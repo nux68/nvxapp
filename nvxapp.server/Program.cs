@@ -28,9 +28,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1"); });
 
-    // Avvia automaticamente la pagina Swagger nel browser predefinito
-    var urlSw = "https://localhost:7146/swagger/index.html";
-    Process.Start(new ProcessStartInfo(urlSw) { UseShellExecute = true });
+    //// Avvia automaticamente la pagina Swagger nel browser predefinito
+    //var urlSw = "https://localhost:7146/swagger/index.html";
+    //Process.Start(new ProcessStartInfo(urlSw) { UseShellExecute = true });
 
 }
 
