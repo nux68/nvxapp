@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "New Profile",
+    "Projects": [
+      {
+        "Path": "nvxapp.server\\nvxapp.server.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "nvxapp.client\\nvxapp.client.esproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]

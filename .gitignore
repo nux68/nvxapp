@@ -1,0 +1,11 @@
+# Specifies intentionally untracked files to ignore when using Git
+# http://git-scm.com/docs/gitignore
+
+nvxapp.Server/bin
+nvxapp.Server/obj
+nvxapp.client/node_modules
+nvxapp.client/.angular
+nvxapp.client/obj/
+nvxapp.client/dist/
+nvxapp.client/www/
+.vs/

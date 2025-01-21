@@ -1,0 +1,7 @@
+{
+  "name": "nvxapp.client",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}

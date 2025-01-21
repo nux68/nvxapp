@@ -1,0 +1,6 @@
+@nvxapp.server_HostAddress = http://localhost:5243
+
+GET {{nvxapp.server_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
