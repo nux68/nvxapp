@@ -2,7 +2,12 @@
 # http://git-scm.com/docs/gitignore
 
 nvxapp.Server/bin
-nvxapp.Server/obj
+nvxapp.Server/obj/
+nvxapp.Server/wwwroot/
+nvxapp.Server/node_modules/
+
+
+
 nvxapp.client/node_modules
 nvxapp.client/.angular
 nvxapp.client/obj/

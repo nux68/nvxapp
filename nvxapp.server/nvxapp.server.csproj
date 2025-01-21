@@ -8,6 +8,21 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.1" />
+	
   </ItemGroup>
+
+	
+	
+  <!-- Definisci i file da copiare -->
+  <ItemGroup>
+	<AngularFiles Include="../nvxapp.client/www/**/*.*" />
+  </ItemGroup>
+  <!-- Target per integrare la build del progetto Angular -->
+  <Target Name="BuildAndCopyAngular" BeforeTargets="Build">
+	<Exec Command="npm install prefix ../nvxapp.client" />
+    <Exec Command="npm run build --prefix ../nvxapp.client" />
+	<Copy SourceFiles="@(AngularFiles)" DestinationFolder="wwwroot" />
+  </Target>
+	
 
 </Project>

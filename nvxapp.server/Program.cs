@@ -18,6 +18,10 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
+// Middleware per i file statici
+app.UseDefaultFiles(); // Serve automaticamente il file "index.html"
+app.UseStaticFiles();
+
 app.MapControllers();
 
 app.Run();

@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "nvxapp.client": "file:../nvxapp.client",
+    "prefix": "^1.0.0"
+  }
+}
