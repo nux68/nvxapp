@@ -1,33 +1,53 @@
 using Microsoft.AspNetCore.Mvc;
+using nvxapp.server.service.ClientServer.Models;
+using nvxapp.server.service.Service.WeatherForecast;
+using nvxapp.server.service.Service.WeatherForecast.Models;
 
 namespace nvxapp.server.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
-    public class WeatherForecastController : ControllerBase
+    [Route("api/[controller]")]
+    public class WeatherForecastController : RepositoryNetcoreControllerBase
     {
-        private static readonly string[] Summaries = new[]
-        {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
+        private readonly IWeatherForecastService _weatherForecastService;
 
-        private readonly ILogger<WeatherForecastController> _logger;
+        
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
+
+        public WeatherForecastController(
+            //ILogger<WeatherForecastController> logger
+
+            IWeatherForecastService weatherForecastService
+
+            )
         {
-            _logger = logger;
+            //_logger = logger;
+
+            _weatherForecastService = weatherForecastService;
         }
 
-        [HttpGet(Name = "GetWeatherForecast")]
-        public IEnumerable<WeatherForecast> Get()
+        [HttpPost]
+        [Route("Get")]
+        public async Task<GenericResult<WeatherForecastOutModel>> Get(GenericRequest<WeatherForecastInModel> inModel)
         {
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            {
-                Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                TemperatureC = Random.Shared.Next(-20, 55),
-                Summary = Summaries[Random.Shared.Next(Summaries.Length)]
-            })
-            .ToArray();
+            //WeatherForecastOutModel retVal = new WeatherForecastOutModel();
+
+            //retVal.WeatherForecastate = Enumerable.Range(1, 5).Select(index => new WeatherForecast
+            //{
+            //    Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
+            //    TemperatureC = Random.Shared.Next(-20, 55),
+            //    Summary = Summaries[Random.Shared.Next(Summaries.Length)]
+            //})
+            //.ToList();
+
+            //return retVal;
+
+            var res = await  _weatherForecastService.GetAll(inModel);
+
+            return res;
+
+            
+
         }
     }
 }

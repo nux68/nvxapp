@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35707.178 d17.12
+VisualStudioVersion = 17.12.35707.178
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nvxapp.server", "nvxapp.server\nvxapp.server.csproj", "{EC0F2DF9-9E0E-4F4E-ADB7-0900FE34A5F9}"
 EndProject
 Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "nvxapp.client", "nvxapp.client\nvxapp.client.esproj", "{5FD20B50-93E5-4176-B80B-EA0E41FFFA1A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "nvxapp.server.service", "nvxapp.server.service\nvxapp.server.service.csproj", "{593A3D3E-9584-4DF0-B93E-0630086F19CC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,6 +25,10 @@ Global
 		{5FD20B50-93E5-4176-B80B-EA0E41FFFA1A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5FD20B50-93E5-4176-B80B-EA0E41FFFA1A}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5FD20B50-93E5-4176-B80B-EA0E41FFFA1A}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{593A3D3E-9584-4DF0-B93E-0630086F19CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{593A3D3E-9584-4DF0-B93E-0630086F19CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{593A3D3E-9584-4DF0-B93E-0630086F19CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{593A3D3E-9584-4DF0-B93E-0630086F19CC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

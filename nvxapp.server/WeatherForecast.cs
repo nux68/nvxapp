@@ -1,13 +1,29 @@
-namespace nvxapp.server
-{
-    public class WeatherForecast
-    {
-        public DateOnly Date { get; set; }
+//namespace nvxapp.server
+//{
 
-        public int TemperatureC { get; set; }
+//    public class WeatherForecastInModel
+//    {
 
-        public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+//    }
 
-        public string? Summary { get; set; }
-    }
-}
+//    public class WeatherForecastOutModel
+//    {
+//        public List<WeatherForecast>  WeatherForecastate { get; set; }
+
+//        public WeatherForecastOutModel()
+//        {
+//            WeatherForecastate = new List<WeatherForecast>();
+//        }
+//    }
+
+//    public class WeatherForecast
+//    {
+//        public DateOnly Date { get; set; }
+
+//        public int TemperatureC { get; set; }
+
+//        public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+
+//        public string? Summary { get; set; }
+//    }
+//}

@@ -6,6 +6,9 @@ nvxapp.Server/obj/
 nvxapp.Server/wwwroot/
 nvxapp.Server/node_modules/
 
+nvxapp.server.service/bin
+nvxapp.server.service/obj/
+
 
 
 nvxapp.client/node_modules

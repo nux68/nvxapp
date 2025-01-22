@@ -1,3 +1,4 @@
+using nvxapp.server.Infrastructure;
 using System.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,10 +13,26 @@ builder.Services.AddOpenApi();
 // Aggiungi Swagger
 builder.Services.AddSwaggerGen();
 
+
+// Aggiungi i servizi CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAllOrigins", policy =>
+    {
+        policy.AllowAnyOrigin() // Permette qualsiasi origine
+              .AllowAnyMethod() // Permette qualsiasi metodo (GET, POST, PUT, DELETE, ecc.)
+              .AllowAnyHeader(); // Permette qualsiasi intestazione
+    });
+});
+
+
+Installers.InstallServices(builder);
+
 var app = builder.Build();
 
 
-
+// Usa la policy CORS globale
+app.UseCors("AllowAllOrigins");
 
 
 

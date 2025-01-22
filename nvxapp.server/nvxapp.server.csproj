@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.1" />
+    <PackageReference Include="NetCore.AutoRegisterDi" Version="2.2.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="7.2.0" />
 	
   </ItemGroup>
@@ -18,11 +19,17 @@
   <ItemGroup>
 	<AngularFiles Include="../nvxapp.client/www/**/*.*" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\nvxapp.server.service\nvxapp.server.service.csproj" />
+  </ItemGroup>
   <!-- Target per integrare la build del progetto Angular -->
   <Target Name="BuildAndCopyAngular" BeforeTargets="Build">
-	<Exec Command="npm install prefix ../nvxapp.client" />
-    <Exec Command="npm run build --prefix ../nvxapp.client" />
-	<Copy SourceFiles="@(AngularFiles)" DestinationFolder="wwwroot" />
+	  <!--   
+	  <Exec Command="npm install prefix ../nvxapp.client" />
+	  -->
+	  
+     <Exec Command="npm run build --prefix ../nvxapp.client" />
+	   <Copy SourceFiles="@(AngularFiles)" DestinationFolder="wwwroot" />
   </Target>
 	
 
