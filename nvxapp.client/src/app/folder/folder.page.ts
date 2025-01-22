@@ -25,7 +25,7 @@ export class FolderPage implements OnInit {
     let request: GenericRequestModel<WeatherForecastInModel> = new GenericRequestModel<WeatherForecastInModel>();
 
     this.weatherForecastService.WeatherForecastGet(request).subscribe(res => {
-      //this.WeatherForecast = res.data.;
+      this.WeatherForecast = res.data.weatherForecast;
     });
 
   }

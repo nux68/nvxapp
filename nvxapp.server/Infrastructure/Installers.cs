@@ -12,8 +12,6 @@ namespace nvxapp.server.Infrastructure
         {
 
 
-
-
             builder.Services.RegisterAssemblyPublicNonGenericClasses(Assembly.GetAssembly(typeof(IServiceBase)))
                 .AsPublicImplementedInterfaces(ServiceLifetime.Scoped);
 
