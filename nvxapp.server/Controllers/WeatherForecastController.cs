@@ -11,9 +11,6 @@ namespace nvxapp.server.Controllers
     {
         private readonly IWeatherForecastService _weatherForecastService;
 
-        
-
-
         public WeatherForecastController(
             //ILogger<WeatherForecastController> logger
 
@@ -30,24 +27,9 @@ namespace nvxapp.server.Controllers
         [Route("Get")]
         public async Task<GenericResult<WeatherForecastOutModel>> Get(GenericRequest<WeatherForecastInModel> inModel)
         {
-            //WeatherForecastOutModel retVal = new WeatherForecastOutModel();
-
-            //retVal.WeatherForecastate = Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            //{
-            //    Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            //    TemperatureC = Random.Shared.Next(-20, 55),
-            //    Summary = Summaries[Random.Shared.Next(Summaries.Length)]
-            //})
-            //.ToList();
-
-            //return retVal;
-
             var res = await  _weatherForecastService.GetAll(inModel);
 
             return res;
-
-            
-
         }
     }
 }

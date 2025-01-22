@@ -3,6 +3,42 @@ using System.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
+/*
+ ATTENZIONE IMPOSTARE IN :
+    
+Pannello di controllo -> Sistema -> Impostazioni si sistema avanzate -> Variabili ambiente
+    mettere
+        ASPNETCORE_ENVIRONMENT
+            Svi            
+            Test
+            Staging
+            Siges
+                
+ */
+
+
+
+
+if (builder.Environment.EnvironmentName.Contains("Development"))
+{
+    // Configurazione personalizzata sviluppatori
+    builder.Configuration
+           .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+           .AddJsonFile($"appsettings.Development.json", optional: true, reloadOnChange: true)
+           .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
+           .AddEnvironmentVariables();
+}
+else
+{
+    builder.Configuration
+           .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+           .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
+           .AddEnvironmentVariables();
+}
+
+
+
 // Add services to the container.
 
 builder.Services.AddControllers();

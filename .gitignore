@@ -9,6 +9,8 @@ nvxapp.Server/node_modules/
 nvxapp.server.service/bin
 nvxapp.server.service/obj/
 
+nvxapp.server.data/bin
+nvxapp.server.data/obj/
 
 
 nvxapp.client/node_modules
