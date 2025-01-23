@@ -4,6 +4,7 @@ using System.Reflection;
 using NetCore.AutoRegisterDi;
 using nvxapp.server.data.Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using nvxapp.server.data.Interfaces;
 
 namespace nvxapp.server.Infrastructure
 {
@@ -23,16 +24,6 @@ namespace nvxapp.server.Infrastructure
         public static IServiceCollection InstallEntityContex(this WebApplicationBuilder builder)
         {
 
-            //builder.Services.AddDbContext<ApplicationDbContext>(options =>
-            //        options.UseNpgsql(
-            //                builder.Configuration["connectionStrings:nvxappDbContext"]
-            //                )
-            //    );
-
-
-            //builder.Services.AddDbContext<ApplicationDbContext>(options =>
-            //        options.UseNpgsql(builder.Configuration.GetConnectionString("nvxappDbContext")));
-
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                    options.UseNpgsql(
                        builder.Configuration.GetConnectionString("nvxappDbContext"),
@@ -40,6 +31,15 @@ namespace nvxapp.server.Infrastructure
                    )
                );
 
+            return builder.Services;
+        }
+
+        public static IServiceCollection InstallRepositories(this WebApplicationBuilder builder)
+        {
+            builder.Services.RegisterAssemblyPublicNonGenericClasses(Assembly.GetAssembly(typeof(IRepository<>)))
+                            .AsPublicImplementedInterfaces(ServiceLifetime.Scoped);
+
+            //builder.Services.AddScoped<IDatabaseTransaction, DatabaseTransaction>();
 
             return builder.Services;
         }
