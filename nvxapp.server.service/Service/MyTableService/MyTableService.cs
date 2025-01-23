@@ -12,6 +12,8 @@ using System.Threading.Tasks;
 using nvxapp.server.data.Repositories;
 using Microsoft.AspNetCore.Identity;
 using AutoMapper;
+using nvxapp.server.data.Entities;
+
 
 namespace nvxapp.server.service.Service.MyTableService
 {
@@ -21,7 +23,9 @@ namespace nvxapp.server.service.Service.MyTableService
         private readonly IMyTableRepository _myTableRepository;
 
         public MyTableService(IMapper mapper,
-                              IMyTableRepository myTableRepository) : base(mapper)
+                              //UserManager<ApplicationUser> userManager,
+                              IAspNetUsersRepository aspNetUsersRepository,
+                              IMyTableRepository myTableRepository) : base(mapper /*, userManager*/  , aspNetUsersRepository)
         {
             _myTableRepository = myTableRepository;
         }

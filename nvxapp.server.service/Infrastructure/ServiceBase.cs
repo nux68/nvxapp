@@ -11,24 +11,37 @@ using Newtonsoft.Json.Utilities;
 using nvxapp.server.service.Helpers;
 using Newtonsoft.Json;
 using AutoMapper;
+using Microsoft.AspNetCore.Identity;
+using nvxapp.server.data.Entities;
+using nvxapp.server.data.Interfaces;
+using nvxapp.server.data.Repositories;
 
 
 namespace nvxapp.server.service.Infrastructure
 {
 
-    public class ServiceBase : IServiceBase //, ICurrentUser
+    public class ServiceBase : IServiceBase , ICurrentUser
     {
         protected readonly IMapper _mapper;
+        //protected readonly UserManager<ApplicationUser> _userManager;
+        protected readonly IAspNetUsersRepository _aspNetUsersRepository;
+
+        private string? _currentUser;
+        public string? CurrentUser
+        {
+            get { return _currentUser; }
+            set { _currentUser = value; }
+        }
 
         public ServiceBase(
-                          IMapper mapper
-                          //UserManager<ApplicationUser> userManager,
-                          //IAspNetUsersRepository aspNetUsersRepository
+                          IMapper mapper,
+                          //UserManager<ApplicationUser> userManager
+                          IAspNetUsersRepository aspNetUsersRepository
                           )
         {
             _mapper = mapper;
             //_userManager = userManager;
-            //_aspNetUsersRepository = aspNetUsersRepository;
+            _aspNetUsersRepository = aspNetUsersRepository;
         }
 
         protected async Task<GenericResult<T>> ExecuteAction<T, P1>(P1? p1, Func<Task<T>> function)
