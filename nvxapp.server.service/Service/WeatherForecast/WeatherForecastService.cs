@@ -46,7 +46,7 @@ namespace nvxapp.server.service.Service.WeatherForecast
                 requestMyTable.Data = new MyTableInModel();
                 var resultMyTable = await _myTableService.GetAll(requestMyTable);
 
-                retVal.MyTableModel = resultMyTable.Data.MyTable;
+                retVal.MyTableModel = resultMyTable.Data!.MyTable;
 
                 retVal.WeatherForecastate = Enumerable.Range(1, 5).Select(index => new WeatherForecastModel
                 {

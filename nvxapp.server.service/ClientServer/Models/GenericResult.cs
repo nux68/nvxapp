@@ -11,9 +11,9 @@ namespace nvxapp.server.service.ClientServer.Models
 
         public bool Success { get; set; }
 
-        public string Error { get; set; }
+        public string? Error { get; set; }
 
-        public T Data { get; set; }
+        public T? Data { get; set; }
 
     }
 }

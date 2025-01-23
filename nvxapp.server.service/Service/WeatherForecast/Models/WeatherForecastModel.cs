@@ -14,13 +14,13 @@ namespace nvxapp.server.service.Service.WeatherForecast.Models
 
     public class WeatherForecastOutModel
     {
-        public List<MyTableModel> MyTableModel { get; set; }
+        public List<MyTableModel>? MyTableModel { get; set; }
         public List<WeatherForecastModel> WeatherForecastate { get; set; }
 
         public WeatherForecastOutModel()
         {
             WeatherForecastate = new List<WeatherForecastModel>();
-            MyTableModel = new List<MyTableModel>();
+            //MyTableModel = new List<MyTableModel>();
         }
     }
 

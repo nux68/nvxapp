@@ -115,7 +115,8 @@ namespace nvxapp.server.service.Infrastructure
             return new GenericResult<T>
             {
                 Success = false,
-                Error = error
+                Error = error,
+                Data = default(T)
             };
         }
 
