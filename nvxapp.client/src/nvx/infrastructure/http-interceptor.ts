@@ -1,11 +1,14 @@
 import { Injectable } from '@angular/core';
-import {
-  HttpInterceptor,
-  HttpRequest,
-  HttpHandler,
-  HttpEvent,
-  HttpErrorResponse,
-} from '@angular/common/http';
+//import {
+//  HttpInterceptor,
+//  HttpRequest,
+//  HttpHandler,
+//  HttpEvent,
+//  HttpErrorResponse,
+//} from '@angular/common/http';
+
+import { HttpClient, HttpInterceptor, HttpHandler, HttpEvent, HttpRequest } from '@angular/common/http';
+
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { catchError, finalize } from 'rxjs/operators';
 //import { AuthService } from '../auth/auth.service';
@@ -55,17 +58,17 @@ export class NvxHttpInterceptor implements HttpInterceptor {
   //  );
   //}
 
-  intercept(req: HttpRequest<any>, next: HttpHandler) {
-    // Get the auth token from the service.
-    //const authToken = this.auth.getAuthorizationToken();
 
-    // Clone the request and replace the original headers with
-    // cloned headers, updated with the authorization.
+
+  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+    // Clona la richiesta per aggiungere il nuovo header
     const authReq = req.clone({
-      headers: req.headers.set('UserName', 'SookaUser')
+      setHeaders: {
+        UserName: `SookaUser`
+      }
     });
 
-    // send cloned request with header to the next handler.
+    // Passa la richiesta al prossimo handler nella catena
     return next.handle(authReq);
   }
 
