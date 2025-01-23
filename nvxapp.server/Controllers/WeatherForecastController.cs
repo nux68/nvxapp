@@ -12,13 +12,11 @@ namespace nvxapp.server.Controllers
         private readonly IWeatherForecastService _weatherForecastService;
 
         public WeatherForecastController(
-            //ILogger<WeatherForecastController> logger
-
-            IWeatherForecastService weatherForecastService
-
-            )
+                                            IHttpContextAccessor httpContextAccessor,
+                                            IWeatherForecastService weatherForecastService
+            ):base( httpContextAccessor )
         {
-            //_logger = logger;
+            
 
             _weatherForecastService = weatherForecastService;
         }
