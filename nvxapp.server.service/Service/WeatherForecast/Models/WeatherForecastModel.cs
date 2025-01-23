@@ -1,4 +1,5 @@
-﻿using System;
+﻿using nvxapp.server.service.Service.MyTableService.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,11 +14,13 @@ namespace nvxapp.server.service.Service.WeatherForecast.Models
 
     public class WeatherForecastOutModel
     {
+        public List<MyTableModel> MyTableModel { get; set; }
         public List<WeatherForecastModel> WeatherForecastate { get; set; }
 
         public WeatherForecastOutModel()
         {
             WeatherForecastate = new List<WeatherForecastModel>();
+            MyTableModel = new List<MyTableModel>();
         }
     }
 

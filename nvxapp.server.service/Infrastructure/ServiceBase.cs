@@ -10,6 +10,7 @@ using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Utilities;
 using nvxapp.server.service.Helpers;
 using Newtonsoft.Json;
+using AutoMapper;
 
 
 namespace nvxapp.server.service.Infrastructure
@@ -17,15 +18,15 @@ namespace nvxapp.server.service.Infrastructure
 
     public class ServiceBase : IServiceBase //, ICurrentUser
     {
+        protected readonly IMapper _mapper;
 
-    
         public ServiceBase(
-                          //IMapper mapper,
+                          IMapper mapper
                           //UserManager<ApplicationUser> userManager,
                           //IAspNetUsersRepository aspNetUsersRepository
                           )
         {
-            //_mapper = mapper;
+            _mapper = mapper;
             //_userManager = userManager;
             //_aspNetUsersRepository = aspNetUsersRepository;
         }

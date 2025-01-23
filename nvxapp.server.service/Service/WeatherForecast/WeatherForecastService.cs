@@ -1,4 +1,5 @@
-﻿using nvxapp.server.service.ClientServer.Models;
+﻿using AutoMapper;
+using nvxapp.server.service.ClientServer.Models;
 using nvxapp.server.service.Infrastructure;
 using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.Service.MyTableService;
@@ -22,7 +23,8 @@ namespace nvxapp.server.service.Service.WeatherForecast
             "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
         };
 
-        public WeatherForecastService(IMyTableService myTableService) : base()
+        public WeatherForecastService(IMapper mapper,
+                                      IMyTableService myTableService) : base(mapper)
         {
             _myTableService = myTableService;
         }
@@ -36,6 +38,8 @@ namespace nvxapp.server.service.Service.WeatherForecast
                 GenericRequest<MyTableInModel> requestMyTable = new GenericRequest<MyTableInModel>();
                 requestMyTable.Data = new MyTableInModel();
                 var resultMyTable = await _myTableService.GetAll(requestMyTable);
+
+                retVal.MyTableModel = resultMyTable.Data.MyTable;
 
                 retVal.WeatherForecastate = Enumerable.Range(1, 5).Select(index => new WeatherForecastModel
                 {

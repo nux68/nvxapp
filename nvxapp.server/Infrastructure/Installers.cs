@@ -44,5 +44,12 @@ namespace nvxapp.server.Infrastructure
             return builder.Services;
         }
 
+        public static IServiceCollection InstallMappers(this WebApplicationBuilder builder)
+        {
+
+            builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+            return builder.Services;
+        }
     }
 }

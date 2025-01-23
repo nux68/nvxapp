@@ -67,7 +67,7 @@ builder.Services.AddCors(options =>
 Installers.InstallServices(builder);
 Installers.InstallEntityContex(builder);
 Installers.InstallRepositories(builder);
-
+Installers.InstallMappers(builder);
 
 
 var app = builder.Build();

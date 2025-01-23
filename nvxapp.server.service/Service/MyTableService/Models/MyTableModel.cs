@@ -8,6 +8,7 @@ namespace nvxapp.server.service.Service.MyTableService.Models
 {
     public class MyTableModel
     {
+        public string? Descrizione { get; set; }
     }
 
     public class MyTableInModel

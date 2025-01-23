@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using nvxapp.server.data.Repositories;
 using Microsoft.AspNetCore.Identity;
+using AutoMapper;
 
 namespace nvxapp.server.service.Service.MyTableService
 {
@@ -19,7 +20,8 @@ namespace nvxapp.server.service.Service.MyTableService
     {
         private readonly IMyTableRepository _myTableRepository;
 
-        public MyTableService(IMyTableRepository myTableRepository) : base()
+        public MyTableService(IMapper mapper,
+                              IMyTableRepository myTableRepository) : base(mapper)
         {
             _myTableRepository = myTableRepository;
         }
@@ -30,9 +32,11 @@ namespace nvxapp.server.service.Service.MyTableService
             {
                 MyTableOutModel retVal = new MyTableOutModel();
 
-                var myTableValue = await  _myTableRepository.FindAll();
+                var myTableFromDB = await  _myTableRepository.FindAll();
 
-                
+                var myTableModel = _mapper.Map<List<MyTableModel>>(myTableFromDB);
+
+                retVal.MyTable = myTableModel;
 
                 //eliminare
                 // Nessun 'await' qui
