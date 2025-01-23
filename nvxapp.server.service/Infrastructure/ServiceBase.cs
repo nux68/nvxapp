@@ -1,21 +1,12 @@
-﻿using nvxapp.server.service.ClientServer.Models;
-using nvxapp.server.service.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Utilities;
-using nvxapp.server.service.Helpers;
-using Newtonsoft.Json;
-using AutoMapper;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
+using Newtonsoft.Json;
 using nvxapp.server.data.Entities;
 using nvxapp.server.data.Interfaces;
 using nvxapp.server.data.Repositories;
-
+using nvxapp.server.service.ClientServer.Models;
+using nvxapp.server.service.Helpers;
+using nvxapp.server.service.Interfaces;
 
 namespace nvxapp.server.service.Infrastructure
 {
@@ -23,7 +14,7 @@ namespace nvxapp.server.service.Infrastructure
     public class ServiceBase : IServiceBase , ICurrentUser
     {
         protected readonly IMapper _mapper;
-        //protected readonly UserManager<ApplicationUser> _userManager;
+        protected readonly UserManager<ApplicationUser> _userManager;
         protected readonly IAspNetUsersRepository _aspNetUsersRepository;
 
         private string? _currentUser;
@@ -35,12 +26,12 @@ namespace nvxapp.server.service.Infrastructure
 
         public ServiceBase(
                           IMapper mapper,
-                          //UserManager<ApplicationUser> userManager
+                          UserManager<ApplicationUser> userManager,
                           IAspNetUsersRepository aspNetUsersRepository
                           )
         {
             _mapper = mapper;
-            //_userManager = userManager;
+            _userManager = userManager;
             _aspNetUsersRepository = aspNetUsersRepository;
         }
 

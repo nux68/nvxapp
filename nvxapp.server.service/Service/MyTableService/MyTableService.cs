@@ -23,9 +23,10 @@ namespace nvxapp.server.service.Service.MyTableService
         private readonly IMyTableRepository _myTableRepository;
 
         public MyTableService(IMapper mapper,
-                              //UserManager<ApplicationUser> userManager,
+                              UserManager<ApplicationUser> userManager,
                               IAspNetUsersRepository aspNetUsersRepository,
-                              IMyTableRepository myTableRepository) : base(mapper /*, userManager*/  , aspNetUsersRepository)
+
+                              IMyTableRepository myTableRepository) : base(mapper , userManager  , aspNetUsersRepository)
         {
             _myTableRepository = myTableRepository;
         }

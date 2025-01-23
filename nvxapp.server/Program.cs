@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using nvxapp.server.data.Entities;
 using nvxapp.server.data.Infrastructure;
 using nvxapp.server.Infrastructure;
 using System.Diagnostics;
@@ -64,10 +66,14 @@ builder.Services.AddCors(options =>
 });
 
 
+
+
 Installers.InstallServices(builder);
 Installers.InstallEntityContex(builder);
 Installers.InstallRepositories(builder);
 Installers.InstallMappers(builder);
+
+
 
 
 var app = builder.Build();

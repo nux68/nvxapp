@@ -28,9 +28,10 @@ namespace nvxapp.server.service.Service.WeatherForecast
         };
 
         public WeatherForecastService(IMapper mapper,
-                                      //UserManager<ApplicationUser> userManager,
+                                      UserManager<ApplicationUser> userManager,
                                       IAspNetUsersRepository aspNetUsersRepository,
-                                      IMyTableService myTableService) : base(mapper /*, userManager*/  , aspNetUsersRepository)
+                                      
+                                      IMyTableService myTableService) : base(mapper , userManager  , aspNetUsersRepository)
         {
             _myTableService = myTableService;
         }

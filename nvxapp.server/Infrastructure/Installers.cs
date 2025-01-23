@@ -5,6 +5,8 @@ using NetCore.AutoRegisterDi;
 using nvxapp.server.data.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using nvxapp.server.data.Interfaces;
+using Microsoft.AspNetCore.Identity;
+using nvxapp.server.data.Entities;
 
 namespace nvxapp.server.Infrastructure
 {
@@ -30,6 +32,10 @@ namespace nvxapp.server.Infrastructure
                        npgsqlOptions => npgsqlOptions.MigrationsAssembly("nvxapp.server.data") // Specifica l'assembly per le migrazioni
                    )
                );
+
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+                            .AddEntityFrameworkStores<ApplicationDbContext>()
+                            .AddDefaultTokenProviders();
 
             return builder.Services;
         }
