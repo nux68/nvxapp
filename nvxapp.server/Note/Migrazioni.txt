@@ -5,6 +5,9 @@ crea
 dotnet ef migrations add InitDB  --context nvxapp.server.data.Infrastructure.ApplicationDbContext --project nvxapp.server.data --startup-project nvxapp.server\nvxapp.server.csproj
 
 aggiorna db
+dotnet ef database update --project nvxapp.server.data --startup-project nvxapp.server
+
+aggiorna db alla migrazione specificata
 dotnet ef database update InitDB --project nvxapp.server.data --startup-project nvxapp.server
 
 cancella
