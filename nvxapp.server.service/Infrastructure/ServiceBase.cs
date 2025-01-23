@@ -7,6 +7,7 @@ using nvxapp.server.data.Repositories;
 using nvxapp.server.service.ClientServer.Models;
 using nvxapp.server.service.Helpers;
 using nvxapp.server.service.Interfaces;
+using Serilog;
 
 namespace nvxapp.server.service.Infrastructure
 {
@@ -45,17 +46,15 @@ namespace nvxapp.server.service.Infrastructure
 
                 await Initialize();
 
-                //Log.Information("Call: {a1}, GUID: {a2}, param: {a3}", function.Method.Name, callGUID, JsonConvert.SerializeObject(p1));
+                Log.Information("Call: {a1}, GUID: {a2}, param: {a3}", function.Method.Name, callGUID, JsonConvert.SerializeObject(p1));
 
 
                 // execute method
                 var data = await function();
 
 
-                //Log.Verbose("END Call: {a1}, GUID: {a2}, result: {a3}", function.Method.Name, callGUID,
-                JsonConvert.SerializeObject(data, 
-                                            new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore }
-                                            );
+                Log.Verbose("END Call: {a1}, GUID: {a2}, result: {a3}", function.Method.Name, callGUID,
+                JsonConvert.SerializeObject(data, new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore }));
 
 
                 return OkResponse(data);
@@ -71,7 +70,7 @@ namespace nvxapp.server.service.Infrastructure
                 // per avere un errore piu' leggibile dall'utente e usare throwexception piu facilmente
                 var _err = _class + " - " + e.ToErrorString();
 
-                //Log.Error(e, "END Call(ExecuteAction ERR): {a1}, GUID: {a2}, result: {a3}", function.Method.Name, callGUID, _err);
+                Log.Error(e, "END Call(ExecuteAction ERR): {a1}, GUID: {a2}, result: {a3}", function.Method.Name, callGUID, _err);
 
                 return ErrorResponse<T>(_err);
             }
@@ -110,7 +109,7 @@ namespace nvxapp.server.service.Infrastructure
         {
 
             Console.WriteLine(error);
-            //Log.Error(error);
+            Log.Error(error);
 
             // return the model
             return new GenericResult<T>

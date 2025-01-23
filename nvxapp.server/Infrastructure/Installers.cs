@@ -7,6 +7,11 @@ using Microsoft.EntityFrameworkCore;
 using nvxapp.server.data.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using nvxapp.server.data.Entities;
+using NpgsqlTypes;
+using Serilog.Core;
+using Serilog.Events;
+using Serilog;
+using Serilog.Sinks.PostgreSQL;
 
 namespace nvxapp.server.Infrastructure
 {
@@ -57,5 +62,127 @@ namespace nvxapp.server.Infrastructure
 
             return builder.Services;
         }
+
+        public static IServiceCollection InstallLog(this WebApplicationBuilder builder)
+        {
+
+            //Log.Logger = new LoggerConfiguration().WriteTo.RollingFile("c:\\Logs\\{Date}.log").CreateLogger();
+
+            var levelSwitch = new LoggingLevelSwitch();
+            levelSwitch.MinimumLevel = LogEventLevel.Information;
+
+            var logMinimumLevel = builder.Configuration["Logging:LogLevel:Serilog"];
+
+            if (logMinimumLevel != null)
+            {
+                logMinimumLevel = logMinimumLevel.ToLower();
+
+                if (logMinimumLevel.StartsWith("info"))
+                {
+                    levelSwitch.MinimumLevel = LogEventLevel.Information;
+                }
+                else if (logMinimumLevel.StartsWith("debug"))
+                {
+                    levelSwitch.MinimumLevel = LogEventLevel.Debug;
+                }
+                else if (logMinimumLevel.StartsWith("trace"))
+                {
+                    levelSwitch.MinimumLevel = LogEventLevel.Verbose;
+                }
+                else if (logMinimumLevel.StartsWith("warn"))
+                {
+                    levelSwitch.MinimumLevel = LogEventLevel.Warning;
+                }
+            }
+
+
+
+
+
+
+            LoggerConfiguration loggerConfiguration = new LoggerConfiguration();
+            loggerConfiguration.MinimumLevel.ControlledBy(levelSwitch)
+                .WriteTo.Console();
+
+            string? LogOnFile = builder.Configuration["Logging:LogType:LogOnFile"];
+            if(LogOnFile!=null)
+            {
+                bool writeToFile = Boolean.Parse(LogOnFile);
+
+                if (writeToFile)
+                {
+                    loggerConfiguration = loggerConfiguration.WriteTo.File($"Logs\\nvxapp.log",
+                                          rollOnFileSizeLimit: true,
+                                          fileSizeLimitBytes: 10000000,
+                                          retainedFileCountLimit: 200,
+                                          outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] {Message:lj}{NewLine}{Exception}");
+
+                }
+            }
+            
+
+
+            string? LogOnDB = builder.Configuration["Logging:LogType:LogOnDB"];
+
+            if(LogOnDB!=null)
+            {
+                bool writeToDatabase = Boolean.Parse(LogOnDB);
+                if (writeToDatabase)
+                {
+                    //IDictionary<string, ColumnWriterBase> columnWriters = new Dictionary<string, ColumnWriterBase>
+                    //{
+                    //    {"Message", new RenderedMessageColumnWriter(NpgsqlDbType.Text) },
+                    //    //{"message_template", new MessageTemplateColumnWriter(NpgsqlDbType.Text) },
+                    //    {"Level", new LevelColumnWriter(true, NpgsqlDbType.Varchar) },
+                    //    {"Date", new TimestampColumnWriter(NpgsqlDbType.Timestamp) },
+                    //    {"Exception", new ExceptionColumnWriter(NpgsqlDbType.Text) },
+                    //    //{"Properties", new LogEventSerializedColumnWriter(NpgsqlDbType.Jsonb) },
+                    //    //{"PropsTest", new PropertiesColumnWriter(NpgsqlDbType.Jsonb) },
+                    //    //{"MachineName", new SinglePropertyColumnWriter("machine_name", PropertyWriteMethod.ToString, NpgsqlDbType.Text, "1") },
+
+                    //    {"CallState", new Call_state_ColumnWriter(PropertyWriteMethod.Raw, NpgsqlDbType.Integer) },
+                    //    {"MethodName", new MethodName_ColumnWriter("a1",PropertyWriteMethod.Raw, NpgsqlDbType.Text) },
+                    //    {"GuidCall", new SimpleString_ColumnWriter("a2",PropertyWriteMethod.Raw, NpgsqlDbType.Text) },
+                    //    {"DataCall", new SimpleString_ColumnWriter("a3",PropertyWriteMethod.Raw, NpgsqlDbType.Text) },
+                    //};
+
+                    //loggerConfiguration = loggerConfiguration.WriteTo.PostgreSQL(
+                    //                      connectionString: builder.Configuration["connectionStrings:nvxappDbContext"],
+                    //                      tableName: "Logs",
+                    //                      columnOptions: columnWriters,
+                    //                      needAutoCreateTable: true,
+                    //                      restrictedToMinimumLevel: levelSwitch.MinimumLevel);
+
+
+                    // TODO nuova versione con colonne riorganizzate e su schema differente
+
+
+                    IDictionary<string, ColumnWriterBase> columnWriters = new Dictionary<string, ColumnWriterBase>
+                    {
+                        {"Date", new TimestampColumnWriter(NpgsqlDbType.Timestamp) },
+                        {"Level", new LevelColumnWriter(true, NpgsqlDbType.Varchar) },
+                        {"CallState", new Call_state_ColumnWriter(PropertyWriteMethod.Raw, NpgsqlDbType.Integer) },
+                        {"MethodName", new MethodName_ColumnWriter("a1",PropertyWriteMethod.Raw, NpgsqlDbType.Text) },
+                        {"Message", new RenderedMessageColumnWriter(NpgsqlDbType.Text) },
+                        {"Exception", new ExceptionColumnWriter(NpgsqlDbType.Text) },
+                        {"GuidCall", new SimpleString_ColumnWriter("a2",PropertyWriteMethod.Raw, NpgsqlDbType.Text) },
+                    };
+
+                    loggerConfiguration = loggerConfiguration.WriteTo.PostgreSQL(
+                                          connectionString: builder.Configuration["connectionStrings:nvxappDbContext"],
+                                          tableName: "Logs",
+                                          columnOptions: columnWriters,
+                                          needAutoCreateTable: true,
+                                          restrictedToMinimumLevel: levelSwitch.MinimumLevel,
+                                          schemaName: "log");
+                }
+            }
+
+            Log.Logger = loggerConfiguration.CreateLogger();
+
+            return builder.Services;
+        }
+
+
     }
 }
