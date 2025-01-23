@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+using nvxapp.server.data.Infrastructure;
 using nvxapp.server.Infrastructure;
 using System.Diagnostics;
 
@@ -63,8 +65,20 @@ builder.Services.AddCors(options =>
 
 
 Installers.InstallServices(builder);
+Installers.InstallEntityContex(builder);
+
 
 var app = builder.Build();
+
+
+//Attiva la migrazione
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+
+    var context = services.GetRequiredService<ApplicationDbContext>();
+    context.Database.Migrate();
+}
 
 
 // Usa la policy CORS globale
