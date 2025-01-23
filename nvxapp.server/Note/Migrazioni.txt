@@ -1,0 +1,14 @@
+﻿lanciare in:
+Package manage console -> nvxapp.server  (root soluzione)
+
+crea
+dotnet ef migrations add InitDB  --context nvxapp.server.data.Infrastructure.ApplicationDbContext --project nvxapp.server.data --startup-project nvxapp.server\nvxapp.server.csproj
+
+aggiorna db
+dotnet ef database update InitDB --project nvxapp.server.data --startup-project nvxapp.server
+
+cancella
+dotnet ef migrations remove --project nvxapp.server.data --startup-project nvxapp.server
+
+cancella tutte migrazioni a db
+dotnet ef database update 0 --project nvxapp.server.data --startup-project nvxapp.server

@@ -1,0 +1,3 @@
+﻿net core 9
+angular 19
+nodejs v22.13.0

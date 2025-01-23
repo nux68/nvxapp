@@ -1,0 +1,70 @@
+﻿Ionic + web API
+
+come ottenere una solution Ionic + web API avviabile e pubblicabile simultaneamente
+
+ipotizziamo che la solution principale si chiamare  myapp
+
+1) Creare un nuovo progetto (myapp.client) con ionic start
+   1.1) use the app creation wizard: NO
+   1.2) scegliere angular
+   1.3) proget name:  myapp.client
+   1.4) Starter template : a scelta
+   1.5) NgModules
+   
+   eliminare tutti i riferimenti a git
+   
+2) Creare un nuovo progetto (myapp.client) con visual studio scegliento con template Angular App 
+   Il nome della solution è indefferente (puo' rimanere myapp.client) perchè ancdremo ad usare solo il progetto e non tutta la soluzione
+   2.1) Entrare nella cartella myapp.client e salvare il file di progetto myapp.client.esproj (servira in seguito)
+   2.2) SVUOTARE la cartella e RIMPIAZZARE il contenuto con tutti i files e cartelle del progetto Ionic
+   2.3) AGGIUNGERE il file myapp.client.esproj salvato in precedenza
+   Dopo questa operazione dovremmo avere un progetto visual studio che avvia Ionic
+   
+  
+4) Creare un nuovo progetto (myapp.server) con visual studio scegliento con template ASP NET CORE web API
+   4.1 dopo aver creato il progetto server, aggingere il progetto visual studio Ionic creato in precedenza con aggiungi "progetto esistente"
+   
+5) modifcare l'avvio della soluzione "configure startup project" aggiungendo myapp.client
+
+quanto fatto fino adesso, permettera di avviare i due progetti simultaneamente
+
+
+DISTRIBUZIONE su IIS
+
+
+1) modificare il file Program.cs per servire i file statci aggiungendo :
+	
+	// Middleware per i file statici
+	app.UseDefaultFiles(); // Serve automaticamente il file "index.html"
+	app.UseStaticFiles();
+   
+2) modificare il file  myapp.server.csproj aggiungendo queste sezioni
+
+  <!-- Definisci i file da copiare -->
+  <ItemGroup>
+	<AngularFiles Include="../myapp.client/www/**/*.*" />
+  </ItemGroup>
+  <!-- Target per integrare la build del progetto Angular -->
+  <Target Name="BuildAndCopyAngular" BeforeTargets="Build">
+	<Exec Command="npm install prefix ../myapp.client" />
+    <Exec Command="npm run build --prefix ../myapp.client" />
+	<Copy SourceFiles="@(AngularFiles)" DestinationFolder="wwwroot" />
+  </Target>
+   
+   
+   
+   
+GIT ignore  
+
+
+myapp.Server/bin
+myapp.Server/obj/
+myapp.Server/wwwroot/
+myapp.Server/node_modules/
+
+myapp.client/node_modules
+myapp.client/.angular
+myapp.client/obj/
+myapp.client/dist/
+myapp.client/www/
+.vs/ 
