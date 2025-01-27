@@ -1,4 +1,5 @@
-﻿using System;
+﻿using nvxapp.server.service.ClientServer.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,11 +17,11 @@ namespace nvxapp.server.service.Service.MyTableService.Models
 
     }
 
-    public class MyTableOutModel
+    public class MyTableOutModel : ModelResult 
     {
         public List<MyTableModel> MyTable { get; set; }
 
-        public MyTableOutModel()
+        public MyTableOutModel() 
         {
             MyTable = new List<MyTableModel>();
         }

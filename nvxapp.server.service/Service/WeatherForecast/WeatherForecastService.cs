@@ -43,10 +43,16 @@ namespace nvxapp.server.service.Service.WeatherForecast
                 WeatherForecastOutModel retVal = new WeatherForecastOutModel();
 
                 GenericRequest<MyTableInModel> requestMyTable = new GenericRequest<MyTableInModel>();
-                requestMyTable.Data = new MyTableInModel();
-                var resultMyTable = await _myTableService.GetAll(requestMyTable);
+                
+                try
+                {
+                    retVal.MyTableModel = _myTableService.GetAll(requestMyTable,true).Result.Data;
+                }
+                catch(Exception ex)
+                {
+                    retVal.AddMessage(ex.Message, MessageType.Exception);
+                }
 
-                retVal.MyTableModel = resultMyTable.Data!.MyTable;
 
                 retVal.WeatherForecastate = Enumerable.Range(1, 5).Select(index => new WeatherForecastModel
                 {
@@ -61,7 +67,7 @@ namespace nvxapp.server.service.Service.WeatherForecast
                 await Task.Delay(1); 
 
                 return retVal;
-            });
+            } /*,false*/);
         }
 
     }

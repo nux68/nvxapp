@@ -1,4 +1,5 @@
-﻿using nvxapp.server.service.Service.MyTableService.Models;
+﻿using nvxapp.server.service.ClientServer.Models;
+using nvxapp.server.service.Service.MyTableService.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,15 +13,15 @@ namespace nvxapp.server.service.Service.WeatherForecast.Models
 
     }
 
-    public class WeatherForecastOutModel
+    public class WeatherForecastOutModel : ModelResult
     {
-        public List<MyTableModel>? MyTableModel { get; set; }
+        // questo verra valorizzato da un altro servizio
+        public MyTableOutModel? MyTableModel { get; set; }
         public List<WeatherForecastModel> WeatherForecastate { get; set; }
 
         public WeatherForecastOutModel()
         {
             WeatherForecastate = new List<WeatherForecastModel>();
-            //MyTableModel = new List<MyTableModel>();
         }
     }
 

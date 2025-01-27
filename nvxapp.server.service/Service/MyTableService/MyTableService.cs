@@ -31,30 +31,38 @@ namespace nvxapp.server.service.Service.MyTableService
             _myTableRepository = myTableRepository;
         }
 
-        public virtual async Task<GenericResult<MyTableOutModel>> GetAll(GenericRequest<MyTableInModel> model)
+        public virtual async Task<GenericResult<MyTableOutModel>> GetAll(GenericRequest<MyTableInModel> model, Boolean isSubProcess)
         {
             return await ExecuteAction(model, async () =>
             {
                 MyTableOutModel retVal = new MyTableOutModel();
+                var i = 0;
+                i = 10 / i;
 
                 var myTableFromDB = await  _myTableRepository.FindAll();
 
                 var myTableModel = _mapper.Map<List<MyTableModel>>(myTableFromDB);
 
                 retVal.MyTable = myTableModel;
+                retVal.MyTable.Clear();
+
+                if (retVal.MyTable.Count == 0)
+                    retVal.Messages.Add(new MessageResult("La tabella MyTable è vuota", MessageType.Warning));
+
+
 
                 //eliminare
                 // Nessun 'await' qui
                 await Task.Delay(1);
 
                 return retVal;
-            });
+            }, isSubProcess);
         }
 
     }
 
     public interface IMyTableService : IServiceBase
     {
-        public Task<GenericResult<MyTableOutModel>> GetAll(GenericRequest<MyTableInModel> model);
+        public Task<GenericResult<MyTableOutModel>> GetAll( GenericRequest<MyTableInModel> model, Boolean standAlone);
     }
 }

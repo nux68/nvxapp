@@ -11,5 +11,18 @@ namespace nvxapp.server.service.ClientServer.Models
 
         public T Data { get; set; }
 
+        // Costruttore senza parametri
+        public GenericRequest()
+        {
+            Data = Activator.CreateInstance<T>();
+        }
+
+        // Costruttore con parametro
+        public GenericRequest(T data)
+        {
+            Data = data;
+        }
     }
+
+    
 }
