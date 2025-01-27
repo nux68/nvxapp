@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.InteropServices.JavaScript;
 
-namespace nvxapp.server.service.ClientServer.Models
+namespace nvxapp.server.service.ClientServer_Service.ModelsBase
 {
     public class GenericResult<T> : IGenericResult<T>, iGenericResult4Server 
     {

@@ -1,8 +1,9 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { WeatherForecastService } from '../../nvx/remote-data/weather-forecast.service';
-import { GenericRequest } from '../../nvx/remote-data/models/ClientServer/generic-request';
-import { WeatherForecastInModel, WeatherForecastOutModel,WeatherForecastModel } from '../../nvx/remote-data/models/weather-forecast-model';
+import { WeatherForecastInModel, WeatherForecastModel } from '../../nvx/ClientServer-Service/WeatherForecastService/Models/weather-forecast-model';
+import { WeatherForecastService } from '../../nvx/ClientServer-Service/WeatherForecastService/weather-forecast.service';
+import { GenericRequest } from '../../nvx/ClientServer-Service/ModelsBase/generic-request';
+
 
 @Component({
   selector: 'app-folder',

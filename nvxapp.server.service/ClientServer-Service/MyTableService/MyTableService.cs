@@ -1,4 +1,4 @@
-﻿using nvxapp.server.service.ClientServer.Models;
+﻿using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Infrastructure;
 using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.Service.MyTableService.Models;

@@ -1,6 +1,6 @@
 ﻿using static System.Runtime.InteropServices.JavaScript.JSType;
 
-namespace nvxapp.server.service.ClientServer.Models
+namespace nvxapp.server.service.ClientServer_Service.ModelsBase
 {
    
 

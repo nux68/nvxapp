@@ -1,4 +1,4 @@
-﻿using nvxapp.server.service.ClientServer.Models;
+﻿using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using System;
 using System.Collections.Generic;
 using System.Linq;

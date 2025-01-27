@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace nvxapp.server.service.ClientServer.Models
+namespace nvxapp.server.service.ClientServer_Service.ModelsBase
 {
     public class GenericRequest<T>
     {

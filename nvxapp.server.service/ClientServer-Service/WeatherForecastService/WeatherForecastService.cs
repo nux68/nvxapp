@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using nvxapp.server.data.Entities;
 using nvxapp.server.data.Repositories;
-using nvxapp.server.service.ClientServer.Models;
+using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Infrastructure;
 using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.Service.MyTableService;
