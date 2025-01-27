@@ -36,8 +36,8 @@ namespace nvxapp.server.service.Service.MyTableService
             return await ExecuteAction(model, async () =>
             {
                 MyTableOutModel retVal = new MyTableOutModel();
-                var i = 0;
-                i = 10 / i;
+                //var i = 0;
+                //i = 10 / i;
 
                 var myTableFromDB = await  _myTableRepository.FindAll();
 
@@ -47,7 +47,7 @@ namespace nvxapp.server.service.Service.MyTableService
                 retVal.MyTable.Clear();
 
                 if (retVal.MyTable.Count == 0)
-                    retVal.Messages.Add(new MessageResult("La tabella MyTable è vuota", MessageType.Warning));
+                    retVal.Messages.Add(new MessageResult("La tabella MyTable è vuota", MessageType.Information));
 
 
 
@@ -63,6 +63,6 @@ namespace nvxapp.server.service.Service.MyTableService
 
     public interface IMyTableService : IServiceBase
     {
-        public Task<GenericResult<MyTableOutModel>> GetAll( GenericRequest<MyTableInModel> model, Boolean standAlone);
+        public Task<GenericResult<MyTableOutModel>> GetAll( GenericRequest<MyTableInModel> model, Boolean isSubProcess);
     }
 }

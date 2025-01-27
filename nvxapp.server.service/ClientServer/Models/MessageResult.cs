@@ -29,6 +29,10 @@
 
         public void AddMessage(string message, MessageType type);
 
+        public void AddMessages(List<MessageResult> messages);
+
+        public List<MessageResult> GetMessages(); 
+
     }
 
 }

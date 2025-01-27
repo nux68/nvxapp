@@ -21,11 +21,20 @@ namespace nvxapp.server.service.ClientServer.Models
             }
         }
 
+        public List<MessageResult> GetMessages()
+        {
+                return Messages;
+        }
+
         public void AddMessage(string message, MessageType type)
         {
             Messages.Add(new MessageResult(message, type));
         }
 
+        public void AddMessages(List<MessageResult> messages)
+        {
+            Messages.AddRange(messages);
+        }
     }
 
    

@@ -36,7 +36,7 @@ namespace nvxapp.server.service.Service.WeatherForecast
             _myTableService = myTableService;
         }
 
-        public virtual async Task<GenericResult<WeatherForecastOutModel>> GetAll(GenericRequest<WeatherForecastInModel> model)
+        public virtual async Task<GenericResult<WeatherForecastOutModel>> GetAll(GenericRequest<WeatherForecastInModel> model, Boolean isSubProcess)
         {
             return await ExecuteAction(model, async () =>
             {
@@ -67,14 +67,14 @@ namespace nvxapp.server.service.Service.WeatherForecast
                 await Task.Delay(1); 
 
                 return retVal;
-            } /*,false*/);
+            } , isSubProcess);
         }
 
     }
 
     public interface IWeatherForecastService : IServiceBase
     {
-        public Task<GenericResult<WeatherForecastOutModel>> GetAll(GenericRequest<WeatherForecastInModel> model);
+        public Task<GenericResult<WeatherForecastOutModel>> GetAll(GenericRequest<WeatherForecastInModel> model, Boolean isSubProcess);
     }
 
 }

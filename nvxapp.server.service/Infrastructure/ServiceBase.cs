@@ -8,12 +8,11 @@ using nvxapp.server.service.ClientServer.Models;
 using nvxapp.server.service.Helpers;
 using nvxapp.server.service.Interfaces;
 using Serilog;
-using System.Data;
 
 namespace nvxapp.server.service.Infrastructure
 {
 
-    public class ServiceBase : IServiceBase , ICurrentUser
+    public class ServiceBase : IServiceBase, ICurrentUser
     {
         protected readonly IMapper _mapper;
         protected readonly UserManager<ApplicationUser> _userManager;
@@ -37,7 +36,7 @@ namespace nvxapp.server.service.Infrastructure
             _aspNetUsersRepository = aspNetUsersRepository;
         }
 
-        protected async Task<GenericResult<T>> ExecuteAction<T, P1>( P1? p1, Func<Task<T>> function, Boolean isSubProcess=false)
+        protected async Task<GenericResult<T>> ExecuteAction<T, P1>(P1? p1, Func<Task<T>> function, Boolean isSubProcess = false)
         {
             var callGUID = Guid.NewGuid();
 
@@ -58,6 +57,14 @@ namespace nvxapp.server.service.Infrastructure
                 JsonConvert.SerializeObject(data, new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore }));
 
 
+                if (isSubProcess == false)
+                {
+                    if (data != null && data is iMessageResult)
+                    {
+                        getAllMessages((iMessageResult)data);
+                    }
+                }
+
                 return OkResponse(data);
 
             }
@@ -77,12 +84,12 @@ namespace nvxapp.server.service.Infrastructure
                    se è un sotto processo
                    ritorno l'Exception cosi il chiamante la potrà gestire a piacimento
                 */
-                if (isSubProcess )
+                if (isSubProcess)
                     throw;
 
                 return ErrorResponse<T>(_err);
             }
-            
+
         }
 
 
@@ -114,14 +121,64 @@ namespace nvxapp.server.service.Infrastructure
             Console.WriteLine(error);
             Log.Error(error);
 
-            
-            return new GenericResult<T>(default(T),error, MessageType.Exception);
+
+            return new GenericResult<T>(default(T), error, MessageType.Exception);
         }
 
         protected void TransactionRollback()
         {
-           // _databaseTransaction?.Rollback();
+            // _databaseTransaction?.Rollback();
         }
+
+        private void getAllMessages(iMessageResult data)
+        {
+
+            if (data != null)
+            {
+                List<MessageResult> AllMessages = new List<MessageResult>();
+
+                var properties = data?.GetType().GetProperties();
+                if (properties != null)
+                {
+                    foreach (var property in properties)
+                    {
+                        var value = property.GetValue(data);
+                        if (value is iMessageResult)
+                        {
+                            getAllMessagesRecursive((iMessageResult)value, AllMessages);
+                        }
+                    }
+                }
+                data!.AddMessages(AllMessages);
+                
+            }
+
+        }
+
+        private void getAllMessagesRecursive(iMessageResult data, List<MessageResult> AllMessages)
+        {
+            if (data != null)
+            {
+                var properties = data?.GetType().GetProperties();
+                if (properties != null)
+                {
+                    foreach (var property in properties)
+                    {
+                        var value = property.GetValue(data);
+                        if (value is iMessageResult)
+                        {
+                            getAllMessagesRecursive((iMessageResult)value, AllMessages);
+                        }
+                    }
+                }
+
+                AllMessages.AddRange(data!.GetMessages());
+
+            }
+        }
+
+
+
     }
 
 

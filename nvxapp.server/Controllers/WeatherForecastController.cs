@@ -25,7 +25,7 @@ namespace nvxapp.server.Controllers
         [Route("Get")]
         public async Task<GenericResult<WeatherForecastOutModel>> Get(GenericRequest<WeatherForecastInModel> inModel)
         {
-            var res = await  _weatherForecastService.GetAll(inModel);
+            var res = await  _weatherForecastService.GetAll(inModel,false);
 
             return res;
         }
