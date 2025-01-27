@@ -59,9 +59,9 @@ namespace nvxapp.server.service.Infrastructure
 
                 if (isSubProcess == false)
                 {
-                    if (data != null && data is iMessageResult)
+                    if (data != null && data is iGenericResult4Server)
                     {
-                        getAllMessages((iMessageResult)data);
+                        getAllMessages((iGenericResult4Server)data);
                     }
                 }
 
@@ -130,12 +130,12 @@ namespace nvxapp.server.service.Infrastructure
             // _databaseTransaction?.Rollback();
         }
 
-        private void getAllMessages(iMessageResult data)
+        private void getAllMessages(iGenericResult4Server data)
         {
 
             if (data != null)
             {
-                List<MessageResult> AllMessages = new List<MessageResult>();
+                List<Message> AllMessages = new List<Message>();
 
                 var properties = data?.GetType().GetProperties();
                 if (properties != null)
@@ -143,9 +143,9 @@ namespace nvxapp.server.service.Infrastructure
                     foreach (var property in properties)
                     {
                         var value = property.GetValue(data);
-                        if (value is iMessageResult)
+                        if (value is iGenericResult4Server)
                         {
-                            getAllMessagesRecursive((iMessageResult)value, AllMessages);
+                            getAllMessagesRecursive((iGenericResult4Server)value, AllMessages);
                         }
                     }
                 }
@@ -155,7 +155,7 @@ namespace nvxapp.server.service.Infrastructure
 
         }
 
-        private void getAllMessagesRecursive(iMessageResult data, List<MessageResult> AllMessages)
+        private void getAllMessagesRecursive(iGenericResult4Server data, List<Message> AllMessages)
         {
             if (data != null)
             {
@@ -165,9 +165,9 @@ namespace nvxapp.server.service.Infrastructure
                     foreach (var property in properties)
                     {
                         var value = property.GetValue(data);
-                        if (value is iMessageResult)
+                        if (value is iGenericResult4Server)
                         {
-                            getAllMessagesRecursive((iMessageResult)value, AllMessages);
+                            getAllMessagesRecursive((iGenericResult4Server)value, AllMessages);
                         }
                     }
                 }

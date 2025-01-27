@@ -4,15 +4,10 @@ namespace nvxapp.server.service.ClientServer.Models
 {
    
 
-    public class ModelResult : iMessageResult
+    public class ModelResult : iModelResult,iGenericResult4Server
     {
-        public List<MessageResult> Messages { get; set; }
-
-        public ModelResult()
-        {
-            Messages = new List<MessageResult>();
-        }
-
+        //iModelResult
+        public List<Message> Messages { get; set; }
         public bool Success
         {
             get
@@ -21,22 +16,36 @@ namespace nvxapp.server.service.ClientServer.Models
             }
         }
 
-        public List<MessageResult> GetMessages()
+
+        //iGenericResult4Server
+        public List<Message> GetMessages()
         {
                 return Messages;
         }
-
         public void AddMessage(string message, MessageType type)
         {
-            Messages.Add(new MessageResult(message, type));
+            Messages.Add(new Message(message, type));
         }
-
-        public void AddMessages(List<MessageResult> messages)
+        public void AddMessages(List<Message> messages)
         {
             Messages.AddRange(messages);
         }
+
+
+        public ModelResult()
+        {
+            Messages = new List<Message>();
+        }
+
+
     }
 
-   
+
+    public interface iModelResult
+    {
+        bool Success { get; }
+        List<Message> Messages { get; set; }
+    }
+
 
 }

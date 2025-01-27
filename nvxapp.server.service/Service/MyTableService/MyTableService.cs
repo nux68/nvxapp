@@ -47,7 +47,7 @@ namespace nvxapp.server.service.Service.MyTableService
                 retVal.MyTable.Clear();
 
                 if (retVal.MyTable.Count == 0)
-                    retVal.Messages.Add(new MessageResult("La tabella MyTable è vuota", MessageType.Information));
+                    retVal.Messages.Add(new Message("La tabella MyTable è vuota", MessageType.Information));
 
 
 

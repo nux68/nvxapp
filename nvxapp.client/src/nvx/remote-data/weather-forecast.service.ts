@@ -3,8 +3,8 @@ import { HttpClient } from '@angular/common/http';
 
 import { map, Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { GenericRequestModel } from './models/generic-request-model';
-import { GenericResult } from './models/generic-result-model';
+import { GenericRequest } from './models/ClientServer/generic-request';
+import { GenericResult } from './models/ClientServer/generic-result';
 import { WeatherForecastInModel, WeatherForecastOutModel } from './models/weather-forecast-model';
 
 @Injectable({
@@ -15,7 +15,7 @@ export class WeatherForecastService {
   constructor(private http: HttpClient) {
   }
 
-  WeatherForecastGet(model: GenericRequestModel<WeatherForecastInModel>): Observable<GenericResult<WeatherForecastOutModel>> {
+  WeatherForecastGet(model: GenericRequest<WeatherForecastInModel>): Observable<GenericResult<WeatherForecastOutModel>> {
 
     return this.http.post<GenericResult<WeatherForecastOutModel>>(environment.remoteData.apiUri + 'WeatherForecast/Get', model)
       //.pipe(
