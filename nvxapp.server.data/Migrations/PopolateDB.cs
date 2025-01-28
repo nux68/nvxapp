@@ -1,14 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Migrations;
-using nvxapp.server.data.Infrastructure;
+using Microsoft.Extensions.Options;
+using nvxapp.server.data.Entities;
 using nvxapp.server.data.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Data;
 
 namespace nvxapp.server.data.Migrations
 {
@@ -23,105 +18,113 @@ namespace nvxapp.server.data.Migrations
             _aspNetUsersRepository = aspNetUsersRepository;
         }
 
+
+        class Data_AspNetRoles
+        {
+            public string Id { get; set; }
+            public string Name { get; set; }
+        }
+
+        class Data_AspNetUsers
+        {
+            public string Id { get; set; }
+            public string UserName { get; set; }
+            public string Email { get; set; }
+        }
+
         public static void PopolateDB_InitDB_UP(MigrationBuilder migrationBuilder)
         {
-            var roles = new[]
-                {
-                    "SuperUser",
-                    "PowerAdmin",
-                    "Admin",
-                    "DomainPowerAdmin",
-                    "DomainAdmin",
-                    "User"
-                };
 
-            foreach (var role in roles)
+            //user
+            List<Data_AspNetUsers> data_AspNetUsers = new List<Data_AspNetUsers>();
+            data_AspNetUsers.Add(new Data_AspNetUsers() { Id = Guid.NewGuid().ToString(), UserName = "NVX", Email = "nello68@hotmail.com" });
+            data_AspNetUsers.Add(new Data_AspNetUsers() { Id = Guid.NewGuid().ToString(), UserName = "NVX2", Email = "nello68@hotmail.com" });
+
+            //AspNetRoles
+            List<string> roleUser = AspNetUsersDataUtil.Get_AspNetRoles(AspNetUsersDataUtil.AspNetRolesGroup.User);
+
+            List<Data_AspNetRoles> data_AspNetRoles_All = new List<Data_AspNetRoles>();
+            List<string> roleAll = AspNetUsersDataUtil.Get_AspNetRoles(AspNetUsersDataUtil.AspNetRolesGroup.All);
+            foreach (var item in roleAll)
             {
-                migrationBuilder.InsertData(
-                    table: "AspNetRoles",
-                    columns: new[] { "Id", "Name", "NormalizedName", "ConcurrencyStamp" },
-                    values: new object[] { Guid.NewGuid().ToString(), role, role.ToUpper(), Guid.NewGuid().ToString() }
-                );
+                data_AspNetRoles_All.Add(new Data_AspNetRoles() { Id = Guid.NewGuid().ToString(), Name = item });
             }
 
 
+            ///*TO DB*/
 
-            // Creazione utente
+            //AspNetRoles
+            List<Data_AspNetRoles> data_AspNetRoles_to_Scan = data_AspNetRoles_All.Where( x=> roleAll.Contains(x.Name)).ToList();
+
+            foreach (var item in data_AspNetRoles_to_Scan)
+            {
+                migrationBuilder.InsertData(
+                              table: "AspNetRoles",
+                              columns: new[] { "Id", "Name", "NormalizedName" },
+                              values: new object[] { item.Id, item.Name, item.Name.ToUpper() }
+                              );
+            }
+
+
+            //user
             var userId = Guid.NewGuid().ToString();
             var hasher = new PasswordHasher<IdentityUser>();
             var passwordHash = hasher.HashPassword(null, "1234");
 
+            foreach (var itemUser in data_AspNetUsers)
+            {
+                migrationBuilder.InsertData(
+                                                table: "AspNetUsers",
+                                                columns: new[]
+                                                {
+                                                        "Id", 
+                                                        "UserName", 
+                                                        "NormalizedUserName", 
+                                                        "Email", 
+                                                        "NormalizedEmail",
+                                                        "EmailConfirmed", 
+                                                        "PasswordHash", 
+                                                        "SecurityStamp",
+                                                        "ConcurrencyStamp", 
+                                                        "LockoutEnabled",
+                                                        "TwoFactorEnabled",
+                                                        "PhoneNumberConfirmed",
+                                                        "AccessFailedCount"
+                                                },
+                                                values: new object[]
+                                                {
+                                                        itemUser.Id,
+                                                        itemUser.UserName,
+                                                        itemUser.UserName.ToUpper(),
+                                                        itemUser.Email,
+                                                        itemUser.Email.ToUpper(),
+                                                        true, 
+                                                        passwordHash, 
+                                                        Guid.NewGuid().ToString(), 
+                                                        Guid.NewGuid().ToString(), 
+                                                        false,
+                                                        false,
+                                                        false, 
+                                                        0
+                                                }
+                );
 
-            
 
-            migrationBuilder.InsertData(
-                                            table: "AspNetUsers",
-                                            columns: new[]
-                                            {
-                                                "Id", "UserName", "NormalizedUserName", "Email", "NormalizedEmail",
-                                                "EmailConfirmed", "PasswordHash", "SecurityStamp", "ConcurrencyStamp", "LockoutEnabled",
-                                                "TwoFactorEnabled","PhoneNumberConfirmed","AccessFailedCount"
-                                            },
-                                            values: new object[]
-                                            {
-                                                userId, "nvx", "NVX", "nello68@hotmail.com", "NELLO68@HOTMAIL.COM",
-                                                true, passwordHash, Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), false,
-                                                false,false, 0
-                                            }
-            );
+                if (itemUser.UserName == "NVX")
+                    data_AspNetRoles_to_Scan = data_AspNetRoles_All;
+                else
+                    data_AspNetRoles_to_Scan = data_AspNetRoles_All.Where(x => roleUser.Contains(x.Name)).ToList(); 
 
+                foreach (var itemRole in data_AspNetRoles_to_Scan)
+                {
+                    migrationBuilder.InsertData(
+                                     table: "AspNetUserRoles",
+                                     columns: new[] { "UserId", "RoleId" },
+                                     values: new object[] { itemUser.Id, itemRole.Id }
+                                     );
+                }
 
-
-
-            //migrationBuilder.Sql($@"
-
-            //                    INSERT INTO AspNetUserRoles (""UserId"", ""RoleId"")
-            //                    SELECT '{userId}', ""Id"" FROM ""AspNetRoles"" WHERE ""Name"" = 'SuperUser'
-            //                    UNION ALL
-            //                    SELECT '{userId}', ""Id"" FROM ""AspNetRoles"" WHERE ""Name"" = 'PowerAdmin'
-            //                    UNION ALL
-            //                    SELECT '{userId}', ""Id"" FROM ""AspNetRoles"" WHERE ""Name"" = 'Admin'
-            //                    UNION ALL
-            //                    SELECT '{userId}', ""Id"" FROM ""AspNetRoles"" WHERE ""Name"" = 'DomainPowerAdmin'
-            //                    UNION ALL
-            //                    SELECT '{userId}', ""Id"" FROM ""AspNetRoles"" WHERE ""Name"" = 'DomainAdmin'
-            //                    UNION ALL
-            //                    SELECT '{userId}', ""Id"" FROM ""AspNetRoles"" WHERE ""Name"" = 'User';
-            //                ");
-
-            //// Collegamento dei ruoli all'utente nella tabella AspNetUserRoles
-            //foreach (var role in roles)
-            //{
-            //    var roleIdQuery = $"SELECT Id FROM AspNetRoles WHERE Name = '{role}'";
-
-            //    migrationBuilder.Sql($@"
-            //                            INSERT INTO AspNetUserRoles (UserId, RoleId)
-            //                            SELECT '{userId}', Id
-            //                            FROM AspNetRoles
-            //                            WHERE Name = '{role}'
-            //                        ");
-            //}
-            ////UserId = table.Column<string>(type: "text", nullable: false),
-            ////        RoleId = table.Column<string>(type: "text", nullable: false)
-
-            /** USER 2 **/
-
-            userId = Guid.NewGuid().ToString();
-            migrationBuilder.InsertData(
-                                            table: "AspNetUsers",
-                                            columns: new[]
-                                            {
-                                                "Id", "UserName", "NormalizedUserName", "Email", "NormalizedEmail",
-                                                "EmailConfirmed", "PasswordHash", "SecurityStamp", "ConcurrencyStamp", "LockoutEnabled",
-                                                "TwoFactorEnabled","PhoneNumberConfirmed","AccessFailedCount"
-                                            },
-                                            values: new object[]
-                                            {
-                                                userId, "nvx2", "NVX2", "nello68@hotmail.com", "NELLO68@HOTMAIL.COM",
-                                                true, passwordHash, Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), false,
-                                                false,false, 0
-                                            }
-                                        );
+            }
 
 
         }
@@ -136,6 +139,6 @@ namespace nvxapp.server.data.Migrations
 
     }
 
-  
+
 
 }
