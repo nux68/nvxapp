@@ -8,18 +8,13 @@ using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.Service.MyTableService;
 using nvxapp.server.service.Service.MyTableService.Models;
 using nvxapp.server.service.Service.WeatherForecast.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 
 
 
 namespace nvxapp.server.service.Service.WeatherForecast
 {
-    public class WeatherForecastService : ServiceBase,IWeatherForecastService
+    public class WeatherForecastService : ServiceBase, IWeatherForecastService
     {
         private readonly IMyTableService _myTableService;
         private static readonly string[] Summaries = new[]
@@ -30,8 +25,8 @@ namespace nvxapp.server.service.Service.WeatherForecast
         public WeatherForecastService(IMapper mapper,
                                       UserManager<ApplicationUser> userManager,
                                       IAspNetUsersRepository aspNetUsersRepository,
-                                      
-                                      IMyTableService myTableService) : base(mapper , userManager  , aspNetUsersRepository)
+
+                                      IMyTableService myTableService) : base(mapper, userManager, aspNetUsersRepository)
         {
             _myTableService = myTableService;
         }
@@ -43,12 +38,12 @@ namespace nvxapp.server.service.Service.WeatherForecast
                 WeatherForecastOutModel retVal = new WeatherForecastOutModel();
 
                 GenericRequest<MyTableInModel> requestMyTable = new GenericRequest<MyTableInModel>();
-                
+
                 try
                 {
-                    retVal.MyTableModel = _myTableService.GetAll(requestMyTable,true).Result.Data;
+                    retVal.MyTableModel = _myTableService.GetAll(requestMyTable, true).Result.Data;
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     retVal.AddMessage(ex.Message, MessageType.Exception);
                 }
@@ -64,10 +59,10 @@ namespace nvxapp.server.service.Service.WeatherForecast
 
                 //eliminare
                 // Nessun 'await' qui
-                await Task.Delay(1); 
+                await Task.Delay(1);
 
                 return retVal;
-            } , isSubProcess);
+            }, isSubProcess);
         }
 
     }

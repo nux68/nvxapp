@@ -64,7 +64,7 @@ export class NvxHttpInterceptor implements HttpInterceptor {
     // Clona la richiesta per aggiungere il nuovo header
     const authReq = req.clone({
       setHeaders: {
-        UserName: `SookaUser`
+        UserName: `NVX` //SookaUser
       }
     });
 

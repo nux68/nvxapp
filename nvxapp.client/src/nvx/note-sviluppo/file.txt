@@ -1,2 +1,3 @@
 ng g m  myModule (crea modulo)
 ng g c  myComponent (crea componente)
+ng g s  myService (servizio)
