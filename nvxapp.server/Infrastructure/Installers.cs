@@ -43,9 +43,23 @@ namespace nvxapp.server.Infrastructure
                    )
                );
 
-            builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
-                            .AddEntityFrameworkStores<ApplicationDbContext>()
-                            .AddDefaultTokenProviders();
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+            {
+                // Personalizza i requisiti della password
+                options.Password.RequiredLength = 3;
+                options.Password.RequireUppercase = false;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireDigit = false;
+                options.Password.RequireNonAlphanumeric = false;
+
+                // Disattiva la validazione delle password
+                options.Password.RequireDigit = false;
+                options.Password.RequiredUniqueChars = 0;
+
+               // options.User.AllowedUserNameCharacters = null;
+
+            }).AddEntityFrameworkStores<ApplicationDbContext>()
+              .AddDefaultTokenProviders();
 
             return builder.Services;
         }
@@ -188,30 +202,30 @@ namespace nvxapp.server.Infrastructure
             return builder.Services;
         }
 
-        public static IServiceCollection InstallIdentity(this WebApplicationBuilder builder)
-        {
+        //public static IServiceCollection InstallIdentity(this WebApplicationBuilder builder)
+        //{
 
-            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
-            {
-                // Personalizza i requisiti della password
-                options.Password.RequiredLength = 3;
-                options.Password.RequireUppercase = false;
-                options.Password.RequireLowercase = false;
-                options.Password.RequireDigit = false;
-                options.Password.RequireNonAlphanumeric = false;
+        //    builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+        //    {
+        //        // Personalizza i requisiti della password
+        //        options.Password.RequiredLength = 3;
+        //        options.Password.RequireUppercase = false;
+        //        options.Password.RequireLowercase = false;
+        //        options.Password.RequireDigit = false;
+        //        options.Password.RequireNonAlphanumeric = false;
 
-                // Disattiva la validazione delle password
-                options.Password.RequireDigit = false;
-                options.Password.RequiredUniqueChars = 0;
+        //        // Disattiva la validazione delle password
+        //        options.Password.RequireDigit = false;
+        //        options.Password.RequiredUniqueChars = 0;
 
-                options.User.AllowedUserNameCharacters = null;
+        //        options.User.AllowedUserNameCharacters = null;
 
-            }).AddEntityFrameworkStores<ApplicationDbContext>();
+        //    }).AddEntityFrameworkStores<ApplicationDbContext>();
 
-            builder.Services.AddScoped<IPasswordHasher<ApplicationUser>, PasswordHasher<ApplicationUser>>();
+        //    builder.Services.AddScoped<IPasswordHasher<ApplicationUser>, PasswordHasher<ApplicationUser>>();
 
-            return builder.Services;
-        }
+        //    return builder.Services;
+        //}
 
     }
 }

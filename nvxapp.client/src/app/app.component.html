@@ -5,10 +5,10 @@
 
 
         <ion-list id="nvx-list">
-          <ion-list-header>NVX</ion-list-header>
-          <ion-note>Elementi menu nvx</ion-note>
+          <ion-list-header>User</ion-list-header>
+          <ion-note>Elementi menu user</ion-note>
 
-          @for (p of appPagesNvx; track p; let i = $index) {
+          @for (p of appPages4User; track p; let i = $index) {
           <ion-menu-toggle auto-hide="false">
             <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
               <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-sharp'"></ion-icon>
@@ -17,6 +17,22 @@
           </ion-menu-toggle>
           }
         </ion-list>
+
+        <ion-list id="nvx-list" *ngIf="accountService.hasRole('Admin')">
+          <ion-list-header>Admin</ion-list-header>
+          <ion-note>Elementi menu Admin</ion-note>
+
+          @for (p of appPages4Admin; track p; let i = $index) {
+          <ion-menu-toggle auto-hide="false">
+            <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
+              <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-sharp'"></ion-icon>
+              <ion-label>{{ p.title }}</ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+          }
+        </ion-list>
+
+        
 
 
 
