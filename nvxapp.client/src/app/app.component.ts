@@ -10,6 +10,8 @@ export class AppComponent {
   public appPagesNvx = [
 
     { title: 'Home', url: '/home', icon: 'home' },
+    { title: 'Login', url: '/login', icon: 'enter' },
+    { title: 'Logout', url: '/logout', icon: 'exit' },
 
   ];
 
