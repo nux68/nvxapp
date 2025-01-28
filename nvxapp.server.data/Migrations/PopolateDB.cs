@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Migrations;
-using Microsoft.Extensions.Options;
 using nvxapp.server.data.Entities;
 using nvxapp.server.data.Repositories;
 using System.Data;
@@ -34,27 +33,35 @@ namespace nvxapp.server.data.Migrations
 
         public static void PopolateDB_InitDB_UP(MigrationBuilder migrationBuilder)
         {
+            string pw = "1234";
 
             //user
             List<Data_AspNetUsers> data_AspNetUsers = new List<Data_AspNetUsers>();
             data_AspNetUsers.Add(new Data_AspNetUsers() { Id = Guid.NewGuid().ToString(), UserName = "NVX", Email = "nello68@hotmail.com" });
             data_AspNetUsers.Add(new Data_AspNetUsers() { Id = Guid.NewGuid().ToString(), UserName = "NVX2", Email = "nello68@hotmail.com" });
+            data_AspNetUsers.Add(new Data_AspNetUsers() { Id = Guid.NewGuid().ToString(), UserName = "NVX3", Email = "nello68@hotmail.com" });
 
-            //AspNetRoles
-            List<string> roleUser = AspNetUsersDataUtil.Get_AspNetRoles(AspNetUsersDataUtil.AspNetRolesGroup.User);
+
+            List<string> roleUser = new List<string>();
+            roleUser.AddRange(AspNetUsersDataUtil.Get_AspNetRoles(AspNetUsersDataUtil.AspNetRolesGroup.User));
+
+            List<string> roleAdmin = new List<string>();
+            roleAdmin.AddRange(AspNetUsersDataUtil.Get_AspNetRoles(AspNetUsersDataUtil.AspNetRolesGroup.Admin));
+            roleAdmin.AddRange(AspNetUsersDataUtil.Get_AspNetRoles(AspNetUsersDataUtil.AspNetRolesGroup.User));
+
+            List<string> roleAll = AspNetUsersDataUtil.Get_AspNetRoles(AspNetUsersDataUtil.AspNetRolesGroup.All);
+
 
             List<Data_AspNetRoles> data_AspNetRoles_All = new List<Data_AspNetRoles>();
-            List<string> roleAll = AspNetUsersDataUtil.Get_AspNetRoles(AspNetUsersDataUtil.AspNetRolesGroup.All);
             foreach (var item in roleAll)
-            {
                 data_AspNetRoles_All.Add(new Data_AspNetRoles() { Id = Guid.NewGuid().ToString(), Name = item });
-            }
+            
 
 
             ///*TO DB*/
 
             //AspNetRoles
-            List<Data_AspNetRoles> data_AspNetRoles_to_Scan = data_AspNetRoles_All.Where( x=> roleAll.Contains(x.Name)).ToList();
+            List<Data_AspNetRoles> data_AspNetRoles_to_Scan = data_AspNetRoles_All.Where(x => roleAll.Contains(x.Name)).ToList();
 
             foreach (var item in data_AspNetRoles_to_Scan)
             {
@@ -69,7 +76,7 @@ namespace nvxapp.server.data.Migrations
             //user
             var userId = Guid.NewGuid().ToString();
             var hasher = new PasswordHasher<IdentityUser>();
-            var passwordHash = hasher.HashPassword(null, "1234");
+            var passwordHash = hasher.HashPassword(null, pw);
 
             foreach (var itemUser in data_AspNetUsers)
             {
@@ -77,15 +84,15 @@ namespace nvxapp.server.data.Migrations
                                                 table: "AspNetUsers",
                                                 columns: new[]
                                                 {
-                                                        "Id", 
-                                                        "UserName", 
-                                                        "NormalizedUserName", 
-                                                        "Email", 
+                                                        "Id",
+                                                        "UserName",
+                                                        "NormalizedUserName",
+                                                        "Email",
                                                         "NormalizedEmail",
-                                                        "EmailConfirmed", 
-                                                        "PasswordHash", 
+                                                        "EmailConfirmed",
+                                                        "PasswordHash",
                                                         "SecurityStamp",
-                                                        "ConcurrencyStamp", 
+                                                        "ConcurrencyStamp",
                                                         "LockoutEnabled",
                                                         "TwoFactorEnabled",
                                                         "PhoneNumberConfirmed",
@@ -98,22 +105,33 @@ namespace nvxapp.server.data.Migrations
                                                         itemUser.UserName.ToUpper(),
                                                         itemUser.Email,
                                                         itemUser.Email.ToUpper(),
-                                                        true, 
-                                                        passwordHash, 
-                                                        Guid.NewGuid().ToString(), 
-                                                        Guid.NewGuid().ToString(), 
+                                                        true,
+                                                        passwordHash,
+                                                        Guid.NewGuid().ToString(),
+                                                        Guid.NewGuid().ToString(),
                                                         false,
                                                         false,
-                                                        false, 
+                                                        false,
                                                         0
                                                 }
                 );
 
 
-                if (itemUser.UserName == "NVX")
-                    data_AspNetRoles_to_Scan = data_AspNetRoles_All;
-                else
-                    data_AspNetRoles_to_Scan = data_AspNetRoles_All.Where(x => roleUser.Contains(x.Name)).ToList(); 
+                switch (itemUser.UserName)
+                {
+                    case "NVX":
+                        data_AspNetRoles_to_Scan = data_AspNetRoles_All;
+                        break;
+
+                    case "NVX3":
+                        data_AspNetRoles_to_Scan = data_AspNetRoles_All.Where(x => roleAdmin.Contains(x.Name)).ToList();
+                        break;
+
+                    default:
+                        data_AspNetRoles_to_Scan = data_AspNetRoles_All.Where(x => roleUser.Contains(x.Name)).ToList();
+                        break;
+                }
+                
 
                 foreach (var itemRole in data_AspNetRoles_to_Scan)
                 {
@@ -129,13 +147,7 @@ namespace nvxapp.server.data.Migrations
 
         }
 
-        //public static void PopolateDB_InitDB_DOWN(MigrationBuilder migrationBuilder)
-        //{
-        //    // Rimuovi i dati in ordine inverso
-        //    migrationBuilder.Sql("DELETE FROM AspNetUserRoles");
-        //    migrationBuilder.Sql("DELETE FROM AspNetUsers WHERE UserName = 'nvx'");
-        //    migrationBuilder.Sql("DELETE FROM AspNetRoles");
-        //}
+
 
     }
 
