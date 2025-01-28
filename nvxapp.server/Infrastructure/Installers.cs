@@ -12,6 +12,7 @@ using Serilog.Core;
 using Serilog.Events;
 using Serilog;
 using Serilog.Sinks.PostgreSQL;
+using nvxapp.server.data.Migrations;
 
 namespace nvxapp.server.Infrastructure
 {
@@ -24,6 +25,10 @@ namespace nvxapp.server.Infrastructure
 
             builder.Services.RegisterAssemblyPublicNonGenericClasses(Assembly.GetAssembly(typeof(IServiceBase)))
                 .AsPublicImplementedInterfaces(ServiceLifetime.Scoped);
+
+            
+
+            
 
             return builder.Services;
         }
@@ -183,6 +188,30 @@ namespace nvxapp.server.Infrastructure
             return builder.Services;
         }
 
+        public static IServiceCollection InstallIdentity(this WebApplicationBuilder builder)
+        {
+
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+            {
+                // Personalizza i requisiti della password
+                options.Password.RequiredLength = 3;
+                options.Password.RequireUppercase = false;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireDigit = false;
+                options.Password.RequireNonAlphanumeric = false;
+
+                // Disattiva la validazione delle password
+                options.Password.RequireDigit = false;
+                options.Password.RequiredUniqueChars = 0;
+
+                options.User.AllowedUserNameCharacters = null;
+
+            }).AddEntityFrameworkStores<ApplicationDbContext>();
+
+            builder.Services.AddScoped<IPasswordHasher<ApplicationUser>, PasswordHasher<ApplicationUser>>();
+
+            return builder.Services;
+        }
 
     }
 }

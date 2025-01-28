@@ -72,6 +72,7 @@ Installers.InstallServices(builder);
 Installers.InstallEntityContex(builder);
 Installers.InstallRepositories(builder);
 Installers.InstallMappers(builder);
+Installers.InstallIdentity(builder);
 Installers.InstallLog(builder);
 
 

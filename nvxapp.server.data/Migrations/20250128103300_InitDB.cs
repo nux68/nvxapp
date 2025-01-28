@@ -9,6 +9,9 @@ namespace nvxapp.server.data.Migrations
     /// <inheritdoc />
     public partial class InitDB : Migration
     {
+      
+
+
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -218,6 +221,11 @@ namespace nvxapp.server.data.Migrations
                 table: "MyTable",
                 column: "Descrizione",
                 unique: true);
+
+
+            PopolateDB.PopolateDB_InitDB_UP(migrationBuilder);
+
+
         }
 
         /// <inheritdoc />

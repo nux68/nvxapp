@@ -12,7 +12,7 @@ using nvxapp.server.data.Infrastructure;
 namespace nvxapp.server.data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250123100733_InitDB")]
+    [Migration("20250128103300_InitDB")]
     partial class InitDB
     {
         /// <inheritdoc />
