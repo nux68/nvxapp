@@ -53,7 +53,7 @@ namespace nvxapp.server.service.Service.MyTableService
 
                 //eliminare
                 // Nessun 'await' qui
-                await Task.Delay(1);
+                await Task.Delay(DelayAsyncMethod);
 
                 return retVal;
             }, isSubProcess);

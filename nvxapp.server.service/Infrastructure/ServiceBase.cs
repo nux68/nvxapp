@@ -18,6 +18,14 @@ namespace nvxapp.server.service.Infrastructure
         protected readonly UserManager<ApplicationUser> _userManager;
         protected readonly IAspNetUsersRepository _aspNetUsersRepository;
 
+
+#if DEBUG
+        public const int DelayAsyncMethod = 1000;
+#else
+        public const int DelayAsyncMethod = 1;
+#endif
+
+
         private string? _currentUser;
         public string? CurrentUser
         {

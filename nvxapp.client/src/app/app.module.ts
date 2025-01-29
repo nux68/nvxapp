@@ -10,10 +10,14 @@ import { AppRoutingModule } from './app-routing.module';
 
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { NvxHttpInterceptor } from '../nvx/infrastructure/http-interceptor';
+import { HttpBackgroundWorkingComponentComponent } from '../nvx/shared/components/http-background-working-component/http-background-working-component.component';
+import { BackgroundWorkingComponent } from '../nvx/shared/components/background-working/background-working.component';
 
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [AppComponent,
+    HttpBackgroundWorkingComponentComponent,
+    BackgroundWorkingComponent],
   imports: [
             BrowserModule,
             IonicModule.forRoot(),

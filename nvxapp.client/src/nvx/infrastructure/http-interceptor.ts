@@ -27,41 +27,10 @@ export class NvxHttpInterceptor implements HttpInterceptor {
   {
   }
 
-  //intercept(
-  //  request: HttpRequest<any>,
-  //  next: HttpHandler
-  //): Observable<HttpEvent<any>> {
-  //  //console.log('Inizio della chiamata HTTP:', request.url);
+  
 
-  //  const apiUri = environment.remoteData.apiUri;
-
-  //  if (request.url.includes( apiUri )) {
-
-  //    //if (this.currentSelectionService.relationshipCronology && this.currentSelectionService.relationshipCronology.length>0) {
-  //      request = request.clone({ headers: request.headers.set('UserName',  "SookaUser" /*this.currentSelectionService.relationshipCronology[0].userName*/) });
-  //    //}
-
-  //  }
-
-  //  this.nvxHttpInterceptorService.HttpCal_Start(request.url);
-
-
-  //  // Aggiungi il tuo codice di manipolazione della richiesta qui, se necessario
-
-  //  return next.handle(request).pipe(
-  //    finalize(() => {
-  //      //console.log('Fine della chiamata HTTP');
-
-  //      this.nvxHttpInterceptorService.HttpCal_End(request.url);
-
-  //      // Aggiungi il tuo codice di manipolazione della risposta qui, se necessario
-  //    })
-  //  );
-  //}
-
-
-
-  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+  intercept(req: HttpRequest<any>,
+            next: HttpHandler): Observable<HttpEvent<any>> {
     // Clona la richiesta per aggiungere il nuovo header
     const authReq = req.clone({
       setHeaders: {
@@ -69,8 +38,20 @@ export class NvxHttpInterceptor implements HttpInterceptor {
       }
     });
 
+    this.nvxHttpInterceptorService.HttpCal_Start(req.url);
+
     // Passa la richiesta al prossimo handler nella catena
-    return next.handle(authReq);
+    return next.handle(authReq).pipe(
+      
+      finalize(() => {
+        //console.log('Fine della chiamata HTTP');
+
+        this.nvxHttpInterceptorService.HttpCal_End(req.url);
+
+        // Aggiungi il tuo codice di manipolazione della risposta qui, se necessario
+      })
+      
+    );
   }
 
 }

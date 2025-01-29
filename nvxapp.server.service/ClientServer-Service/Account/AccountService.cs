@@ -44,7 +44,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
 
                 //eliminare
                 // Nessun 'await' qui
-                await Task.Delay(1);
+                await Task.Delay(DelayAsyncMethod);
 
                 return retVal;
             }, isSubProcess);
@@ -72,7 +72,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
 
                 //eliminare
                 // Nessun 'await' qui
-                await Task.Delay(1);
+                await Task.Delay(DelayAsyncMethod);
 
                 return retVal;
             }, isSubProcess);
