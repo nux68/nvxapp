@@ -9,6 +9,5 @@
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="src\nvx\Utility\" />
-    <Folder Include="src\nvx\pages\" />
   </ItemGroup>
 </Project>
