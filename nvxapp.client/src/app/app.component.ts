@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { AccountService } from '../nvx/ClientServer-Service/Account/account.service';
+import { UsersUtilityService } from '../nvx/Utility/users-utility.service';
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
@@ -8,15 +9,31 @@ import { AccountService } from '../nvx/ClientServer-Service/Account/account.serv
 })
 export class AppComponent {
 
-  public appPages4User = [
 
-    { title: 'Home', url: '/home', icon: 'home' },
-    { title: 'Login', url: '/login', icon: 'enter' },
-    { title: 'Logout', url: '/logout', icon: 'exit' },
+  public appPages4SuperUser = [
+
+    { title: 'SuperUser', url: '/superuser', icon: 'triangle' },
 
   ];
 
+  
+
   public appPages4Admin = [
+
+    { title: 'PowerAdmin', url: '/poweradmin', icon: 'square' },
+    { title: 'Admin', url: '/admin', icon: 'square' },
+
+  ];
+
+  public appPages4DomainAdmin = [
+
+    { title: 'DomainPowerAdmin', url: '/domainpoweradmin', icon: 'ellipse' },
+    { title: 'DomainAdmin', url: '/domainadmin', icon: 'ellipse' },
+
+  ];
+
+
+  public appPages4User = [
 
     { title: 'Home', url: '/home', icon: 'home' },
     { title: 'Login', url: '/login', icon: 'enter' },
@@ -37,5 +54,5 @@ export class AppComponent {
     { title: 'Spam', url: '/folder/spam', icon: 'warning' },
   ];
   public labels = ['Family', 'Friends', 'Notes', 'Work', 'Travel', 'Reminders'];
-  constructor( public accountService:AccountService) {}
+  constructor(public usersUtilityService: UsersUtilityService) {}
 }
