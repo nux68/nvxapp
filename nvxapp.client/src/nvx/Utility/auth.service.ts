@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AccountService } from '../ClientServer-Service/Account/account.service';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
+import { Observable } from 'rxjs/internal/Observable';
 
 @Injectable({
   providedIn: 'root'
@@ -12,6 +13,22 @@ export class AuthService {
 
   constructor() {
   }
+
+  private _UserName$: BehaviorSubject<string | null> = new BehaviorSubject<string>(null);
+  public get UserName$(): Observable<string | null> {
+    return this._UserName$.asObservable();
+  }
+  public set UserName(value: string | null) {
+    this._UserName$.next(value);
+    if (value == null)
+      this.setRole([]);
+  }
+  public get UserName(): string | null {
+    const us = this._UserName$.getValue();
+    return us;
+
+  }
+
 
   public get IsSuperUser(): boolean {
     return this.hasRole('SuperUser');

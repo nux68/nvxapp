@@ -26,8 +26,7 @@ export class AccountService {
     return this.http.post<GenericResult<UserRolesOutModel>>(environment.remoteData.apiUri + 'Account/UserRoles', model)
       .pipe(
                 map(r => {
-                          //this.rolesSubject.next(r.data.roles);
-                  this.authService.setRole(r.data.roles);
+                          this.authService.setRole(r.data.roles);
                           return r;
                          }
                 )
@@ -47,9 +46,6 @@ export class AccountService {
 
   }
 
-  //hasRole(role: string): boolean {
-  //  const roles = this.rolesSubject.getValue();
-  //  return roles.includes(role);
-  //}
+  
 
 }

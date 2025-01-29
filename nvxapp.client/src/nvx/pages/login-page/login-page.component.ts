@@ -5,6 +5,7 @@ import { UserRolesInModel } from '../../ClientServer-Service/Account/Models/user
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NavController } from '@ionic/angular';
 import { LoginInModel } from '../../ClientServer-Service/Account/Models/login-model';
+import { AuthService } from '../../Utility/auth.service';
 
 @Component({
   selector: 'app-login-page',
@@ -21,6 +22,7 @@ export class LoginPageComponent  implements OnInit {
   constructor(private accountService: AccountService,
               private fb: FormBuilder,
               private navCtrl: NavController,
+              private authService: AuthService
   ) {
     this.title = 'Login';
 
@@ -52,6 +54,9 @@ export class LoginPageComponent  implements OnInit {
         if (sucecss) {
           //console.log('Login successful', response);
 
+          const UserName = this.loginForm.controls['email'].value;
+          this.authService.UserName = UserName;
+
           let request: GenericRequest<UserRolesInModel> = new GenericRequest<UserRolesInModel>();
           this.accountService.UserRoles(request).subscribe(x => {
 
@@ -61,7 +66,7 @@ export class LoginPageComponent  implements OnInit {
 
         }
         else {
-
+          this.authService.UserName = null;
         }
 
       });

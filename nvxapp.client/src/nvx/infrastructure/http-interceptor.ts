@@ -14,13 +14,14 @@ import { catchError, finalize } from 'rxjs/operators';
 //import { AuthService } from '../auth/auth.service';
 //import { CurrentSelectionService } from '../local-data/current-selection.service';
 import { environment } from '../../environments/environment';
+import { AuthService } from '../Utility/auth.service';
 
 
 @Injectable()
 export class NvxHttpInterceptor implements HttpInterceptor {
 
   constructor(
-              //public currentSelectionService: CurrentSelectionService,
+              private authService: AuthService,
               private nvxHttpInterceptorService: NvxHttpInterceptorService
              )
   {
@@ -64,7 +65,7 @@ export class NvxHttpInterceptor implements HttpInterceptor {
     // Clona la richiesta per aggiungere il nuovo header
     const authReq = req.clone({
       setHeaders: {
-        UserName: `NVX` //SookaUser
+        UserName: this.authService.UserName != null ? this.authService.UserName : ``  //`NVX` //SookaUser
       }
     });
 
