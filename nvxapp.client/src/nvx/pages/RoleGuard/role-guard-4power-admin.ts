@@ -1,17 +1,18 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
-import { UsersUtilityService } from '../../Utility/users-utility.service';
+import { AuthService } from '../../Utility/auth.service';
+
 
 
 @Injectable({
   providedIn: 'root',
 })
 export class RoleGuard4PowerAdmin implements CanActivate {
-  constructor(public usersUtilityService: UsersUtilityService,
+  constructor(public authService: AuthService,
               private router: Router) { }
 
   canActivate(): boolean {
-    if (this.usersUtilityService.IsPowerAdmin) {
+    if (this.authService.IsPowerAdmin) {
       return true;
     }
     // Redireziona se l'utente non ha il ruolo richiesto

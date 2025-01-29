@@ -4,7 +4,7 @@
       <ion-content>
 
 
-        <ion-list id="nvx-list" *ngIf="usersUtilityService.IsSuperUser">
+        <ion-list id="nvx-list" *ngIf="authService.IsSuperUser">
           <ion-list-header>SuperUser</ion-list-header>
           <ion-note>Elementi menu SuperUser</ion-note>
 
@@ -18,7 +18,7 @@
           }
         </ion-list>
 
-        <ion-list id="nvx-list" *ngIf="usersUtilityService.IsAdmin">
+        <ion-list id="nvx-list" *ngIf="authService.IsInGroupAdmin">
           <ion-list-header>Admin</ion-list-header>
           <ion-note>Elementi menu Admin</ion-note>
 
@@ -32,7 +32,7 @@
           }
         </ion-list>
 
-        <ion-list id="nvx-list" *ngIf="usersUtilityService.IsAdmin">
+        <ion-list id="nvx-list" *ngIf="authService.IsInGroupDomainAdmin">
           <ion-list-header>DomainAdmin</ion-list-header>
           <ion-note>Elementi menu DomainAdmin</ion-note>
 

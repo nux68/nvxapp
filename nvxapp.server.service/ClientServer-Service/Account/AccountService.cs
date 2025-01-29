@@ -56,10 +56,39 @@ namespace nvxapp.server.service.ClientServer_Service.Account
             }, isSubProcess);
         }
 
+        public virtual async Task<GenericResult<LoginOutModel>> Login(GenericRequest<LoginInModel> model, Boolean isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                LoginOutModel retVal = new LoginOutModel();
+
+
+                //if (this.CurrentUser != null)
+                //{
+                //    var applicationUser = await _userManager.FindByNameAsync(this.CurrentUser);
+
+
+                //    if (applicationUser != null)
+                //    {
+                //        var roles = await _userManager.GetRolesAsync(applicationUser);
+                //        retVal.Roles = roles.ToList();
+                //    }
+                //}
+
+
+                //eliminare
+                // Nessun 'await' qui
+                await Task.Delay(1);
+
+                return retVal;
+            }, isSubProcess);
+        }
+
     }
 
     public interface IAccountService : IServiceBase
     {
         public Task<GenericResult<UserRolesOutModel>> UserRoles(GenericRequest<UserRolesInModel> model, Boolean isSubProcess);
+        public Task<GenericResult<LoginOutModel>> Login(GenericRequest<LoginInModel> model, Boolean isSubProcess);
     }
 }

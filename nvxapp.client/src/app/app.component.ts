@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { AccountService } from '../nvx/ClientServer-Service/Account/account.service';
-import { UsersUtilityService } from '../nvx/Utility/users-utility.service';
+import { AuthService } from '../nvx/Utility/auth.service';
+
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
@@ -54,5 +55,7 @@ export class AppComponent {
     { title: 'Spam', url: '/folder/spam', icon: 'warning' },
   ];
   public labels = ['Family', 'Friends', 'Notes', 'Work', 'Travel', 'Reminders'];
-  constructor(public usersUtilityService: UsersUtilityService) {}
+  constructor(public authService: AuthService
+) {
+  }
 }

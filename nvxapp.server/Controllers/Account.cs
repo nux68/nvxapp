@@ -32,6 +32,16 @@ namespace nvxapp.server.Controllers
             return res;
         }
 
+
+        [HttpPost]
+        [Route("Login")]
+        public async Task<GenericResult<LoginOutModel>> Login(GenericRequest<LoginInModel> inModel)
+        {
+            var res = await _accountService.Login(inModel, false);
+
+            return res;
+        }
+
     }
 
 
