@@ -1,3 +1,4 @@
+import { ModelResult } from "../../ModelsBase/model-result";
 
 
 
@@ -7,7 +8,7 @@ export class LoginInModel {
   public password: string | null;
 }
 
-export class LoginOutModel {
+export class LoginOutModel extends ModelResult {
   
   public token: string|null;
   public refreshToken: string | null;

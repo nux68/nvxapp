@@ -7,6 +7,12 @@ using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Infrastructure;
 using nvxapp.server.service.Interfaces;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using System.Security.Claims;
+using System.Text;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.Options;
+using nvxapp.server.service.ServerModels;
 
 
 namespace nvxapp.server.service.ClientServer_Service.Account
@@ -14,14 +20,18 @@ namespace nvxapp.server.service.ClientServer_Service.Account
     public class AccountService : ServiceBase, IAccountService
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly JwtParameter _jwtParameter;
 
-        public AccountService(IMapper mapper,
-                                      UserManager<ApplicationUser> userManager,
-                                      IAspNetUsersRepository aspNetUsersRepository,
-                                      SignInManager<ApplicationUser> signInManager
-                                      ) : base(mapper, userManager, aspNetUsersRepository)
+        public AccountService(IOptions<JwtParameter> jwtParameter,
+                              IMapper mapper,
+                              UserManager<ApplicationUser> userManager,
+                              IAspNetUsersRepository aspNetUsersRepository,
+                              SignInManager<ApplicationUser> signInManager
+                                      
+                              ) : base(mapper, userManager, aspNetUsersRepository)
         {
             _signInManager = signInManager;
+            _jwtParameter = jwtParameter.Value;
         }
 
         public virtual async Task<GenericResult<UserRolesOutModel>> UserRoles(GenericRequest<UserRolesInModel> model, Boolean isSubProcess)
@@ -69,21 +79,25 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                         var result = await _signInManager.CheckPasswordSignInAsync(applicationUser, model.Data.Password, false);
                         if (!result.Succeeded)
                         {
-                            throw new Exception("Password errata");
+                            retVal.AddMessage("Password errata", MessageType.Error);
+
+                            //throw new Exception("Password errata");
                         }
                         else
                         {
-                            // ok
+                            retVal.Token = GenerateJwtToken(applicationUser);
                         }
                     }
                     else
                     {
-                        throw new Exception("Nome utente non trovato");
+                        //throw new Exception("Nome utente non trovato");
+                        retVal.AddMessage("Nome utente non trovato", MessageType.Error);
                     }
                 }
                 else
                 {
-                    throw new Exception("Nome utente non valito");
+                    //throw new Exception("Nome utente non valito");
+                    retVal.AddMessage("Nome utente non valito", MessageType.Error);
                 }
 
 
@@ -94,6 +108,26 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                 return retVal;
             }, isSubProcess);
         }
+
+        private string? GenerateJwtToken(ApplicationUser user)
+        {
+
+            if(string.IsNullOrEmpty(  user.Email))
+                return null;
+
+            var claims = new[]
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, user.Id),
+                new Claim(JwtRegisteredClaimNames.Email, user.Email),
+            };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtParameter.Key));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(_jwtParameter.Issuer, _jwtParameter.Audience, claims, expires: DateTime.UtcNow.AddHours(2), signingCredentials: creds);
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
 
     }
 

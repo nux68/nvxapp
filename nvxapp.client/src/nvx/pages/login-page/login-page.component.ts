@@ -56,7 +56,7 @@ export class LoginPageComponent  implements OnInit {
         var sucecss: boolean;
         sucecss = x.success;
 
-        if (sucecss) {
+        if (sucecss && x.data.messages.length == 0) {
           
           this.authService.UserName = UserName;
 
@@ -69,7 +69,7 @@ export class LoginPageComponent  implements OnInit {
 
         }
         else {
-          this.loginError = x.messages[0].text;
+          this.loginError = x.data.messages[0].text;  //x.messages[0].text;
           this.authService.UserName = null;
         }
 
