@@ -4,8 +4,9 @@
 export class GenericRequest<T> implements iGenericRequest<T> {
   data: T;
 
-  constructor() {
-    
+  
+  constructor(type: new () => T) {
+    this.data = new type(); // Crea una nuova istanza di T
   }
 
 }

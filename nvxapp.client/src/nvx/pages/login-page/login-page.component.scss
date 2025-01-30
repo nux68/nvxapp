@@ -26,3 +26,20 @@ ion-menu-button {
 #container a {
   text-decoration: none;
 }
+
+.error-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  //background: #ffe6e6; /* Leggera evidenziazione per renderlo più visibile */
+  border-radius: 5px;
+  padding: 10px;
+  margin-top: 10px;
+}
+
+.error-text {
+  color: red;
+  font-weight: bold;
+  text-align: center;
+}

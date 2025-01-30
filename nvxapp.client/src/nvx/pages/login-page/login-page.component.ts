@@ -17,7 +17,7 @@ export class LoginPageComponent  implements OnInit {
 
   public title!: string;
   loginForm: FormGroup;
-
+  public loginError!: string;
 
   constructor(private accountService: AccountService,
               private fb: FormBuilder,
@@ -45,19 +45,22 @@ export class LoginPageComponent  implements OnInit {
     if (this.loginForm.valid) {
       const formData = this.loginForm.value;
 
-      let request: GenericRequest<LoginInModel> = new GenericRequest<LoginInModel>();
+      const UserName = this.loginForm.controls['email'].value;
+      const Password = this.loginForm.controls['password'].value;
+
+      let request: GenericRequest<LoginInModel> = new GenericRequest<LoginInModel>(LoginInModel);
+      request.data.userName = UserName;
+      request.data.password = Password;
       this.accountService.Login(request).subscribe(x => {
 
         var sucecss: boolean;
         sucecss = x.success;
 
         if (sucecss) {
-          //console.log('Login successful', response);
-
-          const UserName = this.loginForm.controls['email'].value;
+          
           this.authService.UserName = UserName;
 
-          let request: GenericRequest<UserRolesInModel> = new GenericRequest<UserRolesInModel>();
+          let request: GenericRequest<UserRolesInModel> = new GenericRequest<UserRolesInModel>(UserRolesInModel);
           this.accountService.UserRoles(request).subscribe(x => {
 
             this.navCtrl.navigateForward('/home');
@@ -66,21 +69,11 @@ export class LoginPageComponent  implements OnInit {
 
         }
         else {
+          this.loginError = x.messages[0].text;
           this.authService.UserName = null;
         }
 
       });
-
-
-      //this.http.post('https://your-api.com/api/auth/login', formData).subscribe(
-      //  (response) => {
-      //    console.log('Login successful', response);
-      //    this.navCtrl.navigateForward('/home');
-      //  },
-      //  (error) => {
-      //    console.error('Login failed', error);
-      //  }
-      //);
 
     }
   }

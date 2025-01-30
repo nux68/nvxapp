@@ -23,7 +23,7 @@ export class FolderPage implements OnInit {
   ngOnInit() {
     this.folder = this.activatedRoute.snapshot.paramMap.get('id') as string;
 
-    let request: GenericRequest<WeatherForecastInModel> = new GenericRequest<WeatherForecastInModel>();
+    let request: GenericRequest<WeatherForecastInModel> = new GenericRequest<WeatherForecastInModel>(WeatherForecastInModel);
 
     this.weatherForecastService.WeatherForecastGet(request).subscribe(res => {
       this.WeatherForecast = res.data.weatherForecast;

@@ -9,8 +9,8 @@ export class GenericResult<T> implements iGenericResult<T> {
   data: T | null;
   messages: Message[];
 
-  constructor() {
-
+  constructor(type: new () => T) {
+    this.data = new type(); // Crea una nuova istanza di T
   }
 
 }

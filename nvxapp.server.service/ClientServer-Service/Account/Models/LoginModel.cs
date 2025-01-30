@@ -10,17 +10,18 @@ namespace nvxapp.server.service.ClientServer_Service.Account.Models
 {
     public class LoginInModel
     {
-
+        public string? UserName { get; set; }
+        public string? Password { get; set; }
     }
 
     public class LoginOutModel : ModelResult
     {
         
-        //public List<string> Roles { get; set; }
+        public string? Token { get; set; }
+        public string? RefreshToken { get; set; }
 
         public LoginOutModel()
         {
-             //Roles = new List<string>();
         }
     }
 
