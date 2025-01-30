@@ -13,11 +13,22 @@ using Serilog.Events;
 using Serilog;
 using Serilog.Sinks.PostgreSQL;
 using nvxapp.server.data.Migrations;
+using nvxapp.server.service.ServerModels;
 
 namespace nvxapp.server.Infrastructure
 {
     public static class Installers
     {
+
+        public static IServiceCollection InstallConfiguration(this WebApplicationBuilder builder)
+        {
+
+            builder.Services.Configure<JwtParameter>(builder.Configuration.GetSection("JwtParameter"));
+            //builder.Services.Configure<JwtParameter>(builder.Configuration.GetSection("JwtParameter"));
+
+            return builder.Services;
+        }
+
 
         public static IServiceCollection InstallServices(this WebApplicationBuilder builder)
         {

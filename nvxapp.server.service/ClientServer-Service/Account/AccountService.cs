@@ -22,12 +22,13 @@ namespace nvxapp.server.service.ClientServer_Service.Account
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly JwtParameter _jwtParameter;
 
-        public AccountService(IOptions<JwtParameter> jwtParameter,
-                              IMapper mapper,
+        public AccountService(IMapper mapper,
                               UserManager<ApplicationUser> userManager,
                               IAspNetUsersRepository aspNetUsersRepository,
-                              SignInManager<ApplicationUser> signInManager
-                                      
+
+                              SignInManager<ApplicationUser> signInManager,
+                              IOptions<JwtParameter> jwtParameter
+
                               ) : base(mapper, userManager, aspNetUsersRepository)
         {
             _signInManager = signInManager;

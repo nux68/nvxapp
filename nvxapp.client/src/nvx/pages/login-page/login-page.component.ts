@@ -69,8 +69,16 @@ export class LoginPageComponent  implements OnInit {
 
         }
         else {
-          this.loginError = x.data.messages[0].text;  //x.messages[0].text;
-          this.authService.UserName = null;
+          if (sucecss) {
+            this.loginError = x.data.messages[0].text;  //x.messages[0].text;
+            this.authService.UserName = null;
+          }
+          else {
+            this.loginError = x.messages[0].text;
+            this.authService.UserName = null;
+          }
+
+          
         }
 
       });
