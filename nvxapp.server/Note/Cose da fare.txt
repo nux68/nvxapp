@@ -1,0 +1,3 @@
+﻿gestige gli schemi postgers + migrazioni multi tenat e login
+gestire essore verso chiamata server
+gestire thema
