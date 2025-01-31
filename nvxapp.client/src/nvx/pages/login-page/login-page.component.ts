@@ -59,6 +59,7 @@ export class LoginPageComponent  implements OnInit {
         if (sucecss && x.data.messages.length == 0) {
           
           this.authService.UserName = UserName;
+          this.authService.Token = x.data.token;
 
           let request: GenericRequest<UserRolesInModel> = new GenericRequest<UserRolesInModel>(UserRolesInModel);
           this.accountService.UserRoles(request).subscribe(x => {

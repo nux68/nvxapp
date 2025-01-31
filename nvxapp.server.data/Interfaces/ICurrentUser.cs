@@ -8,7 +8,7 @@ namespace nvxapp.server.data.Interfaces
 {
     public interface ICurrentUser
     {
-        string? CurrentUser { get; set; }
+        string? CurrentUserId { get; set; }
 
     }
 }

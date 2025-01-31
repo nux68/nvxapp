@@ -13,6 +13,9 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Options;
 using nvxapp.server.service.ServerModels;
+using nvxapp.server.service.Helpers;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using nvxapp.server.data.Extensions;
 
 
 namespace nvxapp.server.service.ClientServer_Service.Account
@@ -20,19 +23,18 @@ namespace nvxapp.server.service.ClientServer_Service.Account
     public class AccountService : ServiceBase, IAccountService
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly JwtParameter _jwtParameter;
+        //private readonly JwtParameter _jwtParameter;
 
         public AccountService(IMapper mapper,
                               UserManager<ApplicationUser> userManager,
                               IAspNetUsersRepository aspNetUsersRepository,
-
-                              SignInManager<ApplicationUser> signInManager,
-                              IOptions<JwtParameter> jwtParameter
-
-                              ) : base(mapper, userManager, aspNetUsersRepository)
+                              IOptions<JwtParameter> jwtParameter,
+                              
+                              SignInManager<ApplicationUser> signInManager
+                              ) : base(mapper, userManager, aspNetUsersRepository, jwtParameter)
         {
             _signInManager = signInManager;
-            _jwtParameter = jwtParameter.Value;
+            //_jwtParameter = jwtParameter.Value;
         }
 
         public virtual async Task<GenericResult<UserRolesOutModel>> UserRoles(GenericRequest<UserRolesInModel> model, Boolean isSubProcess)
@@ -42,10 +44,10 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                 UserRolesOutModel retVal = new UserRolesOutModel();
 
 
-                if(this.CurrentUser!=null)
+                if(!string.IsNullOrEmpty(this.CurrentUserId) )
                 {
-                    var applicationUser = await _userManager.FindByNameAsync(this.CurrentUser);
-                    
+                    var applicationUser = await _userManager.FindByIdAsync(this.CurrentUserId);
+
 
                     if (applicationUser != null)
                     {
@@ -86,7 +88,8 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                         }
                         else
                         {
-                            retVal.Token = GenerateJwtToken(applicationUser);
+                            //retVal.Token = GenerateJwtToken(applicationUser);
+                            retVal.Token = UtilToken.GenerateJwtToken(applicationUser, _jwtParameter.Key, _jwtParameter.Issuer,  _jwtParameter.Audience, _jwtParameter.ExpireMinutes);
                         }
                     }
                     else
@@ -110,24 +113,29 @@ namespace nvxapp.server.service.ClientServer_Service.Account
             }, isSubProcess);
         }
 
-        private string? GenerateJwtToken(ApplicationUser user)
-        {
+        //private string? GenerateJwtToken(ApplicationUser user)
+        //{
 
-            if(string.IsNullOrEmpty(  user.Email))
-                return null;
+        //    if( string.IsNullOrEmpty(user.Email) || string.IsNullOrEmpty(user.UserName))
+        //        return null;
 
-            var claims = new[]
-            {
-                new Claim(JwtRegisteredClaimNames.Sub, user.Id),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email),
-            };
+        //    //valori inseriti nel token, saranno disponibili nelle API
+        //    var claims = new[]
+        //    {
+        //        //new Claim(JwtRegisteredClaimNames.Name, user.UserName),
+        //        new Claim(JwtRegisteredClaimNames.Sub, user.Id),
+        //        new Claim(JwtRegisteredClaimNames.Email, user.Email),
+        //    };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtParameter.Key));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        //    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtParameter.Key));
+        //    var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            var token = new JwtSecurityToken(_jwtParameter.Issuer, _jwtParameter.Audience, claims, expires: DateTime.UtcNow.AddHours(2), signingCredentials: creds);
-            return new JwtSecurityTokenHandler().WriteToken(token);
-        }
+            
+
+        //    //var token = new JwtSecurityToken(_jwtParameter.Issuer, _jwtParameter.Audience, claims, expires: DateTime.UtcNow.AddHours(2), signingCredentials: creds);
+        //    var token = new JwtSecurityToken(_jwtParameter.Issuer, _jwtParameter.Audience, claims, expires: DateTime.UtcNow.AddSeconds(_jwtParameter.ExpireMinutes), signingCredentials: creds);
+        //    return new JwtSecurityTokenHandler().WriteToken(token);
+        //}
 
 
     }

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using nvxapp.server.data.Interfaces;
 using nvxapp.server.service.Helpers;
+using System.Security.Claims;
 
 namespace nvxapp.server.Controllers
 {
@@ -16,28 +17,17 @@ namespace nvxapp.server.Controllers
             _httpContextAccessor = httpContextAccessor;
         }
 
-        protected string? CurrentUser
+        protected string? CurrentUserId
         {
             get
             {
-
                 if (_httpContextAccessor.HttpContext != null)
                 {
-                    if (_httpContextAccessor.HttpContext.Request.Headers.TryGetValue("UserName", out var headerValue))
-                    {
-                        string valore = headerValue.ToString();
-
-                        return valore;
-                    }
-                    else
-                    {
-                        // L'header non è presente nella richiesta
-                        return null;
-                    }
+                    var UserId = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                    return UserId;
                 }
 
                 return null;
-
             }
         }
 
@@ -59,13 +49,13 @@ namespace nvxapp.server.Controllers
             List<object> ser_base = nvxReflection.GetObjectsOfType<ICurrentUser>(this);
             foreach (var item in ser_base)
             {
-                ((ICurrentUser)item).CurrentUser = this.CurrentUser;
+                ((ICurrentUser)item).CurrentUserId = this.CurrentUserId;
 
                 //scandice i repo
                 List<object> repo_base = nvxReflection.GetObjectsOfType<ICurrentUser>(item);
                 foreach (var item2 in repo_base)
                 {
-                    ((ICurrentUser)item2).CurrentUser = this.CurrentUser;
+                    ((ICurrentUser)item2).CurrentUserId = this.CurrentUserId;
                 }
 
             }

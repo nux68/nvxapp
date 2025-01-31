@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 using nvxapp.server.data.Entities;
 using nvxapp.server.data.Repositories;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Infrastructure;
 using nvxapp.server.service.Interfaces;
+using nvxapp.server.service.ServerModels;
 using nvxapp.server.service.Service.MyTableService;
 using nvxapp.server.service.Service.MyTableService.Models;
 using nvxapp.server.service.Service.WeatherForecast.Models;
@@ -25,8 +27,9 @@ namespace nvxapp.server.service.Service.WeatherForecast
         public WeatherForecastService(IMapper mapper,
                                       UserManager<ApplicationUser> userManager,
                                       IAspNetUsersRepository aspNetUsersRepository,
+                                      IOptions<JwtParameter> jwtParameter,
 
-                                      IMyTableService myTableService) : base(mapper, userManager, aspNetUsersRepository)
+                                      IMyTableService myTableService) : base(mapper, userManager, aspNetUsersRepository, jwtParameter)
         {
             _myTableService = myTableService;
         }

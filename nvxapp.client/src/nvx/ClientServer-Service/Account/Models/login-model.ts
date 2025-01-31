@@ -11,7 +11,7 @@ export class LoginInModel {
 export class LoginOutModel extends ModelResult {
   
   public token: string|null;
-  public refreshToken: string | null;
+  //public refreshToken: string | null;
 
 }
 

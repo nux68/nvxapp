@@ -1,28 +1,18 @@
 import { Injectable } from '@angular/core';
-//import {
-//  HttpInterceptor,
-//  HttpRequest,
-//  HttpHandler,
-//  HttpEvent,
-//  HttpErrorResponse,
-//} from '@angular/common/http';
-
-import { HttpClient, HttpInterceptor, HttpHandler, HttpEvent, HttpRequest } from '@angular/common/http';
-
+import { HttpClient, HttpInterceptor, HttpHandler, HttpEvent, HttpRequest, HttpErrorResponse, HttpResponse } from '@angular/common/http';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
-import { catchError, finalize } from 'rxjs/operators';
-//import { AuthService } from '../auth/auth.service';
-//import { CurrentSelectionService } from '../local-data/current-selection.service';
+import { catchError, finalize, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { AuthService } from '../Utility/auth.service';
-
+import { NavController } from '@ionic/angular';
 
 @Injectable()
 export class NvxHttpInterceptor implements HttpInterceptor {
 
   constructor(
               private authService: AuthService,
-              private nvxHttpInterceptorService: NvxHttpInterceptorService
+              private nvxHttpInterceptorService: NvxHttpInterceptorService,
+              private navCtrl: NavController,
              )
   {
   }
@@ -34,7 +24,8 @@ export class NvxHttpInterceptor implements HttpInterceptor {
     // Clona la richiesta per aggiungere il nuovo header
     const authReq = req.clone({
       setHeaders: {
-        UserName: this.authService.UserName != null ? this.authService.UserName : ``  //`NVX` //SookaUser
+        //UserName: this.authService.UserName != null ? this.authService.UserName : ``,  //`NVX` //SookaUser
+        Authorization: `Bearer ${this.authService.Token}`
       }
     });
 
@@ -42,7 +33,25 @@ export class NvxHttpInterceptor implements HttpInterceptor {
 
     // Passa la richiesta al prossimo handler nella catena
     return next.handle(authReq).pipe(
-      
+      tap((event: HttpEvent<any>) => {
+        if (event instanceof HttpResponse) {
+          // Se la risposta contiene un nuovo token, aggiorna quello salvato
+          const newToken = event.body?.token;
+          if (newToken) {
+            this.authService.Token = newToken;
+          }
+        }
+      }),
+      catchError((error: HttpErrorResponse) => {
+        if (error.status === 401) {
+          console.warn('Errore 401: Token scaduto o non valido.');
+
+          this.authService.LogOut();  
+          this.navCtrl.navigateForward('/home');
+        }
+
+        return throwError(() => error);
+      }),
       finalize(() => {
         //console.log('Fine della chiamata HTTP');
 

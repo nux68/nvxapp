@@ -19,7 +19,7 @@ namespace nvxapp.server.data.Infrastructure
         private readonly IServiceProvider _serviceProvider;
 
         private string? _currentUser;
-        public string? CurrentUser
+        public string? CurrentUserId
         {
             get { return _currentUser; }
             set { _currentUser = value; }
@@ -92,7 +92,7 @@ namespace nvxapp.server.data.Infrastructure
                 if (changeDateProp != null) changeDateProp.SetValue(entity, now);
 
                 var changeUsrPropUp = entity.GetType().GetProperty("ChangeUser");
-                if (changeUsrPropUp != null) changeUsrPropUp.SetValue(entity, CurrentUser);
+                if (changeUsrPropUp != null) changeUsrPropUp.SetValue(entity, CurrentUserId);
 
                 DbContext.Set<T>().Add(entity);
 
@@ -231,7 +231,7 @@ namespace nvxapp.server.data.Infrastructure
                 if (changeDatePropUp != null) changeDatePropUp.SetValue(entity, now);
 
                 var changeUsrPropUp = entity.GetType().GetProperty("ChangeUser");
-                if (changeUsrPropUp != null) changeUsrPropUp.SetValue(entity, CurrentUser);
+                if (changeUsrPropUp != null) changeUsrPropUp.SetValue(entity, CurrentUserId);
 
 
 

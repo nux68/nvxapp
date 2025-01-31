@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { GenericRequest } from '../../ClientServer-Service/ModelsBase/generic-request';
+import { UserRolesInModel } from '../../ClientServer-Service/Account/Models/user-roles-model';
+import { AccountService } from '../../ClientServer-Service/Account/account.service';
 
 @Component({
   selector: 'app-super-user-page',
@@ -10,10 +13,20 @@ export class SuperUserPageComponent  implements OnInit {
 
   public title!: string;
 
-  constructor() {
+  constructor(private accountService: AccountService
+  ) {
     this.title = 'SuperUserPage';
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+
+    let request: GenericRequest<UserRolesInModel> = new GenericRequest<UserRolesInModel>(UserRolesInModel);
+    this.accountService.UserRoles(request).subscribe(x => {
+
+      
+
+    });
+
+  }
 
 }

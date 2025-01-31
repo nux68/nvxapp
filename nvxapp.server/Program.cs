@@ -1,45 +1,19 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.IdentityModel.Tokens;
 using nvxapp.server.data.Entities;
 using nvxapp.server.data.Infrastructure;
 using nvxapp.server.Infrastructure;
 using System.Diagnostics;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
 
-/*
- ATTENZIONE IMPOSTARE IN :
-    
-Pannello di controllo -> Sistema -> Impostazioni si sistema avanzate -> Variabili ambiente
-    mettere
-        ASPNETCORE_ENVIRONMENT
-            Svi            
-            Test
-            Staging
-            Siges
-                
- */
 
-
-
-
-if (builder.Environment.EnvironmentName.Contains("Development"))
-{
-    // Configurazione personalizzata sviluppatori
-    builder.Configuration
-           .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-           .AddJsonFile($"appsettings.Development.json", optional: true, reloadOnChange: true)
-           .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
-           .AddEnvironmentVariables();
-}
-else
-{
-    builder.Configuration
-           .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-           .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
-           .AddEnvironmentVariables();
-}
+Installers.InstallSettings(builder);
 
 
 
@@ -55,17 +29,10 @@ builder.Services.AddSwaggerGen();
 
 
 // Aggiungi i servizi CORS
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAllOrigins", policy =>
-    {
-        policy.AllowAnyOrigin() // Permette qualsiasi origine
-              .AllowAnyMethod() // Permette qualsiasi metodo (GET, POST, PUT, DELETE, ecc.)
-              .AllowAnyHeader(); // Permette qualsiasi intestazione
-    });
-});
 
 
+
+Installers.InstallCors(builder);
 
 
 Installers.InstallConfiguration(builder);
@@ -73,9 +40,8 @@ Installers.InstallServices(builder);
 Installers.InstallEntityContex(builder);
 Installers.InstallRepositories(builder);
 Installers.InstallMappers(builder);
-//Installers.InstallIdentity(builder);
 Installers.InstallLog(builder);
-
+Installers.InstallAuthentication(builder);
 
 
 
@@ -113,6 +79,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+
+
 
 app.UseAuthentication();
 app.UseAuthorization();

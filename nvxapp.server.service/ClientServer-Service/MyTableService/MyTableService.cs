@@ -13,6 +13,8 @@ using nvxapp.server.data.Repositories;
 using Microsoft.AspNetCore.Identity;
 using AutoMapper;
 using nvxapp.server.data.Entities;
+using Microsoft.Extensions.Options;
+using nvxapp.server.service.ServerModels;
 
 
 namespace nvxapp.server.service.Service.MyTableService
@@ -25,8 +27,10 @@ namespace nvxapp.server.service.Service.MyTableService
         public MyTableService(IMapper mapper,
                               UserManager<ApplicationUser> userManager,
                               IAspNetUsersRepository aspNetUsersRepository,
+                              IOptions<JwtParameter> jwtParameter,
 
-                              IMyTableRepository myTableRepository) : base(mapper , userManager  , aspNetUsersRepository)
+
+                              IMyTableRepository myTableRepository) : base(mapper , userManager  , aspNetUsersRepository, jwtParameter)
         {
             _myTableRepository = myTableRepository;
         }

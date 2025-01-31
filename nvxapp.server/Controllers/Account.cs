@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using nvxapp.server.service.ClientServer_Service.Account;
 using nvxapp.server.service.ClientServer_Service.Account.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
@@ -22,7 +23,7 @@ namespace nvxapp.server.Controllers
             _accountService = accountService;
         }
 
-
+        [Authorize]
         [HttpPost]
         [Route("UserRoles")]
         public async Task<GenericResult<UserRolesOutModel>> UserRoles(GenericRequest<UserRolesInModel> inModel)

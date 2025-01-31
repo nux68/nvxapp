@@ -14,6 +14,9 @@ using Serilog;
 using Serilog.Sinks.PostgreSQL;
 using nvxapp.server.data.Migrations;
 using nvxapp.server.service.ServerModels;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace nvxapp.server.Infrastructure
 {
@@ -24,26 +27,19 @@ namespace nvxapp.server.Infrastructure
         {
 
             builder.Services.Configure<JwtParameter>(builder.Configuration.GetSection("JwtParameter"));
-            //builder.Services.Configure<JwtParameter>(builder.Configuration.GetSection("JwtParameter"));
+            //builder.Services.Configure<JwtParameter>(builder.Configuration.GetSection("ALTRASEZIONE"));
 
             return builder.Services;
         }
-
-
         public static IServiceCollection InstallServices(this WebApplicationBuilder builder)
         {
-
 
             builder.Services.RegisterAssemblyPublicNonGenericClasses(Assembly.GetAssembly(typeof(IServiceBase)))
                 .AsPublicImplementedInterfaces(ServiceLifetime.Scoped);
 
-            
-
-            
 
             return builder.Services;
         }
-
         public static IServiceCollection InstallEntityContex(this WebApplicationBuilder builder)
         {
 
@@ -54,27 +50,24 @@ namespace nvxapp.server.Infrastructure
                    )
                );
 
-            builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+            builder.Services.AddIdentityCore<ApplicationUser>(options =>
             {
-                // Personalizza i requisiti della password
                 options.Password.RequiredLength = 3;
                 options.Password.RequireUppercase = false;
                 options.Password.RequireLowercase = false;
                 options.Password.RequireDigit = false;
                 options.Password.RequireNonAlphanumeric = false;
-
-                // Disattiva la validazione delle password
-                options.Password.RequireDigit = false;
                 options.Password.RequiredUniqueChars = 0;
+            })
+            .AddRoles<IdentityRole>()
+            .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddDefaultTokenProviders();
 
-               // options.User.AllowedUserNameCharacters = null;
-
-            }).AddEntityFrameworkStores<ApplicationDbContext>()
-              .AddDefaultTokenProviders();
+            builder.Services.AddHttpContextAccessor();  
+            builder.Services.AddScoped<SignInManager<ApplicationUser>>();
 
             return builder.Services;
         }
-
         public static IServiceCollection InstallRepositories(this WebApplicationBuilder builder)
         {
             builder.Services.RegisterAssemblyPublicNonGenericClasses(Assembly.GetAssembly(typeof(IRepository<>)))
@@ -84,7 +77,6 @@ namespace nvxapp.server.Infrastructure
 
             return builder.Services;
         }
-
         public static IServiceCollection InstallMappers(this WebApplicationBuilder builder)
         {
 
@@ -92,7 +84,6 @@ namespace nvxapp.server.Infrastructure
 
             return builder.Services;
         }
-
         public static IServiceCollection InstallLog(this WebApplicationBuilder builder)
         {
 
@@ -212,31 +203,78 @@ namespace nvxapp.server.Infrastructure
 
             return builder.Services;
         }
+        public static IServiceCollection InstallAuthentication(this WebApplicationBuilder builder)
+        {
+            string JwtParameterKey = builder.Configuration["JwtParameter:Key"] ?? "";
 
-        //public static IServiceCollection InstallIdentity(this WebApplicationBuilder builder)
-        //{
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                            .AddJwtBearer(options =>
+                            {
+                                options.TokenValidationParameters = new TokenValidationParameters
+                                {
+                                    ValidateIssuer = true,
+                                    ValidateAudience = true,
+                                    ValidateLifetime = true,
+                                    ValidateIssuerSigningKey = true,
+                                    ValidIssuer = builder.Configuration["JwtParameter:Issuer"],
+                                    ValidAudience = builder.Configuration["JwtParameter:Audience"],
+                                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JwtParameterKey)),
 
-        //    builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
-        //    {
-        //        // Personalizza i requisiti della password
-        //        options.Password.RequiredLength = 3;
-        //        options.Password.RequireUppercase = false;
-        //        options.Password.RequireLowercase = false;
-        //        options.Password.RequireDigit = false;
-        //        options.Password.RequireNonAlphanumeric = false;
+                                    ClockSkew = TimeSpan.Zero // ✅ Disattiva il ritardo predefinito di 5 minuti
+                                };
+                            });
 
-        //        // Disattiva la validazione delle password
-        //        options.Password.RequireDigit = false;
-        //        options.Password.RequiredUniqueChars = 0;
+            return builder.Services;
+        }
+        public static IServiceCollection InstallCors(this WebApplicationBuilder builder)
+        {
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAllOrigins", policy =>
+                {
+                    policy.AllowAnyOrigin() // Permette qualsiasi origine
+                          .AllowAnyMethod() // Permette qualsiasi metodo (GET, POST, PUT, DELETE, ecc.)
+                          .AllowAnyHeader(); // Permette qualsiasi intestazione
+                });
+            });
 
-        //        options.User.AllowedUserNameCharacters = null;
+            return builder.Services;
+        }
+        public static IServiceCollection InstallSettings(this WebApplicationBuilder builder)
+        {
+            /*
+                     ATTENZIONE IMPOSTARE IN :
+    
+                    Pannello di controllo -> Sistema -> Impostazioni si sistema avanzate -> Variabili ambiente
+                        mettere
+                            ASPNETCORE_ENVIRONMENT
+                                Svi            
+                                Test
+                                Staging
+                                Siges
+                
+                     */
 
-        //    }).AddEntityFrameworkStores<ApplicationDbContext>();
 
-        //    builder.Services.AddScoped<IPasswordHasher<ApplicationUser>, PasswordHasher<ApplicationUser>>();
+            if (builder.Environment.EnvironmentName.Contains("Development"))
+            {
+                // Configurazione personalizzata sviluppatori
+                builder.Configuration
+                       .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                       .AddJsonFile($"appsettings.Development.json", optional: true, reloadOnChange: true)
+                       .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
+                       .AddEnvironmentVariables();
+            }
+            else
+            {
+                builder.Configuration
+                       .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                       .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
+                       .AddEnvironmentVariables();
+            }
 
-        //    return builder.Services;
-        //}
+            return builder.Services;
+        }
 
     }
 }

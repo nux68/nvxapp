@@ -15,6 +15,7 @@ namespace nvxapp.server.service.ClientServer_Service.ModelsBase
         }
         public List<Message> Messages { get; set; }
         public T? Data { get; set; }
+        public String? Token { get; set; }
 
         //iGenericResult4Server
         public List<Message> GetMessages()
@@ -32,10 +33,11 @@ namespace nvxapp.server.service.ClientServer_Service.ModelsBase
 
         
 
-        public GenericResult(T? data)
+        public GenericResult(T? data,string? token=null)
         {
             Data = data;
             Messages = new List<Message>();
+            Token = token;
 
             if(data is iGenericResult4Server && data != null)
             {
@@ -45,9 +47,10 @@ namespace nvxapp.server.service.ClientServer_Service.ModelsBase
 
             
         }
-        public GenericResult(T? data, string? message, MessageType msgType)
+        public GenericResult(T? data, string? message, MessageType msgType, string? token = null)
         {
             Data = data;
+            Token = token;
             Messages = new List<Message>();
             Messages.Add(new Message(message, msgType));
         }
@@ -63,6 +66,8 @@ namespace nvxapp.server.service.ClientServer_Service.ModelsBase
         List<Message> Messages { get; set; }
         
         T? Data { get; set; }
+
+        String? Token { get; set; }
     }
 
 

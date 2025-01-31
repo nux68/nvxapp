@@ -29,6 +29,20 @@ export class AuthService {
 
   }
 
+  private _Token$: BehaviorSubject<string | null> = new BehaviorSubject<string>(null);
+  public get Token$(): Observable<string | null> {
+    return this._Token$.asObservable();
+  }
+  public set Token(value: string | null) {
+    this._Token$.next(value);
+    if (value == null)
+      this.setRole([]);
+  }
+  public get Token(): string | null {
+    const us = this._Token$.getValue();
+    return us;
+
+  }
 
   public get IsSuperUser(): boolean {
     return this.hasRole('SuperUser');
@@ -65,6 +79,12 @@ export class AuthService {
   public hasRole(role: string): boolean {
     const roles = this.rolesSubject.getValue();
     return roles.includes(role);
+  }
+
+  public LogOut(): void {
+    this.UserName = null;
+    this.Token = null;
+    this.setRole([]);
   }
 
 }

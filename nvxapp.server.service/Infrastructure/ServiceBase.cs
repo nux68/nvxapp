@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using nvxapp.server.data.Entities;
 using nvxapp.server.data.Interfaces;
@@ -7,6 +8,7 @@ using nvxapp.server.data.Repositories;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Helpers;
 using nvxapp.server.service.Interfaces;
+using nvxapp.server.service.ServerModels;
 using Serilog;
 
 namespace nvxapp.server.service.Infrastructure
@@ -17,7 +19,7 @@ namespace nvxapp.server.service.Infrastructure
         protected readonly IMapper _mapper;
         protected readonly UserManager<ApplicationUser> _userManager;
         protected readonly IAspNetUsersRepository _aspNetUsersRepository;
-
+        protected readonly JwtParameter _jwtParameter;
 
 #if DEBUG
         public const int DelayAsyncMethod = 1000;
@@ -27,7 +29,7 @@ namespace nvxapp.server.service.Infrastructure
 
 
         private string? _currentUser;
-        public string? CurrentUser
+        public string? CurrentUserId
         {
             get { return _currentUser; }
             set { _currentUser = value; }
@@ -36,12 +38,14 @@ namespace nvxapp.server.service.Infrastructure
         public ServiceBase(
                           IMapper mapper,
                           UserManager<ApplicationUser> userManager,
-                          IAspNetUsersRepository aspNetUsersRepository
+                          IAspNetUsersRepository aspNetUsersRepository,
+                          IOptions<JwtParameter> jwtParameter
                           )
         {
             _mapper = mapper;
             _userManager = userManager;
             _aspNetUsersRepository = aspNetUsersRepository;
+            _jwtParameter = jwtParameter.Value;
         }
 
         protected async Task<GenericResult<T>> ExecuteAction<T, P1>(P1? p1, Func<Task<T>> function, Boolean isSubProcess = false)
@@ -73,7 +77,7 @@ namespace nvxapp.server.service.Infrastructure
                     }
                 }
 
-                return OkResponse(data);
+                return await OkResponse(data);
 
             }
             catch (Exception e)
@@ -117,10 +121,21 @@ namespace nvxapp.server.service.Infrastructure
 
         }
 
-        protected GenericResult<T> OkResponse<T>(T data)
+        protected async Task<GenericResult<T>> OkResponse<T>(T data)
         {
+            string? token = null;
+
+            if( !string.IsNullOrEmpty( CurrentUserId))
+            {
+                var applicationUser = await _userManager.FindByIdAsync(this.CurrentUserId);
+                if(applicationUser!=null)
+                {
+                    token = UtilToken.GenerateJwtToken(applicationUser, _jwtParameter.Key, _jwtParameter.Issuer, _jwtParameter.Audience, _jwtParameter.ExpireMinutes);
+                }
+            }
+
             // return the model
-            return new GenericResult<T>(data);
+            return new GenericResult<T>(data, token);
         }
 
         protected GenericResult<T> ErrorResponse<T>(string error)
@@ -129,8 +144,7 @@ namespace nvxapp.server.service.Infrastructure
             Console.WriteLine(error);
             Log.Error(error);
 
-
-            return new GenericResult<T>(default(T), error, MessageType.Exception);
+            return new GenericResult<T>(default(T), error, MessageType.Exception,null);
         }
 
         protected void TransactionRollback()
