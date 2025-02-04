@@ -9,9 +9,6 @@ namespace nvxapp.server.data.Migrations
     /// <inheritdoc />
     public partial class InitDB : Migration
     {
-      
-
-
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -58,7 +55,7 @@ namespace nvxapp.server.data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "MyTable",
+                name: "MyTables",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -70,7 +67,7 @@ namespace nvxapp.server.data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MyTable", x => x.Id);
+                    table.PrimaryKey("PK_MyTables", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -217,11 +214,10 @@ namespace nvxapp.server.data.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_MyTable_Descrizione",
-                table: "MyTable",
+                name: "IX_MyTables_Descrizione",
+                table: "MyTables",
                 column: "Descrizione",
                 unique: true);
-
 
             PopolateDB.PopolateDB_InitDB_UP(migrationBuilder);
 
@@ -247,7 +243,7 @@ namespace nvxapp.server.data.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "MyTable");
+                name: "MyTables");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

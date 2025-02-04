@@ -2,7 +2,7 @@
 Package manage console  (root soluzione)
 
 crea
-dotnet ef migrations add InitDB  --context nvxapp.server.data.Infrastructure.ApplicationDbContext --project nvxapp.server.data --startup-project nvxapp.server\nvxapp.server.csproj
+dotnet ef migrations add InitDB  -v --context nvxapp.server.data.Infrastructure.ApplicationDbContext --project nvxapp.server.data --startup-project nvxapp.server\nvxapp.server.csproj
 
 aggiorna db
 dotnet ef database update --project nvxapp.server.data --startup-project nvxapp.server

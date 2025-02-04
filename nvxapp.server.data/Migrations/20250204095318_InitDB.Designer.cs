@@ -12,7 +12,7 @@ using nvxapp.server.data.Infrastructure;
 namespace nvxapp.server.data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250128103300_InitDB")]
+    [Migration("20250204095318_InitDB")]
     partial class InitDB
     {
         /// <inheritdoc />
@@ -259,7 +259,7 @@ namespace nvxapp.server.data.Migrations
                     b.HasIndex("Descrizione")
                         .IsUnique();
 
-                    b.ToTable("MyTable");
+                    b.ToTable("MyTables");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

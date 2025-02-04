@@ -256,7 +256,7 @@ namespace nvxapp.server.data.Migrations
                     b.HasIndex("Descrizione")
                         .IsUnique();
 
-                    b.ToTable("MyTable");
+                    b.ToTable("MyTables");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
