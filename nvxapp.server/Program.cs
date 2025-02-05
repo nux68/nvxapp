@@ -69,7 +69,7 @@ using (var scope = app.Services.CreateScope())
     var factory = services.GetRequiredService<IApplicationDbContextFactory>();
 
     // Lista degli schemi dei tenant (puoi sostituirla con una query al DB)
-    string[] schemiClienti = { "AAA" };
+    string[] schemiClienti = { "SCHEMA_A" };
 
     // Esegui la migrazione sullo schema di default (public)
     using (var context = factory.CreateDbContext("public"))
