@@ -18,3 +18,16 @@ dotnet ef database update 0 --project nvxapp.server.data --startup-project nvxap
 
 lista delle migrazioni
 dotnet ef migrations list --project nvxapp.server.data --startup-project nvxapp.server
+
+
+//4 SCHEMA
+ATTENZIONE IMPOSTARE in ogni migrazione
+x:
+	migrationBuilder.CreateTable(
+		schema: SharedSchema._schema,
+	migrationBuilder.CreateIndex(
+		schema: SharedSchema._schema,
+	table.ForeignKey(
+		principalSchema: SharedSchema._schema,
+
+x semplificare lo sviluppo conviene fare una migrazione che stia solo su public o solo su gli altri schemi

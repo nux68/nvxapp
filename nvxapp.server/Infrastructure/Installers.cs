@@ -17,6 +17,7 @@ using nvxapp.server.service.ServerModels;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace nvxapp.server.Infrastructure
 {
@@ -65,6 +66,15 @@ namespace nvxapp.server.Infrastructure
 
             builder.Services.AddHttpContextAccessor();  
             builder.Services.AddScoped<SignInManager<ApplicationUser>>();
+
+
+            //4 SCHEMA
+            builder.Services.AddScoped<IApplicationDbContextFactory, ApplicationDbContextFactory>();
+            builder.Services.AddScoped<IMigrationsSqlGenerator, SchemaAwareMigrationSqlGenerator>();
+            builder.Services.AddEntityFrameworkNpgsql();
+            //builder.Services.AddMvc();
+            //builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
 
             return builder.Services;
         }

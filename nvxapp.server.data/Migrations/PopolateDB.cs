@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Migrations;
 using nvxapp.server.data.Entities;
+using nvxapp.server.data.Infrastructure;
 using nvxapp.server.data.Repositories;
 using System.Data;
 
@@ -33,6 +34,11 @@ namespace nvxapp.server.data.Migrations
 
         public static void PopolateDB_InitDB_UP(MigrationBuilder migrationBuilder)
         {
+
+            if (SharedSchema._schema != "public")
+                return;
+
+
             string pw = "1234";
 
             //user
@@ -66,6 +72,7 @@ namespace nvxapp.server.data.Migrations
             foreach (var item in data_AspNetRoles_to_Scan)
             {
                 migrationBuilder.InsertData(
+                              //schema: "public",
                               table: "AspNetRoles",
                               columns: new[] { "Id", "Name", "NormalizedName" },
                               values: new object[] { item.Id, item.Name, item.Name.ToUpper() }
@@ -82,6 +89,7 @@ namespace nvxapp.server.data.Migrations
             {
                 migrationBuilder.InsertData(
                                                 table: "AspNetUsers",
+                                                //schema: "public",
                                                 columns: new[]
                                                 {
                                                         "Id",
@@ -137,6 +145,7 @@ namespace nvxapp.server.data.Migrations
                 {
                     migrationBuilder.InsertData(
                                      table: "AspNetUserRoles",
+                                     //schema: "public",
                                      columns: new[] { "UserId", "RoleId" },
                                      values: new object[] { itemUser.Id, itemRole.Id }
                                      );

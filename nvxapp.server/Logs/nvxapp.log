@@ -222,3 +222,11 @@
 2025-01-31 12:12:25.280 [INF] Call: <UserRoles>b__2_0, GUID: "b9823da1-3137-4a57-937c-70edc968149f", param: {"Data":{}}
 2025-01-31 12:12:28.349 [INF] Call: <UserRoles>b__2_0, GUID: "495b8c00-3b6e-4fae-9baa-8c52129c118b", param: {"Data":{}}
 2025-01-31 12:12:32.324 [INF] Call: <UserRoles>b__2_0, GUID: "a1354a5e-e3dc-415a-b6d0-55712bd1406e", param: {"Data":{}}
+2025-02-04 10:58:40.787 [INF] Call: <Login>b__0, GUID: "18a10f63-aec0-4af8-8502-e4411701c93a", param: {"Data":{"UserName":"nvx","Password":"1234"}}
+2025-02-04 10:58:45.640 [INF] Call: <UserRoles>b__2_0, GUID: "c7ee82af-ae8b-46e5-9fab-bc13c2850109", param: {"Data":{}}
+2025-02-04 10:59:32.081 [INF] Call: <Login>b__0, GUID: "40a81cab-f322-4e25-9394-f24a95da254a", param: {"Data":{"UserName":"nvx","Password":"1234"}}
+2025-02-04 10:59:34.284 [INF] Call: <UserRoles>b__2_0, GUID: "992b7139-774b-43a8-b505-02be2f9f51f6", param: {"Data":{}}
+2025-02-04 11:00:27.026 [INF] Call: <UserRoles>b__2_0, GUID: "a275cd13-0f4f-486c-87b6-21a27c49c8d7", param: {"Data":{}}
+2025-02-04 11:00:55.653 [INF] Call: <UserRoles>b__2_0, GUID: "c97ded04-436a-4e22-a9d6-8322b6cd86ab", param: {"Data":{}}
+2025-02-04 11:03:28.840 [INF] Call: <Login>b__0, GUID: "fe14ea86-521b-4835-a0b6-0a3f561b1157", param: {"Data":{"UserName":"nvx","Password":"1234"}}
+2025-02-04 11:03:34.101 [INF] Call: <UserRoles>b__2_0, GUID: "d8113594-d5d3-4697-ae07-b11850034d94", param: {"Data":{}}

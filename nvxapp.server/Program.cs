@@ -1,7 +1,10 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.IdentityModel.Tokens;
 using nvxapp.server.data.Entities;
 using nvxapp.server.data.Infrastructure;
@@ -45,17 +48,49 @@ Installers.InstallAuthentication(builder);
 
 
 
+
 var app = builder.Build();
 
 
 //Attiva la migrazione
+//using (var scope = app.Services.CreateScope())
+//{
+//    var services = scope.ServiceProvider;
+
+//    var context = services.GetRequiredService<ApplicationDbContext>();
+//    context.Database.Migrate();
+//}
+
+
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
+    
+    var factory = services.GetRequiredService<IApplicationDbContextFactory>();
 
-    var context = services.GetRequiredService<ApplicationDbContext>();
-    context.Database.Migrate();
+    // Lista degli schemi dei tenant (puoi sostituirla con una query al DB)
+    string[] schemiClienti = { "AAA" };
+
+    // Esegui la migrazione sullo schema di default (public)
+    using (var context = factory.CreateDbContext("public"))
+    {
+        context.Database.Migrate();
+    }
+
+    // Esegui la migrazione per ogni schema tenant
+    foreach (var schema in schemiClienti)
+    {
+        using (var context = factory.CreateDbContext(schema))
+        {
+            context.Database.ExecuteSqlRaw($"CREATE SCHEMA IF NOT EXISTS \"{schema}\";");
+            //EnsureSchemaExists(context, schema); // Assicura che lo schema esista
+            context.Database.Migrate();
+        }
+    }
 }
+
+
+
 
 
 // Usa la policy CORS globale
