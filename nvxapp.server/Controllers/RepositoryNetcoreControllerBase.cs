@@ -23,6 +23,9 @@ namespace nvxapp.server.Controllers
             {
                 if (_httpContextAccessor.HttpContext != null)
                 {
+                    var tenant = _httpContextAccessor.HttpContext?.User?.FindFirst("tenant")?.Value;
+
+
                     var UserId = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                     return UserId;
                 }

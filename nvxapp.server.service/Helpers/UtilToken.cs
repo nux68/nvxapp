@@ -27,6 +27,7 @@ namespace nvxapp.server.service.Helpers
                 //new Claim(JwtRegisteredClaimNames.Name, user.UserName),
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                new Claim("tenant", "SCHEMA_A")
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Key));
