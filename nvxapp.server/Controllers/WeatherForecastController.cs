@@ -7,7 +7,7 @@ namespace nvxapp.server.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class WeatherForecastController : RepositoryNetcoreControllerBase
+    public class WeatherForecastController : NvxControllerBase
     {
         private readonly IWeatherForecastService _weatherForecastService;
 

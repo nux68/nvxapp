@@ -10,7 +10,7 @@ namespace nvxapp.server.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class AccountController : RepositoryNetcoreControllerBase
+    public class AccountController : NvxControllerBase
     {
         private readonly IAccountService _accountService;
 

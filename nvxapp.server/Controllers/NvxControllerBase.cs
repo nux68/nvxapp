@@ -8,11 +8,11 @@ namespace nvxapp.server.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class RepositoryNetcoreControllerBase : ControllerBase , IActionFilter
+    public class NvxControllerBase : ControllerBase , IActionFilter
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public RepositoryNetcoreControllerBase(IHttpContextAccessor httpContextAccessor)
+        public NvxControllerBase(IHttpContextAccessor httpContextAccessor)
         {
             _httpContextAccessor = httpContextAccessor;
         }

@@ -20,6 +20,7 @@ namespace nvxapp.server.data.Infrastructure
 
         public ApplicationDbContext CreateDbContext(string tenant)
         {
+
             return new ApplicationDbContext(_options, tenant);
         }
     }

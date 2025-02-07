@@ -14,6 +14,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Migrations;
 using nvxapp.server.data.Entities;
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -32,6 +33,7 @@ namespace nvxapp.server.data.Infrastructure
         {
             _schema = schema;
             SharedSchema._schema = _schema;
+
 
             //X le date
             AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
@@ -92,6 +94,7 @@ namespace nvxapp.server.data.Infrastructure
         {
             base.OnConfiguring(optionsBuilder);
 
+
             if (!string.IsNullOrEmpty(_schema))
             {
                 //4 SCHEMA
@@ -99,16 +102,19 @@ namespace nvxapp.server.data.Infrastructure
                 optionsBuilder.ReplaceService<IMigrationsSqlGenerator, SchemaAwareMigrationSqlGenerator>();
                 optionsBuilder.UseNpgsql(options =>
                         options.MigrationsHistoryTable("__EFMigrationsHistory", _schema)
-                    );
+                    )
+                .AddInterceptors(new SchemaInterceptor());
 
             }
                 
             optionsBuilder.ConfigureWarnings(warnings => warnings.Ignore(RelationalEventId.PendingModelChangesWarning));
         }
 
-
-
     }
+
+    
+
+    
 
 }
 

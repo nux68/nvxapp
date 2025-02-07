@@ -48,7 +48,7 @@ namespace nvxapp.server.service.Service.MyTableService
                 var myTableModel = _mapper.Map<List<MyTableModel>>(myTableFromDB);
 
                 retVal.MyTable = myTableModel;
-                retVal.MyTable.Clear();
+                //retVal.MyTable.Clear();
 
                 if (retVal.MyTable.Count == 0)
                     retVal.Messages.Add(new Message("La tabella MyTable è vuota", MessageType.Information));

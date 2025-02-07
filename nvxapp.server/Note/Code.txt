@@ -1,0 +1,18 @@
+﻿
+ESEMPIO WHERE LAMBDA
+
+Func<User, bool> filtershowActiveFunction;
+if (ctx.showActiveOnly)
+    filtershowActiveFunction = u => (u.IsActive == true);
+else
+    filtershowActiveFunction = u => (true);
+
+pagedRows = puList.Where(u => u.Creator == user.UserId || u.UserId == user.UserId)
+                  .Where(u =>
+                                u.UserName.ToLower().Contains(flt) ||
+                                u.TaxCode.ToLower().Contains(flt) ||
+                                u.Email.ToLower().Contains(flt))
+                  .Where(filtershowActiveFunction)//nvx 06/02/2025
+                  .OrderByField(sortField)
+                  .Skip(ctx.perPage * (ctx.currentPage - 1))
+                  .Take(ctx.perPage).ToList();

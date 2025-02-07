@@ -52,20 +52,20 @@ Installers.InstallAuthentication(builder);
 var app = builder.Build();
 
 
-//Attiva la migrazione
-//using (var scope = app.Services.CreateScope())
-//{
-//    var services = scope.ServiceProvider;
+////Attiva la migrazione
+////using (var scope = app.Services.CreateScope())
+////{
+////    var services = scope.ServiceProvider;
 
-//    var context = services.GetRequiredService<ApplicationDbContext>();
-//    context.Database.Migrate();
-//}
+////    var context = services.GetRequiredService<ApplicationDbContext>();
+////    context.Database.Migrate();
+////}
 
 
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
-    
+
     var factory = services.GetRequiredService<IApplicationDbContextFactory>();
 
     // Lista degli schemi dei tenant (puoi sostituirla con una query al DB)
@@ -80,10 +80,10 @@ using (var scope = app.Services.CreateScope())
     // Esegui la migrazione per ogni schema tenant
     foreach (var schema in schemiClienti)
     {
-        using (var context = factory.CreateDbContext(schema))
+        using (var context = factory.CreateDbContext(schema.ToLower()))
         {
-            context.Database.ExecuteSqlRaw($"CREATE SCHEMA IF NOT EXISTS \"{schema}\";");
-            //EnsureSchemaExists(context, schema); // Assicura che lo schema esista
+            //context.Database.ExecuteSqlRaw($"CREATE SCHEMA IF NOT EXISTS \"{schema.ToLower()}\";");
+            ////EnsureSchemaExists(context, schema); // Assicura che lo schema esista
             context.Database.Migrate();
         }
     }

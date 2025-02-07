@@ -1,4 +1,5 @@
-﻿using nvxapp.server.data.Entities;
+﻿using Microsoft.AspNetCore.Http;
+using nvxapp.server.data.Entities;
 using nvxapp.server.data.Infrastructure;
 using nvxapp.server.data.Interfaces;
 using System;
@@ -12,7 +13,9 @@ namespace nvxapp.server.data.Repositories
 {
     public class AspNetUsersRepository : Repository<ApplicationDbContext, ApplicationUser>, IAspNetUsersRepository
     {
-        public AspNetUsersRepository(ApplicationDbContext dbContext, IServiceProvider provider) : base(dbContext, provider)
+        public AspNetUsersRepository(ApplicationDbContext dbContext, 
+                                     IServiceProvider provider, 
+                                     IHttpContextAccessor httpContextAccessor) : base(dbContext, provider, httpContextAccessor)
         {
         }
     }

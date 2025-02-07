@@ -10,6 +10,8 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Serilog;
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
 namespace nvxapp.server.data.Infrastructure
 {
@@ -17,6 +19,7 @@ namespace nvxapp.server.data.Infrastructure
     {
         protected TDbContext DbContext;
         private readonly IServiceProvider _serviceProvider;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         private string? _currentUser;
         public string? CurrentUserId
@@ -25,11 +28,29 @@ namespace nvxapp.server.data.Infrastructure
             set { _currentUser = value; }
         }
 
-        public Repository(TDbContext context, IServiceProvider serviceProvider)
+        public Repository(TDbContext context, 
+                          IServiceProvider serviceProvider,
+                          IHttpContextAccessor httpContextAccessor)
         {
             DbContext = context;
             _serviceProvider = serviceProvider;
+            _httpContextAccessor = httpContextAccessor;
         }
+
+        protected string? CurrentTenat
+        {
+            get
+            {
+                if (_httpContextAccessor.HttpContext != null)
+                {
+                    var tenant = _httpContextAccessor.HttpContext?.User?.FindFirst("tenant")?.Value;
+                    return tenant;
+                }
+
+                return null;
+            }
+        }
+
 
         public async Task<T> UpsertAsync(T entity)
         {
@@ -189,7 +210,6 @@ namespace nvxapp.server.data.Infrastructure
         public async Task<List<T>> FindAll()
         {
             return await DbContext.Set<T>().ToListAsync();
-
         }
 
         public IQueryable<T> FindAll(Expression<Func<T, bool>> where)

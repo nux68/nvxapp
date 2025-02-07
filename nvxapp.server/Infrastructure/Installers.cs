@@ -18,6 +18,10 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.Extensions.DependencyInjection;
+using System;
+using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.Extensions.Configuration;
 
 namespace nvxapp.server.Infrastructure
 {
@@ -45,11 +49,13 @@ namespace nvxapp.server.Infrastructure
         {
 
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
-                   options.UseNpgsql(
+            
+                options.UseNpgsql(
                        builder.Configuration.GetConnectionString("nvxappDbContext"),
                        npgsqlOptions => npgsqlOptions.MigrationsAssembly("nvxapp.server.data") // Specifica l'assembly per le migrazioni
-                   )
-               );
+                       
+                       )
+            );
 
             builder.Services.AddIdentityCore<ApplicationUser>(options =>
             {
@@ -74,6 +80,9 @@ namespace nvxapp.server.Infrastructure
             builder.Services.AddEntityFrameworkNpgsql();
             //builder.Services.AddMvc();
             //builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+            
+
 
 
             return builder.Services;
