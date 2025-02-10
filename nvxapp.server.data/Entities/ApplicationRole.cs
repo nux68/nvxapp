@@ -19,13 +19,13 @@ namespace nvxapp.server.data.Entities
         User =0,
 
         CompanyAdmin =10,
-        CompanyAdminPowerUser = 11,
+        CompanyPowerAdmin = 11,
 
         DealerAdmin = 100,
-        DealerAdminPowerUser = 101,
+        DealerPowerAdmin = 101,
 
         Admin = 1000,
-        AdminPowerUser = 1001,
+        PowerAdmin = 1001,
 
         SuperUser = 10000,
 

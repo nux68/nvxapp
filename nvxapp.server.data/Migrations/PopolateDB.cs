@@ -4,6 +4,7 @@ using nvxapp.server.data.Entities;
 using nvxapp.server.data.Infrastructure;
 using nvxapp.server.data.Repositories;
 using System.Data;
+using static nvxapp.server.data.Entities.AspNetUsersDataUtil;
 
 namespace nvxapp.server.data.Migrations
 {
@@ -23,7 +24,7 @@ namespace nvxapp.server.data.Migrations
         {
             public string Id { get; set; } = string.Empty;
             public string Name { get; set; } = string.Empty;
-            public int Code { get; set; } = 0;
+            public RoleCode Code { get; set; } = RoleCode.User;
         }
 
         class Data_AspNetUsers
@@ -44,7 +45,7 @@ namespace nvxapp.server.data.Migrations
 
             //user
             List<Data_AspNetUsers> data_AspNetUsers = new List<Data_AspNetUsers>();
-            data_AspNetUsers.Add(new Data_AspNetUsers() { Id = Guid.NewGuid().ToString(), UserName = "SuperUser",  Email = "nello68@hotmail.com" });
+            data_AspNetUsers.Add(new Data_AspNetUsers() { Id = Guid.NewGuid().ToString(), UserName = "SuperUser", Email = "nello68@hotmail.com" });
             data_AspNetUsers.Add(new Data_AspNetUsers() { Id = Guid.NewGuid().ToString(), UserName = "PowerAdmin", Email = "nello68@hotmail.com" });
             data_AspNetUsers.Add(new Data_AspNetUsers() { Id = Guid.NewGuid().ToString(), UserName = "Admin", Email = "nello68@hotmail.com" });
 
@@ -55,39 +56,38 @@ namespace nvxapp.server.data.Migrations
             data_AspNetUsers.Add(new Data_AspNetUsers() { Id = Guid.NewGuid().ToString(), UserName = "CompanyAdmin", Email = "nello68@hotmail.com" });
 
 
-            List<string> roleUser = new List<string>();
+            List<AspNetRoles_Key_Code> roleUser = new List<AspNetRoles_Key_Code>();
             roleUser.AddRange(AspNetUsersDataUtil.Get_AspNetRoles(AspNetUsersDataUtil.AspNetRolesGroup.User));
 
-            List<string> roleAdmin = new List<string>();
+            List<AspNetRoles_Key_Code> roleAdmin = new List<AspNetRoles_Key_Code>();
             roleAdmin.AddRange(AspNetUsersDataUtil.Get_AspNetRoles(AspNetUsersDataUtil.AspNetRolesGroup.Admin));
-            roleAdmin.AddRange(AspNetUsersDataUtil.Get_AspNetRoles(AspNetUsersDataUtil.AspNetRolesGroup.User));
+            //roleAdmin.AddRange(AspNetUsersDataUtil.Get_AspNetRoles(AspNetUsersDataUtil.AspNetRolesGroup.User));
 
-            List<string> roleAll = AspNetUsersDataUtil.Get_AspNetRoles(AspNetUsersDataUtil.AspNetRolesGroup.All);
+            List<AspNetRoles_Key_Code> roleAll = AspNetUsersDataUtil.Get_AspNetRoles(AspNetUsersDataUtil.AspNetRolesGroup.All);
 
 
             List<Data_AspNetRoles> data_AspNetRoles_All = new List<Data_AspNetRoles>();
             foreach (var item in roleAll)
-                data_AspNetRoles_All.Add(new Data_AspNetRoles() { Id = Guid.NewGuid().ToString(), Name = item });
-            
+                data_AspNetRoles_All.Add(new Data_AspNetRoles() { Id = Guid.NewGuid().ToString(), Name = item.Key, Code = item.Code });
+
 
 
             ///*TO DB*/
 
             //AspNetRoles
-            List<Data_AspNetRoles> data_AspNetRoles_to_Scan = data_AspNetRoles_All.Where(x => roleAll.Contains(x.Name)).ToList();
+            List<Data_AspNetRoles> data_AspNetRoles_to_Scan = data_AspNetRoles_All;
 
             foreach (var item in data_AspNetRoles_to_Scan)
             {
                 migrationBuilder.InsertData(
-                              //schema: "public",
                               table: "AspNetRoles",
-                              columns: new[] { "Id", "Name", "NormalizedName" },
-                              values: new object[] { item.Id, item.Name, item.Name.ToUpper() }
+                              columns: new[] { "Id", "Code", "Name", "NormalizedName" },
+                              values: new object[] { item.Id, (int)item.Code, item.Name, item.Name.ToUpper() }
                               );
             }
 
 
-            //user
+            ////user
             var userId = Guid.NewGuid().ToString();
             var hasher = new PasswordHasher<IdentityUser>();
             var passwordHash = hasher.HashPassword(null, pw);
@@ -135,18 +135,19 @@ namespace nvxapp.server.data.Migrations
                 switch (itemUser.UserName)
                 {
                     case "SuperUser":
-                        data_AspNetRoles_to_Scan = data_AspNetRoles_All;
+                        //data_AspNetRoles_to_Scan = data_AspNetRoles_All;
+                        data_AspNetRoles_to_Scan = data_AspNetRoles_All.Where(x => x.Name == "SuperUser").ToList();
                         break;
 
                     case "Admin":
-                        data_AspNetRoles_to_Scan = data_AspNetRoles_All.Where(x => roleAdmin.Contains(x.Name)).ToList();
+                        data_AspNetRoles_to_Scan = data_AspNetRoles_All.Where(x => x.Name == "Admin").ToList();
                         break;
 
                     default:
-                        data_AspNetRoles_to_Scan = data_AspNetRoles_All.Where(x => roleUser.Contains(x.Name)).ToList();
+                        data_AspNetRoles_to_Scan = data_AspNetRoles_All.Where(x => x.Name == "User").ToList();
                         break;
                 }
-                
+
 
                 foreach (var itemRole in data_AspNetRoles_to_Scan)
                 {
