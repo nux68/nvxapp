@@ -1,19 +1,19 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 
-import { DomainAdminPageComponent } from './domain-admin-page.component';
+import { CompanyPowerAdminPageComponent } from './company-power-admin-page.component';
 
-describe('DomainAdminPageComponent', () => {
-  let component: DomainAdminPageComponent;
-  let fixture: ComponentFixture<DomainAdminPageComponent>;
+describe('DomainPowerAdminPageComponent', () => {
+  let component: CompanyPowerAdminPageComponent;
+  let fixture: ComponentFixture<CompanyPowerAdminPageComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ DomainAdminPageComponent ],
+      declarations: [ CompanyPowerAdminPageComponent ],
       imports: [IonicModule.forRoot()]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(DomainAdminPageComponent);
+    fixture = TestBed.createComponent(CompanyPowerAdminPageComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   }));

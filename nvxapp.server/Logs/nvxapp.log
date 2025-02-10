@@ -2655,3 +2655,168 @@ POSITION: 90
 2025-02-10 14:46:54.677 [INF] Call: <UserRoles>b__2_0, GUID: "813b3db1-c139-4997-8571-e90f5dfa28ae", param: {"Data":{}}
 2025-02-10 14:47:03.865 [INF] Call: <GetAll>b__3_0, GUID: "c2eefeb8-58c5-40ed-bc56-0b51b298e4ae", param: {"Data":{}}
 2025-02-10 14:47:03.881 [INF] Call: <GetAll>b__2_0, GUID: "c23526e7-8093-4504-8491-44306a994233", param: {"Data":{}}
+2025-02-10 15:23:12.526 [INF] Call: <GetAll>b__3_0, GUID: "7dd069bb-7245-40cd-8c3f-65cae0498f0a", param: {"Data":{}}
+2025-02-10 15:23:12.568 [INF] Call: <GetAll>b__2_0, GUID: "0b5b5855-6741-4ac5-ab9f-abb1b0471b2d", param: {"Data":{}}
+2025-02-10 15:23:13.394 [INF] Call: <GetAll>b__3_0, GUID: "df53ae9b-e15a-40ba-8cf2-71e46f29067b", param: {"Data":{}}
+2025-02-10 15:23:13.409 [INF] Call: <GetAll>b__2_0, GUID: "ad693f39-015b-43fe-a54d-539d3f932ff9", param: {"Data":{}}
+2025-02-10 15:23:14.559 [INF] Call: <GetAll>b__3_0, GUID: "6a97e4d1-2bed-4cc3-acb6-89a374aa8be9", param: {"Data":{}}
+2025-02-10 15:23:14.559 [INF] Call: <GetAll>b__3_0, GUID: "bcb3310b-023d-4423-9b9c-9f1c99ad0d6b", param: {"Data":{}}
+2025-02-10 15:23:14.559 [INF] Call: <GetAll>b__3_0, GUID: "42b4f134-91c6-4c2d-914b-6b90ebbe7dc3", param: {"Data":{}}
+2025-02-10 15:23:14.607 [INF] Call: <GetAll>b__2_0, GUID: "8094f0eb-bb20-4918-be43-22a4d7cbdfb7", param: {"Data":{}}
+2025-02-10 15:23:14.607 [INF] Call: <GetAll>b__2_0, GUID: "021e2f22-775e-4477-a2b7-0f8df7ba4eef", param: {"Data":{}}
+2025-02-10 15:23:14.735 [INF] Call: <GetAll>b__2_0, GUID: "3d44dfa3-3ba5-47bf-8080-c0e6bf78e134", param: {"Data":{}}
+2025-02-10 15:23:20.563 [ERR] END Call(ExecuteAction ERR): <GetAll>b__2_0, GUID: "ad693f39-015b-43fe-a54d-539d3f932ff9", result: MyTableService - 42P01: la relazione "public.MyTable" non esiste
+
+POSITION: 90
+Npgsql.PostgresException (0x80004005): 42P01: la relazione "public.MyTable" non esiste
+
+POSITION: 90
+   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at nvxapp.server.data.Infrastructure.Repository`2.FindAll() in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.data\Infrastructure\Repository.cs:line 206
+   at nvxapp.server.service.Service.MyTableService.MyTableService.<GetAll>b__2_0() in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\ClientServer-Service\MyTableService\MyTableService.cs:line 46
+   at nvxapp.server.service.Infrastructure.ServiceBase.ExecuteAction[T,P1](P1 p1, Func`1 function, Boolean isSubProcess) in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\Infrastructure\ServiceBase.cs:line 65
+  Exception data:
+    Severity: ERRORE
+    SqlState: 42P01
+    MessageText: la relazione "public.MyTable" non esiste
+    Position: 90
+    File: parse_relation.c
+    Line: 1363
+    Routine: parserOpenTable
+2025-02-10 15:23:20.563 [ERR] END Call(ExecuteAction ERR): <GetAll>b__2_0, GUID: "0b5b5855-6741-4ac5-ab9f-abb1b0471b2d", result: MyTableService - 42P01: la relazione "public.MyTable" non esiste
+
+POSITION: 90
+Npgsql.PostgresException (0x80004005): 42P01: la relazione "public.MyTable" non esiste
+
+POSITION: 90
+   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at nvxapp.server.data.Infrastructure.Repository`2.FindAll() in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.data\Infrastructure\Repository.cs:line 206
+   at nvxapp.server.service.Service.MyTableService.MyTableService.<GetAll>b__2_0() in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\ClientServer-Service\MyTableService\MyTableService.cs:line 46
+   at nvxapp.server.service.Infrastructure.ServiceBase.ExecuteAction[T,P1](P1 p1, Func`1 function, Boolean isSubProcess) in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\Infrastructure\ServiceBase.cs:line 65
+  Exception data:
+    Severity: ERRORE
+    SqlState: 42P01
+    MessageText: la relazione "public.MyTable" non esiste
+    Position: 90
+    File: parse_relation.c
+    Line: 1363
+    Routine: parserOpenTable
+2025-02-10 15:23:21.084 [ERR] END Call(ExecuteAction ERR): <GetAll>b__2_0, GUID: "3d44dfa3-3ba5-47bf-8080-c0e6bf78e134", result: MyTableService - 42P01: la relazione "public.MyTable" non esiste
+
+POSITION: 90
+Npgsql.PostgresException (0x80004005): 42P01: la relazione "public.MyTable" non esiste
+
+POSITION: 90
+   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at nvxapp.server.data.Infrastructure.Repository`2.FindAll() in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.data\Infrastructure\Repository.cs:line 206
+   at nvxapp.server.service.Service.MyTableService.MyTableService.<GetAll>b__2_0() in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\ClientServer-Service\MyTableService\MyTableService.cs:line 46
+   at nvxapp.server.service.Infrastructure.ServiceBase.ExecuteAction[T,P1](P1 p1, Func`1 function, Boolean isSubProcess) in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\Infrastructure\ServiceBase.cs:line 65
+  Exception data:
+    Severity: ERRORE
+    SqlState: 42P01
+    MessageText: la relazione "public.MyTable" non esiste
+    Position: 90
+    File: parse_relation.c
+    Line: 1363
+    Routine: parserOpenTable
+2025-02-10 15:23:21.781 [ERR] END Call(ExecuteAction ERR): <GetAll>b__2_0, GUID: "021e2f22-775e-4477-a2b7-0f8df7ba4eef", result: MyTableService - 42P01: la relazione "public.MyTable" non esiste
+
+POSITION: 90
+Npgsql.PostgresException (0x80004005): 42P01: la relazione "public.MyTable" non esiste
+
+POSITION: 90
+   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at nvxapp.server.data.Infrastructure.Repository`2.FindAll() in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.data\Infrastructure\Repository.cs:line 206
+   at nvxapp.server.service.Service.MyTableService.MyTableService.<GetAll>b__2_0() in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\ClientServer-Service\MyTableService\MyTableService.cs:line 46
+   at nvxapp.server.service.Infrastructure.ServiceBase.ExecuteAction[T,P1](P1 p1, Func`1 function, Boolean isSubProcess) in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\Infrastructure\ServiceBase.cs:line 65
+  Exception data:
+    Severity: ERRORE
+    SqlState: 42P01
+    MessageText: la relazione "public.MyTable" non esiste
+    Position: 90
+    File: parse_relation.c
+    Line: 1363
+    Routine: parserOpenTable
+2025-02-10 15:23:20.563 [ERR] END Call(ExecuteAction ERR): <GetAll>b__2_0, GUID: "8094f0eb-bb20-4918-be43-22a4d7cbdfb7", result: MyTableService - 42P01: la relazione "public.MyTable" non esiste
+
+POSITION: 90
+Npgsql.PostgresException (0x80004005): 42P01: la relazione "public.MyTable" non esiste
+
+POSITION: 90
+   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at nvxapp.server.data.Infrastructure.Repository`2.FindAll() in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.data\Infrastructure\Repository.cs:line 206
+   at nvxapp.server.service.Service.MyTableService.MyTableService.<GetAll>b__2_0() in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\ClientServer-Service\MyTableService\MyTableService.cs:line 46
+   at nvxapp.server.service.Infrastructure.ServiceBase.ExecuteAction[T,P1](P1 p1, Func`1 function, Boolean isSubProcess) in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\Infrastructure\ServiceBase.cs:line 65
+  Exception data:
+    Severity: ERRORE
+    SqlState: 42P01
+    MessageText: la relazione "public.MyTable" non esiste
+    Position: 90
+    File: parse_relation.c
+    Line: 1363
+    Routine: parserOpenTable

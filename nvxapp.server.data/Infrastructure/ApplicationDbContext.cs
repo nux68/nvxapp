@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Migrations.Operations;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure.Internal;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Migrations;
 using nvxapp.server.data.Entities;
@@ -22,10 +23,10 @@ using static nvxapp.server.data.Infrastructure.ApplicationDbContext;
 
 namespace nvxapp.server.data.Infrastructure
 {
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole,string>
     {
 
-        public DbSet<MyTable> MyTables { get; set; }
+        //public DbSet<MyTable> MyTables { get; set; }
         
         public string _schema { get; set; } = "public";
 
@@ -64,7 +65,8 @@ namespace nvxapp.server.data.Infrastructure
 
             // Configura lo schema per le tabelle di identità
             modelBuilder.Entity<ApplicationUser>(entity => { entity.ToTable("AspNetUsers", _schema); });
-            modelBuilder.Entity<IdentityRole>(entity => { entity.ToTable("AspNetRoles", _schema); });
+            modelBuilder.Entity<ApplicationRole>(entity => { entity.ToTable("AspNetRoles", _schema); });
+
             modelBuilder.Entity<IdentityUserRole<string>>(entity => { entity.ToTable("AspNetUserRoles", _schema); });
             modelBuilder.Entity<IdentityUserClaim<string>>(entity => { entity.ToTable("AspNetUserClaims", _schema); });
             modelBuilder.Entity<IdentityUserLogin<string>>(entity => { entity.ToTable("AspNetUserLogins", _schema); });
@@ -81,12 +83,14 @@ namespace nvxapp.server.data.Infrastructure
             //})/*.HasIndex(e => e.Descrizione).IsUnique()*/;
 
 
-            // Imposta lo schema per le altre tabelle
-            modelBuilder.Entity<MyTable>().ToTable("MyTable", _schema);
+            //// Imposta lo schema per le altre tabelle
+            //modelBuilder.Entity<MyTable>().ToTable("MyTable", _schema);
 
-            #region SET INDEX
-            modelBuilder.Entity<MyTable>().HasIndex(e => e.Descrizione).IsUnique();
-            #endregion
+            //#region SET INDEX
+            //modelBuilder.Entity<MyTable>().HasIndex(e => e.Descrizione).IsUnique();
+            //#endregion
+
+            
 
         }
 

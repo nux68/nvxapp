@@ -3,8 +3,8 @@ import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 import { RoleGuard4SuperUser } from '../nvx/pages/RoleGuard/role-guard-4super-user';
 import { RoleGuard4PowerAdmin } from '../nvx/pages/RoleGuard/role-guard-4power-admin';
 import { RoleGuard4Admin } from '../nvx/pages/RoleGuard/role-guard-4-admin';
-import { RoleGuard4DomainPowerAdmin } from '../nvx/pages/RoleGuard/role-guard-4-domain-power-admin';
-import { RoleGuard4DomainAdmin } from '../nvx/pages/RoleGuard/role-guard-4-domain-admin';
+import { RoleGuard4CompanyPowerAdmin } from '../nvx/pages/RoleGuard/role-guard-4-company-power-admin';
+import { RoleGuard4CompanyAdmin } from '../nvx/pages/RoleGuard/role-guard-4-company-admin';
 
 const routes: Routes = [
   //{
@@ -21,8 +21,8 @@ const routes: Routes = [
   { path: 'poweradmin', loadChildren: () => import('../nvx/pages/power-admin-page/power-admin-page.module').then(m => m.PowerAdminPageModule), canActivate: [RoleGuard4PowerAdmin] },
   { path: 'admin', loadChildren: () => import('../nvx/pages/admin-page/admin-page.module').then(m => m.AdminPageModule), canActivate: [RoleGuard4Admin] },
 
-  { path: 'domainpoweradmin', loadChildren: () => import('../nvx/pages/domain-power-admin-page/domain-power-admin-page.module').then(m => m.DomainPowerAdminPageModule), canActivate: [RoleGuard4DomainPowerAdmin] },
-  { path: 'domainadmin', loadChildren: () => import('../nvx/pages/domain-admin-page/domain-admin-page.module').then(m => m.DomainAdminPageModule), canActivate: [RoleGuard4DomainAdmin] },
+  { path: 'companypoweradmin', loadChildren: () => import('../nvx/pages/company-power-admin-page/company-power-admin-page.module').then(m => m.CompanyPowerAdminPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
+  { path: 'companyadmin', loadChildren: () => import('../nvx/pages/company-admin-page/company-admin-page.module').then(m => m.CompanyAdminPageModule), canActivate: [RoleGuard4CompanyAdmin] },
 
 
   {

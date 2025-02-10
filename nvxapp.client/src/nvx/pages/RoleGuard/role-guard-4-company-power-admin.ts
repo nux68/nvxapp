@@ -6,7 +6,7 @@ import { AuthService } from '../../Utility/auth.service';
 @Injectable({
   providedIn: 'root',
 })
-export class RoleGuard4DomainPowerAdmin implements CanActivate {
+export class RoleGuard4CompanyPowerAdmin implements CanActivate {
   constructor(public authService: AuthService,
               private router: Router) { }
 

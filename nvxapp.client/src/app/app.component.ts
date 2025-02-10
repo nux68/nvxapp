@@ -26,10 +26,10 @@ export class AppComponent {
 
   ];
 
-  public appPages4DomainAdmin = [
+  public appPages4CompanyAdmin = [
 
-    { title: 'DomainPowerAdmin', url: '/domainpoweradmin', icon: 'ellipse' },
-    { title: 'DomainAdmin', url: '/domainadmin', icon: 'ellipse' },
+    { title: 'CompanyPowerAdmin', url: '/companypoweradmin', icon: 'ellipse' },
+    { title: 'CompanyAdmin', url: '/companyadmin', icon: 'ellipse' },
 
   ];
 

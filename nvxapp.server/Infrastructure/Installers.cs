@@ -66,7 +66,7 @@ namespace nvxapp.server.Infrastructure
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequiredUniqueChars = 0;
             })
-            .AddRoles<IdentityRole>()
+            .AddRoles<IdentityRole<string>>()
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
 

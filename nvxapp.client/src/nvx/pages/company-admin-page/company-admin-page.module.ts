@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
-import { DomainPowerAdminPageComponent } from './domain-power-admin-page.component';
+import { CompanyAdminPageComponent } from './company-admin-page.component';
 
 
 
@@ -15,12 +15,10 @@ import { DomainPowerAdminPageComponent } from './domain-power-admin-page.compone
     RouterModule.forChild([
       {
         path: '',
-        component: DomainPowerAdminPageComponent
+        component: CompanyAdminPageComponent
       }
     ])
   ],
-  declarations: [DomainPowerAdminPageComponent]
+  declarations: [CompanyAdminPageComponent]
 })
-export class DomainPowerAdminPageModule { }
-
-
+export class CompanyAdminPageModule { }

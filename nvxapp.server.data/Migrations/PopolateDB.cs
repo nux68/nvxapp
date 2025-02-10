@@ -23,6 +23,7 @@ namespace nvxapp.server.data.Migrations
         {
             public string Id { get; set; } = string.Empty;
             public string Name { get; set; } = string.Empty;
+            public int Code { get; set; } = 0;
         }
 
         class Data_AspNetUsers
@@ -43,9 +44,15 @@ namespace nvxapp.server.data.Migrations
 
             //user
             List<Data_AspNetUsers> data_AspNetUsers = new List<Data_AspNetUsers>();
-            data_AspNetUsers.Add(new Data_AspNetUsers() { Id = Guid.NewGuid().ToString(), UserName = "NVX", Email = "nello68@hotmail.com" });
-            data_AspNetUsers.Add(new Data_AspNetUsers() { Id = Guid.NewGuid().ToString(), UserName = "NVX2", Email = "nello68@hotmail.com" });
-            data_AspNetUsers.Add(new Data_AspNetUsers() { Id = Guid.NewGuid().ToString(), UserName = "NVX3", Email = "nello68@hotmail.com" });
+            data_AspNetUsers.Add(new Data_AspNetUsers() { Id = Guid.NewGuid().ToString(), UserName = "SuperUser",  Email = "nello68@hotmail.com" });
+            data_AspNetUsers.Add(new Data_AspNetUsers() { Id = Guid.NewGuid().ToString(), UserName = "PowerAdmin", Email = "nello68@hotmail.com" });
+            data_AspNetUsers.Add(new Data_AspNetUsers() { Id = Guid.NewGuid().ToString(), UserName = "Admin", Email = "nello68@hotmail.com" });
+
+            data_AspNetUsers.Add(new Data_AspNetUsers() { Id = Guid.NewGuid().ToString(), UserName = "DealerPowerAdmin", Email = "nello68@hotmail.com" });
+            data_AspNetUsers.Add(new Data_AspNetUsers() { Id = Guid.NewGuid().ToString(), UserName = "DealerAdmin", Email = "nello68@hotmail.com" });
+
+            data_AspNetUsers.Add(new Data_AspNetUsers() { Id = Guid.NewGuid().ToString(), UserName = "CompanyPowerAdmin", Email = "nello68@hotmail.com" });
+            data_AspNetUsers.Add(new Data_AspNetUsers() { Id = Guid.NewGuid().ToString(), UserName = "CompanyAdmin", Email = "nello68@hotmail.com" });
 
 
             List<string> roleUser = new List<string>();
@@ -127,11 +134,11 @@ namespace nvxapp.server.data.Migrations
 
                 switch (itemUser.UserName)
                 {
-                    case "NVX":
+                    case "SuperUser":
                         data_AspNetRoles_to_Scan = data_AspNetRoles_All;
                         break;
 
-                    case "NVX3":
+                    case "Admin":
                         data_AspNetRoles_to_Scan = data_AspNetRoles_All.Where(x => roleAdmin.Contains(x.Name)).ToList();
                         break;
 

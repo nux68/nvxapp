@@ -11,9 +11,9 @@ namespace nvxapp.server.data.Infrastructure
     {
 
 
-        public SchemaAwareMigrationSqlGenerator(MigrationsSqlGeneratorDependencies dependencies,
+        public SchemaAwareMigrationSqlGenerator(MigrationsSqlGeneratorDependencies dependencies ,
                                                 INpgsqlSingletonOptions npgsqlSingletonOptions)
-                                                : base(dependencies, npgsqlSingletonOptions)
+                                                : base(dependencies , npgsqlSingletonOptions)
         {
         }
 
