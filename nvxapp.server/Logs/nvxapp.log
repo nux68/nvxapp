@@ -2647,3 +2647,11 @@ POSITION: 90
     File: parse_relation.c
     Line: 1363
     Routine: parserOpenTable
+2025-02-07 17:39:09.299 [INF] Call: <Login>b__0, GUID: "f52c40bf-f079-4f4b-8c10-126561fb5e6c", param: {"Data":{"UserName":"nvx","Password":"1234"}}
+2025-02-07 17:39:10.910 [INF] Call: <UserRoles>b__2_0, GUID: "a73465ce-f9e9-4993-8982-af76a91945a0", param: {"Data":{}}
+2025-02-07 17:39:17.601 [INF] Call: <GetAll>b__3_0, GUID: "d11b3c69-1d04-4331-95d6-65f36c4259b2", param: {"Data":{}}
+2025-02-07 17:39:17.616 [INF] Call: <GetAll>b__2_0, GUID: "2d60eae3-c278-4a15-bd80-4ab88457779c", param: {"Data":{}}
+2025-02-10 14:46:52.111 [INF] Call: <Login>b__0, GUID: "007e109f-87c8-4aae-926c-9b7e8d870de4", param: {"Data":{"UserName":"nvx","Password":"1234"}}
+2025-02-10 14:46:54.677 [INF] Call: <UserRoles>b__2_0, GUID: "813b3db1-c139-4997-8571-e90f5dfa28ae", param: {"Data":{}}
+2025-02-10 14:47:03.865 [INF] Call: <GetAll>b__3_0, GUID: "c2eefeb8-58c5-40ed-bc56-0b51b298e4ae", param: {"Data":{}}
+2025-02-10 14:47:03.881 [INF] Call: <GetAll>b__2_0, GUID: "c23526e7-8093-4504-8491-44306a994233", param: {"Data":{}}

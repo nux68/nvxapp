@@ -1,16 +1,5 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Design;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Microsoft.EntityFrameworkCore.Migrations;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.IdentityModel.Tokens;
-using nvxapp.server.data.Entities;
-using nvxapp.server.data.Infrastructure;
 using nvxapp.server.Infrastructure;
-using System.Diagnostics;
-using System.Text;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -62,32 +51,32 @@ var app = builder.Build();
 ////}
 
 
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
+//using (var scope = app.Services.CreateScope())
+//{
+//    var services = scope.ServiceProvider;
 
-    var factory = services.GetRequiredService<IApplicationDbContextFactory>();
+//    var factory = services.GetRequiredService<IApplicationDbContextFactory>();
 
-    // Lista degli schemi dei tenant (puoi sostituirla con una query al DB)
-    string[] schemiClienti = { "SCHEMA_A" };
+//    // Lista degli schemi dei tenant (puoi sostituirla con una query al DB)
+//    string[] schemiClienti = { "SCHEMA_A" };
 
-    // Esegui la migrazione sullo schema di default (public)
-    using (var context = factory.CreateDbContext("public"))
-    {
-        context.Database.Migrate();
-    }
+//    // Esegui la migrazione sullo schema di default (public)
+//    using (var context = factory.CreateDbContext("public"))
+//    {
+//        context.Database.Migrate();
+//    }
 
-    // Esegui la migrazione per ogni schema tenant
-    foreach (var schema in schemiClienti)
-    {
-        using (var context = factory.CreateDbContext(schema.ToLower()))
-        {
-            //context.Database.ExecuteSqlRaw($"CREATE SCHEMA IF NOT EXISTS \"{schema.ToLower()}\";");
-            ////EnsureSchemaExists(context, schema); // Assicura che lo schema esista
-            context.Database.Migrate();
-        }
-    }
-}
+//    // Esegui la migrazione per ogni schema tenant
+//    foreach (var schema in schemiClienti)
+//    {
+//        using (var context = factory.CreateDbContext(schema.ToLower()))
+//        {
+//            //context.Database.ExecuteSqlRaw($"CREATE SCHEMA IF NOT EXISTS \"{schema.ToLower()}\";");
+//            ////EnsureSchemaExists(context, schema); // Assicura che lo schema esista
+//            context.Database.Migrate();
+//        }
+//    }
+//}
 
 
 

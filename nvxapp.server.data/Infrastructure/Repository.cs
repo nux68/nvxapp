@@ -1,17 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using nvxapp.server.data.Extensions;
 using nvxapp.server.data.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using Serilog;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using Serilog;
-using Microsoft.AspNetCore.Http;
-using System.Security.Claims;
 
 namespace nvxapp.server.data.Infrastructure
 {
@@ -28,7 +22,7 @@ namespace nvxapp.server.data.Infrastructure
             set { _currentUser = value; }
         }
 
-        public Repository(TDbContext context, 
+        public Repository(TDbContext context,
                           IServiceProvider serviceProvider,
                           IHttpContextAccessor httpContextAccessor)
         {
@@ -37,17 +31,17 @@ namespace nvxapp.server.data.Infrastructure
             _httpContextAccessor = httpContextAccessor;
         }
 
-        protected string? CurrentTenat
+        protected string CurrentTenat
         {
             get
             {
                 if (_httpContextAccessor.HttpContext != null)
                 {
                     var tenant = _httpContextAccessor.HttpContext?.User?.FindFirst("tenant")?.Value;
-                    return tenant;
+                    return tenant ?? "public";
                 }
 
-                return null;
+                return "public";
             }
         }
 
@@ -127,7 +121,7 @@ namespace nvxapp.server.data.Infrastructure
                 else
                     Log.Error(ex.Message, entity);
 
-                throw ;
+                throw;
             }
 
 
@@ -148,7 +142,7 @@ namespace nvxapp.server.data.Infrastructure
             {
                 prop = entity.GetType().GetProperty("id");
                 if (prop != null)
-                    id = (string)(prop.GetValue(entity)??"");
+                    id = (string)(prop.GetValue(entity) ?? "");
                 else
                 {
                     prop = entity.GetType().GetProperty("ID");
@@ -267,7 +261,7 @@ namespace nvxapp.server.data.Infrastructure
                 else
                     Log.Error(ex.Message, entity);
 
-                throw ;
+                throw;
             }
 
 
@@ -290,7 +284,7 @@ namespace nvxapp.server.data.Infrastructure
                 else
                     Log.Error(ex.Message);
 
-                throw ;
+                throw;
             }
 
 
