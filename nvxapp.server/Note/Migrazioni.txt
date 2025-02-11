@@ -4,6 +4,8 @@ Package manage console  (root soluzione)
 crea
 dotnet ef migrations add InitDB  -v --context nvxapp.server.data.Infrastructure.ApplicationDbContext --project nvxapp.server.data --startup-project nvxapp.server\nvxapp.server.csproj
 dotnet ef migrations add MyTable  -v --context nvxapp.server.data.Infrastructure.ApplicationDbContext --project nvxapp.server.data --startup-project nvxapp.server\nvxapp.server.csproj
+dotnet ef migrations add DealerAndCompany_Init  -v --context nvxapp.server.data.Infrastructure.ApplicationDbContext --project nvxapp.server.data --startup-project nvxapp.server\nvxapp.server.csproj
+
 
 aggiorna db
 dotnet ef database update --project nvxapp.server.data --startup-project nvxapp.server
@@ -11,6 +13,7 @@ dotnet ef database update --project nvxapp.server.data --startup-project nvxapp.
 aggiorna db alla migrazione specificata
 dotnet ef database update InitDB --project nvxapp.server.data --startup-project nvxapp.server
 dotnet ef database update MyTable --project nvxapp.server.data --startup-project nvxapp.server
+dotnet ef database update DealerAndCompany_Init --project nvxapp.server.data --startup-project nvxapp.server
 
 cancella
 dotnet ef migrations remove --project nvxapp.server.data --startup-project nvxapp.server

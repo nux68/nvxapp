@@ -14,6 +14,10 @@ namespace nvxapp.server.data.Entities.Public
         public DateTime? CreationDate { get; set; }
         [MaxLength(256)]
         public string? ChangeUser { get; set; }
+
+        public ICollection<UserDealer>? UserDealer { get; set; }
+        public ICollection<UserCompany>? UserCompany { get; set; }
+
     }
 
 
