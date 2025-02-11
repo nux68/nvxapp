@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using nvxapp.server.data.Entities.Public;
@@ -27,11 +28,12 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                               UserManager<ApplicationUser> userManager,
                               IAspNetUsersRepository aspNetUsersRepository,
                               IOptions<JwtParameter> jwtParameter,
+                              IHttpContextAccessor httpContextAccessor,
 
                               IAspNetUserRolesRepository aspNetUserRolesRepository,
                               IAspNetRolesRepository aspNetRolesRepository,
                               SignInManager<ApplicationUser> signInManager
-                              ) : base(mapper, userManager, aspNetUsersRepository, jwtParameter)
+                              ) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, httpContextAccessor)
         {
             _signInManager = signInManager;
             _aspNetUserRolesRepository = aspNetUserRolesRepository;
@@ -95,8 +97,12 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                         }
                         else
                         {
-                            //retVal.Token = GenerateJwtToken(applicationUser);
-                            retVal.Token = UtilToken.GenerateJwtToken(applicationUser, _jwtParameter.Key, _jwtParameter.Issuer, _jwtParameter.Audience, _jwtParameter.ExpireMinutes);
+                            retVal.Token = UtilToken.GenerateJwtToken(applicationUser, 
+                                                                      _jwtParameter.Key,
+                                                                      _jwtParameter.Issuer, 
+                                                                      _jwtParameter.Audience, 
+                                                                      _jwtParameter.ExpireMinutes,
+                                                                      "schema_a");
                         }
                     }
                     else

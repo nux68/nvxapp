@@ -14,7 +14,12 @@ namespace nvxapp.server.service.Helpers
 {
     public static class UtilToken
     {
-        public static string? GenerateJwtToken(ApplicationUser user, string Key ,string Issuer,string Audience,int ExpireMinutes)
+        public static string? GenerateJwtToken(ApplicationUser user, 
+                                               string Key ,
+                                               string Issuer,
+                                               string Audience,
+                                               int ExpireMinutes,
+                                               string CurrentTenat)
         {
             string? retVal = null;
 
@@ -27,7 +32,7 @@ namespace nvxapp.server.service.Helpers
                 //new Claim(JwtRegisteredClaimNames.Name, user.UserName),
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim("tenant", "schema_a")
+                new Claim("tenant", CurrentTenat)
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Key));

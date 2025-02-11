@@ -77,13 +77,15 @@ namespace nvxapp.server.Infrastructure
 
             //4 SCHEMA
             builder.Services.AddScoped<IApplicationDbContextFactory, ApplicationDbContextFactory>();
-            ////4 SCHEMA DISABLED
-            //builder.Services.AddScoped<IMigrationsSqlGenerator, SchemaAwareMigrationSqlGenerator>();
             builder.Services.AddEntityFrameworkNpgsql();
             //builder.Services.AddMvc();
             //builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            ////4 SCHEMA DISABLED
+            //builder.Services.AddScoped<IMigrationsSqlGenerator, SchemaAwareMigrationSqlGenerator>();
 
-            
+
+
+
 
 
 

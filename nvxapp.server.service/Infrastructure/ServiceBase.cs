@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -20,6 +21,7 @@ namespace nvxapp.server.service.Infrastructure
         protected readonly UserManager<ApplicationUser> _userManager;
         protected readonly IAspNetUsersRepository _aspNetUsersRepository;
         protected readonly JwtParameter _jwtParameter;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
 #if DEBUG
         public const int DelayAsyncMethod = 1000;
@@ -39,13 +41,15 @@ namespace nvxapp.server.service.Infrastructure
                           IMapper mapper,
                           UserManager<ApplicationUser> userManager,
                           IAspNetUsersRepository aspNetUsersRepository,
-                          IOptions<JwtParameter> jwtParameter
+                          IOptions<JwtParameter> jwtParameter,
+                          IHttpContextAccessor httpContextAccessor
                           )
         {
             _mapper = mapper;
             _userManager = userManager;
             _aspNetUsersRepository = aspNetUsersRepository;
             _jwtParameter = jwtParameter.Value;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         protected async Task<GenericResult<T>> ExecuteAction<T, P1>(P1? p1, Func<Task<T>> function, Boolean isSubProcess = false)
@@ -125,12 +129,15 @@ namespace nvxapp.server.service.Infrastructure
         {
             string? token = null;
 
-            if( !string.IsNullOrEmpty( CurrentUserId))
+            
+
+            if ( !string.IsNullOrEmpty( CurrentUserId))
             {
                 var applicationUser = await _userManager.FindByIdAsync(this.CurrentUserId);
                 if(applicationUser!=null)
                 {
-                    token = UtilToken.GenerateJwtToken(applicationUser, _jwtParameter.Key, _jwtParameter.Issuer, _jwtParameter.Audience, _jwtParameter.ExpireMinutes);
+                    var currten = this.CurrentTenat;
+                    token = UtilToken.GenerateJwtToken(applicationUser, _jwtParameter.Key, _jwtParameter.Issuer, _jwtParameter.Audience, _jwtParameter.ExpireMinutes, currten);
                 }
             }
 
@@ -199,7 +206,19 @@ namespace nvxapp.server.service.Infrastructure
             }
         }
 
+        protected string CurrentTenat
+        {
+            get
+            {
+                if (_httpContextAccessor.HttpContext != null)
+                {
+                    var tenant = _httpContextAccessor.HttpContext?.User?.FindFirst("tenant")?.Value;
+                    return tenant ?? "";
+                }
 
+                return "";
+            }
+        }
 
     }
 
