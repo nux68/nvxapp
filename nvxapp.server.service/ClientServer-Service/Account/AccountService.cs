@@ -56,10 +56,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                         var roles = await _userManager.GetRolesAsync(applicationUser);
                         if (roles != null && roles.Any())
                         {
-                            // Filtra i ruoli null
-                            var nonNullRoles = roles.Where(role => role != null).ToList();
-
-                            var aspNetRoles = _aspNetRolesRepository.GetAll().Where(x => nonNullRoles.Contains(x.Name)).ToList();
+                            var aspNetRoles = _aspNetRolesRepository.GetAll().Where(x => x.Name!= null && roles.Contains(x.Name)).ToList();
 
                             retVal.Roles = _mapper.Map<List<AspNetRolesModel>>(aspNetRoles);
                         }

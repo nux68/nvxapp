@@ -52,7 +52,7 @@ namespace nvxapp.server.data.Extensions
         /// <param name="value">String value</param>
         /// <param name="length">Max number of charaters to return</param>
         /// <returns>Returns string from right</returns>
-        public static string Right(this string value, int length)
+        public static string? Right(this string value, int length)
         {
             return value != null && value.Length > length ? value.Substring(value.Length - length) : value;
         }
@@ -63,7 +63,7 @@ namespace nvxapp.server.data.Extensions
         /// <param name="value">String value</param>
         /// <param name="length">Max number of charaters to return</param>
         /// <returns>Returns string from left</returns>
-        public static string Left(this string value, int length)
+        public static string? Left(this string value, int length)
         {
             return value != null && value.Length > length ? value.Substring(0, length) : value;
         }
@@ -96,7 +96,7 @@ namespace nvxapp.server.data.Extensions
         /// <param name="value"></param>
         /// <param name="numChar"></param>
         /// <returns></returns>
-        public static string LastChars(this string value, int numChar)
+        public static string? LastChars(this string value, int numChar)
         {
             return value == null || numChar >= value.Length ? value : value.Substring(value.Length - numChar);
         }

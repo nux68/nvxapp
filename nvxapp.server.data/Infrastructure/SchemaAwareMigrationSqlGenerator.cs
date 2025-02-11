@@ -18,7 +18,7 @@ namespace nvxapp.server.data.Infrastructure
         }
 
         protected override void Generate(CreateTableOperation operation,
-                                         IModel model,
+                                         IModel? model,
                                          MigrationCommandListBuilder builder,
                                          bool terminate = true)
         {
