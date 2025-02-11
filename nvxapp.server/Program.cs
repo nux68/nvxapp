@@ -53,32 +53,32 @@ var app = builder.Build();
 //}
 
 
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
+//using (var scope = app.Services.CreateScope())
+//{
+//    var services = scope.ServiceProvider;
 
-    var factory = services.GetRequiredService<IApplicationDbContextFactory>();
+//    var factory = services.GetRequiredService<IApplicationDbContextFactory>();
 
-    // Lista degli schemi dei tenant (puoi sostituirla con una query al DB)
-    string[] schemiClienti = { "SCHEMA_A" };
+//    // Lista degli schemi dei tenant (puoi sostituirla con una query al DB)
+//    string[] schemiClienti = { "SCHEMA_A" };
 
-    // Esegui la migrazione sullo schema di default (public)
-    using (var context = factory.CreateDbContext("public"))
-    {
-        context.Database.Migrate();
-    }
+//    // Esegui la migrazione sullo schema di default (public)
+//    using (var context = factory.CreateDbContext("public"))
+//    {
+//        context.Database.Migrate();
+//    }
 
-    // Esegui la migrazione per ogni schema tenant
-    foreach (var schema in schemiClienti)
-    {
-        using (var context = factory.CreateDbContext(schema.ToLower()))
-        {
-            //context.Database.ExecuteSqlRaw($"CREATE SCHEMA IF NOT EXISTS \"{schema.ToLower()}\";");
-            ////EnsureSchemaExists(context, schema); // Assicura che lo schema esista
-            context.Database.Migrate();
-        }
-    }
-}
+//    // Esegui la migrazione per ogni schema tenant
+//    foreach (var schema in schemiClienti)
+//    {
+//        using (var context = factory.CreateDbContext(schema.ToLower()))
+//        {
+//            //context.Database.ExecuteSqlRaw($"CREATE SCHEMA IF NOT EXISTS \"{schema.ToLower()}\";");
+//            ////EnsureSchemaExists(context, schema); // Assicura che lo schema esista
+//            context.Database.Migrate();
+//        }
+//    }
+//}
 
 
 

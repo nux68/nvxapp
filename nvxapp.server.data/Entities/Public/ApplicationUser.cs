@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace nvxapp.server.data.Entities
+namespace nvxapp.server.data.Entities.Public
 {
     public class ApplicationUser : IdentityUser<string>, IDataChangeStatEntity
     {

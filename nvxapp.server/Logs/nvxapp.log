@@ -2863,3 +2863,65 @@ System.InvalidOperationException: Cannot create a DbSet for 'IdentityRole<string
    at nvxapp.server.service.ClientServer_Service.Account.AccountService.<UserRoles>b__2_0() in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\ClientServer-Service\Account\AccountService.cs:line 54
    at nvxapp.server.service.Infrastructure.ServiceBase.ExecuteAction[T,P1](P1 p1, Func`1 function, Boolean isSubProcess) in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\Infrastructure\ServiceBase.cs:line 65
 2025-02-10 18:15:58.559 [ERR] AccountService - Cannot create a DbSet for 'IdentityRole<string>' because this type is not included in the model for the context.
+2025-02-11 09:50:11.997 [INF] Call: <Login>b__0, GUID: "370b5048-ee58-49df-afa7-ef41ad075d17", param: {"Data":{"UserName":"superuser","Password":"1234"}}
+2025-02-11 09:50:14.360 [INF] Call: <UserRoles>b__3_0, GUID: "e102c3f9-0fc0-4492-b55b-1c0ba3f69ac3", param: {"Data":{}}
+2025-02-11 09:50:14.605 [ERR] END Call(ExecuteAction ERR): <UserRoles>b__3_0, GUID: "e102c3f9-0fc0-4492-b55b-1c0ba3f69ac3", result: AccountService - Cannot create a DbSet for 'IdentityRole<string>' because this type is not included in the model for the context.
+System.InvalidOperationException: Cannot create a DbSet for 'IdentityRole<string>' because this type is not included in the model for the context.
+   at Microsoft.EntityFrameworkCore.Internal.InternalDbSet`1.get_EntityType()
+   at Microsoft.EntityFrameworkCore.Internal.InternalDbSet`1.CheckState()
+   at Microsoft.EntityFrameworkCore.Internal.InternalDbSet`1.get_EntityQueryable()
+   at Microsoft.EntityFrameworkCore.Internal.InternalDbSet`1.System.Linq.IQueryable.get_Expression()
+   at System.Linq.Queryable.Join[TOuter,TInner,TKey,TResult](IQueryable`1 outer, IEnumerable`1 inner, Expression`1 outerKeySelector, Expression`1 innerKeySelector, Expression`1 resultSelector)
+   at Microsoft.AspNetCore.Identity.EntityFrameworkCore.UserStore`9.GetRolesAsync(TUser user, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Identity.UserManager`1.GetRolesAsync(TUser user)
+   at nvxapp.server.service.ClientServer_Service.Account.AccountService.<UserRoles>b__3_0() in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\ClientServer-Service\Account\AccountService.cs:line 58
+   at nvxapp.server.service.Infrastructure.ServiceBase.ExecuteAction[T,P1](P1 p1, Func`1 function, Boolean isSubProcess) in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\Infrastructure\ServiceBase.cs:line 65
+2025-02-11 09:50:14.618 [ERR] AccountService - Cannot create a DbSet for 'IdentityRole<string>' because this type is not included in the model for the context.
+2025-02-11 09:50:48.329 [INF] Call: <Login>b__0, GUID: "eaaaaa54-d2c5-4c7c-831e-5ac79c140fbd", param: {"Data":{"UserName":"superuser","Password":"1234"}}
+2025-02-11 09:50:49.455 [INF] Call: <UserRoles>b__3_0, GUID: "f3fcf278-4fb0-4a11-9437-284490147da5", param: {"Data":{}}
+2025-02-11 09:50:56.286 [ERR] END Call(ExecuteAction ERR): <UserRoles>b__3_0, GUID: "f3fcf278-4fb0-4a11-9437-284490147da5", result: AccountService - Cannot create a DbSet for 'IdentityRole<string>' because this type is not included in the model for the context.
+System.InvalidOperationException: Cannot create a DbSet for 'IdentityRole<string>' because this type is not included in the model for the context.
+   at Microsoft.EntityFrameworkCore.Internal.InternalDbSet`1.get_EntityType()
+   at Microsoft.EntityFrameworkCore.Internal.InternalDbSet`1.CheckState()
+   at Microsoft.EntityFrameworkCore.Internal.InternalDbSet`1.get_EntityQueryable()
+   at Microsoft.EntityFrameworkCore.Internal.InternalDbSet`1.System.Linq.IQueryable.get_Expression()
+   at System.Linq.Queryable.Join[TOuter,TInner,TKey,TResult](IQueryable`1 outer, IEnumerable`1 inner, Expression`1 outerKeySelector, Expression`1 innerKeySelector, Expression`1 resultSelector)
+   at Microsoft.AspNetCore.Identity.EntityFrameworkCore.UserStore`9.GetRolesAsync(TUser user, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Identity.UserManager`1.GetRolesAsync(TUser user)
+   at nvxapp.server.service.ClientServer_Service.Account.AccountService.<UserRoles>b__3_0() in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\ClientServer-Service\Account\AccountService.cs:line 58
+   at nvxapp.server.service.Infrastructure.ServiceBase.ExecuteAction[T,P1](P1 p1, Func`1 function, Boolean isSubProcess) in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\Infrastructure\ServiceBase.cs:line 65
+2025-02-11 09:50:56.294 [ERR] AccountService - Cannot create a DbSet for 'IdentityRole<string>' because this type is not included in the model for the context.
+2025-02-11 09:51:46.593 [INF] Call: <Login>b__0, GUID: "163d0c53-9483-47cb-b68b-606482c4b012", param: {"Data":{"UserName":"superuser","Password":"1234"}}
+2025-02-11 09:51:47.704 [INF] Call: <UserRoles>b__3_0, GUID: "a0f22fc1-3224-46fd-857f-18f78105ab10", param: {"Data":{}}
+2025-02-11 09:52:25.209 [ERR] END Call(ExecuteAction ERR): <UserRoles>b__3_0, GUID: "a0f22fc1-3224-46fd-857f-18f78105ab10", result: AccountService - Cannot create a DbSet for 'IdentityRole<string>' because this type is not included in the model for the context.
+System.InvalidOperationException: Cannot create a DbSet for 'IdentityRole<string>' because this type is not included in the model for the context.
+   at Microsoft.EntityFrameworkCore.Internal.InternalDbSet`1.get_EntityType()
+   at Microsoft.EntityFrameworkCore.Internal.InternalDbSet`1.CheckState()
+   at Microsoft.EntityFrameworkCore.Internal.InternalDbSet`1.get_EntityQueryable()
+   at Microsoft.EntityFrameworkCore.Internal.InternalDbSet`1.System.Linq.IQueryable.get_Expression()
+   at System.Linq.Queryable.Join[TOuter,TInner,TKey,TResult](IQueryable`1 outer, IEnumerable`1 inner, Expression`1 outerKeySelector, Expression`1 innerKeySelector, Expression`1 resultSelector)
+   at Microsoft.AspNetCore.Identity.EntityFrameworkCore.UserStore`9.GetRolesAsync(TUser user, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Identity.UserManager`1.GetRolesAsync(TUser user)
+   at nvxapp.server.service.ClientServer_Service.Account.AccountService.<UserRoles>b__3_0() in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\ClientServer-Service\Account\AccountService.cs:line 58
+   at nvxapp.server.service.Infrastructure.ServiceBase.ExecuteAction[T,P1](P1 p1, Func`1 function, Boolean isSubProcess) in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\Infrastructure\ServiceBase.cs:line 65
+2025-02-11 09:52:25.216 [ERR] AccountService - Cannot create a DbSet for 'IdentityRole<string>' because this type is not included in the model for the context.
+2025-02-11 09:53:31.937 [INF] Call: <Login>b__0, GUID: "0b8ec2e4-7378-4668-b809-e95acff095ec", param: {"Data":{"UserName":"superuser","Password":"1234"}}
+2025-02-11 09:53:33.045 [INF] Call: <UserRoles>b__3_0, GUID: "8962bdfc-220f-424a-90bd-dc8050a408a3", param: {"Data":{}}
+2025-02-11 09:53:58.835 [INF] Call: <Login>b__0, GUID: "604a274f-bcd6-4664-a9ab-f29e858ea757", param: {"Data":{"UserName":"superuser","Password":"1234"}}
+2025-02-11 09:53:59.953 [INF] Call: <UserRoles>b__3_0, GUID: "daa4a7a0-0989-4133-bc5a-b354606ace8e", param: {"Data":{}}
+2025-02-11 10:01:38.046 [INF] Call: <Login>b__0, GUID: "5eceb200-9fe9-47f4-99b9-5b54d2778645", param: {"Data":{"UserName":"superuser","Password":"1234"}}
+2025-02-11 10:01:40.400 [INF] Call: <UserRoles>b__3_0, GUID: "6e76eabb-ffcd-4fd7-a990-335ce206294c", param: {"Data":{}}
+2025-02-11 10:05:43.498 [INF] Call: <Login>b__0, GUID: "f18ae90f-1b8b-4a69-b167-159f6f6843dd", param: {"Data":{"UserName":"superuser","Password":"1234"}}
+2025-02-11 10:05:45.870 [INF] Call: <UserRoles>b__3_0, GUID: "a4784102-a4c5-44f5-acde-a3f6ca0b2e9a", param: {"Data":{}}
+2025-02-11 10:08:26.938 [INF] Call: <Login>b__0, GUID: "c38727da-a7ac-493a-9f4e-84bde619cfbc", param: {"Data":{"UserName":"superuser","Password":"1234"}}
+2025-02-11 10:08:28.057 [INF] Call: <UserRoles>b__3_0, GUID: "e0d5cf84-4de4-402c-bd3f-df3242dd43f5", param: {"Data":{}}
+2025-02-11 10:22:14.482 [INF] Call: <Login>b__0, GUID: "42ccf866-44b3-4ca7-a1f2-567759e59d7c", param: {"Data":{"UserName":"superuser","Password":"1234"}}
+2025-02-11 10:22:16.909 [INF] Call: <UserRoles>b__4_0, GUID: "93501d26-48c4-49a7-aa80-05c18f4056f2", param: {"Data":{}}
+2025-02-11 10:30:24.928 [INF] Call: <Login>b__0, GUID: "f18aa4c5-e1f8-45e5-8ef7-7c44e5d3bbeb", param: {"Data":{"UserName":"superuser","Password":"1234"}}
+2025-02-11 10:30:27.278 [INF] Call: <UserRoles>b__4_0, GUID: "3c72adc0-a9fe-431d-827d-baeee1919b5e", param: {"Data":{}}
+2025-02-11 10:31:53.250 [INF] Call: <Login>b__0, GUID: "468f0cfc-7196-4116-abdc-882ead50c26d", param: {"Data":{"UserName":"superuser","Password":"1234"}}
+2025-02-11 10:31:54.366 [INF] Call: <UserRoles>b__4_0, GUID: "a026a3fe-9966-4a37-81b5-bdb6b89c8da7", param: {"Data":{}}
+2025-02-11 10:35:37.931 [INF] Call: <Login>b__0, GUID: "3a4da002-49fd-4488-9cab-23ccc5df6bb5", param: {"Data":{"UserName":"superuser","Password":"1234"}}
+2025-02-11 10:35:40.357 [INF] Call: <UserRoles>b__4_0, GUID: "7ad7e764-3e84-4427-8072-b95ebc121a2e", param: {"Data":{}}
+2025-02-11 10:41:47.753 [INF] Call: <Login>b__0, GUID: "d6c229bc-136f-49d5-baa1-e2cfce87fcbd", param: {"Data":{"UserName":"superuser","Password":"1234"}}
+2025-02-11 10:41:50.199 [INF] Call: <UserRoles>b__4_0, GUID: "ba0e5f24-a7e7-46b2-bde9-2091fc486894", param: {"Data":{}}

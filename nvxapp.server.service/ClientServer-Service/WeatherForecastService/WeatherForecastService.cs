@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
-using nvxapp.server.data.Entities;
-using nvxapp.server.data.Repositories;
+using nvxapp.server.data.Entities.Public;
+using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Infrastructure;
 using nvxapp.server.service.Interfaces;

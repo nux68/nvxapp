@@ -2,9 +2,9 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using nvxapp.server.data.Entities;
+using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Interfaces;
-using nvxapp.server.data.Repositories;
+using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Helpers;
 using nvxapp.server.service.Interfaces;

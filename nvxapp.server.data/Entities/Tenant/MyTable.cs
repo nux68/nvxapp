@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace nvxapp.server.data.Entities
+namespace nvxapp.server.data.Entities.Tenant
 {
     public class MyTable : BaseEntity
     {

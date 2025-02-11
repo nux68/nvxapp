@@ -1,5 +1,4 @@
-﻿using nvxapp.server.data.Entities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -9,6 +8,7 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using nvxapp.server.service.ServerModels;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using nvxapp.server.data.Entities.Public;
 
 namespace nvxapp.server.service.Helpers
 {

@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore.Migrations;
 using nvxapp.server.data.Entities;
+using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Infrastructure;
-using nvxapp.server.data.Repositories;
+using nvxapp.server.data.Repositories.Public;
 using System.Data;
 using static nvxapp.server.data.Entities.AspNetUsersDataUtil;
 
@@ -56,19 +57,19 @@ namespace nvxapp.server.data.Migrations
             data_AspNetUsers.Add(new Data_AspNetUsers() { Id = Guid.NewGuid().ToString(), UserName = "CompanyAdmin", Email = "nello68@hotmail.com" });
 
 
-            List<AspNetRoles_Key_Code> roleUser = new List<AspNetRoles_Key_Code>();
+            List<AspNetRolesModel> roleUser = new List<AspNetRolesModel>();
             roleUser.AddRange(AspNetUsersDataUtil.Get_AspNetRoles(AspNetUsersDataUtil.AspNetRolesGroup.User));
 
-            List<AspNetRoles_Key_Code> roleAdmin = new List<AspNetRoles_Key_Code>();
+            List<AspNetRolesModel> roleAdmin = new List<AspNetRolesModel>();
             roleAdmin.AddRange(AspNetUsersDataUtil.Get_AspNetRoles(AspNetUsersDataUtil.AspNetRolesGroup.Admin));
-            //roleAdmin.AddRange(AspNetUsersDataUtil.Get_AspNetRoles(AspNetUsersDataUtil.AspNetRolesGroup.User));
+            roleAdmin.AddRange(AspNetUsersDataUtil.Get_AspNetRoles(AspNetUsersDataUtil.AspNetRolesGroup.User));
 
-            List<AspNetRoles_Key_Code> roleAll = AspNetUsersDataUtil.Get_AspNetRoles(AspNetUsersDataUtil.AspNetRolesGroup.All);
+            List<AspNetRolesModel> roleAll = AspNetUsersDataUtil.Get_AspNetRoles(AspNetUsersDataUtil.AspNetRolesGroup.All);
 
 
             List<Data_AspNetRoles> data_AspNetRoles_All = new List<Data_AspNetRoles>();
             foreach (var item in roleAll)
-                data_AspNetRoles_All.Add(new Data_AspNetRoles() { Id = Guid.NewGuid().ToString(), Name = item.Key, Code = item.Code });
+                data_AspNetRoles_All.Add(new Data_AspNetRoles() { Id = Guid.NewGuid().ToString(), Name = item.Name, Code = item.Code });
 
 
 
@@ -140,7 +141,12 @@ namespace nvxapp.server.data.Migrations
                         break;
 
                     case "Admin":
-                        data_AspNetRoles_to_Scan = data_AspNetRoles_All.Where(x => x.Name == "Admin").ToList();
+                        //data_AspNetRoles_to_Scan = data_AspNetRoles_All.Where(x => x.Name == "Admin").ToList();
+
+                        var roleAdminKeys =  roleAdmin.Select(x=> x.Name).ToList();
+
+                        data_AspNetRoles_to_Scan = data_AspNetRoles_All.Where(x => roleAdminKeys.Contains(x.Name)  ).ToList();
+                        
                         break;
 
                     default:

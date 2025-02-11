@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using nvxapp.server.data.Entities;
+using nvxapp.server.data.Entities.Tenant;
 using nvxapp.server.service.Service.MyTableService.Models;
 using System;
 using System.Collections.Generic;

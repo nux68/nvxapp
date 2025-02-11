@@ -9,17 +9,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using nvxapp.server.data.Repositories;
 using Microsoft.AspNetCore.Identity;
 using AutoMapper;
-using nvxapp.server.data.Entities;
 using Microsoft.Extensions.Options;
 using nvxapp.server.service.ServerModels;
+using nvxapp.server.data.Entities.Public;
+using nvxapp.server.data.Repositories.Tenant;
+using nvxapp.server.data.Repositories.Public;
 
 
 namespace nvxapp.server.service.Service.MyTableService
 {
-    
+
     public class MyTableService : ServiceBase, IMyTableService
     {
         private readonly IMyTableRepository _myTableRepository;

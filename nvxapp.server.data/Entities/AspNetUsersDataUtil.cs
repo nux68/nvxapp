@@ -1,4 +1,7 @@
-﻿namespace nvxapp.server.data.Entities
+﻿
+using nvxapp.server.data.Entities.Public;
+
+namespace nvxapp.server.data.Entities
 {
     public static class AspNetUsersDataUtil
     {
@@ -14,39 +17,39 @@
             All
         }
 
-        public class AspNetRoles_Key_Code()
+        public class AspNetRolesModel()
         {
-            public string Key { get; set; }
-            public RoleCode Code { get; set; }
+            public string Name { get; set; } = string.Empty;
+            public RoleCode Code { get; set; } = RoleCode.User;
         }
 
-        public static List<AspNetRoles_Key_Code> Get_AspNetRoles(AspNetRolesGroup group)
+        public static List<AspNetRolesModel> Get_AspNetRoles(AspNetRolesGroup group)
         {
-            List<AspNetRoles_Key_Code> retVal = new List<AspNetRoles_Key_Code>();
+            List<AspNetRolesModel> retVal = new List<AspNetRolesModel>();
 
             if (group == AspNetRolesGroup.SuperUser || group == AspNetRolesGroup.All)
-                retVal.Add(new AspNetRoles_Key_Code() { Key = "SuperUser", Code = RoleCode.SuperUser });
+                retVal.Add(new AspNetRolesModel() { Name = "SuperUser", Code = RoleCode.SuperUser });
 
             if (group == AspNetRolesGroup.Admin || group == AspNetRolesGroup.All)
                 retVal.AddRange(
-                                new AspNetRoles_Key_Code() { Key = "PowerAdmin", Code = RoleCode.PowerAdmin },
-                                new AspNetRoles_Key_Code() { Key = "Admin", Code = RoleCode.Admin }
+                                new AspNetRolesModel() { Name = "PowerAdmin", Code = RoleCode.PowerAdmin },
+                                new AspNetRolesModel() { Name = "Admin", Code = RoleCode.Admin }
                                 );
 
             if (group == AspNetRolesGroup.DealerAdmin || group == AspNetRolesGroup.All)
                 retVal.AddRange(
-                                new AspNetRoles_Key_Code() { Key = "DealerPowerAdmin", Code = RoleCode.DealerPowerAdmin },
-                                new AspNetRoles_Key_Code() { Key = "DealerAdmin", Code = RoleCode.DealerAdmin }
+                                new AspNetRolesModel() { Name = "DealerPowerAdmin", Code = RoleCode.DealerPowerAdmin },
+                                new AspNetRolesModel() { Name = "DealerAdmin", Code = RoleCode.DealerAdmin }
                     );
 
             if (group == AspNetRolesGroup.CompanyAdmin || group == AspNetRolesGroup.All)
                 retVal.AddRange(
-                                new AspNetRoles_Key_Code() { Key = "CompanyPowerAdmin", Code = RoleCode.CompanyPowerAdmin },
-                                new AspNetRoles_Key_Code() { Key = "CompanyAdmin", Code = RoleCode.CompanyAdmin }
+                                new AspNetRolesModel() { Name = "CompanyPowerAdmin", Code = RoleCode.CompanyPowerAdmin },
+                                new AspNetRolesModel() { Name = "CompanyAdmin", Code = RoleCode.CompanyAdmin }
                     );
 
             if (group == AspNetRolesGroup.User || group == AspNetRolesGroup.All)
-                retVal.Add(new AspNetRoles_Key_Code() { Key = "User", Code = RoleCode.User });
+                retVal.Add(new AspNetRolesModel() { Name = "User", Code = RoleCode.User });
 
             return retVal;
         }

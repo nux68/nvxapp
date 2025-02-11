@@ -1,21 +1,15 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Identity;
-using nvxapp.server.data.Entities;
-using nvxapp.server.data.Repositories;
+using Microsoft.Extensions.Options;
+using nvxapp.server.data.Entities.Public;
+using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.service.ClientServer_Service.Account.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
+using nvxapp.server.service.Helpers;
 using nvxapp.server.service.Infrastructure;
 using nvxapp.server.service.Interfaces;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using System.Security.Claims;
-using System.Text;
-using System.IdentityModel.Tokens.Jwt;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.Extensions.Options;
 using nvxapp.server.service.ServerModels;
-using nvxapp.server.service.Helpers;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using nvxapp.server.data.Extensions;
+using static nvxapp.server.data.Entities.AspNetUsersDataUtil;
 
 
 namespace nvxapp.server.service.ClientServer_Service.Account
@@ -24,16 +18,24 @@ namespace nvxapp.server.service.ClientServer_Service.Account
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
         //private readonly JwtParameter _jwtParameter;
+        private readonly IAspNetUserRolesRepository _aspNetUserRolesRepository;
+        private readonly IAspNetRolesRepository _aspNetRolesRepository;
+
+
 
         public AccountService(IMapper mapper,
                               UserManager<ApplicationUser> userManager,
                               IAspNetUsersRepository aspNetUsersRepository,
                               IOptions<JwtParameter> jwtParameter,
-                              
+
+                              IAspNetUserRolesRepository aspNetUserRolesRepository,
+                              IAspNetRolesRepository aspNetRolesRepository,
                               SignInManager<ApplicationUser> signInManager
                               ) : base(mapper, userManager, aspNetUsersRepository, jwtParameter)
         {
             _signInManager = signInManager;
+            _aspNetUserRolesRepository = aspNetUserRolesRepository;
+            _aspNetRolesRepository = aspNetRolesRepository;
             //_jwtParameter = jwtParameter.Value;
         }
 
@@ -44,7 +46,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                 UserRolesOutModel retVal = new UserRolesOutModel();
 
 
-                if(!string.IsNullOrEmpty(this.CurrentUserId) )
+                if (!string.IsNullOrEmpty(this.CurrentUserId))
                 {
                     var applicationUser = await _userManager.FindByIdAsync(this.CurrentUserId);
 
@@ -52,10 +54,12 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                     if (applicationUser != null)
                     {
                         var roles = await _userManager.GetRolesAsync(applicationUser);
-                        retVal.Roles = roles.ToList();
+
+                        var aspNetRoles = _aspNetRolesRepository.GetAll().Where(x => roles.Contains(x.Name)).ToList();
+
+                        retVal.Roles = _mapper.Map<List<AspNetRolesModel>>(aspNetRoles);
                     }
                 }
-                
 
                 //eliminare
                 // Nessun 'await' qui
@@ -89,7 +93,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                         else
                         {
                             //retVal.Token = GenerateJwtToken(applicationUser);
-                            retVal.Token = UtilToken.GenerateJwtToken(applicationUser, _jwtParameter.Key, _jwtParameter.Issuer,  _jwtParameter.Audience, _jwtParameter.ExpireMinutes);
+                            retVal.Token = UtilToken.GenerateJwtToken(applicationUser, _jwtParameter.Key, _jwtParameter.Issuer, _jwtParameter.Audience, _jwtParameter.ExpireMinutes);
                         }
                     }
                     else
@@ -130,7 +134,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
         //    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtParameter.Key));
         //    var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            
+
 
         //    //var token = new JwtSecurityToken(_jwtParameter.Issuer, _jwtParameter.Audience, claims, expires: DateTime.UtcNow.AddHours(2), signingCredentials: creds);
         //    var token = new JwtSecurityToken(_jwtParameter.Issuer, _jwtParameter.Audience, claims, expires: DateTime.UtcNow.AddSeconds(_jwtParameter.ExpireMinutes), signingCredentials: creds);

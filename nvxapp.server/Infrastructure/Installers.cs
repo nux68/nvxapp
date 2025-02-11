@@ -6,7 +6,6 @@ using nvxapp.server.data.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using nvxapp.server.data.Interfaces;
 using Microsoft.AspNetCore.Identity;
-using nvxapp.server.data.Entities;
 using NpgsqlTypes;
 using Serilog.Core;
 using Serilog.Events;
@@ -22,6 +21,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
+using nvxapp.server.data.Entities.Public;
 
 namespace nvxapp.server.Infrastructure
 {
@@ -66,7 +66,7 @@ namespace nvxapp.server.Infrastructure
                 options.Password.RequireNonAlphanumeric = false;
                 options.Password.RequiredUniqueChars = 0;
             })
-            .AddRoles<IdentityRole<string>>()
+            .AddRoles<ApplicationRole>()
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
 

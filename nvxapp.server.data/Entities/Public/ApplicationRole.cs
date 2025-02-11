@@ -5,20 +5,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace nvxapp.server.data.Entities
+namespace nvxapp.server.data.Entities.Public
 {
     public class ApplicationRole : IdentityRole<string>
     {
 
-        public RoleCode Code { get; set; }  
+        public RoleCode Code { get; set; }
 
     }
 
     public enum RoleCode
     {
-        User =0,
+        User = 0,
 
-        CompanyAdmin =10,
+        CompanyAdmin = 10,
         CompanyPowerAdmin = 11,
 
         DealerAdmin = 100,
