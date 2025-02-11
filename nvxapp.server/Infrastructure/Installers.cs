@@ -47,14 +47,15 @@ namespace nvxapp.server.Infrastructure
         }
         public static IServiceCollection InstallEntityContex(this WebApplicationBuilder builder)
         {
+            var serviceProvider = builder.Services.AddEntityFrameworkNpgsql()
+                                                  .BuildServiceProvider();
 
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
             
                 options.UseNpgsql(
                        builder.Configuration.GetConnectionString("nvxappDbContext"),
                        npgsqlOptions => npgsqlOptions.MigrationsAssembly("nvxapp.server.data") // Specifica l'assembly per le migrazioni
-                       
-                       )
+                       ).UseInternalServiceProvider(serviceProvider)
             );
 
             builder.Services.AddIdentityCore<ApplicationUser>(options =>
