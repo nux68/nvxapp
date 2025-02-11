@@ -89,9 +89,11 @@ namespace nvxapp.server.data.Migrations
 
 
             ////user
-            var userId = Guid.NewGuid().ToString();
+            
             var hasher = new PasswordHasher<IdentityUser>();
-            var passwordHash = hasher.HashPassword(null, pw);
+            //var passwordHash = hasher.HashPassword(null, pw);
+            var tempUser = new IdentityUser(); // Istanza temporanea di IdentityUser
+            var passwordHash = hasher.HashPassword(tempUser, pw);
 
             foreach (var itemUser in data_AspNetUsers)
             {

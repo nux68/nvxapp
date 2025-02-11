@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
-namespace nvxapp.server.service.Mappers
+namespace nvxapp.server.service.Mappers.Tenant
 {
     public class MyTableMapper : Profile
     {
