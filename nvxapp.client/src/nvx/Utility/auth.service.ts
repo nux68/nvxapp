@@ -2,13 +2,14 @@ import { Injectable } from '@angular/core';
 import { AccountService } from '../ClientServer-Service/Account/account.service';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 import { Observable } from 'rxjs/internal/Observable';
+import { RolesModel } from '../ClientServer-Service/Account/Models/user-roles-model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  private rolesSubject = new BehaviorSubject<string[]>([]);
+  private rolesSubject = new BehaviorSubject<RolesModel[]>([]);
   roles$ = this.rolesSubject.asObservable();
 
   constructor() {
@@ -56,29 +57,42 @@ export class AuthService {
     return this.hasRole('Admin');
   }
 
-  public get IsDomainPowerAdmin(): boolean {
-    return this.hasRole('DomainPowerAdmin');
+  public get IsCompanyPowerAdmin(): boolean {
+    return this.hasRole('CompanyPowerAdmin');
   }
 
-  public get IsDomainAdmin(): boolean {
-    return this.hasRole('DomainAdmin');
+  public get IsCompanyAdmin(): boolean {
+    return this.hasRole('CompanyAdmin');
+  }
+    
+  public get IsDealerPowerAdmin(): boolean {
+    return this.hasRole('DealerPowerAdmin');
   }
 
-  public get IsInGroupDomainAdmin(): boolean {
-    return (this.hasRole('DomainAdmin') || this.hasRole('DomainPowerAdmin'));
+  public get IsDealerAdmin(): boolean {
+    return this.hasRole('DealerAdmin');
+  }
+
+  public get IsInGroupDealerAdmin(): boolean {
+    return (this.hasRole('DealerAdmin') || this.hasRole('DealerPowerAdmin'));
+  }
+
+  public get IsInGroupCompanyAdmin(): boolean {
+
+    return (this.hasRole('CompanyAdmin') || this.hasRole('CompanyPowerAdmin'));
   }
 
   public get IsInGroupAdmin(): boolean {
     return (this.hasRole('Admin') || this.hasRole('PowerAdmin'));
   }
 
-  public setRole(roles: string[]): void {
+  public setRole(roles: RolesModel[]): void {
     this.rolesSubject.next(roles);
   }
 
   public hasRole(role: string): boolean {
     const roles = this.rolesSubject.getValue();
-    return roles.includes(role);
+    return (roles.findIndex(x => x.name == role) >= 0);
   }
 
   public LogOut(): void {

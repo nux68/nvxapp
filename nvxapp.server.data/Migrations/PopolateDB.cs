@@ -62,6 +62,7 @@ namespace nvxapp.server.data.Migrations
 
             List<AspNetRolesModel> roleAdmin = new List<AspNetRolesModel>();
             roleAdmin.AddRange(AspNetUsersDataUtil.Get_AspNetRoles(AspNetUsersDataUtil.AspNetRolesGroup.Admin));
+            roleAdmin.AddRange(AspNetUsersDataUtil.Get_AspNetRoles(AspNetUsersDataUtil.AspNetRolesGroup.DealerAdmin));
             roleAdmin.AddRange(AspNetUsersDataUtil.Get_AspNetRoles(AspNetUsersDataUtil.AspNetRolesGroup.User));
 
             List<AspNetRolesModel> roleAll = AspNetUsersDataUtil.Get_AspNetRoles(AspNetUsersDataUtil.AspNetRolesGroup.All);
@@ -146,6 +147,7 @@ namespace nvxapp.server.data.Migrations
                         //data_AspNetRoles_to_Scan = data_AspNetRoles_All.Where(x => x.Name == "Admin").ToList();
 
                         var roleAdminKeys =  roleAdmin.Select(x=> x.Name).ToList();
+                        
 
                         data_AspNetRoles_to_Scan = data_AspNetRoles_All.Where(x => roleAdminKeys.Contains(x.Name)  ).ToList();
                         

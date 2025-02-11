@@ -6,12 +6,12 @@ import { AuthService } from '../../Utility/auth.service';
 @Injectable({
   providedIn: 'root',
 })
-export class RoleGuard4CompanyPowerAdmin implements CanActivate {
+export class RoleGuard4DealerPowerAdmin implements CanActivate {
   constructor(public authService: AuthService,
               private router: Router) { }
 
   canActivate(): boolean {
-    if (this.authService.IsCompanyPowerAdmin) {
+    if (this.authService.IsDealerPowerAdmin) {
       return true;
     }
     // Redireziona se l'utente non ha il ruolo richiesto

@@ -26,6 +26,15 @@ export class AppComponent {
 
   ];
 
+  public appPages4DealerAdmin = [
+
+    { title: 'DealerPowerAdmin', url: '/dealerpoweradmin', icon: 'ellipse' },
+    { title: 'DealerAdmin', url: '/dealeradmin', icon: 'ellipse' },
+
+  ];
+
+
+
   public appPages4CompanyAdmin = [
 
     { title: 'CompanyPowerAdmin', url: '/companypoweradmin', icon: 'ellipse' },

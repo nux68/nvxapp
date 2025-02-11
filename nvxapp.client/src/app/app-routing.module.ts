@@ -5,6 +5,8 @@ import { RoleGuard4PowerAdmin } from '../nvx/pages/RoleGuard/role-guard-4power-a
 import { RoleGuard4Admin } from '../nvx/pages/RoleGuard/role-guard-4-admin';
 import { RoleGuard4CompanyPowerAdmin } from '../nvx/pages/RoleGuard/role-guard-4-company-power-admin';
 import { RoleGuard4CompanyAdmin } from '../nvx/pages/RoleGuard/role-guard-4-company-admin';
+import { RoleGuard4DealerPowerAdmin } from '../nvx/pages/RoleGuard/role-guard-4-dealer-power-admin';
+import { RoleGuard4DealerAdmin } from '../nvx/pages/RoleGuard/role-guard-4-dealer-admin';
 
 const routes: Routes = [
   //{
@@ -23,6 +25,9 @@ const routes: Routes = [
 
   { path: 'companypoweradmin', loadChildren: () => import('../nvx/pages/company-power-admin-page/company-power-admin-page.module').then(m => m.CompanyPowerAdminPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
   { path: 'companyadmin', loadChildren: () => import('../nvx/pages/company-admin-page/company-admin-page.module').then(m => m.CompanyAdminPageModule), canActivate: [RoleGuard4CompanyAdmin] },
+
+  { path: 'dealerpoweradmin', loadChildren: () => import('../nvx/pages/dealer-power-admin-page/dealer-power-admin-page.module').then(m => m.DealerPowerAdminPageModule), canActivate: [RoleGuard4DealerPowerAdmin] },
+  { path: 'dealeradmin', loadChildren: () =>      import('../nvx/pages/dealer-admin-page/dealer-admin-page.module').then(m => m.DealerAdminPageModule), canActivate: [RoleGuard4DealerAdmin] },
 
 
   {

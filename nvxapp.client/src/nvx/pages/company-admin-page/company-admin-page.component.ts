@@ -11,7 +11,7 @@ export class CompanyAdminPageComponent  implements OnInit {
   public title!: string;
 
   constructor() {
-    this.title = 'DomainAdminPage';
+    this.title = 'CompanyAdminPage';
   }
 
   ngOnInit() {}

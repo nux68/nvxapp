@@ -11,7 +11,7 @@ export class RoleGuard4CompanyAdmin implements CanActivate {
               private router: Router) { }
 
   canActivate(): boolean {
-    if (this.authService.IsDomainAdmin) {
+    if (this.authService.IsCompanyAdmin) {
       return true;
     }
     // Redireziona se l'utente non ha il ruolo richiesto
