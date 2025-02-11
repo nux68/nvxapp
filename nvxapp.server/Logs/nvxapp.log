@@ -2820,3 +2820,46 @@ POSITION: 90
     File: parse_relation.c
     Line: 1363
     Routine: parserOpenTable
+2025-02-10 18:15:00.376 [INF] Call: <Login>b__0, GUID: "7a2e729c-9595-45f2-a893-ce59aed7b292", param: {"Data":{"UserName":"nvx","Password":"1234"}}
+2025-02-10 18:15:27.469 [INF] Call: <Login>b__0, GUID: "60146672-e572-4b96-b73e-73f3e02c59b8", param: {"Data":{"UserName":"superuser","Password":"1234"}}
+2025-02-10 18:15:28.740 [INF] Call: <UserRoles>b__2_0, GUID: "9dd163b1-c057-4f5a-8806-3263124d1b68", param: {"Data":{}}
+2025-02-10 18:15:28.990 [ERR] END Call(ExecuteAction ERR): <UserRoles>b__2_0, GUID: "9dd163b1-c057-4f5a-8806-3263124d1b68", result: AccountService - Cannot create a DbSet for 'IdentityRole<string>' because this type is not included in the model for the context.
+System.InvalidOperationException: Cannot create a DbSet for 'IdentityRole<string>' because this type is not included in the model for the context.
+   at Microsoft.EntityFrameworkCore.Internal.InternalDbSet`1.get_EntityType()
+   at Microsoft.EntityFrameworkCore.Internal.InternalDbSet`1.CheckState()
+   at Microsoft.EntityFrameworkCore.Internal.InternalDbSet`1.get_EntityQueryable()
+   at Microsoft.EntityFrameworkCore.Internal.InternalDbSet`1.System.Linq.IQueryable.get_Expression()
+   at System.Linq.Queryable.Join[TOuter,TInner,TKey,TResult](IQueryable`1 outer, IEnumerable`1 inner, Expression`1 outerKeySelector, Expression`1 innerKeySelector, Expression`1 resultSelector)
+   at Microsoft.AspNetCore.Identity.EntityFrameworkCore.UserStore`9.GetRolesAsync(TUser user, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Identity.UserManager`1.GetRolesAsync(TUser user)
+   at nvxapp.server.service.ClientServer_Service.Account.AccountService.<UserRoles>b__2_0() in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\ClientServer-Service\Account\AccountService.cs:line 54
+   at nvxapp.server.service.Infrastructure.ServiceBase.ExecuteAction[T,P1](P1 p1, Func`1 function, Boolean isSubProcess) in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\Infrastructure\ServiceBase.cs:line 65
+2025-02-10 18:15:29.002 [ERR] AccountService - Cannot create a DbSet for 'IdentityRole<string>' because this type is not included in the model for the context.
+2025-02-10 18:15:52.462 [INF] Call: <Login>b__0, GUID: "c56fec72-ae84-4f38-bcce-3fa1203dff55", param: {"Data":{"UserName":"SuperUser","Password":"1234"}}
+2025-02-10 18:15:53.589 [INF] Call: <UserRoles>b__2_0, GUID: "bbfc2fc0-5fdb-4618-a95d-05891a583cfd", param: {"Data":{}}
+2025-02-10 18:15:53.755 [ERR] END Call(ExecuteAction ERR): <UserRoles>b__2_0, GUID: "bbfc2fc0-5fdb-4618-a95d-05891a583cfd", result: AccountService - Cannot create a DbSet for 'IdentityRole<string>' because this type is not included in the model for the context.
+System.InvalidOperationException: Cannot create a DbSet for 'IdentityRole<string>' because this type is not included in the model for the context.
+   at Microsoft.EntityFrameworkCore.Internal.InternalDbSet`1.get_EntityType()
+   at Microsoft.EntityFrameworkCore.Internal.InternalDbSet`1.CheckState()
+   at Microsoft.EntityFrameworkCore.Internal.InternalDbSet`1.get_EntityQueryable()
+   at Microsoft.EntityFrameworkCore.Internal.InternalDbSet`1.System.Linq.IQueryable.get_Expression()
+   at System.Linq.Queryable.Join[TOuter,TInner,TKey,TResult](IQueryable`1 outer, IEnumerable`1 inner, Expression`1 outerKeySelector, Expression`1 innerKeySelector, Expression`1 resultSelector)
+   at Microsoft.AspNetCore.Identity.EntityFrameworkCore.UserStore`9.GetRolesAsync(TUser user, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Identity.UserManager`1.GetRolesAsync(TUser user)
+   at nvxapp.server.service.ClientServer_Service.Account.AccountService.<UserRoles>b__2_0() in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\ClientServer-Service\Account\AccountService.cs:line 54
+   at nvxapp.server.service.Infrastructure.ServiceBase.ExecuteAction[T,P1](P1 p1, Func`1 function, Boolean isSubProcess) in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\Infrastructure\ServiceBase.cs:line 65
+2025-02-10 18:15:53.791 [ERR] AccountService - Cannot create a DbSet for 'IdentityRole<string>' because this type is not included in the model for the context.
+2025-02-10 18:15:57.260 [INF] Call: <Login>b__0, GUID: "c97e2d11-487d-442f-88d1-f4496d755c00", param: {"Data":{"UserName":"SuperUser","Password":"1234"}}
+2025-02-10 18:15:58.381 [INF] Call: <UserRoles>b__2_0, GUID: "e2c5dfd3-0253-4edb-b870-2c4b46e83de1", param: {"Data":{}}
+2025-02-10 18:15:58.551 [ERR] END Call(ExecuteAction ERR): <UserRoles>b__2_0, GUID: "e2c5dfd3-0253-4edb-b870-2c4b46e83de1", result: AccountService - Cannot create a DbSet for 'IdentityRole<string>' because this type is not included in the model for the context.
+System.InvalidOperationException: Cannot create a DbSet for 'IdentityRole<string>' because this type is not included in the model for the context.
+   at Microsoft.EntityFrameworkCore.Internal.InternalDbSet`1.get_EntityType()
+   at Microsoft.EntityFrameworkCore.Internal.InternalDbSet`1.CheckState()
+   at Microsoft.EntityFrameworkCore.Internal.InternalDbSet`1.get_EntityQueryable()
+   at Microsoft.EntityFrameworkCore.Internal.InternalDbSet`1.System.Linq.IQueryable.get_Expression()
+   at System.Linq.Queryable.Join[TOuter,TInner,TKey,TResult](IQueryable`1 outer, IEnumerable`1 inner, Expression`1 outerKeySelector, Expression`1 innerKeySelector, Expression`1 resultSelector)
+   at Microsoft.AspNetCore.Identity.EntityFrameworkCore.UserStore`9.GetRolesAsync(TUser user, CancellationToken cancellationToken)
+   at Microsoft.AspNetCore.Identity.UserManager`1.GetRolesAsync(TUser user)
+   at nvxapp.server.service.ClientServer_Service.Account.AccountService.<UserRoles>b__2_0() in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\ClientServer-Service\Account\AccountService.cs:line 54
+   at nvxapp.server.service.Infrastructure.ServiceBase.ExecuteAction[T,P1](P1 p1, Func`1 function, Boolean isSubProcess) in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\Infrastructure\ServiceBase.cs:line 65
+2025-02-10 18:15:58.559 [ERR] AccountService - Cannot create a DbSet for 'IdentityRole<string>' because this type is not included in the model for the context.

@@ -26,7 +26,7 @@ namespace nvxapp.server.data.Infrastructure
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole,string>
     {
 
-        //public DbSet<MyTable> MyTables { get; set; }
+        public DbSet<MyTable> MyTables { get; set; }
         
         public string _schema { get; set; } = "public";
 
@@ -73,24 +73,24 @@ namespace nvxapp.server.data.Infrastructure
             modelBuilder.Entity<IdentityRoleClaim<string>>(entity => { entity.ToTable("AspNetRoleClaims", _schema); });
             modelBuilder.Entity<IdentityUserToken<string>>(entity => { entity.ToTable("AspNetUserTokens", _schema); });
 
-            //// Configura altre entità nello schema appropriato
-            //modelBuilder.Entity<MyTable>(entity =>
-            //{
-            //    entity.ToTable("MyTable", _schema);
-            //    entity.HasKey(e => e.Id);
-            //    entity.Property(e => e.Descrizione).IsRequired()
-            //    ;
-            //})/*.HasIndex(e => e.Descrizione).IsUnique()*/;
+            // Configura altre entità nello schema appropriato
+            modelBuilder.Entity<MyTable>(entity =>
+            {
+                entity.ToTable("MyTable", _schema);
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Descrizione).IsRequired()
+                ;
+            })/*.HasIndex(e => e.Descrizione).IsUnique()*/;
 
 
-            //// Imposta lo schema per le altre tabelle
-            //modelBuilder.Entity<MyTable>().ToTable("MyTable", _schema);
+            // Imposta lo schema per le altre tabelle
+            modelBuilder.Entity<MyTable>().ToTable("MyTable", _schema);
 
-            //#region SET INDEX
-            //modelBuilder.Entity<MyTable>().HasIndex(e => e.Descrizione).IsUnique();
-            //#endregion
+            #region SET INDEX
+            modelBuilder.Entity<MyTable>().HasIndex(e => e.Descrizione).IsUnique();
+            #endregion
 
-            
+
 
         }
 
