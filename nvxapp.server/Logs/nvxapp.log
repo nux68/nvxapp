@@ -82,3 +82,7 @@ POSITION: 90
 2025-02-11 16:47:01.282 [INF] Call: <GetAll>b__3_0, GUID: "b92f3c05-3f50-4f6f-a271-4144a413ebf2", param: {"Data":{}}
 2025-02-11 16:47:01.297 [INF] Call: <GetAll>b__2_0, GUID: "dd54b46e-060c-40d5-89b5-22b0a49c6538", param: {"Data":{}}
 2025-02-11 16:47:10.425 [INF] Call: <UserRoles>b__4_0, GUID: "11c34b71-a8e7-4316-8150-2f4f2359ed6f", param: {"Data":{}}
+2025-02-11 17:03:23.377 [INF] Call: <Login>b__0, GUID: "4a4c4abb-66e2-40b6-bb1c-dd69323cab36", param: {"Data":{"UserName":"superuser","Password":"1234"}}
+2025-02-11 17:03:26.522 [INF] Call: <UserRoles>b__4_0, GUID: "f1a4bf81-b1c1-42b5-8962-065f47951efb", param: {"Data":{}}
+2025-02-11 17:03:32.869 [INF] Call: <GetAll>b__3_0, GUID: "1b22db01-c0dd-4798-aa9e-ae0b5541a456", param: {"Data":{}}
+2025-02-11 17:03:32.885 [INF] Call: <GetAll>b__2_0, GUID: "e91ad9f2-a9fa-464d-8013-6c6f6ea47669", param: {"Data":{}}

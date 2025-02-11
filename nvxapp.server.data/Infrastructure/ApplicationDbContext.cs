@@ -215,9 +215,10 @@ namespace nvxapp.server.data.Infrastructure
 
             if (!string.IsNullOrEmpty(_schema))
             {
-                //4 SCHEMA
+                ////4 SCHEMA
                 SharedSchema._schema = _schema;
-                optionsBuilder.ReplaceService<IMigrationsSqlGenerator, SchemaAwareMigrationSqlGenerator>();
+                ////4 SCHEMA DISABLED
+                //optionsBuilder.ReplaceService<IMigrationsSqlGenerator, SchemaAwareMigrationSqlGenerator>();
                 optionsBuilder.UseNpgsql(options =>
                         options.MigrationsHistoryTable("__EFMigrationsHistory", _schema)
                     )

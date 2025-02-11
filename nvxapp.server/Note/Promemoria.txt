@@ -1,0 +1,6 @@
+﻿il tag: 
+4 SCHEMA 
+	identifica il codice che legge gli schemi
+
+4 SCHEMA DISABLED
+    a seguito di un warning ho disabilitato (non è detto che serve)

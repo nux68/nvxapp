@@ -6,25 +6,26 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Migrations;
 
 namespace nvxapp.server.data.Infrastructure
 {
-    //4 SCHEMA
-    public class SchemaAwareMigrationSqlGenerator : NpgsqlMigrationsSqlGenerator
-    {
+    ////4 SCHEMA
+    ////4 SCHEMA DISABLED
+    //public class SchemaAwareMigrationSqlGenerator : NpgsqlMigrationsSqlGenerator
+    //{
 
 
-        public SchemaAwareMigrationSqlGenerator(MigrationsSqlGeneratorDependencies dependencies ,
-                                                INpgsqlSingletonOptions npgsqlSingletonOptions)
-                                                : base(dependencies , npgsqlSingletonOptions)
-        {
-        }
+    //    public SchemaAwareMigrationSqlGenerator(MigrationsSqlGeneratorDependencies dependencies ,
+    //                                            INpgsqlSingletonOptions npgsqlSingletonOptions)
+    //                                            : base(dependencies , npgsqlSingletonOptions)
+    //    {
+    //    }
 
-        protected override void Generate(CreateTableOperation operation,
-                                         IModel? model,
-                                         MigrationCommandListBuilder builder,
-                                         bool terminate = true)
-        {
+    //    protected override void Generate(CreateTableOperation operation,
+    //                                     IModel? model,
+    //                                     MigrationCommandListBuilder builder,
+    //                                     bool terminate = true)
+    //    {
 
-            operation.Schema = SharedSchema._schema;
-            base.Generate(operation, model, builder, terminate);
-        }
-    }
+    //        operation.Schema = SharedSchema._schema;
+    //        base.Generate(operation, model, builder, terminate);
+    //    }
+    //}
 }
