@@ -9,6 +9,10 @@ namespace nvxapp.server.data.Infrastructure
     //4 SCHEMA
     public static class SharedSchema
     {
-        public static string _schema { get; set; } = "public";
+
+        public static Boolean MigrazioneRunTime { get; set; } = false;
+
+        public static Boolean MultiTenant { get; set; } = false;
+        public static string CurrentSchema { get; set; } = "public";
     }
 }

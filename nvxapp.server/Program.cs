@@ -43,42 +43,48 @@ Installers.InstallAuthentication(builder);
 var app = builder.Build();
 
 
-//Attiva la migrazione
-//using (var scope = app.Services.CreateScope())
-//{
-//    var services = scope.ServiceProvider;
-
-//    var context = services.GetRequiredService<ApplicationDbContext>();
-//    context.Database.Migrate();
-//}
 
 
-//using (var scope = app.Services.CreateScope())
-//{
-//    var services = scope.ServiceProvider;
 
-//    var factory = services.GetRequiredService<IApplicationDbContextFactory>();
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
 
-//    // Lista degli schemi dei tenant (puoi sostituirla con una query al DB)
-//    string[] schemiClienti = { "SCHEMA_A" };
+    var factory = services.GetRequiredService<IApplicationDbContextFactory>();
 
-//    // Esegui la migrazione sullo schema di default (public)
-//    using (var context = factory.CreateDbContext("public"))
-//    {
-//        context.Database.Migrate();
-//    }
+    // Lista degli schemi dei tenant (puoi sostituirla con una query al DB)
+    string[] schemiClienti = { "ScHeMa_A" };
 
-//    // Esegui la migrazione per ogni schema tenant
-//    foreach (var schema in schemiClienti)
-//    {
-//        using (var context = factory.CreateDbContext(schema.ToLower()))
-//        {
-//            //context.Database.ExecuteSqlRaw($"CREATE SCHEMA IF NOT EXISTS \"{schema.ToLower()}\";");
-//            ////EnsureSchemaExists(context, schema); // Assicura che lo schema esista
-//            context.Database.Migrate();
-//        }
-//    }
-//}
+    SharedSchema.MigrazioneRunTime = true;
+
+    var _configuration = app.Services.GetRequiredService<IConfiguration>();
+    Boolean MultiTenant = false;
+    string? sMultiTenant = _configuration["DbParameter:MultiTenant"];
+
+    bool.TryParse(sMultiTenant, out MultiTenant);
+    SharedSchema.MultiTenant = MultiTenant;
+
+    // Esegui la migrazione sullo schema di default (public)
+    using (var context = factory.CreateDbContext("public"))
+    {
+        context.Database.Migrate();
+    }
+
+    // Esegui la migrazione per ogni schema tenant
+    if (MultiTenant)
+    {
+        foreach (var schema in schemiClienti)
+        {
+            using (var context = factory.CreateDbContext(schema.ToLower()))
+            {
+                //context.Database.ExecuteSqlRaw($"CREATE SCHEMA IF NOT EXISTS \"{schema.ToLower()}\";");
+                ////EnsureSchemaExists(context, schema); // Assicura che lo schema esista
+                context.Database.Migrate();
+            }
+        }
+    }
+   
+}
 
 
 

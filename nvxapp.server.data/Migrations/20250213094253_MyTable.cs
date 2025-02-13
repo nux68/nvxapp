@@ -13,14 +13,15 @@ namespace nvxapp.server.data.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
 
-            if (SharedSchema._schema != "public")
-            {
+            if (SharedSchema.MultiTenant == true && SharedSchema.CurrentSchema == "public")
+                return;
 
+            migrationBuilder.EnsureSchema(
+                name: SharedSchema.CurrentSchema);
 
-
-                migrationBuilder.CreateTable(
+            migrationBuilder.CreateTable(
                 name: "MyTable",
-                schema: SharedSchema._schema,
+                schema: SharedSchema.CurrentSchema,
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -35,27 +36,24 @@ namespace nvxapp.server.data.Migrations
                     table.PrimaryKey("PK_MyTable", x => x.Id);
                 });
 
-                migrationBuilder.CreateIndex(
-                    name: "IX_MyTable_Descrizione",
-                    schema: SharedSchema._schema,
-                    table: "MyTable",
-                    column: "Descrizione",
-                    unique: true);
-
-            }
+            migrationBuilder.CreateIndex(
+                name: "IX_MyTable_Descrizione",
+                schema: SharedSchema.CurrentSchema,
+                table: "MyTable",
+                column: "Descrizione",
+                unique: true);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            if (SharedSchema._schema != "public")
-            {
-                migrationBuilder.DropTable(
+            if (SharedSchema.MultiTenant == true && SharedSchema.CurrentSchema == "public")
+                return;
+
+            migrationBuilder.DropTable(
                 name: "MyTable",
-                schema: "public");
-            }
-
-
+                schema: SharedSchema.CurrentSchema);
         }
     }
+
 }

@@ -38,7 +38,7 @@ namespace nvxapp.server.data.Infrastructure
         private void ApplySchema(DbCommand command)
         {
 
-            command.CommandText = command.CommandText.Replace("public.", $"{SharedSchema._schema.ToLower()}.");
+            command.CommandText = command.CommandText.Replace("public.", $"{SharedSchema.CurrentSchema.ToLower()}.");
 
         }
     }

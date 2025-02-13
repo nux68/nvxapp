@@ -17,13 +17,15 @@ namespace nvxapp.server.data.Repositories.Tenant
         public MyTableRepository(ApplicationDbContext dbContext,
                                  IServiceProvider provider,
                                  IHttpContextAccessor httpContextAccessor,
-                                 IApplicationDbContextFactory applicationDbContextFactory) : base(dbContext, provider, httpContextAccessor)
+                                 IApplicationDbContextFactory applicationDbContextFactory) : base(applicationDbContextFactory.CreateDbContext(null), 
+                                                                                                  provider, 
+                                                                                                  httpContextAccessor)
+                                
         {
             _applicationDbContextFactory = applicationDbContextFactory;
 
             var schema = CurrentTenat;
-
-            DbContext = applicationDbContextFactory.CreateDbContext(schema);
+           
         }
     }
 

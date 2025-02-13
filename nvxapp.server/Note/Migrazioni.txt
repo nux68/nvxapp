@@ -26,7 +26,7 @@ dotnet ef migrations list --project nvxapp.server.data --startup-project nvxapp.
 
 
 //4 SCHEMA
-ATTENZIONE IMPOSTARE in ogni migrazione
+ATTENZIONE IMPOSTARE per le migrazioni delle tabelle che stanno nei tenat
 x:
 	migrationBuilder.CreateTable(
 		schema: SharedSchema._schema,
@@ -34,5 +34,22 @@ x:
 		schema: SharedSchema._schema,
 	table.ForeignKey(
 		principalSchema: SharedSchema._schema,
+
+
+Per le tabelle che stanno in  public all'inizio dei metodi up e down
+	if (SharedSchema.CurrentSchema != "public")
+        return;
+
+Per le tabelle che stanno nei tenat all'inizio dei metodi up e down
+
+	if (SharedSchema.MultiTenant == true && SharedSchema.CurrentSchema == "public")
+	    return;
+
+
+
+
+
+
+
 
 x semplificare lo sviluppo conviene fare una migrazione che stia solo su public o solo su gli altri schemi

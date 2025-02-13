@@ -38,7 +38,7 @@ namespace nvxapp.server.data.Migrations
         public static void PopolateDB_InitDB_UP(MigrationBuilder migrationBuilder)
         {
 
-            if (SharedSchema._schema != "public")
+            if (SharedSchema.CurrentSchema != "public")
                 return;
 
 

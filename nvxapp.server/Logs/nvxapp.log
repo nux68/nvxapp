@@ -526,3 +526,513 @@ POSITION: 90
     File: parse_relation.c
     Line: 1363
     Routine: parserOpenTable
+2025-02-12 12:55:00.155 [INF] Call: <Login>b__0, GUID: "ccae5497-3cc5-4e6f-844d-b626787e58a6", param: {"Data":{"UserName":"superuser","Password":"1234"}}
+2025-02-12 12:55:11.860 [INF] Call: <UserRoles>b__4_0, GUID: "6febf306-4b51-42f1-a1ac-4624263d05ed", param: {"Data":{}}
+2025-02-12 16:08:23.692 [INF] Call: <Login>b__0, GUID: "13b54f6a-4257-468a-a68b-88ecd4de1291", param: {"Data":{"UserName":"superuser","Password":"1234"}}
+2025-02-12 16:08:47.920 [INF] Call: <UserRoles>b__4_0, GUID: "ea6c4305-3179-4c30-aafc-26f792f45239", param: {"Data":{}}
+2025-02-12 16:09:56.261 [INF] Call: <Login>b__0, GUID: "18a14345-5952-45cd-995f-b6cf5d3566ff", param: {"Data":{"UserName":"superuser","Password":"1234"}}
+2025-02-12 16:10:25.869 [INF] Call: <UserRoles>b__4_0, GUID: "ee898dd3-2b39-45c4-a272-257c7fac5c41", param: {"Data":{}}
+2025-02-12 16:42:23.157 [INF] Call: <Login>b__0, GUID: "6b8f5680-8d98-46ff-baa1-4914cd2909af", param: {"Data":{"UserName":"superuser","Password":"1234"}}
+2025-02-12 16:42:33.666 [INF] Call: <UserRoles>b__4_0, GUID: "44a58bc8-953e-4816-a7cb-9244cd0bf4b0", param: {"Data":{}}
+2025-02-12 16:42:57.644 [INF] Call: <GetAll>b__3_0, GUID: "73a71601-ebc5-4d66-8163-061a4257ffcf", param: {"Data":{}}
+2025-02-12 16:42:57.659 [INF] Call: <GetAll>b__2_0, GUID: "5fe2da1b-d0ab-4d5f-a4ba-db8c6ff62867", param: {"Data":{}}
+2025-02-12 16:43:18.687 [INF] Call: <UserRoles>b__4_0, GUID: "5cfc755f-23e3-4989-be4d-23ed36a837cf", param: {"Data":{}}
+2025-02-12 16:43:38.697 [INF] Call: <GetAll>b__3_0, GUID: "36042d7c-5fb9-45c6-8432-3d1e4b922c74", param: {"Data":{}}
+2025-02-12 16:43:38.712 [INF] Call: <GetAll>b__2_0, GUID: "c2017a9f-34b0-4d07-b3fc-8df7b66bd838", param: {"Data":{}}
+2025-02-12 16:44:01.230 [INF] Call: <GetAll>b__3_0, GUID: "fb9e76f9-20aa-4380-bdeb-687ba176fed6", param: {"Data":{}}
+2025-02-12 16:44:01.245 [INF] Call: <GetAll>b__2_0, GUID: "373bbe04-962b-4ab3-92c3-0ca0bf5064f6", param: {"Data":{}}
+2025-02-12 16:44:40.151 [INF] Call: <GetAll>b__3_0, GUID: "2dba6deb-948c-4727-ab8d-7732ab860d6a", param: {"Data":{}}
+2025-02-12 16:44:40.166 [INF] Call: <GetAll>b__2_0, GUID: "4c1dbe69-4588-4215-8478-71e41201f7b1", param: {"Data":{}}
+2025-02-12 16:46:22.741 [INF] Call: <Login>b__0, GUID: "880f5b51-c0ad-4821-88bf-2826a45232e6", param: {"Data":{"UserName":"superuser","Password":"1234"}}
+2025-02-12 16:46:24.391 [INF] Call: <UserRoles>b__4_0, GUID: "dd8087b6-a5df-43d6-badb-c4eae3124626", param: {"Data":{}}
+2025-02-12 16:46:31.800 [INF] Call: <GetAll>b__3_0, GUID: "c6621980-6da1-45c1-a524-fc938658737e", param: {"Data":{}}
+2025-02-12 16:46:31.815 [INF] Call: <GetAll>b__2_0, GUID: "17330e5f-535c-49b1-900c-2ad378a9d154", param: {"Data":{}}
+2025-02-12 16:48:12.604 [INF] Call: <UserRoles>b__4_0, GUID: "e93efb5e-a7bb-421c-8246-f113a3516d82", param: {"Data":{}}
+2025-02-12 16:48:21.055 [INF] Call: <GetAll>b__3_0, GUID: "e6d33fcb-8a4a-4915-b40c-fb822ea346b5", param: {"Data":{}}
+2025-02-12 16:48:21.070 [INF] Call: <GetAll>b__2_0, GUID: "8f56f17a-5659-49af-b5f2-ef4f313b62d2", param: {"Data":{}}
+2025-02-12 16:49:06.051 [INF] Call: <UserRoles>b__4_0, GUID: "ad45791c-464c-4f76-bff1-e3945d1dbc75", param: {"Data":{}}
+2025-02-12 16:51:55.734 [INF] Call: <GetAll>b__3_0, GUID: "51c6e1a5-c38c-42ea-a8fc-bfea4bfa7f2d", param: {"Data":{}}
+2025-02-12 16:51:55.749 [INF] Call: <GetAll>b__2_0, GUID: "a3be2c5c-75a5-4e11-ab89-b747521a0461", param: {"Data":{}}
+2025-02-12 16:52:03.494 [INF] Call: <GetAll>b__3_0, GUID: "eb5cf051-f2d2-490f-83b3-c958c3d669bc", param: {"Data":{}}
+2025-02-12 16:52:03.509 [INF] Call: <GetAll>b__2_0, GUID: "121108ef-de5a-4116-9e4e-db6acf2fa037", param: {"Data":{}}
+2025-02-12 16:52:34.578 [INF] Call: <Login>b__0, GUID: "ac6b081c-a79e-4add-8a84-181b27c9e507", param: {"Data":{"UserName":"superuser","Password":"1234"}}
+2025-02-12 16:52:35.698 [INF] Call: <UserRoles>b__4_0, GUID: "60e7ac68-17cd-4cd6-8156-faebe2a11dc3", param: {"Data":{}}
+2025-02-12 16:52:39.785 [INF] Call: <UserRoles>b__4_0, GUID: "072a20e1-99a9-456c-a979-89bfaed7b963", param: {"Data":{}}
+2025-02-12 16:52:58.504 [INF] Call: <GetAll>b__3_0, GUID: "d053e942-c1cc-4e63-81b9-0aab5c9cfa7a", param: {"Data":{}}
+2025-02-12 16:52:58.521 [INF] Call: <GetAll>b__2_0, GUID: "b659fd38-2c54-4370-901b-926489b84194", param: {"Data":{}}
+2025-02-12 16:53:26.129 [INF] Call: <UserRoles>b__4_0, GUID: "aedd1d42-6f73-4f28-9314-16abc0cd7c2e", param: {"Data":{}}
+2025-02-12 16:53:37.351 [INF] Call: <GetAll>b__3_0, GUID: "f6af2c46-e561-4c75-9827-3f2a188cad17", param: {"Data":{}}
+2025-02-12 16:53:37.358 [INF] Call: <GetAll>b__2_0, GUID: "3742ad20-4bf7-4429-b717-c96ca3c32a0a", param: {"Data":{}}
+2025-02-12 16:53:49.724 [INF] Call: <UserRoles>b__4_0, GUID: "569306e0-fb74-4288-943b-cfcc3ad529ad", param: {"Data":{}}
+2025-02-12 16:54:00.077 [INF] Call: <GetAll>b__3_0, GUID: "5e2b86a3-072a-43e9-ba5d-b9eccdda796f", param: {"Data":{}}
+2025-02-12 16:54:00.092 [INF] Call: <GetAll>b__2_0, GUID: "9dc2b2a3-328a-411d-ab14-c602d034c0e4", param: {"Data":{}}
+2025-02-13 09:43:43.802 [INF] Call: <GetAll>b__3_0, GUID: "cc6552c8-96e1-484e-8134-7bfc9231e007", param: {"Data":{}}
+2025-02-13 09:43:43.847 [INF] Call: <GetAll>b__2_0, GUID: "5c8f2d5b-a716-43d8-b601-394d656e97e5", param: {"Data":{}}
+2025-02-13 09:43:44.816 [ERR] END Call(ExecuteAction ERR): <GetAll>b__2_0, GUID: "5c8f2d5b-a716-43d8-b601-394d656e97e5", result: MyTableService - 42P01: la relazione "public.MyTable" non esiste
+
+POSITION: 90
+Npgsql.PostgresException (0x80004005): 42P01: la relazione "public.MyTable" non esiste
+
+POSITION: 90
+   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at nvxapp.server.data.Infrastructure.Repository`2.FindAll() in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.data\Infrastructure\Repository.cs:line 206
+   at nvxapp.server.service.Service.MyTableService.MyTableService.<GetAll>b__2_0() in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\ClientServer-Service\MyTableService\MyTableService.cs:line 48
+   at nvxapp.server.service.Infrastructure.ServiceBase.ExecuteAction[T,P1](P1 p1, Func`1 function, Boolean isSubProcess) in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\Infrastructure\ServiceBase.cs:line 69
+  Exception data:
+    Severity: ERRORE
+    SqlState: 42P01
+    MessageText: la relazione "public.MyTable" non esiste
+    Position: 90
+    File: parse_relation.c
+    Line: 1363
+    Routine: parserOpenTable
+2025-02-13 09:44:30.420 [INF] Call: <Login>b__0, GUID: "aa19afc2-1517-4a24-8b86-08e46e431134", param: {"Data":{"UserName":"superuser","Password":"1234"}}
+2025-02-13 09:44:31.839 [INF] Call: <UserRoles>b__4_0, GUID: "00c0a25e-db3f-4ece-b2ab-4560f2f4b4ca", param: {"Data":{}}
+2025-02-13 09:44:36.444 [INF] Call: <UserRoles>b__4_0, GUID: "109e283b-5de2-446b-a186-7337fc41c316", param: {"Data":{}}
+2025-02-13 09:44:47.232 [INF] Call: <GetAll>b__3_0, GUID: "55846cc2-d4a1-4a10-b8c9-3c7baafab566", param: {"Data":{}}
+2025-02-13 09:44:47.239 [INF] Call: <GetAll>b__2_0, GUID: "8cfe5a15-fefd-4d54-b401-ab1316d94a81", param: {"Data":{}}
+2025-02-13 09:44:48.268 [ERR] END Call(ExecuteAction ERR): <GetAll>b__2_0, GUID: "8cfe5a15-fefd-4d54-b401-ab1316d94a81", result: MyTableService - 42P01: la relazione "public.MyTable" non esiste
+
+POSITION: 90
+Npgsql.PostgresException (0x80004005): 42P01: la relazione "public.MyTable" non esiste
+
+POSITION: 90
+   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at nvxapp.server.data.Infrastructure.Repository`2.FindAll() in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.data\Infrastructure\Repository.cs:line 206
+   at nvxapp.server.service.Service.MyTableService.MyTableService.<GetAll>b__2_0() in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\ClientServer-Service\MyTableService\MyTableService.cs:line 48
+   at nvxapp.server.service.Infrastructure.ServiceBase.ExecuteAction[T,P1](P1 p1, Func`1 function, Boolean isSubProcess) in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\Infrastructure\ServiceBase.cs:line 69
+  Exception data:
+    Severity: ERRORE
+    SqlState: 42P01
+    MessageText: la relazione "public.MyTable" non esiste
+    Position: 90
+    File: parse_relation.c
+    Line: 1363
+    Routine: parserOpenTable
+2025-02-13 09:45:50.750 [INF] Call: <GetAll>b__3_0, GUID: "f5d26008-b081-488e-958d-6d12902590f6", param: {"Data":{}}
+2025-02-13 09:45:50.765 [INF] Call: <GetAll>b__2_0, GUID: "dc3d8632-18c2-41c2-8b82-d832b8fa7e53", param: {"Data":{}}
+2025-02-13 09:45:51.898 [ERR] END Call(ExecuteAction ERR): <GetAll>b__2_0, GUID: "dc3d8632-18c2-41c2-8b82-d832b8fa7e53", result: MyTableService - 42P01: la relazione "public.MyTable" non esiste
+
+POSITION: 90
+Npgsql.PostgresException (0x80004005): 42P01: la relazione "public.MyTable" non esiste
+
+POSITION: 90
+   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at nvxapp.server.data.Infrastructure.Repository`2.FindAll()
+   at nvxapp.server.service.Service.MyTableService.MyTableService.<GetAll>b__2_0() in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\ClientServer-Service\MyTableService\MyTableService.cs:line 48
+   at nvxapp.server.service.Infrastructure.ServiceBase.ExecuteAction[T,P1](P1 p1, Func`1 function, Boolean isSubProcess) in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\Infrastructure\ServiceBase.cs:line 69
+  Exception data:
+    Severity: ERRORE
+    SqlState: 42P01
+    MessageText: la relazione "public.MyTable" non esiste
+    Position: 90
+    File: parse_relation.c
+    Line: 1363
+    Routine: parserOpenTable
+2025-02-13 09:47:11.939 [INF] Call: <Login>b__0, GUID: "369a11e9-1189-42d8-b665-38974d88ee33", param: {"Data":{"UserName":"superuser","Password":"1234"}}
+2025-02-13 09:47:13.600 [INF] Call: <UserRoles>b__4_0, GUID: "bd256748-d2f3-4d7a-a9cf-2af60fbea557", param: {"Data":{}}
+2025-02-13 09:47:24.348 [INF] Call: <UserRoles>b__4_0, GUID: "db222d66-dba1-4d0a-a003-99255f737c7f", param: {"Data":{}}
+2025-02-13 09:47:40.948 [INF] Call: <GetAll>b__3_0, GUID: "506f2476-714c-4bd7-8d45-7eaf287c0224", param: {"Data":{}}
+2025-02-13 09:47:40.963 [INF] Call: <GetAll>b__2_0, GUID: "faaeca72-7246-481a-8cbd-89af2ba4fc68", param: {"Data":{}}
+2025-02-13 09:47:45.487 [ERR] END Call(ExecuteAction ERR): <GetAll>b__2_0, GUID: "faaeca72-7246-481a-8cbd-89af2ba4fc68", result: MyTableService - 42P01: la relazione "public.MyTable" non esiste
+
+POSITION: 90
+Npgsql.PostgresException (0x80004005): 42P01: la relazione "public.MyTable" non esiste
+
+POSITION: 90
+   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at nvxapp.server.data.Infrastructure.Repository`2.FindAll() in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.data\Infrastructure\Repository.cs:line 206
+   at nvxapp.server.service.Service.MyTableService.MyTableService.<GetAll>b__2_0() in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\ClientServer-Service\MyTableService\MyTableService.cs:line 48
+   at nvxapp.server.service.Infrastructure.ServiceBase.ExecuteAction[T,P1](P1 p1, Func`1 function, Boolean isSubProcess) in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\Infrastructure\ServiceBase.cs:line 69
+  Exception data:
+    Severity: ERRORE
+    SqlState: 42P01
+    MessageText: la relazione "public.MyTable" non esiste
+    Position: 90
+    File: parse_relation.c
+    Line: 1363
+    Routine: parserOpenTable
+2025-02-13 09:49:41.358 [INF] Call: <GetAll>b__3_0, GUID: "6a2a9dea-3456-4a7b-ba48-4bf7c0aa5bd5", param: {"Data":{}}
+2025-02-13 09:49:41.373 [INF] Call: <GetAll>b__2_0, GUID: "c4ed3380-7bc0-483e-a56d-8bc4712bd097", param: {"Data":{}}
+2025-02-13 09:49:55.504 [ERR] END Call(ExecuteAction ERR): <GetAll>b__2_0, GUID: "c4ed3380-7bc0-483e-a56d-8bc4712bd097", result: MyTableService - 42P01: la relazione "public.MyTable" non esiste
+
+POSITION: 90
+Npgsql.PostgresException (0x80004005): 42P01: la relazione "public.MyTable" non esiste
+
+POSITION: 90
+   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at nvxapp.server.data.Infrastructure.Repository`2.FindAll() in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.data\Infrastructure\Repository.cs:line 206
+   at nvxapp.server.service.Service.MyTableService.MyTableService.<GetAll>b__2_0() in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\ClientServer-Service\MyTableService\MyTableService.cs:line 48
+   at nvxapp.server.service.Infrastructure.ServiceBase.ExecuteAction[T,P1](P1 p1, Func`1 function, Boolean isSubProcess) in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\Infrastructure\ServiceBase.cs:line 69
+  Exception data:
+    Severity: ERRORE
+    SqlState: 42P01
+    MessageText: la relazione "public.MyTable" non esiste
+    Position: 90
+    File: parse_relation.c
+    Line: 1363
+    Routine: parserOpenTable
+2025-02-13 09:50:44.042 [INF] Call: <GetAll>b__3_0, GUID: "b72921ce-18aa-425b-9ed2-721c0f5077b6", param: {"Data":{}}
+2025-02-13 09:50:44.057 [INF] Call: <GetAll>b__2_0, GUID: "d47edc1f-5754-434d-bf66-48c018643aef", param: {"Data":{}}
+2025-02-13 09:51:05.114 [ERR] END Call(ExecuteAction ERR): <GetAll>b__2_0, GUID: "d47edc1f-5754-434d-bf66-48c018643aef", result: MyTableService - 42P01: la relazione "schema_a.AspNetUsers" non esiste
+
+POSITION: 346
+Npgsql.PostgresException (0x80004005): 42P01: la relazione "schema_a.AspNetUsers" non esiste
+
+POSITION: 346
+   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.Query.ShapedQueryCompilingExpressionVisitor.SingleOrDefaultAsync[TSource](IAsyncEnumerable`1 asyncEnumerable, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.ShapedQueryCompilingExpressionVisitor.SingleOrDefaultAsync[TSource](IAsyncEnumerable`1 asyncEnumerable, CancellationToken cancellationToken)
+   at nvxapp.server.service.Infrastructure.ServiceBase.OkResponse[T](T data) in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\Infrastructure\ServiceBase.cs:line 136
+   at nvxapp.server.service.Infrastructure.ServiceBase.ExecuteAction[T,P1](P1 p1, Func`1 function, Boolean isSubProcess) in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\Infrastructure\ServiceBase.cs:line 84
+  Exception data:
+    Severity: ERRORE
+    SqlState: 42P01
+    MessageText: la relazione "schema_a.AspNetUsers" non esiste
+    Position: 346
+    File: parse_relation.c
+    Line: 1363
+    Routine: parserOpenTable
+2025-02-13 09:51:10.687 [ERR] END Call(ExecuteAction ERR): <GetAll>b__3_0, GUID: "b72921ce-18aa-425b-9ed2-721c0f5077b6", result: WeatherForecastService - 42P01: la relazione "schema_a.AspNetUsers" non esiste
+
+POSITION: 346
+Npgsql.PostgresException (0x80004005): 42P01: la relazione "schema_a.AspNetUsers" non esiste
+
+POSITION: 346
+   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.Query.ShapedQueryCompilingExpressionVisitor.SingleOrDefaultAsync[TSource](IAsyncEnumerable`1 asyncEnumerable, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.ShapedQueryCompilingExpressionVisitor.SingleOrDefaultAsync[TSource](IAsyncEnumerable`1 asyncEnumerable, CancellationToken cancellationToken)
+   at nvxapp.server.service.Infrastructure.ServiceBase.OkResponse[T](T data) in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\Infrastructure\ServiceBase.cs:line 136
+   at nvxapp.server.service.Infrastructure.ServiceBase.ExecuteAction[T,P1](P1 p1, Func`1 function, Boolean isSubProcess) in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\Infrastructure\ServiceBase.cs:line 84
+  Exception data:
+    Severity: ERRORE
+    SqlState: 42P01
+    MessageText: la relazione "schema_a.AspNetUsers" non esiste
+    Position: 346
+    File: parse_relation.c
+    Line: 1363
+    Routine: parserOpenTable
+2025-02-13 09:51:10.701 [ERR] WeatherForecastService - 42P01: la relazione "schema_a.AspNetUsers" non esiste
+
+POSITION: 346
+2025-02-13 09:54:42.473 [INF] Call: <Login>b__0, GUID: "d871bee5-1aa0-4b37-b9d3-5e2205df8352", param: {"Data":{"UserName":"superuser","Password":"1234"}}
+2025-02-13 09:54:44.189 [INF] Call: <UserRoles>b__4_0, GUID: "dfe5853a-0559-4608-bb31-c9f63d8d5ce6", param: {"Data":{}}
+2025-02-13 09:54:49.930 [INF] Call: <UserRoles>b__4_0, GUID: "0c63d63a-d2a6-4fcc-9454-5c03ed24b87f", param: {"Data":{}}
+2025-02-13 09:55:04.770 [INF] Call: <GetAll>b__3_0, GUID: "1baaef22-2328-4295-8f35-318b0841799f", param: {"Data":{}}
+2025-02-13 09:55:04.784 [INF] Call: <GetAll>b__2_0, GUID: "9022b1fd-fce2-47d1-879e-1eb0965ee6e4", param: {"Data":{}}
+2025-02-13 09:55:06.402 [ERR] END Call(ExecuteAction ERR): <GetAll>b__2_0, GUID: "9022b1fd-fce2-47d1-879e-1eb0965ee6e4", result: MyTableService - 42P01: la relazione "public.MyTable" non esiste
+
+POSITION: 90
+Npgsql.PostgresException (0x80004005): 42P01: la relazione "public.MyTable" non esiste
+
+POSITION: 90
+   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at nvxapp.server.data.Infrastructure.Repository`2.FindAll() in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.data\Infrastructure\Repository.cs:line 206
+   at nvxapp.server.service.Service.MyTableService.MyTableService.<GetAll>b__2_0() in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\ClientServer-Service\MyTableService\MyTableService.cs:line 48
+   at nvxapp.server.service.Infrastructure.ServiceBase.ExecuteAction[T,P1](P1 p1, Func`1 function, Boolean isSubProcess) in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\Infrastructure\ServiceBase.cs:line 69
+  Exception data:
+    Severity: ERRORE
+    SqlState: 42P01
+    MessageText: la relazione "public.MyTable" non esiste
+    Position: 90
+    File: parse_relation.c
+    Line: 1363
+    Routine: parserOpenTable
+2025-02-13 09:57:45.998 [INF] Call: <Login>b__0, GUID: "05930f69-50bd-4e70-976a-d59043c1e491", param: {"Data":{"UserName":"superuser","Password":"1234"}}
+2025-02-13 09:57:47.715 [INF] Call: <UserRoles>b__4_0, GUID: "e96d4f82-f10f-4b5f-9e37-a6aad68ddc53", param: {"Data":{}}
+2025-02-13 09:58:34.106 [INF] Call: <UserRoles>b__4_0, GUID: "a07e145c-467b-4d4a-984f-d3e33b58f5bd", param: {"Data":{}}
+2025-02-13 09:59:16.751 [INF] Call: <GetAll>b__3_0, GUID: "8d2f3e4c-788d-4d8f-9254-015cd77a9f56", param: {"Data":{}}
+2025-02-13 09:59:16.766 [INF] Call: <GetAll>b__2_0, GUID: "db2ca37d-4b43-4a1f-af8b-00cc67340cdb", param: {"Data":{}}
+2025-02-13 09:59:22.123 [ERR] END Call(ExecuteAction ERR): <GetAll>b__2_0, GUID: "db2ca37d-4b43-4a1f-af8b-00cc67340cdb", result: MyTableService - 42P01: la relazione "public.MyTable" non esiste
+
+POSITION: 90
+Npgsql.PostgresException (0x80004005): 42P01: la relazione "public.MyTable" non esiste
+
+POSITION: 90
+   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at nvxapp.server.data.Infrastructure.Repository`2.FindAll()
+   at nvxapp.server.service.Service.MyTableService.MyTableService.<GetAll>b__2_0() in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\ClientServer-Service\MyTableService\MyTableService.cs:line 48
+   at nvxapp.server.service.Infrastructure.ServiceBase.ExecuteAction[T,P1](P1 p1, Func`1 function, Boolean isSubProcess) in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\Infrastructure\ServiceBase.cs:line 69
+  Exception data:
+    Severity: ERRORE
+    SqlState: 42P01
+    MessageText: la relazione "public.MyTable" non esiste
+    Position: 90
+    File: parse_relation.c
+    Line: 1363
+    Routine: parserOpenTable
+2025-02-13 09:59:56.529 [INF] Call: <GetAll>b__3_0, GUID: "4e117b26-0e72-40ba-afb2-336d182a356c", param: {"Data":{}}
+2025-02-13 09:59:56.544 [INF] Call: <GetAll>b__2_0, GUID: "cf79ed1f-b9d6-4cfc-98e9-0ecfba577d7d", param: {"Data":{}}
+2025-02-13 10:00:07.616 [ERR] END Call(ExecuteAction ERR): <GetAll>b__2_0, GUID: "cf79ed1f-b9d6-4cfc-98e9-0ecfba577d7d", result: MyTableService - 42P01: la relazione "schema_a.AspNetUsers" non esiste
+
+POSITION: 346
+Npgsql.PostgresException (0x80004005): 42P01: la relazione "schema_a.AspNetUsers" non esiste
+
+POSITION: 346
+   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.Query.ShapedQueryCompilingExpressionVisitor.SingleOrDefaultAsync[TSource](IAsyncEnumerable`1 asyncEnumerable, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.ShapedQueryCompilingExpressionVisitor.SingleOrDefaultAsync[TSource](IAsyncEnumerable`1 asyncEnumerable, CancellationToken cancellationToken)
+   at nvxapp.server.service.Infrastructure.ServiceBase.OkResponse[T](T data) in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\Infrastructure\ServiceBase.cs:line 136
+   at nvxapp.server.service.Infrastructure.ServiceBase.ExecuteAction[T,P1](P1 p1, Func`1 function, Boolean isSubProcess) in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\Infrastructure\ServiceBase.cs:line 84
+  Exception data:
+    Severity: ERRORE
+    SqlState: 42P01
+    MessageText: la relazione "schema_a.AspNetUsers" non esiste
+    Position: 346
+    File: parse_relation.c
+    Line: 1363
+    Routine: parserOpenTable
+2025-02-13 10:00:10.511 [ERR] END Call(ExecuteAction ERR): <GetAll>b__3_0, GUID: "4e117b26-0e72-40ba-afb2-336d182a356c", result: WeatherForecastService - 42P01: la relazione "schema_a.AspNetUsers" non esiste
+
+POSITION: 346
+Npgsql.PostgresException (0x80004005): 42P01: la relazione "schema_a.AspNetUsers" non esiste
+
+POSITION: 346
+   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.Query.ShapedQueryCompilingExpressionVisitor.SingleOrDefaultAsync[TSource](IAsyncEnumerable`1 asyncEnumerable, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.ShapedQueryCompilingExpressionVisitor.SingleOrDefaultAsync[TSource](IAsyncEnumerable`1 asyncEnumerable, CancellationToken cancellationToken)
+   at nvxapp.server.service.Infrastructure.ServiceBase.OkResponse[T](T data) in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\Infrastructure\ServiceBase.cs:line 136
+   at nvxapp.server.service.Infrastructure.ServiceBase.ExecuteAction[T,P1](P1 p1, Func`1 function, Boolean isSubProcess) in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\Infrastructure\ServiceBase.cs:line 84
+  Exception data:
+    Severity: ERRORE
+    SqlState: 42P01
+    MessageText: la relazione "schema_a.AspNetUsers" non esiste
+    Position: 346
+    File: parse_relation.c
+    Line: 1363
+    Routine: parserOpenTable
+2025-02-13 10:00:10.535 [ERR] WeatherForecastService - 42P01: la relazione "schema_a.AspNetUsers" non esiste
+
+POSITION: 346
+2025-02-13 10:26:39.010 [INF] Call: <Login>b__0, GUID: "51ba0631-7a60-4ee4-9e38-e5b950c3ba22", param: {"Data":{"UserName":"superuser","Password":"1234"}}
+2025-02-13 10:26:47.394 [INF] Call: <UserRoles>b__4_0, GUID: "cf83d74f-1653-4586-b32d-afbc0237de60", param: {"Data":{}}
+2025-02-13 10:26:59.728 [INF] Call: <UserRoles>b__4_0, GUID: "6d97e83c-6c89-4088-a585-2609e1cbce4c", param: {"Data":{}}
+2025-02-13 10:27:54.830 [INF] Call: <GetAll>b__3_0, GUID: "b2c3fae0-608a-4bf3-9bee-af43d68dd9bd", param: {"Data":{}}
+2025-02-13 10:27:54.845 [INF] Call: <GetAll>b__2_0, GUID: "cfc5e736-b765-4817-a894-8d317e9a205e", param: {"Data":{}}
+2025-02-13 10:28:35.843 [INF] Call: <UserRoles>b__4_0, GUID: "5774e607-389b-4889-bf56-2fbb67f81add", param: {"Data":{}}
+2025-02-13 10:28:47.947 [INF] Call: <GetAll>b__3_0, GUID: "f822c427-ae89-401e-91c5-fc6a88f078ab", param: {"Data":{}}
+2025-02-13 10:28:47.962 [INF] Call: <GetAll>b__2_0, GUID: "d07ee00d-bafb-4bd4-a072-aaeba11febbd", param: {"Data":{}}
+2025-02-13 10:29:20.654 [INF] Call: <GetAll>b__3_0, GUID: "15d7459f-953b-40d7-856f-3445683ba818", param: {"Data":{}}
+2025-02-13 10:29:20.668 [INF] Call: <GetAll>b__2_0, GUID: "3a662178-a0f7-4939-aac7-47b53e7f743a", param: {"Data":{}}
+2025-02-13 10:29:21.841 [ERR] END Call(ExecuteAction ERR): <GetAll>b__2_0, GUID: "3a662178-a0f7-4939-aac7-47b53e7f743a", result: MyTableService - 42P01: la relazione "public.MyTable" non esiste
+
+POSITION: 90
+Npgsql.PostgresException (0x80004005): 42P01: la relazione "public.MyTable" non esiste
+
+POSITION: 90
+   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource<TResult>.GetResult(Int16 token)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)
+   at Npgsql.NpgsqlCommand.ExecuteDbDataReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteReaderAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.InitializeReaderAsync(AsyncEnumerator enumerator, CancellationToken cancellationToken)
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.Query.Internal.SingleQueryingEnumerable`1.AsyncEnumerator.MoveNextAsync()
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ToListAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at nvxapp.server.data.Infrastructure.Repository`2.FindAll()
+   at nvxapp.server.service.Service.MyTableService.MyTableService.<GetAll>b__2_0() in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\ClientServer-Service\MyTableService\MyTableService.cs:line 48
+   at nvxapp.server.service.Infrastructure.ServiceBase.ExecuteAction[T,P1](P1 p1, Func`1 function, Boolean isSubProcess) in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\Infrastructure\ServiceBase.cs:line 69
+  Exception data:
+    Severity: ERRORE
+    SqlState: 42P01
+    MessageText: la relazione "public.MyTable" non esiste
+    Position: 90
+    File: parse_relation.c
+    Line: 1363
+    Routine: parserOpenTable
+2025-02-13 10:29:48.694 [INF] Call: <UserRoles>b__4_0, GUID: "5aa421df-15dc-4f7d-843c-4dd40ecedc06", param: {"Data":{}}
+2025-02-13 10:30:03.718 [INF] Call: <GetAll>b__3_0, GUID: "bd61917f-e2b6-443d-b66b-b4b1f7a89aaf", param: {"Data":{}}
+2025-02-13 10:30:03.733 [INF] Call: <GetAll>b__2_0, GUID: "16539f10-2a83-40a0-9c29-0e9dca4f88c6", param: {"Data":{}}
+2025-02-13 10:46:09.368 [INF] Call: <Login>b__0, GUID: "715a0e16-890d-4aa3-9bfc-42e5124af50c", param: {"Data":{"UserName":"superuser","Password":"1234"}}
+2025-02-13 10:46:11.035 [INF] Call: <UserRoles>b__4_0, GUID: "abad4121-0af7-4116-8212-3e9cd15be84f", param: {"Data":{}}
+2025-02-13 10:46:15.087 [INF] Call: <GetAll>b__3_0, GUID: "7169d4cb-45ee-4bff-aa20-b2f06790c2d5", param: {"Data":{}}
+2025-02-13 10:46:15.102 [INF] Call: <GetAll>b__2_0, GUID: "0677fdd9-5b96-4887-ac9e-91e6d2544d38", param: {"Data":{}}
+2025-02-13 10:46:34.790 [INF] Call: <GetAll>b__3_0, GUID: "02669a1e-8960-4c0b-858e-7f53f268328e", param: {"Data":{}}
+2025-02-13 10:46:34.806 [INF] Call: <GetAll>b__2_0, GUID: "b4d2feac-b0b1-4d3c-9270-c06082ab2b87", param: {"Data":{}}
+2025-02-13 10:46:50.082 [INF] Call: <UserRoles>b__4_0, GUID: "abdc9408-6411-4c8a-9fb8-79ef5879aa74", param: {"Data":{}}
+2025-02-13 11:56:31.675 [INF] Call: <Login>b__0, GUID: "c2f3b774-f96f-4b89-baf3-0debd6879e5d", param: {"Data":{"UserName":"superuser","Password":"1234"}}
+2025-02-13 11:56:33.339 [INF] Call: <UserRoles>b__4_0, GUID: "0e291e60-6615-42f0-a4a5-598421a11487", param: {"Data":{}}
+2025-02-13 11:56:39.058 [INF] Call: <GetAll>b__3_0, GUID: "cd78bd7e-cd26-46d9-b9bc-655e4683dd5a", param: {"Data":{}}
+2025-02-13 11:56:39.074 [INF] Call: <GetAll>b__2_0, GUID: "b6d6e7c0-d26b-4556-9251-4168984584e9", param: {"Data":{}}
+2025-02-13 11:56:59.952 [INF] Call: <GetAll>b__3_0, GUID: "00b39eac-b411-4d38-a510-2da6fb33f5f5", param: {"Data":{}}
+2025-02-13 11:56:59.967 [INF] Call: <GetAll>b__2_0, GUID: "639b8840-fa3b-454d-bb8f-86b9d998086e", param: {"Data":{}}
+2025-02-13 11:57:06.533 [INF] Call: <GetAll>b__3_0, GUID: "ce5a216c-f1d5-4ed9-89d7-8a5f0ffa2296", param: {"Data":{}}
+2025-02-13 11:57:06.538 [INF] Call: <GetAll>b__2_0, GUID: "cad4db7f-1355-493c-8c1d-80337527283a", param: {"Data":{}}
+2025-02-13 12:55:36.025 [INF] Call: <Login>b__0, GUID: "4efed86a-ed2c-4174-b73d-203f9a3e92de", param: {"Data":{"UserName":"superuser","Password":"1234"}}
+2025-02-13 12:55:37.746 [INF] Call: <UserRoles>b__4_0, GUID: "c0b309b2-cfa2-425f-8e15-c3ef27e3bbc0", param: {"Data":{}}
+2025-02-13 12:55:43.666 [INF] Call: <GetAll>b__3_0, GUID: "51b6dd05-a346-47a5-b287-30c070d3645c", param: {"Data":{}}
+2025-02-13 12:55:43.676 [INF] Call: <GetAll>b__2_0, GUID: "a57e9f94-69f8-4a31-bbd5-9f36c52fd1e0", param: {"Data":{}}
+2025-02-13 12:58:42.547 [INF] Call: <Login>b__0, GUID: "dd356910-2999-4b85-a136-f9d1f3cffcda", param: {"Data":{"UserName":"superuser","Password":"1234"}}
+2025-02-13 12:58:44.266 [INF] Call: <UserRoles>b__4_0, GUID: "61c91d2a-828f-4d2f-87a1-aacc851a5a51", param: {"Data":{}}
+2025-02-13 12:58:52.817 [INF] Call: <GetAll>b__3_0, GUID: "90461726-87bc-4a71-bdbe-e4777995f8fc", param: {"Data":{}}
+2025-02-13 12:58:52.834 [INF] Call: <GetAll>b__2_0, GUID: "dc598d83-c51d-4670-b3f8-9585bfb62f5b", param: {"Data":{}}
+2025-02-13 14:48:10.093 [INF] Call: <Login>b__0, GUID: "bb9332fa-c8f1-40da-9d5f-e0b984d5c1e2", param: {"Data":{"UserName":"superuser","Password":"1234"}}
+2025-02-13 14:48:11.809 [INF] Call: <UserRoles>b__4_0, GUID: "0692f00c-e7b6-45c0-b400-ba6d7b138fc1", param: {"Data":{}}
+2025-02-13 14:48:18.736 [INF] Call: <UserRoles>b__4_0, GUID: "f072b382-3b3c-465b-8b26-327396432d14", param: {"Data":{}}
+2025-02-13 14:48:28.201 [INF] Call: <GetAll>b__3_0, GUID: "feddfc7e-aeb2-41d1-999a-e7965d2b33c9", param: {"Data":{}}
+2025-02-13 14:48:28.217 [INF] Call: <GetAll>b__2_0, GUID: "daab3f3d-2d0d-42f6-803c-a2838aae20c6", param: {"Data":{}}
+2025-02-13 14:48:51.471 [INF] Call: <GetAll>b__3_0, GUID: "942ab5d1-97a1-4cf5-9a44-0d6a6e881d6e", param: {"Data":{}}
+2025-02-13 14:48:51.479 [INF] Call: <GetAll>b__2_0, GUID: "ef7e9bfc-f870-496d-8121-4af1bd6f0e73", param: {"Data":{}}
+2025-02-13 14:49:06.058 [INF] Call: <UserRoles>b__4_0, GUID: "44ef220e-10ee-4c1c-8c1b-af55836f3033", param: {"Data":{}}
+2025-02-13 14:49:12.721 [INF] Call: <GetAll>b__3_0, GUID: "4f5e29e9-9ec6-4cba-b322-b9ed737cb171", param: {"Data":{}}
+2025-02-13 14:49:12.737 [INF] Call: <GetAll>b__2_0, GUID: "8ff45233-26ca-442d-ad0f-8bb8477874ed", param: {"Data":{}}
+2025-02-13 15:07:32.628 [INF] Call: <Login>b__0, GUID: "74e8989f-ca4b-4bc3-a9aa-18f65756042f", param: {"Data":{"UserName":"superuser","Password":"1234"}}
+2025-02-13 15:07:34.280 [INF] Call: <UserRoles>b__4_0, GUID: "c55f73e8-6cd3-40ca-a45f-24ccef700f60", param: {"Data":{}}
+2025-02-13 15:07:39.142 [INF] Call: <UserRoles>b__4_0, GUID: "8a741460-de8d-427a-8e1a-1f491604c30a", param: {"Data":{}}
+2025-02-13 15:07:47.227 [INF] Call: <GetAll>b__3_0, GUID: "27b6802d-fb83-41cb-a25c-3a979878a537", param: {"Data":{}}
+2025-02-13 15:07:47.248 [INF] Call: <GetAll>b__2_0, GUID: "2f0f1917-cedd-4d6e-8c6d-eae396adde00", param: {"Data":{}}
+2025-02-13 15:08:06.737 [INF] Call: <GetAll>b__3_0, GUID: "9f7f9c5b-faa1-462e-b742-515045c00992", param: {"Data":{}}
+2025-02-13 15:08:06.754 [INF] Call: <GetAll>b__2_0, GUID: "64e976f5-e847-420c-9a33-336b16cf8799", param: {"Data":{}}
+2025-02-13 16:56:22.206 [INF] Call: <Login>b__0, GUID: "c1909b05-7f8e-4251-8b04-c01ab4c4a0bd", param: {"Data":{"UserName":"superuser","Password":"1234"}}
+2025-02-13 16:56:23.886 [INF] Call: <UserRoles>b__4_0, GUID: "ab064cf7-a6f3-421c-b82f-ce518748b18a", param: {"Data":{}}
+2025-02-13 16:56:39.459 [INF] Call: <UserRoles>b__4_0, GUID: "3b34c321-ec05-429e-9303-52ad92d751c5", param: {"Data":{}}
+2025-02-13 16:56:50.143 [INF] Call: <GetAll>b__3_0, GUID: "40fb0a0d-2cc3-43dc-bf36-6229ee332021", param: {"Data":{}}
+2025-02-13 16:56:50.158 [INF] Call: <GetAll>b__2_0, GUID: "666e2cc6-1cb8-4274-85ca-271560710dbb", param: {"Data":{}}
+2025-02-13 16:57:09.699 [INF] Call: <GetAll>b__3_0, GUID: "ede6512a-b4fd-4c4c-9be7-a6564ed2a9ae", param: {"Data":{}}
+2025-02-13 16:57:09.714 [INF] Call: <GetAll>b__2_0, GUID: "81a4d685-4720-4d14-ac7c-896f392c869d", param: {"Data":{}}
+2025-02-13 16:57:20.921 [INF] Call: <UserRoles>b__4_0, GUID: "191ecda8-a039-4554-af96-a726d6d43c41", param: {"Data":{}}
+2025-02-13 17:01:43.951 [INF] Call: <Login>b__0, GUID: "0d731442-627e-428c-ba18-7ea14d40fca8", param: {"Data":{"UserName":"superuser","Password":"1234"}}
+2025-02-13 17:01:45.544 [INF] Call: <UserRoles>b__4_0, GUID: "d78153d2-a9a1-465f-994a-24b9998384ff", param: {"Data":{}}
+2025-02-13 17:01:57.163 [INF] Call: <UserRoles>b__4_0, GUID: "c086fb47-2016-4a24-b3a8-42f5aeaa3dd8", param: {"Data":{}}
+2025-02-13 17:02:04.701 [INF] Call: <GetAll>b__3_0, GUID: "f1212223-4273-4087-be62-7b8a5e4d1751", param: {"Data":{}}
+2025-02-13 17:02:04.716 [INF] Call: <GetAll>b__2_0, GUID: "923227a2-8d42-41b2-a269-95bf79135d4a", param: {"Data":{}}

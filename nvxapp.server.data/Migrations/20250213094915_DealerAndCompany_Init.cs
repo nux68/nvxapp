@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
+using nvxapp.server.data.Infrastructure;
 
 #nullable disable
 
@@ -12,6 +13,10 @@ namespace nvxapp.server.data.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+
+            if (SharedSchema.CurrentSchema != "public")
+                return;
+
             migrationBuilder.CreateTable(
                 name: "Dealer",
                 schema: "public",
@@ -38,6 +43,7 @@ namespace nvxapp.server.data.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     IdDealer = table.Column<int>(type: "integer", nullable: false),
                     Descrizione = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    Schema = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
@@ -168,6 +174,9 @@ namespace nvxapp.server.data.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            if (SharedSchema.CurrentSchema != "public")
+                return;
+
             migrationBuilder.DropTable(
                 name: "UserCompany",
                 schema: "public");

@@ -12,8 +12,8 @@ using nvxapp.server.data.Infrastructure;
 namespace nvxapp.server.data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250211161911_DealerAndCompany_Init")]
-    partial class DealerAndCompany_Init
+    [Migration("20250213094253_MyTable")]
+    partial class MyTable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -235,143 +235,6 @@ namespace nvxapp.server.data.Migrations
                     b.ToTable("AspNetUsers", "public");
                 });
 
-            modelBuilder.Entity("nvxapp.server.data.Entities.Public.Company", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ChangeUser")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.Property<DateTime?>("CreationDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("Descrizione")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<int>("IdDealer")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("ModifiedDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Descrizione")
-                        .IsUnique();
-
-                    b.HasIndex("IdDealer");
-
-                    b.ToTable("Company", "public");
-                });
-
-            modelBuilder.Entity("nvxapp.server.data.Entities.Public.Dealer", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ChangeUser")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.Property<DateTime?>("CreationDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("Descrizione")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<DateTime?>("ModifiedDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Descrizione")
-                        .IsUnique();
-
-                    b.ToTable("Dealer", "public");
-                });
-
-            modelBuilder.Entity("nvxapp.server.data.Entities.Public.UserCompany", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ChangeUser")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.Property<DateTime?>("CreationDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("IdAspNetUsers")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("IdCompany")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("ModifiedDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("IdAspNetUsers");
-
-                    b.HasIndex("IdCompany", "IdAspNetUsers")
-                        .IsUnique();
-
-                    b.ToTable("UserCompany", "public");
-                });
-
-            modelBuilder.Entity("nvxapp.server.data.Entities.Public.UserDealer", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ChangeUser")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.Property<DateTime?>("CreationDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("IdAspNetUsers")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("IdDealer")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("ModifiedDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("IdAspNetUsers");
-
-                    b.HasIndex("IdDealer", "IdAspNetUsers")
-                        .IsUnique();
-
-                    b.ToTable("UserDealer", "public");
-                });
-
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.MyTable", b =>
                 {
                     b.Property<int>("Id")
@@ -452,74 +315,6 @@ namespace nvxapp.server.data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("nvxapp.server.data.Entities.Public.Company", b =>
-                {
-                    b.HasOne("nvxapp.server.data.Entities.Public.Dealer", "DealerNavigation")
-                        .WithMany("Company")
-                        .HasForeignKey("IdDealer")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("DealerNavigation");
-                });
-
-            modelBuilder.Entity("nvxapp.server.data.Entities.Public.UserCompany", b =>
-                {
-                    b.HasOne("nvxapp.server.data.Entities.Public.ApplicationUser", "AspNetUsersNavigation")
-                        .WithMany("UserCompany")
-                        .HasForeignKey("IdAspNetUsers")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("nvxapp.server.data.Entities.Public.Company", "CompanyNavigation")
-                        .WithMany("UserCompany")
-                        .HasForeignKey("IdCompany")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("AspNetUsersNavigation");
-
-                    b.Navigation("CompanyNavigation");
-                });
-
-            modelBuilder.Entity("nvxapp.server.data.Entities.Public.UserDealer", b =>
-                {
-                    b.HasOne("nvxapp.server.data.Entities.Public.ApplicationUser", "AspNetUsersNavigation")
-                        .WithMany("UserDealer")
-                        .HasForeignKey("IdAspNetUsers")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("nvxapp.server.data.Entities.Public.Dealer", "DealerNavigation")
-                        .WithMany("UserDealer")
-                        .HasForeignKey("IdDealer")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("AspNetUsersNavigation");
-
-                    b.Navigation("DealerNavigation");
-                });
-
-            modelBuilder.Entity("nvxapp.server.data.Entities.Public.ApplicationUser", b =>
-                {
-                    b.Navigation("UserCompany");
-
-                    b.Navigation("UserDealer");
-                });
-
-            modelBuilder.Entity("nvxapp.server.data.Entities.Public.Company", b =>
-                {
-                    b.Navigation("UserCompany");
-                });
-
-            modelBuilder.Entity("nvxapp.server.data.Entities.Public.Dealer", b =>
-                {
-                    b.Navigation("Company");
-
-                    b.Navigation("UserDealer");
                 });
 #pragma warning restore 612, 618
         }
