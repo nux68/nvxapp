@@ -24,7 +24,7 @@ namespace nvxapp.server.service.Infrastructure
         private readonly IHttpContextAccessor _httpContextAccessor;
 
 #if DEBUG
-        public const int DelayAsyncMethod = 1000;
+        public const int DelayAsyncMethod = 500;
 #else
         public const int DelayAsyncMethod = 1;
 #endif

@@ -13,48 +13,13 @@ using nvxapp.server.data.Entities.Tenant;
 namespace nvxapp.server.data.Infrastructure
 {
 
-    public class MyApplicationDbContextFactory : IDesignTimeDbContextFactory<ApplicationDbContext>
-    {
-        private readonly IHttpContextAccessor? _httpContextAccessor=null;
-
-        //public MyApplicationDbContextFactory(IHttpContextAccessor httpContextAccessor)
-        //{
-        //    _httpContextAccessor = httpContextAccessor;
-        //}
-
-        public ApplicationDbContext CreateDbContext(string[] args)
-        {
-            var configuration = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json")
-                .Build();
-
-            var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
-            var connectionString = configuration.GetConnectionString("nvxappDbContext");
-
-            Boolean MultiTenant = false;
-            string? sMultiTenant = configuration["DbParameter:MultiTenant"];
-
-            bool.TryParse(sMultiTenant, out MultiTenant);
-            SharedSchema.MultiTenant = MultiTenant;
-
-
-            optionsBuilder.UseNpgsql(
-                connectionString,
-                npgsqlOptions => npgsqlOptions.MigrationsAssembly("nvxapp.server.data")
-            );
-
-            Console.WriteLine("ciao");
-
-            return new ApplicationDbContext(optionsBuilder.Options, _httpContextAccessor, configuration);
-        }
-    }
+    
 
 
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, string>
     {
         private readonly IConfiguration _configuration;
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IHttpContextAccessor? _httpContextAccessor;
 
         public DbSet<MyTable> MyTables { get; set; }
         public DbSet<Dealer> Dealer { get; set; }
@@ -70,44 +35,40 @@ namespace nvxapp.server.data.Infrastructure
 
         /*
          Questo costruttore viene eseguito dal ApplicationDbContextFactory nei 
-         repository che accedono ai tenant
+         repository che accedono ai tenant (schema varra null e varra estratto dall'header http)
         */
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options,
                                     IHttpContextAccessor httpContextAccessor,
                                     IConfiguration configuration,
                                     string? schema) : base(options)
         {
-            _currentSchema = schema;
             _httpContextAccessor = httpContextAccessor;
-            _configuration = configuration;
-
-
-            SharedSchema.CurrentSchema = getSchema;
+            
+            _configuration = configuration;         // NON SPOSTARE va eseguito 1
+            _currentSchema = schema;                // NON SPOSTARE va eseguito 2
+            SharedSchema.CurrentSchema = getSchema; // NON SPOSTARE va eseguito 3
 
             //X le date
             AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+            ChangeTracker.QueryTrackingBehavior = Microsoft.EntityFrameworkCore.QueryTrackingBehavior.NoTracking;
 
-            //////////ChangeTracker.QueryTrackingBehavior = Microsoft.EntityFrameworkCore.QueryTrackingBehavior.NoTracking;
-            //////////if (UsersEvents != null)
-            //////////    Entry(UsersEvents).State = EntityState.Detached;
         }
 
         /// Questo costruttore viene eseguito dalla injection
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options,
-                                    IHttpContextAccessor httpContextAccessor,
+                                    IHttpContextAccessor? httpContextAccessor,
                                     IConfiguration configuration) : base(options)
         {
+            _httpContextAccessor = httpContextAccessor;
+            _configuration = configuration;          // NON SPOSTARE va eseguito 1
+            SharedSchema.CurrentSchema = getSchema;  // NON SPOSTARE va eseguito 2
+
             //X le date
             AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-            _httpContextAccessor = httpContextAccessor;
-            _configuration = configuration;
+            ChangeTracker.QueryTrackingBehavior = Microsoft.EntityFrameworkCore.QueryTrackingBehavior.NoTracking;
 
-            SharedSchema.CurrentSchema = getSchema;
 
-            //////////ChangeTracker.QueryTrackingBehavior = Microsoft.EntityFrameworkCore.QueryTrackingBehavior.NoTracking;
-            //////////if (UsersEvents != null)
-            //////////    Entry(UsersEvents).State = EntityState.Detached;
-
+            
         }
 
 
@@ -274,19 +235,18 @@ namespace nvxapp.server.data.Infrastructure
 
             optionsBuilder.ConfigureWarnings(warnings => warnings.Ignore(RelationalEventId.PendingModelChangesWarning));
         }
-
-        /*
-         Funzionamento
-         se MultiTenant = false (parametri applicazione)
-            allora ritorna public
-         altrimenti
-            se _currentSchema è valorizzato dal costruttore tramite RepositoryXX->ApplicationDbContextFactory
-               usa quel valore
-            altrimenti
-               estrae il valore col HttpContext
-         */
         private string getSchema
         {
+            /*
+             Funzionamento
+             se MultiTenant = false (parametri applicazione)
+                allora ritorna public
+             altrimenti
+                se _currentSchema è valorizzato dal costruttore tramite RepositoryXX->ApplicationDbContextFactory
+                   usa quel valore
+                altrimenti
+                   estrae il valore col HttpContext
+             */
 
             get
             {
@@ -306,7 +266,7 @@ namespace nvxapp.server.data.Infrastructure
                 {
                     if (string.IsNullOrEmpty(_currentSchema))
                     {
-                        if (_httpContextAccessor.HttpContext != null)
+                        if (_httpContextAccessor?.HttpContext != null)
                         {
                             var schema = _httpContextAccessor.HttpContext?.User?.FindFirst("tenant")?.Value;
                             if (!string.IsNullOrEmpty(schema))
