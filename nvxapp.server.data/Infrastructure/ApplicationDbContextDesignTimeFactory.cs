@@ -37,7 +37,7 @@ namespace nvxapp.server.data.Infrastructure
                 npgsqlOptions => npgsqlOptions.MigrationsAssembly("nvxapp.server.data")
             );
 
-            Console.WriteLine("MyApplicationDbContextFactory by N.V.N");
+            Console.WriteLine("ApplicationDbContextDesignTimeFactory by N.V.N");
 
             return new ApplicationDbContext(optionsBuilder.Options, _httpContextAccessor, configuration);
         }
