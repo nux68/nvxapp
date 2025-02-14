@@ -5,15 +5,12 @@
 
         
         <ion-list id="nvx-list" *ngIf="userNavigationService.UserCanGoBack">
-          <!--<ion-list-header>ZZZZ</ion-list-header>
-          <ion-note>ZZZ</ion-note>-->
           <ion-menu-toggle auto-hide="false">
-            <ion-item lines="none" detail="false" (click)="handleMenuClick()">
+            <ion-item lines="none" detail="false" (click)="handleMenuClick()" class="menu-item">
               <ion-icon aria-hidden="true" slot="start" [ios]="IconBack + '-outline'" [md]="IconBack + '-sharp'"></ion-icon>
               <ion-label>BACK</ion-label>
             </ion-item>
           </ion-menu-toggle>
-
         </ion-list>
 
         <ion-list id="nvx-list" *ngIf="authService.IsSuperUser">

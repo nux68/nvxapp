@@ -1,3 +1,26 @@
+/*nvx x-ms-webview voce back*/
+.menu-item {
+  --background: transparent;
+  cursor: pointer; /* Cambia il cursore in una "manina" */
+}
+
+.menu-item:hover {
+  --background: rgba(211, 211, 211, 0.3); /* Colore di evidenziazione al passaggio del mouse */
+}
+
+ion-item.menu-item {
+  --background: transparent; /* Sfondo predefinito */
+}
+
+ion-item.menu-item:hover {
+  --background: rgba(211, 211, 211, 0.3); /* Sfondo al passaggio del mouse */
+}
+
+ion-item.menu-item:active {
+  --background: rgba(211, 211, 211, 0.5); /* Sfondo quando è cliccato */
+}
+/*nvx*/
+
 
   ion-menu ion-content {
     --background: var(--ion-item-background, var(--ion-background-color, #fff));
