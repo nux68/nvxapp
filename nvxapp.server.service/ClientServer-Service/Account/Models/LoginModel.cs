@@ -16,7 +16,8 @@ namespace nvxapp.server.service.ClientServer_Service.Account.Models
 
     public class LoginOutModel : ModelResult
     {
-        
+
+        public string? Id { get; set; }
         public string? Token { get; set; }
         //public string? RefreshToken { get; set; }
 

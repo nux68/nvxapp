@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { AccountService } from '../nvx/ClientServer-Service/Account/account.service';
 import { AuthService } from '../nvx/Utility/auth.service';
+import { UserNavigationService } from '../nvx/Utility/user-navigation.service';
 
 @Component({
   selector: 'app-root',
@@ -10,6 +11,7 @@ import { AuthService } from '../nvx/Utility/auth.service';
 })
 export class AppComponent {
 
+  public IconBack: string = "play-back";
 
   public appPages4SuperUser = [
 
@@ -64,7 +66,15 @@ export class AppComponent {
     { title: 'Spam', url: '/folder/spam', icon: 'warning' },
   ];
   public labels = ['Family', 'Friends', 'Notes', 'Work', 'Travel', 'Reminders'];
-  constructor(public authService: AuthService
-) {
+  constructor(public authService: AuthService,
+              public userNavigationService: UserNavigationService
+              )
+  {
   }
+
+  
+  handleMenuClick() {
+    this.userNavigationService.UserGoBack();
+  }
+
 }

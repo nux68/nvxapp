@@ -3,6 +3,18 @@
     <ion-menu contentId="main-content" type="overlay">
       <ion-content>
 
+        
+        <ion-list id="nvx-list" *ngIf="userNavigationService.UserCanGoBack">
+          <!--<ion-list-header>ZZZZ</ion-list-header>
+          <ion-note>ZZZ</ion-note>-->
+          <ion-menu-toggle auto-hide="false">
+            <ion-item lines="none" detail="false" (click)="handleMenuClick()">
+              <ion-icon aria-hidden="true" slot="start" [ios]="IconBack + '-outline'" [md]="IconBack + '-sharp'"></ion-icon>
+              <ion-label>BACK</ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+
+        </ion-list>
 
         <ion-list id="nvx-list" *ngIf="authService.IsSuperUser">
           <ion-list-header>SuperUser</ion-list-header>
@@ -32,7 +44,6 @@
           }
         </ion-list>
 
-        
 
         <ion-list id="nvx-list" *ngIf="authService.IsInGroupDealerAdmin">
           <ion-list-header>DealerAdmin</ion-list-header>
@@ -83,7 +94,7 @@
 
 
 
-        <ion-list id="inbox-list">
+        <!--<ion-list id="inbox-list">
     <ion-list-header>Inbox</ion-list-header>
     <ion-note>hi&#64;ionicframework.com</ion-note>
 
@@ -95,7 +106,10 @@
       </ion-item>
     </ion-menu-toggle>
     }
-  </ion-list>
+  </ion-list>-->
+        <!---->
+        <!---->
+        <!---->
         <!--<ion-list id="labels-list">
     <ion-list-header>Labels</ion-list-header>
 

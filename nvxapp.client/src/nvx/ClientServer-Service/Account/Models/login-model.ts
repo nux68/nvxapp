@@ -9,7 +9,8 @@ export class LoginInModel {
 }
 
 export class LoginOutModel extends ModelResult {
-  
+
+  public id: string | null;
   public token: string|null;
   //public refreshToken: string | null;
 

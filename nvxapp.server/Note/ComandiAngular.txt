@@ -1,0 +1,6 @@
+﻿	ng g c  Pluto (crea componene, g=generate , c=componente) 
+	ng g m  Paperopoli (crea modulo)
+	ng g m  Forecasts --routing (crea modulo con routing su altro file)
+	ng g s Forecasts (servizio)
+	ng g d CnyTaxIdValidator  (direttiva)
+	ng generate pipe nome-pipe  (pipe)

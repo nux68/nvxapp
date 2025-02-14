@@ -7,6 +7,7 @@ import { GenericResult } from '../ModelsBase/generic-result';
 import { UserRolesInModel, UserRolesOutModel } from './Models/user-roles-model';
 import { LoginInModel, LoginOutModel } from './Models/login-model';
 import { AuthService } from '../../Utility/auth.service';
+import { UserLoadInModel, UserLoadOutModel } from './Models/user-load-model';
 
 
 @Injectable({
@@ -21,12 +22,24 @@ export class AccountService {
               private authService: AuthService
   ) { }
 
+  Login(model: GenericRequest<LoginInModel>): Observable<GenericResult<LoginOutModel>> {
+
+    return this.http.post<GenericResult<LoginOutModel>>(environment.remoteData.apiUri + 'Account/Login', model)
+      .pipe(
+        map(r => {
+          return r;
+        }
+        )
+      );
+
+  }
+
   UserRoles(model: GenericRequest<UserRolesInModel>): Observable<GenericResult<UserRolesOutModel>> {
 
     return this.http.post<GenericResult<UserRolesOutModel>>(environment.remoteData.apiUri + 'Account/UserRoles', model)
       .pipe(
                 map(r => {
-                          this.authService.setRole(r.data.roles);
+                          // this.authService.setRole(r.data.roles);
                           return r;
                          }
                 )
@@ -34,15 +47,16 @@ export class AccountService {
 
   }
 
-  Login(model: GenericRequest<LoginInModel>): Observable<GenericResult<LoginOutModel>> {
+  UserLoad(model: GenericRequest<UserLoadInModel>): Observable<GenericResult<UserLoadOutModel>> {
 
-    return this.http.post<GenericResult<LoginOutModel>>(environment.remoteData.apiUri + 'Account/Login', model)
+    return this.http.post<GenericResult<UserLoadOutModel>>(environment.remoteData.apiUri + 'Account/UserLoad', model)
       .pipe(
-        map(r => {
-             return r;
-            }
-        )
-      );
+                map(r => {
+                            //this.authService.setRole(r.data.roles);
+                            return r;
+                          }
+                )
+            );
 
   }
 

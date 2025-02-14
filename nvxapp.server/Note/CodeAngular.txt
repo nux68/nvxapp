@@ -1,0 +1,1 @@
+﻿let request: GenericRequest<UserLoadInModel> = new GenericRequest<UserLoadInModel>(UserLoadInModel);

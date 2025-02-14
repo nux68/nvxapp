@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { UserNavigationService } from '../../Utility/user-navigation.service';
 
 @Component({
   selector: 'app-home-page',
@@ -10,9 +11,11 @@ export class HomePageComponent  implements OnInit {
 
   public title!: string;
 
-  constructor() {
+  constructor(public userNavigationService: UserNavigationService) {
     this.title = 'Home';
   }
+
+  
 
   ngOnInit() {}
 

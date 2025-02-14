@@ -6,6 +6,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NavController } from '@ionic/angular';
 import { LoginInModel } from '../../ClientServer-Service/Account/Models/login-model';
 import { AuthService } from '../../Utility/auth.service';
+import { UserLoadInModel } from '../../ClientServer-Service/Account/Models/user-load-model';
+import { UserNavigationService } from '../../Utility/user-navigation.service';
 
 @Component({
   selector: 'app-login-page',
@@ -20,6 +22,7 @@ export class LoginPageComponent  implements OnInit {
   public loginError!: string;
 
   constructor(private accountService: AccountService,
+              private userNavigationService: UserNavigationService,
               private fb: FormBuilder,
               private navCtrl: NavController,
               private authService: AuthService
@@ -58,25 +61,35 @@ export class LoginPageComponent  implements OnInit {
 
         if (sucecss && x.data.messages.length == 0) {
           
-          this.authService.UserName = UserName;
+          //this.authService.UserName = UserName;
           this.authService.Token = x.data.token;
 
-          let request: GenericRequest<UserRolesInModel> = new GenericRequest<UserRolesInModel>(UserRolesInModel);
-          this.accountService.UserRoles(request).subscribe(x => {
+          //let request: GenericRequest<UserRolesInModel> = new GenericRequest<UserRolesInModel>(UserRolesInModel);
+          //this.accountService.UserRoles(request).subscribe(x => {
+          //  this.navCtrl.navigateForward('/home');
+          //});
 
-            this.navCtrl.navigateForward('/home');
+          let request: GenericRequest<UserLoadInModel> = new GenericRequest<UserLoadInModel>(UserLoadInModel);
+          request.data.id = x.data.id;
+          this.accountService.UserLoad(request).subscribe(usl => {
+            if (usl.success) {
+              this.userNavigationService.UserPush(usl.data.userData,null);
+              this.navCtrl.navigateForward('/home');
+            }
+            else {
 
+            }
           });
 
         }
         else {
           if (sucecss) {
             this.loginError = x.data.messages[0].text;  //x.messages[0].text;
-            this.authService.UserName = null;
+            //this.authService.UserName = null;
           }
           else {
             this.loginError = x.messages[0].text;
-            this.authService.UserName = null;
+            //this.authService.UserName = null;
           }
 
           

@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthService } from '../../Utility/auth.service';
 import { AccountService } from '../../ClientServer-Service/Account/account.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NavController } from '@ionic/angular';
+import { UserNavigationService } from '../../Utility/user-navigation.service';
 
 @Component({
   selector: 'app-logout-page',
@@ -16,9 +16,9 @@ export class LogoutPageComponent  implements OnInit {
   logoutForm: FormGroup;
 
   constructor(private accountService: AccountService,
-    private fb: FormBuilder,
-    private navCtrl: NavController,
-    private authService: AuthService
+              private fb: FormBuilder,
+              private navCtrl: NavController,
+              private userNavigationService: UserNavigationService
   ) {
     this.title = 'LogOut';
 
@@ -31,12 +31,10 @@ export class LogoutPageComponent  implements OnInit {
 
   ngOnInit() {
 
-    
-
   }
 
   logout() {
-    this.authService.UserName = null;
+    this.userNavigationService.LogOut();
     this.navCtrl.navigateForward('/home');
   }
 
