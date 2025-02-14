@@ -7,7 +7,7 @@ import { NavController } from '@ionic/angular';
 import { LoginInModel } from '../../ClientServer-Service/Account/Models/login-model';
 import { AuthService } from '../../Utility/auth.service';
 import { UserLoadInModel } from '../../ClientServer-Service/Account/Models/user-load-model';
-import { UserNavigationService } from '../../Utility/user-navigation.service';
+import { UserDataAdditionalModel, UserNavigationService } from '../../Utility/user-navigation.service';
 
 @Component({
   selector: 'app-login-page',
@@ -73,7 +73,11 @@ export class LoginPageComponent  implements OnInit {
           request.data.id = x.data.id;
           this.accountService.UserLoad(request).subscribe(usl => {
             if (usl.success) {
-              this.userNavigationService.UserPush(usl.data.userData,null);
+
+              let userDataAdditional: UserDataAdditionalModel = new UserDataAdditionalModel();
+              userDataAdditional.gotoBackPage = "/home";
+
+              this.userNavigationService.UserPush(usl.data.userData, userDataAdditional);
               this.navCtrl.navigateForward('/home');
             }
             else {

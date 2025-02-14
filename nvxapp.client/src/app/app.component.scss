@@ -2,23 +2,19 @@
 .menu-item {
   --background: transparent;
   cursor: pointer; /* Cambia il cursore in una "manina" */
+  /*--color: var(--ion-color-primary);*/
+  color:yellow;
 }
 
 .menu-item:hover {
-  --background: rgba(211, 211, 211, 0.3); /* Colore di evidenziazione al passaggio del mouse */
+  /* Colore di evidenziazione al passaggio del mouse */
+  --background: rgba(var(--ion-color-primary-rgb), 0.14);
 }
 
 ion-item.menu-item {
   --background: transparent; /* Sfondo predefinito */
 }
 
-ion-item.menu-item:hover {
-  --background: rgba(211, 211, 211, 0.3); /* Sfondo al passaggio del mouse */
-}
-
-ion-item.menu-item:active {
-  --background: rgba(211, 211, 211, 0.5); /* Sfondo quando è cliccato */
-}
 /*nvx*/
 
 

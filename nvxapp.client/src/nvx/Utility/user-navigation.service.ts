@@ -2,13 +2,15 @@ import { Injectable } from '@angular/core';
 import { UserDataModel } from '../ClientServer-Service/Account/Models/user-load-model';
 import { AuthService } from './auth.service';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { NavController } from '@ionic/angular';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserNavigationService {
 
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService,
+              private navCtrl: NavController) { }
 
   private _userCronology: UserCronologyModel[] | null = [];
 
@@ -52,6 +54,8 @@ export class UserNavigationService {
 
       this.authService.setRole(this._userCronology[this._userCronology.length - 1].userData.roles);
 
+      if(this._userCronology[this._userCronology.length - 1].userDataAdditional.gotoBackPage != null)
+        this.navCtrl.navigateForward(this._userCronology[this._userCronology.length - 1].userDataAdditional.gotoBackPage);
     }
 
   }
@@ -74,5 +78,6 @@ export class UserCronologyModel {
 // dati aggintivi che mi permettono di tornare alla situazione precedente in caso di back
 export class UserDataAdditionalModel {
 
+  public gotoBackPage: string | null;
 
 }
