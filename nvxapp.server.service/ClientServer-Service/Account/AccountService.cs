@@ -255,6 +255,48 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                 return retVal;
             }, isSubProcess);
         }
+        public virtual async Task<GenericResult<UserCompanyListOutModel>> UserCompanyList(GenericRequest<UserCompanyListInModel> model, Boolean isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                UserCompanyListOutModel retVal = new UserCompanyListOutModel();
+
+
+                ApplicationRole? applicationRole = _aspNetRolesRepository.GetAll().Where(x => x.Code == RoleCode.User).FirstOrDefault();
+                if (applicationRole != null)
+                {
+                    if (applicationRole.Name != null)
+                    {
+                        var usrRole = await _userManager.GetUsersInRoleAsync(applicationRole.Name);
+                        if (usrRole != null)
+                        {
+                            var usrId = usrRole.Select(x => x.Id).ToList();
+                            var userCompany = _userCompanyRepository.GetAll().Where(x => usrId.Contains(x.IdAspNetUsers)).ToList();
+
+                            foreach (var item in userCompany)
+                            {
+                                var _user = _aspNetUsersRepository.GetAll().Where(x=> x.Id== item.IdAspNetUsers).FirstOrDefault();
+
+                                retVal.UserCompanyList.Add(new UserCompanyListModel()
+                                {
+                                    IdAspNetUsers = item.IdAspNetUsers,
+                                    Descrizione = _user?.UserName
+                                });
+                            }
+                        }
+                    }
+                }
+
+
+
+                //eliminare
+                // Nessun 'await' qui
+                await Task.Delay(DelayAsyncMethod);
+
+                return retVal;
+            }, isSubProcess);
+        }
+
     }
 
     public interface IAccountService : IServiceBase
@@ -264,6 +306,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
         public Task<GenericResult<UserLoadOutModel>> UserLoad(GenericRequest<UserLoadInModel> model, Boolean isSubProcess);
         public Task<GenericResult<DealerListOutModel>> DealerList(GenericRequest<DealerListInModel> inModel, Boolean isSubProcess);
         public Task<GenericResult<CompanyListOutModel>> CompanyList(GenericRequest<CompanyListInModel> inModel, Boolean isSubProcess);
-        
+        public Task<GenericResult<UserCompanyListOutModel>> UserCompanyList(GenericRequest<UserCompanyListInModel> inModel, Boolean isSubProcess);
+
     }
 }

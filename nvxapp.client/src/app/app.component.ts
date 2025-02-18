@@ -43,6 +43,9 @@ export class AppComponent {
 
     { title: 'CompanyPowerAdmin', component: "CompanyPowerAdminPageComponent", url: '/companypoweradmin', icon: 'ellipse' },
     { title: 'CompanyAdmin', component: "CompanyAdminPageComponent", url: '/companyadmin', icon: 'ellipse' },
+    { title: 'User List', component: "UserCompanyListPageComponent", url: '/usercompanylist', icon: 'list-circle' },
+
+    
 
   ];
 
@@ -136,7 +139,10 @@ export class AppComponent {
         if(this.authService.Token==null)
           return false;
         else
-          return true;
+          if (this.userNavigationService.UserCanGoBack)
+            return false;
+          else
+            return true;
         break;
 
       case 'UserImpersonatePageComponent':

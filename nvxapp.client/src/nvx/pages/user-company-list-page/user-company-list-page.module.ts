@@ -3,7 +3,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
-import { DealerListPageComponent } from './dealer-list-page.component';
+import { UserCompanyListPageComponent } from './user-company-list-page.component';
+
+
 
 
 @NgModule({
@@ -14,15 +16,13 @@ import { DealerListPageComponent } from './dealer-list-page.component';
     RouterModule.forChild([
       {
         path: '',
-        component: DealerListPageComponent
+        component: UserCompanyListPageComponent
       }
     ])
   ],
 
-  declarations: [DealerListPageComponent],
+  declarations: [UserCompanyListPageComponent],
 
 })
-export class DealerListPageModule { }
-
-
+export class UserCompanyListPageModule { }
 
