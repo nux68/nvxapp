@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
-import { UserImpersonateComponent } from './user-impersonate.component';
+import { UserImpersonatePageComponent } from './user-impersonate-page.component';
 
 
 @NgModule({
@@ -14,13 +14,13 @@ import { UserImpersonateComponent } from './user-impersonate.component';
     RouterModule.forChild([
       {
         path: '',
-        component: UserImpersonateComponent
+        component: UserImpersonatePageComponent
       }
     ])
   ],
-  declarations: [UserImpersonateComponent]
+  declarations: [UserImpersonatePageComponent]
 })
-export class UserImpersonateModule { }
+export class UserImpersonatePageModule { }
 
 
 

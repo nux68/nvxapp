@@ -73,10 +73,7 @@ export class AppComponent {
   }
 
   
-  handleMenuClick() {
-    this.userNavigationService.UserGoBack();
-  }
-
+  
   public showPage4User(title: string): boolean {
     switch (title) {
       case 'Home':

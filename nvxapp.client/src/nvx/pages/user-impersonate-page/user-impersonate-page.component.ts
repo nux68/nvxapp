@@ -3,12 +3,12 @@ import { UserNavigationService } from '../../Utility/user-navigation.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
-  selector: 'app-user-impersonate',
-  templateUrl: './user-impersonate.component.html',
-  styleUrls: ['./user-impersonate.component.scss'],
+  selector: 'app-user-impersonate-page',
+  templateUrl: './user-impersonate-page.component.html',
+  styleUrls: ['./user-impersonate-page.component.scss'],
   standalone: false
 })
-export class UserImpersonateComponent  implements OnInit {
+export class UserImpersonatePageComponent  implements OnInit {
 
   public title!: string;
   userGoBackForm: FormGroup;
