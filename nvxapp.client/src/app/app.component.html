@@ -3,15 +3,30 @@
     <ion-menu contentId="main-content" type="overlay">
       <ion-content>
 
-        
-        <ion-list id="nvx-list" *ngIf="userNavigationService.UserCanGoBack">
-          <ion-menu-toggle auto-hide="false">
-            <ion-item lines="none" detail="false" (click)="handleMenuClick()" class="menu-item">
-              <ion-icon aria-hidden="true" slot="start" [ios]="IconBack + '-outline'" [md]="IconBack + '-sharp'"></ion-icon>
-              <ion-label>BACK</ion-label>
+
+        <!--<ion-list id="nvx-list" *ngIf="userNavigationService.UserCanGoBack">
+    <ion-menu-toggle auto-hide="false">
+      <ion-item lines="none" detail="false" (click)="handleMenuClick()" class="menu-item">
+        <ion-icon aria-hidden="true" slot="start" [ios]="IconBack + '-outline'" [md]="IconBack + '-sharp'"></ion-icon>
+        <ion-label>BACK</ion-label>
+      </ion-item>
+    </ion-menu-toggle>
+  </ion-list>-->
+
+        <ion-list id="nvx-list">
+          <ion-list-header>User</ion-list-header>
+          <ion-note>Elementi menu user</ion-note>
+
+          @for (p of appPages4User; track p; let i = $index) {
+          <ion-menu-toggle auto-hide="false" *ngIf="showPage4User(p.title)">
+            <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
+              <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-sharp'"></ion-icon>
+              <ion-label>{{ p.title }}</ion-label>
             </ion-item>
           </ion-menu-toggle>
+          }
         </ion-list>
+
 
         <ion-list id="nvx-list" *ngIf="authService.IsSuperUser">
           <ion-list-header>SuperUser</ion-list-header>
@@ -26,6 +41,7 @@
           </ion-menu-toggle>
           }
         </ion-list>
+
 
         <ion-list id="nvx-list" *ngIf="authService.IsInGroupAdmin">
           <ion-list-header>Admin</ion-list-header>
@@ -71,19 +87,7 @@
           }
         </ion-list>
 
-        <ion-list id="nvx-list">
-          <ion-list-header>User</ion-list-header>
-          <ion-note>Elementi menu user</ion-note>
 
-          @for (p of appPages4User; track p; let i = $index) {
-          <ion-menu-toggle auto-hide="false">
-            <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
-              <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-sharp'"></ion-icon>
-              <ion-label>{{ p.title }}</ion-label>
-            </ion-item>
-          </ion-menu-toggle>
-          }
-        </ion-list>
 
 
 

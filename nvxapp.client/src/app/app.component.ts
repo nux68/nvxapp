@@ -47,10 +47,10 @@ export class AppComponent {
 
   public appPages4User = [
 
+    { title: 'Impersonate', url: '/userimpersonate', icon: 'people-circle' },
     { title: 'Home', url: '/home', icon: 'home' },
     { title: 'Login', url: '/login', icon: 'enter' },
     { title: 'Logout', url: '/logout', icon: 'exit' },
-
   ];
 
 
@@ -76,5 +76,39 @@ export class AppComponent {
   handleMenuClick() {
     this.userNavigationService.UserGoBack();
   }
+
+  public showPage4User(title: string): boolean {
+    switch (title) {
+      case 'Home':
+        return true;
+        break;
+
+      case 'Login':
+        return true;
+        break;
+
+      case 'Logout':
+        if(this.authService.Token==null)
+          return false;
+        else
+          return true;
+        break;
+
+      case 'Impersonate':
+        if (this.userNavigationService.UserCanGoBack)
+          return true;
+        else
+          return false;
+        break;
+
+
+      default:
+        return false;
+        break;
+    }
+
+    
+  }
+
 
 }
