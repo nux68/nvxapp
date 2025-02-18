@@ -14,8 +14,29 @@
     </ion-toolbar>
   </ion-header>
 
-  <div id="container">
+  <ion-grid *ngIf="dealerList!=null">
+    <ion-row>
+      <!--<ion-col>idDealer</ion-col>
+      <ion-col>idAspNetUsers</ion-col>-->
+      <ion-col>descrizione</ion-col>
+      <ion-col>Action</ion-col>
+    </ion-row>
+    <ion-row *ngFor="let item of dealerList">
+      <!--<ion-col>{{ item.idDealer }}</ion-col>
+      <ion-col>{{ item.idAspNetUsers }}</ion-col>-->
+      <ion-col>{{ item.descrizione }}</ion-col>
+      <ion-col>
+        <ion-button (click)="handleButtonClick(item)">Impersonate</ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+
+  <!--<div id="container">
     <strong class="capitalize">{{ title }}</strong>
     <p>{{title}}Component works...</p>
   </div>
+
+  {{dealerList|json}}-->
+
 </ion-content>

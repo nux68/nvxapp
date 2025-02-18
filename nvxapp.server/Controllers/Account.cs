@@ -21,8 +21,6 @@ namespace nvxapp.server.Controllers
             _accountService = accountService;
         }
 
-
-
         [HttpPost]
         [Route("Login")]
         public async Task<GenericResult<LoginOutModel>> Login(GenericRequest<LoginInModel> inModel)
@@ -52,6 +50,15 @@ namespace nvxapp.server.Controllers
             return res;
         }
 
+        [Authorize]
+        [HttpPost]
+        [Route("DealerList")]
+        public async Task<GenericResult<DealerListOutModel>> DealerList(GenericRequest<DealerListInModel> inModel)
+        {
+            var res = await _accountService.DealerList(inModel, false);
+
+            return res;
+        }
     }
 
 

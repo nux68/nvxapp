@@ -45,6 +45,10 @@ export class AuthService {
 
   }
 
+  public get IsUser(): boolean {
+    return this.hasRole('User');
+  }
+
   public get IsSuperUser(): boolean {
     return this.hasRole('SuperUser');
   }

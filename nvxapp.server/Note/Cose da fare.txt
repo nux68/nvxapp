@@ -1,3 +1,6 @@
 ﻿gestige gli schemi postgers + migrazioni multi tenat e login
 gestire essore verso chiamata server
 gestire thema
+
+
+IAspNetRolesRepository da imoplemantare correttamente ORA NON PUO ESSERE USATO

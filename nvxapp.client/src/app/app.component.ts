@@ -52,6 +52,9 @@ export class AppComponent {
     { title: 'Home', component: "HomePageComponent", url: '/home', icon: 'home' },
     { title: 'Login', component: "LoginPageComponent", url: '/login', icon: 'enter' },
     { title: 'Logout', component: "LogoutPageComponent", url: '/logout', icon: 'exit' },
+
+    { title: 'Logged Home', component: "LoggedHomePageComponent", url: '/home', icon: 'home' },
+
   ];
 
 
@@ -117,7 +120,9 @@ export class AppComponent {
   }
 
   public showPage4User(component: string): boolean {
+
     switch (component) {
+
       case 'HomePageComponent':
         return true;
         break;
@@ -142,7 +147,11 @@ export class AppComponent {
 
 
       default:
-        return false;
+
+        if (this.authService.IsUser)
+          return true;
+        else
+          return false;
         break;
     }
 
