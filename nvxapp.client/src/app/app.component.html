@@ -62,7 +62,7 @@
           <ion-note>Elementi menu DealerAdmin</ion-note>
 
           @for (p of appPages4DealerAdmin; track p; let i = $index) {
-          <ion-menu-toggle auto-hide="false">
+          <ion-menu-toggle auto-hide="false" *ngIf="showPage4DealerAdmin(p.component)">
             <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
               <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-sharp'"></ion-icon>
               <ion-label>{{ p.title }}</ion-label>
@@ -77,7 +77,7 @@
           <ion-note>Elementi menu CompanyAdmin</ion-note>
 
           @for (p of appPages4CompanyAdmin; track p; let i = $index) {
-          <ion-menu-toggle auto-hide="false">
+          <ion-menu-toggle auto-hide="false" *ngIf="showPage4CompanyAdmin(p.component)">
             <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
               <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-sharp'"></ion-icon>
               <ion-label>{{ p.title }}</ion-label>

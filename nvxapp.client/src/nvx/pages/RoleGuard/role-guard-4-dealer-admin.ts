@@ -11,7 +11,7 @@ export class RoleGuard4DealerAdmin implements CanActivate {
               private router: Router) { }
 
   canActivate(): boolean {
-    if (this.authService.IsDealerAdmin) {
+    if (this.authService.IsInGroupDealerAdmin) {
       return true;
     }
     // Redireziona se l'utente non ha il ruolo richiesto

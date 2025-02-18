@@ -31,8 +31,8 @@ export class AppComponent {
 
   public appPages4DealerAdmin = [
 
-    { title: 'DealerPowerAdmin', url: '/dealerpoweradmin', icon: 'ellipse' },
-    { title: 'DealerAdmin', url: '/dealeradmin', icon: 'ellipse' },
+    { title: 'DealerPowerAdmin', component: "DealerPowerAdminPageComponent", url: '/dealerpoweradmin', icon: 'ellipse' },
+    { title: 'DealerAdmin', component: "DealerAdminPageComponent", url: '/dealeradmin', icon: 'ellipse' },
 
   ];
 
@@ -40,8 +40,8 @@ export class AppComponent {
 
   public appPages4CompanyAdmin = [
 
-    { title: 'CompanyPowerAdmin', url: '/companypoweradmin', icon: 'ellipse' },
-    { title: 'CompanyAdmin', url: '/companyadmin', icon: 'ellipse' },
+    { title: 'CompanyPowerAdmin', component: "CompanyPowerAdminPageComponent", url: '/companypoweradmin', icon: 'ellipse' },
+    { title: 'CompanyAdmin', component: "CompanyAdminPageComponent", url: '/companyadmin', icon: 'ellipse' },
 
   ];
 
@@ -84,16 +84,38 @@ export class AppComponent {
         return this.authService.IsPowerAdmin;
         break;
 
-      //case 'AdminPageComponent':
-      //  return this.authService.IsInGroupAdmin;
-      //  break;
-
       default:
         return this.authService.IsInGroupAdmin;
         break;
     }
   }
-  
+
+  public showPage4DealerAdmin(component: string): boolean {
+
+    switch (component) {
+      case 'DealerPowerAdminPageComponent':
+        return this.authService.IsDealerPowerAdmin;
+        break;
+
+      default:
+        return this.authService.IsInGroupDealerAdmin;
+        break;
+    }
+  }
+
+  public showPage4CompanyAdmin(component: string): boolean {
+
+    switch (component) {
+      case 'CompanyPowerAdminPageComponent':
+        return this.authService.IsCompanyPowerAdmin;
+        break;
+
+      default:
+        return this.authService.IsInGroupCompanyAdmin;
+        break;
+    }
+  }
+
   public showPage4User(component: string): boolean {
     switch (component) {
       case 'HomePageComponent':
