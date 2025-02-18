@@ -1,0 +1,42 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>{{ title }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">{{ title }}</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-grid *ngIf="companyList!=null">
+    <ion-row>
+      <!--<ion-col>idDealer</ion-col>
+      <ion-col>idAspNetUsers</ion-col>-->
+      <ion-col>descrizione</ion-col>
+      <ion-col>Action</ion-col>
+    </ion-row>
+    <ion-row *ngFor="let item of companyList">
+      <!--<ion-col>{{ item.idCompany }}</ion-col>
+      <ion-col>{{ item.idAspNetUsers }}</ion-col>-->
+      <ion-col>{{ item.descrizione }}</ion-col>
+      <ion-col>
+        <ion-button (click)="handleButtonClick(item)">Impersonate</ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+
+  <!--<div id="container">
+    <strong class="capitalize">{{ title }}</strong>
+    <p>{{title}}Component works...</p>
+  </div>
+
+  {{dealerList|json}}-->
+
+</ion-content>

@@ -20,7 +20,7 @@ export class LogoutPageComponent  implements OnInit {
               private navCtrl: NavController,
               private userNavigationService: UserNavigationService
   ) {
-    this.title = 'LogOut';
+    this.title = 'Logout';
 
     this.logoutForm = this.fb.group({      
     });

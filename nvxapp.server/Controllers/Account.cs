@@ -59,6 +59,18 @@ namespace nvxapp.server.Controllers
 
             return res;
         }
+
+        [Authorize]
+        [HttpPost]
+        [Route("CompanyList")]
+        public async Task<GenericResult<CompanyListOutModel>> CompanyList(GenericRequest<CompanyListInModel> inModel)
+        {
+            var res = await _accountService.CompanyList(inModel, false);
+
+            return res;
+        }
+
+
     }
 
 

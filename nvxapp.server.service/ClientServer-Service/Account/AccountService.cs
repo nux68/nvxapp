@@ -20,10 +20,12 @@ namespace nvxapp.server.service.ClientServer_Service.Account
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IAspNetUserRolesRepository _aspNetUserRolesRepository;
         private readonly IAspNetRolesRepository _aspNetRolesRepository;
+        
         private readonly IDealerRepository _dealerRepository;
-
         private readonly IUserDealerRepository _userDealerRepository;
 
+        private readonly ICompanyRepository _companyRepository;
+        private readonly IUserCompanyRepository _userCompanyRepository;
 
 
         public AccountService(IMapper mapper,
@@ -33,17 +35,23 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                               IHttpContextAccessor httpContextAccessor,
 
                               IAspNetUserRolesRepository aspNetUserRolesRepository,
-                              IDealerRepository dealerRepository,
                               IAspNetRolesRepository aspNetRolesRepository,
+                              IDealerRepository dealerRepository,
                               IUserDealerRepository userDealerRepository,
+                              ICompanyRepository companyRepository,
+                              IUserCompanyRepository userCompanyRepository,
+
                               SignInManager<ApplicationUser> signInManager
                               ) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, httpContextAccessor)
         {
             _signInManager = signInManager;
             _aspNetUserRolesRepository = aspNetUserRolesRepository;
             _aspNetRolesRepository = aspNetRolesRepository;
+            
             _dealerRepository = dealerRepository;
             _userDealerRepository = userDealerRepository;
+            _companyRepository = companyRepository;
+            _userCompanyRepository = userCompanyRepository;
         }
 
 
@@ -169,8 +177,6 @@ namespace nvxapp.server.service.ClientServer_Service.Account
             {
                 DealerListOutModel retVal = new DealerListOutModel();
 
-                var dealer = _dealerRepository.GetAll().ToList();
-
 
                 ApplicationRole? applicationRole = _aspNetRolesRepository.GetAll().Where(x => x.Code == RoleCode.DealerPowerAdmin).FirstOrDefault();
                 if (applicationRole != null)
@@ -207,7 +213,48 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                 return retVal;
             }, isSubProcess);
         }
+        public virtual async Task<GenericResult<CompanyListOutModel>> CompanyList(GenericRequest<CompanyListInModel> model, Boolean isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                CompanyListOutModel retVal = new CompanyListOutModel();
 
+
+                ApplicationRole? applicationRole = _aspNetRolesRepository.GetAll().Where(x => x.Code == RoleCode.CompanyPowerAdmin).FirstOrDefault();
+                if (applicationRole != null)
+                {
+                    if (applicationRole.Name != null)
+                    {
+                        var usrRole = await _userManager.GetUsersInRoleAsync(applicationRole.Name);
+                        if (usrRole != null)
+                        {
+                            var usrId = usrRole.Select(x => x.Id).ToList();
+                            var userCompany = _userCompanyRepository.GetAll().Where(x => usrId.Contains(x.IdAspNetUsers)).ToList();
+
+                            foreach (var item in userCompany)
+                            {
+                                var _company = _companyRepository.FindById(item.IdCompany);
+
+                                retVal.CompanyList.Add(new CompanyListModel()
+                                {
+                                    IdAspNetUsers = item.IdAspNetUsers,
+                                    IdCompany = item.IdCompany,
+                                    Descrizione = _company?.Descrizione
+                                });
+                            }
+                        }
+                    }
+                }
+
+
+
+                //eliminare
+                // Nessun 'await' qui
+                await Task.Delay(DelayAsyncMethod);
+
+                return retVal;
+            }, isSubProcess);
+        }
     }
 
     public interface IAccountService : IServiceBase
@@ -216,5 +263,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
         public Task<GenericResult<UserRolesOutModel>> UserRoles(GenericRequest<UserRolesInModel> model, Boolean isSubProcess);
         public Task<GenericResult<UserLoadOutModel>> UserLoad(GenericRequest<UserLoadInModel> model, Boolean isSubProcess);
         public Task<GenericResult<DealerListOutModel>> DealerList(GenericRequest<DealerListInModel> inModel, Boolean isSubProcess);
+        public Task<GenericResult<CompanyListOutModel>> CompanyList(GenericRequest<CompanyListInModel> inModel, Boolean isSubProcess);
+        
     }
 }

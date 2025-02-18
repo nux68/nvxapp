@@ -33,6 +33,7 @@ export class AppComponent {
 
     { title: 'DealerPowerAdmin', component: "DealerPowerAdminPageComponent", url: '/dealerpoweradmin', icon: 'ellipse' },
     { title: 'DealerAdmin', component: "DealerAdminPageComponent", url: '/dealeradmin', icon: 'ellipse' },
+    { title: 'Company List', component: "CompanyListPageComponent", url: '/companylist', icon: 'list-circle' },
 
   ];
 
