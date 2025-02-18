@@ -139,23 +139,27 @@ namespace nvxapp.server.data.Migrations
 
                 switch (itemUser.UserName)
                 {
-                    case "SuperUser":
-                        //data_AspNetRoles_to_Scan = data_AspNetRoles_All;
-                        data_AspNetRoles_to_Scan = data_AspNetRoles_All.Where(x => x.Name == "SuperUser").ToList();
-                        break;
+                    //////case "SuperUser":
+                    //////    //data_AspNetRoles_to_Scan = data_AspNetRoles_All;
+                    //////    data_AspNetRoles_to_Scan = data_AspNetRoles_All.Where(x => x.Name == "SuperUser").ToList();
+                    //////    break;
 
-                    case "Admin":
-                        //data_AspNetRoles_to_Scan = data_AspNetRoles_All.Where(x => x.Name == "Admin").ToList();
+                    //////case "Admin":
+                    //////    //data_AspNetRoles_to_Scan = data_AspNetRoles_All.Where(x => x.Name == "Admin").ToList();
 
-                        var roleAdminKeys =  roleAdmin.Select(x=> x.Name).ToList();
-                        
+                    //////    var roleAdminKeys =  roleAdmin.Select(x=> x.Name).ToList();
 
-                        data_AspNetRoles_to_Scan = data_AspNetRoles_All.Where(x => roleAdminKeys.Contains(x.Name)  ).ToList();
-                        
-                        break;
 
+                    //////    data_AspNetRoles_to_Scan = data_AspNetRoles_All.Where(x => roleAdminKeys.Contains(x.Name)  ).ToList();
+
+                    //////    break;
+
+                    //////default:
+                    //////    data_AspNetRoles_to_Scan = data_AspNetRoles_All.Where(x => x.Name == "User").ToList();
+                    //////    break;
+                    ///
                     default:
-                        data_AspNetRoles_to_Scan = data_AspNetRoles_All.Where(x => x.Name == "User").ToList();
+                        data_AspNetRoles_to_Scan = data_AspNetRoles_All.Where(x => x.Name == itemUser.UserName).ToList();
                         break;
                 }
 
