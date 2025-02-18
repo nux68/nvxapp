@@ -15,16 +15,17 @@ export class AppComponent {
 
   public appPages4SuperUser = [
 
-    { title: 'SuperUser', url: '/superuser', icon: 'triangle' },
+    { title: 'SuperUser'  , component:"SuperUserPageComponent"  , url: '/superuser', icon: 'triangle' },
+    { title: 'Dealer List', component: "DealerListPageComponent", url: '/dealerlist', icon: 'list-circle' },
 
   ];
 
-  
 
   public appPages4Admin = [
 
-    { title: 'PowerAdmin', url: '/poweradmin', icon: 'square' },
-    { title: 'Admin', url: '/admin', icon: 'square' },
+    { title: 'PowerAdmin', component: "PowerAdminPageComponent", url: '/poweradmin', icon: 'square' },
+    { title: 'Admin', component: "AdminPageComponent", url: '/admin', icon: 'square' },
+    { title: 'Dealer List', component: "DealerListPageComponent", url: '/dealerlist', icon: 'list-circle' },
 
   ];
 
@@ -47,10 +48,10 @@ export class AppComponent {
 
   public appPages4User = [
 
-    { title: 'Impersonate', url: '/userimpersonate', icon: 'people-circle' },
-    { title: 'Home', url: '/home', icon: 'home' },
-    { title: 'Login', url: '/login', icon: 'enter' },
-    { title: 'Logout', url: '/logout', icon: 'exit' },
+    { title: 'Impersonate', component: "UserImpersonatePageComponent", url: '/userimpersonate', icon: 'people-circle' },
+    { title: 'Home', component: "HomePageComponent", url: '/home', icon: 'home' },
+    { title: 'Login', component: "LoginPageComponent", url: '/login', icon: 'enter' },
+    { title: 'Logout', component: "LogoutPageComponent", url: '/logout', icon: 'exit' },
   ];
 
 
@@ -72,26 +73,45 @@ export class AppComponent {
   {
   }
 
+  public showPage4SuperUser(component: string): boolean {
+    return true;
+  }
+
+  public showPage4Admin(component: string): boolean {
+
+    switch (component) {
+      case 'PowerAdminPageComponent':
+        return this.authService.IsPowerAdmin;
+        break;
+
+      //case 'AdminPageComponent':
+      //  return this.authService.IsInGroupAdmin;
+      //  break;
+
+      default:
+        return this.authService.IsInGroupAdmin;
+        break;
+    }
+  }
   
-  
-  public showPage4User(title: string): boolean {
-    switch (title) {
-      case 'Home':
+  public showPage4User(component: string): boolean {
+    switch (component) {
+      case 'HomePageComponent':
         return true;
         break;
 
-      case 'Login':
+      case 'LoginPageComponent':
         return true;
         break;
 
-      case 'Logout':
+      case 'LogoutPageComponent':
         if(this.authService.Token==null)
           return false;
         else
           return true;
         break;
 
-      case 'Impersonate':
+      case 'UserImpersonatePageComponent':
         if (this.userNavigationService.UserCanGoBack)
           return true;
         else

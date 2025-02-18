@@ -15,10 +15,9 @@
 
         <ion-list id="nvx-list">
           <!--<ion-list-header>User</ion-list-header>
-          <ion-note>Elementi menu user</ion-note>-->
-
+    <ion-note>Elementi menu user</ion-note>-->
           @for (p of appPages4User; track p; let i = $index) {
-          <ion-menu-toggle auto-hide="false" *ngIf="showPage4User(p.title)">
+          <ion-menu-toggle auto-hide="false" *ngIf="showPage4User(p.component)">
             <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
               <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-sharp'"></ion-icon>
               <ion-label>{{ p.title }}</ion-label>
@@ -33,7 +32,7 @@
           <ion-note>Elementi menu SuperUser</ion-note>
 
           @for (p of appPages4SuperUser; track p; let i = $index) {
-          <ion-menu-toggle auto-hide="false">
+          <ion-menu-toggle auto-hide="false" *ngIf="showPage4SuperUser(p.component)">
             <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
               <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-sharp'"></ion-icon>
               <ion-label>{{ p.title }}</ion-label>
@@ -41,14 +40,14 @@
           </ion-menu-toggle>
           }
         </ion-list>
-
+        
 
         <ion-list id="nvx-list" *ngIf="authService.IsInGroupAdmin">
           <ion-list-header>Admin</ion-list-header>
           <ion-note>Elementi menu Admin</ion-note>
 
           @for (p of appPages4Admin; track p; let i = $index) {
-          <ion-menu-toggle auto-hide="false">
+          <ion-menu-toggle auto-hide="false" *ngIf="showPage4Admin(p.component)">
             <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
               <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-sharp'"></ion-icon>
               <ion-label>{{ p.title }}</ion-label>
@@ -121,8 +120,8 @@
     </ion-item>
     }
   </ion-list>-->
-
-
+        
+
       </ion-content>
     </ion-menu>
     <ion-router-outlet id="main-content">
