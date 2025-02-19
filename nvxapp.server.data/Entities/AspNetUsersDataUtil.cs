@@ -11,6 +11,7 @@ namespace nvxapp.server.data.Entities
 
             Admin, // admin interni che assistono tutti
             DealerAdmin, // admin a livello di concessionaria
+            FinancialAdvisorAdmin, // admin a livello di studio
             CompanyAdmin, //admin azianda
 
             User,
@@ -41,6 +42,13 @@ namespace nvxapp.server.data.Entities
                                 new AspNetRolesModel() { Name = "DealerPowerAdmin", Code = RoleCode.DealerPowerAdmin },
                                 new AspNetRolesModel() { Name = "DealerAdmin", Code = RoleCode.DealerAdmin }
                     );
+
+            if (group == AspNetRolesGroup.FinancialAdvisorAdmin || group == AspNetRolesGroup.All)
+                retVal.AddRange(
+                                new AspNetRolesModel() { Name = "FinancialAdvisorPowerAdmin", Code = RoleCode.FinancialAdvisorPowerAdmin },
+                                new AspNetRolesModel() { Name = "FinancialAdvisorAdmin", Code = RoleCode.FinancialAdvisorAdmin }
+                    );
+
 
             if (group == AspNetRolesGroup.CompanyAdmin || group == AspNetRolesGroup.All)
                 retVal.AddRange(

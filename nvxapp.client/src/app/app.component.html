@@ -40,7 +40,7 @@
           </ion-menu-toggle>
           }
         </ion-list>
-        
+
 
         <ion-list id="nvx-list" *ngIf="authService.IsInGroupAdmin">
           <ion-list-header>Admin</ion-list-header>
@@ -63,6 +63,21 @@
 
           @for (p of appPages4DealerAdmin; track p; let i = $index) {
           <ion-menu-toggle auto-hide="false" *ngIf="showPage4DealerAdmin(p.component)">
+            <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
+              <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-sharp'"></ion-icon>
+              <ion-label>{{ p.title }}</ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+          }
+        </ion-list>
+        
+
+        <ion-list id="nvx-list" *ngIf="authService.IsInGroupFinancialAdvisorAdmin">
+          <ion-list-header>FinancialAdvisorAdmin</ion-list-header>
+          <ion-note>Elementi menu FinancialAdvisorAdmin</ion-note>
+
+          @for (p of appPages4FinancialAdvisorAdmin; track p; let i = $index) {
+          <ion-menu-toggle auto-hide="false" *ngIf="showPage4FinancialAdvisorAdmin(p.component)">
             <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
               <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-sharp'"></ion-icon>
               <ion-label>{{ p.title }}</ion-label>
@@ -120,8 +135,9 @@
     </ion-item>
     }
   </ion-list>-->
-        
-
+
+
+
       </ion-content>
     </ion-menu>
     <ion-router-outlet id="main-content">

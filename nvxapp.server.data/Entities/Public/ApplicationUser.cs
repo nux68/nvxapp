@@ -17,7 +17,9 @@ namespace nvxapp.server.data.Entities.Public
 
         public ICollection<UserDealer>? UserDealer { get; set; }
         public ICollection<UserCompany>? UserCompany { get; set; }
+        public ICollection<UserFinancialAdvisor>? UserFinancialAdvisor { get; set; }
 
+        
     }
 
 

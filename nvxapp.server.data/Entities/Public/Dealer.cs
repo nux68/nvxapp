@@ -13,7 +13,8 @@ namespace nvxapp.server.data.Entities.Public
         [MaxLength(50)]
         public string? Descrizione { get; set; }
 
-        public ICollection<Company>? Company { get; set; }
+
+        public ICollection<FinancialAdvisor>? FinancialAdvisor { get; set; }
         public ICollection<UserDealer>? UserDealer { get; set; }
     }
 }

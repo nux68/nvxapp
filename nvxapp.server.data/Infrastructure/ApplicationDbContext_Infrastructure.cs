@@ -3,20 +3,17 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Entities.Tenant;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Emit;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace nvxapp.server.data.Infrastructure
 {
     public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, string>
     {
         public DbSet<MyTable> MyTables { get; set; }
+
         public DbSet<Dealer> Dealer { get; set; }
         public DbSet<UserDealer> UserDealer { get; set; }
+        public DbSet<FinancialAdvisor> FinancialAdvisor { get; set; }
+        public DbSet<UserFinancialAdvisor> UserFinancialAdvisor { get; set; }
         public DbSet<Company> Company { get; set; }
         public DbSet<UserCompany> UserCompany { get; set; }
 
@@ -72,6 +69,25 @@ namespace nvxapp.server.data.Infrastructure
                 entity.HasIndex(e => new { e.IdDealer, e.IdAspNetUsers }).IsUnique();
             });
 
+
+            modelBuilder.Entity<FinancialAdvisor>(entity =>
+            {
+                entity.ToTable("FinancialAdvisor", _baseSchema);
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Descrizione).IsRequired();
+                // Crea un indice univoco 
+                entity.HasIndex(e => new { e.Descrizione }).IsUnique();
+            });
+
+            modelBuilder.Entity<UserFinancialAdvisor>(entity =>
+            {
+                entity.ToTable("UserFinancialAdvisor", _baseSchema);
+                entity.HasKey(e => e.Id);
+
+                // Crea un indice univoco su due colonne
+                entity.HasIndex(e => new { e.IdFinancialAdvisor, e.IdAspNetUsers }).IsUnique();
+            });
+
             modelBuilder.Entity<Company>(entity =>
             {
                 entity.ToTable("Company", _baseSchema);
@@ -90,28 +106,41 @@ namespace nvxapp.server.data.Infrastructure
                 entity.HasIndex(e => new { e.IdCompany, e.IdAspNetUsers }).IsUnique();
             });
 
-            #region CONFIGURE RELATIONSHIP ONE-TO-MANY 
+            #region CONFIGURE RELATIONS ONE-TO-MANY 
 
+            #region Dealer-FinancialAdvisor
 
-            #region Dealer-Company
-            modelBuilder.Entity<Company>()
-                        .HasOne(md => md.DealerNavigation)
-                        .WithMany(d => d.Company)
-                        .HasForeignKey(md => md.IdDealer);
-
+            modelBuilder.Entity<FinancialAdvisor>()
+                       .HasOne(md => md.DealerNavigation)
+                       .WithMany(d => d.FinancialAdvisor)
+                       .HasForeignKey(md => md.IdDealer);
+            //questa x specificare la cancellazione
             modelBuilder.Entity<Dealer>()
-                        .HasMany(o => o.Company)
+                        .HasMany(o => o.FinancialAdvisor)
                         .WithOne(i => i.DealerNavigation)
                         .OnDelete(DeleteBehavior.Cascade); //MODIFICARE SENNO RASA VIA TUTTO
 
+            #endregion
+
+            #region FinancialAdvisor-Company
+            modelBuilder.Entity<Company>()
+                        .HasOne(md => md.FinancialAdvisorNavigation)
+                        .WithMany(d => d.Company)
+                        .HasForeignKey(md => md.IdFinancialAdvisor);
+            //questa x specificare la cancellazione
+            modelBuilder.Entity<FinancialAdvisor>()
+                        .HasMany(o => o.Company)
+                        .WithOne(i => i.FinancialAdvisorNavigation)
+                        .OnDelete(DeleteBehavior.Cascade); //MODIFICARE SENNO RASA VIA TUTTO
 
             #endregion
 
             #region Dealer-UserDealer
+
             modelBuilder.Entity<UserDealer>()
-                        .HasOne(md => md.DealerNavigation)
-                        .WithMany(d => d.UserDealer)
-                        .HasForeignKey(md => md.IdDealer);
+                   .HasOne(md => md.DealerNavigation)
+                   .WithMany(d => d.UserDealer)
+                   .HasForeignKey(md => md.IdDealer);
 
             modelBuilder.Entity<Dealer>()
                         .HasMany(o => o.UserDealer)
@@ -128,6 +157,32 @@ namespace nvxapp.server.data.Infrastructure
                         .HasMany(o => o.UserDealer)
                         .WithOne(i => i.AspNetUsersNavigation)
                         .OnDelete(DeleteBehavior.Cascade);
+
+            #endregion
+
+            #region FinancialAdvisor-UserFinancialAdvisor
+
+            modelBuilder.Entity<UserFinancialAdvisor>()
+                   .HasOne(md => md.FinancialAdvisorNavigation)
+                   .WithMany(d => d.UserFinancialAdvisor)
+                   .HasForeignKey(md => md.IdFinancialAdvisor);
+
+            modelBuilder.Entity<FinancialAdvisor>()
+                        .HasMany(o => o.UserFinancialAdvisor)
+                        .WithOne(i => i.FinancialAdvisorNavigation)
+                        .OnDelete(DeleteBehavior.Cascade);
+
+
+            modelBuilder.Entity<UserFinancialAdvisor>()
+                        .HasOne(md => md.AspNetUsersNavigation)
+                        .WithMany(d => d.UserFinancialAdvisor)
+                        .HasForeignKey(md => md.IdAspNetUsers);
+
+            modelBuilder.Entity<ApplicationUser>()
+                        .HasMany(o => o.UserFinancialAdvisor)
+                        .WithOne(i => i.AspNetUsersNavigation)
+                        .OnDelete(DeleteBehavior.Cascade);
+
             #endregion
 
             #region Company-UserCompany
@@ -160,7 +215,7 @@ namespace nvxapp.server.data.Infrastructure
         }
 
 
-      
+
 
     }
 }

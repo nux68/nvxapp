@@ -11,6 +11,7 @@ import { UserLoadInModel, UserLoadOutModel } from './Models/user-load-model';
 import { DealerListInModel, DealerListOutModel } from './Models/dealer-list-model';
 import { CompanyListInModel, CompanyListOutModel } from './Models/company-list-model';
 import { UserCompanyListInModel, UserCompanyListOutModel } from './Models/uesr-company-list-model';
+import { FinancialAdvisorListInModel, FinancialAdvisorListOutModel } from './Models/financial-advisor-list-model';
 
 
 @Injectable({
@@ -66,6 +67,19 @@ export class AccountService {
   DealerList(model: GenericRequest<DealerListInModel>): Observable<GenericResult<DealerListOutModel>> {
 
     return this.http.post<GenericResult<DealerListOutModel>>(environment.remoteData.apiUri + 'Account/DealerList', model)
+      .pipe(
+        map(r => {
+          //this.authService.setRole(r.data.roles);
+          return r;
+        }
+        )
+      );
+
+  }
+
+  FinancialAdvisorList(model: GenericRequest<FinancialAdvisorListInModel>): Observable<GenericResult<FinancialAdvisorListOutModel>> {
+
+    return this.http.post<GenericResult<FinancialAdvisorListOutModel>>(environment.remoteData.apiUri + 'Account/FinancialAdvisorList', model)
       .pipe(
         map(r => {
           //this.authService.setRole(r.data.roles);

@@ -1,7 +1,6 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using nvxapp.server.data.Infrastructure;
 
 #nullable disable
 
@@ -13,10 +12,6 @@ namespace nvxapp.server.data.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-
-            if (SharedSchema.CurrentSchema != "public")
-                return;
-
             migrationBuilder.CreateTable(
                 name: "Dealer",
                 schema: "public",
@@ -35,7 +30,7 @@ namespace nvxapp.server.data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Company",
+                name: "FinancialAdvisor",
                 schema: "public",
                 columns: table => new
                 {
@@ -50,9 +45,9 @@ namespace nvxapp.server.data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Company", x => x.Id);
+                    table.PrimaryKey("PK_FinancialAdvisor", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Company_Dealer_IdDealer",
+                        name: "FK_FinancialAdvisor_Dealer_IdDealer",
                         column: x => x.IdDealer,
                         principalSchema: "public",
                         principalTable: "Dealer",
@@ -88,6 +83,64 @@ namespace nvxapp.server.data.Migrations
                         column: x => x.IdDealer,
                         principalSchema: "public",
                         principalTable: "Dealer",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Company",
+                schema: "public",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    IdFinancialAdvisor = table.Column<int>(type: "integer", nullable: false),
+                    Descrizione = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    Schema = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Company", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Company_FinancialAdvisor_IdFinancialAdvisor",
+                        column: x => x.IdFinancialAdvisor,
+                        principalSchema: "public",
+                        principalTable: "FinancialAdvisor",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserFinancialAdvisor",
+                schema: "public",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    IdFinancialAdvisor = table.Column<int>(type: "integer", nullable: false),
+                    IdAspNetUsers = table.Column<string>(type: "text", nullable: false),
+                    ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserFinancialAdvisor", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UserFinancialAdvisor_AspNetUsers_IdAspNetUsers",
+                        column: x => x.IdAspNetUsers,
+                        principalSchema: "public",
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserFinancialAdvisor_FinancialAdvisor_IdFinancialAdvisor",
+                        column: x => x.IdFinancialAdvisor,
+                        principalSchema: "public",
+                        principalTable: "FinancialAdvisor",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -132,10 +185,10 @@ namespace nvxapp.server.data.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Company_IdDealer",
+                name: "IX_Company_IdFinancialAdvisor",
                 schema: "public",
                 table: "Company",
-                column: "IdDealer");
+                column: "IdFinancialAdvisor");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Dealer_Descrizione",
@@ -143,6 +196,19 @@ namespace nvxapp.server.data.Migrations
                 table: "Dealer",
                 column: "Descrizione",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FinancialAdvisor_Descrizione",
+                schema: "public",
+                table: "FinancialAdvisor",
+                column: "Descrizione",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FinancialAdvisor_IdDealer",
+                schema: "public",
+                table: "FinancialAdvisor",
+                column: "IdDealer");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserCompany_IdAspNetUsers",
@@ -169,14 +235,24 @@ namespace nvxapp.server.data.Migrations
                 table: "UserDealer",
                 columns: new[] { "IdDealer", "IdAspNetUsers" },
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserFinancialAdvisor_IdAspNetUsers",
+                schema: "public",
+                table: "UserFinancialAdvisor",
+                column: "IdAspNetUsers");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserFinancialAdvisor_IdFinancialAdvisor_IdAspNetUsers",
+                schema: "public",
+                table: "UserFinancialAdvisor",
+                columns: new[] { "IdFinancialAdvisor", "IdAspNetUsers" },
+                unique: true);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            if (SharedSchema.CurrentSchema != "public")
-                return;
-
             migrationBuilder.DropTable(
                 name: "UserCompany",
                 schema: "public");
@@ -186,7 +262,15 @@ namespace nvxapp.server.data.Migrations
                 schema: "public");
 
             migrationBuilder.DropTable(
+                name: "UserFinancialAdvisor",
+                schema: "public");
+
+            migrationBuilder.DropTable(
                 name: "Company",
+                schema: "public");
+
+            migrationBuilder.DropTable(
+                name: "FinancialAdvisor",
                 schema: "public");
 
             migrationBuilder.DropTable(

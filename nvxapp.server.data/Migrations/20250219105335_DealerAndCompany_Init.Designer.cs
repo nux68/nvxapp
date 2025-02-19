@@ -12,7 +12,7 @@ using nvxapp.server.data.Infrastructure;
 namespace nvxapp.server.data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250213094915_DealerAndCompany_Init")]
+    [Migration("20250219105335_DealerAndCompany_Init")]
     partial class DealerAndCompany_Init
     {
         /// <inheritdoc />
@@ -255,7 +255,7 @@ namespace nvxapp.server.data.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
-                    b.Property<int>("IdDealer")
+                    b.Property<int>("IdFinancialAdvisor")
                         .HasColumnType("integer");
 
                     b.Property<DateTime?>("ModifiedDate")
@@ -271,7 +271,7 @@ namespace nvxapp.server.data.Migrations
                     b.HasIndex("Descrizione")
                         .IsUnique();
 
-                    b.HasIndex("IdDealer");
+                    b.HasIndex("IdFinancialAdvisor");
 
                     b.ToTable("Company", "public");
                 });
@@ -305,6 +305,47 @@ namespace nvxapp.server.data.Migrations
                         .IsUnique();
 
                     b.ToTable("Dealer", "public");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Public.FinancialAdvisor", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Descrizione")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<int>("IdDealer")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Schema")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Descrizione")
+                        .IsUnique();
+
+                    b.HasIndex("IdDealer");
+
+                    b.ToTable("FinancialAdvisor", "public");
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Public.UserCompany", b =>
@@ -375,6 +416,41 @@ namespace nvxapp.server.data.Migrations
                         .IsUnique();
 
                     b.ToTable("UserDealer", "public");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Public.UserFinancialAdvisor", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("IdAspNetUsers")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("IdFinancialAdvisor")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdAspNetUsers");
+
+                    b.HasIndex("IdFinancialAdvisor", "IdAspNetUsers")
+                        .IsUnique();
+
+                    b.ToTable("UserFinancialAdvisor", "public");
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.MyTable", b =>
@@ -461,8 +537,19 @@ namespace nvxapp.server.data.Migrations
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Public.Company", b =>
                 {
-                    b.HasOne("nvxapp.server.data.Entities.Public.Dealer", "DealerNavigation")
+                    b.HasOne("nvxapp.server.data.Entities.Public.FinancialAdvisor", "FinancialAdvisorNavigation")
                         .WithMany("Company")
+                        .HasForeignKey("IdFinancialAdvisor")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("FinancialAdvisorNavigation");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Public.FinancialAdvisor", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Public.Dealer", "DealerNavigation")
+                        .WithMany("FinancialAdvisor")
                         .HasForeignKey("IdDealer")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -508,11 +595,32 @@ namespace nvxapp.server.data.Migrations
                     b.Navigation("DealerNavigation");
                 });
 
+            modelBuilder.Entity("nvxapp.server.data.Entities.Public.UserFinancialAdvisor", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Public.ApplicationUser", "AspNetUsersNavigation")
+                        .WithMany("UserFinancialAdvisor")
+                        .HasForeignKey("IdAspNetUsers")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("nvxapp.server.data.Entities.Public.FinancialAdvisor", "FinancialAdvisorNavigation")
+                        .WithMany("UserFinancialAdvisor")
+                        .HasForeignKey("IdFinancialAdvisor")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AspNetUsersNavigation");
+
+                    b.Navigation("FinancialAdvisorNavigation");
+                });
+
             modelBuilder.Entity("nvxapp.server.data.Entities.Public.ApplicationUser", b =>
                 {
                     b.Navigation("UserCompany");
 
                     b.Navigation("UserDealer");
+
+                    b.Navigation("UserFinancialAdvisor");
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Public.Company", b =>
@@ -522,9 +630,16 @@ namespace nvxapp.server.data.Migrations
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Public.Dealer", b =>
                 {
-                    b.Navigation("Company");
+                    b.Navigation("FinancialAdvisor");
 
                     b.Navigation("UserDealer");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Public.FinancialAdvisor", b =>
+                {
+                    b.Navigation("Company");
+
+                    b.Navigation("UserFinancialAdvisor");
                 });
 #pragma warning restore 612, 618
         }

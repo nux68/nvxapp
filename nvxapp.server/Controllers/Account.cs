@@ -60,6 +60,17 @@ namespace nvxapp.server.Controllers
             return res;
         }
 
+
+        [Authorize]
+        [HttpPost]
+        [Route("FinancialAdvisorList")]
+        public async Task<GenericResult<CompanyListOutModel>> FinancialAdvisorList(GenericRequest<CompanyListInModel> inModel)
+        {
+            var res = await _accountService.CompanyList(inModel, false);
+
+            return res;
+        }
+
         [Authorize]
         [HttpPost]
         [Route("CompanyList")]

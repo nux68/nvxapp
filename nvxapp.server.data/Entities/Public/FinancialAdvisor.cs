@@ -7,11 +7,12 @@ using System.Threading.Tasks;
 
 namespace nvxapp.server.data.Entities.Public
 {
-    public class Company : BaseEntity
+    public class FinancialAdvisor : BaseEntity
     {
         [Required]
-        public int IdFinancialAdvisor { get; set; }
-        public FinancialAdvisor? FinancialAdvisorNavigation { get; set; }
+        public int IdDealer { get; set; }
+        public Dealer? DealerNavigation { get; set; }
+
 
 
         [Required]
@@ -22,7 +23,7 @@ namespace nvxapp.server.data.Entities.Public
         [MaxLength(50)]
         public string? Schema { get; set; }
 
-
-        public ICollection<UserCompany>? UserCompany { get; set; }
+        public ICollection<Company>? Company { get; set; }
+        public ICollection<UserFinancialAdvisor>? UserFinancialAdvisor { get; set; }
     }
 }

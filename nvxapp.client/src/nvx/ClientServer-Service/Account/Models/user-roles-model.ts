@@ -24,12 +24,15 @@ export enum RoleCode {
   CompanyAdmin = 10,
   CompanyPowerAdmin = 11,
 
-  DealerAdmin = 100,
-  DealerPowerAdmin = 101,
+  FinancialAdvisorAdmin = 100,
+  FinancialAdvisorPowerAdmin = 101,
 
-  Admin = 1000,
-  PowerAdmin = 1001,
+  DealerAdmin = 1000,
+  DealerPowerAdmin = 1001,
 
-  SuperUser = 10000
+  Admin = 10000,
+  PowerAdmin = 10001,
+
+  SuperUser = 100000
 
 }

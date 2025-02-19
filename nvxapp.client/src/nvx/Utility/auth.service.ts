@@ -68,7 +68,15 @@ export class AuthService {
   public get IsCompanyAdmin(): boolean {
     return this.hasRole('CompanyAdmin');
   }
-    
+
+  public get IsFinancialAdvisorPowerAdmin(): boolean {
+    return this.hasRole('FinancialAdvisorPowerAdmin');
+  }
+
+  public get IsFinancialAdvisorAdmin(): boolean {
+    return this.hasRole('FinancialAdvisorAdmin');
+  }
+
   public get IsDealerPowerAdmin(): boolean {
     return this.hasRole('DealerPowerAdmin');
   }
@@ -84,6 +92,11 @@ export class AuthService {
   public get IsInGroupCompanyAdmin(): boolean {
 
     return (this.hasRole('CompanyAdmin') || this.hasRole('CompanyPowerAdmin'));
+  }
+
+  public get IsInGroupFinancialAdvisorAdmin(): boolean {
+
+    return (this.hasRole('FinancialAdvisorAdmin') || this.hasRole('FinancialAdvisorPowerAdmin'));
   }
 
   public get IsInGroupAdmin(): boolean {

@@ -213,6 +213,48 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                 return retVal;
             }, isSubProcess);
         }
+        public virtual async Task<GenericResult<FinancialAdvisorListOutModel>> FinancialAdvisorList(GenericRequest<FinancialAdvisorListInModel> model, Boolean isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                FinancialAdvisorListOutModel retVal = new FinancialAdvisorListOutModel();
+
+
+                ApplicationRole? applicationRole = _aspNetRolesRepository.GetAll().Where(x => x.Code == RoleCode.FinancialAdvisorPowerAdmin).FirstOrDefault();
+                if (applicationRole != null)
+                {
+                    if (applicationRole.Name != null)
+                    {
+                        //var usrRole = await _userManager.GetUsersInRoleAsync(applicationRole.Name);
+                        //if (usrRole != null)
+                        //{
+                        //    var usrId = usrRole.Select(x => x.Id).ToList();
+                        //    var userFinancialAdvisor = _userFinancialAdvisorRepository.GetAll().Where(x => usrId.Contains(x.IdAspNetUsers)).ToList();
+
+                        //    foreach (var item in userFinancialAdvisor)
+                        //    {
+                        //        var _financialAdvisor = _financialAdvisorRepository.FindById(item.IdFinancialAdvisor);
+
+                        //        retVal.FinancialAdvisorList.Add(new FinancialAdvisorListModel()
+                        //        {
+                        //            IdAspNetUsers = item.IdAspNetUsers,
+                        //            IdFinancialAdvisor = item.IdFinancialAdvisor,
+                        //            Descrizione = _financialAdvisor?.Descrizione
+                        //        });
+                        //    }
+                        //}
+                    }
+                }
+
+
+
+                //eliminare
+                // Nessun 'await' qui
+                await Task.Delay(DelayAsyncMethod);
+
+                return retVal;
+            }, isSubProcess);
+        }
         public virtual async Task<GenericResult<CompanyListOutModel>> CompanyList(GenericRequest<CompanyListInModel> model, Boolean isSubProcess)
         {
             return await ExecuteAction(model, async () =>
@@ -297,6 +339,8 @@ namespace nvxapp.server.service.ClientServer_Service.Account
             }, isSubProcess);
         }
 
+
+    
     }
 
     public interface IAccountService : IServiceBase
@@ -305,6 +349,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
         public Task<GenericResult<UserRolesOutModel>> UserRoles(GenericRequest<UserRolesInModel> model, Boolean isSubProcess);
         public Task<GenericResult<UserLoadOutModel>> UserLoad(GenericRequest<UserLoadInModel> model, Boolean isSubProcess);
         public Task<GenericResult<DealerListOutModel>> DealerList(GenericRequest<DealerListInModel> inModel, Boolean isSubProcess);
+        public Task<GenericResult<FinancialAdvisorListOutModel>> FinancialAdvisorList(GenericRequest<FinancialAdvisorListInModel> inModel, Boolean isSubProcess);
         public Task<GenericResult<CompanyListOutModel>> CompanyList(GenericRequest<CompanyListInModel> inModel, Boolean isSubProcess);
         public Task<GenericResult<UserCompanyListOutModel>> UserCompanyList(GenericRequest<UserCompanyListInModel> inModel, Boolean isSubProcess);
 

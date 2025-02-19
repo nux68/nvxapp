@@ -11,7 +11,7 @@ import { UserNavigationService } from '../nvx/Utility/user-navigation.service';
 })
 export class AppComponent {
 
-  public IconBack: string = "play-back";
+  
 
   public appPages4SuperUser = [
 
@@ -37,15 +37,19 @@ export class AppComponent {
 
   ];
 
+  public appPages4FinancialAdvisorAdmin = [
 
+    { title: 'FinancialAdvisorPowerAdmin', component: "FinancialAdvisorPowerAdminPageComponent", url: '/financialadvisorpoweradmin', icon: 'ellipse' },
+    { title: 'FinancialAdvisorAdmin', component: "FinancialAdvisorAdminPageComponent", url: '/financialadvisoradmin', icon: 'ellipse' },
+    { title: 'FinancialAdvisor List', component: "FinancialAdvisorListPageComponent", url: '/financialadvisorlist', icon: 'list-circle' },
+
+  ];
 
   public appPages4CompanyAdmin = [
 
     { title: 'CompanyPowerAdmin', component: "CompanyPowerAdminPageComponent", url: '/companypoweradmin', icon: 'ellipse' },
     { title: 'CompanyAdmin', component: "CompanyAdminPageComponent", url: '/companyadmin', icon: 'ellipse' },
     { title: 'User List', component: "UserCompanyListPageComponent", url: '/usercompanylist', icon: 'list-circle' },
-
-    
 
   ];
 
@@ -109,6 +113,19 @@ export class AppComponent {
         break;
     }
   }
+  
+  public showPage4FinancialAdvisorAdmin(component: string): boolean {
+
+    switch (component) {
+      case 'FinancialAdvisorPowerAdminPageComponent':
+        return this.authService.IsFinancialAdvisorPowerAdmin;
+        break;
+
+      default:
+        return this.authService.IsInGroupFinancialAdvisorAdmin;
+        break;
+    }
+  }
 
   public showPage4CompanyAdmin(component: string): boolean {
 
@@ -132,7 +149,10 @@ export class AppComponent {
         break;
 
       case 'LoginPageComponent':
-        return true;
+        if (this.authService.Token != null)
+          return false;
+        else
+          return true;
         break;
 
       case 'LogoutPageComponent':

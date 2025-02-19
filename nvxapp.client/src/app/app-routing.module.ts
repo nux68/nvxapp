@@ -11,6 +11,9 @@ import { RoleGuard4UserImpersonate } from '../nvx/pages/RoleGuard/role-guard-4-u
 import { RoleGuard4DealerList } from '../nvx/pages/RoleGuard/role-guard-4-dealer-list';
 import { RoleGuard4CompanyList } from '../nvx/pages/RoleGuard/role-guard-4-company-list';
 import { RoleGuard4UserCompanyList } from '../nvx/pages/RoleGuard/role-guard-4-user-company-list';
+import { RoleGuard4FinancialAdvisorPowerAdmin } from '../nvx/pages/RoleGuard/role-guard-4-financial-advisor-power-admin';
+import { RoleGuard4FinancialAdvisorAdmin } from '../nvx/pages/RoleGuard/role-guard-4-financia-ladvisor-admin';
+import { RoleGuard4FinancialAdvisorList } from '../nvx/pages/RoleGuard/role-guard-4-financial-advisor-list';
 
 const routes: Routes = [
   //{
@@ -36,6 +39,10 @@ const routes: Routes = [
   { path: 'dealerpoweradmin', loadChildren: () => import('../nvx/pages/dealer-power-admin-page/dealer-power-admin-page.module').then(m => m.DealerPowerAdminPageModule), canActivate: [RoleGuard4DealerPowerAdmin] },
   { path: 'dealeradmin', loadChildren: () => import('../nvx/pages/dealer-admin-page/dealer-admin-page.module').then(m => m.DealerAdminPageModule), canActivate: [RoleGuard4DealerAdmin] },
   { path: 'dealerlist', loadChildren: () => import('../nvx/pages/dealer-list-page/dealer-list-page.module').then(m => m.DealerListPageModule), canActivate: [RoleGuard4DealerList] },
+
+  { path: 'financialadvisorpoweradmin', loadChildren: () => import('../nvx/pages/financial-advisor-power-admin-page/financial-advisor-power-admin-page.module').then(m => m.FinancialAdvisorPowerAdminPageModule), canActivate: [RoleGuard4FinancialAdvisorPowerAdmin] },
+  { path: 'financialadvisoradmin', loadChildren: () => import('../nvx/pages/financial-advisor-admin-page/financial-advisor-admin-page.module').then(m => m.FinancialAdvisorAdminPageModule), canActivate: [RoleGuard4FinancialAdvisorAdmin] },
+  { path: 'financialadvisorlist', loadChildren: () => import('../nvx/pages/financial-advisor-list-page/financial-advisor-list-page.module').then(m => m.FinancialAdvisorListPageModule), canActivate: [RoleGuard4FinancialAdvisorList] },
 
 
   {
