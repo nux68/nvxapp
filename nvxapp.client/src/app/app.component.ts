@@ -58,8 +58,8 @@ export class AppComponent {
     { title: 'Home', component: "HomePageComponent", url: '/home', icon: 'home' },
     { title: 'Login', component: "LoginPageComponent", url: '/login', icon: 'enter' },
     { title: 'Logout', component: "LogoutPageComponent", url: '/logout', icon: 'exit' },
-
-    { title: 'Logged Home', component: "LoggedHomePageComponent", url: '/home', icon: 'home' },
+    //soggette al login
+    { title: 'User Data', component: "UserPageComponent", url: '/user', icon: 'person' },
 
   ];
 

@@ -26,6 +26,8 @@ const routes: Routes = [
   { path: 'login', loadChildren: ()  => import('../nvx/pages/login-page/login-page.module').then(m => m.LoginPageModule) },
   { path: 'logout', loadChildren: () => import('../nvx/pages/logout-page/logout-page.module').then(m => m.LogoutPageModule) },
   { path: 'userimpersonate', loadChildren: () => import('../nvx/pages/user-impersonate-page/user-impersonate-page.module').then(m => m.UserImpersonatePageModule), canActivate: [RoleGuard4UserImpersonate] },
+  { path: 'user', loadChildren: () => import('../nvx/pages/user-page/user-page.module').then(m => m.UserPageModule) },
+  
 
   { path: 'superuser', loadChildren: () => import('../nvx/pages/super-user-page/super-user-page.module').then(m => m.SuperUserPageModule), canActivate: [RoleGuard4SuperUser] },
   { path: 'poweradmin', loadChildren: () => import('../nvx/pages/power-admin-page/power-admin-page.module').then(m => m.PowerAdminPageModule), canActivate: [RoleGuard4PowerAdmin] },
