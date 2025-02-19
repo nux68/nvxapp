@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using nvxapp.server.data.Infrastructure;
 
@@ -6,7 +7,6 @@ using nvxapp.server.data.Infrastructure;
 
 namespace nvxapp.server.data.Migrations
 {
-    /// <inheritdoc />
     public partial class MyTable : Migration
     {
         /// <inheritdoc />
@@ -55,5 +55,4 @@ namespace nvxapp.server.data.Migrations
                 schema: SharedSchema.CurrentSchema);
         }
     }
-
 }

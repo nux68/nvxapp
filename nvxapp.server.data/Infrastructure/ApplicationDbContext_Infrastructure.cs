@@ -20,9 +20,11 @@ namespace nvxapp.server.data.Infrastructure
 
         private void Define_Table_DbContext_Infrastructure(ModelBuilder modelBuilder)
         {
+            //1
             Gen_InitDB(modelBuilder);
-            Gen_MyTable(modelBuilder);
             Gen_DealerAndCompany_Init(modelBuilder);
+            //2 
+            Gen_MyTable(modelBuilder);
         }
 
         private void Gen_InitDB(ModelBuilder modelBuilder)

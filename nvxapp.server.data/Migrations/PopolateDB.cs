@@ -53,6 +53,10 @@ namespace nvxapp.server.data.Migrations
             data_AspNetUsers.Add(new Data_AspNetUsers() { Id = Guid.NewGuid().ToString(), UserName = "DealerPowerAdmin", Email = "nello68@hotmail.com" });
             data_AspNetUsers.Add(new Data_AspNetUsers() { Id = Guid.NewGuid().ToString(), UserName = "DealerAdmin", Email = "nello68@hotmail.com" });
 
+            data_AspNetUsers.Add(new Data_AspNetUsers() { Id = Guid.NewGuid().ToString(), UserName = "FinancialAdvisorPowerAdmin", Email = "nello68@hotmail.com" });
+            data_AspNetUsers.Add(new Data_AspNetUsers() { Id = Guid.NewGuid().ToString(), UserName = "FinancialAdvisorAdmin", Email = "nello68@hotmail.com" });
+
+
             data_AspNetUsers.Add(new Data_AspNetUsers() { Id = Guid.NewGuid().ToString(), UserName = "CompanyPowerAdmin", Email = "nello68@hotmail.com" });
             data_AspNetUsers.Add(new Data_AspNetUsers() { Id = Guid.NewGuid().ToString(), UserName = "CompanyAdmin", Email = "nello68@hotmail.com" });
 
@@ -91,7 +95,7 @@ namespace nvxapp.server.data.Migrations
 
 
             ////user
-            
+
             var hasher = new PasswordHasher<IdentityUser>();
             //var passwordHash = hasher.HashPassword(null, pw);
             var tempUser = new IdentityUser(); // Istanza temporanea di IdentityUser
@@ -137,44 +141,86 @@ namespace nvxapp.server.data.Migrations
                 );
 
 
-                switch (itemUser.UserName)
-                {
-                    //////case "SuperUser":
-                    //////    //data_AspNetRoles_to_Scan = data_AspNetRoles_All;
-                    //////    data_AspNetRoles_to_Scan = data_AspNetRoles_All.Where(x => x.Name == "SuperUser").ToList();
-                    //////    break;
+             
 
-                    //////case "Admin":
-                    //////    //data_AspNetRoles_to_Scan = data_AspNetRoles_All.Where(x => x.Name == "Admin").ToList();
-
-                    //////    var roleAdminKeys =  roleAdmin.Select(x=> x.Name).ToList();
-
-
-                    //////    data_AspNetRoles_to_Scan = data_AspNetRoles_All.Where(x => roleAdminKeys.Contains(x.Name)  ).ToList();
-
-                    //////    break;
-
-                    //////default:
-                    //////    data_AspNetRoles_to_Scan = data_AspNetRoles_All.Where(x => x.Name == "User").ToList();
-                    //////    break;
-                    ///
-                    default:
-                        data_AspNetRoles_to_Scan = data_AspNetRoles_All.Where(x => x.Name == itemUser.UserName).ToList();
-                        break;
-                }
-
-
-                foreach (var itemRole in data_AspNetRoles_to_Scan)
+                var curr_AspNetRoles = data_AspNetRoles_All.Where(x => x.Name == itemUser.UserName).FirstOrDefault();
+                if (curr_AspNetRoles != null)
                 {
                     migrationBuilder.InsertData(
-                                     table: "AspNetUserRoles",
-                                     //schema: "public",
-                                     columns: new[] { "UserId", "RoleId" },
-                                     values: new object[] { itemUser.Id, itemRole.Id }
-                                     );
+                                    table: "AspNetUserRoles",
+                                    columns: new[] { "UserId", "RoleId" },
+                                    values: new object[] { itemUser.Id, curr_AspNetRoles.Id }
+                                    );
+                    
+                    //per questi ruoli creo i dati default 
+                    switch(curr_AspNetRoles.Code)
+                    {
+                        case RoleCode.DealerPowerAdmin:
+
+                            migrationBuilder.InsertData(
+                                    table: "Dealer",
+                                    columns: new[] { "Descrizione" },
+                                    values: new object[] { "Concessionario Default" }
+                                    );
+
+                            migrationBuilder.InsertData(
+                                    table: "UserDealer",
+                                    columns: new[] { "IdDealer", "IdAspNetUsers" },
+                                    values: new object[] { 1, itemUser .Id}
+                                    );
+
+                            
+
+                            break;
+                        case RoleCode.FinancialAdvisorPowerAdmin:
+                            
+                            migrationBuilder.InsertData(
+                                    table: "FinancialAdvisor",
+                                    columns: new[] { "IdDealer", "Descrizione" },
+                                    values: new object[] { 1,"Studio Default" }
+                                    );
+
+                            migrationBuilder.InsertData(
+                                   table: "UserFinancialAdvisor",
+                                   columns: new[] { "IdFinancialAdvisor", "IdAspNetUsers" },
+                                   values: new object[] { 1, itemUser.Id }
+                                   );
+
+                            break;
+                        case RoleCode.CompanyPowerAdmin:
+
+                            migrationBuilder.InsertData(
+                                  table: "Company",
+                                  columns: new[] { "IdFinancialAdvisor","Descrizione", "Schema" },
+                                  values: new object[] { 1,"Azienda Default", "schema_default" }
+                                  );
+                            
+                            migrationBuilder.InsertData(
+                                 table: "UserCompany",
+                                 columns: new[] { "IdCompany", "IdAspNetUsers" },
+                                 values: new object[] { 1, itemUser.Id }
+                                 );
+
+
+                            break;
+                        case RoleCode.User:
+                            migrationBuilder.InsertData(
+                                 table: "UserCompany",
+                                 columns: new[] { "IdCompany", "IdAspNetUsers" },
+                                 values: new object[] { 1, itemUser.Id }
+                                 );
+
+
+                            break;
+
+                    }
+
                 }
 
+
             }
+
+
 
 
         }

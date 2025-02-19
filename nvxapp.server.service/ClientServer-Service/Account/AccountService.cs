@@ -24,6 +24,9 @@ namespace nvxapp.server.service.ClientServer_Service.Account
         private readonly IDealerRepository _dealerRepository;
         private readonly IUserDealerRepository _userDealerRepository;
 
+        private readonly IFinancialAdvisorRepository _financialAdvisorRepository;
+        private readonly IUserFinancialAdvisorRepository _userFinancialAdvisorRepository;
+
         private readonly ICompanyRepository _companyRepository;
         private readonly IUserCompanyRepository _userCompanyRepository;
 
@@ -36,8 +39,13 @@ namespace nvxapp.server.service.ClientServer_Service.Account
 
                               IAspNetUserRolesRepository aspNetUserRolesRepository,
                               IAspNetRolesRepository aspNetRolesRepository,
+                              
                               IDealerRepository dealerRepository,
                               IUserDealerRepository userDealerRepository,
+
+                              IFinancialAdvisorRepository financialAdvisorRepository,
+                              IUserFinancialAdvisorRepository userFinancialAdvisorRepository,
+
                               ICompanyRepository companyRepository,
                               IUserCompanyRepository userCompanyRepository,
 
@@ -50,6 +58,8 @@ namespace nvxapp.server.service.ClientServer_Service.Account
             
             _dealerRepository = dealerRepository;
             _userDealerRepository = userDealerRepository;
+            _financialAdvisorRepository = financialAdvisorRepository;
+            _userFinancialAdvisorRepository = userFinancialAdvisorRepository;
             _companyRepository = companyRepository;
             _userCompanyRepository = userCompanyRepository;
         }
@@ -225,24 +235,24 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                 {
                     if (applicationRole.Name != null)
                     {
-                        //var usrRole = await _userManager.GetUsersInRoleAsync(applicationRole.Name);
-                        //if (usrRole != null)
-                        //{
-                        //    var usrId = usrRole.Select(x => x.Id).ToList();
-                        //    var userFinancialAdvisor = _userFinancialAdvisorRepository.GetAll().Where(x => usrId.Contains(x.IdAspNetUsers)).ToList();
+                        var usrRole = await _userManager.GetUsersInRoleAsync(applicationRole.Name);
+                        if (usrRole != null)
+                        {
+                            var usrId = usrRole.Select(x => x.Id).ToList();
+                            var userFinancialAdvisor = _userFinancialAdvisorRepository.GetAll().Where(x => usrId.Contains(x.IdAspNetUsers)).ToList();
 
-                        //    foreach (var item in userFinancialAdvisor)
-                        //    {
-                        //        var _financialAdvisor = _financialAdvisorRepository.FindById(item.IdFinancialAdvisor);
+                            foreach (var item in userFinancialAdvisor)
+                            {
+                                var _financialAdvisor = _financialAdvisorRepository.FindById(item.IdFinancialAdvisor);
 
-                        //        retVal.FinancialAdvisorList.Add(new FinancialAdvisorListModel()
-                        //        {
-                        //            IdAspNetUsers = item.IdAspNetUsers,
-                        //            IdFinancialAdvisor = item.IdFinancialAdvisor,
-                        //            Descrizione = _financialAdvisor?.Descrizione
-                        //        });
-                        //    }
-                        //}
+                                retVal.FinancialAdvisorList.Add(new FinancialAdvisorListModel()
+                                {
+                                    IdAspNetUsers = item.IdAspNetUsers,
+                                    IdFinancialAdvisor = item.IdFinancialAdvisor,
+                                    Descrizione = _financialAdvisor?.Descrizione
+                                });
+                            }
+                        }
                     }
                 }
 

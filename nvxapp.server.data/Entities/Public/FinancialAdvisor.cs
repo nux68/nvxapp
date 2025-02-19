@@ -13,15 +13,10 @@ namespace nvxapp.server.data.Entities.Public
         public int IdDealer { get; set; }
         public Dealer? DealerNavigation { get; set; }
 
-
-
         [Required]
         [MaxLength(50)]
         public string? Descrizione { get; set; }
 
-        [Required]
-        [MaxLength(50)]
-        public string? Schema { get; set; }
 
         public ICollection<Company>? Company { get; set; }
         public ICollection<UserFinancialAdvisor>? UserFinancialAdvisor { get; set; }

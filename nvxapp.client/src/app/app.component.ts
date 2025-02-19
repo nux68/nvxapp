@@ -33,16 +33,14 @@ export class AppComponent {
 
     { title: 'DealerPowerAdmin', component: "DealerPowerAdminPageComponent", url: '/dealerpoweradmin', icon: 'ellipse' },
     { title: 'DealerAdmin', component: "DealerAdminPageComponent", url: '/dealeradmin', icon: 'ellipse' },
-    { title: 'Company List', component: "CompanyListPageComponent", url: '/companylist', icon: 'list-circle' },
-
+    { title: 'FinancialAdvisor List', component: "FinancialAdvisorListPageComponent", url: '/financialadvisorlist', icon: 'list-circle' },
   ];
 
   public appPages4FinancialAdvisorAdmin = [
 
     { title: 'FinancialAdvisorPowerAdmin', component: "FinancialAdvisorPowerAdminPageComponent", url: '/financialadvisorpoweradmin', icon: 'ellipse' },
     { title: 'FinancialAdvisorAdmin', component: "FinancialAdvisorAdminPageComponent", url: '/financialadvisoradmin', icon: 'ellipse' },
-    { title: 'FinancialAdvisor List', component: "FinancialAdvisorListPageComponent", url: '/financialadvisorlist', icon: 'list-circle' },
-
+    { title: 'Company List', component: "CompanyListPageComponent", url: '/companylist', icon: 'list-circle' },
   ];
 
   public appPages4CompanyAdmin = [
