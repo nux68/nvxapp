@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { UserNavigationService } from '../../Utility/user-navigation.service';
+import { UserCronologyModel, UserNavigationService } from '../../Utility/user-navigation.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { NavController } from '@ionic/angular';
 
 @Component({
   selector: 'app-user-impersonate-page',
@@ -11,25 +12,31 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 export class UserImpersonatePageComponent  implements OnInit {
 
   public title!: string;
-  userGoBackForm: FormGroup;
+  public selectedValue: string|null = null;
+
+  public userCronology: UserCronologyModel[] | null = null;
 
   constructor(public userNavigationService: UserNavigationService,
+              private navCtrl: NavController,
               private fb: FormBuilder,) {
 
     this.title = 'UserImpersonate';
-
-    this.userGoBackForm = this.fb.group({
-      //email: ['', [Validators.required, Validators.email]],
-      //email: ['', [Validators.required, Validators.minLength(3)]],
-      //password: ['', [Validators.required, Validators.minLength(3)]]
-    });
-
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+      this.userCronology = this.userNavigationService.userCronology;
+      this.selectedValue = this.userCronology[this.userCronology.length - 1].userData.id;
+  }
 
   UserGoBack() {
-    this.userNavigationService.UserGoBack();
+    this.userNavigationService.UserGoTo(this.selectedValue);
   }
+
+  LogOut() {
+    this.userNavigationService.LogOut();
+    this.navCtrl.navigateForward('/home');
+  }
+
+  
 
 }

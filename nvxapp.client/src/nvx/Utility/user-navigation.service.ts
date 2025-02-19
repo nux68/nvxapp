@@ -60,6 +60,24 @@ export class UserNavigationService {
 
   }
 
+  public UserGoTo(idUser: string): void {
+    if (this._userCronology.length > 0) {
+
+      var idx = this._userCronology.findIndex(x => x.userData.id == idUser);
+      if (idx >= 0) {
+        this._userCronology.splice(idx+1);
+
+        this.authService.setRole(this._userCronology[this._userCronology.length - 1].userData.roles);
+
+        if (this._userCronology[this._userCronology.length - 1].userDataAdditional.gotoBackPage != null)
+          this.navCtrl.navigateForward(this._userCronology[this._userCronology.length - 1].userDataAdditional.gotoBackPage);
+      }
+
+
+
+    }
+  }
+
   public LogOut(): void {
     this._userCronology = [];
     this.authService.LogOut();
