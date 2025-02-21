@@ -56,7 +56,7 @@ export class AccountService {
     return this.http.post<GenericResult<UserLoadOutModel>>(environment.remoteData.apiUri + 'Account/UserLoad', model)
       .pipe(
                 map(r => {
-                            //this.authService.setRole(r.data.roles);
+                            this.authService.Token = r.data.token;
                             return r;
                           }
                 )

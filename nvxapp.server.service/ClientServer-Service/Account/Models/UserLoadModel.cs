@@ -16,7 +16,8 @@ namespace nvxapp.server.service.ClientServer_Service.Account.Models
     public class UserLoadOutModel : ModelResult
     {
         public UserDataModel UserData { get; set; }
-        
+        public string? Token { get; set; }
+
         public UserLoadOutModel(){
             UserData = new UserDataModel();
         }

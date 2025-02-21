@@ -102,12 +102,19 @@ namespace nvxapp.server.data.Migrations
                         columns: new[] { "Descrizione" },
                         values: new object[] { "Concessionario " + key_Dealer }
                         );
-
+                //DealerPowerAdmin
                 migrationBuilder.InsertData(
                         table: "UserDealer",
                         columns: new[] { "IdDealer", "IdAspNetUsers" },
                         values: new object[] { idxDealer, data_AspNetUsers[0].Id }
                         );
+                //DealerAdmin
+                migrationBuilder.InsertData(
+                        table: "UserDealer",
+                        columns: new[] { "IdDealer", "IdAspNetUsers" },
+                        values: new object[] { idxDealer, data_AspNetUsers[1].Id }
+                        );
+
 
                 for (int idxFinancial = 1; idxFinancial <= 10; idxFinancial++)
                 {
@@ -124,11 +131,17 @@ namespace nvxapp.server.data.Migrations
                                     columns: new[] { "IdDealer", "Descrizione" },
                                     values: new object[] { idxDealer, "Studio " + key_FinancialAdvisor }
                                     );
-
+                    //FinancialAdvisorPowerAdmin
                     migrationBuilder.InsertData(
                            table: "UserFinancialAdvisor",
                            columns: new[] { "IdFinancialAdvisor", "IdAspNetUsers" },
                            values: new object[] { idxFinancialAdvisor, data_AspNetUsers[0].Id }
+                           );
+                    //FinancialAdvisorAdmin
+                    migrationBuilder.InsertData(
+                           table: "UserFinancialAdvisor",
+                           columns: new[] { "IdFinancialAdvisor", "IdAspNetUsers" },
+                           values: new object[] { idxFinancialAdvisor, data_AspNetUsers[1].Id }
                            );
 
 
@@ -148,10 +161,17 @@ namespace nvxapp.server.data.Migrations
                                                       values: new object[] { idxFinancialAdvisor, "Azienda " + key_Company, "schema_" + key_Company }
                                                       );
 
+                        //CompanyPowerAdmin
                         migrationBuilder.InsertData(
                              table: "UserCompany",
                              columns: new[] { "IdCompany", "IdAspNetUsers" },
                              values: new object[] { idxCompany, data_AspNetUsers[0].Id }
+                             );
+                        //CompanyAdmin
+                        migrationBuilder.InsertData(
+                             table: "UserCompany",
+                             columns: new[] { "IdCompany", "IdAspNetUsers" },
+                             values: new object[] { idxCompany, data_AspNetUsers[1].Id }
                              );
 
                         for (int idxUs = 1; idxUs <= 10; idxUs++)

@@ -136,8 +136,20 @@ namespace nvxapp.server.service.Infrastructure
                 var applicationUser = await _userManager.FindByIdAsync(this.CurrentUserId);
                 if(applicationUser!=null)
                 {
-                    var currten = this.CurrentTenat;
-                    token = UtilToken.GenerateJwtToken(applicationUser, _jwtParameter.Key, _jwtParameter.Issuer, _jwtParameter.Audience, _jwtParameter.ExpireMinutes, currten);
+                    var currentTenat = this.CurrentTenat;
+                    var currentDealer = this.CurrentDealer;
+                    var financialAdvisor = this.CurrentFinancialAdvisor;
+                    var company = this.CurrentCompany;
+
+                    token = UtilToken.GenerateJwtToken(applicationUser, 
+                                                       _jwtParameter.Key, 
+                                                       _jwtParameter.Issuer, 
+                                                       _jwtParameter.Audience, 
+                                                       _jwtParameter.ExpireMinutes,
+                                                       currentTenat,
+                                                       currentDealer,
+                                                       financialAdvisor,
+                                                       company);
                 }
             }
 
@@ -213,6 +225,48 @@ namespace nvxapp.server.service.Infrastructure
                 if (_httpContextAccessor.HttpContext != null)
                 {
                     var tenant = _httpContextAccessor.HttpContext?.User?.FindFirst("tenant")?.Value;
+                    return tenant ?? "";
+                }
+
+                return "";
+            }
+        }
+
+        protected string CurrentDealer
+        {
+            get
+            {
+                if (_httpContextAccessor.HttpContext != null)
+                {
+                    var tenant = _httpContextAccessor.HttpContext?.User?.FindFirst("dealer")?.Value;
+                    return tenant ?? "";
+                }
+
+                return "";
+            }
+        }
+
+        protected string CurrentFinancialAdvisor
+        {
+            get
+            {
+                if (_httpContextAccessor.HttpContext != null)
+                {
+                    var tenant = _httpContextAccessor.HttpContext?.User?.FindFirst("financialadvisor")?.Value;
+                    return tenant ?? "";
+                }
+
+                return "";
+            }
+        }
+
+        protected string CurrentCompany
+        {
+            get
+            {
+                if (_httpContextAccessor.HttpContext != null)
+                {
+                    var tenant = _httpContextAccessor.HttpContext?.User?.FindFirst("company")?.Value;
                     return tenant ?? "";
                 }
 

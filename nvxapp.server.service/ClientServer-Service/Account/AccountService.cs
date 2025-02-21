@@ -20,7 +20,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IAspNetUserRolesRepository _aspNetUserRolesRepository;
         private readonly IAspNetRolesRepository _aspNetRolesRepository;
-        
+
         private readonly IDealerRepository _dealerRepository;
         private readonly IUserDealerRepository _userDealerRepository;
 
@@ -39,7 +39,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
 
                               IAspNetUserRolesRepository aspNetUserRolesRepository,
                               IAspNetRolesRepository aspNetRolesRepository,
-                              
+
                               IDealerRepository dealerRepository,
                               IUserDealerRepository userDealerRepository,
 
@@ -55,7 +55,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
             _signInManager = signInManager;
             _aspNetUserRolesRepository = aspNetUserRolesRepository;
             _aspNetRolesRepository = aspNetRolesRepository;
-            
+
             _dealerRepository = dealerRepository;
             _userDealerRepository = userDealerRepository;
             _financialAdvisorRepository = financialAdvisorRepository;
@@ -94,7 +94,10 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                                                                       _jwtParameter.Issuer,
                                                                       _jwtParameter.Audience,
                                                                       _jwtParameter.ExpireMinutes,
-                                                                      "schema_a");
+                                                                      "",
+                                                                      "",
+                                                                      "",
+                                                                      "");
                         }
                     }
                     else
@@ -161,12 +164,74 @@ namespace nvxapp.server.service.ClientServer_Service.Account
 
                     if (applicationUser != null)
                     {
-                        retVal.UserData.Id = model.Data.Id;
-                        retVal.UserData.UserName = applicationUser.UserName;
+                        string schema = "";
+                        string dealer = "";
+                        string financialAdvisor = "";
+                        string company = "";
 
                         var roles = await _userManager.GetRolesAsync(applicationUser);
                         if (roles != null && roles.Any())
                         {
+
+                            switch (roles[0])
+                            {
+                                case "DealerPowerAdmin":
+                                case "DealerAdmin":
+                                    var userDealer = _userDealerRepository.FindAll(x => x.IdAspNetUsers == applicationUser.Id).FirstOrDefault();
+                                    if (userDealer != null)
+                                        dealer = userDealer.IdDealer.ToString();
+                                    break;
+
+                                case "FinancialAdvisorPowerAdmin":
+                                case "FinancialAdvisorAdmin":
+                                    var userFinancial = _userFinancialAdvisorRepository.FindAll(x => x.IdAspNetUsers == applicationUser.Id).FirstOrDefault();
+                                    if (userFinancial != null)
+                                    {
+                                        financialAdvisor = userFinancial.IdFinancialAdvisor.ToString();
+
+                                        var financial = _financialAdvisorRepository.FindAll(x => x.Id == userFinancial.IdFinancialAdvisor).FirstOrDefault();
+                                        if (financial != null)
+                                            dealer = financial.IdDealer.ToString();
+                                    }
+                                    break;
+
+                                case "CompanyPowerAdmin":
+                                case "CompanyAdmin":
+                                case "User":
+                                    var userCompany = _userCompanyRepository.FindAll(x => x.IdAspNetUsers == applicationUser.Id).FirstOrDefault();
+                                    if (userCompany != null)
+                                    {
+                                        company = userCompany.IdCompany.ToString();
+                                        var comp = _companyRepository.FindAll(x => x.Id == userCompany.IdCompany).FirstOrDefault();
+                                        if(comp!=null)
+                                        {
+                                            schema = comp.Schema??"";
+                                            financialAdvisor = comp.IdFinancialAdvisor.ToString();
+                                            var financial = _financialAdvisorRepository.FindAll(x => x.Id == comp.IdFinancialAdvisor).FirstOrDefault();
+                                            if (financial != null)
+                                                dealer = financial.IdDealer.ToString();
+                                        }
+                                    }
+                                        
+                                    break;
+
+                            }
+
+
+                            retVal.Token = UtilToken.GenerateJwtToken(applicationUser,
+                                                                    _jwtParameter.Key,
+                                                                    _jwtParameter.Issuer,
+                                                                    _jwtParameter.Audience,
+                                                                    _jwtParameter.ExpireMinutes,
+                                                                    schema,
+                                                                    dealer,
+                                                                    financialAdvisor,
+                                                                    company);
+
+                            retVal.UserData.Id = model.Data.Id;
+                            retVal.UserData.UserName = applicationUser.UserName;
+
+
                             var aspNetRoles = _aspNetRolesRepository.GetAll().Where(x => x.Name != null && roles.Contains(x.Name)).ToList();
 
                             retVal.UserData.Roles = _mapper.Map<List<AspNetRolesModel>>(aspNetRoles);
@@ -238,8 +303,16 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                         var usrRole = await _userManager.GetUsersInRoleAsync(applicationRole.Name);
                         if (usrRole != null)
                         {
+                            int IdDealer;
+                            int.TryParse(this.CurrentDealer, out IdDealer);
+
+                            var financialAdvisorIdList = _financialAdvisorRepository.GetAll().Where(x => x.IdDealer == IdDealer).Select(x => x.Id).ToList();
+
+
                             var usrId = usrRole.Select(x => x.Id).ToList();
-                            var userFinancialAdvisor = _userFinancialAdvisorRepository.GetAll().Where(x => usrId.Contains(x.IdAspNetUsers)).ToList();
+                            var userFinancialAdvisor = _userFinancialAdvisorRepository.GetAll()
+                                                                                      .Where(x => usrId.Contains(x.IdAspNetUsers) && financialAdvisorIdList.Contains(x.IdFinancialAdvisor))
+                                                                                      .ToList();
 
                             foreach (var item in userFinancialAdvisor)
                             {
@@ -280,8 +353,14 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                         var usrRole = await _userManager.GetUsersInRoleAsync(applicationRole.Name);
                         if (usrRole != null)
                         {
+                            int IdFinancialAdvisor;
+                            int.TryParse(this.CurrentFinancialAdvisor, out IdFinancialAdvisor);
+
+                            var companyIdList = _companyRepository.GetAll().Where(x => x.IdFinancialAdvisor == IdFinancialAdvisor).Select(x => x.Id).ToList();
+
+
                             var usrId = usrRole.Select(x => x.Id).ToList();
-                            var userCompany = _userCompanyRepository.GetAll().Where(x => usrId.Contains(x.IdAspNetUsers)).ToList();
+                            var userCompany = _userCompanyRepository.GetAll().Where(x => usrId.Contains(x.IdAspNetUsers)  && companyIdList.Contains(x.IdCompany)).ToList();
 
                             foreach (var item in userCompany)
                             {
@@ -322,12 +401,15 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                         var usrRole = await _userManager.GetUsersInRoleAsync(applicationRole.Name);
                         if (usrRole != null)
                         {
+                            int IdCompany;
+                            int.TryParse(this.CurrentCompany, out IdCompany);
+
                             var usrId = usrRole.Select(x => x.Id).ToList();
-                            var userCompany = _userCompanyRepository.GetAll().Where(x => usrId.Contains(x.IdAspNetUsers)).ToList();
+                            var userCompany = _userCompanyRepository.GetAll().Where(x => usrId.Contains(x.IdAspNetUsers) && x.IdCompany == IdCompany).ToList();
 
                             foreach (var item in userCompany)
                             {
-                                var _user = _aspNetUsersRepository.GetAll().Where(x=> x.Id== item.IdAspNetUsers).FirstOrDefault();
+                                var _user = _aspNetUsersRepository.GetAll().Where(x => x.Id == item.IdAspNetUsers).FirstOrDefault();
 
                                 retVal.UserCompanyList.Add(new UserCompanyListModel()
                                 {
@@ -350,7 +432,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
         }
 
 
-    
+
     }
 
     public interface IAccountService : IServiceBase

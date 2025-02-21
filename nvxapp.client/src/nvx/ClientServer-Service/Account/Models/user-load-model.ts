@@ -9,7 +9,7 @@ export class UserLoadInModel {
 export class UserLoadOutModel extends ModelResult {
 
   public userData: UserDataModel | null;
-
+  public token: string | null;
 }
 
 export class UserDataModel  {

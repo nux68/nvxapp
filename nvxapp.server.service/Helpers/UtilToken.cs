@@ -19,7 +19,10 @@ namespace nvxapp.server.service.Helpers
                                                string Issuer,
                                                string Audience,
                                                int ExpireMinutes,
-                                               string CurrentTenat)
+                                               string Tenant,
+                                               string Dealer,
+                                               string FinancialAdvisor,
+                                               string Company)
         {
             string? retVal = null;
 
@@ -32,7 +35,10 @@ namespace nvxapp.server.service.Helpers
                 //new Claim(JwtRegisteredClaimNames.Name, user.UserName),
                 new Claim(JwtRegisteredClaimNames.Sub, user.Id),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim("tenant", CurrentTenat)
+                new Claim("tenant", Tenant),
+                new Claim("dealer", Dealer),
+                new Claim("financialadvisor", FinancialAdvisor),
+                new Claim("company", Company)
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Key));
