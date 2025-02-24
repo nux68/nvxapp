@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
 import { FinancialAdvisorListPageComponent } from './financial-advisor-list-page.component';
+import { GenericFilterPipe } from '../../pipe/generic-filter.pipe';
 
 @NgModule({
   imports: [
@@ -15,7 +16,8 @@ import { FinancialAdvisorListPageComponent } from './financial-advisor-list-page
         path: '',
         component: FinancialAdvisorListPageComponent
       }
-    ])
+    ]),
+    GenericFilterPipe,
   ],
   declarations: [FinancialAdvisorListPageComponent]
 })

@@ -4,6 +4,18 @@
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
     <ion-title>{{ title }}</ion-title>
+    
+  </ion-toolbar>
+  <ion-toolbar>
+    <ion-searchbar [(ngModel)]="searchText"></ion-searchbar>
+
+    <!--<ion-breadcrumbs>
+      <ion-breadcrumb href="#home">Home</ion-breadcrumb>
+      <ion-breadcrumb href="#electronics">Electronics</ion-breadcrumb>
+      <ion-breadcrumb href="#cameras">Cameras</ion-breadcrumb>
+      <ion-breadcrumb href="#film">Film</ion-breadcrumb>
+    </ion-breadcrumbs>-->
+
   </ion-toolbar>
 </ion-header>
 
@@ -17,10 +29,10 @@
 
   <ion-grid *ngIf="dealerList!=null">
     <ion-row>
-      <ion-col *ngFor="let item of dealerList" size-xs="6" size-sm="3" size-md="3" size-lg="3" size-xl="2">
+      <ion-col *ngFor="let item of dealerList | genericFilter: 'descrizione' : searchText" size-xs="6" size-sm="3" size-md="3" size-lg="3" size-xl="2">
 
         <ion-card>
-          
+
           <img alt="Silhouette of mountains" src="/assets/card-media.png" />
           <ion-card-header>
             <ion-card-title>{{ item.descrizione }}</ion-card-title>

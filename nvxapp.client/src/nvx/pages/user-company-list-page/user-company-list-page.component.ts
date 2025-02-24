@@ -15,6 +15,7 @@ import { UserNavigationService, UserDataAdditionalModel } from '../../Utility/us
 export class UserCompanyListPageComponent  implements OnInit {
 
   public title!: string;
+  public searchText!: string;
   public userCompanyList: UserCompanyListModel[] | null = null;
 
   constructor(private navCtrl: NavController,

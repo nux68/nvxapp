@@ -15,6 +15,7 @@ import { NavController } from '@ionic/angular';
 export class DealerListPageComponent  implements OnInit {
 
   public title!: string;
+  public searchText!: string;
   public dealerList: DealerListModel[] | null=null;
 
   constructor(private navCtrl: NavController,

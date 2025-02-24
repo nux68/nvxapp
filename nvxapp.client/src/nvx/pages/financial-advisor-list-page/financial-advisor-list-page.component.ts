@@ -15,6 +15,7 @@ import { FinancialAdvisorListInModel, FinancialAdvisorListModel } from '../../Cl
 export class FinancialAdvisorListPageComponent implements OnInit {
 
   public title!: string;
+  public searchText!: string;
   public financialAdvisorList: FinancialAdvisorListModel[] | null = null;
 
   constructor(private navCtrl: NavController,

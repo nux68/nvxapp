@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
 import { CompanyListPageComponent } from './company-list-page.component';
+import { GenericFilterPipe } from '../../pipe/generic-filter.pipe';
 
 
 @NgModule({
@@ -16,7 +17,8 @@ import { CompanyListPageComponent } from './company-list-page.component';
         path: '',
         component: CompanyListPageComponent
       }
-    ])
+    ]),
+    GenericFilterPipe,
   ],
 
   declarations: [CompanyListPageComponent],

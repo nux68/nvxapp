@@ -5,6 +5,9 @@
     </ion-buttons>
     <ion-title>{{ title }}</ion-title>
   </ion-toolbar>
+  <ion-toolbar>
+    <ion-searchbar [(ngModel)]="searchText"></ion-searchbar>
+  </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
@@ -17,7 +20,7 @@
 
   <ion-grid *ngIf="companyList!=null">
     <ion-row>
-      <ion-col *ngFor="let item of companyList"  size-xs="6" size-sm="3" size-md="3" size-lg="3" size-xl="2">
+      <ion-col *ngFor="let item of companyList | genericFilter: 'descrizione' : searchText"  size-xs="6" size-sm="3" size-md="3" size-lg="3" size-xl="2">
 
         <ion-card>
           

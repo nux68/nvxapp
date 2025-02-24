@@ -5,6 +5,9 @@
     </ion-buttons>
     <ion-title>{{ title }}</ion-title>
   </ion-toolbar>
+  <ion-toolbar>
+    <ion-searchbar [(ngModel)]="searchText"></ion-searchbar>
+  </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
@@ -14,23 +17,10 @@
     </ion-toolbar>
   </ion-header>
 
-  <!--<ion-grid *ngIf="userCompanyList!=null">
-    <ion-row>
-      <ion-col>descrizione</ion-col>
-      <ion-col>Action</ion-col>
-    </ion-row>
-    <ion-row *ngFor="let item of userCompanyList">
-
-      <ion-col>{{ item.descrizione }}</ion-col>
-      <ion-col>
-        <ion-button (click)="handleButtonClick(item)">Impersonate</ion-button>
-      </ion-col>
-    </ion-row>
-  </ion-grid>-->
 
   <ion-grid *ngIf="userCompanyList!=null">
     <ion-row>
-      <ion-col *ngFor="let item of userCompanyList" size-xs="6" size-sm="3" size-md="3" size-lg="3" size-xl="2">
+      <ion-col *ngFor="let item of userCompanyList | genericFilter: 'descrizione' : searchText" size-xs="6" size-sm="3" size-md="3" size-lg="3" size-xl="2">
 
         <ion-card>
           <img alt="Silhouette of mountains" src="/assets/card-media.png" />
