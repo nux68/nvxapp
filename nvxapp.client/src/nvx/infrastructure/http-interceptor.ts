@@ -5,12 +5,14 @@ import { catchError, finalize, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { AuthService } from '../Utility/auth.service';
 import { NavController } from '@ionic/angular';
+import { UserNavigationService } from '../Utility/user-navigation.service';
 
 @Injectable()
 export class NvxHttpInterceptor implements HttpInterceptor {
 
   constructor(
               private authService: AuthService,
+              private userNavigationService:UserNavigationService,
               private nvxHttpInterceptorService: NvxHttpInterceptorService,
               private navCtrl: NavController,
              )
@@ -46,7 +48,7 @@ export class NvxHttpInterceptor implements HttpInterceptor {
         if (error.status === 401) {
           console.warn('Errore 401: Token scaduto o non valido.');
 
-          this.authService.LogOut();  
+          this.userNavigationService.LogOut();  
           this.navCtrl.navigateForward('/home');
         }
 

@@ -42,7 +42,7 @@ export class UserCompanyListPageComponent  implements OnInit {
       if (usl.success) {
 
         let userDataAdditional: UserDataAdditionalModel = new UserDataAdditionalModel();
-        userDataAdditional.gotoBackPage = "/home";
+        userDataAdditional.gotoBackPage = "/usercompanylist";
 
         this.userNavigationService.UserPush(usl.data.userData, userDataAdditional);
         this.navCtrl.navigateForward('/home');

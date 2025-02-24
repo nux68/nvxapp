@@ -42,7 +42,7 @@ export class DealerListPageComponent  implements OnInit {
       if (usl.success) {
 
         let userDataAdditional: UserDataAdditionalModel = new UserDataAdditionalModel();
-        userDataAdditional.gotoBackPage = "/home";
+        userDataAdditional.gotoBackPage = "/dealerlist";
 
         this.userNavigationService.UserPush(usl.data.userData, userDataAdditional);
         this.navCtrl.navigateForward('/home');

@@ -1,1 +1,5 @@
 ﻿let request: GenericRequest<UserLoadInModel> = new GenericRequest<UserLoadInModel>(UserLoadInModel);
+
+setTimeout(() => {
+    console.log("Eseguito dopo 3 secondi");
+}, 3000);

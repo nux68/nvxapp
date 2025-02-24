@@ -63,14 +63,26 @@ export class UserNavigationService {
   public UserGoTo(idUser: string): void {
     if (this._userCronology.length > 0) {
 
+      let gotoBackPage = '/home';
+
       var idx = this._userCronology.findIndex(x => x.userData.id == idUser);
       if (idx >= 0) {
+
+        let idxBackPage = idx + 1;
+        if (idxBackPage == this._userCronology.length) {
+          gotoBackPage = '/home';
+        }
+        else {
+          gotoBackPage = this._userCronology[idxBackPage].userDataAdditional.gotoBackPage;;
+        }
+
         this._userCronology.splice(idx+1);
 
-        this.authService.setRole(this._userCronology[this._userCronology.length - 1].userData.roles);
-
+        this.authService.setRole(this._userCronology[idx].userData.roles);
+       
         if (this._userCronology[this._userCronology.length - 1].userDataAdditional.gotoBackPage != null)
-          this.navCtrl.navigateForward(this._userCronology[this._userCronology.length - 1].userDataAdditional.gotoBackPage);
+          this.navCtrl.navigateForward(gotoBackPage);
+        
       }
 
 
