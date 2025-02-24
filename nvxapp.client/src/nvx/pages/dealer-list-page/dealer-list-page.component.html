@@ -14,29 +14,47 @@
     </ion-toolbar>
   </ion-header>
 
+
   <ion-grid *ngIf="dealerList!=null">
     <ion-row>
-      <!--<ion-col>idDealer</ion-col>
-      <ion-col>idAspNetUsers</ion-col>-->
+      <ion-col *ngFor="let item of dealerList" size-xs="6" size-sm="3" size-md="3" size-lg="3" size-xl="2">
+
+        <ion-card>
+          <img alt="Silhouette of mountains" src="https://ionicframework.com/docs/img/demos/card-media.png" />
+          <ion-card-header>
+            <ion-card-title>{{ item.descrizione }}</ion-card-title>
+            <ion-card-subtitle>bla bla bla</ion-card-subtitle>
+          </ion-card-header>
+
+          <ion-card-content>
+            bla bla bla
+          </ion-card-content>
+
+          <ion-button fill="clear" (click)="handleButtonClick(item)">Impersonate</ion-button>
+          <!--<ion-button fill="clear">Action 2</ion-button>-->
+
+        </ion-card>
+
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <!--<ion-grid *ngIf="dealerList!=null">
+    <ion-row>
+
       <ion-col>descrizione</ion-col>
       <ion-col>Action</ion-col>
     </ion-row>
     <ion-row *ngFor="let item of dealerList">
-      <!--<ion-col>{{ item.idDealer }}</ion-col>
-      <ion-col>{{ item.idAspNetUsers }}</ion-col>-->
+
       <ion-col>{{ item.descrizione }}</ion-col>
       <ion-col>
         <ion-button (click)="handleButtonClick(item)">Impersonate</ion-button>
       </ion-col>
     </ion-row>
-  </ion-grid>
+  </ion-grid>-->
 
 
-  <!--<div id="container">
-    <strong class="capitalize">{{ title }}</strong>
-    <p>{{title}}Component works...</p>
-  </div>
 
-  {{dealerList|json}}-->
 
 </ion-content>

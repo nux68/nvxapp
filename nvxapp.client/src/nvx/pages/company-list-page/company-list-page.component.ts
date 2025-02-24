@@ -6,6 +6,7 @@ import { UserLoadInModel } from '../../ClientServer-Service/Account/Models/user-
 import { GenericRequest } from '../../ClientServer-Service/ModelsBase/generic-request';
 import { UserNavigationService, UserDataAdditionalModel } from '../../Utility/user-navigation.service';
 
+
 @Component({
   selector: 'app-company-list-page',
   templateUrl: './company-list-page.component.html',
@@ -24,6 +25,8 @@ export class CompanyListPageComponent  implements OnInit {
   }
 
   ngOnInit() {
+
+   
 
     let request: GenericRequest<CompanyListInModel> = new GenericRequest<CompanyListInModel>(CompanyListInModel);
     this.accountService.CompanyList(request).subscribe(res => {
