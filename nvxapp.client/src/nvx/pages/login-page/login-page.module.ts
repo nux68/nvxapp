@@ -4,6 +4,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
 import { LoginPageComponent } from './login-page.component';
+import { SharedComponentModule } from '../../shared/shared-component.module';
 
 
 
@@ -18,7 +19,8 @@ import { LoginPageComponent } from './login-page.component';
         path: '',
         component: LoginPageComponent
       }
-    ])
+    ]),
+    SharedComponentModule
   ],
   declarations: [LoginPageComponent]
 })

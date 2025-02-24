@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
 import { FinancialAdvisorPowerAdminPageComponent } from './financial-advisor-power-admin-page.component';
+import { SharedComponentModule } from '../../shared/shared-component.module';
 
 
 @NgModule({
@@ -16,7 +17,8 @@ import { FinancialAdvisorPowerAdminPageComponent } from './financial-advisor-pow
         path: '',
         component: FinancialAdvisorPowerAdminPageComponent
       }
-    ])
+    ]),
+    SharedComponentModule
   ],
   declarations: [FinancialAdvisorPowerAdminPageComponent]
 })

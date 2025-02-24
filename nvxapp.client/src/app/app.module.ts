@@ -12,7 +12,7 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { NvxHttpInterceptor } from '../nvx/infrastructure/http-interceptor';
 import { HttpBackgroundWorkingComponentComponent } from '../nvx/shared/components/http-background-working-component/http-background-working-component.component';
 import { BackgroundWorkingComponent } from '../nvx/shared/components/background-working/background-working.component';
-import { GenericFilterPipe } from '../nvx/pipe/generic-filter.pipe';
+//import { GenericFilterPipe } from '../nvx/pipe/generic-filter.pipe';
 
 
 @NgModule({
@@ -29,7 +29,7 @@ import { GenericFilterPipe } from '../nvx/pipe/generic-filter.pipe';
               provideHttpClient(withInterceptorsFromDi()),
               { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
               { provide: HTTP_INTERCEPTORS, useClass: NvxHttpInterceptor, multi: true },
-              importProvidersFrom(GenericFilterPipe)
+              //importProvidersFrom(GenericFilterPipe)
   ],
   bootstrap: [AppComponent],
 })

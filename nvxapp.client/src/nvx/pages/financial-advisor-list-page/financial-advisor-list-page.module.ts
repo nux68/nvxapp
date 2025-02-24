@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
 import { FinancialAdvisorListPageComponent } from './financial-advisor-list-page.component';
-import { GenericFilterPipe } from '../../pipe/generic-filter.pipe';
+import { SharedComponentModule } from '../../shared/shared-component.module';
 
 @NgModule({
   imports: [
@@ -17,7 +17,7 @@ import { GenericFilterPipe } from '../../pipe/generic-filter.pipe';
         component: FinancialAdvisorListPageComponent
       }
     ]),
-    GenericFilterPipe,
+    SharedComponentModule
   ],
   declarations: [FinancialAdvisorListPageComponent]
 })

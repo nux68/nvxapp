@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
 import { DealerPowerAdminPageComponent } from './dealer-power-admin-page.component';
+import { SharedComponentModule } from '../../shared/shared-component.module';
 
 
 
@@ -17,7 +18,8 @@ import { DealerPowerAdminPageComponent } from './dealer-power-admin-page.compone
         path: '',
         component: DealerPowerAdminPageComponent
       }
-    ])
+    ]),
+    SharedComponentModule
   ],
   declarations: [DealerPowerAdminPageComponent]
 })

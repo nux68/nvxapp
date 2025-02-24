@@ -1,0 +1,10 @@
+
+<ion-toolbar>
+  <ion-breadcrumbs >
+    <ion-breadcrumb *ngFor="let p of userNavigationService.userCronology"
+                    href="javascript:void(0)" (click)="navigateTo(p.userData.id)">{{p.userData.userName}}
+    </ion-breadcrumb>
+  </ion-breadcrumbs>
+</ion-toolbar>
+
+

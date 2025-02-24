@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
 import { SuperUserPageComponent } from './super-user-page.component';
+import { SharedComponentModule } from '../../shared/shared-component.module';
 
 
 
@@ -18,7 +19,8 @@ import { SuperUserPageComponent } from './super-user-page.component';
         path: '',
         component: SuperUserPageComponent
       }
-    ])
+    ]),
+    SharedComponentModule
   ],
   declarations: [SuperUserPageComponent]
 })
