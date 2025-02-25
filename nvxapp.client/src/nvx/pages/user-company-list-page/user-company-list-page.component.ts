@@ -55,4 +55,8 @@ export class UserCompanyListPageComponent  implements OnInit {
 
   }
 
+  Filter(CurrFilter: any) {
+    this.searchText = CurrFilter;
+  }
+
 }

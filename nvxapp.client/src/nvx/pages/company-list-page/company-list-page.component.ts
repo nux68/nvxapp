@@ -58,7 +58,9 @@ export class CompanyListPageComponent  implements OnInit {
 
   }
 
-
+  Filter(CurrFilter: any) {
+    this.searchText = CurrFilter;
+  }
 
 
 }

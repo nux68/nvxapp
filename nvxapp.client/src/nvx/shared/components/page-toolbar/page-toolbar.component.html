@@ -1,0 +1,25 @@
+
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>{{ title }}</ion-title>
+  </ion-toolbar>
+
+  <ion-toolbar *ngIf="showFilter || (showBreadcrumbs && userNavigationService.userCronology.length>0)">
+
+
+
+    <app-breadcrumbs-impersonate *ngIf="showBreadcrumbs">
+
+    </app-breadcrumbs-impersonate>
+
+    <ion-searchbar *ngIf="showFilter"
+                   (ionInput)="filter($event)"
+                   placeholder="Search">
+    </ion-searchbar>
+
+  </ion-toolbar>
+
+</ion-header>

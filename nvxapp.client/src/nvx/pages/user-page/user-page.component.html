@@ -1,11 +1,17 @@
-<ion-header [translucent]="true">
+<!--<ion-header [translucent]="true">
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
     <ion-title>{{ title }}</ion-title>
   </ion-toolbar>
-</ion-header>
+</ion-header>-->
+<!--(ev_Filter)="Filter($event)"-->
+
+<app-page-toolbar [title]="title"
+                  [showFilter]="false"
+                  [showBreadcrumbs]="true">
+</app-page-toolbar>
 
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">

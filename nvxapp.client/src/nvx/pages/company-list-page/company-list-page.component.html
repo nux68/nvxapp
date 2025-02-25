@@ -1,16 +1,23 @@
-<ion-header [translucent]="true">
+<!--<ion-header [translucent]="true">
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
     <ion-title>{{ title }}</ion-title>
   </ion-toolbar>
+
   <ion-toolbar>
     <ion-searchbar [(ngModel)]="searchText"></ion-searchbar>
     <app-breadcrumbs-impersonate></app-breadcrumbs-impersonate>
 
   </ion-toolbar>
-</ion-header>
+</ion-header>-->
+
+<app-page-toolbar [title]="title"
+                  [showFilter]="true"
+                  [showBreadcrumbs]="true"
+                  (ev_Filter)="Filter($event)">
+</app-page-toolbar>
 
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
@@ -22,10 +29,10 @@
 
   <ion-grid *ngIf="companyList!=null">
     <ion-row>
-      <ion-col *ngFor="let item of companyList | genericFilter: 'descrizione' : searchText"  size-xs="6" size-sm="3" size-md="3" size-lg="3" size-xl="2">
+      <ion-col *ngFor="let item of companyList | genericFilter: 'descrizione' : searchText" size-xs="6" size-sm="3" size-md="3" size-lg="3" size-xl="2">
 
         <ion-card>
-          
+
           <img alt="Silhouette of mountains" src="/assets/card-media.png" />
           <ion-card-header>
             <ion-card-title>{{ item.descrizione }}</ion-card-title>
@@ -45,8 +52,8 @@
     </ion-row>
   </ion-grid>
 
- 
 
- 
+
+
 
 </ion-content>

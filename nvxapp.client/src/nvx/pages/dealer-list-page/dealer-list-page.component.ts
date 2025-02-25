@@ -55,6 +55,8 @@ export class DealerListPageComponent  implements OnInit {
 
   }
 
-  
+  public Filter(CurrFilter: any) {
+    this.searchText = CurrFilter;
+  }
 
 }

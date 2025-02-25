@@ -16,6 +16,9 @@ export class BreadcrumbsImpersonateComponent  implements OnInit {
 
   navigateTo(id: string) {
     this.userNavigationService.UserGoTo(id);
+
+    
+
   }
   
 

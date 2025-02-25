@@ -3,3 +3,19 @@
 setTimeout(() => {
     console.log("Eseguito dopo 3 secondi");
 }, 3000);
+
+
+
+javascript:void(0)
+
+<app-page-toolbar [title]="title"
+                  [showFilter]="true"
+                  [showBreadcrumbs]="true"
+                  (ev_Filter)="Filter($event)">
+</app-page-toolbar>
+
+<app-page-toolbar [title]="title"
+                  [showFilter]="true"
+                  [showBreadcrumbs]="true"
+                  (ev_Filter)="javascript:void(0)">
+</app-page-toolbar>

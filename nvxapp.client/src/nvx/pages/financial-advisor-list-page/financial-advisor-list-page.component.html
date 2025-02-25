@@ -1,4 +1,4 @@
-<ion-header [translucent]="true">
+<!--<ion-header [translucent]="true">
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-menu-button></ion-menu-button>
@@ -9,7 +9,12 @@
     <ion-searchbar [(ngModel)]="searchText"></ion-searchbar>
     <app-breadcrumbs-impersonate></app-breadcrumbs-impersonate>
   </ion-toolbar>
-</ion-header>
+</ion-header>-->
+<app-page-toolbar [title]="title"
+                  [showFilter]="true"
+                  [showBreadcrumbs]="true"
+                  (ev_Filter)="Filter($event)">
+</app-page-toolbar>
 
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">

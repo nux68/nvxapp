@@ -55,6 +55,8 @@ export class FinancialAdvisorListPageComponent implements OnInit {
 
   }
 
-
+  Filter(CurrFilter: any) {
+    this.searchText = CurrFilter;
+  }
 }
 
