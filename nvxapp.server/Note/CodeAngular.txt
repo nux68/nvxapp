@@ -8,14 +8,3 @@ setTimeout(() => {
 
 javascript:void(0)
 
-<app-page-toolbar [title]="title"
-                  [showFilter]="true"
-                  [showBreadcrumbs]="true"
-                  (ev_Filter)="Filter($event)">
-</app-page-toolbar>
-
-<app-page-toolbar [title]="title"
-                  [showFilter]="true"
-                  [showBreadcrumbs]="true"
-                  (ev_Filter)="javascript:void(0)">
-</app-page-toolbar>
