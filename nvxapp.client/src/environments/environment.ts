@@ -7,6 +7,7 @@ export const environment = {
 
    remoteData: {
      apiUri: 'https://localhost:7146/api/',
+     signalrUri: 'https://localhost:7146/',
   },
 
 };

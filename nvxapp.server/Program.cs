@@ -25,9 +25,6 @@ builder.Services.AddSwaggerGen();
 
 
 // Aggiungi i servizi CORS
-
-
-
 Installers.InstallCors(builder);
 
 
@@ -39,13 +36,13 @@ Installers.InstallMappers(builder);
 Installers.InstallLog(builder);
 Installers.InstallAuthentication(builder);
 
-
+builder.Services.AddSignalR();
 
 
 var app = builder.Build();
 
 
-
+//Installers.InstallChatAIHub(app);
 
 
 using (var scope = app.Services.CreateScope())
@@ -92,9 +89,12 @@ using (var scope = app.Services.CreateScope())
 
 
 
-// Usa la policy CORS globale
-app.UseCors("AllowAllOrigins");
-
+//// Usa la policy CORS globale
+////app.UseCors("AllowAllOrigins");
+//SIGNALR (V1) CON QUESTO VA
+//app.UseCors("AllowSpecificOrigin"); // Usa la policy CORS specifica
+//SIGNALR (V2)
+app.UseDynamicCors(); // Usa il middleware personalizzato
 
 
 // Configure the HTTP request pipeline.
@@ -126,6 +126,9 @@ app.UseStaticFiles();
 
 app.MapControllers();
 
+
+
+Installers.InstallChatAIHub(app);
 
 
 

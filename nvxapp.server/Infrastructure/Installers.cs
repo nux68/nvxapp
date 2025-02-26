@@ -22,11 +22,28 @@ using System;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using nvxapp.server.data.Entities.Public;
+using nvxapp.server.service.HubAI;
+using System.Net;
 
 namespace nvxapp.server.Infrastructure
 {
     public static class Installers
     {
+
+        public static /*IServiceCollection*/ void  InstallChatAIHub(this WebApplication app)
+        {
+
+            //app.UseRouting();
+
+        
+            app.MapHub<ChatAIHub>("/chathub");
+
+            ////////builder.Services.Configure<JwtParameter>(builder.Configuration.GetSection("JwtParameter"));
+
+
+            ////////return builder.Services;
+        }
+
 
         public static IServiceCollection InstallConfiguration(this WebApplicationBuilder builder)
         {
@@ -253,16 +270,70 @@ namespace nvxapp.server.Infrastructure
         {
             builder.Services.AddCors(options =>
             {
-                options.AddPolicy("AllowAllOrigins", policy =>
+                ////options.AddPolicy("AllowAllOrigins", policy =>
+                ////{
+                ////    policy.AllowAnyOrigin() // Permette qualsiasi origine
+                ////          .AllowAnyMethod() // Permette qualsiasi metodo (GET, POST, PUT, DELETE, ecc.)
+                ////          .AllowAnyHeader(); // Permette qualsiasi intestazione
+                ////});
+
+                //SIGNALR (V1) CON QUESTO VA
+                //options.AddPolicy("AllowSpecificOrigin", policy =>
+                //{
+                //    policy.WithOrigins("http://localhost:4200") // Specifica l'origine del client
+                //          .AllowAnyMethod()
+                //          .AllowAnyHeader()
+                //          .AllowCredentials(); // Consente l'invio delle credenziali
+                //});
+
+                //SIGNALR (V2)
+                builder.Services.AddCors(options =>
                 {
-                    policy.AllowAnyOrigin() // Permette qualsiasi origine
-                          .AllowAnyMethod() // Permette qualsiasi metodo (GET, POST, PUT, DELETE, ecc.)
-                          .AllowAnyHeader(); // Permette qualsiasi intestazione
+                    options.AddPolicy("DynamicOrigins", policy =>
+                    {
+                        policy.AllowAnyMethod()
+                              .AllowAnyHeader()
+                              .AllowCredentials()
+                              .SetIsOriginAllowed(origin => true); // Consente tutte le origini
+                    });
                 });
+
             });
 
             return builder.Services;
         }
+
+        //SIGNALR (V2)
+        public static void UseDynamicCors(this WebApplication app)
+        {
+            app.Use(async (context, next) =>
+            {
+                var origin = context.Request.Headers["Origin"];
+                if (!string.IsNullOrEmpty(origin))
+                {
+                    // Aggiungi l'intestazione Access-Control-Allow-Origin
+                    context.Response.Headers.Append("Access-Control-Allow-Origin", origin);
+                    context.Response.Headers.Append("Access-Control-Allow-Credentials", "true");
+                    context.Response.Headers.Append("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS"); // Metodi consentiti
+                    context.Response.Headers.Append("Access-Control-Allow-Headers", "Content-Type, Authorization, x-requested-with, x-signalr-user-agent"); // Intestazioni consentite
+                }
+
+                if (context.Request.Method == "OPTIONS")
+                {
+                    // Intestazioni preflight
+                    context.Response.Headers.Append("Access-Control-Allow-Headers", "Content-Type, Authorization, x-requested-with, x-signalr-user-agent");
+                    context.Response.StatusCode = (int)HttpStatusCode.OK;
+                    await context.Response.CompleteAsync();
+                    return;
+                }
+
+                await next();
+            });
+        }
+
+
+
+
         public static IServiceCollection InstallSettings(this WebApplicationBuilder builder)
         {
             /*

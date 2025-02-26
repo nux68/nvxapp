@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { AccountService } from '../nvx/ClientServer-Service/Account/account.service';
 import { AuthService } from '../nvx/Utility/auth.service';
 import { UserNavigationService } from '../nvx/Utility/user-navigation.service';
+import { SignalrService } from '../nvx/Utility/signalr.service';
 
 @Component({
   selector: 'app-root',
@@ -9,7 +10,7 @@ import { UserNavigationService } from '../nvx/Utility/user-navigation.service';
   styleUrls: ['app.component.scss'],
   standalone: false,
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
 
   
 
@@ -77,9 +78,24 @@ export class AppComponent {
   ];
   public labels = ['Family', 'Friends', 'Notes', 'Work', 'Travel', 'Reminders'];
   constructor(public authService: AuthService,
-              public userNavigationService: UserNavigationService
+              public userNavigationService: UserNavigationService,
+              public signalrService: SignalrService
               )
   {
+  }
+
+  ngOnInit() {
+    // 🔹 Sottoscrizione agli eventi della chat
+    this.signalrService.on('ReceiveMessage').subscribe((msg: string) => {
+      console.log('🔄 Dati ricevuti:', msg);
+      //this.unreadMessages++;
+      //this.showNotification(msg);
+    });
+
+    // 🔹 Esempio: Sottoscrizione a un altro evento (es. aggiornamento dati)
+    this.signalrService.on('UpdateData').subscribe((data) => {
+      console.log('🔄 Dati aggiornati:', data);
+    });
   }
 
   public showPage4SuperUser(component: string): boolean {
