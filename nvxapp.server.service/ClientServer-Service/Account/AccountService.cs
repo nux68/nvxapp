@@ -1,12 +1,14 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Options;
 using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.service.ClientServer_Service.Account.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Helpers;
+using nvxapp.server.service.HubAI;
 using nvxapp.server.service.Infrastructure;
 using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.ServerModels;
@@ -30,6 +32,9 @@ namespace nvxapp.server.service.ClientServer_Service.Account
         private readonly ICompanyRepository _companyRepository;
         private readonly IUserCompanyRepository _userCompanyRepository;
 
+        private readonly IHubContext<ChatAIHub> _hubContext;
+
+
 
         public AccountService(IMapper mapper,
                               UserManager<ApplicationUser> userManager,
@@ -48,6 +53,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
 
                               ICompanyRepository companyRepository,
                               IUserCompanyRepository userCompanyRepository,
+                              IHubContext<ChatAIHub> hubContext,
 
                               SignInManager<ApplicationUser> signInManager
                               ) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, httpContextAccessor)
@@ -62,6 +68,8 @@ namespace nvxapp.server.service.ClientServer_Service.Account
             _userFinancialAdvisorRepository = userFinancialAdvisorRepository;
             _companyRepository = companyRepository;
             _userCompanyRepository = userCompanyRepository;
+
+            _hubContext = hubContext;
         }
 
 
@@ -134,6 +142,10 @@ namespace nvxapp.server.service.ClientServer_Service.Account
 
                     if (applicationUser != null)
                     {
+
+
+                       
+
                         var roles = await _userManager.GetRolesAsync(applicationUser);
                         if (roles != null && roles.Any())
                         {
@@ -168,6 +180,8 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                         string dealer = "";
                         string financialAdvisor = "";
                         string company = "";
+
+                        await _hubContext.Clients.All.SendAsync("ReceiveMessage", "ciao " + applicationUser.UserName);
 
                         var roles = await _userManager.GetRolesAsync(applicationUser);
                         if (roles != null && roles.Any())

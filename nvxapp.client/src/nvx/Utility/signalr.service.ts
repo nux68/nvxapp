@@ -20,19 +20,12 @@ export class SignalrService {
     if (this.hubConnection && this.hubConnection.state === signalR.HubConnectionState.Connected) {
       return; // Connessione già attiva
     }
-
-    //const transportOptions = {
-    //  headers: {
-    //    'X-SSL-Certificate-Verification': 'false'
-    //  }
-    //};
+    
 
     var hubUrl = environment.remoteData.signalrUri + 'chathub';
 
-    //environment.remoteData.signalrUri + 'chathub'
-
     this.hubConnection = new signalR.HubConnectionBuilder()
-      .withUrl(hubUrl /*, transportOptions*/)
+      .withUrl(hubUrl)
       .configureLogging(signalR.LogLevel.Trace) 
       .withAutomaticReconnect()
       .build();
@@ -43,12 +36,9 @@ export class SignalrService {
         .then(() => console.log('? SignalR connesso'))
         .catch(err => console.error('? Errore connessione SignalR:', err));
 
-
     }, 5000); // Ritardo di 5 secondi
 
-    //this.hubConnection.start()
-    //  .then(() => console.log('? SignalR connesso'))
-    //  .catch(err => console.error('? Errore connessione SignalR:', err));
+    
 
     this.hubConnection.onclose(() => {
       console.log('? Connessione persa, tentando riconnessione...');
