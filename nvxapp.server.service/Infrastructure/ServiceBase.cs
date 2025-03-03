@@ -140,6 +140,7 @@ namespace nvxapp.server.service.Infrastructure
                     var currentDealer = this.CurrentDealer;
                     var financialAdvisor = this.CurrentFinancialAdvisor;
                     var company = this.CurrentCompany;
+                    var userIdFirstConnection = this.UserIdFirstConnection;
 
                     token = UtilToken.GenerateJwtToken(
                                                            _jwtParameter.Key, 
@@ -152,7 +153,8 @@ namespace nvxapp.server.service.Infrastructure
                                                                 FinancialAdvisor= financialAdvisor,
                                                                 Company= company,
                                                                 Tenant = currentTenat,
-                                                                UserId = applicationUser.Id
+                                                                UserId = applicationUser.Id,
+                                                                UserIdFirstConnection= userIdFirstConnection
                                                            } 
                                                        );
                 }
@@ -220,6 +222,21 @@ namespace nvxapp.server.service.Infrastructure
 
                 AllMessages.AddRange(data!.GetMessages());
 
+            }
+        }
+
+
+        protected string UserIdFirstConnection
+        {
+            get
+            {
+                if (_httpContextAccessor.HttpContext != null)
+                {
+                    var tenant = _httpContextAccessor.HttpContext?.User?.FindFirst("useridfirstconnection")?.Value;
+                    return tenant ?? "";
+                }
+
+                return "";
             }
         }
 

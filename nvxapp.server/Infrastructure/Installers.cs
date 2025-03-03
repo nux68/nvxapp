@@ -243,6 +243,31 @@ namespace nvxapp.server.Infrastructure
 
             return builder.Services;
         }
+        //public static IServiceCollection InstallAuthentication(this WebApplicationBuilder builder)
+        //{
+        //    string JwtParameterKey = builder.Configuration["JwtParameter:Key"] ?? "";
+
+        //    builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        //                    .AddJwtBearer(options =>
+        //                    {
+        //                        options.TokenValidationParameters = new TokenValidationParameters
+        //                        {
+        //                            ValidateIssuer = true,
+        //                            ValidateAudience = true,
+        //                            ValidateLifetime = true,
+        //                            ValidateIssuerSigningKey = true,
+        //                            ValidIssuer = builder.Configuration["JwtParameter:Issuer"],
+        //                            ValidAudience = builder.Configuration["JwtParameter:Audience"],
+        //                            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JwtParameterKey)),
+
+        //                            ClockSkew = TimeSpan.Zero // ✅ Disattiva il ritardo predefinito di 5 minuti
+        //                        };
+        //                    });
+
+        //    return builder.Services;
+        //}
+
+
         public static IServiceCollection InstallAuthentication(this WebApplicationBuilder builder)
         {
             string JwtParameterKey = builder.Configuration["JwtParameter:Key"] ?? "";
@@ -260,12 +285,33 @@ namespace nvxapp.server.Infrastructure
                                     ValidAudience = builder.Configuration["JwtParameter:Audience"],
                                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JwtParameterKey)),
 
-                                    ClockSkew = TimeSpan.Zero // ✅ Disattiva il ritardo predefinito di 5 minuti
+                                    ClockSkew = TimeSpan.Zero // Disattiva il ritardo predefinito di 5 minuti
+                                };
+
+                                // 🔹 Gestisce il token anche per SignalR (quando inviato nella query string)
+                                options.Events = new JwtBearerEvents
+                                {
+                                    OnMessageReceived = context =>
+                                    {
+                                        var accessToken = context.Request.Query["access_token"];
+                                        var path = context.HttpContext.Request.Path;
+
+                                        // ✅ Se è una richiesta SignalR e il token è presente nella query string, usalo
+                                        if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/chatHub"))
+                                        {
+                                            context.Token = accessToken;
+                                        }
+
+                                        return Task.CompletedTask;
+                                    }
                                 };
                             });
 
             return builder.Services;
         }
+
+
+
         public static IServiceCollection InstallCors(this WebApplicationBuilder builder)
         {
             builder.Services.AddCors(options =>

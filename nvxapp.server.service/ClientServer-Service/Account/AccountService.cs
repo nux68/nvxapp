@@ -104,7 +104,8 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                                                                           _jwtParameter.ExpireMinutes,
                                                                           new TokenProperty()
                                                                           {
-                                                                              UserId = applicationUser.Id,
+                                                                              UserIdFirstConnection = applicationUser.Id,
+                                                                              UserId = applicationUser.Id
                                                                           }
                                                                       );
                         }
@@ -181,6 +182,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                         string dealer = "";
                         string financialAdvisor = "";
                         string company = "";
+                        string userIdFirstConnection = this.UserIdFirstConnection;
 
                         await _hubContext.Clients.All.SendAsync("ReceiveMessage", applicationUser.UserName + " è entrato");
 
@@ -244,7 +246,8 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                                                                             FinancialAdvisor = financialAdvisor,
                                                                             Company = company,
                                                                             Tenant = schema,
-                                                                            UserId = applicationUser.Id
+                                                                            UserId = applicationUser.Id,
+                                                                            UserIdFirstConnection = userIdFirstConnection
                                                                         }
                                                                     );
 

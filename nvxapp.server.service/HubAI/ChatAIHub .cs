@@ -23,19 +23,32 @@ namespace nvxapp.server.service.HubAI
             _jwtParameter = jwtParameter.Value;
         }
 
-        //public override async Task OnConnectedAsync()
-        //{
-        //    // Estrai il nome utente dal token
-        //    var userName = Context.User?.Identity?.Name;
+        public override async Task OnConnectedAsync()
+        {
 
-        //    // Puoi anche leggere altri claim
-        //    var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        //    var userRole = Context.User?.FindFirst(ClaimTypes.Role)?.Value;
+            // Puoi anche leggere altri claim
+            var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userIdFirstConnection = Context.User?.FindFirst("useridfirstconnection")?.Value;
 
-        //    Console.WriteLine($"Connessione stabilita: {userName} (ID: {userId}, Ruolo: {userRole})");
+            Console.WriteLine($"Connessione stabilita ID: {userIdFirstConnection} ");
 
-        //    await base.OnConnectedAsync();
-        //}
+            //aggiunge al gruppo
+            await Groups.AddToGroupAsync(Context.ConnectionId, $"UserGroup-{userIdFirstConnection}");
+
+
+            await base.OnConnectedAsync();
+        }
+
+        public override async Task OnDisconnectedAsync(Exception? exception)
+        {
+            var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userIdFirstConnection = Context.User?.FindFirst("useridfirstconnection")?.Value;
+
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"UserGroup-{userIdFirstConnection}");
+            await base.OnDisconnectedAsync(exception);
+        }
+
+
 
         //[Authorize]
         public async Task SendMessage(string token, object message)
@@ -60,11 +73,26 @@ namespace nvxapp.server.service.HubAI
                 TokenProperty tokenProperty = GetTokenProperty(handler, claimsPrincipal, token);
 
                 //Console.WriteLine($"Messaggio ricevuto da: {userName}");
-                await Clients.All.SendAsync("ReceiveMessage", new
+                //await Clients.All.SendAsync("ReceiveMessage", new
+                //{
+                //    TipoRisposta = "tipo1",
+                //    ValoreRisposta = "questa risposta viene inviata a tutti gli utenti"
+                //});
+
+                // invio messaggio al gruppo
+                await Clients.Group($"UserGroup-{tokenProperty.UserIdFirstConnection}").SendAsync("ReceiveMessage", new
                 {
                     TipoRisposta = "tipo1",
-                    ValoreRisposta = "valore risposta"
+                    ValoreRisposta = "questa risposta viene inviata al gruppo"
                 });
+
+                //await Clients.User(tokenProperty.UserIdFirstConnection).SendAsync("ReceiveMessage", new
+                //{
+                //    TipoRisposta = "tipo1",
+                //    ValoreRisposta = "questa risposta viene inviata al singolo utente"
+                //});
+
+
             }
             catch (Exception ex)
             {
@@ -72,15 +100,6 @@ namespace nvxapp.server.service.HubAI
             }
 
 
-
-            //var userName = Context.User?.Identity?.Name;
-
-            //await Clients.All.SendAsync("ReceiveMessage", new 
-            //{
-            //    TipoRisposta ="tipo1",
-            //    ValoreRisposta = "valore risposta"
-
-            //});
         }
     
         private TokenProperty GetTokenProperty(JwtSecurityTokenHandler handler, 
@@ -101,6 +120,7 @@ namespace nvxapp.server.service.HubAI
                 tokenProperty.Dealer = jwtToken.Claims.FirstOrDefault(c => c.Type == "dealer")?.Value ?? string.Empty;
                 tokenProperty.Company = jwtToken.Claims.FirstOrDefault(c => c.Type == "company")?.Value ?? string.Empty;
                 tokenProperty.FinancialAdvisor = jwtToken.Claims.FirstOrDefault(c => c.Type == "financialadvisor")?.Value ?? string.Empty;
+                tokenProperty.UserIdFirstConnection = jwtToken.Claims.FirstOrDefault(c => c.Type == "useridfirstconnection")?.Value ?? string.Empty;
             }
 
             return tokenProperty;

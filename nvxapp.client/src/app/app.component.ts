@@ -85,15 +85,24 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    // 🔹 Sottoscrizione agli eventi della chat
-    this.signalrService.on('ReceiveMessage').subscribe((msg: string) => {
-      console.log('🔄 Dati ricevuti:', msg);
+
+    this.signalrService.IsConnect$.subscribe(res => {
+
+      if (res == true) {
+        // 🔹 Sottoscrizione agli eventi della chat
+        this.signalrService.on('ReceiveMessage').subscribe((msg: string) => {
+          console.log('🔄 Dati ricevuti:', msg);
+        });
+
+        // 🔹 Esempio: Sottoscrizione a un altro evento (es. aggiornamento dati)
+        this.signalrService.on('UpdateData').subscribe((data) => {
+          console.log('🔄 Dati aggiornati:', data);
+        });
+      }
+
     });
 
-    // 🔹 Esempio: Sottoscrizione a un altro evento (es. aggiornamento dati)
-    this.signalrService.on('UpdateData').subscribe((data) => {
-      console.log('🔄 Dati aggiornati:', data);
-    });
+    
 
 
     

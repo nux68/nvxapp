@@ -8,6 +8,7 @@ import { LoginInModel } from '../../ClientServer-Service/Account/Models/login-mo
 import { AuthService } from '../../Utility/auth.service';
 import { UserLoadInModel } from '../../ClientServer-Service/Account/Models/user-load-model';
 import { UserDataAdditionalModel, UserNavigationService } from '../../Utility/user-navigation.service';
+import { SignalrService } from '../../Utility/signalr.service';
 
 @Component({
   selector: 'app-login-page',
@@ -25,7 +26,8 @@ export class LoginPageComponent  implements OnInit {
               private userNavigationService: UserNavigationService,
               private fb: FormBuilder,
               private navCtrl: NavController,
-              private authService: AuthService
+              private authService: AuthService,
+              private signalrService: SignalrService
   ) {
     this.title = 'Login';
 
@@ -73,6 +75,8 @@ export class LoginPageComponent  implements OnInit {
           request.data.id = x.data.id;
           this.accountService.UserLoad(request).subscribe(usl => {
             if (usl.success) {
+
+              this.signalrService.startConnection();
 
               let userDataAdditional: UserDataAdditionalModel = new UserDataAdditionalModel();
               userDataAdditional.gotoBackPage = "/home";

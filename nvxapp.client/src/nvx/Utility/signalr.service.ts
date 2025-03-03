@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
-import { Subject } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { AuthService } from './auth.service';
 
@@ -10,14 +10,20 @@ import { AuthService } from './auth.service';
 })
 export class SignalrService {
 
+  private _isConnect$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  public get IsConnect$(): Observable<boolean> {
+    return this._isConnect$.asObservable();
+  }
+
+
   private hubConnection!: signalR.HubConnection;
   private eventSubjects: Map<string, Subject<any>> = new Map();
 
   constructor(private authService: AuthService) {
-    this.startConnection();
+    //this.startConnection();
   }
 
-  private startConnection() {
+  public startConnection() {
     if (this.hubConnection && this.hubConnection.state === signalR.HubConnectionState.Connected) {
       return; // Connessione già attiva
     }
@@ -26,25 +32,37 @@ export class SignalrService {
     var hubUrl = environment.remoteData.signalrUri + 'chathub';
 
     this.hubConnection = new signalR.HubConnectionBuilder()
-      .withUrl(hubUrl)
-      //.withUrl(hubUrl, {
-      //  accessTokenFactory: () => {
-      //    const token = this.authService.Token; // Ottieni il token più recente
-      //    console.log('Bearer Token:', token); // Aggiungi questo per verificare
-      //    return token || ''; // Ritorna il token o una stringa vuota se non presente
-      //  },
-      //})
+      //.withUrl(hubUrl)
+      ////.withUrl(hubUrl, {
+      ////  accessTokenFactory: () => {
+      ////    const token = this.authService.Token; // Ottieni il token più recente
+      ////    console.log('Bearer Token:', token); // Aggiungi questo per verificare
+      ////    return token || ''; // Ritorna il token o una stringa vuota se non presente
+      ////  },
+      ////})
+      .withUrl(hubUrl, {
+        accessTokenFactory: async () => {
+          const token = this.authService.Token;
+          console.log("📡 Token inviato a SignalR:", token);
+          return token;
+        }
+      })
       .configureLogging(signalR.LogLevel.Trace) 
       .withAutomaticReconnect()
       .build();
 
     setTimeout(() => {
 
+      
+
       this.hubConnection.start()
-        .then(() => console.log('? SignalR connesso'))
+        .then(res => {
+          this._isConnect$.next(true);
+          console.log('? SignalR connesso');
+        })
         .catch(err => console.error('? Errore connessione SignalR:', err));
 
-    }, 5000); // Ritardo di 5 secondi
+    }, 100); // Ritardo di 5 secondi
 
     
 
