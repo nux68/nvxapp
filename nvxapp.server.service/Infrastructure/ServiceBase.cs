@@ -141,15 +141,20 @@ namespace nvxapp.server.service.Infrastructure
                     var financialAdvisor = this.CurrentFinancialAdvisor;
                     var company = this.CurrentCompany;
 
-                    token = UtilToken.GenerateJwtToken(applicationUser, 
-                                                       _jwtParameter.Key, 
-                                                       _jwtParameter.Issuer, 
-                                                       _jwtParameter.Audience, 
-                                                       _jwtParameter.ExpireMinutes,
-                                                       currentTenat,
-                                                       currentDealer,
-                                                       financialAdvisor,
-                                                       company);
+                    token = UtilToken.GenerateJwtToken(
+                                                           _jwtParameter.Key, 
+                                                           _jwtParameter.Issuer, 
+                                                           _jwtParameter.Audience, 
+                                                           _jwtParameter.ExpireMinutes,
+                                                           new TokenProperty()
+                                                           {
+                                                                Dealer= currentDealer,
+                                                                FinancialAdvisor= financialAdvisor,
+                                                                Company= company,
+                                                                Tenant = currentTenat,
+                                                                UserId = applicationUser.Id
+                                                           } 
+                                                       );
                 }
             }
 

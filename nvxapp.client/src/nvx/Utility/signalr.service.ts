@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
 import { Subject } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { AuthService } from './auth.service';
 
 
 @Injectable({
@@ -12,7 +13,7 @@ export class SignalrService {
   private hubConnection!: signalR.HubConnection;
   private eventSubjects: Map<string, Subject<any>> = new Map();
 
-  constructor() {
+  constructor(private authService: AuthService) {
     this.startConnection();
   }
 
@@ -26,6 +27,13 @@ export class SignalrService {
 
     this.hubConnection = new signalR.HubConnectionBuilder()
       .withUrl(hubUrl)
+      //.withUrl(hubUrl, {
+      //  accessTokenFactory: () => {
+      //    const token = this.authService.Token; // Ottieni il token più recente
+      //    console.log('Bearer Token:', token); // Aggiungi questo per verificare
+      //    return token || ''; // Ritorna il token o una stringa vuota se non presente
+      //  },
+      //})
       .configureLogging(signalR.LogLevel.Trace) 
       .withAutomaticReconnect()
       .build();
@@ -48,6 +56,17 @@ export class SignalrService {
 
   }
 
+  public restartConnection() {
+    if (this.hubConnection) {
+      this.hubConnection.stop()
+        .then(() => {
+          console.log('⚠️ Connessione interrotta per aggiornare il token.');
+          this.startConnection(); // Avvia nuovamente la connessione
+        })
+        .catch(err => console.error('❌ Errore durante la disconnessione:', err));
+    }
+  }
+
   // ?? Metodo per iscriversi a un evento generico
   on(eventName: string) {
     if (!this.eventSubjects.has(eventName)) {
@@ -61,7 +80,10 @@ export class SignalrService {
 
   // ?? Metodo per inviare un messaggio/evento generico
   send(eventName: string, data: any) {
-    this.hubConnection.invoke(eventName, data)
+
+    const token = this.authService.Token
+
+    this.hubConnection.invoke(eventName, token,data)
       .catch(err => console.error(`? Errore invio evento ${eventName}:`, err));
   }
 

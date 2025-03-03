@@ -97,15 +97,16 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                         else
                         {
                             retVal.Id = applicationUser.Id;
-                            retVal.Token = UtilToken.GenerateJwtToken(applicationUser,
-                                                                      _jwtParameter.Key,
-                                                                      _jwtParameter.Issuer,
-                                                                      _jwtParameter.Audience,
-                                                                      _jwtParameter.ExpireMinutes,
-                                                                      "",
-                                                                      "",
-                                                                      "",
-                                                                      "");
+                            retVal.Token = UtilToken.GenerateJwtToken(
+                                                                          _jwtParameter.Key,
+                                                                          _jwtParameter.Issuer,
+                                                                          _jwtParameter.Audience,
+                                                                          _jwtParameter.ExpireMinutes,
+                                                                          new TokenProperty()
+                                                                          {
+                                                                              UserId = applicationUser.Id,
+                                                                          }
+                                                                      );
                         }
                     }
                     else
@@ -144,7 +145,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                     {
 
 
-                       
+
 
                         var roles = await _userManager.GetRolesAsync(applicationUser);
                         if (roles != null && roles.Any())
@@ -181,7 +182,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                         string financialAdvisor = "";
                         string company = "";
 
-                        await _hubContext.Clients.All.SendAsync("ReceiveMessage", "ciao " + applicationUser.UserName);
+                        await _hubContext.Clients.All.SendAsync("ReceiveMessage", applicationUser.UserName + " è entrato");
 
                         var roles = await _userManager.GetRolesAsync(applicationUser);
                         if (roles != null && roles.Any())
@@ -217,30 +218,35 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                                     {
                                         company = userCompany.IdCompany.ToString();
                                         var comp = _companyRepository.FindAll(x => x.Id == userCompany.IdCompany).FirstOrDefault();
-                                        if(comp!=null)
+                                        if (comp != null)
                                         {
-                                            schema = comp.Schema??"";
+                                            schema = comp.Schema ?? "";
                                             financialAdvisor = comp.IdFinancialAdvisor.ToString();
                                             var financial = _financialAdvisorRepository.FindAll(x => x.Id == comp.IdFinancialAdvisor).FirstOrDefault();
                                             if (financial != null)
                                                 dealer = financial.IdDealer.ToString();
                                         }
                                     }
-                                        
+
                                     break;
 
                             }
 
 
-                            retVal.Token = UtilToken.GenerateJwtToken(applicationUser,
-                                                                    _jwtParameter.Key,
-                                                                    _jwtParameter.Issuer,
-                                                                    _jwtParameter.Audience,
-                                                                    _jwtParameter.ExpireMinutes,
-                                                                    schema,
-                                                                    dealer,
-                                                                    financialAdvisor,
-                                                                    company);
+                            retVal.Token = UtilToken.GenerateJwtToken(
+                                                                        _jwtParameter.Key,
+                                                                        _jwtParameter.Issuer,
+                                                                        _jwtParameter.Audience,
+                                                                        _jwtParameter.ExpireMinutes,
+                                                                        new TokenProperty()
+                                                                        {
+                                                                            Dealer = dealer,
+                                                                            FinancialAdvisor = financialAdvisor,
+                                                                            Company = company,
+                                                                            Tenant = schema,
+                                                                            UserId = applicationUser.Id
+                                                                        }
+                                                                    );
 
                             retVal.UserData.Id = model.Data.Id;
                             retVal.UserData.UserName = applicationUser.UserName;
@@ -374,7 +380,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
 
 
                             var usrId = usrRole.Select(x => x.Id).ToList();
-                            var userCompany = _userCompanyRepository.GetAll().Where(x => usrId.Contains(x.IdAspNetUsers)  && companyIdList.Contains(x.IdCompany)).ToList();
+                            var userCompany = _userCompanyRepository.GetAll().Where(x => usrId.Contains(x.IdAspNetUsers) && companyIdList.Contains(x.IdCompany)).ToList();
 
                             foreach (var item in userCompany)
                             {

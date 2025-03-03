@@ -14,31 +14,44 @@ namespace nvxapp.server.service.Helpers
 {
     public static class UtilToken
     {
-        public static string? GenerateJwtToken(ApplicationUser user, 
+        //public static string? GenerateJwtToken(ApplicationUser user,
+        //                                    string Key,
+        //                                    string Issuer,
+        //                                    string Audience,
+        //                                    int ExpireMinutes,
+        //                                    string Tenant,
+        //                                    string Dealer,
+        //                                    string FinancialAdvisor,
+        //                                    string Company)
+
+
+        public static string? GenerateJwtToken(/*ApplicationUser user, */
                                                string Key ,
                                                string Issuer,
                                                string Audience,
                                                int ExpireMinutes,
-                                               string Tenant,
-                                               string Dealer,
-                                               string FinancialAdvisor,
-                                               string Company)
+                                               TokenProperty tokenProperty
+                                                /*string Tenant,
+                                                string Dealer,
+                                                string FinancialAdvisor,
+                                                string Company*/
+                                                )
         {
-            string? retVal = null;
+            //string? retVal = null;
 
-            if (string.IsNullOrEmpty(user.Email) || string.IsNullOrEmpty(user.UserName))
-                return retVal;
+            //if (string.IsNullOrEmpty(user.Email) || string.IsNullOrEmpty(user.UserName))
+            //    return retVal;
 
             //valori inseriti nel token, saranno disponibili nelle API
             var claims = new[]
             {
                 //new Claim(JwtRegisteredClaimNames.Name, user.UserName),
-                new Claim(JwtRegisteredClaimNames.Sub, user.Id),
-                new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim("tenant", Tenant),
-                new Claim("dealer", Dealer),
-                new Claim("financialadvisor", FinancialAdvisor),
-                new Claim("company", Company)
+                new Claim(JwtRegisteredClaimNames.Sub, tokenProperty.UserId),
+                //new Claim(JwtRegisteredClaimNames.Email, user.Email),
+                new Claim("tenant", tokenProperty.Tenant),
+                new Claim("dealer", tokenProperty.Dealer),
+                new Claim("financialadvisor", tokenProperty.FinancialAdvisor),
+                new Claim("company", tokenProperty.Company)
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Key));
@@ -52,4 +65,16 @@ namespace nvxapp.server.service.Helpers
 
         }
     }
+
+
+    public  class TokenProperty
+    {
+        public string UserId { get; set; } = string.Empty;
+        public string Tenant { get; set; } = string.Empty;
+        public string Dealer { get; set; } = string.Empty;
+        public string FinancialAdvisor { get; set; } = string.Empty;
+        public string Company { get; set; } = string.Empty;
+
+    }
+
 }

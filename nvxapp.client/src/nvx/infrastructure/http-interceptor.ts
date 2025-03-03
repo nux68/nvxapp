@@ -6,6 +6,7 @@ import { environment } from '../../environments/environment';
 import { AuthService } from '../Utility/auth.service';
 import { NavController } from '@ionic/angular';
 import { UserNavigationService } from '../Utility/user-navigation.service';
+import { SignalrService } from '../Utility/signalr.service';
 
 @Injectable()
 export class NvxHttpInterceptor implements HttpInterceptor {
@@ -15,6 +16,7 @@ export class NvxHttpInterceptor implements HttpInterceptor {
               private userNavigationService:UserNavigationService,
               private nvxHttpInterceptorService: NvxHttpInterceptorService,
               private navCtrl: NavController,
+              private signalrService: SignalrService
              )
   {
   }
@@ -41,6 +43,7 @@ export class NvxHttpInterceptor implements HttpInterceptor {
           const newToken = event.body?.token;
           if (newToken) {
             this.authService.Token = newToken;
+            //this.signalrService.restartConnection();
           }
         }
       }),

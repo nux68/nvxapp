@@ -88,14 +88,16 @@ export class AppComponent implements OnInit {
     // 🔹 Sottoscrizione agli eventi della chat
     this.signalrService.on('ReceiveMessage').subscribe((msg: string) => {
       console.log('🔄 Dati ricevuti:', msg);
-      //this.unreadMessages++;
-      //this.showNotification(msg);
     });
 
     // 🔹 Esempio: Sottoscrizione a un altro evento (es. aggiornamento dati)
     this.signalrService.on('UpdateData').subscribe((data) => {
       console.log('🔄 Dati aggiornati:', data);
     });
+
+
+    
+
   }
 
   public showPage4SuperUser(component: string): boolean {
@@ -155,6 +157,9 @@ export class AppComponent implements OnInit {
   }
 
   public showPage4User(component: string): boolean {
+
+
+    
 
     switch (component) {
 

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { SignalrService } from '../../Utility/signalr.service';
 
 @Component({
   selector: 'app-user-page',
@@ -10,10 +11,15 @@ export class UserPageComponent  implements OnInit {
 
   public title!: string;
 
-  constructor() {
+  constructor(private signalrService: SignalrService) {
     this.title = 'UserPage';
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+
+    this.signalrService.send("SendMessage", { 'text': "ciao" });
+    
+
+  }
 
 }
