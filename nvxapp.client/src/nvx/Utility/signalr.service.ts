@@ -19,9 +19,7 @@ export class SignalrService {
   private hubConnection!: signalR.HubConnection;
   private eventSubjects: Map<string, Subject<any>> = new Map();
 
-  constructor(private authService: AuthService) {
-    //this.startConnection();
-  }
+  constructor(private authService: AuthService) {   }
 
   public startConnection() {
     if (this.hubConnection && this.hubConnection.state === signalR.HubConnectionState.Connected) {
@@ -33,17 +31,10 @@ export class SignalrService {
 
     this.hubConnection = new signalR.HubConnectionBuilder()
       //.withUrl(hubUrl)
-      ////.withUrl(hubUrl, {
-      ////  accessTokenFactory: () => {
-      ////    const token = this.authService.Token; // Ottieni il token più recente
-      ////    console.log('Bearer Token:', token); // Aggiungi questo per verificare
-      ////    return token || ''; // Ritorna il token o una stringa vuota se non presente
-      ////  },
-      ////})
       .withUrl(hubUrl, {
         accessTokenFactory: async () => {
           const token = this.authService.Token;
-          console.log("📡 Token inviato a SignalR:", token);
+          console.log("Token inviato a SignalR:", token);
           return token;
         }
       })
@@ -52,8 +43,6 @@ export class SignalrService {
       .build();
 
     setTimeout(() => {
-
-      
 
       this.hubConnection.start()
         .then(res => {

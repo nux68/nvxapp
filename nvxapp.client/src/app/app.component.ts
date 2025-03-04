@@ -86,6 +86,7 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
 
+    // collego gli eventi solo dopo la connessione che avviene dopo il login
     this.signalrService.IsConnect$.subscribe(res => {
 
       if (res == true) {
@@ -101,11 +102,6 @@ export class AppComponent implements OnInit {
       }
 
     });
-
-    
-
-
-    
 
   }
 

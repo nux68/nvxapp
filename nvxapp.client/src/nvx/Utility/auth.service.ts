@@ -15,20 +15,6 @@ export class AuthService {
   constructor() {
   }
 
-  //private _UserName$: BehaviorSubject<string | null> = new BehaviorSubject<string>(null);
-  //public get UserName$(): Observable<string | null> {
-  //  return this._UserName$.asObservable();
-  //}
-  //public set UserName(value: string | null) {
-  //  this._UserName$.next(value);
-  //  if (value == null)
-  //    this.setRole([]);
-  //}
-  //public get UserName(): string | null {
-  //  const us = this._UserName$.getValue();
-  //  return us;
-
-  //}
 
   private _Token$: BehaviorSubject<string | null> = new BehaviorSubject<string>(null);
   public get Token$(): Observable<string | null> {
