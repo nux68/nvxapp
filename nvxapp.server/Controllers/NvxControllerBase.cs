@@ -38,32 +38,32 @@ namespace nvxapp.server.Controllers
         [NonAction]
         public void OnActionExecuting(ActionExecutingContext context)
         {
-            this.AssingCurrentUser();
+            //this.AssingCurrentUser();
         }
 
         [NonAction]
         public void OnActionExecuted(ActionExecutedContext context) { }
 
-        protected void AssingCurrentUser()
-        {
-            Type IRepositoryType = typeof(IRepository<>);
+        //protected void AssingCurrentUser()
+        //{
+        //    Type IRepositoryType = typeof(IRepository<>);
 
-            //Scandice i service
-            List<object> ser_base = nvxReflection.GetObjectsOfType<ICurrentUser>(this);
-            foreach (var item in ser_base)
-            {
-                ((ICurrentUser)item).CurrentUserId = this.CurrentUserId;
+        //    //Scandice i service
+        //    List<object> ser_base = nvxReflection.GetObjectsOfType<ICurrentUser>(this);
+        //    foreach (var item in ser_base)
+        //    {
+        //        ((ICurrentUser)item).CurrentUserId = this.CurrentUserId;
 
-                //scandice i repo
-                List<object> repo_base = nvxReflection.GetObjectsOfType<ICurrentUser>(item);
-                foreach (var item2 in repo_base)
-                {
-                    ((ICurrentUser)item2).CurrentUserId = this.CurrentUserId;
-                }
+        //        //scandice i repo
+        //        List<object> repo_base = nvxReflection.GetObjectsOfType<ICurrentUser>(item);
+        //        foreach (var item2 in repo_base)
+        //        {
+        //            ((ICurrentUser)item2).CurrentUserId = this.CurrentUserId;
+        //        }
 
-            }
+        //    }
 
-        }
+        //}
 
 
 

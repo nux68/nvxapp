@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Repositories.Public;
@@ -26,9 +27,10 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAI
                            UserManager<ApplicationUser> userManager,
                            IAspNetUsersRepository aspNetUsersRepository,
                            IOptions<JwtParameter> jwtParameter,
-                           IHttpContextAccessor httpContextAccessor
+                           IHttpContextAccessor httpContextAccessor,
+                           IConfiguration configuration
 
-                           ) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, httpContextAccessor)
+                           ) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             
         }

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Repositories.Public;
@@ -30,8 +31,9 @@ namespace nvxapp.server.service.Service.WeatherForecast
                                       IAspNetUsersRepository aspNetUsersRepository,
                                       IOptions<JwtParameter> jwtParameter,
                                       IHttpContextAccessor httpContextAccessor,
+                                      IConfiguration configuration,
 
-                                      IMyTableService myTableService) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, httpContextAccessor)
+                                      IMyTableService myTableService) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _myTableService = myTableService;
         }

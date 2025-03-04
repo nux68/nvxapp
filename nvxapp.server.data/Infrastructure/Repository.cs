@@ -22,6 +22,44 @@ namespace nvxapp.server.data.Infrastructure
             set { _currentUser = value; }
         }
 
+        private string? _currentSchema;
+        public string? CurrentSchema
+        {
+            get { return _currentSchema; }
+            set { _currentSchema = value; }
+        }
+
+        /* questa prop verra utilizzara nelle classi derivate che implementano 
+           ICurrentTenant che assegna il tenant in base al login
+           E' stata messa qui, per metterla a disposizione di tutti i repo 
+           che dovranno leggere i dati si schemi diversi da bublic
+        */
+        private string? _currentTenant;
+        public string? CurrentTenant
+        {
+            get { return _currentTenant; }
+            set
+            {
+                _currentTenant = value;
+                this.CurrentSchema = _currentTenant;
+            }
+        }
+
+
+        //protected string CurrentTenat
+        //{
+        //    get
+        //    {
+        //        if (_httpContextAccessor.HttpContext != null)
+        //        {
+        //            var tenant = _httpContextAccessor.HttpContext?.User?.FindFirst("tenant")?.Value;
+        //            return tenant ?? "public";
+        //        }
+
+        //        return "public";
+        //    }
+        //}
+
         public Repository(TDbContext context,
                           IServiceProvider serviceProvider,
                           IHttpContextAccessor httpContextAccessor)
@@ -31,63 +69,61 @@ namespace nvxapp.server.data.Infrastructure
             _httpContextAccessor = httpContextAccessor;
         }
 
-        protected string CurrentTenat
-        {
-            get
-            {
-                if (_httpContextAccessor.HttpContext != null)
-                {
-                    var tenant = _httpContextAccessor.HttpContext?.User?.FindFirst("tenant")?.Value;
-                    return tenant ?? "public";
-                }
-
-                return "public";
-            }
-        }
-
 
         public async Task<T> UpsertAsync(T entity)
         {
 
-            PropertyInfo? prop = null;
-            int id = 0;
-
-            prop = entity.GetType().GetProperty("Id");
-            if (prop != null)
-                id = (int)(prop.GetValue(entity) ?? 0);
-            else
+            try
             {
-                prop = entity.GetType().GetProperty("id");
+                Schema_Set();
+
+
+
+                PropertyInfo? prop = null;
+                int id = 0;
+
+                prop = entity.GetType().GetProperty("Id");
                 if (prop != null)
                     id = (int)(prop.GetValue(entity) ?? 0);
                 else
                 {
-                    prop = entity.GetType().GetProperty("ID");
+                    prop = entity.GetType().GetProperty("id");
                     if (prop != null)
                         id = (int)(prop.GetValue(entity) ?? 0);
+                    else
+                    {
+                        prop = entity.GetType().GetProperty("ID");
+                        if (prop != null)
+                            id = (int)(prop.GetValue(entity) ?? 0);
+                    }
                 }
+
+                //var id = prop == null ? 0 : (int)prop.GetValue(entity);
+
+
+
+
+                var validator = _serviceProvider.GetService<IValidator<T>>();
+
+                if (validator != null)
+                {
+                    var validationResults = validator.Validate(entity).ToList();
+
+                    if (validationResults.Any())
+                        throw new Exception(validationResults.ToStringMessage());
+                }
+
+                //// update the "ChangeDate" property if exists
+                //var changeDateProp = entity.GetType().GetProperty("ModifiedDate");
+                //if (changeDateProp != null) changeDateProp.SetValue(entity, DateTime.Now);
+
+                return id == 0 ? await CreateAsync(entity) : await UpdateAsync(entity);
+
             }
-
-            //var id = prop == null ? 0 : (int)prop.GetValue(entity);
-
-
-
-
-            var validator = _serviceProvider.GetService<IValidator<T>>();
-
-            if (validator != null)
+            finally
             {
-                var validationResults = validator.Validate(entity).ToList();
-
-                if (validationResults.Any())
-                    throw new Exception(validationResults.ToStringMessage());
+                Schema_resume();
             }
-
-            //// update the "ChangeDate" property if exists
-            //var changeDateProp = entity.GetType().GetProperty("ModifiedDate");
-            //if (changeDateProp != null) changeDateProp.SetValue(entity, DateTime.Now);
-
-            return id == 0 ? await CreateAsync(entity) : await UpdateAsync(entity);
 
         }
 
@@ -96,6 +132,8 @@ namespace nvxapp.server.data.Infrastructure
 
             try
             {
+                Schema_Set();
+
                 var now = DateTime.Now;
 
                 // update the "ChangeDate" property if exists
@@ -123,6 +161,10 @@ namespace nvxapp.server.data.Infrastructure
 
                 throw;
             }
+            finally
+            {
+                Schema_resume();
+            }
 
 
 
@@ -132,104 +174,200 @@ namespace nvxapp.server.data.Infrastructure
         public async Task<T> UpsertAsyncGuid(T entity)
         {
 
-            PropertyInfo? prop = null;
-            string id = "";
-
-            prop = entity.GetType().GetProperty("Id");
-            if (prop != null)
-                id = (string)(prop.GetValue(entity) ?? "");
-            else
+            try
             {
-                prop = entity.GetType().GetProperty("id");
+                Schema_Set();
+
+
+                PropertyInfo? prop = null;
+                string id = "";
+
+                prop = entity.GetType().GetProperty("Id");
                 if (prop != null)
                     id = (string)(prop.GetValue(entity) ?? "");
                 else
                 {
-                    prop = entity.GetType().GetProperty("ID");
+                    prop = entity.GetType().GetProperty("id");
                     if (prop != null)
                         id = (string)(prop.GetValue(entity) ?? "");
+                    else
+                    {
+                        prop = entity.GetType().GetProperty("ID");
+                        if (prop != null)
+                            id = (string)(prop.GetValue(entity) ?? "");
+                    }
                 }
+
+                var validator = _serviceProvider.GetService<IValidator<T>>();
+
+                if (validator != null)
+                {
+                    var validationResults = validator.Validate(entity).ToList();
+
+                    if (validationResults.Any())
+                        throw new Exception(validationResults.ToStringMessage());
+                }
+
+                //// update the "ChangeDate" property if exists
+                //var changeDateProp = entity.GetType().GetProperty("ChangeDate");
+                //if (changeDateProp != null) changeDateProp.SetValue(entity, DateTime.Now);
+
+                return id == "" ? await CreateAsync(entity) : await UpdateAsync(entity);
+
             }
-
-            var validator = _serviceProvider.GetService<IValidator<T>>();
-
-            if (validator != null)
+            finally
             {
-                var validationResults = validator.Validate(entity).ToList();
-
-                if (validationResults.Any())
-                    throw new Exception(validationResults.ToStringMessage());
+                Schema_resume();
             }
-
-            //// update the "ChangeDate" property if exists
-            //var changeDateProp = entity.GetType().GetProperty("ChangeDate");
-            //if (changeDateProp != null) changeDateProp.SetValue(entity, DateTime.Now);
-
-            return id == "" ? await CreateAsync(entity) : await UpdateAsync(entity);
-
         }
-
 
         public async Task DeleteAsync(T entity)
         {
-
-            var validator = _serviceProvider.GetService<IValidator<T>>();
-
-            if (validator != null)
+            try
             {
-                var validationResults = validator.CanBeEliminated(entity).ToList();
+                Schema_Set();
 
-                if (validationResults.Any())
-                    throw new Exception(validationResults.ToStringMessage());
+                var validator = _serviceProvider.GetService<IValidator<T>>();
+
+                if (validator != null)
+                {
+                    var validationResults = validator.CanBeEliminated(entity).ToList();
+
+                    if (validationResults.Any())
+                        throw new Exception(validationResults.ToStringMessage());
+                }
+
+
+                DbContext.Set<T>().Remove(entity);
+
+                await DbContext.SaveChangesAsync();
+
+
+
             }
-
-
-            DbContext.Set<T>().Remove(entity);
-
-            await DbContext.SaveChangesAsync();
+            finally
+            {
+                Schema_resume();
+            }
         }
 
         public async Task DeleteRangeAsync(IEnumerable<T> entities)
         {
-            DbContext.Set<T>().RemoveRange(entities);
+            try
+            {
+                Schema_Set();
 
-            await DbContext.SaveChangesAsync();
+                DbContext.Set<T>().RemoveRange(entities);
+
+                await DbContext.SaveChangesAsync();
+
+            }
+            finally
+            {
+                Schema_resume();
+            }
         }
 
         public DbSet<T> GetAll()
         {
-            return DbContext.Set<T>();
+            
+
+            try
+            {
+                Schema_Set();
+                return DbContext.Set<T>();
+            }
+            finally
+            {
+                Schema_resume();
+            }
         }
 
         public async Task<List<T>> FindAll()
         {
-            return await DbContext.Set<T>().ToListAsync();
+            try
+            {
+                Schema_Set();
+                return await DbContext.Set<T>().ToListAsync();
+            }
+            finally
+            {
+                Schema_resume();
+            }
+
+
+
         }
 
         public IQueryable<T> FindAll(Expression<Func<T, bool>> where)
         {
-            return DbContext.Set<T>().Where(where);
-        }
+            try
+            {
+                Schema_Set();
+                return DbContext.Set<T>().Where(where);
+            }
+            finally
+            {
+                Schema_resume();
+            }
 
+
+        }
 
         public T? FindById(int id)
         {
-            return DbContext.Set<T>().Find(id);
+            try
+            {
+                Schema_Set();
+                return DbContext.Set<T>().Find(id);
+            }
+            finally
+            {
+                Schema_resume();
+            }
+            
         }
 
         public async Task<T?> FindByIdAsync(int id)
         {
-            return await DbContext.Set<T>().FindAsync(id);
+            try
+            {
+                Schema_Set();
+                return await DbContext.Set<T>().FindAsync(id);
+            }
+            finally
+            {
+                Schema_resume();
+            }
+            
         }
 
         public async Task<T?> FindByIdAsync(int id1, int id2)
         {
-            return await DbContext.Set<T>().FindAsync(id1, id2);
+            
+            try
+            {
+                Schema_Set();
+                return await DbContext.Set<T>().FindAsync(id1, id2);
+            }
+            finally
+            {
+                Schema_resume();
+            }
         }
 
         public async Task<T?> FindByIdAsync(int id1, int id2, int id3)
         {
-            return await DbContext.Set<T>().FindAsync(id1, id2, id3);
+            try
+            {
+                Schema_Set();
+                return await DbContext.Set<T>().FindAsync(id1, id2, id3);
+            }
+            finally
+            {
+                Schema_resume();
+            }
+            
         }
 
         public async Task<T> UpdateAsync(T entity)
@@ -237,6 +375,7 @@ namespace nvxapp.server.data.Infrastructure
 
             try
             {
+                Schema_Set();
 
                 var now = DateTime.Now;
 
@@ -263,6 +402,10 @@ namespace nvxapp.server.data.Infrastructure
 
                 throw;
             }
+            finally
+            {
+                Schema_resume();
+            }
 
 
 
@@ -275,6 +418,7 @@ namespace nvxapp.server.data.Infrastructure
 
             try
             {
+                Schema_Set();
                 await DbContext.SaveChangesAsync();
             }
             catch (Exception ex)
@@ -286,9 +430,23 @@ namespace nvxapp.server.data.Infrastructure
 
                 throw;
             }
+            finally
+            {
+                Schema_resume();
+            }
 
 
         }
+
+        private void Schema_Set()
+        {
+            SharedSchema.CurrentSchema = CurrentSchema ?? "public";
+        }
+        private void Schema_resume()
+        {
+            SharedSchema.CurrentSchema = "public";
+        }
+
 
     }
 

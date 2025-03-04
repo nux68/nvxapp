@@ -52,7 +52,7 @@ using (var scope = app.Services.CreateScope())
     var factory = services.GetRequiredService<IApplicationDbContextFactory>();
 
     // Lista degli schemi dei tenant (puoi sostituirla con una query al DB)
-    string[] schemiClienti = { "ScHeMa_A" };
+    string[] schemiClienti = { "schema__1_1_1" };
 
     SharedSchema.MigrazioneRunTime = true;
 

@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Repositories.Public;
@@ -41,6 +42,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                               IAspNetUsersRepository aspNetUsersRepository,
                               IOptions<JwtParameter> jwtParameter,
                               IHttpContextAccessor httpContextAccessor,
+                              IConfiguration configuration,
 
                               IAspNetUserRolesRepository aspNetUserRolesRepository,
                               IAspNetRolesRepository aspNetRolesRepository,
@@ -56,7 +58,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                               IHubContext<ChatAIHub> hubContext,
 
                               SignInManager<ApplicationUser> signInManager
-                              ) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, httpContextAccessor)
+                              ) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _signInManager = signInManager;
             _aspNetUserRolesRepository = aspNetUserRolesRepository;

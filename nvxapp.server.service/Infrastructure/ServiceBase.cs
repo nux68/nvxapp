@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using nvxapp.server.data.Entities.Public;
@@ -11,17 +12,19 @@ using nvxapp.server.service.Helpers;
 using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.ServerModels;
 using Serilog;
+using System.Security.Claims;
 
 namespace nvxapp.server.service.Infrastructure
 {
 
-    public class ServiceBase : IServiceBase, ICurrentUser
+    public class ServiceBase : IServiceBase //, ICurrentUser
     {
         protected readonly IMapper _mapper;
         protected readonly UserManager<ApplicationUser> _userManager;
         protected readonly IAspNetUsersRepository _aspNetUsersRepository;
         protected readonly JwtParameter _jwtParameter;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IConfiguration _configuration;
 
 #if DEBUG
         public const int DelayAsyncMethod = 10;
@@ -30,18 +33,19 @@ namespace nvxapp.server.service.Infrastructure
 #endif
 
 
-        private string? _currentUser;
-        public string? CurrentUserId
-        {
-            get { return _currentUser; }
-            set { _currentUser = value; }
-        }
+        //private string? _currentUser;
+        //public string? CurrentUserId
+        //{
+        //    get { return _currentUser; }
+        //    set { _currentUser = value; }
+        //}
 
         public ServiceBase(
                           IMapper mapper,
                           UserManager<ApplicationUser> userManager,
                           IAspNetUsersRepository aspNetUsersRepository,
                           IOptions<JwtParameter> jwtParameter,
+                          IConfiguration configuration,
                           IHttpContextAccessor httpContextAccessor
                           )
         {
@@ -50,12 +54,14 @@ namespace nvxapp.server.service.Infrastructure
             _aspNetUsersRepository = aspNetUsersRepository;
             _jwtParameter = jwtParameter.Value;
             _httpContextAccessor = httpContextAccessor;
+            _configuration = configuration;
         }
 
         protected async Task<GenericResult<T>> ExecuteAction<T, P1>(P1? p1, Func<Task<T>> function, Boolean isSubProcess = false)
         {
             var callGUID = Guid.NewGuid();
 
+            SetUpRepo();
 
             try
             {
@@ -129,12 +135,12 @@ namespace nvxapp.server.service.Infrastructure
         {
             string? token = null;
 
-            
 
-            if ( !string.IsNullOrEmpty( CurrentUserId))
+
+            if (!string.IsNullOrEmpty(CurrentUserId))
             {
                 var applicationUser = await _userManager.FindByIdAsync(this.CurrentUserId);
-                if(applicationUser!=null)
+                if (applicationUser != null)
                 {
                     var currentTenat = this.CurrentTenat;
                     var currentDealer = this.CurrentDealer;
@@ -143,19 +149,19 @@ namespace nvxapp.server.service.Infrastructure
                     var userIdFirstConnection = this.UserIdFirstConnection;
 
                     token = UtilToken.GenerateJwtToken(
-                                                           _jwtParameter.Key, 
-                                                           _jwtParameter.Issuer, 
-                                                           _jwtParameter.Audience, 
+                                                           _jwtParameter.Key,
+                                                           _jwtParameter.Issuer,
+                                                           _jwtParameter.Audience,
                                                            _jwtParameter.ExpireMinutes,
                                                            new TokenProperty()
                                                            {
-                                                                Dealer= currentDealer,
-                                                                FinancialAdvisor= financialAdvisor,
-                                                                Company= company,
-                                                                Tenant = currentTenat,
-                                                                UserId = applicationUser.Id,
-                                                                UserIdFirstConnection= userIdFirstConnection
-                                                           } 
+                                                               Dealer = currentDealer,
+                                                               FinancialAdvisor = financialAdvisor,
+                                                               Company = company,
+                                                               Tenant = currentTenat,
+                                                               UserId = applicationUser.Id,
+                                                               UserIdFirstConnection = userIdFirstConnection
+                                                           }
                                                        );
                 }
             }
@@ -170,7 +176,7 @@ namespace nvxapp.server.service.Infrastructure
             Console.WriteLine(error);
             Log.Error(error);
 
-            return new GenericResult<T>(default(T), error, MessageType.Exception,null);
+            return new GenericResult<T>(default(T), error, MessageType.Exception, null);
         }
 
         protected void TransactionRollback()
@@ -198,7 +204,7 @@ namespace nvxapp.server.service.Infrastructure
                     }
                 }
                 data!.AddMessages(AllMessages);
-                
+
             }
 
         }
@@ -225,6 +231,47 @@ namespace nvxapp.server.service.Infrastructure
             }
         }
 
+        private void SetUpRepo()
+        {
+            //scandice i repo
+            List<object> repo_base = nvxReflection.GetObjectsOfType<ICurrentUser>(this);
+            foreach (var item2 in repo_base)
+            {
+                ((ICurrentUser)item2).CurrentUserId = this.CurrentUserId;
+            }
+
+            Boolean MultiTenant = false;
+            string? sMultiTenant = _configuration["DbParameter:MultiTenant"];
+            bool.TryParse(sMultiTenant, out MultiTenant);
+
+            if (MultiTenant)
+            {
+                //scandice i repo assegna i tenant != da public
+                repo_base = nvxReflection.GetObjectsOfType<ICurrentTenant>(this);
+                var tenant = string.IsNullOrEmpty(CurrentTenat) ? "public" : CurrentTenat;
+                foreach (var item2 in repo_base)
+                {
+                    ((ICurrentTenant)item2).CurrentTenant = tenant;
+                }
+            }
+
+        }
+
+
+        protected string CurrentUserId
+        {
+            get
+            {
+                if (_httpContextAccessor.HttpContext != null)
+                {
+                    var currentUserId = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                    return currentUserId ?? "";
+                }
+
+                return "";
+            }
+        }
+
 
         protected string UserIdFirstConnection
         {
@@ -232,8 +279,8 @@ namespace nvxapp.server.service.Infrastructure
             {
                 if (_httpContextAccessor.HttpContext != null)
                 {
-                    var tenant = _httpContextAccessor.HttpContext?.User?.FindFirst("useridfirstconnection")?.Value;
-                    return tenant ?? "";
+                    var userIdFirstConnection = _httpContextAccessor.HttpContext?.User?.FindFirst("useridfirstconnection")?.Value;
+                    return userIdFirstConnection ?? "";
                 }
 
                 return "";

@@ -7,12 +7,20 @@ using nvxapp.server.data.Interfaces;
 namespace nvxapp.server.data.Repositories.Tenant
 {
 
+    /*
+     ATTENZIONE !!!
+    
+     applicationDbContextFactory.CreateDbContext(null) e quello che permette la lettura dei dati
+     sul tenat in caso di multi tenant
+     
+     */
 
-
-    public class MyTableRepository : Repository<ApplicationDbContext, MyTable>, IMyTableRepository
+    public class MyTableRepository : Repository<ApplicationDbContext, MyTable>, IMyTableRepository, ICurrentTenant
     {
 
         private readonly IApplicationDbContextFactory _applicationDbContextFactory;
+
+
 
         public MyTableRepository(ApplicationDbContext dbContext,
                                  IServiceProvider provider,
@@ -23,9 +31,6 @@ namespace nvxapp.server.data.Repositories.Tenant
                                 
         {
             _applicationDbContextFactory = applicationDbContextFactory;
-
-            var schema = CurrentTenat;
-           
         }
     }
 

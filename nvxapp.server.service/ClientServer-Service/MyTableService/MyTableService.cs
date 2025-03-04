@@ -17,6 +17,7 @@ using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Repositories.Tenant;
 using nvxapp.server.data.Repositories.Public;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 
 
 namespace nvxapp.server.service.Service.MyTableService
@@ -31,8 +32,9 @@ namespace nvxapp.server.service.Service.MyTableService
                               IAspNetUsersRepository aspNetUsersRepository,
                               IOptions<JwtParameter> jwtParameter,
                               IHttpContextAccessor httpContextAccessor,
+                              IConfiguration configuration,
 
-                              IMyTableRepository myTableRepository) : base(mapper , userManager  , aspNetUsersRepository, jwtParameter, httpContextAccessor)
+                              IMyTableRepository myTableRepository) : base(mapper , userManager  , aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _myTableRepository = myTableRepository;
         }
