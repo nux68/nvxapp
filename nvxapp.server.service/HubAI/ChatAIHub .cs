@@ -1,26 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.SignalR;
-using Microsoft.EntityFrameworkCore.Storage.Json;
+﻿using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Helpers;
 using nvxapp.server.service.ServerModels;
+using nvxapp.server.service.Service.MyTableService;
+using nvxapp.server.service.Service.MyTableService.Models;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace nvxapp.server.service.HubAI
 {
     public class ChatAIHub : Hub
     {
         protected readonly JwtParameter _jwtParameter;
+        protected readonly IMyTableService _myTableService;
 
-        public ChatAIHub(IOptions<JwtParameter> jwtParameter) {
+        public ChatAIHub(IOptions<JwtParameter> jwtParameter,
+                         IMyTableService myTableService
+            )
+        {
             _jwtParameter = jwtParameter.Value;
+            _myTableService = myTableService;
         }
 
         public override async Task OnConnectedAsync()
@@ -79,12 +81,25 @@ namespace nvxapp.server.service.HubAI
                 //    ValoreRisposta = "questa risposta viene inviata a tutti gli utenti"
                 //});
 
-                // invio messaggio al gruppo
-                await Clients.Group($"UserGroup-{tokenProperty.UserIdFirstConnection}").SendAsync("ReceiveMessage", new
+
+                // Esempio di utilizzo service
+                GenericRequest<MyTableInModel> model = new GenericRequest<MyTableInModel>();
+                var res = await _myTableService.GetAll(model, false);
+                if (res != null && res.Success)
                 {
-                    TipoRisposta = "tipo1",
-                    ValoreRisposta = "questa risposta viene inviata al gruppo"
-                });
+                    await Clients.Group($"UserGroup-{tokenProperty.UserIdFirstConnection}").SendAsync("ReceiveMessage",
+                                        res.Data?.MyTable);
+                }
+
+                //var myObj = new
+                //{
+                //    TipoRisposta = "tipo1",
+                //    ValoreRisposta = "questa risposta viene inviata al gruppo"
+                //};
+                //// invio messaggio al gruppo
+                //await Clients.Group($"UserGroup-{tokenProperty.UserIdFirstConnection}").SendAsync("ReceiveMessage",
+                //myObj
+                //);
 
                 //await Clients.User(tokenProperty.UserIdFirstConnection).SendAsync("ReceiveMessage", new
                 //{
@@ -101,22 +116,22 @@ namespace nvxapp.server.service.HubAI
 
 
         }
-    
-        private TokenProperty GetTokenProperty(JwtSecurityTokenHandler handler, 
+
+        private TokenProperty GetTokenProperty(JwtSecurityTokenHandler handler,
                                                ClaimsPrincipal? claimsPrincipal,
                                                string token)
         {
             TokenProperty tokenProperty = new TokenProperty();
 
-            if(claimsPrincipal!=null)
-                tokenProperty.UserId = claimsPrincipal.FindFirst(ClaimTypes.NameIdentifier)?.Value??"";
+            if (claimsPrincipal != null)
+                tokenProperty.UserId = claimsPrincipal.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "";
 
             // Decodifica il token
             var jwtToken = handler.ReadJwtToken(token);
 
-            if(jwtToken!=null)
+            if (jwtToken != null)
             {
-                tokenProperty.Tenant = jwtToken.Claims.FirstOrDefault(c => c.Type == "tenant")?.Value??string.Empty;
+                tokenProperty.Tenant = jwtToken.Claims.FirstOrDefault(c => c.Type == "tenant")?.Value ?? string.Empty;
                 tokenProperty.Dealer = jwtToken.Claims.FirstOrDefault(c => c.Type == "dealer")?.Value ?? string.Empty;
                 tokenProperty.Company = jwtToken.Claims.FirstOrDefault(c => c.Type == "company")?.Value ?? string.Empty;
                 tokenProperty.FinancialAdvisor = jwtToken.Claims.FirstOrDefault(c => c.Type == "financialadvisor")?.Value ?? string.Empty;

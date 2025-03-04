@@ -33,12 +33,6 @@ namespace nvxapp.server.service.Infrastructure
 #endif
 
 
-        //private string? _currentUser;
-        //public string? CurrentUserId
-        //{
-        //    get { return _currentUser; }
-        //    set { _currentUser = value; }
-        //}
 
         public ServiceBase(
                           IMapper mapper,
@@ -257,22 +251,6 @@ namespace nvxapp.server.service.Infrastructure
 
         }
 
-
-        protected string CurrentUserId
-        {
-            get
-            {
-                if (_httpContextAccessor.HttpContext != null)
-                {
-                    var currentUserId = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                    return currentUserId ?? "";
-                }
-
-                return "";
-            }
-        }
-
-
         protected string UserIdFirstConnection
         {
             get
@@ -282,11 +260,21 @@ namespace nvxapp.server.service.Infrastructure
                     var userIdFirstConnection = _httpContextAccessor.HttpContext?.User?.FindFirst("useridfirstconnection")?.Value;
                     return userIdFirstConnection ?? "";
                 }
-
                 return "";
             }
         }
-
+        protected string CurrentUserId
+        {
+            get
+            {
+                if (_httpContextAccessor.HttpContext != null)
+                {
+                    var currentUserId = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                    return currentUserId ?? "";
+                }
+                return "";
+            }
+        }
         protected string CurrentTenat
         {
             get
@@ -296,11 +284,9 @@ namespace nvxapp.server.service.Infrastructure
                     var tenant = _httpContextAccessor.HttpContext?.User?.FindFirst("tenant")?.Value;
                     return tenant ?? "";
                 }
-
                 return "";
             }
         }
-
         protected string CurrentDealer
         {
             get
@@ -310,11 +296,9 @@ namespace nvxapp.server.service.Infrastructure
                     var tenant = _httpContextAccessor.HttpContext?.User?.FindFirst("dealer")?.Value;
                     return tenant ?? "";
                 }
-
                 return "";
             }
         }
-
         protected string CurrentFinancialAdvisor
         {
             get
@@ -324,11 +308,9 @@ namespace nvxapp.server.service.Infrastructure
                     var tenant = _httpContextAccessor.HttpContext?.User?.FindFirst("financialadvisor")?.Value;
                     return tenant ?? "";
                 }
-
                 return "";
             }
         }
-
         protected string CurrentCompany
         {
             get
@@ -338,7 +320,6 @@ namespace nvxapp.server.service.Infrastructure
                     var tenant = _httpContextAccessor.HttpContext?.User?.FindFirst("company")?.Value;
                     return tenant ?? "";
                 }
-
                 return "";
             }
         }

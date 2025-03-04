@@ -17,22 +17,22 @@ namespace nvxapp.server.Controllers
             _httpContextAccessor = httpContextAccessor;
         }
 
-        protected string? CurrentUserId
-        {
-            get
-            {
-                if (_httpContextAccessor.HttpContext != null)
-                {
-                    var tenant = _httpContextAccessor.HttpContext?.User?.FindFirst("tenant")?.Value;
+        //protected string? CurrentUserId
+        //{
+        //    get
+        //    {
+        //        if (_httpContextAccessor.HttpContext != null)
+        //        {
+        //            var tenant = _httpContextAccessor.HttpContext?.User?.FindFirst("tenant")?.Value;
 
 
-                    var UserId = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                    return UserId;
-                }
+        //            var UserId = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        //            return UserId;
+        //        }
 
-                return null;
-            }
-        }
+        //        return null;
+        //    }
+        //}
 
 
         [NonAction]
