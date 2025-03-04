@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Helpers;
+using nvxapp.server.service.Infrastructure;
 using nvxapp.server.service.ServerModels;
 using nvxapp.server.service.Service.MyTableService;
 using nvxapp.server.service.Service.MyTableService.Models;
@@ -84,12 +85,18 @@ namespace nvxapp.server.service.HubAI
 
                 // Esempio di utilizzo service
                 GenericRequest<MyTableInModel> model = new GenericRequest<MyTableInModel>();
+
+                //forzatura variabili token (è una prova , qui non servirebbe)
+                ((_myTableService as ServiceBase)!).tokenProperty = tokenProperty;
+
                 var res = await _myTableService.GetAll(model, false);
                 if (res != null && res.Success)
                 {
                     await Clients.Group($"UserGroup-{tokenProperty.UserIdFirstConnection}").SendAsync("ReceiveMessage",
-                                        res.Data?.MyTable);
+                                        res);
                 }
+
+
 
                 //var myObj = new
                 //{

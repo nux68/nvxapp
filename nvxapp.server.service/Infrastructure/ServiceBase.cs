@@ -25,6 +25,10 @@ namespace nvxapp.server.service.Infrastructure
         protected readonly JwtParameter _jwtParameter;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IConfiguration _configuration;
+        // Serve per forzare le proprietà contenute nel token http
+        // i modo da poterle salvare ed usare quando il contesto http non è disponibile
+        // es.hangfire
+        public TokenProperty? tokenProperty { get; set; } = null;
 
 #if DEBUG
         public const int DelayAsyncMethod = 10;
@@ -107,7 +111,6 @@ namespace nvxapp.server.service.Infrastructure
             }
 
         }
-
 
         protected async Task Initialize()
         {
@@ -255,72 +258,117 @@ namespace nvxapp.server.service.Infrastructure
         {
             get
             {
-                if (_httpContextAccessor.HttpContext != null)
+                if (tokenProperty != null)
                 {
-                    var userIdFirstConnection = _httpContextAccessor.HttpContext?.User?.FindFirst("useridfirstconnection")?.Value;
-                    return userIdFirstConnection ?? "";
+                    return tokenProperty.UserIdFirstConnection;
                 }
-                return "";
+                else
+                {
+                    if (_httpContextAccessor.HttpContext != null)
+                    {
+                        var userIdFirstConnection = _httpContextAccessor.HttpContext?.User?.FindFirst("useridfirstconnection")?.Value;
+                        return userIdFirstConnection ?? "";
+                    }
+                    return "";
+                }
             }
         }
         protected string CurrentUserId
         {
             get
             {
-                if (_httpContextAccessor.HttpContext != null)
+                if (tokenProperty != null)
                 {
-                    var currentUserId = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                    return currentUserId ?? "";
+                    return tokenProperty.UserId;
                 }
-                return "";
+                else
+                {
+                    if (_httpContextAccessor.HttpContext != null)
+                    {
+                        var currentUserId = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                        return currentUserId ?? "";
+                    }
+                    return "";
+                }
+
+
             }
         }
         protected string CurrentTenat
         {
+
             get
             {
-                if (_httpContextAccessor.HttpContext != null)
+                if (tokenProperty != null)
                 {
-                    var tenant = _httpContextAccessor.HttpContext?.User?.FindFirst("tenant")?.Value;
-                    return tenant ?? "";
+                    return tokenProperty.Tenant;
                 }
-                return "";
+                else
+                {
+                    if (_httpContextAccessor.HttpContext != null)
+                    {
+                        var tenant = _httpContextAccessor.HttpContext?.User?.FindFirst("tenant")?.Value;
+                        return tenant ?? "";
+                    }
+                    return "";
+                }
             }
         }
         protected string CurrentDealer
         {
             get
             {
-                if (_httpContextAccessor.HttpContext != null)
+                if (tokenProperty != null)
                 {
-                    var tenant = _httpContextAccessor.HttpContext?.User?.FindFirst("dealer")?.Value;
-                    return tenant ?? "";
+                    return tokenProperty.Dealer;
                 }
-                return "";
+                else
+                {
+                    if (_httpContextAccessor.HttpContext != null)
+                    {
+                        var tenant = _httpContextAccessor.HttpContext?.User?.FindFirst("dealer")?.Value;
+                        return tenant ?? "";
+                    }
+                    return "";
+                }
             }
         }
         protected string CurrentFinancialAdvisor
         {
             get
             {
-                if (_httpContextAccessor.HttpContext != null)
+                if (tokenProperty != null)
                 {
-                    var tenant = _httpContextAccessor.HttpContext?.User?.FindFirst("financialadvisor")?.Value;
-                    return tenant ?? "";
+                    return tokenProperty.FinancialAdvisor;
                 }
-                return "";
+                else
+                {
+                    if (_httpContextAccessor.HttpContext != null)
+                    {
+                        var tenant = _httpContextAccessor.HttpContext?.User?.FindFirst("financialadvisor")?.Value;
+                        return tenant ?? "";
+                    }
+                    return "";
+                }
             }
         }
         protected string CurrentCompany
         {
             get
             {
-                if (_httpContextAccessor.HttpContext != null)
+                if (tokenProperty != null)
                 {
-                    var tenant = _httpContextAccessor.HttpContext?.User?.FindFirst("company")?.Value;
-                    return tenant ?? "";
+                    return tokenProperty.Company;
                 }
-                return "";
+                else
+                {
+                    if (_httpContextAccessor.HttpContext != null)
+                    {
+                        var tenant = _httpContextAccessor.HttpContext?.User?.FindFirst("company")?.Value;
+                        return tenant ?? "";
+                    }
+                    return "";
+                }
             }
         }
 
