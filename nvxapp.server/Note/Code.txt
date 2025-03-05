@@ -16,3 +16,7 @@ pagedRows = puList.Where(u => u.Creator == user.UserId || u.UserId == user.UserI
                   .OrderByField(sortField)
                   .Skip(ctx.perPage * (ctx.currentPage - 1))
                   .Take(ctx.perPage).ToList();
+
+
+CAST 
+((_myTableService as ServiceBase)!).tokenProperty = tokenProperty;
