@@ -1,3 +1,4 @@
+using Hangfire;
 using Microsoft.EntityFrameworkCore;
 using nvxapp.server.data.Infrastructure;
 using nvxapp.server.Infrastructure;
@@ -39,6 +40,16 @@ Installers.InstallAuthentication(builder);
 builder.Services.AddSignalR();
 
 
+Boolean useHangFire = false; 
+string? sUseHangfire = builder.Configuration["Hangfire:UseHangfire"];
+bool.TryParse(sUseHangfire, out useHangFire);
+
+if(useHangFire)
+   Installers.InstallHangFire(builder);
+
+
+
+
 var app = builder.Build();
 
 
@@ -56,9 +67,11 @@ using (var scope = app.Services.CreateScope())
 
     SharedSchema.MigrazioneRunTime = true;
 
-    var _configuration = app.Services.GetRequiredService<IConfiguration>();
+    //var _configuration = app.Services.GetRequiredService<IConfiguration>();
     Boolean MultiTenant = false;
-    string? sMultiTenant = _configuration["DbParameter:MultiTenant"];
+    string? sMultiTenant = builder.Configuration["DbParameter:MultiTenant"]; //_configuration["DbParameter:MultiTenant"];
+
+
 
     bool.TryParse(sMultiTenant, out MultiTenant);
     SharedSchema.MultiTenant = MultiTenant;
@@ -106,7 +119,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1"); });
 
-    //////// Avvia automaticamente la pagina Swagger nel browser predefinito
+    ////////////// Avvia automaticamente la pagina Swagger nel browser predefinito
     //////var urlSw = "https://localhost:7146/swagger/index.html";
     //////Process.Start(new ProcessStartInfo(urlSw) { UseShellExecute = true });
 
@@ -129,6 +142,16 @@ app.MapControllers();
 
 
 Installers.InstallChatAIHub(app);
+
+
+if (useHangFire)
+{
+    ////// Configura la dashboard di Hangfire
+    app.UseHangfireDashboard();
+    app.MapGet("/", () => "Hangfire è configurato!");
+    // https://localhost:7146/hangfire
+}
+
 
 
 

@@ -24,11 +24,38 @@ using Microsoft.Extensions.Configuration;
 using nvxapp.server.data.Entities.Public;
 using nvxapp.server.service.HubAI;
 using System.Net;
+using Hangfire;
+using Hangfire.PostgreSql;
 
 namespace nvxapp.server.Infrastructure
 {
     public static class Installers
     {
+
+        public static IServiceCollection InstallHangFire(this WebApplicationBuilder builder)
+        {
+            var connStr = builder.Configuration.GetConnectionString("nvxappDbContext");
+
+            connStr = connStr + ";SearchPath=hangfire";
+
+            // Aggiungi Hangfire ai servizi
+            builder.Services.AddHangfire(config => config
+                   .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+                   .UseSimpleAssemblyNameTypeSerializer()
+                   .UseRecommendedSerializerSettings()
+                   .UsePostgreSqlStorage(options => options.UseNpgsqlConnection(connStr)));
+
+
+            builder.Services.AddHangfireServer();
+
+            ////////ESEMPIO UTILIZZO
+            //////BackgroundJob.Enqueue(() => Console.WriteLine("Job eseguito!"));
+            ////////ricorrente
+            //////RecurringJob.AddOrUpdate("job-id", () => Console.WriteLine("Job ricorrente!"), Cron.Daily);
+
+            return builder.Services;
+        }
+
 
         public static /*IServiceCollection*/ void  InstallChatAIHub(this WebApplication app)
         {
