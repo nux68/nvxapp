@@ -2,7 +2,7 @@ export const environment = {
   production: true,
 
   signalR: {
-    useSignalR: false
+    useSignalR: true
   },
 
 

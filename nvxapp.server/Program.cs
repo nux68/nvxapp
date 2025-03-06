@@ -153,7 +153,7 @@ app.MapControllers();
 
 
 if (useSignalR)
-    Installers.InstallChatAIHub(app);
+    Installers.InstallSignalRHub(app);
 
 
 if (useHangFire)

@@ -10,11 +10,11 @@ namespace nvxapp.server.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class ChatAIController : NvxControllerBase
+    public class SignalRController : NvxControllerBase
     {
         private readonly IChatAIService _chatAIService;
 
-        public ChatAIController(
+        public SignalRController(
                                 IHttpContextAccessor httpContextAccessor,
 
                                 IChatAIService chatAIService

@@ -57,9 +57,9 @@ namespace nvxapp.server.Infrastructure
         }
 
 
-        public static  void  InstallChatAIHub(this WebApplication app)
+        public static  void  InstallSignalRHub(this WebApplication app)
         {
-            app.MapHub<ChatAIHub>("/chathub");
+            app.MapHub<SignalRHub>("/chathub");
         }
 
 

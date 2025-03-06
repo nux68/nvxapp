@@ -13,12 +13,12 @@ using System.Text;
 
 namespace nvxapp.server.service.HubAI
 {
-    public class ChatAIHub : Hub
+    public class SignalRHub : Hub
     {
         protected readonly JwtParameter _jwtParameter;
         protected readonly IMyTableService _myTableService;
 
-        public ChatAIHub(IOptions<JwtParameter> jwtParameter,
+        public SignalRHub(IOptions<JwtParameter> jwtParameter,
                          IMyTableService myTableService
             )
         {

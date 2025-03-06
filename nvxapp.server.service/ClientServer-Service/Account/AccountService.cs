@@ -33,7 +33,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
         private readonly ICompanyRepository _companyRepository;
         private readonly IUserCompanyRepository _userCompanyRepository;
 
-        private readonly IHubContext<ChatAIHub> _hubContext;
+        private readonly IHubContext<SignalRHub> _hubContext;
 
 
 
@@ -55,7 +55,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
 
                               ICompanyRepository companyRepository,
                               IUserCompanyRepository userCompanyRepository,
-                              IHubContext<ChatAIHub> hubContext,
+                              IHubContext<SignalRHub> hubContext,
 
                               SignInManager<ApplicationUser> signInManager
                               ) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
