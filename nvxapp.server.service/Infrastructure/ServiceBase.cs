@@ -17,7 +17,7 @@ using System.Security.Claims;
 namespace nvxapp.server.service.Infrastructure
 {
 
-    public class ServiceBase : IServiceBase //, ICurrentUser
+    public class ServiceBase : IServiceBase 
     {
         protected readonly IMapper _mapper;
         protected readonly UserManager<ApplicationUser> _userManager;

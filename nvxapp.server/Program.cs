@@ -113,8 +113,6 @@ if(useSignalR==false)
 }
 else
 {
-    //SIGNALR (V1) CON QUESTO VA
-    //app.UseCors("AllowSpecificOrigin"); // Usa la policy CORS specifica
     //SIGNALR (V2)
     app.UseDynamicCors(); // Usa il middleware personalizzato
 }

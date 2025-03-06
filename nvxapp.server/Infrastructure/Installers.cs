@@ -1,6 +1,5 @@
 ﻿using nvxapp.server.service.Interfaces;
 using System.Reflection;
-
 using NetCore.AutoRegisterDi;
 using nvxapp.server.data.Infrastructure;
 using Microsoft.EntityFrameworkCore;
@@ -11,16 +10,10 @@ using Serilog.Core;
 using Serilog.Events;
 using Serilog;
 using Serilog.Sinks.PostgreSQL;
-using nvxapp.server.data.Migrations;
 using nvxapp.server.service.ServerModels;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using Microsoft.EntityFrameworkCore.Migrations;
-using Microsoft.Extensions.DependencyInjection;
-using System;
-using Microsoft.EntityFrameworkCore.Diagnostics;
-using Microsoft.Extensions.Configuration;
 using nvxapp.server.data.Entities.Public;
 using nvxapp.server.service.HubAI;
 using System.Net;
@@ -261,29 +254,6 @@ namespace nvxapp.server.Infrastructure
 
             return builder.Services;
         }
-        //public static IServiceCollection InstallAuthentication(this WebApplicationBuilder builder)
-        //{
-        //    string JwtParameterKey = builder.Configuration["JwtParameter:Key"] ?? "";
-
-        //    builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-        //                    .AddJwtBearer(options =>
-        //                    {
-        //                        options.TokenValidationParameters = new TokenValidationParameters
-        //                        {
-        //                            ValidateIssuer = true,
-        //                            ValidateAudience = true,
-        //                            ValidateLifetime = true,
-        //                            ValidateIssuerSigningKey = true,
-        //                            ValidIssuer = builder.Configuration["JwtParameter:Issuer"],
-        //                            ValidAudience = builder.Configuration["JwtParameter:Audience"],
-        //                            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JwtParameterKey)),
-
-        //                            ClockSkew = TimeSpan.Zero // ✅ Disattiva il ritardo predefinito di 5 minuti
-        //                        };
-        //                    });
-
-        //    return builder.Services;
-        //}
 
 
         public static IServiceCollection InstallAuthentication(this WebApplicationBuilder builder, Boolean useSignalR)
@@ -350,15 +320,6 @@ namespace nvxapp.server.Infrastructure
                 }
                 else
                 {
-                    //SIGNALR (V1) CON QUESTO VA
-                    //options.AddPolicy("AllowSpecificOrigin", policy =>
-                    //{
-                    //    policy.WithOrigins("http://localhost:4200") // Specifica l'origine del client
-                    //          .AllowAnyMethod()
-                    //          .AllowAnyHeader()
-                    //          .AllowCredentials(); // Consente l'invio delle credenziali
-                    //});
-
                     //SIGNALR (V2)
                     builder.Services.AddCors(options =>
                     {
