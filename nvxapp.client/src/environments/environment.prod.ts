@@ -1,5 +1,11 @@
 export const environment = {
   production: true,
+
+  signalR: {
+    useSignalR: false
+  },
+
+
   remoteData: {
     apiUri: 'https://localhost:91/api/',
     signalrUri: 'https://localhost:7146/'

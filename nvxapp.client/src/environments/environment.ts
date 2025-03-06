@@ -3,9 +3,14 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false,
+   production: false,
 
-   remoteData: {
+  signalR: {
+    useSignalR: false
+  },
+
+
+  remoteData: {
      apiUri: 'https://localhost:7146/api/',
      signalrUri: 'https://localhost:7146/',
   },

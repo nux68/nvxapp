@@ -57,18 +57,9 @@ namespace nvxapp.server.Infrastructure
         }
 
 
-        public static /*IServiceCollection*/ void  InstallChatAIHub(this WebApplication app)
+        public static  void  InstallChatAIHub(this WebApplication app)
         {
-
-            //app.UseRouting();
-
-        
             app.MapHub<ChatAIHub>("/chathub");
-
-            ////////builder.Services.Configure<JwtParameter>(builder.Configuration.GetSection("JwtParameter"));
-
-
-            ////////return builder.Services;
         }
 
 
@@ -295,7 +286,7 @@ namespace nvxapp.server.Infrastructure
         //}
 
 
-        public static IServiceCollection InstallAuthentication(this WebApplicationBuilder builder)
+        public static IServiceCollection InstallAuthentication(this WebApplicationBuilder builder, Boolean useSignalR)
         {
             string JwtParameterKey = builder.Configuration["JwtParameter:Key"] ?? "";
 
@@ -315,23 +306,27 @@ namespace nvxapp.server.Infrastructure
                                     ClockSkew = TimeSpan.Zero // Disattiva il ritardo predefinito di 5 minuti
                                 };
 
-                                // 🔹 Gestisce il token anche per SignalR (quando inviato nella query string)
-                                options.Events = new JwtBearerEvents
+                                if(useSignalR)
                                 {
-                                    OnMessageReceived = context =>
+                                    // 🔹 Gestisce il token anche per SignalR (quando inviato nella query string)
+                                    options.Events = new JwtBearerEvents
                                     {
-                                        var accessToken = context.Request.Query["access_token"];
-                                        var path = context.HttpContext.Request.Path;
-
-                                        // ✅ Se è una richiesta SignalR e il token è presente nella query string, usalo
-                                        if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/chatHub"))
+                                        OnMessageReceived = context =>
                                         {
-                                            context.Token = accessToken;
-                                        }
+                                            var accessToken = context.Request.Query["access_token"];
+                                            var path = context.HttpContext.Request.Path;
 
-                                        return Task.CompletedTask;
-                                    }
-                                };
+                                            // ✅ Se è una richiesta SignalR e il token è presente nella query string, usalo
+                                            if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/chatHub"))
+                                            {
+                                                context.Token = accessToken;
+                                            }
+
+                                            return Task.CompletedTask;
+                                        }
+                                    };
+                                }
+                                
                             });
 
             return builder.Services;
@@ -339,37 +334,47 @@ namespace nvxapp.server.Infrastructure
 
 
 
-        public static IServiceCollection InstallCors(this WebApplicationBuilder builder)
+        public static IServiceCollection InstallCors(this WebApplicationBuilder builder, Boolean useSignalR)
         {
             builder.Services.AddCors(options =>
             {
-                ////options.AddPolicy("AllowAllOrigins", policy =>
-                ////{
-                ////    policy.AllowAnyOrigin() // Permette qualsiasi origine
-                ////          .AllowAnyMethod() // Permette qualsiasi metodo (GET, POST, PUT, DELETE, ecc.)
-                ////          .AllowAnyHeader(); // Permette qualsiasi intestazione
-                ////});
 
-                //SIGNALR (V1) CON QUESTO VA
-                //options.AddPolicy("AllowSpecificOrigin", policy =>
-                //{
-                //    policy.WithOrigins("http://localhost:4200") // Specifica l'origine del client
-                //          .AllowAnyMethod()
-                //          .AllowAnyHeader()
-                //          .AllowCredentials(); // Consente l'invio delle credenziali
-                //});
-
-                //SIGNALR (V2)
-                builder.Services.AddCors(options =>
+                if(useSignalR==false)
                 {
-                    options.AddPolicy("DynamicOrigins", policy =>
+                    options.AddPolicy("AllowAllOrigins", policy =>
                     {
-                        policy.AllowAnyMethod()
-                              .AllowAnyHeader()
-                              .AllowCredentials()
-                              .SetIsOriginAllowed(origin => true); // Consente tutte le origini
+                        policy.AllowAnyOrigin() // Permette qualsiasi origine
+                              .AllowAnyMethod() // Permette qualsiasi metodo (GET, POST, PUT, DELETE, ecc.)
+                              .AllowAnyHeader(); // Permette qualsiasi intestazione
                     });
-                });
+                }
+                else
+                {
+                    //SIGNALR (V1) CON QUESTO VA
+                    //options.AddPolicy("AllowSpecificOrigin", policy =>
+                    //{
+                    //    policy.WithOrigins("http://localhost:4200") // Specifica l'origine del client
+                    //          .AllowAnyMethod()
+                    //          .AllowAnyHeader()
+                    //          .AllowCredentials(); // Consente l'invio delle credenziali
+                    //});
+
+                    //SIGNALR (V2)
+                    builder.Services.AddCors(options =>
+                    {
+                        options.AddPolicy("DynamicOrigins", policy =>
+                        {
+                            policy.AllowAnyMethod()
+                                  .AllowAnyHeader()
+                                  .AllowCredentials()
+                                  .SetIsOriginAllowed(origin => true); // Consente tutte le origini
+                        });
+                    });
+                }
+
+
+
+                
 
             });
 

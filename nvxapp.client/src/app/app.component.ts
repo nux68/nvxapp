@@ -3,6 +3,7 @@ import { AccountService } from '../nvx/ClientServer-Service/Account/account.serv
 import { AuthService } from '../nvx/Utility/auth.service';
 import { UserNavigationService } from '../nvx/Utility/user-navigation.service';
 import { SignalrService } from '../nvx/Utility/signalr.service';
+import { environment } from '../environments/environment';
 
 @Component({
   selector: 'app-root',
@@ -86,23 +87,24 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
 
-    // collego gli eventi solo dopo la connessione che avviene dopo il login
-    this.signalrService.IsConnect$.subscribe(res => {
+    if (environment.signalR.useSignalR) {
+       // collego gli eventi solo dopo la connessione che avviene dopo il login
+       this.signalrService.IsConnect$.subscribe(res => {
 
-      if (res == true) {
-        // 🔹 Sottoscrizione agli eventi della chat
-        this.signalrService.on('ReceiveMessage').subscribe((msg: string) => {
-          console.log('🔄 Dati ricevuti:', msg);
-        });
+        if (res == true) {
+          // 🔹 Sottoscrizione agli eventi della chat
+          this.signalrService.on('ReceiveMessage').subscribe((msg: string) => {
+            console.log('🔄 Dati ricevuti:', msg);
+          });
 
-        // 🔹 Esempio: Sottoscrizione a un altro evento (es. aggiornamento dati)
-        this.signalrService.on('UpdateData').subscribe((data) => {
-          console.log('🔄 Dati aggiornati:', data);
-        });
-      }
+          // 🔹 Esempio: Sottoscrizione a un altro evento (es. aggiornamento dati)
+          this.signalrService.on('UpdateData').subscribe((data) => {
+            console.log('🔄 Dati aggiornati:', data);
+          });
+        }
 
-    });
-
+      });
+    }
   }
 
   public showPage4SuperUser(component: string): boolean {

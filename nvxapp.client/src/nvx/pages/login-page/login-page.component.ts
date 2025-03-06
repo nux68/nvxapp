@@ -9,6 +9,7 @@ import { AuthService } from '../../Utility/auth.service';
 import { UserLoadInModel } from '../../ClientServer-Service/Account/Models/user-load-model';
 import { UserDataAdditionalModel, UserNavigationService } from '../../Utility/user-navigation.service';
 import { SignalrService } from '../../Utility/signalr.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-login-page',
@@ -76,7 +77,10 @@ export class LoginPageComponent  implements OnInit {
           this.accountService.UserLoad(request).subscribe(usl => {
             if (usl.success) {
 
-              this.signalrService.startConnection();
+              if (environment.signalR.useSignalR) {
+                this.signalrService.startConnection();
+              }
+              
 
               let userDataAdditional: UserDataAdditionalModel = new UserDataAdditionalModel();
               userDataAdditional.gotoBackPage = "/home";

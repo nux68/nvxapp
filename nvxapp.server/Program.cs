@@ -8,6 +8,14 @@ using System.Diagnostics;
 var builder = WebApplication.CreateBuilder(args);
 
 
+Boolean useHangFire = false;
+string? sUseHangfire = builder.Configuration["Hangfire:UseHangfire"];
+bool.TryParse(sUseHangfire, out useHangFire);
+
+Boolean useSignalR = false;
+string? sUseSignalR = builder.Configuration["SignalR:UseSignalR"];
+bool.TryParse(sUseSignalR, out useSignalR);
+
 //
 
 Installers.InstallSettings(builder);
@@ -24,9 +32,10 @@ builder.Services.AddOpenApi();
 // Aggiungi Swagger
 builder.Services.AddSwaggerGen();
 
+//Boolean useSignalR
 
 // Aggiungi i servizi CORS
-Installers.InstallCors(builder);
+Installers.InstallCors(builder, useSignalR);
 
 
 Installers.InstallConfiguration(builder);
@@ -35,14 +44,11 @@ Installers.InstallEntityContex(builder);
 Installers.InstallRepositories(builder);
 Installers.InstallMappers(builder);
 Installers.InstallLog(builder);
-Installers.InstallAuthentication(builder);
+Installers.InstallAuthentication(builder, useSignalR);
 
-builder.Services.AddSignalR();
+//if(useSignalR)
+   builder.Services.AddSignalR();
 
-
-Boolean useHangFire = false; 
-string? sUseHangfire = builder.Configuration["Hangfire:UseHangfire"];
-bool.TryParse(sUseHangfire, out useHangFire);
 
 if(useHangFire)
    Installers.InstallHangFire(builder);
@@ -52,8 +58,6 @@ if(useHangFire)
 
 var app = builder.Build();
 
-
-//Installers.InstallChatAIHub(app);
 
 
 using (var scope = app.Services.CreateScope())
@@ -102,12 +106,20 @@ using (var scope = app.Services.CreateScope())
 
 
 
-//// Usa la policy CORS globale
-////app.UseCors("AllowAllOrigins");
-//SIGNALR (V1) CON QUESTO VA
-//app.UseCors("AllowSpecificOrigin"); // Usa la policy CORS specifica
-//SIGNALR (V2)
-app.UseDynamicCors(); // Usa il middleware personalizzato
+if(useSignalR==false)
+{
+    //Usa la policy CORS globale
+    app.UseCors("AllowAllOrigins");
+}
+else
+{
+    //SIGNALR (V1) CON QUESTO VA
+    //app.UseCors("AllowSpecificOrigin"); // Usa la policy CORS specifica
+    //SIGNALR (V2)
+    app.UseDynamicCors(); // Usa il middleware personalizzato
+}
+
+
 
 
 // Configure the HTTP request pipeline.
@@ -140,8 +152,8 @@ app.UseStaticFiles();
 app.MapControllers();
 
 
-
-Installers.InstallChatAIHub(app);
+if (useSignalR)
+    Installers.InstallChatAIHub(app);
 
 
 if (useHangFire)

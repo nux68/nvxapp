@@ -254,6 +254,19 @@ namespace nvxapp.server.service.Infrastructure
 
         }
 
+        protected Boolean UseSignalR
+        {
+            get
+            {
+                Boolean useSignalR = false;
+                string? sUseSignalR = _configuration["SignalR:UseSignalR"];
+                bool.TryParse(sUseSignalR, out useSignalR);
+
+                return useSignalR;
+            }
+        }
+
+
         protected string UserIdFirstConnection
         {
             get

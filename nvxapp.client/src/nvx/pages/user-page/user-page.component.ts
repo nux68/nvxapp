@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { SignalrService } from '../../Utility/signalr.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-user-page',
@@ -17,7 +18,9 @@ export class UserPageComponent  implements OnInit {
 
   ngOnInit() {
 
-    this.signalrService.send("SendMessage", { 'text': "ciao" });
+    if (environment.signalR.useSignalR) {
+      this.signalrService.send("SendMessage", { 'text': "ciao" });
+    }
     
 
   }

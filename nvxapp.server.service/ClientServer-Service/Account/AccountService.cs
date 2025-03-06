@@ -70,7 +70,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
             _userFinancialAdvisorRepository = userFinancialAdvisorRepository;
             _companyRepository = companyRepository;
             _userCompanyRepository = userCompanyRepository;
-
+            
             _hubContext = hubContext;
         }
 
@@ -186,7 +186,8 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                         string company = "";
                         string userIdFirstConnection = this.UserIdFirstConnection;
 
-                        await _hubContext.Clients.All.SendAsync("ReceiveMessage", applicationUser.UserName + " è entrato");
+                        if(UseSignalR)
+                            await _hubContext.Clients.All.SendAsync("ReceiveMessage", applicationUser.UserName + " è entrato");
 
                         var roles = await _userManager.GetRolesAsync(applicationUser);
                         if (roles != null && roles.Any())
