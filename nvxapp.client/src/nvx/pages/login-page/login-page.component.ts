@@ -41,11 +41,10 @@ export class LoginPageComponent  implements OnInit {
 
   }
 
-  ngOnInit() {
-
-
-
+  ionViewWillEnter() {
   }
+
+  ngOnInit() {}
 
   login() {
     if (this.loginForm.valid) {

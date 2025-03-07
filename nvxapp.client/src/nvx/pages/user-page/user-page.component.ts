@@ -16,13 +16,12 @@ export class UserPageComponent  implements OnInit {
     this.title = 'UserPage';
   }
 
-  ngOnInit() {
-
+  ionViewWillEnter() {
     if (environment.signalR.useSignalR) {
       this.signalrService.send("SendMessage", { 'text': "ciao" });
     }
-    
-
   }
+
+  ngOnInit() {}
 
 }

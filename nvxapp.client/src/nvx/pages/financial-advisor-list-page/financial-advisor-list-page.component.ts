@@ -24,16 +24,16 @@ export class FinancialAdvisorListPageComponent implements OnInit {
     this.title = 'FinancialAdvisorListPage';
   }
 
-  ngOnInit() {
-
+  ionViewWillEnter() {
     let request: GenericRequest<FinancialAdvisorListInModel> = new GenericRequest<FinancialAdvisorListInModel>(FinancialAdvisorListInModel);
     this.accountService.FinancialAdvisorList(request).subscribe(res => {
 
       this.financialAdvisorList = res.data.financialAdvisorList;
 
     });
-
   }
+
+  ngOnInit() {}
 
   handleButtonClick(item: FinancialAdvisorListModel) {
 

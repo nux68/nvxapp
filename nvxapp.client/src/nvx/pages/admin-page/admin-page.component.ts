@@ -14,6 +14,9 @@ export class AdminPageComponent  implements OnInit {
     this.title = 'AdminPage';
   }
 
+  ionViewWillEnter() {
+  }
+
   ngOnInit() {}
 
 }

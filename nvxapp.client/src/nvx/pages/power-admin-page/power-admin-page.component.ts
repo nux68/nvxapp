@@ -14,6 +14,9 @@ export class PowerAdminPageComponent  implements OnInit {
     this.title = 'PowerAdminPage';
   }
 
+  ionViewWillEnter() {
+  }
+
   ngOnInit() {}
 
 }

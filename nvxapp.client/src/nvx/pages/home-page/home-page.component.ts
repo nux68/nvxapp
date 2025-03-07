@@ -15,6 +15,8 @@ export class HomePageComponent  implements OnInit {
     this.title = 'Home';
   }
 
+  ionViewWillEnter() {
+  }
   
 
   ngOnInit() {}

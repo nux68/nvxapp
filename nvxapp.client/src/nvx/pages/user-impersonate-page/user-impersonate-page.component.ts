@@ -23,10 +23,12 @@ export class UserImpersonatePageComponent  implements OnInit {
     this.title = 'UserImpersonate';
   }
 
-  ngOnInit() {
-      this.userCronology = this.userNavigationService.userCronology;
-      this.selectedValue = this.userCronology[this.userCronology.length - 1].userData.id;
+  ionViewWillEnter() {
+    this.userCronology = this.userNavigationService.userCronology;
+    this.selectedValue = this.userCronology[this.userCronology.length - 1].userData.id;
   }
+
+  ngOnInit() {}
 
   UserGoBack() {
     this.userNavigationService.UserGoTo(this.selectedValue);

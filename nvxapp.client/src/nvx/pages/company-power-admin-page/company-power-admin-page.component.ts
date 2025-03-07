@@ -14,6 +14,9 @@ export class CompanyPowerAdminPageComponent  implements OnInit {
     this.title = 'CompanyPowerAdminPage';
   }
 
+  ionViewWillEnter() {
+  }
+
   ngOnInit() {}
 
 }

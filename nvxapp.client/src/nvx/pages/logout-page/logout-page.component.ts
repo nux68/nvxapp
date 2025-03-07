@@ -25,8 +25,10 @@ export class LogoutPageComponent  implements OnInit {
     this.logoutForm = this.fb.group({      
     });
 
+  }
 
 
+  ionViewWillEnter() {
   }
 
   ngOnInit() {

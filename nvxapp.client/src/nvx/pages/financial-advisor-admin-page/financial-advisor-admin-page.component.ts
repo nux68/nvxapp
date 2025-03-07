@@ -14,6 +14,9 @@ export class FinancialAdvisorAdminPageComponent  implements OnInit {
     this.title = 'FinancialAdvisorAdminPage';
   }
 
+  ionViewWillEnter() {
+  }
+
   ngOnInit() {}
 
 }

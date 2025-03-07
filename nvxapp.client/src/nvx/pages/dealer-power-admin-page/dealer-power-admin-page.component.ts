@@ -14,6 +14,9 @@ export class DealerPowerAdminPageComponent  implements OnInit {
     this.title = 'DealerPowerAdminPage';
   }
 
+  ionViewWillEnter() {
+  }
+
   ngOnInit() {}
 
 }

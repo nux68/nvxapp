@@ -24,16 +24,16 @@ export class UserCompanyListPageComponent  implements OnInit {
     this.title = 'UserCompanyListPage';
   }
 
-  ngOnInit() {
-
+  ionViewWillEnter() {
     let request: GenericRequest<UserCompanyListInModel> = new GenericRequest<UserCompanyListInModel>(UserCompanyListInModel);
     this.accountService.UserCompanyList(request).subscribe(res => {
 
       this.userCompanyList = res.data.userCompanyList;
 
     });
-
   }
+
+  ngOnInit() {}
 
   handleButtonClick(item: UserCompanyListModel) {
 

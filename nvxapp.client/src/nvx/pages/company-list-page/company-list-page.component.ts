@@ -25,9 +25,7 @@ export class CompanyListPageComponent  implements OnInit {
     this.title = 'CompanyListPage';
   }
 
-  ngOnInit() {
-
-   
+  ionViewWillEnter() {
 
     let request: GenericRequest<CompanyListInModel> = new GenericRequest<CompanyListInModel>(CompanyListInModel);
     this.accountService.CompanyList(request).subscribe(res => {
@@ -37,6 +35,8 @@ export class CompanyListPageComponent  implements OnInit {
     });
 
   }
+
+  ngOnInit() {}
 
   handleButtonClick(item: CompanyListModel) {
 

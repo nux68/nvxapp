@@ -24,7 +24,7 @@ export class DealerListPageComponent  implements OnInit {
     this.title = 'DealerListPage';
   }
 
-  ngOnInit() {
+  ionViewWillEnter() {
 
     let request: GenericRequest<DealerListInModel> = new GenericRequest<DealerListInModel>(DealerListInModel);
     this.accountService.DealerList(request).subscribe(res => {
@@ -34,6 +34,8 @@ export class DealerListPageComponent  implements OnInit {
     });
 
   }
+
+  ngOnInit() {}
 
   handleButtonClick(item: DealerListModel) {
 

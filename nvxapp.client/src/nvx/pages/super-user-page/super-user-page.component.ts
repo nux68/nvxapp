@@ -18,15 +18,13 @@ export class SuperUserPageComponent  implements OnInit {
     this.title = 'SuperUserPage';
   }
 
-  ngOnInit() {
-
+  ionViewWillEnter() {
     let request: GenericRequest<UserRolesInModel> = new GenericRequest<UserRolesInModel>(UserRolesInModel);
     this.accountService.UserRoles(request).subscribe(x => {
 
-      
-
     });
-
   }
+
+  ngOnInit() {}
 
 }
