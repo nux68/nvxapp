@@ -3724,3 +3724,12 @@ POSITION: 346
 2025-03-07 17:25:43.978 [INF] Call: <DealerList>b__14_0, GUID: "d7e8e22b-f945-479e-bc3d-1b97e837a86f", param: {"Data":{}}
 2025-03-07 17:25:45.252 [INF] Call: <UserLoad>b__0, GUID: "9bc4a1b7-6fab-4600-b3ea-8663e40da9ad", param: {"Data":{"Id":"c7bf46e7-e678-440b-a4b2-8f40c7c0c906"}}
 2025-03-07 17:25:47.908 [INF] Call: <FinancialAdvisorList>b__15_0, GUID: "23965a28-fc30-415b-9406-fd76bf9d65ac", param: {"Data":{}}
+2025-03-07 17:27:12.908 [INF] Call: <Login>b__0, GUID: "6fa752d5-603e-4949-9fc4-501b99c31a1b", param: {"Data":{"UserName":"admin","Password":"1234"}}
+2025-03-07 17:27:13.028 [INF] Call: <UserLoad>b__0, GUID: "5dc86e21-2bf8-401f-b0fe-acfa74a1f400", param: {"Data":{"Id":"55bfd94c-8671-47f0-9d8a-109ceeb3af29"}}
+2025-03-07 17:27:15.032 [INF] Call: <DealerList>b__14_0, GUID: "579af33f-8871-4447-a44a-83160bec6e71", param: {"Data":{}}
+2025-03-07 17:27:15.773 [INF] Call: <UserLoad>b__0, GUID: "738e9878-0823-4b18-82a4-324939b001b2", param: {"Data":{"Id":"c7bf46e7-e678-440b-a4b2-8f40c7c0c906"}}
+2025-03-07 17:27:16.792 [INF] Call: <FinancialAdvisorList>b__15_0, GUID: "5fcbb862-89b5-4495-9be5-fce4fb6006fe", param: {"Data":{}}
+2025-03-07 17:27:17.625 [INF] Call: <UserLoad>b__0, GUID: "545cf06b-f7b5-4f8b-a60a-8dd2f1f988b1", param: {"Data":{"Id":"6aaf95e0-1a97-4c2f-857e-980f8c1cc1d4"}}
+2025-03-07 17:27:18.659 [INF] Call: <CompanyList>b__16_0, GUID: "4881598e-6436-45a4-a77a-8cbde4cd584f", param: {"Data":{}}
+2025-03-07 17:27:19.325 [INF] Call: <UserLoad>b__0, GUID: "ee08dd87-74d5-40b2-9392-cd9106defe1d", param: {"Data":{"Id":"4b68d1bd-c781-4206-945f-db4fe3804805"}}
+2025-03-07 17:27:21.267 [INF] Call: <UserCompanyList>b__17_0, GUID: "c000baf8-9c1f-4b80-9a58-2974d511a2da", param: {"Data":{}}
