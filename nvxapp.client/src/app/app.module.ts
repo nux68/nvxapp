@@ -12,17 +12,22 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { NvxHttpInterceptor } from '../nvx/infrastructure/http-interceptor';
 import { HttpBackgroundWorkingComponentComponent } from '../nvx/shared/components/http-background-working-component/http-background-working-component.component';
 import { BackgroundWorkingComponent } from '../nvx/shared/components/background-working/background-working.component';
+import { FabMenuComponent } from '../nvx/shared/components/fab-menu/fab-menu.component';
+import { FormsModule } from '@angular/forms';
 //import { GenericFilterPipe } from '../nvx/pipe/generic-filter.pipe';
 
 
 @NgModule({
   declarations: [AppComponent,
     HttpBackgroundWorkingComponentComponent,
-    BackgroundWorkingComponent],
+    BackgroundWorkingComponent,
+    FabMenuComponent
+  ],
   imports: [
             BrowserModule,
             IonicModule.forRoot(),
-            AppRoutingModule
+            AppRoutingModule,
+            FormsModule
   ],
   providers: [
               { provide: LOCALE_ID, useValue: 'it' },

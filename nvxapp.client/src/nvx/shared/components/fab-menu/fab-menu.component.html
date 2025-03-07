@@ -1,0 +1,56 @@
+<div>
+
+  <div>
+    <ion-modal trigger="open-modal" (willDismiss)="onWillDismiss($event)">
+      <ng-template>
+        <ion-header>
+          <ion-toolbar color="primary">
+            <!--<ion-buttons slot="start">
+              <ion-button (click)="cancel()">Chiudi</ion-button>
+            </ion-buttons>-->
+            <ion-title>Chat AI</ion-title>
+          </ion-toolbar>
+        </ion-header>
+
+        <!-- Contenitore dei messaggi con riferimento -->
+        <ion-content class="ion-padding" #chatContent>
+          <div *ngFor="let message of messages" [ngClass]="{'user-message': message.sender === 'You', 'assistant-message': message.sender === 'Assistant'}">
+            <strong>{{ message.sender }}:</strong> {{ message.text }}
+          </div>
+        </ion-content>
+
+
+        <!-- Input messaggio -->
+        <ion-footer>
+          <ion-toolbar>
+            <ion-item>
+
+              <ion-textarea [(ngModel)]="newMessage"
+                            placeholder="Scrivi un messaggio..."
+                            rows="1"
+                            auto-grow="true">
+              </ion-textarea>
+
+              <ion-button (click)="sendMessage()" slot="end">
+                Invia
+              </ion-button>
+            </ion-item>
+          </ion-toolbar>
+        </ion-footer>
+      </ng-template>
+    </ion-modal>
+  </div>
+
+
+
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+    <ion-fab-button>
+      <ion-icon name="chatbubbles"></ion-icon>
+    </ion-fab-button>
+    <ion-fab-list side="top">
+      <ion-fab-button id="open-modal">
+        <ion-icon name="chatbubbles-outline"></ion-icon>
+      </ion-fab-button>
+    </ion-fab-list>
+  </ion-fab>
+</div>

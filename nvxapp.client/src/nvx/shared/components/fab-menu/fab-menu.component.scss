@@ -1,0 +1,19 @@
+.user-message {
+  //background-color: #e0f7fa; /* Azzurro chiaro */
+  text-align: left;
+  margin: 10px;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.assistant-message {
+  //background-color: #ffecb3; /* Giallo chiaro */
+  text-align: right;
+  margin: 10px;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+ion-modal {
+  --height: 90vh; /* Altezza del 90% della visuale verticale */
+}

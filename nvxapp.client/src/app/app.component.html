@@ -5,17 +5,17 @@
 
 
         <!--<ion-list id="nvx-list" *ngIf="userNavigationService.UserCanGoBack">
-    <ion-menu-toggle auto-hide="false">
-      <ion-item lines="none" detail="false" (click)="handleMenuClick()" class="menu-item">
-        <ion-icon aria-hidden="true" slot="start" [ios]="IconBack + '-outline'" [md]="IconBack + '-sharp'"></ion-icon>
-        <ion-label>BACK</ion-label>
-      </ion-item>
-    </ion-menu-toggle>
-  </ion-list>-->
+        <ion-menu-toggle auto-hide="false">
+          <ion-item lines="none" detail="false" (click)="handleMenuClick()" class="menu-item">
+            <ion-icon aria-hidden="true" slot="start" [ios]="IconBack + '-outline'" [md]="IconBack + '-sharp'"></ion-icon>
+            <ion-label>BACK</ion-label>
+          </ion-item>
+        </ion-menu-toggle>
+      </ion-list>-->
 
         <ion-list id="nvx-list">
           <!--<ion-list-header>User</ion-list-header>
-    <ion-note>Elementi menu user</ion-note>-->
+        <ion-note>Elementi menu user</ion-note>-->
           @for (p of appPages4User; track p; let i = $index) {
           <ion-menu-toggle auto-hide="false" *ngIf="showPage4User(p.component)">
             <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
@@ -109,37 +109,32 @@
 
         <!---->
         <!---->
-
         <!--<ion-list id="inbox-list">
-            <ion-list-header>Inbox</ion-list-header>
-            <ion-note>hi&#64;ionicframework.com</ion-note>
+          <ion-list-header>Inbox</ion-list-header>
+          <ion-note>hi&#64;ionicframework.com</ion-note>
 
-            @for (p of appPages; track p; let i = $index) {
-            <ion-menu-toggle auto-hide="false">
-              <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
-                <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-sharp'"></ion-icon>
-                <ion-label>{{ p.title }}</ion-label>
-              </ion-item>
-            </ion-menu-toggle>
-          }
-        </ion-list>-->
-
-
+          @for (p of appPages; track p; let i = $index) {
+          <ion-menu-toggle auto-hide="false">
+            <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
+              <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-sharp'"></ion-icon>
+              <ion-label>{{ p.title }}</ion-label>
+            </ion-item>
+          </ion-menu-toggle>
+        }
+      </ion-list>-->
         <!---->
         <!---->
-
-
         <!---->
         <!--<ion-list id="labels-list">
-    <ion-list-header>Labels</ion-list-header>
+        <ion-list-header>Labels</ion-list-header>
 
-    @for (label of labels; track label) {
-    <ion-item lines="none">
-      <ion-icon aria-hidden="true" slot="start" ios="bookmark-outline" md="bookmark-sharp"></ion-icon>
-      <ion-label>{{ label }}</ion-label>
-    </ion-item>
-    }
-  </ion-list>-->
+        @for (label of labels; track label) {
+        <ion-item lines="none">
+          <ion-icon aria-hidden="true" slot="start" ios="bookmark-outline" md="bookmark-sharp"></ion-icon>
+          <ion-label>{{ label }}</ion-label>
+        </ion-item>
+        }
+      </ion-list>-->
 
 
 
@@ -150,5 +145,9 @@
       <app-http-background-working-component></app-http-background-working-component>
 
     </ion-router-outlet>
+
   </ion-split-pane>
+
+  <app-fab-menu></app-fab-menu>
+
 </ion-app>
