@@ -1,14 +1,23 @@
 <div>
 
   <div>
-    <ion-modal trigger="open-modal" (willDismiss)="onWillDismiss($event)">
+    <ion-modal #chatModal [isOpen]="isModalOpen" (willDismiss)="onWillDismissChat($event)">
       <ng-template>
         <ion-header>
           <ion-toolbar color="primary">
-            <ion-buttons slot="start">
-              <ion-button (click)="cancel()">Chiudi</ion-button>
+
+            <ion-buttons slot="end" class="ion-hide-xl-up">
+              <ion-button (click)="cancelChat()">
+                <ion-icon class="nvx-standard-icon" name="close-outline"></ion-icon>
+              </ion-button>
             </ion-buttons>
-            <ion-title>Chat AI</ion-title>
+
+            <ion-icon *ngIf="modalType=='text'" class="nvx-standard-icon" name="chatbubbles-outline" slot="start"></ion-icon>
+            <ion-icon *ngIf="modalType=='vocal'" class="nvx-standard-icon" name="mic-outline" slot="start"></ion-icon>
+            
+
+            <ion-title>{{modalType}}</ion-title>
+
           </ion-toolbar>
         </ion-header>
 
@@ -23,22 +32,35 @@
         <!-- Input messaggio -->
         <ion-footer>
           <ion-toolbar>
-            <ion-item>
 
+            <ion-item *ngIf="modalType=='text'">
               <ion-textarea [(ngModel)]="newMessage"
                             placeholder="Scrivi un messaggio..."
                             rows="1"
                             auto-grow="true">
               </ion-textarea>
 
-              <ion-button (click)="sendMessage()" slot="end">
-                Invia
+              <ion-button shape="round" (click)="sendMessage()" size="default" color="medium">
+                <ion-icon slot="icon-only" name="send-outline"></ion-icon>
               </ion-button>
             </ion-item>
+
+
+            <ion-item *ngIf="modalType=='vocal'">
+              <ion-label>{{ isVoiceCommandActive ? 'Comandi vocali attivi' : 'Comandi vocali disattivati' }}</ion-label>
+              <ion-button shape="round" (click)="toggleVoiceCommand()" size="default" color="{{ isVoiceCommandActive ? 'success' : 'medium' }}">
+                <ion-icon [name]="isVoiceCommandActive ? 'mic' : 'mic-off'" slot="icon-only"></ion-icon>
+              </ion-button>
+            </ion-item>
+
+
+
           </ion-toolbar>
         </ion-footer>
       </ng-template>
     </ion-modal>
+
+
   </div>
 
 
@@ -48,9 +70,19 @@
       <ion-icon name="chatbubbles"></ion-icon>
     </ion-fab-button>
     <ion-fab-list side="top">
-      <ion-fab-button id="open-modal">
+
+      <ion-fab-button (click)="openModal('text')">
         <ion-icon name="chatbubbles-outline"></ion-icon>
       </ion-fab-button>
+      <ion-fab-button (click)="openModal('vocal')">
+        <ion-icon name="mic-outline"></ion-icon>
+      </ion-fab-button>
+
+
     </ion-fab-list>
+
+
+
+
   </ion-fab>
 </div>

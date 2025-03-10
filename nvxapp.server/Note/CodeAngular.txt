@@ -8,3 +8,23 @@ setTimeout(() => {
 
 javascript:void(0)
 
+
+
+nesconde in funzione della risoluzione
+    ion-hide-xs-down
+    ion-hide-xl-up
+
+
+    
+xs	0–576px	Extra small (mobile)
+sm	577–768px	Small (tablet verticale)
+md	769–992px	Medium (tablet orizzontale)
+lg	993–1200px	Large (desktop piccolo)
+xl	1201px e oltre	Extra large (desktop grande)
+
+assegna delle prop css in funzione della risoluzione
+@media (min-width: 577px) {
+  ion-modal {
+    --height: 90vh; /* Altezza del 90% della visuale verticale */
+  }
+}

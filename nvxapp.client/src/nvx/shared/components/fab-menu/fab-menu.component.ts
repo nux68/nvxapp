@@ -12,7 +12,13 @@ export class FabMenuComponent implements OnInit {
   public newMessage: string = '';
   @ViewChild('chatContainer', { static: false }) chatContainer!: ElementRef;
   @ViewChild(IonContent, { static: false }) chatContent!: IonContent;
-  @ViewChild(IonModal) modal!: IonModal;
+
+  
+  @ViewChild('chatModal', { static: true }) chatModal!: IonModal;
+
+  isModalOpen = false; // Controlla se il modal è aperto
+  modalType: string | null = null; // Per salvare il tipo (chat o mic)
+  isVoiceCommandActive = false; // Stato iniziale dei comandi vocali
 
   constructor() { }
 
@@ -51,12 +57,30 @@ export class FabMenuComponent implements OnInit {
   }
 
 
-
-  cancel() {
-    this.modal.dismiss(null, 'cancel');
+  openModal(type: string) {
+    this.modalType = type; // Imposta il valore della variabile
+    this.isModalOpen = true; // Mostra il modal
   }
 
-  onWillDismiss(event: any) {
+  cancelChat() {
+    this.chatModal.dismiss(null, 'cancel');
+  }
+
+  onWillDismissChat(event: any) {
     // Logica aggiuntiva qui, se necessaria
+    this.isModalOpen = false;
+    this.modalType = null;
   }
+
+  toggleVoiceCommand() {
+    this.isVoiceCommandActive = !this.isVoiceCommandActive;
+    if (this.isVoiceCommandActive) {
+      console.log('Comandi vocali attivati.');
+      // Qui puoi aggiungere la logica per avviare i comandi vocali
+    } else {
+      console.log('Comandi vocali disattivati.');
+      // Qui puoi aggiungere la logica per fermare i comandi vocali
+    }
+  }
+
 }
