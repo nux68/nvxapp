@@ -1,6 +1,9 @@
 import { Component, OnInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { IonContent, IonModal } from '@ionic/angular';
 import { SpeechService } from '../../../Utility/speech.service';
+import { ChatAIService } from '../../../ClientServer-Service/ChatAI/chat-ai.service';
+import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
+import { ChatAIInModel } from '../../../ClientServer-Service/ChatAI/Models/chat-AI-model';
 
 @Component({
   selector: 'app-fab-menu',
@@ -20,6 +23,7 @@ export class FabMenuComponent implements OnInit {
   modalType: string | null = null; // Tipo di modale (chat o altro)
 
   constructor(public speechService: SpeechService,
+              private chatAIService: ChatAIService,
               private cdRef: ChangeDetectorRef) {
   }
 
@@ -46,10 +50,20 @@ export class FabMenuComponent implements OnInit {
   sendMessage() {
     if (this.newMessage.trim() !== '') {
       this.messages.push({ sender: 'You', text: this.newMessage });
-      
       this.scrollToBottom(); // Scroll automatico
-      this.fakeAssistantReply(this.newMessage); // Simula una risposta dell'assistente
-      this.newMessage = ''; // Resetta il campo di input
+
+      let request: GenericRequest<ChatAIInModel> = new GenericRequest<ChatAIInModel>(ChatAIInModel);
+      request.data.request = this.newMessage;
+
+      this.chatAIService.SendMessage(request).subscribe(res => {
+
+        this.scrollToBottom(); // Scroll automatico
+        this.fakeAssistantReply(res.data.responce); // Simula una risposta dell'assistente
+        this.newMessage = ''; // Resetta il campo di input
+
+      });
+      
+      
     }
   }
 
@@ -58,18 +72,28 @@ export class FabMenuComponent implements OnInit {
     if (message.trim() !== '') {
       this.messages.push({ sender: 'You', text: message });
       this.scrollToBottom(); // Scroll automatico
-      this.fakeAssistantReply(message); // Simula una risposta dell'assistente
-      //this.newMessage = ''; // Resetta il campo di input
+
+      let request: GenericRequest<ChatAIInModel> = new GenericRequest<ChatAIInModel>(ChatAIInModel);
+      request.data.request = message;
+
+      this.chatAIService.SendMessage(request).subscribe(res => {
+
+        this.scrollToBottom(); // Scroll automatico
+        this.fakeAssistantReply(message); // Simula una risposta dell'assistente
+        //this.newMessage = ''; // Resetta il campo di input
+
+      });
+      
     }
   }
 
   // Simula una risposta automatica dell'assistente
   fakeAssistantReply(myMessage:string) {
-    setTimeout(() => {
-      this.messages.push({ sender: 'Assistant', text: 'Mi hai chiesto! ' + myMessage });
+    //setTimeout(() => {
+      this.messages.push({ sender: 'Assistant', text: myMessage });
       this.cdRef.detectChanges();
       this.scrollToBottom(); // Scroll automatico dopo la risposta
-    }, 100);
+    //}, 100);
   }
 
   // Funzione per scrollare in basso

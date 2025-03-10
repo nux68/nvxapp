@@ -25,6 +25,7 @@
         <ion-content class="ion-padding" #chatContent>
           <div *ngFor="let message of messages" [ngClass]="{'user-message': message.sender === 'You', 'assistant-message': message.sender === 'Assistant'}">
             <strong>{{ message.sender }}:</strong> {{ message.text }}
+            <ion-spinner name="lines"></ion-spinner>
           </div>
         </ion-content>
 

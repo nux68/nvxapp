@@ -3735,3 +3735,82 @@ POSITION: 346
 2025-03-07 17:27:21.267 [INF] Call: <UserCompanyList>b__17_0, GUID: "c000baf8-9c1f-4b80-9a58-2974d511a2da", param: {"Data":{}}
 2025-03-10 09:44:04.044 [INF] Call: <Login>b__0, GUID: "b54c6689-5419-4164-af82-c52b32c1c9a0", param: {"Data":{"UserName":"admin","Password":"1234"}}
 2025-03-10 09:44:04.673 [INF] Call: <UserLoad>b__0, GUID: "885119a3-6454-4b8a-b8af-dd999c417377", param: {"Data":{"Id":"55bfd94c-8671-47f0-9d8a-109ceeb3af29"}}
+2025-03-10 17:49:40.827 [INF] Call: <SendMessage>b__0, GUID: "43c1e00b-df4c-4a66-8d92-31f4f4921bf2", param: {"Data":{"Request":"123123"}}
+2025-03-10 17:49:49.366 [INF] Call: <SendMessage>b__0, GUID: "fad34395-5a11-4dcd-b243-577ed1f80804", param: {"Data":{"Request":"123123123"}}
+2025-03-10 17:50:43.820 [INF] Call: <SendMessage>b__0, GUID: "6a023ccb-73e2-45ff-ae75-939671fa9340", param: {"Data":{"Request":"123123"}}
+2025-03-10 17:50:52.459 [INF] Call: <SendMessage>b__0, GUID: "fa7da930-e30d-4d5c-ae5b-51a170895b50", param: {"Data":{"Request":"123123123123"}}
+2025-03-10 17:50:56.059 [INF] Call: <SendMessage>b__0, GUID: "8937994c-e220-40ff-8d56-2200ceaa9470", param: {"Data":{"Request":"123123123"}}
+2025-03-10 17:50:58.946 [INF] Call: <SendMessage>b__0, GUID: "d3856a50-48b1-42fb-8ac8-7b2f87995e17", param: {"Data":{"Request":"123123"}}
+2025-03-10 17:51:01.805 [INF] Call: <SendMessage>b__0, GUID: "394fcec5-e968-446a-9fcf-37c8ec80e9c2", param: {"Data":{"Request":"123123123"}}
+2025-03-10 17:53:04.335 [INF] Call: <SendMessage>b__0, GUID: "3e894f70-5f14-4242-97af-9df24fcb70b3", param: {"Data":{"Request":"weqrqewrwe"}}
+2025-03-10 17:53:10.222 [INF] Call: <SendMessage>b__0, GUID: "b6af3289-25b7-4c20-9538-694daed573ba", param: {"Data":{"Request":"qwerwerqwr"}}
+2025-03-10 17:53:15.678 [INF] Call: <SendMessage>b__0, GUID: "9cc59cc5-2dc6-4ea6-bf91-da4f8a6d1797", param: {"Data":{"Request":"weqrqwerweqr"}}
+2025-03-10 17:53:19.881 [INF] Call: <SendMessage>b__0, GUID: "e4057dd6-ff3f-4144-bc54-d31ab3fdd44c", param: {"Data":{"Request":"weqrqwerewr"}}
+2025-03-10 17:55:43.754 [INF] Call: <SendMessage>b__0, GUID: "494d626a-c194-415a-83e7-917a7be2407b", param: {"Data":{"Request":"21323"}}
+2025-03-10 17:55:48.883 [INF] Call: <SendMessage>b__0, GUID: "39fd64f1-984d-4c3c-9c97-d3d3e73b6260", param: {"Data":{"Request":"123213"}}
+2025-03-10 17:55:52.825 [INF] Call: <SendMessage>b__0, GUID: "2f61be85-15dd-46e1-9858-15236175220e", param: {"Data":{"Request":"12323123"}}
+2025-03-10 17:55:57.902 [INF] Call: <SendMessage>b__0, GUID: "8ee56d08-f09f-4851-a52f-86cde05662b9", param: {"Data":{"Request":"1232312312"}}
+2025-03-10 17:56:06.934 [INF] Call: <SendMessage>b__0, GUID: "840cc049-714a-4015-8f8e-35327aa9c4d8", param: {"Data":{"Request":"weretertgwert rewt ret ret r"}}
+2025-03-10 17:56:14.707 [INF] Call: <SendMessage>b__0, GUID: "defa8633-0069-44e8-8e19-7e09e9954750", param: {"Data":{"Request":"ertwert wert ret "}}
+2025-03-10 17:56:36.393 [INF] Call: <SendMessage>b__0, GUID: "c3760271-c54e-488a-a403-c871b56491ee", param: {"Data":{"Request":"12312321"}}
+2025-03-10 17:58:23.956 [INF] Call: <SendMessage>b__0, GUID: "c87ca8c9-52f0-4484-8e35-00f068ed3f6a", param: {"Data":{"Request":"ciao \n"}}
+2025-03-10 17:59:26.182 [INF] Call: <SendMessage>b__0, GUID: "8c1c2983-b56d-4d24-a5d1-a3f3d4659886", param: {"Data":{"Request":"123123"}}
+2025-03-10 17:59:55.794 [INF] Call: <SendMessage>b__0, GUID: "eaadc371-0cc1-4303-864f-e8806005824d", param: {"Data":{"Request":"123123"}}
+2025-03-10 18:00:28.208 [INF] Call: <Login>b__0, GUID: "5d0a3c07-64ac-4ffd-9f55-7ac90443c58c", param: {"Data":{"UserName":"admin","Password":"1234"}}
+2025-03-10 18:00:29.749 [INF] Call: <UserLoad>b__0, GUID: "a5538af5-417b-42a5-91e6-602bfa5c32d9", param: {"Data":{"Id":"55bfd94c-8671-47f0-9d8a-109ceeb3af29"}}
+2025-03-10 18:00:46.302 [INF] Call: <DealerList>b__14_0, GUID: "521a5783-ab53-4c97-993f-9bacdac0113e", param: {"Data":{}}
+2025-03-10 18:01:01.061 [INF] Call: <SendMessage>b__0, GUID: "8a535366-28be-4a9c-bb79-e1a095842db5", param: {"Data":{"Request":"123123"}}
+2025-03-10 18:04:47.884 [INF] Call: <SendMessage>b__0, GUID: "51bba6f0-28c2-4351-8e6f-949c1569e04d", param: {"Data":{"Request":"123123"}}
+2025-03-10 18:04:57.881 [INF] Call: <SendMessage>b__0, GUID: "b04fa9a0-9c0d-4421-be8f-d165c5c57754", param: {"Data":{"Request":"1232312"}}
+2025-03-10 18:05:09.255 [INF] Call: <SendMessage>b__0, GUID: "71c12a86-61e8-4a6f-9829-3aa731eb258c", param: {"Data":{"Request":"123123123"}}
+2025-03-10 18:06:21.639 [INF] Call: <SendMessage>b__0, GUID: "c439ef31-7ac6-4944-bb33-e7ff65688dd2", param: {"Data":{"Request":"123123"}}
+2025-03-10 18:09:11.798 [INF] Call: <SendMessage>b__0, GUID: "e19c3d5c-f13f-453a-9b7e-40e8228bd285", param: {"Data":{"Request":"12312"}}
+2025-03-10 18:09:16.361 [INF] Call: <SendMessage>b__0, GUID: "7c410a5e-86b2-4541-9092-d14f37ae6031", param: {"Data":{"Request":"123123"}}
+2025-03-10 18:10:34.284 [INF] Call: <SendMessage>b__0, GUID: "b1544158-5d51-441d-a7a0-45cb8e9fd88b", param: {"Data":{"Request":"213123"}}
+2025-03-10 18:10:38.257 [INF] Call: <SendMessage>b__0, GUID: "1e738e1c-0141-436a-b950-be9c94f77bb7", param: {"Data":{"Request":"21312312"}}
+2025-03-10 18:13:26.838 [INF] Call: <SendMessage>b__0, GUID: "aa0bb841-6b57-443b-abbf-9e6ed9b519c1", param: {"Data":{"Request":"21123"}}
+2025-03-10 18:13:32.023 [INF] Call: <SendMessage>b__0, GUID: "91386002-0e37-4054-b696-550b16943221", param: {"Data":{"Request":"213123"}}
+2025-03-10 18:14:05.174 [INF] Call: <Login>b__0, GUID: "cdd19a15-500e-47a8-bce6-83537c617c2c", param: {"Data":{"UserName":"admin","Password":"1234"}}
+2025-03-10 18:14:06.327 [INF] Call: <UserLoad>b__0, GUID: "6974c338-5632-40ee-bb12-097f855221d3", param: {"Data":{"Id":"55bfd94c-8671-47f0-9d8a-109ceeb3af29"}}
+2025-03-10 18:15:03.157 [INF] Call: <Login>b__0, GUID: "7a762e1b-c249-48f1-a80c-6b51a4498045", param: {"Data":{"UserName":"admin","Password":"1234"}}
+2025-03-10 18:15:04.263 [INF] Call: <UserLoad>b__0, GUID: "45bd6b38-b4cb-4ac8-b60e-77ac39888c13", param: {"Data":{"Id":"55bfd94c-8671-47f0-9d8a-109ceeb3af29"}}
+2025-03-10 18:15:11.016 [INF] Call: <SendMessage>b__0, GUID: "0445bbf0-2b0a-44a8-a7cb-0a7464d0c4b3", param: {"Data":{"Request":"213123"}}
+2025-03-10 18:15:16.903 [INF] Call: <SendMessage>b__0, GUID: "0d996c26-cd85-4722-8311-d0abf6a50b96", param: {"Data":{"Request":"123123123"}}
+2025-03-10 18:15:25.220 [INF] Call: <SendMessage>b__0, GUID: "b0b3db1b-2260-427b-abd0-94195cb2f57a", param: {"Data":{"Request":"123123123"}}
+2025-03-10 18:15:48.591 [INF] Call: <SendMessage>b__0, GUID: "dbfd498c-ec2e-454c-9793-4f760188b8da", param: {"Data":{"Request":"123123"}}
+2025-03-10 18:15:53.211 [INF] Call: <SendMessage>b__0, GUID: "df777a75-b7c8-469c-b81f-e83da5268ca5", param: {"Data":{"Request":"213123"}}
+2025-03-10 18:17:05.799 [INF] Call: <SendMessage>b__0, GUID: "ea419db8-d605-448f-af8c-bddcd689dd12", param: {"Data":{"Request":"123123123"}}
+2025-03-10 18:18:09.138 [INF] Call: <DealerList>b__14_0, GUID: "578725f0-2e46-4b08-8880-755da8ec9e9b", param: {"Data":{}}
+2025-03-10 18:18:10.542 [INF] Call: <DealerList>b__14_0, GUID: "e9d66c3e-d8fd-4d05-ae00-e53f921e728b", param: {"Data":{}}
+2025-03-10 18:18:17.032 [INF] Call: <SendMessage>b__0, GUID: "e54ca626-62ae-42e1-84f1-70ebbe2a0c87", param: {"Data":{"Request":"123123"}}
+2025-03-10 18:18:22.267 [INF] Call: <SendMessage>b__0, GUID: "db5960d3-44aa-401f-9b56-24dcfe7b80c4", param: {"Data":{"Request":"123123123"}}
+2025-03-10 18:18:27.265 [INF] Call: <SendMessage>b__0, GUID: "fbec1648-c325-4491-bbb1-340122e02cd4", param: {"Data":{"Request":"12312312312"}}
+2025-03-10 18:18:57.669 [INF] Call: <SendMessage>b__0, GUID: "38fdc419-4a48-4eb2-8d97-06ba12cc30e5", param: {"Data":{"Request":"123123"}}
+2025-03-10 18:20:13.538 [INF] Call: <SendMessage>b__0, GUID: "293353cf-b707-49a1-8dd6-4b1e941bc643", param: {"Data":{"Request":"123123"}}
+2025-03-10 18:20:16.794 [INF] Call: <SendMessage>b__0, GUID: "6525b642-2d34-49ea-9837-c902a983128b", param: {"Data":{"Request":"123123123"}}
+2025-03-10 18:20:19.924 [INF] Call: <SendMessage>b__0, GUID: "778ccdf8-a397-4015-b395-d0e48562f1b1", param: {"Data":{"Request":"123123123"}}
+2025-03-10 18:20:23.170 [INF] Call: <SendMessage>b__0, GUID: "87a3999d-9912-43a0-be74-35e3edbbe2b0", param: {"Data":{"Request":"123123123"}}
+2025-03-10 18:20:27.626 [INF] Call: <SendMessage>b__0, GUID: "4cd1443e-e98c-45ab-aa61-f1c4383ef3f3", param: {"Data":{"Request":"213213123"}}
+2025-03-10 18:20:30.757 [INF] Call: <SendMessage>b__0, GUID: "809ca568-f319-4a1f-a5cc-e75d852738d5", param: {"Data":{"Request":"123123123"}}
+2025-03-10 18:20:34.345 [INF] Call: <SendMessage>b__0, GUID: "71c096c7-e368-4d41-9aa3-2db546adcaac", param: {"Data":{"Request":"12312313"}}
+2025-03-10 18:20:38.460 [INF] Call: <SendMessage>b__0, GUID: "6dc52946-53bc-410d-9f93-c017e36ee169", param: {"Data":{"Request":"123123123"}}
+2025-03-10 18:20:46.957 [INF] Call: <SendMessage>b__0, GUID: "6e86c291-3805-4235-b3e8-a89b1534316b", param: {"Data":{"Request":"123123123 21 21egre tgret ert ret"}}
+2025-03-10 18:21:35.672 [INF] Call: <SendMessage>b__0, GUID: "a3a958c2-41ab-494d-a631-65d19abba8a2", param: {"Data":{"Request":"123123123123 213 2"}}
+2025-03-10 18:21:39.989 [INF] Call: <SendMessage>b__0, GUID: "238ccdb8-70f4-4b8b-a831-429f0badf9de", param: {"Data":{"Request":"213123 213 213 123 "}}
+2025-03-10 18:21:43.976 [INF] Call: <SendMessage>b__0, GUID: "39fb79b9-6d24-43f4-ae1a-4aaef6990d01", param: {"Data":{"Request":"213 213 213 213 "}}
+2025-03-10 18:21:51.840 [INF] Call: <SendMessage>b__0, GUID: "13bb0cd7-9602-429a-b1e8-32936d1bce29", param: {"Data":{"Request":"123 123 213 213 123 213213 213 "}}
+2025-03-10 18:22:01.872 [INF] Call: <SendMessage>b__0, GUID: "6cc19774-cecc-4069-b729-71d5207fdd1c", param: {"Data":{"Request":"123 213 123 213 213 123 213 123 213 213 213 213"}}
+2025-03-10 18:22:11.877 [INF] Call: <SendMessage>b__0, GUID: "e44443d5-99be-44a0-8650-303ed1812785", param: {"Data":{"Request":"123123 123 213 213 213 213 "}}
+2025-03-10 18:23:11.666 [INF] Call: <SendMessage>b__0, GUID: "0730ac00-c592-4152-86fe-47a6511dfcdf", param: {"Data":{"Request":"123123"}}
+2025-03-10 18:23:48.791 [INF] Call: <Login>b__0, GUID: "d107c16e-3b77-46b0-98af-3c34f108922b", param: {"Data":{"UserName":"admin","Password":"1234"}}
+2025-03-10 18:23:49.944 [INF] Call: <UserLoad>b__0, GUID: "e9eb984a-f87a-4761-8475-901afbfe5389", param: {"Data":{"Id":"55bfd94c-8671-47f0-9d8a-109ceeb3af29"}}
+2025-03-10 18:24:34.229 [INF] Call: <SendMessage>b__0, GUID: "cf0b5304-3782-446c-8ccb-fbf13d3b50bf", param: {"Data":{"Request":"123123"}}
+2025-03-10 18:24:43.645 [INF] Call: <SendMessage>b__0, GUID: "75163594-da0f-4d71-9ee3-9091647a27f5", param: {"Data":{"Request":"213213"}}
+2025-03-10 18:24:50.808 [INF] Call: <SendMessage>b__0, GUID: "8e6c4aca-9219-498f-92af-17ed46df5b8e", param: {"Data":{"Request":"213123123"}}
+2025-03-10 18:24:56.737 [INF] Call: <SendMessage>b__0, GUID: "a9c7a0f7-cc8d-49f0-b454-0cdba8461a3e", param: {"Data":{"Request":"213123213"}}
+2025-03-10 18:24:59.128 [INF] Call: <SendMessage>b__0, GUID: "0dded8dc-ed25-4a72-882c-0acfeaf9d57c", param: {"Data":{"Request":"31231232"}}
+2025-03-10 18:25:01.816 [INF] Call: <SendMessage>b__0, GUID: "9edafac4-1d0c-43db-bf36-56e399faaf29", param: {"Data":{"Request":"3123213"}}
+2025-03-10 18:25:06.898 [INF] Call: <SendMessage>b__0, GUID: "31f868fa-4256-4cbb-8e90-bd42cc4b1aa0", param: {"Data":{"Request":"123123123"}}
+2025-03-10 18:25:11.309 [INF] Call: <SendMessage>b__0, GUID: "b0bb55d9-ae11-47a0-b14e-ed4aacab670a", param: {"Data":{"Request":"123123123"}}
+2025-03-10 18:25:16.328 [INF] Call: <SendMessage>b__0, GUID: "50d29f70-8972-4bb4-b24d-4d48a1be8030", param: {"Data":{"Request":"1231231233"}}
+2025-03-10 18:25:20.881 [INF] Call: <SendMessage>b__0, GUID: "cfc42ceb-d942-487c-bc95-e1be10df491c", param: {"Data":{"Request":"123123123"}}
