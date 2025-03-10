@@ -3733,3 +3733,5 @@ POSITION: 346
 2025-03-07 17:27:18.659 [INF] Call: <CompanyList>b__16_0, GUID: "4881598e-6436-45a4-a77a-8cbde4cd584f", param: {"Data":{}}
 2025-03-07 17:27:19.325 [INF] Call: <UserLoad>b__0, GUID: "ee08dd87-74d5-40b2-9392-cd9106defe1d", param: {"Data":{"Id":"4b68d1bd-c781-4206-945f-db4fe3804805"}}
 2025-03-07 17:27:21.267 [INF] Call: <UserCompanyList>b__17_0, GUID: "c000baf8-9c1f-4b80-9a58-2974d511a2da", param: {"Data":{}}
+2025-03-10 09:44:04.044 [INF] Call: <Login>b__0, GUID: "b54c6689-5419-4164-af82-c52b32c1c9a0", param: {"Data":{"UserName":"admin","Password":"1234"}}
+2025-03-10 09:44:04.673 [INF] Call: <UserLoad>b__0, GUID: "885119a3-6454-4b8a-b8af-dd999c417377", param: {"Data":{"Id":"55bfd94c-8671-47f0-9d8a-109ceeb3af29"}}
