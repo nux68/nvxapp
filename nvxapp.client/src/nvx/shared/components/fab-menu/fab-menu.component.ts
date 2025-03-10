@@ -19,11 +19,8 @@ export class FabMenuComponent implements OnInit {
   isModalOpen = false; // Stato del modale
   modalType: string | null = null; // Tipo di modale (chat o altro)
 
-  isVoiceCommandActive = false; // Stato dei comandi vocali
-
-  constructor(private speechService: SpeechService, private cdRef: ChangeDetectorRef) {
-
-
+  constructor(public speechService: SpeechService,
+              private cdRef: ChangeDetectorRef) {
   }
 
   ngOnInit() {
@@ -36,25 +33,10 @@ export class FabMenuComponent implements OnInit {
     });
 
     this.speechService.VoiceCommandActive$.subscribe(res => {
-      this.isVoiceCommandActive = res;
+
       this.cdRef.detectChanges();
 
-
-      //if (this.isVoiceCommandActive) {
-      ////  console.log('🎤 Comandi vocali attivati.');
-      ////  this.speechService.startListening((text) => {
-      ////    // Invia il messaggio appena viene riconosciuto il comando
-      ////    //this.sendVoiceMessage(text);
-      ////  });
-      //} else {
-      ////  console.log('⏹️ Comandi vocali disattivati.');
-      ////  this.speechService.stopListening();
-      //}
-
-
     });
-
-    
 
   }
 
@@ -64,9 +46,10 @@ export class FabMenuComponent implements OnInit {
   sendMessage() {
     if (this.newMessage.trim() !== '') {
       this.messages.push({ sender: 'You', text: this.newMessage });
-      this.newMessage = ''; // Resetta il campo di input
+      
       this.scrollToBottom(); // Scroll automatico
-      this.fakeAssistantReply(); // Simula una risposta dell'assistente
+      this.fakeAssistantReply(this.newMessage); // Simula una risposta dell'assistente
+      this.newMessage = ''; // Resetta il campo di input
     }
   }
 
@@ -74,16 +57,16 @@ export class FabMenuComponent implements OnInit {
   sendVoiceMessage(message: string) {
     if (message.trim() !== '') {
       this.messages.push({ sender: 'You', text: message });
-      this.newMessage = ''; // Resetta il campo di input
       this.scrollToBottom(); // Scroll automatico
-      this.fakeAssistantReply(); // Simula una risposta dell'assistente
+      this.fakeAssistantReply(message); // Simula una risposta dell'assistente
+      //this.newMessage = ''; // Resetta il campo di input
     }
   }
 
   // Simula una risposta automatica dell'assistente
-  fakeAssistantReply() {
+  fakeAssistantReply(myMessage:string) {
     setTimeout(() => {
-      this.messages.push({ sender: 'Assistant', text: 'Comando ricevuto!' });
+      this.messages.push({ sender: 'Assistant', text: 'Mi hai chiesto! ' + myMessage });
       this.cdRef.detectChanges();
       this.scrollToBottom(); // Scroll automatico dopo la risposta
     }, 100);
@@ -123,23 +106,8 @@ export class FabMenuComponent implements OnInit {
   // Gestione dell'attivazione/disattivazione dei comandi vocali
   toggleVoiceCommand() {
 
-    this.isVoiceCommandActive = !this.isVoiceCommandActive;
+    this.speechService.VoiceCommandActive = !this.speechService.VoiceCommandActive;
 
-    this.speechService.VoiceCommandActive = this.isVoiceCommandActive;
-
-
-    //this.isVoiceCommandActive = !this.isVoiceCommandActive;
-
-    //if (this.isVoiceCommandActive) {
-    //  console.log('🎤 Comandi vocali attivati.');
-    //  this.speechService.startListening((text) => {
-    //    // Invia il messaggio appena viene riconosciuto il comando
-    //    //this.sendVoiceMessage(text);
-    //  });
-    //} else {
-    //  console.log('⏹️ Comandi vocali disattivati.');
-    //  this.speechService.stopListening();
-    //}
   }
 
 

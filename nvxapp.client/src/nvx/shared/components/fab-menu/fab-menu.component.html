@@ -47,9 +47,9 @@
 
 
             <ion-item *ngIf="modalType=='vocal'">
-              <ion-label>{{ isVoiceCommandActive ? 'Comandi vocali attivi' : 'Comandi vocali disattivati' }}</ion-label>
-              <ion-button shape="round" (click)="toggleVoiceCommand()" size="default" color="{{ isVoiceCommandActive ? 'success' : 'medium' }}">
-                <ion-icon [name]="isVoiceCommandActive ? 'mic' : 'mic-off'" slot="icon-only"></ion-icon>
+              <ion-label>{{ speechService.VoiceCommandActive ? 'Comandi vocali attivi' : 'Comandi vocali disattivati' }}</ion-label>
+              <ion-button shape="round" (click)="toggleVoiceCommand()" size="default" color="{{ speechService.VoiceCommandActive ? 'success' : 'medium' }}">
+                <ion-icon [name]="speechService.VoiceCommandActive ? 'mic' : 'mic-off'" slot="icon-only"></ion-icon>
               </ion-button>
             </ion-item>
 
