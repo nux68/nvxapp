@@ -3814,3 +3814,228 @@ POSITION: 346
 2025-03-10 18:25:11.309 [INF] Call: <SendMessage>b__0, GUID: "b0bb55d9-ae11-47a0-b14e-ed4aacab670a", param: {"Data":{"Request":"123123123"}}
 2025-03-10 18:25:16.328 [INF] Call: <SendMessage>b__0, GUID: "50d29f70-8972-4bb4-b24d-4d48a1be8030", param: {"Data":{"Request":"1231231233"}}
 2025-03-10 18:25:20.881 [INF] Call: <SendMessage>b__0, GUID: "cfc42ceb-d942-487c-bc95-e1be10df491c", param: {"Data":{"Request":"123123123"}}
+2025-03-11 10:15:49.307 [INF] Call: <SendMessage>b__0, GUID: "3f2ab9f6-20c3-4eae-b73a-d277bb4a8a36", param: {"Data":{"Request":"9:00"}}
+2025-03-11 10:18:10.355 [INF] Call: <SendMessage>b__0, GUID: "0881116d-86a6-46c4-a616-12f31643b27e", param: {"Data":{"Request":"9:00"}}
+2025-03-11 10:21:38.123 [INF] Call: <SendMessage>b__0, GUID: "0d8ef457-51d8-42a8-b71e-406a182eb865", param: {"Data":{"Request":"che tempo fa oggi?"}}
+2025-03-11 10:31:06.623 [INF] Call: <SendMessage>b__0, GUID: "42110c0a-836d-4551-977a-c6c8d1da5967", param: {"Data":{"Request":"ciao"}}
+2025-03-11 10:32:49.493 [ERR] END Call(ExecuteAction ERR): <SendMessage>b__0, GUID: "42110c0a-836d-4551-977a-c6c8d1da5967", result: ChatAIService - The request was canceled due to the configured HttpClient.Timeout of 100 seconds elapsing. INNER: The operation was canceled.
+System.Threading.Tasks.TaskCanceledException: The request was canceled due to the configured HttpClient.Timeout of 100 seconds elapsing.
+ ---> System.TimeoutException: The operation was canceled.
+ ---> System.Threading.Tasks.TaskCanceledException: The operation was canceled.
+ ---> System.IO.IOException: Unable to read data from the transport connection: Operazione di I/O terminata a causa dell'uscita dal thread oppure della richiesta di un'applicazione..
+ ---> System.Net.Sockets.SocketException (995): Operazione di I/O terminata a causa dell'uscita dal thread oppure della richiesta di un'applicazione.
+   --- End of inner exception stack trace ---
+   at System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs.ThrowException(SocketError error, CancellationToken cancellationToken)
+   at System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs.System.Threading.Tasks.Sources.IValueTaskSource<System.Int32>.GetResult(Int16 token)
+   at System.Net.Http.HttpConnection.InitialFillAsync(Boolean async)
+   at System.Net.Http.HttpConnection.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   --- End of inner exception stack trace ---
+   at System.Net.Http.HttpConnection.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.HttpConnectionPool.SendWithVersionDetectionAndRetryAsync(HttpRequestMessage request, Boolean async, Boolean doRequestAuth, CancellationToken cancellationToken)
+   at System.Net.Http.DiagnosticsHandler.SendAsyncCore(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.RedirectHandler.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.HttpClient.<SendAsync>g__Core|83_0(HttpRequestMessage request, HttpCompletionOption completionOption, CancellationTokenSource cts, Boolean disposeCts, CancellationTokenSource pendingRequestsCts, CancellationToken originalCancellationToken)
+   --- End of inner exception stack trace ---
+   --- End of inner exception stack trace ---
+   at System.Net.Http.HttpClient.HandleFailure(Exception e, Boolean telemetryStarted, HttpResponseMessage response, CancellationTokenSource cts, CancellationToken cancellationToken, CancellationTokenSource pendingRequestsCts)
+   at System.Net.Http.HttpClient.<SendAsync>g__Core|83_0(HttpRequestMessage request, HttpCompletionOption completionOption, CancellationTokenSource cts, Boolean disposeCts, CancellationTokenSource pendingRequestsCts, CancellationToken originalCancellationToken)
+   at nvxapp.server.service.ClientServer_Service.ChatAI.ChatAIService.<>c__DisplayClass1_0.<<SendMessage>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at nvxapp.server.service.Infrastructure.ServiceBase.ExecuteAction[T,P1](P1 p1, Func`1 function, Boolean isSubProcess)
+2025-03-11 10:32:55.954 [ERR] ChatAIService - The request was canceled due to the configured HttpClient.Timeout of 100 seconds elapsing. INNER: The operation was canceled.
+2025-03-11 10:33:01.351 [INF] Call: <SendMessage>b__0, GUID: "ec29f21b-3430-41bf-9b12-1f42fcd69b85", param: {"Data":{"Request":"ciao"}}
+2025-03-11 10:34:43.964 [ERR] END Call(ExecuteAction ERR): <SendMessage>b__0, GUID: "ec29f21b-3430-41bf-9b12-1f42fcd69b85", result: ChatAIService - The request was canceled due to the configured HttpClient.Timeout of 100 seconds elapsing. INNER: The operation was canceled.
+System.Threading.Tasks.TaskCanceledException: The request was canceled due to the configured HttpClient.Timeout of 100 seconds elapsing.
+ ---> System.TimeoutException: The operation was canceled.
+ ---> System.Threading.Tasks.TaskCanceledException: The operation was canceled.
+ ---> System.IO.IOException: Unable to read data from the transport connection: Operazione di I/O terminata a causa dell'uscita dal thread oppure della richiesta di un'applicazione..
+ ---> System.Net.Sockets.SocketException (995): Operazione di I/O terminata a causa dell'uscita dal thread oppure della richiesta di un'applicazione.
+   --- End of inner exception stack trace ---
+   at System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs.ThrowException(SocketError error, CancellationToken cancellationToken)
+   at System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs.System.Threading.Tasks.Sources.IValueTaskSource<System.Int32>.GetResult(Int16 token)
+   at System.Net.Http.HttpConnection.InitialFillAsync(Boolean async)
+   at System.Net.Http.HttpConnection.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   --- End of inner exception stack trace ---
+   at System.Net.Http.HttpConnection.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.HttpConnectionPool.SendWithVersionDetectionAndRetryAsync(HttpRequestMessage request, Boolean async, Boolean doRequestAuth, CancellationToken cancellationToken)
+   at System.Net.Http.DiagnosticsHandler.SendAsyncCore(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.RedirectHandler.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.HttpClient.<SendAsync>g__Core|83_0(HttpRequestMessage request, HttpCompletionOption completionOption, CancellationTokenSource cts, Boolean disposeCts, CancellationTokenSource pendingRequestsCts, CancellationToken originalCancellationToken)
+   --- End of inner exception stack trace ---
+   --- End of inner exception stack trace ---
+   at System.Net.Http.HttpClient.HandleFailure(Exception e, Boolean telemetryStarted, HttpResponseMessage response, CancellationTokenSource cts, CancellationToken cancellationToken, CancellationTokenSource pendingRequestsCts)
+   at System.Net.Http.HttpClient.<SendAsync>g__Core|83_0(HttpRequestMessage request, HttpCompletionOption completionOption, CancellationTokenSource cts, Boolean disposeCts, CancellationTokenSource pendingRequestsCts, CancellationToken originalCancellationToken)
+   at nvxapp.server.service.ClientServer_Service.ChatAI.ChatAIService.<>c__DisplayClass1_0.<<SendMessage>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at nvxapp.server.service.Infrastructure.ServiceBase.ExecuteAction[T,P1](P1 p1, Func`1 function, Boolean isSubProcess)
+2025-03-11 10:35:06.881 [ERR] ChatAIService - The request was canceled due to the configured HttpClient.Timeout of 100 seconds elapsing. INNER: The operation was canceled.
+2025-03-11 10:38:47.725 [INF] Call: <SendMessage>b__0, GUID: "f2021121-4342-4405-a7e5-6d660ef25026", param: {"Data":{"Request":"ciao"}}
+2025-03-11 10:44:29.599 [INF] Call: <SendMessage>b__0, GUID: "e1c5c333-0016-4279-acfd-95d1e0f9c3a5", param: {"Data":{"Request":"1231233"}}
+2025-03-11 10:45:51.171 [INF] Call: <SendMessage>b__0, GUID: "fbdc4c98-de1b-4b14-9de4-e793bf8a1040", param: {"Data":{"Request":"333"}}
+2025-03-11 10:45:55.272 [INF] Call: <SendMessage>b__0, GUID: "88c501aa-7f56-4723-902d-a0c5aae619ab", param: {"Data":{"Request":"12323"}}
+2025-03-11 10:45:58.522 [INF] Call: <SendMessage>b__0, GUID: "999f668e-8bd6-4bb7-9611-f103c21c5ff4", param: {"Data":{"Request":"123123123"}}
+2025-03-11 10:46:01.721 [INF] Call: <SendMessage>b__0, GUID: "2ecfd896-c3fb-4b47-b32a-90690a50ce99", param: {"Data":{"Request":"141324234"}}
+2025-03-11 10:46:04.828 [INF] Call: <SendMessage>b__0, GUID: "580b442c-7eb5-4747-924a-9fd6cbdeb8fc", param: {"Data":{"Request":"1234123434"}}
+2025-03-11 10:46:08.490 [INF] Call: <SendMessage>b__0, GUID: "106db10d-e69e-4571-abde-3c8af5030c5b", param: {"Data":{"Request":"1234314"}}
+2025-03-11 10:46:11.785 [INF] Call: <SendMessage>b__0, GUID: "d6df346d-22c2-43c0-9db2-b462c019a149", param: {"Data":{"Request":"1324324123"}}
+2025-03-11 10:46:15.084 [INF] Call: <SendMessage>b__0, GUID: "9fb9262a-1596-4b16-942a-7e468b99415d", param: {"Data":{"Request":"141244"}}
+2025-03-11 10:46:18.879 [INF] Call: <SendMessage>b__0, GUID: "cf59b15b-8713-4393-8b22-1a1d9852ab05", param: {"Data":{"Request":"1243123434"}}
+2025-03-11 10:48:53.057 [INF] Call: <SendMessage>b__0, GUID: "65d5d6f3-be19-4b98-9deb-c37ecb3bf2a1", param: {"Data":{"Request":"123123123"}}
+2025-03-11 10:48:57.420 [INF] Call: <SendMessage>b__0, GUID: "3be16e78-2024-427d-8dbf-cdbc36914902", param: {"Data":{"Request":"324234234"}}
+2025-03-11 10:49:02.114 [INF] Call: <SendMessage>b__0, GUID: "a763f5d2-c76f-4868-b025-d78ce4d7ca11", param: {"Data":{"Request":"dfsg fdsg fdsg fdsg fdg fdsg"}}
+2025-03-11 10:49:23.310 [INF] Call: <SendMessage>b__0, GUID: "9f66eb55-d649-438d-8e8e-3b4263affa99", param: {"Data":{"Request":"però che mi arrivi direttamente dal cliente che me l'ha regalato"}}
+2025-03-11 10:49:28.848 [INF] Call: <SendMessage>b__0, GUID: "d58d1b38-d949-4f35-b043-79ff47d0b252", param: {"Data":{"Request":"stasera no"}}
+2025-03-11 10:49:44.775 [INF] Call: <SendMessage>b__0, GUID: "397192a4-d9ef-48cd-8f2c-50cd64fbe54c", param: {"Data":{"Request":"123123"}}
+2025-03-11 10:52:24.428 [INF] Call: <SendMessage>b__0, GUID: "48ecb50e-20a2-498c-9e16-0bf9dc7e280a", param: {"Data":{"Request":"213123123"}}
+2025-03-11 10:55:30.191 [INF] Call: <SendMessage>b__0, GUID: "9936a023-60ac-4ca9-aa29-54ed47c03500", param: {"Data":{"Request":"2133"}}
+2025-03-11 10:57:11.353 [ERR] END Call(ExecuteAction ERR): <SendMessage>b__0, GUID: "9936a023-60ac-4ca9-aa29-54ed47c03500", result: ChatAIService - The request was canceled due to the configured HttpClient.Timeout of 100 seconds elapsing. INNER: The operation was canceled.
+System.Threading.Tasks.TaskCanceledException: The request was canceled due to the configured HttpClient.Timeout of 100 seconds elapsing.
+ ---> System.TimeoutException: The operation was canceled.
+ ---> System.Threading.Tasks.TaskCanceledException: The operation was canceled.
+ ---> System.IO.IOException: Unable to read data from the transport connection: Operazione di I/O terminata a causa dell'uscita dal thread oppure della richiesta di un'applicazione..
+ ---> System.Net.Sockets.SocketException (995): Operazione di I/O terminata a causa dell'uscita dal thread oppure della richiesta di un'applicazione.
+   --- End of inner exception stack trace ---
+   at System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs.ThrowException(SocketError error, CancellationToken cancellationToken)
+   at System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs.System.Threading.Tasks.Sources.IValueTaskSource<System.Int32>.GetResult(Int16 token)
+   at System.Net.Http.HttpConnection.InitialFillAsync(Boolean async)
+   at System.Net.Http.HttpConnection.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   --- End of inner exception stack trace ---
+   at System.Net.Http.HttpConnection.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.HttpConnectionPool.SendWithVersionDetectionAndRetryAsync(HttpRequestMessage request, Boolean async, Boolean doRequestAuth, CancellationToken cancellationToken)
+   at System.Net.Http.DiagnosticsHandler.SendAsyncCore(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.RedirectHandler.SendAsync(HttpRequestMessage request, Boolean async, CancellationToken cancellationToken)
+   at System.Net.Http.HttpClient.<SendAsync>g__Core|83_0(HttpRequestMessage request, HttpCompletionOption completionOption, CancellationTokenSource cts, Boolean disposeCts, CancellationTokenSource pendingRequestsCts, CancellationToken originalCancellationToken)
+   --- End of inner exception stack trace ---
+   --- End of inner exception stack trace ---
+   at System.Net.Http.HttpClient.HandleFailure(Exception e, Boolean telemetryStarted, HttpResponseMessage response, CancellationTokenSource cts, CancellationToken cancellationToken, CancellationTokenSource pendingRequestsCts)
+   at System.Net.Http.HttpClient.<SendAsync>g__Core|83_0(HttpRequestMessage request, HttpCompletionOption completionOption, CancellationTokenSource cts, Boolean disposeCts, CancellationTokenSource pendingRequestsCts, CancellationToken originalCancellationToken)
+   at nvxapp.server.service.ClientServer_Service.ChatAI.ChatAIService.<>c__DisplayClass1_0.<<SendMessage>b__0>d.MoveNext() in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\ClientServer-Service\ChatAI\ChatAIService.cs:line 55
+--- End of stack trace from previous location ---
+   at nvxapp.server.service.Infrastructure.ServiceBase.ExecuteAction[T,P1](P1 p1, Func`1 function, Boolean isSubProcess) in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\Infrastructure\ServiceBase.cs:line 73
+2025-03-11 10:57:14.063 [ERR] ChatAIService - The request was canceled due to the configured HttpClient.Timeout of 100 seconds elapsing. INNER: The operation was canceled.
+2025-03-11 10:58:21.949 [INF] Call: <SendMessage>b__0, GUID: "30be0a69-0ed3-431b-8263-3db0c7d5b15d", param: {"Data":{"Request":"ciao"}}
+2025-03-11 11:01:34.054 [INF] Call: <SendMessage>b__0, GUID: "bbaeb8c5-17d3-4547-bec6-503d7a0360c1", param: {"Data":{"Request":"ciao"}}
+2025-03-11 11:04:25.029 [INF] Call: <SendMessage>b__0, GUID: "02c2a22a-18ff-4cba-95ba-9bce3e174f62", param: {"Data":{"Request":"dammi il formato json di una timbratura d'entrata di mario rossi alle 9:00"}}
+2025-03-11 11:40:10.265 [INF] Call: <SendMessage>b__0, GUID: "153aecf6-a563-4d4c-9cdb-4946ec6e7bf7", param: {"Data":{"Request":"timbratura 9:00 per mario rossi"}}
+2025-03-11 11:41:02.808 [ERR] END Call(ExecuteAction ERR): <SendMessage>b__0, GUID: "153aecf6-a563-4d4c-9cdb-4946ec6e7bf7", result: ChatAIService - 'I' is an invalid start of a value. Path: $ | LineNumber: 0 | BytePositionInLine: 0. INNER: 'I' is an invalid start of a value. LineNumber: 0 | BytePositionInLine: 0.
+System.Text.Json.JsonException: 'I' is an invalid start of a value. Path: $ | LineNumber: 0 | BytePositionInLine: 0.
+ ---> System.Text.Json.JsonReaderException: 'I' is an invalid start of a value. LineNumber: 0 | BytePositionInLine: 0.
+   at System.Text.Json.ThrowHelper.ThrowJsonReaderException(Utf8JsonReader& json, ExceptionResource resource, Byte nextByte, ReadOnlySpan`1 bytes)
+   at System.Text.Json.Utf8JsonReader.ConsumeValue(Byte marker)
+   at System.Text.Json.Utf8JsonReader.ReadFirstToken(Byte first)
+   at System.Text.Json.Utf8JsonReader.ReadSingleSegment()
+   at System.Text.Json.Utf8JsonReader.Read()
+   at System.Text.Json.Serialization.JsonConverter`1.ReadCore(Utf8JsonReader& reader, T& value, JsonSerializerOptions options, ReadStack& state)
+   --- End of inner exception stack trace ---
+   at System.Text.Json.ThrowHelper.ReThrowWithPath(ReadStack& state, JsonReaderException ex)
+   at System.Text.Json.Serialization.JsonConverter`1.ReadCore(Utf8JsonReader& reader, T& value, JsonSerializerOptions options, ReadStack& state)
+   at System.Text.Json.Serialization.Metadata.JsonTypeInfo`1.Deserialize(Utf8JsonReader& reader, ReadStack& state)
+   at System.Text.Json.JsonSerializer.ReadFromSpan[TValue](ReadOnlySpan`1 utf8Json, JsonTypeInfo`1 jsonTypeInfo, Nullable`1 actualByteCount)
+   at System.Text.Json.JsonSerializer.ReadFromSpan[TValue](ReadOnlySpan`1 json, JsonTypeInfo`1 jsonTypeInfo)
+   at System.Text.Json.JsonSerializer.Deserialize[TValue](String json, JsonSerializerOptions options)
+   at nvxapp.server.service.ClientServer_Service.ChatAI.ChatAIService.<>c__DisplayClass1_0.<<SendMessage>b__0>d.MoveNext() in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\ClientServer-Service\ChatAI\ChatAIService.cs:line 65
+--- End of stack trace from previous location ---
+   at nvxapp.server.service.Infrastructure.ServiceBase.ExecuteAction[T,P1](P1 p1, Func`1 function, Boolean isSubProcess) in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\Infrastructure\ServiceBase.cs:line 73
+2025-03-11 11:41:17.952 [ERR] ChatAIService - 'I' is an invalid start of a value. Path: $ | LineNumber: 0 | BytePositionInLine: 0. INNER: 'I' is an invalid start of a value. LineNumber: 0 | BytePositionInLine: 0.
+2025-03-11 11:41:35.689 [INF] Call: <SendMessage>b__0, GUID: "25408994-d1b5-4ed6-ba08-0baa8d57c4f0", param: {"Data":{"Request":"timbratura 9:00 per mario rossi"}}
+2025-03-11 11:43:09.823 [ERR] END Call(ExecuteAction ERR): <SendMessage>b__0, GUID: "25408994-d1b5-4ed6-ba08-0baa8d57c4f0", result: ChatAIService - 'I' is an invalid start of a value. Path: $ | LineNumber: 0 | BytePositionInLine: 0. INNER: 'I' is an invalid start of a value. LineNumber: 0 | BytePositionInLine: 0.
+System.Text.Json.JsonException: 'I' is an invalid start of a value. Path: $ | LineNumber: 0 | BytePositionInLine: 0.
+ ---> System.Text.Json.JsonReaderException: 'I' is an invalid start of a value. LineNumber: 0 | BytePositionInLine: 0.
+   at System.Text.Json.ThrowHelper.ThrowJsonReaderException(Utf8JsonReader& json, ExceptionResource resource, Byte nextByte, ReadOnlySpan`1 bytes)
+   at System.Text.Json.Utf8JsonReader.ConsumeValue(Byte marker)
+   at System.Text.Json.Utf8JsonReader.ReadFirstToken(Byte first)
+   at System.Text.Json.Utf8JsonReader.ReadSingleSegment()
+   at System.Text.Json.Utf8JsonReader.Read()
+   at System.Text.Json.Serialization.JsonConverter`1.ReadCore(Utf8JsonReader& reader, T& value, JsonSerializerOptions options, ReadStack& state)
+   --- End of inner exception stack trace ---
+   at System.Text.Json.ThrowHelper.ReThrowWithPath(ReadStack& state, JsonReaderException ex)
+   at System.Text.Json.Serialization.JsonConverter`1.ReadCore(Utf8JsonReader& reader, T& value, JsonSerializerOptions options, ReadStack& state)
+   at System.Text.Json.Serialization.Metadata.JsonTypeInfo`1.Deserialize(Utf8JsonReader& reader, ReadStack& state)
+   at System.Text.Json.JsonSerializer.ReadFromSpan[TValue](ReadOnlySpan`1 utf8Json, JsonTypeInfo`1 jsonTypeInfo, Nullable`1 actualByteCount)
+   at System.Text.Json.JsonSerializer.ReadFromSpan[TValue](ReadOnlySpan`1 json, JsonTypeInfo`1 jsonTypeInfo)
+   at System.Text.Json.JsonSerializer.Deserialize[TValue](String json, JsonSerializerOptions options)
+   at nvxapp.server.service.ClientServer_Service.ChatAI.ChatAIService.<>c__DisplayClass1_0.<<SendMessage>b__0>d.MoveNext() in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\ClientServer-Service\ChatAI\ChatAIService.cs:line 65
+--- End of stack trace from previous location ---
+   at nvxapp.server.service.Infrastructure.ServiceBase.ExecuteAction[T,P1](P1 p1, Func`1 function, Boolean isSubProcess) in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\Infrastructure\ServiceBase.cs:line 73
+2025-03-11 11:48:08.593 [ERR] ChatAIService - 'I' is an invalid start of a value. Path: $ | LineNumber: 0 | BytePositionInLine: 0. INNER: 'I' is an invalid start of a value. LineNumber: 0 | BytePositionInLine: 0.
+2025-03-11 11:52:27.103 [INF] Call: <SendMessage>b__0, GUID: "9c8650c9-5e6c-4ad9-b673-ddd2c7d70aca", param: {"Data":{"Request":"giovanni garibaldi entrata 10:15"}}
+2025-03-11 11:56:08.439 [INF] Call: <SendMessage>b__0, GUID: "a9c01029-d869-47b8-923d-5c1470076593", param: {"Data":{"Request":"Giuseppe garibaldi entrata 9:15"}}
+2025-03-11 11:57:09.242 [INF] Call: <SendMessage>b__0, GUID: "ce95647d-a34b-4126-bf6f-069bb3121aae", param: {"Data":{"Request":"filippo mattarella entra elle 9:00 ed esce alle 22:15"}}
+2025-03-11 11:57:48.819 [ERR] END Call(ExecuteAction ERR): <SendMessage>b__0, GUID: "ce95647d-a34b-4126-bf6f-069bb3121aae", result: ChatAIService - ',' is invalid after a single JSON value. Expected end of data. Path: $ | LineNumber: 5 | BytePositionInLine: 1. INNER: ',' is invalid after a single JSON value. Expected end of data. LineNumber: 5 | BytePositionInLine: 1.
+System.Text.Json.JsonException: ',' is invalid after a single JSON value. Expected end of data. Path: $ | LineNumber: 5 | BytePositionInLine: 1.
+ ---> System.Text.Json.JsonReaderException: ',' is invalid after a single JSON value. Expected end of data. LineNumber: 5 | BytePositionInLine: 1.
+   at System.Text.Json.ThrowHelper.ThrowJsonReaderException(Utf8JsonReader& json, ExceptionResource resource, Byte nextByte, ReadOnlySpan`1 bytes)
+   at System.Text.Json.Utf8JsonReader.ConsumeNextToken(Byte marker)
+   at System.Text.Json.Utf8JsonReader.ReadSingleSegment()
+   at System.Text.Json.Utf8JsonReader.Read()
+   at System.Text.Json.Serialization.JsonConverter`1.ReadCore(Utf8JsonReader& reader, T& value, JsonSerializerOptions options, ReadStack& state)
+   --- End of inner exception stack trace ---
+   at System.Text.Json.ThrowHelper.ReThrowWithPath(ReadStack& state, JsonReaderException ex)
+   at System.Text.Json.Serialization.JsonConverter`1.ReadCore(Utf8JsonReader& reader, T& value, JsonSerializerOptions options, ReadStack& state)
+   at System.Text.Json.Serialization.Metadata.JsonTypeInfo`1.Deserialize(Utf8JsonReader& reader, ReadStack& state)
+   at System.Text.Json.JsonSerializer.ReadFromSpan[TValue](ReadOnlySpan`1 utf8Json, JsonTypeInfo`1 jsonTypeInfo, Nullable`1 actualByteCount)
+   at System.Text.Json.JsonSerializer.ReadFromSpan[TValue](ReadOnlySpan`1 json, JsonTypeInfo`1 jsonTypeInfo)
+   at System.Text.Json.JsonSerializer.Deserialize[TValue](String json, JsonSerializerOptions options)
+   at nvxapp.server.service.ClientServer_Service.ChatAI.ChatAIService.<>c__DisplayClass1_0.<<SendMessage>b__0>d.MoveNext() in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\ClientServer-Service\ChatAI\ChatAIService.cs:line 83
+--- End of stack trace from previous location ---
+   at nvxapp.server.service.Infrastructure.ServiceBase.ExecuteAction[T,P1](P1 p1, Func`1 function, Boolean isSubProcess) in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\Infrastructure\ServiceBase.cs:line 73
+2025-03-11 11:57:56.212 [ERR] ChatAIService - ',' is invalid after a single JSON value. Expected end of data. Path: $ | LineNumber: 5 | BytePositionInLine: 1. INNER: ',' is invalid after a single JSON value. Expected end of data. LineNumber: 5 | BytePositionInLine: 1.
+2025-03-11 11:58:09.207 [INF] Call: <SendMessage>b__0, GUID: "bac9c24f-7757-4684-84ca-33e50fa1c982", param: {"Data":{"Request":"filippo mattarella entra elle 9:00"}}
+2025-03-11 11:58:24.670 [ERR] END Call(ExecuteAction ERR): <SendMessage>b__0, GUID: "bac9c24f-7757-4684-84ca-33e50fa1c982", result: ChatAIService - Expected depth to be zero at the end of the JSON payload. There is an open JSON object or array that should be closed. Path: $ | LineNumber: 4 | BytePositionInLine: 36. INNER: Expected depth to be zero at the end of the JSON payload. There is an open JSON object or array that should be closed. LineNumber: 4 | BytePositionInLine: 36.
+System.Text.Json.JsonException: Expected depth to be zero at the end of the JSON payload. There is an open JSON object or array that should be closed. Path: $ | LineNumber: 4 | BytePositionInLine: 36.
+ ---> System.Text.Json.JsonReaderException: Expected depth to be zero at the end of the JSON payload. There is an open JSON object or array that should be closed. LineNumber: 4 | BytePositionInLine: 36.
+   at System.Text.Json.ThrowHelper.ThrowJsonReaderException(Utf8JsonReader& json, ExceptionResource resource, Byte nextByte, ReadOnlySpan`1 bytes)
+   at System.Text.Json.Utf8JsonReader.ReadSingleSegment()
+   at System.Text.Json.Utf8JsonReader.Read()
+   at System.Text.Json.Utf8JsonReader.TrySkip()
+   at System.Text.Json.JsonDocument.TryParseValue(Utf8JsonReader& reader, JsonDocument& document, Boolean shouldThrow, Boolean useArrayPools)
+   at System.Text.Json.Serialization.Converters.DefaultObjectConverter.OnTryRead(Utf8JsonReader& reader, Type typeToConvert, JsonSerializerOptions options, ReadStack& state, Object& value)
+   at System.Text.Json.Serialization.JsonConverter`1.TryRead(Utf8JsonReader& reader, Type typeToConvert, JsonSerializerOptions options, ReadStack& state, T& value, Boolean& isPopulatedValue)
+   at System.Text.Json.Serialization.JsonConverter`1.ReadCore(Utf8JsonReader& reader, T& value, JsonSerializerOptions options, ReadStack& state)
+   --- End of inner exception stack trace ---
+   at System.Text.Json.ThrowHelper.ReThrowWithPath(ReadStack& state, JsonReaderException ex)
+   at System.Text.Json.Serialization.JsonConverter`1.ReadCore(Utf8JsonReader& reader, T& value, JsonSerializerOptions options, ReadStack& state)
+   at System.Text.Json.Serialization.Metadata.JsonTypeInfo`1.Deserialize(Utf8JsonReader& reader, ReadStack& state)
+   at System.Text.Json.JsonSerializer.ReadFromSpan[TValue](ReadOnlySpan`1 utf8Json, JsonTypeInfo`1 jsonTypeInfo, Nullable`1 actualByteCount)
+   at System.Text.Json.JsonSerializer.ReadFromSpan[TValue](ReadOnlySpan`1 json, JsonTypeInfo`1 jsonTypeInfo)
+   at System.Text.Json.JsonSerializer.Deserialize[TValue](String json, JsonSerializerOptions options)
+   at nvxapp.server.service.ClientServer_Service.ChatAI.ChatAIService.<>c__DisplayClass1_0.<<SendMessage>b__0>d.MoveNext() in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\ClientServer-Service\ChatAI\ChatAIService.cs:line 83
+--- End of stack trace from previous location ---
+   at nvxapp.server.service.Infrastructure.ServiceBase.ExecuteAction[T,P1](P1 p1, Func`1 function, Boolean isSubProcess) in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\Infrastructure\ServiceBase.cs:line 73
+2025-03-11 11:58:27.479 [ERR] ChatAIService - Expected depth to be zero at the end of the JSON payload. There is an open JSON object or array that should be closed. Path: $ | LineNumber: 4 | BytePositionInLine: 36. INNER: Expected depth to be zero at the end of the JSON payload. There is an open JSON object or array that should be closed. LineNumber: 4 | BytePositionInLine: 36.
+2025-03-11 11:58:37.288 [INF] Call: <SendMessage>b__0, GUID: "e98dabb4-dd6b-4126-a610-9236e4e20ed1", param: {"Data":{"Request":"filippo mattarella entra alle 9:00"}}
+2025-03-11 11:58:53.912 [ERR] END Call(ExecuteAction ERR): <SendMessage>b__0, GUID: "e98dabb4-dd6b-4126-a610-9236e4e20ed1", result: ChatAIService - Expected depth to be zero at the end of the JSON payload. There is an open JSON object or array that should be closed. Path: $ | LineNumber: 4 | BytePositionInLine: 36. INNER: Expected depth to be zero at the end of the JSON payload. There is an open JSON object or array that should be closed. LineNumber: 4 | BytePositionInLine: 36.
+System.Text.Json.JsonException: Expected depth to be zero at the end of the JSON payload. There is an open JSON object or array that should be closed. Path: $ | LineNumber: 4 | BytePositionInLine: 36.
+ ---> System.Text.Json.JsonReaderException: Expected depth to be zero at the end of the JSON payload. There is an open JSON object or array that should be closed. LineNumber: 4 | BytePositionInLine: 36.
+   at System.Text.Json.ThrowHelper.ThrowJsonReaderException(Utf8JsonReader& json, ExceptionResource resource, Byte nextByte, ReadOnlySpan`1 bytes)
+   at System.Text.Json.Utf8JsonReader.ReadSingleSegment()
+   at System.Text.Json.Utf8JsonReader.TrySkip()
+   at System.Text.Json.JsonDocument.TryParseValue(Utf8JsonReader& reader, JsonDocument& document, Boolean shouldThrow, Boolean useArrayPools)
+   at System.Text.Json.Serialization.Converters.DefaultObjectConverter.OnTryRead(Utf8JsonReader& reader, Type typeToConvert, JsonSerializerOptions options, ReadStack& state, Object& value)
+   at System.Text.Json.Serialization.JsonConverter`1.TryRead(Utf8JsonReader& reader, Type typeToConvert, JsonSerializerOptions options, ReadStack& state, T& value, Boolean& isPopulatedValue)
+   at System.Text.Json.Serialization.JsonConverter`1.ReadCore(Utf8JsonReader& reader, T& value, JsonSerializerOptions options, ReadStack& state)
+   --- End of inner exception stack trace ---
+   at System.Text.Json.ThrowHelper.ReThrowWithPath(ReadStack& state, JsonReaderException ex)
+   at System.Text.Json.Serialization.JsonConverter`1.ReadCore(Utf8JsonReader& reader, T& value, JsonSerializerOptions options, ReadStack& state)
+   at System.Text.Json.Serialization.Metadata.JsonTypeInfo`1.Deserialize(Utf8JsonReader& reader, ReadStack& state)
+   at System.Text.Json.JsonSerializer.ReadFromSpan[TValue](ReadOnlySpan`1 utf8Json, JsonTypeInfo`1 jsonTypeInfo, Nullable`1 actualByteCount)
+   at System.Text.Json.JsonSerializer.ReadFromSpan[TValue](ReadOnlySpan`1 json, JsonTypeInfo`1 jsonTypeInfo)
+   at System.Text.Json.JsonSerializer.Deserialize[TValue](String json, JsonSerializerOptions options)
+   at nvxapp.server.service.ClientServer_Service.ChatAI.ChatAIService.<>c__DisplayClass1_0.<<SendMessage>b__0>d.MoveNext() in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\ClientServer-Service\ChatAI\ChatAIService.cs:line 83
+--- End of stack trace from previous location ---
+   at nvxapp.server.service.Infrastructure.ServiceBase.ExecuteAction[T,P1](P1 p1, Func`1 function, Boolean isSubProcess) in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\Infrastructure\ServiceBase.cs:line 73
+2025-03-11 11:58:56.951 [ERR] ChatAIService - Expected depth to be zero at the end of the JSON payload. There is an open JSON object or array that should be closed. Path: $ | LineNumber: 4 | BytePositionInLine: 36. INNER: Expected depth to be zero at the end of the JSON payload. There is an open JSON object or array that should be closed. LineNumber: 4 | BytePositionInLine: 36.
+2025-03-11 14:17:58.445 [INF] Call: <SendMessage>b__0, GUID: "5c0e41a2-2184-4ec5-a159-f34a332c95c8", param: {"Data":{"Request":"filippo mattarella entra alle 9:00"}}
+2025-03-11 14:18:01.953 [INF] Call: <SendMessage>b__0, GUID: "55586804-e4d4-4567-9473-02373f416606", param: {"Data":{"Request":"12323"}}
+2025-03-11 14:18:05.258 [INF] Call: <SendMessage>b__0, GUID: "bc6c54a9-aee9-4d25-8b34-e619e071bdf3", param: {"Data":{"Request":"12323"}}
+2025-03-11 14:33:34.658 [INF] Call: <SendMessage>b__0, GUID: "e702fac4-c51d-4568-91f2-db595a406fa6", param: {"Data":{"Request":"1233"}}
+2025-03-11 14:33:52.269 [INF] Call: <SendMessage>b__0, GUID: "62d200bc-c004-46b8-833b-2e4374d11466", param: {"Data":{"Request":"kkk"}}
+2025-03-11 14:35:22.911 [INF] Call: <SendMessage>b__0, GUID: "684fd7d7-6fe3-43e0-9f5d-8a26f07d64e4", param: {"Data":{"Request":"12313"}}
+2025-03-11 14:36:36.559 [INF] Call: <SendMessage>b__0, GUID: "b8683a39-e7ac-4df5-91ca-103664f3d661", param: {"Data":{"Request":"123123"}}
+2025-03-11 14:40:39.276 [INF] Call: <SendMessage>b__0, GUID: "fc1df3c2-eacb-4bde-95b2-6ef87b633c98", param: {"Data":{"Request":"213123"}}
+2025-03-11 14:40:57.203 [INF] Call: <SendMessage>b__0, GUID: "f95bf744-086d-4c45-bcc7-60adbfc7b04f", param: {"Data":{"Request":"jklkl"}}
+2025-03-11 14:43:12.627 [INF] Call: <SendMessage>b__0, GUID: "f8860180-8fbe-4460-b10d-bbd7a21ce088", param: {"Data":{"Request":"ddddd"}}
+2025-03-11 15:00:15.005 [INF] Call: <SendMessage>b__0, GUID: "3e1947aa-1900-47b7-b6d8-9daa9e400148", param: {"Data":{"Request":"2344"}}
+2025-03-11 15:33:28.001 [INF] Call: <SendMessage>b__0, GUID: "c519473f-42bb-40a2-b254-f354bd353f31", param: {"Data":{"Request":"11111"}}
+2025-03-11 16:01:34.056 [INF] Call: <SendMessage>b__0, GUID: "50b1a438-db87-4eae-a981-b14e73b2191f", param: {"Data":{"Request":"213123"}}
+2025-03-11 16:01:42.256 [INF] Call: <SendMessage>b__0, GUID: "c25511d9-f444-4d9b-8489-865c82d99399", param: {"Data":{"Request":"123123123"}}

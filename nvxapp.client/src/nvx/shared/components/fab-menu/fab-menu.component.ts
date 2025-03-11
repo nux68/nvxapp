@@ -16,8 +16,8 @@ export class FabMenuComponent implements OnInit {
   public newMessage: string = '';
   @ViewChild('chatContainer', { static: false }) chatContainer!: ElementRef;
   @ViewChild(IonContent, { static: false }) chatContent!: IonContent;
-
   @ViewChild('chatModal', { static: true }) chatModal!: IonModal;
+  public isChatLoading: boolean= false;
 
   isModalOpen = false; // Stato del modale
   modalType: string | null = null; // Tipo di modale (chat o altro)
@@ -55,13 +55,18 @@ export class FabMenuComponent implements OnInit {
       let request: GenericRequest<ChatAIInModel> = new GenericRequest<ChatAIInModel>(ChatAIInModel);
       request.data.request = this.newMessage;
 
-      this.chatAIService.SendMessage(request).subscribe(res => {
-
+      this.isChatLoading = true;
+      this.chatAIService.SendMessage(request).subscribe((res) => {
+        this.isChatLoading = false;
         this.scrollToBottom(); // Scroll automatico
-        this.fakeAssistantReply(res.data.responce); // Simula una risposta dell'assistente
+        this.AssistantReply(res.data.responce); // Simula una risposta dell'assistente
         this.newMessage = ''; // Resetta il campo di input
 
-      });
+      },
+        (error) => {
+        this.isChatLoading = false;
+      }
+      );
       
       
     }
@@ -76,19 +81,24 @@ export class FabMenuComponent implements OnInit {
       let request: GenericRequest<ChatAIInModel> = new GenericRequest<ChatAIInModel>(ChatAIInModel);
       request.data.request = message;
 
+      this.isChatLoading = true;
       this.chatAIService.SendMessage(request).subscribe(res => {
-
+        this.isChatLoading = false;
         this.scrollToBottom(); // Scroll automatico
-        this.fakeAssistantReply(message); // Simula una risposta dell'assistente
+        this.AssistantReply(message); // Simula una risposta dell'assistente
         //this.newMessage = ''; // Resetta il campo di input
 
-      });
+      },
+        (error) => {
+          this.isChatLoading = false;
+        }
+      );
       
     }
   }
 
   // Simula una risposta automatica dell'assistente
-  fakeAssistantReply(myMessage:string) {
+  AssistantReply(myMessage:string) {
     //setTimeout(() => {
       this.messages.push({ sender: 'Assistant', text: myMessage });
       this.cdRef.detectChanges();

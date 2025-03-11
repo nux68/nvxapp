@@ -31,7 +31,7 @@ namespace nvxapp.server.service.Infrastructure
         public TokenProperty? tokenProperty { get; set; } = null;
 
 #if DEBUG
-        public const int DelayAsyncMethod = 1000;
+        public const int DelayAsyncMethod = 10;
 #else
         public const int DelayAsyncMethod = 1;
 #endif
