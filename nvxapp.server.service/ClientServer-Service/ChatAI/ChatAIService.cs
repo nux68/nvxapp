@@ -15,9 +15,8 @@ using System;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
-//using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
-using Microsoft.ML;
-using Microsoft.ML.Data;
+//using Microsoft.ML;
+//using Microsoft.ML.Data;
 using System.Collections.Generic;
 using static System.Net.Mime.MediaTypeNames;
 
