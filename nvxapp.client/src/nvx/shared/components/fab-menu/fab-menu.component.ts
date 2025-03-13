@@ -62,10 +62,12 @@ export class FabMenuComponent implements OnInit {
         this.AssistantReply(res.data.responce); // Simula una risposta dell'assistente
         this.newMessage = ''; // Resetta il campo di input
 
-      },
-        (error) => {
-        this.isChatLoading = false;
       }
+        //,
+        //(error) => {
+        //this.isChatLoading = false;
+        //}
+
       );
       
       
@@ -88,10 +90,11 @@ export class FabMenuComponent implements OnInit {
         this.AssistantReply(message); // Simula una risposta dell'assistente
         //this.newMessage = ''; // Resetta il campo di input
 
-      },
-        (error) => {
-          this.isChatLoading = false;
-        }
+      }
+        //,
+        //(error) => {
+        //  this.isChatLoading = false;
+        //}
       );
       
     }

@@ -4039,3 +4039,249 @@ System.Text.Json.JsonException: Expected depth to be zero at the end of the JSON
 2025-03-11 15:33:28.001 [INF] Call: <SendMessage>b__0, GUID: "c519473f-42bb-40a2-b254-f354bd353f31", param: {"Data":{"Request":"11111"}}
 2025-03-11 16:01:34.056 [INF] Call: <SendMessage>b__0, GUID: "50b1a438-db87-4eae-a981-b14e73b2191f", param: {"Data":{"Request":"213123"}}
 2025-03-11 16:01:42.256 [INF] Call: <SendMessage>b__0, GUID: "c25511d9-f444-4d9b-8489-865c82d99399", param: {"Data":{"Request":"123123123"}}
+2025-03-11 16:43:08.046 [INF] Call: <SendMessage>b__0, GUID: "08cb8e14-d712-4df9-a1e4-e48fcd84da15", param: {"Data":{"Request":"cioa"}}
+2025-03-11 16:43:22.217 [INF] Call: <SendMessage>b__0, GUID: "51a679a4-2f1f-46ea-8405-91378050439c", param: {"Data":{"Request":"dddd"}}
+2025-03-11 16:44:43.728 [INF] Call: <SendMessage>b__0, GUID: "a449a6da-2d0d-46a7-9712-38ed94822248", param: {"Data":{"Request":"2133"}}
+2025-03-11 16:53:03.093 [INF] Call: <SendMessage>b__0, GUID: "b035cc9a-98ba-4346-8940-9e669527dcab", param: {"Data":{"Request":"1111"}}
+2025-03-11 17:04:12.094 [INF] Call: <SendMessage>b__0, GUID: "1b2643ac-427a-44e9-9610-a0833e7ae5d9", param: {"Data":{"Request":"123123"}}
+2025-03-11 17:04:26.953 [INF] Call: <SendMessage>b__0, GUID: "c0ff5960-a43c-4e77-96ee-da8c3a570afb", param: {"Data":{"Request":"rtyrt"}}
+2025-03-11 17:19:04.517 [INF] Call: <SendMessage>b__0, GUID: "0173e18f-88a0-418c-bbcb-c1887ea85b35", param: {"Data":{"Request":"2222"}}
+2025-03-11 17:20:00.992 [INF] Call: <SendMessage>b__0, GUID: "268fa429-d313-4757-bba7-1374a8e1af4a", param: {"Data":{"Request":"12323"}}
+2025-03-11 17:20:27.274 [INF] Call: <SendMessage>b__0, GUID: "26467c19-b300-4bbf-b337-a108a667b409", param: {"Data":{"Request":"23423"}}
+2025-03-11 17:21:12.663 [INF] Call: <SendMessage>b__0, GUID: "57bdbd0d-4bbc-484b-a516-fc442cff511f", param: {"Data":{"Request":"L'anno dopo appunto è diventato fattura sempre però"}}
+2025-03-11 17:21:23.583 [INF] Call: <SendMessage>b__0, GUID: "3edaa68e-c347-41b5-9766-3929293f2791", param: {"Data":{"Request":"questa Quest'anno questo cliente qua in questione alla competenza quindi noi questo proprietario abbiamo fatto una scelta proprio"}}
+2025-03-12 09:13:31.560 [INF] Call: <SendMessage>b__0, GUID: "2d6cd3fb-e64c-4115-b712-cc3ff48d5007", param: {"Data":{"Request":"123231"}}
+2025-03-12 09:13:48.836 [INF] Call: <SendMessage>b__0, GUID: "72338462-989b-4f9c-b8fd-3b99954380e0", param: {"Data":{"Request":"2143234"}}
+2025-03-12 09:39:08.567 [INF] Call: <SendMessage>b__0, GUID: "8cd020f5-79e8-4e61-939a-843b42e172e2", param: {"Data":{"Request":"121"}}
+2025-03-12 09:42:27.454 [INF] Call: <SendMessage>b__0, GUID: "63d434ab-1a73-48d9-b3ec-cf042d85f595", param: {"Data":{"Request":"1212313"}}
+2025-03-12 09:43:11.588 [INF] Call: <SendMessage>b__0, GUID: "3f353908-720e-412e-974d-df9adf3a285c", param: {"Data":{"Request":"1233"}}
+2025-03-12 09:45:56.400 [INF] Call: <SendMessage>b__0, GUID: "e41f9f65-e300-40a0-8fb9-be99aab5436f", param: {"Data":{"Request":"123123"}}
+2025-03-12 09:46:15.122 [INF] Call: <SendMessage>b__0, GUID: "f2b71dae-8fd9-41c5-89e2-0a726643e343", param: {"Data":{"Request":"werwer"}}
+2025-03-12 17:36:28.477 [INF] Call: <SendMessage>b__0, GUID: "9f809865-a6f3-4116-a70f-b7b638e3c834", param: {"Data":{"Request":"mario rossi"}}
+2025-03-12 17:37:11.830 [INF] Call: <SendMessage>b__0, GUID: "251508ff-1aed-48c5-b7ca-1d81405eea14", param: {"Data":{"Request":"mario rossi 9"}}
+2025-03-12 17:37:43.463 [INF] Call: <SendMessage>b__0, GUID: "1a51f799-d472-4bff-a261-33cb585195ef", param: {"Data":{"Request":"mario rossi uscita alle 9"}}
+2025-03-12 17:38:49.283 [INF] Call: <SendMessage>b__0, GUID: "293f4e31-8d2f-45d3-acd5-a80a8d6ea7fd", param: {"Data":{"Request":"You: mario rossi uscita alle 9:11"}}
+2025-03-12 17:39:23.731 [INF] Call: <SendMessage>b__0, GUID: "e3bfd3c0-049c-4190-bdb7-2bf69d7eaaff", param: {"Data":{"Request":"mario rossi uscita  9:11"}}
+2025-03-12 17:40:56.113 [INF] Call: <SendMessage>b__0, GUID: "8db59c96-38ed-4fc3-9bd6-8ec1ef3e6d48", param: {"Data":{"Request":"mario rossi uscita"}}
+2025-03-12 17:49:13.015 [INF] Call: <SendMessage>b__0, GUID: "1010dde5-e642-4c95-8d6e-f4fdb0e37ad8", param: {"Data":{"Request":" mario rossi uscita 9:11"}}
+2025-03-12 17:49:41.749 [INF] Call: <SendMessage>b__0, GUID: "db0fb1f9-d6b5-415b-bba6-64d6ec81ec48", param: {"Data":{"Request":" mario rossi uscita 09:11"}}
+2025-03-12 17:50:53.778 [INF] Call: <SendMessage>b__0, GUID: "0f681273-fdc5-4713-8af5-e82355d1ca37", param: {"Data":{"Request":"mario rossi entrata 09:11\n"}}
+2025-03-12 17:53:49.931 [INF] Call: <SendMessage>b__0, GUID: "56425ad1-4f20-4140-813d-7c889b95ab67", param: {"Data":{"Request":"mario rossi entrata 09:11"}}
+2025-03-12 17:56:20.923 [INF] Call: <SendMessage>b__0, GUID: "bdcd1224-67bc-482b-9cb2-58184a110cb3", param: {"Data":{"Request":"mario rossi entrata 09:11"}}
+2025-03-12 17:56:52.599 [INF] Call: <SendMessage>b__0, GUID: "ef8f9340-8e9c-4985-b8ab-915b841a5835", param: {"Data":{"Request":"mario rossi entrata alle 09:11"}}
+2025-03-12 17:57:12.004 [INF] Call: <SendMessage>b__0, GUID: "430a76a3-e8c6-4f80-a5ee-3f9b1fec8432", param: {"Data":{"Request":"mario rossi entrata 9:5"}}
+2025-03-12 17:57:32.704 [INF] Call: <SendMessage>b__0, GUID: "a181e9f8-3cb4-4472-ad45-18b810221f4f", param: {"Data":{"Request":"mario rossi entrata 9:15"}}
+2025-03-12 17:58:08.326 [INF] Call: <SendMessage>b__0, GUID: "b048c9a7-425b-403b-9e3c-426a77bd7733", param: {"Data":{"Request":"mario rossi usc 9:15"}}
+2025-03-12 17:59:13.181 [INF] Call: <SendMessage>b__0, GUID: "be40d64c-8c9d-44d6-a4bd-f27c62364be4", param: {"Data":{"Request":" mario rossi entrata 9:15 USCITA 8:20"}}
+2025-03-12 18:00:40.293 [INF] Call: <SendMessage>b__0, GUID: "b42cc99d-3fbf-4616-b97d-46c5a1954340", param: {"Data":{"Request":"mario rossi usc 9 e 15"}}
+2025-03-12 18:02:45.245 [INF] Call: <SendMessage>b__0, GUID: "1f6ca991-77f3-4721-b87e-072bead4c8b3", param: {"Data":{"Request":"mario rossi usc 9 e 15"}}
+2025-03-12 18:03:17.424 [INF] Call: <SendMessage>b__0, GUID: "1119b01a-1b51-4cb6-96fc-db13e48dea1d", param: {"Data":{"Request":"mario rossi usc 9:15"}}
+2025-03-12 18:03:50.364 [INF] Call: <SendMessage>b__0, GUID: "11dcbe88-b07f-4b3a-ae29-d3e272bbcf46", param: {"Data":{"Request":"mario rossi usc 9 e 15"}}
+2025-03-12 18:04:50.311 [INF] Call: <SendMessage>b__0, GUID: "17c61a92-5e5b-42fa-a73e-859eb0561229", param: {"Data":{"Request":"mario rossi usc 9:15"}}
+2025-03-12 18:05:53.695 [INF] Call: <SendMessage>b__0, GUID: "ac5101b4-2492-4a58-9150-48b3cd033770", param: {"Data":{"Request":" mario rossi usc 9:15"}}
+2025-03-12 18:07:31.810 [INF] Call: <SendMessage>b__0, GUID: "228e6e62-a4b4-450f-8454-95d98612960c", param: {"Data":{"Request":"mario rossi usc 9 e 15"}}
+2025-03-12 18:09:26.398 [INF] Call: <SendMessage>b__0, GUID: "78d3a098-1afd-4910-9fd5-2936cd4faf48", param: {"Data":{"Request":"mario rossi usc 9 e 15"}}
+2025-03-12 18:09:48.890 [INF] Call: <SendMessage>b__0, GUID: "e8aff3ee-60d4-4169-aaa8-d030fbf5e666", param: {"Data":{"Request":"mario rossi usc 9:15"}}
+2025-03-12 18:10:49.399 [INF] Call: <SendMessage>b__0, GUID: "5b0a9f8c-d0cd-4717-a0fc-bc7f74d9266b", param: {"Data":{"Request":"Mario Rossi è entrata alle 7:15"}}
+2025-03-12 18:11:14.970 [INF] Call: <SendMessage>b__0, GUID: "84dda61e-6269-4dfd-8e32-eacb6cc5741b", param: {"Data":{"Request":"Mario Rossi entrata alle 7:15"}}
+2025-03-12 18:11:40.821 [INF] Call: <SendMessage>b__0, GUID: "29250cd2-c3d8-4b61-acd4-064fb58bcab9", param: {"Data":{"Request":"Mario Rossi uscita alle 18:00"}}
+2025-03-12 18:12:49.234 [INF] Call: <SendMessage>b__0, GUID: "baa3b8da-af4f-4887-86fc-2dee330cf1bd", param: {"Data":{"Request":"Paolo Ferrari entra alle 7:55"}}
+2025-03-12 18:13:17.398 [INF] Call: <SendMessage>b__0, GUID: "4971f278-1238-4b3a-8a0a-068e28fa33a2", param: {"Data":{"Request":"Carlo Conti entra alle 7:15"}}
+2025-03-12 18:14:27.903 [INF] Call: <SendMessage>b__0, GUID: "47f6af18-a13b-4758-9c73-af301c42e864", param: {"Data":{"Request":"Paolo Rossi entra alle 7:16"}}
+2025-03-12 18:14:55.435 [INF] Call: <SendMessage>b__0, GUID: "c745b435-ec83-4daa-9309-c75ce0bc547c", param: {"Data":{"Request":"Serpico Maurizio esce alle 7:55"}}
+2025-03-12 18:15:59.386 [INF] Call: <SendMessage>b__0, GUID: "6962413d-241c-4aca-899e-5deb6e6d67dd", param: {"Data":{"Request":"serpico maurizio ent 9:00"}}
+2025-03-12 18:17:13.887 [INF] Call: <SendMessage>b__0, GUID: "ff3b4843-1e60-4d56-9b80-f1e32e1dfb40", param: {"Data":{"Request":"Serpico Maurizio entra alle 7:55 ed esce alle 18:00"}}
+2025-03-12 18:19:35.850 [INF] Call: <SendMessage>b__0, GUID: "dade90dc-64e5-4e3e-8b90-f2ff38c5ee4a", param: {"Data":{"Request":" entra alle 7:55 ed esce alle 18:00"}}
+2025-03-12 18:20:48.459 [INF] Call: <SendMessage>b__0, GUID: "ca6a9100-cc69-4fb2-b1c6-6d56f603191a", param: {"Data":{"Request":" entra alle 7:55 ed esce alle 18:00"}}
+2025-03-12 18:21:36.713 [INF] Call: <SendMessage>b__0, GUID: "19f9b685-b902-4f96-a3c2-567e06ea4a87", param: {"Data":{"Request":" entra alle 7:55 ed esce alle 18:00"}}
+2025-03-13 09:36:43.190 [INF] Call: <Login>b__0, GUID: "633ef19b-8076-4b9a-a471-a8751527c0fc", param: {"Data":{"UserName":"superuser","Password":"1234"}}
+2025-03-13 09:36:43.850 [INF] Call: <UserLoad>b__0, GUID: "e6131de9-8e41-4bbe-9b74-6bfce79401f0", param: {"Data":{"Id":"23ca57cc-5f94-4a7a-9ce8-0a0dd3e7577a"}}
+2025-03-13 09:36:53.339 [INF] Call: <DealerList>b__14_0, GUID: "a94019f9-5c32-4048-8ceb-a4abf6e71042", param: {"Data":{}}
+2025-03-13 09:36:58.689 [INF] Call: <UserLoad>b__0, GUID: "48213b25-941c-4280-b9a3-75a4404d7bd1", param: {"Data":{"Id":"c7bf46e7-e678-440b-a4b2-8f40c7c0c906"}}
+2025-03-13 09:37:04.022 [INF] Call: <FinancialAdvisorList>b__15_0, GUID: "7fbfb3d2-550f-4488-a783-a97927754292", param: {"Data":{}}
+2025-03-13 09:37:07.176 [INF] Call: <UserLoad>b__0, GUID: "2758809d-e54a-4827-b9ca-5e9c1ce1bbe0", param: {"Data":{"Id":"bb62a393-f438-455d-bdd8-ed4b290d159a"}}
+2025-03-13 09:37:08.717 [INF] Call: <CompanyList>b__16_0, GUID: "45262ac7-2508-4d30-8538-290429fafefc", param: {"Data":{}}
+2025-03-13 09:37:09.711 [INF] Call: <UserLoad>b__0, GUID: "08a30d31-0fe4-452e-8655-513a12535425", param: {"Data":{"Id":"89eb43c6-f7ff-4fd0-beb2-8efd441cc562"}}
+2025-03-13 09:37:10.798 [INF] Call: <UserCompanyList>b__17_0, GUID: "04e5bbec-7cb3-4722-80c7-9bcdf66b5bdd", param: {"Data":{}}
+2025-03-13 09:37:11.688 [INF] Call: <UserLoad>b__0, GUID: "45a3abf9-23b2-4dd0-b261-67ebfe046b93", param: {"Data":{"Id":"0db78b81-cbf7-4999-8d95-6a3fb21a2bd4"}}
+2025-03-13 09:37:12.827 [INF] Call: <GetAll>b__2_0, GUID: "699f0681-dafc-4ff3-934a-9d599432f2ff", param: {"Data":{}}
+2025-03-13 09:37:15.619 [INF] Call: <CompanyList>b__16_0, GUID: "cf3d56c1-ba28-4e79-a82f-697a144771e0", param: {"Data":{}}
+2025-03-13 09:37:40.598 [INF] Call: <SendMessage>b__0, GUID: "f34487f2-0289-47dc-aecb-48ec957388be", param: {"Data":{"Request":"mario rossi entra alle 9:00"}}
+2025-03-13 09:38:09.551 [INF] Call: <SendMessage>b__0, GUID: "e60d0f11-81a6-461e-9d6e-6fea81352a14", param: {"Data":{"Request":"Mario Rossi entra alle 9:00 00"}}
+2025-03-13 09:38:24.917 [INF] Call: <SendMessage>b__0, GUID: "cc8f8beb-2fd4-4f01-b3b0-6117937603dc", param: {"Data":{"Request":":00 Ora noi siamo concentrati su Vedi allora questo è quello che che io ho scritto ho detto E questo è quello che lui ha ricevuto ora siamo concentrati sul fare in modo che"}}
+2025-03-13 09:38:27.765 [INF] Call: <SendMessage>b__0, GUID: "45f54907-9cf8-41d8-ba7f-9783d6d43c15", param: {"Data":{"Request":"questa roba qui venga Vabbè allora sei ancora"}}
+2025-03-13 09:55:54.436 [INF] Call: <SendMessage>b__0, GUID: "4eaafbce-0aad-4f13-b9e1-2242d795481c", param: {"Data":{"Request":"mario rossi entra alle 9:00"}}
+2025-03-13 09:55:54.656 [ERR] END Call(ExecuteAction ERR): <SendMessage>b__0, GUID: "4eaafbce-0aad-4f13-b9e1-2242d795481c", result: ChatAIService - Schema mismatch for label column 'Label': expected Key<UInt32>, got String (Parameter 'labelCol')
+System.ArgumentOutOfRangeException: Schema mismatch for label column 'Label': expected Key<UInt32>, got String (Parameter 'labelCol')
+   at Microsoft.ML.Trainers.TrainerEstimatorBase`2.CheckLabelCompatible(Column labelCol)
+   at Microsoft.ML.Trainers.TrainerEstimatorBase`2.CheckInputSchema(SchemaShape inputSchema)
+   at Microsoft.ML.Trainers.TrainerEstimatorBase`2.GetOutputSchema(SchemaShape inputSchema)
+   at Microsoft.ML.Data.EstimatorChain`1.GetOutputSchema(SchemaShape inputSchema)
+   at Microsoft.ML.Data.EstimatorChain`1.Fit(IDataView input)
+   at nvxapp.server.service.ClientServer_Service.ChatAI.FakeAI_Nlp.AddestraModello() in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\ClientServer-Service\ChatAI\ChatAIService.cs:line 232
+   at nvxapp.server.service.ClientServer_Service.ChatAI.FakeAI_Nlp..ctor() in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\ClientServer-Service\ChatAI\ChatAIService.cs:line 211
+   at nvxapp.server.service.ClientServer_Service.ChatAI.ChatAIService.<>c__DisplayClass1_0.<<SendMessage>b__0>d.MoveNext() in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\ClientServer-Service\ChatAI\ChatAIService.cs:line 56
+--- End of stack trace from previous location ---
+   at nvxapp.server.service.Infrastructure.ServiceBase.ExecuteAction[T,P1](P1 p1, Func`1 function, Boolean isSubProcess) in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\Infrastructure\ServiceBase.cs:line 73
+2025-03-13 09:56:03.536 [ERR] ChatAIService - Schema mismatch for label column 'Label': expected Key<UInt32>, got String (Parameter 'labelCol')
+2025-03-13 09:56:47.181 [INF] Call: <SendMessage>b__0, GUID: "097406de-1eae-4b67-8154-76ce834a4fda", param: {"Data":{"Request":"mario rossi entra alle 9:00"}}
+2025-03-13 09:56:47.243 [ERR] END Call(ExecuteAction ERR): <SendMessage>b__0, GUID: "097406de-1eae-4b67-8154-76ce834a4fda", result: ChatAIService - Schema mismatch for label column 'Label': expected Key<UInt32>, got String (Parameter 'labelCol')
+System.ArgumentOutOfRangeException: Schema mismatch for label column 'Label': expected Key<UInt32>, got String (Parameter 'labelCol')
+   at Microsoft.ML.Trainers.TrainerEstimatorBase`2.CheckLabelCompatible(Column labelCol)
+   at Microsoft.ML.Trainers.TrainerEstimatorBase`2.CheckInputSchema(SchemaShape inputSchema)
+   at Microsoft.ML.Trainers.TrainerEstimatorBase`2.GetOutputSchema(SchemaShape inputSchema)
+   at Microsoft.ML.Data.EstimatorChain`1.GetOutputSchema(SchemaShape inputSchema)
+   at Microsoft.ML.Data.EstimatorChain`1.Fit(IDataView input)
+   at nvxapp.server.service.ClientServer_Service.ChatAI.FakeAI_Nlp.AddestraModello()
+   at nvxapp.server.service.ClientServer_Service.ChatAI.FakeAI_Nlp..ctor()
+   at nvxapp.server.service.ClientServer_Service.ChatAI.ChatAIService.<>c__DisplayClass1_0.<<SendMessage>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at nvxapp.server.service.Infrastructure.ServiceBase.ExecuteAction[T,P1](P1 p1, Func`1 function, Boolean isSubProcess)
+2025-03-13 09:56:51.247 [ERR] ChatAIService - Schema mismatch for label column 'Label': expected Key<UInt32>, got String (Parameter 'labelCol')
+2025-03-13 09:57:08.469 [INF] Call: <SendMessage>b__0, GUID: "3041e6c4-5052-411a-94eb-b4d2a83239b0", param: {"Data":{"Request":"mario rossi entra alle 9:00"}}
+2025-03-13 09:57:20.554 [ERR] END Call(ExecuteAction ERR): <SendMessage>b__0, GUID: "3041e6c4-5052-411a-94eb-b4d2a83239b0", result: ChatAIService - Schema mismatch for label column 'Label': expected Key<UInt32>, got String (Parameter 'labelCol')
+System.ArgumentOutOfRangeException: Schema mismatch for label column 'Label': expected Key<UInt32>, got String (Parameter 'labelCol')
+   at Microsoft.ML.Trainers.TrainerEstimatorBase`2.CheckLabelCompatible(Column labelCol)
+   at Microsoft.ML.Trainers.TrainerEstimatorBase`2.CheckInputSchema(SchemaShape inputSchema)
+   at Microsoft.ML.Trainers.TrainerEstimatorBase`2.GetOutputSchema(SchemaShape inputSchema)
+   at Microsoft.ML.Data.EstimatorChain`1.GetOutputSchema(SchemaShape inputSchema)
+   at Microsoft.ML.Data.EstimatorChain`1.Fit(IDataView input)
+   at nvxapp.server.service.ClientServer_Service.ChatAI.FakeAI_Nlp.AddestraModello()
+   at nvxapp.server.service.ClientServer_Service.ChatAI.FakeAI_Nlp..ctor()
+   at nvxapp.server.service.ClientServer_Service.ChatAI.ChatAIService.<>c__DisplayClass1_0.<<SendMessage>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at nvxapp.server.service.Infrastructure.ServiceBase.ExecuteAction[T,P1](P1 p1, Func`1 function, Boolean isSubProcess)
+2025-03-13 09:57:21.834 [ERR] ChatAIService - Schema mismatch for label column 'Label': expected Key<UInt32>, got String (Parameter 'labelCol')
+2025-03-13 09:57:25.623 [INF] Call: <SendMessage>b__0, GUID: "bbfe60bd-b238-4265-9e60-a6020c88cf19", param: {"Data":{"Request":"mario rossi entra alle 9:00"}}
+2025-03-13 09:58:06.904 [ERR] END Call(ExecuteAction ERR): <SendMessage>b__0, GUID: "bbfe60bd-b238-4265-9e60-a6020c88cf19", result: ChatAIService - Schema mismatch for label column 'Label': expected Key<UInt32>, got String (Parameter 'labelCol')
+System.ArgumentOutOfRangeException: Schema mismatch for label column 'Label': expected Key<UInt32>, got String (Parameter 'labelCol')
+   at Microsoft.ML.Trainers.TrainerEstimatorBase`2.CheckLabelCompatible(Column labelCol)
+   at Microsoft.ML.Trainers.TrainerEstimatorBase`2.CheckInputSchema(SchemaShape inputSchema)
+   at Microsoft.ML.Trainers.TrainerEstimatorBase`2.GetOutputSchema(SchemaShape inputSchema)
+   at Microsoft.ML.Data.EstimatorChain`1.GetOutputSchema(SchemaShape inputSchema)
+   at Microsoft.ML.Data.EstimatorChain`1.Fit(IDataView input)
+   at nvxapp.server.service.ClientServer_Service.ChatAI.FakeAI_Nlp.AddestraModello()
+   at nvxapp.server.service.ClientServer_Service.ChatAI.FakeAI_Nlp..ctor()
+   at nvxapp.server.service.ClientServer_Service.ChatAI.ChatAIService.<>c__DisplayClass1_0.<<SendMessage>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at nvxapp.server.service.Infrastructure.ServiceBase.ExecuteAction[T,P1](P1 p1, Func`1 function, Boolean isSubProcess)
+2025-03-13 09:58:54.540 [ERR] ChatAIService - Schema mismatch for label column 'Label': expected Key<UInt32>, got String (Parameter 'labelCol')
+2025-03-13 10:00:39.463 [INF] Call: <SendMessage>b__0, GUID: "9432a277-aa3b-4356-af72-e1a2a91c5889", param: {"Data":{"Request":"mario rossi entra alle 9:00"}}
+2025-03-13 10:02:06.382 [ERR] END Call(ExecuteAction ERR): <SendMessage>b__0, GUID: "9432a277-aa3b-4356-af72-e1a2a91c5889", result: ChatAIService - Could not find input column 'PredictedLabel_Nome' (Parameter 'inputSchema')
+System.ArgumentOutOfRangeException: Could not find input column 'PredictedLabel_Nome' (Parameter 'inputSchema')
+   at Microsoft.ML.Transforms.KeyToValueMappingEstimator.GetOutputSchema(SchemaShape inputSchema)
+   at Microsoft.ML.Data.EstimatorChain`1.GetOutputSchema(SchemaShape inputSchema)
+   at Microsoft.ML.Data.EstimatorChain`1.Fit(IDataView input)
+   at nvxapp.server.service.ClientServer_Service.ChatAI.FakeAI_Nlp.AddestraModello()
+   at nvxapp.server.service.ClientServer_Service.ChatAI.FakeAI_Nlp..ctor()
+   at nvxapp.server.service.ClientServer_Service.ChatAI.ChatAIService.<>c__DisplayClass1_0.<<SendMessage>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at nvxapp.server.service.Infrastructure.ServiceBase.ExecuteAction[T,P1](P1 p1, Func`1 function, Boolean isSubProcess)
+2025-03-13 10:02:07.072 [ERR] ChatAIService - Could not find input column 'PredictedLabel_Nome' (Parameter 'inputSchema')
+2025-03-13 10:02:13.625 [INF] Call: <SendMessage>b__0, GUID: "8c67e81e-bf82-4beb-92af-05139a20b042", param: {"Data":{"Request":"mario rossi entra alle 9:00"}}
+2025-03-13 10:02:59.545 [INF] Call: <SendMessage>b__0, GUID: "68b57552-c8b3-4661-b179-510f0f44f079", param: {"Data":{"Request":"mario rossi entrata alle 9:00"}}
+2025-03-13 10:03:28.811 [INF] Call: <SendMessage>b__0, GUID: "ebe7acbc-e26a-41f9-965a-388d6d08c17b", param: {"Data":{"Request":"rossi entrata 9:00"}}
+2025-03-13 10:05:03.587 [INF] Call: <SendMessage>b__0, GUID: "0d7cd36a-1ffe-415f-abe4-6137fd3e8543", param: {"Data":{"Request":"You: rossi entrata 9:00"}}
+2025-03-13 10:05:38.356 [INF] Call: <SendMessage>b__0, GUID: "22820a75-0b4b-4d8d-b457-32df5f656392", param: {"Data":{"Request":"paolo rossi entra alle 9:00"}}
+2025-03-13 10:14:11.216 [INF] Call: <SendMessage>b__0, GUID: "c4aca168-f3ea-4aca-a270-523789ea2a1f", param: {"Data":{"Request":"mario rossi entra alle 9:00"}}
+2025-03-13 10:14:17.766 [ERR] END Call(ExecuteAction ERR): <SendMessage>b__0, GUID: "c4aca168-f3ea-4aca-a270-523789ea2a1f", result: ChatAIService - Model file modello_ner.onnx does not exists.
+System.IO.IOException: Model file modello_ner.onnx does not exists.
+   at Microsoft.ML.Runtime.Contracts.CheckIO(IExceptionContext ctx, Boolean f, String msg, Object[] args)
+   at Microsoft.ML.Transforms.Onnx.OnnxTransformer..ctor(IHostEnvironment env, Options options, Byte[] modelBytes)
+   at Microsoft.ML.Transforms.Onnx.OnnxTransformer..ctor(IHostEnvironment env, String[] outputColumnNames, String[] inputColumnNames, String modelFile, Nullable`1 gpuDeviceId, Boolean fallbackToCpu, IDictionary`2 shapeDictionary, Int32 recursionLimit, Nullable`1 interOpNumThreads, Nullable`1 intraOpNumThreads)
+   at Microsoft.ML.Transforms.Onnx.OnnxScoringEstimator..ctor(IHostEnvironment env, String modelFile, Nullable`1 gpuDeviceId, Boolean fallbackToCpu, IDictionary`2 shapeDictionary, Int32 recursionLimit)
+   at Microsoft.ML.OnnxCatalog.ApplyOnnxModel(TransformsCatalog catalog, String modelFile, Nullable`1 gpuDeviceId, Boolean fallbackToCpu)
+   at nvxapp.server.service.ClientServer_Service.ChatAI.NlpService..ctor() in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\ClientServer-Service\ChatAI\ChatAIService.cs:line 217
+   at nvxapp.server.service.ClientServer_Service.ChatAI.ChatAIService.<>c__DisplayClass1_0.<<SendMessage>b__0>d.MoveNext() in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\ClientServer-Service\ChatAI\ChatAIService.cs:line 60
+--- End of stack trace from previous location ---
+   at nvxapp.server.service.Infrastructure.ServiceBase.ExecuteAction[T,P1](P1 p1, Func`1 function, Boolean isSubProcess) in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\Infrastructure\ServiceBase.cs:line 73
+2025-03-13 10:29:35.336 [INF] Call: <Login>b__0, GUID: "ae8edb17-45d9-400b-979d-a7cf2a85abd9", param: {"Data":{"UserName":"admin","Password":"1223"}}
+2025-03-13 10:29:39.510 [INF] Call: <Login>b__0, GUID: "3b56da36-7629-43be-ab67-2ede109f50f6", param: {"Data":{"UserName":"admin","Password":"1234"}}
+2025-03-13 10:29:39.720 [INF] Call: <UserLoad>b__0, GUID: "7dcc9e91-83e0-413e-b043-8fcbee6aae8c", param: {"Data":{"Id":"55bfd94c-8671-47f0-9d8a-109ceeb3af29"}}
+2025-03-13 10:29:41.053 [INF] Call: <DealerList>b__14_0, GUID: "a0f8f525-3e97-487f-b105-fe2034e67705", param: {"Data":{}}
+2025-03-13 10:29:41.938 [INF] Call: <UserLoad>b__0, GUID: "e54ad1d3-93a7-41ba-bca0-e9a00fa70b7b", param: {"Data":{"Id":"c7bf46e7-e678-440b-a4b2-8f40c7c0c906"}}
+2025-03-13 10:29:43.346 [INF] Call: <FinancialAdvisorList>b__15_0, GUID: "35be2da7-5efd-41f6-b132-8d75b5f36536", param: {"Data":{}}
+2025-03-13 10:29:44.369 [INF] Call: <UserLoad>b__0, GUID: "133b8e1c-b333-49a6-8ae2-599f743bdafb", param: {"Data":{"Id":"bb62a393-f438-455d-bdd8-ed4b290d159a"}}
+2025-03-13 10:29:45.501 [INF] Call: <CompanyList>b__16_0, GUID: "471ddd03-c3fb-4159-a534-639a170b37a7", param: {"Data":{}}
+2025-03-13 10:29:46.524 [INF] Call: <UserLoad>b__0, GUID: "d387b8cb-7a08-46ad-99b1-aba0e37b9fb3", param: {"Data":{"Id":"89eb43c6-f7ff-4fd0-beb2-8efd441cc562"}}
+2025-03-13 10:29:47.678 [INF] Call: <UserCompanyList>b__17_0, GUID: "2373ccb9-1def-4b05-a68f-65f87a1873fb", param: {"Data":{}}
+2025-03-13 10:29:48.458 [INF] Call: <UserLoad>b__0, GUID: "a725ee26-569d-4832-ab66-967f74c0c085", param: {"Data":{"Id":"0db78b81-cbf7-4999-8d95-6a3fb21a2bd4"}}
+2025-03-13 10:29:49.810 [INF] Call: <GetAll>b__2_0, GUID: "e84260b6-21f2-4484-9638-c377c0044c08", param: {"Data":{}}
+2025-03-13 10:29:51.964 [INF] Call: <UserCompanyList>b__17_0, GUID: "64381c99-87da-483f-93f2-2e342f11c3ba", param: {"Data":{}}
+2025-03-13 10:29:52.784 [INF] Call: <CompanyList>b__16_0, GUID: "455ca031-5924-44d7-a8a6-29f993cf78a9", param: {"Data":{}}
+2025-03-13 10:29:54.591 [INF] Call: <CompanyList>b__16_0, GUID: "8299fab5-fca4-4aca-83b8-9ab631d3f53d", param: {"Data":{}}
+2025-03-13 10:29:59.571 [INF] Call: <SendMessage>b__0, GUID: "f891a6c4-b841-45f7-bc37-2f11e06bdd1d", param: {"Data":{"Request":"123123"}}
+2025-03-13 10:32:36.079 [INF] Call: <SendMessage>b__0, GUID: "c4726fc6-07db-42cb-b70b-b3e6b9d6293a", param: {"Data":{"Request":"Paolo Rossi entra alle 9:00"}}
+2025-03-13 10:35:41.861 [INF] Call: <SendMessage>b__0, GUID: "48aec1a0-1f6b-41be-aa3c-3101c63f7471", param: {"Data":{"Request":"Paolo Rossi entra alle 09:00"}}
+2025-03-13 10:39:31.874 [INF] Call: <SendMessage>b__0, GUID: "e84762ba-e464-4e80-b22f-18a1fa8fe251", param: {"Data":{"Request":"Paolo Rossi entra alle 09:00"}}
+2025-03-13 10:44:05.521 [INF] Call: <SendMessage>b__0, GUID: "d95305df-57e9-4cfb-a994-b5d0f437668b", param: {"Data":{"Request":"Paolo Rossi entra alle 09:00"}}
+2025-03-13 10:44:08.950 [ERR] END Call(ExecuteAction ERR): <SendMessage>b__0, GUID: "d95305df-57e9-4cfb-a994-b5d0f437668b", result: ChatAIService - Could not find label column 'Label' (Parameter 'inputSchema')
+System.ArgumentOutOfRangeException: Could not find label column 'Label' (Parameter 'inputSchema')
+   at Microsoft.ML.Trainers.TrainerEstimatorBase`2.CheckInputSchema(SchemaShape inputSchema)
+   at Microsoft.ML.Trainers.TrainerEstimatorBase`2.GetOutputSchema(SchemaShape inputSchema)
+   at Microsoft.ML.Data.EstimatorChain`1.GetOutputSchema(SchemaShape inputSchema)
+   at Microsoft.ML.Data.EstimatorChain`1.Fit(IDataView input)
+   at nvxapp.server.service.ClientServer_Service.ChatAI.FakeAI_Nlp.AddestraModello()
+   at nvxapp.server.service.ClientServer_Service.ChatAI.FakeAI_Nlp..ctor()
+   at nvxapp.server.service.ClientServer_Service.ChatAI.ChatAIService.<>c__DisplayClass1_0.<<SendMessage>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at nvxapp.server.service.Infrastructure.ServiceBase.ExecuteAction[T,P1](P1 p1, Func`1 function, Boolean isSubProcess)
+2025-03-13 10:44:17.839 [ERR] ChatAIService - Could not find label column 'Label' (Parameter 'inputSchema')
+2025-03-13 10:45:11.068 [INF] Call: <SendMessage>b__0, GUID: "a749e5fb-3093-4d38-9cba-889d3b9c3357", param: {"Data":{"Request":"Paolo Rossi entra alle 09:00"}}
+2025-03-13 10:45:11.805 [ERR] END Call(ExecuteAction ERR): <SendMessage>b__0, GUID: "a749e5fb-3093-4d38-9cba-889d3b9c3357", result: ChatAIService - Can't bind the IDataView column 'PredictedLabel' of type 'Key<UInt32, 0-4>' to field or property 'TipoComando' of type 'System.String'.
+System.InvalidOperationException: Can't bind the IDataView column 'PredictedLabel' of type 'Key<UInt32, 0-4>' to field or property 'TipoComando' of type 'System.String'.
+   at Microsoft.ML.Data.TypedCursorable`1..ctor(IHostEnvironment env, IDataView data, Boolean ignoreMissingColumns, InternalSchemaDefinition schemaDefn)
+   at Microsoft.ML.Data.TypedCursorable`1.Create(IHostEnvironment env, IDataView data, Boolean ignoreMissingColumns, SchemaDefinition schemaDefinition)
+   at Microsoft.ML.PredictionEngineBase`2.PredictionEngineCore(IHostEnvironment env, InputRow`1 inputRow, IRowToRowMapper mapper, Boolean ignoreMissingColumns, SchemaDefinition outputSchemaDefinition, Action& disposer, IRowReadableAs`1& outputRow)
+   at Microsoft.ML.PredictionEngineBase`2..ctor(IHostEnvironment env, ITransformer transformer, Boolean ignoreMissingColumns, SchemaDefinition inputSchemaDefinition, SchemaDefinition outputSchemaDefinition, Boolean ownsTransformer)
+   at Microsoft.ML.PredictionEngine`2..ctor(IHostEnvironment env, ITransformer transformer, Boolean ignoreMissingColumns, SchemaDefinition inputSchemaDefinition, SchemaDefinition outputSchemaDefinition, Boolean ownsTransformer)
+   at Microsoft.ML.PredictionEngineExtensions.CreatePredictionEngine[TSrc,TDst](ITransformer transformer, IHostEnvironment env, Boolean ignoreMissingColumns, SchemaDefinition inputSchemaDefinition, SchemaDefinition outputSchemaDefinition, Boolean ownsTransformer)
+   at Microsoft.ML.ModelOperationsCatalog.CreatePredictionEngine[TSrc,TDst](ITransformer transformer, Boolean ignoreMissingColumns, SchemaDefinition inputSchemaDefinition, SchemaDefinition outputSchemaDefinition)
+   at nvxapp.server.service.ClientServer_Service.ChatAI.FakeAI_Nlp.AddestraModello()
+   at nvxapp.server.service.ClientServer_Service.ChatAI.FakeAI_Nlp..ctor()
+   at nvxapp.server.service.ClientServer_Service.ChatAI.ChatAIService.<>c__DisplayClass1_0.<<SendMessage>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at nvxapp.server.service.Infrastructure.ServiceBase.ExecuteAction[T,P1](P1 p1, Func`1 function, Boolean isSubProcess)
+2025-03-13 10:45:14.527 [ERR] ChatAIService - Can't bind the IDataView column 'PredictedLabel' of type 'Key<UInt32, 0-4>' to field or property 'TipoComando' of type 'System.String'.
+2025-03-13 10:45:22.001 [INF] Call: <SendMessage>b__0, GUID: "6720a374-0cda-41d4-84d2-210b97795eef", param: {"Data":{"Request":"Paolo Rossi entra alle 09:00"}}
+2025-03-13 10:45:22.654 [ERR] END Call(ExecuteAction ERR): <SendMessage>b__0, GUID: "6720a374-0cda-41d4-84d2-210b97795eef", result: ChatAIService - Can't bind the IDataView column 'PredictedLabel' of type 'Key<UInt32, 0-4>' to field or property 'TipoComando' of type 'System.String'.
+System.InvalidOperationException: Can't bind the IDataView column 'PredictedLabel' of type 'Key<UInt32, 0-4>' to field or property 'TipoComando' of type 'System.String'.
+   at Microsoft.ML.Data.TypedCursorable`1..ctor(IHostEnvironment env, IDataView data, Boolean ignoreMissingColumns, InternalSchemaDefinition schemaDefn)
+   at Microsoft.ML.Data.TypedCursorable`1.Create(IHostEnvironment env, IDataView data, Boolean ignoreMissingColumns, SchemaDefinition schemaDefinition)
+   at Microsoft.ML.PredictionEngineBase`2.PredictionEngineCore(IHostEnvironment env, InputRow`1 inputRow, IRowToRowMapper mapper, Boolean ignoreMissingColumns, SchemaDefinition outputSchemaDefinition, Action& disposer, IRowReadableAs`1& outputRow)
+   at Microsoft.ML.PredictionEngineBase`2..ctor(IHostEnvironment env, ITransformer transformer, Boolean ignoreMissingColumns, SchemaDefinition inputSchemaDefinition, SchemaDefinition outputSchemaDefinition, Boolean ownsTransformer)
+   at Microsoft.ML.PredictionEngine`2..ctor(IHostEnvironment env, ITransformer transformer, Boolean ignoreMissingColumns, SchemaDefinition inputSchemaDefinition, SchemaDefinition outputSchemaDefinition, Boolean ownsTransformer)
+   at Microsoft.ML.PredictionEngineExtensions.CreatePredictionEngine[TSrc,TDst](ITransformer transformer, IHostEnvironment env, Boolean ignoreMissingColumns, SchemaDefinition inputSchemaDefinition, SchemaDefinition outputSchemaDefinition, Boolean ownsTransformer)
+   at Microsoft.ML.ModelOperationsCatalog.CreatePredictionEngine[TSrc,TDst](ITransformer transformer, Boolean ignoreMissingColumns, SchemaDefinition inputSchemaDefinition, SchemaDefinition outputSchemaDefinition)
+   at nvxapp.server.service.ClientServer_Service.ChatAI.FakeAI_Nlp.AddestraModello()
+   at nvxapp.server.service.ClientServer_Service.ChatAI.FakeAI_Nlp..ctor()
+   at nvxapp.server.service.ClientServer_Service.ChatAI.ChatAIService.<>c__DisplayClass1_0.<<SendMessage>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at nvxapp.server.service.Infrastructure.ServiceBase.ExecuteAction[T,P1](P1 p1, Func`1 function, Boolean isSubProcess)
+2025-03-13 10:45:24.013 [ERR] ChatAIService - Can't bind the IDataView column 'PredictedLabel' of type 'Key<UInt32, 0-4>' to field or property 'TipoComando' of type 'System.String'.
+2025-03-13 10:45:45.947 [INF] Call: <SendMessage>b__0, GUID: "5071285f-c373-414a-9d9c-73cfc6b37080", param: {"Data":{"Request":"Paolo Rossi entra alle 09:00"}}
+2025-03-13 10:45:46.650 [ERR] END Call(ExecuteAction ERR): <SendMessage>b__0, GUID: "5071285f-c373-414a-9d9c-73cfc6b37080", result: ChatAIService - Can't bind the IDataView column 'PredictedLabel' of type 'Key<UInt32, 0-4>' to field or property 'TipoComando' of type 'System.String'.
+System.InvalidOperationException: Can't bind the IDataView column 'PredictedLabel' of type 'Key<UInt32, 0-4>' to field or property 'TipoComando' of type 'System.String'.
+   at Microsoft.ML.Data.TypedCursorable`1..ctor(IHostEnvironment env, IDataView data, Boolean ignoreMissingColumns, InternalSchemaDefinition schemaDefn)
+   at Microsoft.ML.Data.TypedCursorable`1.Create(IHostEnvironment env, IDataView data, Boolean ignoreMissingColumns, SchemaDefinition schemaDefinition)
+   at Microsoft.ML.PredictionEngineBase`2.PredictionEngineCore(IHostEnvironment env, InputRow`1 inputRow, IRowToRowMapper mapper, Boolean ignoreMissingColumns, SchemaDefinition outputSchemaDefinition, Action& disposer, IRowReadableAs`1& outputRow)
+   at Microsoft.ML.PredictionEngineBase`2..ctor(IHostEnvironment env, ITransformer transformer, Boolean ignoreMissingColumns, SchemaDefinition inputSchemaDefinition, SchemaDefinition outputSchemaDefinition, Boolean ownsTransformer)
+   at Microsoft.ML.PredictionEngine`2..ctor(IHostEnvironment env, ITransformer transformer, Boolean ignoreMissingColumns, SchemaDefinition inputSchemaDefinition, SchemaDefinition outputSchemaDefinition, Boolean ownsTransformer)
+   at Microsoft.ML.PredictionEngineExtensions.CreatePredictionEngine[TSrc,TDst](ITransformer transformer, IHostEnvironment env, Boolean ignoreMissingColumns, SchemaDefinition inputSchemaDefinition, SchemaDefinition outputSchemaDefinition, Boolean ownsTransformer)
+   at Microsoft.ML.ModelOperationsCatalog.CreatePredictionEngine[TSrc,TDst](ITransformer transformer, Boolean ignoreMissingColumns, SchemaDefinition inputSchemaDefinition, SchemaDefinition outputSchemaDefinition)
+   at nvxapp.server.service.ClientServer_Service.ChatAI.FakeAI_Nlp.AddestraModello()
+   at nvxapp.server.service.ClientServer_Service.ChatAI.FakeAI_Nlp..ctor()
+   at nvxapp.server.service.ClientServer_Service.ChatAI.ChatAIService.<>c__DisplayClass1_0.<<SendMessage>b__0>d.MoveNext()
+--- End of stack trace from previous location ---
+   at nvxapp.server.service.Infrastructure.ServiceBase.ExecuteAction[T,P1](P1 p1, Func`1 function, Boolean isSubProcess)
+2025-03-13 10:45:48.586 [ERR] ChatAIService - Can't bind the IDataView column 'PredictedLabel' of type 'Key<UInt32, 0-4>' to field or property 'TipoComando' of type 'System.String'.
+2025-03-13 10:45:53.888 [INF] Call: <SendMessage>b__0, GUID: "9f22ea7c-1621-49ad-a71f-d9d0bf720e69", param: {"Data":{"Request":"Paolo Rossi entra alle 09:00"}}
+2025-03-13 10:50:39.703 [INF] Call: <SendMessage>b__0, GUID: "0e268532-5070-46a5-b173-e047d7cd47ff", param: {"Data":{"Request":"Paolo Rossi entra alle 9:00"}}
+2025-03-13 10:50:56.996 [INF] Call: <SendMessage>b__0, GUID: "b5641fa9-d9b6-4769-8ddb-3a44ebb59054", param: {"Data":{"Request":"Paolo Rossi entra alle 9:00"}}
+2025-03-13 10:51:23.641 [INF] Call: <SendMessage>b__0, GUID: "5242ae08-d74d-4283-8a39-f0487307eef2", param: {"Data":{"Request":"Paolo Rossi entra alle 09:00"}}
+2025-03-13 10:54:12.636 [INF] Call: <SendMessage>b__0, GUID: "ee8e5c11-7736-4841-a827-36f62bc95251", param: {"Data":{"Request":"Paolo Rossi entra alle 09:00"}}
+2025-03-13 10:54:41.060 [INF] Call: <SendMessage>b__0, GUID: "da68768e-dd7d-4f78-8f4b-54981c39a889", param: {"Data":{"Request":"Paolo Rossi entra alle 09:00"}}
+2025-03-13 10:56:00.632 [INF] Call: <SendMessage>b__0, GUID: "2de796d2-ce85-4822-b2b3-bb3e51bb069e", param: {"Data":{"Request":"Paolo Rossi entra alle 09:00"}}
+2025-03-13 10:57:02.383 [INF] Call: <SendMessage>b__0, GUID: "407a235c-7747-4dde-adf9-4ce833c38024", param: {"Data":{"Request":"Paolo Rossi entra alle 09:00"}}
+2025-03-13 10:58:23.150 [INF] Call: <SendMessage>b__0, GUID: "e584ca6b-c659-412c-a4d4-d0df030d193e", param: {"Data":{"Request":"Paolo Rossi entrata alle 09:00"}}
+2025-03-13 10:59:00.553 [INF] Call: <SendMessage>b__0, GUID: "b1c52193-db2c-401e-8052-047cadafcc19", param: {"Data":{"Request":"serpico  maurizion entra 9:15"}}
