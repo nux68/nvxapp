@@ -68,10 +68,6 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAI
                     {
                         var body = Encoding.UTF8.GetBytes(model.Data.Request);
 
-                        //// Dichiarazione dell'exchange
-                        //await _rabbitMqConnection._channel.ExchangeDeclareAsync(exchange: "logs", 
-                        //                                                        type: ExchangeType.Direct);
-
                         // Pubblicazione del messaggio
                         await _rabbitMqConnection._channel.BasicPublishAsync(exchange: "logs", 
                                                                              routingKey: string.Empty, 

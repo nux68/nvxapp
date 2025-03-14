@@ -4332,3 +4332,9 @@ System.InvalidOperationException: Can't bind the IDataView column 'PredictedLabe
 2025-03-14 16:16:49.516 [INF] Call: <SendMessage>b__0, GUID: "3c68e974-4165-4220-8f81-82d02d1e41b3", param: {"Data":{"Request":"123123123"}}
 2025-03-14 16:17:01.531 [INF] Call: <SendMessage>b__0, GUID: "2bdae0fd-2c99-4afc-86e3-64bb500d4e24", param: {"Data":{"Request":"ertertertet"}}
 2025-03-14 16:46:35.604 [INF] Call: <SendMessage>b__0, GUID: "64418fd3-4160-4fff-a74b-948e37ffefe4", param: {"Data":{"Request":"123232"}}
+2025-03-14 17:12:46.464 [INF] Call: <SendMessage>b__0, GUID: "4eff7b45-b348-48e2-8705-b46c5df390c3", param: {"Data":{"Request":"12323"}}
+2025-03-14 17:25:25.477 [INF] Call: <SendMessage>b__0, GUID: "041e3a2f-8f17-4ba3-95fe-79081ecf8d3f", param: {"Data":{"Request":"123123"}}
+2025-03-14 17:26:44.039 [INF] Call: <SendMessage>b__0, GUID: "7dccb6b2-b000-4eb1-84de-00d66ea06993", param: {"Data":{"Request":"123123"}}
+2025-03-14 17:27:03.894 [INF] Call: <SendMessage>b__0, GUID: "9d2e6fbd-17c4-4392-b354-18307719c44d", param: {"Data":{"Request":"mario rossi entra alle 9:00"}}
+2025-03-14 17:29:28.818 [INF] Call: <SendMessage>b__0, GUID: "14a36239-764c-4975-a3f8-317f123b2c91", param: {"Data":{"Request":"12331"}}
+2025-03-14 17:54:21.430 [INF] Call: <SendMessage>b__0, GUID: "27e91069-ff0c-46bd-a2fc-7de6fadfc82b", param: {"Data":{"Request":"123213123"}}

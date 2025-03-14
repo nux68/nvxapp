@@ -8,14 +8,14 @@ using System.Text;
 
 namespace nvxapp.server.service.RabbitMQ.Listener
 {
-    public class RabbitMqListenerService : IHostedService, IRabbitMqListenerService
+    public abstract class RabbitMqListenerService : IHostedService, IRabbitMqListenerService
     {
-        private readonly CancellationTokenSource _cts = new(); 
+        private readonly CancellationTokenSource _cts = new();
         private readonly IServiceProvider _serviceProvider;
         private readonly iRabbitMqConnection _rabbitMqConnection;
 
         public RabbitMqListenerService(IConfiguration configuration,
-                                IServiceProvider serviceProvider) 
+                                       IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
 
@@ -30,35 +30,31 @@ namespace nvxapp.server.service.RabbitMQ.Listener
         public async Task StartAsync(CancellationToken cancellationToken)
         {
             await _rabbitMqConnection.Start();
-            _ = Task.Run(async () => await ConsumeAsync(HandleMessageAsync, cancellationToken), cancellationToken); 
+            _ = Task.Run(async () => await ConsumeAsync(HandleMessageAsync, cancellationToken), cancellationToken);
         }
-
         public async Task StopAsync(CancellationToken cancellationToken)
         {
             _cts.Cancel(); // Segnala che l'operazione deve essere annullata
 
             await _rabbitMqConnection.Stop();
         }
-
-    
-
         public async Task ConsumeAsync(Func<object, Task> messageHandler, CancellationToken cancellationToken)
         {
             if (_rabbitMqConnection._channel == null)
                 throw new InvalidOperationException("RabbitMQ non è connesso!");
 
 
-            string queueName = "my-durable-queue";
+            string queueName = QueueName;
 
             QueueDeclareOk queueDeclareResult = await _rabbitMqConnection._channel.QueueDeclareAsync(queue: queueName,
-                                                                                                     durable: false, 
-                                                                                                     exclusive:false, 
+                                                                                                     durable: false,
+                                                                                                     exclusive: false,
                                                                                                      autoDelete: false);
 
-            
-            await _rabbitMqConnection._channel.QueueBindAsync(queue: queueName, 
-                                                              exchange: "logs", 
-                                                              routingKey: string.Empty);
+
+            await _rabbitMqConnection._channel.QueueBindAsync(queue: queueName,
+                                                              exchange: Exchange ,
+                                                              routingKey: RoutingKey);
 
 
             Console.WriteLine(" [*] Waiting for logs.");
@@ -100,7 +96,24 @@ namespace nvxapp.server.service.RabbitMQ.Listener
             }
         }
 
-        protected virtual async Task HandleMessageAsync(object message)
+
+        protected abstract Task HandleMessageAsync(object message);
+
+
+        public abstract string QueueName { get; }
+        public abstract string Exchange { get; }
+        public abstract string RoutingKey { get; }
+
+    }
+
+    public class RabbitMqListenerService_Demo : RabbitMqListenerService
+    {
+
+        public RabbitMqListenerService_Demo(IConfiguration configuration,
+                                            IServiceProvider serviceProvider) : base(configuration, serviceProvider) { }
+
+
+        protected override async Task HandleMessageAsync(object message)
         {
             // Qui elabora il messaggio ricevuto da RabbitMQ.
             Console.WriteLine($"Messaggio ricevuto: {message}");
@@ -112,8 +125,13 @@ namespace nvxapp.server.service.RabbitMQ.Listener
             await Task.CompletedTask; // Assicurati di restituire un Task
         }
 
+        
+
+        public override string QueueName => "my-queue";
+        public override string Exchange => "logs";
+        public override string RoutingKey => string.Empty;
+
     }
 
 
-    
 }
