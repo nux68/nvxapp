@@ -43,29 +43,7 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAI
 
                            ) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
-
             _rabbitMqConnection = rabbitMqConnection;
-
-            //////////Rabbit
-            //_cts = new CancellationTokenSource(); // Inizializza il token
-
-            //if (configuration != null)
-            //{
-            //    int port = 5672;
-            //    string? sPort = configuration["RabbitQm:Connection:Port"];
-            //    if (!string.IsNullOrEmpty(sPort))
-            //        port = int.Parse(sPort);
-
-
-            //    _factory = new ConnectionFactory
-            //    {
-            //        HostName = configuration["RabbitQm:Connection:HostName"] ?? "localhost",
-            //        Port = port,
-            //        UserName = configuration["RabbitQm:Connection:UserName"] ?? "guest",
-            //        Password = configuration["RabbitQm:Connection:Password"] ?? "guest"
-            //    };
-            //}
-
         }
 
         public virtual async Task<GenericResult<ChatAIOutModel>> SendMessage(GenericRequest<ChatAIInModel> model, Boolean isSubProcess)
@@ -81,31 +59,29 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAI
                 retVal.Responce = "AI responce :" + JsonSerializer.Serialize(resAi);
 
 
-
-
-                //if(_factory!=null)
-                //{
-
-
-                //_connection = await _factory.CreateConnectionAsync();
-                //_channel = await _connection.CreateChannelAsync();
-
+                #region RabbitMQ
                 if (_rabbitMqConnection != null)
                 {
                     await _rabbitMqConnection.Start();
 
-                    var body = Encoding.UTF8.GetBytes(model.Data.Request);
+                    if (_rabbitMqConnection._channel != null)
+                    {
+                        var body = Encoding.UTF8.GetBytes(model.Data.Request);
 
-                    // Dichiarazione dell'exchange
-                    await _rabbitMqConnection._channel.ExchangeDeclareAsync(exchange: "logs", type: ExchangeType.Fanout);
+                        // Dichiarazione dell'exchange
+                        await _rabbitMqConnection._channel.ExchangeDeclareAsync(exchange: "logs", type: ExchangeType.Fanout);
 
-                    // Pubblicazione del messaggio
-                    await _rabbitMqConnection._channel.BasicPublishAsync(exchange: "logs", routingKey: string.Empty, body: body);
+                        // Pubblicazione del messaggio
+                        await _rabbitMqConnection._channel.BasicPublishAsync(exchange: "logs", routingKey: string.Empty, body: body);
+
+                        await _rabbitMqConnection.Stop();
+                    }
                 }
+                #endregion
 
 
 
-                //}
+
 
 
 

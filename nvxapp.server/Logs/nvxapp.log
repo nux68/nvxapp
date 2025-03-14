@@ -4324,3 +4324,11 @@ System.InvalidOperationException: Can't bind the IDataView column 'PredictedLabe
 2025-03-14 15:38:56.043 [INF] Call: <UserLoad>b__0, GUID: "5a6c482c-61c8-48b6-974e-20e7158f6274", param: {"Data":{"Id":"55bfd94c-8671-47f0-9d8a-109ceeb3af29"}}
 2025-03-14 15:39:04.996 [INF] Call: <SendMessage>b__0, GUID: "68a0c1ae-3952-482d-b2c5-939c46de734e", param: {"Data":{"Request":"123123"}}
 2025-03-14 15:45:49.750 [INF] Call: <SendMessage>b__0, GUID: "9c306563-cba9-4eeb-8bc9-dedd66e668d4", param: {"Data":{"Request":"werwerw"}}
+2025-03-14 15:53:32.690 [INF] Call: <SendMessage>b__0, GUID: "dd395207-2ad0-46c8-a49c-42ac62d81ef8", param: {"Data":{"Request":"qweqweqe"}}
+2025-03-14 15:53:58.609 [INF] Call: <SendMessage>b__0, GUID: "e2b88741-3101-4378-9880-0ae591201751", param: {"Data":{"Request":"rtyrtyrty"}}
+2025-03-14 15:54:16.466 [INF] Call: <SendMessage>b__0, GUID: "8512a78e-9411-437d-9b4a-8b9ad293d0a2", param: {"Data":{"Request":"rtyrty"}}
+2025-03-14 15:55:28.084 [INF] Call: <SendMessage>b__0, GUID: "4dbfcf7d-d8e8-41a3-93c3-e4d0a5bc3cfd", param: {"Data":{"Request":"123123"}}
+2025-03-14 16:00:59.559 [INF] Call: <SendMessage>b__0, GUID: "6b60086f-3bad-4204-bef1-129fe1737dab", param: {"Data":{"Request":"234234"}}
+2025-03-14 16:16:49.516 [INF] Call: <SendMessage>b__0, GUID: "3c68e974-4165-4220-8f81-82d02d1e41b3", param: {"Data":{"Request":"123123123"}}
+2025-03-14 16:17:01.531 [INF] Call: <SendMessage>b__0, GUID: "2bdae0fd-2c99-4afc-86e3-64bb500d4e24", param: {"Data":{"Request":"ertertertet"}}
+2025-03-14 16:46:35.604 [INF] Call: <SendMessage>b__0, GUID: "64418fd3-4160-4fff-a74b-948e37ffefe4", param: {"Data":{"Request":"123232"}}
