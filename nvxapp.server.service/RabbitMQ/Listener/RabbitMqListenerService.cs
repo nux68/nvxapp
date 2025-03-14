@@ -48,11 +48,17 @@ namespace nvxapp.server.service.RabbitMQ.Listener
                 throw new InvalidOperationException("RabbitMQ non è connesso!");
 
 
-            await _rabbitMqConnection._channel.QueueDeclareAsync(queue: "my-durable-queue", durable: false, exclusive: false, autoDelete: false);
+            string queueName = "my-durable-queue";
 
-            QueueDeclareOk queueDeclareResult = await _rabbitMqConnection._channel.QueueDeclareAsync();
-            string queueName = "my-durable-queue"; 
-            await _rabbitMqConnection._channel.QueueBindAsync(queue: queueName, exchange: "logs", routingKey: string.Empty);
+            QueueDeclareOk queueDeclareResult = await _rabbitMqConnection._channel.QueueDeclareAsync(queue: queueName,
+                                                                                                     durable: false, 
+                                                                                                     exclusive:false, 
+                                                                                                     autoDelete: false);
+
+            
+            await _rabbitMqConnection._channel.QueueBindAsync(queue: queueName, 
+                                                              exchange: "logs", 
+                                                              routingKey: string.Empty);
 
 
             Console.WriteLine(" [*] Waiting for logs.");
