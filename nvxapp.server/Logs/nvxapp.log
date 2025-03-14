@@ -4285,3 +4285,29 @@ System.InvalidOperationException: Can't bind the IDataView column 'PredictedLabe
 2025-03-13 10:57:02.383 [INF] Call: <SendMessage>b__0, GUID: "407a235c-7747-4dde-adf9-4ce833c38024", param: {"Data":{"Request":"Paolo Rossi entra alle 09:00"}}
 2025-03-13 10:58:23.150 [INF] Call: <SendMessage>b__0, GUID: "e584ca6b-c659-412c-a4d4-d0df030d193e", param: {"Data":{"Request":"Paolo Rossi entrata alle 09:00"}}
 2025-03-13 10:59:00.553 [INF] Call: <SendMessage>b__0, GUID: "b1c52193-db2c-401e-8052-047cadafcc19", param: {"Data":{"Request":"serpico  maurizion entra 9:15"}}
+2025-03-13 18:39:12.734 [INF] Call: <Login>b__0, GUID: "d10963d6-874f-4ee6-a738-45f4beecb521", param: {"Data":{"UserName":"admin","Password":"1234"}}
+2025-03-13 18:39:13.345 [INF] Call: <UserLoad>b__0, GUID: "b05330a9-40d3-417d-9be0-445151ce2e21", param: {"Data":{"Id":"55bfd94c-8671-47f0-9d8a-109ceeb3af29"}}
+2025-03-13 18:39:14.345 [INF] Call: <DealerList>b__14_0, GUID: "43920c71-ed40-458d-9aa2-3db83458b69a", param: {"Data":{}}
+2025-03-14 09:30:54.252 [INF] Call: <Login>b__0, GUID: "06c568f7-7c1c-409b-a196-1e17329c8254", param: {"Data":{"UserName":"admin","Password":"1234"}}
+2025-03-14 09:30:54.916 [INF] Call: <UserLoad>b__0, GUID: "937349c6-3df3-4e2d-9487-1535ce39a56a", param: {"Data":{"Id":"55bfd94c-8671-47f0-9d8a-109ceeb3af29"}}
+2025-03-14 09:31:00.101 [INF] Call: <DealerList>b__14_0, GUID: "4bd64f5f-f504-449f-8cd0-c547197915cc", param: {"Data":{}}
+2025-03-14 09:31:18.629 [INF] Call: <DealerList>b__14_0, GUID: "0516bcf1-3fa2-4f1c-97cd-6bbbb24fdb07", param: {"Data":{}}
+2025-03-14 09:31:19.811 [INF] Call: <DealerList>b__14_0, GUID: "4a0007c2-1985-4b10-9d5f-9726f127b76f", param: {"Data":{}}
+2025-03-14 09:31:22.574 [INF] Call: <DealerList>b__14_0, GUID: "bca58bb6-c808-4411-b58e-d905f681c493", param: {"Data":{}}
+2025-03-14 09:31:36.783 [INF] Call: <DealerList>b__14_0, GUID: "43e288a9-6ba3-44a4-814d-942d8ef39780", param: {"Data":{}}
+2025-03-14 09:32:18.121 [INF] Call: <Login>b__0, GUID: "b0acbc6a-362b-443b-add0-d2c860551cad", param: {"Data":{"UserName":"admin","Password":"1234"}}
+2025-03-14 09:32:18.245 [INF] Call: <UserLoad>b__0, GUID: "f0fce0d0-85c6-49f0-971d-a652e6a530b9", param: {"Data":{"Id":"55bfd94c-8671-47f0-9d8a-109ceeb3af29"}}
+2025-03-14 09:32:19.808 [INF] Call: <DealerList>b__14_0, GUID: "5ad1a109-cb49-4b15-babf-dde9a9cd34f6", param: {"Data":{}}
+2025-03-14 09:32:20.890 [INF] Call: <UserLoad>b__0, GUID: "9b95e438-1065-43df-b160-59fd14268aeb", param: {"Data":{"Id":"c7bf46e7-e678-440b-a4b2-8f40c7c0c906"}}
+2025-03-14 09:32:22.107 [INF] Call: <FinancialAdvisorList>b__15_0, GUID: "ea1eb87d-af19-4582-ae1d-7e524ebd688a", param: {"Data":{}}
+2025-03-14 12:25:35.388 [INF] Call: <SendMessage>b__0, GUID: "d9915340-4931-48fc-b73e-cdb8845f444b", param: {"Data":{"Request":"123123"}}
+2025-03-14 12:29:03.423 [INF] Call: <SendMessage>b__0, GUID: "9bd46448-d107-4e31-b7bf-964ae53eca4f", param: {"Data":{"Request":"123123"}}
+2025-03-14 12:29:11.861 [INF] Call: <SendMessage>b__0, GUID: "ff9040f7-4f22-43eb-9477-c8a9b1bb0868", param: {"Data":{"Request":"324234234"}}
+2025-03-14 12:29:26.023 [INF] Call: <SendMessage>b__0, GUID: "bdfc016a-2a94-424f-b488-de78ad08da41", param: {"Data":{"Request":"mauro rossi entra all3 4:00"}}
+2025-03-14 12:29:38.216 [INF] Call: <SendMessage>b__0, GUID: "4fbc4a24-159e-4ec3-b282-a1ab846bc6b8", param: {"Data":{"Request":"You: mauro rossi entra alle 4:00"}}
+2025-03-14 12:30:00.124 [INF] Call: <SendMessage>b__0, GUID: "b2790605-ce94-4e4a-a617-d4f1c9bce74d", param: {"Data":{"Request":"You: mauro rossi esce alle 18:00"}}
+2025-03-14 14:16:58.529 [INF] Call: <SendMessage>b__0, GUID: "0d544b87-2968-4be8-a94d-4f5e0427a5c2", param: {"Data":{"Request":"24234"}}
+2025-03-14 14:17:52.462 [INF] Call: <SendMessage>b__0, GUID: "ade0856e-2937-4a32-83a8-c8df53d32dbd", param: {"Data":{"Request":"ytiyiy"}}
+2025-03-14 14:18:33.066 [INF] Call: <SendMessage>b__0, GUID: "219e59a8-b1f3-4c2b-b33a-0e020a440afe", param: {"Data":{"Request":"678678"}}
+2025-03-14 14:55:29.802 [INF] Call: <SendMessage>b__0, GUID: "2f6acfd8-46cc-41f6-ba03-1bee6650d1c6", param: {"Data":{"Request":"rtyrty"}}
+2025-03-14 14:55:57.378 [INF] Call: <SendMessage>b__0, GUID: "d1296c59-77e0-4ca9-bef2-b9bc0f145025", param: {"Data":{"Request":"sookaaaaaa"}}

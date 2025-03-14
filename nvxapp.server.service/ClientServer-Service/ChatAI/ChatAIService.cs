@@ -19,6 +19,7 @@ using System.Text.RegularExpressions;
 //using Microsoft.ML.Data;
 using System.Collections.Generic;
 using static System.Net.Mime.MediaTypeNames;
+using RabbitMQ.Client;
 
 
 
@@ -27,6 +28,12 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAI
 {
     public class ChatAIService: ServiceBase, IChatAIService
     {
+
+        protected readonly ConnectionFactory? _factory = null;
+        protected IConnection? _connection;
+        protected IChannel? _channel;
+        private readonly CancellationTokenSource _cts = new(); // Aggiungi questo campo alla classe
+
 
         public ChatAIService(IMapper mapper,
                            UserManager<ApplicationUser> userManager,
@@ -37,7 +44,27 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAI
 
                            ) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
+
+            //////////Rabbit
+            _cts = new CancellationTokenSource(); // Inizializza il token
             
+            if (configuration != null)
+            {
+                int port = 5672;
+                string? sPort = configuration["RabbitQm:Connection:Port"];
+                if (!string.IsNullOrEmpty(sPort))
+                    port = int.Parse(sPort);
+
+
+                _factory = new ConnectionFactory
+                {
+                    HostName = configuration["RabbitQm:Connection:HostName"] ?? "localhost",
+                    Port = port,
+                    UserName = configuration["RabbitQm:Connection:UserName"] ?? "guest",
+                    Password = configuration["RabbitQm:Connection:Password"] ?? "guest"
+                };
+            }
+
         }
 
         public virtual async Task<GenericResult<ChatAIOutModel>> SendMessage(GenericRequest<ChatAIInModel> model, Boolean isSubProcess)
@@ -51,6 +78,25 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAI
                 FakeAI_Regex fakeAI = new FakeAI_Regex();
                 var resAi = fakeAI.GetClockignCommand(model.Data.Request);
                 retVal.Responce = "AI responce :" + JsonSerializer.Serialize(resAi) ;
+
+
+                if(_factory!=null)
+                {
+                    _connection = await _factory.CreateConnectionAsync();
+                    _channel = await _connection.CreateChannelAsync();
+
+                    var body = Encoding.UTF8.GetBytes(model.Data.Request);
+
+                    // Dichiarazione dell'exchange
+                    await _channel.ExchangeDeclareAsync(exchange: "logs", type: ExchangeType.Fanout);
+
+                    // Pubblicazione del messaggio
+                    await _channel.BasicPublishAsync(exchange: "logs", routingKey: string.Empty, body: body);
+
+                }
+                
+
+
 
                 //FakeAI_Nlp fakeAI_Nlp = new FakeAI_Nlp();
                 //var cmdObj = fakeAI_Nlp.EstrarreDati(model.Data.Request);

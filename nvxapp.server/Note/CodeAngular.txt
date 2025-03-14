@@ -28,3 +28,17 @@ assegna delle prop css in funzione della risoluzione
     --height: 90vh; /* Altezza del 90% della visuale verticale */
   }
 }
+
+
+				--color-recorder-active: #f00;
+        --color-recorder-inactive: #550a0c;
+        --color-recorder-active-icon: #fff;
+        --color-title-animation-1: #45474a;
+        --color-title-animation-2: #131314;
+        --color-highlight: #f89c21;
+        --color-primary: #87a9ff;
+        --color-tertiary: #ffb95c;
+        --user-chunk-background-color: #acb7ff;
+        --color-sidebars-background: #0c0e11;
+        --color-sidebars-hover: #1a1c1e;
+        --color-canvas-background: #1a1c1e;

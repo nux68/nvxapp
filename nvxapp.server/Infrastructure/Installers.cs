@@ -1,29 +1,66 @@
-﻿using nvxapp.server.service.Interfaces;
-using System.Reflection;
-using NetCore.AutoRegisterDi;
-using nvxapp.server.data.Infrastructure;
-using Microsoft.EntityFrameworkCore;
-using nvxapp.server.data.Interfaces;
+﻿using Hangfire;
+using Hangfire.PostgreSql;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using NetCore.AutoRegisterDi;
 using NpgsqlTypes;
+using nvxapp.server.data.Entities.Public;
+using nvxapp.server.data.Infrastructure;
+using nvxapp.server.data.Interfaces;
+using nvxapp.server.service.HubAI;
+using nvxapp.server.service.Interfaces;
+using nvxapp.server.service.RabbitMQ;
+using nvxapp.server.service.RabbitMQ.Listener;
+using nvxapp.server.service.ServerModels;
+using Serilog;
 using Serilog.Core;
 using Serilog.Events;
-using Serilog;
 using Serilog.Sinks.PostgreSQL;
-using nvxapp.server.service.ServerModels;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using nvxapp.server.data.Entities.Public;
-using nvxapp.server.service.HubAI;
 using System.Net;
-using Hangfire;
-using Hangfire.PostgreSql;
+using System.Reflection;
+using System.Text;
 
 namespace nvxapp.server.Infrastructure
 {
     public static class Installers
     {
+        public static IServiceCollection InstallRabbitMq(this WebApplicationBuilder builder)
+        {
+            //builder.Services.AddHostedService<RabbitMqListenerService>();
+
+
+            //OK
+            var hostedServiceType = typeof(IRabbitMqListenerService);
+            var targetAssembly = Assembly.GetAssembly(typeof(IRabbitMqListenerService));
+
+            if (targetAssembly != null)
+            {
+                var implementations = targetAssembly
+               .GetTypes()
+               .Where(t => t.IsClass && !t.IsAbstract && hostedServiceType.IsAssignableFrom(t));
+
+                foreach (var implementation in implementations)
+                {
+                    // Trova il metodo generico corretto per AddHostedService
+                    var addHostedServiceMethod = typeof(ServiceCollectionHostedServiceExtensions)
+                        .GetMethods(BindingFlags.Static | BindingFlags.Public)
+                        .First(m => m.Name == nameof(ServiceCollectionHostedServiceExtensions.AddHostedService) &&
+                                    m.IsGenericMethod);
+
+                    // Costruisci il metodo generico con il tipo specifico
+                    var genericMethod = addHostedServiceMethod.MakeGenericMethod(implementation);
+
+                    // Invochi il metodo su builder.Services
+                    genericMethod.Invoke(null, new object[] { builder.Services });
+                }
+            }
+
+
+            return builder.Services;
+        }
+
 
         public static IServiceCollection InstallHangFire(this WebApplicationBuilder builder)
         {
@@ -50,7 +87,7 @@ namespace nvxapp.server.Infrastructure
         }
 
 
-        public static  void  InstallSignalRHub(this WebApplication app)
+        public static void InstallSignalRHub(this WebApplication app)
         {
             app.MapHub<SignalRHub>("/chathub");
         }
@@ -67,8 +104,16 @@ namespace nvxapp.server.Infrastructure
         public static IServiceCollection InstallServices(this WebApplicationBuilder builder)
         {
 
+            //builder.Services.RegisterAssemblyPublicNonGenericClasses(Assembly.GetAssembly(typeof(IServiceBase)))
+            //    .AsPublicImplementedInterfaces(ServiceLifetime.Scoped);
+
+            //builder.Services.RegisterAssemblyPublicNonGenericClasses(Assembly.GetAssembly(typeof(IServiceBase)))
+            //        .Where(type => type != typeof(RabbitMqListenerService)) // Escludi RabbitMqListenerService
+            //        .AsPublicImplementedInterfaces(ServiceLifetime.Scoped);
+
             builder.Services.RegisterAssemblyPublicNonGenericClasses(Assembly.GetAssembly(typeof(IServiceBase)))
-                .AsPublicImplementedInterfaces(ServiceLifetime.Scoped);
+                            .Where(type => !typeof(IRabbitMqListenerService).IsAssignableFrom(type)) // Escludi tutte le classi che implementano IRabbitMqListenerService
+                            .AsPublicImplementedInterfaces(ServiceLifetime.Scoped);
 
 
             return builder.Services;
@@ -79,7 +124,7 @@ namespace nvxapp.server.Infrastructure
                                                   .BuildServiceProvider();
 
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
-            
+
                 options.UseNpgsql(
                        builder.Configuration.GetConnectionString("nvxappDbContext"),
                        npgsqlOptions => npgsqlOptions.MigrationsAssembly("nvxapp.server.data") // Specifica l'assembly per le migrazioni
@@ -99,7 +144,7 @@ namespace nvxapp.server.Infrastructure
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
 
-            builder.Services.AddHttpContextAccessor();  
+            builder.Services.AddHttpContextAccessor();
             builder.Services.AddScoped<SignInManager<ApplicationUser>>();
 
 
@@ -177,7 +222,7 @@ namespace nvxapp.server.Infrastructure
                 .WriteTo.Console();
 
             string? LogOnFile = builder.Configuration["Logging:LogType:LogOnFile"];
-            if(LogOnFile!=null)
+            if (LogOnFile != null)
             {
                 bool writeToFile = Boolean.Parse(LogOnFile);
 
@@ -191,12 +236,12 @@ namespace nvxapp.server.Infrastructure
 
                 }
             }
-            
+
 
 
             string? LogOnDB = builder.Configuration["Logging:LogType:LogOnDB"];
 
-            if(LogOnDB!=null)
+            if (LogOnDB != null)
             {
                 bool writeToDatabase = Boolean.Parse(LogOnDB);
                 if (writeToDatabase)
@@ -276,7 +321,7 @@ namespace nvxapp.server.Infrastructure
                                     ClockSkew = TimeSpan.Zero // Disattiva il ritardo predefinito di 5 minuti
                                 };
 
-                                if(useSignalR)
+                                if (useSignalR)
                                 {
                                     // 🔹 Gestisce il token anche per SignalR (quando inviato nella query string)
                                     options.Events = new JwtBearerEvents
@@ -296,7 +341,7 @@ namespace nvxapp.server.Infrastructure
                                         }
                                     };
                                 }
-                                
+
                             });
 
             return builder.Services;
@@ -309,7 +354,7 @@ namespace nvxapp.server.Infrastructure
             builder.Services.AddCors(options =>
             {
 
-                if(useSignalR==false)
+                if (useSignalR == false)
                 {
                     options.AddPolicy("AllowAllOrigins", policy =>
                     {
@@ -335,7 +380,7 @@ namespace nvxapp.server.Infrastructure
 
 
 
-                
+
 
             });
 

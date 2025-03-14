@@ -2,6 +2,7 @@ using Hangfire;
 using Microsoft.EntityFrameworkCore;
 using nvxapp.server.data.Infrastructure;
 using nvxapp.server.Infrastructure;
+using nvxapp.server.service.RabbitMQ;
 using System.Diagnostics;
 
 
@@ -20,9 +21,10 @@ bool.TryParse(sUseSignalR, out useSignalR);
 
 Installers.InstallSettings(builder);
 
+Installers.InstallRabbitMq(builder);
 
 
-// Add services to the container.
+////////// Add services to the container.
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -47,11 +49,11 @@ Installers.InstallLog(builder);
 Installers.InstallAuthentication(builder, useSignalR);
 
 //if(useSignalR)
-   builder.Services.AddSignalR();
+builder.Services.AddSignalR();
 
 
-if(useHangFire)
-   Installers.InstallHangFire(builder);
+if (useHangFire)
+    Installers.InstallHangFire(builder);
 
 
 
@@ -99,14 +101,14 @@ using (var scope = app.Services.CreateScope())
             }
         }
     }
-   
+
 }
 
 
 
 
 
-if(useSignalR==false)
+if (useSignalR == false)
 {
     //Usa la policy CORS globale
     app.UseCors("AllowAllOrigins");
@@ -124,7 +126,7 @@ else
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
-    
+
     // Configura l'uso di Swagger
     app.UseSwagger();
     app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1"); });
