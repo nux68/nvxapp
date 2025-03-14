@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using nvxapp.server.data.Entities.Public;
@@ -10,60 +9,62 @@ using nvxapp.server.service.ClientServer_Service.ChatAI.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Infrastructure;
 using nvxapp.server.service.Interfaces;
+using nvxapp.server.service.RabbitMQ;
 using nvxapp.server.service.ServerModels;
-using System;
+//using Microsoft.ML;
+//using Microsoft.ML.Data;
+using RabbitMQ.Client;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
-//using Microsoft.ML;
-//using Microsoft.ML.Data;
-using System.Collections.Generic;
-using static System.Net.Mime.MediaTypeNames;
-using RabbitMQ.Client;
 
 
 
 
 namespace nvxapp.server.service.ClientServer_Service.ChatAI
 {
-    public class ChatAIService: ServiceBase, IChatAIService
+    public class ChatAIService : ServiceBase, IChatAIService
     {
 
-        protected readonly ConnectionFactory? _factory = null;
-        protected IConnection? _connection;
-        protected IChannel? _channel;
-        private readonly CancellationTokenSource _cts = new(); // Aggiungi questo campo alla classe
+        //protected readonly ConnectionFactory? _factory = null;
+        //protected IConnection? _connection;
+        //protected IChannel? _channel;
+        //private readonly CancellationTokenSource _cts = new(); // Aggiungi questo campo alla classe
 
+        private readonly iRabbitMqConnection _rabbitMqConnection;
 
         public ChatAIService(IMapper mapper,
                            UserManager<ApplicationUser> userManager,
                            IAspNetUsersRepository aspNetUsersRepository,
                            IOptions<JwtParameter> jwtParameter,
                            IHttpContextAccessor httpContextAccessor,
-                           IConfiguration configuration
+                           IConfiguration configuration,
+                           iRabbitMqConnection rabbitMqConnection
 
                            ) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
 
+            _rabbitMqConnection = rabbitMqConnection;
+
             //////////Rabbit
-            _cts = new CancellationTokenSource(); // Inizializza il token
-            
-            if (configuration != null)
-            {
-                int port = 5672;
-                string? sPort = configuration["RabbitQm:Connection:Port"];
-                if (!string.IsNullOrEmpty(sPort))
-                    port = int.Parse(sPort);
+            //_cts = new CancellationTokenSource(); // Inizializza il token
+
+            //if (configuration != null)
+            //{
+            //    int port = 5672;
+            //    string? sPort = configuration["RabbitQm:Connection:Port"];
+            //    if (!string.IsNullOrEmpty(sPort))
+            //        port = int.Parse(sPort);
 
 
-                _factory = new ConnectionFactory
-                {
-                    HostName = configuration["RabbitQm:Connection:HostName"] ?? "localhost",
-                    Port = port,
-                    UserName = configuration["RabbitQm:Connection:UserName"] ?? "guest",
-                    Password = configuration["RabbitQm:Connection:Password"] ?? "guest"
-                };
-            }
+            //    _factory = new ConnectionFactory
+            //    {
+            //        HostName = configuration["RabbitQm:Connection:HostName"] ?? "localhost",
+            //        Port = port,
+            //        UserName = configuration["RabbitQm:Connection:UserName"] ?? "guest",
+            //        Password = configuration["RabbitQm:Connection:Password"] ?? "guest"
+            //    };
+            //}
 
         }
 
@@ -73,28 +74,39 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAI
             {
                 ChatAIOutModel retVal = new ChatAIOutModel();
 
-                retVal.Responce = "AI responce :" +  model.Data.Request;
+                retVal.Responce = "AI responce :" + model.Data.Request;
 
                 FakeAI_Regex fakeAI = new FakeAI_Regex();
                 var resAi = fakeAI.GetClockignCommand(model.Data.Request);
-                retVal.Responce = "AI responce :" + JsonSerializer.Serialize(resAi) ;
+                retVal.Responce = "AI responce :" + JsonSerializer.Serialize(resAi);
 
 
-                if(_factory!=null)
+
+
+                //if(_factory!=null)
+                //{
+
+
+                //_connection = await _factory.CreateConnectionAsync();
+                //_channel = await _connection.CreateChannelAsync();
+
+                if (_rabbitMqConnection != null)
                 {
-                    _connection = await _factory.CreateConnectionAsync();
-                    _channel = await _connection.CreateChannelAsync();
+                    await _rabbitMqConnection.Start();
 
                     var body = Encoding.UTF8.GetBytes(model.Data.Request);
 
                     // Dichiarazione dell'exchange
-                    await _channel.ExchangeDeclareAsync(exchange: "logs", type: ExchangeType.Fanout);
+                    await _rabbitMqConnection._channel.ExchangeDeclareAsync(exchange: "logs", type: ExchangeType.Fanout);
 
                     // Pubblicazione del messaggio
-                    await _channel.BasicPublishAsync(exchange: "logs", routingKey: string.Empty, body: body);
-
+                    await _rabbitMqConnection._channel.BasicPublishAsync(exchange: "logs", routingKey: string.Empty, body: body);
                 }
-                
+
+
+
+                //}
+
 
 
 
@@ -422,7 +434,7 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAI
 
     public class FakeAI_Regex
     {
-        private List<Regex> Clockign_ENT; 
+        private List<Regex> Clockign_ENT;
 
         public FakeAI_Regex()
         {
@@ -435,21 +447,21 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAI
             //Clockign_ENT.Add(new Regex(@"([a-zA-Z\s]+)\s(entrata|ent|uscita|usc)(?:\salle)?\s(\d{1,2}(([:\.]\d{2})|(\se\s\d{1,2})))"));
         }
 
-        public List<ClockignCommand>  GetClockignCommand(string text)
+        public List<ClockignCommand> GetClockignCommand(string text)
         {
             List<ClockignCommand> clockignCommands = new List<ClockignCommand>();
 
-            foreach(var item in Clockign_ENT)
+            foreach (var item in Clockign_ENT)
             {
                 if (item.IsMatch(text))
                 {
                     var match = item.Match(text);
                     clockignCommands.Add(new ClockignCommand()
                     {
-                         action = match.Groups[2].Value.ToString(),
-                         dipendente = match.Groups[1].Value.ToString(),
-                         orario = match.Groups[3].Value.ToString(),
-                         type="timbratura"
+                        action = match.Groups[2].Value.ToString(),
+                        dipendente = match.Groups[1].Value.ToString(),
+                        orario = match.Groups[3].Value.ToString(),
+                        type = "timbratura"
 
                     });
                 }

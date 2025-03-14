@@ -28,9 +28,12 @@ namespace nvxapp.server.Infrastructure
     {
         public static IServiceCollection InstallRabbitMq(this WebApplicationBuilder builder)
         {
+
+            
+            builder.Services.AddScoped<iRabbitMqConnection, RabbitMqConnection>();
+
+
             //builder.Services.AddHostedService<RabbitMqListenerService>();
-
-
             //OK
             var hostedServiceType = typeof(IRabbitMqListenerService);
             var targetAssembly = Assembly.GetAssembly(typeof(IRabbitMqListenerService));

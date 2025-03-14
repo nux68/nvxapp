@@ -61,4 +61,6 @@ namespace nvxapp.server.service.RabbitMQ
     }
 
     
+    
+
 }
