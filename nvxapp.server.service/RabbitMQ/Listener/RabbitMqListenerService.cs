@@ -41,7 +41,7 @@ namespace nvxapp.server.service.RabbitMQ.Listener
         {
             _cts.Cancel(); // Segnala che l'operazione deve essere annullata
 
-            await _rabbitMqConnection.Stop();
+            await _rabbitMqConnection.Stop(1000);
         }
         public async Task ConsumeAsync(Func<object, Task> messageHandler, CancellationToken cancellationToken)
         {
@@ -144,13 +144,16 @@ namespace nvxapp.server.service.RabbitMQ.Listener
 
         
 
-        public override string QueueName => "my-queue";
-        public override string Exchange => "logs";
-        public override string RoutingKey => string.Empty;
+        public override string QueueName => RabbitMqParameter.Default_QueueName;
+        public override string Exchange => RabbitMqParameter.Default_Exchange;
+        public override string RoutingKey => RabbitMqParameter.Default_RoutingKey;
 
     }
 
 
+    /*
+     aggiungere nuove voci per gestire i vari listener
+     */
     public static class RabbitMqParameter
     {
         public static string Default_Exchange => "logs";

@@ -56,12 +56,13 @@ namespace nvxapp.server.service.RabbitMQ
             }
         }
 
-        public async Task Stop()
+        public async Task Stop(int Milliseconds)
         {
             _cts.Cancel(); // Segnala che l'operazione deve essere annullata
 
             // Attendi un breve periodo di tempo per consentire a ConsumeAsync di terminare
-            await Task.Delay(TimeSpan.FromSeconds(5)); // Tempo ragionevole
+            //await Task.Delay(TimeSpan.FromSeconds(5)); // Tempo ragionevole
+            await Task.Delay(TimeSpan.FromMilliseconds(Milliseconds)); // Tempo ragionevole
 
             if (_channel != null && _channel.IsOpen)
             {
@@ -80,7 +81,7 @@ namespace nvxapp.server.service.RabbitMQ
     public interface iRabbitMqConnection
     {
         public  Task Start();
-        public Task Stop();
+        public Task Stop(int Milliseconds);
         public IChannel? _channel { get; set; }
     }
 

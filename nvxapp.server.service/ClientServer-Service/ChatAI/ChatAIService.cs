@@ -10,6 +10,7 @@ using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Infrastructure;
 using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.RabbitMQ;
+using nvxapp.server.service.RabbitMQ.Listener;
 using nvxapp.server.service.ServerModels;
 //using Microsoft.ML;
 //using Microsoft.ML.Data;
@@ -66,7 +67,7 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAI
 
                     if (_rabbitMqConnection._channel != null)
                     {
-                        string QueueName= "my-queue";
+                        string QueueName= RabbitMqParameter.Default_QueueName;
 
                         QueueDeclareOk queueDeclareResult = await _rabbitMqConnection._channel.QueueDeclareAsync(queue: QueueName,
                                                                                          durable: false,
@@ -75,12 +76,12 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAI
 
                         var body = Encoding.UTF8.GetBytes(model.Data.Request);
 
-                        // Pubblicazione del messaggio
-                        await _rabbitMqConnection._channel.BasicPublishAsync(exchange: "logs", 
-                                                                             routingKey: string.Empty, 
+                        //// Pubblicazione del messaggio
+                        await _rabbitMqConnection._channel.BasicPublishAsync(exchange: RabbitMqParameter.Default_Exchange,
+                                                                             routingKey: string.Empty,
                                                                              body: body);
 
-                        await _rabbitMqConnection.Stop();
+                        await _rabbitMqConnection.Stop(10);
                     }
                 }
                 #endregion
