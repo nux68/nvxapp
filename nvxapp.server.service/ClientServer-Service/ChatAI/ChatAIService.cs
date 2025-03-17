@@ -66,6 +66,13 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAI
 
                     if (_rabbitMqConnection._channel != null)
                     {
+                        string QueueName= "my-queue";
+
+                        QueueDeclareOk queueDeclareResult = await _rabbitMqConnection._channel.QueueDeclareAsync(queue: QueueName,
+                                                                                         durable: false,
+                                                                                         exclusive: false,
+                                                                                         autoDelete: false);
+
                         var body = Encoding.UTF8.GetBytes(model.Data.Request);
 
                         // Pubblicazione del messaggio

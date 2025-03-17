@@ -1,6 +1,9 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using nvxapp.server.service.ClientServer_Service.ModelsBase;
+using nvxapp.server.service.Service.WeatherForecast;
+using nvxapp.server.service.Service.WeatherForecast.Models;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using Serilog;
@@ -10,8 +13,10 @@ namespace nvxapp.server.service.RabbitMQ.Listener
 {
     public abstract class RabbitMqListenerService : IHostedService, IRabbitMqListenerService
     {
+        //usare nelle classi derivate per ottenere uno scope
+        protected readonly IServiceProvider _serviceProvider;
+        
         private readonly CancellationTokenSource _cts = new();
-        private readonly IServiceProvider _serviceProvider;
         private readonly iRabbitMqConnection _rabbitMqConnection;
 
         public RabbitMqListenerService(IConfiguration configuration,
@@ -108,9 +113,16 @@ namespace nvxapp.server.service.RabbitMQ.Listener
 
     public class RabbitMqListenerService_Demo : RabbitMqListenerService
     {
+        private readonly IWeatherForecastService _weatherForecastService;
 
         public RabbitMqListenerService_Demo(IConfiguration configuration,
-                                            IServiceProvider serviceProvider) : base(configuration, serviceProvider) { }
+                                            IServiceProvider serviceProvider) : base(configuration, serviceProvider) {
+
+            using (var scope = _serviceProvider.CreateScope())
+            {
+                _weatherForecastService = scope.ServiceProvider.GetRequiredService<IWeatherForecastService>();
+            }
+        }
 
 
         protected override async Task HandleMessageAsync(object message)
@@ -120,6 +132,11 @@ namespace nvxapp.server.service.RabbitMQ.Listener
 
             // Esempio: salva il messaggio in un database, elabora dati, ecc.
             //await _myDatabaseService.SaveMessageAsync(message); // ipotetico servizio di database
+
+            GenericRequest<WeatherForecastInModel> request = new GenericRequest<WeatherForecastInModel>();
+            request.Data = new WeatherForecastInModel();
+
+            var res = await _weatherForecastService.GetAll(request,true);
 
             // Gestisci eventuali eccezioni qui dentro!
             await Task.CompletedTask; // Assicurati di restituire un Task
@@ -133,5 +150,12 @@ namespace nvxapp.server.service.RabbitMQ.Listener
 
     }
 
+
+    public static class RabbitMqParameter
+    {
+        public static string Default_Exchange => "logs";
+        public static string Default_QueueName => "my-queue";
+        public static string Default_RoutingKey => string.Empty;
+    }
 
 }
