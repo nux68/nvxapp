@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace nvxapp.server.data.Entities.Tenant
 {
-    public class Events : BaseEntity
+    public class Request : BaseEntity
     {
 
         [Required]
@@ -11,8 +11,8 @@ namespace nvxapp.server.data.Entities.Tenant
         public ApplicationUser? AspNetUsersNavigation { get; set; }
 
         public DateTime Date { get; set; }
-        public EventType Type { get; set; }
-        public EventState State { get; set; }
+        public RequestType Type { get; set; }
+        public RequestState State { get; set; }
 
         // Campo per oggetto JSON
         public string? DataJson { get; set; }
@@ -21,14 +21,14 @@ namespace nvxapp.server.data.Entities.Tenant
     }
 
 
-    public enum EventType
+    public enum RequestType
     {
         ClockRequest = 1,
         JustRequest = 2,
         ExpenseReportRequest = 3
     }
 
-    public enum EventState
+    public enum RequestState
     {
         Entered = 1,
         Deleted = 1,
