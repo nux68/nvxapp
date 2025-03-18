@@ -67,18 +67,17 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAI
 
                     if (_rabbitMqConnection._channel != null)
                     {
-                        string QueueName= RabbitMqParameter.Default_QueueName;
-
-                        QueueDeclareOk queueDeclareResult = await _rabbitMqConnection._channel.QueueDeclareAsync(queue: QueueName,
-                                                                                         durable: false,
-                                                                                         exclusive: false,
-                                                                                         autoDelete: false);
+                        QueueDeclareOk queueDeclareResult = await _rabbitMqConnection._channel.QueueDeclareAsync(
+                                                                                                 queue: RabbitMqParameter.QueueName_Demo,
+                                                                                                 durable: false,
+                                                                                                 exclusive: false,
+                                                                                                 autoDelete: false);
 
                         var body = Encoding.UTF8.GetBytes(model.Data.Request);
 
                         //// Pubblicazione del messaggio
                         await _rabbitMqConnection._channel.BasicPublishAsync(exchange: RabbitMqParameter.Default_Exchange,
-                                                                             routingKey: string.Empty,
+                                                                             routingKey: RabbitMqParameter.RoutingKey_Demo,
                                                                              body: body);
 
                         await _rabbitMqConnection.Stop(10);

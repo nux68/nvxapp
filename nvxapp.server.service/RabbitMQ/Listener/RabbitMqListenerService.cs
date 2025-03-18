@@ -48,16 +48,24 @@ namespace nvxapp.server.service.RabbitMQ.Listener
             if (_rabbitMqConnection._channel == null)
                 throw new InvalidOperationException("RabbitMQ non è connesso!");
 
+            /*
+            1️⃣ Fanout → Broadcast: tutti i consumer ricevono il messaggio.
+            2️⃣ Direct → Routing esatto con chiave specifica.  (RoutingKey)
+            3️⃣ Topic → Routing basato su pattern(wildcard).
+            4️⃣ Headers → Routing basato su header personalizzati.
+            */
+            await _rabbitMqConnection._channel.ExchangeDeclareAsync(exchange: Exchange,
+                                                                    type: ExchangeType.Fanout // Oppure Direct, Topic, Headers a seconda del caso
+                                                                    );
 
-            string queueName = QueueName;
 
-            QueueDeclareOk queueDeclareResult = await _rabbitMqConnection._channel.QueueDeclareAsync(queue: queueName,
+            QueueDeclareOk queueDeclareResult = await _rabbitMqConnection._channel.QueueDeclareAsync(queue: QueueName,
                                                                                                      durable: false,
                                                                                                      exclusive: false,
                                                                                                      autoDelete: false);
 
 
-            await _rabbitMqConnection._channel.QueueBindAsync(queue: queueName,
+            await _rabbitMqConnection._channel.QueueBindAsync(queue: QueueName,
                                                               exchange: Exchange ,
                                                               routingKey: RoutingKey);
 
@@ -84,7 +92,7 @@ namespace nvxapp.server.service.RabbitMQ.Listener
             };
 
             //serve per indentificare il consumer, magari per spegnerlo
-            string consumerTag = await _rabbitMqConnection._channel.BasicConsumeAsync(queueName, autoAck: true, consumer: consumer);
+            string consumerTag = await _rabbitMqConnection._channel.BasicConsumeAsync(QueueName, autoAck: true, consumer: consumer);
             try
             {
                 // Attendi finché non viene richiesta la cancellazione
@@ -130,12 +138,9 @@ namespace nvxapp.server.service.RabbitMQ.Listener
             // Qui elabora il messaggio ricevuto da RabbitMQ.
             Console.WriteLine($"Messaggio ricevuto: {message}");
 
-            // Esempio: salva il messaggio in un database, elabora dati, ecc.
-            //await _myDatabaseService.SaveMessageAsync(message); // ipotetico servizio di database
-
+            // Esempio: di chiamata al service
             GenericRequest<WeatherForecastInModel> request = new GenericRequest<WeatherForecastInModel>();
             request.Data = new WeatherForecastInModel();
-
             var res = await _weatherForecastService.GetAll(request,true);
 
             // Gestisci eventuali eccezioni qui dentro!
@@ -144,9 +149,9 @@ namespace nvxapp.server.service.RabbitMQ.Listener
 
         
 
-        public override string QueueName => RabbitMqParameter.Default_QueueName;
+        public override string QueueName => RabbitMqParameter.QueueName_Demo;
         public override string Exchange => RabbitMqParameter.Default_Exchange;
-        public override string RoutingKey => RabbitMqParameter.Default_RoutingKey;
+        public override string RoutingKey => RabbitMqParameter.RoutingKey_Demo;
 
     }
 
@@ -156,9 +161,14 @@ namespace nvxapp.server.service.RabbitMQ.Listener
      */
     public static class RabbitMqParameter
     {
-        public static string Default_Exchange => "logs";
+        public static string Default_Exchange => "Nvxapp-Exchange";
         public static string Default_QueueName => "my-queue";
         public static string Default_RoutingKey => string.Empty;
+
+        public static string RoutingKey_Demo => "RoutingKey_demo";
+        public static string QueueName_Demo => "Queue_demo";
+
     }
 
 }
+
