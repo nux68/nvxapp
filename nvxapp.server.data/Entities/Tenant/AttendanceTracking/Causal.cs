@@ -3,17 +3,17 @@ using System.ComponentModel.DataAnnotations;
 
 namespace nvxapp.server.data.Entities.Tenant
 {
-    public class ExpenseReport : BaseEntity
+    public class Causal : BaseEntity
     {
         [Required]
         public required string IdAspNetUsers { get; set; }
         public ApplicationUser? AspNetUsersNavigation { get; set; }
 
         public DateTime Date { get; set; }
-        public RequestState State { get; set; }
 
-        public int? IdRequest { get; set; }
-        public Request? RequestNavigation { get; set; }
+
+        public int IdCausualType { get; set; }
+        public CausalType? CausalTypeNavigation { get; set; }
     }
 
 

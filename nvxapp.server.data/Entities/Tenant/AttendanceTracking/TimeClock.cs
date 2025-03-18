@@ -9,11 +9,15 @@ namespace nvxapp.server.data.Entities.Tenant
         public required string IdAspNetUsers { get; set; }
         public ApplicationUser? AspNetUsersNavigation { get; set; }
 
+        public RequestState State { get; set; }
         public DateTime Clocking { get; set; }
         public DateTime ClockingOriginal { get; set; }
         public DateTime? ClockingRounded { get; set; }
         public DateTime DateReference { get; set; } // girno al quale viene agganciata la timbratura (servita per cavallo notte montanti /smontanti)
         public ClockingType Type { get; set; }
+
+        public int? IdRequest { get; set; }
+        public Request? RequestNavigation { get; set; }
     }
 
 
