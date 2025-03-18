@@ -15,23 +15,22 @@ namespace nvxapp.server.data.Entities.Tenant
         public RequestState State { get; set; }
 
         // Campo per oggetto JSON
-        public string? DataJson { get; set; }
-
+        //public string? DataJson { get; set; }
 
     }
 
 
     public enum RequestType
     {
-        ClockRequest = 1,
-        JustRequest = 2,
-        ExpenseReportRequest = 3
+        TimeClock,
+        Just,
+        ExpenseReport
     }
 
     public enum RequestState
     {
-        Entered = 1,
-        Deleted = 1,
+        Entered,
+        Deleted,
         Rejected,
         Approved,
 
