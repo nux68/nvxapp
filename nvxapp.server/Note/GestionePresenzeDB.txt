@@ -1,4 +1,23 @@
-﻿[1]AspNetUsers(1)
+﻿[1]Dealer (CONC)
+	UserDealer                        -> AspNetUsers			
+
+[1]FinancialAdvisor (STUDIO)
+	UserFinancialAdvisor              -> AspNetUsers
+
+			
+[1]Company(AZIE)
+	UserCompany                       -> AspNetUsers
+	Az_Anagrafica(1-1)
+		Par_Causali(1-N)
+		Par_Giustificativi(1-N)
+
+		Az_Sedi(1-N)
+			Az_Reparto(1-N)           -> Ricorsivo
+
+		
+
+
+[1]AspNetUsers(1)
 	Dip_Anagrafica(1-1)                  -> AspNetUsers
 		Dip_RapportoLavoro(1-N)
 			Dip_GG_Giustificativi(1-N)   -> Par_Giustificativi
@@ -7,19 +26,3 @@
 			Dip_GG_Richiesta(1-N)
 			--
 			Dip_GG_Causali(1-N)          -> Par_Causali
-			
-
-[1]FinancialAdvisor
-	UserFinancialAdvisor              -> AspNetUsers
-
-[1]Dealer
-	UserDealer                        -> AspNetUsers
-			
-[1]Company(N)
-	UserCompany                       -> AspNetUsers
-	Az_Anagrafica(1-1)
-		Az_Sedi(1-N)
-			Az_Reparto(1-N)           -> Ricorsivo
-
-		Par_Causali(1-N)
-		Par_Giustificativi(1-N)
