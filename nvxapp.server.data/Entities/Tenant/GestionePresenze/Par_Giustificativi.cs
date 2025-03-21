@@ -3,18 +3,18 @@ using System.ComponentModel.DataAnnotations;
 
 namespace nvxapp.server.data.Entities.Tenant
 {
-    public class CausalType : BaseEntity
+    public class Par_Giustificativi : BaseEntity
     {
 
         [Required]
         [MaxLength(50)]
-        public string? Description { get; set; }
+        public string? Descrizione { get; set; }
 
         [Required]
         [MaxLength(10)]
-        public string? Code { get; set; }
+        public string? Codice { get; set; }
 
-
+        public ICollection<Dip_GG_Giustificativi>? Dip_GG_Giustificativi { get; set; }
 
     }
 

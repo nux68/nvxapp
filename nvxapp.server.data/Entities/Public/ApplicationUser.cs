@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using nvxapp.server.data.Entities.Tenant;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -19,7 +20,8 @@ namespace nvxapp.server.data.Entities.Public
         public ICollection<UserCompany>? UserCompany { get; set; }
         public ICollection<UserFinancialAdvisor>? UserFinancialAdvisor { get; set; }
 
-        
+        public Dip_Anagrafica? Dip_Anagrafica { get; set; }
+
     }
 
 

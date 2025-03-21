@@ -1,0 +1,13 @@
+﻿AspNetUsers(1)
+	Dip_Anagrafica(1-1)
+		Dip_RapportoLavoro(1-N)
+			Dip_GG_Causali(1-N)
+
+			Dip_GG_Giustificativi(1-N)
+			Dip_GG_NotaSpesa(1-N)
+			Dip_GG_Richiesta(1-N)
+			Dip_GG_Timbratura(1-N)
+
+
+			Par_Causali
+			Par_Giustificativi

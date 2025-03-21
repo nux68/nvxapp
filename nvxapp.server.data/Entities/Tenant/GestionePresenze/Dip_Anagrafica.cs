@@ -3,17 +3,22 @@ using System.ComponentModel.DataAnnotations;
 
 namespace nvxapp.server.data.Entities.Tenant
 {
-    public class ExpenseReport : BaseEntity
+
+    /*
+     dati anagrafici
+     */
+    public class Dip_Anagrafica : BaseEntity
     {
         [Required]
         public required string IdAspNetUsers { get; set; }
         public ApplicationUser? AspNetUsersNavigation { get; set; }
 
-        public DateTime Date { get; set; }
-        public RequestState State { get; set; }
+        public string? Cognome { get; set; }
+        public string? Nome { get; set; }
 
-        public int? IdRequest { get; set; }
-        public Request? RequestNavigation { get; set; }
+        public ICollection<Dip_RapportoLavoro>? Dip_RapportoLavoro { get; set; }
+        
+
     }
 
 
