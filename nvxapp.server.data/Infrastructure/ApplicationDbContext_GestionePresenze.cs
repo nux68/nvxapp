@@ -98,91 +98,54 @@ namespace nvxapp.server.data.Infrastructure
               .OnDelete(DeleteBehavior.Cascade);
 
 
-            
+
+
+            /* Az_Anagrafica */
+            modelBuilder.Entity<Az_Anagrafica>()
+                .HasOne(t_padre => t_padre.CompanyNavigation)
+                .WithOne(t_figlio => t_figlio.Az_Anagrafica)
+                .HasForeignKey<Az_Anagrafica>(key_esterna => key_esterna.IdCompany)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            /* Az_Sedi */
+            modelBuilder.Entity<Az_Sedi>()
+                .HasOne(t_padre => t_padre.Az_AnagraficaNavigation)
+                .WithMany(t_figlio => t_figlio.Az_Sedi)
+                .HasForeignKey(key_esterna => key_esterna.IdAz_Anagrafica)
+                .OnDelete(DeleteBehavior.Cascade);
 
 
 
-            /////////////////////////////////////////////////
-            /////////////////////////////////////////////////
-            /////////////////////////////////////////////////
-            //modelBuilder.Entity<Par_Causali>()
-            //  .HasOne(t_padre => t_padre.Dip_RapportoLavoroNavigation)
-            //  .WithMany(t_figlio => t_figlio.Dip_GG_Timbratura)
-            //  .HasForeignKey(key_esterna => key_esterna.IdDip_RapportoLavoro)
-            //  .OnDelete(DeleteBehavior.Cascade);
+            /* Az_Reparto */
+            modelBuilder.Entity<Az_Reparto>()
+                .HasOne(t_padre => t_padre.Az_SediNavigation)
+                .WithMany(t_figlio => t_figlio.Az_Reparto)
+                .HasForeignKey(key_esterna => key_esterna.IdAz_Sedi)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Relazione ricorsiva: un reparto può avere altri reparti come figli
+            modelBuilder.Entity<Az_Reparto>()
+                .HasOne(t => t.Az_RepartoNavigation)
+                .WithMany(t => t.Az_Reparto_Sub)
+                .HasForeignKey(t => t.IdAz_Reparto)
+                .OnDelete(DeleteBehavior.Restrict); // Evita eliminazioni a cascata
+
+            /* Par_Causali */
+            modelBuilder.Entity<Par_Causali>()
+                .HasOne(t_padre => t_padre.Az_AnagraficaNavigation)
+                .WithMany(t_figlio => t_figlio.Par_Causali)
+                .HasForeignKey(key_esterna => key_esterna.IdAz_Anagrafica)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            /* Par_Giustificativi */
+            modelBuilder.Entity<Par_Giustificativi>()
+                .HasOne(t_padre => t_padre.Az_AnagraficaNavigation)
+                .WithMany(t_figlio => t_figlio.Par_Giustificativi)
+                .HasForeignKey(key_esterna => key_esterna.IdAz_Anagrafica)
+                .OnDelete(DeleteBehavior.Cascade);
 
 
 
-            //modelBuilder.Entity<Dip_GG_Causali>()
-            //    .HasOne(ggc => ggc.Dip_RapportoLavoroNavigation)
-            //    .WithMany(drl => drl.Dip_GG_Causali)
-            //    .HasForeignKey(ggc => ggc.IdDip_RapportoLavoro)
-            //    .OnDelete(DeleteBehavior.Cascade);
-
-            //modelBuilder.Entity<Dip_GG_Giustificativi>()
-            //    .HasOne(ggj => ggj.Dip_RapportoLavoroNavigation)
-            //    .WithMany(drl => drl.Dip_GG_Giustificativi)
-            //    .HasForeignKey(ggj => ggj.IdDip_RapportoLavoro)
-            //    .OnDelete(DeleteBehavior.Cascade);
-
-            //modelBuilder.Entity<Dip_GG_NotaSpesa>()
-            //    .HasOne(ggn => ggn.Dip_RapportoLavoroNavigation)
-            //    .WithMany(drl => drl.Dip_GG_NotaSpesa)
-            //    .HasForeignKey(ggn => ggn.IdDip_RapportoLavoro)
-            //    .OnDelete(DeleteBehavior.Cascade);
-
-            //modelBuilder.Entity<Dip_GG_Richiesta>()
-            //    .HasOne(ggr => ggr.Dip_RapportoLavoroNavigation)
-            //    .WithMany(drl => drl.Dip_GG_Richiesta)
-            //    .HasForeignKey(ggr => ggr.IdDip_RapportoLavoro)
-            //    .OnDelete(DeleteBehavior.Cascade);
-
-            //modelBuilder.Entity<Dip_GG_Timbratura>()
-            //    .HasOne(ggt => ggt.Dip_RapportoLavoroNavigation)
-            //    .WithMany(drl => drl.Dip_GG_Timbratura)
-            //    .HasForeignKey(ggt => ggt.IdDip_RapportoLavoro)
-            //    .OnDelete(DeleteBehavior.Cascade);
-
-            //modelBuilder.Entity<Dip_RapportoLavoro>()
-            //    .HasOne(drl => drl.Dip_AnagraficaNavigation)
-            //    .WithOne(da => da.Dip_RapportoLavoro)
-            //    .HasForeignKey<Dip_RapportoLavoro>(drl => drl.IdDip_Anagrafica)
-            //    .OnDelete(DeleteBehavior.Cascade);
-
-
-            //modelBuilder.Entity<Par_Causali>()
-            // .HasMany(pc => pc.Dip_GG_Causali)
-            // .WithOne(dgc => dgc.Par_CausaliNavigation)
-            // .HasForeignKey(dgc => dgc.IdPar_Causali)
-            // .OnDelete(DeleteBehavior.Cascade);
-
-            //modelBuilder.Entity<Par_Giustificativi>()
-            //.HasMany(pg => pg.Dip_GG_Giustificativi)
-            //.WithOne(dgg => dgg.Par_GiustificativiNavigation)
-            //.OnDelete(DeleteBehavior.Cascade);
-
-
-
-            ////Configurazione chiave esterna Dip_GG_Giustificativi -> Dip_GG_Richiesta
-            //modelBuilder.Entity<Dip_GG_Giustificativi>()
-            //.HasOne(dggj => dggj.Dip_RichiestaNavigation)
-            //.WithMany(dggr => dggr.Dip_GG_Giustificativi)
-            //.HasForeignKey(dggj => dggj.IdDip_Richiesta)
-            //.OnDelete(DeleteBehavior.Restrict);  //Oppure, configura a seconda della tua logica di business
-
-            ////Configurazione chiave esterna Dip_GG_Timbratura -> Dip_GG_Richiesta
-            //modelBuilder.Entity<Dip_GG_Timbratura>()
-            //    .HasOne(dggt => dggt.Dip_RichiestaNavigation)
-            //    .WithMany()
-            //    .HasForeignKey(dggt => dggt.IdDip_Richiesta)
-            //    .OnDelete(DeleteBehavior.Restrict);  //Oppure, configura a seconda della tua logica di business
-
-            ////Configurazione chiave esterna Dip_GG_NotaSpesa -> Dip_GG_Richiesta
-            //modelBuilder.Entity<Dip_GG_NotaSpesa>()
-            //    .HasOne(dggn => dggn.Dip_GG_RichiestaNavigation)
-            //    .WithMany(dggr => dggr.Dip_GG_NotaSpesa)
-            //    .HasForeignKey(dggn => dggn.IdDip_GG_Richiesta)
-            //    .OnDelete(DeleteBehavior.Restrict);  //Oppure, configura a seconda della tua logica di business
         }
 
 

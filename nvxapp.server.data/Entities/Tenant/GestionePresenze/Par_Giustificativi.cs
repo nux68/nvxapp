@@ -7,6 +7,11 @@ namespace nvxapp.server.data.Entities.Tenant
     {
 
         [Required]
+        public required string IdAz_Anagrafica { get; set; }
+        public Az_Anagrafica? Az_AnagraficaNavigation { get; set; }
+
+
+        [Required]
         [MaxLength(50)]
         public string? Descrizione { get; set; }
 

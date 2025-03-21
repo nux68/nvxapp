@@ -3,9 +3,10 @@ using System.ComponentModel.DataAnnotations;
 
 namespace nvxapp.server.data.Entities.Tenant
 {
-    public class Par_Causali : BaseEntity
-    {
 
+    
+    public class Az_Sedi : BaseEntity
+    {
         [Required]
         public required string IdAz_Anagrafica { get; set; }
         public Az_Anagrafica? Az_AnagraficaNavigation { get; set; }
@@ -14,12 +15,7 @@ namespace nvxapp.server.data.Entities.Tenant
         [MaxLength(50)]
         public string? Descrizione { get; set; }
 
-        [Required]
-        [MaxLength(10)]
-        public string? Codice { get; set; }
-
-        public ICollection<Dip_GG_Causali>? Dip_GG_Causali { get; set; }
-
+        public ICollection<Az_Reparto>? Az_Reparto { get; set; }
     }
 
 

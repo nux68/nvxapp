@@ -1,4 +1,5 @@
-﻿using System;
+﻿using nvxapp.server.data.Entities.Tenant;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -24,5 +25,8 @@ namespace nvxapp.server.data.Entities.Public
 
 
         public ICollection<UserCompany>? UserCompany { get; set; }
+
+        public Az_Anagrafica? Az_Anagrafica { get; set; }
+
     }
 }
