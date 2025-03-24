@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Entities.Tenant;
+using nvxapp.server.data.Entities.Tenant.GestionePresenze;
 
 namespace nvxapp.server.data.Infrastructure
 {
@@ -144,6 +145,15 @@ namespace nvxapp.server.data.Infrastructure
                 .HasForeignKey(key_esterna => key_esterna.IdAz_Anagrafica)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            /* Par_Arrotondamenti */
+            modelBuilder.Entity<Par_Arrotondamenti>()
+                .HasOne(t_padre => t_padre.Az_AnagraficaNavigation)
+                .WithMany(t_figlio => t_figlio.Par_Arrotondamenti)
+                .HasForeignKey(key_esterna => key_esterna.IdAz_Anagrafica)
+                .OnDelete(DeleteBehavior.Cascade);
+
+
+            
 
 
         }
