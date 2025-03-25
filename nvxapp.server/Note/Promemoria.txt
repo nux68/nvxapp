@@ -1,6 +1,16 @@
 ﻿
 il sito parte con:
-http://localhost:91/home
+	http://localhost:7146
+NB.
+  ricordarsi di andare in iis 
+    modifica sito
+	  binding
+	   e collegare la porta 7146 e tipo http
+	    
+
+
+
+
 
 
 il tag: 
