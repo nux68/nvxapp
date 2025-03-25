@@ -1,4 +1,9 @@
-﻿il tag: 
+﻿
+il sito parte con:
+http://localhost:91/home
+
+
+il tag: 
 4 SCHEMA 
 	identifica il codice che legge gli schemi
 
