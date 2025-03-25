@@ -56,6 +56,12 @@ if (useHangFire)
     Installers.InstallHangFire(builder);
 
 
+//DISABLED HTTPS (aggiunto)
+builder.WebHost.ConfigureKestrel((context, serverOptions) =>
+{
+    serverOptions.ListenAnyIP(7146); // Ascolta su HTTP (porta 5000)
+    // (Commenta/rimuovi qualsiasi riga che configura HTTPS qui)
+});
 
 
 var app = builder.Build();
@@ -131,13 +137,17 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1"); });
 
-    ////////////// Avvia automaticamente la pagina Swagger nel browser predefinito
-    //////var urlSw = "https://localhost:7146/swagger/index.html";
-    //////Process.Start(new ProcessStartInfo(urlSw) { UseShellExecute = true });
+    //////////////// Avvia automaticamente la pagina Swagger nel browser predefinito
+    /////DISABLED HTTPS (disabilitato)
+    ////////var urlSw = "https://localhost:7146/swagger/index.html";
+    //var urlSw = "http://localhost:7146/swagger/index.html";
+    //Process.Start(new ProcessStartInfo(urlSw) { UseShellExecute = true });
 
 }
 
-app.UseHttpsRedirection();
+
+//DISABLED HTTPS (disabilitato)
+//app.UseHttpsRedirection();
 
 
 

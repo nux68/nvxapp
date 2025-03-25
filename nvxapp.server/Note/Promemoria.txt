@@ -4,3 +4,8 @@
 
 4 SCHEMA DISABLED
     a seguito di un warning ho disabilitato (non è detto che serve)
+
+
+il tag: 
+DISABLED HTTPS
+ha disabilitato l'uso di https
