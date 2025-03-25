@@ -11,8 +11,11 @@ export const environment = {
 
 
   remoteData: {
-     apiUri: 'https://localhost:7146/api/',
-     signalrUri: 'https://localhost:7146/',
+    //DISABLED HTTPS (disabilitato)
+    //apiUri: 'https://localhost:7146/api/',
+    //signalrUri: 'https://localhost:7146/',
+     apiUri: 'http://localhost:7146/api/',
+     signalrUri: 'http://localhost:7146/',
   },
 
 };
