@@ -140,8 +140,8 @@ if (app.Environment.IsDevelopment())
     //////////////// Avvia automaticamente la pagina Swagger nel browser predefinito
     /////DISABLED HTTPS (disabilitato)
     ////////var urlSw = "https://localhost:7146/swagger/index.html";
-    //var urlSw = "http://localhost:7146/swagger/index.html";
-    //Process.Start(new ProcessStartInfo(urlSw) { UseShellExecute = true });
+    ////var urlSw = "http://localhost:7146/swagger/index.html";
+    ////Process.Start(new ProcessStartInfo(urlSw) { UseShellExecute = true });
 
 }
 
