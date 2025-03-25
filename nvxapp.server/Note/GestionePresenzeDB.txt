@@ -10,6 +10,8 @@
 	Az_Anagrafica(1-1)
 		Par_Causali(1-N)
 		Par_Giustificativi(1-N)
+		Par_Arrotondamenti(1-N)
+		Par_Orario(1-N)
 
 		Az_Sedi(1-N)
 			Az_Reparto(1-N)           -> Ricorsivo
