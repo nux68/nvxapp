@@ -18,13 +18,7 @@ string? sUseSignalR = builder.Configuration["SignalR:UseSignalR"];
 bool.TryParse(sUseSignalR, out useSignalR);
 
 
-Boolean useHttps = false;
-string? sUseHttps = builder.Configuration["RunTime:UseHttps"];
-bool.TryParse(sUseHttps, out useHttps);
 
-int runTimePort = 0;
-string? sRunTimePort = builder.Configuration["RunTime:Port"];
-int.TryParse(sRunTimePort, out runTimePort);
 
 //
 
@@ -65,8 +59,17 @@ if (useHangFire)
     Installers.InstallHangFire(builder);
 
 
+
+Boolean useHttps = false;
+string? sUseHttps = builder.Configuration["RunTime:UseHttps"];
+bool.TryParse(sUseHttps, out useHttps);
+
+int runTimePort = 0;
+string? sRunTimePort = builder.Configuration["RunTime:Port"];
+int.TryParse(sRunTimePort, out runTimePort);
+
 //DISABLED HTTPS (aggiunto)
-if(useHttps==false)
+if (useHttps==false)
 {
     builder.WebHost.ConfigureKestrel((context, serverOptions) =>
     {
@@ -157,13 +160,23 @@ if (app.Environment.IsDevelopment())
     else
         urlSw = "http://localhost:"+ runTimePort.ToString() + "/swagger/index.html";
     
-    Process.Start(new ProcessStartInfo(urlSw) { UseShellExecute = true });
+    //Process.Start(new ProcessStartInfo(urlSw) { UseShellExecute = true });
 
+}
+else if (app.Environment.IsProduction())
+{
+    // Configura l'uso di Swagger solo in produzione
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+        c.RoutePrefix = "docs"; // Configura un percorso diverso da "swagger" per maggiore sicurezza
+    });
 }
 
 
-//DISABLED HTTPS (disabilitato)
-if (useHttps == true)
+    //DISABLED HTTPS (disabilitato)
+    if (useHttps == true)
     app.UseHttpsRedirection();
 
 
