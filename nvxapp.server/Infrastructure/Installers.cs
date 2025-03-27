@@ -63,8 +63,6 @@ namespace nvxapp.server.Infrastructure
 
             return builder.Services;
         }
-
-
         public static IServiceCollection InstallHangFire(this WebApplicationBuilder builder)
         {
             var connStr = builder.Configuration.GetConnectionString("nvxappDbContext");
@@ -88,14 +86,10 @@ namespace nvxapp.server.Infrastructure
 
             return builder.Services;
         }
-
-
         public static void InstallSignalRHub(this WebApplication app)
         {
             app.MapHub<SignalRHub>("/chathub");
         }
-
-
         public static IServiceCollection InstallConfiguration(this WebApplicationBuilder builder)
         {
 
@@ -302,8 +296,6 @@ namespace nvxapp.server.Infrastructure
 
             return builder.Services;
         }
-
-
         public static IServiceCollection InstallAuthentication(this WebApplicationBuilder builder, Boolean useSignalR)
         {
             string JwtParameterKey = builder.Configuration["JwtParameter:Key"] ?? "";
@@ -349,9 +341,6 @@ namespace nvxapp.server.Infrastructure
 
             return builder.Services;
         }
-
-
-
         public static IServiceCollection InstallCors(this WebApplicationBuilder builder, Boolean useSignalR)
         {
             builder.Services.AddCors(options =>
@@ -389,7 +378,6 @@ namespace nvxapp.server.Infrastructure
 
             return builder.Services;
         }
-
         //SIGNALR (V2)
         public static void UseDynamicCors(this WebApplication app)
         {
@@ -417,10 +405,6 @@ namespace nvxapp.server.Infrastructure
                 await next();
             });
         }
-
-
-
-
         public static IServiceCollection InstallSettings(this WebApplicationBuilder builder)
         {
             /*
