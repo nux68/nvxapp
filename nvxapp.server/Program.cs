@@ -17,6 +17,9 @@ Boolean useSignalR = false;
 string? sUseSignalR = builder.Configuration["SignalR:UseSignalR"];
 bool.TryParse(sUseSignalR, out useSignalR);
 
+
+
+
 //
 
 Installers.InstallSettings(builder);
@@ -56,12 +59,24 @@ if (useHangFire)
     Installers.InstallHangFire(builder);
 
 
+
+Boolean useHttps = false;
+string? sUseHttps = builder.Configuration["RunTime:UseHttps"];
+bool.TryParse(sUseHttps, out useHttps);
+
+int runTimePort = 0;
+string? sRunTimePort = builder.Configuration["RunTime:Port"];
+int.TryParse(sRunTimePort, out runTimePort);
+
 //DISABLED HTTPS (aggiunto)
-builder.WebHost.ConfigureKestrel((context, serverOptions) =>
+if (useHttps==false)
 {
-    serverOptions.ListenAnyIP(7146); // Ascolta su HTTP (porta 5000)
-    // (Commenta/rimuovi qualsiasi riga che configura HTTPS qui)
-});
+    builder.WebHost.ConfigureKestrel((context, serverOptions) =>
+    {
+        serverOptions.ListenAnyIP(runTimePort); 
+    });
+}
+
 
 
 var app = builder.Build();
@@ -139,20 +154,35 @@ if (app.Environment.IsDevelopment())
 
     //////////////// Avvia automaticamente la pagina Swagger nel browser predefinito
     /////DISABLED HTTPS (disabilitato)
-    ////////var urlSw = "https://localhost:7146/swagger/index.html";
-    ////var urlSw = "http://localhost:7146/swagger/index.html";
-    ////Process.Start(new ProcessStartInfo(urlSw) { UseShellExecute = true });
+    var urlSw = "";
+    if (useHttps)
+        urlSw = "https://localhost:" + runTimePort.ToString() + "/swagger/index.html";
+    else
+        urlSw = "http://localhost:"+ runTimePort.ToString() + "/swagger/index.html";
+    
+    //Process.Start(new ProcessStartInfo(urlSw) { UseShellExecute = true });
 
+}
+else if (app.Environment.IsProduction())
+{
+    // Configura l'uso di Swagger solo in produzione
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+        c.RoutePrefix = "docs"; // Configura un percorso diverso da "swagger" per maggiore sicurezza
+    });
 }
 
 
-//DISABLED HTTPS (disabilitato)
-//app.UseHttpsRedirection();
+    //DISABLED HTTPS (disabilitato)
+    if (useHttps == true)
+    app.UseHttpsRedirection();
 
 
 
 
-app.UseAuthentication();
+    app.UseAuthentication();
 app.UseAuthorization();
 
 // Middleware per i file statici
@@ -171,7 +201,7 @@ if (useHangFire)
     ////// Configura la dashboard di Hangfire
     app.UseHangfireDashboard();
     app.MapGet("/", () => "Hangfire è configurato!");
-    // https://localhost:7146/hangfire
+    // https://localhost:[runTimePort]/hangfire
 }
 
 
