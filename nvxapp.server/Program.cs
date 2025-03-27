@@ -2,8 +2,6 @@ using Hangfire;
 using Microsoft.EntityFrameworkCore;
 using nvxapp.server.data.Infrastructure;
 using nvxapp.server.Infrastructure;
-using nvxapp.server.service.RabbitMQ;
-using System.Diagnostics;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,9 +16,6 @@ string? sUseSignalR = builder.Configuration["SignalR:UseSignalR"];
 bool.TryParse(sUseSignalR, out useSignalR);
 
 
-
-
-//
 
 Installers.InstallSettings(builder);
 
@@ -69,11 +64,11 @@ string? sRunTimePort = builder.Configuration["RunTime:Port"];
 int.TryParse(sRunTimePort, out runTimePort);
 
 //DISABLED HTTPS (aggiunto)
-if (useHttps==false)
+if (useHttps == false)
 {
     builder.WebHost.ConfigureKestrel((context, serverOptions) =>
     {
-        serverOptions.ListenAnyIP(runTimePort); 
+        serverOptions.ListenAnyIP(runTimePort);
     });
 }
 
@@ -158,8 +153,8 @@ if (app.Environment.IsDevelopment())
     if (useHttps)
         urlSw = "https://localhost:" + runTimePort.ToString() + "/swagger/index.html";
     else
-        urlSw = "http://localhost:"+ runTimePort.ToString() + "/swagger/index.html";
-    
+        urlSw = "http://localhost:" + runTimePort.ToString() + "/swagger/index.html";
+
     //Process.Start(new ProcessStartInfo(urlSw) { UseShellExecute = true });
 
 }
@@ -174,15 +169,12 @@ else if (app.Environment.IsProduction())
     });
 }
 
-
-    //DISABLED HTTPS (disabilitato)
-    if (useHttps == true)
+//DISABLED HTTPS (disabilitato)
+if (useHttps == true)
     app.UseHttpsRedirection();
 
 
-
-
-    app.UseAuthentication();
+app.UseAuthentication();
 app.UseAuthorization();
 
 // Middleware per i file statici
