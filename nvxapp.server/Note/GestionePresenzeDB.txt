@@ -16,6 +16,7 @@
 
 		Az_Sedi(1-N)
 			Az_Reparto(1-N)           -> Ricorsivo
+				Az_RepartoAttivita(1-N)
 
 		
 
