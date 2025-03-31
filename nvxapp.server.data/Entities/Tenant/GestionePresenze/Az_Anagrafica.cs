@@ -11,7 +11,7 @@ namespace nvxapp.server.data.Entities.Tenant
     public class Az_Anagrafica : BaseEntity
     {
         [Required]
-        public required string IdCompany { get; set; }
+        public required int IdCompany { get; set; }
         public Company? CompanyNavigation { get; set; }
 
         public ICollection<Az_Sedi>? Az_Sedi { get; set; }

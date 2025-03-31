@@ -13,6 +13,7 @@
 		Par_Arrotondamenti(1-N)
 		Par_Orario(1-N)
 		Par_ProfiloOrario(1-N)
+			Par_ProfiloOrarioGG(1-N)
 
 		Az_Sedi(1-N)
 			Az_Reparto(1-N)           -> Ricorsivo

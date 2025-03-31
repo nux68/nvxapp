@@ -8,7 +8,7 @@ namespace nvxapp.server.data.Entities.Tenant
     public class Az_Reparto : BaseEntity
     {
         [Required]
-        public required string IdAz_Sedi { get; set; }
+        public required int IdAz_Sedi { get; set; }
         public Az_Sedi? Az_SediNavigation { get; set; }
 
         [Required]

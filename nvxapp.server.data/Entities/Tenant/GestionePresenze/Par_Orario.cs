@@ -15,7 +15,7 @@ namespace nvxapp.server.data.Entities.Tenant.GestionePresenze
     {
 
         [Required]
-        public required string IdAz_Anagrafica { get; set; }
+        public required int IdAz_Anagrafica { get; set; }
         public Az_Anagrafica? Az_AnagraficaNavigation { get; set; }
 
         [Required]

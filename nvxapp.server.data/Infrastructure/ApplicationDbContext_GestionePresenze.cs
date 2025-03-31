@@ -31,8 +31,10 @@ namespace nvxapp.server.data.Infrastructure
         public virtual DbSet<Par_Arrotondamenti> Par_Arrotondamenti { get; set; }
         public virtual DbSet<Par_Orario> Par_Orario { get; set; }
         public virtual DbSet<Par_ProfiloOrario> Par_ProfiloOrario { get; set; }
+        public virtual DbSet<Par_ProfiloOrario> Par_ProfiloOrarioGG { get; set; }
 
 
+        
 
 
         private void Define_Table_DbContext_GestionePresenze(ModelBuilder modelBuilder)
@@ -186,6 +188,13 @@ namespace nvxapp.server.data.Infrastructure
                 .HasOne(t_padre => t_padre.Az_AnagraficaNavigation)
                 .WithMany(t_figlio => t_figlio.Par_ProfiloOrario)
                 .HasForeignKey(key_esterna => key_esterna.IdAz_Anagrafica)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            /* Par_ProfiloOrarioGG */
+            modelBuilder.Entity<Par_ProfiloOrarioGG>()
+                .HasOne(t_padre => t_padre.Par_ProfiloOrarioNavigation)
+                .WithMany(t_figlio => t_figlio.Par_ProfiloOrarioGG)
+                .HasForeignKey(key_esterna => key_esterna.IdPar_ProfiloOrario)
                 .OnDelete(DeleteBehavior.Cascade);
 
 
