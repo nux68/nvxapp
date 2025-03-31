@@ -31,10 +31,11 @@ namespace nvxapp.server.data.Infrastructure
         public virtual DbSet<Par_Arrotondamenti> Par_Arrotondamenti { get; set; }
         public virtual DbSet<Par_Orario> Par_Orario { get; set; }
         public virtual DbSet<Par_ProfiloOrario> Par_ProfiloOrario { get; set; }
-        public virtual DbSet<Par_ProfiloOrario> Par_ProfiloOrarioGG { get; set; }
-
+        public virtual DbSet<Par_ProfiloOrarioGG> Par_ProfiloOrarioGG { get; set; }
+        public virtual DbSet<Par_ProfiloOrarioIntervalloHH> Par_ProfiloOrarioIntervalloHH { get; set; }
 
         
+
 
 
         private void Define_Table_DbContext_GestionePresenze(ModelBuilder modelBuilder)
@@ -198,7 +199,22 @@ namespace nvxapp.server.data.Infrastructure
                 .OnDelete(DeleteBehavior.Cascade);
 
 
+            /* Par_ProfiloOrarioIntervalloHH */
+            modelBuilder.Entity<Par_ProfiloOrarioIntervalloHH>()
+                .HasOne(t_padre => t_padre.Par_ProfiloOrarioGGNavigation)
+                .WithMany(t_figlio => t_figlio.Par_ProfiloOrarioIntervalloHH)
+                .HasForeignKey(key_esterna => key_esterna.IdPar_ProfiloOrarioGG)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Par_ProfiloOrarioIntervalloHH>()
+                .HasOne(t_padre => t_padre.Az_RepartoAttivitaNavigation)
+                .WithMany(t_figlio => t_figlio.Par_ProfiloOrarioIntervalloHH)
+                .HasForeignKey(key_esterna => key_esterna.IdAz_RepartoAttivita)
+                .OnDelete(DeleteBehavior.Cascade);
+
+
             
+
 
 
 

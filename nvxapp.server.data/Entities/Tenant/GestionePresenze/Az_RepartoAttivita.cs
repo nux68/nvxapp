@@ -1,4 +1,5 @@
 ﻿using nvxapp.server.data.Entities.Public;
+using nvxapp.server.data.Entities.Tenant.GestionePresenze;
 using System.ComponentModel.DataAnnotations;
 
 namespace nvxapp.server.data.Entities.Tenant
@@ -22,6 +23,7 @@ namespace nvxapp.server.data.Entities.Tenant
 
         // Relazione ricorsiva: Reparti figli
         public ICollection<Az_Reparto>? Az_Reparto_Sub { get; set; }
+        public ICollection<Par_ProfiloOrarioIntervalloHH>? Par_ProfiloOrarioIntervalloHH { get; set; }
 
     }
 

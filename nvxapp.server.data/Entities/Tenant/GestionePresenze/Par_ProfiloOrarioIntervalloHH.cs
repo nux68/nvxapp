@@ -11,19 +11,19 @@ namespace nvxapp.server.data.Entities.Tenant.GestionePresenze
      se presenti queste righe, si andrà a sovrascrivere il comportamento di dafault
      */
 
-    public class Par_ProfiloOrarioGG : BaseEntity
+    public class Par_ProfiloOrarioIntervalloHH : BaseEntity
     {
 
         [Required]
-        public required string IdPar_ProfiloOrario { get; set; }
-        public Par_ProfiloOrario? Par_ProfiloOrarioNavigation { get; set; }
+        public required int IdPar_ProfiloOrarioGG { get; set; }
+        public Par_ProfiloOrarioGG? Par_ProfiloOrarioGGNavigation { get; set; }
 
-        
-
-        public ICollection<Par_ProfiloOrarioIntervalloHH>? Par_ProfiloOrarioIntervalloHH { get; set; }
-
+        public TimeOnly? Dalle { get; set; }
+        public TimeOnly? Alle { get; set; }
 
 
+        public required int IdAz_RepartoAttivita { get; set; }
+        public Az_RepartoAttivita? Az_RepartoAttivitaNavigation { get; set; }
 
     }
 

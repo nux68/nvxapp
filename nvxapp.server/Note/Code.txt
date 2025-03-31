@@ -20,3 +20,9 @@ pagedRows = puList.Where(u => u.Creator == user.UserId || u.UserId == user.UserI
 
 CAST 
 ((_myTableService as ServiceBase)!).tokenProperty = tokenProperty;
+
+
+
+tipo dati
+orario
+public TimeOnly? Dalle { get; set; }
