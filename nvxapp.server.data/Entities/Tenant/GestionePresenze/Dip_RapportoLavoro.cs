@@ -11,7 +11,7 @@ namespace nvxapp.server.data.Entities.Tenant
     public class Dip_RapportoLavoro : BaseEntity
     {
         [Required]
-        public required string IdDip_Anagrafica { get; set; }
+        public required int IdDip_Anagrafica { get; set; }
         public Dip_Anagrafica? Dip_AnagraficaNavigation { get; set; }
 
         public DateTime? DataAss { get; set; } // assunzione

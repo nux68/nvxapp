@@ -15,7 +15,7 @@ namespace nvxapp.server.data.Entities.Tenant.GestionePresenze
     {
 
         [Required]
-        public required string IdPar_ProfiloOrario { get; set; }
+        public required int IdPar_ProfiloOrario { get; set; }
         public Par_ProfiloOrario? Par_ProfiloOrarioNavigation { get; set; }
 
         

@@ -17,7 +17,7 @@ namespace nvxapp.server.data.Entities.Tenant
 
 
         // Relazione ricorsiva: Reparto padre
-        public string? IdAz_Reparto { get; set; }
+        public int? IdAz_Reparto { get; set; }
         public Az_Reparto? Az_RepartoNavigation { get; set; }
 
 
