@@ -17,6 +17,9 @@ namespace nvxapp.server.data.Infrastructure
 
         public virtual DbSet<Dip_Anagrafica> Dip_Anagrafiche { get; set; }
         public virtual DbSet<Dip_RapportoLavoro> Dip_RapportiLavoro { get; set; }
+        public virtual DbSet<Dip_ProfiloOrario> Dip_ProfiloOrario { get; set; }
+
+
         public virtual DbSet<Dip_GG_Giustificativi> Dip_GG_Giustificativi { get; set; }
         public virtual DbSet<Dip_GG_Timbratura> Dip_GG_Timbrature { get; set; }
         public virtual DbSet<Dip_GG_NotaSpesa> Dip_GG_NotaSpese { get; set; }
@@ -59,6 +62,22 @@ namespace nvxapp.server.data.Infrastructure
                 .WithMany(t_figlio=> t_figlio.Dip_RapportoLavoro)
                 .HasForeignKey(key_esterna=> key_esterna.IdDip_Anagrafica)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            /* Dip_ProfiloOrario */
+            modelBuilder.Entity<Dip_ProfiloOrario>()
+                .HasOne(t_padre => t_padre.Dip_RapportoLavoroNavigation)
+                .WithMany(t_figlio => t_figlio.Dip_ProfiloOrario)
+                .HasForeignKey(key_esterna => key_esterna.IdDip_RapportoLavoro)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Dip_ProfiloOrario>()
+                .HasOne(t_padre => t_padre.Par_ProfiloOrarioNavigation)
+                .WithMany(t_figlio => t_figlio.Dip_ProfiloOrario)
+                .HasForeignKey(key_esterna => key_esterna.IdPar_ProfiloOrario)
+                .OnDelete(DeleteBehavior.Cascade);
+
+
+
 
 
             /*Dip_GG_Causali*/

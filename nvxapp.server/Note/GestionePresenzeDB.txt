@@ -14,11 +14,11 @@
 		Par_Orario(1-N)
 			Par_OrarioIntervalloHH(1-N)
 		Par_ProfiloOrario(1-N)
-			Par_ProfiloOrarioGG(1-N)
+			Par_ProfiloOrarioGG(1-N)     -> Par_Orario
 				
 
 		Az_Sedi(1-N)
-			Az_Reparto(1-N)           -> Ricorsivo
+			Az_Reparto(1-N)              -> Ricorsivo
 				Az_RepartoAttivita(1-N)
 
 		
@@ -27,6 +27,7 @@
 [1]AspNetUsers(1)
 	Dip_Anagrafica(1-1)                  -> AspNetUsers
 		Dip_RapportoLavoro(1-N)
+		    Dip_ProfiloOrario(1-N)       -> Par_ProfiloOrario
 			Dip_GG_Giustificativi(1-N)   -> Par_Giustificativi
 			Dip_GG_Timbratura(1-N)
 			Dip_GG_NotaSpesa(1-N)

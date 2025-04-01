@@ -17,7 +17,7 @@ namespace nvxapp.server.data.Entities.Tenant
         public DateTime? DataAss { get; set; } // assunzione
         public DateTime? DataLic { get; set; } // lic
 
-
+        public ICollection<Dip_ProfiloOrario>? Dip_ProfiloOrario { get; set; }
         public ICollection<Dip_GG_Richiesta>? Dip_GG_Richiesta { get; set; }
         public ICollection<Dip_GG_Timbratura>? Dip_GG_Timbratura { get; set; }
         public ICollection<Dip_GG_NotaSpesa>? Dip_GG_NotaSpesa { get; set; }

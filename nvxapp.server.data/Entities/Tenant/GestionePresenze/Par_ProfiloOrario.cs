@@ -24,6 +24,7 @@ namespace nvxapp.server.data.Entities.Tenant.GestionePresenze
         public int NumGiorniCiclo { get; set; }
 
         public ICollection<Par_ProfiloOrarioGG>? Par_ProfiloOrarioGG { get; set; }
+        public ICollection<Dip_ProfiloOrario>? Dip_ProfiloOrario { get; set; }
 
     }
 
