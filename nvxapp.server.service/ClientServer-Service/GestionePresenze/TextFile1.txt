@@ -2,8 +2,8 @@
 *Par_Causali
 *Par_Giustificativi
 *Par_Arrotondamenti
+*Par_Orario
 
-Par_Orario
 Par_OrarioIntervalloHH
 Par_ProfiloOrario
 Par_ProfiloOrarioGG
