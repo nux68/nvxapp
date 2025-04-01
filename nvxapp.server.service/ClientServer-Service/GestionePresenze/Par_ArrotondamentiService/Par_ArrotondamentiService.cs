@@ -10,32 +10,32 @@ using nvxapp.server.data.Repositories.Public;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
-using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_GiustificativiService.Models;
 
-namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_GiustificativiService
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_ArrotondamentiService.Models;
+namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Arrotondamenti
 {
 
-    public class Par_GiustificativiService : ServiceBase, IPar_GiustificativiService
+    public class Par_ArrotondamentiService : ServiceBase, IPar_ArrotondamentiService
     {
-        private readonly IPar_GiustificativiRepository _par_GiustificativiRepository;
+        private readonly IPar_ArrotondamentiRepository _Par_ArrotondamentiRepository;
 
-        public Par_GiustificativiService(IMapper mapper,
+        public Par_ArrotondamentiService(IMapper mapper,
                                   UserManager<ApplicationUser> userManager,
                                   IAspNetUsersRepository aspNetUsersRepository,
                                   IOptions<JwtParameter> jwtParameter,
                                   IHttpContextAccessor httpContextAccessor,
                                   IConfiguration configuration,
 
-                                  IPar_GiustificativiRepository par_GiustificativiRepository) : base(mapper , userManager  , aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
+                                  IPar_ArrotondamentiRepository Par_ArrotondamentiRepository) : base(mapper , userManager  , aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
-            _par_GiustificativiRepository = par_GiustificativiRepository;
+            _Par_ArrotondamentiRepository = Par_ArrotondamentiRepository;
         }
 
-        public virtual async Task<GenericResult<Par_GiustificativiOutModel>> GetAll(GenericRequest<Par_GiustificativiInModel> model, Boolean isSubProcess)
+        public virtual async Task<GenericResult<Par_ArrotondamentiOutModel>> GetAll(GenericRequest<Par_ArrotondamentiInModel> model, Boolean isSubProcess)
         {
             return await ExecuteAction(model, async () =>
             {
-                Par_GiustificativiOutModel retVal = new Par_GiustificativiOutModel();
+                Par_ArrotondamentiOutModel retVal = new Par_ArrotondamentiOutModel();
 
                 //eliminare
                 // Nessun 'await' qui
@@ -47,8 +47,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Giusti
 
     }
 
-    public interface IPar_GiustificativiService : IServiceBase
+    public interface IPar_ArrotondamentiService : IServiceBase
     {
-        public Task<GenericResult<Par_GiustificativiOutModel>> GetAll( GenericRequest<Par_GiustificativiInModel> model, Boolean isSubProcess);
+        public Task<GenericResult<Par_ArrotondamentiOutModel>> GetAll( GenericRequest<Par_ArrotondamentiInModel> model, Boolean isSubProcess);
     }
 }

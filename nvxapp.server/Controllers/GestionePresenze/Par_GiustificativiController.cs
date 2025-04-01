@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_CausaliService;
-using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_GiustificativiService.Models;
+
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_GiustificativiService;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_GiustificativiService.Models;
+
 
 
 namespace nvxapp.server.Controllers
