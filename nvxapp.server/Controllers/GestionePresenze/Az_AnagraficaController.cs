@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using nvxapp.server.service.ClientServer_Service.Account;
-using nvxapp.server.service.ClientServer_Service.Account.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_AnagraficaService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_AnagraficaService.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;

@@ -50,17 +50,14 @@
 	    <Output TaskParameter="ExitCode" PropertyName="ErrorCode" />
 	  </Exec>
 	
-	  <!-- Verifica se la build è fallita -->
-	  <Error Condition="'$(ErrorCode)' != '0'" Text="La build di Angular è fallita. Controlla l'output." />
+	  <!-- Verifica se la build ï¿½ fallita -->
+	  <Error Condition="'$(ErrorCode)' != '0'" Text="La build di Angular ï¿½ fallita. Controlla l'output." />
 	
 	  <!-- Copia l'intera cartella www nella cartella wwwroot -->
 	  <ItemGroup>
 	    <SourceFiles Include="../nvxapp.client/www/**\*.*" />
 	  </ItemGroup>
-	  <Copy
-	    SourceFiles="@(SourceFiles)"
-	    DestinationFolder="wwwroot/%(RecursiveDir)"
-	    SkipUnchangedFiles="true" />
+	  <Copy SourceFiles="@(SourceFiles)" DestinationFolder="wwwroot/%(RecursiveDir)" SkipUnchangedFiles="true" />
 	
 	</Target>
 
