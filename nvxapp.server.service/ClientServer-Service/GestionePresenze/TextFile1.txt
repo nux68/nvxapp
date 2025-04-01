@@ -5,8 +5,8 @@
 *Par_Orario
 *Par_OrarioIntervalloHH
 *Par_ProfiloOrario
+*Par_ProfiloOrarioGG
 
-Par_ProfiloOrarioGG
 Az_Sedi
 Az_Reparto
 Az_RepartoAttivita
