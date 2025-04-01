@@ -23,7 +23,7 @@ namespace nvxapp.server.data.Entities.Tenant
 
         // Relazione ricorsiva: Reparti figli
         public ICollection<Az_Reparto>? Az_Reparto_Sub { get; set; }
-        public ICollection<Par_ProfiloOrarioIntervalloHH>? Par_ProfiloOrarioIntervalloHH { get; set; }
+        //public ICollection<Par_OrarioIntervalloHH>? Par_ProfiloOrarioIntervalloHH { get; set; }
 
     }
 

@@ -32,7 +32,7 @@ namespace nvxapp.server.data.Infrastructure
         public virtual DbSet<Par_Orario> Par_Orario { get; set; }
         public virtual DbSet<Par_ProfiloOrario> Par_ProfiloOrario { get; set; }
         public virtual DbSet<Par_ProfiloOrarioGG> Par_ProfiloOrarioGG { get; set; }
-        public virtual DbSet<Par_ProfiloOrarioIntervalloHH> Par_ProfiloOrarioIntervalloHH { get; set; }
+        public virtual DbSet<Par_OrarioIntervalloHH> Par_ProfiloOrarioIntervalloHH { get; set; }
 
         
 
@@ -200,20 +200,20 @@ namespace nvxapp.server.data.Infrastructure
 
 
             /* Par_ProfiloOrarioIntervalloHH */
-            modelBuilder.Entity<Par_ProfiloOrarioIntervalloHH>()
-                .HasOne(t_padre => t_padre.Par_ProfiloOrarioGGNavigation)
-                .WithMany(t_figlio => t_figlio.Par_ProfiloOrarioIntervalloHH)
-                .HasForeignKey(key_esterna => key_esterna.IdPar_ProfiloOrarioGG)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder.Entity<Par_ProfiloOrarioIntervalloHH>()
-                .HasOne(t_padre => t_padre.Az_RepartoAttivitaNavigation)
-                .WithMany(t_figlio => t_figlio.Par_ProfiloOrarioIntervalloHH)
-                .HasForeignKey(key_esterna => key_esterna.IdAz_RepartoAttivita)
+            modelBuilder.Entity<Par_OrarioIntervalloHH>()
+                .HasOne(t_padre => t_padre.Par_OrarioNavigation)
+                .WithMany(t_figlio => t_figlio.Par_OrarioIntervalloHH)
+                .HasForeignKey(key_esterna => key_esterna.IdPar_Orario)
                 .OnDelete(DeleteBehavior.Cascade);
 
 
-            
+
+            /* Par_ProfiloOrarioGG */
+            modelBuilder.Entity<Par_ProfiloOrarioGG>()
+                .HasOne(t_padre => t_padre.Par_ProfiloOrarioNavigation)
+                .WithMany(t_figlio => t_figlio.Par_ProfiloOrarioGG)
+                .HasForeignKey(key_esterna => key_esterna.IdPar_ProfiloOrario)
+                .OnDelete(DeleteBehavior.Cascade);
 
 
 
