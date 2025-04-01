@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <Folder Include="Entities\Tenant\GestionePresenze\NewFolder\" />
-    <Folder Include="Repositories\Tenant\GestionePresenze\" />
     <Folder Include="Validators\" />
   </ItemGroup>
 
