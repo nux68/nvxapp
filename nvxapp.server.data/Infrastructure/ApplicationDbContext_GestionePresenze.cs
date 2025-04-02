@@ -143,6 +143,7 @@ namespace nvxapp.server.data.Infrastructure
                 .HasForeignKey<Az_Anagrafica>(key_esterna => key_esterna.IdCompany)
                 .OnDelete(DeleteBehavior.Cascade);
 
+
             /* Az_Sedi */
             modelBuilder.Entity<Az_Sedi>()
                 .HasOne(t_padre => t_padre.Az_AnagraficaNavigation)

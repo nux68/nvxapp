@@ -1,6 +1,7 @@
 ﻿using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Entities.Tenant.GestionePresenze;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace nvxapp.server.data.Entities.Tenant
 {
@@ -11,6 +12,7 @@ namespace nvxapp.server.data.Entities.Tenant
     public class Az_Anagrafica : BaseEntity
     {
         [Required]
+        [ForeignKey(nameof(CompanyNavigation))]
         public required int IdCompany { get; set; }
         public Company? CompanyNavigation { get; set; }
 
