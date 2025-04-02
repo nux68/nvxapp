@@ -8,6 +8,7 @@
     <BuildOutputFolder>$(MSBuildProjectDirectory)\dist\nvxapp.client\browser\</BuildOutputFolder>
   </PropertyGroup>
   <ItemGroup>
+    <Folder Include="schema-generator\" />
     <Folder Include="src\nvx\shared\pipe\" />
     <Folder Include="src\nvx\Utility\" />
   </ItemGroup>
