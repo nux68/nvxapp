@@ -5,6 +5,7 @@ import { GenericRequest } from '../../ClientServer-Service/ModelsBase/generic-re
 import { UserLoadInModel } from '../../ClientServer-Service/Account/Models/user-load-model';
 import { UserDataAdditionalModel, UserNavigationService } from '../../Utility/user-navigation.service';
 import { NavController } from '@ionic/angular';
+import { FabMenuItem, FabMenuService } from '../../Utility/fab-menu.service';
 
 @Component({
   selector: 'app-dealer-list-page',
@@ -20,6 +21,7 @@ export class DealerListPageComponent  implements OnInit {
 
   constructor(private navCtrl: NavController,
               private accountService: AccountService,
+              public fabMenuService: FabMenuService,
               private userNavigationService: UserNavigationService) {
     this.title = 'DealerListPage';
   }
@@ -33,6 +35,14 @@ export class DealerListPageComponent  implements OnInit {
 
     });
 
+    this.fabMenuService.fabMenuItem =   [
+      new FabMenuItem('Elemento 1', 'add-circle-outline', this.handleButtonAddClick),
+    ];
+
+  }
+
+  ionViewWillLeave() {
+    this.fabMenuService.fabMenuItem = [];
   }
 
   ngOnInit() {}
@@ -56,6 +66,15 @@ export class DealerListPageComponent  implements OnInit {
     });
 
   }
+
+  handleButtonEditClick(item: DealerListModel) {
+  }
+
+  handleButtonAddClick() {
+    var c = 0;
+
+  }
+
 
   public Filter(CurrFilter: any) {
     this.searchText = CurrFilter;

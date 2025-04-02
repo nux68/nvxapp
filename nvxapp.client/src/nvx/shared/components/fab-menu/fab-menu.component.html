@@ -14,7 +14,7 @@
 
             <ion-icon *ngIf="modalType=='text'" class="nvx-standard-icon" name="chatbubbles-outline" slot="start"></ion-icon>
             <ion-icon *ngIf="modalType=='vocal'" class="nvx-standard-icon" name="mic-outline" slot="start"></ion-icon>
-            
+
 
             <ion-title>{{modalType}}</ion-title>
 
@@ -64,21 +64,26 @@
 
   </div>
 
-
+  
 
   <ion-fab slot="fixed" vertical="bottom" horizontal="end">
     <ion-fab-button>
-      <ion-icon name="chatbubbles"></ion-icon>
+      <ion-icon name="grid-outline"></ion-icon>
     </ion-fab-button>
     <ion-fab-list side="top">
-
       <ion-fab-button (click)="openModal('text')">
         <ion-icon name="chatbubbles-outline"></ion-icon>
       </ion-fab-button>
       <ion-fab-button (click)="openModal('vocal')">
         <ion-icon name="mic-outline"></ion-icon>
       </ion-fab-button>
+    </ion-fab-list>
 
+    <ion-fab-list side="start">
+
+      <ion-fab-button *ngFor="let item of fabMenuService.fabMenuItem" (click)="item.event()">
+        <ion-icon name="{{item.image}}"></ion-icon>
+      </ion-fab-button>
 
     </ion-fab-list>
 

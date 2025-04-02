@@ -4,6 +4,7 @@ import { SpeechService } from '../../../Utility/speech.service';
 import { ChatAIService } from '../../../ClientServer-Service/ChatAI/chat-ai.service';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { ChatAIInModel } from '../../../ClientServer-Service/ChatAI/Models/chat-AI-model';
+import { FabMenuService } from '../../../Utility/fab-menu.service';
 
 @Component({
   selector: 'app-fab-menu',
@@ -24,7 +25,8 @@ export class FabMenuComponent implements OnInit {
 
   constructor(public speechService: SpeechService,
               private chatAIService: ChatAIService,
-              private cdRef: ChangeDetectorRef) {
+              private cdRef: ChangeDetectorRef,
+              public fabMenuService: FabMenuService) {
   }
 
   ngOnInit() {
