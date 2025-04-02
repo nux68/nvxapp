@@ -5357,3 +5357,105 @@ RabbitMQ.Client.Exceptions.BrokerUnreachableException: None of the specified end
 2025-04-02 15:29:13.080 [INF] Call: <Login>b__0, GUID: "c00c4a96-1a9a-4615-890e-8a67dd4cafd5", param: {"Data":{"UserName":"admin","Password":"1234"}}
 2025-04-02 15:29:13.647 [INF] Call: <UserLoad>b__0, GUID: "92ce70fb-75d8-4cd9-b03f-1e5eac0eecd6", param: {"Data":{"Id":"55bfd94c-8671-47f0-9d8a-109ceeb3af29"}}
 2025-04-02 15:29:17.021 [INF] Call: <DealerList>b__14_0, GUID: "198f394e-616d-4d08-8133-7350932fff9d", param: {"Data":{}}
+2025-04-02 15:45:07.974 [ERR] StartAsync RabbitMq:(2)Impossibile stabilira la connessione con il server
+RabbitMQ.Client.Exceptions.BrokerUnreachableException: None of the specified endpoints were reachable
+ ---> System.AggregateException: One or more errors occurred. (Connection failed, host 127.0.0.1:5672)
+ ---> RabbitMQ.Client.Exceptions.ConnectFailureException: Connection failed, host 127.0.0.1:5672
+ ---> System.Net.Sockets.SocketException (10061): Impossibile stabilire la connessione. Rifiuto persistente del computer di destinazione.
+   at System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs.ThrowException(SocketError error, CancellationToken cancellationToken)
+   at System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs.System.Threading.Tasks.Sources.IValueTaskSource.GetResult(Int16 token)
+   at System.Net.Sockets.Socket.<ConnectAsync>g__WaitForConnectWithCancellation|285_0(AwaitableSocketAsyncEventArgs saea, ValueTask connectTask, CancellationToken cancellationToken)
+   at RabbitMQ.Client.Impl.SocketFactory.ConnectUsingAddressFamilyAsync(IPEndPoint endpoint, Func`2 socketFactory, AddressFamily family, TimeSpan connectionTimeout, CancellationToken cancellationToken)
+   --- End of inner exception stack trace ---
+   at RabbitMQ.Client.Impl.SocketFactory.ConnectUsingAddressFamilyAsync(IPEndPoint endpoint, Func`2 socketFactory, AddressFamily family, TimeSpan connectionTimeout, CancellationToken cancellationToken)
+   at RabbitMQ.Client.Impl.SocketFactory.OpenAsync(AmqpTcpEndpoint amqpTcpEndpoint, Func`2 socketFactory, TimeSpan connectionTimeout, CancellationToken cancellationToken)
+   at RabbitMQ.Client.Impl.SocketFrameHandler.CreateAsync(AmqpTcpEndpoint amqpTcpEndpoint, Func`2 socketFactory, TimeSpan connectionTimeout, CancellationToken cancellationToken)
+   at RabbitMQ.Client.ConnectionFactory.CreateFrameHandlerAsync(AmqpTcpEndpoint endpoint, CancellationToken cancellationToken)
+   at RabbitMQ.Client.EndpointResolverExtensions.SelectOneAsync[T](IEndpointResolver resolver, Func`3 selector, CancellationToken cancellationToken)
+   --- End of inner exception stack trace ---
+   at RabbitMQ.Client.EndpointResolverExtensions.SelectOneAsync[T](IEndpointResolver resolver, Func`3 selector, CancellationToken cancellationToken)
+   at RabbitMQ.Client.Framing.AutorecoveringConnection.CreateAsync(ConnectionConfig config, IEndpointResolver endpoints, CancellationToken cancellationToken)
+   at RabbitMQ.Client.ConnectionFactory.CreateConnectionAsync(IEndpointResolver endpointResolver, String clientProvidedName, CancellationToken cancellationToken)
+   --- End of inner exception stack trace ---
+   at RabbitMQ.Client.ConnectionFactory.CreateConnectionAsync(IEndpointResolver endpointResolver, String clientProvidedName, CancellationToken cancellationToken)
+   at nvxapp.server.service.RabbitMQ.RabbitMqConnection.Start() in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\RabbitMQ\RabbitMqConnection.cs:line 45
+2025-04-02 15:45:12.297 [INF] Call: <Login>b__0, GUID: "c6dee0ea-2094-4a7d-99fb-df67d02f754f", param: {"Data":{"UserName":"admin","Password":"1234"}}
+2025-04-02 15:45:13.076 [INF] Call: <UserLoad>b__0, GUID: "a8049c0c-3567-4697-8256-41d3db776bef", param: {"Data":{"Id":"55bfd94c-8671-47f0-9d8a-109ceeb3af29"}}
+2025-04-02 15:45:14.472 [INF] Call: <DealerList>b__14_0, GUID: "ce9afe7d-13a9-415f-965d-b5b107a208ea", param: {"Data":{}}
+2025-04-02 15:46:52.960 [INF] Call: <Login>b__0, GUID: "db9bf5b4-8e6c-48c3-b977-304e0a7cd475", param: {"Data":{"UserName":"admin","Password":"1234"}}
+2025-04-02 15:46:53.081 [INF] Call: <UserLoad>b__0, GUID: "bfd44c70-5c36-4cca-8b68-da25acfbec3e", param: {"Data":{"Id":"55bfd94c-8671-47f0-9d8a-109ceeb3af29"}}
+2025-04-02 15:46:54.075 [INF] Call: <DealerList>b__14_0, GUID: "5af58a85-852f-400c-9eb5-551a954cb46f", param: {"Data":{}}
+2025-04-02 15:54:49.054 [INF] Call: <Login>b__0, GUID: "2b827c49-7ed6-473b-bf61-95614d52e207", param: {"Data":{"UserName":"admin","Password":"1234"}}
+2025-04-02 15:54:49.262 [INF] Call: <UserLoad>b__0, GUID: "185d3835-745a-499e-97dc-b7071505eab8", param: {"Data":{"Id":"55bfd94c-8671-47f0-9d8a-109ceeb3af29"}}
+2025-04-02 15:55:05.715 [INF] Call: <DealerList>b__14_0, GUID: "1edc9598-adba-4c2b-8bc9-27d4a0317b30", param: {"Data":{}}
+2025-04-02 16:09:08.668 [ERR] StartAsync RabbitMq:(2)Impossibile stabilira la connessione con il server
+RabbitMQ.Client.Exceptions.BrokerUnreachableException: None of the specified endpoints were reachable
+ ---> System.AggregateException: One or more errors occurred. (Connection failed, host 127.0.0.1:5672)
+ ---> RabbitMQ.Client.Exceptions.ConnectFailureException: Connection failed, host 127.0.0.1:5672
+ ---> System.Net.Sockets.SocketException (10061): Impossibile stabilire la connessione. Rifiuto persistente del computer di destinazione.
+   at System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs.ThrowException(SocketError error, CancellationToken cancellationToken)
+   at System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs.System.Threading.Tasks.Sources.IValueTaskSource.GetResult(Int16 token)
+   at System.Net.Sockets.Socket.<ConnectAsync>g__WaitForConnectWithCancellation|285_0(AwaitableSocketAsyncEventArgs saea, ValueTask connectTask, CancellationToken cancellationToken)
+   at RabbitMQ.Client.Impl.SocketFactory.ConnectUsingAddressFamilyAsync(IPEndPoint endpoint, Func`2 socketFactory, AddressFamily family, TimeSpan connectionTimeout, CancellationToken cancellationToken)
+   --- End of inner exception stack trace ---
+   at RabbitMQ.Client.Impl.SocketFactory.ConnectUsingAddressFamilyAsync(IPEndPoint endpoint, Func`2 socketFactory, AddressFamily family, TimeSpan connectionTimeout, CancellationToken cancellationToken)
+   at RabbitMQ.Client.Impl.SocketFactory.OpenAsync(AmqpTcpEndpoint amqpTcpEndpoint, Func`2 socketFactory, TimeSpan connectionTimeout, CancellationToken cancellationToken)
+   at RabbitMQ.Client.Impl.SocketFrameHandler.CreateAsync(AmqpTcpEndpoint amqpTcpEndpoint, Func`2 socketFactory, TimeSpan connectionTimeout, CancellationToken cancellationToken)
+   at RabbitMQ.Client.ConnectionFactory.CreateFrameHandlerAsync(AmqpTcpEndpoint endpoint, CancellationToken cancellationToken)
+   at RabbitMQ.Client.EndpointResolverExtensions.SelectOneAsync[T](IEndpointResolver resolver, Func`3 selector, CancellationToken cancellationToken)
+   --- End of inner exception stack trace ---
+   at RabbitMQ.Client.EndpointResolverExtensions.SelectOneAsync[T](IEndpointResolver resolver, Func`3 selector, CancellationToken cancellationToken)
+   at RabbitMQ.Client.Framing.AutorecoveringConnection.CreateAsync(ConnectionConfig config, IEndpointResolver endpoints, CancellationToken cancellationToken)
+   at RabbitMQ.Client.ConnectionFactory.CreateConnectionAsync(IEndpointResolver endpointResolver, String clientProvidedName, CancellationToken cancellationToken)
+   --- End of inner exception stack trace ---
+   at RabbitMQ.Client.ConnectionFactory.CreateConnectionAsync(IEndpointResolver endpointResolver, String clientProvidedName, CancellationToken cancellationToken)
+   at nvxapp.server.service.RabbitMQ.RabbitMqConnection.Start() in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\RabbitMQ\RabbitMqConnection.cs:line 45
+2025-04-02 16:09:09.894 [INF] Call: <Login>b__0, GUID: "7f8de542-fe9e-4233-a3b0-91c5697a19c1", param: {"Data":{"UserName":"admin","Password":"1234"}}
+2025-04-02 16:09:10.870 [INF] Call: <UserLoad>b__0, GUID: "5b32c36e-e034-4b57-9a87-7a4913e94868", param: {"Data":{"Id":"55bfd94c-8671-47f0-9d8a-109ceeb3af29"}}
+2025-04-02 16:09:20.218 [INF] Call: <DealerList>b__14_0, GUID: "bf6de357-b3f9-4747-9957-9732d53fba1e", param: {"Data":{}}
+2025-04-02 16:09:40.377 [INF] Call: <DealerList>b__14_0, GUID: "41a547f0-61c5-496c-9044-f2f8aab253ad", param: {"Data":{}}
+2025-04-02 16:10:01.373 [INF] Call: <DealerList>b__14_0, GUID: "6cba622e-a4bf-496d-90b5-8218ffdf4477", param: {"Data":{}}
+2025-04-02 16:10:07.243 [INF] Call: <DealerList>b__14_0, GUID: "084a101a-0db2-436c-acd4-d61bb7ffaa1c", param: {"Data":{}}
+2025-04-02 16:11:16.029 [INF] Call: <Login>b__0, GUID: "65ef329a-a2ac-4db6-81d6-d673b0a24483", param: {"Data":{"UserName":"admin","Password":"1234"}}
+2025-04-02 16:11:16.165 [INF] Call: <UserLoad>b__0, GUID: "16e03136-f197-4502-833a-e71102bd3619", param: {"Data":{"Id":"55bfd94c-8671-47f0-9d8a-109ceeb3af29"}}
+2025-04-02 16:11:20.290 [INF] Call: <DealerList>b__14_0, GUID: "b18041f1-e27d-4fc0-8be7-39a602bd2af6", param: {"Data":{}}
+2025-04-02 16:11:31.265 [INF] Call: <DealerList>b__14_0, GUID: "e93e3b6e-bd4c-473e-916d-e4e023a9f973", param: {"Data":{}}
+2025-04-02 16:11:43.432 [INF] Call: <DealerList>b__14_0, GUID: "2c5a7937-d2f1-4ef1-956f-1bdcf18af5a5", param: {"Data":{}}
+2025-04-02 16:13:04.235 [INF] Call: <Login>b__0, GUID: "14db2d2b-c018-49a2-a6e2-7c49e65d119a", param: {"Data":{"UserName":"admin","Password":"1234"}}
+2025-04-02 16:13:04.351 [INF] Call: <UserLoad>b__0, GUID: "399ae0e1-98ba-4da3-8c54-1adb48ae9d72", param: {"Data":{"Id":"55bfd94c-8671-47f0-9d8a-109ceeb3af29"}}
+2025-04-02 16:13:09.048 [INF] Call: <DealerList>b__14_0, GUID: "f08dec64-4c39-4e5b-8485-4e493110b988", param: {"Data":{}}
+2025-04-02 16:13:33.104 [INF] Call: <DealerList>b__14_0, GUID: "38287e86-bdbc-4c14-a994-66563fd3dbb1", param: {"Data":{}}
+2025-04-02 16:13:37.558 [INF] Call: <DealerList>b__14_0, GUID: "7e268558-d572-452e-b68f-51c3c74f37d8", param: {"Data":{}}
+2025-04-02 16:14:00.574 [INF] Call: <DealerList>b__14_0, GUID: "48ef7a2a-4878-4ee6-b2aa-edea1d90f859", param: {"Data":{}}
+2025-04-02 16:22:35.840 [ERR] StartAsync RabbitMq:(2)Impossibile stabilira la connessione con il server
+RabbitMQ.Client.Exceptions.BrokerUnreachableException: None of the specified endpoints were reachable
+ ---> System.AggregateException: One or more errors occurred. (Connection failed, host 127.0.0.1:5672)
+ ---> RabbitMQ.Client.Exceptions.ConnectFailureException: Connection failed, host 127.0.0.1:5672
+ ---> System.Net.Sockets.SocketException (10061): Impossibile stabilire la connessione. Rifiuto persistente del computer di destinazione.
+   at System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs.ThrowException(SocketError error, CancellationToken cancellationToken)
+   at System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs.System.Threading.Tasks.Sources.IValueTaskSource.GetResult(Int16 token)
+   at System.Net.Sockets.Socket.<ConnectAsync>g__WaitForConnectWithCancellation|285_0(AwaitableSocketAsyncEventArgs saea, ValueTask connectTask, CancellationToken cancellationToken)
+   at RabbitMQ.Client.Impl.SocketFactory.ConnectUsingAddressFamilyAsync(IPEndPoint endpoint, Func`2 socketFactory, AddressFamily family, TimeSpan connectionTimeout, CancellationToken cancellationToken)
+   --- End of inner exception stack trace ---
+   at RabbitMQ.Client.Impl.SocketFactory.ConnectUsingAddressFamilyAsync(IPEndPoint endpoint, Func`2 socketFactory, AddressFamily family, TimeSpan connectionTimeout, CancellationToken cancellationToken)
+   at RabbitMQ.Client.Impl.SocketFactory.OpenAsync(AmqpTcpEndpoint amqpTcpEndpoint, Func`2 socketFactory, TimeSpan connectionTimeout, CancellationToken cancellationToken)
+   at RabbitMQ.Client.Impl.SocketFrameHandler.CreateAsync(AmqpTcpEndpoint amqpTcpEndpoint, Func`2 socketFactory, TimeSpan connectionTimeout, CancellationToken cancellationToken)
+   at RabbitMQ.Client.ConnectionFactory.CreateFrameHandlerAsync(AmqpTcpEndpoint endpoint, CancellationToken cancellationToken)
+   at RabbitMQ.Client.EndpointResolverExtensions.SelectOneAsync[T](IEndpointResolver resolver, Func`3 selector, CancellationToken cancellationToken)
+   --- End of inner exception stack trace ---
+   at RabbitMQ.Client.EndpointResolverExtensions.SelectOneAsync[T](IEndpointResolver resolver, Func`3 selector, CancellationToken cancellationToken)
+   at RabbitMQ.Client.Framing.AutorecoveringConnection.CreateAsync(ConnectionConfig config, IEndpointResolver endpoints, CancellationToken cancellationToken)
+   at RabbitMQ.Client.ConnectionFactory.CreateConnectionAsync(IEndpointResolver endpointResolver, String clientProvidedName, CancellationToken cancellationToken)
+   --- End of inner exception stack trace ---
+   at RabbitMQ.Client.ConnectionFactory.CreateConnectionAsync(IEndpointResolver endpointResolver, String clientProvidedName, CancellationToken cancellationToken)
+   at nvxapp.server.service.RabbitMQ.RabbitMqConnection.Start() in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\RabbitMQ\RabbitMqConnection.cs:line 45
+2025-04-02 16:22:38.048 [INF] Call: <Login>b__0, GUID: "78726393-98b4-46e8-b90b-b6e8f406ee9b", param: {"Data":{"UserName":"admin","Password":"1234"}}
+2025-04-02 16:22:38.900 [INF] Call: <UserLoad>b__0, GUID: "734cc17c-3ead-432d-8224-4abafd12e1f7", param: {"Data":{"Id":"55bfd94c-8671-47f0-9d8a-109ceeb3af29"}}
+2025-04-02 16:22:40.133 [INF] Call: <DealerList>b__14_0, GUID: "f9d23b83-188d-430a-997e-40959ae2632a", param: {"Data":{}}
+2025-04-02 16:22:51.706 [INF] Call: <DealerList>b__14_0, GUID: "972e63fd-f165-4af8-9285-fc17d9e46466", param: {"Data":{}}
+2025-04-02 16:28:41.728 [INF] Call: <Login>b__0, GUID: "43dd48af-90cb-487a-b530-96aad81cf231", param: {"Data":{"UserName":"admin","Password":"1234"}}
+2025-04-02 16:28:41.908 [INF] Call: <UserLoad>b__0, GUID: "bc9fff6e-f7bf-4fc8-9eeb-24f3ffa14c4a", param: {"Data":{"Id":"55bfd94c-8671-47f0-9d8a-109ceeb3af29"}}
+2025-04-02 16:28:46.924 [INF] Call: <DealerList>b__14_0, GUID: "cf528317-6b4b-44f9-a22a-c1b1063f23a6", param: {"Data":{}}
+2025-04-02 16:29:11.332 [INF] Call: <DealerList>b__14_0, GUID: "de9a2f09-ce62-440e-b8b8-3cd096f98429", param: {"Data":{}}
+2025-04-02 16:29:17.822 [INF] Call: <DealerList>b__14_0, GUID: "9f9f7f9c-a2e3-4ea4-bfd9-9223e9d97d7a", param: {"Data":{}}
+2025-04-02 16:32:51.989 [INF] Call: <DealerList>b__14_0, GUID: "eac4db72-33ff-4552-8d01-7c753c15f9a8", param: {"Data":{}}

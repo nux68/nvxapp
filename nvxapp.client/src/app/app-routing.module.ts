@@ -14,6 +14,7 @@ import { RoleGuard4FinancialAdvisorPowerAdmin } from '../nvx/pages/RoleGuard/rol
 import { RoleGuard4FinancialAdvisorAdmin } from '../nvx/pages/RoleGuard/role-guard-4-financia-ladvisor-admin';
 import { RoleGuard4FinancialAdvisorList } from '../nvx/pages/RoleGuard/role-guard-4-financial-advisor-list';
 import { RoleGuard4User } from '../nvx/pages/RoleGuard/role-guard-4-user';
+import { RoleGuard4DealerEdit } from '../nvx/pages/RoleGuard/role-guard-4-dealer-edit';
 
 
 
@@ -43,6 +44,7 @@ const routes: Routes = [
   { path: 'dealerpoweradmin', loadChildren: () => import('../nvx/pages/dealer-power-admin-page/dealer-power-admin-page.module').then(m => m.DealerPowerAdminPageModule), canActivate: [RoleGuard4DealerPowerAdmin] },
   { path: 'dealeradmin', loadChildren: () => import('../nvx/pages/dealer-admin-page/dealer-admin-page.module').then(m => m.DealerAdminPageModule), canActivate: [RoleGuard4DealerAdmin] },
   { path: 'dealerlist', loadChildren: () => import('../nvx/pages/dealer-list-page/dealer-list-page.module').then(m => m.DealerListPageModule), canActivate: [RoleGuard4DealerList] },
+  { path: 'dealeredit', loadChildren: () => import('../nvx/pages/dealer-edit-page/dealer-edit-page.module').then(m => m.DealerEditPageModule), canActivate: [RoleGuard4DealerEdit] },
 
   { path: 'financialadvisorpoweradmin', loadChildren: () => import('../nvx/pages/financial-advisor-power-admin-page/financial-advisor-power-admin-page.module').then(m => m.FinancialAdvisorPowerAdminPageModule), canActivate: [RoleGuard4FinancialAdvisorPowerAdmin] },
   { path: 'financialadvisoradmin', loadChildren: () => import('../nvx/pages/financial-advisor-admin-page/financial-advisor-admin-page.module').then(m => m.FinancialAdvisorAdminPageModule), canActivate: [RoleGuard4FinancialAdvisorAdmin] },

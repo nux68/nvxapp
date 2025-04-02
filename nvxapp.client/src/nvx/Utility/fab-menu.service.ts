@@ -32,7 +32,8 @@ export class FabMenuItem {
   constructor(
     public text: string | null = null,
     public image: string | null = null,
-    public event: (() => void) | null = null
+    //public event: (() => void) | null = null
+    public event: () => void = () => { } // Arrow function di default
   ) { }
 
 }

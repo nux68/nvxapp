@@ -24,6 +24,7 @@ export class DealerListPageComponent  implements OnInit {
               public fabMenuService: FabMenuService,
               private userNavigationService: UserNavigationService) {
     this.title = 'DealerListPage';
+    console.log('NavController instance:', this.navCtrl);
   }
 
   ionViewWillEnter() {
@@ -36,7 +37,13 @@ export class DealerListPageComponent  implements OnInit {
     });
 
     this.fabMenuService.fabMenuItem =   [
-      new FabMenuItem('Elemento 1', 'add-circle-outline', this.handleButtonAddClick),
+
+      new FabMenuItem('Elemento 1', 'add-circle-outline', () => {
+        this.navCtrl.navigateForward('/dealeredit', {
+          state: { id: this.title }
+        });
+      }),
+
     ];
 
   }
@@ -67,13 +74,29 @@ export class DealerListPageComponent  implements OnInit {
 
   }
 
-  handleButtonEditClick(item: DealerListModel) {
+  handleButtonEditClick = (item: DealerListModel) => {
+    this.navCtrl.navigateForward('/dealeredit', {
+      state: { id: this.title }
+    });
   }
 
-  handleButtonAddClick() {
-    var c = 0;
 
-  }
+  //handleButtonEditClick(item: DealerListModel) {
+  //  this.navCtrl.navigateForward('/dealeredit');
+  //}
+
+  //handleButtonAddClick() {
+  //  //this.router.navigate(['/home']);
+  //  this.navCtrl.navigateForward('/dealeredit');
+
+  //}
+
+ 
+
+  //handleButtonAddClick = (item: DealerListModel) => {
+  //  this.navCtrl.navigateForward('/dealeredit');
+  //}
+
 
 
   public Filter(CurrFilter: any) {
