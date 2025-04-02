@@ -33,7 +33,6 @@ export class FabMenuItem {
     public text: string | null = null,
     public image: string | null = null,
     public event: (() => void) | null = null
-    //public event: string | null = null
   ) { }
 
 }
