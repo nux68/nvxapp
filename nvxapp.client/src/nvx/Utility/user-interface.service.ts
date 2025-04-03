@@ -26,7 +26,6 @@ export class UserInterfaceService {
     );
   }
 
-
   get Btn_ConfermaAnnulla(): ButtonItem[] {
 
     let buttonItem: ButtonItem[] = [];
@@ -39,6 +38,24 @@ export class UserInterfaceService {
 
     return buttonItem;
     
+  }
+  
+  get Btn_Modifica(): ButtonItem {
+    return new ButtonItem(
+      'Modifica',
+      'create-outline',
+      'medium',
+      () => { console.log('Btn_Modifica cliccato'); }
+    );
+  }
+  
+  get Btn_Impersona(): ButtonItem {
+    return new ButtonItem(
+      'Modifica',
+      'person-outline',
+      'primary',
+      () => { console.log('Btn_Impersona cliccato'); }
+    );
   }
 
 }

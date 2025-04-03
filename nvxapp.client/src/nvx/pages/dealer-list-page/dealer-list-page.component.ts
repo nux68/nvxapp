@@ -6,6 +6,7 @@ import { UserLoadInModel } from '../../ClientServer-Service/Account/Models/user-
 import { UserDataAdditionalModel, UserNavigationService } from '../../Utility/user-navigation.service';
 import { NavController } from '@ionic/angular';
 import { FabMenuItem, FabMenuService } from '../../Utility/fab-menu.service';
+import { ButtonItem, UserInterfaceService } from '../../Utility/user-interface.service';
 
 @Component({
   selector: 'app-dealer-list-page',
@@ -17,14 +18,20 @@ export class DealerListPageComponent  implements OnInit {
 
   public title!: string;
   public searchText!: string;
-  public dealerList: DealerListModel[] | null=null;
+  public dealerList: DealerListModel[] | null = null;
+  public btnEdit: ButtonItem;
 
   constructor(private navCtrl: NavController,
               private accountService: AccountService,
               public fabMenuService: FabMenuService,
+              private userInterfaceService: UserInterfaceService,
               private userNavigationService: UserNavigationService) {
     this.title = 'DealerListPage';
     console.log('NavController instance:', this.navCtrl);
+
+    //this.btnEdit = userInterfaceService.Btn_Modifica;
+    //this.btnEdit.event = this.handleButtonEditClick;
+
   }
 
   ionViewWillEnter() {
@@ -40,7 +47,7 @@ export class DealerListPageComponent  implements OnInit {
 
       new FabMenuItem('Elemento 1', 'add-circle-outline', () => {
         this.navCtrl.navigateForward('/dealeredit', {
-          state: { id: this.title }
+          state: { id: 0 }
         });
       }),
 
@@ -54,7 +61,7 @@ export class DealerListPageComponent  implements OnInit {
 
   ngOnInit() {}
 
-  handleButtonClick(item: DealerListModel) {
+  handleButtonImpersonaClick(item: DealerListModel) {
 
     let request: GenericRequest<UserLoadInModel> = new GenericRequest<UserLoadInModel>(UserLoadInModel);
     request.data.id = item.idAspNetUsers;
@@ -76,26 +83,10 @@ export class DealerListPageComponent  implements OnInit {
 
   handleButtonEditClick = (item: DealerListModel) => {
     this.navCtrl.navigateForward('/dealeredit', {
-      state: { id: this.title }
+      state: { id: item.idDealer }
     });
   }
 
-
-  //handleButtonEditClick(item: DealerListModel) {
-  //  this.navCtrl.navigateForward('/dealeredit');
-  //}
-
-  //handleButtonAddClick() {
-  //  //this.router.navigate(['/home']);
-  //  this.navCtrl.navigateForward('/dealeredit');
-
-  //}
-
- 
-
-  //handleButtonAddClick = (item: DealerListModel) => {
-  //  this.navCtrl.navigateForward('/dealeredit');
-  //}
 
 
 

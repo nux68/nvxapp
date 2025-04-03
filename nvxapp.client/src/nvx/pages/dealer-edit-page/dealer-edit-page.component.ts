@@ -15,15 +15,14 @@ export class DealerEditPageComponent  implements OnInit {
   public buttonbar: ButtonItem[]=[];
 
   constructor(private navCtrl: NavController,
-              private userInterfaceService: UserInterfaceService) {
+              private userInterfaceService: UserInterfaceService)
+  {
 
     this.title = 'DealerEditPage';
-
 
     this.buttonbar = userInterfaceService.Btn_ConfermaAnnulla;
     this.buttonbar[0].event = this.handleButtonConfirmClick;
     this.buttonbar[1].event = this.handleButtonCancelClick;
-
   }
 
   ionViewWillEnter() {
