@@ -5,6 +5,7 @@ import { UserDataAdditionalModel, UserNavigationService } from '../../Utility/us
 import { GenericRequest } from '../../ClientServer-Service/ModelsBase/generic-request';
 import { UserLoadInModel } from '../../ClientServer-Service/Account/Models/user-load-model';
 import { FinancialAdvisorListInModel, FinancialAdvisorListModel } from '../../ClientServer-Service/Account/Models/financial-advisor-list-model';
+import { ButtonItem, UserInterfaceService } from '../../Utility/user-interface.service';
 
 @Component({
   selector: 'app-financial-advisor-list-page',
@@ -17,11 +18,17 @@ export class FinancialAdvisorListPageComponent implements OnInit {
   public title!: string;
   public searchText!: string;
   public financialAdvisorList: FinancialAdvisorListModel[] | null = null;
+  public btnImpersona: ButtonItem;
 
   constructor(private navCtrl: NavController,
     private accountService: AccountService,
+    private userInterfaceService: UserInterfaceService,
     private userNavigationService: UserNavigationService) {
     this.title = 'FinancialAdvisorListPage';
+
+    this.btnImpersona = userInterfaceService.Btn_Impersona;
+    this.btnImpersona.event = this.handleButtonImpersonaClick;
+
   }
 
   ionViewWillEnter() {
@@ -35,7 +42,8 @@ export class FinancialAdvisorListPageComponent implements OnInit {
 
   ngOnInit() {}
 
-  handleButtonClick(item: FinancialAdvisorListModel) {
+//handleButtonImpersonaClick(item: FinancialAdvisorListModel) {
+  handleButtonImpersonaClick = (item: any) => {
 
     let request: GenericRequest<UserLoadInModel> = new GenericRequest<UserLoadInModel>(UserLoadInModel);
     request.data.id = item.idAspNetUsers;

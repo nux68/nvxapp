@@ -5,6 +5,7 @@ import { CompanyListModel, CompanyListInModel } from '../../ClientServer-Service
 import { UserLoadInModel } from '../../ClientServer-Service/Account/Models/user-load-model';
 import { GenericRequest } from '../../ClientServer-Service/ModelsBase/generic-request';
 import { UserNavigationService, UserDataAdditionalModel } from '../../Utility/user-navigation.service';
+import { ButtonItem, UserInterfaceService } from '../../Utility/user-interface.service';
 
 
 @Component({
@@ -18,11 +19,17 @@ export class CompanyListPageComponent  implements OnInit {
   public title!: string;
   public searchText!: string;
   public companyList: CompanyListModel[] | null = null;
+  public btnImpersona: ButtonItem;
 
   constructor(private navCtrl: NavController,
-    private accountService: AccountService,
-    private userNavigationService: UserNavigationService) {
+              private accountService: AccountService,
+              private userInterfaceService: UserInterfaceService,
+              private userNavigationService: UserNavigationService) {
+
     this.title = 'CompanyListPage';
+    this.btnImpersona = userInterfaceService.Btn_Impersona;
+    this.btnImpersona.event = this.handleButtonImpersonaClick;
+
   }
 
   ionViewWillEnter() {
@@ -38,7 +45,7 @@ export class CompanyListPageComponent  implements OnInit {
 
   ngOnInit() {}
 
-  handleButtonClick(item: CompanyListModel) {
+  handleButtonImpersonaClick = (item: any) => {
 
     let request: GenericRequest<UserLoadInModel> = new GenericRequest<UserLoadInModel>(UserLoadInModel);
     request.data.id = item.idAspNetUsers;
