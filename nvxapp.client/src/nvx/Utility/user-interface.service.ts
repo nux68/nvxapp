@@ -51,7 +51,7 @@ export class UserInterfaceService {
   
   get Btn_Impersona(): ButtonItem {
     return new ButtonItem(
-      'Modifica',
+      'Impersona',
       'person-outline',
       'primary',
       () => { console.log('Btn_Impersona cliccato'); }
@@ -67,7 +67,7 @@ export class ButtonItem {
     public text: string | null = null,
     public image: string | null = null,
     public color: string | null = null,
-    public event: () => void = () => { } // Arrow function di default
+    public event: (param: any) => void = (param: any) => { } // Arrow function di default
   ) { }
 
 }

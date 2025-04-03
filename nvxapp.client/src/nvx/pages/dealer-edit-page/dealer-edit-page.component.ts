@@ -35,11 +35,11 @@ export class DealerEditPageComponent  implements OnInit {
   }
 
 
-  handleButtonConfirmClick = () => {
+  handleButtonConfirmClick = (param: object) => {
     this.navCtrl.back();
   }
 
-  handleButtonCancelClick = () => {
+  handleButtonCancelClick = (param: object) => {
     this.navCtrl.back();
   }
 

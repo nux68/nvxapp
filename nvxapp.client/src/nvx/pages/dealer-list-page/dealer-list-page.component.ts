@@ -20,6 +20,7 @@ export class DealerListPageComponent  implements OnInit {
   public searchText!: string;
   public dealerList: DealerListModel[] | null = null;
   public btnEdit: ButtonItem;
+  public btnImpersona: ButtonItem;
 
   constructor(private navCtrl: NavController,
               private accountService: AccountService,
@@ -29,8 +30,11 @@ export class DealerListPageComponent  implements OnInit {
     this.title = 'DealerListPage';
     console.log('NavController instance:', this.navCtrl);
 
-    //this.btnEdit = userInterfaceService.Btn_Modifica;
-    //this.btnEdit.event = this.handleButtonEditClick;
+    this.btnEdit = userInterfaceService.Btn_Modifica;
+    this.btnEdit.event = this.handleButtonEditClick;
+
+    this.btnImpersona = userInterfaceService.Btn_Impersona;
+    this.btnImpersona.event = this.handleButtonImpersonaClick;
 
   }
 
@@ -61,8 +65,9 @@ export class DealerListPageComponent  implements OnInit {
 
   ngOnInit() {}
 
-  handleButtonImpersonaClick(item: DealerListModel) {
+  
 
+  handleButtonImpersonaClick = (item: any) => {
     let request: GenericRequest<UserLoadInModel> = new GenericRequest<UserLoadInModel>(UserLoadInModel);
     request.data.id = item.idAspNetUsers;
     this.accountService.UserLoad(request).subscribe(usl => {
@@ -81,7 +86,7 @@ export class DealerListPageComponent  implements OnInit {
 
   }
 
-  handleButtonEditClick = (item: DealerListModel) => {
+  handleButtonEditClick = (item: any) => {
     this.navCtrl.navigateForward('/dealeredit', {
       state: { id: item.idDealer }
     });
