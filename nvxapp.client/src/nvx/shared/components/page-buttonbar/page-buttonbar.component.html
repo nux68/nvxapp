@@ -1,0 +1,12 @@
+<ion-footer>
+  <ion-toolbar color="light">
+    <ion-buttons class="center-buttons">
+      
+      <ion-button *ngFor="let item of buttonbar" (click)="item.event()" color="{{item.color}}" fill="solid">
+        <ion-icon name="{{item.image}}"></ion-icon>
+        &nbsp;{{item.text}}
+      </ion-button>
+
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>

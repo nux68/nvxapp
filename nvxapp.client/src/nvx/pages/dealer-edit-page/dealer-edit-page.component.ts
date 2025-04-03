@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { NavController } from '@ionic/angular';
-import { ActivatedRoute } from '@angular/router';
+import { ButtonItem, UserInterfaceService } from '../../Utility/user-interface.service';
+
 
 @Component({
   selector: 'app-dealer-edit-page',
@@ -11,33 +12,37 @@ import { ActivatedRoute } from '@angular/router';
 export class DealerEditPageComponent  implements OnInit {
 
   public title!: string;
+  public buttonbar: ButtonItem[]=[];
 
-  constructor(/*private route: ActivatedRoute*/
-    private activatedRoute: ActivatedRoute) {
+  constructor(private navCtrl: NavController,
+              private userInterfaceService: UserInterfaceService) {
+
     this.title = 'DealerEditPage';
+
+
+    this.buttonbar = userInterfaceService.Btn_ConfermaAnnulla;
+    this.buttonbar[0].event = this.handleButtonConfirmClick;
+    this.buttonbar[1].event = this.handleButtonCancelClick;
+
   }
 
   ionViewWillEnter() {
-    //this.route.queryParams.subscribe(params => {
-    //  const id = params['id']; // Recupera il parametro 'id'
-    //  console.log(id); // Usa l'id come necessario
-    //});
-
-    //const navigation = this.activatedRoute.routerState.snapshot.root.queryParams;
-    //const itemId = this.activatedRoute.routerState.snapshot.root;
-    //if (itemId) {
-    //  console.log(itemId);
-    //}
 
     const state = history.state;
     if (state && state.id) {
-      
       console.log('Item ID:', state.id); // Usa l'itemId come necessario
     }
 
   }
 
-   
+
+  handleButtonConfirmClick = () => {
+    this.navCtrl.back();
+  }
+
+  handleButtonCancelClick = () => {
+    this.navCtrl.back();
+  }
 
 
   ngOnInit() {}
