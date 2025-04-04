@@ -16,5 +16,7 @@ namespace nvxapp.server.data.Entities.Public
         [Required]
         public required string IdAspNetUsers { get; set; }
         public ApplicationUser? AspNetUsersNavigation { get; set; }
+
+        public Boolean MainUser { get; set; }
     }
 }
