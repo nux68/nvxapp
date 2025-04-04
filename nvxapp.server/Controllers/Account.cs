@@ -50,6 +50,8 @@ namespace nvxapp.server.Controllers
             return res;
         }
 
+
+
         [Authorize]
         [HttpPost]
         [Route("DealerList")]
@@ -59,6 +61,30 @@ namespace nvxapp.server.Controllers
 
             return res;
         }
+
+        [Authorize]
+        [HttpPost]
+        [Route("DealerGet")]
+        public async Task<GenericResult<DealerGetOutModel>> DealerGet(GenericRequest<DealerGetInModel> inModel)
+        {
+            var res = await _accountService.DealerGet(inModel, false);
+
+            return res;
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("DealerPut")]
+        public async Task<GenericResult<DealerPutOutModel>> DealerPut(GenericRequest<DealerPutInModel> inModel)
+        {
+            var res = await _accountService.DealerPut(inModel, false);
+
+            return res;
+        }
+
+
+      
+
 
 
         [Authorize]
@@ -73,6 +99,30 @@ namespace nvxapp.server.Controllers
 
         [Authorize]
         [HttpPost]
+        [Route("FinancialAdvisorGet")]
+        public async Task<GenericResult<FinancialAdvisorGetOutModel>> FinancialAdvisorGet(GenericRequest<FinancialAdvisorGetInModel> inModel)
+        {
+            var res = await _accountService.FinancialAdvisorGet(inModel, false);
+
+            return res;
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("FinancialAdvisorPut")]
+        public async Task<GenericResult<FinancialAdvisorPutOutModel>> FinancialAdvisorPut(GenericRequest<FinancialAdvisorPutInModel> inModel)
+        {
+            var res = await _accountService.FinancialAdvisorPut(inModel, false);
+
+            return res;
+        }
+
+
+
+
+
+        [Authorize]
+        [HttpPost]
         [Route("CompanyList")]
         public async Task<GenericResult<CompanyListOutModel>> CompanyList(GenericRequest<CompanyListInModel> inModel)
         {
@@ -83,6 +133,29 @@ namespace nvxapp.server.Controllers
 
         [Authorize]
         [HttpPost]
+        [Route("CompanyGet")]
+        public async Task<GenericResult<CompanyGetOutModel>> CompanyGet(GenericRequest<CompanyGetInModel> inModel)
+        {
+            var res = await _accountService.CompanyGet(inModel, false);
+
+            return res;
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("CompanyPut")]
+        public async Task<GenericResult<CompanyPutOutModel>> CompanyPut(GenericRequest<CompanyPutInModel> inModel)
+        {
+            var res = await _accountService.CompanyPut(inModel, false);
+
+            return res;
+        }
+
+
+
+
+        [Authorize]
+        [HttpPost]
         [Route("UserCompanyList")]
         public async Task<GenericResult<UserCompanyListOutModel>> UserCompanyList(GenericRequest<UserCompanyListInModel> inModel)
         {
@@ -90,6 +163,28 @@ namespace nvxapp.server.Controllers
 
             return res;
         }
+
+        [Authorize]
+        [HttpPost]
+        [Route("UserCompanyGet")]
+        public async Task<GenericResult<UserCompanyGetOutModel>> UserCompanyGet(GenericRequest<UserCompanyGetInModel> inModel)
+        {
+            var res = await _accountService.UserCompanyGet(inModel, false);
+
+            return res;
+        }
+
+
+        [Authorize]
+        [HttpPost]
+        [Route("UserCompanyPut")]
+        public async Task<GenericResult<UserCompanyPutOutModel>> UserCompanyPut(GenericRequest<UserCompanyPutInModel> inModel)
+        {
+            var res = await _accountService.UserCompanyPut(inModel, false);
+
+            return res;
+        }
+
 
     }
 
