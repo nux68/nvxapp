@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AccountService } from '../../ClientServer-Service/Account/account.service';
-import { DealerListInModel, DealerListModel } from '../../ClientServer-Service/Account/Models/dealer-list-model';
+import { DealerListInModel, DealerListModel } from '../../ClientServer-Service/Account/Models/dealer-model';
 import { GenericRequest } from '../../ClientServer-Service/ModelsBase/generic-request';
 import { UserLoadInModel } from '../../ClientServer-Service/Account/Models/user-load-model';
 import { UserDataAdditionalModel, UserNavigationService } from '../../Utility/user-navigation.service';

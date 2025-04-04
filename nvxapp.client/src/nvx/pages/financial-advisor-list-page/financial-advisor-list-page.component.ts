@@ -4,7 +4,7 @@ import { AccountService } from '../../ClientServer-Service/Account/account.servi
 import { UserDataAdditionalModel, UserNavigationService } from '../../Utility/user-navigation.service';
 import { GenericRequest } from '../../ClientServer-Service/ModelsBase/generic-request';
 import { UserLoadInModel } from '../../ClientServer-Service/Account/Models/user-load-model';
-import { FinancialAdvisorListInModel, FinancialAdvisorListModel } from '../../ClientServer-Service/Account/Models/financial-advisor-list-model';
+import { FinancialAdvisorListInModel, FinancialAdvisorListModel } from '../../ClientServer-Service/Account/Models/financial-advisor-model';
 import { ButtonItem, UserInterfaceService } from '../../Utility/user-interface.service';
 
 @Component({

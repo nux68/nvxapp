@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { AccountService } from '../../ClientServer-Service/Account/account.service';
-import { UserCompanyListModel, UserCompanyListInModel } from '../../ClientServer-Service/Account/Models/uesr-company-list-model';
+import { UserCompanyListModel, UserCompanyListInModel } from '../../ClientServer-Service/Account/Models/user-company-model';
 import { UserLoadInModel } from '../../ClientServer-Service/Account/Models/user-load-model';
 import { GenericRequest } from '../../ClientServer-Service/ModelsBase/generic-request';
 import { UserNavigationService, UserDataAdditionalModel } from '../../Utility/user-navigation.service';
