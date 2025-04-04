@@ -325,7 +325,25 @@ namespace nvxapp.server.service.ClientServer_Service.Account
             {
                 DealerGetOutModel retVal = new DealerGetOutModel();
 
+                var dealer = await _dealerRepository.FindByIdAsync(model.Data.Id);
+                if(dealer!=null)
+                {
+                    retVal.DealerEdit = new DealerEditModel()
+                    {
+                         Descrizione = dealer.Descrizione,
+                         IdDealer= dealer.Id
+                    };
+                }
+                else
+                {
+                    retVal.DealerEdit = new DealerEditModel()
+                    {
+                        Descrizione = "",
+                        IdDealer = 0
+                    };
+                }
 
+                
 
                 //eliminare
                 // Nessun 'await' qui
@@ -340,8 +358,29 @@ namespace nvxapp.server.service.ClientServer_Service.Account
             {
                 DealerPutOutModel retVal = new DealerPutOutModel();
 
+                
 
+                var dealer = await _dealerRepository.FindByIdAsync(model.Data.DealerEdit.IdDealer);
+                if (dealer != null)
+                {
+                    dealer.Descrizione = model.Data.DealerEdit.Descrizione;
 
+                //    retVal.DealerEdit = new DealerEditModel()
+                //    {
+                //        Descrizione = dealer.Descrizione,
+                //        IdDealer = dealer.Id
+                //    };
+                }
+                else
+                {
+                //    retVal.DealerEdit = new DealerEditModel()
+                //    {
+                //        Descrizione = "",
+                //        IdDealer = 0
+                //    };
+                }
+
+                await _dealerRepository.UpdateAsync(dealer);
 
                 //eliminare
                 // Nessun 'await' qui

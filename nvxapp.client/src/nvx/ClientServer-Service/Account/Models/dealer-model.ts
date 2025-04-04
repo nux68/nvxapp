@@ -44,7 +44,7 @@ export class DealerGetOutModel extends ModelResult {
   public dealerEdit: DealerEditModel;
 
 }
-export class DealerPutInModel extends ModelResult {
+export class DealerPutInModel  {
 
   public dealerEdit: DealerEditModel;
 

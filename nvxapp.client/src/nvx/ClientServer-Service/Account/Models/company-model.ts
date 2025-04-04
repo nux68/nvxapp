@@ -43,7 +43,7 @@ export class CompanyGetOutModel extends ModelResult {
   public CompanyEdit: CompanyEditModel;
 
 }
-export class CompanyPutInModel extends ModelResult {
+export class CompanyPutInModel  {
 
   public CompanyEdit: CompanyEditModel;
 

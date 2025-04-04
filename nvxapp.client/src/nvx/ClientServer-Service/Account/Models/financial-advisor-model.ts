@@ -42,7 +42,7 @@ export class FinancialAdvisorGetOutModel extends ModelResult {
   public FinancialAdvisorEdit: FinancialAdvisorEditModel;
 
 }
-export class FinancialAdvisorPutInModel extends ModelResult {
+export class FinancialAdvisorPutInModel  {
 
   public FinancialAdvisorEdit: FinancialAdvisorEditModel;
 

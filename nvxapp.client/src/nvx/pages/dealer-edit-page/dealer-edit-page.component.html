@@ -14,11 +14,32 @@
     <strong class="capitalize">{{ title }}</strong>
     <p>{{title}}Component works...</p>
 
-    <!--{{ userNavigationService.userCronology | json}}-->
+    <br />
 
+    <!--(ngSubmit)="onSubmit()"-->
+
+    <form [formGroup]="dealerForm">
+
+      <ion-item>
+        <ion-label position="floating">Descrizione</ion-label>
+        <ion-input type="text" formControlName="descrizione"></ion-input>
+      </ion-item>
+      <ion-note color="danger" *ngIf="dealerForm.get('descrizione')?.hasError('required') && dealerForm.get('descrizione')?.touched">
+        La descrizione è obbligatoria.
+      </ion-note>
+      <ion-note color="danger" *ngIf="dealerForm.get('descrizione')?.hasError('maxlength') && dealerForm.get('descrizione')?.touched">
+        La descrizione non può superare i 20 caratteri.
+      </ion-note>
+
+    </form>
+
+
+    <br />
+
+    {{ editModel | json}}
   </div>
 
-  <ion-list>
+  <!--<ion-list>
     <ion-item>
       <ion-label>Pokémon Yellow</ion-label>
     </ion-item>
@@ -79,9 +100,9 @@
     <ion-item>
       <ion-label>Super Mario World</ion-label>
     </ion-item>
-  </ion-list>
+  </ion-list>-->
 
-  <!--<app-fab-menu></app-fab-menu>-->
+  
 
 </ion-content>
 
