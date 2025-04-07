@@ -11,10 +11,11 @@ import { RoleGuard4DealerList } from '../nvx/pages/RoleGuard/role-guard-4-dealer
 import { RoleGuard4CompanyList } from '../nvx/pages/RoleGuard/role-guard-4-company-list';
 import { RoleGuard4UserCompanyList } from '../nvx/pages/RoleGuard/role-guard-4-user-company-list';
 import { RoleGuard4FinancialAdvisorPowerAdmin } from '../nvx/pages/RoleGuard/role-guard-4-financial-advisor-power-admin';
-import { RoleGuard4FinancialAdvisorAdmin } from '../nvx/pages/RoleGuard/role-guard-4-financia-ladvisor-admin';
+import { RoleGuard4FinancialAdvisorAdmin } from '../nvx/pages/RoleGuard/role-guard-4-financial-advisor-admin';
 import { RoleGuard4FinancialAdvisorList } from '../nvx/pages/RoleGuard/role-guard-4-financial-advisor-list';
 import { RoleGuard4User } from '../nvx/pages/RoleGuard/role-guard-4-user';
 import { RoleGuard4DealerEdit } from '../nvx/pages/RoleGuard/role-guard-4-dealer-edit';
+import { RoleGuard4FinancialAdvisorEdit } from '../nvx/pages/RoleGuard/role-guard-4-financial-advisor-edit';
 
 
 
@@ -49,7 +50,9 @@ const routes: Routes = [
   { path: 'financialadvisorpoweradmin', loadChildren: () => import('../nvx/pages/financial-advisor-power-admin-page/financial-advisor-power-admin-page.module').then(m => m.FinancialAdvisorPowerAdminPageModule), canActivate: [RoleGuard4FinancialAdvisorPowerAdmin] },
   { path: 'financialadvisoradmin', loadChildren: () => import('../nvx/pages/financial-advisor-admin-page/financial-advisor-admin-page.module').then(m => m.FinancialAdvisorAdminPageModule), canActivate: [RoleGuard4FinancialAdvisorAdmin] },
   { path: 'financialadvisorlist', loadChildren: () => import('../nvx/pages/financial-advisor-list-page/financial-advisor-list-page.module').then(m => m.FinancialAdvisorListPageModule), canActivate: [RoleGuard4FinancialAdvisorList] },
+  { path: 'financialadvisoredit', loadChildren: () => import('../nvx/pages/financial-advisor-edit-page/financial-advisor-edit-page.module').then(m => m.FinancialAdvisorEditPageModule), canActivate: [RoleGuard4FinancialAdvisorEdit] },
 
+  
 
   {
     path: 'folder/:id',

@@ -29,10 +29,15 @@
             bla bla bla
           </ion-card-content>
 
-          
+
           <ion-button (click)="btnImpersona.event(item)" color="{{btnImpersona.color}}" fill="solid">
             <ion-icon name="{{btnImpersona.image}}"></ion-icon>
             &nbsp;{{btnImpersona.text}}
+          </ion-button>
+
+          <ion-button (click)="btnEdit.event(item)" color="{{btnEdit.color}}" fill="solid">
+            <ion-icon name="{{btnEdit.image}}"></ion-icon>
+            &nbsp;{{btnEdit.text}}
           </ion-button>
 
 

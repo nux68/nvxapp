@@ -421,11 +421,12 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                             {
                                 var _financialAdvisor = _financialAdvisorRepository.FindById(item.IdFinancialAdvisor);
 
-                                retVal.FinancialAdvisorList.Add(new FinancialAdvisorModel()
+                                retVal.FinancialAdvisorList.Add(new FinancialAdvisorListModel()
                                 {
                                     IdAspNetUsers = item.IdAspNetUsers,
                                     IdFinancialAdvisor = item.IdFinancialAdvisor,
-                                    Descrizione = _financialAdvisor?.Descrizione
+                                    Descrizione = _financialAdvisor?.Descrizione,
+                                    MainUser = item.MainUser
                                 });
                             }
                         }
@@ -445,8 +446,26 @@ namespace nvxapp.server.service.ClientServer_Service.Account
         {
             return await ExecuteAction(model, async () =>
             {
+
                 FinancialAdvisorGetOutModel retVal = new FinancialAdvisorGetOutModel();
 
+                var financialAdvisor = await _financialAdvisorRepository.FindByIdAsync(model.Data.Id);
+                if (financialAdvisor != null)
+                {
+                    retVal.FinancialAdvisorEdit = new FinancialAdvisorEditModel()
+                    {
+                        Descrizione = financialAdvisor.Descrizione,
+                        IdFinancialAdvisor = financialAdvisor.Id
+                    };
+                }
+                else
+                {
+                    retVal.FinancialAdvisorEdit = new FinancialAdvisorEditModel()
+                    {
+                        Descrizione = "",
+                        IdFinancialAdvisor = 0
+                    };
+                }
 
 
                 //eliminare
@@ -463,6 +482,27 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                 FinancialAdvisorPutOutModel retVal = new FinancialAdvisorPutOutModel();
 
 
+                var financialAdvisor = await _financialAdvisorRepository.FindByIdAsync(model.Data.FinancialAdvisorEdit.IdFinancialAdvisor);
+                if (financialAdvisor != null)
+                {
+                    financialAdvisor.Descrizione = model.Data.FinancialAdvisorEdit.Descrizione;
+
+                    //    retVal.DealerEdit = new DealerEditModel()
+                    //    {
+                    //        Descrizione = dealer.Descrizione,
+                    //        IdDealer = dealer.Id
+                    //    };
+                }
+                else
+                {
+                    //    retVal.DealerEdit = new DealerEditModel()
+                    //    {
+                    //        Descrizione = "",
+                    //        IdDealer = 0
+                    //    };
+                }
+
+                await _financialAdvisorRepository.UpdateAsync(financialAdvisor);
 
 
                 //eliminare

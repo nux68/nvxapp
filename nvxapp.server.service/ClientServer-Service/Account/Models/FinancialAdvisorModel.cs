@@ -10,13 +10,14 @@ using static nvxapp.server.data.Entities.AspNetUsersDataUtil;
 
 namespace nvxapp.server.service.ClientServer_Service.Account.Models
 {
-    public class FinancialAdvisorModel
+    public class FinancialAdvisorListModel
     {
         public int IdFinancialAdvisor { get; set; }
 
         public string? IdAspNetUsers { get; set; }
 
         public string? Descrizione { get; set; }
+        public Boolean MainUser { get; set; }
 
     }
     public class FinancialAdvisorListInModel
@@ -24,14 +25,13 @@ namespace nvxapp.server.service.ClientServer_Service.Account.Models
     }
     public class FinancialAdvisorListOutModel : ModelResult
     {
-        public List<FinancialAdvisorModel> FinancialAdvisorList { get; set; }
+        public List<FinancialAdvisorListModel> FinancialAdvisorList { get; set; }
 
         public FinancialAdvisorListOutModel()
         {
-            FinancialAdvisorList = new List<FinancialAdvisorModel>();
+            FinancialAdvisorList = new List<FinancialAdvisorListModel>();
         }
     }
-
 
 
 
@@ -39,7 +39,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account.Models
     {
         public int IdFinancialAdvisor { get; set; }
         public string IdAspNetUsers { get; set; } = string.Empty;
-        public string Descrizione { get; set; } = string.Empty;
+        public string? Descrizione { get; set; } = string.Empty;
         public Boolean MainUser { get; set; }
     }
     public class FinancialAdvisorGetInModel
