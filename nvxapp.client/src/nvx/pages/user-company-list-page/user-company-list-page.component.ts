@@ -82,6 +82,7 @@ export class UserCompanyListPageComponent  implements OnInit {
 
   }
 
+
   handleButtonEditClick = (item: any) => {
     this.navCtrl.navigateForward('/usercompanyedit', {
       state: { id: item.idUserCompany }
