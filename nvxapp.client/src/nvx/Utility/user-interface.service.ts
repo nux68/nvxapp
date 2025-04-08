@@ -12,7 +12,8 @@ export class UserInterfaceService {
     return new ButtonItem(
       'Conferma',
       'checkmark-circle-outline',
-      'primary',                 
+      'primary',
+      false,
       () => { console.log('Btn_Conferma cliccato'); } 
     );
   }
@@ -22,6 +23,7 @@ export class UserInterfaceService {
       'Annulla',
       'close-circle-outline',
       'medium',
+      false,
       () => { console.log('Btn_Annulla cliccato'); }
     );
   }
@@ -45,6 +47,7 @@ export class UserInterfaceService {
       'Modifica',
       'create-outline',
       'medium',
+      false,
       () => { console.log('Btn_Modifica cliccato'); }
     );
   }
@@ -54,6 +57,7 @@ export class UserInterfaceService {
       'Impersona',
       'person-outline',
       'primary',
+      false,
       () => { console.log('Btn_Impersona cliccato'); }
     );
   }
@@ -67,7 +71,9 @@ export class ButtonItem {
     public text: string | null = null,
     public image: string | null = null,
     public color: string | null = null,
+    public disabled: boolean = false,
     public event: (param: any) => void = (param: any) => { } // Arrow function di default
+    
   ) { }
 
 }

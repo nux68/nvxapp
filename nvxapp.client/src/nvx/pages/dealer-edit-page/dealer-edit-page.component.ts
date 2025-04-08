@@ -25,7 +25,7 @@ export class DealerEditPageComponent extends BasePageConfirmCancelComponent<Deal
     super(navCtrl, userInterfaceService, fb);
 
   }
-
+    
 
   get Title(): string { return "DealerEditPage"; }
   get EditForm(): FormGroup {

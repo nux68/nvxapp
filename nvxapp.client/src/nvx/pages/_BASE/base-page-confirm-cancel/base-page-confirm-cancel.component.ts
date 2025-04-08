@@ -27,6 +27,11 @@ export abstract class BasePageConfirmCancelComponent<T> implements OnInit {
    
   ngOnInit() {
     this._editForm = this.EditForm;
+
+    this._editForm.statusChanges.subscribe(() => {
+      this.buttonbar[0].disabled = !this._editForm.valid;
+    });
+
   }
 
   ionViewWillEnter() {
