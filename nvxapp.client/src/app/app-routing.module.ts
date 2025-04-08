@@ -16,6 +16,7 @@ import { RoleGuard4FinancialAdvisorList } from '../nvx/pages/RoleGuard/role-guar
 import { RoleGuard4User } from '../nvx/pages/RoleGuard/role-guard-4-user';
 import { RoleGuard4DealerEdit } from '../nvx/pages/RoleGuard/role-guard-4-dealer-edit';
 import { RoleGuard4FinancialAdvisorEdit } from '../nvx/pages/RoleGuard/role-guard-4-financial-advisor-edit';
+import { RoleGuard4CompanyEdit } from '../nvx/pages/RoleGuard/role-guard-4-company-edit';
 
 
 
@@ -40,6 +41,8 @@ const routes: Routes = [
   { path: 'companypoweradmin', loadChildren: () => import('../nvx/pages/company-power-admin-page/company-power-admin-page.module').then(m => m.CompanyPowerAdminPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
   { path: 'companyadmin', loadChildren: () => import('../nvx/pages/company-admin-page/company-admin-page.module').then(m => m.CompanyAdminPageModule), canActivate: [RoleGuard4CompanyAdmin] },
   { path: 'companylist', loadChildren: () => import('../nvx/pages/company-list-page/company-list-page.module').then(m => m.CompanyListPageModule), canActivate: [RoleGuard4CompanyList] },
+  { path: 'companyedit', loadChildren: () => import('../nvx/pages/company-edit-page/company-edit-page.module').then(m => m.CompanyEditPageModule), canActivate: [RoleGuard4CompanyEdit] },
+
   { path: 'usercompanylist', loadChildren: () => import('../nvx/pages/user-company-list-page/user-company-list-page.module').then(m => m.UserCompanyListPageModule), canActivate: [RoleGuard4UserCompanyList] },
 
   { path: 'dealerpoweradmin', loadChildren: () => import('../nvx/pages/dealer-power-admin-page/dealer-power-admin-page.module').then(m => m.DealerPowerAdminPageModule), canActivate: [RoleGuard4DealerPowerAdmin] },

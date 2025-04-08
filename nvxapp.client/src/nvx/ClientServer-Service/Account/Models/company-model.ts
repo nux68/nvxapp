@@ -40,17 +40,17 @@ export class CompanyGetInModel {
 }
 export class CompanyGetOutModel extends ModelResult {
 
-  public CompanyEdit: CompanyEditModel;
+  public companyEdit: CompanyEditModel;
 
 }
 export class CompanyPutInModel  {
 
-  public CompanyEdit: CompanyEditModel;
+  public companyEdit: CompanyEditModel;
 
 }
 export class CompanyPutOutModel extends ModelResult {
 
-  public CompanyEdit: CompanyEditModel;
+  public companyEdit: CompanyEditModel;
 
 }
 

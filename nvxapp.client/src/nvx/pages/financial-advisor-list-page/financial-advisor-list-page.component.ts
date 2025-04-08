@@ -27,6 +27,7 @@ export class FinancialAdvisorListPageComponent implements OnInit {
     private userInterfaceService: UserInterfaceService,
     public fabMenuService: FabMenuService,
     private userNavigationService: UserNavigationService) {
+
     this.title = 'FinancialAdvisorListPage';
 
     this.btnEdit = userInterfaceService.Btn_Modifica;
@@ -62,7 +63,6 @@ export class FinancialAdvisorListPageComponent implements OnInit {
   }
 
   ngOnInit() {}
-
 
   handleButtonImpersonaClick = (item: any) => {
 

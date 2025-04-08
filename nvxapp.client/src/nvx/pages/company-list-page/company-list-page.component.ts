@@ -6,6 +6,7 @@ import { UserLoadInModel } from '../../ClientServer-Service/Account/Models/user-
 import { GenericRequest } from '../../ClientServer-Service/ModelsBase/generic-request';
 import { UserNavigationService, UserDataAdditionalModel } from '../../Utility/user-navigation.service';
 import { ButtonItem, UserInterfaceService } from '../../Utility/user-interface.service';
+import { FabMenuItem, FabMenuService } from '../../Utility/fab-menu.service';
 
 
 @Component({
@@ -20,15 +21,19 @@ export class CompanyListPageComponent  implements OnInit {
   public searchText!: string;
   public companyList: CompanyListModel[] | null = null;
   public btnImpersona: ButtonItem;
+  public btnEdit: ButtonItem;
 
   constructor(private navCtrl: NavController,
               private accountService: AccountService,
+              public fabMenuService: FabMenuService,
               private userInterfaceService: UserInterfaceService,
               private userNavigationService: UserNavigationService) {
 
     this.title = 'CompanyListPage';
     this.btnImpersona = userInterfaceService.Btn_Impersona;
     this.btnImpersona.event = this.handleButtonImpersonaClick;
+    this.btnEdit = userInterfaceService.Btn_Modifica;
+    this.btnEdit.event = this.handleButtonEditClick;
 
   }
 
@@ -41,6 +46,20 @@ export class CompanyListPageComponent  implements OnInit {
 
     });
 
+    this.fabMenuService.fabMenuItem = [
+
+      new FabMenuItem('Elemento 1', 'add-circle-outline', () => {
+        this.navCtrl.navigateForward('/companyedit', {
+          state: { id: 0 }
+        });
+      }),
+
+    ];
+
+  }
+
+  ionViewWillLeave() {
+    this.fabMenuService.fabMenuItem = [];
   }
 
   ngOnInit() {}
@@ -63,6 +82,12 @@ export class CompanyListPageComponent  implements OnInit {
       }
     });
 
+  }
+
+  handleButtonEditClick = (item: any) => {
+    this.navCtrl.navigateForward('/companyedit', {
+      state: { id: item.idCompany }
+    });
   }
 
   Filter(CurrFilter: any) {

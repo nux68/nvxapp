@@ -567,9 +567,26 @@ namespace nvxapp.server.service.ClientServer_Service.Account
         {
             return await ExecuteAction(model, async () =>
             {
+
                 CompanyGetOutModel retVal = new CompanyGetOutModel();
 
-
+                var company = await _companyRepository.FindByIdAsync(model.Data.Id);
+                if (company != null)
+                {
+                    retVal.CompanyEdit = new CompanyEditModel()
+                    {
+                        Descrizione = company.Descrizione,
+                        IdCompany = company.Id
+                    };
+                }
+                else
+                {
+                    retVal.CompanyEdit = new CompanyEditModel()
+                    {
+                        Descrizione = "",
+                        IdCompany = 0
+                    };
+                }
 
                 //eliminare
                 // Nessun 'await' qui
@@ -585,6 +602,27 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                 CompanyPutOutModel retVal = new CompanyPutOutModel();
 
 
+                var company = await _companyRepository.FindByIdAsync(model.Data.CompanyEdit.IdCompany);
+                if (company != null)
+                {
+                    company.Descrizione = model.Data.CompanyEdit.Descrizione;
+
+                    //    retVal.DealerEdit = new DealerEditModel()
+                    //    {
+                    //        Descrizione = dealer.Descrizione,
+                    //        IdDealer = dealer.Id
+                    //    };
+                }
+                else
+                {
+                    //    retVal.DealerEdit = new DealerEditModel()
+                    //    {
+                    //        Descrizione = "",
+                    //        IdDealer = 0
+                    //    };
+                }
+
+                await _companyRepository.UpdateAsync(company);
 
 
                 //eliminare

@@ -36,7 +36,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account.Models
     {
         public int IdCompany { get; set; }
         public string IdAspNetUsers { get; set; } = string.Empty;
-        public string Descrizione { get; set; } = string.Empty;
+        public string? Descrizione { get; set; } = string.Empty;
         public Boolean MainUser { get; set; }
     }
     public class CompanyGetInModel
