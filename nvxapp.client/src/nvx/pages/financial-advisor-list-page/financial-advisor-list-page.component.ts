@@ -4,7 +4,9 @@ import { AccountService } from '../../ClientServer-Service/Account/account.servi
 import { UserDataAdditionalModel, UserNavigationService } from '../../Utility/user-navigation.service';
 import { GenericRequest } from '../../ClientServer-Service/ModelsBase/generic-request';
 import { UserLoadInModel } from '../../ClientServer-Service/Account/Models/user-load-model';
-import { FinancialAdvisorListInModel, FinancialAdvisorListModel } from '../../ClientServer-Service/Account/Models/financial-advisor-list-model';
+import { FinancialAdvisorListInModel, FinancialAdvisorListModel } from '../../ClientServer-Service/Account/Models/financial-advisor-model';
+import { ButtonItem, UserInterfaceService } from '../../Utility/user-interface.service';
+import { FabMenuService, FabMenuItem } from '../../Utility/fab-menu.service';
 
 @Component({
   selector: 'app-financial-advisor-list-page',
@@ -17,11 +19,23 @@ export class FinancialAdvisorListPageComponent implements OnInit {
   public title!: string;
   public searchText!: string;
   public financialAdvisorList: FinancialAdvisorListModel[] | null = null;
+  public btnEdit: ButtonItem;
+  public btnImpersona: ButtonItem;
 
   constructor(private navCtrl: NavController,
     private accountService: AccountService,
+    private userInterfaceService: UserInterfaceService,
+    public fabMenuService: FabMenuService,
     private userNavigationService: UserNavigationService) {
+
     this.title = 'FinancialAdvisorListPage';
+
+    this.btnEdit = userInterfaceService.Btn_Modifica;
+    this.btnEdit.event = this.handleButtonEditClick;
+
+    this.btnImpersona = userInterfaceService.Btn_Impersona;
+    this.btnImpersona.event = this.handleButtonImpersonaClick;
+
   }
 
   ionViewWillEnter() {
@@ -31,11 +45,26 @@ export class FinancialAdvisorListPageComponent implements OnInit {
       this.financialAdvisorList = res.data.financialAdvisorList;
 
     });
+
+    this.fabMenuService.fabMenuItem = [
+
+      new FabMenuItem('Elemento 1', 'add-circle-outline', () => {
+        this.navCtrl.navigateForward('/financialadvisoredit', {
+          state: { id: 0 }
+        });
+      }),
+
+    ];
+
+  }
+
+  ionViewWillLeave() {
+    this.fabMenuService.fabMenuItem = [];
   }
 
   ngOnInit() {}
 
-  handleButtonClick(item: FinancialAdvisorListModel) {
+  handleButtonImpersonaClick = (item: any) => {
 
     let request: GenericRequest<UserLoadInModel> = new GenericRequest<UserLoadInModel>(UserLoadInModel);
     request.data.id = item.idAspNetUsers;
@@ -53,6 +82,12 @@ export class FinancialAdvisorListPageComponent implements OnInit {
       }
     });
 
+  }
+
+  handleButtonEditClick = (item: any) => {
+    this.navCtrl.navigateForward('/financialadvisoredit', {
+      state: { id: item.idFinancialAdvisor }
+    });
   }
 
   Filter(CurrFilter: any) {

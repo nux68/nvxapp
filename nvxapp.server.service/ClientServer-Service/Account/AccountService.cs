@@ -272,6 +272,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                 return retVal;
             }, isSubProcess);
         }
+        
         public virtual async Task<GenericResult<DealerListOutModel>> DealerList(GenericRequest<DealerListInModel> model, Boolean isSubProcess)
         {
             return await ExecuteAction(model, async () =>
@@ -293,13 +294,17 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                             foreach (var item in userDealer)
                             {
                                 var _dealer = _dealerRepository.FindById(item.IdDealer);
-
-                                retVal.DealerList.Add(new DealerListModel()
+                                if(_dealer!=null)
                                 {
-                                    IdAspNetUsers = item.IdAspNetUsers,
-                                    IdDealer = item.IdDealer,
-                                    Descrizione = _dealer?.Descrizione
-                                });
+                                    retVal.DealerList.Add(new DealerListModel()
+                                    {
+                                        IdAspNetUsers = item.IdAspNetUsers,
+                                        IdDealer = item.IdDealer,
+                                        Descrizione = _dealer?.Descrizione??"",
+                                        MainUser = item.MainUser
+                                    });
+                                }
+                                
                             }
                         }
                     }
@@ -314,6 +319,78 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                 return retVal;
             }, isSubProcess);
         }
+        public virtual async Task<GenericResult<DealerGetOutModel>> DealerGet(GenericRequest<DealerGetInModel> model, Boolean isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                DealerGetOutModel retVal = new DealerGetOutModel();
+
+                var dealer = await _dealerRepository.FindByIdAsync(model.Data.Id);
+                if(dealer!=null)
+                {
+                    retVal.DealerEdit = new DealerEditModel()
+                    {
+                         Descrizione = dealer.Descrizione,
+                         IdDealer= dealer.Id
+                    };
+                }
+                else
+                {
+                    retVal.DealerEdit = new DealerEditModel()
+                    {
+                        Descrizione = "",
+                        IdDealer = 0
+                    };
+                }
+
+                
+
+                //eliminare
+                // Nessun 'await' qui
+                await Task.Delay(DelayAsyncMethod);
+
+                return retVal;
+            }, isSubProcess);
+        }
+        public virtual async Task<GenericResult<DealerPutOutModel>> DealerPut(GenericRequest<DealerPutInModel> model, Boolean isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                DealerPutOutModel retVal = new DealerPutOutModel();
+
+                
+
+                var dealer = await _dealerRepository.FindByIdAsync(model.Data.DealerEdit.IdDealer);
+                if (dealer != null)
+                {
+                    dealer.Descrizione = model.Data.DealerEdit.Descrizione;
+
+                //    retVal.DealerEdit = new DealerEditModel()
+                //    {
+                //        Descrizione = dealer.Descrizione,
+                //        IdDealer = dealer.Id
+                //    };
+                }
+                else
+                {
+                //    retVal.DealerEdit = new DealerEditModel()
+                //    {
+                //        Descrizione = "",
+                //        IdDealer = 0
+                //    };
+                }
+
+                await _dealerRepository.UpdateAsync(dealer);
+
+                //eliminare
+                // Nessun 'await' qui
+                await Task.Delay(DelayAsyncMethod);
+
+                return retVal;
+            }, isSubProcess);
+        }
+
+
         public virtual async Task<GenericResult<FinancialAdvisorListOutModel>> FinancialAdvisorList(GenericRequest<FinancialAdvisorListInModel> model, Boolean isSubProcess)
         {
             return await ExecuteAction(model, async () =>
@@ -348,7 +425,8 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                                 {
                                     IdAspNetUsers = item.IdAspNetUsers,
                                     IdFinancialAdvisor = item.IdFinancialAdvisor,
-                                    Descrizione = _financialAdvisor?.Descrizione
+                                    Descrizione = _financialAdvisor?.Descrizione,
+                                    MainUser = item.MainUser
                                 });
                             }
                         }
@@ -364,6 +442,79 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                 return retVal;
             }, isSubProcess);
         }
+        public virtual async Task<GenericResult<FinancialAdvisorGetOutModel>> FinancialAdvisorGet(GenericRequest<FinancialAdvisorGetInModel> model, Boolean isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+
+                FinancialAdvisorGetOutModel retVal = new FinancialAdvisorGetOutModel();
+
+                var financialAdvisor = await _financialAdvisorRepository.FindByIdAsync(model.Data.Id);
+                if (financialAdvisor != null)
+                {
+                    retVal.FinancialAdvisorEdit = new FinancialAdvisorEditModel()
+                    {
+                        Descrizione = financialAdvisor.Descrizione,
+                        IdFinancialAdvisor = financialAdvisor.Id
+                    };
+                }
+                else
+                {
+                    retVal.FinancialAdvisorEdit = new FinancialAdvisorEditModel()
+                    {
+                        Descrizione = "",
+                        IdFinancialAdvisor = 0
+                    };
+                }
+
+
+                //eliminare
+                // Nessun 'await' qui
+                await Task.Delay(DelayAsyncMethod);
+
+                return retVal;
+            }, isSubProcess);
+        }
+        public virtual async Task<GenericResult<FinancialAdvisorPutOutModel>> FinancialAdvisorPut(GenericRequest<FinancialAdvisorPutInModel> model, Boolean isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                FinancialAdvisorPutOutModel retVal = new FinancialAdvisorPutOutModel();
+
+
+                var financialAdvisor = await _financialAdvisorRepository.FindByIdAsync(model.Data.FinancialAdvisorEdit.IdFinancialAdvisor);
+                if (financialAdvisor != null)
+                {
+                    financialAdvisor.Descrizione = model.Data.FinancialAdvisorEdit.Descrizione;
+
+                    //    retVal.DealerEdit = new DealerEditModel()
+                    //    {
+                    //        Descrizione = dealer.Descrizione,
+                    //        IdDealer = dealer.Id
+                    //    };
+                }
+                else
+                {
+                    //    retVal.DealerEdit = new DealerEditModel()
+                    //    {
+                    //        Descrizione = "",
+                    //        IdDealer = 0
+                    //    };
+                }
+
+                await _financialAdvisorRepository.UpdateAsync(financialAdvisor);
+
+
+                //eliminare
+                // Nessun 'await' qui
+                await Task.Delay(DelayAsyncMethod);
+
+                return retVal;
+            }, isSubProcess);
+        }
+
+
+
         public virtual async Task<GenericResult<CompanyListOutModel>> CompanyList(GenericRequest<CompanyListInModel> model, Boolean isSubProcess)
         {
             return await ExecuteAction(model, async () =>
@@ -392,7 +543,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                             {
                                 var _company = _companyRepository.FindById(item.IdCompany);
 
-                                retVal.CompanyList.Add(new CompanyListModel()
+                                retVal.CompanyList.Add(new CompanyModel()
                                 {
                                     IdAspNetUsers = item.IdAspNetUsers,
                                     IdCompany = item.IdCompany,
@@ -412,6 +563,78 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                 return retVal;
             }, isSubProcess);
         }
+        public virtual async Task<GenericResult<CompanyGetOutModel>> CompanyGet(GenericRequest<CompanyGetInModel> model, Boolean isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+
+                CompanyGetOutModel retVal = new CompanyGetOutModel();
+
+                var company = await _companyRepository.FindByIdAsync(model.Data.Id);
+                if (company != null)
+                {
+                    retVal.CompanyEdit = new CompanyEditModel()
+                    {
+                        Descrizione = company.Descrizione,
+                        IdCompany = company.Id
+                    };
+                }
+                else
+                {
+                    retVal.CompanyEdit = new CompanyEditModel()
+                    {
+                        Descrizione = "",
+                        IdCompany = 0
+                    };
+                }
+
+                //eliminare
+                // Nessun 'await' qui
+                await Task.Delay(DelayAsyncMethod);
+
+                return retVal;
+            }, isSubProcess);
+        }
+        public virtual async Task<GenericResult<CompanyPutOutModel>> CompanyPut(GenericRequest<CompanyPutInModel> model, Boolean isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                CompanyPutOutModel retVal = new CompanyPutOutModel();
+
+
+                var company = await _companyRepository.FindByIdAsync(model.Data.CompanyEdit.IdCompany);
+                if (company != null)
+                {
+                    company.Descrizione = model.Data.CompanyEdit.Descrizione;
+
+                    //    retVal.DealerEdit = new DealerEditModel()
+                    //    {
+                    //        Descrizione = dealer.Descrizione,
+                    //        IdDealer = dealer.Id
+                    //    };
+                }
+                else
+                {
+                    //    retVal.DealerEdit = new DealerEditModel()
+                    //    {
+                    //        Descrizione = "",
+                    //        IdDealer = 0
+                    //    };
+                }
+
+                await _companyRepository.UpdateAsync(company);
+
+
+                //eliminare
+                // Nessun 'await' qui
+                await Task.Delay(DelayAsyncMethod);
+
+                return retVal;
+            }, isSubProcess);
+        }
+
+
+
         public virtual async Task<GenericResult<UserCompanyListOutModel>> UserCompanyList(GenericRequest<UserCompanyListInModel> model, Boolean isSubProcess)
         {
             return await ExecuteAction(model, async () =>
@@ -437,9 +660,10 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                             {
                                 var _user = _aspNetUsersRepository.GetAll().Where(x => x.Id == item.IdAspNetUsers).FirstOrDefault();
 
-                                retVal.UserCompanyList.Add(new UserCompanyListModel()
+                                retVal.UserCompanyList.Add(new UserCompanyModel()
                                 {
                                     IdAspNetUsers = item.IdAspNetUsers,
+                                    IdUserCompany = item.Id,
                                     Descrizione = _user?.UserName
                                 });
                             }
@@ -456,6 +680,78 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                 return retVal;
             }, isSubProcess);
         }
+        public virtual async Task<GenericResult<UserCompanyGetOutModel>> UserCompanyGet(GenericRequest<UserCompanyGetInModel> model, Boolean isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                UserCompanyGetOutModel retVal = new UserCompanyGetOutModel();
+
+                
+
+                var userCompany = await _userCompanyRepository.FindByIdAsync(model.Data.Id);
+                if (userCompany != null)
+                {
+                    retVal.UserCompanyEdit = new UserCompanyEditModel()
+                    {
+                        Descrizione = userCompany.IdAspNetUsers,
+                        //IdAspNetUsers = userCompany.IdAspNetUsers,
+                        IdUserCompany = userCompany.Id,
+                    };
+                }
+                else
+                {
+                    retVal.UserCompanyEdit = new UserCompanyEditModel()
+                    {
+                        Descrizione = "",
+                        //IdAspNetUsers = string.Empty
+                        IdUserCompany = 0
+                    };
+                }
+
+                //eliminare
+                // Nessun 'await' qui
+                await Task.Delay(DelayAsyncMethod);
+
+                return retVal;
+            }, isSubProcess);
+        }
+        public virtual async Task<GenericResult<UserCompanyPutOutModel>> UserCompanyPut(GenericRequest<UserCompanyPutInModel> model, Boolean isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                UserCompanyPutOutModel retVal = new UserCompanyPutOutModel();
+
+                var userCompany = await _userCompanyRepository.FindByIdAsync(model.Data.UserCompanyEdit.IdUserCompany);
+                if (userCompany != null)
+                {
+                    //userCompany.Descrizione = model.Data.UserCompanyEdit.Descrizione;
+
+                    //    retVal.DealerEdit = new DealerEditModel()
+                    //    {
+                    //        Descrizione = dealer.Descrizione,
+                    //        IdDealer = dealer.Id
+                    //    };
+                }
+                else
+                {
+                    //    retVal.DealerEdit = new DealerEditModel()
+                    //    {
+                    //        Descrizione = "",
+                    //        IdDealer = 0
+                    //    };
+                }
+
+                await _userCompanyRepository.UpdateAsync(userCompany);
+
+
+                //eliminare
+                // Nessun 'await' qui
+                await Task.Delay(DelayAsyncMethod);
+
+                return retVal;
+            }, isSubProcess);
+        }
+
 
 
 
@@ -466,10 +762,25 @@ namespace nvxapp.server.service.ClientServer_Service.Account
         public Task<GenericResult<LoginOutModel>> Login(GenericRequest<LoginInModel> model, Boolean isSubProcess);
         public Task<GenericResult<UserRolesOutModel>> UserRoles(GenericRequest<UserRolesInModel> model, Boolean isSubProcess);
         public Task<GenericResult<UserLoadOutModel>> UserLoad(GenericRequest<UserLoadInModel> model, Boolean isSubProcess);
+        
         public Task<GenericResult<DealerListOutModel>> DealerList(GenericRequest<DealerListInModel> inModel, Boolean isSubProcess);
+        public Task<GenericResult<DealerGetOutModel>> DealerGet(GenericRequest<DealerGetInModel> inModel, Boolean isSubProcess);
+        public Task<GenericResult<DealerPutOutModel>> DealerPut(GenericRequest<DealerPutInModel> inModel, Boolean isSubProcess);
+
+
         public Task<GenericResult<FinancialAdvisorListOutModel>> FinancialAdvisorList(GenericRequest<FinancialAdvisorListInModel> inModel, Boolean isSubProcess);
+        public Task<GenericResult<FinancialAdvisorGetOutModel>> FinancialAdvisorGet(GenericRequest<FinancialAdvisorGetInModel> inModel, Boolean isSubProcess);
+        public Task<GenericResult<FinancialAdvisorPutOutModel>> FinancialAdvisorPut(GenericRequest<FinancialAdvisorPutInModel> inModel, Boolean isSubProcess);
+
+
         public Task<GenericResult<CompanyListOutModel>> CompanyList(GenericRequest<CompanyListInModel> inModel, Boolean isSubProcess);
+        public Task<GenericResult<CompanyGetOutModel>> CompanyGet(GenericRequest<CompanyGetInModel> inModel, Boolean isSubProcess);
+        public Task<GenericResult<CompanyPutOutModel>> CompanyPut(GenericRequest<CompanyPutInModel> inModel, Boolean isSubProcess);
+
+
         public Task<GenericResult<UserCompanyListOutModel>> UserCompanyList(GenericRequest<UserCompanyListInModel> inModel, Boolean isSubProcess);
+        public Task<GenericResult<UserCompanyGetOutModel>> UserCompanyGet(GenericRequest<UserCompanyGetInModel> inModel, Boolean isSubProcess);
+        public Task<GenericResult<UserCompanyPutOutModel>> UserCompanyPut(GenericRequest<UserCompanyPutInModel> inModel, Boolean isSubProcess);
 
     }
 }

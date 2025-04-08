@@ -10,6 +10,11 @@ NB.
 
 
 
+su nuova instalazione ho dovuto installare manualmente x avviare le migrazioni
+
+dotnet add package Microsoft.EntityFrameworkCore.Tools
+
+
 
 
 

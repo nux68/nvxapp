@@ -4,6 +4,8 @@ import { SpeechService } from '../../../Utility/speech.service';
 import { ChatAIService } from '../../../ClientServer-Service/ChatAI/chat-ai.service';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { ChatAIInModel } from '../../../ClientServer-Service/ChatAI/Models/chat-AI-model';
+import { FabMenuService } from '../../../Utility/fab-menu.service';
+import { IonFab } from '@ionic/angular';
 
 @Component({
   selector: 'app-fab-menu',
@@ -17,14 +19,26 @@ export class FabMenuComponent implements OnInit {
   @ViewChild('chatContainer', { static: false }) chatContainer!: ElementRef;
   @ViewChild(IonContent, { static: false }) chatContent!: IonContent;
   @ViewChild('chatModal', { static: true }) chatModal!: IonModal;
-  public isChatLoading: boolean= false;
+  public isChatLoading: boolean = false;
+  @ViewChild('fab', { static: false }) fab: IonFab;
 
   isModalOpen = false; // Stato del modale
   modalType: string | null = null; // Tipo di modale (chat o altro)
 
   constructor(public speechService: SpeechService,
               private chatAIService: ChatAIService,
-              private cdRef: ChangeDetectorRef) {
+              private cdRef: ChangeDetectorRef,
+              public fabMenuService: FabMenuService) {
+
+    
+
+              this.fabMenuService.fabMenuItem$.subscribe((data) => {
+                if (this.fab) {
+                  this.fab.close();
+                }
+              });
+
+
   }
 
   ngOnInit() {

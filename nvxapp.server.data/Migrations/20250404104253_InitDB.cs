@@ -232,6 +232,7 @@ namespace nvxapp.server.data.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     IdDealer = table.Column<int>(type: "integer", nullable: false),
                     IdAspNetUsers = table.Column<string>(type: "text", nullable: false),
+                    MainUser = table.Column<bool>(type: "boolean", nullable: false),
                     ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
@@ -290,6 +291,7 @@ namespace nvxapp.server.data.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     IdFinancialAdvisor = table.Column<int>(type: "integer", nullable: false),
                     IdAspNetUsers = table.Column<string>(type: "text", nullable: false),
+                    MainUser = table.Column<bool>(type: "boolean", nullable: false),
                     ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
@@ -322,6 +324,7 @@ namespace nvxapp.server.data.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     IdCompany = table.Column<int>(type: "integer", nullable: false),
                     IdAspNetUsers = table.Column<string>(type: "text", nullable: false),
+                    MainUser = table.Column<bool>(type: "boolean", nullable: false),
                     ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)

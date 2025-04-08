@@ -362,6 +362,9 @@ namespace nvxapp.server.data.Migrations
                     b.Property<int>("IdCompany")
                         .HasColumnType("integer");
 
+                    b.Property<bool>("MainUser")
+                        .HasColumnType("boolean");
+
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("timestamp without time zone");
 
@@ -397,6 +400,9 @@ namespace nvxapp.server.data.Migrations
                     b.Property<int>("IdDealer")
                         .HasColumnType("integer");
 
+                    b.Property<bool>("MainUser")
+                        .HasColumnType("boolean");
+
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("timestamp without time zone");
 
@@ -431,6 +437,9 @@ namespace nvxapp.server.data.Migrations
 
                     b.Property<int>("IdFinancialAdvisor")
                         .HasColumnType("integer");
+
+                    b.Property<bool>("MainUser")
+                        .HasColumnType("boolean");
 
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("timestamp without time zone");

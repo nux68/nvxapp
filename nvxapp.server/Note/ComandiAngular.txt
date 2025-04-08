@@ -1,4 +1,6 @@
 ﻿	ng g c  Pluto (crea componene, g=generate , c=componente) 
+	g g c  Pluto --flat  (stessa cartella)
+	
 	ng g m  Paperopoli (crea modulo)
 	ng g m  Forecasts --routing (crea modulo con routing su altro file)
 	ng g s Forecasts (servizio)

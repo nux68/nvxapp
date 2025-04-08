@@ -11,9 +11,12 @@ import { RoleGuard4DealerList } from '../nvx/pages/RoleGuard/role-guard-4-dealer
 import { RoleGuard4CompanyList } from '../nvx/pages/RoleGuard/role-guard-4-company-list';
 import { RoleGuard4UserCompanyList } from '../nvx/pages/RoleGuard/role-guard-4-user-company-list';
 import { RoleGuard4FinancialAdvisorPowerAdmin } from '../nvx/pages/RoleGuard/role-guard-4-financial-advisor-power-admin';
-import { RoleGuard4FinancialAdvisorAdmin } from '../nvx/pages/RoleGuard/role-guard-4-financia-ladvisor-admin';
+import { RoleGuard4FinancialAdvisorAdmin } from '../nvx/pages/RoleGuard/role-guard-4-financial-advisor-admin';
 import { RoleGuard4FinancialAdvisorList } from '../nvx/pages/RoleGuard/role-guard-4-financial-advisor-list';
 import { RoleGuard4User } from '../nvx/pages/RoleGuard/role-guard-4-user';
+import { RoleGuard4DealerEdit } from '../nvx/pages/RoleGuard/role-guard-4-dealer-edit';
+import { RoleGuard4FinancialAdvisorEdit } from '../nvx/pages/RoleGuard/role-guard-4-financial-advisor-edit';
+import { RoleGuard4CompanyEdit } from '../nvx/pages/RoleGuard/role-guard-4-company-edit';
 
 
 
@@ -38,16 +41,22 @@ const routes: Routes = [
   { path: 'companypoweradmin', loadChildren: () => import('../nvx/pages/company-power-admin-page/company-power-admin-page.module').then(m => m.CompanyPowerAdminPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
   { path: 'companyadmin', loadChildren: () => import('../nvx/pages/company-admin-page/company-admin-page.module').then(m => m.CompanyAdminPageModule), canActivate: [RoleGuard4CompanyAdmin] },
   { path: 'companylist', loadChildren: () => import('../nvx/pages/company-list-page/company-list-page.module').then(m => m.CompanyListPageModule), canActivate: [RoleGuard4CompanyList] },
+  { path: 'companyedit', loadChildren: () => import('../nvx/pages/company-edit-page/company-edit-page.module').then(m => m.CompanyEditPageModule), canActivate: [RoleGuard4CompanyEdit] },
+
   { path: 'usercompanylist', loadChildren: () => import('../nvx/pages/user-company-list-page/user-company-list-page.module').then(m => m.UserCompanyListPageModule), canActivate: [RoleGuard4UserCompanyList] },
+  { path: 'usercompanyedit', loadChildren: () => import('../nvx/pages/user-company-edit-page/user-company-edit-page.module').then(m => m.UserCompanyEditPageModule), canActivate: [RoleGuard4UserCompanyList] },
 
   { path: 'dealerpoweradmin', loadChildren: () => import('../nvx/pages/dealer-power-admin-page/dealer-power-admin-page.module').then(m => m.DealerPowerAdminPageModule), canActivate: [RoleGuard4DealerPowerAdmin] },
   { path: 'dealeradmin', loadChildren: () => import('../nvx/pages/dealer-admin-page/dealer-admin-page.module').then(m => m.DealerAdminPageModule), canActivate: [RoleGuard4DealerAdmin] },
   { path: 'dealerlist', loadChildren: () => import('../nvx/pages/dealer-list-page/dealer-list-page.module').then(m => m.DealerListPageModule), canActivate: [RoleGuard4DealerList] },
+  { path: 'dealeredit', loadChildren: () => import('../nvx/pages/dealer-edit-page/dealer-edit-page.module').then(m => m.DealerEditPageModule), canActivate: [RoleGuard4DealerEdit] },
 
   { path: 'financialadvisorpoweradmin', loadChildren: () => import('../nvx/pages/financial-advisor-power-admin-page/financial-advisor-power-admin-page.module').then(m => m.FinancialAdvisorPowerAdminPageModule), canActivate: [RoleGuard4FinancialAdvisorPowerAdmin] },
   { path: 'financialadvisoradmin', loadChildren: () => import('../nvx/pages/financial-advisor-admin-page/financial-advisor-admin-page.module').then(m => m.FinancialAdvisorAdminPageModule), canActivate: [RoleGuard4FinancialAdvisorAdmin] },
   { path: 'financialadvisorlist', loadChildren: () => import('../nvx/pages/financial-advisor-list-page/financial-advisor-list-page.module').then(m => m.FinancialAdvisorListPageModule), canActivate: [RoleGuard4FinancialAdvisorList] },
+  { path: 'financialadvisoredit', loadChildren: () => import('../nvx/pages/financial-advisor-edit-page/financial-advisor-edit-page.module').then(m => m.FinancialAdvisorEditPageModule), canActivate: [RoleGuard4FinancialAdvisorEdit] },
 
+  
 
   {
     path: 'folder/:id',

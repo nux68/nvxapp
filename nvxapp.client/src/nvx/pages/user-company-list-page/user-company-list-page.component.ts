@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { AccountService } from '../../ClientServer-Service/Account/account.service';
-import { UserCompanyListModel, UserCompanyListInModel } from '../../ClientServer-Service/Account/Models/uesr-company-list-model';
+import { UserCompanyListModel, UserCompanyListInModel } from '../../ClientServer-Service/Account/Models/user-company-model';
 import { UserLoadInModel } from '../../ClientServer-Service/Account/Models/user-load-model';
 import { GenericRequest } from '../../ClientServer-Service/ModelsBase/generic-request';
 import { UserNavigationService, UserDataAdditionalModel } from '../../Utility/user-navigation.service';
+import { ButtonItem, UserInterfaceService } from '../../Utility/user-interface.service';
+import { FabMenuItem, FabMenuService } from '../../Utility/fab-menu.service';
 
 @Component({
   selector: 'app-user-company-list-page',
@@ -17,11 +19,21 @@ export class UserCompanyListPageComponent  implements OnInit {
   public title!: string;
   public searchText!: string;
   public userCompanyList: UserCompanyListModel[] | null = null;
+  public btnImpersona: ButtonItem;
+  public btnEdit: ButtonItem;
 
   constructor(private navCtrl: NavController,
-    private accountService: AccountService,
-    private userNavigationService: UserNavigationService) {
+              private accountService: AccountService,
+              public fabMenuService: FabMenuService,
+              private userInterfaceService: UserInterfaceService,
+              private userNavigationService: UserNavigationService) {
+
     this.title = 'UserCompanyListPage';
+
+    this.btnImpersona = userInterfaceService.Btn_Impersona;
+    this.btnImpersona.event = this.handleButtonImpersonaClick;
+    this.btnEdit = userInterfaceService.Btn_Modifica;
+    this.btnEdit.event = this.handleButtonEditClick;
   }
 
   ionViewWillEnter() {
@@ -31,11 +43,26 @@ export class UserCompanyListPageComponent  implements OnInit {
       this.userCompanyList = res.data.userCompanyList;
 
     });
+
+    this.fabMenuService.fabMenuItem = [
+
+      new FabMenuItem('Elemento 1', 'add-circle-outline', () => {
+        this.navCtrl.navigateForward('/usercompanyedit', {
+          state: { id: 0 }
+        });
+      }),
+
+    ];
+
+  }
+
+  ionViewWillLeave() {
+    this.fabMenuService.fabMenuItem = [];
   }
 
   ngOnInit() {}
 
-  handleButtonClick(item: UserCompanyListModel) {
+  handleButtonImpersonaClick = (item: any) => {
 
     let request: GenericRequest<UserLoadInModel> = new GenericRequest<UserLoadInModel>(UserLoadInModel);
     request.data.id = item.idAspNetUsers;
@@ -53,6 +80,12 @@ export class UserCompanyListPageComponent  implements OnInit {
       }
     });
 
+  }
+
+  handleButtonEditClick = (item: any) => {
+    this.navCtrl.navigateForward('/usercompanyedit', {
+      state: { id: item.idUserCompany }
+    });
   }
 
   Filter(CurrFilter: any) {

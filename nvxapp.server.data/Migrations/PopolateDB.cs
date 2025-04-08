@@ -105,14 +105,14 @@ namespace nvxapp.server.data.Migrations
                 //DealerPowerAdmin
                 migrationBuilder.InsertData(
                         table: "UserDealer",
-                        columns: new[] { "IdDealer", "IdAspNetUsers" },
-                        values: new object[] { idxDealer, data_AspNetUsers[0].Id }
+                        columns: new[] { "IdDealer", "IdAspNetUsers", "MainUser" },
+                        values: new object[] { idxDealer, data_AspNetUsers[0].Id ,true}
                         );
                 //DealerAdmin
                 migrationBuilder.InsertData(
                         table: "UserDealer",
-                        columns: new[] { "IdDealer", "IdAspNetUsers" },
-                        values: new object[] { idxDealer, data_AspNetUsers[1].Id }
+                        columns: new[] { "IdDealer", "IdAspNetUsers", "MainUser" },
+                        values: new object[] { idxDealer, data_AspNetUsers[1].Id ,true}
                         );
 
 
@@ -134,14 +134,14 @@ namespace nvxapp.server.data.Migrations
                     //FinancialAdvisorPowerAdmin
                     migrationBuilder.InsertData(
                            table: "UserFinancialAdvisor",
-                           columns: new[] { "IdFinancialAdvisor", "IdAspNetUsers" },
-                           values: new object[] { idxFinancialAdvisor, data_AspNetUsers[0].Id }
+                           columns: new[] { "IdFinancialAdvisor", "IdAspNetUsers" , "MainUser" },
+                           values: new object[] { idxFinancialAdvisor, data_AspNetUsers[0].Id ,true}
                            );
                     //FinancialAdvisorAdmin
                     migrationBuilder.InsertData(
                            table: "UserFinancialAdvisor",
-                           columns: new[] { "IdFinancialAdvisor", "IdAspNetUsers" },
-                           values: new object[] { idxFinancialAdvisor, data_AspNetUsers[1].Id }
+                           columns: new[] { "IdFinancialAdvisor", "IdAspNetUsers", "MainUser" },
+                           values: new object[] { idxFinancialAdvisor, data_AspNetUsers[1].Id ,true}
                            );
 
 
@@ -164,14 +164,14 @@ namespace nvxapp.server.data.Migrations
                         //CompanyPowerAdmin
                         migrationBuilder.InsertData(
                              table: "UserCompany",
-                             columns: new[] { "IdCompany", "IdAspNetUsers" },
-                             values: new object[] { idxCompany, data_AspNetUsers[0].Id }
+                             columns: new[] { "IdCompany", "IdAspNetUsers" , "MainUser" },
+                             values: new object[] { idxCompany, data_AspNetUsers[0].Id,true }
                              );
                         //CompanyAdmin
                         migrationBuilder.InsertData(
                              table: "UserCompany",
-                             columns: new[] { "IdCompany", "IdAspNetUsers" },
-                             values: new object[] { idxCompany, data_AspNetUsers[1].Id }
+                             columns: new[] { "IdCompany", "IdAspNetUsers" , "MainUser" },
+                             values: new object[] { idxCompany, data_AspNetUsers[1].Id ,true}
                              );
 
                         for (int idxUs = 1; idxUs <= 10; idxUs++)
@@ -184,8 +184,8 @@ namespace nvxapp.server.data.Migrations
 
                             migrationBuilder.InsertData(
                                                          table: "UserCompany",
-                                                         columns: new[] { "IdCompany", "IdAspNetUsers" },
-                                                         values: new object[] { idxCompany, data_AspNetUsers[0].Id }
+                                                         columns: new[] { "IdCompany", "IdAspNetUsers", "MainUser" },
+                                                         values: new object[] { idxCompany, data_AspNetUsers[0].Id,false }
                                                          );
                         }
 

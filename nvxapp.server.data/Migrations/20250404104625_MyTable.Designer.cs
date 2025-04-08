@@ -12,7 +12,7 @@ using nvxapp.server.data.Infrastructure;
 namespace nvxapp.server.data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250219120739_MyTable")]
+    [Migration("20250404104625_MyTable")]
     partial class MyTable
     {
         /// <inheritdoc />
@@ -21,7 +21,7 @@ namespace nvxapp.server.data.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("public")
-                .HasAnnotation("ProductVersion", "9.0.1")
+                .HasAnnotation("ProductVersion", "9.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -365,6 +365,9 @@ namespace nvxapp.server.data.Migrations
                     b.Property<int>("IdCompany")
                         .HasColumnType("integer");
 
+                    b.Property<bool>("MainUser")
+                        .HasColumnType("boolean");
+
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("timestamp without time zone");
 
@@ -400,6 +403,9 @@ namespace nvxapp.server.data.Migrations
                     b.Property<int>("IdDealer")
                         .HasColumnType("integer");
 
+                    b.Property<bool>("MainUser")
+                        .HasColumnType("boolean");
+
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("timestamp without time zone");
 
@@ -434,6 +440,9 @@ namespace nvxapp.server.data.Migrations
 
                     b.Property<int>("IdFinancialAdvisor")
                         .HasColumnType("integer");
+
+                    b.Property<bool>("MainUser")
+                        .HasColumnType("boolean");
 
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("timestamp without time zone");

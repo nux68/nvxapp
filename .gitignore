@@ -5,6 +5,7 @@ nvxapp.Server/bin
 nvxapp.Server/obj/
 nvxapp.Server/wwwroot/
 nvxapp.Server/node_modules/
+nvxapp.Server/logs/
 
 nvxapp.server.service/bin
 nvxapp.server.service/obj/
