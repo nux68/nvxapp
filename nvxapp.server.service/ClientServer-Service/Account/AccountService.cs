@@ -662,7 +662,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
 
                                 retVal.UserCompanyList.Add(new UserCompanyModel()
                                 {
-                                    //IdAspNetUsers = item.IdAspNetUsers,
+                                    IdAspNetUsers = item.IdAspNetUsers,
                                     IdUserCompany = item.Id,
                                     Descrizione = _user?.UserName
                                 });

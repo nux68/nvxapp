@@ -6,7 +6,7 @@ import { UserLoadInModel } from '../../ClientServer-Service/Account/Models/user-
 import { GenericRequest } from '../../ClientServer-Service/ModelsBase/generic-request';
 import { UserNavigationService, UserDataAdditionalModel } from '../../Utility/user-navigation.service';
 import { ButtonItem, UserInterfaceService } from '../../Utility/user-interface.service';
-import { FabMenuService } from '../../Utility/fab-menu.service';
+import { FabMenuItem, FabMenuService } from '../../Utility/fab-menu.service';
 
 @Component({
   selector: 'app-user-company-list-page',
@@ -43,6 +43,17 @@ export class UserCompanyListPageComponent  implements OnInit {
       this.userCompanyList = res.data.userCompanyList;
 
     });
+
+    this.fabMenuService.fabMenuItem = [
+
+      new FabMenuItem('Elemento 1', 'add-circle-outline', () => {
+        this.navCtrl.navigateForward('/usercompanyedit', {
+          state: { id: 0 }
+        });
+      }),
+
+    ];
+
   }
 
   ionViewWillLeave() {

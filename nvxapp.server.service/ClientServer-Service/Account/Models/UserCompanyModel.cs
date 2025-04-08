@@ -12,7 +12,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account.Models
 {
     public class UserCompanyModel
     {
-        //public string? IdAspNetUsers { get; set; }
+        public string? IdAspNetUsers { get; set; }
         public int IdUserCompany { get; set; }
 
         public string? Descrizione { get; set; }

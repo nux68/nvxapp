@@ -7,7 +7,7 @@ export class UserCompanyListModel {
 
   public descrizione: string | null;
 
-  //public idAspNetUsers: string;
+  public idAspNetUsers: string;
   public idUserCompany: number;
 
 }
