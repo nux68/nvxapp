@@ -44,6 +44,7 @@ const routes: Routes = [
   { path: 'companyedit', loadChildren: () => import('../nvx/pages/company-edit-page/company-edit-page.module').then(m => m.CompanyEditPageModule), canActivate: [RoleGuard4CompanyEdit] },
 
   { path: 'usercompanylist', loadChildren: () => import('../nvx/pages/user-company-list-page/user-company-list-page.module').then(m => m.UserCompanyListPageModule), canActivate: [RoleGuard4UserCompanyList] },
+  { path: 'usercompanyedit', loadChildren: () => import('../nvx/pages/user-company-edit-page/user-company-edit-page.module').then(m => m.UserCompanyEditPageModule), canActivate: [RoleGuard4UserCompanyList] },
 
   { path: 'dealerpoweradmin', loadChildren: () => import('../nvx/pages/dealer-power-admin-page/dealer-power-admin-page.module').then(m => m.DealerPowerAdminPageModule), canActivate: [RoleGuard4DealerPowerAdmin] },
   { path: 'dealeradmin', loadChildren: () => import('../nvx/pages/dealer-admin-page/dealer-admin-page.module').then(m => m.DealerAdminPageModule), canActivate: [RoleGuard4DealerAdmin] },

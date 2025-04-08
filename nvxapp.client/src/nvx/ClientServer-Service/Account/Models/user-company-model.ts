@@ -7,7 +7,8 @@ export class UserCompanyListModel {
 
   public descrizione: string | null;
 
-  public idAspNetUsers: string;
+  //public idAspNetUsers: string;
+  public idUserCompany: number;
 
 }
 export class UserCompanyListInModel {
@@ -26,26 +27,27 @@ export class UserCompanyEditModel {
 
   public descrizione: string | null;
 
-  public idAspNetUsers: string;
+  //public idAspNetUsers: string;
+  public idUserCompany: number;
 
 
 
 }
 export class UserCompanyGetInModel {
-  public id: string;
+  public id: number;
 }
 export class UserCompanyGetOutModel extends ModelResult {
 
-  public UserCompanyEdit: UserCompanyEditModel;
+  public userCompanyEdit: UserCompanyEditModel;
 
 }
 export class UserCompanyPutInModel  {
 
-  public UserCompanyEdit: UserCompanyEditModel;
+  public userCompanyEdit: UserCompanyEditModel;
 
 }
 export class UserCompanyPutOutModel extends ModelResult {
 
-  public UserCompanyEdit: UserCompanyEditModel;
+  public userCompanyEdit: UserCompanyEditModel;
 
 }

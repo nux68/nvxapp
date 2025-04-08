@@ -12,7 +12,8 @@ namespace nvxapp.server.service.ClientServer_Service.Account.Models
 {
     public class UserCompanyModel
     {
-        public string? IdAspNetUsers { get; set; }
+        //public string? IdAspNetUsers { get; set; }
+        public int IdUserCompany { get; set; }
 
         public string? Descrizione { get; set; }
     }
@@ -33,12 +34,13 @@ namespace nvxapp.server.service.ClientServer_Service.Account.Models
 
     public class UserCompanyEditModel
     {
-        public string IdAspNetUsers { get; set; } = string.Empty;
+        public int IdUserCompany { get; set; }
+        //public string IdAspNetUsers { get; set; } = string.Empty;
         public string Descrizione { get; set; } = string.Empty;
     }
     public class UserCompanyGetInModel
     {
-        public string Id { get; set; } = string.Empty ;
+        public int Id { get; set; } = 0;
     }
     public class UserCompanyGetOutModel : ModelResult
     {

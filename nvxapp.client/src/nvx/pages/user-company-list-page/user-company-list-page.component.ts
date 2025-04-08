@@ -6,6 +6,7 @@ import { UserLoadInModel } from '../../ClientServer-Service/Account/Models/user-
 import { GenericRequest } from '../../ClientServer-Service/ModelsBase/generic-request';
 import { UserNavigationService, UserDataAdditionalModel } from '../../Utility/user-navigation.service';
 import { ButtonItem, UserInterfaceService } from '../../Utility/user-interface.service';
+import { FabMenuService } from '../../Utility/fab-menu.service';
 
 @Component({
   selector: 'app-user-company-list-page',
@@ -19,9 +20,11 @@ export class UserCompanyListPageComponent  implements OnInit {
   public searchText!: string;
   public userCompanyList: UserCompanyListModel[] | null = null;
   public btnImpersona: ButtonItem;
+  public btnEdit: ButtonItem;
 
   constructor(private navCtrl: NavController,
               private accountService: AccountService,
+              public fabMenuService: FabMenuService,
               private userInterfaceService: UserInterfaceService,
               private userNavigationService: UserNavigationService) {
 
@@ -29,6 +32,8 @@ export class UserCompanyListPageComponent  implements OnInit {
 
     this.btnImpersona = userInterfaceService.Btn_Impersona;
     this.btnImpersona.event = this.handleButtonImpersonaClick;
+    this.btnEdit = userInterfaceService.Btn_Modifica;
+    this.btnEdit.event = this.handleButtonEditClick;
   }
 
   ionViewWillEnter() {
@@ -38,6 +43,10 @@ export class UserCompanyListPageComponent  implements OnInit {
       this.userCompanyList = res.data.userCompanyList;
 
     });
+  }
+
+  ionViewWillLeave() {
+    this.fabMenuService.fabMenuItem = [];
   }
 
   ngOnInit() {}
@@ -60,6 +69,12 @@ export class UserCompanyListPageComponent  implements OnInit {
       }
     });
 
+  }
+
+  handleButtonEditClick = (item: any) => {
+    this.navCtrl.navigateForward('/usercompanyedit', {
+      state: { id: item.idUserCompany }
+    });
   }
 
   Filter(CurrFilter: any) {

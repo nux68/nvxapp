@@ -662,7 +662,8 @@ namespace nvxapp.server.service.ClientServer_Service.Account
 
                                 retVal.UserCompanyList.Add(new UserCompanyModel()
                                 {
-                                    IdAspNetUsers = item.IdAspNetUsers,
+                                    //IdAspNetUsers = item.IdAspNetUsers,
+                                    IdUserCompany = item.Id,
                                     Descrizione = _user?.UserName
                                 });
                             }
@@ -685,7 +686,27 @@ namespace nvxapp.server.service.ClientServer_Service.Account
             {
                 UserCompanyGetOutModel retVal = new UserCompanyGetOutModel();
 
+                
 
+                var userCompany = await _userCompanyRepository.FindByIdAsync(model.Data.Id);
+                if (userCompany != null)
+                {
+                    retVal.UserCompanyEdit = new UserCompanyEditModel()
+                    {
+                        Descrizione = userCompany.IdAspNetUsers,
+                        //IdAspNetUsers = userCompany.IdAspNetUsers,
+                        IdUserCompany = userCompany.Id,
+                    };
+                }
+                else
+                {
+                    retVal.UserCompanyEdit = new UserCompanyEditModel()
+                    {
+                        Descrizione = "",
+                        //IdAspNetUsers = string.Empty
+                        IdUserCompany = 0
+                    };
+                }
 
                 //eliminare
                 // Nessun 'await' qui
@@ -700,7 +721,27 @@ namespace nvxapp.server.service.ClientServer_Service.Account
             {
                 UserCompanyPutOutModel retVal = new UserCompanyPutOutModel();
 
+                var userCompany = await _userCompanyRepository.FindByIdAsync(model.Data.UserCompanyEdit.IdUserCompany);
+                if (userCompany != null)
+                {
+                    //userCompany.Descrizione = model.Data.UserCompanyEdit.Descrizione;
 
+                    //    retVal.DealerEdit = new DealerEditModel()
+                    //    {
+                    //        Descrizione = dealer.Descrizione,
+                    //        IdDealer = dealer.Id
+                    //    };
+                }
+                else
+                {
+                    //    retVal.DealerEdit = new DealerEditModel()
+                    //    {
+                    //        Descrizione = "",
+                    //        IdDealer = 0
+                    //    };
+                }
+
+                await _userCompanyRepository.UpdateAsync(userCompany);
 
 
                 //eliminare
