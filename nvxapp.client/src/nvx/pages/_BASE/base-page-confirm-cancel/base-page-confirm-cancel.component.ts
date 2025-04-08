@@ -1,15 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Injectable, OnInit } from '@angular/core';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/user-interface.service';
 import { NavController } from '@ionic/angular';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { Observable, of } from 'rxjs';
 
-//@Component({
-//  selector: 'app-base-page-confirm-cancel',
-//  templateUrl: './base-page-confirm-cancel.component.html',
-//  styleUrls: ['./base-page-confirm-cancel.component.scss'],
-//  standalone: false
-//})
-export abstract class BasePageConfirmCancelComponent<T>  /*implements OnInit*/ {
+
+@Injectable({
+  providedIn: 'root'
+})
+export abstract class BasePageConfirmCancelComponent<T> implements OnInit {
 
   public buttonbar: ButtonItem[] = [];
 
@@ -23,53 +22,47 @@ export abstract class BasePageConfirmCancelComponent<T>  /*implements OnInit*/ {
     this.buttonbar = userInterfaceService.Btn_ConfermaAnnulla;
     this.buttonbar[0].event = this._handleButtonConfirmClick;
     this.buttonbar[1].event = this._handleButtonCancelClick;
-
+   
+  }
+   
+  ngOnInit() {
     this._editForm = this.EditForm;
   }
 
-  //ngOnInit() {
-  //  //this._editForm = this.EditForm;
-  //}
-
   ionViewWillEnter() {
-    
-    this.LoadData();
+    this.LoadData().subscribe(res => {
+
+      this._editModel = res;
+
+      // Popola il form con i dati ottenuti
+      if (this._editModel) {
+        this._editForm.patchValue(this._editModel);
+      }
+
+    });
   }
 
-  _handleButtonConfirmClick = (param: object) => {
+  private _handleButtonConfirmClick = (param: object) => {
+
+    this.forceValidation();
     this.ButtonConfirmClickEv(param);
+
   }
 
-  _handleButtonCancelClick = (param: object) => {
+  private _handleButtonCancelClick = (param: object) => {
     this.ButtonCancelClickEv(param);
   }
-
-
-  abstract get Title(): string;
-
-  /*abstract*/ get EditForm(): FormGroup | null { return null};
-
-  get ShowFilter(): boolean { return false; }
-
-
-  abstract LoadData(): void;
-
+      
   ButtonConfirmClickEv = (param: object) => {
+
+   
 
     if (this._editForm.valid) {
       Object.assign(this._editModel, this._editForm.value);
 
-    //  let request: GenericRequest<DealerPutInModel> = new GenericRequest<DealerPutInModel>(DealerPutInModel);
-    //  request.data.dealerEdit = this.editModel;
-
-    //  this.accountService.DealerPut(request).subscribe(res => {
-
+      this.SaveData(this._editModel).subscribe(res => {
         this.navCtrl.back();
-
-    //  });
-
-
-
+      });
     }
 
   }
@@ -78,21 +71,29 @@ export abstract class BasePageConfirmCancelComponent<T>  /*implements OnInit*/ {
     this.navCtrl.back();
   }
 
+  private forceValidation() {
+    // Forza la validazione su tutto il form
+    Object.keys(this._editForm.controls).forEach((key) => {
+      const control = this._editForm.get(key);
+      control?.markAsTouched(); // Segna il campo come "toccato" per attivare gli errori
+      control?.updateValueAndValidity(); // Forza la validazione
+    });
+  }
 
-  ////ngOnInit() {
-  ////  var c = 0;
-  ////}
 
-  //conferma(): void {
-  //  console.log('Conferma dal componente base');
-  //}
+  //ridefinire se si vuole mostrare il filtro
+  get ShowFilter(): boolean { return false; }
 
-  //annulla(): void {
-  //  console.log('Annulla dal componente base');
-  //}
+  abstract LoadData(): Observable<T>;
 
-  
+  abstract SaveData(editModel: T): Observable<boolean>;
+
+  abstract get Title(): string;
+    
+  abstract get EditForm(): FormGroup | null;
 
 }
+
+
 
 

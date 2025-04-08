@@ -48,13 +48,17 @@ export class FinancialAdvisorListPageComponent implements OnInit {
     this.fabMenuService.fabMenuItem = [
 
       new FabMenuItem('Elemento 1', 'add-circle-outline', () => {
-        this.navCtrl.navigateForward('/dealeredit', {
+        this.navCtrl.navigateForward('/financialadvisoredit', {
           state: { id: 0 }
         });
       }),
 
     ];
 
+  }
+
+  ionViewWillLeave() {
+    this.fabMenuService.fabMenuItem = [];
   }
 
   ngOnInit() {}

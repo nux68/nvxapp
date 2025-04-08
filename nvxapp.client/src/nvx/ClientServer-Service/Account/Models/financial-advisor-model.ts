@@ -39,17 +39,17 @@ export class FinancialAdvisorGetInModel {
 }
 export class FinancialAdvisorGetOutModel extends ModelResult {
 
-  public FinancialAdvisorEdit: FinancialAdvisorEditModel;
+  public financialAdvisorEdit: FinancialAdvisorEditModel;
 
 }
 export class FinancialAdvisorPutInModel  {
 
-  public FinancialAdvisorEdit: FinancialAdvisorEditModel;
+  public financialAdvisorEdit: FinancialAdvisorEditModel;
 
 }
 export class FinancialAdvisorPutOutModel extends ModelResult {
 
-  public FinancialAdvisorEdit: FinancialAdvisorEditModel;
+  public financialAdvisorEdit: FinancialAdvisorEditModel;
 
 }
 
