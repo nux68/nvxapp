@@ -713,7 +713,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                     {
                         Descrizione = StringHelper.RemoveSpecialCharacters(model.Data.CompanyEdit.Descrizione),
                         IdFinancialAdvisor = IdFinancialAdvisor,
-                        Schema = "schema"+ StringHelper.RemoveSpecialCharacters(model.Data.CompanyEdit.Descrizione),
+                        Schema = "schema_"+ StringHelper.RemoveSpecialCharacters(model.Data.CompanyEdit.Descrizione),
                     };
 
                     company = await _companyRepository.UpsertAsync(company);
