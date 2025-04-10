@@ -53,7 +53,7 @@ export class CompanyEditPageComponent extends BasePageConfirmCancelComponent<Com
     }
     else {
       return new Observable<CompanyEditModel | null>((subscriber) => {
-        subscriber.next(null); // Stato non valido, restituisce null
+        subscriber.next(new CompanyEditModel());
         subscriber.complete();
       });
     }

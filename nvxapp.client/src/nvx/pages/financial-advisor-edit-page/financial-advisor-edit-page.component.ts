@@ -56,7 +56,7 @@ export class FinancialAdvisorEditPageComponent extends BasePageConfirmCancelComp
     }
     else {
       return new Observable<FinancialAdvisorEditModel | null>((subscriber) => {
-        subscriber.next(null); // Stato non valido, restituisce null
+        subscriber.next(new FinancialAdvisorEditModel()); 
         subscriber.complete();
       });
     }

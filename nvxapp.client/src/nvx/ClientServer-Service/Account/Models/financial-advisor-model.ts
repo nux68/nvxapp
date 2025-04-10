@@ -3,15 +3,12 @@ import { RolesModel } from "./user-roles-model";
 
 
 export class FinancialAdvisorListModel {
-
-  public idFinancialAdvisor: number;
-
-  public descrizione: string | null;
-
-  public idAspNetUsers: string;
-
-  public mainUser: boolean;
-
+  constructor(
+    public idFinancialAdvisor: number = 0,
+    public descrizione: string | null = "",
+    public idAspNetUsers: string = "",
+    public mainUser: boolean = false
+  ) { }
 }
 export class FinancialAdvisorListInModel {
   
@@ -24,16 +21,14 @@ export class FinancialAdvisorListOutModel extends ModelResult {
 
 
 export class FinancialAdvisorEditModel {
-
-  public idFinancialAdvisor: number;
-
-  public descrizione: string | null;
-
-  public idAspNetUsers: string;
-
-  public mainUser: boolean;
-
+  constructor(
+    public idFinancialAdvisor: number = 0,
+    public descrizione: string | null = "Descrizione non disponibile",
+    public idAspNetUsers: string = "",
+    public mainUser: boolean = false
+  ) { }
 }
+
 export class FinancialAdvisorGetInModel {
   public id: number;
 }

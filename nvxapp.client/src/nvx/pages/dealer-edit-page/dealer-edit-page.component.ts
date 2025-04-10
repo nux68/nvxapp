@@ -7,7 +7,8 @@ import { GenericRequest } from '../../ClientServer-Service/ModelsBase/generic-re
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Observable, map, catchError } from 'rxjs';
 import { BasePageConfirmCancelComponent } from '../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
-
+import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
+import { StringHelperService } from '../../Utility/string-helper.service';
 
 @Component({
   selector: 'app-dealer-edit-page',
@@ -17,9 +18,12 @@ import { BasePageConfirmCancelComponent } from '../_BASE/base-page-confirm-cance
 }) 
 export class DealerEditPageComponent extends BasePageConfirmCancelComponent<DealerEditModel> {
 
+  modifiedDescription: string | null = null;
+
   constructor(protected override navCtrl: NavController,
               protected override userInterfaceService: UserInterfaceService,
               protected override fb: FormBuilder,
+              private stringHelperService: StringHelperService,
               private accountService: AccountService) {
 
     super(navCtrl, userInterfaceService, fb);
@@ -29,7 +33,8 @@ export class DealerEditPageComponent extends BasePageConfirmCancelComponent<Deal
 
   get Title(): string { return "DealerEditPage"; }
   get EditForm(): FormGroup {
-    return this.fb.group({
+    return this.
+      fb.group({
 
       descrizione: [null, [Validators.required, Validators.maxLength(20)]],
 
@@ -53,7 +58,15 @@ export class DealerEditPageComponent extends BasePageConfirmCancelComponent<Deal
     }
     else {
       return new Observable<DealerEditModel | null>((subscriber) => {
-        subscriber.next(null); // Stato non valido, restituisce null
+
+        //aggiunge campi solo per le new
+        this._editForm.addControl('mail', this.fb.control(null, [Validators.required, Validators.email]));
+        this._editForm.addControl('pw', this.fb.control(null, [Validators.required]));
+        this._editForm.addControl('confirmPassword', this.fb.control(null, [Validators.required]));
+        this._editForm.setValidators(matchPasswords);
+        this._editForm.updateValueAndValidity();
+
+        subscriber.next(new DealerEditModel());
         subscriber.complete();
       });
     }
@@ -63,7 +76,7 @@ export class DealerEditPageComponent extends BasePageConfirmCancelComponent<Deal
     let request: GenericRequest<DealerPutInModel> =
       new GenericRequest<DealerPutInModel>(DealerPutInModel);
     request.data.dealerEdit = editModel;
-
+    
     return this.accountService.DealerPut(request).pipe(
       map(() => true), // Restituisce true in caso di successo
       catchError((error) => {
@@ -74,6 +87,24 @@ export class DealerEditPageComponent extends BasePageConfirmCancelComponent<Deal
   };
 
 
+  
 
+  UpdateDescription() {
+    const descrizione = this._editForm.get('descrizione')?.value;
+
+    if (descrizione) {
+      this.modifiedDescription = "Attenzione per accedere a questa utenza verrano creati i seguenti user    ->   " + this.stringHelperService.removeSpecialCharacters(descrizione) + "_Admin" + " / " + this.stringHelperService.removeSpecialCharacters(descrizione) + "_PowerAdmin";
+    } else {
+      this.modifiedDescription = null;
+    }
+  }
 
 }
+
+
+const matchPasswords: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
+  const password = control.get('pw')?.value;
+  const confirmPassword = control.get('confirmPassword')?.value;
+
+  return password === confirmPassword ? null : { notMatching: true };
+};

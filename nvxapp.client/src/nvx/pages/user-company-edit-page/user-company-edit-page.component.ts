@@ -54,7 +54,7 @@ export class UserCompanyEditPageComponent extends BasePageConfirmCancelComponent
     }
     else {
       return new Observable<UserCompanyEditModel | null>((subscriber) => {
-        subscriber.next(null); // Stato non valido, restituisce null
+        subscriber.next(new UserCompanyEditModel()); 
         subscriber.complete();
       });
     }

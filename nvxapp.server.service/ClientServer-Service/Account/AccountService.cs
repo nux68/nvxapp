@@ -70,7 +70,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
             _userFinancialAdvisorRepository = userFinancialAdvisorRepository;
             _companyRepository = companyRepository;
             _userCompanyRepository = userCompanyRepository;
-            
+
             _hubContext = hubContext;
         }
 
@@ -186,7 +186,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                         string company = "";
                         string userIdFirstConnection = this.UserIdFirstConnection;
 
-                        if(UseSignalR)
+                        if (UseSignalR)
                             await _hubContext.Clients.All.SendAsync("ReceiveMessage", applicationUser.UserName + " è entrato");
 
                         var roles = await _userManager.GetRolesAsync(applicationUser);
@@ -272,7 +272,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                 return retVal;
             }, isSubProcess);
         }
-        
+
         public virtual async Task<GenericResult<DealerListOutModel>> DealerList(GenericRequest<DealerListInModel> model, Boolean isSubProcess)
         {
             return await ExecuteAction(model, async () =>
@@ -294,17 +294,17 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                             foreach (var item in userDealer)
                             {
                                 var _dealer = _dealerRepository.FindById(item.IdDealer);
-                                if(_dealer!=null)
+                                if (_dealer != null)
                                 {
                                     retVal.DealerList.Add(new DealerListModel()
                                     {
                                         IdAspNetUsers = item.IdAspNetUsers,
                                         IdDealer = item.IdDealer,
-                                        Descrizione = _dealer?.Descrizione??"",
+                                        Descrizione = _dealer?.Descrizione ?? "",
                                         MainUser = item.MainUser
                                     });
                                 }
-                                
+
                             }
                         }
                     }
@@ -326,12 +326,12 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                 DealerGetOutModel retVal = new DealerGetOutModel();
 
                 var dealer = await _dealerRepository.FindByIdAsync(model.Data.Id);
-                if(dealer!=null)
+                if (dealer != null)
                 {
                     retVal.DealerEdit = new DealerEditModel()
                     {
-                         Descrizione = dealer.Descrizione,
-                         IdDealer= dealer.Id
+                        Descrizione = dealer.Descrizione,
+                        IdDealer = dealer.Id
                     };
                 }
                 else
@@ -343,7 +343,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                     };
                 }
 
-                
+
 
                 //eliminare
                 // Nessun 'await' qui
@@ -358,29 +358,73 @@ namespace nvxapp.server.service.ClientServer_Service.Account
             {
                 DealerPutOutModel retVal = new DealerPutOutModel();
 
-                
 
-                var dealer = await _dealerRepository.FindByIdAsync(model.Data.DealerEdit.IdDealer);
+
+                Dealer dealer = await _dealerRepository.FindByIdAsync(model.Data.DealerEdit.IdDealer);
                 if (dealer != null)
                 {
                     dealer.Descrizione = model.Data.DealerEdit.Descrizione;
 
-                //    retVal.DealerEdit = new DealerEditModel()
-                //    {
-                //        Descrizione = dealer.Descrizione,
-                //        IdDealer = dealer.Id
-                //    };
+                    await _dealerRepository.UpdateAsync(dealer);
                 }
                 else
                 {
-                //    retVal.DealerEdit = new DealerEditModel()
-                //    {
-                //        Descrizione = "",
-                //        IdDealer = 0
-                //    };
+                    dealer = new Dealer()
+                    {
+                        Descrizione = StringHelper.RemoveSpecialCharacters(model.Data.DealerEdit.Descrizione)
+                    };
+
+                    dealer = await _dealerRepository.UpsertAsync(dealer);
+
+                    string password = model.Data.DealerEdit.Pw;
+                    
+
+                    //DealerPowerAdmin
+                    var user = new ApplicationUser
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        UserName = dealer.Descrizione + "_PowerAdmin",
+                        Email = model.Data.DealerEdit.Mail
+                    };
+
+                    var result = await _userManager.CreateAsync(user, password);
+                    if (result.Succeeded)
+                    {
+                        result = await _userManager.AddToRoleAsync(user, "DealerPowerAdmin");
+
+                        await _userDealerRepository.UpsertAsync(new UserDealer()
+                        {
+                            IdAspNetUsers = user.Id,
+                            IdDealer = dealer.Id,
+                            MainUser = true
+                        });
+                    }
+
+                    //DealerAdmin
+                    user = new ApplicationUser
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        UserName = dealer.Descrizione + "_Admin",
+                        Email = model.Data.DealerEdit.Mail
+                    };
+
+                    result = await _userManager.CreateAsync(user, password);
+                    if (result.Succeeded)
+                    {
+                        result = await _userManager.AddToRoleAsync(user, "DealerAdmin");
+
+                        await _userDealerRepository.UpsertAsync(new UserDealer()
+                        {
+                            IdAspNetUsers = user.Id,
+                            IdDealer = dealer.Id,
+                            MainUser = true
+                        });
+                    }
+         
+
                 }
 
-                await _dealerRepository.UpdateAsync(dealer);
+
 
                 //eliminare
                 // Nessun 'await' qui
@@ -686,7 +730,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
             {
                 UserCompanyGetOutModel retVal = new UserCompanyGetOutModel();
 
-                
+
 
                 var userCompany = await _userCompanyRepository.FindByIdAsync(model.Data.Id);
                 if (userCompany != null)
@@ -762,7 +806,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
         public Task<GenericResult<LoginOutModel>> Login(GenericRequest<LoginInModel> model, Boolean isSubProcess);
         public Task<GenericResult<UserRolesOutModel>> UserRoles(GenericRequest<UserRolesInModel> model, Boolean isSubProcess);
         public Task<GenericResult<UserLoadOutModel>> UserLoad(GenericRequest<UserLoadInModel> model, Boolean isSubProcess);
-        
+
         public Task<GenericResult<DealerListOutModel>> DealerList(GenericRequest<DealerListInModel> inModel, Boolean isSubProcess);
         public Task<GenericResult<DealerGetOutModel>> DealerGet(GenericRequest<DealerGetInModel> inModel, Boolean isSubProcess);
         public Task<GenericResult<DealerPutOutModel>> DealerPut(GenericRequest<DealerPutInModel> inModel, Boolean isSubProcess);
