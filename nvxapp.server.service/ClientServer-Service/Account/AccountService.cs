@@ -325,9 +325,19 @@ namespace nvxapp.server.service.ClientServer_Service.Account
             {
                 DealerGetOutModel retVal = new DealerGetOutModel();
 
+                
+
                 var dealer = await _dealerRepository.FindByIdAsync(model.Data.Id);
                 if (dealer != null)
                 {
+                    if(dealer.Descrizione=="PSL")
+                    {
+                        int i = 0;
+
+                        i = 10 / i;
+                    }
+
+
                     retVal.DealerEdit = new DealerEditModel()
                     {
                         Descrizione = dealer.Descrizione,

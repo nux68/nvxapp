@@ -14,12 +14,14 @@ import { HttpBackgroundWorkingComponentComponent } from '../nvx/shared/component
 import { BackgroundWorkingComponent } from '../nvx/shared/components/background-working/background-working.component';
 import { FabMenuComponent } from '../nvx/shared/components/fab-menu/fab-menu.component';
 import { FormsModule } from '@angular/forms';
+import { HttpBackgroundErrorDialogComponent } from '../nvx/shared/components/http-background-error-dialog/http-background-error-dialog.component';
 //import { GenericFilterPipe } from '../nvx/pipe/generic-filter.pipe';
 
 
 @NgModule({
   declarations: [AppComponent,
     HttpBackgroundWorkingComponentComponent,
+    HttpBackgroundErrorDialogComponent,
     BackgroundWorkingComponent,
     FabMenuComponent
   ],

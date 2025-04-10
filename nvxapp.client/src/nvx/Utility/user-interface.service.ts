@@ -62,6 +62,16 @@ export class UserInterfaceService {
     );
   }
 
+  get Btn_Chiudi(): ButtonItem {
+    return new ButtonItem(
+      'Chiudi',
+      'close-outline',
+      'medium',
+      false,
+      () => { console.log('Btn_Chiudi cliccato'); }
+    );
+  }
+  
 }
 
 

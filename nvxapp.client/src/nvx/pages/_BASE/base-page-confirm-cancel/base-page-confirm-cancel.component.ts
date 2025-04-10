@@ -43,6 +43,9 @@ export abstract class BasePageConfirmCancelComponent<T> implements OnInit {
       if (this._editModel) {
         this._editForm.patchValue(this._editModel);
       }
+      else {
+        this._editForm.setErrors({ formInvalid: true });
+      }
 
     });
   }
