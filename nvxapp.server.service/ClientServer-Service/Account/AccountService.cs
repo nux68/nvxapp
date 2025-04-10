@@ -695,27 +695,77 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                 CompanyPutOutModel retVal = new CompanyPutOutModel();
 
 
-                var company = await _companyRepository.FindByIdAsync(model.Data.CompanyEdit.IdCompany);
+                Company company = await _companyRepository.FindByIdAsync(model.Data.CompanyEdit.IdCompany);
                 if (company != null)
                 {
                     company.Descrizione = model.Data.CompanyEdit.Descrizione;
 
-                    //    retVal.DealerEdit = new DealerEditModel()
-                    //    {
-                    //        Descrizione = dealer.Descrizione,
-                    //        IdDealer = dealer.Id
-                    //    };
+                    await _companyRepository.UpdateAsync(company);
                 }
                 else
                 {
-                    //    retVal.DealerEdit = new DealerEditModel()
-                    //    {
-                    //        Descrizione = "",
-                    //        IdDealer = 0
-                    //    };
+                    /////////////////////
+                    
+                    int IdFinancialAdvisor;
+                    int.TryParse(this.CurrentFinancialAdvisor, out IdFinancialAdvisor);
+
+                    company = new Company()
+                    {
+                        Descrizione = StringHelper.RemoveSpecialCharacters(model.Data.CompanyEdit.Descrizione),
+                        IdFinancialAdvisor = IdFinancialAdvisor,
+                        Schema = "schema"+ StringHelper.RemoveSpecialCharacters(model.Data.CompanyEdit.Descrizione),
+                    };
+
+                    company = await _companyRepository.UpsertAsync(company);
+
+                    string password = model.Data.CompanyEdit.Pw;
+
+
+                    //DealerPowerAdmin
+                    var user = new ApplicationUser
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        UserName = company.Descrizione + "_PowerAdmin", //CompanyPowerAdmin
+                        Email = model.Data.CompanyEdit.Mail
+                    };
+
+                    var result = await _userManager.CreateAsync(user, password);
+                    if (result.Succeeded)
+                    {
+                        result = await _userManager.AddToRoleAsync(user, "CompanyPowerAdmin");
+
+                        await _userCompanyRepository.UpsertAsync(new UserCompany()
+                        {
+                            IdAspNetUsers = user.Id,
+                            IdCompany = company.Id,
+                            MainUser = true
+                        });
+                    }
+
+                    //DealerAdmin
+                    user = new ApplicationUser
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        UserName = company.Descrizione + "_Admin", //CompanyAdmin
+                        Email = model.Data.CompanyEdit.Mail
+                    };
+
+                    result = await _userManager.CreateAsync(user, password);
+                    if (result.Succeeded)
+                    {
+                        result = await _userManager.AddToRoleAsync(user, "CompanyAdmin");
+
+                        await _userCompanyRepository.UpsertAsync(new UserCompany()
+                        {
+                            IdAspNetUsers = user.Id,
+                            IdCompany = company.Id,
+                            MainUser = true
+                        });
+                    }
+                    /////////////////////
                 }
 
-                await _companyRepository.UpdateAsync(company);
+                
 
 
                 //eliminare

@@ -5,11 +5,7 @@
 </app-page-toolbar>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">{{ Title }}</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  
 
   <br />
 
@@ -25,12 +21,49 @@
     <ion-note color="danger" *ngIf="_editForm.get('descrizione')?.hasError('maxlength') && _editForm.get('descrizione')?.touched">
       La descrizione non può superare i 20 caratteri.
     </ion-note>
+    <!-- Etichetta gialla che appare solo se il valore è stato modificato -->
+    <ion-note color="warning" *ngIf="modifiedDescription">
+      {{ modifiedDescription }}
+    </ion-note>
+
+    <ng-container *ngIf="_editModel!=null && _editModel.idCompany == 0">
+      <ion-item>
+        <ion-label position="floating">Email</ion-label>
+        <ion-input type="email" formControlName="mail"></ion-input>
+      </ion-item>
+      <ion-note color="danger" *ngIf="_editForm.get('mail')?.hasError('required') && _editForm.get('mail')?.touched">
+        L'email è obbligatoria.
+      </ion-note>
+      <ion-note color="danger" *ngIf="_editForm.get('mail')?.hasError('email') && _editForm.get('mail')?.touched">
+        Inserisci un'email valida.
+      </ion-note>
+
+      <ion-item>
+        <ion-label position="floating">Password</ion-label>
+        <ion-input type="password" formControlName="pw"></ion-input>
+      </ion-item>
+      <ion-note color="danger" *ngIf="_editForm.get('pw')?.hasError('required') && _editForm.get('pw')?.touched">
+        La password è obbligatoria.
+      </ion-note>
+
+      <ion-item>
+        <ion-label position="floating">Conferma Password</ion-label>
+        <ion-input type="password" formControlName="confirmPassword"></ion-input>
+      </ion-item>
+      <ion-note color="danger" *ngIf="_editForm.get('confirmPassword')?.hasError('required') && _editForm.get('confirmPassword')?.touched">
+        La conferma della password è obbligatoria.
+      </ion-note>
+      <ion-note color="danger" *ngIf="_editForm.hasError('notMatching') && _editForm.get('confirmPassword')?.touched">
+        Le password non corrispondono.
+      </ion-note>
+
+    </ng-container>
 
   </form>
 
   <br />
 
-  {{ _editModel | json}}
+  <!--{{ _editModel | json}}-->
 
 
 </ion-content>

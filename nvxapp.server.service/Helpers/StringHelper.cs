@@ -9,8 +9,11 @@ namespace nvxapp.server.service.Helpers
 {
     public static class StringHelper
     {
-        public static string RemoveSpecialCharacters(string str)
+        public static string? RemoveSpecialCharacters(string? str)
         {
+            if (string.IsNullOrEmpty(str))
+                return str;
+
             return Regex.Replace(str, "[^a-zA-Z0-9]", "");
         }
     }

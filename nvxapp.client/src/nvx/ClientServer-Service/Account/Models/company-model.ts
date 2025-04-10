@@ -26,7 +26,9 @@ export class CompanyEditModel {
     public idCompany: number = 0,
     public descrizione: string | null = "",
     public idAspNetUsers: string = "",
-    public mainUser: boolean = false
+    public mainUser: boolean = false,
+    public mail: string | null = null,
+    public pw: string | null = null
   ) { }
 }
 export class CompanyGetInModel {

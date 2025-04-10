@@ -41,7 +41,6 @@ namespace nvxapp.server.service.ClientServer_Service.Account.Models
         public string IdAspNetUsers { get; set; } = string.Empty;
         public string? Descrizione { get; set; } = string.Empty;
         public Boolean MainUser { get; set; }
-
         public string? Mail { get; set; } = string.Empty;
         public string? Pw { get; set; } = string.Empty;
     }
