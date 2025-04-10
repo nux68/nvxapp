@@ -834,9 +834,13 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                 var userCompany = await _userCompanyRepository.FindByIdAsync(model.Data.Id);
                 if (userCompany != null)
                 {
+
+                    var applicationUser = await _userManager.FindByIdAsync(userCompany.IdAspNetUsers);
+
+
                     retVal.UserCompanyEdit = new UserCompanyEditModel()
                     {
-                        Descrizione = userCompany.IdAspNetUsers,
+                        Descrizione = applicationUser.UserName, //userCompany.IdAspNetUsers,
                         //IdAspNetUsers = userCompany.IdAspNetUsers,
                         IdUserCompany = userCompany.Id,
                     };
@@ -864,27 +868,47 @@ namespace nvxapp.server.service.ClientServer_Service.Account
             {
                 UserCompanyPutOutModel retVal = new UserCompanyPutOutModel();
 
-                var userCompany = await _userCompanyRepository.FindByIdAsync(model.Data.UserCompanyEdit.IdUserCompany);
+                UserCompany userCompany = await _userCompanyRepository.FindByIdAsync(model.Data.UserCompanyEdit.IdUserCompany);
                 if (userCompany != null)
                 {
                     //userCompany.Descrizione = model.Data.UserCompanyEdit.Descrizione;
 
-                    //    retVal.DealerEdit = new DealerEditModel()
-                    //    {
-                    //        Descrizione = dealer.Descrizione,
-                    //        IdDealer = dealer.Id
-                    //    };
+                    await _userCompanyRepository.UpdateAsync(userCompany);
                 }
                 else
                 {
-                    //    retVal.DealerEdit = new DealerEditModel()
-                    //    {
-                    //        Descrizione = "",
-                    //        IdDealer = 0
-                    //    };
+                    ////
+                    int IdCompany;
+                    int.TryParse(this.CurrentCompany, out IdCompany);
+
+
+
+                    //DealerPowerAdmin
+                    string password = model.Data.UserCompanyEdit.Pw;
+
+                    var user = new ApplicationUser
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        UserName = model.Data.UserCompanyEdit.Descrizione,
+                        Email = model.Data.UserCompanyEdit.Mail
+                    };
+
+                    var result = await _userManager.CreateAsync(user, password);
+                    if (result.Succeeded)
+                    {
+                        result = await _userManager.AddToRoleAsync(user, "User");
+
+                        await _userCompanyRepository.UpsertAsync(new UserCompany()
+                        {
+                            IdAspNetUsers = user.Id,
+                            IdCompany = IdCompany,
+                            MainUser = false
+                        });
+                    }
+                    
                 }
 
-                await _userCompanyRepository.UpdateAsync(userCompany);
+                
 
 
                 //eliminare

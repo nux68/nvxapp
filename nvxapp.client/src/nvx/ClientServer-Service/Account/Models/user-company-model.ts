@@ -6,7 +6,8 @@ export class UserCompanyListModel {
   constructor(
     public descrizione: string | null = "",
     public idAspNetUsers: string = "",
-    public idUserCompany: number = 0
+    public idUserCompany: number = 0,
+    public mainUser: boolean = false
   ) { }
 }
 export class UserCompanyListInModel {
@@ -22,8 +23,12 @@ export class UserCompanyListOutModel extends ModelResult {
 
 export class UserCompanyEditModel {
   constructor(
-    public descrizione: string | null = "Descrizione non disponibile",
-    public idUserCompany: number = 0
+    public descrizione: string | null = "",
+    public idUserCompany: number = 0,
+    public mainUser: boolean = false,
+
+    public mail: string | null = null,
+    public pw: string | null = null
   ) { }
 }
 
