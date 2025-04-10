@@ -85,10 +85,7 @@ export class DealerEditPageComponent extends BasePageConfirmCancelComponent<Deal
       })
     );
   };
-
-
   
-
   UpdateDescription() {
     const descrizione = this._editForm.get('descrizione')?.value;
 

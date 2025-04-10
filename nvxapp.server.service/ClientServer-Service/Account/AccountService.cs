@@ -526,27 +526,76 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                 FinancialAdvisorPutOutModel retVal = new FinancialAdvisorPutOutModel();
 
 
-                var financialAdvisor = await _financialAdvisorRepository.FindByIdAsync(model.Data.FinancialAdvisorEdit.IdFinancialAdvisor);
+                FinancialAdvisor financialAdvisor = await _financialAdvisorRepository.FindByIdAsync(model.Data.FinancialAdvisorEdit.IdFinancialAdvisor);
                 if (financialAdvisor != null)
                 {
                     financialAdvisor.Descrizione = model.Data.FinancialAdvisorEdit.Descrizione;
 
-                    //    retVal.DealerEdit = new DealerEditModel()
-                    //    {
-                    //        Descrizione = dealer.Descrizione,
-                    //        IdDealer = dealer.Id
-                    //    };
+                    await _financialAdvisorRepository.UpdateAsync(financialAdvisor);
                 }
                 else
                 {
-                    //    retVal.DealerEdit = new DealerEditModel()
-                    //    {
-                    //        Descrizione = "",
-                    //        IdDealer = 0
-                    //    };
+                    ////
+
+                    int IdDealer;
+                    int.TryParse(this.CurrentDealer, out IdDealer);
+
+                    financialAdvisor = new FinancialAdvisor()
+                    {
+                        IdDealer = IdDealer,
+                        Descrizione = StringHelper.RemoveSpecialCharacters(model.Data.FinancialAdvisorEdit.Descrizione)
+                    };
+
+                    financialAdvisor = await _financialAdvisorRepository.UpsertAsync(financialAdvisor);
+
+                    string password = model.Data.FinancialAdvisorEdit.Pw;
+
+
+                    //DealerPowerAdmin
+                    var user = new ApplicationUser
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        UserName = financialAdvisor.Descrizione + "_PowerAdmin", //FinancialAdvisorPowerAdmin
+                        Email = model.Data.FinancialAdvisorEdit.Mail
+                    };
+
+                    var result = await _userManager.CreateAsync(user, password);
+                    if (result.Succeeded)
+                    {
+                        result = await _userManager.AddToRoleAsync(user, "FinancialAdvisorPowerAdmin");
+
+                        await _userFinancialAdvisorRepository.UpsertAsync(new UserFinancialAdvisor()
+                        {
+                            IdAspNetUsers = user.Id,
+                            IdFinancialAdvisor = financialAdvisor.Id,
+                            MainUser = true
+                        });
+                    }
+
+                    //DealerAdmin
+                    user = new ApplicationUser
+                    {
+                        Id = Guid.NewGuid().ToString(), 
+                        UserName = financialAdvisor.Descrizione + "_Admin", //FinancialAdvisorAdmin
+                        Email = model.Data.FinancialAdvisorEdit.Mail
+                    };
+
+                    result = await _userManager.CreateAsync(user, password);
+                    if (result.Succeeded)
+                    {
+                        result = await _userManager.AddToRoleAsync(user, "FinancialAdvisorAdmin");
+
+                        await _userFinancialAdvisorRepository.UpsertAsync(new UserFinancialAdvisor()
+                        {
+                            IdAspNetUsers = user.Id,
+                            IdFinancialAdvisor = financialAdvisor.Id,
+                            MainUser = true
+                        });
+                    }
+                    ////
                 }
 
-                await _financialAdvisorRepository.UpdateAsync(financialAdvisor);
+                
 
 
                 //eliminare
