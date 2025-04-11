@@ -13,7 +13,7 @@ using nvxapp.server.data.Entities.Tenant;
 namespace nvxapp.server.data.Infrastructure
 {
 
-    
+
 
 
     public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, string>

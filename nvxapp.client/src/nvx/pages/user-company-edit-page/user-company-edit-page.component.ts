@@ -10,6 +10,8 @@ import { map, catchError } from 'rxjs';
 import { UserCompanyEditModel, UserCompanyGetInModel, UserCompanyPutInModel } from '../../ClientServer-Service/Account/Models/user-company-model';
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { StringHelperService } from '../../Utility/string-helper.service';
+import { ParameterService } from '../../ClientServer-Service/Parameter/parameter.service';
+import { RolesModel } from '../../ClientServer-Service/Parameter/Models/roles-model';
 
 @Component({
   selector: 'app-user-company-edit-page',
@@ -24,6 +26,7 @@ export class UserCompanyEditPageComponent extends BasePageConfirmCancelComponent
   constructor(protected override navCtrl: NavController,
     protected override userInterfaceService: UserInterfaceService,
     protected override fb: FormBuilder,
+    private parameterService: ParameterService,
     private stringHelperService: StringHelperService,
     private accountService: AccountService) {
 
@@ -37,12 +40,14 @@ export class UserCompanyEditPageComponent extends BasePageConfirmCancelComponent
     return this.fb.group({
 
       descrizione: [null, [Validators.required, Validators.maxLength(50)]],
+      roleId: [null, [Validators.required ]],
 
     });
   }
 
   LoadData = (): Observable<UserCompanyEditModel | null> => {
     const state = history.state;
+
 
     if (state && state.id) {
       let request: GenericRequest<UserCompanyGetInModel> = new GenericRequest<UserCompanyGetInModel>(UserCompanyGetInModel);
@@ -85,7 +90,16 @@ export class UserCompanyEditPageComponent extends BasePageConfirmCancelComponent
     );
   };
 
+  getRoler(): RolesModel[] {
 
+    if (this._editModel && this._editModel.idUserCompany == 0) {
+      return this.parameterService.Roles.filter(role => role.code <= 10);
+    }
+
+    return this.parameterService.Roles;
+  }
+
+  
 
 
 }

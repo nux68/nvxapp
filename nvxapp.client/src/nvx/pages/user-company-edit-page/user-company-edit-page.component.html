@@ -56,7 +56,25 @@
         Le password non corrispondono.
       </ion-note>
 
+
+
+
     </ng-container>
+
+    <ion-item>
+      <ion-label position="floating">Ruolo</ion-label>
+      <ion-select formControlName="roleId" [disabled]="_editModel!=null && _editModel.idUserCompany > 0">
+        <ion-select-option *ngFor="let role of getRoler()" [value]="role.id" >
+          {{ role.name }}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <!-- Mostra un errore se il ruolo non è selezionato -->
+    <ion-note color="danger" *ngIf="_editForm.get('roleId')?.hasError('required') && _editForm.get('roleId')?.touched">
+      Il ruolo è obbligatorio.
+    </ion-note>
+
 
   </form>
 

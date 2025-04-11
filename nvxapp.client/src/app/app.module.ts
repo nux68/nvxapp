@@ -15,6 +15,7 @@ import { BackgroundWorkingComponent } from '../nvx/shared/components/background-
 import { FabMenuComponent } from '../nvx/shared/components/fab-menu/fab-menu.component';
 import { FormsModule } from '@angular/forms';
 import { HttpBackgroundErrorDialogComponent } from '../nvx/shared/components/http-background-error-dialog/http-background-error-dialog.component';
+import { ParameterLoaderComponent } from '../nvx/shared/components/parameter-loader/parameter-loader.component';
 //import { GenericFilterPipe } from '../nvx/pipe/generic-filter.pipe';
 
 
@@ -22,6 +23,7 @@ import { HttpBackgroundErrorDialogComponent } from '../nvx/shared/components/htt
   declarations: [AppComponent,
     HttpBackgroundWorkingComponentComponent,
     HttpBackgroundErrorDialogComponent,
+    ParameterLoaderComponent,
     BackgroundWorkingComponent,
     FabMenuComponent
   ],

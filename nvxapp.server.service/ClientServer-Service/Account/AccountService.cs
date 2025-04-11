@@ -325,12 +325,12 @@ namespace nvxapp.server.service.ClientServer_Service.Account
             {
                 DealerGetOutModel retVal = new DealerGetOutModel();
 
-                
+
 
                 var dealer = await _dealerRepository.FindByIdAsync(model.Data.Id);
                 if (dealer != null)
                 {
-                    if(dealer.Descrizione=="PSL")
+                    if (dealer.Descrizione == "PSL")
                     {
                         int i = 0;
 
@@ -387,7 +387,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                     dealer = await _dealerRepository.UpsertAsync(dealer);
 
                     string password = model.Data.DealerEdit.Pw;
-                    
+
 
                     //DealerPowerAdmin
                     var user = new ApplicationUser
@@ -430,7 +430,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                             MainUser = true
                         });
                     }
-         
+
 
                 }
 
@@ -585,7 +585,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                     //DealerAdmin
                     user = new ApplicationUser
                     {
-                        Id = Guid.NewGuid().ToString(), 
+                        Id = Guid.NewGuid().ToString(),
                         UserName = financialAdvisor.Descrizione + "_Admin", //FinancialAdvisorAdmin
                         Email = model.Data.FinancialAdvisorEdit.Mail
                     };
@@ -605,7 +605,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                     ////
                 }
 
-                
+
 
 
                 //eliminare
@@ -715,7 +715,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                 else
                 {
                     /////////////////////
-                    
+
                     int IdFinancialAdvisor;
                     int.TryParse(this.CurrentFinancialAdvisor, out IdFinancialAdvisor);
 
@@ -723,7 +723,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                     {
                         Descrizione = StringHelper.RemoveSpecialCharacters(model.Data.CompanyEdit.Descrizione),
                         IdFinancialAdvisor = IdFinancialAdvisor,
-                        Schema = "schema_"+ StringHelper.RemoveSpecialCharacters(model.Data.CompanyEdit.Descrizione),
+                        Schema = "schema_" + StringHelper.RemoveSpecialCharacters(model.Data.CompanyEdit.Descrizione),
                     };
 
                     company = await _companyRepository.UpsertAsync(company);
@@ -775,7 +775,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                     /////////////////////
                 }
 
-                
+
 
 
                 //eliminare
@@ -795,34 +795,63 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                 UserCompanyListOutModel retVal = new UserCompanyListOutModel();
 
 
-                ApplicationRole? applicationRole = _aspNetRolesRepository.GetAll().Where(x => x.Code == RoleCode.User).FirstOrDefault();
-                if (applicationRole != null)
+                int IdCompany;
+                int.TryParse(this.CurrentCompany, out IdCompany);
+
+                List<UserCompany> userCompany_List = _userCompanyRepository.GetAll().Where(x => x.IdCompany == IdCompany).ToList();
+                List<string> IdAspNetUsers_List = userCompany_List.Select(x => x.IdAspNetUsers).ToList();
+
+                List<ApplicationUser> ApplicationUser_List = _aspNetUsersRepository.FindAll(x => IdAspNetUsers_List.Contains(x.Id)).ToList();
+
+                List<IdentityUserRole<string>> IdentityUserRole_list = _aspNetUserRolesRepository.FindAll(x => IdAspNetUsers_List.Contains(x.UserId)).ToList();
+
+                foreach (var item in userCompany_List)
                 {
-                    if (applicationRole.Name != null)
+                    var cur_user = ApplicationUser_List.Where(x => x.Id == item.IdAspNetUsers).FirstOrDefault();
+                    var cur_role = IdentityUserRole_list.Where(x=> x.UserId == item.IdAspNetUsers).FirstOrDefault();
+
+                    if(cur_role!=null)
                     {
-                        var usrRole = await _userManager.GetUsersInRoleAsync(applicationRole.Name);
-                        if (usrRole != null)
+                        retVal.UserCompanyList.Add(new UserCompanyModel()
                         {
-                            int IdCompany;
-                            int.TryParse(this.CurrentCompany, out IdCompany);
-
-                            var usrId = usrRole.Select(x => x.Id).ToList();
-                            var userCompany = _userCompanyRepository.GetAll().Where(x => usrId.Contains(x.IdAspNetUsers) && x.IdCompany == IdCompany).ToList();
-
-                            foreach (var item in userCompany)
-                            {
-                                var _user = _aspNetUsersRepository.GetAll().Where(x => x.Id == item.IdAspNetUsers).FirstOrDefault();
-
-                                retVal.UserCompanyList.Add(new UserCompanyModel()
-                                {
-                                    IdAspNetUsers = item.IdAspNetUsers,
-                                    IdUserCompany = item.Id,
-                                    Descrizione = _user?.UserName
-                                });
-                            }
-                        }
+                            IdAspNetUsers = item.IdAspNetUsers,
+                            IdUserCompany = item.Id,
+                            Descrizione = cur_user?.UserName,
+                            MainUser = item.MainUser,
+                            RoleId = cur_role.RoleId
+                        });
                     }
+                    
                 }
+
+                //ApplicationRole? applicationRole = _aspNetRolesRepository.GetAll().Where(x => x.Code == RoleCode.User).FirstOrDefault();
+                //if (applicationRole != null)
+                //{
+                //    if (applicationRole.Name != null)
+                //    {
+                //        var usrRole = await _userManager.GetUsersInRoleAsync(applicationRole.Name);
+                //        if (usrRole != null)
+                //        {
+                //            int IdCompany;
+                //            int.TryParse(this.CurrentCompany, out IdCompany);
+
+                //            var usrId = usrRole.Select(x => x.Id).ToList();
+                //            var userCompany = _userCompanyRepository.GetAll().Where(x => usrId.Contains(x.IdAspNetUsers) && x.IdCompany == IdCompany).ToList();
+
+                //            foreach (var item in userCompany)
+                //            {
+                //                var _user = _aspNetUsersRepository.GetAll().Where(x => x.Id == item.IdAspNetUsers).FirstOrDefault();
+
+                //                retVal.UserCompanyList.Add(new UserCompanyModel()
+                //                {
+                //                    IdAspNetUsers = item.IdAspNetUsers,
+                //                    IdUserCompany = item.Id,
+                //                    Descrizione = _user?.UserName
+                //                });
+                //            }
+                //        }
+                //    }
+                //}
 
 
 
@@ -844,16 +873,20 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                 var userCompany = await _userCompanyRepository.FindByIdAsync(model.Data.Id);
                 if (userCompany != null)
                 {
+                    ApplicationUser? applicationUser  = await _userManager.FindByIdAsync(userCompany.IdAspNetUsers);
+                    IdentityUserRole<string>? identityUserRole =  _aspNetUserRolesRepository.FindAll(x => x.UserId == userCompany.IdAspNetUsers).FirstOrDefault();
 
-                    var applicationUser = await _userManager.FindByIdAsync(userCompany.IdAspNetUsers);
-
-
-                    retVal.UserCompanyEdit = new UserCompanyEditModel()
+                    if(applicationUser!=null && identityUserRole!=null)
                     {
-                        Descrizione = applicationUser.UserName, //userCompany.IdAspNetUsers,
-                        //IdAspNetUsers = userCompany.IdAspNetUsers,
-                        IdUserCompany = userCompany.Id,
-                    };
+                        retVal.UserCompanyEdit = new UserCompanyEditModel()
+                        {
+                            Descrizione = applicationUser.UserName, 
+                            IdUserCompany = userCompany.Id,
+                            Mail = applicationUser.Email,
+                            MainUser = false,
+                            RoleId = identityUserRole.RoleId
+                        };
+                    }
                 }
                 else
                 {
@@ -915,10 +948,10 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                             MainUser = false
                         });
                     }
-                    
+
                 }
 
-                
+
 
 
                 //eliminare

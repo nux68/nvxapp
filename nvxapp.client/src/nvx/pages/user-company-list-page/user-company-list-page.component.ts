@@ -7,6 +7,7 @@ import { GenericRequest } from '../../ClientServer-Service/ModelsBase/generic-re
 import { UserNavigationService, UserDataAdditionalModel } from '../../Utility/user-navigation.service';
 import { ButtonItem, UserInterfaceService } from '../../Utility/user-interface.service';
 import { FabMenuItem, FabMenuService } from '../../Utility/fab-menu.service';
+import { ParameterService } from '../../ClientServer-Service/Parameter/parameter.service';
 
 @Component({
   selector: 'app-user-company-list-page',
@@ -25,6 +26,7 @@ export class UserCompanyListPageComponent  implements OnInit {
   constructor(private navCtrl: NavController,
               private accountService: AccountService,
               public fabMenuService: FabMenuService,
+              private parameterService: ParameterService,
               private userInterfaceService: UserInterfaceService,
               private userNavigationService: UserNavigationService) {
 
@@ -82,7 +84,6 @@ export class UserCompanyListPageComponent  implements OnInit {
 
   }
 
-
   handleButtonEditClick = (item: any) => {
     this.navCtrl.navigateForward('/usercompanyedit', {
       state: { id: item.idUserCompany }
@@ -92,5 +93,30 @@ export class UserCompanyListPageComponent  implements OnInit {
   Filter(CurrFilter: any) {
     this.searchText = CurrFilter;
   }
+
+  getAdmin() {
+
+    const roles = this.parameterService.Roles.filter(role => role.code == 10 || role.code == 11);
+
+    const filteredUserCompanyList = this.userCompanyList.filter(usr =>
+      roles.some(role => role.id === usr.roleId)
+    );
+
+    return filteredUserCompanyList;
+
+  }
+
+  getUser() {
+
+    const roles = this.parameterService.Roles.filter(role => role.code == 0);
+
+    const filteredUserCompanyList = this.userCompanyList.filter(usr =>
+      roles.some(role => role.id === usr.roleId)
+    );
+
+    return filteredUserCompanyList;
+
+  }
+
 
 }
