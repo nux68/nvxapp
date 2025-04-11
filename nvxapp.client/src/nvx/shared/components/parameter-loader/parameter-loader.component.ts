@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, NgZone, OnInit } from '@angular/core';
 import { ParameterService } from '../../../ClientServer-Service/Parameter/parameter.service';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { RolesListInModel } from '../../../ClientServer-Service/Parameter/Models/roles-model';
-import { catchError, concatMap, delay, of, retryWhen, tap } from 'rxjs';
+import { catchError, concatMap, delay, of, retry, retryWhen, tap, timer } from 'rxjs';
 import { merge } from 'rxjs/internal/observable/merge';
 import { concat } from 'rxjs/internal/observable/concat';
 import { from } from 'rxjs/internal/observable/from';
@@ -31,10 +31,10 @@ export class ParameterLoaderComponent  implements OnInit {
 
 
   ngOnInit() {
-    setTimeout(() => {
+    //setTimeout(() => {
       this.isModalOpen = true;  // ✅ Apri il modal dopo 2 secondi
       this.startProgress();
-    }, 1000); // 2000 ms = 2 secondi
+    //}, 1000); // 2000 ms = 2 secondi
   }
 
   async startProgress() {
@@ -44,18 +44,38 @@ export class ParameterLoaderComponent  implements OnInit {
     let request: GenericRequest<RolesListInModel> = new GenericRequest<RolesListInModel>(RolesListInModel);
 
     //TEMPOARNEO SOLO DEMO
+    //for (let i = 0; i < 50; i++) {
+    //  this.calls.push(
+    //    this.parameterService.Load_Roles(request).pipe(
+    //      tap(() => this.updateProgress()),
+    //      retryWhen(errors =>
+    //        errors.pipe(
+    //          tap((error) => {
+    //            console.error(`Errore rilevato, ritento dopo qualche secondo:`, error);
+    //          }),
+    //          delay(3000) // Ritenta dopo 3 secondi
+    //        )
+    //      ),
+    //      catchError((error) => {
+    //        console.error(`Errore durante il caricamento del ruolo:`, error);
+    //        // Puoi decidere cosa fare in caso di fallimento finale
+    //        return of(null); // Continua per evitare il blocco
+    //      })
+    //    )
+    //  );
+    //}
+
     for (let i = 0; i < 50; i++) {
       this.calls.push(
         this.parameterService.Load_Roles(request).pipe(
           tap(() => this.updateProgress()),
-          retryWhen(errors =>
-            errors.pipe(
-              tap((error) => {
-                console.error(`Errore rilevato, ritento dopo qualche secondo:`, error);
-              }),
-              delay(3000) // Ritenta dopo 3 secondi
-            )
-          ),
+          retry({
+            count: 20, // Numero massimo di tentativi
+            delay: (error, retryCount) => {
+              console.error(`Errore rilevato, ritento dopo ${retryCount} secondi:`, error);
+              return timer(3000); // Ritenta dopo 3 secondi
+            }
+          }),
           catchError((error) => {
             console.error(`Errore durante il caricamento del ruolo:`, error);
             // Puoi decidere cosa fare in caso di fallimento finale
