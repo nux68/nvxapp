@@ -2,7 +2,6 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
 import { SharedComponentModule } from '../../shared/shared-component.module';
-import { BasePageConfirmCancelModule } from '../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.module';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { UserEditPageComponent } from './user-edit-page.component';
@@ -11,7 +10,7 @@ import { UserEditPageComponent } from './user-edit-page.component';
 
 @NgModule({
   imports: [
-    BasePageConfirmCancelModule,
+
 
     CommonModule,
     FormsModule,
