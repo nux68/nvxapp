@@ -1008,7 +1008,6 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                 return retVal;
             }, isSubProcess);
         }
-
         public virtual async Task<GenericResult<UserPutOutModel>> UserPut(GenericRequest<UserPutInModel> model, Boolean isSubProcess)
         {
             return await ExecuteAction(model, async () =>
@@ -1059,6 +1058,155 @@ namespace nvxapp.server.service.ClientServer_Service.Account
             }, isSubProcess);
         }
 
+
+        public virtual async Task<GenericResult<UserDealerListOutModel>> UserDealerList(GenericRequest<UserDealerListInModel> model, Boolean isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                UserDealerListOutModel retVal = new UserDealerListOutModel();
+
+
+                int IdDealer;
+                int.TryParse(this.CurrentDealer, out IdDealer);
+
+                List<UserDealer> userDealer_List = _userDealerRepository.GetAll().Where(x => x.IdDealer == IdDealer).ToList();
+                List<string> IdAspNetUsers_List = userDealer_List.Select(x => x.IdAspNetUsers).ToList();
+
+                List<ApplicationUser> ApplicationUser_List = _aspNetUsersRepository.FindAll(x => IdAspNetUsers_List.Contains(x.Id)).ToList();
+
+                List<IdentityUserRole<string>> IdentityUserRole_list = _aspNetUserRolesRepository.FindAll(x => IdAspNetUsers_List.Contains(x.UserId)).ToList();
+
+                foreach (var item in userDealer_List)
+                {
+                    var cur_user = ApplicationUser_List.Where(x => x.Id == item.IdAspNetUsers).FirstOrDefault();
+                    var cur_role = IdentityUserRole_list.Where(x => x.UserId == item.IdAspNetUsers).FirstOrDefault();
+
+                    if (cur_role != null)
+                    {
+                        retVal.UserDealerList.Add(new UserDealerModel()
+                        {
+                            IdAspNetUsers = item.IdAspNetUsers,
+                            IdUserDealer = item.Id,
+                            Descrizione = cur_user?.UserName,
+                            MainUser = item.MainUser,
+                            RoleId = cur_role.RoleId
+                        });
+                    }
+
+                }
+
+                //eliminare
+                // Nessun 'await' qui
+                await Task.Delay(DelayAsyncMethod);
+
+                return retVal;
+            }, isSubProcess);
+        }
+        public virtual async Task<GenericResult<UserDealerGetOutModel>> UserDealerGet(GenericRequest<UserDealerGetInModel> model, Boolean isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                UserDealerGetOutModel retVal = new UserDealerGetOutModel();
+
+
+
+                var userDealer = await _userDealerRepository.FindByIdAsync(model.Data.Id);
+                if (userDealer != null)
+                {
+                    ApplicationUser? applicationUser = await _userManager.FindByIdAsync(userDealer.IdAspNetUsers);
+                    IdentityUserRole<string>? identityUserRole = _aspNetUserRolesRepository.FindAll(x => x.UserId == userDealer.IdAspNetUsers).FirstOrDefault();
+
+                    if (applicationUser != null && identityUserRole != null)
+                    {
+                        retVal.UserDealerEdit = new UserDealerEditModel()
+                        {
+                            Descrizione = applicationUser.UserName,
+                            IdUserDealer = userDealer.Id,
+                            Mail = applicationUser.Email,
+                            MainUser = false,
+                            RoleId = identityUserRole.RoleId
+                        };
+                    }
+                }
+                else
+                {
+                    retVal.UserDealerEdit = new UserDealerEditModel()
+                    {
+                        Descrizione = "",
+                        //IdAspNetUsers = string.Empty
+                        IdUserDealer = 0
+                    };
+                }
+
+                //eliminare
+                // Nessun 'await' qui
+                await Task.Delay(DelayAsyncMethod);
+
+                return retVal;
+            }, isSubProcess);
+        }
+        public virtual async Task<GenericResult<UserDealerPutOutModel>> UserDealerPut(GenericRequest<UserDealerPutInModel> model, Boolean isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                UserDealerPutOutModel retVal = new UserDealerPutOutModel();
+
+                UserDealer userDealer = await _userDealerRepository.FindByIdAsync(model.Data.UserDealerEdit.IdUserDealer);
+                if (userDealer != null)
+                {
+                    
+
+                    await _userDealerRepository.UpdateAsync(userDealer);
+                }
+                else
+                {
+                    ////
+                    int IdDealer;
+                    int.TryParse(this.CurrentDealer, out IdDealer);
+
+
+
+                    //DealerPowerAdmin
+                    string password = model.Data.UserDealerEdit.Pw;
+
+                    var user = new ApplicationUser
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        UserName = model.Data.UserDealerEdit.Descrizione,
+                        Email = model.Data.UserDealerEdit.Mail
+                    };
+
+                    var result = await _userManager.CreateAsync(user, password);
+                    if (result.Succeeded)
+                    {
+                        var roleName = _aspNetRolesRepository.GetAll()
+                                                       .Where(x => x.Id == model.Data.UserDealerEdit.RoleId)
+                                                       .Select(x => x.Name).FirstOrDefault();
+
+                        result = await _userManager.AddToRoleAsync(user, roleName);
+
+                        await _userDealerRepository.UpsertAsync(new UserDealer()
+                        {
+                            IdAspNetUsers = user.Id,
+                            IdDealer = IdDealer,
+                            MainUser = false
+                        });
+                    }
+
+                }
+
+
+
+
+                //eliminare
+                // Nessun 'await' qui
+                await Task.Delay(DelayAsyncMethod);
+
+                return retVal;
+            }, isSubProcess);
+        }
+
+
     }
 
     public interface IAccountService : IServiceBase
@@ -1089,6 +1237,10 @@ namespace nvxapp.server.service.ClientServer_Service.Account
         public Task<GenericResult<UserListOutModel>> UserList(GenericRequest<UserListInModel> model, Boolean isSubProcess);
         public Task<GenericResult<UserGetOutModel>> UserGet(GenericRequest<UserGetInModel> inModel, Boolean isSubProcess);
         public Task<GenericResult<UserPutOutModel>> UserPut(GenericRequest<UserPutInModel> inModel, Boolean isSubProcess);
+
+        public Task<GenericResult<UserDealerListOutModel>> UserDealerList(GenericRequest<UserDealerListInModel> inModel, Boolean isSubProcess);
+        public Task<GenericResult<UserDealerGetOutModel>> UserDealerGet(GenericRequest<UserDealerGetInModel> inModel, Boolean isSubProcess);
+        public Task<GenericResult<UserDealerPutOutModel>> UserDealerPut(GenericRequest<UserDealerPutInModel> inModel, Boolean isSubProcess);
 
     }
 

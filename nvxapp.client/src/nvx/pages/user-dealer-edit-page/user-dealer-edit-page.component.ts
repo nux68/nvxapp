@@ -13,6 +13,7 @@ import { ParameterService } from '../../ClientServer-Service/Parameter/parameter
 import { RolesModel } from '../../ClientServer-Service/Parameter/Models/roles-model';
 
 import { UserCompanyEditModel, UserCompanyGetInModel, UserCompanyPutInModel } from '../../ClientServer-Service/Account/Models/user-company-model';
+import { UserDealerGetInModel, UserDealerEditModel, UserDealerPutInModel } from '../../ClientServer-Service/Account/Models/user-dealer-model';
 
 @Component({
   selector: 'app-user-dealer-edit-page',
@@ -20,7 +21,7 @@ import { UserCompanyEditModel, UserCompanyGetInModel, UserCompanyPutInModel } fr
   styleUrls: ['./user-dealer-edit-page.component.scss'],
   standalone:false
 })//UserDealerEditPageComponent
-export class UserDealerEditPageComponent extends BasePageConfirmCancelComponent<UserCompanyEditModel> {
+export class UserDealerEditPageComponent extends BasePageConfirmCancelComponent<UserDealerEditModel> {
 
   modifiedDescription: string | null = null;
 
@@ -46,16 +47,16 @@ export class UserDealerEditPageComponent extends BasePageConfirmCancelComponent<
     });
   }
 
-  LoadData = (): Observable<UserCompanyEditModel | null> => {
+  LoadData = (): Observable<UserDealerEditModel | null> => {
     const state = history.state;
 
 
     if (state && state.id) {
-      let request: GenericRequest<UserCompanyGetInModel> = new GenericRequest<UserCompanyGetInModel>(UserCompanyGetInModel);
+      let request: GenericRequest<UserDealerGetInModel> = new GenericRequest<UserDealerGetInModel>(UserDealerGetInModel);
       request.data.id = state.id;
 
-      return this.accountService.UserCompanyGet(request).pipe(
-        map((res) => res.data.userCompanyEdit), // Estrae il dato richiesto
+      return this.accountService.UserDealerGet(request).pipe(
+        map((res) => res.data.userDealerEdit), // Estrae il dato richiesto
         catchError((error) => {
           console.error('Errore durante la chiamata API:', error);
           return [null]; // Restituisce null in caso di errore
@@ -63,7 +64,7 @@ export class UserDealerEditPageComponent extends BasePageConfirmCancelComponent<
       );
     }
     else {
-      return new Observable<UserCompanyEditModel | null>((subscriber) => {
+      return new Observable<UserDealerEditModel | null>((subscriber) => {
         //aggiunge campi solo per le new
         this._editForm.addControl('mail', this.fb.control(null, [Validators.required, Validators.email]));
         this._editForm.addControl('pw', this.fb.control(null, [Validators.required]));
@@ -71,18 +72,18 @@ export class UserDealerEditPageComponent extends BasePageConfirmCancelComponent<
         this._editForm.setValidators(matchPasswords);
         this._editForm.updateValueAndValidity();
 
-        subscriber.next(new UserCompanyEditModel());
+        subscriber.next(new UserDealerEditModel());
         subscriber.complete();
       });
     }
   };
 
-  SaveData = (editModel: UserCompanyEditModel): Observable<boolean> => {
-    let request: GenericRequest<UserCompanyPutInModel> =
-      new GenericRequest<UserCompanyPutInModel>(UserCompanyPutInModel);
-    request.data.userCompanyEdit = editModel;
+  SaveData = (editModel: UserDealerEditModel): Observable<boolean> => {
+    let request: GenericRequest<UserDealerPutInModel> =
+      new GenericRequest<UserDealerPutInModel>(UserDealerPutInModel);
+    request.data.userDealerEdit = editModel;
 
-    return this.accountService.UserCompanyPut(request).pipe(
+    return this.accountService.UserDealerPut(request).pipe(
       map(() => true), // Restituisce true in caso di successo
       catchError((error) => {
         console.error('Errore durante la chiamata API:', error);
@@ -93,8 +94,8 @@ export class UserDealerEditPageComponent extends BasePageConfirmCancelComponent<
 
   getRoler(): RolesModel[] {
 
-    if (this._editModel && this._editModel.idUserCompany == 0) {
-      return this.parameterService.Roles.filter(role => role.code <= 10);
+    if (this._editModel && this._editModel.idUserDealer == 0) {
+      return this.parameterService.Roles.filter(role => (role.code == 1000 || role.code == 1001));
     }
 
     return this.parameterService.Roles;

@@ -10,53 +10,53 @@ using static nvxapp.server.data.Entities.AspNetUsersDataUtil;
 
 namespace nvxapp.server.service.ClientServer_Service.Account.Models
 {
-    public class UserCompanyModel
+    public class UserDealerModel
     {
         public string? IdAspNetUsers { get; set; }
-        public int IdUserCompany { get; set; }
+        public int IdUserDealer { get; set; }
         public string? Descrizione { get; set; }
         public Boolean MainUser { get; set; }
         public string? RoleId { get; set; }
     }
-    public class UserCompanyListInModel
+    public class UserDealerListInModel
     {
     }
-    public class UserCompanyListOutModel : ModelResult
+    public class UserDealerListOutModel : ModelResult
     {
-        public List<UserCompanyModel> UserCompanyList { get; set; }
+        public List<UserDealerModel> UserDealerList { get; set; }
 
-        public UserCompanyListOutModel()
+        public UserDealerListOutModel()
         {
-            UserCompanyList = new List<UserCompanyModel>();
+            UserDealerList = new List<UserDealerModel>();
         }
     }
 
 
 
-    public class UserCompanyEditModel
+    public class UserDealerEditModel
     {
-        public int IdUserCompany { get; set; }
+        public int IdUserDealer { get; set; }
         public string? Descrizione { get; set; } = string.Empty;
         public Boolean MainUser { get; set; }
         public string? Mail { get; set; } = string.Empty;
         public string? Pw { get; set; } = string.Empty;
         public string? RoleId { get; set; }
     }
-    public class UserCompanyGetInModel
+    public class UserDealerGetInModel
     {
         public int Id { get; set; } = 0;
     }
-    public class UserCompanyGetOutModel : ModelResult
+    public class UserDealerGetOutModel : ModelResult
     {
-        public UserCompanyEditModel UserCompanyEdit { get; set; } = new UserCompanyEditModel();
+        public UserDealerEditModel UserDealerEdit { get; set; } = new UserDealerEditModel();
     }
-    public class UserCompanyPutInModel : ModelResult
+    public class UserDealerPutInModel : ModelResult
     {
-        public UserCompanyEditModel UserCompanyEdit { get; set; } = new UserCompanyEditModel();
+        public UserDealerEditModel UserDealerEdit { get; set; } = new UserDealerEditModel();
     }
-    public class UserCompanyPutOutModel : ModelResult
+    public class UserDealerPutOutModel : ModelResult
     {
-        public UserCompanyEditModel UserCompanyEdit { get; set; } = new UserCompanyEditModel();
+        public UserDealerEditModel UserDealerEdit { get; set; } = new UserDealerEditModel();
     }
 
 }

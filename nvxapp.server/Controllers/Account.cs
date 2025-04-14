@@ -218,6 +218,39 @@ namespace nvxapp.server.Controllers
         }
 
 
+        [Authorize]
+        [HttpPost]
+        [Route("UserDealerList")]
+        public async Task<GenericResult<UserDealerListOutModel>> UserDealerList(GenericRequest<UserDealerListInModel> inModel)
+        {
+            var res = await _accountService.UserDealerList(inModel, false);
+
+            return res;
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("UserDealerGet")]
+        public async Task<GenericResult<UserDealerGetOutModel>> UserDealerGet(GenericRequest<UserDealerGetInModel> inModel)
+        {
+            var res = await _accountService.UserDealerGet(inModel, false);
+
+            return res;
+        }
+
+
+        [Authorize]
+        [HttpPost]
+        [Route("UserDealerPut")]
+        public async Task<GenericResult<UserDealerPutOutModel>> UserDealerPut(GenericRequest<UserDealerPutInModel> inModel)
+        {
+            var res = await _accountService.UserDealerPut(inModel, false);
+
+            return res;
+        }
+
+
+
     }
 
 

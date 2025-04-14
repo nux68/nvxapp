@@ -13,6 +13,7 @@ import { CompanyGetInModel, CompanyGetOutModel, CompanyListInModel, CompanyListO
 import { UserCompanyGetInModel, UserCompanyGetOutModel, UserCompanyListInModel, UserCompanyListOutModel, UserCompanyPutInModel, UserCompanyPutOutModel } from './Models/user-company-model';
 import { FinancialAdvisorGetInModel, FinancialAdvisorGetOutModel, FinancialAdvisorListInModel, FinancialAdvisorListOutModel, FinancialAdvisorPutInModel, FinancialAdvisorPutOutModel } from './Models/financial-advisor-model';
 import { UserGetInModel, UserGetOutModel, UserListInModel, UserListOutModel, UserPutInModel, UserPutOutModel } from './Models/user-model';
+import { UserDealerListInModel, UserDealerListOutModel, UserDealerGetInModel, UserDealerGetOutModel, UserDealerPutInModel, UserDealerPutOutModel } from './Models/user-dealer-model';
 
 
 @Injectable({
@@ -258,5 +259,43 @@ export class AccountService {
       );
 
   }
+
+
+  UserDealerList(model: GenericRequest<UserDealerListInModel>): Observable<GenericResult<UserDealerListOutModel>> {
+
+    return this.http.post<GenericResult<UserDealerListOutModel>>(environment.remoteData.apiUri + 'Account/UserDealerList', model)
+      .pipe(
+        map(r => {
+          return r;
+        }
+        )
+      );
+
+  }
+
+  UserDealerGet(model: GenericRequest<UserDealerGetInModel>): Observable<GenericResult<UserDealerGetOutModel>> {
+
+    return this.http.post<GenericResult<UserDealerGetOutModel>>(environment.remoteData.apiUri + 'Account/UserDealerGet', model)
+      .pipe(
+        map(r => {
+          return r;
+        }
+        )
+      );
+
+  }
+
+  UserDealerPut(model: GenericRequest<UserDealerPutInModel>): Observable<GenericResult<UserDealerPutOutModel>> {
+
+    return this.http.post<GenericResult<UserDealerPutOutModel>>(environment.remoteData.apiUri + 'Account/UserDealerPut', model)
+      .pipe(
+        map(r => {
+          return r;
+        }
+        )
+      );
+
+  }
+
 
 }

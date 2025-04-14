@@ -9,6 +9,7 @@ import { ParameterService } from '../../ClientServer-Service/Parameter/parameter
 
 import { UserLoadInModel } from '../../ClientServer-Service/Account/Models/user-load-model';
 import { UserCompanyListModel, UserCompanyListInModel } from '../../ClientServer-Service/Account/Models/user-company-model';
+import { UserDealerListModel, UserDealerListInModel } from '../../ClientServer-Service/Account/Models/user-dealer-model';
 
 @Component({
   selector: 'app-user-dealer-list-page',
@@ -20,8 +21,7 @@ export class UserDealerListPageComponent implements OnInit {
 
   public title!: string;
   public searchText!: string;
-  public userCompanyList: UserCompanyListModel[] | null = null;
-  public btnImpersona: ButtonItem;
+  public userDealerList: UserDealerListModel[] | null = null;
   public btnEdit: ButtonItem;
 
   constructor(private navCtrl: NavController,
@@ -33,24 +33,23 @@ export class UserDealerListPageComponent implements OnInit {
 
     this.title = 'UserDealerListPage';
 
-    this.btnImpersona = userInterfaceService.Btn_Impersona;
-    this.btnImpersona.event = this.handleButtonImpersonaClick;
+    
     this.btnEdit = userInterfaceService.Btn_Modifica;
     this.btnEdit.event = this.handleButtonEditClick;
   }
 
   ionViewWillEnter() {
-    let request: GenericRequest<UserCompanyListInModel> = new GenericRequest<UserCompanyListInModel>(UserCompanyListInModel);
-    this.accountService.UserCompanyList(request).subscribe(res => {
+    let request: GenericRequest<UserDealerListInModel> = new GenericRequest<UserDealerListInModel>(UserDealerListInModel);
+    this.accountService.UserDealerList(request).subscribe(res => {
 
-      this.userCompanyList = res.data.userCompanyList;
+      this.userDealerList = res.data.userDealerList;
 
     });
 
     this.fabMenuService.fabMenuItem = [
 
       new FabMenuItem('Elemento 1', 'add-circle-outline', () => {
-        this.navCtrl.navigateForward('/usercompanyedit', {
+        this.navCtrl.navigateForward('/userdealeredit', {
           state: { id: 0 }
         });
       }),
@@ -65,29 +64,10 @@ export class UserDealerListPageComponent implements OnInit {
 
   ngOnInit() { }
 
-  handleButtonImpersonaClick = (item: any) => {
-
-    let request: GenericRequest<UserLoadInModel> = new GenericRequest<UserLoadInModel>(UserLoadInModel);
-    request.data.id = item.idAspNetUsers;
-    this.accountService.UserLoad(request).subscribe(usl => {
-      if (usl.success) {
-
-        let userDataAdditional: UserDataAdditionalModel = new UserDataAdditionalModel();
-        userDataAdditional.gotoBackPage = "/usercompanylist";
-
-        this.userNavigationService.UserPush(usl.data.userData, userDataAdditional);
-        this.navCtrl.navigateForward('/home');
-      }
-      else {
-
-      }
-    });
-
-  }
 
   handleButtonEditClick = (item: any) => {
-    this.navCtrl.navigateForward('/usercompanyedit', {
-      state: { id: item.idUserCompany }
+    this.navCtrl.navigateForward('/userdealeredit', {
+      state: { id: item.idUserDealer }
     });
   }
 
@@ -97,25 +77,25 @@ export class UserDealerListPageComponent implements OnInit {
 
   getAdmin() {
 
-    const roles = this.parameterService.Roles.filter(role => role.code == 10 || role.code == 11);
+    const roles = this.parameterService.Roles.filter(role => role.code == 10 || role.code == 1000);
 
-    const filteredUserCompanyList = this.userCompanyList.filter(usr =>
+    const filteredUserDealerList = this.userDealerList.filter(usr =>
       roles.some(role => role.id === usr.roleId)
     );
 
-    return filteredUserCompanyList;
+    return filteredUserDealerList;
 
   }
 
-  getUser() {
+  getPowerAdmin() {
 
-    const roles = this.parameterService.Roles.filter(role => role.code == 0);
+    const roles = this.parameterService.Roles.filter(role => role.code == 1001);
 
-    const filteredUserCompanyList = this.userCompanyList.filter(usr =>
+    const filteredUserDealerList = this.userDealerList.filter(usr =>
       roles.some(role => role.id === usr.roleId)
     );
 
-    return filteredUserCompanyList;
+    return filteredUserDealerList;
 
   }
 
