@@ -11,12 +11,12 @@ import { UserLoadInModel } from '../../ClientServer-Service/Account/Models/user-
 import { UserCompanyListModel, UserCompanyListInModel } from '../../ClientServer-Service/Account/Models/user-company-model';
 
 @Component({
-  selector: 'app-user-company-list-page',
-  templateUrl: './user-company-list-page.component.html',
-  styleUrls: ['./user-company-list-page.component.scss'],
-  standalone: false
+  selector: 'app-user-financial-advisor-list-page',
+  templateUrl: './user-financial-advisor-list-page.component.html',
+  styleUrls: ['./user-financial-advisor-list-page.component.scss'],
+  standalone:false
 })
-export class UserCompanyListPageComponent  implements OnInit {
+export class UserFinancialAdvisorListPageComponent implements OnInit {
 
   public title!: string;
   public searchText!: string;
@@ -25,13 +25,13 @@ export class UserCompanyListPageComponent  implements OnInit {
   public btnEdit: ButtonItem;
 
   constructor(private navCtrl: NavController,
-              private accountService: AccountService,
-              public fabMenuService: FabMenuService,
-              private parameterService: ParameterService,
-              private userInterfaceService: UserInterfaceService,
-              private userNavigationService: UserNavigationService) {
+    private accountService: AccountService,
+    public fabMenuService: FabMenuService,
+    private parameterService: ParameterService,
+    private userInterfaceService: UserInterfaceService,
+    private userNavigationService: UserNavigationService) {
 
-    this.title = 'UserCompanyListPage';
+    this.title = 'UserFinancialAdvisorListPage';
 
     this.btnImpersona = userInterfaceService.Btn_Impersona;
     this.btnImpersona.event = this.handleButtonImpersonaClick;
@@ -63,7 +63,7 @@ export class UserCompanyListPageComponent  implements OnInit {
     this.fabMenuService.fabMenuItem = [];
   }
 
-  ngOnInit() {}
+  ngOnInit() { }
 
   handleButtonImpersonaClick = (item: any) => {
 

@@ -15,12 +15,12 @@ import { RolesModel } from '../../ClientServer-Service/Parameter/Models/roles-mo
 import { UserCompanyEditModel, UserCompanyGetInModel, UserCompanyPutInModel } from '../../ClientServer-Service/Account/Models/user-company-model';
 
 @Component({
-  selector: 'app-user-company-edit-page',
-  templateUrl: './user-company-edit-page.component.html',
-  styleUrls: ['./user-company-edit-page.component.scss'],
+  selector: 'app-user-dealer-edit-page',
+  templateUrl: './user-dealer-edit-page.component.html',
+  styleUrls: ['./user-dealer-edit-page.component.scss'],
   standalone:false
-})
-export class UserCompanyEditPageComponent extends BasePageConfirmCancelComponent<UserCompanyEditModel> {
+})//UserDealerEditPageComponent
+export class UserDealerEditPageComponent extends BasePageConfirmCancelComponent<UserCompanyEditModel> {
 
   modifiedDescription: string | null = null;
 
@@ -36,12 +36,12 @@ export class UserCompanyEditPageComponent extends BasePageConfirmCancelComponent
   }
 
 
-  get Title(): string { return "UserCompanyEditPage"; }
+  get Title(): string { return "UserDealerEditPage"; }
   get EditForm(): FormGroup {
     return this.fb.group({
 
       descrizione: [null, [Validators.required, Validators.maxLength(50)]],
-      roleId: [null, [Validators.required ]],
+      roleId: [null, [Validators.required]],
 
     });
   }
@@ -71,7 +71,7 @@ export class UserCompanyEditPageComponent extends BasePageConfirmCancelComponent
         this._editForm.setValidators(matchPasswords);
         this._editForm.updateValueAndValidity();
 
-        subscriber.next(new UserCompanyEditModel()); 
+        subscriber.next(new UserCompanyEditModel());
         subscriber.complete();
       });
     }
@@ -100,7 +100,7 @@ export class UserCompanyEditPageComponent extends BasePageConfirmCancelComponent
     return this.parameterService.Roles;
   }
 
-  
+
 
 
 }
@@ -112,3 +112,4 @@ const matchPasswords: ValidatorFn = (control: AbstractControl): ValidationErrors
 
   return password === confirmPassword ? null : { notMatching: true };
 };
+

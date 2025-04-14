@@ -11,6 +11,10 @@ export class RoleGuard4Admin implements CanActivate {
               private router: Router) { }
 
   canActivate(): boolean {
+    if (this.authService.IsSuperUser) {
+      return true;
+    }
+
     if (this.authService.IsInGroupAdmin) {
       return true;
     }

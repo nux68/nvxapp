@@ -4,8 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
 import { SharedComponentModule } from '../../shared/shared-component.module';
-import { UserCompanyListPageComponent } from './user-company-list-page.component';
-
+import { UserDealerListPageComponent } from './user-dealer-list-page.component';
 
 
 
@@ -17,14 +16,13 @@ import { UserCompanyListPageComponent } from './user-company-list-page.component
     RouterModule.forChild([
       {
         path: '',
-        component: UserCompanyListPageComponent
+        component: UserDealerListPageComponent
       }
     ]),
     SharedComponentModule
   ],
 
-  declarations: [UserCompanyListPageComponent],
+  declarations: [UserDealerListPageComponent],
 
 })
-export class UserCompanyListPageModule { }
-
+export class UserDealerListPageModule { }

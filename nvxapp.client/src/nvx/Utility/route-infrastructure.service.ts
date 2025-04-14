@@ -44,8 +44,7 @@ export class RouteInfrastructureService {
       { path: 'companylist', loadChildren: () => import('../../nvx/pages/company-list-page/company-list-page.module').then(m => m.CompanyListPageModule), canActivate: [RoleGuard4CompanyList] },
       { path: 'companyedit', loadChildren: () => import('../../nvx/pages/company-edit-page/company-edit-page.module').then(m => m.CompanyEditPageModule), canActivate: [RoleGuard4CompanyEdit] },
 
-      { path: 'usercompanylist', loadChildren: () => import('../../nvx/pages/user-company-list-page/user-company-list-page.module').then(m => m.UserCompanyListPageModule), canActivate: [RoleGuard4UserCompanyList] },
-      { path: 'usercompanyedit', loadChildren: () => import('../../nvx/pages/user-company-edit-page/user-company-edit-page.module').then(m => m.UserCompanyEditPageModule), canActivate: [RoleGuard4UserCompanyList] },
+      
 
       { path: 'dealerpoweradmin', loadChildren: () => import('../../nvx/pages/dealer-power-admin-page/dealer-power-admin-page.module').then(m => m.DealerPowerAdminPageModule), canActivate: [RoleGuard4DealerPowerAdmin] },
       { path: 'dealeradmin', loadChildren: () => import('../../nvx/pages/dealer-admin-page/dealer-admin-page.module').then(m => m.DealerAdminPageModule), canActivate: [RoleGuard4DealerAdmin] },
@@ -56,6 +55,19 @@ export class RouteInfrastructureService {
       { path: 'financialadvisoradmin', loadChildren: () => import('../../nvx/pages/financial-advisor-admin-page/financial-advisor-admin-page.module').then(m => m.FinancialAdvisorAdminPageModule), canActivate: [RoleGuard4FinancialAdvisorAdmin] },
       { path: 'financialadvisorlist', loadChildren: () => import('../../nvx/pages/financial-advisor-list-page/financial-advisor-list-page.module').then(m => m.FinancialAdvisorListPageModule), canActivate: [RoleGuard4FinancialAdvisorList] },
       { path: 'financialadvisoredit', loadChildren: () => import('../../nvx/pages/financial-advisor-edit-page/financial-advisor-edit-page.module').then(m => m.FinancialAdvisorEditPageModule), canActivate: [RoleGuard4FinancialAdvisorEdit] },
+
+      { path: 'userlist', loadChildren: () => import('../../nvx/pages/user-list-page/user-list-page.module').then(m => m.UserListPageModule), canActivate: [RoleGuard4Admin] },
+      { path: 'useredit', loadChildren: () => import('../../nvx/pages/user-edit-page/user-edit-page.module').then(m => m.UserEditPageModule), canActivate: [RoleGuard4Admin] },
+      { path: 'userdealerlist', loadChildren: () => import('../../nvx/pages/user-dealer-list-page/user-dealer-list-page.module').then(m => m.UserDealerListPageModule), canActivate: [RoleGuard4DealerAdmin] },
+      { path: 'userdealeredit', loadChildren: () => import('../../nvx/pages/user-dealer-edit-page/user-dealer-edit-page.module').then(m => m.UserDealerEditPageModule), canActivate: [RoleGuard4DealerAdmin] },
+
+      { path: 'userfinancialadvisorlist', loadChildren: () => import('../../nvx/pages/user-financial-advisor-list-page/user-financial-advisor-list-page.module').then(m => m.UserFinancialAdvisorListPageModule), canActivate: [RoleGuard4FinancialAdvisorAdmin] },
+      { path: 'userfinancialadvisoredit', loadChildren: () => import('../../nvx/pages/user-financial-advisor-edit-page/user-financial-advisor-edit-page.module').then(m => m.UserFinancialAdvisorEditPageModule), canActivate: [RoleGuard4FinancialAdvisorAdmin] },
+
+      { path: 'usercompanylist', loadChildren: () => import('../../nvx/pages/user-company-list-page/user-company-list-page.module').then(m => m.UserCompanyListPageModule), canActivate: [RoleGuard4UserCompanyList] },
+      { path: 'usercompanyedit', loadChildren: () => import('../../nvx/pages/user-company-edit-page/user-company-edit-page.module').then(m => m.UserCompanyEditPageModule), canActivate: [RoleGuard4UserCompanyList] },
+
+
     ];
   }
 

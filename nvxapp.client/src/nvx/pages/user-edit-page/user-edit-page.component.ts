@@ -15,12 +15,12 @@ import { RolesModel } from '../../ClientServer-Service/Parameter/Models/roles-mo
 import { UserCompanyEditModel, UserCompanyGetInModel, UserCompanyPutInModel } from '../../ClientServer-Service/Account/Models/user-company-model';
 
 @Component({
-  selector: 'app-user-company-edit-page',
-  templateUrl: './user-company-edit-page.component.html',
-  styleUrls: ['./user-company-edit-page.component.scss'],
+  selector: 'app-user-edit-page',
+  templateUrl: './user-edit-page.component.html',
+  styleUrls: ['./user-edit-page.component.scss'],
   standalone:false
 })
-export class UserCompanyEditPageComponent extends BasePageConfirmCancelComponent<UserCompanyEditModel> {
+export class UserEditPageComponent extends BasePageConfirmCancelComponent<UserCompanyEditModel> {
 
   modifiedDescription: string | null = null;
 
@@ -41,7 +41,7 @@ export class UserCompanyEditPageComponent extends BasePageConfirmCancelComponent
     return this.fb.group({
 
       descrizione: [null, [Validators.required, Validators.maxLength(50)]],
-      roleId: [null, [Validators.required ]],
+      roleId: [null, [Validators.required]],
 
     });
   }
@@ -71,7 +71,7 @@ export class UserCompanyEditPageComponent extends BasePageConfirmCancelComponent
         this._editForm.setValidators(matchPasswords);
         this._editForm.updateValueAndValidity();
 
-        subscriber.next(new UserCompanyEditModel()); 
+        subscriber.next(new UserCompanyEditModel());
         subscriber.complete();
       });
     }
@@ -100,7 +100,7 @@ export class UserCompanyEditPageComponent extends BasePageConfirmCancelComponent
     return this.parameterService.Roles;
   }
 
-  
+
 
 
 }
