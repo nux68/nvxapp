@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Infrastructure;
 using nvxapp.server.data.Interfaces;
@@ -12,7 +13,7 @@ namespace nvxapp.server.data.Repositories.Public
 {
 
 
-    public class AspNetUserRolesRepository : Repository<ApplicationDbContext, ApplicationRole>, IAspNetUserRolesRepository
+    public class AspNetUserRolesRepository : Repository<ApplicationDbContext, IdentityUserRole<string>>, IAspNetUserRolesRepository
     {
         public AspNetUserRolesRepository(ApplicationDbContext dbContext,
                                      IServiceProvider provider,
@@ -20,7 +21,7 @@ namespace nvxapp.server.data.Repositories.Public
         {
         }
     }
-    public interface IAspNetUserRolesRepository : IRepository<ApplicationRole>
+    public interface IAspNetUserRolesRepository : IRepository<IdentityUserRole<string>>
     {
 
     }

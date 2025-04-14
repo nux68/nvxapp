@@ -12,6 +12,9 @@ import { DealerGetInModel, DealerGetOutModel, DealerListInModel, DealerListOutMo
 import { CompanyGetInModel, CompanyGetOutModel, CompanyListInModel, CompanyListOutModel, CompanyPutInModel, CompanyPutOutModel } from './Models/company-model';
 import { UserCompanyGetInModel, UserCompanyGetOutModel, UserCompanyListInModel, UserCompanyListOutModel, UserCompanyPutInModel, UserCompanyPutOutModel } from './Models/user-company-model';
 import { FinancialAdvisorGetInModel, FinancialAdvisorGetOutModel, FinancialAdvisorListInModel, FinancialAdvisorListOutModel, FinancialAdvisorPutInModel, FinancialAdvisorPutOutModel } from './Models/financial-advisor-model';
+import { UserGetInModel, UserGetOutModel, UserListInModel, UserListOutModel, UserPutInModel, UserPutOutModel } from './Models/user-model';
+import { UserDealerListInModel, UserDealerListOutModel, UserDealerGetInModel, UserDealerGetOutModel, UserDealerPutInModel, UserDealerPutOutModel } from './Models/user-dealer-model';
+import { UserFinancialAdvisorListInModel, UserFinancialAdvisorListOutModel, UserFinancialAdvisorGetInModel, UserFinancialAdvisorGetOutModel, UserFinancialAdvisorPutInModel, UserFinancialAdvisorPutOutModel } from './Models/user-financial-advisor-model';
 
 
 @Injectable({
@@ -183,7 +186,6 @@ export class AccountService {
 
 
 
-
   UserCompanyList(model: GenericRequest<UserCompanyListInModel>): Observable<GenericResult<UserCompanyListOutModel>> {
 
     return this.http.post<GenericResult<UserCompanyListOutModel>>(environment.remoteData.apiUri + 'Account/UserCompanyList', model)
@@ -220,6 +222,121 @@ export class AccountService {
       );
 
   }
+
+
+
+  UserList(model: GenericRequest<UserListInModel>): Observable<GenericResult<UserListOutModel>> {
+
+    return this.http.post<GenericResult<UserListOutModel>>(environment.remoteData.apiUri + 'Account/UserList', model)
+      .pipe(
+            map(r => {
+                return r;
+              }
+           )
+      );
+
+  }
+
+  UserGet(model: GenericRequest<UserGetInModel>): Observable<GenericResult<UserGetOutModel>> {
+
+    return this.http.post<GenericResult<UserGetOutModel>>(environment.remoteData.apiUri + 'Account/UserGet', model)
+      .pipe(
+          map(r => {
+            return r;
+          }
+        )
+      );
+
+  }
+
+  UserPut(model: GenericRequest<UserPutInModel>): Observable<GenericResult<UserPutOutModel>> {
+
+    return this.http.post<GenericResult<UserPutOutModel>>(environment.remoteData.apiUri + 'Account/UserPut', model)
+      .pipe(
+          map(r => {
+            return r;
+          }
+        )
+      );
+
+  }
+
+
+  UserDealerList(model: GenericRequest<UserDealerListInModel>): Observable<GenericResult<UserDealerListOutModel>> {
+
+    return this.http.post<GenericResult<UserDealerListOutModel>>(environment.remoteData.apiUri + 'Account/UserDealerList', model)
+      .pipe(
+        map(r => {
+          return r;
+        }
+        )
+      );
+
+  }
+
+  UserDealerGet(model: GenericRequest<UserDealerGetInModel>): Observable<GenericResult<UserDealerGetOutModel>> {
+
+    return this.http.post<GenericResult<UserDealerGetOutModel>>(environment.remoteData.apiUri + 'Account/UserDealerGet', model)
+      .pipe(
+        map(r => {
+          return r;
+        }
+        )
+      );
+
+  }
+
+  UserDealerPut(model: GenericRequest<UserDealerPutInModel>): Observable<GenericResult<UserDealerPutOutModel>> {
+
+    return this.http.post<GenericResult<UserDealerPutOutModel>>(environment.remoteData.apiUri + 'Account/UserDealerPut', model)
+      .pipe(
+        map(r => {
+          return r;
+        }
+        )
+      );
+
+  }
+
+
+
+  UserFinancialAdvisorList(model: GenericRequest<UserFinancialAdvisorListInModel>): Observable<GenericResult<UserFinancialAdvisorListOutModel>> {
+
+    return this.http.post<GenericResult<UserFinancialAdvisorListOutModel>>(environment.remoteData.apiUri + 'Account/UserFinancialAdvisorList', model)
+      .pipe(
+        map(r => {
+          return r;
+        }
+        )
+      );
+
+  }
+
+  UserFinancialAdvisorGet(model: GenericRequest<UserFinancialAdvisorGetInModel>): Observable<GenericResult<UserFinancialAdvisorGetOutModel>> {
+
+    return this.http.post<GenericResult<UserFinancialAdvisorGetOutModel>>(environment.remoteData.apiUri + 'Account/UserFinancialAdvisorGet', model)
+      .pipe(
+        map(r => {
+          return r;
+        }
+        )
+      );
+
+  }
+
+  UserFinancialAdvisorPut(model: GenericRequest<UserFinancialAdvisorPutInModel>): Observable<GenericResult<UserFinancialAdvisorPutOutModel>> {
+
+    return this.http.post<GenericResult<UserFinancialAdvisorPutOutModel>>(environment.remoteData.apiUri + 'Account/UserFinancialAdvisorPut', model)
+      .pipe(
+        map(r => {
+          return r;
+        }
+        )
+      );
+
+  }
+
+
 
 
 }

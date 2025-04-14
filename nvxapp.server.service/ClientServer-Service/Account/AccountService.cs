@@ -70,7 +70,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
             _userFinancialAdvisorRepository = userFinancialAdvisorRepository;
             _companyRepository = companyRepository;
             _userCompanyRepository = userCompanyRepository;
-            
+
             _hubContext = hubContext;
         }
 
@@ -186,7 +186,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                         string company = "";
                         string userIdFirstConnection = this.UserIdFirstConnection;
 
-                        if(UseSignalR)
+                        if (UseSignalR)
                             await _hubContext.Clients.All.SendAsync("ReceiveMessage", applicationUser.UserName + " è entrato");
 
                         var roles = await _userManager.GetRolesAsync(applicationUser);
@@ -272,7 +272,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                 return retVal;
             }, isSubProcess);
         }
-        
+
         public virtual async Task<GenericResult<DealerListOutModel>> DealerList(GenericRequest<DealerListInModel> model, Boolean isSubProcess)
         {
             return await ExecuteAction(model, async () =>
@@ -289,22 +289,22 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                         if (usrRole != null)
                         {
                             var usrId = usrRole.Select(x => x.Id).ToList();
-                            var userDealer = _userDealerRepository.GetAll().Where(x => usrId.Contains(x.IdAspNetUsers)).ToList();
+                            var userDealer = _userDealerRepository.GetAll().Where(x => usrId.Contains(x.IdAspNetUsers) && x.MainUser == true).ToList();
 
                             foreach (var item in userDealer)
                             {
                                 var _dealer = _dealerRepository.FindById(item.IdDealer);
-                                if(_dealer!=null)
+                                if (_dealer != null)
                                 {
                                     retVal.DealerList.Add(new DealerListModel()
                                     {
                                         IdAspNetUsers = item.IdAspNetUsers,
                                         IdDealer = item.IdDealer,
-                                        Descrizione = _dealer?.Descrizione??"",
+                                        Descrizione = _dealer?.Descrizione ?? "",
                                         MainUser = item.MainUser
                                     });
                                 }
-                                
+
                             }
                         }
                     }
@@ -325,13 +325,23 @@ namespace nvxapp.server.service.ClientServer_Service.Account
             {
                 DealerGetOutModel retVal = new DealerGetOutModel();
 
+
+
                 var dealer = await _dealerRepository.FindByIdAsync(model.Data.Id);
-                if(dealer!=null)
+                if (dealer != null)
                 {
+                    if (dealer.Descrizione == "PSL")
+                    {
+                        int i = 0;
+
+                        i = 10 / i;
+                    }
+
+
                     retVal.DealerEdit = new DealerEditModel()
                     {
-                         Descrizione = dealer.Descrizione,
-                         IdDealer= dealer.Id
+                        Descrizione = dealer.Descrizione,
+                        IdDealer = dealer.Id
                     };
                 }
                 else
@@ -343,7 +353,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                     };
                 }
 
-                
+
 
                 //eliminare
                 // Nessun 'await' qui
@@ -358,29 +368,73 @@ namespace nvxapp.server.service.ClientServer_Service.Account
             {
                 DealerPutOutModel retVal = new DealerPutOutModel();
 
-                
 
-                var dealer = await _dealerRepository.FindByIdAsync(model.Data.DealerEdit.IdDealer);
+
+                Dealer? dealer = await _dealerRepository.FindByIdAsync(model.Data.DealerEdit.IdDealer);
                 if (dealer != null)
                 {
                     dealer.Descrizione = model.Data.DealerEdit.Descrizione;
 
-                //    retVal.DealerEdit = new DealerEditModel()
-                //    {
-                //        Descrizione = dealer.Descrizione,
-                //        IdDealer = dealer.Id
-                //    };
+                    await _dealerRepository.UpdateAsync(dealer);
                 }
                 else
                 {
-                //    retVal.DealerEdit = new DealerEditModel()
-                //    {
-                //        Descrizione = "",
-                //        IdDealer = 0
-                //    };
+                    dealer = new Dealer()
+                    {
+                        Descrizione = StringHelper.RemoveSpecialCharacters(model.Data.DealerEdit.Descrizione)
+                    };
+
+                    dealer = await _dealerRepository.UpsertAsync(dealer);
+
+                    string password = model.Data.DealerEdit.Pw != null ? model.Data.DealerEdit.Pw : "1234";
+
+
+                    //DealerPowerAdmin
+                    var user = new ApplicationUser
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        UserName = dealer.Descrizione + "_PowerAdmin",
+                        Email = model.Data.DealerEdit.Mail
+                    };
+
+                    var result = await _userManager.CreateAsync(user, password);
+                    if (result.Succeeded)
+                    {
+                        result = await _userManager.AddToRoleAsync(user, "DealerPowerAdmin");
+
+                        await _userDealerRepository.UpsertAsync(new UserDealer()
+                        {
+                            IdAspNetUsers = user.Id,
+                            IdDealer = dealer.Id,
+                            MainUser = true
+                        });
+                    }
+
+                    //DealerAdmin
+                    user = new ApplicationUser
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        UserName = dealer.Descrizione + "_Admin",
+                        Email = model.Data.DealerEdit.Mail
+                    };
+
+                    result = await _userManager.CreateAsync(user, password);
+                    if (result.Succeeded)
+                    {
+                        result = await _userManager.AddToRoleAsync(user, "DealerAdmin");
+
+                        await _userDealerRepository.UpsertAsync(new UserDealer()
+                        {
+                            IdAspNetUsers = user.Id,
+                            IdDealer = dealer.Id,
+                            MainUser = true
+                        });
+                    }
+
+
                 }
 
-                await _dealerRepository.UpdateAsync(dealer);
+
 
                 //eliminare
                 // Nessun 'await' qui
@@ -414,7 +468,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
 
                             var usrId = usrRole.Select(x => x.Id).ToList();
                             var userFinancialAdvisor = _userFinancialAdvisorRepository.GetAll()
-                                                                                      .Where(x => usrId.Contains(x.IdAspNetUsers) && financialAdvisorIdList.Contains(x.IdFinancialAdvisor))
+                                                                                      .Where(x => usrId.Contains(x.IdAspNetUsers) && x.MainUser == true && financialAdvisorIdList.Contains(x.IdFinancialAdvisor))
                                                                                       .ToList();
 
                             foreach (var item in userFinancialAdvisor)
@@ -482,27 +536,76 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                 FinancialAdvisorPutOutModel retVal = new FinancialAdvisorPutOutModel();
 
 
-                var financialAdvisor = await _financialAdvisorRepository.FindByIdAsync(model.Data.FinancialAdvisorEdit.IdFinancialAdvisor);
+                FinancialAdvisor? financialAdvisor = await _financialAdvisorRepository.FindByIdAsync(model.Data.FinancialAdvisorEdit.IdFinancialAdvisor);
                 if (financialAdvisor != null)
                 {
                     financialAdvisor.Descrizione = model.Data.FinancialAdvisorEdit.Descrizione;
 
-                    //    retVal.DealerEdit = new DealerEditModel()
-                    //    {
-                    //        Descrizione = dealer.Descrizione,
-                    //        IdDealer = dealer.Id
-                    //    };
+                    await _financialAdvisorRepository.UpdateAsync(financialAdvisor);
                 }
                 else
                 {
-                    //    retVal.DealerEdit = new DealerEditModel()
-                    //    {
-                    //        Descrizione = "",
-                    //        IdDealer = 0
-                    //    };
+                    ////
+
+                    int IdDealer;
+                    int.TryParse(this.CurrentDealer, out IdDealer);
+
+                    financialAdvisor = new FinancialAdvisor()
+                    {
+                        IdDealer = IdDealer,
+                        Descrizione = StringHelper.RemoveSpecialCharacters(model.Data.FinancialAdvisorEdit.Descrizione)
+                    };
+
+                    financialAdvisor = await _financialAdvisorRepository.UpsertAsync(financialAdvisor);
+
+                    string password = model.Data.FinancialAdvisorEdit.Pw!=null? model.Data.FinancialAdvisorEdit.Pw:"1234";
+
+
+                    //DealerPowerAdmin
+                    var user = new ApplicationUser
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        UserName = financialAdvisor.Descrizione + "_PowerAdmin", //FinancialAdvisorPowerAdmin
+                        Email = model.Data.FinancialAdvisorEdit.Mail
+                    };
+
+                    var result = await _userManager.CreateAsync(user, password);
+                    if (result.Succeeded)
+                    {
+                        result = await _userManager.AddToRoleAsync(user, "FinancialAdvisorPowerAdmin");
+
+                        await _userFinancialAdvisorRepository.UpsertAsync(new UserFinancialAdvisor()
+                        {
+                            IdAspNetUsers = user.Id,
+                            IdFinancialAdvisor = financialAdvisor.Id,
+                            MainUser = true
+                        });
+                    }
+
+                    //DealerAdmin
+                    user = new ApplicationUser
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        UserName = financialAdvisor.Descrizione + "_Admin", //FinancialAdvisorAdmin
+                        Email = model.Data.FinancialAdvisorEdit.Mail
+                    };
+
+                    result = await _userManager.CreateAsync(user, password);
+                    if (result.Succeeded)
+                    {
+                        result = await _userManager.AddToRoleAsync(user, "FinancialAdvisorAdmin");
+
+                        await _userFinancialAdvisorRepository.UpsertAsync(new UserFinancialAdvisor()
+                        {
+                            IdAspNetUsers = user.Id,
+                            IdFinancialAdvisor = financialAdvisor.Id,
+                            MainUser = true
+                        });
+                    }
+                    ////
                 }
 
-                await _financialAdvisorRepository.UpdateAsync(financialAdvisor);
+
 
 
                 //eliminare
@@ -537,7 +640,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
 
 
                             var usrId = usrRole.Select(x => x.Id).ToList();
-                            var userCompany = _userCompanyRepository.GetAll().Where(x => usrId.Contains(x.IdAspNetUsers) && companyIdList.Contains(x.IdCompany)).ToList();
+                            var userCompany = _userCompanyRepository.GetAll().Where(x => usrId.Contains(x.IdAspNetUsers) && x.MainUser == true && companyIdList.Contains(x.IdCompany)).ToList();
 
                             foreach (var item in userCompany)
                             {
@@ -602,27 +705,77 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                 CompanyPutOutModel retVal = new CompanyPutOutModel();
 
 
-                var company = await _companyRepository.FindByIdAsync(model.Data.CompanyEdit.IdCompany);
+                Company? company = await _companyRepository.FindByIdAsync(model.Data.CompanyEdit.IdCompany);
                 if (company != null)
                 {
                     company.Descrizione = model.Data.CompanyEdit.Descrizione;
 
-                    //    retVal.DealerEdit = new DealerEditModel()
-                    //    {
-                    //        Descrizione = dealer.Descrizione,
-                    //        IdDealer = dealer.Id
-                    //    };
+                    await _companyRepository.UpdateAsync(company);
                 }
                 else
                 {
-                    //    retVal.DealerEdit = new DealerEditModel()
-                    //    {
-                    //        Descrizione = "",
-                    //        IdDealer = 0
-                    //    };
+                    /////////////////////
+
+                    int IdFinancialAdvisor;
+                    int.TryParse(this.CurrentFinancialAdvisor, out IdFinancialAdvisor);
+
+                    company = new Company()
+                    {
+                        Descrizione = StringHelper.RemoveSpecialCharacters(model.Data.CompanyEdit.Descrizione),
+                        IdFinancialAdvisor = IdFinancialAdvisor,
+                        Schema = "schema_" + StringHelper.RemoveSpecialCharacters(model.Data.CompanyEdit.Descrizione),
+                    };
+
+                    company = await _companyRepository.UpsertAsync(company);
+
+                    string password = model.Data.CompanyEdit.Pw!=null ? model.Data.CompanyEdit.Pw : "1234";
+
+
+                    //DealerPowerAdmin
+                    var user = new ApplicationUser
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        UserName = company.Descrizione + "_PowerAdmin", //CompanyPowerAdmin
+                        Email = model.Data.CompanyEdit.Mail
+                    };
+
+                    var result = await _userManager.CreateAsync(user, password);
+                    if (result.Succeeded)
+                    {
+                        result = await _userManager.AddToRoleAsync(user, "CompanyPowerAdmin");
+
+                        await _userCompanyRepository.UpsertAsync(new UserCompany()
+                        {
+                            IdAspNetUsers = user.Id,
+                            IdCompany = company.Id,
+                            MainUser = true
+                        });
+                    }
+
+                    //DealerAdmin
+                    user = new ApplicationUser
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        UserName = company.Descrizione + "_Admin", //CompanyAdmin
+                        Email = model.Data.CompanyEdit.Mail
+                    };
+
+                    result = await _userManager.CreateAsync(user, password);
+                    if (result.Succeeded)
+                    {
+                        result = await _userManager.AddToRoleAsync(user, "CompanyAdmin");
+
+                        await _userCompanyRepository.UpsertAsync(new UserCompany()
+                        {
+                            IdAspNetUsers = user.Id,
+                            IdCompany = company.Id,
+                            MainUser = true
+                        });
+                    }
+                    /////////////////////
                 }
 
-                await _companyRepository.UpdateAsync(company);
+
 
 
                 //eliminare
@@ -642,36 +795,34 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                 UserCompanyListOutModel retVal = new UserCompanyListOutModel();
 
 
-                ApplicationRole? applicationRole = _aspNetRolesRepository.GetAll().Where(x => x.Code == RoleCode.User).FirstOrDefault();
-                if (applicationRole != null)
+                int IdCompany;
+                int.TryParse(this.CurrentCompany, out IdCompany);
+
+                List<UserCompany> userCompany_List = _userCompanyRepository.GetAll().Where(x => x.IdCompany == IdCompany).ToList();
+                List<string> IdAspNetUsers_List = userCompany_List.Select(x => x.IdAspNetUsers).ToList();
+
+                List<ApplicationUser> ApplicationUser_List = _aspNetUsersRepository.FindAll(x => IdAspNetUsers_List.Contains(x.Id)).ToList();
+
+                List<IdentityUserRole<string>> IdentityUserRole_list = _aspNetUserRolesRepository.FindAll(x => IdAspNetUsers_List.Contains(x.UserId)).ToList();
+
+                foreach (var item in userCompany_List)
                 {
-                    if (applicationRole.Name != null)
+                    var cur_user = ApplicationUser_List.Where(x => x.Id == item.IdAspNetUsers).FirstOrDefault();
+                    var cur_role = IdentityUserRole_list.Where(x => x.UserId == item.IdAspNetUsers).FirstOrDefault();
+
+                    if (cur_role != null)
                     {
-                        var usrRole = await _userManager.GetUsersInRoleAsync(applicationRole.Name);
-                        if (usrRole != null)
+                        retVal.UserCompanyList.Add(new UserCompanyModel()
                         {
-                            int IdCompany;
-                            int.TryParse(this.CurrentCompany, out IdCompany);
-
-                            var usrId = usrRole.Select(x => x.Id).ToList();
-                            var userCompany = _userCompanyRepository.GetAll().Where(x => usrId.Contains(x.IdAspNetUsers) && x.IdCompany == IdCompany).ToList();
-
-                            foreach (var item in userCompany)
-                            {
-                                var _user = _aspNetUsersRepository.GetAll().Where(x => x.Id == item.IdAspNetUsers).FirstOrDefault();
-
-                                retVal.UserCompanyList.Add(new UserCompanyModel()
-                                {
-                                    IdAspNetUsers = item.IdAspNetUsers,
-                                    IdUserCompany = item.Id,
-                                    Descrizione = _user?.UserName
-                                });
-                            }
-                        }
+                            IdAspNetUsers = item.IdAspNetUsers,
+                            IdUserCompany = item.Id,
+                            Descrizione = cur_user?.UserName,
+                            MainUser = item.MainUser,
+                            RoleId = cur_role.RoleId
+                        });
                     }
+
                 }
-
-
 
                 //eliminare
                 // Nessun 'await' qui
@@ -686,17 +837,25 @@ namespace nvxapp.server.service.ClientServer_Service.Account
             {
                 UserCompanyGetOutModel retVal = new UserCompanyGetOutModel();
 
-                
+
 
                 var userCompany = await _userCompanyRepository.FindByIdAsync(model.Data.Id);
                 if (userCompany != null)
                 {
-                    retVal.UserCompanyEdit = new UserCompanyEditModel()
+                    ApplicationUser? applicationUser = await _userManager.FindByIdAsync(userCompany.IdAspNetUsers);
+                    IdentityUserRole<string>? identityUserRole = _aspNetUserRolesRepository.FindAll(x => x.UserId == userCompany.IdAspNetUsers).FirstOrDefault();
+
+                    if (applicationUser != null && identityUserRole != null)
                     {
-                        Descrizione = userCompany.IdAspNetUsers,
-                        //IdAspNetUsers = userCompany.IdAspNetUsers,
-                        IdUserCompany = userCompany.Id,
-                    };
+                        retVal.UserCompanyEdit = new UserCompanyEditModel()
+                        {
+                            Descrizione = applicationUser.UserName,
+                            IdUserCompany = userCompany.Id,
+                            Mail = applicationUser.Email,
+                            MainUser = false,
+                            RoleId = identityUserRole.RoleId
+                        };
+                    }
                 }
                 else
                 {
@@ -721,27 +880,47 @@ namespace nvxapp.server.service.ClientServer_Service.Account
             {
                 UserCompanyPutOutModel retVal = new UserCompanyPutOutModel();
 
-                var userCompany = await _userCompanyRepository.FindByIdAsync(model.Data.UserCompanyEdit.IdUserCompany);
+                UserCompany? userCompany = await _userCompanyRepository.FindByIdAsync(model.Data.UserCompanyEdit.IdUserCompany);
                 if (userCompany != null)
                 {
                     //userCompany.Descrizione = model.Data.UserCompanyEdit.Descrizione;
 
-                    //    retVal.DealerEdit = new DealerEditModel()
-                    //    {
-                    //        Descrizione = dealer.Descrizione,
-                    //        IdDealer = dealer.Id
-                    //    };
+                    await _userCompanyRepository.UpdateAsync(userCompany);
                 }
                 else
                 {
-                    //    retVal.DealerEdit = new DealerEditModel()
-                    //    {
-                    //        Descrizione = "",
-                    //        IdDealer = 0
-                    //    };
+                    ////
+                    int IdCompany;
+                    int.TryParse(this.CurrentCompany, out IdCompany);
+
+
+
+                    //DealerPowerAdmin
+                    string password = model.Data.UserCompanyEdit.Pw != null ? model.Data.UserCompanyEdit.Pw : "1234";
+
+                    var user = new ApplicationUser
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        UserName = model.Data.UserCompanyEdit.Descrizione,
+                        Email = model.Data.UserCompanyEdit.Mail
+                    };
+
+                    var result = await _userManager.CreateAsync(user, password);
+                    if (result.Succeeded)
+                    {
+                        result = await _userManager.AddToRoleAsync(user, "User");
+
+                        await _userCompanyRepository.UpsertAsync(new UserCompany()
+                        {
+                            IdAspNetUsers = user.Id,
+                            IdCompany = IdCompany,
+                            MainUser = false
+                        });
+                    }
+
                 }
 
-                await _userCompanyRepository.UpdateAsync(userCompany);
+
 
 
                 //eliminare
@@ -753,6 +932,434 @@ namespace nvxapp.server.service.ClientServer_Service.Account
         }
 
 
+        public virtual async Task<GenericResult<UserListOutModel>> UserList(GenericRequest<UserListInModel> model, Boolean isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                UserListOutModel retVal = new UserListOutModel();
+
+
+                List<string> applicationRole = _aspNetRolesRepository.GetAll()
+                                                                     .Where(x => x.Code == RoleCode.Admin ||
+                                                                                 x.Code == RoleCode.PowerAdmin)
+                                                                     .Select(x => x.Id).ToList();
+
+                List<IdentityUserRole<string>> IdentityUserRole_list = _aspNetUserRolesRepository.FindAll(x => applicationRole.Contains(x.RoleId)).ToList();
+
+                List<string> IdAspNetUsers_List = IdentityUserRole_list.Select(x => x.UserId).ToList();
+
+                List<ApplicationUser> ApplicationUser_List = _aspNetUsersRepository.FindAll(x => IdAspNetUsers_List.Contains(x.Id)).ToList();
+
+                foreach (var item in IdentityUserRole_list)
+                {
+                    var cur_user = ApplicationUser_List.Where(x => x.Id == item.UserId).FirstOrDefault();
+                    if (cur_user != null)
+                    {
+                        retVal.UserList.Add(new UserListModel()
+                        {
+                            IdAspNetUsers = item.UserId,
+                            Descrizione = cur_user?.UserName,
+                            RoleId = item.RoleId
+                        });
+                    }
+                }
+
+                //eliminare
+                // Nessun 'await' qui
+                await Task.Delay(DelayAsyncMethod);
+
+                return retVal;
+            }, isSubProcess);
+        }
+        public virtual async Task<GenericResult<UserGetOutModel>> UserGet(GenericRequest<UserGetInModel> model, Boolean isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                UserGetOutModel retVal = new UserGetOutModel();
+
+
+                ApplicationUser? applicationUser = await _userManager.FindByIdAsync(model.Data.Id);
+                if (applicationUser != null)
+                {
+                    var identityUserRole = _aspNetUserRolesRepository.FindAll(x => x.UserId == applicationUser.Id).FirstOrDefault();
+
+                    retVal.UserEdit = new UserEditModel()
+                    {
+                        Descrizione = applicationUser.UserName,
+                        IdAspNetUsers = applicationUser.Id,
+                        Mail = applicationUser.Email,
+                        RoleId = identityUserRole != null ? identityUserRole.RoleId : string.Empty
+                    };
+                }
+                else
+                {
+                    retVal.UserEdit = new UserEditModel()
+                    {
+                        Descrizione = "",
+                        IdAspNetUsers = string.Empty,
+                        RoleId = string.Empty,
+                    };
+                }
+
+                //eliminare
+                // Nessun 'await' qui
+                await Task.Delay(DelayAsyncMethod);
+
+                return retVal;
+            }, isSubProcess);
+        }
+        public virtual async Task<GenericResult<UserPutOutModel>> UserPut(GenericRequest<UserPutInModel> model, Boolean isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                UserPutOutModel retVal = new UserPutOutModel();
+
+                ApplicationUser? applicationUser = await _userManager.FindByIdAsync(model.Data.UserEdit.IdAspNetUsers);
+                if (applicationUser != null)
+                {
+                    //userCompany.Descrizione = model.Data.UserCompanyEdit.Descrizione;
+
+                    await _userManager.UpdateAsync(applicationUser);
+                }
+                else
+                {
+                    var roleName = _aspNetRolesRepository.GetAll()
+                                                                .Where(x => x.Id == model.Data.UserEdit.RoleId)
+                                                                .Select(x => x.Name).FirstOrDefault();
+                    if (roleName == null)
+                        roleName = "User";
+
+
+                    //DealerPowerAdmin
+                    string password = model.Data.UserEdit.Pw != null ? model.Data.UserEdit.Pw : "1234";
+
+                    var user = new ApplicationUser
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        UserName = model.Data.UserEdit.Descrizione,
+                        Email = model.Data.UserEdit.Mail
+                    };
+
+                    var result = await _userManager.CreateAsync(user, password);
+                    if (result.Succeeded)
+                    {
+                        result = await _userManager.AddToRoleAsync(user, roleName);
+
+                    }
+
+                }
+
+
+
+
+                //eliminare
+                // Nessun 'await' qui
+                await Task.Delay(DelayAsyncMethod);
+
+                return retVal;
+            }, isSubProcess);
+        }
+
+
+        public virtual async Task<GenericResult<UserDealerListOutModel>> UserDealerList(GenericRequest<UserDealerListInModel> model, Boolean isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                UserDealerListOutModel retVal = new UserDealerListOutModel();
+
+
+                int IdDealer;
+                int.TryParse(this.CurrentDealer, out IdDealer);
+
+                List<UserDealer> userDealer_List = _userDealerRepository.GetAll().Where(x => x.IdDealer == IdDealer).ToList();
+                List<string> IdAspNetUsers_List = userDealer_List.Select(x => x.IdAspNetUsers).ToList();
+
+                List<ApplicationUser> ApplicationUser_List = _aspNetUsersRepository.FindAll(x => IdAspNetUsers_List.Contains(x.Id)).ToList();
+
+                List<IdentityUserRole<string>> IdentityUserRole_list = _aspNetUserRolesRepository.FindAll(x => IdAspNetUsers_List.Contains(x.UserId)).ToList();
+
+                foreach (var item in userDealer_List)
+                {
+                    var cur_user = ApplicationUser_List.Where(x => x.Id == item.IdAspNetUsers).FirstOrDefault();
+                    var cur_role = IdentityUserRole_list.Where(x => x.UserId == item.IdAspNetUsers).FirstOrDefault();
+
+                    if (cur_role != null)
+                    {
+                        retVal.UserDealerList.Add(new UserDealerModel()
+                        {
+                            IdAspNetUsers = item.IdAspNetUsers,
+                            IdUserDealer = item.Id,
+                            Descrizione = cur_user?.UserName,
+                            MainUser = item.MainUser,
+                            RoleId = cur_role.RoleId
+                        });
+                    }
+
+                }
+
+                //eliminare
+                // Nessun 'await' qui
+                await Task.Delay(DelayAsyncMethod);
+
+                return retVal;
+            }, isSubProcess);
+        }
+        public virtual async Task<GenericResult<UserDealerGetOutModel>> UserDealerGet(GenericRequest<UserDealerGetInModel> model, Boolean isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                UserDealerGetOutModel retVal = new UserDealerGetOutModel();
+
+
+
+                var userDealer = await _userDealerRepository.FindByIdAsync(model.Data.Id);
+                if (userDealer != null)
+                {
+                    ApplicationUser? applicationUser = await _userManager.FindByIdAsync(userDealer.IdAspNetUsers);
+                    IdentityUserRole<string>? identityUserRole = _aspNetUserRolesRepository.FindAll(x => x.UserId == userDealer.IdAspNetUsers).FirstOrDefault();
+
+                    if (applicationUser != null && identityUserRole != null)
+                    {
+                        retVal.UserDealerEdit = new UserDealerEditModel()
+                        {
+                            Descrizione = applicationUser.UserName,
+                            IdUserDealer = userDealer.Id,
+                            Mail = applicationUser.Email,
+                            MainUser = false,
+                            RoleId = identityUserRole.RoleId
+                        };
+                    }
+                }
+                else
+                {
+                    retVal.UserDealerEdit = new UserDealerEditModel()
+                    {
+                        Descrizione = "",
+                        //IdAspNetUsers = string.Empty
+                        IdUserDealer = 0
+                    };
+                }
+
+                //eliminare
+                // Nessun 'await' qui
+                await Task.Delay(DelayAsyncMethod);
+
+                return retVal;
+            }, isSubProcess);
+        }
+        public virtual async Task<GenericResult<UserDealerPutOutModel>> UserDealerPut(GenericRequest<UserDealerPutInModel> model, Boolean isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                UserDealerPutOutModel retVal = new UserDealerPutOutModel();
+
+                UserDealer? userDealer = await _userDealerRepository.FindByIdAsync(model.Data.UserDealerEdit.IdUserDealer);
+                if (userDealer != null)
+                {
+
+
+                    await _userDealerRepository.UpdateAsync(userDealer);
+                }
+                else
+                {
+                    ////
+                    int IdDealer;
+                    int.TryParse(this.CurrentDealer, out IdDealer);
+
+
+
+                    //DealerPowerAdmin
+                    string password = model.Data.UserDealerEdit.Pw!=null? model.Data.UserDealerEdit.Pw:"1234";
+
+                    var user = new ApplicationUser
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        UserName = model.Data.UserDealerEdit.Descrizione,
+                        Email = model.Data.UserDealerEdit.Mail
+                    };
+
+                    var result = await _userManager.CreateAsync(user, password);
+                    if (result.Succeeded)
+                    {
+                        var roleName = _aspNetRolesRepository.GetAll()
+                                                       .Where(x => x.Id == model.Data.UserDealerEdit.RoleId)
+                                                       .Select(x => x.Name).FirstOrDefault();
+
+                        if (string.IsNullOrEmpty(roleName))
+                            roleName = "DealerAdmin";
+
+                        result = await _userManager.AddToRoleAsync(user, roleName);
+
+                        await _userDealerRepository.UpsertAsync(new UserDealer()
+                        {
+                            IdAspNetUsers = user.Id,
+                            IdDealer = IdDealer,
+                            MainUser = false
+                        });
+                    }
+
+                }
+
+
+
+
+                //eliminare
+                // Nessun 'await' qui
+                await Task.Delay(DelayAsyncMethod);
+
+                return retVal;
+            }, isSubProcess);
+        }
+
+
+        public virtual async Task<GenericResult<UserFinancialAdvisorListOutModel>> UserFinancialAdvisorList(GenericRequest<UserFinancialAdvisorListInModel> model, Boolean isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                UserFinancialAdvisorListOutModel retVal = new UserFinancialAdvisorListOutModel();
+
+
+                int IdFinancialAdvisor;
+                int.TryParse(this.CurrentFinancialAdvisor, out IdFinancialAdvisor);
+
+                List<UserFinancialAdvisor> userFinancialAdvisor_List = _userFinancialAdvisorRepository.GetAll().Where(x => x.IdFinancialAdvisor == IdFinancialAdvisor).ToList();
+                List<string> IdAspNetUsers_List = userFinancialAdvisor_List.Select(x => x.IdAspNetUsers).ToList();
+
+                List<ApplicationUser> ApplicationUser_List = _aspNetUsersRepository.FindAll(x => IdAspNetUsers_List.Contains(x.Id)).ToList();
+
+                List<IdentityUserRole<string>> IdentityUserRole_list = _aspNetUserRolesRepository.FindAll(x => IdAspNetUsers_List.Contains(x.UserId)).ToList();
+
+                foreach (var item in userFinancialAdvisor_List)
+                {
+                    var cur_user = ApplicationUser_List.Where(x => x.Id == item.IdAspNetUsers).FirstOrDefault();
+                    var cur_role = IdentityUserRole_list.Where(x => x.UserId == item.IdAspNetUsers).FirstOrDefault();
+
+                    if (cur_role != null)
+                    {
+                        retVal.UserFinancialAdvisorList.Add(new UserFinancialAdvisorModel()
+                        {
+                            IdAspNetUsers = item.IdAspNetUsers,
+                            IdUserFinancialAdvisor = item.Id,
+                            Descrizione = cur_user?.UserName,
+                            MainUser = item.MainUser,
+                            RoleId = cur_role.RoleId
+                        });
+                    }
+
+                }
+
+                //eliminare
+                // Nessun 'await' qui
+                await Task.Delay(DelayAsyncMethod);
+
+                return retVal;
+            }, isSubProcess);
+        }
+        public virtual async Task<GenericResult<UserFinancialAdvisorGetOutModel>> UserFinancialAdvisorGet(GenericRequest<UserFinancialAdvisorGetInModel> model, Boolean isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                UserFinancialAdvisorGetOutModel retVal = new UserFinancialAdvisorGetOutModel();
+
+
+
+                var userFinancialAdvisor = await _userFinancialAdvisorRepository.FindByIdAsync(model.Data.Id);
+                if (userFinancialAdvisor != null)
+                {
+                    ApplicationUser? applicationUser = await _userManager.FindByIdAsync(userFinancialAdvisor.IdAspNetUsers);
+                    IdentityUserRole<string>? identityUserRole = _aspNetUserRolesRepository.FindAll(x => x.UserId == userFinancialAdvisor.IdAspNetUsers).FirstOrDefault();
+
+                    if (applicationUser != null && identityUserRole != null)
+                    {
+                        retVal.UserFinancialAdvisorEdit = new UserFinancialAdvisorEditModel()
+                        {
+                            Descrizione = applicationUser.UserName,
+                            IdUserFinancialAdvisor = userFinancialAdvisor.Id,
+                            Mail = applicationUser.Email,
+                            MainUser = false,
+                            RoleId = identityUserRole.RoleId
+                        };
+                    }
+                }
+                else
+                {
+                    retVal.UserFinancialAdvisorEdit = new UserFinancialAdvisorEditModel()
+                    {
+                        Descrizione = "",
+                        //IdAspNetUsers = string.Empty
+                        IdUserFinancialAdvisor = 0
+                    };
+                }
+
+                //eliminare
+                // Nessun 'await' qui
+                await Task.Delay(DelayAsyncMethod);
+
+                return retVal;
+            }, isSubProcess);
+        }
+        public virtual async Task<GenericResult<UserFinancialAdvisorPutOutModel>> UserFinancialAdvisorPut(GenericRequest<UserFinancialAdvisorPutInModel> model, Boolean isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                UserFinancialAdvisorPutOutModel retVal = new UserFinancialAdvisorPutOutModel();
+
+                UserFinancialAdvisor? userFinancialAdvisor = await _userFinancialAdvisorRepository.FindByIdAsync(model.Data.UserFinancialAdvisorEdit.IdUserFinancialAdvisor);
+                if (userFinancialAdvisor != null)
+                {
+
+
+                    await _userFinancialAdvisorRepository.UpdateAsync(userFinancialAdvisor);
+                }
+                else
+                {
+                    ////
+                    int IdFinancialAdvisor;
+                    int.TryParse(this.CurrentFinancialAdvisor, out IdFinancialAdvisor);
+
+
+
+                    //FinancialAdvisorPowerAdmin
+                    string password = model.Data.UserFinancialAdvisorEdit.Pw != null ? model.Data.UserFinancialAdvisorEdit.Pw : "1234";
+
+                    var user = new ApplicationUser
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        UserName = model.Data.UserFinancialAdvisorEdit.Descrizione,
+                        Email = model.Data.UserFinancialAdvisorEdit.Mail
+                    };
+
+                    var result = await _userManager.CreateAsync(user, password);
+                    if (result.Succeeded)
+                    {
+                        var roleName = _aspNetRolesRepository.GetAll()
+                                                       .Where(x => x.Id == model.Data.UserFinancialAdvisorEdit.RoleId)
+                                                       .Select(x => x.Name).FirstOrDefault();
+                        if (string.IsNullOrEmpty(roleName))
+                            roleName = "FinancialAdvisorAdmin";
+
+                        result = await _userManager.AddToRoleAsync(user, roleName);
+
+                        await _userFinancialAdvisorRepository.UpsertAsync(new UserFinancialAdvisor()
+                        {
+                            IdAspNetUsers = user.Id,
+                            IdFinancialAdvisor = IdFinancialAdvisor,
+                            MainUser = false
+                        });
+                    }
+
+                }
+
+
+
+
+                //eliminare
+                // Nessun 'await' qui
+                await Task.Delay(DelayAsyncMethod);
+
+                return retVal;
+            }, isSubProcess);
+        }
 
 
     }
@@ -762,7 +1369,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
         public Task<GenericResult<LoginOutModel>> Login(GenericRequest<LoginInModel> model, Boolean isSubProcess);
         public Task<GenericResult<UserRolesOutModel>> UserRoles(GenericRequest<UserRolesInModel> model, Boolean isSubProcess);
         public Task<GenericResult<UserLoadOutModel>> UserLoad(GenericRequest<UserLoadInModel> model, Boolean isSubProcess);
-        
+
         public Task<GenericResult<DealerListOutModel>> DealerList(GenericRequest<DealerListInModel> inModel, Boolean isSubProcess);
         public Task<GenericResult<DealerGetOutModel>> DealerGet(GenericRequest<DealerGetInModel> inModel, Boolean isSubProcess);
         public Task<GenericResult<DealerPutOutModel>> DealerPut(GenericRequest<DealerPutInModel> inModel, Boolean isSubProcess);
@@ -782,5 +1389,19 @@ namespace nvxapp.server.service.ClientServer_Service.Account
         public Task<GenericResult<UserCompanyGetOutModel>> UserCompanyGet(GenericRequest<UserCompanyGetInModel> inModel, Boolean isSubProcess);
         public Task<GenericResult<UserCompanyPutOutModel>> UserCompanyPut(GenericRequest<UserCompanyPutInModel> inModel, Boolean isSubProcess);
 
+        public Task<GenericResult<UserListOutModel>> UserList(GenericRequest<UserListInModel> model, Boolean isSubProcess);
+        public Task<GenericResult<UserGetOutModel>> UserGet(GenericRequest<UserGetInModel> inModel, Boolean isSubProcess);
+        public Task<GenericResult<UserPutOutModel>> UserPut(GenericRequest<UserPutInModel> inModel, Boolean isSubProcess);
+
+        public Task<GenericResult<UserDealerListOutModel>> UserDealerList(GenericRequest<UserDealerListInModel> inModel, Boolean isSubProcess);
+        public Task<GenericResult<UserDealerGetOutModel>> UserDealerGet(GenericRequest<UserDealerGetInModel> inModel, Boolean isSubProcess);
+        public Task<GenericResult<UserDealerPutOutModel>> UserDealerPut(GenericRequest<UserDealerPutInModel> inModel, Boolean isSubProcess);
+
+        public Task<GenericResult<UserFinancialAdvisorListOutModel>> UserFinancialAdvisorList(GenericRequest<UserFinancialAdvisorListInModel> inModel, Boolean isSubProcess);
+        public Task<GenericResult<UserFinancialAdvisorGetOutModel>> UserFinancialAdvisorGet(GenericRequest<UserFinancialAdvisorGetInModel> inModel, Boolean isSubProcess);
+        public Task<GenericResult<UserFinancialAdvisorPutOutModel>> UserFinancialAdvisorPut(GenericRequest<UserFinancialAdvisorPutInModel> inModel, Boolean isSubProcess);
+
     }
+
+
 }

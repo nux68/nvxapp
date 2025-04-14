@@ -6,6 +6,7 @@ import { environment } from '../../environments/environment';
 import { AuthService } from '../Utility/auth.service';
 import { NavController } from '@ionic/angular';
 import { UserNavigationService } from '../Utility/user-navigation.service';
+import { GenericResult } from '../ClientServer-Service/ModelsBase/generic-result';
 
 
 @Injectable()
@@ -38,8 +39,17 @@ export class NvxHttpInterceptor implements HttpInterceptor {
     return next.handle(authReq).pipe(
       tap((event: HttpEvent<any>) => {
         if (event instanceof HttpResponse) {
+          const body = event.body;
+
+          if (body && typeof body.success === 'boolean' && 'data' in body && Array.isArray(body.messages) && 'token' in body) {
+            if (body.success === false) {
+              this.nvxHttpInterceptorService.HttpError_Add(body);
+            }
+          }
+
+
           // Se la risposta contiene un nuovo token, aggiorna quello salvato
-          const newToken = event.body?.token;
+          const newToken = body?.token;
           if (newToken) {
             this.authService.Token = newToken;
           }
@@ -106,6 +116,42 @@ export class NvxHttpInterceptorService {
       this._isActiveCall = false;
       this._isActiveCall$.next(this._isActiveCall);
     }
+
+  }
+
+
+
+  public get isHttpErr(): boolean {
+    return this._isHttpActiveErr;
+  }
+
+  public get isHttpErr$(): Observable<boolean> {
+    return this._isActiveHttpErr$.asObservable();
+  }
+
+  public get activeHttpErr(): GenericResult<any>[] {
+    return this._activeHttpErr;
+  }
+
+
+  private _activeHttpErr: GenericResult<any>[] = [];
+
+  private _isHttpActiveErr: boolean = false;
+  private _isActiveHttpErr$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+
+  HttpError_Add(err: GenericResult<any>): void {
+    this._activeHttpErr.push(err);
+
+    this._isHttpActiveErr = true;
+    this._isActiveHttpErr$.next(this._isHttpActiveErr);
+
+  }
+
+  HttpError_Clear(): void {
+    this._activeHttpErr = [];
+
+    this._isHttpActiveErr = false;
+    this._isActiveHttpErr$.next(this._isHttpActiveErr);
 
   }
 

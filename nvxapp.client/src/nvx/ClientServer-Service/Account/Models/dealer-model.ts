@@ -4,13 +4,12 @@ import { RolesModel } from "./user-roles-model";
 
 export class DealerListModel {
 
-  public idDealer: number;
-
-  public descrizione: string | null;
-
-  public idAspNetUsers: string;
-
-  public mainUser: boolean;
+  constructor(
+    public idDealer: number = 0,
+    public descrizione: string | null = "",
+    public idAspNetUsers: string = "",
+    public mainUser: boolean = false,
+  ) { }
 
 }
 export class DealerListInModel {
@@ -27,13 +26,14 @@ export class DealerListOutModel extends ModelResult {
 
 export class DealerEditModel {
 
-  public idDealer: number;
-
-  public descrizione: string | null;
-
-  public idAspNetUsers: string;
-
-  public mainUser: boolean;
+  constructor(
+    public idDealer: number = 0,
+    public descrizione: string | null = "",
+    public idAspNetUsers: string = "",
+    public mainUser: boolean = false,
+    public mail: string | null = null,
+    public pw: string | null = null
+  ) { }
 
 }
 export class DealerGetInModel {

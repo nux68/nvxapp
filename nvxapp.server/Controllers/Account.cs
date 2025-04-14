@@ -186,6 +186,100 @@ namespace nvxapp.server.Controllers
         }
 
 
+
+
+        [Authorize]
+        [HttpPost]
+        [Route("UserList")]
+        public async Task<GenericResult<UserListOutModel>> UserList(GenericRequest<UserListInModel> inModel)
+        {
+            var res = await _accountService.UserList(inModel, false);
+
+            return res;
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("UserGet")]
+        public async Task<GenericResult<UserGetOutModel>> UserGet(GenericRequest<UserGetInModel> inModel)
+        {
+            var res = await _accountService.UserGet(inModel, false);
+
+            return res;
+        }
+        [Authorize]
+        [HttpPost]
+        [Route("UserPut")]
+        public async Task<GenericResult<UserPutOutModel>> UserPut(GenericRequest<UserPutInModel> inModel)
+        {
+            var res = await _accountService.UserPut(inModel, false);
+
+            return res;
+        }
+
+
+        [Authorize]
+        [HttpPost]
+        [Route("UserDealerList")]
+        public async Task<GenericResult<UserDealerListOutModel>> UserDealerList(GenericRequest<UserDealerListInModel> inModel)
+        {
+            var res = await _accountService.UserDealerList(inModel, false);
+
+            return res;
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("UserDealerGet")]
+        public async Task<GenericResult<UserDealerGetOutModel>> UserDealerGet(GenericRequest<UserDealerGetInModel> inModel)
+        {
+            var res = await _accountService.UserDealerGet(inModel, false);
+
+            return res;
+        }
+
+
+        [Authorize]
+        [HttpPost]
+        [Route("UserDealerPut")]
+        public async Task<GenericResult<UserDealerPutOutModel>> UserDealerPut(GenericRequest<UserDealerPutInModel> inModel)
+        {
+            var res = await _accountService.UserDealerPut(inModel, false);
+
+            return res;
+        }
+
+
+        [Authorize]
+        [HttpPost]
+        [Route("UserFinancialAdvisorList")]
+        public async Task<GenericResult<UserFinancialAdvisorListOutModel>> UserFinancialAdvisorList(GenericRequest<UserFinancialAdvisorListInModel> inModel)
+        {
+            var res = await _accountService.UserFinancialAdvisorList(inModel, false);
+
+            return res;
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("UserFinancialAdvisorGet")]
+        public async Task<GenericResult<UserFinancialAdvisorGetOutModel>> UserFinancialAdvisorGet(GenericRequest<UserFinancialAdvisorGetInModel> inModel)
+        {
+            var res = await _accountService.UserFinancialAdvisorGet(inModel, false);
+
+            return res;
+        }
+
+
+        [Authorize]
+        [HttpPost]
+        [Route("UserFinancialAdvisorPut")]
+        public async Task<GenericResult<UserFinancialAdvisorPutOutModel>> UserFinancialAdvisorPut(GenericRequest<UserFinancialAdvisorPutInModel> inModel)
+        {
+            var res = await _accountService.UserFinancialAdvisorPut(inModel, false);
+
+            return res;
+        }
     }
 
 

@@ -3,15 +3,12 @@ import { RolesModel } from "./user-roles-model";
 
 
 export class CompanyListModel {
-
-  public idCompany: number;
-
-  public descrizione: string | null;
-
-  public idAspNetUsers: string;
-
-  public mainUser: boolean;
-
+  constructor(
+    public idCompany: number = 0,
+    public descrizione: string | null = "",
+    public idAspNetUsers: string = "",
+    public mainUser: boolean = false
+  ) { }
 }
 export class CompanyListInModel {
   
@@ -25,15 +22,14 @@ export class CompanyListOutModel extends ModelResult {
 
 
 export class CompanyEditModel {
-
-  public idCompany: number;
-
-  public descrizione: string | null;
-
-  public idAspNetUsers: string;
-
-  public mainUser: boolean;
-
+  constructor(
+    public idCompany: number = 0,
+    public descrizione: string | null = "",
+    public idAspNetUsers: string = "",
+    public mainUser: boolean = false,
+    public mail: string | null = null,
+    public pw: string | null = null
+  ) { }
 }
 export class CompanyGetInModel {
   public id: number;

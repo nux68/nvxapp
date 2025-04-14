@@ -1,0 +1,23 @@
+
+<ng-container>
+  <ion-modal class="nvx-modal" [isOpen]="isModalOpen" [canDismiss]="canClose">
+    <ng-template>
+
+      <ion-header>
+        <ion-toolbar color="primary">
+          <ion-title>Caricamento in corso...</ion-title>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="ion-padding">
+        <p>Attendere il completamento del processo...</p>
+        <ion-progress-bar [value]="progress / 100"></ion-progress-bar>
+        <p>{{ progress }}%</p>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+</ng-container>
+
+
+
+

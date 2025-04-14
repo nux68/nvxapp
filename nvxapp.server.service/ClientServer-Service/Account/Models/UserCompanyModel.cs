@@ -14,8 +14,9 @@ namespace nvxapp.server.service.ClientServer_Service.Account.Models
     {
         public string? IdAspNetUsers { get; set; }
         public int IdUserCompany { get; set; }
-
         public string? Descrizione { get; set; }
+        public Boolean MainUser { get; set; }
+        public string? RoleId { get; set; }
     }
     public class UserCompanyListInModel
     {
@@ -35,8 +36,11 @@ namespace nvxapp.server.service.ClientServer_Service.Account.Models
     public class UserCompanyEditModel
     {
         public int IdUserCompany { get; set; }
-        //public string IdAspNetUsers { get; set; } = string.Empty;
-        public string Descrizione { get; set; } = string.Empty;
+        public string? Descrizione { get; set; } = string.Empty;
+        public Boolean MainUser { get; set; }
+        public string? Mail { get; set; } = string.Empty;
+        public string? Pw { get; set; } = string.Empty;
+        public string? RoleId { get; set; }
     }
     public class UserCompanyGetInModel
     {

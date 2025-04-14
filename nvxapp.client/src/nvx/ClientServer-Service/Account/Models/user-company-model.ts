@@ -3,13 +3,13 @@ import { RolesModel } from "./user-roles-model";
 
 
 export class UserCompanyListModel {
-
-
-  public descrizione: string | null;
-
-  public idAspNetUsers: string;
-  public idUserCompany: number;
-
+  constructor(
+    public descrizione: string | null = "",
+    public idAspNetUsers: string = "",
+    public idUserCompany: number = 0,
+    public mainUser: boolean = false,
+    public roleId: string = "",
+  ) { }
 }
 export class UserCompanyListInModel {
   
@@ -23,16 +23,17 @@ export class UserCompanyListOutModel extends ModelResult {
 
 
 export class UserCompanyEditModel {
+  constructor(
+    public descrizione: string | null = "",
+    public idUserCompany: number = 0,
+    public mainUser: boolean = false,
 
-
-  public descrizione: string | null;
-
-  //public idAspNetUsers: string;
-  public idUserCompany: number;
-
-
-
+    public mail: string | null = null,
+    public pw: string | null = null,
+    public roleId: string = "",
+  ) { }
 }
+
 export class UserCompanyGetInModel {
   public id: number;
 }

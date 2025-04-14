@@ -1,12 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { AccountService } from '../../ClientServer-Service/Account/account.service';
-import { UserCompanyListModel, UserCompanyListInModel } from '../../ClientServer-Service/Account/Models/user-company-model';
-import { UserLoadInModel } from '../../ClientServer-Service/Account/Models/user-load-model';
 import { GenericRequest } from '../../ClientServer-Service/ModelsBase/generic-request';
 import { UserNavigationService, UserDataAdditionalModel } from '../../Utility/user-navigation.service';
 import { ButtonItem, UserInterfaceService } from '../../Utility/user-interface.service';
 import { FabMenuItem, FabMenuService } from '../../Utility/fab-menu.service';
+import { ParameterService } from '../../ClientServer-Service/Parameter/parameter.service';
+
+import { UserLoadInModel } from '../../ClientServer-Service/Account/Models/user-load-model';
+import { UserCompanyListModel, UserCompanyListInModel } from '../../ClientServer-Service/Account/Models/user-company-model';
+import { RoleCode } from '../../ClientServer-Service/Account/Models/user-roles-model';
 
 @Component({
   selector: 'app-user-company-list-page',
@@ -25,6 +28,7 @@ export class UserCompanyListPageComponent  implements OnInit {
   constructor(private navCtrl: NavController,
               private accountService: AccountService,
               public fabMenuService: FabMenuService,
+              private parameterService: ParameterService,
               private userInterfaceService: UserInterfaceService,
               private userNavigationService: UserNavigationService) {
 
@@ -91,5 +95,30 @@ export class UserCompanyListPageComponent  implements OnInit {
   Filter(CurrFilter: any) {
     this.searchText = CurrFilter;
   }
+
+  getAdmin() {
+
+    const roles = this.parameterService.Roles.filter(role => role.code == RoleCode.CompanyAdmin || role.code == RoleCode.CompanyPowerAdmin);
+
+    const filteredUserCompanyList = this.userCompanyList.filter(usr =>
+      roles.some(role => role.id === usr.roleId)
+    );
+
+    return filteredUserCompanyList;
+
+  }
+
+  getUser() {
+
+    const roles = this.parameterService.Roles.filter(role => role.code == RoleCode.User);
+
+    const filteredUserCompanyList = this.userCompanyList.filter(usr =>
+      roles.some(role => role.id === usr.roleId)
+    );
+
+    return filteredUserCompanyList;
+
+  }
+
 
 }

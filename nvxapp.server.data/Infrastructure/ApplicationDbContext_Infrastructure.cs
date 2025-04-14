@@ -31,7 +31,6 @@ namespace nvxapp.server.data.Infrastructure
         {
             modelBuilder.Entity<ApplicationUser>(entity => { entity.ToTable("AspNetUsers", _baseSchema); });
             modelBuilder.Entity<ApplicationRole>(entity => { entity.ToTable("AspNetRoles", _baseSchema); });
-
             modelBuilder.Entity<IdentityUserRole<string>>(entity => { entity.ToTable("AspNetUserRoles", _baseSchema); });
             modelBuilder.Entity<IdentityUserClaim<string>>(entity => { entity.ToTable("AspNetUserClaims", _baseSchema); });
             modelBuilder.Entity<IdentityUserLogin<string>>(entity => { entity.ToTable("AspNetUserLogins", _baseSchema); });
