@@ -13,7 +13,7 @@
 
     <ion-item>
       <ion-label position="floating">Descrizione</ion-label>
-      <ion-input type="text" formControlName="descrizione"></ion-input>
+      <ion-input type="text" formControlName="descrizione" (ionChange)="UpdateDescription()"></ion-input>
     </ion-item>
     <ion-note color="danger" *ngIf="_editForm.get('descrizione')?.hasError('required') && _editForm.get('descrizione')?.touched">
       La descrizione è obbligatoria.

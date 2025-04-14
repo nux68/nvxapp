@@ -86,6 +86,15 @@ export class CompanyEditPageComponent extends BasePageConfirmCancelComponent<Com
     );
   };
 
+  UpdateDescription() {
+    const descrizione = this._editForm.get('descrizione')?.value;
+
+    if (descrizione) {
+      this.modifiedDescription = "Attenzione per accedere a questa utenza verrano creati i seguenti user    ->   " + this.stringHelperService.removeSpecialCharacters(descrizione) + "_Admin" + " / " + this.stringHelperService.removeSpecialCharacters(descrizione) + "_PowerAdmin";
+    } else {
+      this.modifiedDescription = null;
+    }
+  }
 
 
 
