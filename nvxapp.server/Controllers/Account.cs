@@ -186,6 +186,38 @@ namespace nvxapp.server.Controllers
         }
 
 
+
+
+        [Authorize]
+        [HttpPost]
+        [Route("UserList")]
+        public async Task<GenericResult<UserListOutModel>> UserList(GenericRequest<UserListInModel> inModel)
+        {
+            var res = await _accountService.UserList(inModel, false);
+
+            return res;
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("UserGet")]
+        public async Task<GenericResult<UserGetOutModel>> UserGet(GenericRequest<UserGetInModel> inModel)
+        {
+            var res = await _accountService.UserGet(inModel, false);
+
+            return res;
+        }
+        [Authorize]
+        [HttpPost]
+        [Route("UserPut")]
+        public async Task<GenericResult<UserPutOutModel>> UserPut(GenericRequest<UserPutInModel> inModel)
+        {
+            var res = await _accountService.UserPut(inModel, false);
+
+            return res;
+        }
+
+
     }
 
 

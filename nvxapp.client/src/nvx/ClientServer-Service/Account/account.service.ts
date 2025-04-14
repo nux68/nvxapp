@@ -12,6 +12,7 @@ import { DealerGetInModel, DealerGetOutModel, DealerListInModel, DealerListOutMo
 import { CompanyGetInModel, CompanyGetOutModel, CompanyListInModel, CompanyListOutModel, CompanyPutInModel, CompanyPutOutModel } from './Models/company-model';
 import { UserCompanyGetInModel, UserCompanyGetOutModel, UserCompanyListInModel, UserCompanyListOutModel, UserCompanyPutInModel, UserCompanyPutOutModel } from './Models/user-company-model';
 import { FinancialAdvisorGetInModel, FinancialAdvisorGetOutModel, FinancialAdvisorListInModel, FinancialAdvisorListOutModel, FinancialAdvisorPutInModel, FinancialAdvisorPutOutModel } from './Models/financial-advisor-model';
+import { UserGetInModel, UserGetOutModel, UserListInModel, UserListOutModel, UserPutInModel, UserPutOutModel } from './Models/user-model';
 
 
 @Injectable({
@@ -183,7 +184,6 @@ export class AccountService {
 
 
 
-
   UserCompanyList(model: GenericRequest<UserCompanyListInModel>): Observable<GenericResult<UserCompanyListOutModel>> {
 
     return this.http.post<GenericResult<UserCompanyListOutModel>>(environment.remoteData.apiUri + 'Account/UserCompanyList', model)
@@ -221,5 +221,42 @@ export class AccountService {
 
   }
 
+
+
+  UserList(model: GenericRequest<UserListInModel>): Observable<GenericResult<UserListOutModel>> {
+
+    return this.http.post<GenericResult<UserListOutModel>>(environment.remoteData.apiUri + 'Account/UserList', model)
+      .pipe(
+            map(r => {
+                return r;
+              }
+           )
+      );
+
+  }
+
+  UserGet(model: GenericRequest<UserGetInModel>): Observable<GenericResult<UserGetOutModel>> {
+
+    return this.http.post<GenericResult<UserGetOutModel>>(environment.remoteData.apiUri + 'Account/UserGet', model)
+      .pipe(
+          map(r => {
+            return r;
+          }
+        )
+      );
+
+  }
+
+  UserPut(model: GenericRequest<UserPutInModel>): Observable<GenericResult<UserPutOutModel>> {
+
+    return this.http.post<GenericResult<UserPutOutModel>>(environment.remoteData.apiUri + 'Account/UserPut', model)
+      .pipe(
+          map(r => {
+            return r;
+          }
+        )
+      );
+
+  }
 
 }

@@ -824,37 +824,6 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                     
                 }
 
-                //ApplicationRole? applicationRole = _aspNetRolesRepository.GetAll().Where(x => x.Code == RoleCode.User).FirstOrDefault();
-                //if (applicationRole != null)
-                //{
-                //    if (applicationRole.Name != null)
-                //    {
-                //        var usrRole = await _userManager.GetUsersInRoleAsync(applicationRole.Name);
-                //        if (usrRole != null)
-                //        {
-                //            int IdCompany;
-                //            int.TryParse(this.CurrentCompany, out IdCompany);
-
-                //            var usrId = usrRole.Select(x => x.Id).ToList();
-                //            var userCompany = _userCompanyRepository.GetAll().Where(x => usrId.Contains(x.IdAspNetUsers) && x.IdCompany == IdCompany).ToList();
-
-                //            foreach (var item in userCompany)
-                //            {
-                //                var _user = _aspNetUsersRepository.GetAll().Where(x => x.Id == item.IdAspNetUsers).FirstOrDefault();
-
-                //                retVal.UserCompanyList.Add(new UserCompanyModel()
-                //                {
-                //                    IdAspNetUsers = item.IdAspNetUsers,
-                //                    IdUserCompany = item.Id,
-                //                    Descrizione = _user?.UserName
-                //                });
-                //            }
-                //        }
-                //    }
-                //}
-
-
-
                 //eliminare
                 // Nessun 'await' qui
                 await Task.Delay(DelayAsyncMethod);
@@ -963,7 +932,132 @@ namespace nvxapp.server.service.ClientServer_Service.Account
         }
 
 
+        public virtual async Task<GenericResult<UserListOutModel>> UserList(GenericRequest<UserListInModel> model, Boolean isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                UserListOutModel retVal = new UserListOutModel();
 
+
+                List<string> applicationRole = _aspNetRolesRepository.GetAll()
+                                                                     .Where(x => x.Code == RoleCode.Admin ||
+                                                                                 x.Code == RoleCode.PowerAdmin)
+                                                                     .Select(x=> x.Id).ToList();
+
+                List<IdentityUserRole<string>> IdentityUserRole_list = _aspNetUserRolesRepository.FindAll(x => applicationRole.Contains(x.RoleId)).ToList();
+
+                List<string> IdAspNetUsers_List = IdentityUserRole_list.Select(x => x.UserId).ToList();
+
+                List<ApplicationUser> ApplicationUser_List = _aspNetUsersRepository.FindAll(x => IdAspNetUsers_List.Contains(x.Id)).ToList();
+
+                foreach (var item in IdentityUserRole_list)
+                {
+                    var cur_user = ApplicationUser_List.Where(x => x.Id == item.UserId).FirstOrDefault();
+                    if(cur_user!=null)
+                    {
+                        retVal.UserList.Add(new UserListModel()
+                        {
+                            IdAspNetUsers = item.UserId,
+                            Descrizione = cur_user?.UserName,
+                            RoleId = item.RoleId
+                        });
+                    }
+                }
+
+                //eliminare
+                // Nessun 'await' qui
+                await Task.Delay(DelayAsyncMethod);
+
+                return retVal;
+            }, isSubProcess);
+        }
+        public virtual async Task<GenericResult<UserGetOutModel>> UserGet(GenericRequest<UserGetInModel> model, Boolean isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                UserGetOutModel retVal = new UserGetOutModel();
+
+
+                ApplicationUser? applicationUser = await _userManager.FindByIdAsync(model.Data.Id);
+                if (applicationUser != null)
+                {
+                    var  identityUserRole = _aspNetUserRolesRepository.FindAll(x =>x.UserId == applicationUser.Id).FirstOrDefault();
+
+                    retVal.UserEdit = new UserEditModel()
+                    {
+                        Descrizione = applicationUser.UserName,
+                        IdAspNetUsers = applicationUser.Id,
+                        Mail = applicationUser.Email,
+                        RoleId = identityUserRole!=null? identityUserRole.RoleId: string.Empty
+                    };
+                }
+                else
+                {
+                    retVal.UserEdit = new UserEditModel()
+                    {
+                        Descrizione = "",
+                        IdAspNetUsers = string.Empty,
+                        RoleId = string.Empty,
+                    };
+                }
+
+                //eliminare
+                // Nessun 'await' qui
+                await Task.Delay(DelayAsyncMethod);
+
+                return retVal;
+            }, isSubProcess);
+        }
+
+        public virtual async Task<GenericResult<UserPutOutModel>> UserPut(GenericRequest<UserPutInModel> model, Boolean isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                UserPutOutModel retVal = new UserPutOutModel();
+
+                ApplicationUser? applicationUser = await _userManager.FindByIdAsync(model.Data.UserEdit.IdAspNetUsers);
+                if (applicationUser != null)
+                {
+                    //userCompany.Descrizione = model.Data.UserCompanyEdit.Descrizione;
+
+                    await _userManager.UpdateAsync(applicationUser);
+                }
+                else
+                {
+                    var roleName = _aspNetRolesRepository.GetAll()
+                                                                .Where(x => x.Id == model.Data.UserEdit.RoleId)
+                                                                .Select(x => x.Name).FirstOrDefault();
+
+
+                    //DealerPowerAdmin
+                    string password = model.Data.UserEdit.Pw;
+
+                    var user = new ApplicationUser
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        UserName = model.Data.UserEdit.Descrizione,
+                        Email = model.Data.UserEdit.Mail
+                    };
+
+                    var result = await _userManager.CreateAsync(user, password);
+                    if (result.Succeeded)
+                    {
+                        result = await _userManager.AddToRoleAsync(user, roleName);
+                        
+                    }
+
+                }
+
+
+
+
+                //eliminare
+                // Nessun 'await' qui
+                await Task.Delay(DelayAsyncMethod);
+
+                return retVal;
+            }, isSubProcess);
+        }
 
     }
 
@@ -992,5 +1086,11 @@ namespace nvxapp.server.service.ClientServer_Service.Account
         public Task<GenericResult<UserCompanyGetOutModel>> UserCompanyGet(GenericRequest<UserCompanyGetInModel> inModel, Boolean isSubProcess);
         public Task<GenericResult<UserCompanyPutOutModel>> UserCompanyPut(GenericRequest<UserCompanyPutInModel> inModel, Boolean isSubProcess);
 
+        public Task<GenericResult<UserListOutModel>> UserList(GenericRequest<UserListInModel> model, Boolean isSubProcess);
+        public Task<GenericResult<UserGetOutModel>> UserGet(GenericRequest<UserGetInModel> inModel, Boolean isSubProcess);
+        public Task<GenericResult<UserPutOutModel>> UserPut(GenericRequest<UserPutInModel> inModel, Boolean isSubProcess);
+
     }
+
+
 }

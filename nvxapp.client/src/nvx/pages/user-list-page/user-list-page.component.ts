@@ -8,7 +8,7 @@ import { FabMenuItem, FabMenuService } from '../../Utility/fab-menu.service';
 import { ParameterService } from '../../ClientServer-Service/Parameter/parameter.service';
 
 import { UserLoadInModel } from '../../ClientServer-Service/Account/Models/user-load-model';
-import { UserCompanyListModel, UserCompanyListInModel } from '../../ClientServer-Service/Account/Models/user-company-model';
+import { UserListInModel, UserListModel } from '../../ClientServer-Service/Account/Models/user-model';
 
 @Component({
   selector: 'app-user-list-page',
@@ -20,8 +20,8 @@ export class UserListPageComponent  implements OnInit {
 
   public title!: string;
   public searchText!: string;
-  public userCompanyList: UserCompanyListModel[] | null = null;
-  public btnImpersona: ButtonItem;
+  public userList: UserListModel[] | null = null;
+  //public btnImpersona: ButtonItem;
   public btnEdit: ButtonItem;
 
   constructor(private navCtrl: NavController,
@@ -33,25 +33,25 @@ export class UserListPageComponent  implements OnInit {
 
     this.title = 'UserListPage';
 
-    this.btnImpersona = userInterfaceService.Btn_Impersona;
-    this.btnImpersona.event = this.handleButtonImpersonaClick;
+    //this.btnImpersona = userInterfaceService.Btn_Impersona;
+    //this.btnImpersona.event = this.handleButtonImpersonaClick;
     this.btnEdit = userInterfaceService.Btn_Modifica;
     this.btnEdit.event = this.handleButtonEditClick;
   }
 
   ionViewWillEnter() {
-    let request: GenericRequest<UserCompanyListInModel> = new GenericRequest<UserCompanyListInModel>(UserCompanyListInModel);
-    this.accountService.UserCompanyList(request).subscribe(res => {
+    let request: GenericRequest<UserListInModel> = new GenericRequest<UserListInModel>(UserListInModel);
+    this.accountService.UserList(request).subscribe(res => {
 
-      this.userCompanyList = res.data.userCompanyList;
+      this.userList = res.data.userList;
 
     });
 
     this.fabMenuService.fabMenuItem = [
 
       new FabMenuItem('Elemento 1', 'add-circle-outline', () => {
-        this.navCtrl.navigateForward('/usercompanyedit', {
-          state: { id: 0 }
+        this.navCtrl.navigateForward('/useredit', {
+          state: { id: '' }
         });
       }),
 
@@ -65,29 +65,29 @@ export class UserListPageComponent  implements OnInit {
 
   ngOnInit() { }
 
-  handleButtonImpersonaClick = (item: any) => {
+  //handleButtonImpersonaClick = (item: any) => {
 
-    let request: GenericRequest<UserLoadInModel> = new GenericRequest<UserLoadInModel>(UserLoadInModel);
-    request.data.id = item.idAspNetUsers;
-    this.accountService.UserLoad(request).subscribe(usl => {
-      if (usl.success) {
+  //  let request: GenericRequest<UserLoadInModel> = new GenericRequest<UserLoadInModel>(UserLoadInModel);
+  //  request.data.id = item.idAspNetUsers;
+  //  this.accountService.UserLoad(request).subscribe(usl => {
+  //    if (usl.success) {
 
-        let userDataAdditional: UserDataAdditionalModel = new UserDataAdditionalModel();
-        userDataAdditional.gotoBackPage = "/usercompanylist";
+  //      let userDataAdditional: UserDataAdditionalModel = new UserDataAdditionalModel();
+  //      userDataAdditional.gotoBackPage = "/userlist";
 
-        this.userNavigationService.UserPush(usl.data.userData, userDataAdditional);
-        this.navCtrl.navigateForward('/home');
-      }
-      else {
+  //      this.userNavigationService.UserPush(usl.data.userData, userDataAdditional);
+  //      this.navCtrl.navigateForward('/home');
+  //    }
+  //    else {
 
-      }
-    });
+  //    }
+  //  });
 
-  }
+  //}
 
   handleButtonEditClick = (item: any) => {
-    this.navCtrl.navigateForward('/usercompanyedit', {
-      state: { id: item.idUserCompany }
+    this.navCtrl.navigateForward('/useredit', {
+      state: { id: item.idAspNetUsers }
     });
   }
 
@@ -97,25 +97,25 @@ export class UserListPageComponent  implements OnInit {
 
   getAdmin() {
 
-    const roles = this.parameterService.Roles.filter(role => role.code == 10 || role.code == 11);
+    const roles = this.parameterService.Roles.filter(role => role.code == 10000);
 
-    const filteredUserCompanyList = this.userCompanyList.filter(usr =>
+    const filtereduserList = this.userList.filter(usr =>
       roles.some(role => role.id === usr.roleId)
     );
 
-    return filteredUserCompanyList;
+    return filtereduserList;
 
   }
 
-  getUser() {
+  getPowerAdmin() {
 
-    const roles = this.parameterService.Roles.filter(role => role.code == 0);
+    const roles = this.parameterService.Roles.filter(role => role.code == 10001);
 
-    const filteredUserCompanyList = this.userCompanyList.filter(usr =>
+    const filtereduserList = this.userList.filter(usr =>
       roles.some(role => role.id === usr.roleId)
     );
 
-    return filteredUserCompanyList;
+    return filtereduserList;
 
   }
 
