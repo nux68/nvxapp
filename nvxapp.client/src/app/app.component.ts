@@ -4,6 +4,8 @@ import { AuthService } from '../nvx/Utility/auth.service';
 import { UserNavigationService } from '../nvx/Utility/user-navigation.service';
 import { SignalrService } from '../nvx/Utility/signalr.service';
 import { environment } from '../environments/environment';
+import { MainMenuItem, MainMenuService } from '../nvx/Utility/main-menu.service';
+
 
 @Component({
   selector: 'app-root',
@@ -13,59 +15,14 @@ import { environment } from '../environments/environment';
 })
 export class AppComponent implements OnInit {
 
+  public appPages4SuperUser: MainMenuItem[] = [];
+  public appPages4Admin: MainMenuItem[] = [];
+  public appPages4DealerAdmin: MainMenuItem[] = [];
+  public appPages4FinancialAdvisorAdmin: MainMenuItem[] = [];
+  public appPages4CompanyAdmin: MainMenuItem[] = [];
+  public appPages4User: MainMenuItem[] = [];
+
   
-
-  public appPages4SuperUser = [
-
-    { title: 'SuperUser'  , component:"SuperUserPageComponent"  , url: '/superuser', icon: 'triangle' },
-    { title: 'Dealer List', component: "DealerListPageComponent", url: '/dealerlist', icon: 'list-circle' },
-
-  ];
-
-
-  public appPages4Admin = [
-
-    { title: 'PowerAdmin', component: "PowerAdminPageComponent", url: '/poweradmin', icon: 'square' },
-    { title: 'Admin', component: "AdminPageComponent", url: '/admin', icon: 'square' },
-    { title: 'Dealer List', component: "DealerListPageComponent", url: '/dealerlist', icon: 'list-circle' },
-
-  ];
-
-  public appPages4DealerAdmin = [
-
-    { title: 'DealerPowerAdmin', component: "DealerPowerAdminPageComponent", url: '/dealerpoweradmin', icon: 'ellipse' },
-    { title: 'DealerAdmin', component: "DealerAdminPageComponent", url: '/dealeradmin', icon: 'ellipse' },
-    { title: 'FinancialAdvisor List', component: "FinancialAdvisorListPageComponent", url: '/financialadvisorlist', icon: 'list-circle' },
-  ];
-
-  public appPages4FinancialAdvisorAdmin = [
-
-    { title: 'FinancialAdvisorPowerAdmin', component: "FinancialAdvisorPowerAdminPageComponent", url: '/financialadvisorpoweradmin', icon: 'ellipse' },
-    { title: 'FinancialAdvisorAdmin', component: "FinancialAdvisorAdminPageComponent", url: '/financialadvisoradmin', icon: 'ellipse' },
-    { title: 'Company List', component: "CompanyListPageComponent", url: '/companylist', icon: 'list-circle' },
-  ];
-
-  public appPages4CompanyAdmin = [
-
-    { title: 'CompanyPowerAdmin', component: "CompanyPowerAdminPageComponent", url: '/companypoweradmin', icon: 'ellipse' },
-    { title: 'CompanyAdmin', component: "CompanyAdminPageComponent", url: '/companyadmin', icon: 'ellipse' },
-    { title: 'User List', component: "UserCompanyListPageComponent", url: '/usercompanylist', icon: 'list-circle' },
-
-  ];
-
-
-  public appPages4User = [
-
-    { title: 'Impersonate', component: "UserImpersonatePageComponent", url: '/userimpersonate', icon: 'people-circle' },
-    { title: 'Home', component: "HomePageComponent", url: '/home', icon: 'home' },
-    { title: 'Login', component: "LoginPageComponent", url: '/login', icon: 'enter' },
-    { title: 'Logout', component: "LogoutPageComponent", url: '/logout', icon: 'exit' },
-    //soggette al login
-    { title: 'User Data', component: "UserPageComponent", url: '/user', icon: 'person' },
-
-  ];
-
-
 
   public appPages = [
 
@@ -80,9 +37,17 @@ export class AppComponent implements OnInit {
   public labels = ['Family', 'Friends', 'Notes', 'Work', 'Travel', 'Reminders'];
   constructor(public authService: AuthService,
               public userNavigationService: UserNavigationService,
-              public signalrService: SignalrService
+              public signalrService: SignalrService,
+              private mainMenuService: MainMenuService
               )
   {
+
+    this.appPages4SuperUser = this.mainMenuService.Pages4SuperUser;
+    this.appPages4Admin = this.mainMenuService.Pages4Admin;
+    this.appPages4DealerAdmin = this.mainMenuService.Pages4DealerAdmin;
+    this.appPages4FinancialAdvisorAdmin = this.mainMenuService.Pages4FinancialAdvisorAdmin;
+    this.appPages4CompanyAdmin = this.mainMenuService.Pages4CompanyAdmin;
+    this.appPages4User = this.mainMenuService.Pages4User;
   }
 
   ngOnInit() {
