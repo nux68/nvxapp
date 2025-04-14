@@ -250,7 +250,36 @@ namespace nvxapp.server.Controllers
         }
 
 
+        [Authorize]
+        [HttpPost]
+        [Route("UserFinancialAdvisorList")]
+        public async Task<GenericResult<UserFinancialAdvisorListOutModel>> UserFinancialAdvisorList(GenericRequest<UserFinancialAdvisorListInModel> inModel)
+        {
+            var res = await _accountService.UserFinancialAdvisorList(inModel, false);
 
+            return res;
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("UserFinancialAdvisorGet")]
+        public async Task<GenericResult<UserFinancialAdvisorGetOutModel>> UserFinancialAdvisorGet(GenericRequest<UserFinancialAdvisorGetInModel> inModel)
+        {
+            var res = await _accountService.UserFinancialAdvisorGet(inModel, false);
+
+            return res;
+        }
+
+
+        [Authorize]
+        [HttpPost]
+        [Route("UserFinancialAdvisorPut")]
+        public async Task<GenericResult<UserFinancialAdvisorPutOutModel>> UserFinancialAdvisorPut(GenericRequest<UserFinancialAdvisorPutInModel> inModel)
+        {
+            var res = await _accountService.UserFinancialAdvisorPut(inModel, false);
+
+            return res;
+        }
     }
 
 

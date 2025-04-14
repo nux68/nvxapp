@@ -289,7 +289,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                         if (usrRole != null)
                         {
                             var usrId = usrRole.Select(x => x.Id).ToList();
-                            var userDealer = _userDealerRepository.GetAll().Where(x => usrId.Contains(x.IdAspNetUsers)).ToList();
+                            var userDealer = _userDealerRepository.GetAll().Where(x => usrId.Contains(x.IdAspNetUsers) && x.MainUser ==true).ToList();
 
                             foreach (var item in userDealer)
                             {
@@ -468,7 +468,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
 
                             var usrId = usrRole.Select(x => x.Id).ToList();
                             var userFinancialAdvisor = _userFinancialAdvisorRepository.GetAll()
-                                                                                      .Where(x => usrId.Contains(x.IdAspNetUsers) && financialAdvisorIdList.Contains(x.IdFinancialAdvisor))
+                                                                                      .Where(x => usrId.Contains(x.IdAspNetUsers) &&  x.MainUser==true  && financialAdvisorIdList.Contains(x.IdFinancialAdvisor))
                                                                                       .ToList();
 
                             foreach (var item in userFinancialAdvisor)
@@ -640,7 +640,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
 
 
                             var usrId = usrRole.Select(x => x.Id).ToList();
-                            var userCompany = _userCompanyRepository.GetAll().Where(x => usrId.Contains(x.IdAspNetUsers) && companyIdList.Contains(x.IdCompany)).ToList();
+                            var userCompany = _userCompanyRepository.GetAll().Where(x => usrId.Contains(x.IdAspNetUsers) && x.MainUser == true && companyIdList.Contains(x.IdCompany)).ToList();
 
                             foreach (var item in userCompany)
                             {
@@ -1207,6 +1207,154 @@ namespace nvxapp.server.service.ClientServer_Service.Account
         }
 
 
+        public virtual async Task<GenericResult<UserFinancialAdvisorListOutModel>> UserFinancialAdvisorList(GenericRequest<UserFinancialAdvisorListInModel> model, Boolean isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                UserFinancialAdvisorListOutModel retVal = new UserFinancialAdvisorListOutModel();
+
+
+                int IdFinancialAdvisor;
+                int.TryParse(this.CurrentFinancialAdvisor, out IdFinancialAdvisor);
+
+                List<UserFinancialAdvisor> userFinancialAdvisor_List = _userFinancialAdvisorRepository.GetAll().Where(x => x.IdFinancialAdvisor == IdFinancialAdvisor).ToList();
+                List<string> IdAspNetUsers_List = userFinancialAdvisor_List.Select(x => x.IdAspNetUsers).ToList();
+
+                List<ApplicationUser> ApplicationUser_List = _aspNetUsersRepository.FindAll(x => IdAspNetUsers_List.Contains(x.Id)).ToList();
+
+                List<IdentityUserRole<string>> IdentityUserRole_list = _aspNetUserRolesRepository.FindAll(x => IdAspNetUsers_List.Contains(x.UserId)).ToList();
+
+                foreach (var item in userFinancialAdvisor_List)
+                {
+                    var cur_user = ApplicationUser_List.Where(x => x.Id == item.IdAspNetUsers).FirstOrDefault();
+                    var cur_role = IdentityUserRole_list.Where(x => x.UserId == item.IdAspNetUsers).FirstOrDefault();
+
+                    if (cur_role != null)
+                    {
+                        retVal.UserFinancialAdvisorList.Add(new UserFinancialAdvisorModel()
+                        {
+                            IdAspNetUsers = item.IdAspNetUsers,
+                            IdUserFinancialAdvisor = item.Id,
+                            Descrizione = cur_user?.UserName,
+                            MainUser = item.MainUser,
+                            RoleId = cur_role.RoleId
+                        });
+                    }
+
+                }
+
+                //eliminare
+                // Nessun 'await' qui
+                await Task.Delay(DelayAsyncMethod);
+
+                return retVal;
+            }, isSubProcess);
+        }
+        public virtual async Task<GenericResult<UserFinancialAdvisorGetOutModel>> UserFinancialAdvisorGet(GenericRequest<UserFinancialAdvisorGetInModel> model, Boolean isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                UserFinancialAdvisorGetOutModel retVal = new UserFinancialAdvisorGetOutModel();
+
+
+
+                var userFinancialAdvisor = await _userFinancialAdvisorRepository.FindByIdAsync(model.Data.Id);
+                if (userFinancialAdvisor != null)
+                {
+                    ApplicationUser? applicationUser = await _userManager.FindByIdAsync(userFinancialAdvisor.IdAspNetUsers);
+                    IdentityUserRole<string>? identityUserRole = _aspNetUserRolesRepository.FindAll(x => x.UserId == userFinancialAdvisor.IdAspNetUsers).FirstOrDefault();
+
+                    if (applicationUser != null && identityUserRole != null)
+                    {
+                        retVal.UserFinancialAdvisorEdit = new UserFinancialAdvisorEditModel()
+                        {
+                            Descrizione = applicationUser.UserName,
+                            IdUserFinancialAdvisor = userFinancialAdvisor.Id,
+                            Mail = applicationUser.Email,
+                            MainUser = false,
+                            RoleId = identityUserRole.RoleId
+                        };
+                    }
+                }
+                else
+                {
+                    retVal.UserFinancialAdvisorEdit = new UserFinancialAdvisorEditModel()
+                    {
+                        Descrizione = "",
+                        //IdAspNetUsers = string.Empty
+                        IdUserFinancialAdvisor = 0
+                    };
+                }
+
+                //eliminare
+                // Nessun 'await' qui
+                await Task.Delay(DelayAsyncMethod);
+
+                return retVal;
+            }, isSubProcess);
+        }
+        public virtual async Task<GenericResult<UserFinancialAdvisorPutOutModel>> UserFinancialAdvisorPut(GenericRequest<UserFinancialAdvisorPutInModel> model, Boolean isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                UserFinancialAdvisorPutOutModel retVal = new UserFinancialAdvisorPutOutModel();
+
+                UserFinancialAdvisor userFinancialAdvisor = await _userFinancialAdvisorRepository.FindByIdAsync(model.Data.UserFinancialAdvisorEdit.IdUserFinancialAdvisor);
+                if (userFinancialAdvisor != null)
+                {
+
+
+                    await _userFinancialAdvisorRepository.UpdateAsync(userFinancialAdvisor);
+                }
+                else
+                {
+                    ////
+                    int IdFinancialAdvisor;
+                    int.TryParse(this.CurrentFinancialAdvisor, out IdFinancialAdvisor);
+
+
+
+                    //FinancialAdvisorPowerAdmin
+                    string password = model.Data.UserFinancialAdvisorEdit.Pw;
+
+                    var user = new ApplicationUser
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        UserName = model.Data.UserFinancialAdvisorEdit.Descrizione,
+                        Email = model.Data.UserFinancialAdvisorEdit.Mail
+                    };
+
+                    var result = await _userManager.CreateAsync(user, password);
+                    if (result.Succeeded)
+                    {
+                        var roleName = _aspNetRolesRepository.GetAll()
+                                                       .Where(x => x.Id == model.Data.UserFinancialAdvisorEdit.RoleId)
+                                                       .Select(x => x.Name).FirstOrDefault();
+
+                        result = await _userManager.AddToRoleAsync(user, roleName);
+
+                        await _userFinancialAdvisorRepository.UpsertAsync(new UserFinancialAdvisor()
+                        {
+                            IdAspNetUsers = user.Id,
+                            IdFinancialAdvisor = IdFinancialAdvisor,
+                            MainUser = false
+                        });
+                    }
+
+                }
+
+
+
+
+                //eliminare
+                // Nessun 'await' qui
+                await Task.Delay(DelayAsyncMethod);
+
+                return retVal;
+            }, isSubProcess);
+        }
+
+
     }
 
     public interface IAccountService : IServiceBase
@@ -1241,6 +1389,10 @@ namespace nvxapp.server.service.ClientServer_Service.Account
         public Task<GenericResult<UserDealerListOutModel>> UserDealerList(GenericRequest<UserDealerListInModel> inModel, Boolean isSubProcess);
         public Task<GenericResult<UserDealerGetOutModel>> UserDealerGet(GenericRequest<UserDealerGetInModel> inModel, Boolean isSubProcess);
         public Task<GenericResult<UserDealerPutOutModel>> UserDealerPut(GenericRequest<UserDealerPutInModel> inModel, Boolean isSubProcess);
+
+        public Task<GenericResult<UserFinancialAdvisorListOutModel>> UserFinancialAdvisorList(GenericRequest<UserFinancialAdvisorListInModel> inModel, Boolean isSubProcess);
+        public Task<GenericResult<UserFinancialAdvisorGetOutModel>> UserFinancialAdvisorGet(GenericRequest<UserFinancialAdvisorGetInModel> inModel, Boolean isSubProcess);
+        public Task<GenericResult<UserFinancialAdvisorPutOutModel>> UserFinancialAdvisorPut(GenericRequest<UserFinancialAdvisorPutInModel> inModel, Boolean isSubProcess);
 
     }
 

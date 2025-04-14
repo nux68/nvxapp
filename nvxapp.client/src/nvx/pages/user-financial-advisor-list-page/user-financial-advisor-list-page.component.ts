@@ -8,7 +8,8 @@ import { FabMenuItem, FabMenuService } from '../../Utility/fab-menu.service';
 import { ParameterService } from '../../ClientServer-Service/Parameter/parameter.service';
 
 import { UserLoadInModel } from '../../ClientServer-Service/Account/Models/user-load-model';
-import { UserCompanyListModel, UserCompanyListInModel } from '../../ClientServer-Service/Account/Models/user-company-model';
+import { UserFinancialAdvisorListModel, UserFinancialAdvisorListInModel } from '../../ClientServer-Service/Account/Models/user-financial-advisor-model';
+
 
 @Component({
   selector: 'app-user-financial-advisor-list-page',
@@ -20,7 +21,7 @@ export class UserFinancialAdvisorListPageComponent implements OnInit {
 
   public title!: string;
   public searchText!: string;
-  public userCompanyList: UserCompanyListModel[] | null = null;
+  public userFinancialAdvisorList: UserFinancialAdvisorListModel[] | null = null;
   public btnImpersona: ButtonItem;
   public btnEdit: ButtonItem;
 
@@ -33,24 +34,22 @@ export class UserFinancialAdvisorListPageComponent implements OnInit {
 
     this.title = 'UserFinancialAdvisorListPage';
 
-    this.btnImpersona = userInterfaceService.Btn_Impersona;
-    this.btnImpersona.event = this.handleButtonImpersonaClick;
     this.btnEdit = userInterfaceService.Btn_Modifica;
     this.btnEdit.event = this.handleButtonEditClick;
   }
 
   ionViewWillEnter() {
-    let request: GenericRequest<UserCompanyListInModel> = new GenericRequest<UserCompanyListInModel>(UserCompanyListInModel);
-    this.accountService.UserCompanyList(request).subscribe(res => {
+    let request: GenericRequest<UserFinancialAdvisorListInModel> = new GenericRequest<UserFinancialAdvisorListInModel>(UserFinancialAdvisorListInModel);
+    this.accountService.UserFinancialAdvisorList(request).subscribe(res => {
 
-      this.userCompanyList = res.data.userCompanyList;
+      this.userFinancialAdvisorList = res.data.userFinancialAdvisorList;
 
     });
 
     this.fabMenuService.fabMenuItem = [
 
       new FabMenuItem('Elemento 1', 'add-circle-outline', () => {
-        this.navCtrl.navigateForward('/usercompanyedit', {
+        this.navCtrl.navigateForward('/userfinancialadvisoredit', {
           state: { id: 0 }
         });
       }),
@@ -65,29 +64,11 @@ export class UserFinancialAdvisorListPageComponent implements OnInit {
 
   ngOnInit() { }
 
-  handleButtonImpersonaClick = (item: any) => {
-
-    let request: GenericRequest<UserLoadInModel> = new GenericRequest<UserLoadInModel>(UserLoadInModel);
-    request.data.id = item.idAspNetUsers;
-    this.accountService.UserLoad(request).subscribe(usl => {
-      if (usl.success) {
-
-        let userDataAdditional: UserDataAdditionalModel = new UserDataAdditionalModel();
-        userDataAdditional.gotoBackPage = "/usercompanylist";
-
-        this.userNavigationService.UserPush(usl.data.userData, userDataAdditional);
-        this.navCtrl.navigateForward('/home');
-      }
-      else {
-
-      }
-    });
-
-  }
+  
 
   handleButtonEditClick = (item: any) => {
-    this.navCtrl.navigateForward('/usercompanyedit', {
-      state: { id: item.idUserCompany }
+    this.navCtrl.navigateForward('/userfinancialadvisoredit', {
+      state: { id: item.idUserFinancialAdvisor }
     });
   }
 
@@ -97,25 +78,25 @@ export class UserFinancialAdvisorListPageComponent implements OnInit {
 
   getAdmin() {
 
-    const roles = this.parameterService.Roles.filter(role => role.code == 10 || role.code == 11);
+    const roles = this.parameterService.Roles.filter(role => role.code == 100 );
 
-    const filteredUserCompanyList = this.userCompanyList.filter(usr =>
+    const filteredUserFinancialAdvisorList = this.userFinancialAdvisorList.filter(usr =>
       roles.some(role => role.id === usr.roleId)
     );
 
-    return filteredUserCompanyList;
+    return filteredUserFinancialAdvisorList;
 
   }
 
-  getUser() {
+  getPowerAdmin() {
 
-    const roles = this.parameterService.Roles.filter(role => role.code == 0);
+    const roles = this.parameterService.Roles.filter(role => role.code == 101);
 
-    const filteredUserCompanyList = this.userCompanyList.filter(usr =>
+    const filteredUserFinancialAdvisorList = this.userFinancialAdvisorList.filter(usr =>
       roles.some(role => role.id === usr.roleId)
     );
 
-    return filteredUserCompanyList;
+    return filteredUserFinancialAdvisorList;
 
   }
 

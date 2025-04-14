@@ -11,8 +11,10 @@ import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { StringHelperService } from '../../Utility/string-helper.service';
 import { ParameterService } from '../../ClientServer-Service/Parameter/parameter.service';
 import { RolesModel } from '../../ClientServer-Service/Parameter/Models/roles-model';
+import { UserFinancialAdvisorEditModel, UserFinancialAdvisorGetInModel, UserFinancialAdvisorPutInModel } from '../../ClientServer-Service/Account/Models/user-financial-advisor-model';
+import { RoleCode } from '../../ClientServer-Service/Account/Models/user-roles-model';
 
-import { UserCompanyEditModel, UserCompanyGetInModel, UserCompanyPutInModel } from '../../ClientServer-Service/Account/Models/user-company-model';
+
 
 @Component({
   selector: 'app-user-financial-advisor-edit-page',
@@ -20,7 +22,7 @@ import { UserCompanyEditModel, UserCompanyGetInModel, UserCompanyPutInModel } fr
   styleUrls: ['./user-financial-advisor-edit-page.component.scss'],
   standalone:false
 })
-export class UserFinancialAdvisorEditPageComponent extends BasePageConfirmCancelComponent<UserCompanyEditModel> {
+export class UserFinancialAdvisorEditPageComponent extends BasePageConfirmCancelComponent<UserFinancialAdvisorEditModel> {
 
   modifiedDescription: string | null = null;
 
@@ -46,16 +48,16 @@ export class UserFinancialAdvisorEditPageComponent extends BasePageConfirmCancel
     });
   }
 
-  LoadData = (): Observable<UserCompanyEditModel | null> => {
+  LoadData = (): Observable<UserFinancialAdvisorEditModel | null> => {
     const state = history.state;
 
 
     if (state && state.id) {
-      let request: GenericRequest<UserCompanyGetInModel> = new GenericRequest<UserCompanyGetInModel>(UserCompanyGetInModel);
+      let request: GenericRequest<UserFinancialAdvisorGetInModel> = new GenericRequest<UserFinancialAdvisorGetInModel>(UserFinancialAdvisorGetInModel);
       request.data.id = state.id;
 
-      return this.accountService.UserCompanyGet(request).pipe(
-        map((res) => res.data.userCompanyEdit), // Estrae il dato richiesto
+      return this.accountService.UserFinancialAdvisorGet(request).pipe(
+        map((res) => res.data.userFinancialAdvisorEdit), // Estrae il dato richiesto
         catchError((error) => {
           console.error('Errore durante la chiamata API:', error);
           return [null]; // Restituisce null in caso di errore
@@ -63,7 +65,7 @@ export class UserFinancialAdvisorEditPageComponent extends BasePageConfirmCancel
       );
     }
     else {
-      return new Observable<UserCompanyEditModel | null>((subscriber) => {
+      return new Observable<UserFinancialAdvisorEditModel | null>((subscriber) => {
         //aggiunge campi solo per le new
         this._editForm.addControl('mail', this.fb.control(null, [Validators.required, Validators.email]));
         this._editForm.addControl('pw', this.fb.control(null, [Validators.required]));
@@ -71,18 +73,18 @@ export class UserFinancialAdvisorEditPageComponent extends BasePageConfirmCancel
         this._editForm.setValidators(matchPasswords);
         this._editForm.updateValueAndValidity();
 
-        subscriber.next(new UserCompanyEditModel());
+        subscriber.next(new UserFinancialAdvisorEditModel());
         subscriber.complete();
       });
     }
   };
 
-  SaveData = (editModel: UserCompanyEditModel): Observable<boolean> => {
-    let request: GenericRequest<UserCompanyPutInModel> =
-      new GenericRequest<UserCompanyPutInModel>(UserCompanyPutInModel);
-    request.data.userCompanyEdit = editModel;
+  SaveData = (editModel: UserFinancialAdvisorEditModel): Observable<boolean> => {
+    let request: GenericRequest<UserFinancialAdvisorPutInModel> =
+      new GenericRequest<UserFinancialAdvisorPutInModel>(UserFinancialAdvisorPutInModel);
+    request.data.userFinancialAdvisorEdit = editModel;
 
-    return this.accountService.UserCompanyPut(request).pipe(
+    return this.accountService.UserFinancialAdvisorPut(request).pipe(
       map(() => true), // Restituisce true in caso di successo
       catchError((error) => {
         console.error('Errore durante la chiamata API:', error);
@@ -93,8 +95,8 @@ export class UserFinancialAdvisorEditPageComponent extends BasePageConfirmCancel
 
   getRoler(): RolesModel[] {
 
-    if (this._editModel && this._editModel.idUserCompany == 0) {
-      return this.parameterService.Roles.filter(role => role.code <= 10);
+    if (this._editModel && this._editModel.idUserFinancialAdvisor == 0) {
+      return this.parameterService.Roles.filter(role => (role.code == RoleCode.FinancialAdvisorPowerAdmin || role.code == RoleCode.FinancialAdvisorAdmin));
     }
 
     return this.parameterService.Roles;

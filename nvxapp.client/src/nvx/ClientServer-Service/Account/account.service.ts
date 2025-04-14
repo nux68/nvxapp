@@ -14,6 +14,7 @@ import { UserCompanyGetInModel, UserCompanyGetOutModel, UserCompanyListInModel, 
 import { FinancialAdvisorGetInModel, FinancialAdvisorGetOutModel, FinancialAdvisorListInModel, FinancialAdvisorListOutModel, FinancialAdvisorPutInModel, FinancialAdvisorPutOutModel } from './Models/financial-advisor-model';
 import { UserGetInModel, UserGetOutModel, UserListInModel, UserListOutModel, UserPutInModel, UserPutOutModel } from './Models/user-model';
 import { UserDealerListInModel, UserDealerListOutModel, UserDealerGetInModel, UserDealerGetOutModel, UserDealerPutInModel, UserDealerPutOutModel } from './Models/user-dealer-model';
+import { UserFinancialAdvisorListInModel, UserFinancialAdvisorListOutModel, UserFinancialAdvisorGetInModel, UserFinancialAdvisorGetOutModel, UserFinancialAdvisorPutInModel, UserFinancialAdvisorPutOutModel } from './Models/user-financial-advisor-model';
 
 
 @Injectable({
@@ -296,6 +297,46 @@ export class AccountService {
       );
 
   }
+
+
+
+  UserFinancialAdvisorList(model: GenericRequest<UserFinancialAdvisorListInModel>): Observable<GenericResult<UserFinancialAdvisorListOutModel>> {
+
+    return this.http.post<GenericResult<UserFinancialAdvisorListOutModel>>(environment.remoteData.apiUri + 'Account/UserFinancialAdvisorList', model)
+      .pipe(
+        map(r => {
+          return r;
+        }
+        )
+      );
+
+  }
+
+  UserFinancialAdvisorGet(model: GenericRequest<UserFinancialAdvisorGetInModel>): Observable<GenericResult<UserFinancialAdvisorGetOutModel>> {
+
+    return this.http.post<GenericResult<UserFinancialAdvisorGetOutModel>>(environment.remoteData.apiUri + 'Account/UserFinancialAdvisorGet', model)
+      .pipe(
+        map(r => {
+          return r;
+        }
+        )
+      );
+
+  }
+
+  UserFinancialAdvisorPut(model: GenericRequest<UserFinancialAdvisorPutInModel>): Observable<GenericResult<UserFinancialAdvisorPutOutModel>> {
+
+    return this.http.post<GenericResult<UserFinancialAdvisorPutOutModel>>(environment.remoteData.apiUri + 'Account/UserFinancialAdvisorPut', model)
+      .pipe(
+        map(r => {
+          return r;
+        }
+        )
+      );
+
+  }
+
+
 
 
 }

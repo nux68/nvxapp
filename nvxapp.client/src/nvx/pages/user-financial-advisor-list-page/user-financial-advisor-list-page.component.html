@@ -6,10 +6,10 @@
 
 <ion-content [fullscreen]="true">
 
-  <ion-grid *ngIf="userCompanyList!=null">
+  <ion-grid *ngIf="userFinancialAdvisorList!=null">
 
     <ion-row>
-      <ion-col *ngFor="let item of getAdmin() | genericFilter: 'descrizione' : searchText" size-xs="6" size-sm="3" size-md="3" size-lg="3" size-xl="2">
+      <ion-col *ngFor="let item of getPowerAdmin() | genericFilter: 'descrizione' : searchText" size-xs="6" size-sm="3" size-md="3" size-lg="3" size-xl="2">
 
         <ion-card>
           <img alt="Silhouette of mountains" src="assets/card-media-admin.png" />
@@ -36,7 +36,7 @@
     </ion-row>
 
     <ion-row>
-      <ion-col *ngFor="let item of getUser() | genericFilter: 'descrizione' : searchText" size-xs="6" size-sm="3" size-md="3" size-lg="3" size-xl="2">
+      <ion-col *ngFor="let item of getAdmin() | genericFilter: 'descrizione' : searchText" size-xs="6" size-sm="3" size-md="3" size-lg="3" size-xl="2">
 
         <ion-card>
           <img alt="Silhouette of mountains" src="assets/card-media.png" />
@@ -49,10 +49,7 @@
             bla bla bla
           </ion-card-content>
 
-          <ion-button shape="round" (click)="btnImpersona.event(item)" color="{{btnImpersona.color}}" fill="solid" expand="block">
-            <ion-icon name="{{btnImpersona.image}}"></ion-icon>
-            &nbsp;{{btnImpersona.text}}
-          </ion-button>
+       
 
           <ion-button shape="round" (click)="btnEdit.event(item)" color="{{btnEdit.color}}" fill="solid" expand="block">
             <ion-icon name="{{btnEdit.image}}"></ion-icon>
