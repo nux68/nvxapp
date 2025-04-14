@@ -289,7 +289,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                         if (usrRole != null)
                         {
                             var usrId = usrRole.Select(x => x.Id).ToList();
-                            var userDealer = _userDealerRepository.GetAll().Where(x => usrId.Contains(x.IdAspNetUsers) && x.MainUser ==true).ToList();
+                            var userDealer = _userDealerRepository.GetAll().Where(x => usrId.Contains(x.IdAspNetUsers) && x.MainUser == true).ToList();
 
                             foreach (var item in userDealer)
                             {
@@ -370,7 +370,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
 
 
 
-                Dealer dealer = await _dealerRepository.FindByIdAsync(model.Data.DealerEdit.IdDealer);
+                Dealer? dealer = await _dealerRepository.FindByIdAsync(model.Data.DealerEdit.IdDealer);
                 if (dealer != null)
                 {
                     dealer.Descrizione = model.Data.DealerEdit.Descrizione;
@@ -386,7 +386,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
 
                     dealer = await _dealerRepository.UpsertAsync(dealer);
 
-                    string password = model.Data.DealerEdit.Pw;
+                    string password = model.Data.DealerEdit.Pw != null ? model.Data.DealerEdit.Pw : "1234";
 
 
                     //DealerPowerAdmin
@@ -468,7 +468,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
 
                             var usrId = usrRole.Select(x => x.Id).ToList();
                             var userFinancialAdvisor = _userFinancialAdvisorRepository.GetAll()
-                                                                                      .Where(x => usrId.Contains(x.IdAspNetUsers) &&  x.MainUser==true  && financialAdvisorIdList.Contains(x.IdFinancialAdvisor))
+                                                                                      .Where(x => usrId.Contains(x.IdAspNetUsers) && x.MainUser == true && financialAdvisorIdList.Contains(x.IdFinancialAdvisor))
                                                                                       .ToList();
 
                             foreach (var item in userFinancialAdvisor)
@@ -536,7 +536,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                 FinancialAdvisorPutOutModel retVal = new FinancialAdvisorPutOutModel();
 
 
-                FinancialAdvisor financialAdvisor = await _financialAdvisorRepository.FindByIdAsync(model.Data.FinancialAdvisorEdit.IdFinancialAdvisor);
+                FinancialAdvisor? financialAdvisor = await _financialAdvisorRepository.FindByIdAsync(model.Data.FinancialAdvisorEdit.IdFinancialAdvisor);
                 if (financialAdvisor != null)
                 {
                     financialAdvisor.Descrizione = model.Data.FinancialAdvisorEdit.Descrizione;
@@ -558,7 +558,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
 
                     financialAdvisor = await _financialAdvisorRepository.UpsertAsync(financialAdvisor);
 
-                    string password = model.Data.FinancialAdvisorEdit.Pw;
+                    string password = model.Data.FinancialAdvisorEdit.Pw!=null? model.Data.FinancialAdvisorEdit.Pw:"1234";
 
 
                     //DealerPowerAdmin
@@ -705,7 +705,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                 CompanyPutOutModel retVal = new CompanyPutOutModel();
 
 
-                Company company = await _companyRepository.FindByIdAsync(model.Data.CompanyEdit.IdCompany);
+                Company? company = await _companyRepository.FindByIdAsync(model.Data.CompanyEdit.IdCompany);
                 if (company != null)
                 {
                     company.Descrizione = model.Data.CompanyEdit.Descrizione;
@@ -728,7 +728,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
 
                     company = await _companyRepository.UpsertAsync(company);
 
-                    string password = model.Data.CompanyEdit.Pw;
+                    string password = model.Data.CompanyEdit.Pw!=null ? model.Data.CompanyEdit.Pw : "1234";
 
 
                     //DealerPowerAdmin
@@ -808,9 +808,9 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                 foreach (var item in userCompany_List)
                 {
                     var cur_user = ApplicationUser_List.Where(x => x.Id == item.IdAspNetUsers).FirstOrDefault();
-                    var cur_role = IdentityUserRole_list.Where(x=> x.UserId == item.IdAspNetUsers).FirstOrDefault();
+                    var cur_role = IdentityUserRole_list.Where(x => x.UserId == item.IdAspNetUsers).FirstOrDefault();
 
-                    if(cur_role!=null)
+                    if (cur_role != null)
                     {
                         retVal.UserCompanyList.Add(new UserCompanyModel()
                         {
@@ -821,7 +821,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                             RoleId = cur_role.RoleId
                         });
                     }
-                    
+
                 }
 
                 //eliminare
@@ -842,14 +842,14 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                 var userCompany = await _userCompanyRepository.FindByIdAsync(model.Data.Id);
                 if (userCompany != null)
                 {
-                    ApplicationUser? applicationUser  = await _userManager.FindByIdAsync(userCompany.IdAspNetUsers);
-                    IdentityUserRole<string>? identityUserRole =  _aspNetUserRolesRepository.FindAll(x => x.UserId == userCompany.IdAspNetUsers).FirstOrDefault();
+                    ApplicationUser? applicationUser = await _userManager.FindByIdAsync(userCompany.IdAspNetUsers);
+                    IdentityUserRole<string>? identityUserRole = _aspNetUserRolesRepository.FindAll(x => x.UserId == userCompany.IdAspNetUsers).FirstOrDefault();
 
-                    if(applicationUser!=null && identityUserRole!=null)
+                    if (applicationUser != null && identityUserRole != null)
                     {
                         retVal.UserCompanyEdit = new UserCompanyEditModel()
                         {
-                            Descrizione = applicationUser.UserName, 
+                            Descrizione = applicationUser.UserName,
                             IdUserCompany = userCompany.Id,
                             Mail = applicationUser.Email,
                             MainUser = false,
@@ -880,7 +880,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
             {
                 UserCompanyPutOutModel retVal = new UserCompanyPutOutModel();
 
-                UserCompany userCompany = await _userCompanyRepository.FindByIdAsync(model.Data.UserCompanyEdit.IdUserCompany);
+                UserCompany? userCompany = await _userCompanyRepository.FindByIdAsync(model.Data.UserCompanyEdit.IdUserCompany);
                 if (userCompany != null)
                 {
                     //userCompany.Descrizione = model.Data.UserCompanyEdit.Descrizione;
@@ -896,7 +896,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
 
 
                     //DealerPowerAdmin
-                    string password = model.Data.UserCompanyEdit.Pw;
+                    string password = model.Data.UserCompanyEdit.Pw != null ? model.Data.UserCompanyEdit.Pw : "1234";
 
                     var user = new ApplicationUser
                     {
@@ -942,7 +942,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                 List<string> applicationRole = _aspNetRolesRepository.GetAll()
                                                                      .Where(x => x.Code == RoleCode.Admin ||
                                                                                  x.Code == RoleCode.PowerAdmin)
-                                                                     .Select(x=> x.Id).ToList();
+                                                                     .Select(x => x.Id).ToList();
 
                 List<IdentityUserRole<string>> IdentityUserRole_list = _aspNetUserRolesRepository.FindAll(x => applicationRole.Contains(x.RoleId)).ToList();
 
@@ -953,7 +953,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                 foreach (var item in IdentityUserRole_list)
                 {
                     var cur_user = ApplicationUser_List.Where(x => x.Id == item.UserId).FirstOrDefault();
-                    if(cur_user!=null)
+                    if (cur_user != null)
                     {
                         retVal.UserList.Add(new UserListModel()
                         {
@@ -981,14 +981,14 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                 ApplicationUser? applicationUser = await _userManager.FindByIdAsync(model.Data.Id);
                 if (applicationUser != null)
                 {
-                    var  identityUserRole = _aspNetUserRolesRepository.FindAll(x =>x.UserId == applicationUser.Id).FirstOrDefault();
+                    var identityUserRole = _aspNetUserRolesRepository.FindAll(x => x.UserId == applicationUser.Id).FirstOrDefault();
 
                     retVal.UserEdit = new UserEditModel()
                     {
                         Descrizione = applicationUser.UserName,
                         IdAspNetUsers = applicationUser.Id,
                         Mail = applicationUser.Email,
-                        RoleId = identityUserRole!=null? identityUserRole.RoleId: string.Empty
+                        RoleId = identityUserRole != null ? identityUserRole.RoleId : string.Empty
                     };
                 }
                 else
@@ -1026,10 +1026,12 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                     var roleName = _aspNetRolesRepository.GetAll()
                                                                 .Where(x => x.Id == model.Data.UserEdit.RoleId)
                                                                 .Select(x => x.Name).FirstOrDefault();
+                    if (roleName == null)
+                        roleName = "User";
 
 
                     //DealerPowerAdmin
-                    string password = model.Data.UserEdit.Pw;
+                    string password = model.Data.UserEdit.Pw != null ? model.Data.UserEdit.Pw : "1234";
 
                     var user = new ApplicationUser
                     {
@@ -1042,7 +1044,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                     if (result.Succeeded)
                     {
                         result = await _userManager.AddToRoleAsync(user, roleName);
-                        
+
                     }
 
                 }
@@ -1151,10 +1153,10 @@ namespace nvxapp.server.service.ClientServer_Service.Account
             {
                 UserDealerPutOutModel retVal = new UserDealerPutOutModel();
 
-                UserDealer userDealer = await _userDealerRepository.FindByIdAsync(model.Data.UserDealerEdit.IdUserDealer);
+                UserDealer? userDealer = await _userDealerRepository.FindByIdAsync(model.Data.UserDealerEdit.IdUserDealer);
                 if (userDealer != null)
                 {
-                    
+
 
                     await _userDealerRepository.UpdateAsync(userDealer);
                 }
@@ -1167,7 +1169,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
 
 
                     //DealerPowerAdmin
-                    string password = model.Data.UserDealerEdit.Pw;
+                    string password = model.Data.UserDealerEdit.Pw!=null? model.Data.UserDealerEdit.Pw:"1234";
 
                     var user = new ApplicationUser
                     {
@@ -1182,6 +1184,9 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                         var roleName = _aspNetRolesRepository.GetAll()
                                                        .Where(x => x.Id == model.Data.UserDealerEdit.RoleId)
                                                        .Select(x => x.Name).FirstOrDefault();
+
+                        if (string.IsNullOrEmpty(roleName))
+                            roleName = "DealerAdmin";
 
                         result = await _userManager.AddToRoleAsync(user, roleName);
 
@@ -1299,7 +1304,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
             {
                 UserFinancialAdvisorPutOutModel retVal = new UserFinancialAdvisorPutOutModel();
 
-                UserFinancialAdvisor userFinancialAdvisor = await _userFinancialAdvisorRepository.FindByIdAsync(model.Data.UserFinancialAdvisorEdit.IdUserFinancialAdvisor);
+                UserFinancialAdvisor? userFinancialAdvisor = await _userFinancialAdvisorRepository.FindByIdAsync(model.Data.UserFinancialAdvisorEdit.IdUserFinancialAdvisor);
                 if (userFinancialAdvisor != null)
                 {
 
@@ -1315,7 +1320,7 @@ namespace nvxapp.server.service.ClientServer_Service.Account
 
 
                     //FinancialAdvisorPowerAdmin
-                    string password = model.Data.UserFinancialAdvisorEdit.Pw;
+                    string password = model.Data.UserFinancialAdvisorEdit.Pw != null ? model.Data.UserFinancialAdvisorEdit.Pw : "1234";
 
                     var user = new ApplicationUser
                     {
@@ -1330,6 +1335,8 @@ namespace nvxapp.server.service.ClientServer_Service.Account
                         var roleName = _aspNetRolesRepository.GetAll()
                                                        .Where(x => x.Id == model.Data.UserFinancialAdvisorEdit.RoleId)
                                                        .Select(x => x.Name).FirstOrDefault();
+                        if (string.IsNullOrEmpty(roleName))
+                            roleName = "FinancialAdvisorAdmin";
 
                         result = await _userManager.AddToRoleAsync(user, roleName);
 

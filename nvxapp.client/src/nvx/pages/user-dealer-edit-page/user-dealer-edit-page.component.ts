@@ -14,6 +14,7 @@ import { RolesModel } from '../../ClientServer-Service/Parameter/Models/roles-mo
 
 import { UserCompanyEditModel, UserCompanyGetInModel, UserCompanyPutInModel } from '../../ClientServer-Service/Account/Models/user-company-model';
 import { UserDealerGetInModel, UserDealerEditModel, UserDealerPutInModel } from '../../ClientServer-Service/Account/Models/user-dealer-model';
+import { RoleCode } from '../../ClientServer-Service/Account/Models/user-roles-model';
 
 @Component({
   selector: 'app-user-dealer-edit-page',
@@ -95,7 +96,7 @@ export class UserDealerEditPageComponent extends BasePageConfirmCancelComponent<
   getRoler(): RolesModel[] {
 
     if (this._editModel && this._editModel.idUserDealer == 0) {
-      return this.parameterService.Roles.filter(role => (role.code == 1000 || role.code == 1001));
+      return this.parameterService.Roles.filter(role => (role.code == RoleCode.DealerAdmin || role.code == RoleCode.DealerPowerAdmin));
     }
 
     return this.parameterService.Roles;

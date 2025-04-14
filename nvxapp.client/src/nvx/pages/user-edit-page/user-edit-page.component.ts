@@ -14,6 +14,7 @@ import { RolesModel } from '../../ClientServer-Service/Parameter/Models/roles-mo
 
 
 import { UserEditModel, UserGetInModel, UserPutInModel } from '../../ClientServer-Service/Account/Models/user-model';
+import { RoleCode } from '../../ClientServer-Service/Account/Models/user-roles-model';
 
 @Component({
   selector: 'app-user-edit-page',
@@ -95,7 +96,7 @@ export class UserEditPageComponent extends BasePageConfirmCancelComponent<UserEd
   getRoler(): RolesModel[] {
 
     if (this._editModel && this._editModel.descrizione == '') {
-      return this.parameterService.Roles.filter(role => role.code == 10000 || role.code == 10001);
+      return this.parameterService.Roles.filter(role => role.code == RoleCode.Admin || role.code == RoleCode.PowerAdmin);
     }
 
     return this.parameterService.Roles;

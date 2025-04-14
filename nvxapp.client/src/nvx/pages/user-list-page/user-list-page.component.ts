@@ -9,6 +9,7 @@ import { ParameterService } from '../../ClientServer-Service/Parameter/parameter
 
 import { UserLoadInModel } from '../../ClientServer-Service/Account/Models/user-load-model';
 import { UserListInModel, UserListModel } from '../../ClientServer-Service/Account/Models/user-model';
+import { RoleCode } from '../../ClientServer-Service/Account/Models/user-roles-model';
 
 @Component({
   selector: 'app-user-list-page',
@@ -97,7 +98,7 @@ export class UserListPageComponent  implements OnInit {
 
   getAdmin() {
 
-    const roles = this.parameterService.Roles.filter(role => role.code == 10000);
+    const roles = this.parameterService.Roles.filter(role => role.code == RoleCode.Admin);
 
     const filtereduserList = this.userList.filter(usr =>
       roles.some(role => role.id === usr.roleId)
@@ -109,7 +110,7 @@ export class UserListPageComponent  implements OnInit {
 
   getPowerAdmin() {
 
-    const roles = this.parameterService.Roles.filter(role => role.code == 10001);
+    const roles = this.parameterService.Roles.filter(role => role.code == RoleCode.PowerAdmin);
 
     const filtereduserList = this.userList.filter(usr =>
       roles.some(role => role.id === usr.roleId)

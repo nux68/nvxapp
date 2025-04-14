@@ -9,6 +9,7 @@ import { ParameterService } from '../../ClientServer-Service/Parameter/parameter
 
 import { UserLoadInModel } from '../../ClientServer-Service/Account/Models/user-load-model';
 import { UserFinancialAdvisorListModel, UserFinancialAdvisorListInModel } from '../../ClientServer-Service/Account/Models/user-financial-advisor-model';
+import { RoleCode } from '../../ClientServer-Service/Account/Models/user-roles-model';
 
 
 @Component({
@@ -78,7 +79,7 @@ export class UserFinancialAdvisorListPageComponent implements OnInit {
 
   getAdmin() {
 
-    const roles = this.parameterService.Roles.filter(role => role.code == 100 );
+    const roles = this.parameterService.Roles.filter(role => role.code == RoleCode.FinancialAdvisorAdmin );
 
     const filteredUserFinancialAdvisorList = this.userFinancialAdvisorList.filter(usr =>
       roles.some(role => role.id === usr.roleId)
@@ -90,7 +91,7 @@ export class UserFinancialAdvisorListPageComponent implements OnInit {
 
   getPowerAdmin() {
 
-    const roles = this.parameterService.Roles.filter(role => role.code == 101);
+    const roles = this.parameterService.Roles.filter(role => role.code == RoleCode.FinancialAdvisorPowerAdmin);
 
     const filteredUserFinancialAdvisorList = this.userFinancialAdvisorList.filter(usr =>
       roles.some(role => role.id === usr.roleId)

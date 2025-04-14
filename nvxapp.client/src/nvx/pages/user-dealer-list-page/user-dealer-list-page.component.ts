@@ -10,6 +10,7 @@ import { ParameterService } from '../../ClientServer-Service/Parameter/parameter
 import { UserLoadInModel } from '../../ClientServer-Service/Account/Models/user-load-model';
 import { UserCompanyListModel, UserCompanyListInModel } from '../../ClientServer-Service/Account/Models/user-company-model';
 import { UserDealerListModel, UserDealerListInModel } from '../../ClientServer-Service/Account/Models/user-dealer-model';
+import { RoleCode } from '../../ClientServer-Service/Account/Models/user-roles-model';
 
 @Component({
   selector: 'app-user-dealer-list-page',
@@ -77,7 +78,7 @@ export class UserDealerListPageComponent implements OnInit {
 
   getAdmin() {
 
-    const roles = this.parameterService.Roles.filter(role => role.code == 10 || role.code == 1000);
+    const roles = this.parameterService.Roles.filter(role => role.code == RoleCode.DealerAdmin);
 
     const filteredUserDealerList = this.userDealerList.filter(usr =>
       roles.some(role => role.id === usr.roleId)
@@ -89,7 +90,7 @@ export class UserDealerListPageComponent implements OnInit {
 
   getPowerAdmin() {
 
-    const roles = this.parameterService.Roles.filter(role => role.code == 1001);
+    const roles = this.parameterService.Roles.filter(role => role.code == RoleCode.DealerPowerAdmin);
 
     const filteredUserDealerList = this.userDealerList.filter(usr =>
       roles.some(role => role.id === usr.roleId)

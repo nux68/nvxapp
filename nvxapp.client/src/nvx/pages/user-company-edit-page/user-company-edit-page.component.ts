@@ -13,6 +13,7 @@ import { ParameterService } from '../../ClientServer-Service/Parameter/parameter
 import { RolesModel } from '../../ClientServer-Service/Parameter/Models/roles-model';
 
 import { UserCompanyEditModel, UserCompanyGetInModel, UserCompanyPutInModel } from '../../ClientServer-Service/Account/Models/user-company-model';
+import { RoleCode } from '../../ClientServer-Service/Account/Models/user-roles-model';
 
 @Component({
   selector: 'app-user-company-edit-page',
@@ -94,7 +95,7 @@ export class UserCompanyEditPageComponent extends BasePageConfirmCancelComponent
   getRoler(): RolesModel[] {
 
     if (this._editModel && this._editModel.idUserCompany == 0) {
-      return this.parameterService.Roles.filter(role => role.code <= 10);
+      return this.parameterService.Roles.filter(role => role.code == RoleCode.User);
     }
 
     return this.parameterService.Roles;
