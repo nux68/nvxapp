@@ -71,7 +71,56 @@ export class UserInterfaceService {
       () => { console.log('Btn_Chiudi cliccato'); }
     );
   }
+
   
+
+  get Btn_LogIn(): ButtonItem {
+    return new ButtonItem(
+      'Login',
+      'log-in-outline',
+      'primary',
+      false,
+      () => { console.log('Btn_LogIn cliccato'); }
+    );
+  }
+  get Btn_LogOut(): ButtonItem {
+    return new ButtonItem(
+      'Logout',
+      'log-out-outline',
+      'primary',
+      false,
+      () => { console.log('Btn_LogOut cliccato'); }
+    );
+  }
+
+  get Btn_LogInAnnulla(): ButtonItem[] {
+
+    let buttonItem: ButtonItem[] = [];
+
+    const btn_LogIn = this.Btn_LogIn;
+    buttonItem.push(btn_LogIn);
+
+    const btn_Annulla = this.Btn_Annulla;
+    buttonItem.push(btn_Annulla);
+
+    return buttonItem;
+
+  }
+
+  get Btn_LogOutAnnulla(): ButtonItem[] {
+
+    let buttonItem: ButtonItem[] = [];
+
+    const btn_LogOut = this.Btn_LogOut;
+    buttonItem.push(btn_LogOut);
+
+    const btn_Annulla = this.Btn_Annulla;
+    buttonItem.push(btn_Annulla);
+
+    return buttonItem;
+
+  }
+
 }
 
 
