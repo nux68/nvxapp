@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { NvxHttpInterceptorService } from '../../../infrastructure/http-interceptor';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/user-interface.service';
 import { MessageType } from '../../../ClientServer-Service/ModelsBase/message';
+import { NavController } from '@ionic/angular';
 
 @Component({
   selector: 'app-http-background-error-dialog',
@@ -11,11 +12,14 @@ import { MessageType } from '../../../ClientServer-Service/ModelsBase/message';
 })
 export class HttpBackgroundErrorDialogComponent  implements OnInit {
 
+  
+
   public isModalOpen: boolean = false;
   public buttonbar: ButtonItem[] = [];
 
-  constructor(protected userInterfaceService: UserInterfaceService,
-    public nvxHttpInterceptorService: NvxHttpInterceptorService)
+  constructor(protected navCtrl: NavController,
+              protected userInterfaceService: UserInterfaceService,
+              public nvxHttpInterceptorService: NvxHttpInterceptorService)
   {
     this.buttonbar.push(userInterfaceService.Btn_Chiudi);
     this.buttonbar[0].event = this._handleButtonConfirmClick;
@@ -36,6 +40,7 @@ export class HttpBackgroundErrorDialogComponent  implements OnInit {
 
   onWillDismissErr(event: any) {
     this.close();
+    this.navCtrl.back();
   }
 
   _handleButtonConfirmClick = (param: object) => {

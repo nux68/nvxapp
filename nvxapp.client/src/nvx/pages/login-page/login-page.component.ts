@@ -10,6 +10,7 @@ import { UserLoadInModel } from '../../ClientServer-Service/Account/Models/user-
 import { UserDataAdditionalModel, UserNavigationService } from '../../Utility/user-navigation.service';
 import { SignalrService } from '../../Utility/signalr.service';
 import { environment } from '../../../environments/environment';
+import { ButtonItem, UserInterfaceService } from '../../Utility/user-interface.service';
 
 @Component({
   selector: 'app-login-page',
@@ -23,14 +24,21 @@ export class LoginPageComponent  implements OnInit {
   loginForm: FormGroup;
   public loginError!: string;
 
+  public buttonbar: ButtonItem[] = [];
+
   constructor(private accountService: AccountService,
               private userNavigationService: UserNavigationService,
+              protected userInterfaceService: UserInterfaceService,
               private fb: FormBuilder,
               private navCtrl: NavController,
               private authService: AuthService,
               private signalrService: SignalrService
   ) {
     this.title = 'Login';
+
+    this.buttonbar = userInterfaceService.Btn_LogInAnnulla;
+    this.buttonbar[0].event = this._handleButtonConfirmClick;
+    this.buttonbar[1].event = this._handleButtonCancelClick;
 
     this.loginForm = this.fb.group({
       //email: ['', [Validators.required, Validators.email]],
@@ -44,7 +52,11 @@ export class LoginPageComponent  implements OnInit {
   ionViewWillEnter() {
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.loginForm.statusChanges.subscribe(() => {
+      this.buttonbar[0].disabled = !this.loginForm.valid;
+    });
+  }
 
   login() {
     if (this.loginForm.valid) {
@@ -111,5 +123,15 @@ export class LoginPageComponent  implements OnInit {
     }
   }
 
+
+  private _handleButtonConfirmClick = (param: object) => {
+
+    this.login()
+
+  }
+
+  private _handleButtonCancelClick = (param: object) => {
+    this.navCtrl.navigateForward('/home');
+  }
 
 }

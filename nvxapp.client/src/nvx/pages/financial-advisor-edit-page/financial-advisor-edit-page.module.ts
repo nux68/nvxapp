@@ -5,15 +5,14 @@ import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
 import { SharedComponentModule } from '../../shared/shared-component.module';
 import { FinancialAdvisorEditPageComponent } from './financial-advisor-edit-page.component';
-import { BasePageConfirmCancelModule } from '../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.module';
+
 
 
 
 
 @NgModule({
   imports: [
-    BasePageConfirmCancelModule,
-
+    
     CommonModule,
     FormsModule,
     ReactiveFormsModule,

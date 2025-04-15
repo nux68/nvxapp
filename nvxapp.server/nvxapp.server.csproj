@@ -42,6 +42,10 @@
 	  <ProjectReference Include="..\nvxapp.server.service\nvxapp.server.service.csproj" />
 	</ItemGroup>
 	
+	<ItemGroup>
+	  <Folder Include="Logs\" />
+	</ItemGroup>
+	
 	<!-- Target per integrare la build del progetto Angular -->
 	<Target Name="BuildAndCopyAngular" BeforeTargets="Build">
 	
