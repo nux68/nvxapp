@@ -1,4 +1,5 @@
 <div>
+  
   <ion-modal class="nvx-modal" #httpErrModal [isOpen]="isModalOpen" (willDismiss)="onWillDismissErr($event)">
     <ng-template>
 
@@ -42,7 +43,7 @@
 
             <ion-button shape="round" *ngFor="let item of buttonbar" (click)="item.event({})" color="{{item.color}}" [disabled]="item.disabled" fill="solid">
               <ion-icon name="{{item.image}}"></ion-icon>
-              &nbsp;{{item.text}}
+              &nbsp;{{item.text}}&nbsp;&nbsp;
             </ion-button>
 
           </ion-buttons>
