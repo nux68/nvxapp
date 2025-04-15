@@ -5,7 +5,7 @@
 
 <ion-content [fullscreen]="true">
 
-  <!--<form [formGroup]="loginForm" (ngSubmit)="login()">-->
+  
   <form [formGroup]="loginForm">
     <ion-item>
       <ion-label position="floating">User Name</ion-label>
@@ -20,9 +20,6 @@
     <div *ngIf="loginError" class="error-container">
       <p class="error-text">{{ loginError }}</p>
     </div>
-
-    <!--<ion-button expand="full" type="submit" [disabled]="!loginForm.valid">Login</ion-button>-->
-    
 
   </form>
 
