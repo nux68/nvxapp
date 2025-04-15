@@ -48,4 +48,9 @@
   overflow: hidden; // Evita bordi tagliati
 }
 
+/*@media (max-width: 576px) {*/ /* Soglia per sm */
+  /*.nvx-modal {
+    display: none;
+  }
+}*/
 
