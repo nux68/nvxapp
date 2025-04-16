@@ -26,3 +26,129 @@ ion-menu-button {
 #container a {
   text-decoration: none;
 }
+
+
+/* attendance-calendar.component.scss */
+.calendar-container {
+  width: 100%;
+  height: 100%;
+  background-color: #212121;
+  color: #ffffff;
+}
+
+.month-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background-color: #333333;
+  border-bottom: 1px solid #444444;
+
+  h2 {
+    margin: 0;
+    text-align: center;
+    flex-grow: 1;
+    font-size: 18px;
+  }
+
+  .month-navigation {
+    display: flex;
+
+    ion-button {
+      --color: #ffffff;
+      font-size: 14px;
+    }
+  }
+}
+
+.weekday-header {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  background-color: #333333;
+  border-bottom: 1px solid #444444;
+
+  .weekday {
+    padding: 10px 0;
+    text-align: center;
+    font-weight: bold;
+    font-size: 14px;
+
+    &.weekend {
+      color: #3f51b5; // Blu per il weekend
+    }
+  }
+}
+
+.calendar-weeks {
+  .week {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    border-bottom: 1px solid #333333;
+  }
+
+  .day {
+    min-height: 100px;
+    border-right: 1px solid #333333;
+    position: relative;
+    padding: 5px;
+
+    &:last-child {
+      border-right: none;
+    }
+
+    &.non-current-month {
+      background-color: #1a1a1a;
+      color: #666666;
+    }
+
+    &.weekend {
+      .day-number {
+        color: #3f51b5; // Blu per weekend
+      }
+    }
+
+    .day-number {
+      position: absolute;
+      top: 5px;
+      left: 5px;
+      font-weight: bold;
+    }
+
+    .timestamps {
+      margin-top: 25px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+
+      .timestamp {
+        padding: 3px 5px;
+        border-radius: 3px;
+        font-size: 12px;
+        text-align: center;
+
+        &.entry {
+          /* background-color: #0d5f47; // Verde scuro per entrate
+          color: white;*/
+          background-color: var(--ion-color-primary); // Usa il colore primario di Ionic
+          color: var(--ion-color-primary-contrast); // Usa il colore di contrasto appropriato
+        }
+
+        &.exit {
+          /*   background-color: #6d2642; // Rosso scuro per uscite
+          color: white;*/
+          background-color: var(--ion-color-medium); // Usa il colore primario di Ionic
+          color: var(--ion-color-medium-contrast); // Usa il colore di contrasto appropriato
+        }
+      }
+    }
+  }
+}
+
+// Stile per i giorni festivi o speciali
+.day.holiday {
+  background-color: rgba(244, 67, 54, 0.1);
+
+  .day-number {
+    color: #f44336;
+  }
+}
