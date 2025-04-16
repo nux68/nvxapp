@@ -1,7 +1,11 @@
+// Import eventuali variabili globali o mixin se necessari nel tuo progetto
+// @import 'path/to/variables';
+
 ion-menu-button {
   color: var(--ion-color-primary);
 }
 
+// Stili generali (potrebbero essere in un file globale)
 #container {
   text-align: center;
   position: absolute;
@@ -28,127 +32,211 @@ ion-menu-button {
 }
 
 
-/* attendance-calendar.component.scss */
+/* Stili Calendario Presenze */
 .calendar-container {
   width: 100%;
-  height: 100%;
-  background-color: #212121;
-  color: #ffffff;
+  min-height: 100%; // Occupa almeno tutta l'altezza
+  background-color: #212121; // Sfondo scuro
+  color: #ffffff; // Testo bianco
+  display: flex;
+  flex-direction: column; // Layout verticale
 }
 
 .month-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px;
-  background-color: #333333;
-  border-bottom: 1px solid #444444;
+  padding: 10px 5px; // Padding ridotto orizzontalmente
+  background-color: #333333; // Sfondo header leggermente più chiaro
+  border-bottom: 1px solid #444444; // Bordo separatore
+  flex-shrink: 0; // Impedisce all'header di restringersi
 
   h2 {
     margin: 0;
     text-align: center;
-    flex-grow: 1;
-    font-size: 18px;
+    flex-grow: 1; // Occupa lo spazio centrale
+    font-size: clamp(16px, 4vw, 18px); // Dimensione font responsiva
+    font-weight: bold;
   }
+  // Stile bottoni navigazione mese
+  .nav-button {
+    --color: #ffffff; // Colore icona/testo bottone
+    font-size: 14px;
+    --padding-start: 5px;
+    --padding-end: 5px;
+    min-width: 40px; // Larghezza minima
 
-  .month-navigation {
-    display: flex;
-
-    ion-button {
-      --color: #ffffff;
-      font-size: 14px;
+    ion-icon {
+      font-size: 22px; // Dimensione icona
     }
   }
 }
 
+.calendar-grid {
+  flex-grow: 1; // Permette alla griglia di espandersi verticalmente
+  display: flex;
+  flex-direction: column;
+}
+
 .weekday-header {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(7, 1fr); // 7 colonne uguali
   background-color: #333333;
   border-bottom: 1px solid #444444;
+  flex-shrink: 0; // Impedisce all'header dei giorni di restringersi
 
   .weekday {
-    padding: 10px 0;
+    padding: 8px 0;
     text-align: center;
     font-weight: bold;
-    font-size: 14px;
+    font-size: clamp(12px, 3vw, 13px); // Font responsivo e leggermente più piccolo
+    text-transform: capitalize; // Es: Lun, Mar,...
 
     &.weekend {
-      color: #3f51b5; // Blu per il weekend
+      color: #64b5f6; // Blu chiaro per weekend (buono su sfondo scuro)
     }
   }
 }
 
 .calendar-weeks {
+  flex-grow: 1; // Occupa lo spazio rimanente
+  display: flex;
+  flex-direction: column;
+
   .week {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    border-bottom: 1px solid #333333;
+    border-bottom: 1px solid #444444; // Linea separatrice tra settimane
+    flex-grow: 1; // Le settimane si dividono lo spazio verticale disponibile
+    min-height: 100px; // Altezza minima per settimana (aggiustare se necessario)
+
+    &:last-child {
+      border-bottom: none; // Nessun bordo sotto l'ultima settimana
+    }
   }
 
   .day {
-    min-height: 100px;
-    border-right: 1px solid #333333;
-    position: relative;
+    border-right: 1px solid #444444; // Linea separatrice tra giorni
+    position: relative; // Necessario per posizionare .day-number
     padding: 5px;
+    display: flex; // Layout flex per contenuto interno
+    flex-direction: column; // Stack verticale: numero sopra, contenuto sotto
+    overflow: hidden; // Nasconde contenuto che esce dai bordi
 
     &:last-child {
-      border-right: none;
+      border-right: none; // Nessun bordo a destra per l'ultimo giorno
     }
-
+    // Giorno non del mese corrente
     &.non-current-month {
-      background-color: #1a1a1a;
-      color: #666666;
-    }
-
-    &.weekend {
+      background-color: #1a1a1a; // Sfondo molto scuro
       .day-number {
-        color: #3f51b5; // Blu per weekend
+        color: #555555; // Numero giorno grigio scuro
+      }
+      // Opzionale: Nascondi completamente il contenuto dei giorni non del mese
+      .day-content {
+        opacity: 0.5; // Oppure display: none;
       }
     }
-
+    // Giorno del weekend
+    &.weekend {
+      // background-color: #2a2a2a; // Leggermente diverso se si vuole
+      .day-number {
+        color: #64b5f6; // Numero giorno blu chiaro
+      }
+    }
+    // Numero del giorno
     .day-number {
       position: absolute;
-      top: 5px;
-      left: 5px;
+      top: 3px;
+      left: 4px;
+      font-size: 12px;
       font-weight: bold;
+      z-index: 1; // Sopra altri sfondi
     }
-
-    .timestamps {
-      margin-top: 25px;
+    // Contenitore per giustificativi e timbrature
+    .day-content {
+      margin-top: 20px; // Spazio sotto il numero del giorno
       display: flex;
       flex-direction: column;
-      gap: 5px;
+      gap: 5px; // Spazio tra sezione giustificativi e timbrature
+      flex-grow: 1; // Permette al contenuto di usare lo spazio disponibile
+      overflow-y: auto; // Abilita scroll verticale se il contenuto è troppo
+      padding-bottom: 5px; // Spazio sotto il contenuto
+      // Nascondi la scrollbar standard (opzionale)
+      &::-webkit-scrollbar {
+        display: none;
+      }
+      // Chrome, Safari, Opera
+      -ms-overflow-style: none; // IE, Edge
+      scrollbar-width: none; // Firefox
+    }
+    // --- Sezione Giustificativi ---
+    .justifications {
+      display: flex;
+      flex-direction: column;
+      gap: 3px; // Spazio tra giustificativi multipli
+
+      .justification {
+        padding: 3px 5px;
+        border-radius: 4px; // Angoli arrotondati
+        font-size: 11px; // Font piccolo
+        text-align: center;
+        font-weight: 500; // Medio peso
+        color: #ffffff; // Testo bianco di default
+        line-height: 1.3; // Interlinea
+        // Colori specifici per tipo
+        &.justification-vacation {
+          background-color: #1e88e5;
+        }
+        // Blu (Ferie, Festivo)
+        &.justification-sick {
+          background-color: #e53935;
+        }
+        // Rosso (Malattia)
+        &.justification-leave {
+          background-color: #fb8c00;
+        }
+        // Arancio (Permesso)
+        &.justification-other {
+          background-color: #5e35b1;
+        }
+        // Viola (Altro)
+      }
+    }
+    // --- Sezione Timbrature ---
+    .timestamps {
+      display: flex;
+      flex-direction: column;
+      gap: 3px; // Spazio tra timbrature
 
       .timestamp {
-        padding: 3px 5px;
-        border-radius: 3px;
-        font-size: 12px;
+        padding: 2px 4px;
+        border-radius: 4px;
+        font-size: 11px;
         text-align: center;
+        line-height: 1.3;
 
         &.entry {
-          /* background-color: #0d5f47; // Verde scuro per entrate
-          color: white;*/
-          background-color: var(--ion-color-primary); // Usa il colore primario di Ionic
-          color: var(--ion-color-primary-contrast); // Usa il colore di contrasto appropriato
+          background-color: var(--ion-color-primary, #3880ff); // Colore primario Ionic (con fallback)
+          color: var(--ion-color-primary-contrast, #ffffff); // Contrasto primario (con fallback)
         }
 
         &.exit {
-          /*   background-color: #6d2642; // Rosso scuro per uscite
-          color: white;*/
-          background-color: var(--ion-color-medium); // Usa il colore primario di Ionic
-          color: var(--ion-color-medium-contrast); // Usa il colore di contrasto appropriato
+          background-color: var(--ion-color-medium, #92949c); // Colore medium Ionic (con fallback)
+          color: var(--ion-color-medium-contrast, #ffffff); // Contrasto medium (con fallback)
         }
       }
     }
-  }
-}
-
-// Stile per i giorni festivi o speciali
-.day.holiday {
-  background-color: rgba(244, 67, 54, 0.1);
-
-  .day-number {
-    color: #f44336;
+    // Stile aggiuntivo per giorni con giustificativo full-day
+    &.full-day-justification {
+      // Optional: Evidenzia l'intero sfondo
+      // background-color: rgba(255, 255, 255, 0.05);
+      .justifications .justification {
+        // Rendi il giustificativo più evidente
+        // font-weight: bold;
+        // Oppure aggiungi un bordo
+        // border: 1px solid rgba(255, 255, 255, 0.5);
+      }
+    }
   }
 }
