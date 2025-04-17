@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
 import { AdminPageComponent } from './admin-page.component';
-import { SharedComponentModule } from '../../../shared/shared-component.module';
+import { SharedComponentInfrastructureModule } from '../../../shared/shared-component-infrastructure.module';
 
 
 
@@ -20,7 +20,7 @@ import { SharedComponentModule } from '../../../shared/shared-component.module';
         component: AdminPageComponent
       }
     ]),
-    SharedComponentModule
+    SharedComponentInfrastructureModule
   ],
   declarations: [AdminPageComponent]
 })

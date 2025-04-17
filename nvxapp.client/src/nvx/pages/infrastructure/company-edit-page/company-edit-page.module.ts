@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
-import { SharedComponentModule } from '../../../shared/shared-component.module';
+import { SharedComponentInfrastructureModule } from '../../../shared/shared-component-infrastructure.module';
 import { CompanyEditPageComponent } from './company-edit-page.component';
 
 
@@ -22,7 +22,7 @@ import { CompanyEditPageComponent } from './company-edit-page.component';
         component: CompanyEditPageComponent
       }
     ]),
-    SharedComponentModule
+    SharedComponentInfrastructureModule
   ],
 
   declarations: [CompanyEditPageComponent],

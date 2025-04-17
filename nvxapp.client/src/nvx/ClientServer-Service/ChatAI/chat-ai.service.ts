@@ -4,7 +4,7 @@ import { environment } from '../../../environments/environment';
 import { GenericRequest } from '../ModelsBase/generic-request';
 import { GenericResult } from '../ModelsBase/generic-result';
 import { HttpClient } from '@angular/common/http';
-import { AuthService } from '../../Utility/auth.service';
+import { AuthService } from '../../Utility/infrastructure/auth.service';
 import { ChatAIInModel, ChatAIOutModel } from './Models/chat-AI-model';
 
 @Injectable({

@@ -9,13 +9,13 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
-import { NvxHttpInterceptor } from '../nvx/infrastructure/http-interceptor';
-import { HttpBackgroundWorkingComponentComponent } from '../nvx/shared/components/http-background-working-component/http-background-working-component.component';
-import { BackgroundWorkingComponent } from '../nvx/shared/components/background-working/background-working.component';
-import { FabMenuComponent } from '../nvx/shared/components/fab-menu/fab-menu.component';
+import { NvxHttpInterceptor } from '../nvx/http/http-interceptor';
+import { HttpBackgroundWorkingComponentComponent } from '../nvx/shared/components/infrastructure/http-background-working-component/http-background-working-component.component';
+import { BackgroundWorkingComponent } from '../nvx/shared/components/infrastructure/background-working/background-working.component';
+import { FabMenuComponent } from '../nvx/shared/components/infrastructure/fab-menu/fab-menu.component';
 import { FormsModule } from '@angular/forms';
-import { HttpBackgroundErrorDialogComponent } from '../nvx/shared/components/http-background-error-dialog/http-background-error-dialog.component';
-import { ParameterLoaderComponent } from '../nvx/shared/components/parameter-loader/parameter-loader.component';
+import { HttpBackgroundErrorDialogComponent } from '../nvx/shared/components/infrastructure/http-background-error-dialog/http-background-error-dialog.component';
+import { ParameterLoaderComponent } from '../nvx/shared/components/infrastructure/parameter-loader/parameter-loader.component';
 //import { GenericFilterPipe } from '../nvx/pipe/generic-filter.pipe';
 
 

@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { SignalrService } from '../../../Utility/signalr.service';
+import { SignalrService } from '../../../Utility/infrastructure/signalr.service';
 import { environment } from '../../../../environments/environment';
 import { Observable, of } from 'rxjs';
-import { MonthNavigatorService } from '../../../Utility/month-navigator.service';
+import { MonthNavigatorService } from '../../../Utility/infrastructure/month-navigator.service';
 
 
 

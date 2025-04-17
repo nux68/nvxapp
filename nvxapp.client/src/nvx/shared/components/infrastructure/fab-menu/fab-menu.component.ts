@@ -1,10 +1,10 @@
 import { Component, OnInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { IonContent, IonModal } from '@ionic/angular';
-import { SpeechService } from '../../../Utility/speech.service';
-import { ChatAIService } from '../../../ClientServer-Service/ChatAI/chat-ai.service';
-import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
-import { ChatAIInModel } from '../../../ClientServer-Service/ChatAI/Models/chat-AI-model';
-import { FabMenuService } from '../../../Utility/fab-menu.service';
+import { SpeechService } from '../../../../Utility/infrastructure/speech.service';
+import { ChatAIService } from '../../../../ClientServer-Service/ChatAI/chat-ai.service';
+import { GenericRequest } from '../../../../ClientServer-Service/ModelsBase/generic-request';
+import { ChatAIInModel } from '../../../../ClientServer-Service/ChatAI/Models/chat-AI-model';
+import { FabMenuService } from '../../../../Utility/infrastructure/fab-menu.service';
 import { IonFab } from '@ionic/angular';
 
 @Component({

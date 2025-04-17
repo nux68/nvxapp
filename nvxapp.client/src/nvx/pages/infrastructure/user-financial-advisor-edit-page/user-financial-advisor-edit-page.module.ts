@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
-import { SharedComponentModule } from '../../../shared/shared-component.module';
+import { SharedComponentInfrastructureModule } from '../../../shared/shared-component-infrastructure.module';
 import { UserFinancialAdvisorEditPageComponent } from './user-financial-advisor-edit-page.component';
 
 
@@ -25,7 +25,7 @@ import { UserFinancialAdvisorEditPageComponent } from './user-financial-advisor-
         component: UserFinancialAdvisorEditPageComponent
       }
     ]),
-    SharedComponentModule
+    SharedComponentInfrastructureModule
   ],
 
   declarations: [UserFinancialAdvisorEditPageComponent],

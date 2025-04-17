@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
 import { FinancialAdvisorListPageComponent } from './financial-advisor-list-page.component';
-import { SharedComponentModule } from '../../../shared/shared-component.module';
+import { SharedComponentInfrastructureModule } from '../../../shared/shared-component-infrastructure.module';
 
 @NgModule({
   imports: [
@@ -17,7 +17,7 @@ import { SharedComponentModule } from '../../../shared/shared-component.module';
         component: FinancialAdvisorListPageComponent
       }
     ]),
-    SharedComponentModule
+    SharedComponentInfrastructureModule
   ],
   declarations: [FinancialAdvisorListPageComponent]
 })

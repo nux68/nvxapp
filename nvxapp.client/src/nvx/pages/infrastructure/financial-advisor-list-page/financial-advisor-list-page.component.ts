@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { AccountService } from '../../../ClientServer-Service/Account/account.service';
-import { UserDataAdditionalModel, UserNavigationService } from '../../../Utility/user-navigation.service';
+import { UserDataAdditionalModel, UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { UserLoadInModel } from '../../../ClientServer-Service/Account/Models/user-load-model';
 import { FinancialAdvisorListInModel, FinancialAdvisorListModel } from '../../../ClientServer-Service/Account/Models/financial-advisor-model';
-import { ButtonItem, UserInterfaceService } from '../../../Utility/user-interface.service';
-import { FabMenuService, FabMenuItem } from '../../../Utility/fab-menu.service';
+import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
+import { FabMenuService, FabMenuItem } from '../../../Utility/infrastructure/fab-menu.service';
 
 @Component({
   selector: 'app-financial-advisor-list-page',

@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { ButtonItem } from '../../../Utility/user-interface.service';
+import { ButtonItem } from '../../../../Utility/infrastructure/user-interface.service';
 
 @Component({
   selector: 'app-page-buttonbar',

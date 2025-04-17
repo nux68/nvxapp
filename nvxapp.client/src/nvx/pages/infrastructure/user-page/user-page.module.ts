@@ -4,7 +4,7 @@ import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { UserPageComponent } from './user-page.component';
-import { SharedComponentModule } from '../../../shared/shared-component.module';
+import { SharedComponentInfrastructureModule } from '../../../shared/shared-component-infrastructure.module';
 
 
 
@@ -19,7 +19,7 @@ import { SharedComponentModule } from '../../../shared/shared-component.module';
         component: UserPageComponent
       }
     ]),
-    SharedComponentModule
+    SharedComponentInfrastructureModule
   ],
   declarations: [UserPageComponent]
 })

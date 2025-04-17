@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { AccountService } from '../nvx/ClientServer-Service/Account/account.service';
-import { AuthService } from '../nvx/Utility/auth.service';
-import { UserNavigationService } from '../nvx/Utility/user-navigation.service';
-import { SignalrService } from '../nvx/Utility/signalr.service';
+import { AuthService } from '../nvx/Utility/infrastructure/auth.service';
+import { UserNavigationService } from '../nvx/Utility/infrastructure/user-navigation.service';
+import { SignalrService } from '../nvx/Utility/infrastructure/signalr.service';
 import { environment } from '../environments/environment';
-import { MainMenuItem, MainMenuService } from '../nvx/Utility/main-menu.service';
+import { MainMenuItem, MainMenuService } from '../nvx/Utility/infrastructure/main-menu.service';
 
 
 @Component({

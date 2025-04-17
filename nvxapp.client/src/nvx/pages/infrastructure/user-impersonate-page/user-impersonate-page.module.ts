@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
 import { UserImpersonatePageComponent } from './user-impersonate-page.component';
-import { SharedComponentModule } from '../../../shared/shared-component.module';
+import { SharedComponentInfrastructureModule } from '../../../shared/shared-component-infrastructure.module';
 
 
 @NgModule({
@@ -18,7 +18,7 @@ import { SharedComponentModule } from '../../../shared/shared-component.module';
         component: UserImpersonatePageComponent
       }
     ]),
-    SharedComponentModule
+    SharedComponentInfrastructureModule
   ],
   declarations: [UserImpersonatePageComponent]
 })

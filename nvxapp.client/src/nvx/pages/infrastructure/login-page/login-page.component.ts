@@ -5,12 +5,12 @@ import { UserRolesInModel } from '../../../ClientServer-Service/Account/Models/u
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NavController } from '@ionic/angular';
 import { LoginInModel } from '../../../ClientServer-Service/Account/Models/login-model';
-import { AuthService } from '../../../Utility/auth.service';
+import { AuthService } from '../../../Utility/infrastructure/auth.service';
 import { UserLoadInModel } from '../../../ClientServer-Service/Account/Models/user-load-model';
-import { UserDataAdditionalModel, UserNavigationService } from '../../../Utility/user-navigation.service';
-import { SignalrService } from '../../../Utility/signalr.service';
+import { UserDataAdditionalModel, UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
+import { SignalrService } from '../../../Utility/infrastructure/signalr.service';
 import { environment } from '../../../../environments/environment';
-import { ButtonItem, UserInterfaceService } from '../../../Utility/user-interface.service';
+import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 
 @Component({
   selector: 'app-login-page',

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
-import { UserInterfaceService } from '../../../Utility/user-interface.service';
+import { UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { NavController } from '@ionic/angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AccountService } from '../../../ClientServer-Service/Account/account.service';
@@ -8,7 +8,7 @@ import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic
 import { Observable } from 'rxjs/internal/Observable';
 import { map, catchError } from 'rxjs';
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
-import { StringHelperService } from '../../../Utility/string-helper.service';
+import { StringHelperService } from '../../../Utility/infrastructure/string-helper.service';
 import { ParameterService } from '../../../ClientServer-Service/Parameter/parameter.service';
 import { RolesModel } from '../../../ClientServer-Service/Parameter/Models/roles-model';
 
