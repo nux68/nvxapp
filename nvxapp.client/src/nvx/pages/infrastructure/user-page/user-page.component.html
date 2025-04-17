@@ -30,7 +30,7 @@
     <div class="calendar-grid">
       <!-- Intestazione giorni della settimana -->
       <div class="weekday-header">
-        <div class="weekday" *ngFor="let day of weekDays; let i = index"
+        <div class="weekday" *ngFor="let day of monthNavigatorService.weekDays; let i = index"
              [ngClass]="{'weekend': i > 4}">
           {{ day }}
         </div>

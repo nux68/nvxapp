@@ -1,3 +1,5 @@
+// --- START OF FILE month-navigator.service.ts ---
+
 import { Injectable } from '@angular/core';
 
 @Injectable({
@@ -7,38 +9,53 @@ export class MonthNavigatorService {
   private _currentMonth: number;
   private _currentYear: number;
 
+  // --- NUOVO: Definizioni costanti per nomi giorni/mesi ---
+  private readonly _weekDays = ['lun', 'mar', 'mer', 'gio', 'ven', 'sab', 'dom'];
+  private readonly _monthNames = ['GENNAIO', 'FEBBRAIO', 'MARZO', 'APRILE', 'MAGGIO', 'GIUGNO',
+    'LUGLIO', 'AGOSTO', 'SETTEMBRE', 'OTTOBRE', 'NOVEMBRE', 'DICEMBRE'];
+  // --- FINE NUOVO ---
+
   constructor() {
-    // Inizializza con il mese e anno correnti
     const today = new Date();
     this._currentMonth = today.getMonth();
     this._currentYear = today.getFullYear();
   }
 
-  /**
-   * Ottiene il mese corrente (0-11, dove 0 è gennaio)
-   */
   get currentMonth(): number {
     return this._currentMonth;
   }
 
-  /**
-   * Ottiene l'anno corrente
-   */
   get currentYear(): number {
     return this._currentYear;
   }
 
-  /**
-   * Ottiene il nome del mese corrente
-   */
+  // MODIFICATO: Usa la costante interna
   get currentMonthName(): string {
+    // Check per evitare errori se _currentMonth fosse invalido (improbabile qui)
+    if (this._currentMonth >= 0 && this._currentMonth < this._monthNames.length) {
+      return this._monthNames[this._currentMonth];
+    }
+    // Fallback se l'indice non è valido
     return new Date(this._currentYear, this._currentMonth, 1)
-      .toLocaleString('default', { month: 'long' });
+      .toLocaleString('it-IT', { month: 'long' }).toUpperCase(); // Usa localizzazione come fallback
+  }
+
+  // --- NUOVO: Getters per le costanti ---
+  /**
+   * Restituisce l'array dei nomi abbreviati dei giorni della settimana (lun-dom)
+   */
+  get weekDays(): string[] {
+    return this._weekDays;
   }
 
   /**
-   * Vai al mese successivo
+   * Restituisce l'array dei nomi completi dei mesi (GENNAIO-DICEMBRE)
    */
+  get monthNames(): string[] {
+    return this._monthNames;
+  }
+  // --- FINE NUOVO ---
+
   nextMonth(): void {
     if (this._currentMonth === 11) {
       this._currentMonth = 0;
@@ -48,9 +65,6 @@ export class MonthNavigatorService {
     }
   }
 
-  /**
-   * Vai al mese precedente
-   */
   previousMonth(): void {
     if (this._currentMonth === 0) {
       this._currentMonth = 11;
@@ -60,11 +74,6 @@ export class MonthNavigatorService {
     }
   }
 
-  /**
-   * Imposta un mese e anno specifici
-   * @param month Mese (0-11)
-   * @param year Anno
-   */
   setMonthAndYear(month: number, year: number): void {
     if (month < 0 || month > 11) {
       throw new Error('Il mese deve essere un valore tra 0 e 11');
@@ -73,35 +82,24 @@ export class MonthNavigatorService {
     this._currentYear = year;
   }
 
-  /**
-   * Resetta al mese e anno correnti
-   */
   resetToCurrentDate(): void {
     const today = new Date();
     this._currentMonth = today.getMonth();
     this._currentYear = today.getFullYear();
   }
 
-  /**
-   * Ottiene la data del primo giorno del mese corrente
-   */
   getFirstDayOfMonth(): Date {
     return new Date(this._currentYear, this._currentMonth, 1);
   }
 
-  /**
-   * Ottiene la data dell'ultimo giorno del mese corrente
-   */
   getLastDayOfMonth(): Date {
     return new Date(this._currentYear, this._currentMonth + 1, 0);
   }
 
-  /**
-   * Controlla se il mese corrente è il mese attuale
-   */
   isCurrentMonthToday(): boolean {
     const today = new Date();
     return this._currentMonth === today.getMonth() &&
       this._currentYear === today.getFullYear();
   }
 }
+// --- END OF FILE month-navigator.service.ts ---
