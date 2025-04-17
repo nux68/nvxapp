@@ -5,77 +5,14 @@
 
 <ion-content [fullscreen]="true">
 
-  <div class="calendar-container">
 
-    <!-- MODIFICATO: Struttura Navigazione Mese -->
-    <div class="month-header">
-      <!-- Pulsante Mese Precedente -->
-      <ion-button fill="clear" (click)="previousMonth()" class="nav-button prev">
-        <ion-icon slot="icon-only" name="chevron-back-outline"></ion-icon>
-        <!-- Optional: Nome mese precedente -->
-        <!-- {{ monthNames[(currentMonthIndex + 11) % 12].substring(0, 3) }} -->
-      </ion-button>
+  <div id="container">
+    <strong class="capitalize">{{ title }}</strong>
+    <p>{{title}}Component works...</p>
 
-      <!-- Nome Mese e Anno -->
-      <h2>{{ currentMonthDisplay }}</h2>
+  </div>
 
-      <!-- Pulsante Mese Successivo -->
-      <ion-button fill="clear" (click)="nextMonth()" class="nav-button next">
-        <!-- Optional: Nome mese successivo -->
-        <!-- {{ monthNames[(currentMonthIndex + 1) % 12].substring(0, 3) }} -->
-        <ion-icon slot="icon-only" name="chevron-forward-outline"></ion-icon>
-      </ion-button>
-    </div>
 
-    <div class="calendar-grid">
-      <!-- Intestazione giorni della settimana -->
-      <div class="weekday-header">
-        <div class="weekday" *ngFor="let day of monthNavigatorService.weekDays; let i = index"
-             [ngClass]="{'weekend': i > 4}">
-          {{ day }}
-        </div>
-      </div>
-
-      <!-- Griglia del calendario -->
-      <div class="calendar-weeks">
-        <div class="week" *ngFor="let week of weeks">
-          <!-- MODIFICATO: Aggiunte classi per giustificativi -->
-          <div class="day" *ngFor="let day of week; let i = index"
-               [ngClass]="{'non-current-month' : !day.isCurrentMonth,'weekend' : i>4,'has-content': (day.records && day.records.length > 0) || (day.justifications && day.justifications.length > 0),'full-day-justification': hasFullDayJustification(day.justifications)}">
-
-            <div class="day-number">{{ day.day }}</div>
-
-            <!-- NUOVO: Contenitore per contenuto del giorno -->
-            <div class="day-content">
-
-              <!-- NUOVO: Sezione Visualizzazione Giustificativi -->
-              <ng-container *ngIf="day.justifications && day.justifications.length > 0">
-                <div class="justifications">
-                  <div class="justification" *ngFor="let just of day.justifications"
-                       [ngClass]="getJustificationClass(just)">
-                    <!-- Classi dinamiche per stile -->
-                    {{ just.description }}
-                  </div>
-                </div>
-              </ng-container>
-
-              <!-- Sezione Visualizzazione Timbrature -->
-              <ng-container *ngIf="day.records && day.records.length > 0">
-                <div class="timestamps">
-                  <!-- Timbrature ordinate per orario -->
-                  <div class="timestamp" *ngFor="let record of getOrderedTimestamps(day)"
-                       [ngClass]="{'entry': record.type === 'E', 'exit': record.type === 'U'}">
-                    {{ record.type }} {{ record.time }}
-                  </div>
-                </div>
-              </ng-container>
-
-            </div> <!-- Fine day-content -->
-
-          </div> <!-- Fine day -->
-        </div> <!-- Fine week -->
-      </div> <!-- Fine calendar-weeks -->
-    </div> <!-- Fine calendar-grid -->
-  </div> <!-- Fine calendar-container -->
+  <!--<app-fab-menu></app-fab-menu>-->
 
 </ion-content>
