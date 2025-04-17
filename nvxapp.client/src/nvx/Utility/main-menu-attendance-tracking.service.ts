@@ -12,7 +12,17 @@ export class MainMenuAttendanceTrackingService implements iMainMenuService {
   public get Pages4Admin(): MainMenuItem[] { return []; }
   public get Pages4DealerAdmin(): MainMenuItem[] { return []; }
   public get Pages4FinancialAdvisorAdmin(): MainMenuItem[] { return []; }
-  public get Pages4CompanyAdmin(): MainMenuItem[] { return []; }
-  public get Pages4User(): MainMenuItem[] { return []; }
+  public get Pages4CompanyAdmin(): MainMenuItem[] {
+
+    return [
+      { title: 'Admin Time Sheet', component: "TimeSheetAdminPageComponent", url: '/admintimesheet', icon: 'ellipse' }
+    ];
+
+  }
+  public get Pages4User(): MainMenuItem[] {
+    return [
+      { title: 'User Time Sheet', component: "TimeSheetUserPageComponent", url: '/usertimesheet', icon: 'person' },
+    ];
+  }
 
 }

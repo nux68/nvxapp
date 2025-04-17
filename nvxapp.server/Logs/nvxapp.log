@@ -6707,3 +6707,183 @@ RabbitMQ.Client.Exceptions.BrokerUnreachableException: None of the specified end
 2025-04-08 10:18:29.118 [INF] Call: <UserLoad>b__0, GUID: "674eacc1-3e3c-4965-9368-7e85688c164f", param: {"Data":{"Id":"fdf6031a-48d0-4571-b29b-357b97bd8e81"}}
 2025-04-08 10:18:30.550 [INF] Call: <UserCompanyList>b__23_0, GUID: "0a4dfed5-12da-49b2-a7f5-08c459642b28", param: {"Data":{}}
 2025-04-08 10:18:46.227 [INF] Call: <UserCompanyList>b__23_0, GUID: "1805a918-0372-456b-8a61-1da300a9d8ff", param: {"Data":{}}
+2025-04-17 14:25:01.121 [ERR] StartAsync RabbitMq:(2)Impossibile stabilira la connessione con il server
+RabbitMQ.Client.Exceptions.BrokerUnreachableException: None of the specified endpoints were reachable
+ ---> System.AggregateException: One or more errors occurred. (Connection failed, host 127.0.0.1:5672)
+ ---> RabbitMQ.Client.Exceptions.ConnectFailureException: Connection failed, host 127.0.0.1:5672
+ ---> System.Net.Sockets.SocketException (10061): Impossibile stabilire la connessione. Rifiuto persistente del computer di destinazione.
+   at System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs.ThrowException(SocketError error, CancellationToken cancellationToken)
+   at System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs.System.Threading.Tasks.Sources.IValueTaskSource.GetResult(Int16 token)
+   at System.Net.Sockets.Socket.<ConnectAsync>g__WaitForConnectWithCancellation|285_0(AwaitableSocketAsyncEventArgs saea, ValueTask connectTask, CancellationToken cancellationToken)
+   at RabbitMQ.Client.Impl.SocketFactory.ConnectUsingAddressFamilyAsync(IPEndPoint endpoint, Func`2 socketFactory, AddressFamily family, TimeSpan connectionTimeout, CancellationToken cancellationToken)
+   --- End of inner exception stack trace ---
+   at RabbitMQ.Client.Impl.SocketFactory.ConnectUsingAddressFamilyAsync(IPEndPoint endpoint, Func`2 socketFactory, AddressFamily family, TimeSpan connectionTimeout, CancellationToken cancellationToken)
+   at RabbitMQ.Client.Impl.SocketFactory.OpenAsync(AmqpTcpEndpoint amqpTcpEndpoint, Func`2 socketFactory, TimeSpan connectionTimeout, CancellationToken cancellationToken)
+   at RabbitMQ.Client.Impl.SocketFrameHandler.CreateAsync(AmqpTcpEndpoint amqpTcpEndpoint, Func`2 socketFactory, TimeSpan connectionTimeout, CancellationToken cancellationToken)
+   at RabbitMQ.Client.ConnectionFactory.CreateFrameHandlerAsync(AmqpTcpEndpoint endpoint, CancellationToken cancellationToken)
+   at RabbitMQ.Client.EndpointResolverExtensions.SelectOneAsync[T](IEndpointResolver resolver, Func`3 selector, CancellationToken cancellationToken)
+   --- End of inner exception stack trace ---
+   at RabbitMQ.Client.EndpointResolverExtensions.SelectOneAsync[T](IEndpointResolver resolver, Func`3 selector, CancellationToken cancellationToken)
+   at RabbitMQ.Client.Framing.AutorecoveringConnection.CreateAsync(ConnectionConfig config, IEndpointResolver endpoints, CancellationToken cancellationToken)
+   at RabbitMQ.Client.ConnectionFactory.CreateConnectionAsync(IEndpointResolver endpointResolver, String clientProvidedName, CancellationToken cancellationToken)
+   --- End of inner exception stack trace ---
+   at RabbitMQ.Client.ConnectionFactory.CreateConnectionAsync(IEndpointResolver endpointResolver, String clientProvidedName, CancellationToken cancellationToken)
+   at nvxapp.server.service.RabbitMQ.RabbitMqConnection.Start() in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\RabbitMQ\RabbitMqConnection.cs:line 45
+2025-04-17 14:25:07.348 [INF] Call: <Roles>b__2_0, GUID: "7d0f766f-e7ff-461f-93ef-05cebf5d009c", param: {"Data":{}}
+2025-04-17 14:25:08.303 [INF] Call: <Roles>b__2_0, GUID: "1d263b77-985e-4a8e-8d1c-2ae798b88c01", param: {"Data":{}}
+2025-04-17 14:25:08.393 [INF] Call: <Roles>b__2_0, GUID: "ac96411f-8b3a-42b2-aa60-b3bcd16f395b", param: {"Data":{}}
+2025-04-17 14:25:08.484 [INF] Call: <Roles>b__2_0, GUID: "fc7731f7-d147-4758-934b-3ca1ebe07709", param: {"Data":{}}
+2025-04-17 14:25:08.575 [INF] Call: <Roles>b__2_0, GUID: "0e19b30a-f05f-4e44-aad0-a65f816f27d2", param: {"Data":{}}
+2025-04-17 14:25:08.651 [INF] Call: <Roles>b__2_0, GUID: "d9faf94c-eae7-4685-9045-2a9dc6144f0d", param: {"Data":{}}
+2025-04-17 14:25:08.741 [INF] Call: <Roles>b__2_0, GUID: "e483921a-4c9c-4191-a3bd-93531200d0e5", param: {"Data":{}}
+2025-04-17 14:25:08.816 [INF] Call: <Roles>b__2_0, GUID: "46b808e2-d801-499a-8ce7-01d44ef650a7", param: {"Data":{}}
+2025-04-17 14:25:08.891 [INF] Call: <Roles>b__2_0, GUID: "00b40ecf-634e-4b81-b7fc-7e2f10ba0506", param: {"Data":{}}
+2025-04-17 14:25:08.966 [INF] Call: <Roles>b__2_0, GUID: "0f4dd8cc-d44c-4baf-83b9-f8c0020a0957", param: {"Data":{}}
+2025-04-17 14:25:09.042 [INF] Call: <Roles>b__2_0, GUID: "94e77939-be8d-4af8-9d7b-fb9a4880dca7", param: {"Data":{}}
+2025-04-17 14:25:09.117 [INF] Call: <Roles>b__2_0, GUID: "26e9b417-efd7-4d84-8c29-97a17c061db2", param: {"Data":{}}
+2025-04-17 14:25:09.207 [INF] Call: <Roles>b__2_0, GUID: "45962d47-7491-4e7c-ada9-07f7f5949a75", param: {"Data":{}}
+2025-04-17 14:25:09.284 [INF] Call: <Roles>b__2_0, GUID: "c8a68f4d-1ef5-45c9-9ffb-dd2402bd0a33", param: {"Data":{}}
+2025-04-17 14:25:09.358 [INF] Call: <Roles>b__2_0, GUID: "632aa698-943e-4d66-b1c3-c260c89bd41a", param: {"Data":{}}
+2025-04-17 14:25:09.448 [INF] Call: <Roles>b__2_0, GUID: "b8a6d849-6406-4f15-a355-e9a090aafef2", param: {"Data":{}}
+2025-04-17 14:25:09.538 [INF] Call: <Roles>b__2_0, GUID: "f96dfb54-cd49-422e-ab41-b62cabff2cb1", param: {"Data":{}}
+2025-04-17 14:25:09.614 [INF] Call: <Roles>b__2_0, GUID: "be245b85-032c-4aa7-8bbb-b84b8d658063", param: {"Data":{}}
+2025-04-17 14:25:09.690 [INF] Call: <Roles>b__2_0, GUID: "050ad5ae-311c-4f10-99ac-a74ddd28b2bb", param: {"Data":{}}
+2025-04-17 14:25:09.780 [INF] Call: <Roles>b__2_0, GUID: "ab6d0f83-ff38-4665-8554-77a0c9cad370", param: {"Data":{}}
+2025-04-17 14:25:09.870 [INF] Call: <Roles>b__2_0, GUID: "4a2a0a28-9deb-4660-aa98-e56e3e48761a", param: {"Data":{}}
+2025-04-17 14:25:09.990 [INF] Call: <Roles>b__2_0, GUID: "23bc0735-75b8-4008-beff-1e462517c19e", param: {"Data":{}}
+2025-04-17 14:25:10.095 [INF] Call: <Roles>b__2_0, GUID: "335549a7-8c1a-4066-9598-5d5023b8a4da", param: {"Data":{}}
+2025-04-17 14:25:10.200 [INF] Call: <Roles>b__2_0, GUID: "4ce5ee7f-0a18-4e4f-86f1-8234c907f95b", param: {"Data":{}}
+2025-04-17 14:25:10.305 [INF] Call: <Roles>b__2_0, GUID: "1677958a-3da4-4fd3-bb33-60839d41dbca", param: {"Data":{}}
+2025-04-17 14:25:10.425 [INF] Call: <Roles>b__2_0, GUID: "b011628f-d90a-4560-92a6-9d291362d7dd", param: {"Data":{}}
+2025-04-17 14:25:10.575 [INF] Call: <Roles>b__2_0, GUID: "d0cfc911-d551-429a-a568-e8d7026c6c82", param: {"Data":{}}
+2025-04-17 14:25:10.695 [INF] Call: <Roles>b__2_0, GUID: "305080ff-0a89-4931-8180-7eb0f65d5d51", param: {"Data":{}}
+2025-04-17 14:25:10.815 [INF] Call: <Roles>b__2_0, GUID: "337ffd6e-3f1f-4bce-ad4c-b27b0c6ce271", param: {"Data":{}}
+2025-04-17 14:25:10.920 [INF] Call: <Roles>b__2_0, GUID: "b3b3676a-1c1b-4e24-81f0-f1c8cd0be683", param: {"Data":{}}
+2025-04-17 14:25:11.040 [INF] Call: <Roles>b__2_0, GUID: "c8e20131-f6e8-4d7e-9804-ce522e798582", param: {"Data":{}}
+2025-04-17 14:25:11.131 [INF] Call: <Roles>b__2_0, GUID: "6a62b192-e342-4168-8b14-4d19ad9307c6", param: {"Data":{}}
+2025-04-17 14:25:11.221 [INF] Call: <Roles>b__2_0, GUID: "04d9a371-c3eb-4c4e-92f7-0a655470111f", param: {"Data":{}}
+2025-04-17 14:25:11.326 [INF] Call: <Roles>b__2_0, GUID: "afa4db8f-fc48-4c62-96e6-2693359f0dfd", param: {"Data":{}}
+2025-04-17 14:25:11.416 [INF] Call: <Roles>b__2_0, GUID: "c6996783-bc3c-4f94-9389-6225809cbe4c", param: {"Data":{}}
+2025-04-17 14:25:11.506 [INF] Call: <Roles>b__2_0, GUID: "10fab4d6-35a1-43e3-9237-3a70079fca0d", param: {"Data":{}}
+2025-04-17 14:25:11.596 [INF] Call: <Roles>b__2_0, GUID: "ebb79755-e371-46c8-809b-8ef336511134", param: {"Data":{}}
+2025-04-17 14:25:11.686 [INF] Call: <Roles>b__2_0, GUID: "4d562dc8-0fbb-471c-b5e9-7412605ea9c4", param: {"Data":{}}
+2025-04-17 14:25:11.777 [INF] Call: <Roles>b__2_0, GUID: "7f62d14d-24bf-4a11-8ba8-f11ed6626ced", param: {"Data":{}}
+2025-04-17 14:25:11.867 [INF] Call: <Roles>b__2_0, GUID: "6b9e711b-57e7-4c92-afb3-28f99dd24aa2", param: {"Data":{}}
+2025-04-17 14:25:11.957 [INF] Call: <Roles>b__2_0, GUID: "3d698735-7c17-49de-8e64-309f4d009c6c", param: {"Data":{}}
+2025-04-17 14:25:12.047 [INF] Call: <Roles>b__2_0, GUID: "e64af733-b6f7-43c8-8951-d93da4e0cf09", param: {"Data":{}}
+2025-04-17 14:25:12.137 [INF] Call: <Roles>b__2_0, GUID: "f694a36a-88e3-4841-93f4-17e830fc1a62", param: {"Data":{}}
+2025-04-17 14:25:12.228 [INF] Call: <Roles>b__2_0, GUID: "0be2b841-a5e0-4f0f-9dc7-7ed588a0b66b", param: {"Data":{}}
+2025-04-17 14:25:12.317 [INF] Call: <Roles>b__2_0, GUID: "53fba8b1-3f8d-443b-9bb7-e55e0f0c41ed", param: {"Data":{}}
+2025-04-17 14:25:12.407 [INF] Call: <Roles>b__2_0, GUID: "1f4b892d-04ff-493b-9ef4-2e9190735737", param: {"Data":{}}
+2025-04-17 14:25:12.497 [INF] Call: <Roles>b__2_0, GUID: "f567dc86-f929-49e0-970c-350bede9caf9", param: {"Data":{}}
+2025-04-17 14:25:12.587 [INF] Call: <Roles>b__2_0, GUID: "9bd0fb5b-2210-4063-8ff0-48d486214840", param: {"Data":{}}
+2025-04-17 14:25:12.678 [INF] Call: <Roles>b__2_0, GUID: "9f277c02-a816-48f0-b70f-f65a8dee2440", param: {"Data":{}}
+2025-04-17 14:25:12.768 [INF] Call: <Roles>b__2_0, GUID: "85a7af24-4046-4915-b880-c4fbfeb8beda", param: {"Data":{}}
+2025-04-17 14:25:20.691 [INF] Call: <Login>b__0, GUID: "2e0696de-e0a7-4a52-ac66-e27a1616cc79", param: {"Data":{"UserName":"admin","Password":"1234"}}
+2025-04-17 14:25:21.096 [INF] Call: <UserLoad>b__0, GUID: "ce8828dc-d329-4dd9-bc96-8274df4b17a7", param: {"Data":{"Id":"bb43222e-279a-4fac-8440-da3e2702446e"}}
+2025-04-17 14:25:22.795 [INF] Call: <DealerList>b__14_0, GUID: "31570143-a266-48c4-aaa2-488255edced5", param: {"Data":{}}
+2025-04-17 14:25:24.120 [INF] Call: <UserLoad>b__0, GUID: "014064e2-7124-4df6-a4ae-846d5c917064", param: {"Data":{"Id":"f10eb71d-7ea9-4567-9d0c-5d0436c8e677"}}
+2025-04-17 14:25:25.449 [INF] Call: <FinancialAdvisorList>b__17_0, GUID: "1c8fd9b8-b54b-435e-b79d-8601fda35bba", param: {"Data":{}}
+2025-04-17 14:25:26.546 [INF] Call: <UserLoad>b__0, GUID: "6a9b8882-0105-4855-826f-32e7f94d5e65", param: {"Data":{"Id":"41371acf-a60a-42dc-82a2-8b9c55c8c762"}}
+2025-04-17 14:25:28.136 [INF] Call: <CompanyList>b__20_0, GUID: "7b92dcb5-93f2-4ffd-8481-3114a5cf8aeb", param: {"Data":{}}
+2025-04-17 14:25:29.041 [INF] Call: <UserLoad>b__0, GUID: "059b4788-e75d-4c34-bb5f-c461482ac23d", param: {"Data":{"Id":"e96c17f5-d8e2-4c33-83df-27d493796ab9"}}
+2025-04-17 14:25:34.364 [INF] Call: <UserCompanyList>b__23_0, GUID: "7f316f6d-a24a-4e92-b8f3-e5973c05e337", param: {"Data":{}}
+2025-04-17 14:25:35.957 [INF] Call: <UserLoad>b__0, GUID: "1e10a272-c44d-49f4-aaf6-8c3476423701", param: {"Data":{"Id":"0c342a98-40fd-48e2-929c-e734a6202374"}}
+2025-04-17 14:25:43.526 [INF] Call: <UserCompanyList>b__23_0, GUID: "5d96d29d-0949-41af-9508-8876b76b3266", param: {"Data":{}}
+2025-04-17 14:25:44.235 [INF] Call: <CompanyList>b__20_0, GUID: "ba912f97-8170-4e69-a59a-ea470f202fb1", param: {"Data":{}}
+2025-04-17 14:37:44.323 [ERR] StartAsync RabbitMq:(2)Impossibile stabilira la connessione con il server
+RabbitMQ.Client.Exceptions.BrokerUnreachableException: None of the specified endpoints were reachable
+ ---> System.AggregateException: One or more errors occurred. (Connection failed, host 127.0.0.1:5672)
+ ---> RabbitMQ.Client.Exceptions.ConnectFailureException: Connection failed, host 127.0.0.1:5672
+ ---> System.Net.Sockets.SocketException (10061): Impossibile stabilire la connessione. Rifiuto persistente del computer di destinazione.
+   at System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs.ThrowException(SocketError error, CancellationToken cancellationToken)
+   at System.Net.Sockets.Socket.AwaitableSocketAsyncEventArgs.System.Threading.Tasks.Sources.IValueTaskSource.GetResult(Int16 token)
+   at System.Net.Sockets.Socket.<ConnectAsync>g__WaitForConnectWithCancellation|285_0(AwaitableSocketAsyncEventArgs saea, ValueTask connectTask, CancellationToken cancellationToken)
+   at RabbitMQ.Client.Impl.SocketFactory.ConnectUsingAddressFamilyAsync(IPEndPoint endpoint, Func`2 socketFactory, AddressFamily family, TimeSpan connectionTimeout, CancellationToken cancellationToken)
+   --- End of inner exception stack trace ---
+   at RabbitMQ.Client.Impl.SocketFactory.ConnectUsingAddressFamilyAsync(IPEndPoint endpoint, Func`2 socketFactory, AddressFamily family, TimeSpan connectionTimeout, CancellationToken cancellationToken)
+   at RabbitMQ.Client.Impl.SocketFactory.OpenAsync(AmqpTcpEndpoint amqpTcpEndpoint, Func`2 socketFactory, TimeSpan connectionTimeout, CancellationToken cancellationToken)
+   at RabbitMQ.Client.Impl.SocketFrameHandler.CreateAsync(AmqpTcpEndpoint amqpTcpEndpoint, Func`2 socketFactory, TimeSpan connectionTimeout, CancellationToken cancellationToken)
+   at RabbitMQ.Client.ConnectionFactory.CreateFrameHandlerAsync(AmqpTcpEndpoint endpoint, CancellationToken cancellationToken)
+   at RabbitMQ.Client.EndpointResolverExtensions.SelectOneAsync[T](IEndpointResolver resolver, Func`3 selector, CancellationToken cancellationToken)
+   --- End of inner exception stack trace ---
+   at RabbitMQ.Client.EndpointResolverExtensions.SelectOneAsync[T](IEndpointResolver resolver, Func`3 selector, CancellationToken cancellationToken)
+   at RabbitMQ.Client.Framing.AutorecoveringConnection.CreateAsync(ConnectionConfig config, IEndpointResolver endpoints, CancellationToken cancellationToken)
+   at RabbitMQ.Client.ConnectionFactory.CreateConnectionAsync(IEndpointResolver endpointResolver, String clientProvidedName, CancellationToken cancellationToken)
+   --- End of inner exception stack trace ---
+   at RabbitMQ.Client.ConnectionFactory.CreateConnectionAsync(IEndpointResolver endpointResolver, String clientProvidedName, CancellationToken cancellationToken)
+   at nvxapp.server.service.RabbitMQ.RabbitMqConnection.Start() in C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server.service\RabbitMQ\RabbitMqConnection.cs:line 45
+2025-04-17 14:37:47.805 [INF] Call: <Roles>b__2_0, GUID: "3754920b-755d-4578-b6a7-fec5f72392d1", param: {"Data":{}}
+2025-04-17 14:37:48.328 [INF] Call: <Roles>b__2_0, GUID: "427d11f8-a817-4498-ac22-87e8920552af", param: {"Data":{}}
+2025-04-17 14:37:48.418 [INF] Call: <Roles>b__2_0, GUID: "b706c17e-5b66-41c0-aed9-a296c013d6ab", param: {"Data":{}}
+2025-04-17 14:37:48.509 [INF] Call: <Roles>b__2_0, GUID: "b51a4bf2-57bb-4b30-b34e-af79b63b16b9", param: {"Data":{}}
+2025-04-17 14:37:48.584 [INF] Call: <Roles>b__2_0, GUID: "a14d47ce-b2cc-42dd-a47d-3fd2d1895260", param: {"Data":{}}
+2025-04-17 14:37:48.659 [INF] Call: <Roles>b__2_0, GUID: "6eeff49e-08ab-4aa1-932d-5ea9687ab46f", param: {"Data":{}}
+2025-04-17 14:37:48.749 [INF] Call: <Roles>b__2_0, GUID: "2eb23f7e-1a13-4d21-8fe6-66bcb14f8fb9", param: {"Data":{}}
+2025-04-17 14:37:48.839 [INF] Call: <Roles>b__2_0, GUID: "8dd7f1e2-e25b-4fbb-9302-9bf94a5d755b", param: {"Data":{}}
+2025-04-17 14:37:48.918 [INF] Call: <Roles>b__2_0, GUID: "c71e233d-d1ae-4bb3-9b5c-d3a2dd77b6d4", param: {"Data":{}}
+2025-04-17 14:37:49.005 [INF] Call: <Roles>b__2_0, GUID: "89c93a32-66dc-4ad2-856e-1fa8d9f80238", param: {"Data":{}}
+2025-04-17 14:37:49.095 [INF] Call: <Roles>b__2_0, GUID: "18cdd9db-51ac-4ba1-a0d6-0ab8c62c3e45", param: {"Data":{}}
+2025-04-17 14:37:49.170 [INF] Call: <Roles>b__2_0, GUID: "d149ddfb-bf4b-414d-930a-82e2d0377f80", param: {"Data":{}}
+2025-04-17 14:37:49.246 [INF] Call: <Roles>b__2_0, GUID: "53ae0a17-4988-4b97-8f1d-2e30c53f92cb", param: {"Data":{}}
+2025-04-17 14:37:49.337 [INF] Call: <Roles>b__2_0, GUID: "5635b6b0-ba8a-4f31-b564-9b24d173cf67", param: {"Data":{}}
+2025-04-17 14:37:49.427 [INF] Call: <Roles>b__2_0, GUID: "9e625e3a-fce3-45d0-98f7-ec887b0d2465", param: {"Data":{}}
+2025-04-17 14:37:49.505 [INF] Call: <Roles>b__2_0, GUID: "a5726fbe-7be5-4cd0-a955-be9d29204b7b", param: {"Data":{}}
+2025-04-17 14:37:49.638 [INF] Call: <Roles>b__2_0, GUID: "3c2ba0c3-e554-44dc-8d1d-9f948acfecb3", param: {"Data":{}}
+2025-04-17 14:37:49.729 [INF] Call: <Roles>b__2_0, GUID: "6a8d5090-e191-4516-a3aa-72bb536cf09d", param: {"Data":{}}
+2025-04-17 14:37:49.819 [INF] Call: <Roles>b__2_0, GUID: "970b87b8-901f-4b9a-b2b4-a94458e5eedf", param: {"Data":{}}
+2025-04-17 14:37:49.910 [INF] Call: <Roles>b__2_0, GUID: "12f0de71-65bb-4986-8ac1-3abb657d85c4", param: {"Data":{}}
+2025-04-17 14:37:50.020 [INF] Call: <Roles>b__2_0, GUID: "43f6bc10-23eb-42ea-ab78-75bba3d4974c", param: {"Data":{}}
+2025-04-17 14:37:50.106 [INF] Call: <Roles>b__2_0, GUID: "acdad169-9462-4fb3-88a9-57e618d40f63", param: {"Data":{}}
+2025-04-17 14:37:50.166 [INF] Call: <Roles>b__2_0, GUID: "380ae510-7d78-4c22-8cc8-2563aa160ad4", param: {"Data":{}}
+2025-04-17 14:37:50.256 [INF] Call: <Roles>b__2_0, GUID: "806f4dd9-614d-49ed-9618-9c65bddc933a", param: {"Data":{}}
+2025-04-17 14:37:50.346 [INF] Call: <Roles>b__2_0, GUID: "e9331ded-34be-4a30-b5fa-c03621297d52", param: {"Data":{}}
+2025-04-17 14:37:50.436 [INF] Call: <Roles>b__2_0, GUID: "d5131353-1fd0-4391-ae34-47f661482920", param: {"Data":{}}
+2025-04-17 14:37:50.511 [INF] Call: <Roles>b__2_0, GUID: "a6a2e28c-9d22-42eb-9805-0271c100686a", param: {"Data":{}}
+2025-04-17 14:37:50.601 [INF] Call: <Roles>b__2_0, GUID: "d3d9a47c-0244-46c3-a3d2-019be746cdbb", param: {"Data":{}}
+2025-04-17 14:37:50.691 [INF] Call: <Roles>b__2_0, GUID: "0e4dee0d-dfe8-405a-9ebf-128b3c1b515c", param: {"Data":{}}
+2025-04-17 14:37:50.782 [INF] Call: <Roles>b__2_0, GUID: "d3a81a12-d8d4-40f9-a2c6-28c74f162bc4", param: {"Data":{}}
+2025-04-17 14:37:50.872 [INF] Call: <Roles>b__2_0, GUID: "d2aefa2e-85b3-434b-9b76-1a5d90c92781", param: {"Data":{}}
+2025-04-17 14:37:50.962 [INF] Call: <Roles>b__2_0, GUID: "21b15427-1aac-4506-b6b6-713c8a16f4ab", param: {"Data":{}}
+2025-04-17 14:37:51.052 [INF] Call: <Roles>b__2_0, GUID: "6e86e01a-2c05-4f6d-9881-30720fac3443", param: {"Data":{}}
+2025-04-17 14:37:51.142 [INF] Call: <Roles>b__2_0, GUID: "d47cc489-8651-45bb-a2cf-657c4067c34c", param: {"Data":{}}
+2025-04-17 14:37:51.232 [INF] Call: <Roles>b__2_0, GUID: "22321ef3-56b0-4aff-9e90-2b7c8e787a1c", param: {"Data":{}}
+2025-04-17 14:37:51.324 [INF] Call: <Roles>b__2_0, GUID: "4c6f6d5e-f6a8-446b-8bdc-fb6b062de1ea", param: {"Data":{}}
+2025-04-17 14:37:51.414 [INF] Call: <Roles>b__2_0, GUID: "b270d297-b128-47f9-944d-0638678b51b0", param: {"Data":{}}
+2025-04-17 14:37:51.504 [INF] Call: <Roles>b__2_0, GUID: "1ab91cd0-57c3-4e2f-9d57-9e24773bd803", param: {"Data":{}}
+2025-04-17 14:37:51.594 [INF] Call: <Roles>b__2_0, GUID: "9bae8d15-db4b-4d04-b8fb-1c50a96fce31", param: {"Data":{}}
+2025-04-17 14:37:51.684 [INF] Call: <Roles>b__2_0, GUID: "7e68de42-fea2-4cd7-8e62-3c9e9bf85551", param: {"Data":{}}
+2025-04-17 14:37:51.776 [INF] Call: <Roles>b__2_0, GUID: "2b5cc569-b058-4d5d-8841-1ccf66ad4e01", param: {"Data":{}}
+2025-04-17 14:37:51.865 [INF] Call: <Roles>b__2_0, GUID: "e0d675e0-0176-4333-9d7d-06a9fb51c118", param: {"Data":{}}
+2025-04-17 14:37:51.956 [INF] Call: <Roles>b__2_0, GUID: "c7623ccf-87d8-4988-9b5c-ffa8fff3a2b0", param: {"Data":{}}
+2025-04-17 14:37:52.061 [INF] Call: <Roles>b__2_0, GUID: "5753bf59-aad2-4c51-b0e5-d423f6e54c67", param: {"Data":{}}
+2025-04-17 14:37:52.152 [INF] Call: <Roles>b__2_0, GUID: "08f0681f-3d3c-4c5d-8a5f-a7f63b42a1d1", param: {"Data":{}}
+2025-04-17 14:37:52.242 [INF] Call: <Roles>b__2_0, GUID: "4920469c-17d8-4b61-a882-cd2e956d5955", param: {"Data":{}}
+2025-04-17 14:37:52.332 [INF] Call: <Roles>b__2_0, GUID: "8c57b627-d92c-4c4f-841d-6d710bf39e42", param: {"Data":{}}
+2025-04-17 14:37:52.422 [INF] Call: <Roles>b__2_0, GUID: "1969e3df-338d-4821-842d-6a97c743be0a", param: {"Data":{}}
+2025-04-17 14:37:52.503 [INF] Call: <Roles>b__2_0, GUID: "5627d778-fbba-41c9-b8fa-cf71ba48ab54", param: {"Data":{}}
+2025-04-17 14:37:52.575 [INF] Call: <Roles>b__2_0, GUID: "046e6a9b-d31f-430c-a74a-9ea02b16a6cf", param: {"Data":{}}
+2025-04-17 14:37:59.425 [INF] Call: <Login>b__0, GUID: "5a0ad76e-6b48-4f4d-b3c6-c6fcf6f0fa23", param: {"Data":{"UserName":"admin","Password":"1234"}}
+2025-04-17 14:37:59.801 [INF] Call: <UserLoad>b__0, GUID: "0edf6825-d135-4078-a18d-fa3317814a67", param: {"Data":{"Id":"bb43222e-279a-4fac-8440-da3e2702446e"}}
+2025-04-17 14:38:01.200 [INF] Call: <DealerList>b__14_0, GUID: "bde61de8-b0be-49d0-b5a9-f9520d145bd1", param: {"Data":{}}
+2025-04-17 14:38:02.130 [INF] Call: <UserLoad>b__0, GUID: "a63702bb-68cc-47f9-a391-87fa69ac40bd", param: {"Data":{"Id":"f10eb71d-7ea9-4567-9d0c-5d0436c8e677"}}
+2025-04-17 14:38:02.989 [INF] Call: <FinancialAdvisorList>b__17_0, GUID: "bbfb7330-72ce-45c4-84ed-2a6a77ea5226", param: {"Data":{}}
+2025-04-17 14:38:03.934 [INF] Call: <UserLoad>b__0, GUID: "7b545569-df91-4601-8a62-803675e12cfa", param: {"Data":{"Id":"41371acf-a60a-42dc-82a2-8b9c55c8c762"}}
+2025-04-17 14:38:04.794 [INF] Call: <CompanyList>b__20_0, GUID: "88eed508-819a-46eb-b183-ea24e99be4d5", param: {"Data":{}}
+2025-04-17 14:38:05.485 [INF] Call: <UserLoad>b__0, GUID: "1179808e-ee93-4505-af63-0c48ad82d0a6", param: {"Data":{"Id":"e96c17f5-d8e2-4c33-83df-27d493796ab9"}}
+2025-04-17 14:38:08.425 [INF] Call: <UserCompanyList>b__23_0, GUID: "43bd9859-0017-4466-b514-372d61db3f3f", param: {"Data":{}}
+2025-04-17 14:38:09.897 [INF] Call: <UserLoad>b__0, GUID: "db642d10-4720-4acb-ac47-d385a2902c6f", param: {"Data":{"Id":"0c342a98-40fd-48e2-929c-e734a6202374"}}
+2025-04-17 14:38:11.301 [INF] Call: <GetAll>b__2_0, GUID: "8a057fe3-fe11-4a53-af24-3be468ee7d0c", param: {"Data":{}}
+2025-04-17 14:38:17.269 [INF] Call: <GetAll>b__2_0, GUID: "bce8f064-5a5d-4ee2-897b-cc57cfd8d66f", param: {"Data":{}}
+2025-04-17 14:38:18.104 [INF] Call: <GetAll>b__2_0, GUID: "af0baf61-e6c8-4b9b-984e-81fd3d5e14e7", param: {"Data":{}}
+2025-04-17 14:38:21.385 [INF] Call: <GetAll>b__2_0, GUID: "8729184f-12d0-4636-98a4-aa40ad87b2ef", param: {"Data":{}}
+2025-04-17 14:38:23.114 [INF] Call: <GetAll>b__2_0, GUID: "f44e58b1-3308-456c-afe6-7d4b533cf5e0", param: {"Data":{}}
+2025-04-17 14:38:25.526 [INF] Call: <GetAll>b__2_0, GUID: "8c5eedf3-596b-4e98-ad66-b141b8ae0038", param: {"Data":{}}
+2025-04-17 14:38:26.204 [INF] Call: <GetAll>b__2_0, GUID: "9a93c724-38fc-461b-a16a-153df9776b5c", param: {"Data":{}}
+2025-04-17 14:38:40.018 [INF] Call: <GetAll>b__2_0, GUID: "bd052713-ce76-44c9-8bee-824f0d751016", param: {"Data":{}}
+2025-04-17 14:38:40.955 [INF] Call: <GetAll>b__2_0, GUID: "304805b3-d38c-4b28-a541-74816ce91d0e", param: {"Data":{}}
+2025-04-17 14:38:49.912 [INF] Call: <GetAll>b__2_0, GUID: "1beed0f2-390d-4500-82e1-c09775e6775f", param: {"Data":{}}
+2025-04-17 14:38:50.803 [INF] Call: <GetAll>b__2_0, GUID: "43d0e362-b1a9-4e5d-b17f-1ec460d0eb56", param: {"Data":{}}
+2025-04-17 14:38:51.227 [INF] Call: <GetAll>b__2_0, GUID: "e45a0c7c-ac0c-4c17-874d-b7ef093a02aa", param: {"Data":{}}
+2025-04-17 14:38:52.839 [INF] Call: <GetAll>b__2_0, GUID: "ee193848-4beb-49ab-b3e7-9e45b76ca18a", param: {"Data":{}}
+2025-04-17 14:38:53.245 [INF] Call: <GetAll>b__2_0, GUID: "0aa1c4df-e0e2-41e9-ba6e-b5bcde04a188", param: {"Data":{}}
