@@ -3,8 +3,7 @@ import { UserNavigationService } from '../../../Utility/infrastructure/user-navi
 import { environment } from '../../../../environments/environment';
 import { MonthNavigatorService } from '../../../Utility/infrastructure/month-navigator.service';
 import { SignalrService } from '../../../Utility/infrastructure/signalr.service';
-import { MonthData, TimeStamp, Justification } from '../../infrastructure/user-page/user-page.component';
-import { MokeTimeSheetService } from '../../../Utility/GestionePresenze/moke-time-sheet.service';
+import { Justification, MokeTimeSheetService, MonthData, TimeStamp } from '../../../Utility/GestionePresenze/moke-time-sheet.service';
 
 @Component({
   selector: 'app-time-sheet-user-page',
