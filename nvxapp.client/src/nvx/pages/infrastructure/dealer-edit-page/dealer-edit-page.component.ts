@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { NavController } from '@ionic/angular';
-import { ButtonItem, UserInterfaceService } from '../../../Utility/user-interface.service';
+import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { AccountService } from '../../../ClientServer-Service/Account/account.service';
 import { DealerEditModel, DealerGetInModel, DealerListInModel, DealerPutInModel } from '../../../ClientServer-Service/Account/Models/dealer-model';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
@@ -8,7 +8,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Observable, map, catchError } from 'rxjs';
 import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
-import { StringHelperService } from '../../../Utility/string-helper.service';
+import { StringHelperService } from '../../../Utility/infrastructure/string-helper.service';
 
 @Component({
   selector: 'app-dealer-edit-page',

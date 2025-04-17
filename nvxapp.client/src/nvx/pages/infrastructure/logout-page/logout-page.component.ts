@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { AccountService } from '../../../ClientServer-Service/Account/account.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NavController } from '@ionic/angular';
-import { UserNavigationService } from '../../../Utility/user-navigation.service';
-import { ButtonItem, UserInterfaceService } from '../../../Utility/user-interface.service';
+import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
+import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 
 @Component({
   selector: 'app-logout-page',

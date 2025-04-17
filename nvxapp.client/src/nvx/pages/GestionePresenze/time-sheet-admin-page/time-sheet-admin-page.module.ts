@@ -3,8 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
-import { SharedComponentModule } from '../../../shared/shared-component.module';
 import { TimeSheetAdminPageComponent } from './time-sheet-admin-page.component';
+import { SharedComponentInfrastructureModule } from '../../../shared/shared-component-infrastructure.module';
 
 
 @NgModule({
@@ -18,7 +18,7 @@ import { TimeSheetAdminPageComponent } from './time-sheet-admin-page.component';
         component: TimeSheetAdminPageComponent
       }
     ]),
-    SharedComponentModule
+    SharedComponentInfrastructureModule
   ],
   declarations: [TimeSheetAdminPageComponent]
 })

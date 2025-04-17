@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
-import { SharedComponentModule } from '../../../shared/shared-component.module';
+import { SharedComponentInfrastructureModule } from '../../../shared/shared-component-infrastructure.module';
 import { UserDealerListPageComponent } from './user-dealer-list-page.component';
 
 
@@ -19,7 +19,7 @@ import { UserDealerListPageComponent } from './user-dealer-list-page.component';
         component: UserDealerListPageComponent
       }
     ]),
-    SharedComponentModule
+    SharedComponentInfrastructureModule
   ],
 
   declarations: [UserDealerListPageComponent],

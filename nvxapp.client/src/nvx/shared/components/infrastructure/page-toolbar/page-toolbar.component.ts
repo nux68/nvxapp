@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { UserNavigationService } from '../../../Utility/user-navigation.service';
+import { UserNavigationService } from '../../../../Utility/infrastructure/user-navigation.service';
 
 @Component({
   selector: 'app-page-toolbar',

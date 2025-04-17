@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
-import { SharedComponentModule } from '../../../shared/shared-component.module';
+import { SharedComponentInfrastructureModule } from '../../../shared/shared-component-infrastructure.module';
 
 import { CompanyListPageComponent } from './company-list-page.component';
 
@@ -20,7 +20,7 @@ import { CompanyListPageComponent } from './company-list-page.component';
         component: CompanyListPageComponent
       }
     ]),
-    SharedComponentModule,
+    SharedComponentInfrastructureModule,
   ],
 
   declarations: [CompanyListPageComponent],

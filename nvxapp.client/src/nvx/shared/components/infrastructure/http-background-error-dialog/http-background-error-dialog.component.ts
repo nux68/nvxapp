@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { NvxHttpInterceptorService } from '../../../infrastructure/http-interceptor';
-import { ButtonItem, UserInterfaceService } from '../../../Utility/user-interface.service';
-import { MessageType } from '../../../ClientServer-Service/ModelsBase/message';
+import { NvxHttpInterceptorService } from '../../../../http/http-interceptor';
+import { ButtonItem, UserInterfaceService } from '../../../../Utility/infrastructure/user-interface.service';
+import { MessageType } from '../../../../ClientServer-Service/ModelsBase/message';
 import { NavController } from '@ionic/angular';
 
 @Component({

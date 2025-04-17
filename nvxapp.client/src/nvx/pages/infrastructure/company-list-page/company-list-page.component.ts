@@ -4,9 +4,9 @@ import { AccountService } from '../../../ClientServer-Service/Account/account.se
 import { CompanyListModel, CompanyListInModel } from '../../../ClientServer-Service/Account/Models/company-model';
 import { UserLoadInModel } from '../../../ClientServer-Service/Account/Models/user-load-model';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
-import { UserNavigationService, UserDataAdditionalModel } from '../../../Utility/user-navigation.service';
-import { ButtonItem, UserInterfaceService } from '../../../Utility/user-interface.service';
-import { FabMenuItem, FabMenuService } from '../../../Utility/fab-menu.service';
+import { UserNavigationService, UserDataAdditionalModel } from '../../../Utility/infrastructure/user-navigation.service';
+import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
+import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 
 
 @Component({

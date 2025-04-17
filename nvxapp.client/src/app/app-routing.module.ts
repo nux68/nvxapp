@@ -1,8 +1,8 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
-import { RouteService } from '../nvx/Utility/route.service';
-import { RouteInfrastructureService } from '../nvx/Utility/route-infrastructure.service';
-import { RouteAttendanceTrackingService } from '../nvx/Utility/route-attendance-tracking.service';
+import { RouteService } from '../nvx/Utility/infrastructure/route.service';
+import { RouteInfrastructureService } from '../nvx/Utility/infrastructure/route-infrastructure.service';
+import { RouteAttendanceTrackingService } from '../nvx/Utility/infrastructure/route-attendance-tracking.service';
 
 const routeInfrastructureService = new RouteInfrastructureService();
 const routeAttendanceTrackingService = new RouteAttendanceTrackingService();

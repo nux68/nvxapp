@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Component, NgZone, OnInit } from '@angular/core';
-import { ParameterService } from '../../../ClientServer-Service/Parameter/parameter.service';
-import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
-import { RolesListInModel } from '../../../ClientServer-Service/Parameter/Models/roles-model';
+import { ParameterService } from '../../../../ClientServer-Service/Parameter/parameter.service';
+import { GenericRequest } from '../../../../ClientServer-Service/ModelsBase/generic-request';
+import { RolesListInModel } from '../../../../ClientServer-Service/Parameter/Models/roles-model';
 import { catchError, concatMap, delay, of, retry, retryWhen, tap, timer } from 'rxjs';
 import { merge } from 'rxjs/internal/observable/merge';
 import { concat } from 'rxjs/internal/observable/concat';

@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { UserNavigationService } from '../../../Utility/user-navigation.service';
+import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
 import { environment } from '../../../../environments/environment';
-import { MonthNavigatorService } from '../../../Utility/month-navigator.service';
-import { SignalrService } from '../../../Utility/signalr.service';
+import { MonthNavigatorService } from '../../../Utility/infrastructure/month-navigator.service';
+import { SignalrService } from '../../../Utility/infrastructure/signalr.service';
 import { MonthData, TimeStamp, Justification } from '../../infrastructure/user-page/user-page.component';
 import { MokeTimeSheetService } from '../../../Utility/GestionePresenze/moke-time-sheet.service';
 

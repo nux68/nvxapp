@@ -4,7 +4,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
 import { LogoutPageComponent } from './logout-page.component';
-import { SharedComponentModule } from '../../../shared/shared-component.module';
+import { SharedComponentInfrastructureModule } from '../../../shared/shared-component-infrastructure.module';
 
 
 @NgModule({
@@ -19,7 +19,7 @@ import { SharedComponentModule } from '../../../shared/shared-component.module';
         component: LogoutPageComponent
       }
     ]),
-    SharedComponentModule
+    SharedComponentInfrastructureModule
   ],
   declarations: [LogoutPageComponent]
 })

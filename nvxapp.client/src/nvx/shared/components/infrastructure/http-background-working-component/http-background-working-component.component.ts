@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { NvxHttpInterceptorService } from '../../../infrastructure/http-interceptor';
+import { NvxHttpInterceptorService } from '../../../../http/http-interceptor';
 
 @Component({
   selector: 'app-http-background-working-component',
