@@ -13,11 +13,14 @@ ion-menu-button {
   right: 0;
   top: 50%;
   transform: translateY(-50%);
+  background-color: var(--ion-background-color, transparent);
+  color: var(--ion-text-color);
 }
 
 #container strong {
   font-size: 20px;
   line-height: 26px;
+  color: var(--ion-text-color);
 }
 
 #container p {
