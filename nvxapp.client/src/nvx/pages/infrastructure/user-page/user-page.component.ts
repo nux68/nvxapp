@@ -1,5 +1,3 @@
-// --- START OF FILE user-page.component.ts ---
-
 import { Component, OnInit } from '@angular/core';
 import { SignalrService } from '../../../Utility/signalr.service';
 import { environment } from '../../../../environments/environment';
@@ -7,7 +5,7 @@ import { Observable, of } from 'rxjs';
 import { MonthNavigatorService } from '../../../Utility/month-navigator.service';
 
 
-// Interfacce (invariate)
+
 export interface TimeStamp { type: 'E' | 'U'; time: string; }
 export interface Justification { code: string; description: string; isFullDay: boolean; }
 export interface DayRecord { date: Date; timestamps: TimeStamp[]; justifications: Justification[]; }
@@ -22,17 +20,14 @@ export interface MonthData { year: number; month: number; days: { [key: number]:
 export class UserPageComponent implements OnInit {
   public title!: string;
 
-  ///////////CALENDAR
   currentMonth: MonthData;
-  // RIMOSSI: weekDays e monthNames - ora nel servizio
   weeks: Array<Array<{ day: number, records: TimeStamp[], justifications: Justification[], isCurrentMonth: boolean }>>;
   currentMonthDisplay: string;
-  ///////////CALENDAR END
+  
 
   constructor(
-    private signalrService: SignalrService,
-    // MODIFICATO: Reso pubblico per accesso dal template a weekDays
-    public monthNavigatorService: MonthNavigatorService
+              private signalrService: SignalrService,
+              public monthNavigatorService: MonthNavigatorService
   ) {
     this.title = 'UserPage';
     this.weeks = [];
@@ -58,13 +53,12 @@ export class UserPageComponent implements OnInit {
 
     this.getMonthData(year, month).subscribe(monthData => {
       this.currentMonth = monthData;
-      // MODIFICATO: Usa monthNames dal servizio
       this.currentMonthDisplay = `${this.monthNavigatorService.monthNames[month]} - ${year}`;
       this.buildCalendarWeeks();
     });
   }
 
-  // buildCalendarWeeks usa solo monthNavigatorService.currentYear/Month, non richiede modifiche qui
+
   buildCalendarWeeks() {
     this.weeks = [];
     const year = this.monthNavigatorService.currentYear;
@@ -118,13 +112,13 @@ export class UserPageComponent implements OnInit {
   }
 
   private getMockApril2025Data(): MonthData {
-    // (Contenuto del metodo invariato... omettiamo per brevità)
+    
     const aprilData: MonthData = {
       year: 2025, month: 3, days: {
         1: { date: new Date(2025, 3, 1), timestamps: [{ type: 'E', time: '09:02' }, { type: 'U', time: '13:03' }, { type: 'E', time: '13:59' }, { type: 'U', time: '18:00' }], justifications: [] },
         2: { date: new Date(2025, 3, 1), timestamps: [{ type: 'E', time: '09:02' }, { type: 'U', time: '13:03' }, { type: 'E', time: '13:59' }, { type: 'U', time: '18:00' }], justifications: [] },
         3: { date: new Date(2025, 3, 1), timestamps: [{ type: 'E', time: '09:02' }, { type: 'U', time: '13:03' }, { type: 'E', time: '13:59' }, { type: 'U', time: '18:00' }], justifications: [] },
-        // ... altri giorni mock ...
+
         16: { date: new Date(2025, 3, 16), timestamps: [], justifications: [{ code: 'MAL', description: 'Malattia', isFullDay: true }] },
         17: { date: new Date(2025, 3, 17), timestamps: [{ type: 'E', time: '09:00' }, { type: 'U', time: '13:00' }], justifications: [{ code: 'PER', description: 'Permesso Pom.', isFullDay: false }] },
         18: { date: new Date(2025, 3, 18), timestamps: [], justifications: [{ code: 'FER', description: 'Ferie', isFullDay: true }] },
