@@ -22,6 +22,11 @@ export class MainMenuAttendanceTrackingService implements iMainMenuService {
   public get Pages4User(): MainMenuItem[] {
     return [
       { title: 'User Time Sheet', component: "TimeSheetUserPageComponent", url: '/usertimesheet', icon: 'person' },
+
+      { title: 'Time Clock User', component: "TimeClockUserPageComponent", url: '/timeclockuser', icon: 'person' },
+
+      { title: 'Request Justification User', component: "RequestJustificationUserPageComponent", url: '/requestjustificationuser', icon: 'person' },
+      { title: 'Request Clocking User', component: "RequestClockingUserPageComponent", url: '/requestclockinguser', icon: 'person' },
     ];
   }
 
