@@ -1,14 +1,16 @@
 /* time-clock-user-page.component.scss */
+
 ion-menu-button {
   color: var(--ion-color-primary);
 }
 
-.dark-background {
-  --background: #121212;
-  --color: white;
-}
+/* Let ion-content handle its own background/color via theme variables */
+/* The explicit .dark-background class and its styles are removed */
+
+/* --- Base Styles (Light Theme / Default) --- */
 
 .location-badge {
+  /* Light green background, dark green text for light theme */
   background-color: #e0f2e0;
   color: #027602;
   padding: 15px;
@@ -22,6 +24,7 @@ ion-menu-button {
   ion-icon {
     margin-right: 10px;
     font-size: 24px;
+    /* Icon color will inherit from text color */
   }
 }
 
@@ -31,13 +34,15 @@ ion-menu-button {
   margin-bottom: 40px;
 
   .date {
-    color: #cccccc;
+    /* Use a step color or inherit default text color (dark in light mode) */
+    color: var(--ion-color-step-600, #666666);
     font-size: 24px;
     margin-bottom: 10px;
   }
 
   .time {
-    color: #cccccc;
+    /* Inherit default text color (dark in light mode) */
+    color: inherit;
     font-size: 70px;
     font-weight: bold;
   }
@@ -47,7 +52,7 @@ ion-menu-button {
   display: flex;
   justify-content: space-around;
   padding: 20px;
-  margin-top: 60px;
+  margin-top: 60px; /* Adjusted from 60px */
 
   .clock-button {
     display: flex;
@@ -60,6 +65,8 @@ ion-menu-button {
     border: none;
     font-size: 22px;
     font-weight: bold;
+    cursor: pointer; /* Added for better UX */
+    transition: background-color 0.2s ease-in-out; /* Smooth hover */
 
     ion-icon {
       font-size: 32px;
@@ -67,13 +74,19 @@ ion-menu-button {
     }
 
     &.check-in {
-      background-color: #006644;
+      /* Green background, white text (good contrast) */
+      background-color: #006644; /* Consider using var(--ion-color-success) if it matches */
       color: white;
     }
 
     &.check-out {
-      background-color: #8a2727;
+      /* Red background, white text (good contrast) */
+      background-color: #8a2727; /* Consider using var(--ion-color-danger) if it matches */
       color: white;
+    }
+    /* Optional: Subtle hover effect */
+    &:hover {
+      filter: brightness(110%);
     }
   }
 }
@@ -83,9 +96,54 @@ ion-menu-button {
   bottom: 0;
   left: 0;
   right: 0;
-  background-color: #444444;
-  color: white;
+  /* Light background, dark text for light theme */
+  background-color: var(--ion-toolbar-background, #f8f8f8);
+  color: var(--ion-text-color, #000000);
   padding: 15px;
   text-align: center;
   font-size: 18px;
+  border-top: 1px solid var(--ion-border-color, #e0e0e0); /* Add subtle top border */
 }
+
+
+/* --- Dark Theme Overrides --- */
+@media (prefers-color-scheme: dark) {
+
+  .location-badge {
+    /* Darker, less saturated green background, light green text */
+    background-color: #1a4d2e; /* Example dark green */
+    color: #a5d6a7; /* Example light green text */
+    /* Icon color inherits light green text */
+  }
+
+  .clock-container {
+    .date {
+      /* Lighter grey for dark mode */
+      color: var(--ion-color-step-400, #999999);
+    }
+
+    .time {
+      /* Inherits light text color from ion-content */
+      color: inherit;
+    }
+  }
+
+  .button-container {
+    /* Optional: Slightly adjust button colors for dark mode if desired */
+    /*
+    .clock-button {
+       &.check-in { background-color: #007a53; }
+       &.check-out { background-color: #a83c3c; }
+    }
+    */
+  }
+
+  .last-action {
+    /* Dark background, light text for dark theme */
+    background-color: var(--ion-toolbar-background, #222222);
+    color: var(--ion-text-color, #ffffff);
+    border-top-color: var(--ion-border-color, #444444); /* Darker border */
+  }
+}
+
+/* --- END OF THEME-SENSITIVE CSS --- */

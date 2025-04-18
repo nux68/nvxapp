@@ -4,7 +4,8 @@
                   [showBreadcrumbs]="true">
 </app-page-toolbar>
 
-<ion-content [fullscreen]="true" class="dark-background">
+<!-- REMOVED dark-background class -->
+<ion-content [fullscreen]="true">
   <div class="location-badge">
     <ion-icon name="location"></ion-icon>
     <span>{{ location }}</span>
@@ -16,6 +17,7 @@
   </div>
 
   <div class="button-container">
+    <!-- Buttons remain the same -->
     <button class="clock-button check-in" (click)="checkIn()">
       <ion-icon name="arrow-forward-circle-outline"></ion-icon>
       <span>ENTRATA</span>

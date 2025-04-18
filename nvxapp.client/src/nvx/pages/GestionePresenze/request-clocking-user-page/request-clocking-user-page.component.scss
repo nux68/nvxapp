@@ -1,67 +1,80 @@
 /* request-clocking-user-page.component.scss */
+
 ion-menu-button {
   color: var(--ion-color-primary);
 }
 
-.dark-background {
-  --background: #121212;
-  --color: white;
-}
+/* --- Base Styles (Light Theme / Default) --- */
 
 .form-section {
   margin: 20px;
+  padding-bottom: 10px; // Add padding to the bottom of the section
 
   .form-label {
-    color: #a0a0a0;
-    font-size: 18px;
-    margin-bottom: 10px;
+    // Use a standard text color step for labels in light mode
+    color: var(--ion-color-step-600, #666666);
+    font-size: 16px; // Slightly smaller label
+    margin-bottom: 8px;
     font-weight: 500;
   }
 
   .form-input {
-    border-bottom: 1px solid #444;
-    padding-bottom: 10px;
-
-    ion-select, ion-datetime, ion-textarea {
-      --background: #333;
-      --color: white;
-      --placeholder-color: #888;
-      border-radius: 5px;
-      font-size: 16px;
-      padding: 10px;
+    // Use standard border color for light theme
+    border-bottom: 1px solid var(--ion-border-color, #e0e0e0);
+    padding-bottom: 10px; // Padding below the input field/area
+    // Let Ionic components handle their own styling by default
+    // Remove explicit dark background/color overrides here
+    // You might need to style specific parts using ::part() if needed
+    ion-select,
+    ion-datetime-button, // Target the button specifically if needed
+    ion-textarea {
+      // Generally, avoid setting explicit background/color here.
+      // Let Ionic handle theme adaptation.
+      // If you NEED custom background, use variables:
+      // --background: var(--ion-item-background, var(--ion-background-color, #ffffff));
+      // --color: var(--ion-text-color, #000000);
+      --placeholder-color: var(--ion-color-step-400, #999999); // Adjust placeholder
       width: 100%;
+      // Minor padding adjustment might be needed depending on Ionic version/mode
+      // padding: 8px 0; // Example adjustment
     }
-
+    // Remove padding/border override for supervisor section container
     &.supervisors {
       display: flex;
       justify-content: space-between;
-      align-items: center;
+      align-items: flex-start; // Align items to the top
       padding-bottom: 0;
-      border-bottom: none;
+      border-bottom: none; // Keep no border
 
       .chips-container {
         flex: 1;
         display: flex;
         flex-wrap: wrap;
+        gap: 8px; // Use gap for spacing instead of margin
+        margin-right: 10px; // Space before the add button
       }
     }
   }
 }
 
 .chip {
-  display: flex;
+  display: inline-flex; // Use inline-flex for wrapping
   align-items: center;
-  background-color: #555;
-  border-radius: 20px;
-  padding: 8px 12px;
-  margin-right: 10px;
-  margin-bottom: 10px;
+  // Use a light background color for chips in light mode
+  background-color: var(--ion-color-light-tint, #f4f4f4);
+  // Inherit default text color (dark)
+  color: inherit;
+  border-radius: 16px; // Standard chip border-radius
+  padding: 5px 10px;
+  font-size: 14px; // Standard chip font size
+  // Remove margin-right/bottom, use gap in container
 
   ion-icon {
     margin-left: 8px;
-    color: #ff4545;
+    // Use danger color variable for the remove icon
+    color: var(--ion-color-danger, #eb445a);
     cursor: pointer;
-    font-size: 18px;
+    font-size: 16px; // Slightly smaller icon
   }
 }
 
@@ -71,14 +84,22 @@ ion-menu-button {
   justify-content: center;
   background-color: transparent;
   border: none;
-  color: white;
-  font-size: 24px;
+  // Use primary color for the add button in light mode
+  color: var(--ion-color-primary, #3880ff);
+  font-size: 24px; // Keep icon size consistent
   cursor: pointer;
-  width: 40px;
-  height: 40px;
+  width: 36px; // Slightly smaller touch target
+  height: 36px;
+  padding: 0; // Remove default padding
+  border-radius: 50%; // Make it round
+  transition: background-color 0.2s ease; // Hover effect
+
+  &:hover {
+    background-color: rgba(var(--ion-color-primary-rgb, 56, 128, 255), 0.1); // Subtle hover
+  }
 
   ion-icon {
-    font-size: 24px;
+    font-size: 24px; // Match button font-size
   }
 }
 
@@ -87,23 +108,103 @@ ion-menu-button {
   bottom: 0;
   left: 0;
   right: 0;
-  background-color: #444444;
-  padding: 15px;
+  // Use toolbar background for light theme
+  background-color: var(--ion-toolbar-background, #f8f8f8);
+  padding: 10px 15px; // Adjust padding
   display: flex;
   justify-content: center;
+  // Add top border for separation
+  border-top: 1px solid var(--ion-border-color, #e0e0e0);
 }
 
 .submit-button {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: transparent;
+  // Standard button styling - consider using ion-button instead?
+  // If using custom button:
+  background-color: var(--ion-color-primary); // Primary color background
+  color: var(--ion-color-primary-contrast, #ffffff); // Contrast color (white)
   border: none;
-  color: white;
-  font-size: 20px;
+  font-size: 16px; // Standard button text size
+  padding: 10px 20px; // Button padding
+  border-radius: 8px; // Rounded corners
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: var(--ion-color-primary-shade);
+  }
 
   ion-icon {
-    margin-right: 10px;
-    font-size: 22px;
+    margin-right: 8px;
+    font-size: 20px; // Icon size
   }
 }
+
+
+/* --- Dark Theme Overrides --- */
+@media (prefers-color-scheme: dark) {
+
+  .form-section {
+    .form-label {
+      // Lighter grey label for dark mode
+      color: var(--ion-color-step-400, #999999);
+    }
+
+    .form-input {
+      // Darker border color
+      border-bottom-color: var(--ion-border-color, #444444);
+      // Restore specific dark styles for Ionic components if needed
+      // Note: Ionic components often handle this automatically now.
+      // Test without these first.
+      /*
+      ion-select,
+      ion-datetime-button,
+      ion-textarea {
+        --background: var(--ion-item-background, #333); // Dark item background
+        --color: var(--ion-text-color, #ffffff); // Light text
+        --placeholder-color: var(--ion-color-step-500, #888888); // Dark placeholder
+      }
+      */
+    }
+  }
+
+  .chip {
+    // Darker background for chips in dark mode
+    background-color: var(--ion-color-step-800, #3a3a3a);
+    // Inherits light text color
+    color: inherit;
+
+    ion-icon {
+      // Danger color usually works on dark too, but could adjust if needed
+      color: var(--ion-color-danger-tint, #ff6b81); // Optional lighter red
+    }
+  }
+
+  .add-button {
+    // Use primary tint or light text color for add button in dark mode
+    color: var(--ion-color-primary-tint, #4c8dff);
+
+    &:hover {
+      background-color: rgba(var(--ion-color-primary-rgb, 56, 128, 255), 0.15); // Dark hover
+    }
+  }
+
+  .submit-button-container {
+    // Dark toolbar background
+    background-color: var(--ion-toolbar-background, #1e1e1e);
+    // Dark border color
+    border-top-color: var(--ion-border-color, #444444);
+  }
+
+  .submit-button {
+    // Button colors usually adapt well, but can override if needed
+    // background-color: var(--ion-color-primary);
+    // color: var(--ion-color-primary-contrast);
+    // &:hover { background-color: var(--ion-color-primary-shade); }
+  }
+}
+
+/* --- END OF THEME-SENSITIVE CSS --- */

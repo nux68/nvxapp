@@ -1,56 +1,55 @@
 /* request-justification-user-page.component.scss */
+
 ion-menu-button {
   color: var(--ion-color-primary);
 }
 
-.dark-background {
-  --background: #121212;
-  --color: white;
-}
-
-.form-input.date-input-container {
-  display: flex; // Make the container a flex container
-  justify-content: flex-start; // Align items (the button) to the start (left)
-  align-items: center; // Optional: Vertically center the button if needed
-  // Add any other specific styling for this container if necessary
-  // e.g., padding: 0; if default padding is interfering
-}
+/* --- Base Styles (Light Theme / Default) --- */
 
 .form-section {
   margin: 20px;
+  padding-bottom: 10px; // Consistent padding below sections
 
   .form-label {
-    color: #a0a0a0;
-    font-size: 18px;
-    margin-bottom: 10px;
+    color: var(--ion-color-step-600, #666666); // Grey text for labels
+    font-size: 16px;
+    margin-bottom: 8px;
     font-weight: 500;
   }
 
   .form-input {
-    border-bottom: 1px solid #444;
-    padding-bottom: 10px;
-
-    ion-select, ion-datetime, ion-textarea {
-      --background: #333;
-      --color: white;
-      --placeholder-color: #888;
-      border-radius: 5px;
-      font-size: 16px;
-      padding: 10px;
+    border-bottom: 1px solid var(--ion-border-color, #e0e0e0); // Light border
+    padding-bottom: 10px; // Space below input
+    // Rely on Ionic's default theme handling for these components
+    ion-select,
+    ion-datetime-button,
+    ion-textarea {
       width: 100%;
+      // Remove explicit background/color settings
+      --placeholder-color: var(--ion-color-step-400, #999999); // Adjust placeholder color
     }
-
+    // Specific layout for date input container
+    &.date-input-container {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      padding-bottom: 0; // Remove padding if button has enough vertical space
+      border-bottom: none; // No border needed just for the button usually
+    }
+    // Supervisor section layout
     &.supervisors {
       display: flex;
       justify-content: space-between;
-      align-items: center;
+      align-items: flex-start;
       padding-bottom: 0;
-      border-bottom: none;
+      border-bottom: none; // Keep no border
 
       .chips-container {
         flex: 1;
         display: flex;
         flex-wrap: wrap;
+        gap: 8px; // Use gap for spacing
+        margin-right: 10px;
       }
     }
   }
@@ -60,32 +59,46 @@ ion-menu-button {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid #444;
+  border-bottom: 1px solid var(--ion-border-color, #e0e0e0); // Light border
   padding-bottom: 10px;
 
   .hours-display {
-    font-size: 20px;
+    font-size: 18px; // Slightly smaller size
     font-weight: 500;
-    color: white;
+    color: inherit; // Inherit dark text
   }
 
   .hours-controls {
     display: flex;
+    gap: 10px; // Use gap for spacing
 
     .hours-button {
       display: flex;
       align-items: center;
       justify-content: center;
-      background-color: #666;
+      // Use a light grey background for buttons
+      background-color: var(--ion-color-light-tint, #f0f0f0);
       border: none;
       border-radius: 50%;
-      width: 46px;
-      height: 46px;
-      margin-left: 10px;
+      width: 40px; // Slightly smaller buttons
+      height: 40px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+
+      &:hover:not(:disabled) {
+        background-color: var(--ion-color-light-shade, #dcdcdc);
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        background-color: var(--ion-color-light-tint, #f0f0f0); // Keep bg same when disabled
+      }
 
       ion-icon {
-        font-size: 24px;
-        color: white;
+        font-size: 20px;
+        // Use a standard dark color for icons
+        color: var(--ion-color-step-800, #333333);
       }
     }
   }
@@ -95,33 +108,34 @@ ion-menu-button {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 18px;
-  padding-top: 10px;
-  padding-bottom: 10px;
-  color: white;
-
+  font-size: 16px; // Match label size
+  padding: 10px 0; // Vertical padding only
+  color: inherit; // Inherit dark text
+  border-bottom: 1px solid var(--ion-border-color, #e0e0e0); // Consistent border
+  // Let ion-toggle handle its own theme variables
   ion-toggle {
-    --background: #444;
-    --background-checked: #0a5;
-    --handle-background: white;
-    --handle-background-checked: white;
+    // Remove specific overrides unless necessary
+    // --background: #e0e0e0; // Example light theme track
+    // --background-checked: var(--ion-color-primary-tint); // Example light theme checked track
+    // --handle-background: white;
+    // --handle-background-checked: var(--ion-color-primary);
   }
 }
 
 .chip {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  background-color: #555;
-  border-radius: 20px;
-  padding: 8px 12px;
-  margin-right: 10px;
-  margin-bottom: 10px;
+  background-color: var(--ion-color-light-tint, #f4f4f4); // Light chip bg
+  color: inherit; // Inherit dark text
+  border-radius: 16px;
+  padding: 5px 10px;
+  font-size: 14px;
 
   ion-icon {
     margin-left: 8px;
-    color: #ff4545;
+    color: var(--ion-color-danger, #eb445a); // Danger color icon
     cursor: pointer;
-    font-size: 18px;
+    font-size: 16px;
   }
 }
 
@@ -131,11 +145,18 @@ ion-menu-button {
   justify-content: center;
   background-color: transparent;
   border: none;
-  color: white;
+  color: var(--ion-color-primary, #3880ff); // Primary color icon
   font-size: 24px;
   cursor: pointer;
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: rgba(var(--ion-color-primary-rgb, 56, 128, 255), 0.1);
+  }
 
   ion-icon {
     font-size: 24px;
@@ -143,7 +164,7 @@ ion-menu-button {
 }
 
 .notes-section {
-  margin-bottom: 80px;
+  margin-bottom: 80px; // Space above fixed submit button
 }
 
 .submit-button-container {
@@ -151,23 +172,125 @@ ion-menu-button {
   bottom: 0;
   left: 0;
   right: 0;
-  background-color: #444444;
-  padding: 15px;
+  background-color: var(--ion-toolbar-background, #f8f8f8); // Light toolbar bg
+  padding: 10px 15px;
   display: flex;
   justify-content: center;
+  border-top: 1px solid var(--ion-border-color, #e0e0e0); // Light border
 }
 
 .submit-button {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: transparent;
+  background-color: var(--ion-color-primary); // Primary button bg
+  color: var(--ion-color-primary-contrast, #ffffff); // Contrast text (white)
   border: none;
-  color: white;
-  font-size: 20px;
+  font-size: 16px;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: var(--ion-color-primary-shade);
+  }
 
   ion-icon {
-    margin-right: 10px;
-    font-size: 22px;
+    margin-right: 8px;
+    font-size: 20px;
   }
 }
+
+
+/* --- Dark Theme Overrides --- */
+@media (prefers-color-scheme: dark) {
+
+  .form-section {
+    .form-label {
+      color: var(--ion-color-step-400, #999999); // Lighter grey label
+    }
+
+    .form-input {
+      border-bottom-color: var(--ion-border-color, #444444); // Darker border
+      // Optional: Restore dark specific styles if Ionic defaults aren't enough
+      /*
+      ion-select,
+      ion-datetime-button,
+      ion-textarea {
+        --background: var(--ion-item-background, #333);
+        --color: var(--ion-text-color, #ffffff);
+        --placeholder-color: var(--ion-color-step-500, #888888);
+      }
+      */
+    }
+  }
+
+  .hours-input {
+    border-bottom-color: var(--ion-border-color, #444444); // Darker border
+
+    .hours-display {
+      color: inherit; // Inherit light text
+    }
+
+    .hours-controls {
+      .hours-button {
+        // Darker grey background for buttons
+        background-color: var(--ion-color-step-800, #3a3a3a);
+
+        &:hover:not(:disabled) {
+          background-color: var(--ion-color-step-700, #4f4f4f);
+        }
+
+        &:disabled {
+          background-color: var(--ion-color-step-800, #3a3a3a); // Keep bg same when disabled
+        }
+
+        ion-icon {
+          // Use a light color for icons
+          color: var(--ion-color-step-200, #cccccc);
+        }
+      }
+    }
+  }
+
+  .toggle-section {
+    color: inherit; // Inherit light text
+    border-bottom-color: var(--ion-border-color, #444444); // Darker border
+    // Let ion-toggle handle its own theme variables
+    ion-toggle {
+      // --background: #444; // Example dark theme track
+      // --background-checked: var(--ion-color-primary-shade); // Example dark theme checked track
+    }
+  }
+
+  .chip {
+    background-color: var(--ion-color-step-800, #3a3a3a); // Dark chip bg
+    color: inherit; // Inherit light text
+
+    ion-icon {
+      // Use tint for danger color if needed
+      color: var(--ion-color-danger-tint, #ff6b81);
+    }
+  }
+
+  .add-button {
+    color: var(--ion-color-primary-tint, #4c8dff); // Lighter primary color
+
+    &:hover {
+      background-color: rgba(var(--ion-color-primary-rgb, 56, 128, 255), 0.15);
+    }
+  }
+
+  .submit-button-container {
+    background-color: var(--ion-toolbar-background, #1e1e1e); // Dark toolbar bg
+    border-top-color: var(--ion-border-color, #444444); // Dark border
+  }
+
+  .submit-button {
+    // Primary button should adapt automatically via variables
+  }
+}
+
+/* --- END OF THEME-SENSITIVE CSS --- */

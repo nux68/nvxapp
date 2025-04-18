@@ -4,10 +4,12 @@
                   [showBreadcrumbs]="true">
 </app-page-toolbar>
 
-<ion-content [fullscreen]="true" class="dark-background">
+<!-- REMOVED dark-background class -->
+<ion-content [fullscreen]="true">
   <div class="form-section">
     <div class="form-label">Tipo richiesta</div>
     <div class="form-input">
+      <!-- ion-select should inherit styling or use Ionic variables -->
       <ion-select [(ngModel)]="requestType" interface="action-sheet" placeholder="Seleziona">
         <ion-select-option value="ENTRATA">ENTRATA</ion-select-option>
         <ion-select-option value="USCITA">USCITA</ion-select-option>
@@ -18,9 +20,11 @@
   <div class="form-section">
     <div class="form-label">Data e ora</div>
     <div class="form-input">
+      <!-- ion-datetime-button styling is usually handled by Ionic -->
       <ion-datetime-button datetime="datetime-modal"></ion-datetime-button>
       <ion-modal [keepContentsMounted]="true">
         <ng-template>
+          <!-- ion-datetime styling within the modal is handled by Ionic -->
           <ion-datetime id="datetime-modal"
                         [(ngModel)]="dateTime"
                         presentation="date-time"
@@ -37,9 +41,11 @@
   <div class="form-section">
     <div class="form-label">Responsabili</div>
     <div class="form-input supervisors">
+      <!-- Keep class for layout -->
       <div class="chips-container">
         <div class="chip" *ngFor="let supervisor of supervisors; let i = index">
           <span>{{ supervisor }}</span>
+          <!-- Keep icon for functionality -->
           <ion-icon name="trash" (click)="removeSupervisor(i)"></ion-icon>
         </div>
       </div>
@@ -52,7 +58,8 @@
   <div class="form-section">
     <div class="form-label">Note</div>
     <div class="form-input">
-      <ion-textarea [(ngModel)]="notes" placeholder="Inserisci note..."></ion-textarea>
+      <!-- ion-textarea should inherit styling or use Ionic variables -->
+      <ion-textarea [(ngModel)]="notes" placeholder="Inserisci note..." rows="4"></ion-textarea> <!-- Added rows for better default size -->
     </div>
   </div>
 

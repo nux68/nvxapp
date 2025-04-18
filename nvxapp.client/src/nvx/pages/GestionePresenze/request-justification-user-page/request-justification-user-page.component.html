@@ -4,7 +4,10 @@
                   [showBreadcrumbs]="true">
 </app-page-toolbar>
 
-<ion-content [fullscreen]="true" class="dark-background">
+<!-- REMOVED dark-background class -->
+<ion-content [fullscreen]="true">
+  <!-- Rest of the content remains the same -->
+
   <div class="form-section">
     <div class="form-label">Giustificativo</div>
     <div class="form-input">
@@ -26,19 +29,15 @@
     </div>
   </div>
 
-  <!-- Start Date Input using ion-datetime-button -->
   <div class="form-section">
     <div class="form-label">Inizio</div>
-    <!-- Add the new class here -->
     <div class="form-input date-input-container">
       <ion-datetime-button datetime="startDatetime"></ion-datetime-button>
     </div>
   </div>
 
-  <!-- End Date Input using ion-datetime-button -->
   <div class="form-section">
     <div class="form-label">Fine</div>
-    <!-- Add the new class here -->
     <div class="form-input date-input-container">
       <ion-datetime-button datetime="endDatetime"></ion-datetime-button>
     </div>
@@ -82,7 +81,7 @@
   <div class="form-section notes-section">
     <div class="form-label">Note</div>
     <div class="form-input">
-      <ion-textarea [(ngModel)]="notes" placeholder="Inserisci note..."></ion-textarea>
+      <ion-textarea [(ngModel)]="notes" placeholder="Inserisci note..." rows="4"></ion-textarea>
     </div>
   </div>
 
@@ -93,7 +92,7 @@
     </button>
   </div>
 
-  <!-- Start Date Modal -->
+  <!-- Modals remain the same -->
   <ion-modal [keepContentsMounted]="true">
     <ng-template>
       <ion-datetime id="startDatetime"
@@ -104,13 +103,9 @@
                     cancelText="Annulla"
                     locale="it-IT">
       </ion-datetime>
-      <!-- Use self-closing tag syntax -->
-      <!-- Optional: Set max date if needed -->
-      <!-- [max]="maxDate" -->
     </ng-template>
   </ion-modal>
 
-  <!-- End Date Modal -->
   <ion-modal [keepContentsMounted]="true">
     <ng-template>
       <ion-datetime id="endDatetime"
@@ -122,9 +117,6 @@
                     cancelText="Annulla"
                     locale="it-IT">
       </ion-datetime>
-      <!-- Use self-closing tag syntax -->
-      <!-- Optional: Set max date if needed -->
-      <!-- [max]="maxDate" -->
     </ng-template>
   </ion-modal>
 
