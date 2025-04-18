@@ -1,23 +1,32 @@
+<!-- time-clock-user-page.component.html -->
 <app-page-toolbar [title]="title"
                   [showFilter]="false"
                   [showBreadcrumbs]="true">
 </app-page-toolbar>
 
-<ion-content [fullscreen]="true">
-
-
-  <div id="container">
-    <strong class="capitalize">{{ title }}</strong>
-    <p>{{title}}Component works...</p>
-
-    <!--{{ userNavigationService.userCronology | json}}-->
-
+<ion-content [fullscreen]="true" class="dark-background">
+  <div class="location-badge">
+    <ion-icon name="location"></ion-icon>
+    <span>{{ location }}</span>
   </div>
 
+  <div class="clock-container">
+    <div class="date">{{ formattedDate }}</div>
+    <div class="time">{{ currentTime }}</div>
+  </div>
 
+  <div class="button-container">
+    <button class="clock-button check-in" (click)="checkIn()">
+      <ion-icon name="arrow-forward-circle-outline"></ion-icon>
+      <span>ENTRATA</span>
+    </button>
+    <button class="clock-button check-out" (click)="checkOut()">
+      <ion-icon name="arrow-back-circle-outline"></ion-icon>
+      <span>USCITA</span>
+    </button>
+  </div>
 
-
-  <!--<app-fab-menu></app-fab-menu>-->
-
+  <div class="last-action">
+    <p>Ultima timbratura: {{ lastAction }}</p>
+  </div>
 </ion-content>
-
