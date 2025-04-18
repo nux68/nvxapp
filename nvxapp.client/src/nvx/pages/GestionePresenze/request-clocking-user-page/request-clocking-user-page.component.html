@@ -16,16 +16,21 @@
   </div>
 
   <div class="form-section">
-    <div class="form-label">Inizio</div>
+    <div class="form-label">Data e ora</div>
     <div class="form-input">
-      <ion-datetime [(ngModel)]="startDate" displayFormat="DD/MM/YYYY" placeholder="Seleziona data"></ion-datetime>
-    </div>
-  </div>
-
-  <div class="form-section">
-    <div class="form-label">Ora</div>
-    <div class="form-input">
-      <ion-datetime [(ngModel)]="startDateTime" displayFormat="DD/MM/YYYY HH:mm" placeholder="Seleziona data e ora"></ion-datetime>
+      <ion-datetime-button datetime="datetime-modal"></ion-datetime-button>
+      <ion-modal [keepContentsMounted]="true">
+        <ng-template>
+          <ion-datetime id="datetime-modal"
+                        [(ngModel)]="dateTime"
+                        presentation="date-time"
+                        [showDefaultButtons]="true"
+                        doneText="OK"
+                        cancelText="Annulla"
+                        (ionChange)="updateDateTime($event)">
+          </ion-datetime>
+        </ng-template>
+      </ion-modal>
     </div>
   </div>
 

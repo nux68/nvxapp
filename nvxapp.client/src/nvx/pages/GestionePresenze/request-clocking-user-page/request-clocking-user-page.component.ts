@@ -11,8 +11,8 @@ import { UserNavigationService } from '../../../Utility/infrastructure/user-navi
 export class RequestClockingUserPageComponent implements OnInit {
   public title: string;
   public requestType: string;
-  public startDate: string;
-  public startDateTime: string;
+  public dateTime: string;
+  public formattedDateTime: string;
   public supervisors: string[];
   public notes: string;
 
@@ -20,10 +20,11 @@ export class RequestClockingUserPageComponent implements OnInit {
     this.title = 'Richiedi timbratura';
     this.requestType = 'ENTRATA';
 
-    // Initialize with current date
+    // Initialize with current date and time
     const now = new Date();
-    this.startDate = this.formatDate(now);
-    this.startDateTime = this.formatDateTime(now);
+    // Format date for ion-datetime (ISO format)
+    this.dateTime = now.toISOString();
+    this.formattedDateTime = this.formatDateTime(now);
 
     this.supervisors = ['manzo.admin'];
     this.notes = '';
@@ -34,17 +35,18 @@ export class RequestClockingUserPageComponent implements OnInit {
 
   ngOnInit() { }
 
-  formatDate(date: Date): string {
+  formatDateTime(date: Date): string {
     const day = date.getDate().toString().padStart(2, '0');
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
     const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
-  }
-
-  formatDateTime(date: Date): string {
     const hours = date.getHours().toString().padStart(2, '0');
     const minutes = date.getMinutes().toString().padStart(2, '0');
-    return `${this.formatDate(date)} ${hours}:${minutes}`;
+    return `${day}/${month}/${year} ${hours}:${minutes}`;
+  }
+
+  updateDateTime(event: any) {
+    const selectedDate = new Date(event.detail.value);
+    this.formattedDateTime = this.formatDateTime(selectedDate);
   }
 
   addSupervisor() {
@@ -62,8 +64,8 @@ export class RequestClockingUserPageComponent implements OnInit {
   submitRequest() {
     console.log('Request submitted', {
       type: this.requestType,
-      startDate: this.startDate,
-      startDateTime: this.startDateTime,
+      dateTime: this.dateTime,
+      formattedDateTime: this.formattedDateTime,
       supervisors: this.supervisors,
       notes: this.notes
     });

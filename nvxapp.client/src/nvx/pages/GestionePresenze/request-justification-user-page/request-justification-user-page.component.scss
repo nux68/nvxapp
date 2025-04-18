@@ -8,6 +8,14 @@ ion-menu-button {
   --color: white;
 }
 
+.form-input.date-input-container {
+  display: flex; // Make the container a flex container
+  justify-content: flex-start; // Align items (the button) to the start (left)
+  align-items: center; // Optional: Vertically center the button if needed
+  // Add any other specific styling for this container if necessary
+  // e.g., padding: 0; if default padding is interfering
+}
+
 .form-section {
   margin: 20px;
 

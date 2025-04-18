@@ -26,17 +26,21 @@
     </div>
   </div>
 
+  <!-- Start Date Input using ion-datetime-button -->
   <div class="form-section">
     <div class="form-label">Inizio</div>
-    <div class="form-input">
-      <ion-datetime [(ngModel)]="startDate" displayFormat="DD/MM/YYYY" placeholder="Seleziona data"></ion-datetime>
+    <!-- Add the new class here -->
+    <div class="form-input date-input-container">
+      <ion-datetime-button datetime="startDatetime"></ion-datetime-button>
     </div>
   </div>
 
+  <!-- End Date Input using ion-datetime-button -->
   <div class="form-section">
     <div class="form-label">Fine</div>
-    <div class="form-input">
-      <ion-datetime [(ngModel)]="endDate" displayFormat="DD/MM/YYYY" placeholder="Seleziona data"></ion-datetime>
+    <!-- Add the new class here -->
+    <div class="form-input date-input-container">
+      <ion-datetime-button datetime="endDatetime"></ion-datetime-button>
     </div>
   </div>
 
@@ -45,10 +49,10 @@
     <div class="hours-input">
       <div class="hours-display">{{hoursFormatted}}</div>
       <div class="hours-controls">
-        <button class="hours-button decrease" (click)="decreaseHours()">
+        <button class="hours-button decrease" (click)="decreaseHours()" [disabled]="fullDay">
           <ion-icon name="remove"></ion-icon>
         </button>
-        <button class="hours-button increase" (click)="increaseHours()">
+        <button class="hours-button increase" (click)="increaseHours()" [disabled]="fullDay">
           <ion-icon name="add"></ion-icon>
         </button>
       </div>
@@ -88,4 +92,40 @@
       <span>Invia</span>
     </button>
   </div>
+
+  <!-- Start Date Modal -->
+  <ion-modal [keepContentsMounted]="true">
+    <ng-template>
+      <ion-datetime id="startDatetime"
+                    [(ngModel)]="startDate"
+                    presentation="date"
+                    [showDefaultButtons]="true"
+                    doneText="Fatto"
+                    cancelText="Annulla"
+                    locale="it-IT">
+      </ion-datetime>
+      <!-- Use self-closing tag syntax -->
+      <!-- Optional: Set max date if needed -->
+      <!-- [max]="maxDate" -->
+    </ng-template>
+  </ion-modal>
+
+  <!-- End Date Modal -->
+  <ion-modal [keepContentsMounted]="true">
+    <ng-template>
+      <ion-datetime id="endDatetime"
+                    [(ngModel)]="endDate"
+                    presentation="date"
+                    [min]="startDate"
+                    [showDefaultButtons]="true"
+                    doneText="Fatto"
+                    cancelText="Annulla"
+                    locale="it-IT">
+      </ion-datetime>
+      <!-- Use self-closing tag syntax -->
+      <!-- Optional: Set max date if needed -->
+      <!-- [max]="maxDate" -->
+    </ng-template>
+  </ion-modal>
+
 </ion-content>
