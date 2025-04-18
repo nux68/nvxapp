@@ -1,24 +1,60 @@
+<!-- request-clocking-user-page.component.html -->
 <app-page-toolbar [title]="title"
                   [showFilter]="false"
                   [showBreadcrumbs]="true">
 </app-page-toolbar>
 
-<ion-content [fullscreen]="true">
-
-
-  <div id="container">
-    <strong class="capitalize">{{ title }}</strong>
-    <p>{{title}}Component works...</p>
-
-    <!--{{ userNavigationService.userCronology | json}}-->
-
+<ion-content [fullscreen]="true" class="dark-background">
+  <div class="form-section">
+    <div class="form-label">Tipo richiesta</div>
+    <div class="form-input">
+      <ion-select [(ngModel)]="requestType" interface="action-sheet" placeholder="Seleziona">
+        <ion-select-option value="ENTRATA">ENTRATA</ion-select-option>
+        <ion-select-option value="USCITA">USCITA</ion-select-option>
+      </ion-select>
+    </div>
   </div>
 
+  <div class="form-section">
+    <div class="form-label">Inizio</div>
+    <div class="form-input">
+      <ion-datetime [(ngModel)]="startDate" displayFormat="DD/MM/YYYY" placeholder="Seleziona data"></ion-datetime>
+    </div>
+  </div>
 
+  <div class="form-section">
+    <div class="form-label">Ora</div>
+    <div class="form-input">
+      <ion-datetime [(ngModel)]="startDateTime" displayFormat="DD/MM/YYYY HH:mm" placeholder="Seleziona data e ora"></ion-datetime>
+    </div>
+  </div>
 
+  <div class="form-section">
+    <div class="form-label">Responsabili</div>
+    <div class="form-input supervisors">
+      <div class="chips-container">
+        <div class="chip" *ngFor="let supervisor of supervisors; let i = index">
+          <span>{{ supervisor }}</span>
+          <ion-icon name="trash" (click)="removeSupervisor(i)"></ion-icon>
+        </div>
+      </div>
+      <button class="add-button" (click)="addSupervisor()">
+        <ion-icon name="add"></ion-icon>
+      </button>
+    </div>
+  </div>
 
-  <!--<app-fab-menu></app-fab-menu>-->
+  <div class="form-section">
+    <div class="form-label">Note</div>
+    <div class="form-input">
+      <ion-textarea [(ngModel)]="notes" placeholder="Inserisci note..."></ion-textarea>
+    </div>
+  </div>
 
+  <div class="submit-button-container">
+    <button class="submit-button" (click)="submitRequest()">
+      <ion-icon name="save"></ion-icon>
+      <span>Invia</span>
+    </button>
+  </div>
 </ion-content>
-
-
