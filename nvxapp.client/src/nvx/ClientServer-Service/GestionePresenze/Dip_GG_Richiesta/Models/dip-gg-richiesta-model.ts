@@ -17,3 +17,20 @@ export class Dip_GG_RichiestaModel  {
 
 }
 
+export enum TipoRichiesta {
+  Timbratura,
+  Giustificativo,
+  NotaSpesa
+}
+
+export enum StatoRichiesta {
+  Diretta,
+
+  Immessa,
+  Cancellata,
+  Rifiutata,
+  ApprovazioneInCorso,
+  ParzialmenteApprovata,
+
+  Approvata
+}
