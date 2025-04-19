@@ -32,7 +32,7 @@ export class UserCompanyListPageComponent  implements OnInit {
               private userInterfaceService: UserInterfaceService,
               private userNavigationService: UserNavigationService) {
 
-    this.title = 'UserCompanyListPage';
+    this.title = 'User Company';
 
     this.btnImpersona = userInterfaceService.Btn_Impersona;
     this.btnImpersona.event = this.handleButtonImpersonaClick;

@@ -27,7 +27,7 @@ export class DealerListPageComponent  implements OnInit {
               public fabMenuService: FabMenuService,
               private userInterfaceService: UserInterfaceService,
               private userNavigationService: UserNavigationService) {
-    this.title = 'DealerListPage';
+    this.title = 'Dealers';
     console.log('NavController instance:', this.navCtrl);
 
     this.btnEdit = userInterfaceService.Btn_Modifica;
@@ -93,10 +93,14 @@ export class DealerListPageComponent  implements OnInit {
   }
 
 
-
-
   public Filter(CurrFilter: any) {
     this.searchText = CurrFilter;
+  }
+
+  isAdmin(item: DealerListModel) {
+
+
+      return false;
   }
 
 }

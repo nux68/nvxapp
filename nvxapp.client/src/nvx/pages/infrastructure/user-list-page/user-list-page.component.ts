@@ -2,12 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { AccountService } from '../../../ClientServer-Service/Account/account.service';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
-import { UserNavigationService, UserDataAdditionalModel } from '../../../Utility/infrastructure/user-navigation.service';
+import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { ParameterService } from '../../../ClientServer-Service/Parameter/parameter.service';
-
-import { UserLoadInModel } from '../../../ClientServer-Service/Account/Models/user-load-model';
 import { UserListInModel, UserListModel } from '../../../ClientServer-Service/Account/Models/user-model';
 import { RoleCode } from '../../../ClientServer-Service/Account/Models/user-roles-model';
 
@@ -22,7 +20,6 @@ export class UserListPageComponent  implements OnInit {
   public title!: string;
   public searchText!: string;
   public userList: UserListModel[] | null = null;
-  //public btnImpersona: ButtonItem;
   public btnEdit: ButtonItem;
 
   constructor(private navCtrl: NavController,
@@ -32,10 +29,7 @@ export class UserListPageComponent  implements OnInit {
     private userInterfaceService: UserInterfaceService,
     private userNavigationService: UserNavigationService) {
 
-    this.title = 'UserListPage';
-
-    //this.btnImpersona = userInterfaceService.Btn_Impersona;
-    //this.btnImpersona.event = this.handleButtonImpersonaClick;
+    this.title = 'Users';
     this.btnEdit = userInterfaceService.Btn_Modifica;
     this.btnEdit.event = this.handleButtonEditClick;
   }
@@ -65,26 +59,6 @@ export class UserListPageComponent  implements OnInit {
   }
 
   ngOnInit() { }
-
-  //handleButtonImpersonaClick = (item: any) => {
-
-  //  let request: GenericRequest<UserLoadInModel> = new GenericRequest<UserLoadInModel>(UserLoadInModel);
-  //  request.data.id = item.idAspNetUsers;
-  //  this.accountService.UserLoad(request).subscribe(usl => {
-  //    if (usl.success) {
-
-  //      let userDataAdditional: UserDataAdditionalModel = new UserDataAdditionalModel();
-  //      userDataAdditional.gotoBackPage = "/userlist";
-
-  //      this.userNavigationService.UserPush(usl.data.userData, userDataAdditional);
-  //      this.navCtrl.navigateForward('/home');
-  //    }
-  //    else {
-
-  //    }
-  //  });
-
-  //}
 
   handleButtonEditClick = (item: any) => {
     this.navCtrl.navigateForward('/useredit', {
@@ -120,5 +94,23 @@ export class UserListPageComponent  implements OnInit {
 
   }
 
+  getAll() {
+    const sortedUserCompanyList = this.userList.sort((a, b) => {
+      const roleA = this.parameterService.Roles.find(role => role.id === a.roleId)?.code || 0;
+      const roleB = this.parameterService.Roles.find(role => role.id === b.roleId)?.code || 0;
+      return roleB - roleA; // Ordinamento decrescente in base a `code`
+    });
+    return sortedUserCompanyList;
+  }
+
+  isPowerAdmin(item: UserListModel) {
+
+    const roles = this.parameterService.Roles.filter(role => role.code == RoleCode.PowerAdmin);
+
+    if (item.roleId == roles[0].id)
+      return true;
+    else
+      return false;
+  }
 
 }

@@ -12,8 +12,8 @@ export class MainMenuInfrastructureService implements iMainMenuService{
 
       return [
         { title: 'SuperUser', component: "SuperUserPageComponent", url: '/superuser', icon: 'triangle' },
-        { title: 'Dealer List', component: "DealerListPageComponent", url: '/dealerlist', icon: 'list-circle' },
-        { title: 'User List', component: "UserListPageComponent", url: '/userlist', icon: 'list-circle' }
+        { title: 'Dealers', component: "DealerListPageComponent", url: '/dealerlist', icon: 'list-circle' },
+        { title: 'Users', component: "UserListPageComponent", url: '/userlist', icon: 'list-circle' }
       ];
 
   }
@@ -22,8 +22,8 @@ export class MainMenuInfrastructureService implements iMainMenuService{
     return [
       { title: 'PowerAdmin', component: "PowerAdminPageComponent", url: '/poweradmin', icon: 'square' },
       { title: 'Admin', component: "AdminPageComponent", url: '/admin', icon: 'square' },
-      { title: 'User List', component: "UserListPageComponent", url: '/userlist', icon: 'list-circle' },
-      { title: 'Dealer List', component: "DealerListPageComponent", url: '/dealerlist', icon: 'list-circle' },
+      { title: 'Users', component: "UserListPageComponent", url: '/userlist', icon: 'list-circle' },
+      { title: 'Dealers', component: "DealerListPageComponent", url: '/dealerlist', icon: 'list-circle' },
     ];
 
   }
@@ -32,8 +32,8 @@ export class MainMenuInfrastructureService implements iMainMenuService{
       return [
         { title: 'DealerPowerAdmin', component: "DealerPowerAdminPageComponent", url: '/dealerpoweradmin', icon: 'ellipse' },
         { title: 'DealerAdmin', component: "DealerAdminPageComponent", url: '/dealeradmin', icon: 'ellipse' },
-        { title: 'UserDealer List', component: "UserDealerListPageComponent", url: '/userdealerlist', icon: 'list-circle' },
-        { title: 'FinancialAdvisor List', component: "FinancialAdvisorListPageComponent", url: '/financialadvisorlist', icon: 'list-circle' },
+        { title: 'Users Dealer', component: "UserDealerListPageComponent", url: '/userdealerlist', icon: 'list-circle' },
+        { title: 'FinancialAdvisors', component: "FinancialAdvisorListPageComponent", url: '/financialadvisorlist', icon: 'list-circle' },
         
       ];
 
@@ -43,8 +43,8 @@ export class MainMenuInfrastructureService implements iMainMenuService{
       return [
         { title: 'FinancialAdvisorPowerAdmin', component: "FinancialAdvisorPowerAdminPageComponent", url: '/financialadvisorpoweradmin', icon: 'ellipse' },
         { title: 'FinancialAdvisorAdmin', component: "FinancialAdvisorAdminPageComponent", url: '/financialadvisoradmin', icon: 'ellipse' },
-        { title: 'UserFinancialAdvisor List', component: "UserFinancialAdvisorListPageComponent", url: '/userfinancialadvisorlist', icon: 'list-circle' },
-        { title: 'Company List', component: "CompanyListPageComponent", url: '/companylist', icon: 'list-circle' },
+        { title: 'Users FinancialAdvisor', component: "UserFinancialAdvisorListPageComponent", url: '/userfinancialadvisorlist', icon: 'list-circle' },
+        { title: 'Company', component: "CompanyListPageComponent", url: '/companylist', icon: 'list-circle' },
       ];
 
     }
@@ -53,7 +53,7 @@ export class MainMenuInfrastructureService implements iMainMenuService{
       return [
         { title: 'CompanyPowerAdmin', component: "CompanyPowerAdminPageComponent", url: '/companypoweradmin', icon: 'ellipse' },
         { title: 'CompanyAdmin', component: "CompanyAdminPageComponent", url: '/companyadmin', icon: 'ellipse' },
-        { title: 'User List', component: "UserCompanyListPageComponent", url: '/usercompanylist', icon: 'list-circle' },
+        { title: 'Users', component: "UserCompanyListPageComponent", url: '/usercompanylist', icon: 'list-circle' },
       ];
 
     }

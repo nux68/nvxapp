@@ -31,7 +31,7 @@ export class DealerEditPageComponent extends BasePageConfirmCancelComponent<Deal
   }
     
 
-  get Title(): string { return "DealerEditPage"; }
+  get Title(): string { return "Dealer"; }
   get EditForm(): FormGroup {
     return this.
       fb.group({

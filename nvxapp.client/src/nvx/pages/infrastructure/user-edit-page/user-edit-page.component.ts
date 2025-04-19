@@ -38,7 +38,7 @@ export class UserEditPageComponent extends BasePageConfirmCancelComponent<UserEd
   }
 
 
-  get Title(): string { return "UserEditPage"; }
+  get Title(): string { return "User"; }
   get EditForm(): FormGroup {
     return this.fb.group({
 
