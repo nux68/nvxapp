@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { AuthService } from '../../../Utility/auth.service';
+import { AuthService } from '../../../Utility/infrastructure/auth.service';
 import { environment } from '../../../../environments/environment';
 import { GenericRequest } from '../../ModelsBase/generic-request';
 import { GenericResult } from '../../ModelsBase/generic-result';

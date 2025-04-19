@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { AuthService } from '../../../Utility/auth.service';
 import { environment } from '../../../../environments/environment';
 import { GenericRequest } from '../../ModelsBase/generic-request';
 import { GenericResult } from '../../ModelsBase/generic-result';
 import { map, Observable } from 'rxjs';
 import { Dip_GG_TimbraturaInModel, Dip_GG_TimbraturaOutModel } from './Models/dip-gg-timbratura-model';
+import { AuthService } from '../../../Utility/infrastructure/auth.service';
 
 @Injectable({
   providedIn: 'root'
