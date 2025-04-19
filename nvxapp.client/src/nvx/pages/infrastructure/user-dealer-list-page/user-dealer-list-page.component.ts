@@ -32,7 +32,7 @@ export class UserDealerListPageComponent implements OnInit {
     private userInterfaceService: UserInterfaceService,
     private userNavigationService: UserNavigationService) {
 
-    this.title = 'UserDealerListPage';
+    this.title = 'Users Dealer';
 
     
     this.btnEdit = userInterfaceService.Btn_Modifica;
@@ -98,6 +98,34 @@ export class UserDealerListPageComponent implements OnInit {
 
     return filteredUserDealerList;
 
+  }
+
+ 
+
+  getAll() {
+    const sortedUserList = this.userDealerList.sort((a, b) => {
+      const roleA = this.parameterService.Roles.find(role => role.id === a.roleId)?.code || 0;
+      const roleB = this.parameterService.Roles.find(role => role.id === b.roleId)?.code || 0;
+
+      // Primo criterio: ordinamento decrescente su roleId
+      if (roleB !== roleA) {
+        return roleB - roleA;
+      }
+
+      // Secondo criterio: ordinamento ascendente su descrizione
+      return a.descrizione.localeCompare(b.descrizione);
+    });
+    return sortedUserList;
+  }
+
+  isPowerAdmin(item: UserDealerListModel) {
+
+    const roles = this.parameterService.Roles.filter(role => role.code == RoleCode.DealerPowerAdmin);
+
+    if (item.roleId == roles[0].id)
+      return true;
+    else
+      return false;
   }
 
 

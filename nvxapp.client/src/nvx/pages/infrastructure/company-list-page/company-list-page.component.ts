@@ -29,7 +29,7 @@ export class CompanyListPageComponent  implements OnInit {
               private userInterfaceService: UserInterfaceService,
               private userNavigationService: UserNavigationService) {
 
-    this.title = 'CompanyListPage';
+    this.title = 'Companies';
     this.btnImpersona = userInterfaceService.Btn_Impersona;
     this.btnImpersona.event = this.handleButtonImpersonaClick;
     this.btnEdit = userInterfaceService.Btn_Modifica;
@@ -92,6 +92,19 @@ export class CompanyListPageComponent  implements OnInit {
 
   Filter(CurrFilter: any) {
     this.searchText = CurrFilter;
+  }
+
+  isAdmin(item: CompanyListModel) {
+
+
+    return false;
+  }
+
+  getAll() {
+    const sortedUserCompanyList = this.companyList.sort((a, b) =>
+      a.descrizione.localeCompare(b.descrizione)
+    );
+    return sortedUserCompanyList;
   }
 
 
