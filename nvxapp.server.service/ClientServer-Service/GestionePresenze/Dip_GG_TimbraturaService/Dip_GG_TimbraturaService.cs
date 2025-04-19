@@ -1,5 +1,4 @@
 ﻿using nvxapp.server.service.ClientServer_Service.ModelsBase;
-using nvxapp.server.service.Infrastructure;
 using nvxapp.server.service.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using AutoMapper;
@@ -12,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
 
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_TimbraturaService.Models;
+using nvxapp.server.Base;
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Timbratura
 {
