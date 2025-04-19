@@ -6,17 +6,17 @@ using Microsoft.Extensions.Options;
 using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
-using nvxapp.server.service.Infrastructure;
+using nvxapp.server.Base;
 using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.ServerModels;
-using nvxapp.server.service.Service.MyTableService;
-using nvxapp.server.service.Service.MyTableService.Models;
-using nvxapp.server.service.Service.WeatherForecast.Models;
+using nvxapp.server.service.Service.Infrastructure.MyTableService;
+using nvxapp.server.service.Service.Infrastructure.MyTableService.Models;
+using nvxapp.server.service.Service.Infrastructure.WeatherForecast.Models;
 
 
 
 
-namespace nvxapp.server.service.Service.WeatherForecast
+namespace nvxapp.server.service.Service.Infrastructure.WeatherForecast
 {
     public class WeatherForecastService : ServiceBase, IWeatherForecastService
     {

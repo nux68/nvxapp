@@ -14,7 +14,7 @@ using nvxapp.server.service.ServerModels;
 using Serilog;
 using System.Security.Claims;
 
-namespace nvxapp.server.service.Infrastructure
+namespace nvxapp.server.Base
 {
 
     public class ServiceBase : IServiceBase 

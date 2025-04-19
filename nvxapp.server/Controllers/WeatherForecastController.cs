@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
-using nvxapp.server.service.Service.WeatherForecast;
-using nvxapp.server.service.Service.WeatherForecast.Models;
+using nvxapp.server.service.Service.Infrastructure.WeatherForecast;
+using nvxapp.server.service.Service.Infrastructure.WeatherForecast.Models;
 
 namespace nvxapp.server.Controllers
 {

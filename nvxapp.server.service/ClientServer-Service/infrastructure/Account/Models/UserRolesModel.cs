@@ -1,6 +1,6 @@
 ﻿using nvxapp.server.data.Entities;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
-using nvxapp.server.service.Service.MyTableService.Models;
+using nvxapp.server.service.Service.Infrastructure.MyTableService.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static nvxapp.server.data.Entities.AspNetUsersDataUtil;
 
-namespace nvxapp.server.service.ClientServer_Service.Account.Models
+namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Models
 {
     public class UserRolesInModel
     {

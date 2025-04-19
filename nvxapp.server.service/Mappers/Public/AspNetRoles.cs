@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using nvxapp.server.data.Entities.Public;
-using nvxapp.server.service.Service.MyTableService.Models;
+using nvxapp.server.service.Service.Infrastructure.MyTableService.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;

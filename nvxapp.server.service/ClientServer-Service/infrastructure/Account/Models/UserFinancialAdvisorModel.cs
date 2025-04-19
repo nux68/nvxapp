@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static nvxapp.server.data.Entities.AspNetUsersDataUtil;
 
-namespace nvxapp.server.service.ClientServer_Service.Account.Models
+namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Models
 {
     public class UserFinancialAdvisorModel
     {
