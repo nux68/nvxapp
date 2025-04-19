@@ -22,7 +22,7 @@ using System.Net;
 using System.Reflection;
 using System.Text;
 
-namespace nvxapp.server.Infrastructure
+namespace nvxapp.server.Utility
 {
     public static class Installers
     {

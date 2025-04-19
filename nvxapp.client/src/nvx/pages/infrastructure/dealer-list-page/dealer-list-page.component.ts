@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { AccountService } from '../../../ClientServer-Service/Account/account.service';
-import { DealerListInModel, DealerListModel } from '../../../ClientServer-Service/Account/Models/dealer-model';
+import { AccountService } from '../../../ClientServer-Service/Infrastructure/Account/account.service';
+import { DealerListInModel, DealerListModel } from '../../../ClientServer-Service/Infrastructure/Account/Models/dealer-model';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
-import { UserLoadInModel } from '../../../ClientServer-Service/Account/Models/user-load-model';
+import { UserLoadInModel } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-load-model';
 import { UserDataAdditionalModel, UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
 import { NavController } from '@ionic/angular';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';

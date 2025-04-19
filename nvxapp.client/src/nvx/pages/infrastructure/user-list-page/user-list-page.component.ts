@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { NavController } from '@ionic/angular';
-import { AccountService } from '../../../ClientServer-Service/Account/account.service';
+import { AccountService } from '../../../ClientServer-Service/Infrastructure/Account/account.service';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
-import { ParameterService } from '../../../ClientServer-Service/Parameter/parameter.service';
-import { UserListInModel, UserListModel } from '../../../ClientServer-Service/Account/Models/user-model';
-import { RoleCode } from '../../../ClientServer-Service/Account/Models/user-roles-model';
+import { ParameterService } from '../../../ClientServer-Service/Infrastructure/Parameter/parameter.service';
+import { UserListInModel, UserListModel } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-model';
+import { RoleCode } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-roles-model';
 
 @Component({
   selector: 'app-user-list-page',

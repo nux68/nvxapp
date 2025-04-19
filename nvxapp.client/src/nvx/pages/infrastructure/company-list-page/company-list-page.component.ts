@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { NavController } from '@ionic/angular';
-import { AccountService } from '../../../ClientServer-Service/Account/account.service';
-import { CompanyListModel, CompanyListInModel } from '../../../ClientServer-Service/Account/Models/company-model';
-import { UserLoadInModel } from '../../../ClientServer-Service/Account/Models/user-load-model';
+import { AccountService } from '../../../ClientServer-Service/Infrastructure/Account/account.service';
+import { CompanyListModel, CompanyListInModel } from '../../../ClientServer-Service/Infrastructure/Account/Models/company-model';
+import { UserLoadInModel } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-load-model';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { UserNavigationService, UserDataAdditionalModel } from '../../../Utility/infrastructure/user-navigation.service';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';

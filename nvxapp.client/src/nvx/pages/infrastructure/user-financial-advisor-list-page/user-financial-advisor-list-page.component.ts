@@ -1,15 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { NavController } from '@ionic/angular';
-import { AccountService } from '../../../ClientServer-Service/Account/account.service';
+import { AccountService } from '../../../ClientServer-Service/Infrastructure/Account/account.service';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { UserNavigationService, UserDataAdditionalModel } from '../../../Utility/infrastructure/user-navigation.service';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
-import { ParameterService } from '../../../ClientServer-Service/Parameter/parameter.service';
+import { ParameterService } from '../../../ClientServer-Service/Infrastructure/Parameter/parameter.service';
 
-import { UserLoadInModel } from '../../../ClientServer-Service/Account/Models/user-load-model';
-import { UserFinancialAdvisorListModel, UserFinancialAdvisorListInModel } from '../../../ClientServer-Service/Account/Models/user-financial-advisor-model';
-import { RoleCode } from '../../../ClientServer-Service/Account/Models/user-roles-model';
+import { UserLoadInModel } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-load-model';
+import { UserFinancialAdvisorListModel, UserFinancialAdvisorListInModel } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-financial-advisor-model';
+import { RoleCode } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-roles-model';
 
 
 @Component({

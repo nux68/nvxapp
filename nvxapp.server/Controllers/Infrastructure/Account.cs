@@ -5,7 +5,7 @@ using nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 
 
-namespace nvxapp.server.Controllers
+namespace nvxapp.server.Controllers.Infrastructure
 {
     [ApiController]
     [Route("api/[controller]")]

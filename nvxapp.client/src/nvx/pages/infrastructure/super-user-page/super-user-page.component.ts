@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
-import { UserRolesInModel } from '../../../ClientServer-Service/Account/Models/user-roles-model';
-import { AccountService } from '../../../ClientServer-Service/Account/account.service';
+import { UserRolesInModel } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-roles-model';
+import { AccountService } from '../../../ClientServer-Service/Infrastructure/Account/account.service';
 
 @Component({
   selector: 'app-super-user-page',

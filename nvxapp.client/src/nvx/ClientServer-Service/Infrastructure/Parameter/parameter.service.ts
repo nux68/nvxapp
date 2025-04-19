@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { AuthService } from '../../Utility/infrastructure/auth.service';
-import { environment } from '../../../environments/environment';
-import { GenericRequest } from '../ModelsBase/generic-request';
-import { GenericResult } from '../ModelsBase/generic-result';
+import { AuthService } from '../../../Utility/infrastructure/auth.service';
+import { environment } from '../../../../environments/environment';
+import { GenericRequest } from '../../ModelsBase/generic-request';
+import { GenericResult } from '../../ModelsBase/generic-result';
 import { BehaviorSubject, map, Observable } from 'rxjs';
 import { RolesListInModel, RolesListOutModel, RolesModel } from './Models/roles-model';
 

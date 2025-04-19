@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { AccountService } from '../../../ClientServer-Service/Account/account.service';
+import { AccountService } from '../../../ClientServer-Service/Infrastructure/Account/account.service';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
-import { UserRolesInModel } from '../../../ClientServer-Service/Account/Models/user-roles-model';
+import { UserRolesInModel } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-roles-model';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NavController } from '@ionic/angular';
-import { LoginInModel } from '../../../ClientServer-Service/Account/Models/login-model';
+import { LoginInModel } from '../../../ClientServer-Service/Infrastructure/Account/Models/login-model';
 import { AuthService } from '../../../Utility/infrastructure/auth.service';
-import { UserLoadInModel } from '../../../ClientServer-Service/Account/Models/user-load-model';
+import { UserLoadInModel } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-load-model';
 import { UserDataAdditionalModel, UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
 import { SignalrService } from '../../../Utility/infrastructure/signalr.service';
 import { environment } from '../../../../environments/environment';

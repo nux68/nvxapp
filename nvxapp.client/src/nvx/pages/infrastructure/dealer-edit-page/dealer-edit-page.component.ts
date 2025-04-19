@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
-import { AccountService } from '../../../ClientServer-Service/Account/account.service';
-import { DealerEditModel, DealerGetInModel, DealerListInModel, DealerPutInModel } from '../../../ClientServer-Service/Account/Models/dealer-model';
+import { AccountService } from '../../../ClientServer-Service/Infrastructure/Account/account.service';
+import { DealerEditModel, DealerGetInModel, DealerListInModel, DealerPutInModel } from '../../../ClientServer-Service/Infrastructure/Account/Models/dealer-model';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Observable, map, catchError } from 'rxjs';
