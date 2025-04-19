@@ -3,8 +3,8 @@ import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-ca
 import { UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { NavController } from '@ionic/angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { FinancialAdvisorEditModel, FinancialAdvisorGetInModel, FinancialAdvisorPutInModel } from '../../../ClientServer-Service/Account/Models/financial-advisor-model';
-import { AccountService } from '../../../ClientServer-Service/Account/account.service';
+import { FinancialAdvisorEditModel, FinancialAdvisorGetInModel, FinancialAdvisorPutInModel } from '../../../ClientServer-Service/Infrastructure/Account/Models/financial-advisor-model';
+import { AccountService } from '../../../ClientServer-Service/Infrastructure/Account/account.service';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { Observable } from 'rxjs/internal/Observable';
 import { map, catchError } from 'rxjs';

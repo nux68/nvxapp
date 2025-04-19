@@ -3,18 +3,18 @@ import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-ca
 import { UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { NavController } from '@ionic/angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { AccountService } from '../../../ClientServer-Service/Account/account.service';
+import { AccountService } from '../../../ClientServer-Service/Infrastructure/Account/account.service';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { Observable } from 'rxjs/internal/Observable';
 import { map, catchError } from 'rxjs';
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { StringHelperService } from '../../../Utility/infrastructure/string-helper.service';
-import { ParameterService } from '../../../ClientServer-Service/Parameter/parameter.service';
-import { RolesModel } from '../../../ClientServer-Service/Parameter/Models/roles-model';
+import { ParameterService } from '../../../ClientServer-Service/Infrastructure/Parameter/parameter.service';
+import { RolesModel } from '../../../ClientServer-Service/Infrastructure/Parameter/Models/roles-model';
 
 
-import { UserEditModel, UserGetInModel, UserPutInModel } from '../../../ClientServer-Service/Account/Models/user-model';
-import { RoleCode } from '../../../ClientServer-Service/Account/Models/user-roles-model';
+import { UserEditModel, UserGetInModel, UserPutInModel } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-model';
+import { RoleCode } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-roles-model';
 
 @Component({
   selector: 'app-user-edit-page',

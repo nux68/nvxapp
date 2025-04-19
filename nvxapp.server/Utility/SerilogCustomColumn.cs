@@ -5,7 +5,7 @@ using Serilog.Sinks.PostgreSQL;
 using System.Text.RegularExpressions;
 using System.Text;
 
-namespace nvxapp.server.Infrastructure
+namespace nvxapp.server.Utility
 {
    
     public class SimpleString_ColumnWriter : ColumnWriterBase

@@ -1,11 +1,11 @@
 import { ChangeDetectorRef, Component, NgZone, OnInit } from '@angular/core';
-import { ParameterService } from '../../../../ClientServer-Service/Parameter/parameter.service';
+import { ParameterService } from '../../../../ClientServer-Service/Infrastructure/Parameter/parameter.service';
 import { GenericRequest } from '../../../../ClientServer-Service/ModelsBase/generic-request';
-import { RolesListInModel } from '../../../../ClientServer-Service/Parameter/Models/roles-model';
-import { catchError, concatMap, delay, of, retry, retryWhen, tap, timer } from 'rxjs';
+import { catchError, concatMap, delay, of, retry, tap, timer } from 'rxjs';
 import { merge } from 'rxjs/internal/observable/merge';
 import { concat } from 'rxjs/internal/observable/concat';
 import { from } from 'rxjs/internal/observable/from';
+import { RolesListInModel } from '../../../../ClientServer-Service/Infrastructure/Parameter/Models/roles-model';
 
 @Component({
   selector: 'app-parameter-loader',

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { UserDataModel } from '../../ClientServer-Service/Account/Models/user-load-model';
+import { UserDataModel } from '../../ClientServer-Service/Infrastructure/Account/Models/user-load-model';
 import { AuthService } from './auth.service';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { NavController } from '@ionic/angular';

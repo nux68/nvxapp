@@ -1,7 +1,7 @@
 using Hangfire;
 using Microsoft.EntityFrameworkCore;
 using nvxapp.server.data.Infrastructure;
-using nvxapp.server.Infrastructure;
+using nvxapp.server.Utility;
 
 
 var builder = WebApplication.CreateBuilder(args);

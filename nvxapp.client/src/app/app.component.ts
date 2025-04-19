@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AccountService } from '../nvx/ClientServer-Service/Account/account.service';
+import { AccountService } from '../nvx/ClientServer-Service/Infrastructure/Account/account.service';
 import { AuthService } from '../nvx/Utility/infrastructure/auth.service';
 import { UserNavigationService } from '../nvx/Utility/infrastructure/user-navigation.service';
 import { SignalrService } from '../nvx/Utility/infrastructure/signalr.service';

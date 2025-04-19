@@ -1,4 +1,4 @@
-import { ModelResult } from "../../ModelsBase/model-result";
+import { ModelResult } from "../../../ModelsBase/model-result";
 
 
 

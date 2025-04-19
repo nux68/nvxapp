@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { AccountService } from '../../../ClientServer-Service/Account/account.service';
+import { AccountService } from '../../../ClientServer-Service/Infrastructure/Account/account.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NavController } from '@ionic/angular';
 import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';

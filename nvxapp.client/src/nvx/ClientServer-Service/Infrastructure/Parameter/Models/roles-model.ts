@@ -1,5 +1,5 @@
 import { RoleCode } from "../../Account/Models/user-roles-model";
-import { ModelResult } from "../../ModelsBase/model-result";
+import { ModelResult } from "../../../ModelsBase/model-result";
 
 
 

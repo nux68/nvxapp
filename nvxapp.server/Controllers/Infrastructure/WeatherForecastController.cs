@@ -3,7 +3,7 @@ using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Service.Infrastructure.WeatherForecast;
 using nvxapp.server.service.Service.Infrastructure.WeatherForecast.Models;
 
-namespace nvxapp.server.Controllers
+namespace nvxapp.server.Controllers.Infrastructure
 {
     [ApiController]
     [Route("api/[controller]")]

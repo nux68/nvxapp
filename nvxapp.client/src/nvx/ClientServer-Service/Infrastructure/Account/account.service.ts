@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, map, Observable } from 'rxjs';
-import { environment } from '../../../environments/environment';
-import { GenericRequest } from '../ModelsBase/generic-request';
-import { GenericResult } from '../ModelsBase/generic-result';
+import { environment } from '../../../../environments/environment';
+import { GenericRequest } from '../../ModelsBase/generic-request';
+import { GenericResult } from '../../ModelsBase/generic-result';
 import { UserRolesInModel, UserRolesOutModel } from './Models/user-roles-model';
 import { LoginInModel, LoginOutModel } from './Models/login-model';
-import { AuthService } from '../../Utility/infrastructure/auth.service';
+import { AuthService } from '../../../Utility/infrastructure/auth.service';
 import { UserLoadInModel, UserLoadOutModel } from './Models/user-load-model';
 import { DealerGetInModel, DealerGetOutModel, DealerListInModel, DealerListOutModel, DealerPutInModel, DealerPutOutModel } from './Models/dealer-model';
 import { CompanyGetInModel, CompanyGetOutModel, CompanyListInModel, CompanyListOutModel, CompanyPutInModel, CompanyPutOutModel } from './Models/company-model';
