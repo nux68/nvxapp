@@ -38,7 +38,7 @@ export class UserFinancialAdvisorEditPageComponent extends BasePageConfirmCancel
   }
 
 
-  get Title(): string { return "UserFinancialAdvisorEditPage"; }
+  get Title(): string { return "User FinancialAdvisor"; }
   get EditForm(): FormGroup {
     return this.fb.group({
 

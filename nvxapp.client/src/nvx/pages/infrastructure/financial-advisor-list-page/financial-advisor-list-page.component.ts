@@ -28,7 +28,7 @@ export class FinancialAdvisorListPageComponent implements OnInit {
     public fabMenuService: FabMenuService,
     private userNavigationService: UserNavigationService) {
 
-    this.title = 'FinancialAdvisorListPage';
+    this.title = 'Financial Advisors';
 
     this.btnEdit = userInterfaceService.Btn_Modifica;
     this.btnEdit.event = this.handleButtonEditClick;
@@ -93,5 +93,19 @@ export class FinancialAdvisorListPageComponent implements OnInit {
   Filter(CurrFilter: any) {
     this.searchText = CurrFilter;
   }
+
+  isAdmin(item: FinancialAdvisorListModel) {
+
+
+    return false;
+  }
+
+  getAll() {
+    const sortedUserCompanyList = this.financialAdvisorList.sort((a, b) =>
+      a.descrizione.localeCompare(b.descrizione)
+    );
+    return sortedUserCompanyList;
+  }
+
 }
 

@@ -30,10 +30,10 @@ export class MainMenuInfrastructureService implements iMainMenuService{
     public get Pages4DealerAdmin(): MainMenuItem[] {
 
       return [
-        { title: 'DealerPowerAdmin', component: "DealerPowerAdminPageComponent", url: '/dealerpoweradmin', icon: 'ellipse' },
-        { title: 'DealerAdmin', component: "DealerAdminPageComponent", url: '/dealeradmin', icon: 'ellipse' },
+        { title: 'Dealer Power Admin', component: "DealerPowerAdminPageComponent", url: '/dealerpoweradmin', icon: 'ellipse' },
+        { title: 'Dealer Admin', component: "DealerAdminPageComponent", url: '/dealeradmin', icon: 'ellipse' },
         { title: 'Users Dealer', component: "UserDealerListPageComponent", url: '/userdealerlist', icon: 'list-circle' },
-        { title: 'FinancialAdvisors', component: "FinancialAdvisorListPageComponent", url: '/financialadvisorlist', icon: 'list-circle' },
+        { title: 'Financial Advisors', component: "FinancialAdvisorListPageComponent", url: '/financialadvisorlist', icon: 'list-circle' },
         
       ];
 
@@ -41,18 +41,18 @@ export class MainMenuInfrastructureService implements iMainMenuService{
     public get Pages4FinancialAdvisorAdmin(): MainMenuItem[] {
 
       return [
-        { title: 'FinancialAdvisorPowerAdmin', component: "FinancialAdvisorPowerAdminPageComponent", url: '/financialadvisorpoweradmin', icon: 'ellipse' },
-        { title: 'FinancialAdvisorAdmin', component: "FinancialAdvisorAdminPageComponent", url: '/financialadvisoradmin', icon: 'ellipse' },
-        { title: 'Users FinancialAdvisor', component: "UserFinancialAdvisorListPageComponent", url: '/userfinancialadvisorlist', icon: 'list-circle' },
-        { title: 'Company', component: "CompanyListPageComponent", url: '/companylist', icon: 'list-circle' },
+        { title: 'Financial Advisor Power Admin', component: "FinancialAdvisorPowerAdminPageComponent", url: '/financialadvisorpoweradmin', icon: 'ellipse' },
+        { title: 'Financial Advisor Admin', component: "FinancialAdvisorAdminPageComponent", url: '/financialadvisoradmin', icon: 'ellipse' },
+        { title: 'Users Financial Advisor', component: "UserFinancialAdvisorListPageComponent", url: '/userfinancialadvisorlist', icon: 'list-circle' },
+        { title: 'Companies', component: "CompanyListPageComponent", url: '/companylist', icon: 'list-circle' },
       ];
 
     }
     public get Pages4CompanyAdmin(): MainMenuItem[] {
 
       return [
-        { title: 'CompanyPowerAdmin', component: "CompanyPowerAdminPageComponent", url: '/companypoweradmin', icon: 'ellipse' },
-        { title: 'CompanyAdmin', component: "CompanyAdminPageComponent", url: '/companyadmin', icon: 'ellipse' },
+        { title: 'Company Power Admin', component: "CompanyPowerAdminPageComponent", url: '/companypoweradmin', icon: 'ellipse' },
+        { title: 'Company Admin', component: "CompanyAdminPageComponent", url: '/companyadmin', icon: 'ellipse' },
         { title: 'Users', component: "UserCompanyListPageComponent", url: '/usercompanylist', icon: 'list-circle' },
       ];
 

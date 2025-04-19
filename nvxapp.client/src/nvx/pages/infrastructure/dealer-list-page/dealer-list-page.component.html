@@ -10,7 +10,7 @@
 
   <ion-grid *ngIf="dealerList!=null">
 
-    <ion-row *ngFor="let item of dealerList | genericFilter: 'descrizione' : searchText" class="nvx-ion-row-4table">
+    <ion-row *ngFor="let item of getAll() | genericFilter: 'descrizione' : searchText" class="nvx-ion-row-4table">
 
       <ion-item-sliding class="ion-hide-sm-up">
         <ion-item>
@@ -36,8 +36,6 @@
 
         </ion-item-options>
       </ion-item-sliding>
-
-
 
 
       <ion-col size="8" class="ion-hide-sm-down">

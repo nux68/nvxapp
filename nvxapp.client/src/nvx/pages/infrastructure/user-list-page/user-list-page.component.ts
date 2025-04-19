@@ -94,13 +94,21 @@ export class UserListPageComponent  implements OnInit {
 
   }
 
+ 
   getAll() {
-    const sortedUserCompanyList = this.userList.sort((a, b) => {
+    const sortedUserList = this.userList.sort((a, b) => {
       const roleA = this.parameterService.Roles.find(role => role.id === a.roleId)?.code || 0;
       const roleB = this.parameterService.Roles.find(role => role.id === b.roleId)?.code || 0;
-      return roleB - roleA; // Ordinamento decrescente in base a `code`
+
+      // Primo criterio: ordinamento decrescente su roleId
+      if (roleB !== roleA) {
+        return roleB - roleA;
+      }
+
+      // Secondo criterio: ordinamento ascendente su descrizione
+      return a.descrizione.localeCompare(b.descrizione);
     });
-    return sortedUserCompanyList;
+    return sortedUserList;
   }
 
   isPowerAdmin(item: UserListModel) {

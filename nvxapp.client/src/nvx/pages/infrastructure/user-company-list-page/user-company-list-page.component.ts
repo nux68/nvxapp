@@ -32,7 +32,7 @@ export class UserCompanyListPageComponent  implements OnInit {
               private userInterfaceService: UserInterfaceService,
               private userNavigationService: UserNavigationService) {
 
-    this.title = 'User Company';
+    this.title = 'Users';
 
     this.btnImpersona = userInterfaceService.Btn_Impersona;
     this.btnImpersona.event = this.handleButtonImpersonaClick;
@@ -122,14 +122,23 @@ export class UserCompanyListPageComponent  implements OnInit {
 
  
 
+
   getAll() {
-    const sortedUserCompanyList = this.userCompanyList.sort((a, b) => {
+    const sortedUserList = this.userCompanyList.sort((a, b) => {
       const roleA = this.parameterService.Roles.find(role => role.id === a.roleId)?.code || 0;
       const roleB = this.parameterService.Roles.find(role => role.id === b.roleId)?.code || 0;
-      return roleB - roleA; // Ordinamento decrescente in base a `code`
+
+      // Primo criterio: ordinamento decrescente su roleId
+      if (roleB !== roleA) {
+        return roleB - roleA;
+      }
+
+      // Secondo criterio: ordinamento ascendente su descrizione
+      return a.descrizione.localeCompare(b.descrizione);
     });
-    return sortedUserCompanyList;
+    return sortedUserList;
   }
+
 
   isAdmin(item: UserCompanyListModel) {
 

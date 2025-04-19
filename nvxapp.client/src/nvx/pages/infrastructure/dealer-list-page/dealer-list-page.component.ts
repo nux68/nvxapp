@@ -103,4 +103,10 @@ export class DealerListPageComponent  implements OnInit {
       return false;
   }
 
+  getAll() {
+    const sortedUserCompanyList = this.dealerList.sort((a, b) =>
+      a.descrizione.localeCompare(b.descrizione)
+    );
+    return sortedUserCompanyList;
+  }
 }
