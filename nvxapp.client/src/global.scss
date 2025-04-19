@@ -48,9 +48,35 @@
   overflow: hidden; // Evita bordi tagliati
 }
 
+
+.nvx-ion-row-4table {
+  border-bottom: 1px solid var(--ion-toolbar-background);
+  transition: background-color 0.3s ease; /* Animazione fluida per il cambio colore */
+}
+
+.nvx-ion-row-4table:hover {
+  background-color: var(--ion-item-background);
+}
+
+
+
+
 /*@media (max-width: 576px) {*/ /* Soglia per sm */
   /*.nvx-modal {
     display: none;
   }
 }*/
 
+
+  /*per i bottoni slide*/
+/*ion-item-option {
+  border-radius: 15px;*/ /* Arrotonda i bordi */
+  /*overflow: hidden;*/ /* Per evitare contenuti fuori dai bordi */
+  /*margin: 8px 0;*/ /* Spazio sopra e sotto */
+/*}
+
+.center-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;*/ /* Spazio tra i bottoni */
+/*}*/

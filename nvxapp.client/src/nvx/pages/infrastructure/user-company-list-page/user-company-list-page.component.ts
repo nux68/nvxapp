@@ -120,5 +120,25 @@ export class UserCompanyListPageComponent  implements OnInit {
 
   }
 
+ 
+
+  getAll() {
+    const sortedUserCompanyList = this.userCompanyList.sort((a, b) => {
+      const roleA = this.parameterService.Roles.find(role => role.id === a.roleId)?.code || 0;
+      const roleB = this.parameterService.Roles.find(role => role.id === b.roleId)?.code || 0;
+      return roleB - roleA; // Ordinamento decrescente in base a `code`
+    });
+    return sortedUserCompanyList;
+  }
+
+  isAdmin(item: UserCompanyListModel) {
+
+    const roles = this.parameterService.Roles.filter(role => role.code == RoleCode.User);
+
+    if (item.roleId == roles[0].id)
+      return false;
+    else
+      return true;
+  }
 
 }
