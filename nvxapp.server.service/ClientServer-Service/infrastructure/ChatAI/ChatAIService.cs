@@ -5,9 +5,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Repositories.Public;
-using nvxapp.server.service.ClientServer_Service.ChatAI.Models;
+using nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
-using nvxapp.server.service.Infrastructure;
+using nvxapp.server.Base;
 using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.RabbitMQ;
 using nvxapp.server.service.RabbitMQ.Listener;
@@ -22,7 +22,7 @@ using System.Text.RegularExpressions;
 
 
 
-namespace nvxapp.server.service.ClientServer_Service.ChatAI
+namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
 {
     public class ChatAIService : ServiceBase, IChatAIService
     {

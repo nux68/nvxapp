@@ -1,9 +1,9 @@
 ﻿using nvxapp.server.service.ClientServer_Service.ModelsBase;
-using nvxapp.server.service.Infrastructure;
+using nvxapp.server.Base;
 using nvxapp.server.service.Interfaces;
-using nvxapp.server.service.Service.MyTableService.Models;
-using nvxapp.server.service.Service.WeatherForecast;
-using nvxapp.server.service.Service.WeatherForecast.Models;
+using nvxapp.server.service.Service.Infrastructure.MyTableService.Models;
+using nvxapp.server.service.Service.Infrastructure.WeatherForecast;
+using nvxapp.server.service.Service.Infrastructure.WeatherForecast.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,7 +20,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 
 
-namespace nvxapp.server.service.Service.MyTableService
+namespace nvxapp.server.service.Service.Infrastructure.MyTableService
 {
 
     public class MyTableService : ServiceBase, IMyTableService

@@ -2,8 +2,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
-using nvxapp.server.service.Service.WeatherForecast;
-using nvxapp.server.service.Service.WeatherForecast.Models;
+using nvxapp.server.service.Service.Infrastructure.WeatherForecast;
+using nvxapp.server.service.Service.Infrastructure.WeatherForecast.Models;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using Serilog;

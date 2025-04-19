@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using nvxapp.server.data.Repositories.Tenant;
-using nvxapp.server.service.ClientServer_Service.Account.Models;
-using nvxapp.server.service.ClientServer_Service.ChatAI;
-using nvxapp.server.service.ClientServer_Service.ChatAI.Models;
+using nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Models;
+using nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI;
+using nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 
 namespace nvxapp.server.Controllers

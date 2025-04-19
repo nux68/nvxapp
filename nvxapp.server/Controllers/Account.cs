@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using nvxapp.server.service.ClientServer_Service.Account;
-using nvxapp.server.service.ClientServer_Service.Account.Models;
+using nvxapp.server.service.ClientServer_Service.Infrastructure.Account;
+using nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 
 

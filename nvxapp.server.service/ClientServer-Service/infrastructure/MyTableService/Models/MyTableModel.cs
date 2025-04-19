@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace nvxapp.server.service.Service.MyTableService.Models
+namespace nvxapp.server.service.Service.Infrastructure.MyTableService.Models
 {
     public class MyTableModel
     {

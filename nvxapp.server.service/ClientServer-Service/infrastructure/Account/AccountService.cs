@@ -6,17 +6,17 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Repositories.Public;
-using nvxapp.server.service.ClientServer_Service.Account.Models;
+using nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Helpers;
 using nvxapp.server.service.HubAI;
-using nvxapp.server.service.Infrastructure;
+using nvxapp.server.Base;
 using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.ServerModels;
 using static nvxapp.server.data.Entities.AspNetUsersDataUtil;
 
 
-namespace nvxapp.server.service.ClientServer_Service.Account
+namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
 {
     public class AccountService : ServiceBase, IAccountService
     {
