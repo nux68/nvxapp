@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators'; // Import map operator if you plan real sorting/processing
+import { Dip_GG_TimbraturaModel, TipoTimbratura } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Timbratura/Models/dip-gg-timbratura-model';
+import { StatoRichiesta } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/Models/dip-gg-richiesta-model';
 
 // --- INTERFACE DEFINITIONS (Moved Here) ---
 export interface TimeStamp {
@@ -18,6 +20,8 @@ export interface DayRecord {
   date: Date;
   timestamps: TimeStamp[];
   justifications: Justification[];
+
+  dip_GG_Timbratura: Dip_GG_TimbraturaModel[];
 }
 
 export interface MonthData {
@@ -65,15 +69,22 @@ export class MokeTimeSheetService {
 
     // Optional: Add processing/sorting if the source doesn't guarantee it
     // Example: Ensure all day records have sorted timestamps
-    return dataObservable.pipe(
-      map(monthData => {
-        // Ensure timestamps are sorted for every day in the returned data
-        Object.values(monthData.days).forEach(dayRecord => {
-          dayRecord.timestamps = this.sortTimestampsByTime(dayRecord.timestamps);
-        });
-        return monthData;
-      })
-    );
+    //return dataObservable.pipe(
+    //  map(monthData => {
+    //    // Ensure timestamps are sorted for every day in the returned data
+    //    //nvx
+    //    //Object.values(monthData.days).forEach(dayRecord => {
+    //    //  dayRecord.timestamps = this.sortTimestampsByTime(dayRecord.timestamps);
+    //    //});
+    //    Object.values(monthData.days).forEach(dayRecord  => {
+    //      dayRecord.dip_GG_Timbratura = this.sortTimestampsByTime(dayRecord.dip_GG_Timbratura);
+    //    });
+    //    return monthData;
+    //  })
+    //);
+
+    return dataObservable;
+
     // --- FINE SIMULAZIONE ---
   }
 
@@ -82,26 +93,176 @@ export class MokeTimeSheetService {
    * (Private helper method)
    * @returns MonthData
    */
+  //private getMockApril2025Data(): MonthData {
+  //  const aprilData: MonthData = {
+  //    year: 2025, month: 3, days: {
+  //      // Note: Timestamps don't strictly NEED to be pre-sorted here
+  //      // because the getMonthData method pipes through a sort.
+  //      1: { date: new Date(2025, 3, 1), timestamps: [{ type: 'E', time: '09:02' }, { type: 'U', time: '13:03' }, { type: 'E', time: '13:59' }, { type: 'U', time: '18:00' }], justifications: [] },
+  //      2: { date: new Date(2025, 3, 2), timestamps: [{ type: 'E', time: '08:59' }, { type: 'U', time: '13:02' }, { type: 'E', time: '13:58' }, { type: 'U', time: '18:08' }], justifications: [] },
+  //      3: { date: new Date(2025, 3, 3), timestamps: [{ type: 'E', time: '08:49' }, { type: 'U', time: '13:05' }, { type: 'E', time: '13:51' }, { type: 'U', time: '18:00' }], justifications: [] },
+  //      // ... (include other mock days as needed)
+  //      16: { date: new Date(2025, 3, 16), timestamps: [], justifications: [{ code: 'MAL', description: 'Malattia', isFullDay: true }] },
+  //      17: { date: new Date(2025, 3, 17), timestamps: [{ type: 'E', time: '09:00' }, { type: 'U', time: '13:00' }], justifications: [{ code: 'PER', description: 'Permesso Pom.', isFullDay: false }] },
+  //      18: { date: new Date(2025, 3, 18), timestamps: [], justifications: [{ code: 'FER', description: 'Ferie', isFullDay: true }] },
+  //      21: { date: new Date(2025, 3, 21), timestamps: [], justifications: [{ code: 'FST', description: 'Pasquetta', isFullDay: true }] },
+  //      25: { date: new Date(2025, 3, 25), timestamps: [], justifications: [{ code: 'FST', description: 'Liberazione', isFullDay: true }] },
+  //    }
+  //  };
+  //   Sorting is now handled reliably in getMonthData's pipe
+  //   Object.values(aprilData.days).forEach(dayRec => {
+  //     dayRec.timestamps = this.sortTimestampsByTime(dayRec.timestamps);
+  //   });
+
+
+
+
+  //  return aprilData;
+  //}
+
+
   private getMockApril2025Data(): MonthData {
-    const aprilData: MonthData = {
-      year: 2025, month: 3, days: {
-        // Note: Timestamps don't strictly NEED to be pre-sorted here
-        // because the getMonthData method pipes through a sort.
-        1: { date: new Date(2025, 3, 1), timestamps: [{ type: 'E', time: '09:02' }, { type: 'U', time: '13:03' }, { type: 'E', time: '13:59' }, { type: 'U', time: '18:00' }], justifications: [] },
-        2: { date: new Date(2025, 3, 2), timestamps: [{ type: 'E', time: '08:59' }, { type: 'U', time: '13:02' }, { type: 'E', time: '13:58' }, { type: 'U', time: '18:08' }], justifications: [] },
-        3: { date: new Date(2025, 3, 3), timestamps: [{ type: 'E', time: '08:49' }, { type: 'U', time: '13:05' }, { type: 'E', time: '13:51' }, { type: 'U', time: '18:00' }], justifications: [] },
-        // ... (include other mock days as needed)
-        16: { date: new Date(2025, 3, 16), timestamps: [], justifications: [{ code: 'MAL', description: 'Malattia', isFullDay: true }] },
-        17: { date: new Date(2025, 3, 17), timestamps: [{ type: 'E', time: '09:00' }, { type: 'U', time: '13:00' }], justifications: [{ code: 'PER', description: 'Permesso Pom.', isFullDay: false }] },
-        18: { date: new Date(2025, 3, 18), timestamps: [], justifications: [{ code: 'FER', description: 'Ferie', isFullDay: true }] },
-        21: { date: new Date(2025, 3, 21), timestamps: [], justifications: [{ code: 'FST', description: 'Pasquetta', isFullDay: true }] },
-        25: { date: new Date(2025, 3, 25), timestamps: [], justifications: [{ code: 'FST', description: 'Liberazione', isFullDay: true }] },
+    // Funzione helper per convertire il type del timestamp nel TimbraturaTipo corrispondente
+    const mapTipoTimbratura = (type: 'E' | 'U' | 'S' | 'A'): TipoTimbratura => {
+      switch (type) {
+        case 'E': return TipoTimbratura.Entrata;
+        case 'U': return TipoTimbratura.Uscita;;
+        case 'S': return TipoTimbratura.SenzaVerso;;
+        case 'A': return TipoTimbratura.Attivita;;
+        default: return TipoTimbratura.SenzaVerso;;
       }
     };
-    // Sorting is now handled reliably in getMonthData's pipe
-    // Object.values(aprilData.days).forEach(dayRec => {
-    //   dayRec.timestamps = this.sortTimestampsByTime(dayRec.timestamps);
-    // });
+
+    // Funzione helper per convertire una stringa oraria in un oggetto Date
+    const createTimeObject = (dateObj: Date, timeStr: string): Date => {
+      const [hours, minutes] = timeStr.split(':').map(Number);
+      const newDate = new Date(dateObj);
+      newDate.setHours(hours, minutes, 0, 0);
+      return newDate;
+    };
+
+    // Funzione helper per mappare timestamps in dip_GG_Timbratura
+    const mapToDipGGTimbratura = (date: Date, timestamps: TimeStamp[]): Dip_GG_TimbraturaModel[] => {
+      return timestamps.map(ts => {
+        const timeObject = createTimeObject(date, ts.time);
+        return {
+          idDip_RapportoLavoro: 0, 
+          // Date e timbrature
+          timbratura: timeObject,
+          timbraturaOriginale: timeObject,
+          timbraturaArrotondata: timeObject, 
+          giornoCompetenza: timeObject, 
+          // Tipo di timbratura
+          timbraturaTipo: mapTipoTimbratura(ts.type),
+          richiestaStato: StatoRichiesta.Diretta,
+          idDip_Richiesta: 0
+        };
+      });
+    };
+
+    const aprilData: MonthData = {
+      year: 2025,
+      month: 3,
+      days: {
+        1: {
+          date: new Date(2025, 3, 1),
+          timestamps: [
+            { type: 'E', time: '09:02' },
+            { type: 'U', time: '13:03' },
+            { type: 'E', time: '13:59' },
+            { type: 'U', time: '18:00' }
+          ],
+          justifications: [],
+          dip_GG_Timbratura: mapToDipGGTimbratura(
+            new Date(2025, 3, 1),
+            [
+              { type: 'E', time: '09:02' },
+              { type: 'U', time: '13:03' },
+              { type: 'E', time: '13:59' },
+              { type: 'U', time: '18:00' }
+            ]
+          )
+        },
+        2: {
+          date: new Date(2025, 3, 2),
+          timestamps: [
+            { type: 'E', time: '08:59' },
+            { type: 'U', time: '13:02' },
+            { type: 'E', time: '13:58' },
+            { type: 'U', time: '18:08' }
+          ],
+          justifications: [],
+          dip_GG_Timbratura: mapToDipGGTimbratura(
+            new Date(2025, 3, 2),
+            [
+              { type: 'E', time: '08:59' },
+              { type: 'U', time: '13:02' },
+              { type: 'E', time: '13:58' },
+              { type: 'U', time: '18:08' }
+            ]
+          )
+        },
+        3: {
+          date: new Date(2025, 3, 3),
+          timestamps: [
+            { type: 'E', time: '08:49' },
+            { type: 'U', time: '13:05' },
+            { type: 'E', time: '13:51' },
+            { type: 'U', time: '18:00' }
+          ],
+          justifications: [],
+          dip_GG_Timbratura: mapToDipGGTimbratura(
+            new Date(2025, 3, 3),
+            [
+              { type: 'E', time: '08:49' },
+              { type: 'U', time: '13:05' },
+              { type: 'E', time: '13:51' },
+              { type: 'U', time: '18:00' }
+            ]
+          )
+        },
+        16: {
+          date: new Date(2025, 3, 16),
+          timestamps: [],
+          justifications: [{ code: 'MAL', description: 'Malattia', isFullDay: true }],
+          dip_GG_Timbratura: []
+        },
+        17: {
+          date: new Date(2025, 3, 17),
+          timestamps: [
+            { type: 'E', time: '09:00' },
+            { type: 'U', time: '13:00' }
+          ],
+          justifications: [{ code: 'PER', description: 'Permesso Pom.', isFullDay: false }],
+          dip_GG_Timbratura: mapToDipGGTimbratura(
+            new Date(2025, 3, 17),
+            [
+              { type: 'E', time: '09:00' },
+              { type: 'U', time: '13:00' }
+            ]
+          )
+        },
+        18: {
+          date: new Date(2025, 3, 18),
+          timestamps: [],
+          justifications: [{ code: 'FER', description: 'Ferie', isFullDay: true }],
+          dip_GG_Timbratura: []
+        },
+        21: {
+          date: new Date(2025, 3, 21),
+          timestamps: [],
+          justifications: [{ code: 'FST', description: 'Pasquetta', isFullDay: true }],
+          dip_GG_Timbratura: []
+        },
+        25: {
+          date: new Date(2025, 3, 25),
+          timestamps: [],
+          justifications: [{ code: 'FST', description: 'Liberazione', isFullDay: true }],
+          dip_GG_Timbratura: []
+        },
+      }
+    };
+
     return aprilData;
   }
 
@@ -116,6 +277,11 @@ export class MokeTimeSheetService {
     // Create a copy before sorting to avoid modifying the original array if needed elsewhere
     return [...timestamps].sort((a, b) => this.timeToMinutes(a.time) - this.timeToMinutes(b.time));
   }
+  //private sortTimestampsByTime(timestamps: Date[] | undefined): Date[] {
+  //  if (!timestamps) return [];
+  //  // Create a copy before sorting to avoid modifying the original array if needed elsewhere
+  //  return [...timestamps].sort((a, b) => a.getUTCDate() - b.getUTCDate());
+  //}
 
   /**
    * Converts a HH:MM time string to total minutes from midnight.

@@ -4,6 +4,7 @@ import { environment } from '../../../../environments/environment';
 import { MonthNavigatorService } from '../../../Utility/infrastructure/month-navigator.service';
 import { SignalrService } from '../../../Utility/infrastructure/signalr.service';
 import { Justification, MokeTimeSheetService, MonthData, TimeStamp } from '../../../Utility/GestionePresenze/moke-time-sheet.service';
+import { Dip_GG_TimbraturaModel, TipoTimbratura } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Timbratura/Models/dip-gg-timbratura-model';
 
 @Component({
   selector: 'app-time-sheet-user-page',
@@ -15,9 +16,19 @@ import { Justification, MokeTimeSheetService, MonthData, TimeStamp } from '../..
 export class TimeSheetUserPageComponent implements OnInit {
   public title!: string;
 
+  TipoTimbratura = TipoTimbratura;
+
   currentMonth: MonthData; // Usa l'interfaccia importata
   // Usa le interfacce importate nella definizione di 'weeks'
-  weeks: Array<Array<{ day: number, records: TimeStamp[], justifications: Justification[], isCurrentMonth: boolean }>>;
+  weeks: Array<Array<{
+    day: number,
+    records: TimeStamp[],
+    justifications: Justification[],
+    isCurrentMonth: boolean,
+    //nvx
+    dip_GG_Timbratura: Dip_GG_TimbraturaModel[]
+  }>>;
+
   currentMonthDisplay: string;
 
   constructor(
@@ -70,12 +81,25 @@ export class TimeSheetUserPageComponent implements OnInit {
     const lastDay = new Date(year, month + 1, 0).getDate();
     const prevMonthLastDay = new Date(year, month, 0).getDate();
 
-    let currentWeek: Array<{ day: number, records: TimeStamp[], justifications: Justification[], isCurrentMonth: boolean }> = [];
+    let currentWeek: Array<{
+      day: number,
+      records: TimeStamp[],
+      justifications: Justification[],
+      isCurrentMonth: boolean,
+      //nvx
+      dip_GG_Timbratura: Dip_GG_TimbraturaModel[]
+    }> = [];
 
     // Giorni mese precedente
     for (let i = 0; i < dayOfWeek; i++) {
       const day = prevMonthLastDay - dayOfWeek + i + 1;
-      currentWeek.push({ day: day, records: [], justifications: [], isCurrentMonth: false });
+      currentWeek.push({
+        day: day,
+        records: [],
+        justifications: [],
+        isCurrentMonth: false,
+        dip_GG_Timbratura: []
+      });
     }
 
     // Giorni mese corrente
@@ -89,7 +113,9 @@ export class TimeSheetUserPageComponent implements OnInit {
         // Il servizio dati dovrebbe già fornire array vuoti dove appropriato
         records: dayData?.timestamps || [],
         justifications: dayData?.justifications || [],
-        isCurrentMonth: true
+        isCurrentMonth: true,
+        //nvx
+        dip_GG_Timbratura: dayData?.dip_GG_Timbratura || [],
       });
 
       if (currentWeek.length === 7) {
@@ -102,7 +128,14 @@ export class TimeSheetUserPageComponent implements OnInit {
     if (currentWeek.length > 0) {
       let nextMonthDay = 1;
       while (currentWeek.length < 7) {
-        currentWeek.push({ day: nextMonthDay, records: [], justifications: [], isCurrentMonth: false });
+        currentWeek.push({
+          day: nextMonthDay,
+          records: [],
+          justifications: [],
+          isCurrentMonth: false,
+          //nvx
+          dip_GG_Timbratura: []
+        });
         nextMonthDay++;
       }
       this.weeks.push(currentWeek);

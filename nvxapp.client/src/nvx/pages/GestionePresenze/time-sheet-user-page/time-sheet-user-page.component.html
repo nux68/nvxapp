@@ -60,15 +60,24 @@
               </ng-container>
 
               <!-- Sezione Visualizzazione Timbrature -->
-              <ng-container *ngIf="day.records && day.records.length > 0">
-                <div class="timestamps">
-                  <!-- MODIFICATO: Itera direttamente su day.records (assumendo siano ordinati dal servizio) -->
-                  <div class="timestamp" *ngFor="let record of day.records"
-                       [ngClass]="{'entry': record.type === 'E', 'exit': record.type === 'U'}">
-                    {{ record.type }} {{ record.time }}
+              <!--<ng-container *ngIf="day.records && day.records.length > 0">-->
+                <ng-container *ngIf="day.dip_GG_Timbratura && day.dip_GG_Timbratura.length > 0">
+                  <div class="timestamps">
+                    <!-- MODIFICATO: Itera direttamente su day.records (assumendo siano ordinati dal servizio) -->
+                    <!--
+                      <div class="timestamp" *ngFor="let record of day.records"
+                         [ngClass]="{'entry': record.type === 'E', 'exit': record.type === 'U'}">
+                        {{ record.type }} {{ record.time }}
+                      </div>
+                      -->
+                    
+                    <div class="timestamp" *ngFor="let record of day.dip_GG_Timbratura"
+                         [ngClass]="{'entry': record.timbraturaTipo === TipoTimbratura.Entrata, 'exit': record.timbraturaTipo === TipoTimbratura.Uscita}">
+                      {{ record.timbraturaTipo }} {{ record.timbratura | date:'HH:mm' }}
+                    </div>
+
                   </div>
-                </div>
-              </ng-container>
+                </ng-container>
 
             </div> <!-- Fine day-content -->
 
