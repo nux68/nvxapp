@@ -5,6 +5,7 @@ import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
 import { SharedComponentInfrastructureModule } from '../../../shared/shared-component-infrastructure.module';
 import { TimeClockUserPageComponent } from './time-clock-user-page.component';
+import { SharedComponentGestionePresenzeModuleModule } from '../../../shared/shared-component-gestione-presenze-module.module';
 
 
 
@@ -19,7 +20,8 @@ import { TimeClockUserPageComponent } from './time-clock-user-page.component';
         component: TimeClockUserPageComponent
       }
     ]),
-    SharedComponentInfrastructureModule
+    SharedComponentInfrastructureModule,
+    SharedComponentGestionePresenzeModuleModule
   ],
   declarations: [TimeClockUserPageComponent]
 })

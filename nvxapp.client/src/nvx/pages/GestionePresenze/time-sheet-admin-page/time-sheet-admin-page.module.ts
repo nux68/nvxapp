@@ -5,6 +5,7 @@ import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
 import { TimeSheetAdminPageComponent } from './time-sheet-admin-page.component';
 import { SharedComponentInfrastructureModule } from '../../../shared/shared-component-infrastructure.module';
+import { SharedComponentGestionePresenzeModuleModule } from '../../../shared/shared-component-gestione-presenze-module.module';
 
 
 @NgModule({
@@ -18,7 +19,8 @@ import { SharedComponentInfrastructureModule } from '../../../shared/shared-comp
         component: TimeSheetAdminPageComponent
       }
     ]),
-    SharedComponentInfrastructureModule
+    SharedComponentInfrastructureModule,
+    SharedComponentGestionePresenzeModuleModule
   ],
   declarations: [TimeSheetAdminPageComponent]
 })

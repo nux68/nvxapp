@@ -5,6 +5,7 @@ import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
 import { TimeSheetUserPageComponent } from './time-sheet-user-page.component';
 import { SharedComponentInfrastructureModule } from '../../../shared/shared-component-infrastructure.module';
+import { SharedComponentGestionePresenzeModuleModule } from '../../../shared/shared-component-gestione-presenze-module.module';
 
 
 
@@ -20,7 +21,8 @@ import { SharedComponentInfrastructureModule } from '../../../shared/shared-comp
         component: TimeSheetUserPageComponent
       }
     ]),
-    SharedComponentInfrastructureModule
+    SharedComponentInfrastructureModule,
+    SharedComponentGestionePresenzeModuleModule
   ],
   declarations: [TimeSheetUserPageComponent]
 })

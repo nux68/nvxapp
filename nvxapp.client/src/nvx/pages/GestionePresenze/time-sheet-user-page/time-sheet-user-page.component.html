@@ -7,8 +7,10 @@
 
   <div class="calendar-container">
 
+
     <!-- MODIFICATO: Struttura Navigazione Mese -->
     <div class="month-header">
+
       <!-- Pulsante Mese Precedente -->
       <ion-button fill="clear" (click)="previousMonth()" class="nav-button prev">
         <ion-icon slot="icon-only" name="chevron-back-outline"></ion-icon>
@@ -25,6 +27,7 @@
         <!-- {{ monthNames[(currentMonthIndex + 1) % 12].substring(0, 3) }} -->
         <ion-icon slot="icon-only" name="chevron-forward-outline"></ion-icon>
       </ion-button>
+
     </div>
 
     <div class="calendar-grid">
@@ -73,7 +76,7 @@
                     
                     <div class="timestamp" *ngFor="let record of day.dip_GG_Timbratura"
                          [ngClass]="{'entry': record.timbraturaTipo === TipoTimbratura.Entrata, 'exit': record.timbraturaTipo === TipoTimbratura.Uscita}">
-                      {{ record.timbraturaTipo }} {{ record.timbratura | date:'HH:mm' }}
+                      {{ record.timbraturaTipo | tipoTimbraturaToShortText }} {{ record.timbratura | date:'HH:mm' }}
                     </div>
 
                   </div>
@@ -84,7 +87,10 @@
           </div> <!-- Fine day -->
         </div> <!-- Fine week -->
       </div> <!-- Fine calendar-weeks -->
+
     </div> <!-- Fine calendar-grid -->
+
+
   </div> <!-- Fine calendar-container -->
 
 </ion-content>

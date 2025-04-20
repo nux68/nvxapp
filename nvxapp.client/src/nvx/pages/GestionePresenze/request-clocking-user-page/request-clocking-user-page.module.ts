@@ -5,6 +5,7 @@ import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
 import { SharedComponentInfrastructureModule } from '../../../shared/shared-component-infrastructure.module';
 import { RequestClockingUserPageComponent } from './request-clocking-user-page.component';
+import { SharedComponentGestionePresenzeModuleModule } from '../../../shared/shared-component-gestione-presenze-module.module';
 
 
 
@@ -20,7 +21,8 @@ import { RequestClockingUserPageComponent } from './request-clocking-user-page.c
         component: RequestClockingUserPageComponent
       }
     ]),
-    SharedComponentInfrastructureModule
+    SharedComponentInfrastructureModule,
+    SharedComponentGestionePresenzeModuleModule
   ],
   declarations: [RequestClockingUserPageComponent]
 })

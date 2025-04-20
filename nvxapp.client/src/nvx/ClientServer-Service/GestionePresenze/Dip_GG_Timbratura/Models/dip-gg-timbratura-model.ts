@@ -40,27 +40,27 @@ export class Dip_GG_TimbraturaModel  {
 
 }
 
-export interface iDip_GG_TimbraturaModel {
-  // Proprietà richieste
-  idDip_RapportoLavoro: number; // Non nullable
+////////export interface iDip_GG_TimbraturaModel {
+////////  // Proprietà richieste
+////////  idDip_RapportoLavoro: number; // Non nullable
 
-  // Date e timbrature
-  timbratura: Date;
-  timbraturaOriginale: Date;
-  timbraturaArrotondata?: Date; // Nullable
-  giornoCompetenza: Date; // Giorno per cavallo notte montanti/smontanti
+////////  // Date e timbrature
+////////  timbratura: Date;
+////////  timbraturaOriginale: Date;
+////////  timbraturaArrotondata?: Date; // Nullable
+////////  giornoCompetenza: Date; // Giorno per cavallo notte montanti/smontanti
 
-  // Tipo di timbratura
-  timbraturaTipo: TipoTimbratura;
+////////  // Tipo di timbratura
+////////  timbraturaTipo: TipoTimbratura;
 
-  /*
-    Per gli inserimenti diretti:
-      richiestaStato = Diretta
-      idDip_Richiesta = null
-  */
-  richiestaStato: StatoRichiesta;
-  idDip_Richiesta?: number; // Nullable
-}
+
+////////    //Per gli inserimenti diretti:
+////////    //  richiestaStato = Diretta
+////////    //  idDip_Richiesta = null
+  
+////////  richiestaStato: StatoRichiesta;
+////////  idDip_Richiesta?: number; // Nullable
+////////}
 
 export enum TipoTimbratura {
   Entrata,     
