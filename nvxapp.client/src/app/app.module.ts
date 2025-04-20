@@ -17,7 +17,11 @@ import { FormsModule } from '@angular/forms';
 import { HttpBackgroundErrorDialogComponent } from '../nvx/shared/components/infrastructure/http-background-error-dialog/http-background-error-dialog.component';
 import { ParameterLoaderComponent } from '../nvx/shared/components/infrastructure/parameter-loader/parameter-loader.component';
 //import { GenericFilterPipe } from '../nvx/pipe/generic-filter.pipe';
+import localeIt from '@angular/common/locales/it';
+import { registerLocaleData } from '@angular/common';
 
+// Registra i dati di localizzazione italiana
+registerLocaleData(localeIt); // Questa riga è essenziale!
 
 @NgModule({
   declarations: [AppComponent,
