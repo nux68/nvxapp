@@ -6,6 +6,7 @@ import { merge } from 'rxjs/internal/observable/merge';
 import { concat } from 'rxjs/internal/observable/concat';
 import { from } from 'rxjs/internal/observable/from';
 import { RolesListInModel } from '../../../../ClientServer-Service/Infrastructure/Parameter/Models/roles-model';
+import { AuthService } from '../../../../Utility/infrastructure/auth.service';
 
 @Component({
   selector: 'app-parameter-loader',
@@ -23,6 +24,7 @@ export class ParameterLoaderComponent  implements OnInit {
 
   constructor(
     private parameterService: ParameterService,
+    private authService: AuthService
     )
   {
     
@@ -35,40 +37,34 @@ export class ParameterLoaderComponent  implements OnInit {
       this.isModalOpen = true;  // ✅ Apri il modal dopo 2 secondi
       this.startProgress();
     //}, 1000); // 2000 ms = 2 secondi
+
+
+    this.authService.Roles$.subscribe(res => {
+
+      if (this.authService.IsUser || this.authService.IsInGroupCompanyAdmin) {
+        var c = 0;
+      }
+      else {
+        var c = 0;
+      }
+
+
+    });
+
   }
 
   async startProgress() {
     this.isModalOpen = true;
 
     this.progress = 0; // Resetta la progress bar
-    let request: GenericRequest<RolesListInModel> = new GenericRequest<RolesListInModel>(RolesListInModel);
 
-    //TEMPOARNEO SOLO DEMO
-    //for (let i = 0; i < 50; i++) {
-    //  this.calls.push(
-    //    this.parameterService.Load_Roles(request).pipe(
-    //      tap(() => this.updateProgress()),
-    //      retryWhen(errors =>
-    //        errors.pipe(
-    //          tap((error) => {
-    //            console.error(`Errore rilevato, ritento dopo qualche secondo:`, error);
-    //          }),
-    //          delay(3000) // Ritenta dopo 3 secondi
-    //        )
-    //      ),
-    //      catchError((error) => {
-    //        console.error(`Errore durante il caricamento del ruolo:`, error);
-    //        // Puoi decidere cosa fare in caso di fallimento finale
-    //        return of(null); // Continua per evitare il blocco
-    //      })
-    //    )
-    //  );
-    //}
+
 
     for (let i = 0; i < 50; i++) {
       this.calls.push(
-        this.parameterService.Load_Roles(request).pipe(
-          tap(() => this.updateProgress()),
+        
+        this.parameterService.Load_Roles(new GenericRequest<RolesListInModel>(RolesListInModel)).pipe(
+          tap(() => this.updateProgress(this.calls)),
           retry({
             count: 20, // Numero massimo di tentativi
             delay: (error, retryCount) => {
@@ -82,6 +78,7 @@ export class ParameterLoaderComponent  implements OnInit {
             return of(null); // Continua per evitare il blocco
           })
         )
+
       );
     }
 
@@ -95,9 +92,9 @@ export class ParameterLoaderComponent  implements OnInit {
     });
   }
 
-  updateProgress() {
+  updateProgress(calls: any[]) {
     this.currStep = this.currStep + 1;
-    this.progress = Math.floor(this.currStep * (100 / this.calls.length)); // Aggiorna la barra progressivamente
+    this.progress = Math.floor(this.currStep * (100 / calls.length)); // Aggiorna la barra progressivamente
   }
 
 }

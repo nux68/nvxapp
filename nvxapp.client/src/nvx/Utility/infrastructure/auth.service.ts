@@ -9,12 +9,18 @@ import { RolesModel } from '../../ClientServer-Service/Infrastructure/Account/Mo
 })
 export class AuthService {
 
-  private rolesSubject = new BehaviorSubject<RolesModel[]>([]);
-  roles$ = this.rolesSubject.asObservable();
+ 
 
   constructor() {
   }
 
+  private rolesSubject = new BehaviorSubject<RolesModel[]>([]);
+
+  //private _roles$ = this.rolesSubject.asObservable();
+
+  public get Roles$(): Observable<RolesModel[] | []> {
+    return this.rolesSubject.asObservable();
+  }
 
   private _Token$: BehaviorSubject<string | null> = new BehaviorSubject<string>(null);
   public get Token$(): Observable<string | null> {
