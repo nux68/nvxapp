@@ -6,6 +6,8 @@ import { merge } from 'rxjs/internal/observable/merge';
 import { concat } from 'rxjs/internal/observable/concat';
 import { from } from 'rxjs/internal/observable/from';
 import { RolesListInModel } from '../../../../ClientServer-Service/Infrastructure/Parameter/Models/roles-model';
+import { AuthService } from '../../../../Utility/infrastructure/auth.service';
+import { SharedParameterGestionePresenzeService } from '../../../shared-parameter-gestione-presenze.service';
 
 @Component({
   selector: 'app-parameter-loader',
@@ -19,56 +21,53 @@ export class ParameterLoaderComponent  implements OnInit {
   public progress = 0;
   public currStep = 0;
 
-  private calls: any[] =[];
 
   constructor(
     private parameterService: ParameterService,
-    )
-  {
-    
-  }
+    private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
+    private authService: AuthService
+    ){}
 
 
 
   ngOnInit() {
-    //setTimeout(() => {
-      this.isModalOpen = true;  // ✅ Apri il modal dopo 2 secondi
-      this.startProgress();
-    //}, 1000); // 2000 ms = 2 secondi
+    
+    this.isModalOpen = true;  
+
+    //caricamento parametri iniziali
+    this.startProgress( this.AddCallInfrastructure() );
+    
+
+    //caricameno parametri azie/user
+    this.authService.Roles$.subscribe(res => {
+
+      if (this.authService.IsUser || this.authService.IsInGroupCompanyAdmin) {
+
+        if (this.sharedParameterGestionePresenzeService.IsLoad == false) {
+
+          let presCall: any[] = [];
+          presCall = this.sharedParameterGestionePresenzeService.InitCall(this.updateProgress.bind(this));
+          this.currStep = 0;
+          this.startProgress(presCall);
+          this.sharedParameterGestionePresenzeService.IsLoad = true;
+        }
+      }
+      else {
+        this.sharedParameterGestionePresenzeService.IsLoad = false;
+      }
+    });
+
   }
 
-  async startProgress() {
-    this.isModalOpen = true;
+  private AddCallInfrastructure(): any[]  {
 
-    this.progress = 0; // Resetta la progress bar
-    let request: GenericRequest<RolesListInModel> = new GenericRequest<RolesListInModel>(RolesListInModel);
-
-    //TEMPOARNEO SOLO DEMO
-    //for (let i = 0; i < 50; i++) {
-    //  this.calls.push(
-    //    this.parameterService.Load_Roles(request).pipe(
-    //      tap(() => this.updateProgress()),
-    //      retryWhen(errors =>
-    //        errors.pipe(
-    //          tap((error) => {
-    //            console.error(`Errore rilevato, ritento dopo qualche secondo:`, error);
-    //          }),
-    //          delay(3000) // Ritenta dopo 3 secondi
-    //        )
-    //      ),
-    //      catchError((error) => {
-    //        console.error(`Errore durante il caricamento del ruolo:`, error);
-    //        // Puoi decidere cosa fare in caso di fallimento finale
-    //        return of(null); // Continua per evitare il blocco
-    //      })
-    //    )
-    //  );
-    //}
+    let calls: any[] = [];
 
     for (let i = 0; i < 50; i++) {
-      this.calls.push(
-        this.parameterService.Load_Roles(request).pipe(
-          tap(() => this.updateProgress()),
+      calls.push(
+
+        this.parameterService.Load_Roles(new GenericRequest<RolesListInModel>(RolesListInModel)).pipe(
+          tap(() => this.updateProgress(calls)),
           retry({
             count: 20, // Numero massimo di tentativi
             delay: (error, retryCount) => {
@@ -82,10 +81,21 @@ export class ParameterLoaderComponent  implements OnInit {
             return of(null); // Continua per evitare il blocco
           })
         )
+
       );
     }
 
-    from(this.calls).pipe(
+    return calls;
+
+  }
+
+
+  async startProgress(calls: any[]) {
+    this.isModalOpen = true;
+
+    this.progress = 0; // Resetta la progress bar
+
+    from(calls).pipe(
       concatMap(call => call)  
     ).subscribe({
       complete: () => {
@@ -95,9 +105,9 @@ export class ParameterLoaderComponent  implements OnInit {
     });
   }
 
-  updateProgress() {
+  updateProgress(calls: any[]):void {
     this.currStep = this.currStep + 1;
-    this.progress = Math.floor(this.currStep * (100 / this.calls.length)); // Aggiorna la barra progressivamente
+    this.progress = Math.floor(this.currStep * (100 / calls.length)); // Aggiorna la barra progressivamente
   }
 
 }
