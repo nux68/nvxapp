@@ -26,7 +26,7 @@ namespace nvxapp.server.data.Entities.Tenant
 
 
 
-        public StatoRichiesta Stato { get; set; }
+        public StatoRichiesta RichiestaStato { get; set; }
         public int? IdDip_Richiesta { get; set; }
         public Dip_GG_Richiesta? Dip_RichiestaNavigation { get; set; }
 

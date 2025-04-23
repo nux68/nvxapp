@@ -15,8 +15,7 @@ export class Dip_GG_TimbraturaOutModel extends ModelResult {
 
 export class Dip_GG_TimbraturaModel  {
 
-  
-  // Proprietà richieste
+  //public id: number; 
   public idDip_RapportoLavoro!: number; // Utilizzo di "!" per proprietà richieste non nullable
 
   // Date e timbrature

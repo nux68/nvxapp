@@ -1,6 +1,8 @@
-﻿using nvxapp.server.service.ClientServer_Service.ModelsBase;
+﻿using nvxapp.server.data.Entities.Tenant;
+using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,6 +11,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Giusti
 {
     public class Par_GiustificativiModel
     {
+        public int Id { get; set; }
+        public int IdAz_Anagrafica { get; set; }
+        public string? Descrizione { get; set; }
+        public string? Codice { get; set; }
+
     }
 
     public class Par_GiustificativiInModel
@@ -18,6 +25,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Giusti
 
     public class Par_GiustificativiOutModel : ModelResult 
     {
+        public List<Par_GiustificativiModel> Par_Giustificativi { get; set; } = new List<Par_GiustificativiModel>();
+
+
+
         public Par_GiustificativiOutModel() 
         {
         

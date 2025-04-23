@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_GiustificativiService.Models;
+using System.Security.Cryptography.Xml;
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_GiustificativiService
 {
@@ -36,6 +37,32 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Giusti
             return await ExecuteAction(model, async () =>
             {
                 Par_GiustificativiOutModel retVal = new Par_GiustificativiOutModel();
+
+
+                retVal.Par_Giustificativi.Add( new Par_GiustificativiModel()
+                {
+                       Id=1,
+                       IdAz_Anagrafica =1,
+                       Descrizione ="Ferie",
+                       Codice ="FE"
+                }  );
+
+                retVal.Par_Giustificativi.Add(new Par_GiustificativiModel()
+                {
+                    Id = 2,
+                    IdAz_Anagrafica = 1,
+                    Descrizione = "ROL",
+                    Codice = "ROL"
+                });
+
+                retVal.Par_Giustificativi.Add(new Par_GiustificativiModel()
+                {
+                    Id = 3,
+                    IdAz_Anagrafica = 1,
+                    Descrizione = "Malattia",
+                    Codice = "MA"
+                });
+
 
                 //eliminare
                 // Nessun 'await' qui
