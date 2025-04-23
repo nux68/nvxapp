@@ -7,6 +7,7 @@ import { concat } from 'rxjs/internal/observable/concat';
 import { from } from 'rxjs/internal/observable/from';
 import { RolesListInModel } from '../../../../ClientServer-Service/Infrastructure/Parameter/Models/roles-model';
 import { AuthService } from '../../../../Utility/infrastructure/auth.service';
+import { SharedParameterGestionePresenzeService } from '../../../shared-parameter-gestione-presenze.service';
 
 @Component({
   selector: 'app-parameter-loader',
@@ -20,51 +21,53 @@ export class ParameterLoaderComponent  implements OnInit {
   public progress = 0;
   public currStep = 0;
 
-  private calls: any[] =[];
 
   constructor(
     private parameterService: ParameterService,
+    private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
     private authService: AuthService
-    )
-  {
-    
-  }
+    ){}
 
 
 
   ngOnInit() {
-    //setTimeout(() => {
-      this.isModalOpen = true;  // ✅ Apri il modal dopo 2 secondi
-      this.startProgress();
-    //}, 1000); // 2000 ms = 2 secondi
+    
+    this.isModalOpen = true;  
 
+    //caricamento parametri iniziali
+    this.startProgress( this.AddCallInfrastructure() );
+    
 
+    //caricameno parametri azie/user
     this.authService.Roles$.subscribe(res => {
 
       if (this.authService.IsUser || this.authService.IsInGroupCompanyAdmin) {
-        var c = 0;
+
+        if (this.sharedParameterGestionePresenzeService.IsLoad == false) {
+
+          let presCall: any[] = [];
+          presCall = this.sharedParameterGestionePresenzeService.InitCall(this.updateProgress.bind(this));
+          this.currStep = 0;
+          this.startProgress(presCall);
+          this.sharedParameterGestionePresenzeService.IsLoad = true;
+        }
       }
       else {
-        var c = 0;
+        this.sharedParameterGestionePresenzeService.IsLoad = false;
       }
-
-
     });
 
   }
 
-  async startProgress() {
-    this.isModalOpen = true;
+  private AddCallInfrastructure(): any[]  {
 
-    this.progress = 0; // Resetta la progress bar
-
-
+    let calls: any[] = [];
 
     for (let i = 0; i < 50; i++) {
-      this.calls.push(
-        
+      calls.push(
+
         this.parameterService.Load_Roles(new GenericRequest<RolesListInModel>(RolesListInModel)).pipe(
-          tap(() => this.updateProgress(this.calls)),
+          tap(() => this.updateProgress(calls)),
           retry({
             count: 20, // Numero massimo di tentativi
             delay: (error, retryCount) => {
@@ -82,7 +85,17 @@ export class ParameterLoaderComponent  implements OnInit {
       );
     }
 
-    from(this.calls).pipe(
+    return calls;
+
+  }
+
+
+  async startProgress(calls: any[]) {
+    this.isModalOpen = true;
+
+    this.progress = 0; // Resetta la progress bar
+
+    from(calls).pipe(
       concatMap(call => call)  
     ).subscribe({
       complete: () => {
@@ -92,7 +105,7 @@ export class ParameterLoaderComponent  implements OnInit {
     });
   }
 
-  updateProgress(calls: any[]) {
+  updateProgress(calls: any[]):void {
     this.currStep = this.currStep + 1;
     this.progress = Math.floor(this.currStep * (100 / calls.length)); // Aggiorna la barra progressivamente
   }
