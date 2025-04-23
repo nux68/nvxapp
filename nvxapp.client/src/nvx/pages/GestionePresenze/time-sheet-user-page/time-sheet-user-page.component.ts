@@ -5,6 +5,7 @@ import { MonthNavigatorService } from '../../../Utility/infrastructure/month-nav
 import { SignalrService } from '../../../Utility/infrastructure/signalr.service';
 import { Justification, MokeTimeSheetService, MonthData, TimeStamp } from '../../../Utility/GestionePresenze/moke-time-sheet.service';
 import { Dip_GG_TimbraturaModel, TipoTimbratura } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Timbratura/Models/dip-gg-timbratura-model';
+import { Dip_GG_GiustificativiModel } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Giustificativi/Models/dip-gg-giustificativi-model';
 
 @Component({
   selector: 'app-time-sheet-user-page',
@@ -26,7 +27,8 @@ export class TimeSheetUserPageComponent implements OnInit {
     justifications: Justification[],
     isCurrentMonth: boolean,
     //nvx
-    dip_GG_Timbratura: Dip_GG_TimbraturaModel[]
+    dip_GG_Timbratura: Dip_GG_TimbraturaModel[],
+    dip_GG_GiustificativiModel: Dip_GG_GiustificativiModel[]
   }>>;
 
   currentMonthDisplay: string;
@@ -87,7 +89,8 @@ export class TimeSheetUserPageComponent implements OnInit {
       justifications: Justification[],
       isCurrentMonth: boolean,
       //nvx
-      dip_GG_Timbratura: Dip_GG_TimbraturaModel[]
+      dip_GG_Timbratura: Dip_GG_TimbraturaModel[],
+      dip_GG_GiustificativiModel: Dip_GG_GiustificativiModel[]
     }> = [];
 
     // Giorni mese precedente
@@ -98,7 +101,8 @@ export class TimeSheetUserPageComponent implements OnInit {
         records: [],
         justifications: [],
         isCurrentMonth: false,
-        dip_GG_Timbratura: []
+        dip_GG_Timbratura: [],
+        dip_GG_GiustificativiModel:[]
       });
     }
 
@@ -116,6 +120,7 @@ export class TimeSheetUserPageComponent implements OnInit {
         isCurrentMonth: true,
         //nvx
         dip_GG_Timbratura: dayData?.dip_GG_Timbratura || [],
+        dip_GG_GiustificativiModel:dayData?.dip_GG_Giustificativi || []
       });
 
       if (currentWeek.length === 7) {
@@ -134,7 +139,8 @@ export class TimeSheetUserPageComponent implements OnInit {
           justifications: [],
           isCurrentMonth: false,
           //nvx
-          dip_GG_Timbratura: []
+          dip_GG_Timbratura: [],
+          dip_GG_GiustificativiModel:[]
         });
         nextMonthDay++;
       }

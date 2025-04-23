@@ -3,6 +3,7 @@ import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators'; // Import map operator if you plan real sorting/processing
 import { Dip_GG_TimbraturaModel, TipoTimbratura } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Timbratura/Models/dip-gg-timbratura-model';
 import { StatoRichiesta } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/Models/dip-gg-richiesta-model';
+import { Dip_GG_GiustificativiModel } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Giustificativi/Models/dip-gg-giustificativi-model';
 
 // --- INTERFACE DEFINITIONS (Moved Here) ---
 export interface TimeStamp {
@@ -22,6 +23,7 @@ export interface DayRecord {
   justifications: Justification[];
 
   dip_GG_Timbratura: Dip_GG_TimbraturaModel[];
+  dip_GG_Giustificativi: Dip_GG_GiustificativiModel[];
 }
 
 export interface MonthData {
@@ -146,6 +148,7 @@ export class MokeTimeSheetService {
       return timestamps.map(ts => {
         const timeObject = createTimeObject(date, ts.time);
         return {
+          id:0,
           idDip_RapportoLavoro: 0, 
           // Date e timbrature
           timbratura: timeObject,
@@ -181,7 +184,8 @@ export class MokeTimeSheetService {
               { type: 'E', time: '13:59' },
               { type: 'U', time: '18:00' }
             ]
-          )
+          ),
+          dip_GG_Giustificativi:[]
         },
         2: {
           date: new Date(2025, 3, 2),
@@ -200,7 +204,8 @@ export class MokeTimeSheetService {
               { type: 'E', time: '13:58' },
               { type: 'U', time: '18:08' }
             ]
-          )
+          ),
+          dip_GG_Giustificativi: []
         },
         3: {
           date: new Date(2025, 3, 3),
@@ -219,13 +224,15 @@ export class MokeTimeSheetService {
               { type: 'E', time: '13:51' },
               { type: 'U', time: '18:00' }
             ]
-          )
+          ),
+          dip_GG_Giustificativi: []
         },
         16: {
           date: new Date(2025, 3, 16),
           timestamps: [],
           justifications: [{ code: 'MAL', description: 'Malattia', isFullDay: true }],
-          dip_GG_Timbratura: []
+          dip_GG_Timbratura: [],
+          dip_GG_Giustificativi: [{ id: 0, idDip_RapportoLavoro: 0, data: new Date(2025, 1, 1), idJustificationType: 0, inputType: 0, hours: "", from: "", idPar_Giustificativi: 1, richiestaStato: 0, idDip_Richiesta: 0 }]
         },
         17: {
           date: new Date(2025, 3, 17),
@@ -240,25 +247,29 @@ export class MokeTimeSheetService {
               { type: 'E', time: '09:00' },
               { type: 'U', time: '13:00' }
             ]
-          )
+          ),
+          dip_GG_Giustificativi: [{ id: 0, idDip_RapportoLavoro: 0, data: new Date(2025, 1, 1), idJustificationType: 0, inputType: 0, hours: "", from: "", idPar_Giustificativi: 1, richiestaStato: 0, idDip_Richiesta: 0 }]
         },
         18: {
           date: new Date(2025, 3, 18),
           timestamps: [],
           justifications: [{ code: 'FER', description: 'Ferie', isFullDay: true }],
-          dip_GG_Timbratura: []
+          dip_GG_Timbratura: [],
+          dip_GG_Giustificativi: [{ id: 0, idDip_RapportoLavoro: 0, data: new Date(2025, 1, 1), idJustificationType: 0, inputType: 0, hours: "", from: "", idPar_Giustificativi: 1, richiestaStato: 0, idDip_Richiesta: 0 }]
         },
         21: {
           date: new Date(2025, 3, 21),
           timestamps: [],
           justifications: [{ code: 'FST', description: 'Pasquetta', isFullDay: true }],
-          dip_GG_Timbratura: []
+          dip_GG_Timbratura: [],
+          dip_GG_Giustificativi: [{ id: 0, idDip_RapportoLavoro: 0, data: new Date(2025, 1, 1), idJustificationType: 0, inputType: 0, hours: "", from: "", idPar_Giustificativi: 1, richiestaStato: 0, idDip_Richiesta: 0 }]
         },
         25: {
           date: new Date(2025, 3, 25),
           timestamps: [],
           justifications: [{ code: 'FST', description: 'Liberazione', isFullDay: true }],
-          dip_GG_Timbratura: []
+          dip_GG_Timbratura: [],
+          dip_GG_Giustificativi: [{ id: 0, idDip_RapportoLavoro: 0, data: new Date(2025, 1, 1), idJustificationType: 0, inputType: 0, hours: "", from: "", idPar_Giustificativi: 1, richiestaStato: 0, idDip_Richiesta: 0 }]
         },
       }
     };
