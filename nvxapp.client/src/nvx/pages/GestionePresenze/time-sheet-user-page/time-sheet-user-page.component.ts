@@ -23,8 +23,8 @@ export class TimeSheetUserPageComponent implements OnInit {
   // Usa le interfacce importate nella definizione di 'weeks'
   weeks: Array<Array<{
     day: number,
-    records: TimeStamp[],
-    justifications: Justification[],
+    //records: TimeStamp[],
+    //justifications: Justification[],
     isCurrentMonth: boolean,
     //nvx
     dip_GG_Timbratura: Dip_GG_TimbraturaModel[],
@@ -85,8 +85,8 @@ export class TimeSheetUserPageComponent implements OnInit {
 
     let currentWeek: Array<{
       day: number,
-      records: TimeStamp[],
-      justifications: Justification[],
+      //records: TimeStamp[],
+      //justifications: Justification[],
       isCurrentMonth: boolean,
       //nvx
       dip_GG_Timbratura: Dip_GG_TimbraturaModel[],
@@ -98,8 +98,8 @@ export class TimeSheetUserPageComponent implements OnInit {
       const day = prevMonthLastDay - dayOfWeek + i + 1;
       currentWeek.push({
         day: day,
-        records: [],
-        justifications: [],
+        //records: [],
+        //justifications: [],
         isCurrentMonth: false,
         dip_GG_Timbratura: [],
         dip_GG_Giustificativi:[]
@@ -115,8 +115,8 @@ export class TimeSheetUserPageComponent implements OnInit {
         day: i,
         // Usa fallback se dayData non esiste o se le proprietà sono vuote
         // Il servizio dati dovrebbe già fornire array vuoti dove appropriato
-        records: dayData?.timestamps || [],
-        justifications: dayData?.justifications || [],
+        //records: dayData?.timestamps || [],
+        //justifications: dayData?.justifications || [],
         isCurrentMonth: true,
         //nvx
         dip_GG_Timbratura: dayData?.dip_GG_Timbratura || [],
@@ -135,8 +135,8 @@ export class TimeSheetUserPageComponent implements OnInit {
       while (currentWeek.length < 7) {
         currentWeek.push({
           day: nextMonthDay,
-          records: [],
-          justifications: [],
+          //records: [],
+          //justifications: [],
           isCurrentMonth: false,
           //nvx
           dip_GG_Timbratura: [],
@@ -175,8 +175,9 @@ export class TimeSheetUserPageComponent implements OnInit {
   // }
 
   // Verifica se c'è almeno un giustificativo per l'intera giornata
-  hasFullDayJustification(justifications: Justification[] | undefined): boolean {
-    return justifications?.some(j => j.isFullDay) || false;
+  //hasFullDayJustification(justifications: Justification[] | undefined): boolean {
+  hasFullDayJustification(justifications: Dip_GG_GiustificativiModel[] | undefined): boolean {
+    return false; //justifications?.some(j => j.isFullDay) || false;
   }
 
   // Restituisce classi CSS specifiche per tipo di giustificativo

@@ -1,4 +1,5 @@
 ﻿using nvxapp.server.data.Entities.Tenant;
+using nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using System;
 using System.Collections.Generic;
@@ -32,8 +33,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Giu
 
     public class Dip_GG_GiustificativiOutModel : ModelResult 
     {
-        public List<Dip_GG_GiustificativiModel> Dip_GG_Giustificativi = new List<Dip_GG_GiustificativiModel>();
+        public List<Dip_GG_GiustificativiModel> Dip_GG_Giustificativi { get; set; } = new List<Dip_GG_GiustificativiModel>();
 
+        
         public Dip_GG_GiustificativiOutModel() 
         {
         

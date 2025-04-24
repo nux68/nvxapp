@@ -18,7 +18,7 @@ export class DipGGGiustificativiService {
 
   GetAll(model: GenericRequest<Dip_GG_GiustificativiInModel>): Observable<GenericResult<Dip_GG_GiustificativiOutModel>> {
 
-    return this.http.post<GenericResult<Dip_GG_GiustificativiOutModel>>(environment.remoteData.apiUri + 'Az_Anagrafica/GetAll', model)
+    return this.http.post<GenericResult<Dip_GG_GiustificativiOutModel>>(environment.remoteData.apiUri + 'Dip_GG_Giustificativi/GetAll', model)
       .pipe(
         map(r => {
           return r;

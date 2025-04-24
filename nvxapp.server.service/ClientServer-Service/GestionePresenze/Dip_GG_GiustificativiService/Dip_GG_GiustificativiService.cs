@@ -1,17 +1,17 @@
-﻿using nvxapp.server.service.ClientServer_Service.ModelsBase;
-using nvxapp.server.Base;
-using nvxapp.server.service.Interfaces;
-using Microsoft.AspNetCore.Identity;
-using AutoMapper;
-using Microsoft.Extensions.Options;
-using nvxapp.server.service.ServerModels;
-using nvxapp.server.data.Entities.Public;
-using nvxapp.server.data.Repositories.Public;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
+using nvxapp.server.Base;
+using nvxapp.server.data.Entities.Public;
+using nvxapp.server.data.Entities.Tenant;
+using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
-
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_GiustificativiService.Models;
+using nvxapp.server.service.ClientServer_Service.ModelsBase;
+using nvxapp.server.service.Interfaces;
+using nvxapp.server.service.ServerModels;
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Giustificativi
 {
@@ -27,7 +27,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Giu
                                   IHttpContextAccessor httpContextAccessor,
                                   IConfiguration configuration,
 
-                                  IDip_GG_GiustificativiRepository Dip_GG_GiustificativiRepository) : base(mapper , userManager  , aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
+                                  IDip_GG_GiustificativiRepository Dip_GG_GiustificativiRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _Dip_GG_GiustificativiRepository = Dip_GG_GiustificativiRepository;
         }
@@ -37,6 +37,25 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Giu
             return await ExecuteAction(model, async () =>
             {
                 Dip_GG_GiustificativiOutModel retVal = new Dip_GG_GiustificativiOutModel();
+
+
+                for (int i = 1; i < 6;  i++)
+                {
+                    retVal.Dip_GG_Giustificativi.Add(new Dip_GG_GiustificativiModel()
+                    {
+                        Id = i,
+                        IdDip_RapportoLavoro = 1,
+                        Data = DateTime.Now.AddDays(i),
+                        IdJustificationType = 0,
+                        InputType = JustificationInputType.Manual,
+                        Hours = new TimeSpan(4,0,0),
+                        From = new TimeSpan(9, 0,0),
+                        IdPar_Giustificativi = 1,
+                        RichiestaStato = StatoRichiesta.Diretta,
+                        IdDip_Richiesta = 0
+                    });
+                }
+
 
                 //eliminare
                 // Nessun 'await' qui
@@ -50,6 +69,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Giu
 
     public interface IDip_GG_GiustificativiService : IServiceBase
     {
-        public Task<GenericResult<Dip_GG_GiustificativiOutModel>> GetAll( GenericRequest<Dip_GG_GiustificativiInModel> model, Boolean isSubProcess);
+        public Task<GenericResult<Dip_GG_GiustificativiOutModel>> GetAll(GenericRequest<Dip_GG_GiustificativiInModel> model, Boolean isSubProcess);
     }
 }

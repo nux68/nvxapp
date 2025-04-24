@@ -40,8 +40,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
 
     public class Dip_GG_TimbraturaOutModel : ModelResult 
     {
-        public List<Dip_GG_TimbraturaModel>  Dip_GG_Timbratura = new List<Dip_GG_TimbraturaModel>();
-
+        public List<Dip_GG_TimbraturaModel>  Dip_GG_Timbratura { get; set; }  = new List<Dip_GG_TimbraturaModel>();
+        
         public Dip_GG_TimbraturaOutModel() 
         {
         

@@ -12,6 +12,7 @@ using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
 
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_TimbraturaService.Models;
 using nvxapp.server.Base;
+using nvxapp.server.data.Entities.Tenant;
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Timbratura
 {
@@ -38,9 +39,29 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
             {
                 Dip_GG_TimbraturaOutModel retVal = new Dip_GG_TimbraturaOutModel();
 
-                //eliminare
-                // Nessun 'await' qui
-                await Task.Delay(DelayAsyncMethod);
+
+                for (int i = 1; i < 6; i++)
+                {
+                    for (int t = 1; t < 5; t++)
+                    {
+                        retVal.Dip_GG_Timbratura.Add(new Dip_GG_TimbraturaModel()
+                        {
+                            Id = 0,
+                            IdDip_RapportoLavoro = 1,
+                            Timbratura = DateTime.Now.AddDays(i).AddHours(t),
+                            TimbraturaOrigianle = DateTime.Now.AddDays(i).AddHours(t),
+                            TimbraturaArrotondata = DateTime.Now.AddDays(i).AddHours(t),
+                            GiornoCompetenza = DateTime.Now.AddDays(i),
+                            TimbraturaTipo = TipoTimbratura.SenzaVerso,
+                            RichiestaStato = StatoRichiesta.Diretta,
+                            IdDip_Richiesta = 0
+                        });
+                    }
+                }
+
+                    //eliminare
+                    // Nessun 'await' qui
+                    await Task.Delay(DelayAsyncMethod);
 
                 return retVal;
             }, isSubProcess);
