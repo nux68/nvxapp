@@ -3,7 +3,7 @@ import { UserNavigationService } from '../../../Utility/infrastructure/user-navi
 import { environment } from '../../../../environments/environment';
 import { MonthNavigatorService } from '../../../Utility/infrastructure/month-navigator.service';
 import { SignalrService } from '../../../Utility/infrastructure/signalr.service';
-import { Justification, MokeTimeSheetService, MonthData, TimeStamp } from '../../../Utility/GestionePresenze/moke-time-sheet.service';
+import { MokeTimeSheetService, MonthData } from '../../../Utility/GestionePresenze/moke-time-sheet.service';
 import { Dip_GG_TimbraturaModel, TipoTimbratura } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Timbratura/Models/dip-gg-timbratura-model';
 import { Dip_GG_GiustificativiModel } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Giustificativi/Models/dip-gg-giustificativi-model';
 
@@ -23,10 +23,7 @@ export class TimeSheetUserPageComponent implements OnInit {
   // Usa le interfacce importate nella definizione di 'weeks'
   weeks: Array<Array<{
     day: number,
-    //records: TimeStamp[],
-    //justifications: Justification[],
     isCurrentMonth: boolean,
-    //nvx
     dip_GG_Timbratura: Dip_GG_TimbraturaModel[],
     dip_GG_Giustificativi: Dip_GG_GiustificativiModel[]
   }>>;
@@ -34,9 +31,9 @@ export class TimeSheetUserPageComponent implements OnInit {
   currentMonthDisplay: string;
 
   constructor(
-    private signalrService: SignalrService,
-    public monthNavigatorService: MonthNavigatorService,
-    private calendarDataService: MokeTimeSheetService // <-- INIETTA IL NUOVO SERVIZIO
+              private signalrService: SignalrService,
+              public monthNavigatorService: MonthNavigatorService,
+              private calendarDataService: MokeTimeSheetService 
   ) {
     this.title = 'TimeSheetUser';
     this.weeks = [];
@@ -61,7 +58,7 @@ export class TimeSheetUserPageComponent implements OnInit {
 
     console.log(`UserPageComponent: Loading data for: ${year}-${month + 1} via CalendarDataService`);
 
-    // MODIFICATO: Chiama il metodo del servizio dati
+    // Chiama il metodo del servizio dati
     this.calendarDataService.getMonthData(year, month).subscribe(monthData => {
       this.currentMonth = monthData; // monthData è già del tipo corretto MonthData
       // Usa monthNames dal servizio di navigazione come prima
@@ -69,8 +66,7 @@ export class TimeSheetUserPageComponent implements OnInit {
       this.buildCalendarWeeks(); // Costruisce la UI dopo aver ricevuto i dati
     });
   }
-
-  // buildCalendarWeeks rimane quasi invariato, usa this.currentMonth popolato dal servizio
+  
   buildCalendarWeeks() {
     this.weeks = [];
     const year = this.monthNavigatorService.currentYear;
@@ -148,11 +144,6 @@ export class TimeSheetUserPageComponent implements OnInit {
     }
   }
 
-  // RIMOSSI: getMonthData, getMockApril2025Data, sortTimestampsByTime, timeToMinutes
-  // Questi metodi sono ora privati dentro CalendarDataService
-
-  // --- Metodi Helper per la VISTA (rimangono nel componente) ---
-
   previousMonth() {
     this.monthNavigatorService.previousMonth();
     this.loadMonth(); // Ricarica i dati usando il servizio
@@ -164,24 +155,15 @@ export class TimeSheetUserPageComponent implements OnInit {
   }
 
   // Restituisce timbrature filtrate per tipo (utile per UI specifiche?)
-  getTimestampsByType(records: TimeStamp[] | undefined, type: 'E' | 'U'): TimeStamp[] {
-    return records?.filter(r => r.type === type) || [];
+  getTimestampsByType(records: Dip_GG_TimbraturaModel[] | undefined, type: TipoTimbratura): Dip_GG_TimbraturaModel[] {
+    return records?.filter(r => r.timbraturaTipo === type) || [];
   }
-
-  // RIMOSSO: getOrderedTimestamps - Il servizio dati ora garantisce che i record siano ordinati.
-  // La template dovrà essere aggiornata per iterare direttamente su day.records.
-  // getOrderedTimestamps(day: { records: TimeStamp[] } | undefined): TimeStamp[] {
-  //   // logica rimossa
-  // }
-
-  // Verifica se c'è almeno un giustificativo per l'intera giornata
-  //hasFullDayJustification(justifications: Justification[] | undefined): boolean {
+  
   hasFullDayJustification(justifications: Dip_GG_GiustificativiModel[] | undefined): boolean {
     return false; //justifications?.some(j => j.isFullDay) || false;
   }
 
   // Restituisce classi CSS specifiche per tipo di giustificativo
-  //getJustificationClass(justification: Justification): string {
   getJustificationClass(justification: Dip_GG_GiustificativiModel): string {
     //switch (justification.code.toUpperCase()) {
     //  case 'FER': case 'FST': return 'justification-vacation';
@@ -192,4 +174,23 @@ export class TimeSheetUserPageComponent implements OnInit {
     return 'justification-other';
 
   }
+
+  getDayClass(day: any, index: number): { [key: string]: boolean } {
+    return {
+      'non-current-month': !day.isCurrentMonth,
+      'weekend': index > 4,
+      'has-content': (day.dip_GG_Timbratura && day.dip_GG_Timbratura.length > 0) ||
+                     (day.dip_GG_Giustificativi && day.dip_GG_Giustificativi.length > 0),
+      'full-day-justification': this.hasFullDayJustification(day.dip_GG_Giustificativi)
+    };
+  }
+
+  getTimestampClass(record: any): { [key: string]: boolean } {
+    return {
+      'entry': record.timbraturaTipo === TipoTimbratura.Entrata,
+      'exit': record.timbraturaTipo === TipoTimbratura.Uscita
+    };
+  }
+
+
 }
