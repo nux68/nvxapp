@@ -9,7 +9,7 @@ export class Dip_GG_TimbraturaInModel {
 
 export class Dip_GG_TimbraturaOutModel extends ModelResult {
 
-  public Dip_GG_TimbraturaModel: Dip_GG_TimbraturaModel;
+  public dip_GG_Timbratura: Dip_GG_TimbraturaModel[];
 
 }
 

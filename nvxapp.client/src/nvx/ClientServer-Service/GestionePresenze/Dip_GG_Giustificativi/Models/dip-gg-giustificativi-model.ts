@@ -9,7 +9,7 @@ export class Dip_GG_GiustificativiInModel {
 
 export class Dip_GG_GiustificativiOutModel extends ModelResult {
 
-  public Dip_GG_GiustificativiModel: Dip_GG_GiustificativiModel;
+  public dip_GG_Giustificativi: Dip_GG_GiustificativiModel[];
 
 }
 

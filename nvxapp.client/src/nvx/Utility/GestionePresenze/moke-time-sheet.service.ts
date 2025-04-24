@@ -1,9 +1,13 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { catchError, Observable, of, throwError } from 'rxjs';
 import { map } from 'rxjs/operators'; // Import map operator if you plan real sorting/processing
-import { Dip_GG_TimbraturaModel, TipoTimbratura } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Timbratura/Models/dip-gg-timbratura-model';
+import { Dip_GG_TimbraturaInModel, Dip_GG_TimbraturaModel, TipoTimbratura } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Timbratura/Models/dip-gg-timbratura-model';
 import { StatoRichiesta } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/Models/dip-gg-richiesta-model';
-import { Dip_GG_GiustificativiModel } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Giustificativi/Models/dip-gg-giustificativi-model';
+import { Dip_GG_GiustificativiInModel, Dip_GG_GiustificativiModel } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Giustificativi/Models/dip-gg-giustificativi-model';
+import { DipGGGiustificativiService } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Giustificativi/dip-gg-giustificativi.service';
+import { DipGGTimbraturaService } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Timbratura/dip-gg-timbratura.service';
+import { GenericRequest } from '../../ClientServer-Service/ModelsBase/generic-request';
+import { forkJoin } from 'rxjs/internal/observable/forkJoin';
 
 // --- INTERFACE DEFINITIONS (Moved Here) ---
 export interface TimeStamp {
@@ -26,6 +30,13 @@ export interface DayRecord {
   dip_GG_Giustificativi: Dip_GG_GiustificativiModel[];
 }
 
+
+export interface TimeSheetRemoteData {
+  dip_GG_Timbratura: Dip_GG_TimbraturaModel[];
+  dip_GG_Giustificativi: Dip_GG_GiustificativiModel[];
+}
+
+
 export interface MonthData {
   year: number;
   month: number;  // 0-11 (gennaio = 0)
@@ -38,7 +49,8 @@ export interface MonthData {
 })
 export class MokeTimeSheetService {
 
-  constructor() { }
+  constructor(private dipGGGiustificativiService: DipGGGiustificativiService,
+              private dipGGTimbraturaService: DipGGTimbraturaService) { }
 
   /**
    * Fetches calendar data for a specific month and year.
@@ -89,6 +101,49 @@ export class MokeTimeSheetService {
 
     // --- FINE SIMULAZIONE ---
   }
+
+  
+
+  getMonthDataFromServer(year: number, month: number): Observable<TimeSheetRemoteData> {
+    
+    let request_Just  = new GenericRequest<Dip_GG_GiustificativiInModel>(Dip_GG_GiustificativiInModel);
+    let request_clock = new GenericRequest<Dip_GG_TimbraturaInModel>(Dip_GG_TimbraturaInModel);
+
+    // 2. Define the Observables for the API calls (DO NOT subscribe yet)
+    const justificationsObservable$ = this.dipGGGiustificativiService.GetAll(request_Just);
+    const clockingsObservable$ = this.dipGGTimbraturaService.GetAll(request_clock);
+
+    // 3. Use forkJoin to execute both Observables in parallel
+    // It will emit an object with the results once BOTH calls complete
+    return forkJoin({
+      // Assign keys to easily access the results later
+      justResult: justificationsObservable$,
+      clockResult: clockingsObservable$
+    }).pipe(
+      // 4. Use the 'map' operator to transform the combined results
+      map(results => {
+
+        const giustificativiArray = results.justResult?.data?.dip_GG_Giustificativi || [];
+        const timbratureArray = results.clockResult?.data?.dip_GG_Timbratura || [];
+
+        // Crea l'oggetto finale TimeSheetRemoteData
+        const remoteData: TimeSheetRemoteData = {
+          dip_GG_Giustificativi: giustificativiArray,
+          dip_GG_Timbratura: timbratureArray
+        };
+
+        console.log('Both calls finished. Combined data:', remoteData);
+        return remoteData; // Return the structured data
+      }),
+      // 5. Optional: Add error handling for the forkJoin
+      catchError(error => {
+        console.error("Error fetching month data (one or both calls failed):", error);
+        return throwError(() => new Error('Failed to load data for month ' + month + '/' + year));
+      })
+    );
+    // The method now correctly returns an Observable<MonthData>
+  }
+
 
   /**
    * Generates mock data for April 2025.
