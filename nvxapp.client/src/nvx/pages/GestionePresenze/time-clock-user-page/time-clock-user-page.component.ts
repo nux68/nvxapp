@@ -16,6 +16,9 @@ export class TimeClockUserPageComponent implements OnInit, OnDestroy {
   public formattedDate: string;
   public lastAction: string;
 
+  // Traccia lo stato dell'ultima timbratura (entrata o uscita)
+  private isLastActionCheckIn: boolean = false;
+
   private timeInterval: any;
 
   constructor(public userNavigationService: UserNavigationService) {
@@ -25,6 +28,9 @@ export class TimeClockUserPageComponent implements OnInit, OnDestroy {
     this.currentTime = this.formatTime(this.currentDate);
     this.formattedDate = this.formatDate(this.currentDate);
     this.lastAction = 'uscita 18:10 (17/04/2025)';
+
+    // Imposta lo stato iniziale in base all'ultima azione (qui assumiamo che fosse un'uscita)
+    this.isLastActionCheckIn = false;
   }
 
   ngOnInit() {
@@ -70,19 +76,22 @@ export class TimeClockUserPageComponent implements OnInit, OnDestroy {
     return `${day}/${month}/${year}`;
   }
 
-  checkIn() {
+  // Nuovo metodo che alterna tra entrata e uscita
+  clockInOut() {
     const now = new Date();
     const timeStr = this.formatTime(now);
     const dateStr = this.formatDate(now);
-    this.lastAction = `entrata ${timeStr} (${dateStr})`;
-    // Here you can add logic to send check-in data to server
-  }
 
-  checkOut() {
-    const now = new Date();
-    const timeStr = this.formatTime(now);
-    const dateStr = this.formatDate(now);
-    this.lastAction = `uscita ${timeStr} (${dateStr})`;
-    // Here you can add logic to send check-out data to server
+    // Alterna tra entrata e uscita ad ogni click
+    this.isLastActionCheckIn = !this.isLastActionCheckIn;
+
+    // Aggiorna il messaggio dell'ultima azione in base allo stato attuale
+    if (this.isLastActionCheckIn) {
+      this.lastAction = `entrata ${timeStr} (${dateStr})`;
+      // Logica per inviare i dati di entrata al server
+    } else {
+      this.lastAction = `uscita ${timeStr} (${dateStr})`;
+      // Logica per inviare i dati di uscita al server
+    }
   }
 }

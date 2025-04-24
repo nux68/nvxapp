@@ -4,9 +4,6 @@ ion-menu-button {
   color: var(--ion-color-primary);
 }
 
-/* Let ion-content handle its own background/color via theme variables */
-/* The explicit .dark-background class and its styles are removed */
-
 /* --- Base Styles (Light Theme / Default) --- */
 
 .location-badge {
@@ -50,43 +47,44 @@ ion-menu-button {
 
 .button-container {
   display: flex;
-  justify-content: space-around;
+  justify-content: center; /* Centrato invece di space-around */
   padding: 20px;
-  margin-top: 60px; /* Adjusted from 60px */
+  margin-top: 60px;
 
   .clock-button {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 150px;
-    height: 150px;
-    border-radius: 10px;
+    width: 180px; /* Leggermente più largo del precedente */
+    height: 180px; /* Leggermente più alto del precedente */
+    border-radius: 90px; /* Perfettamente circolare */
     border: none;
-    font-size: 22px;
+    font-size: 26px; /* Testo leggermente più grande */
     font-weight: bold;
-    cursor: pointer; /* Added for better UX */
-    transition: background-color 0.2s ease-in-out; /* Smooth hover */
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out, transform 0.2s ease;
 
     ion-icon {
-      font-size: 32px;
+      font-size: 40px; /* Icona più grande */
       margin-bottom: 10px;
     }
 
-    &.check-in {
-      /* Green background, white text (good contrast) */
-      background-color: #006644; /* Consider using var(--ion-color-success) if it matches */
+    &.clock-in-out {
+      /* Colore blu/viola per un tasto neutrale */
+      background-color: #3949ab; /* Blu indaco */
       color: white;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2); /* Ombra leggera */
     }
-
-    &.check-out {
-      /* Red background, white text (good contrast) */
-      background-color: #8a2727; /* Consider using var(--ion-color-danger) if it matches */
-      color: white;
-    }
-    /* Optional: Subtle hover effect */
+    /* Effetto hover e active per feedback migliore */
     &:hover {
       filter: brightness(110%);
+      transform: translateY(-2px);
+    }
+
+    &:active {
+      transform: translateY(1px);
+      filter: brightness(95%);
     }
   }
 }
@@ -129,13 +127,11 @@ ion-menu-button {
   }
 
   .button-container {
-    /* Optional: Slightly adjust button colors for dark mode if desired */
-    /*
     .clock-button {
-       &.check-in { background-color: #007a53; }
-       &.check-out { background-color: #a83c3c; }
+      &.clock-in-out {
+        background-color: #5c6bc0; /* Versione più chiara del colore per dark mode */
+      }
     }
-    */
   }
 
   .last-action {
