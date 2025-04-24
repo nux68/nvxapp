@@ -52,35 +52,39 @@
             <div class="day-content">
 
               <!-- NUOVO: Sezione Visualizzazione Giustificativi -->
-              <ng-container *ngIf="day.justifications && day.justifications.length > 0">
+              <!--<ng-container *ngIf="day.justifications && day.justifications.length > 0">-->
+              <ng-container *ngIf="day.dip_GG_Giustificativi && day.dip_GG_Giustificativi.length > 0">
                 <div class="justifications">
-                  <div class="justification" *ngFor="let just of day.justifications"
+                  <div class="justification" *ngFor="let just of day.dip_GG_Giustificativi"
                        [ngClass]="getJustificationClass(just)">
+                    <!--<div class="justification" *ngFor="let just of day.justifications"-->
                     <!-- Classi dinamiche per stile -->
-                    {{ just.description }}
+                    <!--{{ just.description }}-->
+
+                    {{ just.id | parGiustificativiToLongText}}
                   </div>
                 </div>
               </ng-container>
 
               <!-- Sezione Visualizzazione Timbrature -->
               <!--<ng-container *ngIf="day.records && day.records.length > 0">-->
-                <ng-container *ngIf="day.dip_GG_Timbratura && day.dip_GG_Timbratura.length > 0">
-                  <div class="timestamps">
-                    <!-- MODIFICATO: Itera direttamente su day.records (assumendo siano ordinati dal servizio) -->
-                    <!--
-                      <div class="timestamp" *ngFor="let record of day.records"
-                         [ngClass]="{'entry': record.type === 'E', 'exit': record.type === 'U'}">
-                        {{ record.type }} {{ record.time }}
-                      </div>
-                      -->
-                    
-                    <div class="timestamp" *ngFor="let record of day.dip_GG_Timbratura"
-                         [ngClass]="{'entry': record.timbraturaTipo === TipoTimbratura.Entrata, 'exit': record.timbraturaTipo === TipoTimbratura.Uscita}">
-                      {{ record.timbraturaTipo | tipoTimbraturaToShortText }} {{ record.timbratura | date:'HH:mm' }}
-                    </div>
-
+              <ng-container *ngIf="day.dip_GG_Timbratura && day.dip_GG_Timbratura.length > 0">
+                <div class="timestamps">
+                  <!-- MODIFICATO: Itera direttamente su day.records (assumendo siano ordinati dal servizio) -->
+                  <!--
+                  <div class="timestamp" *ngFor="let record of day.records"
+                     [ngClass]="{'entry': record.type === 'E', 'exit': record.type === 'U'}">
+                    {{ record.type }} {{ record.time }}
                   </div>
-                </ng-container>
+                  -->
+
+                  <div class="timestamp" *ngFor="let record of day.dip_GG_Timbratura"
+                       [ngClass]="{'entry': record.timbraturaTipo === TipoTimbratura.Entrata, 'exit': record.timbraturaTipo === TipoTimbratura.Uscita}">
+                    {{ record.timbraturaTipo | tipoTimbraturaToShortText }} {{ record.timbratura | date:'HH:mm' }}
+                  </div>
+
+                </div>
+              </ng-container>
 
             </div> <!-- Fine day-content -->
 

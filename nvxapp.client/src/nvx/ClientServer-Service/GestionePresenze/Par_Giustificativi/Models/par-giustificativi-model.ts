@@ -13,7 +13,8 @@ export class Par_GiustificativiOutModel extends ModelResult {
 }
 
 export class Par_GiustificativiModel  {
-  
+
+  public id!: number; // not Nullable
   public idAz_Anagrafica!: number; // not Nullable
   public descrizione!: string;
   public codice!: string;

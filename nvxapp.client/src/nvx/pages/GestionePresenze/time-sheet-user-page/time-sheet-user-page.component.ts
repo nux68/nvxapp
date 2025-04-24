@@ -28,7 +28,7 @@ export class TimeSheetUserPageComponent implements OnInit {
     isCurrentMonth: boolean,
     //nvx
     dip_GG_Timbratura: Dip_GG_TimbraturaModel[],
-    dip_GG_GiustificativiModel: Dip_GG_GiustificativiModel[]
+    dip_GG_Giustificativi: Dip_GG_GiustificativiModel[]
   }>>;
 
   currentMonthDisplay: string;
@@ -90,7 +90,7 @@ export class TimeSheetUserPageComponent implements OnInit {
       isCurrentMonth: boolean,
       //nvx
       dip_GG_Timbratura: Dip_GG_TimbraturaModel[],
-      dip_GG_GiustificativiModel: Dip_GG_GiustificativiModel[]
+      dip_GG_Giustificativi: Dip_GG_GiustificativiModel[]
     }> = [];
 
     // Giorni mese precedente
@@ -102,7 +102,7 @@ export class TimeSheetUserPageComponent implements OnInit {
         justifications: [],
         isCurrentMonth: false,
         dip_GG_Timbratura: [],
-        dip_GG_GiustificativiModel:[]
+        dip_GG_Giustificativi:[]
       });
     }
 
@@ -120,7 +120,7 @@ export class TimeSheetUserPageComponent implements OnInit {
         isCurrentMonth: true,
         //nvx
         dip_GG_Timbratura: dayData?.dip_GG_Timbratura || [],
-        dip_GG_GiustificativiModel:dayData?.dip_GG_Giustificativi || []
+        dip_GG_Giustificativi:dayData?.dip_GG_Giustificativi || []
       });
 
       if (currentWeek.length === 7) {
@@ -140,7 +140,7 @@ export class TimeSheetUserPageComponent implements OnInit {
           isCurrentMonth: false,
           //nvx
           dip_GG_Timbratura: [],
-          dip_GG_GiustificativiModel:[]
+          dip_GG_Giustificativi:[]
         });
         nextMonthDay++;
       }
@@ -180,12 +180,15 @@ export class TimeSheetUserPageComponent implements OnInit {
   }
 
   // Restituisce classi CSS specifiche per tipo di giustificativo
-  getJustificationClass(justification: Justification): string {
-    switch (justification.code.toUpperCase()) {
-      case 'FER': case 'FST': return 'justification-vacation';
-      case 'MAL': return 'justification-sick';
-      case 'PER': return 'justification-leave';
-      default: return 'justification-other';
-    }
+  //getJustificationClass(justification: Justification): string {
+  getJustificationClass(justification: Dip_GG_GiustificativiModel): string {
+    //switch (justification.code.toUpperCase()) {
+    //  case 'FER': case 'FST': return 'justification-vacation';
+    //  case 'MAL': return 'justification-sick';
+    //  case 'PER': return 'justification-leave';
+    //  default: return 'justification-other';
+    //}
+    return 'justification-other';
+
   }
 }

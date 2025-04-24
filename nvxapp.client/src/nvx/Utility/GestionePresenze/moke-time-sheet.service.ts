@@ -232,7 +232,7 @@ export class MokeTimeSheetService {
           timestamps: [],
           justifications: [{ code: 'MAL', description: 'Malattia', isFullDay: true }],
           dip_GG_Timbratura: [],
-          dip_GG_Giustificativi: [{ id: 0, idDip_RapportoLavoro: 0, data: new Date(2025, 1, 1), idJustificationType: 0, inputType: 0, hours: "", from: "", idPar_Giustificativi: 1, richiestaStato: 0, idDip_Richiesta: 0 }]
+          dip_GG_Giustificativi: [{ id: 1, idDip_RapportoLavoro: 0, data: new Date(2025, 1, 1), idJustificationType: 0, inputType: 0, hours: "", from: "", idPar_Giustificativi: 1, richiestaStato: 0, idDip_Richiesta: 0 }]
         },
         17: {
           date: new Date(2025, 3, 17),
@@ -248,28 +248,28 @@ export class MokeTimeSheetService {
               { type: 'U', time: '13:00' }
             ]
           ),
-          dip_GG_Giustificativi: [{ id: 0, idDip_RapportoLavoro: 0, data: new Date(2025, 1, 1), idJustificationType: 0, inputType: 0, hours: "", from: "", idPar_Giustificativi: 1, richiestaStato: 0, idDip_Richiesta: 0 }]
+          dip_GG_Giustificativi: [{ id: 2, idDip_RapportoLavoro: 0, data: new Date(2025, 1, 1), idJustificationType: 0, inputType: 0, hours: "", from: "", idPar_Giustificativi: 1, richiestaStato: 0, idDip_Richiesta: 0 }]
         },
         18: {
           date: new Date(2025, 3, 18),
           timestamps: [],
           justifications: [{ code: 'FER', description: 'Ferie', isFullDay: true }],
           dip_GG_Timbratura: [],
-          dip_GG_Giustificativi: [{ id: 0, idDip_RapportoLavoro: 0, data: new Date(2025, 1, 1), idJustificationType: 0, inputType: 0, hours: "", from: "", idPar_Giustificativi: 1, richiestaStato: 0, idDip_Richiesta: 0 }]
+          dip_GG_Giustificativi: [{ id: 1, idDip_RapportoLavoro: 0, data: new Date(2025, 1, 1), idJustificationType: 0, inputType: 0, hours: "", from: "", idPar_Giustificativi: 1, richiestaStato: 0, idDip_Richiesta: 0 }]
         },
         21: {
           date: new Date(2025, 3, 21),
           timestamps: [],
           justifications: [{ code: 'FST', description: 'Pasquetta', isFullDay: true }],
           dip_GG_Timbratura: [],
-          dip_GG_Giustificativi: [{ id: 0, idDip_RapportoLavoro: 0, data: new Date(2025, 1, 1), idJustificationType: 0, inputType: 0, hours: "", from: "", idPar_Giustificativi: 1, richiestaStato: 0, idDip_Richiesta: 0 }]
+          dip_GG_Giustificativi: [{ id: 3, idDip_RapportoLavoro: 0, data: new Date(2025, 1, 1), idJustificationType: 0, inputType: 0, hours: "", from: "", idPar_Giustificativi: 1, richiestaStato: 0, idDip_Richiesta: 0 }]
         },
         25: {
           date: new Date(2025, 3, 25),
           timestamps: [],
           justifications: [{ code: 'FST', description: 'Liberazione', isFullDay: true }],
           dip_GG_Timbratura: [],
-          dip_GG_Giustificativi: [{ id: 0, idDip_RapportoLavoro: 0, data: new Date(2025, 1, 1), idJustificationType: 0, inputType: 0, hours: "", from: "", idPar_Giustificativi: 1, richiestaStato: 0, idDip_Richiesta: 0 }]
+          dip_GG_Giustificativi: [{ id: 2, idDip_RapportoLavoro: 0, data: new Date(2025, 1, 1), idJustificationType: 0, inputType: 0, hours: "", from: "", idPar_Giustificativi: 1, richiestaStato: 0, idDip_Richiesta: 0 }]
         },
       }
     };
