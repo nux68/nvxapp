@@ -13,7 +13,7 @@ using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
 
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_ProfiloOrarioService.Models;
 
-namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_ProfiloOrario
+namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_ProfiloOrarioService
 {
 
     public class Dip_ProfiloOrarioService : ServiceBase, IDip_ProfiloOrarioService

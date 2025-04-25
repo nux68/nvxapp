@@ -13,7 +13,7 @@ using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
 
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_AnagraficaService.Models;
 
-namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagrafica
+namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_AnagraficaService
 {
 
     public class Dip_AnagraficaService : ServiceBase, IDip_AnagraficaService

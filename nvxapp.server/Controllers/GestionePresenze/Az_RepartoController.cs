@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
-using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_Reparto;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_RepartoService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_RepartoService;
 
 
 

@@ -2,10 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
-using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagrafica;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_AnagraficaService.Models;
-using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_RapportoLavoro;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_RapportoLavoroService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_RapportoLavoroService;
 
 
 

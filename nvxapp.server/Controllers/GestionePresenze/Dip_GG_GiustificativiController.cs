@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
-using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Giustificativi;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_GiustificativiService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_GiustificativiService;
 
 
 
@@ -28,7 +28,7 @@ namespace nvxapp.server.Controllers
         [Authorize]
         [HttpPost]
         [Route("GetAll")]
-        public async Task<GenericResult<Dip_GG_GiustificativiOutModel>> GetAll(GenericRequest<Dip_GG_GiustificativiInModel> inModel)
+        public async Task<GenericResult<Dip_GG_Giustificativi_GetAll_OutModel>> GetAll(GenericRequest<Dip_GG_Giustificativi_GetAll_InModel> inModel)
         {
             var res = await _dip_GG_GiustificativiService.GetAll(inModel, false);
 

@@ -11,7 +11,7 @@ namespace nvxapp.server.data.Entities.Tenant
 
         
         public DateTime Timbratura { get; set; }
-        public DateTime TimbraturaOrigianle { get; set; }
+        public DateTime TimbraturaOriginale { get; set; }
         public DateTime? TimbraturaArrotondata { get; set; }
         public DateTime GiornoCompetenza { get; set; } // girno al quale viene agganciata la timbratura (servirà per cavallo notte montanti /smontanti)
         public TipoTimbratura TimbraturaTipo { get; set; }

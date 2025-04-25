@@ -10,9 +10,10 @@ using nvxapp.server.data.Repositories.Public;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
-
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_OrarioIntervalloHHService.Models;
-namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_OrarioIntervalloHH
+
+
+namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_OrarioIntervalloHHService
 {
 
     public class Par_OrarioIntervalloHHService : ServiceBase, IPar_OrarioIntervalloHHService

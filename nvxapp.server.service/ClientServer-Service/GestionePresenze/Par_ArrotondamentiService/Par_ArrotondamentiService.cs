@@ -12,7 +12,7 @@ using Microsoft.Extensions.Configuration;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
 
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_ArrotondamentiService.Models;
-namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Arrotondamenti
+namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_ArrotondamentiService
 {
 
     public class Par_ArrotondamentiService : ServiceBase, IPar_ArrotondamentiService

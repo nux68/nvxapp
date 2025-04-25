@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
-using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Timbratura;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_TimbraturaService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_TimbraturaService;
 
 
 
@@ -28,14 +28,24 @@ namespace nvxapp.server.Controllers
         [Authorize]
         [HttpPost]
         [Route("GetAll")]
-        public async Task<GenericResult<Dip_GG_TimbraturaOutModel>> GetAll(GenericRequest<Dip_GG_TimbraturaInModel> inModel)
+        public async Task<GenericResult<Dip_GG_Timbratura_GetAll_OutModel>> GetAll(GenericRequest<Dip_GG_Timbratura_GetAll_InModel> inModel)
         {
             var res = await _Dip_GG_TimbraturaService.GetAll(inModel, false);
 
             return res;
         }
 
-        
+        [Authorize]
+        [HttpPost]
+        [Route("Stamp")]
+        public async Task<GenericResult<Dip_GG_Timbratura_Stamp_OutModel>> Stamp(GenericRequest<Dip_GG_Timbratura_Stamp_InModel> inModel)
+        {
+            var res = await _Dip_GG_TimbraturaService.Stamp(inModel, false);
+
+            return res;
+        }
+
+
 
     }
 

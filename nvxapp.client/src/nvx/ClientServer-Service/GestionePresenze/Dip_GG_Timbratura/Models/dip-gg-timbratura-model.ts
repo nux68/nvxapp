@@ -3,19 +3,9 @@ import { StatoRichiesta } from "../../Dip_GG_Richiesta/Models/dip-gg-richiesta-m
 
 
 
-export class Dip_GG_TimbraturaInModel {
-  
-}
+export class Dip_GG_TimbraturaModel {
 
-export class Dip_GG_TimbraturaOutModel extends ModelResult {
-
-  public dip_GG_Timbratura: Dip_GG_TimbraturaModel[];
-
-}
-
-export class Dip_GG_TimbraturaModel  {
-
-  public id: number; 
+  public id: number;
   public idDip_RapportoLavoro!: number; // Utilizzo di "!" per proprietà richieste non nullable
 
   // Date e timbrature
@@ -38,32 +28,38 @@ export class Dip_GG_TimbraturaModel  {
 
 
 }
-
-////////export interface iDip_GG_TimbraturaModel {
-////////  // Proprietà richieste
-////////  idDip_RapportoLavoro: number; // Non nullable
-
-////////  // Date e timbrature
-////////  timbratura: Date;
-////////  timbraturaOriginale: Date;
-////////  timbraturaArrotondata?: Date; // Nullable
-////////  giornoCompetenza: Date; // Giorno per cavallo notte montanti/smontanti
-
-////////  // Tipo di timbratura
-////////  timbraturaTipo: TipoTimbratura;
-
-
-////////    //Per gli inserimenti diretti:
-////////    //  richiestaStato = Diretta
-////////    //  idDip_Richiesta = null
-  
-////////  richiestaStato: StatoRichiesta;
-////////  idDip_Richiesta?: number; // Nullable
-////////}
-
 export enum TipoTimbratura {
-  Entrata,     
-  Uscita,      
-  SenzaVerso,  
-  Attivita     
+  Entrata,
+  Uscita,
+  SenzaVerso,
+  Attivita
 }
+
+
+
+export class Dip_GG_Timbratura_GetAll_InModel {
+  public year: number;
+  public month: number;
+}
+export class Dip_GG_Timbratura_GetAll_OutModel extends ModelResult {
+
+  public dip_GG_Timbratura: Dip_GG_TimbraturaModel[];
+
+}
+
+
+export class Dip_GG_Timbratura_Stamp_InModel {
+  public dateStamp!: string;
+}
+export class Dip_GG_Timbratura_Stamp_OutModel extends ModelResult {
+
+  
+
+}
+
+
+
+
+
+
+

@@ -13,7 +13,7 @@ using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
 
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediService.Models;
 
-namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_Sedi
+namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediService
 {
 
     public class Az_SediService : ServiceBase, IAz_SediService

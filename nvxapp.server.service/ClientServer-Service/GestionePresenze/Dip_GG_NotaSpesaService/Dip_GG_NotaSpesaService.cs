@@ -13,7 +13,7 @@ using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
 
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_NotaSpesaService.Models;
 
-namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_NotaSpesa
+namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_NotaSpesaService
 {
 
     public class Dip_GG_NotaSpesaService : ServiceBase, IDip_GG_NotaSpesaService

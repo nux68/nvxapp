@@ -13,7 +13,7 @@ using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.ServerModels;
 
-namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Giustificativi
+namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_GiustificativiService
 {
 
     public class Dip_GG_GiustificativiService : ServiceBase, IDip_GG_GiustificativiService
@@ -32,11 +32,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Giu
             _Dip_GG_GiustificativiRepository = Dip_GG_GiustificativiRepository;
         }
 
-        public virtual async Task<GenericResult<Dip_GG_GiustificativiOutModel>> GetAll(GenericRequest<Dip_GG_GiustificativiInModel> model, Boolean isSubProcess)
+        public virtual async Task<GenericResult<Dip_GG_Giustificativi_GetAll_OutModel>> GetAll(GenericRequest<Dip_GG_Giustificativi_GetAll_InModel> model, Boolean isSubProcess)
         {
             return await ExecuteAction(model, async () =>
             {
-                Dip_GG_GiustificativiOutModel retVal = new Dip_GG_GiustificativiOutModel();
+                Dip_GG_Giustificativi_GetAll_OutModel retVal = new Dip_GG_Giustificativi_GetAll_OutModel();
 
 
                 for (int i = 1; i < 6;  i++)
@@ -69,6 +69,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Giu
 
     public interface IDip_GG_GiustificativiService : IServiceBase
     {
-        public Task<GenericResult<Dip_GG_GiustificativiOutModel>> GetAll(GenericRequest<Dip_GG_GiustificativiInModel> model, Boolean isSubProcess);
+        public Task<GenericResult<Dip_GG_Giustificativi_GetAll_OutModel>> GetAll(GenericRequest<Dip_GG_Giustificativi_GetAll_InModel> model, Boolean isSubProcess);
     }
 }

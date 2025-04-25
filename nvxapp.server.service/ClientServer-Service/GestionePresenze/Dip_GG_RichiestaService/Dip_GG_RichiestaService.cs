@@ -13,7 +13,7 @@ using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
 
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_RichiestaService.Models;
 
-namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Richiesta
+namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_RichiestaService
 {
 
     public class Dip_GG_RichiestaService : ServiceBase, IDip_GG_RichiestaService

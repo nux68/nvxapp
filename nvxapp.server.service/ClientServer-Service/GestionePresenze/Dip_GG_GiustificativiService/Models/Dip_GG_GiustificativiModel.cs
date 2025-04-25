@@ -26,17 +26,18 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Giu
 
     }
 
-    public class Dip_GG_GiustificativiInModel
+    public class Dip_GG_Giustificativi_GetAll_InModel
     {
-
+        public int Year { get; set; } = 0;
+        public int Month { get; set; } = 0;
     }
 
-    public class Dip_GG_GiustificativiOutModel : ModelResult 
+    public class Dip_GG_Giustificativi_GetAll_OutModel : ModelResult 
     {
         public List<Dip_GG_GiustificativiModel> Dip_GG_Giustificativi { get; set; } = new List<Dip_GG_GiustificativiModel>();
 
         
-        public Dip_GG_GiustificativiOutModel() 
+        public Dip_GG_Giustificativi_GetAll_OutModel() 
         {
         
         }

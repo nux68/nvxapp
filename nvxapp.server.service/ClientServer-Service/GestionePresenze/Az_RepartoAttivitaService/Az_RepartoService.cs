@@ -13,7 +13,7 @@ using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
 
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_RepartoAttivitaService.Models;
 
-namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_RepartoAttivita
+namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_RepartoAttivitaService
 {
 
     public class Az_RepartoAttivitaService : ServiceBase, IAz_RepartoAttivitaService

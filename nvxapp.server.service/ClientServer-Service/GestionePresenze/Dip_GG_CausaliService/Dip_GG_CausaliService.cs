@@ -13,7 +13,7 @@ using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
 
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_CausaliService.Models;
 
-namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Causali
+namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_CausaliService
 {
 
     public class Dip_GG_CausaliService : ServiceBase, IDip_GG_CausaliService

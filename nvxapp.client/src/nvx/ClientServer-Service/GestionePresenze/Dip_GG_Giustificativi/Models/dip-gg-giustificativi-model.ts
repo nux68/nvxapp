@@ -3,11 +3,12 @@ import { StatoRichiesta } from "../../Dip_GG_Richiesta/Models/dip-gg-richiesta-m
 
 
 
-export class Dip_GG_GiustificativiInModel {
-  
+export class Dip_GG_Giustificativi_GetAll_InModel {
+  public year: number;
+  public month: number;
 }
 
-export class Dip_GG_GiustificativiOutModel extends ModelResult {
+export class Dip_GG_Giustificativi_GetAll_OutModel extends ModelResult {
 
   public dip_GG_Giustificativi: Dip_GG_GiustificativiModel[];
 

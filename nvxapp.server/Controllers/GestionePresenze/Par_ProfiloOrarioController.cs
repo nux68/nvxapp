@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
-using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_ProfiloOrario;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_ProfiloOrarioService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_ProfiloOrarioService;
 
 
 

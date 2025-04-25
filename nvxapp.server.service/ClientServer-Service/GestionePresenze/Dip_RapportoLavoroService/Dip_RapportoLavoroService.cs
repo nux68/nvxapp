@@ -13,7 +13,7 @@ using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
 
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_RapportoLavoroService.Models;
 
-namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_RapportoLavoro
+namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_RapportoLavoroService
 {
 
     public class Dip_RapportoLavoroService : ServiceBase, IDip_RapportoLavoroService

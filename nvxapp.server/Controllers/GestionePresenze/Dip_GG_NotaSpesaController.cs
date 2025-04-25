@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
-using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_NotaSpesa;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_NotaSpesaService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_NotaSpesaService;
 
 
 

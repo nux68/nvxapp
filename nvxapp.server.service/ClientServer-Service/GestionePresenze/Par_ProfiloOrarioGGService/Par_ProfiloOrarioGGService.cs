@@ -12,9 +12,9 @@ using Microsoft.Extensions.Configuration;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
 
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_ProfiloOrarioGGService.Models;
-using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_ProfiloOrario;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_ProfiloOrarioService.Models;
-namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_ProfiloOrarioGG
+
+namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_ProfiloOrarioGGService
 {
 
     public class Par_ProfiloOrarioGGService : ServiceBase, IPar_ProfiloOrarioGGService

@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
-using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_Sedi;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediService;
 
 
 

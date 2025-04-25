@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { catchError, Observable, of, throwError } from 'rxjs';
 import { map } from 'rxjs/operators'; // Import map operator if you plan real sorting/processing
-import { Dip_GG_TimbraturaInModel, Dip_GG_TimbraturaModel, TipoTimbratura } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Timbratura/Models/dip-gg-timbratura-model';
+import { Dip_GG_Timbratura_GetAll_InModel, Dip_GG_TimbraturaModel, TipoTimbratura } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Timbratura/Models/dip-gg-timbratura-model';
 import { StatoRichiesta } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/Models/dip-gg-richiesta-model';
-import { Dip_GG_GiustificativiInModel, Dip_GG_GiustificativiModel } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Giustificativi/Models/dip-gg-giustificativi-model';
+import { Dip_GG_Giustificativi_GetAll_InModel, Dip_GG_GiustificativiModel } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Giustificativi/Models/dip-gg-giustificativi-model';
 import { DipGGGiustificativiService } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Giustificativi/dip-gg-giustificativi.service';
 import { DipGGTimbraturaService } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Timbratura/dip-gg-timbratura.service';
 import { GenericRequest } from '../../ClientServer-Service/ModelsBase/generic-request';
@@ -57,8 +57,13 @@ export class MokeTimeSheetService {
 
   getMonthDataFromServer(year: number, month: number): Observable<TimeSheetRemoteData> {
     
-    let request_Just  = new GenericRequest<Dip_GG_GiustificativiInModel>(Dip_GG_GiustificativiInModel);
-    let request_clock = new GenericRequest<Dip_GG_TimbraturaInModel>(Dip_GG_TimbraturaInModel);
+    let request_Just = new GenericRequest<Dip_GG_Giustificativi_GetAll_InModel>(Dip_GG_Giustificativi_GetAll_InModel);
+    request_Just.data.year = year;
+    request_Just.data.month = month+1;
+
+    let request_clock = new GenericRequest<Dip_GG_Timbratura_GetAll_InModel>(Dip_GG_Timbratura_GetAll_InModel);
+    request_clock.data.year = year;
+    request_clock.data.month = month+1;
 
     // 2. Define the Observables for the API calls (DO NOT subscribe yet)
     const justificationsObservable$ = this.dipGGGiustificativiService.GetAll(request_Just);
