@@ -2,6 +2,11 @@
 import { Component, OnInit } from '@angular/core';
 import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
 import { DipGGRichiestaService } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/dip-gg-richiesta.service';
+import { StringHelperService } from '../../../Utility/infrastructure/string-helper.service';
+import { NavController } from '@ionic/angular';
+import { Dip_GG_Richiesta_Send_InModel } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/Models/dip-gg-richiesta-model';
+import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
+import { Dip_GG_TimbraturaModel } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Timbratura/Models/dip-gg-timbratura-model';
 
 @Component({
   selector: 'app-request-clocking-user-page',
@@ -17,8 +22,10 @@ export class RequestClockingUserPageComponent implements OnInit {
   public supervisors: string[];
   public notes: string;
 
-  constructor(public userNavigationService: UserNavigationService,
-              private pipGGRichiestaService: DipGGRichiestaService) {
+  constructor(private navCtrl: NavController,
+              public userNavigationService: UserNavigationService,
+              private dipGGRichiestaService: DipGGRichiestaService,
+              private stringHelperService: StringHelperService) {
 
     this.title = 'Richiedi timbratura';
     this.requestType = 'ENTRATA';
@@ -65,6 +72,19 @@ export class RequestClockingUserPageComponent implements OnInit {
   }
 
   submitRequest() {
+
+    let request_rich = new GenericRequest<Dip_GG_Richiesta_Send_InModel>(Dip_GG_Richiesta_Send_InModel);
+
+    let dip_GG_Timbratura: Dip_GG_TimbraturaModel = new Dip_GG_TimbraturaModel()
+    
+    
+    request_rich.data.dip_GG_RichiestaModel.dati = this.stringHelperService.toJSONString(dip_GG_Timbratura);
+
+    this.dipGGRichiestaService.Send(request_rich).subscribe(res => {
+      this.navCtrl.navigateForward('/usertimesheet');
+    });
+
+   
 
     console.log('Request submitted', {
       type: this.requestType,
