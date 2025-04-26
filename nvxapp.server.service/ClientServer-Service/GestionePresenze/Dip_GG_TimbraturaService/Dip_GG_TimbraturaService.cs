@@ -77,8 +77,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
                 {
                     User_DATA_COMB_DipAna_DipRapp user_DATA_COMB_DipAna_DipRapp = await _gestionePresenzeUserUtility.Get_DipAna_DipRapp(this.CurrentUserId, true);
 
+                    
+
                     List<Dip_GG_Timbratura> timbratura = _dip_GG_TimbraturaRepository.FindAll(x => x.GiornoCompetenza.Year == model.Data.Year &&
-                                                                                              x.GiornoCompetenza.Month == model.Data.Month)
+                                                                                                   x.GiornoCompetenza.Month == model.Data.Month &&
+                                                                                                   x.IdDip_RapportoLavoro == user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.Id)
                                                                                      .OrderBy(x => x.TimbraturaOriginale).ToList();
 
                     var groupedByDay = timbratura.GroupBy(x => x.GiornoCompetenza.Date).ToList();

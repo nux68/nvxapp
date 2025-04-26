@@ -19,4 +19,14 @@ namespace nvxapp.server.service.Mappers.Tenant.GestionePresenze
         }
 
     }
+
+    public class Dip_GG_TimbraturaModel_To_Dip_GG_Timbratura_Mapper : Profile
+    {
+
+        public Dip_GG_TimbraturaModel_To_Dip_GG_Timbratura_Mapper()
+        {
+            CreateMap<Dip_GG_TimbraturaModel, Dip_GG_Timbratura>();
+        }
+
+    }
 }

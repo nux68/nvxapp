@@ -1,19 +1,22 @@
 import { ModelResult } from "../../../ModelsBase/model-result";
 
 
+export class Dip_GG_RichiestaModel {
 
-export class Dip_GG_RichiestaInModel {
-  
-}
+  id!: number;
+  idDip_RapportoLavoro!: number;
 
-export class Dip_GG_RichiestaOutModel extends ModelResult {
+  data!: Date;
+  dataA!: Date;
 
-  public Dip_GG_RichiestaModel: Dip_GG_RichiestaModel;
+  richiestaTipo!: TipoRichiesta;
+  richiestaStato!: StatoRichiesta;
 
-}
+  // Campo per oggetto JSON
+  dati?: string;
 
-export class Dip_GG_RichiestaModel  {
-  
+  // Campo per oggetto JSON
+  cronologiaApprovazione?: string;
 
 }
 
@@ -33,4 +36,30 @@ export enum StatoRichiesta {
   ParzialmenteApprovata,
 
   Approvata
+}
+
+
+
+
+export class Dip_GG_Richiesta_GetAll_InModel {
+  public year: number;
+  public month: number;
+}
+
+export class Dip_GG_Richiesta_GetAll_OutModel extends ModelResult {
+
+  public dip_GG_RichiestaModel: Dip_GG_RichiestaModel[];
+
+}
+
+
+
+export class Dip_GG_Richiesta_Send_InModel {
+  public dip_GG_RichiestaModel: Dip_GG_RichiestaModel;
+}
+
+export class Dip_GG_Richiesta_Send_OutModel extends ModelResult {
+
+  public dip_GG_RichiestaModel: Dip_GG_RichiestaModel;
+
 }

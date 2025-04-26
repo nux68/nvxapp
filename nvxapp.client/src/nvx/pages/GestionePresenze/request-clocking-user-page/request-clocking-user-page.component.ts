@@ -1,6 +1,7 @@
 // request-clocking-user-page.component.ts
 import { Component, OnInit } from '@angular/core';
 import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
+import { DipGGRichiestaService } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/dip-gg-richiesta.service';
 
 @Component({
   selector: 'app-request-clocking-user-page',
@@ -16,7 +17,9 @@ export class RequestClockingUserPageComponent implements OnInit {
   public supervisors: string[];
   public notes: string;
 
-  constructor(public userNavigationService: UserNavigationService) {
+  constructor(public userNavigationService: UserNavigationService,
+              private pipGGRichiestaService: DipGGRichiestaService) {
+
     this.title = 'Richiedi timbratura';
     this.requestType = 'ENTRATA';
 
@@ -62,6 +65,7 @@ export class RequestClockingUserPageComponent implements OnInit {
   }
 
   submitRequest() {
+
     console.log('Request submitted', {
       type: this.requestType,
       dateTime: this.dateTime,
@@ -72,5 +76,6 @@ export class RequestClockingUserPageComponent implements OnInit {
 
     // In a real app, this would send the data to a service
     alert('Richiesta inviata con successo!');
+
   }
 }
