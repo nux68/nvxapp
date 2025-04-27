@@ -1,6 +1,7 @@
-// request-justification-user-page.component.ts
 import { Component, OnInit } from '@angular/core';
 import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
+import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
+import { NavController } from '@ionic/angular';
 
 @Component({
   selector: 'app-request-justification-user-page',
@@ -10,9 +11,16 @@ import { UserNavigationService } from '../../../Utility/infrastructure/user-navi
 })
 export class RequestJustificationUserPageComponent implements OnInit {
   public title: string;
+
+  //////
+  public buttonbar: ButtonItem[] = [];
+  public btnAnnulla: ButtonItem;
+  public btnInvia: ButtonItem;
+  //////
+
+
   public justificationType: string;
   public requestType: string;
-  // Store dates in ISO 8601 format, compatible with ion-datetime's ngModel
   public startDate: string;
   public endDate: string;
   public hours: number;
@@ -21,11 +29,27 @@ export class RequestJustificationUserPageComponent implements OnInit {
   public supervisors: string[];
   public notes: string;
 
-  // Optional: Define a maximum date if needed for the pickers
-  // public maxDate: string = new Date(new Date().getFullYear() + 5, 11, 31).toISOString();
+  
 
-  constructor(public userNavigationService: UserNavigationService) {
+  constructor(public userNavigationService: UserNavigationService,
+              private navCtrl: NavController,
+              private userInterfaceService: UserInterfaceService) {
     this.title = 'Richiesta ferie e permessi';
+
+    this.btnInvia = userInterfaceService.Btn_Invia;
+    this.btnInvia.event = this._handleButtonConfirmClick;
+    this.buttonbar.push(this.btnInvia);
+    this.btnAnnulla = userInterfaceService.Btn_Annulla;
+    this.btnAnnulla.event = this._handleButtonCancelClick;
+    this.buttonbar.push(this.btnAnnulla);
+
+
+
+  }
+
+  ngOnInit() {}
+
+  ionViewWillEnter() {
     this.justificationType = 'FERIE';
     this.requestType = 'A_DURATA';
 
@@ -42,18 +66,9 @@ export class RequestJustificationUserPageComponent implements OnInit {
     this.supervisors = ['manzo.admin'];
     this.notes = '';
   }
+  
 
-  ionViewWillEnter() {
-    // Add any logic needed when the view is about to enter
-  }
 
-  ngOnInit() {
-    // Add any initialization logic needed after the component is created
-  }
-
-  // Removed formatDate function as it's no longer needed for binding.
-  // ion-datetime handles presentation format internally via locale and displayFormat (if used),
-  // and ngModel uses ISO 8601 string format.
 
   increaseHours() {
     if (!this.fullDay && this.hours < 8) { // Prevent changing hours if fullDay is true
@@ -122,49 +137,23 @@ export class RequestJustificationUserPageComponent implements OnInit {
     };
 
     console.log('Request submitted', requestData);
-
-    // --- Placeholder for actual service call ---
-    // this.yourApiService.submitJustification(requestData).subscribe({
-    //   next: (response) => {
-    //     console.log('Submission successful', response);
-    //     alert('Richiesta inviata con successo!');
-    //     // Optionally navigate away or reset form
-    //     // this.resetForm();
-    //     // this.userNavigationService.goBack();
-    //   },
-    //   error: (error) => {
-    //     console.error('Submission failed', error);
-    //     alert('Errore durante l\'invio della richiesta. Riprova.');
-    //   }
-    // });
-    // -----------------------------------------
-
-    // Using alert for demo purposes as before
+ 
     alert('Richiesta inviata con successo! (Simulato)');
   }
 
-  // Optional: Helper function if backend requires specific format like 'dd/MM/yyyy'
-  // formatDateForBackend(date: Date): string {
-  //   if (!date) return '';
-  //   const day = date.getDate().toString().padStart(2, '0');
-  //   const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Month is 0-indexed
-  //   const year = date.getFullYear();
-  //   return `${day}/${month}/${year}`;
-  // }
 
-  // Optional: Method to reset the form after submission
-  // resetForm() {
-  //   const now = new Date();
-  //   now.setHours(0, 0, 0, 0);
-  //   this.startDate = now.toISOString();
-  //   this.endDate = now.toISOString();
-  //   this.justificationType = 'FERIE';
-  //   this.requestType = 'A_DURATA';
-  //   this.hours = 1;
-  //   this.updateHoursFormatted();
-  //   this.fullDay = false;
-  //   // Decide whether to keep supervisors or reset them
-  //   // this.supervisors = ['manzo.admin'];
-  //   this.notes = '';
-  // }
+
+  private _handleButtonConfirmClick = (param: object) => {
+
+    this.submitRequest();
+
+  }
+
+  private _handleButtonCancelClick = (param: object) => {
+
+    this.navCtrl.navigateForward('/home');
+
+  }
+
+
 }
