@@ -32,7 +32,7 @@ export class StringHelperService {
   }
   //const timbratura = GenericHelper.fromJSONString(jsonString, Dip_GG_TimbraturaModel);
 
-  DateTimeCurr_To_ISOString(): string {
+  DateCurr_To_ISOString(): string {
     const now = new Date();
     const localOffset = now.getTimezoneOffset() * 60000; // Offset in millisecondi
     const localTime = new Date(now.getTime() - localOffset).toISOString().slice(0, 16);
@@ -40,7 +40,20 @@ export class StringHelperService {
     return localTime;
   }
 
-  DateTime_To_ddmmyyyy_hhmm(date: Date): string {
+  DateCustom_To_ISOString(year: number, month: number, day: number, hh: number, mm: number): string {
+
+    const customDate = new Date(year, month - 1, day, hh, mm); // Nota: i mesi sono 0-based, quindi sottrai 1
+
+    // Calcola l'offset locale
+    const localOffset = customDate.getTimezoneOffset() * 60000; // Offset in millisecondi
+
+    // Adatta l'orario al fuso orario locale
+    const localTime = new Date(customDate.getTime() - localOffset).toISOString().slice(0, 16);
+
+    return localTime; // Ritorna il risultato formattato
+  }
+
+  Date_To_S_ddmmyyyy_hhmm(date: Date): string {
     const day = date.getDate().toString().padStart(2, '0');
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
     const year = date.getFullYear();
@@ -50,7 +63,7 @@ export class StringHelperService {
 
   }
 
-  DateTime_To_ddmmyyyy(date: Date): string {
+  Date_To_S_ddmmyyyy(date: Date): string {
     const day = date.getDate().toString().padStart(2, '0');
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
     const year = date.getFullYear();
@@ -60,7 +73,7 @@ export class StringHelperService {
 
   }
 
-  DateTime_To_hhmm(date: Date): string {
+  Date_To_S_hhmm(date: Date): string {
     //const day = date.getDate().toString().padStart(2, '0');
     //const month = (date.getMonth() + 1).toString().padStart(2, '0');
     //const year = date.getFullYear();
@@ -69,4 +82,32 @@ export class StringHelperService {
     return `${hours}:${minutes}`;
 
   }
+
+  Date_S_ddmmyyyy_hhmm_To_Date(dateString: string): Date {
+    const [datePart, timePart] = dateString.split(" ");
+
+    // Estrai giorno, mese e anno dalla parte data
+    const [day, month, year] = datePart.split("/").map(Number);
+
+    // Estrai ore e minuti dalla parte orario
+    const [hours, minutes] = timePart.split(":").map(Number);
+
+    // Crea un oggetto Date
+    const date = new Date(year, month - 1, day, hours, minutes);
+    return date;
+
+  }
+
+  Date_S_ddmmyyyy_hhmm_To_ISOString(dateString: string): string {
+
+    const date = this.Date_S_ddmmyyyy_hhmm_To_Date(dateString);
+
+    const isoString = date.toISOString();
+
+    return isoString;
+
+  }
+
+ 
+
 }
