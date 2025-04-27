@@ -21,32 +21,31 @@
     <div class="time">{{ currentTime }}</div>
   </div>
 
-
-
-  <div class="button-container">
-
-    <button class="clock-button clock-in-out" (click)="clockInOut()">
-      <ion-icon name="time-outline"></ion-icon>
-      <span>TIMBRA</span>
-    </button>
-  </div>
-
   <div class="last-action">
-    <p>Ultima timbratura: {{ lastAction }}</p>
-  </div>
+    <!--<div >-->
+      <p>Ultima timbratura: {{ lastAction }}</p>
+    </div>
 
-  <!-- Modals remain the same -->
-  <ion-modal [keepContentsMounted]="true">
-    <ng-template>
-      <ion-datetime id="startDatetime"
-                    [(ngModel)]="startDateBtn"
-                    presentation="date"
-                    [showDefaultButtons]="true"
-                    doneText="Fatto"
-                    cancelText="Annulla"
-                    locale="it-IT">
-      </ion-datetime>
-    </ng-template>
-  </ion-modal>
+    <!--<div class="button-container">
+      <button class="clock-button clock-in-out" (click)="clockInOut()">
+        <ion-icon name="time-outline"></ion-icon>
+        <span>TIMBRA</span>
+      </button>
+    </div>-->
+    <!-- Modals remain the same -->
+    <ion-modal [keepContentsMounted]="true">
+      <ng-template>
+        <ion-datetime id="startDatetime"
+                      [(ngModel)]="startDateBtn"
+                      presentation="date"
+                      [showDefaultButtons]="true"
+                      doneText="Fatto"
+                      cancelText="Annulla"
+                      locale="it-IT">
+        </ion-datetime>
+      </ng-template>
+    </ion-modal>
 
 </ion-content>
+
+<app-page-buttonbar [buttonbar]="buttonbar"></app-page-buttonbar>

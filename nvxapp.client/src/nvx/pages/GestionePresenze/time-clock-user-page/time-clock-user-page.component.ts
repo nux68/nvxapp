@@ -1,11 +1,10 @@
-// time-clock-user-page.component.ts
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
 import { DipGGTimbraturaService } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Timbratura/dip-gg-timbratura.service';
-import { Dip_GG_Giustificativi_GetAll_InModel } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Giustificativi/Models/dip-gg-giustificativi-model';
-import { Dip_GG_Timbratura_GetAll_InModel, Dip_GG_Timbratura_Stamp_InModel } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Timbratura/Models/dip-gg-timbratura-model';
+import { Dip_GG_Timbratura_Stamp_InModel } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Timbratura/Models/dip-gg-timbratura-model';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { NavController } from '@ionic/angular';
+import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 
 @Component({
   selector: 'app-time-clock-user-page',
@@ -15,6 +14,12 @@ import { NavController } from '@ionic/angular';
 })
 export class TimeClockUserPageComponent implements OnInit, OnDestroy {
   public title: string;
+  //////
+  public buttonbar: ButtonItem[] = [];
+  public btnAnnulla: ButtonItem;
+  public btnInvia: ButtonItem;
+  //////
+
   public location: string;
   public currentDate: Date;
   public currentTime: string;
@@ -30,17 +35,21 @@ export class TimeClockUserPageComponent implements OnInit, OnDestroy {
   private timeInterval: any;
 
   constructor(private navCtrl: NavController,
+              private userInterfaceService: UserInterfaceService,
               public userNavigationService: UserNavigationService,
               private dipGGTimbraturaService: DipGGTimbraturaService) {
-    this.title = 'Terminale di timbratura';
-    this.location = 'Via Vesuvio';
-    this.currentDate = new Date();
-    this.currentTime = this.formatTime(this.currentDate);
-    this.formattedDate = this.formatDate(this.currentDate);
-    this.lastAction = 'xxxxx';
 
-    // Imposta lo stato iniziale in base all'ultima azione (qui assumiamo che fosse un'uscita)
-    this.isLastActionCheckIn = false;
+    this.title = 'Terminale di timbratura';
+
+    
+
+    this.btnInvia = userInterfaceService.Btn_Invia;
+    this.btnInvia.event = this._handleButtonConfirmClick;
+    this.buttonbar.push(this.btnInvia);
+    this.btnAnnulla = userInterfaceService.Btn_Annulla;
+    this.btnAnnulla.event = this._handleButtonCancelClick;
+    this.buttonbar.push(this.btnAnnulla);
+
   }
 
   ngOnInit() {
@@ -52,10 +61,20 @@ export class TimeClockUserPageComponent implements OnInit, OnDestroy {
   }
 
   ionViewWillEnter() {
+
+    this.location = 'Via Vesuvio';
+    this.currentDate = new Date();
+    this.currentTime = this.formatTime(this.currentDate);
+    this.formattedDate = this.formatDate(this.currentDate);
+    this.lastAction = 'xxxxx';
+
+    // Imposta lo stato iniziale in base all'ultima azione (qui assumiamo che fosse un'uscita)
+    this.isLastActionCheckIn = false;
     this.startDate = new Date().toLocaleDateString();
 
     this.startClock();
   }
+
 
   ionViewWillLeave() {
     this.stopClock();
@@ -121,4 +140,17 @@ export class TimeClockUserPageComponent implements OnInit, OnDestroy {
     });
 
   }
+
+  private _handleButtonConfirmClick = (param: object) => {
+
+    this.clockInOut();
+
+  }
+
+  private _handleButtonCancelClick = (param: object) => {
+
+    this.navCtrl.navigateForward('/home');
+
+  }
+
 }

@@ -91,16 +91,15 @@ ion-menu-button {
 
 .last-action {
   position: fixed;
-  bottom: 0;
+/*  bottom: 0;*/
   left: 0;
   right: 0;
-  /* Light background, dark text for light theme */
   background-color: var(--ion-toolbar-background, #f8f8f8);
   color: var(--ion-text-color, #000000);
-  padding: 15px;
+ /* padding: 15px;*/
   text-align: center;
   font-size: 18px;
-  border-top: 1px solid var(--ion-border-color, #e0e0e0); /* Add subtle top border */
+  border-top: 1px solid var(--ion-border-color, #e0e0e0); 
 }
 
 
