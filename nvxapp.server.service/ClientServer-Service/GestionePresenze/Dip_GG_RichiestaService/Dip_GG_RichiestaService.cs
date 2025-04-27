@@ -81,7 +81,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
             {
                 Dip_GG_Richiesta_Send_OutModel retVal = new Dip_GG_Richiesta_Send_OutModel();
 
-                if (true)
+                if (false)
                 {
                     User_DATA_COMB_DipAna_DipRapp user_DATA_COMB_DipAna_DipRapp = await _gestionePresenzeUserUtility.Get_DipAna_DipRapp(this.CurrentUserId, true);
 

@@ -38,12 +38,12 @@ export class RequestClockingUserPageComponent implements OnInit {
     // Format date for ion-datetime (ISO format)
     //this.dateTime = now.toISOString();
 
-    this.dateTime = this.stringHelperService.DateTimeCurr_To_ISOString();
+    this.dateTime = this.stringHelperService.DateCurr_To_ISOString();
 
     //DateTime parsedDate = DateTime.ParseExact(dateString, "dd/MM/yyyy HH:mm", System.Globalization.CultureInfo.InvariantCulture);
 
-    this.formattedDate = this.stringHelperService.DateTime_To_ddmmyyyy(now)
-    this.formattedTime = this.stringHelperService.DateTime_To_hhmm(now);
+    this.formattedDate = this.stringHelperService.Date_To_S_ddmmyyyy(now)
+    this.formattedTime = this.stringHelperService.Date_To_S_hhmm(now);
 
     this.supervisors = ['manzo.admin'];
     this.notes = '';
@@ -65,8 +65,8 @@ export class RequestClockingUserPageComponent implements OnInit {
 
   updateDateTime(event: any) {
     const selectedDate = new Date(event.detail.value);
-    this.formattedDate = this.stringHelperService.DateTime_To_ddmmyyyy(selectedDate)
-    this.formattedTime = this.stringHelperService.DateTime_To_hhmm(selectedDate);
+    this.formattedDate = this.stringHelperService.Date_To_S_ddmmyyyy(selectedDate)
+    this.formattedTime = this.stringHelperService.Date_To_S_hhmm(selectedDate);
   }
 
   addSupervisor() {
