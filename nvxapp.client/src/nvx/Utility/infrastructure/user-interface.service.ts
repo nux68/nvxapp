@@ -121,6 +121,26 @@ export class UserInterfaceService {
 
   }
 
+  get Btn_Invia(): ButtonItem {
+    return new ButtonItem(
+      'Invia',
+      'save',
+      'primary',
+      false,
+      () => { console.log('Btn_Invia cliccato'); }
+    );
+  }
+  get Btn_Clock(): ButtonItem {
+    return new ButtonItem(
+      'Clock',
+      'time-outline',
+      'primary',
+      false,
+      () => { console.log('Btn_Clock cliccato'); }
+    );
+  }
+
+  
 }
 
 
