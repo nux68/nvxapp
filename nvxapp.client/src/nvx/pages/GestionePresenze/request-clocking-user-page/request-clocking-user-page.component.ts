@@ -1,4 +1,3 @@
-// request-clocking-user-page.component.ts
 import { Component, OnInit } from '@angular/core';
 import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
 import { DipGGRichiestaService } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/dip-gg-richiesta.service';
@@ -6,7 +5,7 @@ import { StringHelperService } from '../../../Utility/infrastructure/string-help
 import { NavController } from '@ionic/angular';
 import { Dip_GG_Richiesta_Body_Timbratura, Dip_GG_Richiesta_Send_InModel, StatoRichiesta, TipoRichiesta } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/Models/dip-gg-richiesta-model';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
-import { Dip_GG_TimbraturaModel } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Timbratura/Models/dip-gg-timbratura-model';
+import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 
 @Component({
   selector: 'app-request-clocking-user-page',
@@ -16,22 +15,38 @@ import { Dip_GG_TimbraturaModel } from '../../../ClientServer-Service/GestionePr
 })
 export class RequestClockingUserPageComponent implements OnInit {
   public title: string;
-  public requestType: string;
 
+  //////
+  public buttonbar: ButtonItem[] = [];
+  public btnAnnulla: ButtonItem;
+  public btnInvia: ButtonItem;
+  //////
   public dateTime: string;
   public formattedDate: string;
   public formattedTime: string;
-
   public supervisors: string[];
   public notes: string;
 
   constructor(private navCtrl: NavController,
               public userNavigationService: UserNavigationService,
+              private userInterfaceService: UserInterfaceService,
               private dipGGRichiestaService: DipGGRichiestaService,
               private stringHelperService: StringHelperService) {
 
     this.title = 'Richiedi timbratura';
-    this.requestType = 'ENTRATA';
+
+    this.btnInvia = userInterfaceService.Btn_Invia;
+    this.btnInvia.event = this._handleButtonConfirmClick;
+    this.buttonbar.push(this.btnInvia);
+    this.btnAnnulla = userInterfaceService.Btn_Annulla;
+    this.btnAnnulla.event = this._handleButtonCancelClick;
+    this.buttonbar.push(this.btnAnnulla);
+ 
+  }
+
+  ngOnInit() { }
+
+  ionViewWillEnter() {
 
     // Initialize with current date and time
     const now = new Date();
@@ -40,7 +55,6 @@ export class RequestClockingUserPageComponent implements OnInit {
 
     this.dateTime = this.stringHelperService.DateCurr_To_ISOString();
 
-    //DateTime parsedDate = DateTime.ParseExact(dateString, "dd/MM/yyyy HH:mm", System.Globalization.CultureInfo.InvariantCulture);
 
     this.formattedDate = this.stringHelperService.Date_To_S_ddmmyyyy(now)
     this.formattedTime = this.stringHelperService.Date_To_S_hhmm(now);
@@ -48,21 +62,7 @@ export class RequestClockingUserPageComponent implements OnInit {
     this.supervisors = ['manzo.admin'];
     this.notes = '';
   }
-
-  ionViewWillEnter() {
-  }
-
-  ngOnInit() { }
-
-  formatDateTime(date: Date): string {
-    const day = date.getDate().toString().padStart(2, '0');
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const year = date.getFullYear();
-    const hours = date.getHours().toString().padStart(2, '0');
-    const minutes = date.getMinutes().toString().padStart(2, '0');
-    return `${day}/${month}/${year} ${hours}:${minutes}`;
-  }
-
+   
   updateDateTime(event: any) {
     const selectedDate = new Date(event.detail.value);
     this.formattedDate = this.stringHelperService.Date_To_S_ddmmyyyy(selectedDate)
@@ -115,4 +115,17 @@ export class RequestClockingUserPageComponent implements OnInit {
     //alert('Richiesta inviata con successo!');
 
   }
+
+  private _handleButtonConfirmClick = (param: object) => {
+
+    this.submitRequest();
+
+  }
+
+  private _handleButtonCancelClick = (param: object) => {
+
+    this.navCtrl.navigateForward('/home');
+
+  }
+
 }

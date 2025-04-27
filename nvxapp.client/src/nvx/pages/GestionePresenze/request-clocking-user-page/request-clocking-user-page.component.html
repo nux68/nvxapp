@@ -1,4 +1,3 @@
-<!-- request-clocking-user-page.component.html -->
 <app-page-toolbar [title]="title"
                   [showFilter]="false"
                   [showBreadcrumbs]="true">
@@ -7,16 +6,15 @@
 
 <ion-content [fullscreen]="true">
 
-  <div class="form-section">
+  <!--<div class="form-section">
     <div class="form-label">Tipo richiesta</div>
     <div class="form-input">
-      <!-- ion-select should inherit styling or use Ionic variables -->
       <ion-select [(ngModel)]="requestType" interface="action-sheet" placeholder="Seleziona">
         <ion-select-option value="ENTRATA">ENTRATA</ion-select-option>
         <ion-select-option value="USCITA">USCITA</ion-select-option>
       </ion-select>
     </div>
-  </div>
+  </div>-->
 
   <div class="form-section">
     <div class="form-label">Data e ora</div>
@@ -64,10 +62,8 @@
     </div>
   </div>
 
-  <div class="submit-button-container">
-    <button class="submit-button" (click)="submitRequest()">
-      <ion-icon name="save"></ion-icon>
-      <span>Invia</span>
-    </button>
-  </div>
+
 </ion-content>
+
+
+<app-page-buttonbar [buttonbar]="buttonbar"></app-page-buttonbar>
