@@ -16,7 +16,7 @@ namespace nvxapp.server.data.Entities.Tenant
         public StatoRichiesta RichiestaStato { get; set; }
 
         // Campo per oggetto JSON
-        public string? Dati { get; set; }
+        public required string Dati { get; set; } = string.Empty;
 
         // Campo per oggetto JSON
         public string? CronologiaApprovazione { get; set; }

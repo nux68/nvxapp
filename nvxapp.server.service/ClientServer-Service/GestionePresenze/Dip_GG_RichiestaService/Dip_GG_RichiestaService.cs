@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using nvxapp.server.Base;
 using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Entities.Tenant;
@@ -80,7 +81,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
             {
                 Dip_GG_Richiesta_Send_OutModel retVal = new Dip_GG_Richiesta_Send_OutModel();
 
-                if (false)
+                if (true)
                 {
                     User_DATA_COMB_DipAna_DipRapp user_DATA_COMB_DipAna_DipRapp = await _gestionePresenzeUserUtility.Get_DipAna_DipRapp(this.CurrentUserId, true);
 
@@ -93,7 +94,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                         switch (dip_GG_Richiesta.RichiestaTipo)
                         {
                             case TipoRichiesta.Timbratura:
-                                await Add_Dip_GG_Timbratura(dip_GG_Richiesta, user_DATA_COMB_DipAna_DipRapp);
+                                await Add_Dip_GG_Timbratura(dip_GG_Richiesta,user_DATA_COMB_DipAna_DipRapp);
                                 break;
 
                             case TipoRichiesta.Giustificativo:
@@ -121,18 +122,33 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
         {
             if (user_DATA_COMB_DipAna_DipRapp != null && user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro != null)
             {
-                Dip_GG_Timbratura dip_GG_Timbratura = new Dip_GG_Timbratura()
+
+                if (dip_GG_Richiesta.Dati != null)
                 {
-                    IdDip_RapportoLavoro = user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.Id,
-                    IdDip_Richiesta = dip_GG_Richiesta.Id,
-                    //Timbratura = finalDate,
-                    //TimbraturaOriginale = finalDate,
-                    //TimbraturaArrotondata = finalDate,
-                    //GiornoCompetenza = finalDate,
-                    TimbraturaTipo = TipoTimbratura.SenzaVerso,
-                    RichiestaStato = StatoRichiesta.Immessa,
-                };
-                await _dip_GG_TimbraturaRepository.UpsertAsyncGuid(dip_GG_Timbratura);
+                    Dip_GG_Richiesta_Body_Timbratura richiesta = JsonConvert.DeserializeObject<Dip_GG_Richiesta_Body_Timbratura>(dip_GG_Richiesta.Dati);
+
+                    if(richiesta!=null)
+                    {
+                        string fullDateTime = $"{dip_GG_Richiesta.Data.ToString("dd/MM/yyyy")} {richiesta.hhmm}";
+
+                        // Fai il parsing della stringa completa
+                        DateTime parsedDateTime = DateTime.ParseExact(fullDateTime, "dd/MM/yyyy HH:mm", System.Globalization.CultureInfo.InvariantCulture);
+
+                        Dip_GG_Timbratura dip_GG_Timbratura = new Dip_GG_Timbratura()
+                        {
+                            IdDip_RapportoLavoro = user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.Id,
+                            IdDip_Richiesta = dip_GG_Richiesta.Id,
+                            Timbratura = parsedDateTime,
+                            TimbraturaOriginale = parsedDateTime,
+                            TimbraturaArrotondata = parsedDateTime,
+                            GiornoCompetenza = new DateTime(parsedDateTime.Year, parsedDateTime.Month, parsedDateTime.Day),
+                            TimbraturaTipo = TipoTimbratura.SenzaVerso,
+                            RichiestaStato = StatoRichiesta.Immessa,
+                        };
+                        await _dip_GG_TimbraturaRepository.UpsertAsyncGuid(dip_GG_Timbratura);
+                    }
+                   
+                }
             }
         }
 

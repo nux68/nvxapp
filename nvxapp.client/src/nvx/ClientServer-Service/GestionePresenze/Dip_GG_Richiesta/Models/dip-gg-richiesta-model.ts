@@ -6,8 +6,8 @@ export class Dip_GG_RichiestaModel {
   id!: number;
   idDip_RapportoLavoro!: number;
 
-  data!: Date;
-  dataA!: Date;
+  data!: string;
+  dataA!: string;
 
   richiestaTipo!: TipoRichiesta;
   richiestaStato!: StatoRichiesta;
@@ -19,6 +19,15 @@ export class Dip_GG_RichiestaModel {
   cronologiaApprovazione?: string;
 
 }
+
+export class Dip_GG_Richiesta_Body_Timbratura {
+  hhmm!: string;
+}
+export class Dip_GG_Richiesta_Body_Giustificativo {
+}
+export class Dip_GG_Richiesta_Body_NotaSpesa {
+}
+
 
 export enum TipoRichiesta {
   Timbratura,
@@ -56,10 +65,17 @@ export class Dip_GG_Richiesta_GetAll_OutModel extends ModelResult {
 
 export class Dip_GG_Richiesta_Send_InModel {
   public dip_GG_RichiestaModel: Dip_GG_RichiestaModel;
+  constructor() {
+    this.dip_GG_RichiestaModel = new Dip_GG_RichiestaModel(); 
+  }
 }
 
 export class Dip_GG_Richiesta_Send_OutModel extends ModelResult {
 
   public dip_GG_RichiestaModel: Dip_GG_RichiestaModel;
+  constructor() {
+    super();
+    this.dip_GG_RichiestaModel = new Dip_GG_RichiestaModel();
+  }
 
 }

@@ -35,7 +35,17 @@ namespace nvxapp.server.Controllers
             return res;
         }
 
-        
+        [Authorize]
+        [HttpPost]
+        [Route("Send")]
+        public async Task<GenericResult<Dip_GG_Richiesta_Send_OutModel>> Send(GenericRequest<Dip_GG_Richiesta_Send_InModel> inModel)
+        {
+            var res = await _dip_GG_RichiestaService.Send(inModel, false);
+
+            return res;
+        }
+
+
 
     }
 

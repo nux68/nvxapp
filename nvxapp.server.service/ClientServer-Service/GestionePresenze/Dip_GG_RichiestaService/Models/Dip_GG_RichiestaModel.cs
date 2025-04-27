@@ -9,25 +9,41 @@ using System.Threading.Tasks;
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_RichiestaService.Models
 {
+    
+
+   
+
     public class Dip_GG_RichiestaModel
     {
         public required int Id { get; set; }
         public required int IdDip_RapportoLavoro { get; set; }
         
-        public DateTime Data { get; set; }
-        public DateTime DataA { get; set; }
+        public string Data { get; set; } = string.Empty;
+        public string DataA { get; set; } = string.Empty;
 
         public TipoRichiesta RichiestaTipo { get; set; }
         public StatoRichiesta RichiestaStato { get; set; }
 
         // Campo per oggetto JSON
-        public string? Dati { get; set; }
+        public required string Dati { get; set; } = string.Empty;
 
         // Campo per oggetto JSON
         public string? CronologiaApprovazione { get; set; }
 
     }
 
+    public class Dip_GG_Richiesta_Body_Timbratura
+    {
+        public required string hhmm { get; set; } = string.Empty;
+    }
+    public class Dip_GG_Richiesta_Body_Giustificativo
+    {
+
+    }
+    public class Dip_GG_Richiesta_Body_NotaSpesa
+    {
+
+    }
 
 
     public class Dip_GG_Richiesta_GetAll_InModel
