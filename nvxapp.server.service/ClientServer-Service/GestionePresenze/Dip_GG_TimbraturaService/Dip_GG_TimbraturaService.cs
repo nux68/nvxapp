@@ -51,27 +51,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
             {
                 Dip_GG_Timbratura_GetAll_OutModel retVal = new Dip_GG_Timbratura_GetAll_OutModel();
 
-
-                //for (int i = 1; i < 6; i++)
-                //{
-                //    for (int t = 1; t < 5; t++)
-                //    {
-                //        retVal.Dip_GG_Timbratura.Add(new Dip_GG_TimbraturaModel()
-                //        {
-                //            Id = 0,
-                //            IdDip_RapportoLavoro = 1,
-                //            Timbratura = DateTime.Now.AddDays(i).AddHours(t),
-                //            TimbraturaOriginale = DateTime.Now.AddDays(i).AddHours(t),
-                //            TimbraturaArrotondata = DateTime.Now.AddDays(i).AddHours(t),
-                //            GiornoCompetenza = DateTime.Now.AddDays(i),
-                //            TimbraturaTipo = TipoTimbratura.SenzaVerso,
-                //            RichiestaStato = StatoRichiesta.Diretta,
-                //            IdDip_Richiesta = 0
-                //        });
-                //    }
-                //}
-
-
                 User_DATA_COMB_DipAna_DipRapp user_DATA_COMB_DipAna_DipRapp = await _gestionePresenzeUserUtility.Get_DipAna_DipRapp(this.CurrentUserId, true);
 
                 if (user_DATA_COMB_DipAna_DipRapp != null && user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro != null)
@@ -100,27 +79,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
 
                     retVal.Dip_GG_Timbratura = _mapper.Map<List<Dip_GG_TimbraturaModel>>(timbratura);
 
-                    //foreach(var item in timbratura)
-                    //{
-                    //    retVal.Dip_GG_Timbratura.Add(new Dip_GG_TimbraturaModel()
-                    //    {
-                    //        Id = item.Id,
-                    //        IdDip_RapportoLavoro = item.IdDip_RapportoLavoro,
-                    //        Timbratura = item.Timbratura,
-                    //        TimbraturaOriginale = item.TimbraturaOriginale,
-                    //        TimbraturaArrotondata = item.TimbraturaArrotondata,
-                    //        GiornoCompetenza = item.GiornoCompetenza,
-                    //        TimbraturaTipo = item.TimbraturaTipo,
-                    //        RichiestaStato = item.RichiestaStato,
-                    //        IdDip_Richiesta = item.IdDip_Richiesta
-                    //    });
-                    //}
-
                 }
-
-
-
-
 
                 //eliminare
                 // Nessun 'await' qui
