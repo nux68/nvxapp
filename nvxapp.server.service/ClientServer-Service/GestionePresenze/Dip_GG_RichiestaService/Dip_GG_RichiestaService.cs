@@ -81,32 +81,31 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
             {
                 Dip_GG_Richiesta_Send_OutModel retVal = new Dip_GG_Richiesta_Send_OutModel();
 
-                if (false)
+
+                User_DATA_COMB_DipAna_DipRapp user_DATA_COMB_DipAna_DipRapp = await _gestionePresenzeUserUtility.Get_DipAna_DipRapp(this.CurrentUserId, true);
+
+                if (user_DATA_COMB_DipAna_DipRapp != null && user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro != null)
                 {
-                    User_DATA_COMB_DipAna_DipRapp user_DATA_COMB_DipAna_DipRapp = await _gestionePresenzeUserUtility.Get_DipAna_DipRapp(this.CurrentUserId, true);
+                    Dip_GG_Richiesta dip_GG_Richiesta = _mapper.Map<Dip_GG_Richiesta>(model.Data.Dip_GG_RichiestaModel);
+                    dip_GG_Richiesta.IdDip_RapportoLavoro = user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.Id;
+                    dip_GG_Richiesta = await _dip_GG_RichiestaRepository.UpsertAsync(dip_GG_Richiesta);
 
-                    if (user_DATA_COMB_DipAna_DipRapp != null && user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro != null)
+                    switch (dip_GG_Richiesta.RichiestaTipo)
                     {
-                        Dip_GG_Richiesta dip_GG_Richiesta = _mapper.Map<Dip_GG_Richiesta>(model.Data.Dip_GG_RichiestaModel);
-                        dip_GG_Richiesta.IdDip_RapportoLavoro = user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.Id;
-                        dip_GG_Richiesta = await _dip_GG_RichiestaRepository.UpsertAsync(dip_GG_Richiesta);
+                        case TipoRichiesta.Timbratura:
+                            await Add_Dip_GG_Timbratura(dip_GG_Richiesta, user_DATA_COMB_DipAna_DipRapp);
+                            break;
 
-                        switch (dip_GG_Richiesta.RichiestaTipo)
-                        {
-                            case TipoRichiesta.Timbratura:
-                                await Add_Dip_GG_Timbratura(dip_GG_Richiesta,user_DATA_COMB_DipAna_DipRapp);
-                                break;
+                        case TipoRichiesta.Giustificativo:
+                            await Add_Dip_GG_Giustificativi(dip_GG_Richiesta, user_DATA_COMB_DipAna_DipRapp);
 
-                            case TipoRichiesta.Giustificativo:
-                                await Add_Dip_GG_Giustificativi(dip_GG_Richiesta, user_DATA_COMB_DipAna_DipRapp);
-
-                                break;
-                            case TipoRichiesta.NotaSpesa:
-                                break;
-                        }
-
+                            break;
+                        case TipoRichiesta.NotaSpesa:
+                            break;
                     }
+
                 }
+
 
 
                 //eliminare
@@ -125,9 +124,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
 
                 if (dip_GG_Richiesta.Dati != null)
                 {
-                    Dip_GG_Richiesta_Body_Timbratura richiesta = JsonConvert.DeserializeObject<Dip_GG_Richiesta_Body_Timbratura>(dip_GG_Richiesta.Dati);
-
-                    if(richiesta!=null)
+                    Dip_GG_Richiesta_Body_Timbratura? richiesta = JsonConvert.DeserializeObject<Dip_GG_Richiesta_Body_Timbratura>(dip_GG_Richiesta.Dati);
+                    if (user_DATA_COMB_DipAna_DipRapp != null && user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro != null)
+                    {
+                        if (richiesta != null)
                     {
                         string fullDateTime = $"{dip_GG_Richiesta.Data.ToString("dd/MM/yyyy")} {richiesta.hhmm}";
 
@@ -147,7 +147,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                         };
                         await _dip_GG_TimbraturaRepository.UpsertAsyncGuid(dip_GG_Timbratura);
                     }
-                   
+                    }
                 }
             }
         }

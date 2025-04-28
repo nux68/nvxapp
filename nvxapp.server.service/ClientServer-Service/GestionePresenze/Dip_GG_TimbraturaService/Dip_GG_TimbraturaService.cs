@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using nvxapp.server.Base;
@@ -14,7 +13,6 @@ using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Timbrat
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.ServerModels;
-using nvxapp.server.service.Service.Infrastructure.MyTableService.Models;
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_TimbraturaService
 {
@@ -44,7 +42,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
             //_dip_AnagraficaRepository = dip_AnagraficaRepository;
             //_dip_RapportoLavoroRepository = dip_RapportoLavoroRepository;
             _dip_GG_TimbraturaRepository = dip_GG_TimbraturaRepository;
-            
+
         }
 
         public virtual async Task<GenericResult<Dip_GG_Timbratura_GetAll_OutModel>> GetAll(GenericRequest<Dip_GG_Timbratura_GetAll_InModel> model, Boolean isSubProcess)
@@ -73,15 +71,15 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
                     }
                 }
 
-                if (false)//TEMP
-                {
-                    User_DATA_COMB_DipAna_DipRapp user_DATA_COMB_DipAna_DipRapp = await _gestionePresenzeUserUtility.Get_DipAna_DipRapp(this.CurrentUserId, true);
 
-                    
+                User_DATA_COMB_DipAna_DipRapp user_DATA_COMB_DipAna_DipRapp = await _gestionePresenzeUserUtility.Get_DipAna_DipRapp(this.CurrentUserId, true);
+
+                if (user_DATA_COMB_DipAna_DipRapp != null && user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro != null)
+                {
 
                     List<Dip_GG_Timbratura> timbratura = _dip_GG_TimbraturaRepository.FindAll(x => x.GiornoCompetenza.Year == model.Data.Year &&
-                                                                                                   x.GiornoCompetenza.Month == model.Data.Month &&
-                                                                                                   x.IdDip_RapportoLavoro == user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.Id)
+                                                                                              x.GiornoCompetenza.Month == model.Data.Month &&
+                                                                                              x.IdDip_RapportoLavoro == user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.Id)
                                                                                      .OrderBy(x => x.TimbraturaOriginale).ToList();
 
                     var groupedByDay = timbratura.GroupBy(x => x.GiornoCompetenza.Date).ToList();
@@ -118,9 +116,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
                     //    });
                     //}
 
-
-
                 }
+
+
 
 
 
@@ -144,10 +142,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
                 DateTime finalDate = parsedDate.Add(DateTime.Now.TimeOfDay);
 
 
-                if (false)//TEMP
-                {
-                    User_DATA_COMB_DipAna_DipRapp user_DATA_COMB_DipAna_DipRapp = await _gestionePresenzeUserUtility.Get_DipAna_DipRapp(this.CurrentUserId, true);
 
+                User_DATA_COMB_DipAna_DipRapp user_DATA_COMB_DipAna_DipRapp = await _gestionePresenzeUserUtility.Get_DipAna_DipRapp(this.CurrentUserId, true);
+
+                if (user_DATA_COMB_DipAna_DipRapp != null && user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro != null)
+                {
                     Dip_GG_Timbratura dip_GG_Timbratura = new Dip_GG_Timbratura()
                     {
                         IdDip_RapportoLavoro = user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.Id,
@@ -158,8 +157,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
                         TimbraturaTipo = TipoTimbratura.SenzaVerso,
                         RichiestaStato = StatoRichiesta.Diretta,
                     };
-                    await _dip_GG_TimbraturaRepository.UpsertAsyncGuid(dip_GG_Timbratura);
+                    await _dip_GG_TimbraturaRepository.UpsertAsync(dip_GG_Timbratura);
                 }
+
+                
+
 
                 //eliminare
                 // Nessun 'await' qui
