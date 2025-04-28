@@ -1,5 +1,6 @@
 ﻿using nvxapp.server.data.Entities.Public;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace nvxapp.server.data.Entities.Tenant.GestionePresenze
 {
@@ -11,7 +12,8 @@ namespace nvxapp.server.data.Entities.Tenant.GestionePresenze
 
         [Required]
         public required int IdPar_ProfiloOrario { get; set; }
-        public Par_ProfiloOrario? Par_ProfiloOrarioNavigation { get; set; }
+        [ForeignKey("IdPar_ProfiloOrario")]
+        public virtual Par_ProfiloOrario? Par_ProfiloOrarioNavigation { get; set; }
 
 
 

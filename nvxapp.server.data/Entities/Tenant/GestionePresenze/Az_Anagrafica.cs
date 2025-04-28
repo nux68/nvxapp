@@ -14,7 +14,8 @@ namespace nvxapp.server.data.Entities.Tenant
         [Required]
         [ForeignKey(nameof(CompanyNavigation))]
         public required int IdCompany { get; set; }
-        public Company? CompanyNavigation { get; set; }
+        [ForeignKey("IdCompany")]
+        public virtual Company? CompanyNavigation { get; set; }
 
         public ICollection<Az_Sedi>? Az_Sedi { get; set; }
 

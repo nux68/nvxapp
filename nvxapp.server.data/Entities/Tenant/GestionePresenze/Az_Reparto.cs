@@ -1,5 +1,6 @@
 ﻿using nvxapp.server.data.Entities.Public;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace nvxapp.server.data.Entities.Tenant
 {
@@ -9,7 +10,8 @@ namespace nvxapp.server.data.Entities.Tenant
     {
         [Required]
         public required int IdAz_Sedi { get; set; }
-        public Az_Sedi? Az_SediNavigation { get; set; }
+        [ForeignKey("IdAz_Sedi")]
+        public virtual Az_Sedi? Az_SediNavigation { get; set; }
 
         [Required]
         [MaxLength(50)]
@@ -18,7 +20,8 @@ namespace nvxapp.server.data.Entities.Tenant
 
         // Relazione ricorsiva: Reparto padre
         public int? IdAz_Reparto { get; set; }
-        public Az_Reparto? Az_RepartoNavigation { get; set; }
+        [ForeignKey("IdAz_Reparto")]
+        public virtual Az_Reparto? Az_RepartoNavigation { get; set; }
 
 
 

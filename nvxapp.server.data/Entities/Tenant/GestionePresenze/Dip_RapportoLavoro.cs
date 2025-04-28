@@ -1,5 +1,6 @@
 ﻿using nvxapp.server.data.Entities.Public;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace nvxapp.server.data.Entities.Tenant
 {
@@ -11,8 +12,10 @@ namespace nvxapp.server.data.Entities.Tenant
     public class Dip_RapportoLavoro : BaseEntity
     {
         [Required]
+        [Column("IdDip_Anagrafica")]
         public required int IdDip_Anagrafica { get; set; }
-        public Dip_Anagrafica? Dip_AnagraficaNavigation { get; set; }
+        [ForeignKey("IdDip_Anagrafica")]
+        public virtual Dip_Anagrafica? Dip_AnagraficaNavigation { get; set; }
 
         public DateTime? DataAss { get; set; } // assunzione
         public DateTime? DataLic { get; set; } // lic

@@ -15,8 +15,8 @@ namespace nvxapp.server.data.Infrastructure
         public virtual DbSet<Az_RepartoAttivita> Az_RepartoAttivita { get; set; }
 
 
-        public virtual DbSet<Dip_Anagrafica> Dip_Anagrafiche { get; set; }
-        public virtual DbSet<Dip_RapportoLavoro> Dip_RapportiLavoro { get; set; }
+        public virtual DbSet<Dip_Anagrafica> Dip_Anagrafica { get; set; }
+        public virtual DbSet<Dip_RapportoLavoro> Dip_RapportoLavoro { get; set; }
         public virtual DbSet<Dip_ProfiloOrario> Dip_ProfiloOrario { get; set; }
 
 

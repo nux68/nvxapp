@@ -1,5 +1,6 @@
 ﻿using nvxapp.server.data.Entities.Public;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace nvxapp.server.data.Entities.Tenant
 {
@@ -7,13 +8,15 @@ namespace nvxapp.server.data.Entities.Tenant
     {
         [Required]
         public required int IdDip_RapportoLavoro { get; set; }
-        public Dip_RapportoLavoro? Dip_RapportoLavoroNavigation { get; set; }
+        [ForeignKey("IdDip_RapportoLavoro")]
+        public virtual Dip_RapportoLavoro? Dip_RapportoLavoroNavigation { get; set; }
 
         public DateTime Data { get; set; }
 
 
         public int IdPar_Causali { get; set; }
-        public Par_Causali? Par_CausaliNavigation { get; set; }
+        [ForeignKey("IdPar_Causali")]
+        public virtual Par_Causali? Par_CausaliNavigation { get; set; }
     }
 
 
