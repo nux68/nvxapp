@@ -208,6 +208,10 @@ ion-menu-button {
         text-align: center;
         font-weight: 500;
         line-height: 1.3;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 3px;
 
         &.justification-vacation {
           background-color: #1e88e5;
@@ -243,6 +247,10 @@ ion-menu-button {
         font-size: 11px;
         text-align: center;
         line-height: 1.3;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 3px;
 
         &.entry {
           background-color: var(--ion-color-primary, #3880ff);
@@ -259,6 +267,16 @@ ion-menu-button {
   }
 }
 
+/* Status icon styling */
+.status-icon {
+  font-size: 12px;
+  vertical-align: middle;
+}
+
+.justification .status-icon,
+.timestamp .status-icon {
+  opacity: 0.9;
+}
 
 /* Dark Theme Overrides */
 @media (prefers-color-scheme: dark) {

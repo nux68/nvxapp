@@ -51,19 +51,43 @@
             <div class="day-content">
 
               <!-- NUOVO: Sezione Visualizzazione Giustificativi -->
+              <!--<ng-container *ngIf="day.dip_GG_Giustificativi && day.dip_GG_Giustificativi.length > 0">
+    <div class="justifications">
+      <div class="justification" *ngFor="let just of day.dip_GG_Giustificativi" [ngClass]="getJustificationClass(just)">
+        {{ just.idPar_Giustificativi | parGiustificativiToLongText}}
+      </div>
+    </div>
+  </ng-container>-->
               <ng-container *ngIf="day.dip_GG_Giustificativi && day.dip_GG_Giustificativi.length > 0">
                 <div class="justifications">
                   <div class="justification" *ngFor="let just of day.dip_GG_Giustificativi" [ngClass]="getJustificationClass(just)">
-                    {{ just.idPar_Giustificativi | parGiustificativiToLongText}}
+                    <span>{{ just.idPar_Giustificativi | parGiustificativiToLongText}}</span>
+                    <!-- Status icon with tooltip -->
+                    <ion-icon *ngIf="just.idDip_Richiesta"
+                              [name]="getStatusIcon(just.richiestaStato)"
+                              class="status-icon"
+                              [title]="getStatusText(just.richiestaStato)"></ion-icon>
                   </div>
                 </div>
               </ng-container>
 
               <!-- Sezione Visualizzazione Timbrature -->
+              <!--<ng-container *ngIf="day.dip_GG_Timbratura && day.dip_GG_Timbratura.length > 0">
+    <div class="timestamps">
+      <div class="timestamp" *ngFor="let record of day.dip_GG_Timbratura" [ngClass]="getTimestampClass(record)">
+        {{ record.timbraturaTipo | tipoTimbraturaToShortText }} {{ record.timbratura | date:'HH:mm' }}
+      </div>
+    </div>
+  </ng-container>-->
               <ng-container *ngIf="day.dip_GG_Timbratura && day.dip_GG_Timbratura.length > 0">
                 <div class="timestamps">
                   <div class="timestamp" *ngFor="let record of day.dip_GG_Timbratura" [ngClass]="getTimestampClass(record)">
-                    {{ record.timbraturaTipo | tipoTimbraturaToShortText }} {{ record.timbratura | date:'HH:mm' }}
+                    <span>{{ record.timbraturaTipo | tipoTimbraturaToShortText }} {{ record.timbratura | date:'HH:mm' }}</span>
+                    <!-- Status icon with tooltip -->
+                    <ion-icon *ngIf="record.idDip_Richiesta"
+                              [name]="getStatusIcon(record.richiestaStato)"
+                              class="status-icon"
+                              [title]="getStatusText(record.richiestaStato)"></ion-icon>
                   </div>
                 </div>
               </ng-container>

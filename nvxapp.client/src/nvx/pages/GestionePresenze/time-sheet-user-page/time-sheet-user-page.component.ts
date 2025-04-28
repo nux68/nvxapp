@@ -6,18 +6,20 @@ import { SignalrService } from '../../../Utility/infrastructure/signalr.service'
 import { MokeTimeSheetService, MonthData } from '../../../Utility/GestionePresenze/moke-time-sheet.service';
 import { Dip_GG_TimbraturaModel, TipoTimbratura } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Timbratura/Models/dip-gg-timbratura-model';
 import { Dip_GG_GiustificativiModel, JustificationInputType } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Giustificativi/Models/dip-gg-giustificativi-model';
+import { StatoRichiesta } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/Models/dip-gg-richiesta-model';
 
 @Component({
   selector: 'app-time-sheet-user-page',
   templateUrl: './time-sheet-user-page.component.html',
   styleUrls: ['./time-sheet-user-page.component.scss'],
-  standalone:false
-}) 
+  standalone: false
+})
 
 export class TimeSheetUserPageComponent implements OnInit {
   public title!: string;
 
   TipoTimbratura = TipoTimbratura;
+  StatoRichiesta = StatoRichiesta;
 
   currentMonth: MonthData; // Usa l'interfaccia importata
   // Usa le interfacce importate nella definizione di 'weeks'
@@ -31,9 +33,9 @@ export class TimeSheetUserPageComponent implements OnInit {
   currentMonthDisplay: string;
 
   constructor(
-              private signalrService: SignalrService,
-              public monthNavigatorService: MonthNavigatorService,
-              private calendarDataService: MokeTimeSheetService 
+    private signalrService: SignalrService,
+    public monthNavigatorService: MonthNavigatorService,
+    private calendarDataService: MokeTimeSheetService
   ) {
     this.title = 'TimeSheetUser';
     this.weeks = [];
@@ -66,7 +68,7 @@ export class TimeSheetUserPageComponent implements OnInit {
       this.buildCalendarWeeks(); // Costruisce la UI dopo aver ricevuto i dati
     });
   }
-  
+
   buildCalendarWeeks() {
     this.weeks = [];
     const year = this.monthNavigatorService.currentYear;
@@ -81,10 +83,7 @@ export class TimeSheetUserPageComponent implements OnInit {
 
     let currentWeek: Array<{
       day: number,
-      //records: TimeStamp[],
-      //justifications: Justification[],
       isCurrentMonth: boolean,
-      //nvx
       dip_GG_Timbratura: Dip_GG_TimbraturaModel[],
       dip_GG_Giustificativi: Dip_GG_GiustificativiModel[]
     }> = [];
@@ -94,11 +93,9 @@ export class TimeSheetUserPageComponent implements OnInit {
       const day = prevMonthLastDay - dayOfWeek + i + 1;
       currentWeek.push({
         day: day,
-        //records: [],
-        //justifications: [],
         isCurrentMonth: false,
         dip_GG_Timbratura: [],
-        dip_GG_Giustificativi:[]
+        dip_GG_Giustificativi: []
       });
     }
 
@@ -111,12 +108,9 @@ export class TimeSheetUserPageComponent implements OnInit {
         day: i,
         // Usa fallback se dayData non esiste o se le proprietà sono vuote
         // Il servizio dati dovrebbe già fornire array vuoti dove appropriato
-        //records: dayData?.timestamps || [],
-        //justifications: dayData?.justifications || [],
         isCurrentMonth: true,
-        //nvx
         dip_GG_Timbratura: dayData?.dip_GG_Timbratura || [],
-        dip_GG_Giustificativi:dayData?.dip_GG_Giustificativi || []
+        dip_GG_Giustificativi: dayData?.dip_GG_Giustificativi || []
       });
 
       if (currentWeek.length === 7) {
@@ -131,12 +125,9 @@ export class TimeSheetUserPageComponent implements OnInit {
       while (currentWeek.length < 7) {
         currentWeek.push({
           day: nextMonthDay,
-          //records: [],
-          //justifications: [],
           isCurrentMonth: false,
-          //nvx
           dip_GG_Timbratura: [],
-          dip_GG_Giustificativi:[]
+          dip_GG_Giustificativi: []
         });
         nextMonthDay++;
       }
@@ -158,7 +149,7 @@ export class TimeSheetUserPageComponent implements OnInit {
   getTimestampsByType(records: Dip_GG_TimbraturaModel[] | undefined, type: TipoTimbratura): Dip_GG_TimbraturaModel[] {
     return records?.filter(r => r.timbraturaTipo === type) || [];
   }
-  
+
   hasFullDayJustification(justifications: Dip_GG_GiustificativiModel[] | undefined): boolean {
     return justifications?.some(j => j.inputType == JustificationInputType.AllDay,) || false;
   }
@@ -172,7 +163,6 @@ export class TimeSheetUserPageComponent implements OnInit {
     //  default: return 'justification-other';
     //}
     return 'justification-other';
-
   }
 
   getDayClass(day: any, index: number): { [key: string]: boolean } {
@@ -180,7 +170,7 @@ export class TimeSheetUserPageComponent implements OnInit {
       'non-current-month': !day.isCurrentMonth,
       'weekend': index > 4,
       'has-content': (day.dip_GG_Timbratura && day.dip_GG_Timbratura.length > 0) ||
-                     (day.dip_GG_Giustificativi && day.dip_GG_Giustificativi.length > 0),
+        (day.dip_GG_Giustificativi && day.dip_GG_Giustificativi.length > 0),
       'full-day-justification': this.hasFullDayJustification(day.dip_GG_Giustificativi)
     };
   }
@@ -192,5 +182,47 @@ export class TimeSheetUserPageComponent implements OnInit {
     };
   }
 
+  // Helper method to get appropriate icon for request status
+  getStatusIcon(status: StatoRichiesta): string {
+    switch (status) {
+      case StatoRichiesta.Diretta:
+        return 'checkmark-circle'; // Direct entry
+      case StatoRichiesta.Immessa:
+        return 'time-outline'; // Submitted
+      case StatoRichiesta.ApprovazioneInCorso:
+        return 'hourglass-outline'; // In progress
+      case StatoRichiesta.ParzialmenteApprovata:
+        return 'alert-circle-outline'; // Partially approved
+      case StatoRichiesta.Approvata:
+        return 'checkmark-circle-outline'; // Approved
+      case StatoRichiesta.Rifiutata:
+        return 'close-circle-outline'; // Rejected
+      case StatoRichiesta.Cancellata:
+        return 'trash-outline'; // Cancelled
+      default:
+        return 'help-circle-outline'; // Unknown status
+    }
+  }
 
+  // Helper method to get text description for request status
+  getStatusText(status: StatoRichiesta): string {
+    switch (status) {
+      case StatoRichiesta.Diretta:
+        return 'Direct Entry';
+      case StatoRichiesta.Immessa:
+        return 'Submitted';
+      case StatoRichiesta.ApprovazioneInCorso:
+        return 'Approval In Progress';
+      case StatoRichiesta.ParzialmenteApprovata:
+        return 'Partially Approved';
+      case StatoRichiesta.Approvata:
+        return 'Approved';
+      case StatoRichiesta.Rifiutata:
+        return 'Rejected';
+      case StatoRichiesta.Cancellata:
+        return 'Cancelled';
+      default:
+        return 'Unknown Status';
+    }
+  }
 }
