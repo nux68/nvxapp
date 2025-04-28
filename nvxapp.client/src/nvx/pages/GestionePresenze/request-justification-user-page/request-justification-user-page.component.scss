@@ -55,51 +55,85 @@ ion-menu-button {
   }
 }
 
-.hours-input {
+/* Updated time input styles */
+.time-input {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid var(--ion-border-color, #e0e0e0); // Light border
-  padding-bottom: 10px;
+  align-items: flex-start;
+  border-bottom: 1px solid var(--ion-border-color, #e0e0e0);
+  padding-bottom: 15px;
+  flex-wrap: wrap;
 
-  .hours-display {
-    font-size: 18px; // Slightly smaller size
-    font-weight: 500;
-    color: inherit; // Inherit dark text
-  }
-
-  .hours-controls {
+  .time-control-group {
     display: flex;
-    gap: 10px; // Use gap for spacing
+    flex-direction: column;
+    align-items: center;
+    margin-right: 15px;
 
-    .hours-button {
+    .time-label {
+      font-size: 14px;
+      color: var(--ion-color-step-600, #666666);
+      margin-bottom: 5px;
+    }
+
+    .time-controls {
       display: flex;
       align-items: center;
-      justify-content: center;
-      // Use a light grey background for buttons
-      background-color: var(--ion-color-light-tint, #f0f0f0);
-      border: none;
-      border-radius: 50%;
-      width: 40px; // Slightly smaller buttons
-      height: 40px;
-      cursor: pointer;
-      transition: background-color 0.2s ease;
 
-      &:hover:not(:disabled) {
-        background-color: var(--ion-color-light-shade, #dcdcdc);
+      .time-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--ion-color-light-tint, #f0f0f0);
+        border: none;
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+
+        &:hover:not(:disabled) {
+          background-color: var(--ion-color-light-shade, #dcdcdc);
+        }
+
+        &:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+          background-color: var(--ion-color-light-tint, #f0f0f0);
+        }
+
+        ion-icon {
+          font-size: 18px;
+          color: var(--ion-color-step-800, #333333);
+        }
       }
 
-      &:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-        background-color: var(--ion-color-light-tint, #f0f0f0); // Keep bg same when disabled
+      .time-display {
+        width: 36px;
+        text-align: center;
+        font-size: 16px;
+        font-weight: 500;
+        margin: 0 5px;
       }
+    }
+  }
 
-      ion-icon {
-        font-size: 20px;
-        // Use a standard dark color for icons
-        color: var(--ion-color-step-800, #333333);
-      }
+  .time-total {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-left: auto;
+
+    .time-total-label {
+      font-size: 14px;
+      color: var(--ion-color-step-600, #666666);
+      margin-bottom: 5px;
+    }
+
+    .time-total-value {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--ion-color-primary);
     }
   }
 }
@@ -112,14 +146,6 @@ ion-menu-button {
   padding: 10px 0; // Vertical padding only
   color: inherit; // Inherit dark text
   border-bottom: 1px solid var(--ion-border-color, #e0e0e0); // Consistent border
-  // Let ion-toggle handle its own theme variables
-  ion-toggle {
-    // Remove specific overrides unless necessary
-    // --background: #e0e0e0; // Example light theme track
-    // --background-checked: var(--ion-color-primary-tint); // Example light theme checked track
-    // --handle-background: white;
-    // --handle-background-checked: var(--ion-color-primary);
-  }
 }
 
 .chip {
@@ -214,43 +240,40 @@ ion-menu-button {
 
     .form-input {
       border-bottom-color: var(--ion-border-color, #444444); // Darker border
-      // Optional: Restore dark specific styles if Ionic defaults aren't enough
-      /*
-      ion-select,
-      ion-datetime-button,
-      ion-textarea {
-        --background: var(--ion-item-background, #333);
-        --color: var(--ion-text-color, #ffffff);
-        --placeholder-color: var(--ion-color-step-500, #888888);
-      }
-      */
     }
   }
 
-  .hours-input {
-    border-bottom-color: var(--ion-border-color, #444444); // Darker border
+  /* Dark theme time input */
+  .time-input {
+    border-bottom-color: var(--ion-border-color, #444444);
 
-    .hours-display {
-      color: inherit; // Inherit light text
+    .time-control-group {
+      .time-label {
+        color: var(--ion-color-step-400, #999999);
+      }
+
+      .time-controls {
+        .time-button {
+          background-color: var(--ion-color-step-800, #3a3a3a);
+
+          &:hover:not(:disabled) {
+            background-color: var(--ion-color-step-700, #4f4f4f);
+          }
+
+          &:disabled {
+            background-color: var(--ion-color-step-800, #3a3a3a);
+          }
+
+          ion-icon {
+            color: var(--ion-color-step-200, #cccccc);
+          }
+        }
+      }
     }
 
-    .hours-controls {
-      .hours-button {
-        // Darker grey background for buttons
-        background-color: var(--ion-color-step-800, #3a3a3a);
-
-        &:hover:not(:disabled) {
-          background-color: var(--ion-color-step-700, #4f4f4f);
-        }
-
-        &:disabled {
-          background-color: var(--ion-color-step-800, #3a3a3a); // Keep bg same when disabled
-        }
-
-        ion-icon {
-          // Use a light color for icons
-          color: var(--ion-color-step-200, #cccccc);
-        }
+    .time-total {
+      .time-total-label {
+        color: var(--ion-color-step-400, #999999);
       }
     }
   }
@@ -258,11 +281,6 @@ ion-menu-button {
   .toggle-section {
     color: inherit; // Inherit light text
     border-bottom-color: var(--ion-border-color, #444444); // Darker border
-    // Let ion-toggle handle its own theme variables
-    ion-toggle {
-      // --background: #444; // Example dark theme track
-      // --background-checked: var(--ion-color-primary-shade); // Example dark theme checked track
-    }
   }
 
   .chip {
@@ -286,10 +304,6 @@ ion-menu-button {
   .submit-button-container {
     background-color: var(--ion-toolbar-background, #1e1e1e); // Dark toolbar bg
     border-top-color: var(--ion-border-color, #444444); // Dark border
-  }
-
-  .submit-button {
-    // Primary button should adapt automatically via variables
   }
 }
 

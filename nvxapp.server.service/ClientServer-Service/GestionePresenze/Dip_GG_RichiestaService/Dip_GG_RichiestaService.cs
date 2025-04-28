@@ -15,6 +15,8 @@ using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.ServerModels;
 
+
+
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_RichiestaService
 {
 
@@ -55,7 +57,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                 {
                     List<Dip_GG_Richiesta> richiesta = _dip_GG_RichiestaRepository.FindAll(x => x.IdDip_RapportoLavoro == user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.Id &&
                         (
-                            (x.Data.Year == model.Data.Year && x.Data.Month == model.Data.Month) ||  
+                            (x.Data.Year == model.Data.Year && x.Data.Month == model.Data.Month) ||
                             (x.DataA.Year == model.Data.Year && x.DataA.Month == model.Data.Month) ||
                             (x.Data.Year < model.Data.Year || (x.Data.Year == model.Data.Year && x.Data.Month < model.Data.Month)) &&
                             (x.DataA.Year > model.Data.Year || (x.DataA.Year == model.Data.Year && x.DataA.Month > model.Data.Month))
@@ -161,13 +163,48 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
         {
             if (user_DATA_COMB_DipAna_DipRapp != null && user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro != null)
             {
-                Dip_GG_Giustificativi dip_GG_Giustificativi = new Dip_GG_Giustificativi()
+                //Dip_GG_Giustificativi dip_GG_Giustificativi = new Dip_GG_Giustificativi()
+                //{
+                //    IdDip_RapportoLavoro = user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.Id,
+                //    IdDip_Richiesta = dip_GG_Richiesta.Id,
+                //    IdPar_Giustificativi = 0
+                //};
+                //dip_GG_Giustificativi = await _Dip_GG_GiustificativiRepository.UpsertAsync(dip_GG_Giustificativi);
+
+
+
+                if (user_DATA_COMB_DipAna_DipRapp != null && user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro != null)
                 {
-                    IdDip_RapportoLavoro = user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.Id,
-                    IdDip_Richiesta = dip_GG_Richiesta.Id,
-                    IdPar_Giustificativi = 0
-                };
-                await _Dip_GG_GiustificativiRepository.UpsertAsyncGuid(dip_GG_Giustificativi);
+
+                    if (dip_GG_Richiesta.Dati != null)
+                    {
+                        Dip_GG_Richiesta_Body_Giustificativo? richiesta = JsonConvert.DeserializeObject<Dip_GG_Richiesta_Body_Giustificativo>(dip_GG_Richiesta.Dati);
+                        if (user_DATA_COMB_DipAna_DipRapp != null && user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro != null)
+                        {
+                            if (richiesta != null)
+                            {
+
+                                for (DateTime date = dip_GG_Richiesta.Data; date <= dip_GG_Richiesta.DataA; date = date.AddDays(1))
+                                {
+                                    string fullDateTime = $"{dip_GG_Richiesta.Data.ToString("dd/MM/yyyy")} {richiesta.hhmm}";
+
+                                    Dip_GG_Giustificativi dip_GG_Giustificativi = new Dip_GG_Giustificativi()
+                                    {
+                                        Data = date,
+                                        IdDip_RapportoLavoro = user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.Id,
+                                        IdDip_Richiesta = dip_GG_Richiesta.Id,
+                                        IdPar_Giustificativi = richiesta.IdPar_Giustificativi,
+                                        RichiestaStato = StatoRichiesta.Immessa,
+                                        InputType = JustificationInputType.Manual, // MIGLIORARE
+                                    };
+                                    await _Dip_GG_GiustificativiRepository.UpsertAsync(dip_GG_Giustificativi);
+                                }
+                            }
+                        }
+                    }
+                }
+
+
             }
         }
 

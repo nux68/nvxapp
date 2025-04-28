@@ -2,12 +2,18 @@ import { Component, OnInit } from '@angular/core';
 import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { NavController } from '@ionic/angular';
+import { Dip_GG_Richiesta_Body_Giustificativo, Dip_GG_Richiesta_Send_InModel, StatoRichiesta, TipoRichiesta } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/Models/dip-gg-richiesta-model';
+import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
+import { DipGGRichiestaService } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/dip-gg-richiesta.service';
+import { StringHelperService } from '../../../Utility/infrastructure/string-helper.service';
+import { Par_GiustificativiModel } from '../../../ClientServer-Service/GestionePresenze/Par_Giustificativi/Models/par-giustificativi-model';
+import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
 
 @Component({
   selector: 'app-request-justification-user-page',
   templateUrl: './request-justification-user-page.component.html',
   styleUrls: ['./request-justification-user-page.component.scss'],
-  standalone: false // Assuming this component is declared in an NgModule
+  standalone: false
 })
 export class RequestJustificationUserPageComponent implements OnInit {
   public title: string;
@@ -18,22 +24,28 @@ export class RequestJustificationUserPageComponent implements OnInit {
   public btnInvia: ButtonItem;
   //////
 
-
-  public justificationType: string;
-  public requestType: string;
   public startDate: string;
+  public formattedStartDate: string;
   public endDate: string;
-  public hours: number;
-  public hoursFormatted: string;
-  public fullDay: boolean;
-  public supervisors: string[];
-  public notes: string;
+  public formattedEndDate: string;
 
-  
+  public justificationType: string = '';
+  public hours: number = 1;
+  public minutes: number = 0;
+  public hoursFormatted: string = '01:00';
+  public fullDay: boolean = true;  // Modificato a true come richiesto
+  public supervisors: string[] = ['manzo.admin'];
+  public notes: string = '';
+
+  // Proprietà per accedere ai giustificativi
+  public giustificativi: Par_GiustificativiModel[] = [];
 
   constructor(public userNavigationService: UserNavigationService,
-              private navCtrl: NavController,
-              private userInterfaceService: UserInterfaceService) {
+    private navCtrl: NavController,
+    private dipGGRichiestaService: DipGGRichiestaService,
+    private stringHelperService: StringHelperService,
+    private userInterfaceService: UserInterfaceService,
+    private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService) {
     this.title = 'Richiesta ferie e permessi';
 
     this.btnInvia = userInterfaceService.Btn_Invia;
@@ -43,73 +55,137 @@ export class RequestJustificationUserPageComponent implements OnInit {
     this.btnAnnulla.event = this._handleButtonCancelClick;
     this.buttonbar.push(this.btnAnnulla);
 
-
-
+    // Initialize variables immediately to prevent undefined errors
+    this.initializeValues();
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    // Caricamento dei giustificativi dall'apposito servizio
+    if (this.sharedParameterGestionePresenzeService.Par_Giustificativi) {
+      this.giustificativi = this.sharedParameterGestionePresenzeService.Par_Giustificativi;
+      // Se ci sono giustificativi disponibili, impostiamo il primo come default
+      if (this.giustificativi.length > 0) {
+        this.justificationType = this.giustificativi[0].codice;
+      }
+    }
+  }
+
+  // Method to explicitly initialize values
+  initializeValues() {
+    this.hours = 8; // Impostiamo a 8 ore per giorno intero
+    this.minutes = 0;
+    this.hoursFormatted = '08:00';
+    this.fullDay = true; // Modificato a true come richiesto
+    this.updateHoursFormatted();
+  }
 
   ionViewWillEnter() {
-    this.justificationType = 'FERIE';
-    this.requestType = 'A_DURATA';
+    // Caricamento dei giustificativi se non già caricati
+    if (this.sharedParameterGestionePresenzeService.Par_Giustificativi) {
+      this.giustificativi = this.sharedParameterGestionePresenzeService.Par_Giustificativi;
+      // Se ci sono giustificativi disponibili, impostiamo il primo come default
+      if (this.giustificativi.length > 0) {
+        this.justificationType = this.giustificativi[0].codice;
+      }
+    }
 
     // Initialize with current date in ISO 8601 format
     const now = new Date();
+
     // Set time to midnight for consistency when dealing with dates only
     now.setHours(0, 0, 0, 0);
-    this.startDate = now.toISOString();
-    this.endDate = now.toISOString(); // Initialize end date same as start date
 
-    this.hours = 1;
-    this.hoursFormatted = '01:00';
-    this.fullDay = false;
+    this.startDate = this.stringHelperService.DateCurr_To_ISOString();
+    this.endDate = this.stringHelperService.DateCurr_To_ISOString();
+
+    this.formattedStartDate = this.stringHelperService.Date_To_S_ddmmyyyy(now);
+    this.formattedEndDate = this.stringHelperService.Date_To_S_ddmmyyyy(now);
+
+    this.hours = 8; // Impostato a 8 ore per giorno intero
+    this.minutes = 0;
+    this.hoursFormatted = '08:00';
+    this.fullDay = true; // Modificato a true come richiesto
     this.supervisors = ['manzo.admin'];
     this.notes = '';
+    this.updateHoursFormatted();
   }
-  
 
+  // Resto del codice rimane invariato...
 
+  updateStartDate(event: any) {
+    const selectedDate = new Date(event.detail.value);
+    this.formattedStartDate = this.stringHelperService.Date_To_S_ddmmyyyy(selectedDate);
+  }
+
+  updateEndDate(event: any) {
+    const selectedDate = new Date(event.detail.value);
+    this.formattedEndDate = this.stringHelperService.Date_To_S_ddmmyyyy(selectedDate);
+  }
 
   increaseHours() {
-    if (!this.fullDay && this.hours < 8) { // Prevent changing hours if fullDay is true
+    if (!this.fullDay && this.hours < 8) {
       this.hours++;
       this.updateHoursFormatted();
     }
   }
 
   decreaseHours() {
-    if (!this.fullDay && this.hours > 1) { // Prevent changing hours if fullDay is true
+    if (!this.fullDay && this.hours > 0) {
       this.hours--;
       this.updateHoursFormatted();
     }
   }
 
+  increaseMinutes() {
+    if (!this.fullDay) {
+      if (this.minutes === 45) {
+        this.minutes = 0;
+        if (this.hours < 8) {
+          this.hours++;
+        }
+      } else {
+        this.minutes += 15;
+      }
+      this.updateHoursFormatted();
+    }
+  }
+
+  decreaseMinutes() {
+    if (!this.fullDay) {
+      if (this.minutes === 0) {
+        this.minutes = 45;
+        if (this.hours > 0) {
+          this.hours--;
+        }
+      } else {
+        this.minutes -= 15;
+      }
+      this.updateHoursFormatted();
+    }
+  }
+
   updateHoursFormatted() {
-    this.hoursFormatted = `${this.hours.toString().padStart(2, '0')}:00`;
+    const h = this.hours || 0;
+    const m = this.minutes || 0;
+    this.hoursFormatted = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
   }
 
   toggleFullDay() {
     if (this.fullDay) {
-      this.hours = 8; // Set hours to 8 for a full day
+      this.hours = 8;
+      this.minutes = 0;
     } else {
-      this.hours = 1; // Reset to default or minimum hours when not full day
+      this.hours = 1;
+      this.minutes = 0;
     }
     this.updateHoursFormatted();
-    // Optionally disable hour controls when fullDay is true (handled via [disabled] in template now)
   }
 
   addSupervisor() {
-    // In a real app, this would likely open a user selection modal/popup
-    // For demo purposes, adding a static mock supervisor
-    const newSupervisor = 'new.supervisor.' + (this.supervisors.length + 1); // Make it unique for demo
+    const newSupervisor = 'new.supervisor.' + (this.supervisors.length + 1);
     if (!this.supervisors.includes(newSupervisor)) {
       this.supervisors.push(newSupervisor);
     }
-    // Alternatively, prompt the user:
-    // const supervisorToAdd = prompt("Inserisci nome utente responsabile:");
-    // if (supervisorToAdd && !this.supervisors.includes(supervisorToAdd)) {
-    //   this.supervisors.push(supervisorToAdd);
-    // }
   }
 
   removeSupervisor(index: number) {
@@ -119,41 +195,34 @@ export class RequestJustificationUserPageComponent implements OnInit {
   }
 
   submitRequest() {
-    // Note: startDate and endDate are now in ISO 8601 format (e.g., "2023-10-27T00:00:00.000Z")
-    // Adjust the hours value if the request type is 'GIORNALIERA' or if fullDay is true
-    const hoursToSend = (this.requestType === 'GIORNALIERA' || this.fullDay) ? 8 : this.hours;
+    let request_rich = new GenericRequest<Dip_GG_Richiesta_Send_InModel>(Dip_GG_Richiesta_Send_InModel);
 
-    const requestData = {
-      justificationType: this.justificationType,
-      requestType: this.requestType,
-      // You might want to format the date for the backend here if ISO is not desired
-      // e.g., startDate: this.formatDateForBackend(new Date(this.startDate)),
-      startDate: this.startDate,
-      endDate: this.endDate,
-      hours: hoursToSend, // Use adjusted hours
-      fullDay: this.fullDay, // Keep track if it was explicitly set as full day
-      supervisors: this.supervisors,
-      notes: this.notes
-    };
+    let dip_GG_Richiesta_Body_Giustificativo: Dip_GG_Richiesta_Body_Giustificativo = new Dip_GG_Richiesta_Body_Giustificativo();
+    dip_GG_Richiesta_Body_Giustificativo.hhmm = this.hoursFormatted;
+    dip_GG_Richiesta_Body_Giustificativo.allDay = this.fullDay;
 
-    console.log('Request submitted', requestData);
- 
-    alert('Richiesta inviata con successo! (Simulato)');
+    // Trova l'ID del giustificativo selezionato
+    const giustificativoSelezionato = this.giustificativi.find(g => g.codice === this.justificationType);
+    dip_GG_Richiesta_Body_Giustificativo.idPar_Giustificativi = giustificativoSelezionato ? giustificativoSelezionato.id : 1;
+
+    request_rich.data.dip_GG_RichiestaModel.id = 0;
+    request_rich.data.dip_GG_RichiestaModel.idDip_RapportoLavoro = 0;
+    request_rich.data.dip_GG_RichiestaModel.richiestaStato = StatoRichiesta.Immessa;
+    request_rich.data.dip_GG_RichiestaModel.richiestaTipo = TipoRichiesta.Giustificativo;
+    request_rich.data.dip_GG_RichiestaModel.data = this.formattedStartDate;
+    request_rich.data.dip_GG_RichiestaModel.dataA = this.formattedEndDate;
+    request_rich.data.dip_GG_RichiestaModel.dati = this.stringHelperService.toJSONString(dip_GG_Richiesta_Body_Giustificativo);
+
+    this.dipGGRichiestaService.Send(request_rich).subscribe(res => {
+      this.navCtrl.navigateForward('/usertimesheet');
+    });
   }
 
-
-
   private _handleButtonConfirmClick = (param: object) => {
-
     this.submitRequest();
-
   }
 
   private _handleButtonCancelClick = (param: object) => {
-
     this.navCtrl.navigateForward('/home');
-
   }
-
-
 }

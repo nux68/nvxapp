@@ -4,7 +4,6 @@
                   [showBreadcrumbs]="true">
 </app-page-toolbar>
 
-<!-- REMOVED dark-background class -->
 <ion-content [fullscreen]="true">
   <!-- Rest of the content remains the same -->
 
@@ -12,22 +11,14 @@
     <div class="form-label">Giustificativo</div>
     <div class="form-input">
       <ion-select [(ngModel)]="justificationType" interface="action-sheet" placeholder="Seleziona">
-        <ion-select-option value="FERIE">FERIE</ion-select-option>
-        <ion-select-option value="PERMESSO">PERMESSO</ion-select-option>
-        <ion-select-option value="MALATTIA">MALATTIA</ion-select-option>
+        <ion-select-option *ngFor="let giustificativo of giustificativi" [value]="giustificativo.codice">
+          {{giustificativo.descrizione}}
+        </ion-select-option>
       </ion-select>
     </div>
   </div>
 
-  <div class="form-section">
-    <div class="form-label">Tipo richiesta</div>
-    <div class="form-input">
-      <ion-select [(ngModel)]="requestType" interface="action-sheet" placeholder="Seleziona">
-        <ion-select-option value="A_DURATA">A durata</ion-select-option>
-        <ion-select-option value="GIORNALIERA">Giornaliera</ion-select-option>
-      </ion-select>
-    </div>
-  </div>
+  <!-- Rimossa la sezione Tipo richiesta come richiesto -->
 
   <div class="form-section">
     <div class="form-label">Inizio</div>
@@ -43,17 +34,40 @@
     </div>
   </div>
 
-  <div class="form-section">
+  <!-- La sezione ore sarà visibile solo se fullDay è false -->
+  <div class="form-section" *ngIf="!fullDay">
     <div class="form-label">Ore</div>
-    <div class="hours-input">
-      <div class="hours-display">{{hoursFormatted}}</div>
-      <div class="hours-controls">
-        <button class="hours-button decrease" (click)="decreaseHours()" [disabled]="fullDay">
-          <ion-icon name="remove"></ion-icon>
-        </button>
-        <button class="hours-button increase" (click)="increaseHours()" [disabled]="fullDay">
-          <ion-icon name="add"></ion-icon>
-        </button>
+    <div class="time-input">
+      <!-- Hours control -->
+      <div class="time-control-group">
+        <div class="time-label">Ore</div>
+        <div class="time-controls">
+          <button class="time-button decrease" (click)="decreaseHours()">
+            <ion-icon name="remove"></ion-icon>
+          </button>
+          <div class="time-display">{{(hours || 0).toString().padStart(2, '0')}}</div>
+          <button class="time-button increase" (click)="increaseHours()">
+            <ion-icon name="add"></ion-icon>
+          </button>
+        </div>
+      </div>
+      <!-- Minutes control -->
+      <div class="time-control-group">
+        <div class="time-label">Min</div>
+        <div class="time-controls">
+          <button class="time-button decrease" (click)="decreaseMinutes()">
+            <ion-icon name="remove"></ion-icon>
+          </button>
+          <div class="time-display">{{(minutes || 0).toString().padStart(2, '0')}}</div>
+          <button class="time-button increase" (click)="increaseMinutes()">
+            <ion-icon name="add"></ion-icon>
+          </button>
+        </div>
+      </div>
+      <!-- Total time display -->
+      <div class="time-total">
+        <div class="time-total-label">Totale</div>
+        <div class="time-total-value">{{hoursFormatted || '00:00'}}</div>
       </div>
     </div>
   </div>
@@ -85,13 +99,6 @@
     </div>
   </div>
 
-  <!--<div class="submit-button-container">
-    <button class="submit-button" (click)="submitRequest()">
-      <ion-icon name="save"></ion-icon>
-      <span>Invia</span>
-    </button>
-  </div>-->
-
   <!-- Modals remain the same -->
   <ion-modal [keepContentsMounted]="true">
     <ng-template>
@@ -101,6 +108,7 @@
                     [showDefaultButtons]="true"
                     doneText="Fatto"
                     cancelText="Annulla"
+                    (ionChange)="updateStartDate($event)"
                     locale="it-IT">
       </ion-datetime>
     </ng-template>
@@ -115,6 +123,7 @@
                     [showDefaultButtons]="true"
                     doneText="Fatto"
                     cancelText="Annulla"
+                    (ionChange)="updateEndDate($event)"
                     locale="it-IT">
       </ion-datetime>
     </ng-template>

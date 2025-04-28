@@ -38,7 +38,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
     }
     public class Dip_GG_Richiesta_Body_Giustificativo
     {
-
+        public required string hhmm { get; set; } = string.Empty;
+        public required bool AllDay { get; set; } = false;
+        public required int IdPar_Giustificativi { get; set; } = 0;
     }
     public class Dip_GG_Richiesta_Body_NotaSpesa
     {

@@ -24,6 +24,9 @@ export class Dip_GG_Richiesta_Body_Timbratura {
   hhmm!: string;
 }
 export class Dip_GG_Richiesta_Body_Giustificativo {
+  hhmm!: string;
+  allDay!: boolean;
+  idPar_Giustificativi!: number;
 }
 export class Dip_GG_Richiesta_Body_NotaSpesa {
 }

@@ -12,6 +12,9 @@ using Microsoft.Extensions.Configuration;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_GiustificativiService.Models;
 using System.Security.Cryptography.Xml;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
+using nvxapp.server.data.Entities.Tenant;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_RichiestaService.Models;
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_GiustificativiService
 {
@@ -19,6 +22,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Giusti
     public class Par_GiustificativiService : ServiceBase, IPar_GiustificativiService
     {
         private readonly IPar_GiustificativiRepository _par_GiustificativiRepository;
+        private readonly IGestionePresenzeUserUtility _gestionePresenzeUserUtility;
 
         public Par_GiustificativiService(IMapper mapper,
                                   UserManager<ApplicationUser> userManager,
@@ -27,9 +31,12 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Giusti
                                   IHttpContextAccessor httpContextAccessor,
                                   IConfiguration configuration,
 
-                                  IPar_GiustificativiRepository par_GiustificativiRepository) : base(mapper , userManager  , aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
+                                  IPar_GiustificativiRepository par_GiustificativiRepository,
+                                  IGestionePresenzeUserUtility gestionePresenzeUserUtility
+            ) : base(mapper , userManager  , aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _par_GiustificativiRepository = par_GiustificativiRepository;
+            _gestionePresenzeUserUtility = gestionePresenzeUserUtility;
         }
 
         public virtual async Task<GenericResult<Par_GiustificativiOutModel>> GetAll(GenericRequest<Par_GiustificativiInModel> model, Boolean isSubProcess)
@@ -39,29 +46,85 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Giusti
                 Par_GiustificativiOutModel retVal = new Par_GiustificativiOutModel();
 
 
-                retVal.Par_Giustificativi.Add( new Par_GiustificativiModel()
-                {
-                       Id=1,
-                       IdAz_Anagrafica =1,
-                       Descrizione ="Ferie",
-                       Codice ="FE"
-                }  );
+                int IdCompany;
+                int.TryParse(this.CurrentCompany, out IdCompany);
 
-                retVal.Par_Giustificativi.Add(new Par_GiustificativiModel()
-                {
-                    Id = 2,
-                    IdAz_Anagrafica = 1,
-                    Descrizione = "ROL",
-                    Codice = "ROL"
-                });
+                Company_DATA_COMB_AzAna_AzSedi_AzReparto company_DATA_COMB_AzAna_AzSedi_AzReparto = await _gestionePresenzeUserUtility.Get_AzAna_AzSedi_AzReparto(IdCompany,true);
 
-                retVal.Par_Giustificativi.Add(new Par_GiustificativiModel()
+                Par_Giustificativi? par_Giustificativi=null;
+                if (company_DATA_COMB_AzAna_AzSedi_AzReparto !=null && company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Anagrafica!= null)
                 {
-                    Id = 3,
-                    IdAz_Anagrafica = 1,
-                    Descrizione = "Malattia",
-                    Codice = "MA"
-                });
+                    //MA
+                    par_Giustificativi = _par_GiustificativiRepository.FindAll(x => x.IdAz_Anagrafica == company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Anagrafica.Id &&
+                                                                               x.Codice =="MA").FirstOrDefault();
+                    if( par_Giustificativi==null)
+                    {
+                        par_Giustificativi = new Par_Giustificativi() { 
+                             IdAz_Anagrafica= company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Anagrafica.Id,
+                             Codice="MA",
+                             Descrizione="Malattia"
+                        };
+                        par_Giustificativi = await _par_GiustificativiRepository.UpsertAsync(par_Giustificativi);
+                    }
+                    retVal.Par_Giustificativi.Add(_mapper.Map<Par_GiustificativiModel>(par_Giustificativi));
+
+                    //ROL
+                    par_Giustificativi = _par_GiustificativiRepository.FindAll(x => x.IdAz_Anagrafica == company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Anagrafica.Id &&
+                                                                               x.Codice == "ROL").FirstOrDefault();
+                    if (par_Giustificativi == null)
+                    {
+                        par_Giustificativi = new Par_Giustificativi()
+                        {
+                            IdAz_Anagrafica = company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Anagrafica.Id,
+                            Codice = "ROL",
+                            Descrizione = "ROL"
+                        };
+                        par_Giustificativi = await _par_GiustificativiRepository.UpsertAsync(par_Giustificativi);
+                    }
+                    retVal.Par_Giustificativi.Add(_mapper.Map<Par_GiustificativiModel>(par_Giustificativi));
+
+                    //FERIE
+                    par_Giustificativi = _par_GiustificativiRepository.FindAll(x => x.IdAz_Anagrafica == company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Anagrafica.Id &&
+                                                                               x.Codice == "FE").FirstOrDefault();
+                    if (par_Giustificativi == null)
+                    {
+                        par_Giustificativi = new Par_Giustificativi()
+                        {
+                            IdAz_Anagrafica = company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Anagrafica.Id,
+                            Codice = "FE",
+                            Descrizione = "Ferie"
+                        };
+                        par_Giustificativi = await _par_GiustificativiRepository.UpsertAsync(par_Giustificativi);
+                    }
+                    retVal.Par_Giustificativi.Add(_mapper.Map<Par_GiustificativiModel>(par_Giustificativi));
+                }
+
+                
+
+
+                //retVal.Par_Giustificativi.Add( new Par_GiustificativiModel()
+                //{
+                //       Id=1,
+                //       IdAz_Anagrafica =1,
+                //       Descrizione ="Ferie",
+                //       Codice ="FE"
+                //}  );
+
+                //retVal.Par_Giustificativi.Add(new Par_GiustificativiModel()
+                //{
+                //    Id = 2,
+                //    IdAz_Anagrafica = 1,
+                //    Descrizione = "ROL",
+                //    Codice = "ROL"
+                //});
+
+                //retVal.Par_Giustificativi.Add(new Par_GiustificativiModel()
+                //{
+                //    Id = 3,
+                //    IdAz_Anagrafica = 1,
+                //    Descrizione = "Malattia",
+                //    Codice = "MA"
+                //});
 
 
                 //eliminare
