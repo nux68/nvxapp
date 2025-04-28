@@ -145,7 +145,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                             TimbraturaTipo = TipoTimbratura.SenzaVerso,
                             RichiestaStato = StatoRichiesta.Immessa,
                         };
-                        await _dip_GG_TimbraturaRepository.UpsertAsyncGuid(dip_GG_Timbratura);
+                        await _dip_GG_TimbraturaRepository.UpsertAsync(dip_GG_Timbratura);
                     }
                     }
                 }
