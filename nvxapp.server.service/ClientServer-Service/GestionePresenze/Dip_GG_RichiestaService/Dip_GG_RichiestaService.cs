@@ -53,13 +53,17 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
 
                 if (user_DATA_COMB_DipAna_DipRapp != null && user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro != null)
                 {
+                    List<Dip_GG_Richiesta> richiesta = _dip_GG_RichiestaRepository.FindAll(x => x.IdDip_RapportoLavoro == user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.Id &&
+                        (
+                            (x.Data.Year == model.Data.Year && x.Data.Month == model.Data.Month) ||  
+                            (x.DataA.Year == model.Data.Year && x.DataA.Month == model.Data.Month) ||
+                            (x.Data.Year < model.Data.Year || (x.Data.Year == model.Data.Year && x.Data.Month < model.Data.Month)) &&
+                            (x.DataA.Year > model.Data.Year || (x.DataA.Year == model.Data.Year && x.DataA.Month > model.Data.Month))
+                        )
+                    )
+                    .OrderBy(x => x.Data)
+                    .ToList();
 
-
-                    //TODO qui non va bene , trovare criterio per periodo cavallo mese
-                    List<Dip_GG_Richiesta> richiesta = _dip_GG_RichiestaRepository.FindAll(x => x.Data.Year == model.Data.Year &&
-                                                                                            x.Data.Month == model.Data.Month &&
-                                                                                            x.IdDip_RapportoLavoro == user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.Id)
-                                                                              .OrderBy(x => x.Data).ToList();
 
                     retVal.Dip_GG_RichiestaModel = _mapper.Map<List<Dip_GG_RichiestaModel>>(richiesta);
                 }
@@ -128,25 +132,25 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                     if (user_DATA_COMB_DipAna_DipRapp != null && user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro != null)
                     {
                         if (richiesta != null)
-                    {
-                        string fullDateTime = $"{dip_GG_Richiesta.Data.ToString("dd/MM/yyyy")} {richiesta.hhmm}";
-
-                        // Fai il parsing della stringa completa
-                        DateTime parsedDateTime = DateTime.ParseExact(fullDateTime, "dd/MM/yyyy HH:mm", System.Globalization.CultureInfo.InvariantCulture);
-
-                        Dip_GG_Timbratura dip_GG_Timbratura = new Dip_GG_Timbratura()
                         {
-                            IdDip_RapportoLavoro = user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.Id,
-                            IdDip_Richiesta = dip_GG_Richiesta.Id,
-                            Timbratura = parsedDateTime,
-                            TimbraturaOriginale = parsedDateTime,
-                            TimbraturaArrotondata = parsedDateTime,
-                            GiornoCompetenza = new DateTime(parsedDateTime.Year, parsedDateTime.Month, parsedDateTime.Day),
-                            TimbraturaTipo = TipoTimbratura.SenzaVerso,
-                            RichiestaStato = StatoRichiesta.Immessa,
-                        };
-                        await _dip_GG_TimbraturaRepository.UpsertAsync(dip_GG_Timbratura);
-                    }
+                            string fullDateTime = $"{dip_GG_Richiesta.Data.ToString("dd/MM/yyyy")} {richiesta.hhmm}";
+
+                            // Fai il parsing della stringa completa
+                            DateTime parsedDateTime = DateTime.ParseExact(fullDateTime, "dd/MM/yyyy HH:mm", System.Globalization.CultureInfo.InvariantCulture);
+
+                            Dip_GG_Timbratura dip_GG_Timbratura = new Dip_GG_Timbratura()
+                            {
+                                IdDip_RapportoLavoro = user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.Id,
+                                IdDip_Richiesta = dip_GG_Richiesta.Id,
+                                Timbratura = parsedDateTime,
+                                TimbraturaOriginale = parsedDateTime,
+                                TimbraturaArrotondata = parsedDateTime,
+                                GiornoCompetenza = new DateTime(parsedDateTime.Year, parsedDateTime.Month, parsedDateTime.Day),
+                                TimbraturaTipo = TipoTimbratura.SenzaVerso,
+                                RichiestaStato = StatoRichiesta.Immessa,
+                            };
+                            await _dip_GG_TimbraturaRepository.UpsertAsync(dip_GG_Timbratura);
+                        }
                     }
                 }
             }

@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { catchError, Observable, of, throwError } from 'rxjs';
 import { map } from 'rxjs/operators'; // Import map operator if you plan real sorting/processing
 import { Dip_GG_Timbratura_GetAll_InModel, Dip_GG_TimbraturaModel, TipoTimbratura } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Timbratura/Models/dip-gg-timbratura-model';
-import { StatoRichiesta } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/Models/dip-gg-richiesta-model';
+import { Dip_GG_Richiesta_GetAll_InModel, Dip_GG_RichiestaModel, StatoRichiesta } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/Models/dip-gg-richiesta-model';
 import { Dip_GG_Giustificativi_GetAll_InModel, Dip_GG_GiustificativiModel } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Giustificativi/Models/dip-gg-giustificativi-model';
 import { DipGGGiustificativiService } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Giustificativi/dip-gg-giustificativi.service';
 import { DipGGTimbraturaService } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Timbratura/dip-gg-timbratura.service';
 import { GenericRequest } from '../../ClientServer-Service/ModelsBase/generic-request';
 import { forkJoin } from 'rxjs/internal/observable/forkJoin';
+import { DipGGRichiestaService } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/dip-gg-richiesta.service';
 
 
 
@@ -28,6 +29,7 @@ export interface MonthData {
 export interface TimeSheetRemoteData {
   dip_GG_Timbratura: Dip_GG_TimbraturaModel[];
   dip_GG_Giustificativi: Dip_GG_GiustificativiModel[];
+  dip_GG_Richiesta: Dip_GG_RichiestaModel[];
 }
 
 
@@ -38,7 +40,9 @@ export interface TimeSheetRemoteData {
 export class MokeTimeSheetService {
 
   constructor(private dipGGGiustificativiService: DipGGGiustificativiService,
-              private dipGGTimbraturaService: DipGGTimbraturaService) { }
+              private dipGGTimbraturaService: DipGGTimbraturaService,
+              private dipGGRichiestaService: DipGGRichiestaService) {
+  }
 
 
   getMonthData(year: number, month: number): Observable<MonthData> {
@@ -63,29 +67,39 @@ export class MokeTimeSheetService {
 
     let request_clock = new GenericRequest<Dip_GG_Timbratura_GetAll_InModel>(Dip_GG_Timbratura_GetAll_InModel);
     request_clock.data.year = year;
-    request_clock.data.month = month+1;
+    request_clock.data.month = month + 1;
+
+    let request_rich = new GenericRequest<Dip_GG_Richiesta_GetAll_InModel>(Dip_GG_Richiesta_GetAll_InModel);
+    request_rich.data.year = year;
+    request_rich.data.month = month + 1;
 
     // 2. Define the Observables for the API calls (DO NOT subscribe yet)
     const justificationsObservable$ = this.dipGGGiustificativiService.GetAll(request_Just);
     const clockingsObservable$ = this.dipGGTimbraturaService.GetAll(request_clock);
+    const requestObservable$ = this.dipGGRichiestaService.GetAll(request_clock);
+
+    
 
     // 3. Use forkJoin to execute both Observables in parallel
     // It will emit an object with the results once BOTH calls complete
     return forkJoin({
       // Assign keys to easily access the results later
       justResult: justificationsObservable$,
-      clockResult: clockingsObservable$
+      clockResult: clockingsObservable$,
+      requestResult: requestObservable$
     }).pipe(
       // 4. Use the 'map' operator to transform the combined results
       map(results => {
 
         const giustificativiArray = results.justResult?.data?.dip_GG_Giustificativi || [];
         const timbratureArray = results.clockResult?.data?.dip_GG_Timbratura || [];
+        const richiesteArray = results.requestResult?.data?.dip_GG_Richiesta || [];
 
         // Crea l'oggetto finale TimeSheetRemoteData
         const remoteData: TimeSheetRemoteData = {
           dip_GG_Giustificativi: giustificativiArray,
-          dip_GG_Timbratura: timbratureArray
+          dip_GG_Timbratura: timbratureArray,
+          dip_GG_Richiesta: richiesteArray
         };
 
         console.log('Both calls finished. Combined data:', remoteData);
