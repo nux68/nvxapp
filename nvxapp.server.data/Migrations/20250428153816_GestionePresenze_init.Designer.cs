@@ -12,7 +12,7 @@ using nvxapp.server.data.Infrastructure;
 namespace nvxapp.server.data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250428104056_GestionePresenze_init")]
+    [Migration("20250428153816_GestionePresenze_init")]
     partial class GestionePresenze_init
     {
         /// <inheritdoc />

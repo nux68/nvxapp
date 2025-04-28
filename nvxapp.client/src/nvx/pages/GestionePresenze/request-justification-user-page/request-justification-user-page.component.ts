@@ -110,16 +110,41 @@ export class RequestJustificationUserPageComponent implements OnInit {
     this.updateHoursFormatted();
   }
 
-  // Resto del codice rimane invariato...
+  // Funzione per confrontare due date in formato dd/mm/yyyy
+  compareDates(date1: string, date2: string): number {
+    // Converte da formato dd/mm/yyyy a Date objects per confronto
+    const [day1, month1, year1] = date1.split('/').map(Number);
+    const [day2, month2, year2] = date2.split('/').map(Number);
+
+    const d1 = new Date(year1, month1 - 1, day1);
+    const d2 = new Date(year2, month2 - 1, day2);
+
+    // Ritorna -1 se d1 < d2, 0 se uguali, 1 se d1 > d2
+    return d1 < d2 ? -1 : d1 > d2 ? 1 : 0;
+  }
 
   updateStartDate(event: any) {
     const selectedDate = new Date(event.detail.value);
     this.formattedStartDate = this.stringHelperService.Date_To_S_ddmmyyyy(selectedDate);
+
+    // Controlla se la data di inizio è successiva alla data di fine
+    if (this.compareDates(this.formattedStartDate, this.formattedEndDate) > 0) {
+      // Aggiorna la data di fine per farla coincidere con la data di inizio
+      this.endDate = event.detail.value;
+      this.formattedEndDate = this.formattedStartDate;
+    }
   }
 
   updateEndDate(event: any) {
     const selectedDate = new Date(event.detail.value);
     this.formattedEndDate = this.stringHelperService.Date_To_S_ddmmyyyy(selectedDate);
+
+    // Controlla se la data di fine è precedente alla data di inizio
+    if (this.compareDates(this.formattedEndDate, this.formattedStartDate) < 0) {
+      // Aggiorna la data di inizio per farla coincidere con la data di fine
+      this.startDate = event.detail.value;
+      this.formattedStartDate = this.formattedEndDate;
+    }
   }
 
   increaseHours() {
