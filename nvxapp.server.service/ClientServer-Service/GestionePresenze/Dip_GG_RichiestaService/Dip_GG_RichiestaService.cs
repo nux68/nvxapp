@@ -163,16 +163,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
         {
             if (user_DATA_COMB_DipAna_DipRapp != null && user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro != null)
             {
-                //Dip_GG_Giustificativi dip_GG_Giustificativi = new Dip_GG_Giustificativi()
-                //{
-                //    IdDip_RapportoLavoro = user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.Id,
-                //    IdDip_Richiesta = dip_GG_Richiesta.Id,
-                //    IdPar_Giustificativi = 0
-                //};
-                //dip_GG_Giustificativi = await _Dip_GG_GiustificativiRepository.UpsertAsync(dip_GG_Giustificativi);
-
-
-
                 if (user_DATA_COMB_DipAna_DipRapp != null && user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro != null)
                 {
 
@@ -195,7 +185,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                                         IdDip_Richiesta = dip_GG_Richiesta.Id,
                                         IdPar_Giustificativi = richiesta.IdPar_Giustificativi,
                                         RichiestaStato = StatoRichiesta.Immessa,
-                                        InputType = JustificationInputType.Manual, // MIGLIORARE
+                                        InputType = richiesta.AllDay?  JustificationInputType.AllDay: JustificationInputType.Manual, 
+                                        Hours= TimeSpan.Parse(richiesta.hhmm) 
                                     };
                                     await _Dip_GG_GiustificativiRepository.UpsertAsync(dip_GG_Giustificativi);
                                 }

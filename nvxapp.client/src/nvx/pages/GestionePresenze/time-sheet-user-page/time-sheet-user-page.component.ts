@@ -5,7 +5,7 @@ import { MonthNavigatorService } from '../../../Utility/infrastructure/month-nav
 import { SignalrService } from '../../../Utility/infrastructure/signalr.service';
 import { MokeTimeSheetService, MonthData } from '../../../Utility/GestionePresenze/moke-time-sheet.service';
 import { Dip_GG_TimbraturaModel, TipoTimbratura } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Timbratura/Models/dip-gg-timbratura-model';
-import { Dip_GG_GiustificativiModel } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Giustificativi/Models/dip-gg-giustificativi-model';
+import { Dip_GG_GiustificativiModel, JustificationInputType } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Giustificativi/Models/dip-gg-giustificativi-model';
 
 @Component({
   selector: 'app-time-sheet-user-page',
@@ -160,7 +160,7 @@ export class TimeSheetUserPageComponent implements OnInit {
   }
   
   hasFullDayJustification(justifications: Dip_GG_GiustificativiModel[] | undefined): boolean {
-    return false; //justifications?.some(j => j.isFullDay) || false;
+    return justifications?.some(j => j.inputType == JustificationInputType.AllDay,) || false;
   }
 
   // Restituisce classi CSS specifiche per tipo di giustificativo
