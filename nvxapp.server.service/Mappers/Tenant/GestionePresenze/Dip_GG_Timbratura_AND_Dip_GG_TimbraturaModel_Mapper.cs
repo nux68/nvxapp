@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using nvxapp.server.data.Entities.Tenant;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_TimbraturaService.Models;
-using nvxapp.server.service.Service.Infrastructure.MyTableService.Models;
+
 
 namespace nvxapp.server.service.Mappers.Tenant.GestionePresenze
 {

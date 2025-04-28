@@ -54,7 +54,7 @@
               <ng-container *ngIf="day.dip_GG_Giustificativi && day.dip_GG_Giustificativi.length > 0">
                 <div class="justifications">
                   <div class="justification" *ngFor="let just of day.dip_GG_Giustificativi" [ngClass]="getJustificationClass(just)">
-                    {{ just.id | parGiustificativiToLongText}}
+                    {{ just.idPar_Giustificativi | parGiustificativiToLongText}}
                   </div>
                 </div>
               </ng-container>

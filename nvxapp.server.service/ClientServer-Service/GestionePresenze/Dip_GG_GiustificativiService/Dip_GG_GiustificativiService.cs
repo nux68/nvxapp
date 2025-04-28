@@ -8,7 +8,9 @@ using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Entities.Tenant;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_GiustificativiService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_TimbraturaService.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.ServerModels;
@@ -18,6 +20,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Giu
 
     public class Dip_GG_GiustificativiService : ServiceBase, IDip_GG_GiustificativiService
     {
+        private readonly IGestionePresenzeUserUtility _gestionePresenzeUserUtility;
         private readonly IDip_GG_GiustificativiRepository _Dip_GG_GiustificativiRepository;
 
         public Dip_GG_GiustificativiService(IMapper mapper,
@@ -27,8 +30,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Giu
                                   IHttpContextAccessor httpContextAccessor,
                                   IConfiguration configuration,
 
+                                  IGestionePresenzeUserUtility gestionePresenzeUserUtility,
                                   IDip_GG_GiustificativiRepository Dip_GG_GiustificativiRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
+            _gestionePresenzeUserUtility = gestionePresenzeUserUtility;
             _Dip_GG_GiustificativiRepository = Dip_GG_GiustificativiRepository;
         }
 
@@ -39,22 +44,42 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Giu
                 Dip_GG_Giustificativi_GetAll_OutModel retVal = new Dip_GG_Giustificativi_GetAll_OutModel();
 
 
-                for (int i = 1; i < 6;  i++)
+                //for (int i = 1; i < 6;  i++)
+                //{
+                //    retVal.Dip_GG_Giustificativi.Add(new Dip_GG_GiustificativiModel()
+                //    {
+                //        Id = i,
+                //        IdDip_RapportoLavoro = 1,
+                //        Data = DateTime.Now.AddDays(i),
+                //        IdJustificationType = 0,
+                //        InputType = JustificationInputType.Manual,
+                //        Hours = new TimeSpan(4,0,0),
+                //        From = new TimeSpan(9, 0,0),
+                //        IdPar_Giustificativi = 1,
+                //        RichiestaStato = StatoRichiesta.Diretta,
+                //        IdDip_Richiesta = 0
+                //    });
+                //}
+
+
+                User_DATA_COMB_DipAna_DipRapp user_DATA_COMB_DipAna_DipRapp = await _gestionePresenzeUserUtility.Get_DipAna_DipRapp(this.CurrentUserId, true);
+
+                if (user_DATA_COMB_DipAna_DipRapp != null && user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro != null)
                 {
-                    retVal.Dip_GG_Giustificativi.Add(new Dip_GG_GiustificativiModel()
-                    {
-                        Id = i,
-                        IdDip_RapportoLavoro = 1,
-                        Data = DateTime.Now.AddDays(i),
-                        IdJustificationType = 0,
-                        InputType = JustificationInputType.Manual,
-                        Hours = new TimeSpan(4,0,0),
-                        From = new TimeSpan(9, 0,0),
-                        IdPar_Giustificativi = 1,
-                        RichiestaStato = StatoRichiesta.Diretta,
-                        IdDip_Richiesta = 0
-                    });
+
+                    List<Dip_GG_Giustificativi> just = _Dip_GG_GiustificativiRepository.FindAll(x => x.Data.Year == model.Data.Year &&
+                                                                                              x.Data.Month == model.Data.Month &&
+                                                                                              x.IdDip_RapportoLavoro == user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.Id)
+                                                                                          //.OrderBy(x => x.TimbraturaOriginale)
+                                                                                          .ToList();
+
+                    
+
+                    retVal.Dip_GG_Giustificativi = _mapper.Map<List<Dip_GG_GiustificativiModel>>(just);
+
                 }
+
+
 
 
                 //eliminare
