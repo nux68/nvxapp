@@ -21,7 +21,10 @@ export class RouteAttendanceTrackingService {
 
 
       //admin
-      { path: 'admintimesheet', loadChildren: () => import('../../pages/GestionePresenze/time-sheet-admin-page/time-sheet-admin-page.module').then(m => m.TimeSheetAdminModule), canActivate: [RoleGuard4CompanyAdmin] },
+      { path: 'admintimesheet',    loadChildren: () => import('../../pages/GestionePresenze/time-sheet-admin-page/time-sheet-admin-page.module').then(m => m.TimeSheetAdminModule), canActivate: [RoleGuard4CompanyAdmin] },
+      { path: 'justificationlist', loadChildren: () => import('../../pages/GestionePresenze/justification-list-page/justification-list-page.module').then(m => m.JustificationListPageModule), canActivate: [RoleGuard4CompanyAdmin] },
+      { path: 'justificationedit', loadChildren: () => import('../../pages/GestionePresenze/justification-edit-page/justification-edit-page.module').then(m => m.JustificationEditPageModule), canActivate: [RoleGuard4CompanyAdmin] },
+      
 
     ];
   }

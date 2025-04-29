@@ -17,12 +17,12 @@ import { UserDealerGetInModel, UserDealerEditModel, UserDealerPutInModel } from 
 import { RoleCode } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-roles-model';
 
 @Component({
-  selector: 'app-user-dealer-edit-page',
-  templateUrl: './user-dealer-edit-page.component.html',
-  styleUrls: ['./user-dealer-edit-page.component.scss'],
-  standalone:false
-})
-export class UserDealerEditPageComponent extends BasePageConfirmCancelComponent<UserDealerEditModel> {
+  selector: 'app-justification-edit-page',
+  templateUrl: './justification-edit-page.component.html',
+  styleUrls: ['./justification-edit-page.component.scss'],
+  standalone: false
+}) 
+export class JustificationEditPageComponent extends BasePageConfirmCancelComponent<UserDealerEditModel> {
 
   modifiedDescription: string | null = null;
 
@@ -114,4 +114,5 @@ const matchPasswords: ValidatorFn = (control: AbstractControl): ValidationErrors
 
   return password === confirmPassword ? null : { notMatching: true };
 };
+
 

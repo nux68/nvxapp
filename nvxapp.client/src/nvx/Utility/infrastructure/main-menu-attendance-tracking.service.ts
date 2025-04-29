@@ -15,7 +15,8 @@ export class MainMenuAttendanceTrackingService implements iMainMenuService {
   public get Pages4CompanyAdmin(): MainMenuItem[] {
 
     return [
-      { title: 'Admin Time Sheet', component: "TimeSheetAdminPageComponent", url: '/admintimesheet', icon: 'ellipse' }
+      { title: 'Admin Time Sheet', component: "TimeSheetAdminPageComponent", url: '/admintimesheet', icon: 'ellipse' },
+      { title: 'Justifications'  , component: "JustificationListPageComponent", url: '/justificationlist', icon: 'ellipse' },
     ];
 
   }
