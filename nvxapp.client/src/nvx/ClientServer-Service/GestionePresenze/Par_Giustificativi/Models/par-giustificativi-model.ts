@@ -19,5 +19,8 @@ export class Par_GiustificativiModel  {
   public descrizione!: string;
   public codice!: string;
 
+  public backgroundColor!: string;
+  public textColor!: string;
+
 }
 

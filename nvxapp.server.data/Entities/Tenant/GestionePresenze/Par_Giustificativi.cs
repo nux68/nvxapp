@@ -21,6 +21,12 @@ namespace nvxapp.server.data.Entities.Tenant
         [MaxLength(10)]
         public string? Codice { get; set; }
 
+        [MaxLength(7)]
+        public string? BackgroundColor { get; set; }
+        [MaxLength(7)]
+        public string? TextColor { get; set; }
+
+
         public ICollection<Dip_GG_Giustificativi>? Dip_GG_Giustificativi { get; set; }
 
     }

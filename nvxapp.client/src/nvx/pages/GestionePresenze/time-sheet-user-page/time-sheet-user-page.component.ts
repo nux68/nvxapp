@@ -7,6 +7,7 @@ import { MokeTimeSheetService, MonthData } from '../../../Utility/GestionePresen
 import { Dip_GG_TimbraturaModel, TipoTimbratura } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Timbratura/Models/dip-gg-timbratura-model';
 import { Dip_GG_GiustificativiModel, JustificationInputType } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Giustificativi/Models/dip-gg-giustificativi-model';
 import { StatoRichiesta } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/Models/dip-gg-richiesta-model';
+import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
 
 @Component({
   selector: 'app-time-sheet-user-page',
@@ -35,7 +36,8 @@ export class TimeSheetUserPageComponent implements OnInit {
   constructor(
     private signalrService: SignalrService,
     public monthNavigatorService: MonthNavigatorService,
-    private calendarDataService: MokeTimeSheetService
+    private calendarDataService: MokeTimeSheetService,
+    private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService
   ) {
     this.title = 'TimeSheetUser';
     this.weeks = [];
@@ -153,17 +155,7 @@ export class TimeSheetUserPageComponent implements OnInit {
   hasFullDayJustification(justifications: Dip_GG_GiustificativiModel[] | undefined): boolean {
     return justifications?.some(j => j.inputType == JustificationInputType.AllDay,) || false;
   }
-
-  // Restituisce classi CSS specifiche per tipo di giustificativo
-  getJustificationClass(justification: Dip_GG_GiustificativiModel): string {
-    //switch (justification.code.toUpperCase()) {
-    //  case 'FER': case 'FST': return 'justification-vacation';
-    //  case 'MAL': return 'justification-sick';
-    //  case 'PER': return 'justification-leave';
-    //  default: return 'justification-other';
-    //}
-    return 'justification-other';
-  }
+  
 
   getDayClass(day: any, index: number): { [key: string]: boolean } {
     return {
@@ -225,4 +217,23 @@ export class TimeSheetUserPageComponent implements OnInit {
         return 'Unknown Status';
     }
   }
+
+  get_dip_GG_Giustificativi_backColor(ggJust: Dip_GG_GiustificativiModel): string {
+    
+    var just = this.sharedParameterGestionePresenzeService.Par_Giustificativi.find(x => x.id == ggJust.idPar_Giustificativi);
+    if (just)
+      return just.backgroundColor;
+    else
+      return null;
+  }
+
+  get_dip_GG_Giustificativi_txtColor(ggJust: Dip_GG_GiustificativiModel): string {
+
+    var just = this.sharedParameterGestionePresenzeService.Par_Giustificativi.find(x => x.id == ggJust.idPar_Giustificativi);
+    if (just)
+      return just.textColor;
+    else
+      return null;
+  }
+
 }

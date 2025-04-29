@@ -62,7 +62,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Giusti
                         par_Giustificativi = new Par_Giustificativi() { 
                              IdAz_Anagrafica= company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Anagrafica.Id,
                              Codice="MA",
-                             Descrizione="Malattia"
+                             Descrizione="Malattia",
+                             BackgroundColor= "#ff0000",
+                             TextColor = "#ffffff"
                         };
                         par_Giustificativi = await _par_GiustificativiRepository.UpsertAsync(par_Giustificativi);
                     }
@@ -77,7 +79,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Giusti
                         {
                             IdAz_Anagrafica = company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Anagrafica.Id,
                             Codice = "ROL",
-                            Descrizione = "ROL"
+                            Descrizione = "ROL",
+                            BackgroundColor = "#7fff00",
+                            TextColor = "#000000"
                         };
                         par_Giustificativi = await _par_GiustificativiRepository.UpsertAsync(par_Giustificativi);
                     }
@@ -92,7 +96,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Giusti
                         {
                             IdAz_Anagrafica = company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Anagrafica.Id,
                             Codice = "FE",
-                            Descrizione = "Ferie"
+                            Descrizione = "Ferie",
+                            BackgroundColor = "#ff8c00",
+                            TextColor = "#ffffff"
                         };
                         par_Giustificativi = await _par_GiustificativiRepository.UpsertAsync(par_Giustificativi);
                     }

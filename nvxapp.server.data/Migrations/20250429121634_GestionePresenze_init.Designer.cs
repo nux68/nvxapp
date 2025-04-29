@@ -12,7 +12,7 @@ using nvxapp.server.data.Infrastructure;
 namespace nvxapp.server.data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250428153816_GestionePresenze_init")]
+    [Migration("20250429121634_GestionePresenze_init")]
     partial class GestionePresenze_init
     {
         /// <inheritdoc />
@@ -1218,6 +1218,10 @@ namespace nvxapp.server.data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("BackgroundColor")
+                        .HasMaxLength(7)
+                        .HasColumnType("character varying(7)");
+
                     b.Property<string>("ChangeUser")
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
@@ -1240,6 +1244,10 @@ namespace nvxapp.server.data.Migrations
 
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("TextColor")
+                        .HasMaxLength(7)
+                        .HasColumnType("character varying(7)");
 
                     b.HasKey("Id");
 
