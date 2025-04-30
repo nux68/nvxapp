@@ -89,10 +89,12 @@ export class JustificationEditPageComponent extends BasePageConfirmCancelCompone
     return this.parGiustificativiService.Par_GiustificativiPut(request).pipe(
       map(() => {
 
-        let request: GenericRequest<Par_GiustificativiInModel> = new GenericRequest<Par_GiustificativiInModel>(Par_GiustificativiInModel);
-        this.parGiustificativiService.GetAll(request).subscribe(res => {
-          this.sharedParameterGestionePresenzeService.Par_Giustificativi =  res.data.par_Giustificativi;
-        });
+        //TODO DISAB SHARED DATA
+        // Aggiorno il dato condiviso
+        //let request: GenericRequest<Par_GiustificativiInModel> = new GenericRequest<Par_GiustificativiInModel>(Par_GiustificativiInModel);
+        //this.parGiustificativiService.GetAll(request).subscribe(res => {
+        //  this.sharedParameterGestionePresenzeService.Par_Giustificativi =  res.data.par_Giustificativi;
+        //});
 
         return true;
       }), // Restituisce true in caso di successo

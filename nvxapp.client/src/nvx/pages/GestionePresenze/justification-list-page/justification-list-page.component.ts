@@ -25,6 +25,7 @@ export class JustificationListPageComponent implements OnInit {
   constructor(private navCtrl: NavController,
               private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
               public fabMenuService: FabMenuService,
+              private parGiustificativiService: ParGiustificativiService,
               private userInterfaceService: UserInterfaceService,
               private userNavigationService: UserNavigationService) {
 
@@ -32,17 +33,21 @@ export class JustificationListPageComponent implements OnInit {
     this.btnEdit = userInterfaceService.Btn_Modifica;
     this.btnEdit.event = this.handleButtonEditClick;
 
-    this.sharedParameterGestionePresenzeService.Par_Giustificativi$.subscribe(res => {
-      this.par_GiustificativiList = this.sharedParameterGestionePresenzeService.Par_Giustificativi;
-    });
+    //TODO DISAB SHARED DATA
+    //this.sharedParameterGestionePresenzeService.Par_Giustificativi$.subscribe(res => {
+    //  this.par_GiustificativiList = this.sharedParameterGestionePresenzeService.Par_Giustificativi;
+    //});
 
   }
 
   ionViewWillEnter() {
-    //non li leggo ogni volta
 
+    //TODO DISAB SHARED DATA
+    let request: GenericRequest<Par_GiustificativiInModel> = new GenericRequest<Par_GiustificativiInModel>(Par_GiustificativiInModel);
+    this.parGiustificativiService.GetAll(request).subscribe(res => {
+      this.par_GiustificativiList = res.data.par_Giustificativi;
+    });
 
-    //this.par_GiustificativiList = this.sharedParameterGestionePresenzeService.Par_Giustificativi;
 
     this.fabMenuService.fabMenuItem = [
 
