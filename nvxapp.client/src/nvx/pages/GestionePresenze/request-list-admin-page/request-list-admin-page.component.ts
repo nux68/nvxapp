@@ -8,13 +8,14 @@ import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic
 import { ParGiustificativiService } from '../../../ClientServer-Service/GestionePresenze/Par_Giustificativi/par-giustificativi.service';
 
 
+
 @Component({
-  selector: 'app-justification-list-page',
-  templateUrl: './justification-list-page.component.html',
-  styleUrls: ['./justification-list-page.component.scss'],
+  selector: 'app-request-list-admin-page',
+  templateUrl: './request-list-admin-page.component.html',
+  styleUrls: ['./request-list-admin-page.component.scss'],
   standalone: false
 }) 
-export class JustificationListPageComponent implements OnInit {
+export class RequestListAdminPageComponent implements OnInit {
 
   public title!: string;
   public searchText!: string;
@@ -22,12 +23,12 @@ export class JustificationListPageComponent implements OnInit {
   public btnEdit: ButtonItem;
 
   constructor(private navCtrl: NavController,
-              private parGiustificativiService: ParGiustificativiService,
-              public fabMenuService: FabMenuService,
-              private userInterfaceService: UserInterfaceService,
-              private userNavigationService: UserNavigationService) {
+    private parGiustificativiService: ParGiustificativiService,
+    public fabMenuService: FabMenuService,
+    private userInterfaceService: UserInterfaceService,
+    private userNavigationService: UserNavigationService) {
 
-    this.title = 'Justifications';
+    this.title = 'Request List Admin';
     this.btnEdit = userInterfaceService.Btn_Modifica;
     this.btnEdit.event = this.handleButtonEditClick;
   }

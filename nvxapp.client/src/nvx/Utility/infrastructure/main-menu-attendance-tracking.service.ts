@@ -15,19 +15,20 @@ export class MainMenuAttendanceTrackingService implements iMainMenuService {
   public get Pages4CompanyAdmin(): MainMenuItem[] {
 
     return [
+      { title: 'Request List Admin', component: "JustificationListPageComponent", url: '/requestlistadmin', icon: 'ellipse' },
       { title: 'Admin Time Sheet', component: "TimeSheetAdminPageComponent", url: '/admintimesheet', icon: 'ellipse' },
-      { title: 'Justifications'  , component: "JustificationListPageComponent", url: '/justificationlist', icon: 'ellipse' },
+      { title: 'Justifications', component: "JustificationListPageComponent", url: '/justificationlist', icon: 'ellipse' },
     ];
 
   }
   public get Pages4User(): MainMenuItem[] {
     return [
+      { title: 'Request List User', component: "RequestListUserPageComponent", url: '/requestlistuser', icon: 'person' },
       { title: 'User Time Sheet', component: "TimeSheetUserPageComponent", url: '/usertimesheet', icon: 'person' },
-
       { title: 'Time Clock User', component: "TimeClockUserPageComponent", url: '/timeclockuser', icon: 'person' },
-
       { title: 'Request Justification User', component: "RequestJustificationUserPageComponent", url: '/requestjustificationuser', icon: 'person' },
       { title: 'Request Clocking User', component: "RequestClockingUserPageComponent", url: '/requestclockinguser', icon: 'person' },
+      
     ];
   }
 
