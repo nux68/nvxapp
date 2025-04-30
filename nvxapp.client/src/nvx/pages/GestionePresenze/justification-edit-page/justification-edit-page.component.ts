@@ -9,8 +9,9 @@ import { map, catchError } from 'rxjs';
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { StringHelperService } from '../../../Utility/infrastructure/string-helper.service';
 import { ParameterService } from '../../../ClientServer-Service/Infrastructure/Parameter/parameter.service';
-import { Par_GiustificativiGetInModel, Par_GiustificativiModel, Par_GiustificativiPutInModel } from '../../../ClientServer-Service/GestionePresenze/Par_Giustificativi/Models/par-giustificativi-model';
+import { Par_GiustificativiGetInModel, Par_GiustificativiInModel, Par_GiustificativiModel, Par_GiustificativiPutInModel } from '../../../ClientServer-Service/GestionePresenze/Par_Giustificativi/Models/par-giustificativi-model';
 import { ParGiustificativiService } from '../../../ClientServer-Service/GestionePresenze/Par_Giustificativi/par-giustificativi.service';
+import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
 
 @Component({
   selector: 'app-justification-edit-page',
@@ -26,6 +27,7 @@ export class JustificationEditPageComponent extends BasePageConfirmCancelCompone
     protected override userInterfaceService: UserInterfaceService,
     protected override fb: FormBuilder,
     private parameterService: ParameterService,
+    private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
     private stringHelperService: StringHelperService,
     private parGiustificativiService: ParGiustificativiService) {
 
@@ -85,7 +87,15 @@ export class JustificationEditPageComponent extends BasePageConfirmCancelCompone
     request.data.par_Giustificativi = editModel;
 
     return this.parGiustificativiService.Par_GiustificativiPut(request).pipe(
-      map(() => true), // Restituisce true in caso di successo
+      map(() => {
+
+        let request: GenericRequest<Par_GiustificativiInModel> = new GenericRequest<Par_GiustificativiInModel>(Par_GiustificativiInModel);
+        this.parGiustificativiService.GetAll(request).subscribe(res => {
+          this.sharedParameterGestionePresenzeService.Par_Giustificativi =  res.data.par_Giustificativi;
+        });
+
+        return true;
+      }), // Restituisce true in caso di successo
       catchError((error) => {
         console.error('Errore durante la chiamata API:', error);
         return [false]; // Restituisce false in caso di errore

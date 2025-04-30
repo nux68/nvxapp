@@ -6,6 +6,7 @@ import { UserNavigationService } from '../../../Utility/infrastructure/user-navi
 import { Par_GiustificativiInModel, Par_GiustificativiModel } from '../../../ClientServer-Service/GestionePresenze/Par_Giustificativi/Models/par-giustificativi-model';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { ParGiustificativiService } from '../../../ClientServer-Service/GestionePresenze/Par_Giustificativi/par-giustificativi.service';
+import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
 
 
 @Component({
@@ -22,7 +23,7 @@ export class JustificationListPageComponent implements OnInit {
   public btnEdit: ButtonItem;
 
   constructor(private navCtrl: NavController,
-              private parGiustificativiService: ParGiustificativiService,
+              private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
               public fabMenuService: FabMenuService,
               private userInterfaceService: UserInterfaceService,
               private userNavigationService: UserNavigationService) {
@@ -30,14 +31,18 @@ export class JustificationListPageComponent implements OnInit {
     this.title = 'Justifications';
     this.btnEdit = userInterfaceService.Btn_Modifica;
     this.btnEdit.event = this.handleButtonEditClick;
+
+    this.sharedParameterGestionePresenzeService.Par_Giustificativi$.subscribe(res => {
+      this.par_GiustificativiList = this.sharedParameterGestionePresenzeService.Par_Giustificativi;
+    });
+
   }
 
   ionViewWillEnter() {
+    //non li leggo ogni volta
 
-    let request: GenericRequest<Par_GiustificativiInModel> = new GenericRequest<Par_GiustificativiInModel>(Par_GiustificativiInModel);
-    this.parGiustificativiService.GetAll(request).subscribe(res => {
-      this.par_GiustificativiList = res.data.par_Giustificativi;
-    });
+
+    //this.par_GiustificativiList = this.sharedParameterGestionePresenzeService.Par_Giustificativi;
 
     this.fabMenuService.fabMenuItem = [
 

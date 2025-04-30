@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { catchError, of, retry, tap, timer } from 'rxjs';
+import { BehaviorSubject, catchError, Observable, of, retry, tap, timer } from 'rxjs';
 import { GenericRequest } from '../ClientServer-Service/ModelsBase/generic-request';
 import { Par_GiustificativiInModel, Par_GiustificativiModel } from '../ClientServer-Service/GestionePresenze/Par_Giustificativi/Models/par-giustificativi-model';
 import { ParGiustificativiService } from '../ClientServer-Service/GestionePresenze/Par_Giustificativi/par-giustificativi.service';
-import { RolesListInModel } from '../ClientServer-Service/Infrastructure/Parameter/Models/roles-model';
+import { RolesListInModel, RolesModel } from '../ClientServer-Service/Infrastructure/Parameter/Models/roles-model';
 
 @Injectable({
   providedIn: 'root'
@@ -111,7 +111,15 @@ export class SharedParameterGestionePresenzeService {
   public get Par_Giustificativi(): Par_GiustificativiModel[] | null {
     return this._par_Giustificativi;
   }
+  public set Par_Giustificativi(value: Par_GiustificativiModel[] | null) {
+    this._par_Giustificativi = value;
+    this._par_GiustificativiSubject.next(value);
+  }
 
+  private _par_GiustificativiSubject = new BehaviorSubject<Par_GiustificativiModel[]>([]);
+  public get Par_Giustificativi$(): Observable<Par_GiustificativiModel[] | []> {
+    return this._par_GiustificativiSubject.asObservable();
+  }
 
 
 }
