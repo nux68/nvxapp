@@ -32,11 +32,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Rappor
             _dip_RapportoLavoroRepository = dip_RapportoLavoroRepository;
         }
 
-        public virtual async Task<GenericResult<Dip_RapportoLavoroOutModel>> GetAll(GenericRequest<Dip_RapportoLavoroInModel> model, Boolean isSubProcess)
+        public virtual async Task<GenericResult<Dip_RapportoLavoro_GetAll_OutModel>> GetAll(GenericRequest<Dip_RapportoLavoro_GetAll_InModel> model, Boolean isSubProcess)
         {
             return await ExecuteAction(model, async () =>
             {
-                Dip_RapportoLavoroOutModel retVal = new Dip_RapportoLavoroOutModel();
+                Dip_RapportoLavoro_GetAll_OutModel retVal = new Dip_RapportoLavoro_GetAll_OutModel();
 
                 //eliminare
                 // Nessun 'await' qui
@@ -50,6 +50,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Rappor
 
     public interface IDip_RapportoLavoroService : IServiceBase
     {
-        public Task<GenericResult<Dip_RapportoLavoroOutModel>> GetAll( GenericRequest<Dip_RapportoLavoroInModel> model, Boolean isSubProcess);
+        public Task<GenericResult<Dip_RapportoLavoro_GetAll_OutModel>> GetAll( GenericRequest<Dip_RapportoLavoro_GetAll_InModel> model, Boolean isSubProcess);
     }
 }

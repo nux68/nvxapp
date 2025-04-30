@@ -5,7 +5,7 @@ import { environment } from '../../../../environments/environment';
 import { GenericRequest } from '../../ModelsBase/generic-request';
 import { GenericResult } from '../../ModelsBase/generic-result';
 import { map, Observable } from 'rxjs';
-import { Dip_AnagraficaInModel, Dip_AnagraficaOutModel } from './Models/dip-anagrafica-model';
+import { Dip_Anagrafica_GetAll_InModel, Dip_Anagrafica_GetAll_OutModel } from './Models/dip-anagrafica-model';
 
 @Injectable({
   providedIn: 'root'
@@ -16,9 +16,9 @@ export class DipAnagraficaService {
     private authService: AuthService
   ) { }
 
-  GetAll(model: GenericRequest<Dip_AnagraficaInModel>): Observable<GenericResult<Dip_AnagraficaOutModel>> {
+  GetAll(model: GenericRequest<Dip_Anagrafica_GetAll_InModel>): Observable<GenericResult<Dip_Anagrafica_GetAll_OutModel>> {
 
-    return this.http.post<GenericResult<Dip_AnagraficaOutModel>>(environment.remoteData.apiUri + 'Dip_Anagrafica/GetAll', model)
+    return this.http.post<GenericResult<Dip_Anagrafica_GetAll_OutModel>>(environment.remoteData.apiUri + 'Dip_Anagrafica/GetAll', model)
       .pipe(
         map(r => {
           return r;

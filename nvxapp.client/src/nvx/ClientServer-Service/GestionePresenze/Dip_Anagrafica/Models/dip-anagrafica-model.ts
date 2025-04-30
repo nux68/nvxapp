@@ -1,19 +1,29 @@
 import { ModelResult } from "../../../ModelsBase/model-result";
+import { Dip_RapportoLavoroModel } from "../../Dip_RapportoLavoro/Models/dip-rapporto-lavoro-model";
 
 
+export class Dip_AnagraficaModel {
 
-export class Dip_AnagraficaInModel {
+  public userName: string;
+  public idDip_Anagrafica!: number;
+  public idAspNetUsers: string;
+  public cognome!: string;
+  public nome!: string;
+
+  public dip_RapportoLavoro: Dip_RapportoLavoroModel[];
+
+}
+
+export class Dip_Anagrafica_GetAll_InModel {
   
 }
 
-export class Dip_AnagraficaOutModel extends ModelResult {
+export class Dip_Anagrafica_GetAll_OutModel extends ModelResult {
 
-  public Dip_AnagraficaModel: Dip_AnagraficaModel;
-
-}
-
-export class Dip_AnagraficaModel  {
-  
+ 
+  public dip_Anagrafica: Dip_AnagraficaModel[];
 
 }
+
+
 

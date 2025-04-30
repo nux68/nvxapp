@@ -29,7 +29,7 @@ namespace nvxapp.server.Controllers
         [Authorize]
         [HttpPost]
         [Route("GetAll")]
-        public async Task<GenericResult<Dip_RapportoLavoroOutModel>> GetAll(GenericRequest<Dip_RapportoLavoroInModel> inModel)
+        public async Task<GenericResult<Dip_RapportoLavoro_GetAll_OutModel>> GetAll(GenericRequest<Dip_RapportoLavoro_GetAll_InModel> inModel)
         {
             var res = await _dip_RapportoLavoroService.GetAll(inModel, false);
 

@@ -4,6 +4,8 @@ import { GenericRequest } from '../ClientServer-Service/ModelsBase/generic-reque
 import { Par_GiustificativiInModel, Par_GiustificativiModel } from '../ClientServer-Service/GestionePresenze/Par_Giustificativi/Models/par-giustificativi-model';
 import { ParGiustificativiService } from '../ClientServer-Service/GestionePresenze/Par_Giustificativi/par-giustificativi.service';
 import { RolesListInModel, RolesModel } from '../ClientServer-Service/Infrastructure/Parameter/Models/roles-model';
+import { Dip_Anagrafica_GetAll_InModel, Dip_AnagraficaModel } from '../ClientServer-Service/GestionePresenze/Dip_Anagrafica/Models/dip-anagrafica-model';
+import { DipAnagraficaService } from '../ClientServer-Service/GestionePresenze/Dip_Anagrafica/dip-anagrafica.service';
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +18,9 @@ export class SharedParameterGestionePresenzeService {
 
 
 
-  constructor(private parGiustificativiService: ParGiustificativiService) {}
+  constructor(private parGiustificativiService: ParGiustificativiService,
+              private dipAnagraficaService: DipAnagraficaService   
+  ) { }
 
   
 
@@ -42,6 +46,24 @@ export class SharedParameterGestionePresenzeService {
             // Puoi decidere cosa fare in caso di fallimento finale
             return of(null); // Continua per evitare il blocco
           })),
+
+      this.dipAnagraficaService.GetAll(new GenericRequest<Dip_Anagrafica_GetAll_InModel>(Dip_Anagrafica_GetAll_InModel)).pipe(
+        tap((result) => {
+          this.Dip_Anagrafica = result.data.dip_Anagrafica
+          updateProgress(calls)
+        }),
+        retry({
+          count: 20, // Numero massimo di tentativi
+          delay: (error, retryCount) => {
+            console.error(`Errore rilevato, ritento dopo ${retryCount} secondi:`, error);
+            return timer(500); // Ritenta dopo 0.5 secondi
+          }
+        }),
+        catchError((error) => {
+          console.error(`Errore durante il caricamento delle anagrafiche:`, error);
+          // Puoi decidere cosa fare in caso di fallimento finale
+          return of(null); // Continua per evitare il blocco
+        })),
 
       //this.parGiustificativiService.GetAll(new GenericRequest<Par_GiustificativiInModel>(Par_GiustificativiInModel)).pipe(
       //  tap((result) => {
@@ -119,6 +141,24 @@ export class SharedParameterGestionePresenzeService {
   private _par_GiustificativiSubject = new BehaviorSubject<Par_GiustificativiModel[]>([]);
   public get Par_Giustificativi$(): Observable<Par_GiustificativiModel[] | []> {
     return this._par_GiustificativiSubject.asObservable();
+  }
+
+  
+  
+
+  private _dip_Anagrafica: Dip_AnagraficaModel[] | null = [];
+
+  public get Dip_Anagrafica(): Dip_AnagraficaModel[] | null {
+    return this._dip_Anagrafica;
+  }
+  public set Dip_Anagrafica(value: Dip_AnagraficaModel[] | null) {
+    this._dip_Anagrafica = value;
+    this._dip_AnagraficaSubject.next(value);
+  }
+
+  private _dip_AnagraficaSubject = new BehaviorSubject<Dip_AnagraficaModel[]>([]);
+  public get Dip_Anagrafica$(): Observable<Dip_AnagraficaModel[] | []> {
+    return this._dip_AnagraficaSubject.asObservable();
   }
 
 
