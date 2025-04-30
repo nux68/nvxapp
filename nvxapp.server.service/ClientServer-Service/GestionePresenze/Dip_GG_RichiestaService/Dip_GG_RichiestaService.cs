@@ -11,6 +11,8 @@ using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_RichiestaService.Models;
+using nvxapp.server.service.ClientServer_Service.Infrastructure.Account;
+using nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.ServerModels;
@@ -22,10 +24,15 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
 
     public class Dip_GG_RichiestaService : ServiceBase, IDip_GG_RichiestaService
     {
+        private readonly IAccountService _accountService;
+
         private readonly IGestionePresenzeUserUtility _gestionePresenzeUserUtility;
         private readonly IDip_GG_RichiestaRepository _dip_GG_RichiestaRepository;
         private readonly IDip_GG_TimbraturaRepository _dip_GG_TimbraturaRepository;
-        private readonly IDip_GG_GiustificativiRepository _Dip_GG_GiustificativiRepository;
+        private readonly IDip_GG_GiustificativiRepository _dip_GG_GiustificativiRepository;
+
+        private readonly IDip_AnagraficaRepository _dip_AnagraficaRepository;
+        private readonly IDip_RapportoLavoroRepository _dip_RapportoLavoroRepository;
 
         public Dip_GG_RichiestaService(IMapper mapper,
                                   UserManager<ApplicationUser> userManager,
@@ -34,44 +41,43 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                                   IHttpContextAccessor httpContextAccessor,
                                   IConfiguration configuration,
 
+                                  IAccountService accountService,
+                                  IDip_AnagraficaRepository dip_AnagraficaRepository,
+                                  IDip_RapportoLavoroRepository dip_RapportoLavoroRepository,
                                   IGestionePresenzeUserUtility gestionePresenzeUserUtility,
                                   IDip_GG_RichiestaRepository dip_GG_RichiestaRepository,
                                   IDip_GG_TimbraturaRepository dip_GG_TimbraturaRepository,
                                   IDip_GG_GiustificativiRepository dip_GG_GiustificativiRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
+            _accountService = accountService;
             _gestionePresenzeUserUtility = gestionePresenzeUserUtility;
             _dip_GG_RichiestaRepository = dip_GG_RichiestaRepository;
             _dip_GG_TimbraturaRepository = dip_GG_TimbraturaRepository;
-            _Dip_GG_GiustificativiRepository = dip_GG_GiustificativiRepository;
+            _dip_GG_GiustificativiRepository = dip_GG_GiustificativiRepository;
+            _dip_AnagraficaRepository = dip_AnagraficaRepository;
+            _dip_RapportoLavoroRepository = dip_RapportoLavoroRepository;
+
         }
 
-        public virtual async Task<GenericResult<Dip_GG_Richiesta_GetAll_OutModel>> GetAll(GenericRequest<Dip_GG_Richiesta_GetAll_InModel> model, Boolean isSubProcess)
+        public virtual async Task<GenericResult<Dip_GG_Richiesta_GetAll4User_OutModel>> GetAll4User(GenericRequest<Dip_GG_Richiesta_GetAll4User_InModel> model, Boolean isSubProcess)
         {
             return await ExecuteAction(model, async () =>
             {
-                Dip_GG_Richiesta_GetAll_OutModel retVal = new Dip_GG_Richiesta_GetAll_OutModel();
+                Dip_GG_Richiesta_GetAll4User_OutModel retVal = new Dip_GG_Richiesta_GetAll4User_OutModel();
 
+                //TODO gestire
                 User_DATA_COMB_DipAna_DipRapp user_DATA_COMB_DipAna_DipRapp = await _gestionePresenzeUserUtility.Get_DipAna_DipRapp(this.CurrentUserId, true);
 
                 if (user_DATA_COMB_DipAna_DipRapp != null && user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro != null)
                 {
-                    List<Dip_GG_Richiesta> richiesta = _dip_GG_RichiestaRepository.FindAll(x => x.IdDip_RapportoLavoro == user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.Id &&
-                        (
-                            (x.Data.Year == model.Data.Year && x.Data.Month == model.Data.Month) ||
-                            (x.DataA.Year == model.Data.Year && x.DataA.Month == model.Data.Month) ||
-                            (x.Data.Year < model.Data.Year || (x.Data.Year == model.Data.Year && x.Data.Month < model.Data.Month)) &&
-                            (x.DataA.Year > model.Data.Year || (x.DataA.Year == model.Data.Year && x.DataA.Month > model.Data.Month))
-                        )
-                    )
-                    .OrderBy(x => x.Data)
-                    .ToList();
+                    List<int> idDip_RapportoLavoro = new List<int>();
+                    idDip_RapportoLavoro.Add(user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.Id);
 
+                    List<Dip_GG_Richiesta> richiesta = Get_Dip_GG_Richiesta(idDip_RapportoLavoro, model.Data.Year, model.Data.Month);
+                    richiesta = richiesta.OrderBy(x => x.Data).ToList();
 
                     retVal.Dip_GG_RichiestaModel = _mapper.Map<List<Dip_GG_RichiestaModel>>(richiesta);
                 }
-
-
-
 
                 //eliminare
                 // Nessun 'await' qui
@@ -80,7 +86,34 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                 return retVal;
             }, isSubProcess);
         }
+        public virtual async Task<GenericResult<Dip_GG_Richiesta_GetAll4Admin_OutModel>> GetAll4Admin(GenericRequest<Dip_GG_Richiesta_GetAll4Admin_InModel> model, Boolean isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                Dip_GG_Richiesta_GetAll4Admin_OutModel retVal = new Dip_GG_Richiesta_GetAll4Admin_OutModel();
 
+                GenericRequest<UserCompanyListInModel> req = new GenericRequest<UserCompanyListInModel>();
+                var res = await _accountService.UserCompanyList(req,true);
+                if(res.Success && res.Data != null)
+                {
+                    var UserCompanyList = res.Data.UserCompanyList;
+                    List<string?> idAspNetUsers = UserCompanyList.Select(x => x.IdAspNetUsers).ToList();
+                    List<int> idDip_Anagrafica = _dip_AnagraficaRepository.FindAll(x=> idAspNetUsers.Contains(x.IdAspNetUsers)).Select(x=> x.Id).ToList();
+                    List<int> idDip_RapportoLavoro = _dip_RapportoLavoroRepository.FindAll(x => idDip_Anagrafica.Contains(x.IdDip_Anagrafica)).Select(x => x.Id).ToList();
+
+                    List<Dip_GG_Richiesta> richiesta = Get_Dip_GG_Richiesta(idDip_RapportoLavoro, model.Data.Year, model.Data.Month);
+                    richiesta = richiesta.OrderBy(x => x.Data).ToList();
+
+                    retVal.Dip_GG_RichiestaModel = _mapper.Map<List<Dip_GG_RichiestaModel>>(richiesta);
+                }
+
+                //eliminare
+                // Nessun 'await' qui
+                await Task.Delay(DelayAsyncMethod);
+
+                return retVal;
+            }, isSubProcess);
+        }
         public virtual async Task<GenericResult<Dip_GG_Richiesta_Send_OutModel>> Send(GenericRequest<Dip_GG_Richiesta_Send_InModel> model, Boolean isSubProcess)
         {
             return await ExecuteAction(model, async () =>
@@ -122,6 +155,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
             }, isSubProcess);
         }
 
+
+
         private async Task Add_Dip_GG_Timbratura(Dip_GG_Richiesta dip_GG_Richiesta,
                                                  User_DATA_COMB_DipAna_DipRapp user_DATA_COMB_DipAna_DipRapp)
         {
@@ -157,7 +192,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                 }
             }
         }
-
         private async Task Add_Dip_GG_Giustificativi(Dip_GG_Richiesta dip_GG_Richiesta,
                                                      User_DATA_COMB_DipAna_DipRapp user_DATA_COMB_DipAna_DipRapp)
         {
@@ -185,10 +219,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                                         IdDip_Richiesta = dip_GG_Richiesta.Id,
                                         IdPar_Giustificativi = richiesta.IdPar_Giustificativi,
                                         RichiestaStato = StatoRichiesta.Immessa,
-                                        InputType = richiesta.AllDay?  JustificationInputType.AllDay: JustificationInputType.Manual, 
-                                        Hours= TimeSpan.Parse(richiesta.hhmm) 
+                                        InputType = richiesta.AllDay ? JustificationInputType.AllDay : JustificationInputType.Manual,
+                                        Hours = TimeSpan.Parse(richiesta.hhmm)
                                     };
-                                    await _Dip_GG_GiustificativiRepository.UpsertAsync(dip_GG_Giustificativi);
+                                    await _dip_GG_GiustificativiRepository.UpsertAsync(dip_GG_Giustificativi);
                                 }
                             }
                         }
@@ -198,12 +232,27 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
 
             }
         }
+        private List<Dip_GG_Richiesta> Get_Dip_GG_Richiesta(List<int> idDipRappList, int Year, int Month)
+        {
+            List<Dip_GG_Richiesta> richiesta = _dip_GG_RichiestaRepository.FindAll(x => idDipRappList.Contains(x.IdDip_RapportoLavoro) &&
+                                                                                        (
+                                                                                            (x.Data.Year == Year && x.Data.Month == Month) ||
+                                                                                            (x.DataA.Year == Year && x.DataA.Month == Month) ||
+                                                                                            (x.Data.Year < Year || (x.Data.Year == Year && x.Data.Month < Month)) && (x.DataA.Year > Year || (x.DataA.Year == Year && x.DataA.Month > Month))
+                                                                                        )
+                                                                                  )
+                                                                          .ToList();
+
+            return richiesta;
+        }
+
 
     }
 
     public interface IDip_GG_RichiestaService : IServiceBase
     {
-        public Task<GenericResult<Dip_GG_Richiesta_GetAll_OutModel>> GetAll(GenericRequest<Dip_GG_Richiesta_GetAll_InModel> model, Boolean isSubProcess);
+        public Task<GenericResult<Dip_GG_Richiesta_GetAll4User_OutModel>> GetAll4User(GenericRequest<Dip_GG_Richiesta_GetAll4User_InModel> model, Boolean isSubProcess);
+        public Task<GenericResult<Dip_GG_Richiesta_GetAll4Admin_OutModel>> GetAll4Admin(GenericRequest<Dip_GG_Richiesta_GetAll4Admin_InModel> model, Boolean isSubProcess);
         public Task<GenericResult<Dip_GG_Richiesta_Send_OutModel>> Send(GenericRequest<Dip_GG_Richiesta_Send_InModel> model, Boolean isSubProcess);
     }
 }

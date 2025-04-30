@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { catchError, Observable, of, throwError } from 'rxjs';
 import { map } from 'rxjs/operators'; // Import map operator if you plan real sorting/processing
 import { Dip_GG_Timbratura_GetAll_InModel, Dip_GG_TimbraturaModel, TipoTimbratura } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Timbratura/Models/dip-gg-timbratura-model';
-import { Dip_GG_Richiesta_GetAll_InModel, Dip_GG_RichiestaModel, StatoRichiesta } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/Models/dip-gg-richiesta-model';
+import { Dip_GG_Richiesta_GetAll4User_InModel, Dip_GG_RichiestaModel, StatoRichiesta } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/Models/dip-gg-richiesta-model';
 import { Dip_GG_Giustificativi_GetAll_InModel, Dip_GG_GiustificativiModel } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Giustificativi/Models/dip-gg-giustificativi-model';
 import { DipGGGiustificativiService } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Giustificativi/dip-gg-giustificativi.service';
 import { DipGGTimbraturaService } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Timbratura/dip-gg-timbratura.service';
@@ -69,14 +69,14 @@ export class MokeTimeSheetService {
     request_clock.data.year = year;
     request_clock.data.month = month + 1;
 
-    let request_rich = new GenericRequest<Dip_GG_Richiesta_GetAll_InModel>(Dip_GG_Richiesta_GetAll_InModel);
+    let request_rich = new GenericRequest<Dip_GG_Richiesta_GetAll4User_InModel>(Dip_GG_Richiesta_GetAll4User_InModel);
     request_rich.data.year = year;
     request_rich.data.month = month + 1;
 
     // 2. Define the Observables for the API calls (DO NOT subscribe yet)
     const justificationsObservable$ = this.dipGGGiustificativiService.GetAll(request_Just);
     const clockingsObservable$ = this.dipGGTimbraturaService.GetAll(request_clock);
-    const requestObservable$ = this.dipGGRichiestaService.GetAll(request_clock);
+    const requestObservable$ = this.dipGGRichiestaService.GetAll4User(request_clock);
 
     
 

@@ -53,15 +53,26 @@ export enum StatoRichiesta {
 
 
 
-export class Dip_GG_Richiesta_GetAll_InModel {
+export class Dip_GG_Richiesta_GetAll4User_InModel {
   public year: number;
   public month: number;
 
   constructor() {}
+}
+export class Dip_GG_Richiesta_GetAll4User_OutModel extends ModelResult {
+
+  public dip_GG_Richiesta: Dip_GG_RichiestaModel[];
 
 }
 
-export class Dip_GG_Richiesta_GetAll_OutModel extends ModelResult {
+
+export class Dip_GG_Richiesta_GetAll4Admin_InModel {
+  public year: number;
+  public month: number;
+
+  constructor() { }
+}
+export class Dip_GG_Richiesta_GetAll4Admin_OutModel extends ModelResult {
 
   public dip_GG_Richiesta: Dip_GG_RichiestaModel[];
 

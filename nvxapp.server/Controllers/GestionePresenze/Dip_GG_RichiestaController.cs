@@ -27,10 +27,21 @@ namespace nvxapp.server.Controllers
 
         [Authorize]
         [HttpPost]
-        [Route("GetAll")]
-        public async Task<GenericResult<Dip_GG_Richiesta_GetAll_OutModel>> GetAll(GenericRequest<Dip_GG_Richiesta_GetAll_InModel> inModel)
+        [Route("GetAll4User")]
+        public async Task<GenericResult<Dip_GG_Richiesta_GetAll4User_OutModel>> GetAll4User(GenericRequest<Dip_GG_Richiesta_GetAll4User_InModel> inModel)
         {
-            var res = await _dip_GG_RichiestaService.GetAll(inModel, false);
+            var res = await _dip_GG_RichiestaService.GetAll4User(inModel, false);
+
+            return res;
+        }
+
+
+        [Authorize]
+        [HttpPost]
+        [Route("GetAll4Admin")]
+        public async Task<GenericResult<Dip_GG_Richiesta_GetAll4Admin_OutModel>> GetAll4Admin(GenericRequest<Dip_GG_Richiesta_GetAll4Admin_InModel> inModel)
+        {
+            var res = await _dip_GG_RichiestaService.GetAll4Admin(inModel, false);
 
             return res;
         }
