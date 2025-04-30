@@ -30,12 +30,55 @@
       </ion-item-sliding>
 
 
-      <ion-col size="10" class="ion-hide-sm-down">
+      <ion-col size="2" class="ion-hide-sm-down">
         <ion-icon [name]="isAdmin(item) ? 'server-outline' : 'server-outline'"></ion-icon>
         <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
           {{ item.id }}
         </ion-label>
       </ion-col>
+
+      <ion-col size="2" class="ion-hide-sm-down">
+        <ion-icon [name]="isAdmin(item) ? 'server-outline' : 'server-outline'"></ion-icon>
+        <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
+          {{ item.id }}
+        </ion-label>
+      </ion-col>
+
+      <ion-col size="1" class="ion-hide-sm-down">
+        <ion-icon [name]="isAdmin(item) ? 'server-outline' : 'server-outline'"></ion-icon>
+        <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
+          {{ item.data }}
+        </ion-label>
+      </ion-col>
+
+      <ion-col size="1" class="ion-hide-sm-down">
+        <ion-icon [name]="isAdmin(item) ? 'server-outline' : 'server-outline'"></ion-icon>
+        <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
+          {{ item.dataA }}
+        </ion-label>
+      </ion-col>
+
+      <ion-col size="1" class="ion-hide-sm-down">
+        <ion-icon [name]="isAdmin(item) ? 'server-outline' : 'server-outline'"></ion-icon>
+        <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
+          DATI
+        </ion-label>
+      </ion-col>
+
+      <ion-col size="1" class="ion-hide-sm-down">
+        <ion-icon [name]="isAdmin(item) ? 'server-outline' : 'server-outline'"></ion-icon>
+        <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
+          {{ item.richiestaTipo | tipoRichiestaToLongText }}
+        </ion-label>
+      </ion-col>
+
+      <ion-col size="1" class="ion-hide-sm-down">
+        <ion-icon [name]="isAdmin(item) ? 'server-outline' : 'server-outline'"></ion-icon>
+        <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
+          {{ item.richiestaStato | statoRichiestaLongText }}
+        </ion-label>
+      </ion-col>
+
       <ion-col size="2" class="ion-hide-sm-down">
         <ion-button size="small" shape="round" (click)="btnEdit.event(item)" color="{{btnEdit.color}}">
           <ion-icon name="{{btnEdit.image}}"></ion-icon>
