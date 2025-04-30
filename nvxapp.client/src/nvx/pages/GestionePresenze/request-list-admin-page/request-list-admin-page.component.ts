@@ -6,6 +6,9 @@ import { UserNavigationService } from '../../../Utility/infrastructure/user-navi
 import { Par_GiustificativiInModel, Par_GiustificativiModel } from '../../../ClientServer-Service/GestionePresenze/Par_Giustificativi/Models/par-giustificativi-model';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { ParGiustificativiService } from '../../../ClientServer-Service/GestionePresenze/Par_Giustificativi/par-giustificativi.service';
+import { DipGGRichiestaService } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/dip-gg-richiesta.service';
+import { Dip_GG_Richiesta_GetAll4Admin_InModel, Dip_GG_Richiesta_GetAll4User_InModel, Dip_GG_RichiestaModel } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/Models/dip-gg-richiesta-model';
+import { MonthNavigatorService } from '../../../Utility/infrastructure/month-navigator.service';
 
 
 
@@ -19,12 +22,13 @@ export class RequestListAdminPageComponent implements OnInit {
 
   public title!: string;
   public searchText!: string;
-  public par_GiustificativiList: Par_GiustificativiModel[] | null = null;
+  public dip_GG_RichiestaList: Dip_GG_RichiestaModel[] | null = null;
   public btnEdit: ButtonItem;
 
   constructor(private navCtrl: NavController,
-    private parGiustificativiService: ParGiustificativiService,
+    private dipGGRichiestaService: DipGGRichiestaService,
     public fabMenuService: FabMenuService,
+    private monthNavigatorService: MonthNavigatorService,
     private userInterfaceService: UserInterfaceService,
     private userNavigationService: UserNavigationService) {
 
@@ -35,25 +39,28 @@ export class RequestListAdminPageComponent implements OnInit {
 
   ionViewWillEnter() {
 
-    let request: GenericRequest<Par_GiustificativiInModel> = new GenericRequest<Par_GiustificativiInModel>(Par_GiustificativiInModel);
-    this.parGiustificativiService.GetAll(request).subscribe(res => {
-      this.par_GiustificativiList = res.data.par_Giustificativi;
+    let request: GenericRequest<Dip_GG_Richiesta_GetAll4Admin_InModel> = new GenericRequest<Dip_GG_Richiesta_GetAll4Admin_InModel>(Dip_GG_Richiesta_GetAll4Admin_InModel);
+    request.data.month = this.monthNavigatorService.currentMonth + 1;
+    request.data.year = this.monthNavigatorService.currentYear;
+
+    this.dipGGRichiestaService.GetAll4Admin(request).subscribe(res => {
+      this.dip_GG_RichiestaList = res.data.dip_GG_Richiesta;
     });
 
-    this.fabMenuService.fabMenuItem = [
+    //this.fabMenuService.fabMenuItem = [
 
-      new FabMenuItem('Elemento 1', 'add-circle-outline', () => {
-        this.navCtrl.navigateForward('/justificationedit', {
-          state: { id: 0 }
-        });
-      }),
+    //  new FabMenuItem('Elemento 1', 'add-circle-outline', () => {
+    //    this.navCtrl.navigateForward('/justificationedit', {
+    //      state: { id: 0 }
+    //    });
+    //  }),
 
-    ];
+    //];
 
   }
 
   ionViewWillLeave() {
-    this.fabMenuService.fabMenuItem = [];
+    //this.fabMenuService.fabMenuItem = [];
   }
 
   ngOnInit() { }
@@ -75,10 +82,12 @@ export class RequestListAdminPageComponent implements OnInit {
   }
 
   getAll() {
-    const sorted_GiustificativiList = this.par_GiustificativiList.sort((a, b) =>
-      a.descrizione.localeCompare(b.descrizione)
-    );
-    return sorted_GiustificativiList;
+    //const sorted_GiustificativiList = this.par_GiustificativiList.sort((a, b) =>
+    //  a.descrizione.localeCompare(b.descrizione)
+    //);
+    //return sorted_GiustificativiList;
+
+    return this.dip_GG_RichiestaList;
   }
 
 

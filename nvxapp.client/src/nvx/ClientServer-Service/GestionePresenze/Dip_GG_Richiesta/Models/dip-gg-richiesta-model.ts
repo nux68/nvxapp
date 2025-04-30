@@ -81,18 +81,18 @@ export class Dip_GG_Richiesta_GetAll4Admin_OutModel extends ModelResult {
 
 
 export class Dip_GG_Richiesta_Send_InModel {
-  public dip_GG_RichiestaModel: Dip_GG_RichiestaModel;
+  public dip_GG_Richiesta: Dip_GG_RichiestaModel;
   constructor() {
-    this.dip_GG_RichiestaModel = new Dip_GG_RichiestaModel(); 
+    this.dip_GG_Richiesta = new Dip_GG_RichiestaModel(); 
   }
 }
 
 export class Dip_GG_Richiesta_Send_OutModel extends ModelResult {
 
-  public dip_GG_RichiestaModel: Dip_GG_RichiestaModel;
+  public dip_GG_Richiesta: Dip_GG_RichiestaModel;
   constructor() {
     super();
-    this.dip_GG_RichiestaModel = new Dip_GG_RichiestaModel();
+    this.dip_GG_Richiesta = new Dip_GG_RichiestaModel();
   }
 
 }

@@ -8,7 +8,7 @@
 
 
 
-  <ion-grid *ngIf="par_GiustificativiList!=null">
+  <ion-grid *ngIf="dip_GG_RichiestaList!=null">
 
     <ion-row *ngFor="let item of getAll() | genericFilter: 'descrizione' : searchText" class="nvx-ion-row-4table">
 
@@ -16,7 +16,7 @@
         <ion-item>
           <ion-icon [name]="isAdmin(item) ? 'server-outline' : 'server-outline'"></ion-icon>
           <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
-            {{ item.descrizione }}
+            {{ item.id }}
           </ion-label>
         </ion-item>
 
@@ -33,7 +33,7 @@
       <ion-col size="10" class="ion-hide-sm-down">
         <ion-icon [name]="isAdmin(item) ? 'server-outline' : 'server-outline'"></ion-icon>
         <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
-          {{ item.descrizione }}
+          {{ item.id }}
         </ion-label>
       </ion-col>
       <ion-col size="2" class="ion-hide-sm-down">

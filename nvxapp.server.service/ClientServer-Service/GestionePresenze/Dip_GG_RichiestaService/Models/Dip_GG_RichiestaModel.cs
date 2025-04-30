@@ -55,7 +55,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
     }
     public class Dip_GG_Richiesta_GetAll4User_OutModel : ModelResult 
     {
-        public List<Dip_GG_RichiestaModel> Dip_GG_RichiestaModel { get; set; } = new List<Dip_GG_RichiestaModel>();
+        public List<Dip_GG_RichiestaModel> Dip_GG_Richiesta { get; set; } = new List<Dip_GG_RichiestaModel>();
     }
 
 
@@ -66,7 +66,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
     }
     public class Dip_GG_Richiesta_GetAll4Admin_OutModel : ModelResult
     {
-        public List<Dip_GG_RichiestaModel> Dip_GG_RichiestaModel { get; set; } = new List<Dip_GG_RichiestaModel>();
+        public List<Dip_GG_RichiestaModel> Dip_GG_Richiesta { get; set; } = new List<Dip_GG_RichiestaModel>();
     }
 
 
@@ -74,11 +74,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
 
     public class Dip_GG_Richiesta_Send_InModel
     {
-        public Dip_GG_RichiestaModel? Dip_GG_RichiestaModel { get; set; } 
+        public Dip_GG_RichiestaModel? Dip_GG_Richiesta { get; set; } 
     }
     public class Dip_GG_Richiesta_Send_OutModel : ModelResult
     {
-        public Dip_GG_RichiestaModel? Dip_GG_RichiestaModel { get; set; }
+        public Dip_GG_RichiestaModel? Dip_GG_Richiesta { get; set; }
     }
 
 }

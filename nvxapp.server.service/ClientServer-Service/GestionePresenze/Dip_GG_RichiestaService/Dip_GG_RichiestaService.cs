@@ -76,7 +76,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                     List<Dip_GG_Richiesta> richiesta = Get_Dip_GG_Richiesta(idDip_RapportoLavoro, model.Data.Year, model.Data.Month);
                     richiesta = richiesta.OrderBy(x => x.Data).ToList();
 
-                    retVal.Dip_GG_RichiestaModel = _mapper.Map<List<Dip_GG_RichiestaModel>>(richiesta);
+                    retVal.Dip_GG_Richiesta = _mapper.Map<List<Dip_GG_RichiestaModel>>(richiesta);
                 }
 
                 //eliminare
@@ -104,7 +104,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                     List<Dip_GG_Richiesta> richiesta = Get_Dip_GG_Richiesta(idDip_RapportoLavoro, model.Data.Year, model.Data.Month);
                     richiesta = richiesta.OrderBy(x => x.Data).ToList();
 
-                    retVal.Dip_GG_RichiestaModel = _mapper.Map<List<Dip_GG_RichiestaModel>>(richiesta);
+                    retVal.Dip_GG_Richiesta = _mapper.Map<List<Dip_GG_RichiestaModel>>(richiesta);
                 }
 
                 //eliminare
@@ -125,7 +125,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
 
                 if (user_DATA_COMB_DipAna_DipRapp != null && user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro != null)
                 {
-                    Dip_GG_Richiesta dip_GG_Richiesta = _mapper.Map<Dip_GG_Richiesta>(model.Data.Dip_GG_RichiestaModel);
+                    Dip_GG_Richiesta dip_GG_Richiesta = _mapper.Map<Dip_GG_Richiesta>(model.Data.Dip_GG_Richiesta);
                     dip_GG_Richiesta.IdDip_RapportoLavoro = user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.Id;
                     dip_GG_Richiesta = await _dip_GG_RichiestaRepository.UpsertAsync(dip_GG_Richiesta);
 

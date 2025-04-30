@@ -89,13 +89,13 @@ export class RequestClockingUserPageComponent implements OnInit {
     let dip_GG_Richiesta_Body_Timbratura: Dip_GG_Richiesta_Body_Timbratura = new Dip_GG_Richiesta_Body_Timbratura();
     dip_GG_Richiesta_Body_Timbratura.hhmm = this.formattedTime;
 
-    request_rich.data.dip_GG_RichiestaModel.id = 0;
-    request_rich.data.dip_GG_RichiestaModel.idDip_RapportoLavoro = 0;
-    request_rich.data.dip_GG_RichiestaModel.richiestaStato = StatoRichiesta.Immessa;
-    request_rich.data.dip_GG_RichiestaModel.richiestaTipo = TipoRichiesta.Timbratura;
-    request_rich.data.dip_GG_RichiestaModel.data = this.formattedDate;
-    request_rich.data.dip_GG_RichiestaModel.dataA = this.formattedDate;
-    request_rich.data.dip_GG_RichiestaModel.dati = this.stringHelperService.toJSONString(dip_GG_Richiesta_Body_Timbratura);
+    request_rich.data.dip_GG_Richiesta.id = 0;
+    request_rich.data.dip_GG_Richiesta.idDip_RapportoLavoro = 0;
+    request_rich.data.dip_GG_Richiesta.richiestaStato = StatoRichiesta.Immessa;
+    request_rich.data.dip_GG_Richiesta.richiestaTipo = TipoRichiesta.Timbratura;
+    request_rich.data.dip_GG_Richiesta.data = this.formattedDate;
+    request_rich.data.dip_GG_Richiesta.dataA = this.formattedDate;
+    request_rich.data.dip_GG_Richiesta.dati = this.stringHelperService.toJSONString(dip_GG_Richiesta_Body_Timbratura);
 
     this.dipGGRichiestaService.Send(request_rich).subscribe(res => {
       this.navCtrl.navigateForward('/usertimesheet');

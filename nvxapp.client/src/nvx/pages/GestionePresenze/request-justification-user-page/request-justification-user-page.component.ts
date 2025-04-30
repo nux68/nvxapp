@@ -230,13 +230,13 @@ export class RequestJustificationUserPageComponent implements OnInit {
     const giustificativoSelezionato = this.giustificativi.find(g => g.codice === this.justificationType);
     dip_GG_Richiesta_Body_Giustificativo.idPar_Giustificativi = giustificativoSelezionato ? giustificativoSelezionato.id : 1;
 
-    request_rich.data.dip_GG_RichiestaModel.id = 0;
-    request_rich.data.dip_GG_RichiestaModel.idDip_RapportoLavoro = 0;
-    request_rich.data.dip_GG_RichiestaModel.richiestaStato = StatoRichiesta.Immessa;
-    request_rich.data.dip_GG_RichiestaModel.richiestaTipo = TipoRichiesta.Giustificativo;
-    request_rich.data.dip_GG_RichiestaModel.data = this.formattedStartDate;
-    request_rich.data.dip_GG_RichiestaModel.dataA = this.formattedEndDate;
-    request_rich.data.dip_GG_RichiestaModel.dati = this.stringHelperService.toJSONString(dip_GG_Richiesta_Body_Giustificativo);
+    request_rich.data.dip_GG_Richiesta.id = 0;
+    request_rich.data.dip_GG_Richiesta.idDip_RapportoLavoro = 0;
+    request_rich.data.dip_GG_Richiesta.richiestaStato = StatoRichiesta.Immessa;
+    request_rich.data.dip_GG_Richiesta.richiestaTipo = TipoRichiesta.Giustificativo;
+    request_rich.data.dip_GG_Richiesta.data = this.formattedStartDate;
+    request_rich.data.dip_GG_Richiesta.dataA = this.formattedEndDate;
+    request_rich.data.dip_GG_Richiesta.dati = this.stringHelperService.toJSONString(dip_GG_Richiesta_Body_Giustificativo);
 
     this.dipGGRichiestaService.Send(request_rich).subscribe(res => {
       this.navCtrl.navigateForward('/usertimesheet');
