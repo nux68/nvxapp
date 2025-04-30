@@ -35,7 +35,27 @@ namespace nvxapp.server.Controllers
             return res;
         }
 
-        
+        [Authorize]
+        [HttpPost]
+        [Route("Par_GiustificativiGet")]
+        public async Task<GenericResult<Par_GiustificativiGetOutModel>> Par_GiustificativiGet(GenericRequest<Par_GiustificativiGetInModel> inModel)
+        {
+            var res = await _par_GiustificativiService.Par_GiustificativiGet(inModel, false);
+
+            return res;
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("Par_GiustificativiPut")]
+        public async Task<GenericResult<Par_GiustificativiPutOutModel>> Par_GiustificativiPut(GenericRequest<Par_GiustificativiPutInModel> inModel)
+        {
+            var res = await _par_GiustificativiService.Par_GiustificativiPut(inModel, false);
+
+            return res;
+        }
+
+
 
     }
 

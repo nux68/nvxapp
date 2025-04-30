@@ -3,18 +3,14 @@ import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-ca
 import { UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { NavController } from '@ionic/angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { AccountService } from '../../../ClientServer-Service/Infrastructure/Account/account.service';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { Observable } from 'rxjs/internal/Observable';
 import { map, catchError } from 'rxjs';
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { StringHelperService } from '../../../Utility/infrastructure/string-helper.service';
 import { ParameterService } from '../../../ClientServer-Service/Infrastructure/Parameter/parameter.service';
-import { RolesModel } from '../../../ClientServer-Service/Infrastructure/Parameter/Models/roles-model';
-
-import { UserCompanyEditModel, UserCompanyGetInModel, UserCompanyPutInModel } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-company-model';
-import { UserDealerGetInModel, UserDealerEditModel, UserDealerPutInModel } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-dealer-model';
-import { RoleCode } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-roles-model';
+import { Par_GiustificativiGetInModel, Par_GiustificativiModel, Par_GiustificativiPutInModel } from '../../../ClientServer-Service/GestionePresenze/Par_Giustificativi/Models/par-giustificativi-model';
+import { ParGiustificativiService } from '../../../ClientServer-Service/GestionePresenze/Par_Giustificativi/par-giustificativi.service';
 
 @Component({
   selector: 'app-justification-edit-page',
@@ -22,42 +18,46 @@ import { RoleCode } from '../../../ClientServer-Service/Infrastructure/Account/M
   styleUrls: ['./justification-edit-page.component.scss'],
   standalone: false
 }) 
-export class JustificationEditPageComponent extends BasePageConfirmCancelComponent<UserDealerEditModel> {
+export class JustificationEditPageComponent extends BasePageConfirmCancelComponent<Par_GiustificativiModel> {
 
-  modifiedDescription: string | null = null;
+  
 
   constructor(protected override navCtrl: NavController,
     protected override userInterfaceService: UserInterfaceService,
     protected override fb: FormBuilder,
     private parameterService: ParameterService,
     private stringHelperService: StringHelperService,
-    private accountService: AccountService) {
+    private parGiustificativiService: ParGiustificativiService) {
 
     super(navCtrl, userInterfaceService, fb);
 
   }
 
 
-  get Title(): string { return "UserDealerEditPage"; }
+  get Title(): string { return "Justification"; }
   get EditForm(): FormGroup {
     return this.fb.group({
 
       descrizione: [null, [Validators.required, Validators.maxLength(50)]],
-      roleId: [null, [Validators.required]],
+      codice: [null, [Validators.required, Validators.maxLength(5)]],
+      backgroundColor: [null, []],
+      textColor: [null, []],
+
+      //roleId: [null, [Validators.required]],
 
     });
   }
 
-  LoadData = (): Observable<UserDealerEditModel | null> => {
+  LoadData = (): Observable<Par_GiustificativiModel | null> => {
     const state = history.state;
 
 
     if (state && state.id) {
-      let request: GenericRequest<UserDealerGetInModel> = new GenericRequest<UserDealerGetInModel>(UserDealerGetInModel);
+      let request: GenericRequest<Par_GiustificativiGetInModel> = new GenericRequest<Par_GiustificativiGetInModel>(Par_GiustificativiGetInModel);
       request.data.id = state.id;
 
-      return this.accountService.UserDealerGet(request).pipe(
-        map((res) => res.data.userDealerEdit), // Estrae il dato richiesto
+      return this.parGiustificativiService.Par_GiustificativiGet(request).pipe(
+        map((res) => res.data.par_Giustificativi), // Estrae il dato richiesto
         catchError((error) => {
           console.error('Errore durante la chiamata API:', error);
           return [null]; // Restituisce null in caso di errore
@@ -65,26 +65,26 @@ export class JustificationEditPageComponent extends BasePageConfirmCancelCompone
       );
     }
     else {
-      return new Observable<UserDealerEditModel | null>((subscriber) => {
+      return new Observable<Par_GiustificativiModel | null>((subscriber) => {
         //aggiunge campi solo per le new
-        this._editForm.addControl('mail', this.fb.control(null, [Validators.required, Validators.email]));
-        this._editForm.addControl('pw', this.fb.control(null, [Validators.required]));
-        this._editForm.addControl('confirmPassword', this.fb.control(null, [Validators.required]));
-        this._editForm.setValidators(matchPasswords);
+        //this._editForm.addControl('mail', this.fb.control(null, [Validators.required, Validators.email]));
+        //this._editForm.addControl('pw', this.fb.control(null, [Validators.required]));
+        //this._editForm.addControl('confirmPassword', this.fb.control(null, [Validators.required]));
+        this._editForm.setValidators(matchData);
         this._editForm.updateValueAndValidity();
 
-        subscriber.next(new UserDealerEditModel());
+        subscriber.next(new Par_GiustificativiModel());
         subscriber.complete();
       });
     }
   };
 
-  SaveData = (editModel: UserDealerEditModel): Observable<boolean> => {
-    let request: GenericRequest<UserDealerPutInModel> =
-      new GenericRequest<UserDealerPutInModel>(UserDealerPutInModel);
-    request.data.userDealerEdit = editModel;
+  SaveData = (editModel: Par_GiustificativiModel): Observable<boolean> => {
+    let request: GenericRequest<Par_GiustificativiPutInModel> =
+      new GenericRequest<Par_GiustificativiPutInModel>(Par_GiustificativiPutInModel);
+    request.data.par_Giustificativi = editModel;
 
-    return this.accountService.UserDealerPut(request).pipe(
+    return this.parGiustificativiService.Par_GiustificativiPut(request).pipe(
       map(() => true), // Restituisce true in caso di successo
       catchError((error) => {
         console.error('Errore durante la chiamata API:', error);
@@ -93,14 +93,7 @@ export class JustificationEditPageComponent extends BasePageConfirmCancelCompone
     );
   };
 
-  getRoler(): RolesModel[] {
 
-    if (this._editModel && this._editModel.idUserDealer == 0) {
-      return this.parameterService.Roles.filter(role => (role.code == RoleCode.DealerAdmin || role.code == RoleCode.DealerPowerAdmin));
-    }
-
-    return this.parameterService.Roles;
-  }
 
 
 
@@ -108,11 +101,13 @@ export class JustificationEditPageComponent extends BasePageConfirmCancelCompone
 }
 
 
-const matchPasswords: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
-  const password = control.get('pw')?.value;
-  const confirmPassword = control.get('confirmPassword')?.value;
+const matchData: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
+  //const password = control.get('pw')?.value;
+  //const confirmPassword = control.get('confirmPassword')?.value;
 
-  return password === confirmPassword ? null : { notMatching: true };
+  //return password === confirmPassword ? null : { notMatching: true };
+
+  return null;
 };
 
 

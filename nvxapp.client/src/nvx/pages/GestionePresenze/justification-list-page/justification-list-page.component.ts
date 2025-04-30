@@ -1,10 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { AccountService } from '../../../ClientServer-Service/Infrastructure/Account/account.service';
-import { FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
+import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
-import { CompanyListModel } from '../../../ClientServer-Service/Infrastructure/Account/Models/company-model';
+import { Par_GiustificativiInModel, Par_GiustificativiModel } from '../../../ClientServer-Service/GestionePresenze/Par_Giustificativi/Models/par-giustificativi-model';
+import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
+import { ParGiustificativiService } from '../../../ClientServer-Service/GestionePresenze/Par_Giustificativi/par-giustificativi.service';
+
 
 @Component({
   selector: 'app-justification-list-page',
@@ -16,40 +19,34 @@ export class JustificationListPageComponent implements OnInit {
 
   public title!: string;
   public searchText!: string;
-  public companyList: CompanyListModel[] | null = null;
-  public btnImpersona: ButtonItem;
+  public par_GiustificativiList: Par_GiustificativiModel[] | null = null;
   public btnEdit: ButtonItem;
 
   constructor(private navCtrl: NavController,
-              private accountService: AccountService,
+              private parGiustificativiService: ParGiustificativiService,
               public fabMenuService: FabMenuService,
               private userInterfaceService: UserInterfaceService,
               private userNavigationService: UserNavigationService) {
 
     this.title = 'Justifications';
-    this.btnImpersona = userInterfaceService.Btn_Impersona;
-    this.btnImpersona.event = this.handleButtonImpersonaClick;
     this.btnEdit = userInterfaceService.Btn_Modifica;
     this.btnEdit.event = this.handleButtonEditClick;
-
   }
 
   ionViewWillEnter() {
 
-    //let request: GenericRequest<CompanyListInModel> = new GenericRequest<CompanyListInModel>(CompanyListInModel);
-    //this.accountService.CompanyList(request).subscribe(res => {
-
-    //  this.companyList = res.data.companyList;
-
-    //});
+    let request: GenericRequest<Par_GiustificativiInModel> = new GenericRequest<Par_GiustificativiInModel>(Par_GiustificativiInModel);
+    this.parGiustificativiService.GetAll(request).subscribe(res => {
+      this.par_GiustificativiList = res.data.par_Giustificativi;
+    });
 
     this.fabMenuService.fabMenuItem = [
 
-      //new FabMenuItem('Elemento 1', 'add-circle-outline', () => {
-      //  this.navCtrl.navigateForward('/companyedit', {
-      //    state: { id: 0 }
-      //  });
-      //}),
+      new FabMenuItem('Elemento 1', 'add-circle-outline', () => {
+        this.navCtrl.navigateForward('/justificationedit', {
+          state: { id: 0 }
+        });
+      }),
 
     ];
 
@@ -61,30 +58,11 @@ export class JustificationListPageComponent implements OnInit {
 
   ngOnInit() { }
 
-  handleButtonImpersonaClick = (item: any) => {
-
-    //let request: GenericRequest<UserLoadInModel> = new GenericRequest<UserLoadInModel>(UserLoadInModel);
-    //request.data.id = item.idAspNetUsers;
-    //this.accountService.UserLoad(request).subscribe(usl => {
-    //  if (usl.success) {
-
-    //    let userDataAdditional: UserDataAdditionalModel = new UserDataAdditionalModel();
-    //    userDataAdditional.gotoBackPage = "/companylist";
-
-    //    this.userNavigationService.UserPush(usl.data.userData, userDataAdditional);
-    //    this.navCtrl.navigateForward('/home');
-    //  }
-    //  else {
-
-    //  }
-    //});
-
-  }
 
   handleButtonEditClick = (item: any) => {
-    //this.navCtrl.navigateForward('/companyedit', {
-    //  state: { id: item.idCompany }
-    //});
+    this.navCtrl.navigateForward('/justificationedit', {
+      state: { id: item.id }
+    });
   }
 
   Filter(CurrFilter: any) {
@@ -93,15 +71,14 @@ export class JustificationListPageComponent implements OnInit {
 
   isAdmin(item: any) {
 
-
     return false;
   }
 
   getAll() {
-    const sortedUserCompanyList = this.companyList.sort((a, b) =>
+    const sorted_GiustificativiList = this.par_GiustificativiList.sort((a, b) =>
       a.descrizione.localeCompare(b.descrizione)
     );
-    return sortedUserCompanyList;
+    return sorted_GiustificativiList;
   }
 
 

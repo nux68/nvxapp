@@ -5,7 +5,7 @@ import { environment } from '../../../../environments/environment';
 import { GenericRequest } from '../../ModelsBase/generic-request';
 import { GenericResult } from '../../ModelsBase/generic-result';
 import { map, Observable } from 'rxjs';
-import { Par_GiustificativiInModel, Par_GiustificativiOutModel } from './Models/par-giustificativi-model';
+import { Par_GiustificativiGetInModel, Par_GiustificativiGetOutModel, Par_GiustificativiInModel, Par_GiustificativiOutModel, Par_GiustificativiPutInModel, Par_GiustificativiPutOutModel } from './Models/par-giustificativi-model';
 
 @Injectable({
   providedIn: 'root'
@@ -28,5 +28,28 @@ export class ParGiustificativiService {
 
   }
 
-  
+  Par_GiustificativiGet(model: GenericRequest<Par_GiustificativiGetInModel>): Observable<GenericResult<Par_GiustificativiGetOutModel>> {
+
+    return this.http.post<GenericResult<Par_GiustificativiGetOutModel>>(environment.remoteData.apiUri + 'Par_Giustificativi/Par_GiustificativiGet', model)
+      .pipe(
+          map(r => {
+            return r;
+          }
+        )
+      );
+
+  }
+
+  Par_GiustificativiPut(model: GenericRequest<Par_GiustificativiPutInModel>): Observable<GenericResult<Par_GiustificativiPutOutModel>> {
+
+    return this.http.post<GenericResult<Par_GiustificativiPutOutModel>>(environment.remoteData.apiUri + 'Par_Giustificativi/Par_GiustificativiPut', model)
+      .pipe(
+          map(r => {
+              return r;
+            }
+          )
+      );
+
+  }
+
 }

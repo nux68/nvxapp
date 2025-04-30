@@ -1,4 +1,5 @@
 ﻿using nvxapp.server.data.Entities.Tenant;
+using nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using System;
 using System.Collections.Generic;
@@ -20,11 +21,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Giusti
 
     }
 
+
     public class Par_GiustificativiInModel
     {
 
     }
-
     public class Par_GiustificativiOutModel : ModelResult 
     {
         public List<Par_GiustificativiModel> Par_Giustificativi { get; set; } = new List<Par_GiustificativiModel>();
@@ -37,7 +38,24 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Giusti
         }
     }
 
-   
+
+    public class Par_GiustificativiGetInModel
+    {
+        public int Id { get; set; } = 0;
+    }
+    public class Par_GiustificativiGetOutModel : ModelResult
+    {
+        public Par_GiustificativiModel Par_Giustificativi { get; set; } = new Par_GiustificativiModel();
+    }
+    public class Par_GiustificativiPutInModel : ModelResult
+    {
+        public Par_GiustificativiModel Par_Giustificativi { get; set; } = new Par_GiustificativiModel();
+    }
+    public class Par_GiustificativiPutOutModel : ModelResult
+    {
+        public Par_GiustificativiModel Par_Giustificativi { get; set; } = new Par_GiustificativiModel();
+    }
+
 
 
 }
