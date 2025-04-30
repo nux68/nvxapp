@@ -27,7 +27,7 @@ export class SharedParameterGestionePresenzeService {
 
       this.parGiustificativiService.GetAll(new GenericRequest<Par_GiustificativiInModel>(Par_GiustificativiInModel)).pipe(
           tap((result) => {
-            this._par_Giustificativi = result.data.par_Giustificativi
+            this.Par_Giustificativi = result.data.par_Giustificativi
             updateProgress(calls)
           }),
           retry({
@@ -43,59 +43,59 @@ export class SharedParameterGestionePresenzeService {
             return of(null); // Continua per evitare il blocco
           })),
 
-      this.parGiustificativiService.GetAll(new GenericRequest<Par_GiustificativiInModel>(Par_GiustificativiInModel)).pipe(
-        tap((result) => {
-          this._par_Giustificativi = result.data.par_Giustificativi
-          updateProgress(calls)
-        }),
-        retry({
-          count: 20, // Numero massimo di tentativi
-          delay: (error, retryCount) => {
-            console.error(`Errore rilevato, ritento dopo ${retryCount} secondi:`, error);
-            return timer(500); // Ritenta dopo 0.5 secondi
-          }
-        }),
-        catchError((error) => {
-          console.error(`Errore durante il caricamento dei giustificativi:`, error);
-          // Puoi decidere cosa fare in caso di fallimento finale
-          return of(null); // Continua per evitare il blocco
-        })),
+      //this.parGiustificativiService.GetAll(new GenericRequest<Par_GiustificativiInModel>(Par_GiustificativiInModel)).pipe(
+      //  tap((result) => {
+      //    this.Par_Giustificativi = result.data.par_Giustificativi
+      //    updateProgress(calls)
+      //  }),
+      //  retry({
+      //    count: 20, // Numero massimo di tentativi
+      //    delay: (error, retryCount) => {
+      //      console.error(`Errore rilevato, ritento dopo ${retryCount} secondi:`, error);
+      //      return timer(500); // Ritenta dopo 0.5 secondi
+      //    }
+      //  }),
+      //  catchError((error) => {
+      //    console.error(`Errore durante il caricamento dei giustificativi:`, error);
+      //    // Puoi decidere cosa fare in caso di fallimento finale
+      //    return of(null); // Continua per evitare il blocco
+      //  })),
 
-      this.parGiustificativiService.GetAll(new GenericRequest<Par_GiustificativiInModel>(Par_GiustificativiInModel)).pipe(
-        tap((result) => {
-          this._par_Giustificativi = result.data.par_Giustificativi
-          updateProgress(calls)
-        }),
-        retry({
-          count: 20, // Numero massimo di tentativi
-          delay: (error, retryCount) => {
-            console.error(`Errore rilevato, ritento dopo ${retryCount} secondi:`, error);
-            return timer(500); // Ritenta dopo 0.5 secondi
-          }
-        }),
-        catchError((error) => {
-          console.error(`Errore durante il caricamento dei giustificativi:`, error);
-          // Puoi decidere cosa fare in caso di fallimento finale
-          return of(null); // Continua per evitare il blocco
-        })),
+      //this.parGiustificativiService.GetAll(new GenericRequest<Par_GiustificativiInModel>(Par_GiustificativiInModel)).pipe(
+      //  tap((result) => {
+      //    this.Par_Giustificativi = result.data.par_Giustificativi
+      //    updateProgress(calls)
+      //  }),
+      //  retry({
+      //    count: 20, // Numero massimo di tentativi
+      //    delay: (error, retryCount) => {
+      //      console.error(`Errore rilevato, ritento dopo ${retryCount} secondi:`, error);
+      //      return timer(500); // Ritenta dopo 0.5 secondi
+      //    }
+      //  }),
+      //  catchError((error) => {
+      //    console.error(`Errore durante il caricamento dei giustificativi:`, error);
+      //    // Puoi decidere cosa fare in caso di fallimento finale
+      //    return of(null); // Continua per evitare il blocco
+      //  })),
 
-      this.parGiustificativiService.GetAll(new GenericRequest<Par_GiustificativiInModel>(Par_GiustificativiInModel)).pipe(
-        tap((result) => {
-          this._par_Giustificativi = result.data.par_Giustificativi
-          updateProgress(calls)
-        }),
-        retry({
-          count: 20, // Numero massimo di tentativi
-          delay: (error, retryCount) => {
-            console.error(`Errore rilevato, ritento dopo ${retryCount} secondi:`, error);
-            return timer(500); // Ritenta dopo 0.5 secondi
-          }
-        }),
-        catchError((error) => {
-          console.error(`Errore durante il caricamento dei giustificativi:`, error);
-          // Puoi decidere cosa fare in caso di fallimento finale
-          return of(null); // Continua per evitare il blocco
-        })),
+      //this.parGiustificativiService.GetAll(new GenericRequest<Par_GiustificativiInModel>(Par_GiustificativiInModel)).pipe(
+      //  tap((result) => {
+      //    this.Par_Giustificativi = result.data.par_Giustificativi
+      //    updateProgress(calls)
+      //  }),
+      //  retry({
+      //    count: 20, // Numero massimo di tentativi
+      //    delay: (error, retryCount) => {
+      //      console.error(`Errore rilevato, ritento dopo ${retryCount} secondi:`, error);
+      //      return timer(500); // Ritenta dopo 0.5 secondi
+      //    }
+      //  }),
+      //  catchError((error) => {
+      //    console.error(`Errore durante il caricamento dei giustificativi:`, error);
+      //    // Puoi decidere cosa fare in caso di fallimento finale
+      //    return of(null); // Continua per evitare il blocco
+      //  })),
 
 
     );
