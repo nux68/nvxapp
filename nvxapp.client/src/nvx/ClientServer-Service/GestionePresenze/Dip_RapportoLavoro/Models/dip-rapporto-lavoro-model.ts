@@ -1,9 +1,13 @@
 import { ModelResult } from "../../../ModelsBase/model-result";
 
+export class Dip_RapportoLavoroModel {
+  public id!: number;
+
+}
 
 
 export class Dip_RapportoLavoro_GetAll_InModel {
-  public id!: number;
+ 
 }
 
 export class Dip_RapportoLavoro_GetAll_OutModel extends ModelResult {
@@ -12,8 +16,5 @@ export class Dip_RapportoLavoro_GetAll_OutModel extends ModelResult {
 
 }
 
-export class Dip_RapportoLavoroModel  {
-  
 
-}
 

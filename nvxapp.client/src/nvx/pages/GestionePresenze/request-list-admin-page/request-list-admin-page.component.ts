@@ -37,9 +37,7 @@ export class RequestListAdminPageComponent implements OnInit {
     this.btnEdit.event = this.handleButtonEditClick;
   }
 
-  //const record = _dip_Anagrafica?.find(dip =>
-  //  dip.dip_RapportoLavoro.some(rapporto => rapporto.id === 1)
-  //);
+
 
   ionViewWillEnter() {
 

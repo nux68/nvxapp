@@ -5,6 +5,7 @@ import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
 import { SharedComponentInfrastructureModule } from '../../../shared/shared-component-infrastructure.module';
 import { RequestListAdminPageComponent } from './request-list-admin-page.component';
+import { SharedComponentGestionePresenzeModuleModule } from '../../../shared/shared-component-gestione-presenze-module.module';
 
 
 
@@ -20,6 +21,7 @@ import { RequestListAdminPageComponent } from './request-list-admin-page.compone
       }
     ]),
     SharedComponentInfrastructureModule,
+    SharedComponentGestionePresenzeModuleModule,
   ],
 
   declarations: [RequestListAdminPageComponent],
