@@ -56,7 +56,15 @@ namespace nvxapp.server.Controllers
             return res;
         }
 
+        [Authorize]
+        [HttpPost]
+        [Route("SetState")]
+        public async Task<GenericResult<Dip_GG_Richiesta_SetState_OutModel>> SetState(GenericRequest<Dip_GG_Richiesta_SetState_InModel> inModel)
+        {
+            var res = await _dip_GG_RichiestaService.SetState(inModel, false);
 
+            return res;
+        }
 
     }
 

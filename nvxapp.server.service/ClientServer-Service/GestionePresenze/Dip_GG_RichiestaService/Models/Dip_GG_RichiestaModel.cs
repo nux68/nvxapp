@@ -81,4 +81,14 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
         public Dip_GG_RichiestaModel? Dip_GG_Richiesta { get; set; }
     }
 
+
+    public class Dip_GG_Richiesta_SetState_InModel
+    {
+        //public Dip_GG_RichiestaModel? Dip_GG_Richiesta { get; set; }
+    }
+    public class Dip_GG_Richiesta_SetState_OutModel : ModelResult
+    {
+        
+    }
+
 }
