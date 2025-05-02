@@ -7,8 +7,11 @@ import { Par_GiustificativiInModel, Par_GiustificativiModel } from '../../../Cli
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { ParGiustificativiService } from '../../../ClientServer-Service/GestionePresenze/Par_Giustificativi/par-giustificativi.service';
 import { DipGGRichiestaService } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/dip-gg-richiesta.service';
-import { Dip_GG_Richiesta_GetAll4User_InModel, Dip_GG_RichiestaModel } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/Models/dip-gg-richiesta-model';
+import { Dip_GG_Richiesta_GetAll4User_InModel, Dip_GG_RichiestaModel, StatoRichiesta, TipoRichiesta } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/Models/dip-gg-richiesta-model';
 import { MonthNavigatorService } from '../../../Utility/infrastructure/month-navigator.service';
+import { DipGGTimbraturaUtilityService } from '../../../Utility/GestionePresenze/dip-gg-timbratura-utility.service';
+import { StatoRichiestaShortTextPipe } from '../../../shared/pipe/GestionePresenze/stato-richiesta-short-text.pipe';
+import { TipoRichiestaToShortTextPipe } from '../../../shared/pipe/GestionePresenze/tipo-richiesta-to-short-text.pipe';
 
 
 
@@ -23,18 +26,19 @@ export class RequestListUserPageComponent implements OnInit {
   public title!: string;
   public searchText!: string;
   public dip_GG_RichiestaList: Dip_GG_RichiestaModel[] | null = null;
-  public btnEdit: ButtonItem;
+  public btnDelete: ButtonItem;
 
   constructor(private navCtrl: NavController,
     private dipGGRichiestaService: DipGGRichiestaService,
     public fabMenuService: FabMenuService,
     private monthNavigatorService: MonthNavigatorService,
     private userInterfaceService: UserInterfaceService,
+    private dipGGTimbraturaUtilityService: DipGGTimbraturaUtilityService,
     private userNavigationService: UserNavigationService) {
 
     this.title = 'Request List User';
-    this.btnEdit = userInterfaceService.Btn_Modifica;
-    this.btnEdit.event = this.handleButtonEditClick;
+    this.btnDelete = userInterfaceService.Btn_Cancella;
+    this.btnDelete.event = this.handleButtonEditClick;
   }
 
   ionViewWillEnter() {
@@ -89,6 +93,50 @@ export class RequestListUserPageComponent implements OnInit {
 
     return this.dip_GG_RichiestaList;
   }
+
+  public getDataA(item:Dip_GG_RichiestaModel): string{
+    if (item.data != item.dataA)
+      return item.dataA;
+
+    return '';
+
+  }
+
+  public getDati(item: Dip_GG_RichiestaModel): string {
+
+    return this.dipGGTimbraturaUtilityService.getDatitext(item);
+
+  }
+
+
+  public showBtnDelete(item: Dip_GG_RichiestaModel): boolean {
+    if (item.richiestaStato == StatoRichiesta.Immessa)
+      return true;
+    return false;
+  }
+
+  public getItemText1(item: Dip_GG_RichiestaModel): string {
+    let retVal = "";
+
+    const tipoRichiesta = new StatoRichiestaShortTextPipe();
+
+    retVal = item.data + " " + this.getDataA(item) + " " + tipoRichiesta.transform(item.richiestaStato);
+
+    return retVal;
+
+  }
+
+  public getItemText2(item: Dip_GG_RichiestaModel): string {
+    let retVal = "";
+
+    const tipoRichiesta = new TipoRichiestaToShortTextPipe();
+
+    retVal = tipoRichiesta.transform(item.richiestaTipo) + " " + this.getDati(item);;
+
+    return retVal;
+
+  }
+
 
 
 }

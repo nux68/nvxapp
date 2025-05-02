@@ -141,6 +141,39 @@ export class UserInterfaceService {
   }
 
   
+
+  get Btn_Approva(): ButtonItem {
+    return new ButtonItem(
+      'Approva',
+      'checkmark-outline',
+      'primary',
+      false,
+      () => { console.log('Btn_Approva cliccato'); }
+    );
+  }
+
+  get Btn_Rifiuta(): ButtonItem {
+    return new ButtonItem(
+      'Rifiuta',
+      'close-outline',
+      'danger',
+      false,
+      () => { console.log('Btn_Rifiuta cliccato'); }
+    );
+  }
+
+  get Btn_Cancella(): ButtonItem {
+    return new ButtonItem(
+      'Cancella',
+      'trash-outline',
+      'medium',
+      false,
+      () => { console.log('Btn_Cancella cliccato'); }
+    );
+  }
+
+  //trash-outline
+  
 }
 
 

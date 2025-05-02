@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component,  OnInit } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
@@ -7,8 +7,14 @@ import { Par_GiustificativiInModel, Par_GiustificativiModel } from '../../../Cli
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { ParGiustificativiService } from '../../../ClientServer-Service/GestionePresenze/Par_Giustificativi/par-giustificativi.service';
 import { DipGGRichiestaService } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/dip-gg-richiesta.service';
-import { Dip_GG_Richiesta_GetAll4Admin_InModel, Dip_GG_Richiesta_GetAll4User_InModel, Dip_GG_RichiestaModel } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/Models/dip-gg-richiesta-model';
+import { Dip_GG_Richiesta_Body_Timbratura, Dip_GG_Richiesta_GetAll4Admin_InModel, Dip_GG_Richiesta_GetAll4User_InModel, Dip_GG_RichiestaModel, StatoRichiesta, TipoRichiesta } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/Models/dip-gg-richiesta-model';
 import { MonthNavigatorService } from '../../../Utility/infrastructure/month-navigator.service';
+import { DipGGTimbraturaUtilityService } from '../../../Utility/GestionePresenze/dip-gg-timbratura-utility.service';
+import { StatoRichiestaLongTextPipe } from '../../../shared/pipe/GestionePresenze/stato-richiesta-long-text.pipe';
+import { TipoRichiestaToLongTextPipe } from '../../../shared/pipe/GestionePresenze/tipo-richiesta-to-long-text.pipe';
+import { TipoRichiestaToShortTextPipe } from '../../../shared/pipe/GestionePresenze/tipo-richiesta-to-short-text.pipe';
+import { StatoRichiestaShortTextPipe } from '../../../shared/pipe/GestionePresenze/stato-richiesta-short-text.pipe';
+
 
 
 
@@ -23,18 +29,29 @@ export class RequestListAdminPageComponent implements OnInit {
   public title!: string;
   public searchText!: string;
   public dip_GG_RichiestaList: Dip_GG_RichiestaModel[] | null = null;
-  public btnEdit: ButtonItem;
+  public btnApprova: ButtonItem;
+  public btnRifiuta: ButtonItem;
+
+  //public tipoRichiestaToLongTextPipe: TipoRichiestaToLongTextPipe,
+  
 
   constructor(private navCtrl: NavController,
     private dipGGRichiestaService: DipGGRichiestaService,
     public fabMenuService: FabMenuService,
+    
     private monthNavigatorService: MonthNavigatorService,
     private userInterfaceService: UserInterfaceService,
+    private dipGGTimbraturaUtilityService: DipGGTimbraturaUtilityService,
     private userNavigationService: UserNavigationService) {
 
     this.title = 'Request List Admin';
-    this.btnEdit = userInterfaceService.Btn_Modifica;
-    this.btnEdit.event = this.handleButtonEditClick;
+    this.btnApprova = userInterfaceService.Btn_Approva;
+    this.btnApprova.event = this.handleButtonApprovaClick;
+
+    this.btnRifiuta = userInterfaceService.Btn_Rifiuta;
+    this.btnRifiuta.event = this.handleButtonRifiutaClick;
+
+    
   }
 
 
@@ -68,10 +85,15 @@ export class RequestListAdminPageComponent implements OnInit {
   ngOnInit() { }
 
 
-  handleButtonEditClick = (item: any) => {
-    this.navCtrl.navigateForward('/justificationedit', {
-      state: { id: item.id }
-    });
+  handleButtonApprovaClick = (item: any) => {
+    //this.navCtrl.navigateForward('/justificationedit', {
+    //  state: { id: item.id }
+    //});
+  }
+  handleButtonRifiutaClick = (item: any) => {
+    //this.navCtrl.navigateForward('/justificationedit', {
+    //  state: { id: item.id }
+    //});
   }
 
   Filter(CurrFilter: any) {
@@ -92,5 +114,57 @@ export class RequestListAdminPageComponent implements OnInit {
     return this.dip_GG_RichiestaList;
   }
 
+  public getDataA(item: Dip_GG_RichiestaModel): string {
+    if (item.data != item.dataA)
+      return item.dataA;
+
+    return '';
+
+  }
+
+  public getDati(item: Dip_GG_RichiestaModel): string {
+
+    return this.dipGGTimbraturaUtilityService.getDatitext(item);
+
+  }
+
+  public showBtnApprova(item: Dip_GG_RichiestaModel): boolean {
+
+    if (item.richiestaStato != StatoRichiesta.Immessa)
+      return false;
+
+    return true;
+  }
+
+  public showBtnRifiuta(item: Dip_GG_RichiestaModel): boolean{
+    if (item.richiestaStato != StatoRichiesta.Immessa)
+      return false;
+    return true;
+  }
+
+  public getItemText1(item: Dip_GG_RichiestaModel):string {
+    let retVal = "";
+
+    const tipoRichiesta = new StatoRichiestaShortTextPipe();
+
+    retVal = item.data + " " + this.getDataA(item) + " " + tipoRichiesta.transform(item.richiestaStato);
+
+    return retVal;
+
+  }
+
+  public getItemText2(item: Dip_GG_RichiestaModel): string {
+    let retVal = "";
+
+    const tipoRichiesta = new TipoRichiestaToShortTextPipe();
+
+    retVal = tipoRichiesta.transform(item.richiestaTipo) + " " + this.getDati(item);;
+
+    return retVal;
+
+  }
+
+  
 
 }
+

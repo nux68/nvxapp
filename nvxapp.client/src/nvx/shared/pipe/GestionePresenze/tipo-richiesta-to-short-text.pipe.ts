@@ -14,11 +14,11 @@ export class TipoRichiestaToShortTextPipe implements PipeTransform {
 
     switch (value) {
       case TipoRichiesta.Timbratura:
-        return 'Timbratura';
+        return 'Timbr.';
       case TipoRichiesta.Giustificativo:
-        return 'Giustificativo';
+        return 'Giust.';
       case TipoRichiesta.NotaSpesa:
-        return 'NotaSpesa';
+        return 'Spesa';
     
       default:
         return '';

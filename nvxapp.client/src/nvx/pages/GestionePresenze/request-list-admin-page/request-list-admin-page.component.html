@@ -14,16 +14,34 @@
 
       <ion-item-sliding class="ion-hide-sm-up">
         <ion-item>
-          <ion-icon [name]="isAdmin(item) ? 'server-outline' : 'server-outline'"></ion-icon>
-          <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
-            {{ item.id }}
-          </ion-label>
+
+          <ion-item>
+            <ion-label>
+              <strong>{{ item.idDip_RapportoLavoro | idDipRapportoLavoroToCognome }} {{ item.idDip_RapportoLavoro | idDipRapportoLavoroToNome }}</strong>
+              
+              <ion-text style="white-space:nowrap;">
+                {{getItemText1(item)}}
+              </ion-text>
+              
+              <ion-note color="medium" style="white-space:nowrap;">
+                {{getItemText2(item)}}
+              </ion-note>
+
+            </ion-label>
+          </ion-item>
+
         </ion-item>
 
         <ion-item-options side="end">
-          <ion-item-option color="{{btnEdit.color}}" (click)="btnEdit.event(item)">
-            <ion-icon slot="start" name="{{btnEdit.image}}"></ion-icon>
-            Modifica
+
+          <ion-item-option *ngIf="showBtnApprova(item)" color="{{btnApprova.color}}" (click)="btnApprova.event(item)">
+            <ion-icon slot="start" name="{{btnApprova.image}}"></ion-icon>
+            {{btnApprova.text}}
+          </ion-item-option>
+
+          <ion-item-option *ngIf="showBtnRifiuta(item)" color="{{btnRifiuta.color}}" (click)="btnRifiuta.event(item)">
+            <ion-icon slot="start" name="{{btnRifiuta.image}}"></ion-icon>
+            {{btnRifiuta.text}}
           </ion-item-option>
 
         </ion-item-options>
@@ -50,7 +68,7 @@
 
       <ion-col class="ion-hide-sm-down">
         <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
-          {{ item.dataA }}
+          {{ getDataA(item) }}
         </ion-label>
       </ion-col>
 
@@ -62,7 +80,7 @@
 
       <ion-col class="ion-hide-sm-down">
         <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
-          DATI
+          {{getDati(item)}}
         </ion-label>
       </ion-col>
 
@@ -73,9 +91,16 @@
       </ion-col>
 
       <ion-col class="ion-hide-sm-down">
-        <ion-button size="small" shape="round" (click)="btnEdit.event(item)" color="{{btnEdit.color}}">
-          <ion-icon name="{{btnEdit.image}}"></ion-icon>
-          &nbsp;{{btnEdit.text}}
+        <ion-button size="small" *ngIf="showBtnApprova(item)" shape="round" (click)="btnApprova.event(item)" color="{{btnApprova.color}}">
+          <ion-icon name="{{btnApprova.image}}"></ion-icon>
+          &nbsp;{{btnApprova.text}}
+        </ion-button>
+      </ion-col>
+
+      <ion-col class="ion-hide-sm-down">
+        <ion-button size="small" *ngIf="showBtnRifiuta(item)" shape="round" (click)="btnRifiuta.event(item)" color="{{btnRifiuta.color}}">
+          <ion-icon name="{{btnRifiuta.image}}"></ion-icon>
+          &nbsp;{{btnRifiuta.text}}
         </ion-button>
       </ion-col>
 

@@ -14,19 +14,19 @@ export class StatoRichiestaShortTextPipe implements PipeTransform {
 
     switch (value) {
       case StatoRichiesta.Diretta:
-        return 'Diretta';
+        return 'Dir.';
       case StatoRichiesta.Immessa:
-        return 'Immessa';
+        return 'Imm.';
       case StatoRichiesta.Cancellata:
-        return 'Cancellata';
+        return 'Canc.';
       case StatoRichiesta.Rifiutata:
-        return 'Rifiutata';
+        return 'Rif.';
       case StatoRichiesta.ApprovazioneInCorso:
-        return 'ApprovazioneInCorso';
+        return 'In Appr.';
       case StatoRichiesta.ParzialmenteApprovata:
-        return 'ParzialmenteApprovata';
+        return 'Parz. Appr';
       case StatoRichiesta.Approvata:
-        return 'Approvata';
+        return 'Appr.';
 
       default:
         return '';

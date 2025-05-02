@@ -5,6 +5,7 @@ import { StatoRichiesta } from '../../../ClientServer-Service/GestionePresenze/D
   name: 'statoRichiestaLongText',
   standalone: true
 })
+
 export class StatoRichiestaLongTextPipe implements PipeTransform {
 
   transform(value: StatoRichiesta | null | undefined): string {
@@ -33,4 +34,8 @@ export class StatoRichiestaLongTextPipe implements PipeTransform {
     }
   }
 
+}
+
+function Injectable(arg0: { providedIn: string; }): (target: typeof StatoRichiestaLongTextPipe) => void | typeof StatoRichiestaLongTextPipe {
+    throw new Error('Function not implemented.');
 }
