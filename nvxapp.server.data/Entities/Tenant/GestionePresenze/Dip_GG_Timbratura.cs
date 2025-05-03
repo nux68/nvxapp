@@ -24,6 +24,7 @@ namespace nvxapp.server.data.Entities.Tenant
                 IdDip_Richiesta = null
          */
         public StatoRichiesta RichiestaStato { get; set; }
+        //TODO UNIFORMARE
         public int? IdDip_Richiesta { get; set; }
         [ForeignKey("IdDip_Richiesta")]
         public virtual Dip_GG_Richiesta? Dip_RichiestaNavigation { get; set; }

@@ -89,10 +89,9 @@ export class Dip_GG_Richiesta_Send_InModel {
 
 export class Dip_GG_Richiesta_Send_OutModel extends ModelResult {
 
-  public dip_GG_Richiesta: Dip_GG_RichiestaModel;
+  
   constructor() {
     super();
-    this.dip_GG_Richiesta = new Dip_GG_RichiestaModel();
   }
 
 }
@@ -100,9 +99,12 @@ export class Dip_GG_Richiesta_Send_OutModel extends ModelResult {
 
 
 export class Dip_GG_Richiesta_SetState_InModel {
-  //public dip_GG_Richiesta: Dip_GG_RichiestaModel;
+
+  richiestaStato!: StatoRichiesta;
+  IdDip_GG_Richiesta: number[] = [];
+
   constructor() {
-    //this.dip_GG_Richiesta = new Dip_GG_RichiestaModel();
+    
   }
 }
 

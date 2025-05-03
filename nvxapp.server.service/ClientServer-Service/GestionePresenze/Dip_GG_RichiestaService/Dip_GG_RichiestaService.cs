@@ -30,6 +30,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
         private readonly IDip_GG_RichiestaRepository _dip_GG_RichiestaRepository;
         private readonly IDip_GG_TimbraturaRepository _dip_GG_TimbraturaRepository;
         private readonly IDip_GG_GiustificativiRepository _dip_GG_GiustificativiRepository;
+        private readonly IDip_GG_NotaSpesaRepository _dip_GG_NotaSpesaRepository;
 
         private readonly IDip_AnagraficaRepository _dip_AnagraficaRepository;
         private readonly IDip_RapportoLavoroRepository _dip_RapportoLavoroRepository;
@@ -47,6 +48,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                                   IGestionePresenzeUserUtility gestionePresenzeUserUtility,
                                   IDip_GG_RichiestaRepository dip_GG_RichiestaRepository,
                                   IDip_GG_TimbraturaRepository dip_GG_TimbraturaRepository,
+                                  IDip_GG_NotaSpesaRepository dip_GG_NotaSpesaRepository,
                                   IDip_GG_GiustificativiRepository dip_GG_GiustificativiRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _accountService = accountService;
@@ -54,6 +56,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
             _dip_GG_RichiestaRepository = dip_GG_RichiestaRepository;
             _dip_GG_TimbraturaRepository = dip_GG_TimbraturaRepository;
             _dip_GG_GiustificativiRepository = dip_GG_GiustificativiRepository;
+            _dip_GG_NotaSpesaRepository = dip_GG_NotaSpesaRepository;
             _dip_AnagraficaRepository = dip_AnagraficaRepository;
             _dip_RapportoLavoroRepository = dip_RapportoLavoroRepository;
 
@@ -161,30 +164,84 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
             {
                 Dip_GG_Richiesta_SetState_OutModel retVal = new Dip_GG_Richiesta_SetState_OutModel();
 
+               
+                var richieste = _dip_GG_RichiestaRepository.FindAll(x => model.Data.IdDip_GG_Richiesta.Contains(x.Id)).ToList();
+                foreach(var item in richieste)
+                {
+                    item.RichiestaStato = model.Data.RichiestaStato;
+                    await _dip_GG_RichiestaRepository.UpdateAsync(item);
 
-                //User_DATA_COMB_DipAna_DipRapp user_DATA_COMB_DipAna_DipRapp = await _gestionePresenzeUserUtility.Get_DipAna_DipRapp(this.CurrentUserId, true);
+                    switch (model.Data.RichiestaStato)
+                    {
+                        case StatoRichiesta.Cancellata:
+                        case StatoRichiesta.Rifiutata:
 
-                //if (user_DATA_COMB_DipAna_DipRapp != null && user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro != null)
-                //{
-                //    Dip_GG_Richiesta dip_GG_Richiesta = _mapper.Map<Dip_GG_Richiesta>(model.Data.Dip_GG_Richiesta);
-                //    dip_GG_Richiesta.IdDip_RapportoLavoro = user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.Id;
-                //    dip_GG_Richiesta = await _dip_GG_RichiestaRepository.UpsertAsync(dip_GG_Richiesta);
+                          
+                            switch ( item.RichiestaTipo)
+                            {
+                                case TipoRichiesta.Timbratura:
+                                    var timbr = _dip_GG_TimbraturaRepository.FindAll(x => x.IdDip_Richiesta == item.Id).ToList();
+                                    await _dip_GG_TimbraturaRepository.DeleteRangeAsync(timbr);
 
-                //    switch (dip_GG_Richiesta.RichiestaTipo)
-                //    {
-                //        case TipoRichiesta.Timbratura:
-                //            await Add_Dip_GG_Timbratura(dip_GG_Richiesta, user_DATA_COMB_DipAna_DipRapp);
-                //            break;
+                                    break;
+                                case TipoRichiesta.Giustificativo:
 
-                //        case TipoRichiesta.Giustificativo:
-                //            await Add_Dip_GG_Giustificativi(dip_GG_Richiesta, user_DATA_COMB_DipAna_DipRapp);
+                                    var just = _dip_GG_GiustificativiRepository.FindAll(x => x.IdDip_Richiesta == item.Id).ToList();
+                                    await _dip_GG_GiustificativiRepository.DeleteRangeAsync(just);
 
-                //            break;
-                //        case TipoRichiesta.NotaSpesa:
-                //            break;
-                //    }
+                                    break;
+                                case TipoRichiesta.NotaSpesa:
 
-                //}
+                                    var nota = _dip_GG_NotaSpesaRepository.FindAll(x => x.IdDip_GG_Richiesta == item.Id).ToList();
+                                    await _dip_GG_NotaSpesaRepository.DeleteRangeAsync(nota);
+
+                                    break;
+
+                            }
+                            break;
+
+                        default:
+                            switch (item.RichiestaTipo)
+                            {
+                                case TipoRichiesta.Timbratura:
+                                    var timbr = _dip_GG_TimbraturaRepository.FindAll(x => x.IdDip_Richiesta == item.Id).ToList();
+                                    foreach(var idemDett in timbr)
+                                    {
+                                        idemDett.RichiestaStato = model.Data.RichiestaStato;
+                                        await _dip_GG_TimbraturaRepository.UpsertAsync(idemDett);
+                                    }
+
+
+                                    break;
+                                case TipoRichiesta.Giustificativo:
+
+                                    var just = _dip_GG_GiustificativiRepository.FindAll(x => x.IdDip_Richiesta == item.Id).ToList();
+                                    foreach (var idemDett in just)
+                                    {
+                                        idemDett.RichiestaStato = model.Data.RichiestaStato;
+                                        await _dip_GG_GiustificativiRepository.UpsertAsync(idemDett);
+                                    }
+
+                                    break;
+                                case TipoRichiesta.NotaSpesa:
+
+                                    var nota = _dip_GG_NotaSpesaRepository.FindAll(x => x.IdDip_GG_Richiesta == item.Id).ToList();
+                                    foreach (var idemDett in nota)
+                                    {
+                                        idemDett.RichiestaStato = model.Data.RichiestaStato;
+                                        await _dip_GG_NotaSpesaRepository.UpsertAsync(idemDett);
+                                    }
+
+                                    break;
+
+                            }
+
+                            break;
+                    }
+                }
+
+
+             
 
 
                 //eliminare

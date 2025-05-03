@@ -7,7 +7,7 @@ import { Par_GiustificativiInModel, Par_GiustificativiModel } from '../../../Cli
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { ParGiustificativiService } from '../../../ClientServer-Service/GestionePresenze/Par_Giustificativi/par-giustificativi.service';
 import { DipGGRichiestaService } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/dip-gg-richiesta.service';
-import { Dip_GG_Richiesta_GetAll4User_InModel, Dip_GG_RichiestaModel, StatoRichiesta, TipoRichiesta } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/Models/dip-gg-richiesta-model';
+import { Dip_GG_Richiesta_GetAll4User_InModel, Dip_GG_Richiesta_SetState_InModel, Dip_GG_RichiestaModel, StatoRichiesta, TipoRichiesta } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/Models/dip-gg-richiesta-model';
 import { MonthNavigatorService } from '../../../Utility/infrastructure/month-navigator.service';
 import { DipGGTimbraturaUtilityService } from '../../../Utility/GestionePresenze/dip-gg-timbratura-utility.service';
 import { StatoRichiestaShortTextPipe } from '../../../shared/pipe/GestionePresenze/stato-richiesta-short-text.pipe';
@@ -38,18 +38,13 @@ export class RequestListUserPageComponent implements OnInit {
 
     this.title = 'Request List User';
     this.btnDelete = userInterfaceService.Btn_Cancella;
-    this.btnDelete.event = this.handleButtonEditClick;
+    this.btnDelete.event = this.handleButtonDeleteClick;
   }
 
   ionViewWillEnter() {
 
-    let request: GenericRequest<Dip_GG_Richiesta_GetAll4User_InModel> = new GenericRequest<Dip_GG_Richiesta_GetAll4User_InModel>(Dip_GG_Richiesta_GetAll4User_InModel);
-    request.data.month = this.monthNavigatorService.currentMonth+1;
-    request.data.year = this.monthNavigatorService.currentYear;
-
-    this.dipGGRichiestaService.GetAll4User(request).subscribe(res => {
-      this.dip_GG_RichiestaList = res.data.dip_GG_Richiesta;
-    });
+    this.loadData();
+ 
 
     //this.fabMenuService.fabMenuItem = [
 
@@ -63,6 +58,16 @@ export class RequestListUserPageComponent implements OnInit {
 
   }
 
+  private loadData() {
+    let request: GenericRequest<Dip_GG_Richiesta_GetAll4User_InModel> = new GenericRequest<Dip_GG_Richiesta_GetAll4User_InModel>(Dip_GG_Richiesta_GetAll4User_InModel);
+    request.data.month = this.monthNavigatorService.currentMonth + 1;
+    request.data.year = this.monthNavigatorService.currentYear;
+
+    this.dipGGRichiestaService.GetAll4User(request).subscribe(res => {
+      this.dip_GG_RichiestaList = res.data.dip_GG_Richiesta;
+    });
+  }
+
   ionViewWillLeave() {
     //this.fabMenuService.fabMenuItem = [];
   }
@@ -70,7 +75,17 @@ export class RequestListUserPageComponent implements OnInit {
   ngOnInit() { }
 
 
-  handleButtonEditClick = (item: any) => {
+  handleButtonDeleteClick = (item: any) => {
+    let IdDip_GG_Richiesta: number[] = [];
+    IdDip_GG_Richiesta.push(item.id);
+
+    let request: GenericRequest<Dip_GG_Richiesta_SetState_InModel> = new GenericRequest<Dip_GG_Richiesta_SetState_InModel>(Dip_GG_Richiesta_SetState_InModel);
+    request.data.richiestaStato = StatoRichiesta.Cancellata;
+    request.data.IdDip_GG_Richiesta = IdDip_GG_Richiesta;
+    this.dipGGRichiestaService.SetState(request).subscribe(res => {
+      this.loadData();
+    });
+
     //this.navCtrl.navigateForward('/justificationedit', {
     //  state: { id: item.id }
     //});

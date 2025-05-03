@@ -7,7 +7,7 @@ import { Par_GiustificativiInModel, Par_GiustificativiModel } from '../../../Cli
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { ParGiustificativiService } from '../../../ClientServer-Service/GestionePresenze/Par_Giustificativi/par-giustificativi.service';
 import { DipGGRichiestaService } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/dip-gg-richiesta.service';
-import { Dip_GG_Richiesta_Body_Timbratura, Dip_GG_Richiesta_GetAll4Admin_InModel, Dip_GG_Richiesta_GetAll4User_InModel, Dip_GG_RichiestaModel, StatoRichiesta, TipoRichiesta } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/Models/dip-gg-richiesta-model';
+import { Dip_GG_Richiesta_Body_Timbratura, Dip_GG_Richiesta_GetAll4Admin_InModel, Dip_GG_Richiesta_GetAll4User_InModel, Dip_GG_Richiesta_SetState_InModel, Dip_GG_RichiestaModel, StatoRichiesta, TipoRichiesta } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/Models/dip-gg-richiesta-model';
 import { MonthNavigatorService } from '../../../Utility/infrastructure/month-navigator.service';
 import { DipGGTimbraturaUtilityService } from '../../../Utility/GestionePresenze/dip-gg-timbratura-utility.service';
 import { StatoRichiestaLongTextPipe } from '../../../shared/pipe/GestionePresenze/stato-richiesta-long-text.pipe';
@@ -58,13 +58,7 @@ export class RequestListAdminPageComponent implements OnInit {
 
   ionViewWillEnter() {
 
-    let request: GenericRequest<Dip_GG_Richiesta_GetAll4Admin_InModel> = new GenericRequest<Dip_GG_Richiesta_GetAll4Admin_InModel>(Dip_GG_Richiesta_GetAll4Admin_InModel);
-    request.data.month = this.monthNavigatorService.currentMonth + 1;
-    request.data.year = this.monthNavigatorService.currentYear;
-
-    this.dipGGRichiestaService.GetAll4Admin(request).subscribe(res => {
-      this.dip_GG_RichiestaList = res.data.dip_GG_Richiesta;
-    });
+    this.loadData();
 
     //this.fabMenuService.fabMenuItem = [
 
@@ -78,6 +72,8 @@ export class RequestListAdminPageComponent implements OnInit {
 
   }
 
+
+
   ionViewWillLeave() {
     //this.fabMenuService.fabMenuItem = [];
   }
@@ -86,11 +82,13 @@ export class RequestListAdminPageComponent implements OnInit {
 
 
   handleButtonApprovaClick = (item: any) => {
+    this.sendStato(item, StatoRichiesta.Approvata );
     //this.navCtrl.navigateForward('/justificationedit', {
     //  state: { id: item.id }
     //});
   }
   handleButtonRifiutaClick = (item: any) => {
+    this.sendStato(item, StatoRichiesta.Rifiutata);
     //this.navCtrl.navigateForward('/justificationedit', {
     //  state: { id: item.id }
     //});
@@ -98,6 +96,29 @@ export class RequestListAdminPageComponent implements OnInit {
 
   Filter(CurrFilter: any) {
     this.searchText = CurrFilter;
+  }
+
+  private loadData() {
+    let request: GenericRequest<Dip_GG_Richiesta_GetAll4Admin_InModel> = new GenericRequest<Dip_GG_Richiesta_GetAll4Admin_InModel>(Dip_GG_Richiesta_GetAll4Admin_InModel);
+    request.data.month = this.monthNavigatorService.currentMonth + 1;
+    request.data.year = this.monthNavigatorService.currentYear;
+
+    this.dipGGRichiestaService.GetAll4Admin(request).subscribe(res => {
+      this.dip_GG_RichiestaList = res.data.dip_GG_Richiesta;
+    });
+  }
+
+  private sendStato(item: any, statoRichiesta: StatoRichiesta) {
+
+    let IdDip_GG_Richiesta: number[] = [];
+    IdDip_GG_Richiesta.push(item.id);
+
+    let request: GenericRequest<Dip_GG_Richiesta_SetState_InModel> = new GenericRequest<Dip_GG_Richiesta_SetState_InModel>(Dip_GG_Richiesta_SetState_InModel);
+    request.data.richiestaStato = statoRichiesta;
+    request.data.IdDip_GG_Richiesta = IdDip_GG_Richiesta;
+    this.dipGGRichiestaService.SetState(request).subscribe(res => {
+      this.loadData();
+    });
   }
 
   isAdmin(item: any) {
@@ -111,7 +132,7 @@ export class RequestListAdminPageComponent implements OnInit {
     //);
     //return sorted_GiustificativiList;
 
-    return this.dip_GG_RichiestaList;
+    return this.dip_GG_RichiestaList.filter(x=>x.richiestaStato!= StatoRichiesta.Cancellata);
   }
 
   public getDataA(item: Dip_GG_RichiestaModel): string {
