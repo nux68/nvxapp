@@ -21,7 +21,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Giu
         public TimeSpan? From { get; set; }   // se InputType=manual  (dalle)
         public required int IdPar_Giustificativi { get; set; }
         public StatoRichiesta RichiestaStato { get; set; }
-        public int? IdDip_Richiesta { get; set; }
+        public int? IdDip_GG_Richiesta { get; set; }
 
 
     }

@@ -180,13 +180,13 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                             switch ( item.RichiestaTipo)
                             {
                                 case TipoRichiesta.Timbratura:
-                                    var timbr = _dip_GG_TimbraturaRepository.FindAll(x => x.IdDip_Richiesta == item.Id).ToList();
+                                    var timbr = _dip_GG_TimbraturaRepository.FindAll(x => x.IdDip_GG_Richiesta == item.Id).ToList();
                                     await _dip_GG_TimbraturaRepository.DeleteRangeAsync(timbr);
 
                                     break;
                                 case TipoRichiesta.Giustificativo:
 
-                                    var just = _dip_GG_GiustificativiRepository.FindAll(x => x.IdDip_Richiesta == item.Id).ToList();
+                                    var just = _dip_GG_GiustificativiRepository.FindAll(x => x.IdDip_GG_Richiesta == item.Id).ToList();
                                     await _dip_GG_GiustificativiRepository.DeleteRangeAsync(just);
 
                                     break;
@@ -204,7 +204,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                             switch (item.RichiestaTipo)
                             {
                                 case TipoRichiesta.Timbratura:
-                                    var timbr = _dip_GG_TimbraturaRepository.FindAll(x => x.IdDip_Richiesta == item.Id).ToList();
+                                    var timbr = _dip_GG_TimbraturaRepository.FindAll(x => x.IdDip_GG_Richiesta == item.Id).ToList();
                                     foreach(var idemDett in timbr)
                                     {
                                         idemDett.RichiestaStato = model.Data.RichiestaStato;
@@ -215,7 +215,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                                     break;
                                 case TipoRichiesta.Giustificativo:
 
-                                    var just = _dip_GG_GiustificativiRepository.FindAll(x => x.IdDip_Richiesta == item.Id).ToList();
+                                    var just = _dip_GG_GiustificativiRepository.FindAll(x => x.IdDip_GG_Richiesta == item.Id).ToList();
                                     foreach (var idemDett in just)
                                     {
                                         idemDett.RichiestaStato = model.Data.RichiestaStato;
@@ -273,7 +273,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                             Dip_GG_Timbratura dip_GG_Timbratura = new Dip_GG_Timbratura()
                             {
                                 IdDip_RapportoLavoro = user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.Id,
-                                IdDip_Richiesta = dip_GG_Richiesta.Id,
+                                IdDip_GG_Richiesta = dip_GG_Richiesta.Id,
                                 Timbratura = parsedDateTime,
                                 TimbraturaOriginale = parsedDateTime,
                                 TimbraturaArrotondata = parsedDateTime,
@@ -311,7 +311,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                                     {
                                         Data = date,
                                         IdDip_RapportoLavoro = user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.Id,
-                                        IdDip_Richiesta = dip_GG_Richiesta.Id,
+                                        IdDip_GG_Richiesta = dip_GG_Richiesta.Id,
                                         IdPar_Giustificativi = richiesta.IdPar_Giustificativi,
                                         RichiestaStato = StatoRichiesta.Immessa,
                                         InputType = richiesta.AllDay ? JustificationInputType.AllDay : JustificationInputType.Manual,

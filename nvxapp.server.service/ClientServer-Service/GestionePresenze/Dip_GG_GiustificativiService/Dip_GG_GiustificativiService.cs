@@ -57,7 +57,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Giu
                 //        From = new TimeSpan(9, 0,0),
                 //        IdPar_Giustificativi = 1,
                 //        RichiestaStato = StatoRichiesta.Diretta,
-                //        IdDip_Richiesta = 0
+                //        IdDip_GG_Richiesta = 0
                 //    });
                 //}
 

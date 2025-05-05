@@ -27,7 +27,7 @@ export class Dip_GG_GiustificativiModel  {
 
   public idPar_Giustificativi: number; // Required
   public richiestaStato: StatoRichiesta;
-  public idDip_Richiesta?: number; // Opzionale (può essere null)
+  public idDip_GG_Richiesta?: number; // Opzionale (può essere null)
 
 }
 

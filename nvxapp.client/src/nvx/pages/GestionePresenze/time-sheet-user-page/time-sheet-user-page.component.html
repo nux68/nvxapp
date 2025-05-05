@@ -62,7 +62,7 @@
                     
                     <span>{{ just.idPar_Giustificativi | parGiustificativiToLongText}}</span>
 
-                    <ion-icon *ngIf="just.idDip_Richiesta"
+                    <ion-icon *ngIf="just.idDip_GG_Richiesta"
                               [name]="getStatusIcon(just.richiestaStato)"
                               class="status-icon"
                               [title]="getStatusText(just.richiestaStato)">
@@ -77,7 +77,7 @@
                   <div class="timestamp" *ngFor="let record of day.dip_GG_Timbratura" [ngClass]="getTimestampClass(record)">
                     <span>{{ record.timbraturaTipo | tipoTimbraturaToShortText }} {{ record.timbratura | date:'HH:mm' }}</span>
 
-                    <ion-icon *ngIf="record.idDip_Richiesta"
+                    <ion-icon *ngIf="record.idDip_GG_Richiesta"
                               [name]="getStatusIcon(record.richiestaStato)"
                               class="status-icon"
                               [title]="getStatusText(record.richiestaStato)">

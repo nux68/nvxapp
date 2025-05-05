@@ -33,7 +33,8 @@ namespace nvxapp.server.data.Entities.Tenant
     {
         Timbratura,
         Giustificativo,
-        NotaSpesa
+        NotaSpesa,
+        ApprovazioneStraordinario
     }
 
     public enum StatoRichiesta

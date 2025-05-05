@@ -35,7 +35,8 @@ export class Dip_GG_Richiesta_Body_NotaSpesa {
 export enum TipoRichiesta {
   Timbratura,
   Giustificativo,
-  NotaSpesa
+  NotaSpesa,
+  ApprovazioneStraordinario
 }
 
 export enum StatoRichiesta {

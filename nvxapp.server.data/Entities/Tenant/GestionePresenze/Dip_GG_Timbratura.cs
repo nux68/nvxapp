@@ -21,12 +21,12 @@ namespace nvxapp.server.data.Entities.Tenant
         /* 
           per gli inserimenti diretti, 
                 StatoRichiasta = Diretta e
-                IdDip_Richiesta = null
+                IdDip_GG_Richiesta = null
          */
         public StatoRichiesta RichiestaStato { get; set; }
         //TODO UNIFORMARE
-        public int? IdDip_Richiesta { get; set; }
-        [ForeignKey("IdDip_Richiesta")]
+        public int? IdDip_GG_Richiesta { get; set; }
+        [ForeignKey("IdDip_GG_Richiesta")]
         public virtual Dip_GG_Richiesta? Dip_RichiestaNavigation { get; set; }
     }
 

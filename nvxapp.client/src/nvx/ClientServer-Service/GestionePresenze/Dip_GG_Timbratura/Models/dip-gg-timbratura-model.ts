@@ -20,10 +20,10 @@ export class Dip_GG_TimbraturaModel {
   /*
     Per gli inserimenti diretti:
       richiestaStato = Diretta
-      idDip_Richiesta = null
+      idDip_GG_Richiesta = null
   */
   public richiestaStato!: StatoRichiesta;
-  public idDip_Richiesta?: number; // Nullable
+  public idDip_GG_Richiesta?: number; // Nullable
 
 
 

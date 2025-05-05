@@ -25,10 +25,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
         /* 
           per gli inserimenti diretti, 
                 StatoRichiasta = Diretta e
-                IdDip_Richiesta = null
+                IdDip_GG_Richiesta = null
          */
         public StatoRichiesta RichiestaStato { get; set; }
-        public int? IdDip_Richiesta { get; set; }
+        public int? idDip_GG_Richiesta { get; set; }
 
 
     }
