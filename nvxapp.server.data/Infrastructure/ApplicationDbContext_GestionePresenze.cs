@@ -175,6 +175,13 @@ namespace nvxapp.server.data.Infrastructure
                 .HasForeignKey(key_esterna => key_esterna.IdAz_Reparto)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            /* Az_RepartoUser */
+            modelBuilder.Entity<Az_RepartoUser>()
+                .HasOne(t_padre => t_padre.Az_RepartoNavigation)
+                .WithMany(t_figlio => t_figlio.Az_RepartoUser)
+                .HasForeignKey(key_esterna => key_esterna.IdAz_Reparto)
+                .OnDelete(DeleteBehavior.Cascade);
+
 
             /* Par_Causali */
             modelBuilder.Entity<Par_Causali>()
