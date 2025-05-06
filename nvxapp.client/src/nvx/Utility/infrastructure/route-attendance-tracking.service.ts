@@ -31,6 +31,7 @@ export class RouteAttendanceTrackingService {
 
       { path: 'departmentlist', loadChildren: () => import('../../pages/GestionePresenze/department-list-page/department-list-page.module').then(m => m.DepartmentListPageModule), canActivate: [RoleGuard4CompanyAdmin] },
       { path: 'departmentedit', loadChildren: () => import('../../pages/GestionePresenze/department-edit-page/department-edit-page.module').then(m => m.DepartmentEditPageModule), canActivate: [RoleGuard4CompanyAdmin] },
+      { path: 'companycfgedit', loadChildren: () => import('../../pages/GestionePresenze/company-cfg-page/company-cfg-page.module').then(m => m.CompanyCfgPageModule), canActivate: [RoleGuard4CompanyAdmin] },
       
       
     ];

@@ -19,6 +19,7 @@ export class MainMenuAttendanceTrackingService implements iMainMenuService {
       { title: 'Admin Time Sheet', component: "TimeSheetAdminPageComponent", url: '/admintimesheet', icon: 'ellipse' },
       { title: 'Justifications', component: "JustificationListPageComponent", url: '/justificationlist', icon: 'ellipse' },
       { title: 'Departments', component: "DepartmentListPageComponent", url: '/departmentlist', icon: 'ellipse' },
+      { title: 'Company cfg', component: "CompanyCfgPageComponent", url: '/companycfgedit', icon: 'ellipse' },
     ];
 
   }
