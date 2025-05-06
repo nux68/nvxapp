@@ -12,14 +12,14 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
 
         private readonly IAz_AnagraficaRepository _az_AnagraficaRepository;
         private readonly IAz_SediRepository _az_SediRepository; 
-        private readonly IAz_RepartoRepository _az_RepartoRepository;
+        private readonly IAz_SediRepartoRepository _az_RepartoRepository;
 
         public GestionePresenzeUserUtility(IDip_AnagraficaRepository dip_AnagraficaRepository,
                                            IDip_RapportoLavoroRepository dip_RapportoLavoroRepository,
 
                                            IAz_AnagraficaRepository az_AnagraficaRepository,
                                            IAz_SediRepository az_SediRepository,
-                                           IAz_RepartoRepository az_RepartoRepository )
+                                           IAz_SediRepartoRepository az_RepartoRepository )
         {
             _dip_AnagraficaRepository = dip_AnagraficaRepository;
             _dip_RapportoLavoroRepository = dip_RapportoLavoroRepository;
@@ -120,7 +120,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
             {
                 if (InitIfNotExsist)
                 {
-                    company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Reparto = new Az_Reparto
+                    company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Reparto = new Az_SediReparto
                     {
                         IdAz_Sedi = company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Sedi.Id,
                         Descrizione = "Default"
@@ -148,7 +148,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
     {
         public Az_Anagrafica? az_Anagrafica;
         public Az_Sedi? az_Sedi;
-        public Az_Reparto? az_Reparto;
+        public Az_SediReparto? az_Reparto;
     }
 
 

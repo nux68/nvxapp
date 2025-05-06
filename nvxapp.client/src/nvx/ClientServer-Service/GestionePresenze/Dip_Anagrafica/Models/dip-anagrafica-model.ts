@@ -4,9 +4,10 @@ import { Dip_RapportoLavoroModel } from "../../Dip_RapportoLavoro/Models/dip-rap
 
 export class Dip_AnagraficaModel {
 
-  public userName: string;
-  public idDip_Anagrafica!: number;
+  public id!: number;
   public idAspNetUsers: string;
+  public userName: string;
+  
   public cognome!: string;
   public nome!: string;
 

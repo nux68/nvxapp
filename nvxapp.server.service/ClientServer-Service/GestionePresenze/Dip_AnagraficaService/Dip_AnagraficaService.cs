@@ -65,7 +65,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
                             IdAspNetUsers = item.IdAspNetUsers,
                             Cognome = item.Cognome,
                             Nome = item.Nome,
-                            IdDip_Anagrafica = item.Id,
+                            Id = item.Id,
                             Dip_RapportoLavoro = _mapper.Map<List<Dip_RapportoLavoroModel>>(dip_RapportoLavoro.Where(x => x.IdDip_Anagrafica == item.Id).ToList())
                         });
                     }

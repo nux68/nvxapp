@@ -10,7 +10,15 @@ export class Par_GiustificativiModel {
 
   public backgroundColor!: string;
   public textColor!: string;
+  public tipoInput!: JustTipoInput;
 
+}
+
+
+export enum JustTipoInput {
+  InteraGiornate,
+  Intervallo,
+  Tutti
 }
 
 

@@ -8,7 +8,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
     {
         public string UserName { get; set; } = string.Empty;
         public string IdAspNetUsers { get; set; } = string.Empty;
-        public int IdDip_Anagrafica { get; set; }
+        public int Id { get; set; }
         public string? Cognome { get; set; }
         public string? Nome { get; set; }
         public List<Dip_RapportoLavoroModel> Dip_RapportoLavoro { get; set; } = new List<Dip_RapportoLavoroModel>();

@@ -11,9 +11,10 @@ namespace nvxapp.server.data.Infrastructure
 
         public virtual DbSet<Az_Anagrafica> Az_Anagrafica { get; set; }
         public virtual DbSet<Az_Sedi> Az_Sedi { get; set; }
-        public virtual DbSet<Az_Reparto> Az_Reparto { get; set; }
-        public virtual DbSet<Az_RepartoAttivita> Az_RepartoAttivita { get; set; }
-
+        public virtual DbSet<Az_SediReparto> Az_SediReparto { get; set; }
+        public virtual DbSet<Az_SediRepartoAttivita> Az_SediRepartoAttivita { get; set; }
+        public virtual DbSet<Az_SediRepartoUser> Az_SediRepartoUser { get; set; }
+        public virtual DbSet<Az_Cfg> Az_Cfg { get; set; }
 
         public virtual DbSet<Dip_Anagrafica> Dip_Anagrafica { get; set; }
         public virtual DbSet<Dip_RapportoLavoro> Dip_RapportoLavoro { get; set; }
@@ -143,6 +144,13 @@ namespace nvxapp.server.data.Infrastructure
                 .HasForeignKey<Az_Anagrafica>(key_esterna => key_esterna.IdCompany)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            /* Az_Cfg */
+            modelBuilder.Entity<Az_Cfg>()
+                .HasOne(t_padre => t_padre.Az_AnagraficaNavigation)
+                .WithOne(t_figlio => t_figlio.Az_Cfg)
+                .HasForeignKey<Az_Cfg>(key_esterna => key_esterna.IdAz_Anagrafica)
+                .OnDelete(DeleteBehavior.Cascade);
+
 
             /* Az_Sedi */
             modelBuilder.Entity<Az_Sedi>()
@@ -154,32 +162,42 @@ namespace nvxapp.server.data.Infrastructure
 
 
             /* Az_Reparto */
-            modelBuilder.Entity<Az_Reparto>()
+            modelBuilder.Entity<Az_SediReparto>()
                 .HasOne(t_padre => t_padre.Az_SediNavigation)
                 .WithMany(t_figlio => t_figlio.Az_Reparto)
                 .HasForeignKey(key_esterna => key_esterna.IdAz_Sedi)
                 .OnDelete(DeleteBehavior.Cascade);
 
             // Relazione ricorsiva: un reparto può avere altri reparti come figli
-            modelBuilder.Entity<Az_Reparto>()
-                .HasOne(t => t.Az_RepartoNavigation)
-                .WithMany(t => t.Az_Reparto_Sub)
-                .HasForeignKey(t => t.IdAz_Reparto)
+            modelBuilder.Entity<Az_SediReparto>()
+                .HasOne(t => t.Az_SediRepartoNavigation)
+                .WithMany(t => t.Az_SediReparto_Sub)
+                .HasForeignKey(t => t.IdAz_SediReparto)
                 .OnDelete(DeleteBehavior.Restrict); // Evita eliminazioni a cascata
 
 
             /* Az_RepartoAttivita */
-            modelBuilder.Entity<Az_RepartoAttivita>()
-                .HasOne(t_padre => t_padre.Az_RepartoNavigation)
-                .WithMany(t_figlio => t_figlio.Az_RepartoAttivita)
-                .HasForeignKey(key_esterna => key_esterna.IdAz_Reparto)
+            modelBuilder.Entity<Az_SediRepartoAttivita>()
+                .HasOne(t_padre => t_padre.Az_SediRepartoNavigation)
+                .WithMany(t_figlio => t_figlio.Az_SediRepartoAttivita)
+                .HasForeignKey(key_esterna => key_esterna.IdAz_SediReparto)
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            /* Az_SediRepartoUser */
+            modelBuilder.Entity<Az_SediRepartoUser>()
+                .HasOne(t_padre => t_padre.Az_SediRepartoNavigation)
+                .WithMany(t_figlio => t_figlio.Az_SediRepartoUser)
+                .HasForeignKey(key_esterna => key_esterna.IdAz_SediReparto)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            
+
+
             /* Az_RepartoUser */
-            modelBuilder.Entity<Az_RepartoUser>()
-                .HasOne(t_padre => t_padre.Az_RepartoNavigation)
-                .WithMany(t_figlio => t_figlio.Az_RepartoUser)
-                .HasForeignKey(key_esterna => key_esterna.IdAz_Reparto)
+            modelBuilder.Entity<Az_SediRepartoUser>()
+                .HasOne(t_padre => t_padre.Az_SediRepartoNavigation)
+                .WithMany(t_figlio => t_figlio.Az_SediRepartoUser)
+                .HasForeignKey(key_esterna => key_esterna.IdAz_SediReparto)
                 .OnDelete(DeleteBehavior.Cascade);
 
 

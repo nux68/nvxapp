@@ -6,7 +6,7 @@ namespace nvxapp.server.data.Entities.Tenant
 {
 
     
-    public class Az_Sedi : BaseEntity
+    public class Az_Cfg : BaseEntity
     {
         [Required]
         public required int IdAz_Anagrafica { get; set; }
@@ -15,11 +15,17 @@ namespace nvxapp.server.data.Entities.Tenant
 
         [Required]
         [MaxLength(50)]
-        public string? Descrizione { get; set; }
-
-        public ICollection<Az_SediReparto>? Az_Reparto { get; set; }
+        public TipoApprovazione ApprovazioneTipo { get; set; }
+        
     }
 
+    public enum TipoApprovazione
+    {
+        SigleAdmin,
+        AllAdmin,
+        AllAdminHierarchy,
+
+    }
 
 
 }

@@ -19,6 +19,8 @@ namespace nvxapp.server.data.Entities.Tenant
 
         public ICollection<Az_Sedi>? Az_Sedi { get; set; }
 
+        public Az_Cfg? Az_Cfg { get; set; }
+
         public ICollection<Par_Causali>? Par_Causali { get; set; }
         public ICollection<Par_Giustificativi>? Par_Giustificativi { get; set; }
         public ICollection<Par_Arrotondamenti>? Par_Arrotondamenti { get; set; }

@@ -26,16 +26,16 @@ namespace nvxapp.server.data.Entities.Tenant
         [MaxLength(7)]
         public string? TextColor { get; set; }
 
-        //public JustInputValoriConsentiti InputValoriConsentiti { get; set; }
+        public JustTipoInput TipoInput { get; set; }
 
         public ICollection<Dip_GG_Giustificativi>? Dip_GG_Giustificativi { get; set; }
 
     }
 
-    public enum JustInputValoriConsentiti
+    public enum JustTipoInput
     {
-        SoloInteraGiornate,
-        DaA,
+        InteraGiornate,
+        Intervallo,
         Tutti
     }
 
