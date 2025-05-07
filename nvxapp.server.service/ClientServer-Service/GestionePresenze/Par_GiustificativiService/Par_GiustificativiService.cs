@@ -47,7 +47,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Giusti
                 int IdCompany;
                 int.TryParse(this.CurrentCompany, out IdCompany);
 
-                Company_DATA_COMB_AzAna_AzSedi_AzReparto company_DATA_COMB_AzAna_AzSedi_AzReparto = await _gestionePresenzeUserUtility.Get_AzAna_AzSedi_AzReparto(IdCompany, true);
+                Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg company_DATA_COMB_AzAna_AzSedi_AzReparto = await _gestionePresenzeUserUtility.Get_AzAna_AzSedi_AzReparto_Az_Cfg(IdCompany, true);
 
                 Par_Giustificativi? par_Giustificativi = null;
                 if (company_DATA_COMB_AzAna_AzSedi_AzReparto != null && company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Anagrafica != null)
@@ -150,7 +150,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Giusti
                 int IdCompany;
                 int.TryParse(this.CurrentCompany, out IdCompany);
 
-                Company_DATA_COMB_AzAna_AzSedi_AzReparto company_DATA_COMB_AzAna_AzSedi_AzReparto = await _gestionePresenzeUserUtility.Get_AzAna_AzSedi_AzReparto(IdCompany, true);
+                Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg company_DATA_COMB_AzAna_AzSedi_AzReparto = await _gestionePresenzeUserUtility.Get_AzAna_AzSedi_AzReparto_Az_Cfg(IdCompany, true);
 
                 if (company_DATA_COMB_AzAna_AzSedi_AzReparto != null && company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Anagrafica != null)
                 {

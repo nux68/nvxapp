@@ -35,7 +35,26 @@ namespace nvxapp.server.Controllers
             return res;
         }
 
-        
+        [Authorize]
+        [HttpPost]
+        [Route("Az_Cfg_Get")]
+        public async Task<GenericResult<Az_Cfg_Get_OutModel>> Az_Cfg_Get(GenericRequest<Az_Cfg_Get_InModel> inModel)
+        {
+            var res = await _az_CfgService.Az_CfgGet(inModel, false);
+
+            return res;
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("Az_Cfg_Put")]
+        public async Task<GenericResult<Az_Cfg_Put_OutModel>> Az_Cfg_Put(GenericRequest<Az_Cfg_Put_InModel> inModel)
+        {
+            var res = await _az_CfgService.Az_CfgPut(inModel, false);
+
+            return res;
+        }
+
 
     }
 

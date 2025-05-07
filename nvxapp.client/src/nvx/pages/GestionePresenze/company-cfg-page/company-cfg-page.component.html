@@ -1,3 +1,31 @@
-<p>
-  company-cfg-page works!
-</p>
+<app-page-toolbar [title]="Title"
+                  [showFilter]="ShowFilter"
+                  [showBreadcrumbs]="true">
+</app-page-toolbar>
+
+<br />
+<ion-content [fullscreen]="true">
+
+  <form [formGroup]="_editForm">
+
+  
+    <ion-list>
+      <ion-list-header>
+        <ion-label>Tipo Approvazione</ion-label>
+      </ion-list-header>
+
+      <ion-radio-group formControlName="approvazioneTipo">
+        <ion-item *ngFor="let option of tipoApprovazioneOptions">
+          <ion-label>{{ getTipoApprovazioneLabel(option.value) }}</ion-label>
+          <ion-radio [value]="option.value" slot="start"></ion-radio>
+        </ion-item>
+      </ion-radio-group>
+    </ion-list>
+
+  </form>
+
+</ion-content>
+<br />
+
+
+<app-page-buttonbar [buttonbar]="buttonbar"></app-page-buttonbar>

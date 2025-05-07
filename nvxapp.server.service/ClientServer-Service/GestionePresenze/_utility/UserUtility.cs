@@ -13,13 +13,15 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
         private readonly IAz_AnagraficaRepository _az_AnagraficaRepository;
         private readonly IAz_SediRepository _az_SediRepository; 
         private readonly IAz_SediRepartoRepository _az_RepartoRepository;
+        private readonly IAz_CfgRepository _az_CfgRepository;
 
         public GestionePresenzeUserUtility(IDip_AnagraficaRepository dip_AnagraficaRepository,
                                            IDip_RapportoLavoroRepository dip_RapportoLavoroRepository,
 
                                            IAz_AnagraficaRepository az_AnagraficaRepository,
                                            IAz_SediRepository az_SediRepository,
-                                           IAz_SediRepartoRepository az_RepartoRepository )
+                                           IAz_SediRepartoRepository az_RepartoRepository,
+                                           IAz_CfgRepository az_CfgRepository)
         {
             _dip_AnagraficaRepository = dip_AnagraficaRepository;
             _dip_RapportoLavoroRepository = dip_RapportoLavoroRepository;
@@ -27,6 +29,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
             _az_AnagraficaRepository = az_AnagraficaRepository;
             _az_SediRepository = az_SediRepository;
             _az_RepartoRepository = az_RepartoRepository;
+            _az_CfgRepository = az_CfgRepository;
         }
 
         public async Task<User_DATA_COMB_DipAna_DipRapp> Get_DipAna_DipRapp(string IdAspNetUsers, bool InitIfNotExsist)
@@ -74,9 +77,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
         }
 
         
-        public async Task<Company_DATA_COMB_AzAna_AzSedi_AzReparto> Get_AzAna_AzSedi_AzReparto(int IdCompany, bool InitIfNotExsist)
+        public async Task<Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg> Get_AzAna_AzSedi_AzReparto_Az_Cfg(int IdCompany, bool InitIfNotExsist)
         {
-            Company_DATA_COMB_AzAna_AzSedi_AzReparto company_DATA_COMB_AzAna_AzSedi_AzReparto = new Company_DATA_COMB_AzAna_AzSedi_AzReparto();
+            Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg company_DATA_COMB_AzAna_AzSedi_AzReparto = new Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg();
 
             company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Anagrafica = await _az_AnagraficaRepository.FindAll(x => x.IdCompany == IdCompany).FirstOrDefaultAsync();
             if (company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Anagrafica == null)
@@ -95,7 +98,25 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                 }
             }
 
+            //Az_Cfg
+            company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Cfg = await _az_CfgRepository.FindAll(x => x.IdAz_Anagrafica == company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Anagrafica.Id).FirstOrDefaultAsync();
+            if (company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Cfg == null)
+            {
+                if (InitIfNotExsist)
+                {
+                    company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Cfg = new Az_Cfg()
+                    {
+                        IdAz_Anagrafica = company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Anagrafica.Id
+                    };
+                    company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Cfg = await _az_CfgRepository.UpsertAsync(company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Cfg);
+                }
+                else
+                {
+                    throw new Exception("Az_Cfg non trovata");
+                }
+            }
 
+            //Sedi
             company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Sedi = await _az_SediRepository.FindAll(x => x.IdAz_Anagrafica == company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Anagrafica.Id).FirstOrDefaultAsync();
             if (company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Sedi == null)
             {
@@ -114,7 +135,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                 }
             }
 
-
+            //reparto
             company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Reparto = await _az_RepartoRepository.FindAll(x => x.IdAz_Sedi == company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Sedi.Id).FirstOrDefaultAsync();
             if (company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Reparto == null)
             {
@@ -144,17 +165,18 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
         public Dip_RapportoLavoro? dip_RapportoLavoro;
     }
 
-    public class Company_DATA_COMB_AzAna_AzSedi_AzReparto
+    public class Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg
     {
         public Az_Anagrafica? az_Anagrafica;
         public Az_Sedi? az_Sedi;
         public Az_SediReparto? az_Reparto;
+        public Az_Cfg? az_Cfg;
     }
 
 
     public interface IGestionePresenzeUserUtility
     {
         Task<User_DATA_COMB_DipAna_DipRapp> Get_DipAna_DipRapp(string IdAspNetUsers, bool InitIfNotExsist);
-        Task<Company_DATA_COMB_AzAna_AzSedi_AzReparto> Get_AzAna_AzSedi_AzReparto(int  IdCompany, bool InitIfNotExsist);
+        Task<Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg> Get_AzAna_AzSedi_AzReparto_Az_Cfg(int  IdCompany, bool InitIfNotExsist);
     }
 }
