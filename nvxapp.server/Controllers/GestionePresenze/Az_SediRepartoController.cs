@@ -35,7 +35,28 @@ namespace nvxapp.server.Controllers
             return res;
         }
 
-        
+        [Authorize]
+        [HttpPost]
+        [Route("Az_SediRepartoGet")]
+        public async Task<GenericResult<Az_SediRepartoGetOutModel>> Az_SediRepartoGet(GenericRequest<Az_SediRepartoGetInModel> inModel)
+        {
+            var res = await _az_RepartoService.Az_SediRepartoGet(inModel, false);
+
+            return res;
+        }
+
+
+        [Authorize]
+        [HttpPost]
+        [Route("Az_SediRepartoPut")]
+        public async Task<GenericResult<Az_SediRepartoPutOutModel>> Az_SediRepartoPut(GenericRequest<Az_SediRepartoPutInModel> inModel)
+        {
+            var res = await _az_RepartoService.Az_SediRepartoPut(inModel, false);
+
+            return res;
+        }
+
+
 
     }
 
