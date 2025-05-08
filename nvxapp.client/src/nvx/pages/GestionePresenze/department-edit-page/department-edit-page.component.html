@@ -7,22 +7,49 @@
 <ion-content [fullscreen]="true">
 
 
-  <br />
+  
 
   <form [formGroup]="_editForm">
 
-    <ion-item>
-      <ion-label position="floating">Descrizione</ion-label>
-      <ion-input type="text" formControlName="descrizione" (ionChange)="UpdateDescription()"></ion-input>
-    </ion-item>
-    <ion-note color="danger" *ngIf="_editForm.get('descrizione')?.hasError('required') && _editForm.get('descrizione')?.touched">
-      La descrizione è obbligatoria.
-    </ion-note>
-    <ion-note color="danger" *ngIf="_editForm.get('descrizione')?.hasError('maxlength') && _editForm.get('descrizione')?.touched">
-      La descrizione non può superare i 20 caratteri.
-    </ion-note>
+    <ion-segment>
+      <ion-segment-button value="first" content-id="first">
+        <ion-label>Generale</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="second" content-id="second">
+        <ion-label>Admin</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="third" content-id="third">
+        <ion-label>Users</ion-label>
+      </ion-segment-button>
+    </ion-segment>
 
-  
+    <ion-segment-view>
+      <ion-segment-content id="first">
+        <br />
+        <ion-item>
+          <ion-label position="floating">Descrizione</ion-label>
+          <ion-input type="text" formControlName="descrizione" (ionChange)="UpdateDescription()"></ion-input>
+        </ion-item>
+        <ion-note color="danger" *ngIf="_editForm.get('descrizione')?.hasError('required') && _editForm.get('descrizione')?.touched">
+          La descrizione è obbligatoria.
+        </ion-note>
+        <ion-note color="danger" *ngIf="_editForm.get('descrizione')?.hasError('maxlength') && _editForm.get('descrizione')?.touched">
+          La descrizione non può superare i 20 caratteri.
+        </ion-note>
+      </ion-segment-content>
+      <ion-segment-content id="second">
+        <br />
+        Second
+      </ion-segment-content>
+      <ion-segment-content id="third">
+        <br />
+        Third
+      </ion-segment-content>
+    </ion-segment-view>
+
+
+
+
   </form>
 
   <br />

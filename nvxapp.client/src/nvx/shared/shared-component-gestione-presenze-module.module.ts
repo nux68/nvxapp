@@ -10,6 +10,8 @@ import { TipoRichiestaToLongTextPipe } from './pipe/GestionePresenze/tipo-richie
 import { TipoRichiestaToShortTextPipe } from './pipe/GestionePresenze/tipo-richiesta-to-short-text.pipe';
 import { IdDipRapportoLavoroToCognomePipe } from './pipe/GestionePresenze/id-dip-rapporto-lavoro-to-cognome.pipe';
 import { IdDipRapportoLavoroToNomePipe } from './pipe/GestionePresenze/id-dip-rapporto-lavoro-to-nome.pipe';
+import { IdAspNetUsersToCognomePipe } from './pipe/GestionePresenze/id-asp-net-users-to-cognome.pipe';
+import { IdAspNetUsersToNomePipe } from './pipe/GestionePresenze/id-asp-net-users-to-nome.pipe';
 
 
 
@@ -19,10 +21,12 @@ import { IdDipRapportoLavoroToNomePipe } from './pipe/GestionePresenze/id-dip-ra
     CommonModule,
     TipoTimbraturaToLongTextPipe, TipoTimbraturaToShortTextPipe, ParGiustificativiToLongTextPipe, ParGiustificativiToShortTextPipe,
     TipoRichiestaToShortTextPipe, TipoRichiestaToLongTextPipe, StatoRichiestaLongTextPipe, StatoRichiestaShortTextPipe,
-    IdDipRapportoLavoroToNomePipe, IdDipRapportoLavoroToCognomePipe
+    IdDipRapportoLavoroToNomePipe, IdDipRapportoLavoroToCognomePipe,
+    IdAspNetUsersToCognomePipe, IdAspNetUsersToNomePipe
   ],
   exports: [TipoTimbraturaToLongTextPipe, TipoTimbraturaToShortTextPipe, ParGiustificativiToLongTextPipe, ParGiustificativiToShortTextPipe,
     TipoRichiestaToShortTextPipe, TipoRichiestaToLongTextPipe, StatoRichiestaLongTextPipe, StatoRichiestaShortTextPipe,
-    IdDipRapportoLavoroToNomePipe, IdDipRapportoLavoroToCognomePipe]
+    IdDipRapportoLavoroToNomePipe, IdDipRapportoLavoroToCognomePipe,
+    IdAspNetUsersToCognomePipe, IdAspNetUsersToNomePipe]
 })
 export class SharedComponentGestionePresenzeModuleModule { }

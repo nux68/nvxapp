@@ -32,7 +32,7 @@ export class DepartmentEditPageComponent extends BasePageConfirmCancelComponent<
   }
 
 
-  get Title(): string { return "Dealer"; }
+  get Title(): string { return "Department"; }
   get EditForm(): FormGroup {
     return this.
       fb.group({
