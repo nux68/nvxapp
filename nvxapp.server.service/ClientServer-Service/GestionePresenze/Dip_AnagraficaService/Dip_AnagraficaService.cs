@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Data;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
@@ -8,6 +9,7 @@ using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Entities.Tenant;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_AnagraficaService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_RapportoLavoroService.Models;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Account;
@@ -24,6 +26,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
         private readonly IAccountService _accountService;
         private readonly IDip_AnagraficaRepository _dip_AnagraficaRepository;
         private readonly IDip_RapportoLavoroRepository _dip_RapportoLavoroRepository;
+        private readonly IGestionePresenzeUserUtility _gestionePresenzeUserUtility;
+        private readonly IAspNetRolesRepository _aspNetRolesRepository;
 
         public Dip_AnagraficaService(IMapper mapper,
                                   UserManager<ApplicationUser> userManager,
@@ -32,6 +36,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
                                   IHttpContextAccessor httpContextAccessor,
                                   IConfiguration configuration,
 
+                                  IAspNetRolesRepository aspNetRolesRepository,
+                                  IGestionePresenzeUserUtility gestionePresenzeUserUtility,
                                   IAccountService accountService,
                                   IDip_RapportoLavoroRepository dip_RapportoLavoroRepository,
                                   IDip_AnagraficaRepository dip_AnagraficaRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
@@ -39,6 +45,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
             _dip_AnagraficaRepository = dip_AnagraficaRepository;
             _dip_RapportoLavoroRepository = dip_RapportoLavoroRepository;
             _accountService = accountService;
+            _gestionePresenzeUserUtility = gestionePresenzeUserUtility;
+            _aspNetRolesRepository = aspNetRolesRepository;
         }
 
         public virtual async Task<GenericResult<Dip_Anagrafica_GetAll_OutModel>> GetAll(GenericRequest<Dip_Anagrafica_GetAll_InModel> model, Boolean isSubProcess)
@@ -53,19 +61,27 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
                 {
                     var UserCompanyList = res.Data.UserCompanyList;
                     List<string?> idAspNetUsers = UserCompanyList.Select(x => x.IdAspNetUsers).ToList();
+
+                    // TODO eliminare a regime
+                    foreach (var item in idAspNetUsers)
+                    {
+                        if (item != null)
+                            await _gestionePresenzeUserUtility.Get_DipAna_DipRapp(item, true);
+                    }
+
+                    var aspNetRoles = _aspNetRolesRepository.GetAll().ToList();
+
+
                     List<Dip_Anagrafica> dip_Anagrafica = _dip_AnagraficaRepository.FindAll(x => idAspNetUsers.Contains(x.IdAspNetUsers)).ToList();
                     List<Dip_RapportoLavoro> dip_RapportoLavoro = _dip_RapportoLavoroRepository.FindAll(x => dip_Anagrafica.Select(x => x.Id).ToList().Contains(x.IdDip_Anagrafica)).ToList();
                     foreach (var item in dip_Anagrafica)
                     {
-                        //string? UserName = UserCompanyList.Where(x => x.IdAspNetUsers == item.IdAspNetUsers).Select(x => x.Descrizione).FirstOrDefault();
 
-
-                        
 
                         var applicationUser = await _userManager.FindByIdAsync(item.IdAspNetUsers);
-                        if(applicationUser!=null)
+                        if (applicationUser != null)
                         {
-
+                            var usrRoles = new List<string>(await _userManager.GetRolesAsync(applicationUser));
                             retVal.Dip_Anagrafica.Add(new Dip_AnagraficaModel()
                             {
                                 UserName = applicationUser.UserName != null ? applicationUser.UserName : string.Empty,
@@ -74,10 +90,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
                                 Nome = item.Nome,
                                 Id = item.Id,
                                 Dip_RapportoLavoro = _mapper.Map<List<Dip_RapportoLavoroModel>>(dip_RapportoLavoro.Where(x => x.IdDip_Anagrafica == item.Id).ToList()),
-                                Roles = new List<string>(await _userManager.GetRolesAsync(applicationUser))
+                                Roles = aspNetRoles.Where(x=> x.Name!= null && usrRoles.Contains(x.Name)).Select(x=> x.Id).ToList()
+                                
                             });
                         }
-                        
+
                     }
                 }
 

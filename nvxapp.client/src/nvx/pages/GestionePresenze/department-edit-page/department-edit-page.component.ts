@@ -10,6 +10,8 @@ import { StringHelperService } from '../../../Utility/infrastructure/string-help
 import { AzSediRepartoService } from '../../../ClientServer-Service/GestionePresenze/Az_SediReparto/az-sedi-reparto.service';
 import { Az_SediRepartoGetInModel, Az_SediRepartoModel, Az_SediRepartoPutInModel } from '../../../ClientServer-Service/GestionePresenze/Az_SediReparto/Models/az-sedi-reparto-model';
 import { DealerGetInModel, DealerPutInModel } from '../../../ClientServer-Service/Infrastructure/Account/Models/dealer-model';
+import { Dip_AnagraficaModel } from '../../../ClientServer-Service/GestionePresenze/Dip_Anagrafica/Models/dip-anagrafica-model';
+import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
 
 @Component({
   selector: 'app-department-edit-page',
@@ -21,9 +23,16 @@ export class DepartmentEditPageComponent extends BasePageConfirmCancelComponent<
 
   modifiedDescription: string | null = null;
 
+  public dip_Anagrafica: Dip_AnagraficaModel[];
+  public searchText!: string;
+
+  selectedAdmin: string[] = [];
+  selectedUser: string[] = [];
+
   constructor(protected override navCtrl: NavController,
     protected override userInterfaceService: UserInterfaceService,
     protected override fb: FormBuilder,
+    private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
     private stringHelperService: StringHelperService,
     private azSediRepartoService: AzSediRepartoService) {
 
@@ -31,6 +40,10 @@ export class DepartmentEditPageComponent extends BasePageConfirmCancelComponent<
 
   }
 
+  override ionViewWillEnter() {
+    super.ionViewWillEnter();
+    this.dip_Anagrafica = this.sharedParameterGestionePresenzeService.Dip_Anagrafica;
+  }
 
   get Title(): string { return "Department"; }
   get EditForm(): FormGroup {
@@ -95,6 +108,40 @@ export class DepartmentEditPageComponent extends BasePageConfirmCancelComponent<
       this.modifiedDescription = null;
     }
   }
+
+  public getAdmin(): Dip_AnagraficaModel[] {
+    return this.dip_Anagrafica;
+  }
+
+  public getUser(): Dip_AnagraficaModel[] {
+    return this.dip_Anagrafica;
+  }
+
+
+  toggleSelectionAdmin(itemId: string, event: any) {
+    if (event.detail.checked) {
+      this.selectedAdmin.push(itemId);
+    } else {
+      this.selectedAdmin = this.selectedAdmin.filter(id => id !== itemId);
+    }
+  }
+
+  isSelectedAdmin(itemId: string): boolean {
+    return this.selectedAdmin.includes(itemId);
+  }
+
+  toggleSelectionUser(itemId: string, event: any) {
+    if (event.detail.checked) {
+      this.selectedUser.push(itemId);
+    } else {
+      this.selectedUser = this.selectedUser.filter(id => id !== itemId);
+    }
+  }
+
+  isSelectedUser(itemId: string): boolean {
+    return this.selectedUser.includes(itemId);
+  }
+
 
 }
 
