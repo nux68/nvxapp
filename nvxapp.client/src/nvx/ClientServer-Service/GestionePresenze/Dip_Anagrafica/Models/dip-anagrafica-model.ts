@@ -13,6 +13,8 @@ export class Dip_AnagraficaModel {
 
   public dip_RapportoLavoro: Dip_RapportoLavoroModel[];
 
+  public roles: string[];
+
 }
 
 export class Dip_Anagrafica_GetAll_InModel {

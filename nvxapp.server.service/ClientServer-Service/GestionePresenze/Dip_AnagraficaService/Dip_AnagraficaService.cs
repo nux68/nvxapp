@@ -57,17 +57,27 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
                     List<Dip_RapportoLavoro> dip_RapportoLavoro = _dip_RapportoLavoroRepository.FindAll(x => dip_Anagrafica.Select(x => x.Id).ToList().Contains(x.IdDip_Anagrafica)).ToList();
                     foreach (var item in dip_Anagrafica)
                     {
-                        string? UserName = UserCompanyList.Where(x => x.IdAspNetUsers == item.IdAspNetUsers).Select(x => x.Descrizione).FirstOrDefault();
+                        //string? UserName = UserCompanyList.Where(x => x.IdAspNetUsers == item.IdAspNetUsers).Select(x => x.Descrizione).FirstOrDefault();
 
-                        retVal.Dip_Anagrafica.Add(new Dip_AnagraficaModel()
+
+                        
+
+                        var applicationUser = await _userManager.FindByIdAsync(item.IdAspNetUsers);
+                        if(applicationUser!=null)
                         {
-                            UserName = UserName != null ? UserName : string.Empty,
-                            IdAspNetUsers = item.IdAspNetUsers,
-                            Cognome = item.Cognome,
-                            Nome = item.Nome,
-                            Id = item.Id,
-                            Dip_RapportoLavoro = _mapper.Map<List<Dip_RapportoLavoroModel>>(dip_RapportoLavoro.Where(x => x.IdDip_Anagrafica == item.Id).ToList())
-                        });
+
+                            retVal.Dip_Anagrafica.Add(new Dip_AnagraficaModel()
+                            {
+                                UserName = applicationUser.UserName != null ? applicationUser.UserName : string.Empty,
+                                IdAspNetUsers = item.IdAspNetUsers,
+                                Cognome = item.Cognome,
+                                Nome = item.Nome,
+                                Id = item.Id,
+                                Dip_RapportoLavoro = _mapper.Map<List<Dip_RapportoLavoroModel>>(dip_RapportoLavoro.Where(x => x.IdDip_Anagrafica == item.Id).ToList()),
+                                Roles = new List<string>(await _userManager.GetRolesAsync(applicationUser))
+                            });
+                        }
+                        
                     }
                 }
 

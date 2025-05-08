@@ -12,7 +12,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
         public string? Cognome { get; set; }
         public string? Nome { get; set; }
         public List<Dip_RapportoLavoroModel> Dip_RapportoLavoro { get; set; } = new List<Dip_RapportoLavoroModel>();
-        
+        public List<string> Roles { get; set; } = new List<string>();
+
     }
 
     public class Dip_Anagrafica_GetAll_InModel

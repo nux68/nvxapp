@@ -28,6 +28,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
         private readonly IAccountService _accountService;
         private readonly IAz_SediRepartoRepository _az_SediRepartoRepository;
         private readonly IGestionePresenzeUserUtility _gestionePresenzeUserUtility;
+        private readonly IAspNetRolesRepository _aspNetRolesRepository;
 
         public Az_SediRepartoService(IMapper mapper,
                                   UserManager<ApplicationUser> userManager,
@@ -36,6 +37,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
                                   IHttpContextAccessor httpContextAccessor,
                                   IConfiguration configuration,
 
+                                  IAspNetRolesRepository aspNetRolesRepository,
                                   IAccountService accountService,
                                   IAz_SediRepartoUserService az_SediRepartoUserService,
                                   IGestionePresenzeUserUtility gestionePresenzeUserUtility,
@@ -45,6 +47,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
             _accountService = accountService;
             _gestionePresenzeUserUtility = gestionePresenzeUserUtility;
             _az_SediRepartoUserService = az_SediRepartoUserService;
+            _aspNetRolesRepository = aspNetRolesRepository;
         }
 
         public virtual async Task<GenericResult<Az_SediReparto_GetAll_OutModel>> GetAll(GenericRequest<Az_SediReparto_GetAll_InModel> model, Boolean isSubProcess)
@@ -80,18 +83,36 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
                     GenericRequest<Az_SediRepartoUser_GetAll_InModel> req1 = new GenericRequest<Az_SediRepartoUser_GetAll_InModel>();
                     req1.Data.IdAz_SediReparto = retVal.Az_SediReparto.Id;
 
-                    var res1 = await _az_SediRepartoUserService.GetAll(req1, true);
-                    if (res1.Success && res1.Data != null)
-                    {
 
-                    }
 
-                    GenericRequest<UserCompanyListInModel> req2 = new GenericRequest<UserCompanyListInModel>();
-                    var res2 = await _accountService.UserCompanyList(req2, true);
-                    if (res2.Success && res2.Data != null)
-                    {
 
-                    }
+                    ////var usrRole = await _userManager.GetUsersInRoleAsync(applicationRole.Name);
+
+                    ////var applicationUser = await _userManager.FindByIdAsync(this.CurrentUserId);
+                    ////var roles = await _userManager.GetRolesAsync(applicationUser);
+
+                    //var res1 = await _az_SediRepartoUserService.GetAll(req1, true);
+                    //if (res1.Success && res1.Data != null)
+                    //{
+
+                    //}
+
+                    //GenericRequest<UserCompanyListInModel> req2 = new GenericRequest<UserCompanyListInModel>();
+                    //var res2 = await _accountService.UserCompanyList(req2, true);
+                    //if (res2.Success && res2.Data != null)
+                    //{
+                    //    List<string> companyAdminRole = _aspNetRolesRepository.GetAll()
+                    //                                                          .Where(x => x.Code == RoleCode.CompanyAdmin || x.Code == RoleCode.CompanyPowerAdmin)
+                    //                                                          .Select(x=> x.Id).ToList();
+
+                    //    List<string> userRole = _aspNetRolesRepository.GetAll()
+                    //                                                  .Where(x => x.Code == RoleCode.User)
+                    //                                                  .Select(x => x.Id).ToList();
+
+                    //    List<UserCompanyModel> AdminCompanyList = res2.Data.UserCompanyList.Where(x=> x.RoleId!= null &&  companyAdminRole.Contains(x.RoleId)).ToList();
+                    //    List<UserCompanyModel> UesrCompanyList = res2.Data.UserCompanyList.Where(x => x.RoleId != null && userRole.Contains(x.RoleId)).ToList();
+                    //    var c = 0;
+                    //}
 
                 }
                 else
