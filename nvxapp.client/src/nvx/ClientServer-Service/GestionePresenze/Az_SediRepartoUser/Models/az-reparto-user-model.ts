@@ -15,11 +15,13 @@ export class Az_SediRepartoUserModel {
 
 export class Az_SediRepartoUser_GetAll_InModel {
 
+  public idAz_Reparto!: number;
 
 }
 
 export class Az_SediRepartoUser_GetAll_OutModel extends ModelResult {
-  
+
+  public az_RepartoUser: Az_SediRepartoUserModel[];
 
 }
 

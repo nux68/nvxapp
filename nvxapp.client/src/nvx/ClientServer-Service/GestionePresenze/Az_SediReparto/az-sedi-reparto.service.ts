@@ -5,7 +5,7 @@ import { environment } from '../../../../environments/environment';
 import { GenericRequest } from '../../ModelsBase/generic-request';
 import { GenericResult } from '../../ModelsBase/generic-result';
 import { map, Observable } from 'rxjs';
-import { Az_SediRepartoGetInModel, Az_SediRepartoGetOutModel, Az_SediRepartoInModel, Az_SediRepartoOutModel, Az_SediRepartoPutInModel, Az_SediRepartoPutOutModel } from './Models/az-sedi-reparto-model';
+import { Az_SediRepartoGetInModel, Az_SediRepartoGetOutModel, Az_SediReparto_GetAll_InModel, Az_SediReparto_GetAll_OutModel, Az_SediRepartoPutInModel, Az_SediRepartoPutOutModel } from './Models/az-sedi-reparto-model';
 
 @Injectable({
   providedIn: 'root'
@@ -16,9 +16,9 @@ export class AzSediRepartoService {
     private authService: AuthService
   ) { }
 
-  GetAll(model: GenericRequest<Az_SediRepartoInModel>): Observable<GenericResult<Az_SediRepartoOutModel>> {
+  GetAll(model: GenericRequest<Az_SediReparto_GetAll_InModel>): Observable<GenericResult<Az_SediReparto_GetAll_OutModel>> {
 
-    return this.http.post<GenericResult<Az_SediRepartoOutModel>>(environment.remoteData.apiUri + 'Az_SediReparto/GetAll', model)
+    return this.http.post<GenericResult<Az_SediReparto_GetAll_OutModel>>(environment.remoteData.apiUri + 'Az_SediReparto/GetAll', model)
       .pipe(
         map(r => {
           return r;

@@ -38,6 +38,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
             {
                 Az_SediRepartoUser_GetAll_OutModel retVal = new Az_SediRepartoUser_GetAll_OutModel();
 
+                var RepUser =  _az_RepartoUserRepository.FindAll(x=> x.IdAz_SediReparto == model.Data.IdAz_SediReparto).ToList();
+                retVal.Az_RepartoUser = _mapper.Map<List<Az_SediRepartoUserModel>>(RepUser);
                 //eliminare
                 // Nessun 'await' qui
                 await Task.Delay(DelayAsyncMethod);

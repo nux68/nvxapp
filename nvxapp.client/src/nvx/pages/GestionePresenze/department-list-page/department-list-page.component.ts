@@ -7,7 +7,7 @@ import { Par_GiustificativiInModel, Par_GiustificativiModel } from '../../../Cli
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
 import { AzSediRepartoService } from '../../../ClientServer-Service/GestionePresenze/Az_SediReparto/az-sedi-reparto.service';
-import { Az_SediRepartoInModel, Az_SediRepartoModel } from '../../../ClientServer-Service/GestionePresenze/Az_SediReparto/Models/az-sedi-reparto-model';
+import { Az_SediReparto_GetAll_InModel, Az_SediRepartoModel } from '../../../ClientServer-Service/GestionePresenze/Az_SediReparto/Models/az-sedi-reparto-model';
 
 @Component({
   selector: 'app-department-list-page',
@@ -43,7 +43,7 @@ export class DepartmentListPageComponent  implements OnInit {
   ionViewWillEnter() {
 
     //TODO DISAB SHARED DATA
-    let request: GenericRequest<Az_SediRepartoInModel> = new GenericRequest<Az_SediRepartoInModel>(Az_SediRepartoInModel);
+    let request: GenericRequest<Az_SediReparto_GetAll_InModel> = new GenericRequest<Az_SediReparto_GetAll_InModel>(Az_SediReparto_GetAll_InModel);
     this.azSediRepartoService.GetAll(request).subscribe(res => {
       this.az_SediRepartoList = res.data.az_SediReparto;
     });

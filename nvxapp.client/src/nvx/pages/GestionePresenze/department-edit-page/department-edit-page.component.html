@@ -27,7 +27,7 @@
       <ion-segment-content id="first">
         <br />
         <ion-item>
-          <ion-label position="floating">Descrizione</ion-label>
+          <ion-label position="floating">Descrizione reparto</ion-label>
           <ion-input type="text" formControlName="descrizione" (ionChange)="UpdateDescription()"></ion-input>
         </ion-item>
         <ion-note color="danger" *ngIf="_editForm.get('descrizione')?.hasError('required') && _editForm.get('descrizione')?.touched">

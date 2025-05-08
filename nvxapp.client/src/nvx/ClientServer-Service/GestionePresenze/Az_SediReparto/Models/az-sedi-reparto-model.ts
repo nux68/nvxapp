@@ -12,10 +12,10 @@ export class Az_SediRepartoModel {
 }
 
 
-export class Az_SediRepartoInModel {
+export class Az_SediReparto_GetAll_InModel {
   
 }
-export class Az_SediRepartoOutModel extends ModelResult {
+export class Az_SediReparto_GetAll_OutModel extends ModelResult {
 
   public az_SediReparto: Az_SediRepartoModel[];
 
