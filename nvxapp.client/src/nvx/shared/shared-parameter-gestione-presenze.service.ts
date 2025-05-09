@@ -6,6 +6,8 @@ import { ParGiustificativiService } from '../ClientServer-Service/GestionePresen
 import { RolesListInModel, RolesModel } from '../ClientServer-Service/Infrastructure/Parameter/Models/roles-model';
 import { Dip_Anagrafica_GetAll_InModel, Dip_AnagraficaModel } from '../ClientServer-Service/GestionePresenze/Dip_Anagrafica/Models/dip-anagrafica-model';
 import { DipAnagraficaService } from '../ClientServer-Service/GestionePresenze/Dip_Anagrafica/dip-anagrafica.service';
+import { AzCfgService } from '../ClientServer-Service/GestionePresenze/Az_Cfg/az-cfg.service';
+import { Az_Cfg_Get_InModel, Az_Cfg_GetAll_InModel, Az_CfgModel } from '../ClientServer-Service/GestionePresenze/Az_Cfg/Models/az-cfg-model';
 
 @Injectable({
   providedIn: 'root'
@@ -19,7 +21,8 @@ export class SharedParameterGestionePresenzeService {
 
 
   constructor(private parGiustificativiService: ParGiustificativiService,
-              private dipAnagraficaService: DipAnagraficaService   
+              private dipAnagraficaService: DipAnagraficaService,
+              private azCfgService: AzCfgService
   ) { }
 
   
@@ -61,6 +64,24 @@ export class SharedParameterGestionePresenzeService {
         }),
         catchError((error) => {
           console.error(`Errore durante il caricamento delle anagrafiche:`, error);
+          // Puoi decidere cosa fare in caso di fallimento finale
+          return of(null); // Continua per evitare il blocco
+        })),
+
+      this.azCfgService.Az_CfgGet(new GenericRequest<Az_Cfg_Get_InModel>(Az_Cfg_Get_InModel)).pipe(
+        tap((result) => {
+          this.Az_Cfg = result.data.az_Cfg
+          updateProgress(calls)
+        }),
+        retry({
+          count: 20, // Numero massimo di tentativi
+          delay: (error, retryCount) => {
+            console.error(`Errore rilevato, ritento dopo ${retryCount} secondi:`, error);
+            return timer(500); // Ritenta dopo 0.5 secondi
+          }
+        }),
+        catchError((error) => {
+          console.error(`Errore durante il caricamento dell condigurazione azienda:`, error);
           // Puoi decidere cosa fare in caso di fallimento finale
           return of(null); // Continua per evitare il blocco
         })),
@@ -161,5 +182,21 @@ export class SharedParameterGestionePresenzeService {
     return this._dip_AnagraficaSubject.asObservable();
   }
 
+  
+
+  private _az_Cfg: Az_CfgModel | null = null;
+
+  public get Az_Cfg(): Az_CfgModel | null {
+    return this._az_Cfg;
+  }
+  public set Az_Cfg(value: Az_CfgModel | null) {
+    this._az_Cfg = value;
+    this._az_CfgSubject.next(value);
+  }
+
+  private _az_CfgSubject = new BehaviorSubject<Az_CfgModel>(null);
+  public get Az_Cfg$(): Observable<Az_CfgModel | {}> {
+    return this._az_CfgSubject.asObservable();
+  }
 
 }

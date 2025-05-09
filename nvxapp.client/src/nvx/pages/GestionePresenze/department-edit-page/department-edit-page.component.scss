@@ -26,3 +26,46 @@ ion-menu-button {
 #container a {
   text-decoration: none;
 }
+
+
+
+
+/* Stile per gli elementi riordinabili */
+ion-reorder {
+  cursor: grab;
+}
+
+ion-reorder:active {
+  cursor: grabbing;
+}
+
+/* Stile per riga selezionata con approvazione */
+ion-row.approval-selected {
+  background-color: rgba(var(--ion-color-primary-rgb), 0.1);
+}
+
+/* Stile per riga con cursore durante riordinamento */
+ion-reorder-group:not([disabled]) ion-row:hover {
+  cursor: pointer;
+}
+
+
+
+/* Stile per il bottone di attivazione riordino */
+ion-button {
+  margin: 15px;
+}
+
+/* Stile per il titolo delle colonne */
+//ion-grid ion-row:first-child {
+  ion-grid ion-row {
+    //font-weight: bold;
+    border-bottom: 1px solid var(--ion-color-medium);
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+  }
+  /* Migliora la visibilità durante il trascinamento */
+  ion-reorder-group .reorder-active {
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+    z-index: 100;
+  }
