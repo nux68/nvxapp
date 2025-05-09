@@ -1,3 +1,4 @@
+import { RoleCode } from "../../../Infrastructure/Account/Models/user-roles-model";
 import { ModelResult } from "../../../ModelsBase/model-result";
 import { Dip_RapportoLavoroModel } from "../../Dip_RapportoLavoro/Models/dip-rapporto-lavoro-model";
 
@@ -13,7 +14,7 @@ export class Dip_AnagraficaModel {
 
   public dip_RapportoLavoro: Dip_RapportoLavoroModel[];
 
-  public roles: string[];
+  public roleCode: RoleCode[];
 
 }
 

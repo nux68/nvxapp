@@ -1,4 +1,5 @@
-﻿using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_RichiestaService.Models;
+﻿using nvxapp.server.data.Entities.Public;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_RichiestaService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_RapportoLavoroService.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 
@@ -12,7 +13,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
         public string? Cognome { get; set; }
         public string? Nome { get; set; }
         public List<Dip_RapportoLavoroModel> Dip_RapportoLavoro { get; set; } = new List<Dip_RapportoLavoroModel>();
-        public List<string> Roles { get; set; } = new List<string>();
+        public List<RoleCode> RoleCode { get; set; } = new List<RoleCode>();
 
     }
 

@@ -13,7 +13,6 @@ using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediReparto
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRepartoUserService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRepartoUserService.Models;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Account;
-using nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.ServerModels;
@@ -29,6 +28,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
         private readonly IAz_SediRepartoRepository _az_SediRepartoRepository;
         private readonly IGestionePresenzeUserUtility _gestionePresenzeUserUtility;
         private readonly IAspNetRolesRepository _aspNetRolesRepository;
+        private readonly IAz_SediRepartoUserRepository _az_RepartoUserRepository;
+
 
         public Az_SediRepartoService(IMapper mapper,
                                   UserManager<ApplicationUser> userManager,
@@ -37,6 +38,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
                                   IHttpContextAccessor httpContextAccessor,
                                   IConfiguration configuration,
 
+                                  IAz_SediRepartoUserRepository az_RepartoUserRepository,
                                   IAspNetRolesRepository aspNetRolesRepository,
                                   IAccountService accountService,
                                   IAz_SediRepartoUserService az_SediRepartoUserService,
@@ -48,6 +50,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
             _gestionePresenzeUserUtility = gestionePresenzeUserUtility;
             _az_SediRepartoUserService = az_SediRepartoUserService;
             _aspNetRolesRepository = aspNetRolesRepository;
+            _az_RepartoUserRepository = az_RepartoUserRepository;
         }
 
         public virtual async Task<GenericResult<Az_SediReparto_GetAll_OutModel>> GetAll(GenericRequest<Az_SediReparto_GetAll_InModel> model, Boolean isSubProcess)
@@ -83,37 +86,49 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
                     GenericRequest<Az_SediRepartoUser_GetAll_InModel> req1 = new GenericRequest<Az_SediRepartoUser_GetAll_InModel>();
                     req1.Data.IdAz_SediReparto = retVal.Az_SediReparto.Id;
 
+                    var res1 = await _az_SediRepartoUserService.GetAll(req1, true);
+                    if (res1.Success && res1.Data != null)
+                    {
+                        ApplicationRole? userRole = _aspNetRolesRepository.GetAll().Where(x => x.Code == RoleCode.User).FirstOrDefault();
+                        ApplicationRole? companyAdminRole = _aspNetRolesRepository.GetAll().Where(x => x.Code == RoleCode.CompanyAdmin).FirstOrDefault();
+                        ApplicationRole? companyPowerAdminRole = _aspNetRolesRepository.GetAll().Where(x => x.Code == RoleCode.CompanyPowerAdmin).FirstOrDefault();
 
-
-
-                    ////var usrRole = await _userManager.GetUsersInRoleAsync(applicationRole.Name);
-
-                    ////var applicationUser = await _userManager.FindByIdAsync(this.CurrentUserId);
-                    ////var roles = await _userManager.GetRolesAsync(applicationUser);
-
-                    //var res1 = await _az_SediRepartoUserService.GetAll(req1, true);
-                    //if (res1.Success && res1.Data != null)
-                    //{
-
-                    //}
-
-                    //GenericRequest<UserCompanyListInModel> req2 = new GenericRequest<UserCompanyListInModel>();
-                    //var res2 = await _accountService.UserCompanyList(req2, true);
-                    //if (res2.Success && res2.Data != null)
-                    //{
-                    //    List<string> companyAdminRole = _aspNetRolesRepository.GetAll()
-                    //                                                          .Where(x => x.Code == RoleCode.CompanyAdmin || x.Code == RoleCode.CompanyPowerAdmin)
-                    //                                                          .Select(x=> x.Id).ToList();
-
-                    //    List<string> userRole = _aspNetRolesRepository.GetAll()
-                    //                                                  .Where(x => x.Code == RoleCode.User)
-                    //                                                  .Select(x => x.Id).ToList();
-
-                    //    List<UserCompanyModel> AdminCompanyList = res2.Data.UserCompanyList.Where(x=> x.RoleId!= null &&  companyAdminRole.Contains(x.RoleId)).ToList();
-                    //    List<UserCompanyModel> UesrCompanyList = res2.Data.UserCompanyList.Where(x => x.RoleId != null && userRole.Contains(x.RoleId)).ToList();
-                    //    var c = 0;
-                    //}
-
+                        foreach (var item in res1.Data.Az_RepartoUser)
+                        {
+                            var applicationUser = await _userManager.FindByIdAsync(item.IdAspNetUsers);
+                            if (applicationUser != null)
+                            {
+                                var roles = await _userManager.GetRolesAsync(applicationUser);
+                                if (roles != null)
+                                {
+                                    //user
+                                    if (userRole != null && userRole.Name != null)
+                                    {
+                                        if (roles.Contains(userRole.Name))
+                                        {
+                                            retVal.SelectedUser.Add(new CheckObjOn_Id_Text()
+                                            {
+                                                Id = item.IdAspNetUsers,
+                                                Checked = true
+                                            });
+                                        }
+                                    }
+                                    //admin
+                                    if (companyAdminRole != null && companyAdminRole.Name != null && companyPowerAdminRole != null && companyPowerAdminRole.Name != null)
+                                    {
+                                        if (roles.Contains(companyAdminRole.Name) || roles.Contains(companyPowerAdminRole.Name))
+                                        {
+                                            retVal.SelectedAdmin.Add(new CheckObjOn_Id_Text()
+                                            {
+                                                Id = item.IdAspNetUsers,
+                                                Checked = true
+                                            });
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
                 else
                 {
@@ -133,6 +148,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
             {
                 Az_SediRepartoPutOutModel retVal = new Az_SediRepartoPutOutModel();
                 retVal.Az_SediReparto = model.Data.Az_SediReparto;
+                retVal.SelectedUser = model.Data.SelectedUser;
+                retVal.SelectedAdmin = model.Data.SelectedAdmin;
 
 
                 int IdCompany;
@@ -157,6 +174,59 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
                     //aggiurna il valore ritornato al client
                     az_SediReparto = await _az_SediRepartoRepository.UpsertAsync(az_SediReparto);
                     retVal.Az_SediReparto = _mapper.Map<Az_SediRepartoModel>(az_SediReparto);
+
+
+                    //Az_SediRepartoUser 
+                    GenericRequest<Az_SediRepartoUser_GetAll_InModel> req1 = new GenericRequest<Az_SediRepartoUser_GetAll_InModel>();
+                    req1.Data.IdAz_SediReparto = retVal.Az_SediReparto.Id;
+
+                    var res1 = await _az_SediRepartoUserService.GetAll(req1, true);
+                    if (res1.Success && res1.Data != null)
+                    {
+                        //cancellazione
+                        foreach (var item in res1.Data.Az_RepartoUser)
+                        {
+                            // ciclo i valori originali, se non presente nei valori ritornati (o Checked=falso) dal client
+                            // allora è stato eliminato e procedo alla cancellazione
+
+                            var selUser = model.Data.SelectedUser.Where(x => x.Id == item.IdAspNetUsers && x.Checked).FirstOrDefault();
+                            var selAdmi = model.Data.SelectedAdmin.Where(x => x.Id == item.IdAspNetUsers && x.Checked).FirstOrDefault();
+
+                            if (selUser == null && selAdmi == null)
+                            {
+                                var recDB = await _az_RepartoUserRepository.FindByIdAsync(item.Id);
+                                if (recDB != null)
+                                    await _az_RepartoUserRepository.DeleteAsync(recDB);
+                            }
+                        }
+                        //aggiornamento
+                        var AllUser = model.Data.SelectedUser.Where(x => x.Checked == true).ToList();
+                        foreach (var item in model.Data.SelectedAdmin.Where(x => x.Checked == true))
+                        {
+                            // aggiungo gli admin sommando eventualmente le caratteristiche che hanno solo loro
+                            var us = AllUser.Where(x => x.Id == item.Id).FirstOrDefault();
+                            if (us == null)
+                                AllUser.Add(new CheckObjOn_Id_Text() { Id = item.Id, Checked = true });
+                        }
+
+                        foreach(var item in AllUser)
+                        {
+                            var recDB =  _az_RepartoUserRepository.FindAll(x=> x.IdAz_SediReparto == model.Data.Az_SediReparto.Id && 
+                                                                               x.IdAspNetUsers == item.Id).FirstOrDefault();
+                            if(recDB==null)
+                            {
+                                recDB = new Az_SediRepartoUser()
+                                {
+                                    IdAspNetUsers = item.Id,
+                                    IdAz_SediReparto = model.Data.Az_SediReparto.Id
+                                };
+                            }
+                            await _az_RepartoUserRepository.UpsertAsync(recDB);
+                        }
+
+                    }
+
+
                 }
 
 
@@ -178,5 +248,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
         public Task<GenericResult<Az_SediRepartoGetOutModel>> Az_SediRepartoGet(GenericRequest<Az_SediRepartoGetInModel> model, Boolean isSubProcess);
         public Task<GenericResult<Az_SediRepartoPutOutModel>> Az_SediRepartoPut(GenericRequest<Az_SediRepartoPutInModel> model, Boolean isSubProcess);
     }
+
+
+
 
 }

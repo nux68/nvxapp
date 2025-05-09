@@ -1,3 +1,4 @@
+import { CheckObjOn_Id_Text } from "../../../ModelsBase/check-obj";
 import { ModelResult } from "../../../ModelsBase/model-result";
 
 
@@ -6,7 +7,6 @@ export class Az_SediRepartoModel {
   public id!: number;
   public idAz_Sedi!: number; 
   public descrizione!: string;
-
   public idAz_SediReparto?: number; 
 
 }
@@ -21,16 +21,25 @@ export class Az_SediReparto_GetAll_OutModel extends ModelResult {
 
 }
 
+
 export class Az_SediRepartoGetInModel {
   public id: number;
 }
 export class Az_SediRepartoGetOutModel extends ModelResult {
   public az_SediReparto: Az_SediRepartoModel;
+  public selectedAdmin: CheckObjOn_Id_Text[];
+  public selectedUser: CheckObjOn_Id_Text[];
 }
+
+
 export class Az_SediRepartoPutInModel {
   public az_SediReparto: Az_SediRepartoModel;
+  public selectedAdmin: CheckObjOn_Id_Text[];
+  public selectedUser: CheckObjOn_Id_Text[];
 }
 export class Az_SediRepartoPutOutModel extends ModelResult {
   public az_SediReparto: Az_SediRepartoModel;
+  public selectedAdmin: CheckObjOn_Id_Text[];
+  public selectedUser: CheckObjOn_Id_Text[];
 }
 

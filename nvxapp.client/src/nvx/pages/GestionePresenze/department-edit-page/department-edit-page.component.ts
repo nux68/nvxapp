@@ -12,6 +12,8 @@ import { Az_SediRepartoGetInModel, Az_SediRepartoModel, Az_SediRepartoPutInModel
 import { DealerGetInModel, DealerPutInModel } from '../../../ClientServer-Service/Infrastructure/Account/Models/dealer-model';
 import { Dip_AnagraficaModel } from '../../../ClientServer-Service/GestionePresenze/Dip_Anagrafica/Models/dip-anagrafica-model';
 import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
+import { CheckObjOn_Id_Text } from '../../../ClientServer-Service/ModelsBase/check-obj';
+import { RoleCode } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-roles-model';
 
 @Component({
   selector: 'app-department-edit-page',
@@ -23,11 +25,13 @@ export class DepartmentEditPageComponent extends BasePageConfirmCancelComponent<
 
   modifiedDescription: string | null = null;
 
-  public dip_Anagrafica: Dip_AnagraficaModel[];
   public searchText!: string;
 
-  selectedAdmin: string[] = [];
-  selectedUser: string[] = [];
+  public dip_Anagrafica: Dip_AnagraficaModel[];
+  
+
+  selectedAdmin: CheckObjOn_Id_Text[] = [];
+  selectedUser: CheckObjOn_Id_Text[] = [];
 
   constructor(protected override navCtrl: NavController,
     protected override userInterfaceService: UserInterfaceService,
@@ -63,7 +67,12 @@ export class DepartmentEditPageComponent extends BasePageConfirmCancelComponent<
       request.data.id = state.id;
 
       return this.azSediRepartoService.Az_SediRepartoGet(request).pipe(
-        map((res) => res.data.az_SediReparto), // Estrae il dato richiesto
+        map((res) => {
+          this.selectedAdmin = res.data.selectedAdmin;
+          this.selectedUser = res.data.selectedUser;
+          return res.data.az_SediReparto;
+
+        }), // Estrae il dato richiesto
         catchError((error) => {
           console.error('Errore durante la chiamata API:', error);
           return [null]; // Restituisce null in caso di errore
@@ -73,12 +82,8 @@ export class DepartmentEditPageComponent extends BasePageConfirmCancelComponent<
     else {
       return new Observable<Az_SediRepartoModel | null>((subscriber) => {
 
-        //aggiunge campi solo per le new
-        //this._editForm.addControl('mail', this.fb.control(null, [Validators.required, Validators.email]));
-        //this._editForm.addControl('pw', this.fb.control(null, [Validators.required]));
-        //this._editForm.addControl('confirmPassword', this.fb.control(null, [Validators.required]));
-        //this._editForm.setValidators(matchPasswords);
-        //this._editForm.updateValueAndValidity();
+        this.selectedAdmin = [];
+        this.selectedUser = [];
 
         subscriber.next(new Az_SediRepartoModel());
         subscriber.complete();
@@ -89,6 +94,9 @@ export class DepartmentEditPageComponent extends BasePageConfirmCancelComponent<
   SaveData = (editModel: Az_SediRepartoModel): Observable<boolean> => {
     let request: GenericRequest<Az_SediRepartoPutInModel> = new GenericRequest<Az_SediRepartoPutInModel>(Az_SediRepartoPutInModel);
     request.data.az_SediReparto = editModel;
+    request.data.selectedAdmin = this.selectedAdmin;
+    request.data.selectedUser = this.selectedUser;
+    
 
     return this.azSediRepartoService.Az_SediRepartoPut(request).pipe(
       map(() => true), // Restituisce true in caso di successo
@@ -110,36 +118,80 @@ export class DepartmentEditPageComponent extends BasePageConfirmCancelComponent<
   }
 
   public getAdmin(): Dip_AnagraficaModel[] {
-    return this.dip_Anagrafica;
+    return this.dip_Anagrafica.filter(dip =>
+      dip.roleCode.includes(RoleCode.CompanyAdmin) ||
+      dip.roleCode.includes(RoleCode.CompanyPowerAdmin)
+    );
   }
 
   public getUser(): Dip_AnagraficaModel[] {
-    return this.dip_Anagrafica;
+    return this.dip_Anagrafica.filter(dip =>
+      dip.roleCode.includes(RoleCode.User) 
+    );
   }
 
 
   toggleSelectionAdmin(itemId: string, event: any) {
-    if (event.detail.checked) {
-      this.selectedAdmin.push(itemId);
+
+    //const existingEntry = this._editModel.selectedAdmin.find(entry => entry.id === itemId);
+
+    //if (existingEntry) {
+    //  // Se l'elemento esiste, aggiorna solo lo stato selected
+    //  existingEntry.checked = event.detail.checked;
+    //} else {
+    //  // Se l'elemento non è presente, lo aggiunge alla lista
+    //  this._editModel.selectedAdmin.push({ id: itemId, checked: event.detail.checked });
+    //}
+    
+
+    const existingEntry = this.selectedAdmin.find(entry => entry.id === itemId);
+
+    if (existingEntry) {
+      // Se l'elemento esiste, aggiorna solo lo stato selected
+      existingEntry.checked = event.detail.checked;
     } else {
-      this.selectedAdmin = this.selectedAdmin.filter(id => id !== itemId);
+      // Se l'elemento non è presente, lo aggiunge alla lista
+      this.selectedAdmin.push({ id: itemId, checked: event.detail.checked });
     }
+
   }
 
   isSelectedAdmin(itemId: string): boolean {
-    return this.selectedAdmin.includes(itemId);
+    
+    //return this._editModel.selectedAdmin.find(entry => entry.id === itemId)?.checked ?? false;
+    return this.selectedAdmin.find(entry => entry.id === itemId)?.checked ?? false;
   }
 
   toggleSelectionUser(itemId: string, event: any) {
-    if (event.detail.checked) {
-      this.selectedUser.push(itemId);
+
+    //const existingEntry = this._editModel.selectedUser.find(entry => entry.id === itemId);
+
+    //if (existingEntry) {
+    //  // Se l'elemento esiste, aggiorna solo lo stato selected
+    //  existingEntry.checked = event.detail.checked;
+    //} else {
+    //  // Se l'elemento non è presente, lo aggiunge alla lista
+    //  this._editModel.selectedUser.push({ id: itemId, checked: event.detail.checked });
+    //}
+
+
+    const existingEntry = this.selectedUser.find(entry => entry.id === itemId);
+
+    if (existingEntry) {
+      // Se l'elemento esiste, aggiorna solo lo stato selected
+      existingEntry.checked = event.detail.checked;
     } else {
-      this.selectedUser = this.selectedUser.filter(id => id !== itemId);
+      // Se l'elemento non è presente, lo aggiunge alla lista
+      this.selectedUser.push({ id: itemId, checked: event.detail.checked });
     }
+
   }
 
   isSelectedUser(itemId: string): boolean {
-    return this.selectedUser.includes(itemId);
+    
+    //return this._editModel.selectedUser.find(entry => entry.id === itemId)?.checked ?? false;
+    return this.selectedUser.find(entry => entry.id === itemId)?.checked ?? false;
+
   }
 
 
