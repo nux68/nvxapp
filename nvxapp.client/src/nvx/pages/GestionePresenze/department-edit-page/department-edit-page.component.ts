@@ -26,7 +26,7 @@ export class DepartmentEditPageComponent extends BasePageConfirmCancelComponent<
   modifiedDescription: string | null = null;
 
   public searchText!: string;
-
+  public currSection: string ="first";
   public dip_Anagrafica: Dip_AnagraficaModel[];
 
   // Flag per abilitare/disabilitare il riordino
@@ -307,6 +307,10 @@ export class DepartmentEditPageComponent extends BasePageConfirmCancelComponent<
     }
   }
 
+  segmentChanged(event: any) {
+    console.log('Segment cambiato:', event.detail.value);
+    this.currSection = event.detail.value;
+  }
   
 }
 
