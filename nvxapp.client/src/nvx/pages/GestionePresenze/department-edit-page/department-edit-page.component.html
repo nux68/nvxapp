@@ -47,10 +47,11 @@
             <ion-item-sliding class="ion-hide-sm-up">
               <ion-item>
 
-                <ion-checkbox slot="start" [checked]="isSelectedAdmin(item.idAspNetUsers)" (ionChange)="toggleSelectionAdmin(item.idAspNetUsers, $event)"></ion-checkbox>
+                <ion-checkbox slot="start" [checked]="isSelectedAdmin(item.id)" (ionChange)="toggleSelectionAdmin(item.id, $event)"></ion-checkbox>
                 <ion-label>
-                  {{ item.idAspNetUsers  | idAspNetUsersToCognome}}  {{ item.idAspNetUsers  | idAspNetUsersToNome}}
+                  {{ item.id  | idAspNetUsersToCognome}}  {{ item.id  | idAspNetUsersToNome}}
                 </ion-label>
+                <ion-checkbox slot="end" [checked]="isSelectedApproval(item.id)" (ionChange)="toggleSelectionApproval(item.id, $event)"></ion-checkbox>
 
 
               </ion-item>
@@ -58,19 +59,23 @@
             </ion-item-sliding>
 
             <ion-col size="1" class="ion-hide-sm-down">
-              <ion-checkbox [checked]="isSelectedAdmin(item.idAspNetUsers)" (ionChange)="toggleSelectionAdmin(item.idAspNetUsers, $event)"></ion-checkbox>
+              <ion-checkbox [checked]="isSelectedAdmin(item.id)" (ionChange)="toggleSelectionAdmin(item.id, $event)"></ion-checkbox>
             </ion-col>
 
             <ion-col class="ion-hide-sm-down">
               <ion-label>
-                {{ item.idAspNetUsers  | idAspNetUsersToCognome}}
+                {{ item.id  | idAspNetUsersToCognome}}
               </ion-label>
             </ion-col>
 
             <ion-col class="ion-hide-sm-down">
               <ion-label>
-                {{ item.idAspNetUsers  | idAspNetUsersToNome}}
+                {{ item.id  | idAspNetUsersToNome}}
               </ion-label>
+            </ion-col>
+
+            <ion-col size="1" class="ion-hide-sm-down">
+              <ion-checkbox [checked]="isSelectedApproval(item.id)" (ionChange)="toggleSelectionApproval(item.id, $event)"></ion-checkbox>
             </ion-col>
 
           </ion-row>
@@ -87,9 +92,9 @@
             <ion-item-sliding class="ion-hide-sm-up">
               <ion-item>
 
-                <ion-checkbox slot="start" [checked]="isSelectedUser(item.idAspNetUsers)" (ionChange)="toggleSelectionUser(item.idAspNetUsers, $event)"></ion-checkbox>
+                <ion-checkbox slot="start" [checked]="isSelectedUser(item.id)" (ionChange)="toggleSelectionUser(item.id, $event)"></ion-checkbox>
                 <ion-label>
-                  {{ item.idAspNetUsers  | idAspNetUsersToCognome}}  {{ item.idAspNetUsers  | idAspNetUsersToNome}}
+                  {{ item.id  | idAspNetUsersToCognome}}  {{ item.id  | idAspNetUsersToNome}}
                 </ion-label>
 
 
@@ -98,18 +103,18 @@
             </ion-item-sliding>
 
             <ion-col size="1" class="ion-hide-sm-down">
-              <ion-checkbox [checked]="isSelectedUser(item.idAspNetUsers)" (ionChange)="toggleSelectionUser(item.idAspNetUsers, $event)"></ion-checkbox>
+              <ion-checkbox [checked]="isSelectedUser(item.id)" (ionChange)="toggleSelectionUser(item.id, $event)"></ion-checkbox>
             </ion-col>
 
             <ion-col class="ion-hide-sm-down">
               <ion-label>
-                {{ item.idAspNetUsers  | idAspNetUsersToCognome}}
+                {{ item.id  | idAspNetUsersToCognome}}
               </ion-label>
             </ion-col>
 
             <ion-col class="ion-hide-sm-down">
               <ion-label>
-                {{ item.idAspNetUsers  | idAspNetUsersToNome}}
+                {{ item.id  | idAspNetUsersToNome}}
               </ion-label>
             </ion-col>
 

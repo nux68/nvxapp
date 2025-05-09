@@ -29,22 +29,30 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
     {
 
         public Az_SediRepartoModel Az_SediReparto { get; set; } = new Az_SediRepartoModel();
-        public List<CheckObjOn_Id_Text> SelectedAdmin { get; set; } = new List<CheckObjOn_Id_Text>();
-        public List<CheckObjOn_Id_Text> SelectedUser { get; set; } = new List<CheckObjOn_Id_Text>();
+        public List<CheckObjOn_Id_Text_4ApprovalZorder> SelectedAdmin { get; set; } = new List<CheckObjOn_Id_Text_4ApprovalZorder>();
+        public List<CheckObjOn_Id_Text_4ApprovalZorder> SelectedUser { get; set; } = new List<CheckObjOn_Id_Text_4ApprovalZorder>();
 
 
     }
+
+    public class CheckObjOn_Id_Text_4ApprovalZorder : CheckObjOn_Id_Text
+    {
+        public Boolean EnabledToApproval { get; set; }
+        public int ApprovalZOrder { get; set; }
+    }
+
+
 
     public class Az_SediRepartoPutInModel
     {
         public Az_SediRepartoModel Az_SediReparto { get; set; } = new Az_SediRepartoModel();
-        public List<CheckObjOn_Id_Text> SelectedAdmin { get; set; } = new List<CheckObjOn_Id_Text>();
-        public List<CheckObjOn_Id_Text> SelectedUser { get; set; } = new List<CheckObjOn_Id_Text>();
+        public List<CheckObjOn_Id_Text_4ApprovalZorder> SelectedAdmin { get; set; } = new List<CheckObjOn_Id_Text_4ApprovalZorder>();
+        public List<CheckObjOn_Id_Text_4ApprovalZorder> SelectedUser { get; set; } = new List<CheckObjOn_Id_Text_4ApprovalZorder>();
     }
     public class Az_SediRepartoPutOutModel : ModelResult
     {
         public Az_SediRepartoModel Az_SediReparto { get; set; } = new Az_SediRepartoModel();
-        public List<CheckObjOn_Id_Text> SelectedAdmin { get; set; } = new List<CheckObjOn_Id_Text>();
-        public List<CheckObjOn_Id_Text> SelectedUser { get; set; } = new List<CheckObjOn_Id_Text>();
+        public List<CheckObjOn_Id_Text_4ApprovalZorder> SelectedAdmin { get; set; } = new List<CheckObjOn_Id_Text_4ApprovalZorder>();
+        public List<CheckObjOn_Id_Text_4ApprovalZorder> SelectedUser { get; set; } = new List<CheckObjOn_Id_Text_4ApprovalZorder>();
     }
 }

@@ -8,7 +8,7 @@ import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-ca
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { StringHelperService } from '../../../Utility/infrastructure/string-helper.service';
 import { AzSediRepartoService } from '../../../ClientServer-Service/GestionePresenze/Az_SediReparto/az-sedi-reparto.service';
-import { Az_SediRepartoGetInModel, Az_SediRepartoModel, Az_SediRepartoPutInModel } from '../../../ClientServer-Service/GestionePresenze/Az_SediReparto/Models/az-sedi-reparto-model';
+import { Az_SediRepartoGetInModel, Az_SediRepartoModel, Az_SediRepartoPutInModel, CheckObjOn_Id_Text_4ApprovalZorder } from '../../../ClientServer-Service/GestionePresenze/Az_SediReparto/Models/az-sedi-reparto-model';
 import { DealerGetInModel, DealerPutInModel } from '../../../ClientServer-Service/Infrastructure/Account/Models/dealer-model';
 import { Dip_AnagraficaModel } from '../../../ClientServer-Service/GestionePresenze/Dip_Anagrafica/Models/dip-anagrafica-model';
 import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
@@ -30,8 +30,8 @@ export class DepartmentEditPageComponent extends BasePageConfirmCancelComponent<
   public dip_Anagrafica: Dip_AnagraficaModel[];
   
 
-  selectedAdmin: CheckObjOn_Id_Text[] = [];
-  selectedUser: CheckObjOn_Id_Text[] = [];
+  selectedAdmin: CheckObjOn_Id_Text_4ApprovalZorder[] = [];
+  selectedUser: CheckObjOn_Id_Text_4ApprovalZorder[] = [];
 
   constructor(protected override navCtrl: NavController,
     protected override userInterfaceService: UserInterfaceService,
@@ -117,31 +117,40 @@ export class DepartmentEditPageComponent extends BasePageConfirmCancelComponent<
     }
   }
 
-  public getAdmin(): Dip_AnagraficaModel[] {
-    return this.dip_Anagrafica.filter(dip =>
+  public getAdmin(): CheckObjOn_Id_Text_4ApprovalZorder[] {
+
+    let retVal: CheckObjOn_Id_Text_4ApprovalZorder[] = [];
+
+    this.dip_Anagrafica.filter(dip =>
       dip.roleCode.includes(RoleCode.CompanyAdmin) ||
       dip.roleCode.includes(RoleCode.CompanyPowerAdmin)
-    );
+    ).forEach(item => {
+      let appo = { id: item.idAspNetUsers, checked: false, enabledToApproval: false, approvalZOrder: 0 };
+      retVal.push(appo);
+    });
+
+
+    return retVal;
+
   }
 
-  public getUser(): Dip_AnagraficaModel[] {
-    return this.dip_Anagrafica.filter(dip =>
-      dip.roleCode.includes(RoleCode.User) 
-    );
+  public getUser(): CheckObjOn_Id_Text_4ApprovalZorder[] {
+
+    let retVal: CheckObjOn_Id_Text_4ApprovalZorder[] = [];
+
+    this.dip_Anagrafica.filter(dip =>
+      dip.roleCode.includes(RoleCode.User)
+    ).forEach(item => {
+      let appo = { id: item.idAspNetUsers, checked: false, enabledToApproval: false, approvalZOrder: 0 };
+      retVal.push(appo);
+    });
+    
+
+    return retVal;
   }
 
 
   toggleSelectionAdmin(itemId: string, event: any) {
-
-    //const existingEntry = this._editModel.selectedAdmin.find(entry => entry.id === itemId);
-
-    //if (existingEntry) {
-    //  // Se l'elemento esiste, aggiorna solo lo stato selected
-    //  existingEntry.checked = event.detail.checked;
-    //} else {
-    //  // Se l'elemento non è presente, lo aggiunge alla lista
-    //  this._editModel.selectedAdmin.push({ id: itemId, checked: event.detail.checked });
-    //}
     
 
     const existingEntry = this.selectedAdmin.find(entry => entry.id === itemId);
@@ -151,29 +160,19 @@ export class DepartmentEditPageComponent extends BasePageConfirmCancelComponent<
       existingEntry.checked = event.detail.checked;
     } else {
       // Se l'elemento non è presente, lo aggiunge alla lista
-      this.selectedAdmin.push({ id: itemId, checked: event.detail.checked });
+      this.selectedAdmin.push({ id: itemId, checked: event.detail.checked, enabledToApproval: false, approvalZOrder:0 });
     }
 
   }
 
   isSelectedAdmin(itemId: string): boolean {
     
-    //return this._editModel.selectedAdmin.find(entry => entry.id === itemId)?.checked ?? false;
     return this.selectedAdmin.find(entry => entry.id === itemId)?.checked ?? false;
   }
 
   toggleSelectionUser(itemId: string, event: any) {
 
-    //const existingEntry = this._editModel.selectedUser.find(entry => entry.id === itemId);
-
-    //if (existingEntry) {
-    //  // Se l'elemento esiste, aggiorna solo lo stato selected
-    //  existingEntry.checked = event.detail.checked;
-    //} else {
-    //  // Se l'elemento non è presente, lo aggiunge alla lista
-    //  this._editModel.selectedUser.push({ id: itemId, checked: event.detail.checked });
-    //}
-
+    
 
     const existingEntry = this.selectedUser.find(entry => entry.id === itemId);
 
@@ -182,18 +181,38 @@ export class DepartmentEditPageComponent extends BasePageConfirmCancelComponent<
       existingEntry.checked = event.detail.checked;
     } else {
       // Se l'elemento non è presente, lo aggiunge alla lista
-      this.selectedUser.push({ id: itemId, checked: event.detail.checked });
+      this.selectedUser.push({ id: itemId, checked: event.detail.checked, enabledToApproval: false, approvalZOrder: 0 });
     }
 
   }
 
   isSelectedUser(itemId: string): boolean {
     
-    //return this._editModel.selectedUser.find(entry => entry.id === itemId)?.checked ?? false;
     return this.selectedUser.find(entry => entry.id === itemId)?.checked ?? false;
 
   }
 
+
+
+  toggleSelectionApproval(itemId: string, event: any) {
+
+
+    const existingEntry = this.selectedAdmin.find(entry => entry.id === itemId);
+
+    if (existingEntry) {
+      // Se l'elemento esiste, aggiorna solo lo stato selected
+      existingEntry.enabledToApproval = event.detail.checked;
+    } else {
+      // Se l'elemento non è presente, lo aggiunge alla lista
+      this.selectedAdmin.push({ id: itemId, checked: false, enabledToApproval: event.detail.checked, approvalZOrder: 0 });
+    }
+
+  }
+
+  isSelectedApproval(itemId: string): boolean {
+
+    return this.selectedAdmin.find(entry => entry.id === itemId)?.enabledToApproval ?? false;
+  }
 
 }
 

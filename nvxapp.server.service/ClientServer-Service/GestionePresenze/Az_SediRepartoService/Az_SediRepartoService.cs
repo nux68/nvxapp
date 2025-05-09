@@ -106,7 +106,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
                                     {
                                         if (roles.Contains(userRole.Name))
                                         {
-                                            retVal.SelectedUser.Add(new CheckObjOn_Id_Text()
+                                            retVal.SelectedUser.Add(new CheckObjOn_Id_Text_4ApprovalZorder()
                                             {
                                                 Id = item.IdAspNetUsers,
                                                 Checked = true
@@ -118,10 +118,12 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
                                     {
                                         if (roles.Contains(companyAdminRole.Name) || roles.Contains(companyPowerAdminRole.Name))
                                         {
-                                            retVal.SelectedAdmin.Add(new CheckObjOn_Id_Text()
+                                            retVal.SelectedAdmin.Add(new CheckObjOn_Id_Text_4ApprovalZorder()
                                             {
                                                 Id = item.IdAspNetUsers,
-                                                Checked = true
+                                                Checked = true,
+                                                ApprovalZOrder = item.ApprovalZOrder,
+                                                EnabledToApproval= item.EnabledToApproval
                                             });
                                         }
                                     }
@@ -206,7 +208,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
                             // aggiungo gli admin sommando eventualmente le caratteristiche che hanno solo loro
                             var us = AllUser.Where(x => x.Id == item.Id).FirstOrDefault();
                             if (us == null)
-                                AllUser.Add(new CheckObjOn_Id_Text() { Id = item.Id, Checked = true });
+                                AllUser.Add(new CheckObjOn_Id_Text_4ApprovalZorder() { Id = item.Id, Checked = true ,  
+                                                                                       EnabledToApproval=item.EnabledToApproval , 
+                                                                                       ApprovalZOrder= item.ApprovalZOrder});
                         }
 
                         foreach(var item in AllUser)
@@ -221,6 +225,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
                                     IdAz_SediReparto = model.Data.Az_SediReparto.Id
                                 };
                             }
+                            recDB.EnabledToApproval = item.EnabledToApproval;
+                            recDB.ApprovalZOrder = item.ApprovalZOrder;
                             await _az_RepartoUserRepository.UpsertAsync(recDB);
                         }
 

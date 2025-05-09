@@ -27,19 +27,23 @@ export class Az_SediRepartoGetInModel {
 }
 export class Az_SediRepartoGetOutModel extends ModelResult {
   public az_SediReparto: Az_SediRepartoModel;
-  public selectedAdmin: CheckObjOn_Id_Text[];
-  public selectedUser: CheckObjOn_Id_Text[];
+  public selectedAdmin: CheckObjOn_Id_Text_4ApprovalZorder[];
+  public selectedUser: CheckObjOn_Id_Text_4ApprovalZorder[];
 }
 
+export class CheckObjOn_Id_Text_4ApprovalZorder extends CheckObjOn_Id_Text {
+  public enabledToApproval!: boolean;
+  public approvalZOrder!: number;
+}
 
 export class Az_SediRepartoPutInModel {
   public az_SediReparto: Az_SediRepartoModel;
-  public selectedAdmin: CheckObjOn_Id_Text[];
-  public selectedUser: CheckObjOn_Id_Text[];
+  public selectedAdmin: CheckObjOn_Id_Text_4ApprovalZorder[];
+  public selectedUser: CheckObjOn_Id_Text_4ApprovalZorder[];
 }
 export class Az_SediRepartoPutOutModel extends ModelResult {
   public az_SediReparto: Az_SediRepartoModel;
-  public selectedAdmin: CheckObjOn_Id_Text[];
-  public selectedUser: CheckObjOn_Id_Text[];
+  public selectedAdmin: CheckObjOn_Id_Text_4ApprovalZorder[];
+  public selectedUser: CheckObjOn_Id_Text_4ApprovalZorder[];
 }
 
