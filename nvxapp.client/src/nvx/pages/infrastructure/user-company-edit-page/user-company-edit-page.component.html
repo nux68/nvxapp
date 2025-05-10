@@ -64,7 +64,7 @@
     <ion-item>
       <ion-label position="floating">Ruolo</ion-label>
       <ion-select formControlName="roleId" [disabled]="_editModel!=null && _editModel.idUserCompany > 0">
-        <ion-select-option *ngFor="let role of getRoler()" [value]="role.id" >
+        <ion-select-option *ngFor="let role of getRoler()" [value]="role.id">
           {{ role.name }}
         </ion-select-option>
       </ion-select>
@@ -74,6 +74,36 @@
     <ion-note color="danger" *ngIf="_editForm.get('roleId')?.hasError('required') && _editForm.get('roleId')?.touched">
       Il ruolo è obbligatorio.
     </ion-note>
+
+
+
+    <ion-item>
+      <ion-label position="floating">Ruolo</ion-label>
+      <ion-select formControlName="roles" aria-label="Ruoli" [multiple]="true">
+        <ion-select-option value="{{item}}" *ngFor="let item of getRoles()">{{ item }}</ion-select-option>
+      </ion-select>
+    </ion-item>
+    <!-- Mostra un errore se il ruolo non è selezionato -->
+    <ion-note color="danger" *ngIf="_editForm.get('roles')?.hasError('minArrayLength') && _editForm.get('roles')?.touched">
+      Il ruolo è obbligatorio.
+    </ion-note>
+
+
+
+    <!--<ng-container *ngIf="_editModel!=null">
+
+    <ion-item>
+       <ion-label>Ruoli</ion-label>
+    </ion-item>
+    <ion-item *ngFor="let item of getRoles()">
+      <ion-checkbox slot="start" [checked]="isSelectedRole(item)" (ionChange)="toggleSelectionRole(item, $event)"></ion-checkbox>
+      <ion-label>
+        {{ item }}
+      </ion-label>
+    </ion-item>
+
+  </ng-container>-->
+
 
 
   </form>
