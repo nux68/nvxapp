@@ -96,18 +96,6 @@ export class UserCompanyListPageComponent  implements OnInit {
     this.searchText = CurrFilter;
   }
 
-  getAdmin() {
-
-    const roles = this.parameterService.Roles.filter(role => role.code == RoleCode.CompanyAdmin || role.code == RoleCode.CompanyPowerAdmin);
-
-    const filteredUserCompanyList = this.userCompanyList.filter(usr =>
-      roles.some(role => role.id === usr.roleId)
-    );
-
-    return filteredUserCompanyList;
-
-  }
-
   getUser() {
 
     const roles = this.parameterService.Roles.filter(role => role.code == RoleCode.User);
@@ -119,9 +107,6 @@ export class UserCompanyListPageComponent  implements OnInit {
     return filteredUserCompanyList;
 
   }
-
- 
-
 
   getAll() {
     const sortedUserList = this.userCompanyList.sort((a, b) => {
@@ -139,15 +124,33 @@ export class UserCompanyListPageComponent  implements OnInit {
     return sortedUserList;
   }
 
-
   isAdmin(item: UserCompanyListModel) {
 
-    const roles = this.parameterService.Roles.filter(role => role.code == RoleCode.User);
 
-    if (item.roleId == roles[0].id)
-      return false;
-    else
+    const rolesAdmin = this.parameterService.Roles.find(role => role.code == RoleCode.CompanyAdmin);
+
+    const rolesPowerAdmin = this.parameterService.Roles.find(role => role.code == RoleCode.CompanyPowerAdmin);
+
+    if (item.roles.includes(rolesAdmin.name) || item.roles.includes(rolesPowerAdmin.name)) {
       return true;
+    }
+    return false;
+
+  }
+
+  isUser(item: UserCompanyListModel) {
+
+ 
+
+    const rolesUser = this.parameterService.Roles.find(role => role.code == RoleCode.User);
+
+   
+
+    if (item.roles.includes(rolesUser.name) ) {
+      return true;
+    }
+    return false;
+
   }
 
 }

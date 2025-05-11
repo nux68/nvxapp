@@ -112,8 +112,9 @@ export class UserCompanyEditPageComponent extends BasePageConfirmCancelComponent
   getRoles(): string[] {
 
     if (this._editModel) {
+      const rolesPowerAdmin = this.parameterService.Roles.find(role => role.code == RoleCode.CompanyPowerAdmin);
 
-      if (this._editModel.roles.includes("CompanyPowerAdmin")) {
+      if (this._editModel.roles.includes(rolesPowerAdmin.name)) {
         return this.parameterService.Roles.filter(role => role.code == RoleCode.CompanyPowerAdmin )
           .map(role => role.name); 
       }

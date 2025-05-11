@@ -20,7 +20,7 @@
 
         <ion-item-options side="end">
 
-          <ion-item-option color="{{btnImpersona.color}}" (click)="btnImpersona.event(item)" *ngIf="!isAdmin(item)">
+          <ion-item-option color="{{btnImpersona.color}}" (click)="btnImpersona.event(item)" *ngIf="isUser(item)">
             <ion-icon slot="start" name="{{btnImpersona.image}}"></ion-icon>
             Impersona
           </ion-item-option>
@@ -45,7 +45,7 @@
       </ion-col>
       <ion-col size="2" class="ion-hide-sm-down">
         <!--fill="solid" expand="block"-->
-        <ion-button size="small" shape="round" (click)="btnImpersona.event(item)" color="{{btnImpersona.color}}" *ngIf="!isAdmin(item)">
+        <ion-button size="small" shape="round" (click)="btnImpersona.event(item)" color="{{btnImpersona.color}}" *ngIf="isUser(item)">
           <ion-icon name="{{btnImpersona.image}}"></ion-icon>
           &nbsp;{{btnImpersona.text}}
         </ion-button>
@@ -60,63 +60,6 @@
 
 
     </ion-row>
-
-  <!--<ion-row>
-    <ion-col *ngFor="let item of getAdmin() | genericFilter: 'descrizione' : searchText" size-xs="6" size-sm="3" size-md="3" size-lg="3" size-xl="2">
-
-      <ion-card>
-        <img alt="Silhouette of mountains" src="assets/card-media-admin.png" />
-        <ion-card-header>
-          <ion-card-title>{{ item.descrizione }}</ion-card-title>
-          <ion-card-subtitle>bla bla bla</ion-card-subtitle>
-        </ion-card-header>
-
-        <ion-card-content>
-          bla bla bla
-        </ion-card-content>
-
-
-
-        <ion-button shape="round" (click)="btnEdit.event(item)" color="{{btnEdit.color}}" fill="solid" expand="block">
-          <ion-icon name="{{btnEdit.image}}"></ion-icon>
-          &nbsp;{{btnEdit.text}}
-        </ion-button>
-
-
-      </ion-card>
-
-    </ion-col>
-  </ion-row>
-
-  <ion-row>
-    <ion-col *ngFor="let item of getUser() | genericFilter: 'descrizione' : searchText" size-xs="6" size-sm="3" size-md="3" size-lg="3" size-xl="2">
-
-      <ion-card>
-        <img alt="Silhouette of mountains" src="assets/card-media.png" />
-        <ion-card-header>
-          <ion-card-title>{{ item.descrizione }}</ion-card-title>
-          <ion-card-subtitle>bla bla bla</ion-card-subtitle>
-        </ion-card-header>
-
-        <ion-card-content>
-          bla bla bla
-        </ion-card-content>
-
-        <ion-button shape="round" (click)="btnImpersona.event(item)" color="{{btnImpersona.color}}" fill="solid" expand="block">
-          <ion-icon name="{{btnImpersona.image}}"></ion-icon>
-          &nbsp;{{btnImpersona.text}}
-        </ion-button>
-
-        <ion-button shape="round" (click)="btnEdit.event(item)" color="{{btnEdit.color}}" fill="solid" expand="block">
-          <ion-icon name="{{btnEdit.image}}"></ion-icon>
-          &nbsp;{{btnEdit.text}}
-        </ion-button>
-
-
-      </ion-card>
-
-    </ion-col>
-  </ion-row>-->
 
 </ion-grid>
 

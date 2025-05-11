@@ -176,5 +176,12 @@ export class AppComponent implements OnInit {
     
   }
 
+  public getMenuItem4CompanyAdmin() {
+    
+    if (this.authService.IsUser) {
+      return this.appPages4CompanyAdmin.filter(x => x.component !="UserCompanyListPageComponent");
+    }
 
+    return this.appPages4CompanyAdmin;
+  }
 }
