@@ -23,6 +23,7 @@ interface TipoApprovazioneOption {
 })
 export class CompanyCfgPageComponent extends BasePageConfirmCancelComponent<Az_CfgModel> {
 
+  public currSection: string = "first";
   modifiedDescription: string | null = null;
   tipoApprovazioneOptions: TipoApprovazioneOption[] = [
     { value: TipoApprovazione.SigleAdmin, label: 'Single Admin' },
@@ -84,6 +85,11 @@ export class CompanyCfgPageComponent extends BasePageConfirmCancelComponent<Az_C
       })
     );
   };
+
+  segmentChanged(event: any) {
+    console.log('Segment cambiato:', event.detail.value);
+    this.currSection = event.detail.value;
+  }
 
   //UpdateDescription() {
   //  const descrizione = this._editForm.get('descrizione')?.value;

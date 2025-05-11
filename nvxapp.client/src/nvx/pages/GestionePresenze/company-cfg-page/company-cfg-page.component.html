@@ -8,19 +8,34 @@
 
   <form [formGroup]="_editForm">
 
-  
-    <ion-list>
-      <ion-list-header>
-        <ion-label>Tipo Approvazione</ion-label>
-      </ion-list-header>
+    <ion-segment (ionChange)="segmentChanged($event)" [value]="currSection">
+      <ion-segment-button value="first" content-id="first">
+        <ion-label>Approvazioni</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="second" content-id="second">
+        <ion-label>Varie</ion-label>
+      </ion-segment-button>
+    </ion-segment>
 
-      <ion-radio-group formControlName="approvazioneTipo">
-        <ion-item *ngFor="let option of tipoApprovazioneOptions">
-          <ion-label>{{ getTipoApprovazioneLabel(option.value) }}</ion-label>
-          <ion-radio [value]="option.value" slot="start"></ion-radio>
-        </ion-item>
-      </ion-radio-group>
-    </ion-list>
+    <div [hidden]="currSection!='first'">
+      <ion-list>
+        <ion-list-header>
+          <ion-label>Tipo Approvazione</ion-label>
+        </ion-list-header>
+
+        <ion-radio-group formControlName="approvazioneTipo">
+          <ion-item *ngFor="let option of tipoApprovazioneOptions">
+            <ion-label>{{ getTipoApprovazioneLabel(option.value) }}</ion-label>
+            <ion-radio [value]="option.value" slot="start"></ion-radio>
+          </ion-item>
+        </ion-radio-group>
+      </ion-list>
+    </div>
+
+    <div [hidden]="currSection!='second'">
+    </div>
+
+
 
   </form>
 
