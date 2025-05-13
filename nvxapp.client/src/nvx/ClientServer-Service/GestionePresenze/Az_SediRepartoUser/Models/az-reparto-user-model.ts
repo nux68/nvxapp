@@ -30,8 +30,11 @@ export class Az_SediRepartoUser_GetAll_OutModel extends ModelResult {
 
 export class Az_SediRepartoUser_GetAll_Period_InModel {
 
-  public idAz_Reparto!: number;
+  public idAz_SediReparto!: number[];
   public dataDal?: Date;
   public dataAl?: Date;
+  constructor() {
+    this.idAz_SediReparto = [];
+  }
 
 }

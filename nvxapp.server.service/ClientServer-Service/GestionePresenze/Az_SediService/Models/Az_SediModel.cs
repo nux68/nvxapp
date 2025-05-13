@@ -9,6 +9,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediSer
 {
     public class Az_SediModel
     {
+        public required int Id { get; set; }
+        public required int IdAz_Anagrafica { get; set; }
+        public string? Descrizione { get; set; }
     }
 
     public class Az_Sedi_GetAll_InModel

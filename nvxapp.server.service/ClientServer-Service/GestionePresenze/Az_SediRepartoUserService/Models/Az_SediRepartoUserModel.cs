@@ -37,7 +37,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
 
     public class Az_SediRepartoUser_GetAll_Period_InModel
     {
-        public int IdAz_SediReparto { get; set; }
+        public List<int> IdAz_SediReparto { get; set; } = new List<int>();
         public DateTime? DataDal { get; set; }
         public DateTime? DataAl { get; set; }
     }

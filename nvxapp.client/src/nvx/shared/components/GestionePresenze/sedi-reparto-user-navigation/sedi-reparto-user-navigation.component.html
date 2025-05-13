@@ -1,3 +1,51 @@
-<p>
-  sedi-reparto-user-navigation works!
-</p>
+<div class="ion-padding">
+  <ion-row>
+    <!-- Sedi Select -->
+    <ion-col size="12" size-md="4" *ngIf="!hideSediSelect">
+      <ion-item>
+        <ion-label position="stacked">Sede</ion-label>
+        <ion-select [(ngModel)]="selectedSediId"
+                    (ionChange)="onSediChange()"
+                    placeholder="Seleziona una sede"
+                    interface="popover">
+          <ion-select-option [value]="sede.id" *ngFor="let sede of az_SediList">
+            {{ sede.descrizione }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+    </ion-col>
+
+    <!-- Reparto Select -->
+    <ion-col size="12" size-md="4" *ngIf="!hideRepartoSelect">
+      <ion-item>
+        <ion-label position="stacked">Reparto</ion-label>
+        <ion-select [(ngModel)]="selectedRepartoId"
+                    (ionChange)="onRepartoChange()"
+                    placeholder="Seleziona uno o più reparti"
+                    interface="popover"
+                    [disabled]="!selectedSediId"
+                    multiple="true">
+          <ion-select-option [value]="reparto.id" *ngFor="let reparto of filteredReparti">
+            {{ reparto.descrizione }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+    </ion-col>
+
+    <!-- User Select -->
+    <ion-col size="12" size-md="4" *ngIf="!hideUserSelect">
+      <ion-item>
+        <ion-label position="stacked">Utente</ion-label>
+        <ion-select [(ngModel)]="selectedUserId"
+                    (ionChange)="onUserChange()"
+                    placeholder="Seleziona un utente"
+                    interface="popover"
+                    [disabled]="!selectedRepartoId || selectedRepartoId.length === 0">
+          <ion-select-option [value]="user.idAspNetUsers" *ngFor="let user of az_SediRepartoUserList">
+            {{ user.idAspNetUsers }} <!-- Consider displaying a more user-friendly property if available -->
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+    </ion-col>
+  </ion-row>
+</div>

@@ -8,6 +8,7 @@ import { Dip_Anagrafica_GetAll_InModel, Dip_AnagraficaModel } from '../ClientSer
 import { DipAnagraficaService } from '../ClientServer-Service/GestionePresenze/Dip_Anagrafica/dip-anagrafica.service';
 import { AzCfgService } from '../ClientServer-Service/GestionePresenze/Az_Cfg/az-cfg.service';
 import { Az_Cfg_Get_InModel, Az_Cfg_GetAll_InModel, Az_CfgModel } from '../ClientServer-Service/GestionePresenze/Az_Cfg/Models/az-cfg-model';
+import { RoleCode } from '../ClientServer-Service/Infrastructure/Account/Models/user-roles-model';
 
 @Injectable({
   providedIn: 'root'
@@ -180,6 +181,25 @@ export class SharedParameterGestionePresenzeService {
   private _dip_AnagraficaSubject = new BehaviorSubject<Dip_AnagraficaModel[]>([]);
   public get Dip_Anagrafica$(): Observable<Dip_AnagraficaModel[] | []> {
     return this._dip_AnagraficaSubject.asObservable();
+  }
+
+
+  public Dip_Anagrafica_OnRoles(roles: RoleCode[]): Dip_AnagraficaModel[]  {
+    if (this._dip_Anagrafica === null) {
+      return [];
+    }
+
+    if (!roles || roles.length === 0 || this._dip_Anagrafica.length === 0) {
+      return []; // Nessun criterio di filtro o nessun dato da filtrare => array vuoto
+    }
+
+    return this._dip_Anagrafica.filter(anagrafica => {
+      if (!anagrafica.roleCode || anagrafica.roleCode.length === 0) {
+        return false; // L'anagrafica non ha ruoli, quindi non può corrispondere
+      }
+      // Verifica se almeno uno dei ruoli dell'anagrafica è incluso nei ruoli di filtro
+      return anagrafica.roleCode.some(userRole => roles.includes(userRole));
+    });
   }
 
   

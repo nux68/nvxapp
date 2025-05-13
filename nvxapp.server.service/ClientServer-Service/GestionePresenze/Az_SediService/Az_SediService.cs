@@ -12,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
 
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRepartoService.Models;
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediService
 {
@@ -37,6 +38,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediSer
             return await ExecuteAction(model, async () =>
             {
                 Az_Sedi_GetAll_OutModel retVal = new Az_Sedi_GetAll_OutModel();
+
+
+                var az_Sedi = _az_SediRepository.FindAll(x => x.Id > 0).ToList();
+
+                retVal.Az_Sedi = _mapper.Map<List<Az_SediModel>>(az_Sedi);
 
                 //eliminare
                 // Nessun 'await' qui
