@@ -16,10 +16,15 @@ namespace nvxapp.server.data.Entities.Tenant
 
         [Required]
         public required string IdAspNetUsers { get; set; }
+        
+        [ForeignKey("IdAspNetUsers")]
         public ApplicationUser? AspNetUsersNavigation { get; set; }
         public Boolean EnabledToApproval { get; set; }
 
         public int ApprovalZOrder { get; set; }
+
+        public DateTime? DataDal { get; set; } 
+        public DateTime? DataAl { get; set; } 
 
     }
 

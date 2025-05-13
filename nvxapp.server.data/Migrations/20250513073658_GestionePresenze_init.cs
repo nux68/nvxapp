@@ -490,9 +490,10 @@ namespace nvxapp.server.data.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     IdAz_SediReparto = table.Column<int>(type: "integer", nullable: false),
                     IdAspNetUsers = table.Column<string>(type: "text", nullable: false),
-                    AspNetUsersNavigationId = table.Column<string>(type: "text", nullable: true),
                     EnabledToApproval = table.Column<bool>(type: "boolean", nullable: false),
                     ApprovalZOrder = table.Column<int>(type: "integer", nullable: false),
+                    DataDal = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    DataAl = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
@@ -501,11 +502,12 @@ namespace nvxapp.server.data.Migrations
                 {
                     table.PrimaryKey("PK_Az_SediRepartoUser", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Az_SediRepartoUser_AspNetUsers_AspNetUsersNavigationId",
-                        column: x => x.AspNetUsersNavigationId,
+                        name: "FK_Az_SediRepartoUser_AspNetUsers_IdAspNetUsers",
+                        column: x => x.IdAspNetUsers,
                         principalSchema: "public",
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Az_SediRepartoUser_Az_SediReparto_IdAz_SediReparto",
                         column: x => x.IdAz_SediReparto,
@@ -696,10 +698,10 @@ namespace nvxapp.server.data.Migrations
                 column: "IdAz_SediReparto");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Az_SediRepartoUser_AspNetUsersNavigationId",
+                name: "IX_Az_SediRepartoUser_IdAspNetUsers",
                 schema: "public",
                 table: "Az_SediRepartoUser",
-                column: "AspNetUsersNavigationId");
+                column: "IdAspNetUsers");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Az_SediRepartoUser_IdAz_SediReparto",

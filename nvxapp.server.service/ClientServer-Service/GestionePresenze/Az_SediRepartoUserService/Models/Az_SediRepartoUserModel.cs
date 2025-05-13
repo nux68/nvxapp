@@ -13,6 +13,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
         public  string IdAspNetUsers { get; set; } = string.Empty;
         public Boolean EnabledToApproval { get; set; }
         public int ApprovalZOrder { get; set; }
+        public DateTime? DataDal { get; set; }
+        public DateTime? DataAl { get; set; }
     }
 
     public class Az_SediRepartoUser_GetAll_InModel

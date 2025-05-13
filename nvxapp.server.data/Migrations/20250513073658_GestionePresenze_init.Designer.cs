@@ -12,7 +12,7 @@ using nvxapp.server.data.Infrastructure;
 namespace nvxapp.server.data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250506104536_GestionePresenze_init")]
+    [Migration("20250513073658_GestionePresenze_init")]
     partial class GestionePresenze_init
     {
         /// <inheritdoc />
@@ -649,14 +649,17 @@ namespace nvxapp.server.data.Migrations
                     b.Property<int>("ApprovalZOrder")
                         .HasColumnType("integer");
 
-                    b.Property<string>("AspNetUsersNavigationId")
-                        .HasColumnType("text");
-
                     b.Property<string>("ChangeUser")
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
                     b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("DataAl")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("DataDal")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<bool>("EnabledToApproval")
@@ -674,7 +677,7 @@ namespace nvxapp.server.data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AspNetUsersNavigationId");
+                    b.HasIndex("IdAspNetUsers");
 
                     b.HasIndex("IdAz_SediReparto");
 
@@ -1545,7 +1548,9 @@ namespace nvxapp.server.data.Migrations
                 {
                     b.HasOne("nvxapp.server.data.Entities.Public.ApplicationUser", "AspNetUsersNavigation")
                         .WithMany()
-                        .HasForeignKey("AspNetUsersNavigationId");
+                        .HasForeignKey("IdAspNetUsers")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("nvxapp.server.data.Entities.Tenant.Az_SediReparto", "Az_SediRepartoNavigation")
                         .WithMany("Az_SediRepartoUser")

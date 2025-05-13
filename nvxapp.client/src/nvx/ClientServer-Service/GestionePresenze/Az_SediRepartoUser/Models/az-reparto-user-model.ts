@@ -10,6 +10,8 @@ export class Az_SediRepartoUserModel {
   public enabledToApproval: number;
   public approvalZOrder!: number;
 
+  public dataDal?: Date;
+  public dataAl?: Date;
 
 }
 
