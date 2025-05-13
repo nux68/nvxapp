@@ -1,7 +1,10 @@
 <div class="ion-padding">
-  <ion-row>
+  <ion-row class="ion-align-items-end">
+    <!-- Helps align baselines of selects and buttons -->
     <!-- Sedi Select -->
-    <ion-col size="12" size-md="4" *ngIf="!hideSediSelect">
+    <!--size="12" size-md="ColumnSize"-->
+
+    <ion-col  size-xs="12" size-sm="2" *ngIf="!hideSediSelect">
       <ion-item>
         <ion-label position="stacked">Sede</ion-label>
         <ion-select [(ngModel)]="selectedSediId"
@@ -16,14 +19,14 @@
     </ion-col>
 
     <!-- Reparto Select -->
-    <ion-col size="12" size-md="4" *ngIf="!hideRepartoSelect">
+    <ion-col size-xs="12" size-sm="5"  *ngIf="!hideRepartoSelect">
       <ion-item>
         <ion-label position="stacked">Reparto</ion-label>
         <ion-select [(ngModel)]="selectedRepartoId"
                     (ionChange)="onRepartoChange()"
                     placeholder="Seleziona uno o più reparti"
-                    interface="popover"
-                    [disabled]="!selectedSediId"
+                    interface="modal"
+                    [disabled]="(!hideSediSelect && !selectedSediId) || filteredReparti.length === 0"
                     multiple="true">
           <ion-select-option [value]="reparto.id" *ngFor="let reparto of filteredReparti">
             {{ reparto.descrizione }}
@@ -32,20 +35,32 @@
       </ion-item>
     </ion-col>
 
-    <!-- User Select -->
-    <ion-col size="12" size-md="4" *ngIf="!hideUserSelect">
-      <ion-item>
-        <ion-label position="stacked">Utente</ion-label>
-        <ion-select [(ngModel)]="selectedUserId"
-                    (ionChange)="onUserChange()"
-                    placeholder="Seleziona un utente"
-                    interface="popover"
-                    [disabled]="!selectedRepartoId || selectedRepartoId.length === 0">
-          <ion-select-option [value]="user.idAspNetUsers" *ngFor="let user of az_SediRepartoUserList">
-            {{ user.idAspNetUsers }} <!-- Consider displaying a more user-friendly property if available -->
-          </ion-select-option>
-        </ion-select>
-      </ion-item>
+    <!-- User Select and Navigation -->
+    <ion-col size-xs="12"  size-sm="5" *ngIf="!hideUserSelect">
+      <div class="user-select-container">
+        <ion-item class="user-select-item">
+          <ion-label position="stacked">Utente</ion-label>
+          <ion-select [(ngModel)]="selectedUserId"
+                      (ionChange)="onUserChange()"
+                      placeholder="Seleziona un utente"
+                      interface="modal"
+                      [disabled]="(!selectedRepartoId || selectedRepartoId.length === 0) || az_SediRepartoUserList.length === 0">
+            <ion-select-option [value]="user.idAspNetUsers" *ngFor="let user of az_SediRepartoUserList">
+              {{ user.idAspNetUsers | idAspNetUsersToCognome }} {{ user.idAspNetUsers | idAspNetUsersToNome }}
+            </ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <div class="user-navigation-buttons" *ngIf="az_SediRepartoUserList.length > 1">
+          <ion-button (click)="navigateToPreviousUser()" [disabled]="!canNavigatePrevious"  shape="round" color="primary" aria-label="Utente precedente">
+            <ion-icon name="chevron-back-outline" slot="icon-only"></ion-icon>
+          </ion-button>
+          <ion-button (click)="navigateToNextUser()" [disabled]="!canNavigateNext"  shape="round" color="primary" aria-label="Utente successivo">
+            <ion-icon name="chevron-forward-outline" slot="icon-only"></ion-icon>
+          </ion-button>
+        </div>
+      </div>
     </ion-col>
+
   </ion-row>
 </div>

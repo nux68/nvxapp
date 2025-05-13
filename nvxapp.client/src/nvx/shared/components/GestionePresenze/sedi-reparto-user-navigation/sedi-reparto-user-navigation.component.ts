@@ -24,8 +24,11 @@ export class SediRepartoUserNavigationComponent implements OnInit {
 
   // Output parameters for selected values
   @Output() sediIdChange = new EventEmitter<number | undefined>();
-  @Output() repartoIdChange = new EventEmitter<number[] | undefined>(); // Changed to number[]
-  @Output() userIdChange = new EventEmitter<string | undefined>();
+  @Output() repartoIdChange = new EventEmitter<number[] | undefined>();  // lista reparti selezionati 
+  @Output() allUsersIdChange = new EventEmitter<string[] | undefined>();   //  lista degli user per i reparti selezionati
+  @Output() currUserIdChange = new EventEmitter<string | undefined>();  //  user corrente
+
+
 
   // Data lists
   public az_SediList: Az_SediModel[] = [];
@@ -35,8 +38,11 @@ export class SediRepartoUserNavigationComponent implements OnInit {
 
   // Selected values
   public selectedSediId: number | null = null;
-  public selectedRepartoId: number[] | null = null; // Changed to number[]
+  public selectedRepartoId: number[] | null = null;
   public selectedUserId: string | null = null;
+
+  // Index for user navigation
+  public currentUserIndex: number = -1;
 
   constructor(
     private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
@@ -49,6 +55,16 @@ export class SediRepartoUserNavigationComponent implements OnInit {
     this.Load_Init().subscribe({
       error: (err) => console.error("Error during SediRepartoUserNavigation initialization:", err)
     });
+  }
+
+  public ColumnSize():string {
+    let NumColumn = 0;
+
+    if (!this.hideSediSelect) NumColumn++;
+    if (!this.hideRepartoSelect) NumColumn++;
+    if (!this.hideUserSelect) NumColumn++;
+
+    return (12 / NumColumn).toString();
   }
 
   private Load_Init(): Observable<boolean> {
@@ -66,20 +82,28 @@ export class SediRepartoUserNavigationComponent implements OnInit {
         this.az_SediList = results.sediResult?.data?.az_Sedi || [];
         this.az_SediRepartoList = results.sediRepartoResult?.data?.az_SediReparto || [];
 
-        // Initialize filtered reparti list (will be empty if selectedSediId is null)
-        this.updateFilteredReparti();
-
-        // If Sedi select is visible and there are sedi, select the first one
-        if (!this.hideSediSelect && this.az_SediList.length > 0) {
-          this.selectedSediId = this.az_SediList[0].id;
-          // This will trigger filtering reparti, selecting all of them (if applicable), and loading users
-          this.onSediChange();
+        if (this.hideSediSelect) {
+          this.selectedSediId = null;
+          this.filteredReparti = [...this.az_SediRepartoList];
+          if (!this.hideRepartoSelect && this.filteredReparti.length > 0) {
+            this.selectedRepartoId = this.filteredReparti.map(reparto => reparto.id);
+            this.onRepartoChange(); // This will handle user list loading and selection reset
+          } else {
+            this.selectedRepartoId = null;
+            this.onRepartoChange(); // This will clear users and call onUserChange
+          }
+          this.sediIdChange.emit(undefined);
         } else {
-          // If no auto-selection of Sede (e.g., Sedi select hidden or no Sedi available)
-          // Emit initial state based on current selectedSediId (which might be null)
-          this.sediIdChange.emit(this.selectedSediId !== null ? this.selectedSediId : undefined);
-          this.repartoIdChange.emit(undefined); // No reparti selected yet
-          this.userIdChange.emit(undefined);    // No user selected yet
+          // Sedi select is visible
+          this.updateFilteredReparti(); // Initially selectedSediId is null, so filteredReparti is empty
+          if (this.az_SediList.length > 0) {
+            this.selectedSediId = this.az_SediList[0].id;
+            this.onSediChange();
+          } else {
+            // No Sedi to select, or Sedi select hidden
+            this.selectedSediId = null;
+            this.onSediChange(); // Will cascade to onRepartoChange -> onUserChange with null selections
+          }
         }
         return true;
       }),
@@ -87,90 +111,133 @@ export class SediRepartoUserNavigationComponent implements OnInit {
         console.error("SediRepartoUserNavigation Error fetching data.", error);
         this.az_SediList = [];
         this.az_SediRepartoList = [];
-        this.updateFilteredReparti(); // Ensure lists are empty on error
+        this.updateFilteredReparti();
+        this.selectedRepartoId = null; // Ensure reset on error
+        this.onRepartoChange(); // Cascade reset
         return throwError(() => new Error('SediRepartoUserNavigation Failed to load data'));
       })
     );
   }
 
-  // Filter reparti based on selected sede
   private updateFilteredReparti() {
-    if (this.selectedSediId !== null) {
+    if (this.selectedSediId !== null && !this.hideSediSelect) { // Don't filter if SediSelect is hidden
       this.filteredReparti = this.az_SediRepartoList.filter(
         reparto => reparto.idAz_Sedi === this.selectedSediId
       );
-    } else {
+    } else if (this.hideSediSelect) {
+      this.filteredReparti = [...this.az_SediRepartoList]; // Use all reparti if Sedi select is hidden
+    }
+    else {
       this.filteredReparti = [];
     }
   }
 
-  // Handler for sede selection change
   public onSediChange() {
-    // Update filtered reparti list based on the new selectedSediId
     this.updateFilteredReparti();
-
-    // Reset dependent selections
     this.selectedRepartoId = null;
-    this.az_SediRepartoUserList = [];
-    this.selectedUserId = null;
 
-    // Emit the selected sede ID
     this.sediIdChange.emit(this.selectedSediId !== null ? this.selectedSediId : undefined);
 
-    // If Reparto select is visible, a Sede is selected, and there are filtered Reparti, select all of them
     if (!this.hideRepartoSelect && this.selectedSediId !== null && this.filteredReparti.length > 0) {
       this.selectedRepartoId = this.filteredReparti.map(reparto => reparto.id);
-      // Trigger onRepartoChange to load users for these reparti and emit event
       this.onRepartoChange();
     } else {
-      // No reparti to select, or reparto select is hidden
-      this.repartoIdChange.emit(undefined);
-      this.userIdChange.emit(undefined);
+      // No reparti to auto-select (e.g. Sede deselected, no reparti for Sede, or Reparto select hidden)
+      // Call onRepartoChange to clear dependent selections (users)
+      this.onRepartoChange();
     }
   }
 
-  // Handler for reparto selection change
   public onRepartoChange() {
-    // Reset user selection
+    // Reset user selection and list first
     this.selectedUserId = null;
-    this.az_SediRepartoUserList = []; // Clear previous user list
+    this.az_SediRepartoUserList = [];
+    this.allUsersIdChange.emit(this.az_SediRepartoUserList.map(x => x.idAspNetUsers));
 
-    // Load users for the selected reparti if any are selected
+    // Call onUserChange to update currentUserIndex to -1 and emit undefined for userId
+    this.onUserChange();
+
     if (this.selectedRepartoId && this.selectedRepartoId.length > 0) {
       this.LoadAz_SediRepartoUser(this.selectedRepartoId);
     }
+    // If no reparti selected, user list is already cleared and onUserChange has been called.
 
-    // Emit the selected reparto IDs (or undefined if none)
     this.repartoIdChange.emit(this.selectedRepartoId && this.selectedRepartoId.length > 0 ? this.selectedRepartoId : undefined);
-    // User is reset, so emit undefined for userId
-    this.userIdChange.emit(undefined);
+
   }
 
-  // Handler for user selection change
   public onUserChange() {
-    // Emit the selected user ID
-    this.userIdChange.emit(this.selectedUserId !== null ? this.selectedUserId : undefined);
+    if (this.selectedUserId && this.az_SediRepartoUserList.length > 0) {
+      const newIndex = this.az_SediRepartoUserList.findIndex(user => user.idAspNetUsers === this.selectedUserId);
+      if (newIndex !== -1) {
+        this.currentUserIndex = newIndex;
+      } else {
+        // selectedUserId is not in the current list (e.g., list was reloaded and user is no longer valid)
+        this.selectedUserId = null; // Deselect
+        this.currentUserIndex = -1;
+      }
+    } else {
+      // No user selected (selectedUserId is null) or user list is empty
+      this.currentUserIndex = -1;
+    }
+    this.currUserIdChange.emit(this.selectedUserId !== null ? this.selectedUserId : undefined);
   }
 
   private LoadAz_SediRepartoUser(idAz_SediRepartoList: number[]) {
     let request: GenericRequest<Az_SediRepartoUser_GetAll_Period_InModel> = new GenericRequest<Az_SediRepartoUser_GetAll_Period_InModel>(Az_SediRepartoUser_GetAll_Period_InModel);
-
-    // Set the array of reparto IDs in the request
     request.data.idAz_SediReparto = [...idAz_SediRepartoList];
 
     this.azSediRepartoUserServiceService.GetAllPeriod(request).subscribe({
       next: res => {
-         var repUser = res.data?.az_RepartoUser || [];
-
+        var repUser = res.data?.az_RepartoUser || [];
         var idAspNetUsers = this.sharedParameterGestionePresenzeService.Dip_Anagrafica_OnRoles([RoleCode.User]).map(x => x.idAspNetUsers);
-
         this.az_SediRepartoUserList = repUser.filter(x => idAspNetUsers.includes(x.idAspNetUsers));
 
+        this.allUsersIdChange.emit(this.az_SediRepartoUserList.map(x => x.idAspNetUsers));
+
+        // selectedUserId was reset to null in onRepartoChange.
+        // onUserChange was also called there, setting currentUserIndex to -1 and emitting undefined.
+        // Now, if users are loaded, select the first one.
+        if (this.az_SediRepartoUserList.length > 0) {
+          this.selectedUserId = this.az_SediRepartoUserList[0].idAspNetUsers;
+          this.onUserChange(); // Update currentUserIndex and emit the newly selected userId
+        }
+        // If az_SediRepartoUserList is empty, selectedUserId remains null,
+        // and the state set by onUserChange in onRepartoChange (index -1, emitted undefined) is still correct.
       },
       error: err => {
         console.error("Error loading users for reparti:", err);
-        this.az_SediRepartoUserList = []; // Clear list on error
+        this.az_SediRepartoUserList = []; // Ensure list is empty on error
+        this.allUsersIdChange.emit(this.az_SediRepartoUserList.map(x => x.idAspNetUsers));
+        // selectedUserId is already null from onRepartoChange.
+        // onUserChange was already called in onRepartoChange to reset index and emit.
       }
     });
+  }
+
+  // User navigation methods
+  public navigateToPreviousUser(): void {
+    if (this.canNavigatePrevious) {
+      this.currentUserIndex--;
+      this.selectedUserId = this.az_SediRepartoUserList[this.currentUserIndex].idAspNetUsers;
+      this.onUserChange(); // Update select display and emit change
+    }
+  }
+
+  public navigateToNextUser(): void {
+    if (this.canNavigateNext) {
+      this.currentUserIndex++;
+      this.selectedUserId = this.az_SediRepartoUserList[this.currentUserIndex].idAspNetUsers;
+      this.onUserChange(); // Update select display and emit change
+    }
+  }
+
+  // Getters for button disabled states
+  public get canNavigatePrevious(): boolean {
+    return this.az_SediRepartoUserList.length > 0 && this.currentUserIndex > 0;
+  }
+
+  public get canNavigateNext(): boolean {
+    return this.az_SediRepartoUserList.length > 0 && this.currentUserIndex < this.az_SediRepartoUserList.length - 1;
   }
 }

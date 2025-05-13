@@ -6,7 +6,16 @@
 
 <ion-content [fullscreen]="true">
 
-  <app-sedi-reparto-user-navigation></app-sedi-reparto-user-navigation>
+  <app-sedi-reparto-user-navigation
+        [hideSediSelect]="true"
+        [hideRepartoSelect]="false"
+        [hideUserSelect]="false"
+        (sediIdChange)="onSedeChanged($event)"
+        (repartoIdChange)="onRepartiChanged($event)"
+        (allUsersIdChange)="onAllUsersInSelectionChanged($event)"
+        (currUserIdChange)="onCurrentUserChanged($event)" >
+
+  </app-sedi-reparto-user-navigation>
 
   <ion-grid *ngIf="dip_GG_RichiestaList!=null">
 

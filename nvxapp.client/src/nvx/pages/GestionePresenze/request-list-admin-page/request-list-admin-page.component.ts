@@ -14,6 +14,7 @@ import { StatoRichiestaLongTextPipe } from '../../../shared/pipe/GestionePresenz
 import { TipoRichiestaToLongTextPipe } from '../../../shared/pipe/GestionePresenze/tipo-richiesta-to-long-text.pipe';
 import { TipoRichiestaToShortTextPipe } from '../../../shared/pipe/GestionePresenze/tipo-richiesta-to-short-text.pipe';
 import { StatoRichiestaShortTextPipe } from '../../../shared/pipe/GestionePresenze/stato-richiesta-short-text.pipe';
+import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
 
 
 
@@ -31,11 +32,13 @@ export class RequestListAdminPageComponent implements OnInit {
   public dip_GG_RichiestaList: Dip_GG_RichiestaModel[] | null = null;
   public btnApprova: ButtonItem;
   public btnRifiuta: ButtonItem;
+  public currRappLavSel: number[] = [];
 
   //public tipoRichiestaToLongTextPipe: TipoRichiestaToLongTextPipe,
   
 
   constructor(private navCtrl: NavController,
+    private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
     private dipGGRichiestaService: DipGGRichiestaService,
     public fabMenuService: FabMenuService,
     
@@ -132,7 +135,7 @@ export class RequestListAdminPageComponent implements OnInit {
     //);
     //return sorted_GiustificativiList;
 
-    return this.dip_GG_RichiestaList.filter(x=>x.richiestaStato!= StatoRichiesta.Cancellata);
+    return this.dip_GG_RichiestaList.filter(x => x.richiestaStato != StatoRichiesta.Cancellata && this.currRappLavSel.includes(x.idDip_RapportoLavoro));
   }
 
   public getDataA(item: Dip_GG_RichiestaModel): string {
@@ -185,7 +188,39 @@ export class RequestListAdminPageComponent implements OnInit {
 
   }
 
-  
 
+  onSedeChanged(sediId: number | undefined): void {
+    //this.selectedSedeId = sediId;
+    //console.log('Parent: Sede ID changed to:', sediId);
+    //this.fetchRelevantData();
+  }
+  onRepartiChanged(repartoIds: number[] | undefined): void {
+    //this.selectedRepartoIds = repartoIds;
+    //console.log('Parent: Reparto IDs changed to:', repartoIds);
+    // Note: User list will be re-evaluated by the navigation component,
+    // leading to onCurrentUserChanged potentially being called.
+    // We might not need to call fetchRelevantData() here if onCurrentUserChanged also calls it.
+    // However, if we want to show data aggregated by reparti even if no user is selected,
+    // then we might fetch here. For this example, let's assume we act on user change.
+  }
+  onCurrentUserChanged(userId: string | undefined): void {
+    //this.currentNavigationUserId = userId;
+    //console.log('Parent: Current User ID changed to:', userId);
+    //this.fetchRelevantData();
+  }
+
+  onAllUsersInSelectionChanged(userIds: string[] | undefined): void {
+    console.log('Parent: All available User IDs in current selection:', userIds);
+
+    var idDipRappLav = this.sharedParameterGestionePresenzeService.Dip_Anagrafica
+      .filter(x => userIds.includes(x.idAspNetUsers))
+      .reduce((acc, dip) => acc.concat(dip.dip_RapportoLavoro.map(rapporto => rapporto.id)), []);
+    
+
+    this.currRappLavSel = idDipRappLav;                                                                              
+
+  }
+
+  
 }
 

@@ -11,3 +11,58 @@ ion-item {
 ion-col {
   padding: 5px;
 }
+
+/*.user-select-container {
+  display: flex;
+  align-items: flex-end; // Aligns select and button group along their bottom edge
+
+  .user-select-item {
+    flex-grow: 1; // Allows the ion-item (select) to take available space
+    // Fix for ion-item in flex container not taking full width by default sometimes
+    // or ensure its internal components align as expected.
+    // May not be needed depending on global styles.
+  }
+
+  .user-navigation-buttons {
+    display: flex;
+    align-items: center; // Vertically centers the buttons themselves
+    margin-left: 4px; // Small space between select and buttons
+    // Ionic buttons in a flex container usually align well.
+    // If ion-item has a default bottom padding/margin for the input,
+    // you might need to add a similar padding-bottom here if align-items: flex-end on parent
+    // doesn't perfectly align the visual baseline of the select input and the buttons.
+    // e.g. padding-bottom: var(--ion-padding, 8px) if using stacked label for select
+  }
+}*/
+
+// Ensure ion-item doesn't add extra padding that misaligns it in flex
+ion-item.user-select-item {
+  --inner-padding-end: 0; // Remove default inner padding if it causes issues with flex item
+  --padding-start: 0; // Adjust as needed
+}
+
+.user-select-container {
+  display: flex;
+  align-items: center; // Modificato da flex-end a center per allineare verticalmente l'item e il gruppo di bottoni
+
+  .user-select-item {
+    flex-grow: 1; // Permette all'ion-item (select) di occupare lo spazio disponibile
+  }
+
+  .user-navigation-buttons {
+    display: flex; // Mantiene i bottoni in linea
+    align-items: center; // Allinea verticalmente i bottoni tra loro (utile se avessero altezze diverse)
+    margin-left: 4px; // Piccolo spazio tra select e bottoni
+    // I bottoni Ionic di solito si allineano bene in un contenitore flex.
+    // Se l'ion-item ha un padding/margin di default che influisce sulla linea di base visuale,
+    // potrebbe essere necessario un aggiustamento, ma align-items: center è solitamente efficace.
+  }
+}
+
+// Assicura che ion-item non aggiunga padding extra che potrebbero disallinearlo in flex
+// Queste regole potrebbero già essere presenti o potrebbero necessitare di aggiustamenti
+// a seconda degli stili globali.
+ion-item.user-select-item {
+  --inner-padding-end: 0; // Rimuove il padding interno di default se causa problemi
+  --padding-start: 0; // Adegua se necessario
+}

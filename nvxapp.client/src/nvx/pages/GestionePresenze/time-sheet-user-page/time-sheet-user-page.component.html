@@ -12,8 +12,8 @@
     <div class="month-header">
 
       <!-- Pulsante Mese Precedente -->
-      <ion-button fill="clear" (click)="previousMonth()" class="nav-button prev">
-        <ion-icon slot="icon-only" name="chevron-back-outline"></ion-icon>
+      <ion-button  (click)="previousMonth()" shape="round" color="primary">
+        <ion-icon slot="icon-only" name="chevron-back-outline" ></ion-icon>
         <!-- Optional: Nome mese precedente -->
         <!-- {{ monthNames[(currentMonthIndex + 11) % 12].substring(0, 3) }} -->
       </ion-button>
@@ -22,10 +22,10 @@
       <h2>{{ currentMonthDisplay }}</h2>
 
       <!-- Pulsante Mese Successivo -->
-      <ion-button fill="clear" (click)="nextMonth()" class="nav-button next">
+      <ion-button  (click)="nextMonth()" shape="round" color="primary">
         <!-- Optional: Nome mese successivo -->
         <!-- {{ monthNames[(currentMonthIndex + 1) % 12].substring(0, 3) }} -->
-        <ion-icon slot="icon-only" name="chevron-forward-outline"></ion-icon>
+        <ion-icon slot="icon-only" name="chevron-forward-outline" ></ion-icon>
       </ion-button>
 
     </div>
