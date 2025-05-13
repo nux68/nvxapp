@@ -11,14 +11,16 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediSer
     {
     }
 
-    public class Az_SediInModel
+    public class Az_Sedi_GetAll_InModel
     {
 
     }
 
-    public class Az_SediOutModel : ModelResult 
+    public class Az_Sedi_GetAll_OutModel : ModelResult 
     {
-        public Az_SediOutModel() 
+        public List<Az_SediModel> Az_Sedi { get; set; } = new List<Az_SediModel>();
+
+        public Az_Sedi_GetAll_OutModel() 
         {
         
         }

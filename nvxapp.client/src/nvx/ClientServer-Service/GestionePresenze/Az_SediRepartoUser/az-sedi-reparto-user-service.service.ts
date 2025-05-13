@@ -5,7 +5,7 @@ import { environment } from '../../../../environments/environment';
 import { GenericRequest } from '../../ModelsBase/generic-request';
 import { GenericResult } from '../../ModelsBase/generic-result';
 import { map, Observable } from 'rxjs';
-import { Az_SediRepartoUser_GetAll_InModel, Az_SediRepartoUser_GetAll_OutModel } from './Models/az-reparto-user-model';
+import { Az_SediRepartoUser_GetAll_InModel, Az_SediRepartoUser_GetAll_OutModel, Az_SediRepartoUser_GetAll_Period_InModel } from './Models/az-reparto-user-model';
 
 @Injectable({
   providedIn: 'root'
@@ -25,6 +25,18 @@ export class AzSediRepartoUserServiceService {
         }
         )
       );
-
   }
+
+  GetAllPeriod(model: GenericRequest<Az_SediRepartoUser_GetAll_Period_InModel>): Observable<GenericResult<Az_SediRepartoUser_GetAll_OutModel>> {
+
+    return this.http.post<GenericResult<Az_SediRepartoUser_GetAll_OutModel>>(environment.remoteData.apiUri + 'Az_SediRepartoUser/GetAllPeriod', model)
+      .pipe(
+        map(r => {
+          return r;
+        }
+        )
+      );
+  }
+
+
 }

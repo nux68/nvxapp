@@ -35,7 +35,17 @@ namespace nvxapp.server.Controllers
             return res;
         }
 
-        
+        [Authorize]
+        [HttpPost]
+        [Route("GetAllPeriod")]
+        public async Task<GenericResult<Az_SediRepartoUser_GetAll_OutModel>> GetAllPeriod(GenericRequest<Az_SediRepartoUser_GetAll_Period_InModel> inModel)
+        {
+            var res = await _az_SediRepartoUserService.GetAllPeriod(inModel, false);
+
+            return res;
+        }
+
+
 
     }
 

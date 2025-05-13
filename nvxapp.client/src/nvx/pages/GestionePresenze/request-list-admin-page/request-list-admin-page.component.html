@@ -6,7 +6,7 @@
 
 <ion-content [fullscreen]="true">
 
-
+  <app-sedi-reparto-user-navigation></app-sedi-reparto-user-navigation>
 
   <ion-grid *ngIf="dip_GG_RichiestaList!=null">
 
@@ -18,11 +18,11 @@
           <ion-item>
             <ion-label>
               <strong>{{ item.idDip_RapportoLavoro | idDipRapportoLavoroToCognome }} {{ item.idDip_RapportoLavoro | idDipRapportoLavoroToNome }}</strong>
-              
+
               <ion-text style="white-space:nowrap;">
                 {{getItemText1(item)}}
               </ion-text>
-              
+
               <ion-note color="medium" style="white-space:nowrap;">
                 {{getItemText2(item)}}
               </ion-note>

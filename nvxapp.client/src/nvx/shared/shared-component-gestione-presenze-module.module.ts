@@ -12,6 +12,7 @@ import { IdDipRapportoLavoroToCognomePipe } from './pipe/GestionePresenze/id-dip
 import { IdDipRapportoLavoroToNomePipe } from './pipe/GestionePresenze/id-dip-rapporto-lavoro-to-nome.pipe';
 import { IdAspNetUsersToCognomePipe } from './pipe/GestionePresenze/id-asp-net-users-to-cognome.pipe';
 import { IdAspNetUsersToNomePipe } from './pipe/GestionePresenze/id-asp-net-users-to-nome.pipe';
+import { SediRepartoUserNavigationComponent } from './components/GestionePresenze/sedi-reparto-user-navigation/sedi-reparto-user-navigation.component';
 
 
 
@@ -22,11 +23,16 @@ import { IdAspNetUsersToNomePipe } from './pipe/GestionePresenze/id-asp-net-user
     TipoTimbraturaToLongTextPipe, TipoTimbraturaToShortTextPipe, ParGiustificativiToLongTextPipe, ParGiustificativiToShortTextPipe,
     TipoRichiestaToShortTextPipe, TipoRichiestaToLongTextPipe, StatoRichiestaLongTextPipe, StatoRichiestaShortTextPipe,
     IdDipRapportoLavoroToNomePipe, IdDipRapportoLavoroToCognomePipe,
-    IdAspNetUsersToCognomePipe, IdAspNetUsersToNomePipe
+    IdAspNetUsersToCognomePipe, IdAspNetUsersToNomePipe,
+
+    SediRepartoUserNavigationComponent
+
   ],
   exports: [TipoTimbraturaToLongTextPipe, TipoTimbraturaToShortTextPipe, ParGiustificativiToLongTextPipe, ParGiustificativiToShortTextPipe,
     TipoRichiestaToShortTextPipe, TipoRichiestaToLongTextPipe, StatoRichiestaLongTextPipe, StatoRichiestaShortTextPipe,
     IdDipRapportoLavoroToNomePipe, IdDipRapportoLavoroToCognomePipe,
-    IdAspNetUsersToCognomePipe, IdAspNetUsersToNomePipe]
+    IdAspNetUsersToCognomePipe, IdAspNetUsersToNomePipe,
+
+    SediRepartoUserNavigationComponent]
 })
 export class SharedComponentGestionePresenzeModuleModule { }

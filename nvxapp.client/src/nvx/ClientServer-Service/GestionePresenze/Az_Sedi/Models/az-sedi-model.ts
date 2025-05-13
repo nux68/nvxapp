@@ -2,18 +2,23 @@ import { ModelResult } from "../../../ModelsBase/model-result";
 
 
 
-export class Az_SediInModel {
+export class Az_SediModel {
+  public id!: number;
+  public idAz_Anagrafica!: string;
+  public descrizione: string;
+
+}
+
+export class Az_Sedi_GetAll_InModel {
   
 }
 
-export class Az_SediOutModel extends ModelResult {
 
-  public Az_SediModel: Az_SediModel;
+export class Az_Sedi_GetAll_OutModel extends ModelResult {
 
-}
-
-export class Az_SediModel  {
-  
+  public az_Sedi: Az_SediModel[];
 
 }
+
+
 

@@ -32,11 +32,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediSer
             _az_SediRepository = az_SediRepository;
         }
 
-        public virtual async Task<GenericResult<Az_SediOutModel>> GetAll(GenericRequest<Az_SediInModel> model, Boolean isSubProcess)
+        public virtual async Task<GenericResult<Az_Sedi_GetAll_OutModel>> GetAll(GenericRequest<Az_Sedi_GetAll_InModel> model, Boolean isSubProcess)
         {
             return await ExecuteAction(model, async () =>
             {
-                Az_SediOutModel retVal = new Az_SediOutModel();
+                Az_Sedi_GetAll_OutModel retVal = new Az_Sedi_GetAll_OutModel();
 
                 //eliminare
                 // Nessun 'await' qui
@@ -50,6 +50,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediSer
 
     public interface IAz_SediService : IServiceBase
     {
-        public Task<GenericResult<Az_SediOutModel>> GetAll( GenericRequest<Az_SediInModel> model, Boolean isSubProcess);
+        public Task<GenericResult<Az_Sedi_GetAll_OutModel>> GetAll( GenericRequest<Az_Sedi_GetAll_InModel> model, Boolean isSubProcess);
     }
 }

@@ -10,6 +10,7 @@
   <ItemGroup>
     <Folder Include="schema-generator\" />
     <Folder Include="src\nvx\pages\_BASE\" />
+    <Folder Include="src\nvx\shared\components\GestionePresenze\" />
     <Folder Include="src\nvx\shared\pipe\GestionePresenze\" />
     <Folder Include="src\nvx\Utility\GestionePresenze\" />
   </ItemGroup>

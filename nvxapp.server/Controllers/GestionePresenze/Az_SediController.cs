@@ -28,7 +28,7 @@ namespace nvxapp.server.Controllers
         [Authorize]
         [HttpPost]
         [Route("GetAll")]
-        public async Task<GenericResult<Az_SediOutModel>> GetAll(GenericRequest<Az_SediInModel> inModel)
+        public async Task<GenericResult<Az_Sedi_GetAll_OutModel>> GetAll(GenericRequest<Az_Sedi_GetAll_InModel> inModel)
         {
             var res = await _az_SediService.GetAll(inModel, false);
 
