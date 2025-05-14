@@ -5,18 +5,29 @@
 
 <ion-content [fullscreen]="true">
 
+  <app-sedi-reparto-user-navigation [showPeriodSelect]="true"
+                                    [showSediSelect]="false"
+                                    [showRepartoSelect]="true"
+                                    [showUserSelect]="true"
+                                    (periodChange)="onPeriodChange($event)"
+                                    (sediIdChange)="onSedeChanged($event)"
+                                    (repartoIdChange)="onRepartiChanged($event)"
+                                    (allUsersIdChange)="onAllUsersInSelectionChanged($event)"
+                                    (currUserIdChange)="onCurrentUserChanged($event)">
 
-  <div id="container">
-    <strong class="capitalize">{{ title }}</strong>
-    <p>{{title}}Component works...</p>
+  </app-sedi-reparto-user-navigation>
 
-    <!--{{ userNavigationService.userCronology | json}}-->
+    <div id="container">
+      <strong class="capitalize">{{ title }}</strong>
+      <p>{{title}}Component works...</p>
 
-  </div>
+      <!--{{ userNavigationService.userCronology | json}}-->
+
+    </div>
 
 
 
 
-  <!--<app-fab-menu></app-fab-menu>-->
+    <!--<app-fab-menu></app-fab-menu>-->
 
 </ion-content>
