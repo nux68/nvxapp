@@ -1,4 +1,3 @@
-// Add any custom styling here
 ion-select {
   width: 100%;
 }
@@ -12,28 +11,41 @@ ion-col {
   padding: 5px;
 }
 
-/*.user-select-container {
+/* sedi-reparto-user-navigation.component.scss */
+
+.user-select-container {
   display: flex;
-  align-items: flex-end; // Aligns select and button group along their bottom edge
+  align-items: flex-end; /* This is overridden by the later .user-select-container rule for align-items */
+  gap: 8px; /* Adds space between the select item and the button group */
 
   .user-select-item {
-    flex-grow: 1; // Allows the ion-item (select) to take available space
-    // Fix for ion-item in flex container not taking full width by default sometimes
-    // or ensure its internal components align as expected.
-    // May not be needed depending on global styles.
+    flex-grow: 1; /* Allows the select item to take up available space */
   }
 
   .user-navigation-buttons {
     display: flex;
-    align-items: center; // Vertically centers the buttons themselves
-    margin-left: 4px; // Small space between select and buttons
-    // Ionic buttons in a flex container usually align well.
-    // If ion-item has a default bottom padding/margin for the input,
-    // you might need to add a similar padding-bottom here if align-items: flex-end on parent
-    // doesn't perfectly align the visual baseline of the select input and the buttons.
-    // e.g. padding-bottom: var(--ion-padding, 8px) if using stacked label for select
+    gap: 8px; /* Space between the two navigation buttons */
   }
-}*/
+}
+
+.month-navigation-container {
+  display: flex;
+  align-items: center; /* MODIFIED: Aligns items vertically to the center */
+  gap: 8px; /* Adds space between the select item and buttons */
+  width: 100%;
+
+  .month-select-item {
+    flex-grow: 1; /* Allows the select item to take up available space */
+    // --inner-padding-end: 0; // Optional: if buttons are too close
+  }
+  // ion-button for month navigation already has shape="round"
+  // and color="primary". The gap property handles spacing.
+}
+
+// Ensure ion-items within flex containers behave well
+ion-item {
+  --inner-padding-end: 8px; // Default is often larger, adjust if needed
+}
 
 // Ensure ion-item doesn't add extra padding that misaligns it in flex
 ion-item.user-select-item {
@@ -57,12 +69,4 @@ ion-item.user-select-item {
     // Se l'ion-item ha un padding/margin di default che influisce sulla linea di base visuale,
     // potrebbe essere necessario un aggiustamento, ma align-items: center è solitamente efficace.
   }
-}
-
-// Assicura che ion-item non aggiunga padding extra che potrebbero disallinearlo in flex
-// Queste regole potrebbero già essere presenti o potrebbero necessitare di aggiustamenti
-// a seconda degli stili globali.
-ion-item.user-select-item {
-  --inner-padding-end: 0; // Rimuove il padding interno di default se causa problemi
-  --padding-start: 0; // Adegua se necessario
 }

@@ -189,6 +189,12 @@ export class RequestListAdminPageComponent implements OnInit {
   }
 
 
+  onPeriodChange(period: { year: number, month: number } | undefined): void {
+    //this.selectedSedeId = sediId;
+    console.log('Parent: Period changed to:', period.year + period.month);
+    //this.fetchRelevantData();
+  }
+
   onSedeChanged(sediId: number | undefined): void {
     //this.selectedSedeId = sediId;
     //console.log('Parent: Sede ID changed to:', sediId);

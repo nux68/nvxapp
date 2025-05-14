@@ -7,9 +7,11 @@
 <ion-content [fullscreen]="true">
 
   <app-sedi-reparto-user-navigation
-        [hideSediSelect]="true"
-        [hideRepartoSelect]="false"
-        [hideUserSelect]="false"
+        [showPeriodSelect]="true"
+        [showSediSelect]="true"
+        [showRepartoSelect]="true"
+        [showUserSelect]="true"
+        (periodChange)="onPeriodChange($event)"
         (sediIdChange)="onSedeChanged($event)"
         (repartoIdChange)="onRepartiChanged($event)"
         (allUsersIdChange)="onAllUsersInSelectionChanged($event)"
