@@ -9,7 +9,7 @@ import { ParGiustificativiService } from '../../../ClientServer-Service/Gestione
 import { DipGGRichiestaService } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/dip-gg-richiesta.service';
 import { Dip_GG_Richiesta_Body_Timbratura, Dip_GG_Richiesta_GetAll4Admin_InModel, Dip_GG_Richiesta_GetAll4User_InModel, Dip_GG_Richiesta_SetState_InModel, Dip_GG_RichiestaModel, StatoRichiesta, TipoRichiesta } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/Models/dip-gg-richiesta-model';
 import { MonthNavigatorService } from '../../../Utility/infrastructure/month-navigator.service';
-import { DipGGTimbraturaUtilityService } from '../../../Utility/GestionePresenze/dip-gg-timbratura-utility.service';
+import { TimeSheetUtilityService } from '../../../Utility/GestionePresenze/time-sheet-utility.service';
 import { StatoRichiestaLongTextPipe } from '../../../shared/pipe/GestionePresenze/stato-richiesta-long-text.pipe';
 import { TipoRichiestaToLongTextPipe } from '../../../shared/pipe/GestionePresenze/tipo-richiesta-to-long-text.pipe';
 import { TipoRichiestaToShortTextPipe } from '../../../shared/pipe/GestionePresenze/tipo-richiesta-to-short-text.pipe';
@@ -44,7 +44,7 @@ export class RequestListAdminPageComponent implements OnInit {
     
     private monthNavigatorService: MonthNavigatorService,
     private userInterfaceService: UserInterfaceService,
-    private dipGGTimbraturaUtilityService: DipGGTimbraturaUtilityService,
+    private dipGGTimbraturaUtilityService: TimeSheetUtilityService,
     private userNavigationService: UserNavigationService) {
 
     this.title = 'Request List Admin';

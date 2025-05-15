@@ -5,7 +5,7 @@ import { SharedParameterGestionePresenzeService } from '../../shared/shared-para
 @Injectable({
   providedIn: 'root'
 })
-export class DipGGTimbraturaUtilityService {
+export class TimeSheetUtilityService {
 
   constructor(private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService) { }
 

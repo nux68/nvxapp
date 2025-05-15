@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { DipGGTimbraturaUtilityService } from './dip-gg-timbratura-utility.service';
+import { TimeSheetUtilityService } from './time-sheet-utility.service';
 
 describe('DipGGTimbraturaUtilityService', () => {
-  let service: DipGGTimbraturaUtilityService;
+  let service: TimeSheetUtilityService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(DipGGTimbraturaUtilityService);
+    service = TestBed.inject(TimeSheetUtilityService);
   });
 
   it('should be created', () => {

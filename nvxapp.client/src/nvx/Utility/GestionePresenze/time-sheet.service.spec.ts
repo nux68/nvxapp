@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { MokeTimeSheetService } from './moke-time-sheet.service';
+import { TimeSheetService } from './time-sheet.service';
 
 describe('MokeTimeSheetService', () => {
-  let service: MokeTimeSheetService;
+  let service: TimeSheetService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(MokeTimeSheetService);
+    service = TestBed.inject(TimeSheetService);
   });
 
   it('should be created', () => {

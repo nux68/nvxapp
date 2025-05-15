@@ -3,11 +3,13 @@ import { UserNavigationService } from '../../../Utility/infrastructure/user-navi
 import { environment } from '../../../../environments/environment';
 import { MonthNavigatorService } from '../../../Utility/infrastructure/month-navigator.service';
 import { SignalrService } from '../../../Utility/infrastructure/signalr.service';
-import { MokeTimeSheetService, MonthData } from '../../../Utility/GestionePresenze/moke-time-sheet.service';
+import { TimeSheetService } from '../../../Utility/GestionePresenze/time-sheet.service';
+import { MonthData } from '../../../Utility/GestionePresenze/time-sheet-common-data';
 import { Dip_GG_TimbraturaModel, TipoTimbratura } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Timbratura/Models/dip-gg-timbratura-model';
 import { Dip_GG_GiustificativiModel, JustificationInputType } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Giustificativi/Models/dip-gg-giustificativi-model';
 import { StatoRichiesta } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/Models/dip-gg-richiesta-model';
 import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
+
 
 @Component({
   selector: 'app-time-sheet-user-page',
@@ -36,7 +38,7 @@ export class TimeSheetUserPageComponent implements OnInit {
   constructor(
     private signalrService: SignalrService,
     public monthNavigatorService: MonthNavigatorService,
-    private calendarDataService: MokeTimeSheetService,
+    private timeSheetService: TimeSheetService,
     private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService
   ) {
     this.title = 'TimeSheetUser';
@@ -63,7 +65,7 @@ export class TimeSheetUserPageComponent implements OnInit {
     console.log(`UserPageComponent: Loading data for: ${year}-${month + 1} via CalendarDataService`);
 
     // Chiama il metodo del servizio dati
-    this.calendarDataService.getMonthData(year, month).subscribe(monthData => {
+    this.timeSheetService.getMonthData(year, month).subscribe(monthData => {
       this.currentMonth = monthData; // monthData è già del tipo corretto MonthData
       // Usa monthNames dal servizio di navigazione come prima
       this.currentMonthDisplay = `${this.monthNavigatorService.monthNames[month]} - ${year}`;

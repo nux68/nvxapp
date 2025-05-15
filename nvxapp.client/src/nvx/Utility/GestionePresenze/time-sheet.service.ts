@@ -9,35 +9,16 @@ import { DipGGTimbraturaService } from '../../ClientServer-Service/GestionePrese
 import { GenericRequest } from '../../ClientServer-Service/ModelsBase/generic-request';
 import { forkJoin } from 'rxjs/internal/observable/forkJoin';
 import { DipGGRichiestaService } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/dip-gg-richiesta.service';
+import { MonthData, TimeSheetRemoteData } from './time-sheet-common-data';
 
 
-
-export interface DayRecord {
-  date: Date;
-  dip_GG_Timbratura: Dip_GG_TimbraturaModel[];
-  dip_GG_Giustificativi: Dip_GG_GiustificativiModel[];
-}
-
-
-export interface MonthData {
-  year: number;
-  month: number;  // 0-11 (gennaio = 0)
-  days: { [key: number]: DayRecord };  // Mappa giorno -> record
-}
-
-
-export interface TimeSheetRemoteData {
-  dip_GG_Timbratura: Dip_GG_TimbraturaModel[];
-  dip_GG_Giustificativi: Dip_GG_GiustificativiModel[];
-  dip_GG_Richiesta: Dip_GG_RichiestaModel[];
-}
 
 
 
 @Injectable({
   providedIn: 'root'
 })
-export class MokeTimeSheetService {
+export class TimeSheetService {
 
   constructor(private dipGGGiustificativiService: DipGGGiustificativiService,
               private dipGGTimbraturaService: DipGGTimbraturaService,
