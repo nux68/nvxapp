@@ -33,6 +33,8 @@ export class RequestListAdminPageComponent implements OnInit {
   public btnApprova: ButtonItem;
   public btnRifiuta: ButtonItem;
   public currRappLavSel: number[] = [];
+  public currYear: number
+  public currMonth: number
 
   //public tipoRichiestaToLongTextPipe: TipoRichiestaToLongTextPipe,
   
@@ -42,7 +44,7 @@ export class RequestListAdminPageComponent implements OnInit {
     private dipGGRichiestaService: DipGGRichiestaService,
     public fabMenuService: FabMenuService,
     
-    private monthNavigatorService: MonthNavigatorService,
+    //private monthNavigatorService: MonthNavigatorService,
     private userInterfaceService: UserInterfaceService,
     private dipGGTimbraturaUtilityService: TimeSheetUtilityService,
     private userNavigationService: UserNavigationService) {
@@ -103,8 +105,9 @@ export class RequestListAdminPageComponent implements OnInit {
 
   private loadData() {
     let request: GenericRequest<Dip_GG_Richiesta_GetAll4Admin_InModel> = new GenericRequest<Dip_GG_Richiesta_GetAll4Admin_InModel>(Dip_GG_Richiesta_GetAll4Admin_InModel);
-    request.data.month = this.monthNavigatorService.currentMonth + 1;
-    request.data.year = this.monthNavigatorService.currentYear;
+    request.data.month = this.currMonth;
+    request.data.year = this.currYear;
+
 
     this.dipGGRichiestaService.GetAll4Admin(request).subscribe(res => {
       this.dip_GG_RichiestaList = res.data.dip_GG_Richiesta;
@@ -192,6 +195,10 @@ export class RequestListAdminPageComponent implements OnInit {
   onPeriodChange(period: { year: number, month: number } | undefined): void {
     //this.selectedSedeId = sediId;
     console.log('Parent: Period changed to:', period.year + period.month);
+
+    this.currYear = period.year;
+    this.currMonth = period.month;
+
     //this.fetchRelevantData();
   }
 

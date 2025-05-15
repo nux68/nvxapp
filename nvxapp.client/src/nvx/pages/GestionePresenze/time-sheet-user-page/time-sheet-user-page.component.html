@@ -7,28 +7,29 @@
 
   <div class="calendar-container">
 
+    <app-sedi-reparto-user-navigation [showPeriodSelect]="true"
+                                      [showSediSelect]="false"
+                                      [showRepartoSelect]="false"
+                                      [showUserSelect]="false"
+                                      (periodChange)="onPeriodChange($event)"
+                                      (sediIdChange)="onSedeChanged($event)"
+                                      (repartoIdChange)="onRepartiChanged($event)"
+                                      (allUsersIdChange)="onAllUsersInSelectionChanged($event)"
+                                      (currUserIdChange)="onCurrentUserChanged($event)">
+    </app-sedi-reparto-user-navigation>
+
 
     <!-- Struttura Navigazione Mese -->
-    <div class="month-header">
-
-      <!-- Pulsante Mese Precedente -->
-      <ion-button  (click)="previousMonth()" shape="round" color="primary">
-        <ion-icon slot="icon-only" name="chevron-back-outline" ></ion-icon>
-        <!-- Optional: Nome mese precedente -->
-        <!-- {{ monthNames[(currentMonthIndex + 11) % 12].substring(0, 3) }} -->
+    <!--<div class="month-header">
+      <ion-button (click)="previousMonth()" shape="round" color="primary">
+        <ion-icon slot="icon-only" name="chevron-back-outline"></ion-icon>
       </ion-button>
-
-      <!-- Nome Mese e Anno -->
       <h2>{{ currentMonthDisplay }}</h2>
-
-      <!-- Pulsante Mese Successivo -->
-      <ion-button  (click)="nextMonth()" shape="round" color="primary">
-        <!-- Optional: Nome mese successivo -->
-        <!-- {{ monthNames[(currentMonthIndex + 1) % 12].substring(0, 3) }} -->
-        <ion-icon slot="icon-only" name="chevron-forward-outline" ></ion-icon>
+      <ion-button (click)="nextMonth()" shape="round" color="primary">
+        <ion-icon slot="icon-only" name="chevron-forward-outline"></ion-icon>
       </ion-button>
+    </div>-->
 
-    </div>
 
     <div class="calendar-grid">
       <!-- Intestazione giorni della settimana -->
@@ -50,16 +51,16 @@
             <!-- NUOVO: Contenitore per contenuto del giorno -->
             <div class="day-content">
 
-  
+
               <ng-container *ngIf="day.dip_GG_Giustificativi && day.dip_GG_Giustificativi.length > 0">
                 <div class="justifications">
-              
-                  
+
+
                   <div class="justification" *ngFor="let just of day.dip_GG_Giustificativi"
                        [style.background-color]="get_dip_GG_Giustificativi_backColor(just)"
                        [style.color]="get_dip_GG_Giustificativi_txtColor(just)">
 
-                    
+
                     <span>{{ just.idPar_Giustificativi | parGiustificativiToLongText}}</span>
 
                     <ion-icon *ngIf="just.idDip_GG_Richiesta"

@@ -27,6 +27,7 @@ export class RequestListUserPageComponent implements OnInit {
   public searchText!: string;
   public dip_GG_RichiestaList: Dip_GG_RichiestaModel[] | null = null;
   public btnDelete: ButtonItem;
+  
 
   constructor(private navCtrl: NavController,
     private dipGGRichiestaService: DipGGRichiestaService,

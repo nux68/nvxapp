@@ -67,9 +67,15 @@ export class SediRepartoUserNavigationComponent implements OnInit {
 
   ngOnInit() {
     this.initializePeriodSelection();
-    this.Load_Init().subscribe({
-      error: (err) => console.error("Error during SediRepartoUserNavigation initialization:", err)
-    });
+
+    if (this.showSediSelect || this.showRepartoSelect || this.showUserSelect) {
+      this.Load_Init().subscribe({
+        error: (err) => console.error("Error during SediRepartoUserNavigation initialization:", err)
+      });
+    }
+
+    
+
   }
 
   private initializePeriodSelection(): void {

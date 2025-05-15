@@ -33,7 +33,9 @@ export class TimeSheetUserPageComponent implements OnInit {
     dip_GG_Giustificativi: Dip_GG_GiustificativiModel[]
   }>>;
 
-  currentMonthDisplay: string;
+  //currentMonthDisplay: string;
+  public currYear: number
+  public currMonth: number
 
   constructor(
     private signalrService: SignalrService,
@@ -45,7 +47,7 @@ export class TimeSheetUserPageComponent implements OnInit {
     this.weeks = [];
     // Inizializza con una struttura valida ma vuota
     this.currentMonth = { year: 0, month: 0, days: {} };
-    this.currentMonthDisplay = '';
+    //this.currentMonthDisplay = '';
   }
 
   ionViewWillEnter() {
@@ -55,35 +57,31 @@ export class TimeSheetUserPageComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.loadMonth();
+    //this.loadMonth();
   }
 
-  loadMonth() {
-    const year = this.monthNavigatorService.currentYear;
-    const month = this.monthNavigatorService.currentMonth;
+
+  loadMonth(year: number, month:number) {
 
     console.log(`UserPageComponent: Loading data for: ${year}-${month + 1} via CalendarDataService`);
 
     // Chiama il metodo del servizio dati
     this.timeSheetService.getMonthData(year, month).subscribe(monthData => {
       this.currentMonth = monthData; // monthData è già del tipo corretto MonthData
-      // Usa monthNames dal servizio di navigazione come prima
-      this.currentMonthDisplay = `${this.monthNavigatorService.monthNames[month]} - ${year}`;
-      this.buildCalendarWeeks(); // Costruisce la UI dopo aver ricevuto i dati
+      this.buildCalendarWeeks();     // Costruisce la UI dopo aver ricevuto i dati
     });
   }
 
   buildCalendarWeeks() {
     this.weeks = [];
-    const year = this.monthNavigatorService.currentYear;
-    const month = this.monthNavigatorService.currentMonth;
+    
 
-    const firstDay = new Date(year, month, 1);
+    const firstDay = new Date(this.currYear, this.currMonth, 1);
     let dayOfWeek = firstDay.getDay() || 7;
     dayOfWeek = dayOfWeek - 1;
 
-    const lastDay = new Date(year, month + 1, 0).getDate();
-    const prevMonthLastDay = new Date(year, month, 0).getDate();
+    const lastDay = new Date(this.currYear, this.currMonth + 1, 0).getDate();
+    const prevMonthLastDay = new Date(this.currYear, this.currMonth, 0).getDate();
 
     let currentWeek: Array<{
       day: number,
@@ -139,15 +137,6 @@ export class TimeSheetUserPageComponent implements OnInit {
     }
   }
 
-  previousMonth() {
-    this.monthNavigatorService.previousMonth();
-    this.loadMonth(); // Ricarica i dati usando il servizio
-  }
-
-  nextMonth() {
-    this.monthNavigatorService.nextMonth();
-    this.loadMonth(); // Ricarica i dati usando il servizio
-  }
 
   // Restituisce timbrature filtrate per tipo (utile per UI specifiche?)
   getTimestampsByType(records: Dip_GG_TimbraturaModel[] | undefined, type: TipoTimbratura): Dip_GG_TimbraturaModel[] {
@@ -236,6 +225,27 @@ export class TimeSheetUserPageComponent implements OnInit {
       return just.textColor;
     else
       return null;
+  }
+
+
+  onPeriodChange(period: { year: number, month: number } | undefined): void {
+
+    this.currYear = period.year;
+    this.currMonth = period.month-1;
+
+    this.loadMonth(this.currYear, this.currMonth);
+
+    console.log('Parent: Period changed to:', period.year + period.month);
+    
+  }
+
+  onSedeChanged(sediId: number | undefined): void {
+  }
+  onRepartiChanged(repartoIds: number[] | undefined): void {
+  }
+  onCurrentUserChanged(userId: string | undefined): void {
+  }
+  onAllUsersInSelectionChanged(userIds: string[] | undefined): void {
   }
 
 }

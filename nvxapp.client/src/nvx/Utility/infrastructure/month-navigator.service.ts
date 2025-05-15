@@ -56,50 +56,50 @@ export class MonthNavigatorService {
   }
   // --- FINE NUOVO ---
 
-  nextMonth(): void {
-    if (this._currentMonth === 11) {
-      this._currentMonth = 0;
-      this._currentYear++;
-    } else {
-      this._currentMonth++;
-    }
-  }
+  //nextMonth(): void {
+  //  if (this._currentMonth === 11) {
+  //    this._currentMonth = 0;
+  //    this._currentYear++;
+  //  } else {
+  //    this._currentMonth++;
+  //  }
+  //}
 
-  previousMonth(): void {
-    if (this._currentMonth === 0) {
-      this._currentMonth = 11;
-      this._currentYear--;
-    } else {
-      this._currentMonth--;
-    }
-  }
+  //previousMonth(): void {
+  //  if (this._currentMonth === 0) {
+  //    this._currentMonth = 11;
+  //    this._currentYear--;
+  //  } else {
+  //    this._currentMonth--;
+  //  }
+  //}
 
-  setMonthAndYear(month: number, year: number): void {
-    if (month < 0 || month > 11) {
-      throw new Error('Il mese deve essere un valore tra 0 e 11');
-    }
-    this._currentMonth = month;
-    this._currentYear = year;
-  }
+  //setMonthAndYear(month: number, year: number): void {
+  //  if (month < 0 || month > 11) {
+  //    throw new Error('Il mese deve essere un valore tra 0 e 11');
+  //  }
+  //  this._currentMonth = month;
+  //  this._currentYear = year;
+  //}
 
-  resetToCurrentDate(): void {
-    const today = new Date();
-    this._currentMonth = today.getMonth();
-    this._currentYear = today.getFullYear();
-  }
+  //resetToCurrentDate(): void {
+  //  const today = new Date();
+  //  this._currentMonth = today.getMonth();
+  //  this._currentYear = today.getFullYear();
+  //}
 
-  getFirstDayOfMonth(): Date {
-    return new Date(this._currentYear, this._currentMonth, 1);
-  }
+  //getFirstDayOfMonth(): Date {
+  //  return new Date(this._currentYear, this._currentMonth, 1);
+  //}
 
-  getLastDayOfMonth(): Date {
-    return new Date(this._currentYear, this._currentMonth + 1, 0);
-  }
+  //getLastDayOfMonth(): Date {
+  //  return new Date(this._currentYear, this._currentMonth + 1, 0);
+  //}
 
-  isCurrentMonthToday(): boolean {
-    const today = new Date();
-    return this._currentMonth === today.getMonth() &&
-      this._currentYear === today.getFullYear();
-  }
+  //isCurrentMonthToday(): boolean {
+  //  const today = new Date();
+  //  return this._currentMonth === today.getMonth() &&
+  //    this._currentYear === today.getFullYear();
+  //}
 }
 // --- END OF FILE month-navigator.service.ts ---
