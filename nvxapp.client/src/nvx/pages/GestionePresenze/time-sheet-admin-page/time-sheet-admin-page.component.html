@@ -4,10 +4,7 @@
 </app-page-toolbar>
 
 <ion-content [fullscreen]="true">
-
-  <div class="calendar-container">
-
-
+  <div class="time-sheet-container">
     <app-sedi-reparto-user-navigation [showPeriodSelect]="true"
                                       [showSediSelect]="false"
                                       [showRepartoSelect]="true"
@@ -17,25 +14,57 @@
                                       (repartoIdChange)="onRepartiChanged($event)"
                                       (allUsersIdChange)="onAllUsersInSelectionChanged($event)"
                                       (currUserIdChange)="onCurrentUserChanged($event)">
-
     </app-sedi-reparto-user-navigation>
 
-    <!--<div id="container">-->
+    <div *ngIf="!currentDays || currentDays.length === 0" class="no-data-message">
+      <p>Seleziona un utente per visualizzare i dati</p>
+    </div>
 
+    <div class="day-list-container" *ngIf="currentDays && currentDays.length > 0">
+      <div class="day-list-header">
+        <div class="day-column">Giorno</div>
+        <div class="timestamps-column">Timbrature</div>
+        <div class="justifications-column">Giustificativi</div>
+      </div>
 
-      <strong class="capitalize">{{ title }}</strong>
-      <p>{{title}}Component works...</p>
+      <div class="day-row" *ngFor="let day of currentDays" [ngClass]="{'weekend': isWeekend(day.date)}">
+        <div class="day-column">
+          <div class="day-number">{{ day.date | date:'dd' }}</div>
+          <div class="day-name">{{ day.date | date:'EEEE' }}</div>
+          <div class="day-date">{{ day.date | date:'dd/MM/yyyy' }}</div>
+        </div>
 
+        <div class="timestamps-column">
+          <div class="no-data" *ngIf="!day.dip_GG_Timbratura || day.dip_GG_Timbratura.length === 0">
+            Nessuna timbratura
+          </div>
+          <div class="timestamp-item" *ngFor="let record of day.dip_GG_Timbratura"
+               [ngClass]="getTimestampClass(record)">
+            <span>{{ record.timbraturaTipo | tipoTimbraturaToShortText }} {{ record.timbratura | date:'HH:mm' }}</span>
+            <ion-icon *ngIf="record.idDip_GG_Richiesta"
+                      [name]="getStatusIcon(record.richiestaStato)"
+                      class="status-icon"
+                      [title]="getStatusText(record.richiestaStato)">
+            </ion-icon>
+          </div>
+        </div>
 
-
-
-      {{ currentMonth | json}}
-
-
-    <!--</div>-->
-
+        <div class="justifications-column">
+          <div class="no-data" *ngIf="!day.dip_GG_Giustificativi || day.dip_GG_Giustificativi.length === 0">
+            Nessun giustificativo
+          </div>
+          <div class="justification-item" *ngFor="let just of day.dip_GG_Giustificativi"
+               [style.background-color]="get_dip_GG_Giustificativi_backColor(just)"
+               [style.color]="get_dip_GG_Giustificativi_txtColor(just)">
+            <span>{{ just.idPar_Giustificativi | parGiustificativiToLongText}}</span>
+            <ion-icon *ngIf="just.idDip_GG_Richiesta"
+                      [name]="getStatusIcon(just.richiestaStato)"
+                      class="status-icon"
+                      [title]="getStatusText(just.richiestaStato)">
+            </ion-icon>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-
-    <!--<app-fab-menu></app-fab-menu>-->
-
 </ion-content>

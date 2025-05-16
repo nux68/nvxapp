@@ -2,36 +2,154 @@ ion-menu-button {
   color: var(--ion-color-primary);
 }
 
-#container {
-  text-align: center;
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-#container strong {
-  font-size: 20px;
-  line-height: 26px;
-}
-
-#container p {
-  font-size: 16px;
-  line-height: 22px;
-  color: #8c8c8c;
-  margin: 0;
-}
-
-#container a {
-  text-decoration: none;
-}
-
-.calendar-container {
+.time-sheet-container {
   width: 100%;
   min-height: 100%;
-  background-color: var(--ion-background-color, #ffffff); /* Light BG */
-  color: var(--ion-text-color, #000000); /* Dark Text */
+  background-color: var(--ion-background-color);
+  color: var(--ion-text-color);
   display: flex;
   flex-direction: column;
+  padding-bottom: 20px;
+}
+
+.no-data-message {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  font-size: 1.2rem;
+  color: var(--ion-color-medium);
+  text-align: center;
+}
+
+/* Day List Layout */
+.day-list-container {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  padding: 0 10px;
+}
+
+.day-list-header {
+  display: grid;
+  grid-template-columns: 140px 1fr 1fr;
+  background-color: var(--ion-color-light);
+  border-radius: 8px 8px 0 0;
+  font-weight: bold;
+  padding: 12px 10px;
+  margin-bottom: 4px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.day-row {
+  display: grid;
+  grid-template-columns: 140px 1fr 1fr;
+  border-bottom: 1px solid var(--ion-border-color);
+  padding: 12px 10px;
+  margin-bottom: 8px;
+  border-radius: 4px;
+  background-color: var(--ion-color-light-tint);
+
+  &.weekend {
+    background-color: rgba(var(--ion-color-light-rgb), 0.6);
+    border-left: 3px solid var(--ion-color-medium);
+  }
+}
+
+.day-column {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-right: 10px;
+
+  .day-number {
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+
+  .day-name {
+    text-transform: capitalize;
+    font-size: 0.9rem;
+    color: var(--ion-color-medium);
+  }
+
+  .day-date {
+    font-size: 0.8rem;
+    color: var(--ion-color-medium-shade);
+    margin-top: 2px;
+  }
+}
+
+.timestamps-column,
+.justifications-column {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 5px;
+}
+
+/* Timestamp Styling */
+.timestamp-item {
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  &.entry {
+    background-color: var(--ion-color-primary);
+    color: var(--ion-color-primary-contrast);
+  }
+
+  &.exit {
+    background-color: var(--ion-color-medium);
+    color: var(--ion-color-medium-contrast);
+  }
+}
+
+/* Justification Styling */
+.justification-item {
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  /* Colors will be set dynamically via [style] binding */
+}
+
+/* Status Icons */
+.status-icon {
+  font-size: 16px;
+  margin-left: 8px;
+}
+
+/* No Data Messages */
+.no-data {
+  font-style: italic;
+  color: var(--ion-color-medium);
+  font-size: 0.9rem;
+  padding: 10px;
+  text-align: center;
+}
+
+/* Dark Theme Overrides */
+@media (prefers-color-scheme: dark) {
+  .day-list-header {
+    background-color: var(--ion-color-step-100);
+  }
+
+  .day-row {
+    background-color: var(--ion-color-step-50);
+
+    &.weekend {
+      background-color: var(--ion-color-step-100);
+      border-left: 3px solid var(--ion-color-primary-shade);
+    }
+  }
+
+  .no-data {
+    color: var(--ion-color-step-500);
+  }
 }
