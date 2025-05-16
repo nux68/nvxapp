@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Entities.Tenant;
 using nvxapp.server.data.Entities.Tenant.GestionePresenze;
@@ -103,6 +104,14 @@ namespace nvxapp.server.data.Infrastructure
                .HasForeignKey(key_esterna => key_esterna.IdDip_RapportoLavoro)
                .OnDelete(DeleteBehavior.Cascade);
 
+            EntityTypeBuilder<Dip_GG_Richiesta> richiestaEntity = modelBuilder.Entity<Dip_GG_Richiesta>();
+
+            // Configurazione per le liste di oggetti JSON (Npgsql le mappa a jsonb)
+            richiestaEntity.Property(e => e.RichiestaApprovazioneData)
+                .HasColumnType("jsonb");
+
+            richiestaEntity.Property(e => e.RevocaApprovazioneData)
+                .HasColumnType("jsonb");
 
 
             /*Dip_GG_Giustificativi*/

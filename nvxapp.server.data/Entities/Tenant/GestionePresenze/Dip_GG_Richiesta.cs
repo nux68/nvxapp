@@ -15,17 +15,29 @@ namespace nvxapp.server.data.Entities.Tenant
         public DateTime DataA { get; set; }
 
         public TipoRichiesta RichiestaTipo { get; set; }
+        // Campo per oggetto JSON
+        public required string Dati { get; set; } = string.Empty;   // contiene oggetti di tipo  Dip_GG_Richiesta_Body_Timbratura,Dip_GG_Richiesta_Body_Giustificativo, Dip_GG_Richiesta_Body_NotaSpesa
+
+
         public StatoRichiesta RichiestaStato { get; set; }
+        public List<Dip_GG_Richiesta_Stato_Cronology> RichiestaApprovazioneData { get; set; } = new List<Dip_GG_Richiesta_Stato_Cronology>();
 
-        // Campo per oggetto JSON
-        public required string Dati { get; set; } = string.Empty;
 
-        // Campo per oggetto JSON
-        public string? CronologiaApprovazione { get; set; }
+        // servono per gestire l'annullamento di una richiesta approvata
+        public StatoRichiesta? RevocaStato { get; set; }
+        public List<Dip_GG_Richiesta_Stato_Cronology> RevocaApprovazioneData { get; set; } = new List<Dip_GG_Richiesta_Stato_Cronology>();
+        
 
         public ICollection<Dip_GG_Giustificativi>? Dip_GG_Giustificativi { get; set; }
         public ICollection<Dip_GG_Timbratura>? Dip_GG_Timbratura { get; set; }
         public ICollection<Dip_GG_NotaSpesa>? Dip_GG_NotaSpesa { get; set; }
+    }
+
+    public class Dip_GG_Richiesta_Stato_Cronology
+    {
+        public string IdAspNetUsers { get; set; } = string.Empty;
+        public StatoRichiesta RichiestaStato { get; set; }
+        public DateTime Data { get; set; }
     }
 
 

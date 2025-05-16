@@ -10,15 +10,24 @@ export class Dip_GG_RichiestaModel {
   dataA!: string;
 
   richiestaTipo!: TipoRichiesta;
+  
+  // Campo per oggetto JSON
+  dati?: string;  // contiene oggetti di tipo  Dip_GG_Richiesta_Body_Timbratura,Dip_GG_Richiesta_Body_Giustificativo, Dip_GG_Richiesta_Body_NotaSpesa
+
   richiestaStato!: StatoRichiesta;
+  richiestaApprovazioneData: Dip_GG_Richiesta_Stato_Cronology[];
 
-  // Campo per oggetto JSON
-  dati?: string;
-
-  // Campo per oggetto JSON
-  cronologiaApprovazione?: string;
+  revocaStato?: StatoRichiesta;
+  revocaApprovazioneData: Dip_GG_Richiesta_Stato_Cronology[];
 
 }
+
+export class Dip_GG_Richiesta_Stato_Cronology {
+  idAspNetUsers!: string;
+  richiestaStato!: StatoRichiesta;
+  data!: Date;
+}
+
 
 export class Dip_GG_Richiesta_Body_Timbratura {
   hhmm!: string;
