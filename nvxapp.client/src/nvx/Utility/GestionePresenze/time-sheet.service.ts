@@ -26,8 +26,8 @@ export class TimeSheetService {
   }
 
 
-  getMonthData(year: number, month: number): Observable<MonthData> {
-    return this.getMonthDataFromServer(year, month).pipe(
+  getMonthData(year: number, month: number, idAspNetUsers: string|null): Observable<MonthData> {
+    return this.getMonthDataFromServer(year, month, idAspNetUsers).pipe(
       map(remoteData => this.transformRemoteDataToMonthData(remoteData, year, month)),
       catchError(error => {
         console.warn(`Error fetching data from server: ${error}. Falling back to mock data.`);
@@ -40,19 +40,23 @@ export class TimeSheetService {
     );
   }
 
-  getMonthDataFromServer(year: number, month: number): Observable<TimeSheetRemoteData> {
+  getMonthDataFromServer(year: number, month: number, idAspNetUsers: string | null): Observable<TimeSheetRemoteData> {
     
     let request_Just = new GenericRequest<Dip_GG_Giustificativi_GetAll_InModel>(Dip_GG_Giustificativi_GetAll_InModel);
     request_Just.data.year = year;
-    request_Just.data.month = month+1;
+    request_Just.data.month = month + 1;
+    request_Just.data.idAspNetUsers = idAspNetUsers;
 
     let request_clock = new GenericRequest<Dip_GG_Timbratura_GetAll_InModel>(Dip_GG_Timbratura_GetAll_InModel);
     request_clock.data.year = year;
     request_clock.data.month = month + 1;
+    request_clock.data.idAspNetUsers = idAspNetUsers;
 
     let request_rich = new GenericRequest<Dip_GG_Richiesta_GetAll4User_InModel>(Dip_GG_Richiesta_GetAll4User_InModel);
     request_rich.data.year = year;
     request_rich.data.month = month + 1;
+    request_rich.data.idAspNetUsers = idAspNetUsers;
+    
 
     // 2. Define the Observables for the API calls (DO NOT subscribe yet)
     const justificationsObservable$ = this.dipGGGiustificativiService.GetAll(request_Just);

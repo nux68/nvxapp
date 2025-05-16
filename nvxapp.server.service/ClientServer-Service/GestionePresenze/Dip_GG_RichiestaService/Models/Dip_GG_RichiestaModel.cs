@@ -54,6 +54,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
 
     public class Dip_GG_Richiesta_GetAll4User_InModel
     {
+        public string? IdAspNetUsers { get; set; }
         public int Year { get; set; } = 0;
         public int Month { get; set; } = 0;
     }

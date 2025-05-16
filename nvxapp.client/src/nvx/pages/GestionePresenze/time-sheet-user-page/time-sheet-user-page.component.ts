@@ -66,7 +66,7 @@ export class TimeSheetUserPageComponent implements OnInit {
     console.log(`UserPageComponent: Loading data for: ${this.currYear}-${this.currMonth + 1} via CalendarDataService`);
 
     // Chiama il metodo del servizio dati
-    this.timeSheetService.getMonthData(this.currYear, this.currMonth).subscribe(monthData => {
+    this.timeSheetService.getMonthData(this.currYear, this.currMonth,null).subscribe(monthData => {
       this.currentMonth = monthData; // monthData è già del tipo corretto MonthData
       this.buildCalendarWeeks();     // Costruisce la UI dopo aver ricevuto i dati
     });

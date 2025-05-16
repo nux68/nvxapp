@@ -28,6 +28,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Giu
 
     public class Dip_GG_Giustificativi_GetAll_InModel
     {
+        public string? IdAspNetUsers { get; set; } 
         public int Year { get; set; } = 0;
         public int Month { get; set; } = 0;
     }

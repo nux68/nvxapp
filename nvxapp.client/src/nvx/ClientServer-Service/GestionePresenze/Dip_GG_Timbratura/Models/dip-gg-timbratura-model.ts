@@ -38,6 +38,7 @@ export enum TipoTimbratura {
 
 
 export class Dip_GG_Timbratura_GetAll_InModel {
+  public idAspNetUsers?: string
   public year: number;
   public month: number;
 }

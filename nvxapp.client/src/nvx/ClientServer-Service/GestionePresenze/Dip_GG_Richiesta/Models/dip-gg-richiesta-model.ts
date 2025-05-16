@@ -28,7 +28,6 @@ export class Dip_GG_Richiesta_Stato_Cronology {
   data!: Date;
 }
 
-
 export class Dip_GG_Richiesta_Body_Timbratura {
   hhmm!: string;
 }
@@ -64,6 +63,7 @@ export enum StatoRichiesta {
 
 
 export class Dip_GG_Richiesta_GetAll4User_InModel {
+  public idAspNetUsers?: string
   public year: number;
   public month: number;
 

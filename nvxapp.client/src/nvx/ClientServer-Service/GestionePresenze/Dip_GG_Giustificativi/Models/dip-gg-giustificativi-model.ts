@@ -4,6 +4,7 @@ import { StatoRichiesta } from "../../Dip_GG_Richiesta/Models/dip-gg-richiesta-m
 
 
 export class Dip_GG_Giustificativi_GetAll_InModel {  
+  public idAspNetUsers?:string
   public year: number;
   public month: number;
 }
