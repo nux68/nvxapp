@@ -1,15 +1,18 @@
 import { Injectable } from '@angular/core';
-import { UserDataModel } from '../../ClientServer-Service/Infrastructure/Account/Models/user-load-model';
+import { UserDataModel, UserLoadInModel } from '../../ClientServer-Service/Infrastructure/Account/Models/user-load-model';
 import { AuthService } from './auth.service';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { NavController } from '@ionic/angular';
+import { AccountService } from '../../ClientServer-Service/Infrastructure/Account/account.service';
+import { GenericRequest } from '../../ClientServer-Service/ModelsBase/generic-request';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserNavigationService {
 
-  constructor(private authService: AuthService,
+  constructor(private accountService: AccountService,
+              private authService: AuthService,
               private navCtrl: NavController) { }
 
   private _userCronology: UserCronologyModel[] | null = [];
@@ -52,10 +55,17 @@ export class UserNavigationService {
     if (this._userCronology.length > 1) {
       this._userCronology.pop();
 
-      this.authService.setRole(this._userCronology[this._userCronology.length - 1].userData.roles);
+      let request: GenericRequest<UserLoadInModel> = new GenericRequest<UserLoadInModel>(UserLoadInModel);
+      request.data.id = this._userCronology[this._userCronology.length - 1].userData.id;
+      this.accountService.UserLoad(request).subscribe(usl => {
+        if (usl.success) {
+          this.authService.setRole(this._userCronology[this._userCronology.length - 1].userData.roles);
 
-      if(this._userCronology[this._userCronology.length - 1].userDataAdditional.gotoBackPage != null)
-        this.navCtrl.navigateForward(this._userCronology[this._userCronology.length - 1].userDataAdditional.gotoBackPage);
+          if (this._userCronology[this._userCronology.length - 1].userDataAdditional.gotoBackPage != null)
+            this.navCtrl.navigateForward(this._userCronology[this._userCronology.length - 1].userDataAdditional.gotoBackPage);
+        }
+      });
+      
     }
 
   }
@@ -78,10 +88,21 @@ export class UserNavigationService {
 
         this._userCronology.splice(idx+1);
 
-        this.authService.setRole(this._userCronology[idx].userData.roles);
-       
-        if (this._userCronology[this._userCronology.length - 1].userDataAdditional.gotoBackPage != null)
-          this.navCtrl.navigateForward(gotoBackPage);
+        
+
+
+        let request: GenericRequest<UserLoadInModel> = new GenericRequest<UserLoadInModel>(UserLoadInModel);
+        request.data.id = this._userCronology[this._userCronology.length - 1].userData.id;
+        this.accountService.UserLoad(request).subscribe(usl => {
+          if (usl.success) {
+            this.authService.setRole(this._userCronology[idx].userData.roles);
+
+            if (this._userCronology[this._userCronology.length - 1].userDataAdditional.gotoBackPage != null)
+              this.navCtrl.navigateForward(gotoBackPage);
+            
+          }
+        });
+
         
       }
 
