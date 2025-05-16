@@ -1,5 +1,8 @@
 import { ModelResult } from "../../../ModelsBase/model-result";
 
+/************************************************************/
+/******************** MODEL DATA ****************************/
+/************************************************************/
 
 export class Dip_GG_RichiestaModel {
 
@@ -21,13 +24,11 @@ export class Dip_GG_RichiestaModel {
   revocaApprovazioneData: Dip_GG_Richiesta_Stato_Cronology[];
 
 }
-
 export class Dip_GG_Richiesta_Stato_Cronology {
   idAspNetUsers!: string;
   richiestaStato!: StatoRichiesta;
   data!: Date;
 }
-
 export class Dip_GG_Richiesta_Body_Timbratura {
   hhmm!: string;
 }
@@ -46,7 +47,6 @@ export enum TipoRichiesta {
   NotaSpesa,
   ApprovazioneStraordinario
 }
-
 export enum StatoRichiesta {
   Diretta,
 
@@ -60,7 +60,9 @@ export enum StatoRichiesta {
 }
 
 
-
+/************************************************************/
+/******************** DATI INPUT X API **********************/
+/************************************************************/
 
 export class Dip_GG_Richiesta_GetAll4User_InModel {
   public idAspNetUsers?: string
@@ -89,14 +91,12 @@ export class Dip_GG_Richiesta_GetAll4Admin_OutModel extends ModelResult {
 }
 
 
-
 export class Dip_GG_Richiesta_Send_InModel {
   public dip_GG_Richiesta: Dip_GG_RichiestaModel;
   constructor() {
     this.dip_GG_Richiesta = new Dip_GG_RichiestaModel(); 
   }
 }
-
 export class Dip_GG_Richiesta_Send_OutModel extends ModelResult {
 
   
@@ -105,7 +105,6 @@ export class Dip_GG_Richiesta_Send_OutModel extends ModelResult {
   }
 
 }
-
 
 
 export class Dip_GG_Richiesta_SetState_InModel {
@@ -117,7 +116,6 @@ export class Dip_GG_Richiesta_SetState_InModel {
     
   }
 }
-
 export class Dip_GG_Richiesta_SetState_OutModel extends ModelResult {
 
   //public dip_GG_Richiesta: Dip_GG_RichiestaModel;

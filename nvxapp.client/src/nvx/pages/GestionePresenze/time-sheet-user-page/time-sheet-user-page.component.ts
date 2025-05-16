@@ -33,21 +33,21 @@ export class TimeSheetUserPageComponent implements OnInit {
     dip_GG_Giustificativi: Dip_GG_GiustificativiModel[]
   }>>;
 
-  //currentMonthDisplay: string;
+  
   public currYear: number
   public currMonth: number
 
   constructor(
-    private signalrService: SignalrService,
-    public monthNavigatorService: MonthNavigatorService,
-    private timeSheetService: TimeSheetService,
-    private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService
+              private signalrService: SignalrService,
+              public monthNavigatorService: MonthNavigatorService,
+              private timeSheetService: TimeSheetService,
+              private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService
   ) {
     this.title = 'TimeSheetUser';
     this.weeks = [];
     // Inizializza con una struttura valida ma vuota
     this.currentMonth = { year: 0, month: 0, days: {} };
-    //this.currentMonthDisplay = '';
+    
   }
 
   ionViewWillEnter() {
@@ -56,12 +56,9 @@ export class TimeSheetUserPageComponent implements OnInit {
     }
   }
 
-  ngOnInit() {
-    //this.loadMonth();
-  }
+  ngOnInit() {}
 
-
-  loadMonth(/*year: number, month:number*/) {
+  loadMonth() {
 
     console.log(`UserPageComponent: Loading data for: ${this.currYear}-${this.currMonth + 1} via CalendarDataService`);
 
@@ -137,7 +134,6 @@ export class TimeSheetUserPageComponent implements OnInit {
     }
   }
 
-
   // Restituisce timbrature filtrate per tipo (utile per UI specifiche?)
   getTimestampsByType(records: Dip_GG_TimbraturaModel[] | undefined, type: TipoTimbratura): Dip_GG_TimbraturaModel[] {
     return records?.filter(r => r.timbraturaTipo === type) || [];
@@ -147,7 +143,6 @@ export class TimeSheetUserPageComponent implements OnInit {
     return justifications?.some(j => j.inputType == JustificationInputType.AllDay,) || false;
   }
   
-
   getDayClass(day: any, index: number): { [key: string]: boolean } {
     return {
       'non-current-month': !day.isCurrentMonth,
@@ -227,28 +222,19 @@ export class TimeSheetUserPageComponent implements OnInit {
       return null;
   }
 
-
   onPeriodChange(period: { year: number, month: number } | undefined): void {
 
     this.currYear = period.year;
     this.currMonth = period.month-1;
 
-    this.loadMonth(/*this.currYear, this.currMonth*/);
-
-    console.log('Parent: Period changed to:', period.year + period.month);
-    
+    this.loadMonth();
   }
 
-  onSedeChanged(sediId: number | undefined): void {
-  }
-  onRepartiChanged(repartoIds: number[] | undefined): void {
-  }
-  onCurrentUserChanged(userId: string | undefined): void {
 
-    var vv = userId;
 
-  }
-  onAllUsersInSelectionChanged(userIds: string[] | undefined): void {
-  }
+  onSedeChanged(sediId: number | undefined): void {}
+  onRepartiChanged(repartoIds: number[] | undefined): void {}
+  onCurrentUserChanged(userId: string | undefined): void {}
+  onAllUsersInSelectionChanged(userIds: string[] | undefined): void {}
 
 }

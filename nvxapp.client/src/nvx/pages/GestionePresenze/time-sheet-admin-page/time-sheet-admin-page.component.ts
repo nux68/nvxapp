@@ -25,13 +25,11 @@ export class TimeSheetAdminPageComponent implements OnInit {
     this.title = 'TimeSheetAdmin';
   }
 
-  ionViewWillEnter() {
-  }
-
+  ionViewWillEnter() {}
 
   ngOnInit() { }
 
-  loadMonth(/*year: number, month: number*/) {
+  loadMonth() {
 
     if (this.currUserId) {
 
@@ -45,13 +43,12 @@ export class TimeSheetAdminPageComponent implements OnInit {
 
   }
 
-
   onPeriodChange(period: { year: number, month: number } | undefined): void {
 
     this.currYear = period.year;
     this.currMonth = period.month-1;
 
-    this.loadMonth(/*this.currYear, this.currMonth*/);
+    this.loadMonth();
 
     console.log('Parent: Period changed to:', period.year + period.month);
   }
@@ -60,7 +57,7 @@ export class TimeSheetAdminPageComponent implements OnInit {
 
     this.currUserId = userId;
 
-    this.loadMonth(/*this.currYear, this.currMonth*/);
+    this.loadMonth();
 
   }
 
