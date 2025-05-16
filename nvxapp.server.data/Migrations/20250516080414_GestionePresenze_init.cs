@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
+using nvxapp.server.data.Entities.Tenant;
 
 #nullable disable
 
@@ -299,7 +301,8 @@ namespace nvxapp.server.data.Migrations
                         column: x => x.IdAz_SediReparto,
                         principalSchema: "public",
                         principalTable: "Az_SediReparto",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Az_SediReparto_Az_Sedi_IdAz_Sedi",
                         column: x => x.IdAz_Sedi,
@@ -403,9 +406,11 @@ namespace nvxapp.server.data.Migrations
                     Data = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     DataA = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     RichiestaTipo = table.Column<int>(type: "integer", nullable: false),
-                    RichiestaStato = table.Column<int>(type: "integer", nullable: false),
                     Dati = table.Column<string>(type: "text", nullable: false),
-                    CronologiaApprovazione = table.Column<string>(type: "text", nullable: true),
+                    RichiestaStato = table.Column<int>(type: "integer", nullable: false),
+                    RichiestaApprovazioneData = table.Column<List<Dip_GG_Richiesta_Stato_Cronology>>(type: "jsonb", nullable: false),
+                    RevocaStato = table.Column<int>(type: "integer", nullable: true),
+                    RevocaApprovazioneData = table.Column<List<Dip_GG_Richiesta_Stato_Cronology>>(type: "jsonb", nullable: false),
                     ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
@@ -453,7 +458,8 @@ namespace nvxapp.server.data.Migrations
                         column: x => x.IdPar_ProfiloOrario,
                         principalSchema: "public",
                         principalTable: "Par_ProfiloOrario",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -572,7 +578,8 @@ namespace nvxapp.server.data.Migrations
                         column: x => x.IdDip_GG_Richiesta,
                         principalSchema: "public",
                         principalTable: "Dip_GG_Richieste",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Dip_GG_Giustificativi_Dip_RapportoLavoro_IdDip_RapportoLavo~",
                         column: x => x.IdDip_RapportoLavoro,
@@ -612,7 +619,8 @@ namespace nvxapp.server.data.Migrations
                         column: x => x.IdDip_GG_Richiesta,
                         principalSchema: "public",
                         principalTable: "Dip_GG_Richieste",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Dip_GG_NotaSpese_Dip_RapportoLavoro_IdDip_RapportoLavoro",
                         column: x => x.IdDip_RapportoLavoro,
@@ -649,7 +657,8 @@ namespace nvxapp.server.data.Migrations
                         column: x => x.IdDip_GG_Richiesta,
                         principalSchema: "public",
                         principalTable: "Dip_GG_Richieste",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Dip_GG_Timbrature_Dip_RapportoLavoro_IdDip_RapportoLavoro",
                         column: x => x.IdDip_RapportoLavoro,

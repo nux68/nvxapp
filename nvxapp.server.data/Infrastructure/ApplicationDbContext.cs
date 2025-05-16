@@ -73,7 +73,7 @@ namespace nvxapp.server.data.Infrastructure
             modelBuilder.HasDefaultSchema(_baseSchema);
 
             Define_Table_DbContext_Infrastructure(modelBuilder);
-
+            Define_Table_DbContext_GestionePresenze(modelBuilder);
 
 
         }
