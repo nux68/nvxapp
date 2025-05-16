@@ -28,6 +28,7 @@ ion-menu-button {
   display: flex;
   flex-direction: column;
   padding: 0 10px;
+  width: 50%;
 }
 
 .day-list-header {
@@ -80,7 +81,14 @@ ion-menu-button {
   }
 }
 
-.timestamps-column,
+.timestamps-column { // MODIFIED SECTION
+  display: grid; // Changed from flex to grid
+  grid-template-columns: repeat(2, 1fr); // Create 2 equal columns
+  gap: 8px; // This will now be the gap between rows and columns of the grid items
+  padding: 5px;
+  // flex-direction: column; // No longer needed with grid
+}
+
 .justifications-column {
   display: flex;
   flex-direction: column;
@@ -90,12 +98,13 @@ ion-menu-button {
 
 /* Timestamp Styling */
 .timestamp-item {
-  padding: 8px 10px;
+  padding: 4px 10px;
   border-radius: 6px;
   font-size: 0.9rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  // width: 100%; /* Ensure items take full width of their grid cell */
 
   &.entry {
     background-color: var(--ion-color-primary);
@@ -110,7 +119,7 @@ ion-menu-button {
 
 /* Justification Styling */
 .justification-item {
-  padding: 8px 10px;
+  padding: 4px 10px;
   border-radius: 6px;
   font-size: 0.9rem;
   display: flex;
@@ -132,6 +141,7 @@ ion-menu-button {
   font-size: 0.9rem;
   padding: 10px;
   text-align: center;
+  grid-column: span 2; /* If no-data message appears within timestamps-column, make it span both columns */
 }
 
 /* Dark Theme Overrides */
