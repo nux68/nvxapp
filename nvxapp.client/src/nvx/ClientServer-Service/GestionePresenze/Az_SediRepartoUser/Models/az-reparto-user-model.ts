@@ -7,8 +7,11 @@ export class Az_SediRepartoUserModel {
   public idAspNetUsers: string;
   public idAz_Reparto!: number;
 
-  public enabledToApproval: number;
+  public enabledToAdmin: boolean;
+  public enabledToApproval: boolean;
   public approvalZOrder!: number;
+
+  public userInDepartment: boolean;
 
   public dataDal?: Date;
   public dataAl?: Date;

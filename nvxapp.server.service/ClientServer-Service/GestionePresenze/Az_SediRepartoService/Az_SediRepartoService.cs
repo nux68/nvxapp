@@ -102,7 +102,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
                                 if (roles != null)
                                 {
                                     //user
-                                    if (userRole != null && userRole.Name != null)
+                                    if (userRole != null && userRole.Name != null && item.UserInDepartment)
                                     {
                                         if (roles.Contains(userRole.Name))
                                         {
@@ -114,7 +114,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
                                         }
                                     }
                                     //admin
-                                    if (companyAdminRole != null && companyAdminRole.Name != null && companyPowerAdminRole != null && companyPowerAdminRole.Name != null)
+                                    if (companyAdminRole != null && companyAdminRole.Name != null && companyPowerAdminRole != null && companyPowerAdminRole.Name != null && item.EnabledToAdmin)
                                     {
                                         if (roles.Contains(companyAdminRole.Name) || roles.Contains(companyPowerAdminRole.Name))
                                         {
@@ -123,7 +123,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
                                                 Id = item.IdAspNetUsers,
                                                 Checked = true,
                                                 ApprovalZOrder = item.ApprovalZOrder,
-                                                EnabledToApproval= item.EnabledToApproval
+                                                EnabledToApproval = item.EnabledToApproval
                                             });
                                         }
                                     }
@@ -189,35 +189,47 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
                         foreach (var item in res1.Data.Az_RepartoUser)
                         {
                             // ciclo i valori originali, se non presente nei valori ritornati (o Checked=falso) dal client
-                            // allora è stato eliminato e procedo alla cancellazione
+                            // allora è stato eliminato e procedo alla cancellazione (logica)
+                            
+                            var recDB = _az_RepartoUserRepository.FindAll(x => x.IdAz_SediReparto == model.Data.Az_SediReparto.Id &&
+                                                                               x.IdAspNetUsers == item.IdAspNetUsers).FirstOrDefault();
 
-                            var selUser = model.Data.SelectedUser.Where(x => x.Id == item.IdAspNetUsers && x.Checked).FirstOrDefault();
-                            var selAdmi = model.Data.SelectedAdmin.Where(x => x.Id == item.IdAspNetUsers && x.Checked).FirstOrDefault();
-
-                            if (selUser == null && selAdmi == null)
+                            if (recDB != null)
                             {
-                                var recDB = await _az_RepartoUserRepository.FindByIdAsync(item.Id);
-                                if (recDB != null)
-                                    await _az_RepartoUserRepository.DeleteAsync(recDB);
+                                Boolean updateRec = false;
+
+                                var selAdmi = model.Data.SelectedAdmin.Where(x => x.Id == item.IdAspNetUsers && x.Checked).FirstOrDefault();
+                                if (selAdmi == null && recDB.EnabledToAdmin)
+                                {
+                                    recDB.EnabledToAdmin = false;
+                                    recDB.EnabledToApproval = false;
+                                    recDB.ApprovalZOrder = 0;
+                                    updateRec = true;
+                                }
+
+                                var selUser = model.Data.SelectedUser.Where(x => x.Id == item.IdAspNetUsers && x.Checked).FirstOrDefault();
+                                if (selUser == null && recDB.UserInDepartment)
+                                {
+                                    recDB.UserInDepartment = false;
+                                    updateRec = true;
+                                }
+                                
+                                if(updateRec)
+                                    await _az_RepartoUserRepository.UpsertAsync(recDB);
+                                
                             }
-                        }
-                        //aggiornamento
-                        var AllUser = model.Data.SelectedUser.Where(x => x.Checked == true).ToList();
-                        foreach (var item in model.Data.SelectedAdmin.Where(x => x.Checked == true))
-                        {
-                            // aggiungo gli admin sommando eventualmente le caratteristiche che hanno solo loro
-                            var us = AllUser.Where(x => x.Id == item.Id).FirstOrDefault();
-                            if (us == null)
-                                AllUser.Add(new CheckObjOn_Id_Text_4ApprovalZorder() { Id = item.Id, Checked = true ,  
-                                                                                       EnabledToApproval=item.EnabledToApproval , 
-                                                                                       ApprovalZOrder= item.ApprovalZOrder});
+                            
                         }
 
-                        foreach(var item in AllUser)
+
+                        //aggiornamento
+                        var AllAdmin = model.Data.SelectedAdmin.Where(x => x.Checked == true).ToList();
+                        foreach (var item in AllAdmin)
                         {
-                            var recDB =  _az_RepartoUserRepository.FindAll(x=> x.IdAz_SediReparto == model.Data.Az_SediReparto.Id && 
+                            var recDB = _az_RepartoUserRepository.FindAll(x => x.IdAz_SediReparto == model.Data.Az_SediReparto.Id &&
                                                                                x.IdAspNetUsers == item.Id).FirstOrDefault();
-                            if(recDB==null)
+
+                            if (recDB == null)
                             {
                                 recDB = new Az_SediRepartoUser()
                                 {
@@ -225,8 +237,29 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
                                     IdAz_SediReparto = model.Data.Az_SediReparto.Id
                                 };
                             }
+
+                            recDB.EnabledToAdmin = true;
                             recDB.EnabledToApproval = item.EnabledToApproval;
                             recDB.ApprovalZOrder = item.ApprovalZOrder;
+                            await _az_RepartoUserRepository.UpsertAsync(recDB);
+                        }
+
+                        var AllUser = model.Data.SelectedUser.Where(x => x.Checked == true).ToList();
+                        foreach (var item in AllUser)
+                        {
+                            var recDB = _az_RepartoUserRepository.FindAll(x => x.IdAz_SediReparto == model.Data.Az_SediReparto.Id &&
+                                                                               x.IdAspNetUsers == item.Id).FirstOrDefault();
+
+                            if (recDB == null)
+                            {
+                                recDB = new Az_SediRepartoUser()
+                                {
+                                    IdAspNetUsers = item.Id,
+                                    IdAz_SediReparto = model.Data.Az_SediReparto.Id
+                                };
+                            }
+
+                            recDB.UserInDepartment = true;
                             await _az_RepartoUserRepository.UpsertAsync(recDB);
                         }
 

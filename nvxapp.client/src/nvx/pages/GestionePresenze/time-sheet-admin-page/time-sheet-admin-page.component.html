@@ -5,27 +5,36 @@
 
 <ion-content [fullscreen]="true">
 
-  <app-sedi-reparto-user-navigation [showPeriodSelect]="true"
-                                    [showSediSelect]="false"
-                                    [showRepartoSelect]="true"
-                                    [showUserSelect]="true"
-                                    (periodChange)="onPeriodChange($event)"
-                                    (sediIdChange)="onSedeChanged($event)"
-                                    (repartoIdChange)="onRepartiChanged($event)"
-                                    (allUsersIdChange)="onAllUsersInSelectionChanged($event)"
-                                    (currUserIdChange)="onCurrentUserChanged($event)">
+  <div class="calendar-container">
 
-  </app-sedi-reparto-user-navigation>
 
-  <div id="container">
-    <strong class="capitalize">{{ title }}</strong>
-    <p>{{title}}Component works...</p>
+    <app-sedi-reparto-user-navigation [showPeriodSelect]="true"
+                                      [showSediSelect]="false"
+                                      [showRepartoSelect]="true"
+                                      [showUserSelect]="true"
+                                      (periodChange)="onPeriodChange($event)"
+                                      (sediIdChange)="onSedeChanged($event)"
+                                      (repartoIdChange)="onRepartiChanged($event)"
+                                      (allUsersIdChange)="onAllUsersInSelectionChanged($event)"
+                                      (currUserIdChange)="onCurrentUserChanged($event)">
 
-    {{ currentMonth | json}}
+    </app-sedi-reparto-user-navigation>
+
+    <!--<div id="container">-->
+
+
+      <strong class="capitalize">{{ title }}</strong>
+      <p>{{title}}Component works...</p>
+
+
+
+
+      {{ currentMonth | json}}
+
+
+    <!--</div>-->
 
   </div>
-
-
 
     <!--<app-fab-menu></app-fab-menu>-->
 

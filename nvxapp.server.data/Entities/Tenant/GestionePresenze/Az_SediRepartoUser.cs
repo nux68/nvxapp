@@ -19,9 +19,15 @@ namespace nvxapp.server.data.Entities.Tenant
         
         [ForeignKey("IdAspNetUsers")]
         public ApplicationUser? AspNetUsersNavigation { get; set; }
-        public Boolean EnabledToApproval { get; set; }
 
+        //dati per x l'amministratore
+        public Boolean EnabledToAdmin { get; set; }
+        public Boolean EnabledToApproval { get; set; }
         public int ApprovalZOrder { get; set; }
+
+        // user collegato al reparto
+        public Boolean UserInDepartment { get; set; }
+
 
         public DateTime? DataDal { get; set; } 
         public DateTime? DataAl { get; set; } 

@@ -12,7 +12,7 @@ using nvxapp.server.data.Infrastructure;
 namespace nvxapp.server.data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250516090558_GestionePresenze_init")]
+    [Migration("20250516131934_GestionePresenze_init")]
     partial class GestionePresenze_init
     {
         /// <inheritdoc />
@@ -662,6 +662,9 @@ namespace nvxapp.server.data.Migrations
                     b.Property<DateTime?>("DataDal")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<bool>("EnabledToAdmin")
+                        .HasColumnType("boolean");
+
                     b.Property<bool>("EnabledToApproval")
                         .HasColumnType("boolean");
 
@@ -674,6 +677,9 @@ namespace nvxapp.server.data.Migrations
 
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("timestamp without time zone");
+
+                    b.Property<bool>("UserInDepartment")
+                        .HasColumnType("boolean");
 
                     b.HasKey("Id");
 

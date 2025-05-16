@@ -11,8 +11,15 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
         public int Id { get; set; }
         public int IdAz_SediReparto { get; set; }
         public  string IdAspNetUsers { get; set; } = string.Empty;
+
+        //dati per x l'amministratore
+        public Boolean EnabledToAdmin { get; set; }
         public Boolean EnabledToApproval { get; set; }
         public int ApprovalZOrder { get; set; }
+
+        // user collegato al reparto
+        public Boolean UserInDepartment { get; set; }
+
         public DateTime? DataDal { get; set; }
         public DateTime? DataAl { get; set; }
     }
