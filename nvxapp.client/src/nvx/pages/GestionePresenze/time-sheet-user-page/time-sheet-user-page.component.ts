@@ -61,12 +61,12 @@ export class TimeSheetUserPageComponent implements OnInit {
   }
 
 
-  loadMonth(year: number, month:number) {
+  loadMonth(/*year: number, month:number*/) {
 
-    console.log(`UserPageComponent: Loading data for: ${year}-${month + 1} via CalendarDataService`);
+    console.log(`UserPageComponent: Loading data for: ${this.currYear}-${this.currMonth + 1} via CalendarDataService`);
 
     // Chiama il metodo del servizio dati
-    this.timeSheetService.getMonthData(year, month).subscribe(monthData => {
+    this.timeSheetService.getMonthData(this.currYear, this.currMonth).subscribe(monthData => {
       this.currentMonth = monthData; // monthData è già del tipo corretto MonthData
       this.buildCalendarWeeks();     // Costruisce la UI dopo aver ricevuto i dati
     });
@@ -233,7 +233,7 @@ export class TimeSheetUserPageComponent implements OnInit {
     this.currYear = period.year;
     this.currMonth = period.month-1;
 
-    this.loadMonth(this.currYear, this.currMonth);
+    this.loadMonth(/*this.currYear, this.currMonth*/);
 
     console.log('Parent: Period changed to:', period.year + period.month);
     
@@ -244,6 +244,9 @@ export class TimeSheetUserPageComponent implements OnInit {
   onRepartiChanged(repartoIds: number[] | undefined): void {
   }
   onCurrentUserChanged(userId: string | undefined): void {
+
+    var vv = userId;
+
   }
   onAllUsersInSelectionChanged(userIds: string[] | undefined): void {
   }

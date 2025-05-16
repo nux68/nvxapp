@@ -44,23 +44,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Giu
                 Dip_GG_Giustificativi_GetAll_OutModel retVal = new Dip_GG_Giustificativi_GetAll_OutModel();
 
 
-                //for (int i = 1; i < 6;  i++)
-                //{
-                //    retVal.Dip_GG_Giustificativi.Add(new Dip_GG_GiustificativiModel()
-                //    {
-                //        Id = i,
-                //        IdDip_RapportoLavoro = 1,
-                //        Data = DateTime.Now.AddDays(i),
-                //        IdJustificationType = 0,
-                //        InputType = JustificationInputType.Manual,
-                //        Hours = new TimeSpan(4,0,0),
-                //        From = new TimeSpan(9, 0,0),
-                //        IdPar_Giustificativi = 1,
-                //        RichiestaStato = StatoRichiesta.Diretta,
-                //        IdDip_GG_Richiesta = 0
-                //    });
-                //}
-
 
                 User_DATA_COMB_DipAna_DipRapp user_DATA_COMB_DipAna_DipRapp = await _gestionePresenzeUserUtility.Get_DipAna_DipRapp(this.CurrentUserId, true);
 
