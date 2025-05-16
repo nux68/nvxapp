@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using nvxapp.server.data.Entities.Tenant;
 
 #nullable disable
 
@@ -408,9 +406,9 @@ namespace nvxapp.server.data.Migrations
                     RichiestaTipo = table.Column<int>(type: "integer", nullable: false),
                     Dati = table.Column<string>(type: "text", nullable: false),
                     RichiestaStato = table.Column<int>(type: "integer", nullable: false),
-                    RichiestaApprovazioneData = table.Column<List<Dip_GG_Richiesta_Stato_Cronology>>(type: "jsonb", nullable: false),
+                    RichiestaApprovazioneData = table.Column<string>(type: "jsonb", nullable: false),
                     RevocaStato = table.Column<int>(type: "integer", nullable: true),
-                    RevocaApprovazioneData = table.Column<List<Dip_GG_Richiesta_Stato_Cronology>>(type: "jsonb", nullable: false),
+                    RevocaApprovazioneData = table.Column<string>(type: "jsonb", nullable: false),
                     ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)

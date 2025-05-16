@@ -98,8 +98,7 @@ namespace nvxapp.server.data.Infrastructure
 
 
             /* Dip_GG_Richiesta */
-            modelBuilder.Entity<Dip_GG_Richiesta>()
-               .HasOne(t_padre => t_padre.Dip_RapportoLavoroNavigation)
+            modelBuilder.Entity<Dip_GG_Richiesta>().HasOne(t_padre => t_padre.Dip_RapportoLavoroNavigation)
                .WithMany(t_figlio => t_figlio.Dip_GG_Richiesta)
                .HasForeignKey(key_esterna => key_esterna.IdDip_RapportoLavoro)
                .OnDelete(DeleteBehavior.Cascade);

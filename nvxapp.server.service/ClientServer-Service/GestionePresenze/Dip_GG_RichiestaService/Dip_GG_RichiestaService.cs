@@ -130,6 +130,19 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                 {
                     Dip_GG_Richiesta dip_GG_Richiesta = _mapper.Map<Dip_GG_Richiesta>(model.Data.Dip_GG_Richiesta);
                     dip_GG_Richiesta.IdDip_RapportoLavoro = user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.Id;
+
+                    dip_GG_Richiesta.RichiestaStato = StatoRichiesta.Immessa;
+
+                    List<Dip_GG_Richiesta_Stato_Cronology>  RichiestaApprovazioneData = new List<Dip_GG_Richiesta_Stato_Cronology>();
+
+                    RichiestaApprovazioneData.Add(new Dip_GG_Richiesta_Stato_Cronology() { IdAspNetUsers = "AAA" , RichiestaStato= StatoRichiesta.Immessa,Data= DateTime.Now});
+                    RichiestaApprovazioneData.Add(new Dip_GG_Richiesta_Stato_Cronology() { IdAspNetUsers = "BBB", RichiestaStato = StatoRichiesta.Immessa, Data = DateTime.Now });
+
+                    List<Dip_GG_Richiesta_Stato_Cronology> RevocaApprovazioneData = new List<Dip_GG_Richiesta_Stato_Cronology>();
+
+                    dip_GG_Richiesta.RichiestaApprovazioneData = JsonConvert.SerializeObject(RichiestaApprovazioneData, Formatting.Indented);
+                    dip_GG_Richiesta.RevocaApprovazioneData = JsonConvert.SerializeObject(RevocaApprovazioneData, Formatting.Indented);
+
                     dip_GG_Richiesta = await _dip_GG_RichiestaRepository.UpsertAsync(dip_GG_Richiesta);
 
                     switch (dip_GG_Richiesta.RichiestaTipo)

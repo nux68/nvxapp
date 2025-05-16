@@ -22,10 +22,14 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
         public string DataA { get; set; } = string.Empty;
 
         public TipoRichiesta RichiestaTipo { get; set; }
-        public StatoRichiesta RichiestaStato { get; set; }
-
         // Campo per oggetto JSON
         public required string Dati { get; set; } = string.Empty;
+
+        public StatoRichiesta RichiestaStato { get; set; }
+        public List<Dip_GG_Richiesta_Stato_Cronology>? RichiestaApprovazioneData { get; set; } = new List<Dip_GG_Richiesta_Stato_Cronology>();
+
+        public StatoRichiesta? RevocaStato { get; set; }
+        public List<Dip_GG_Richiesta_Stato_Cronology>? RevocaApprovazioneData { get; set; } = new List<Dip_GG_Richiesta_Stato_Cronology>();
 
         // Campo per oggetto JSON
         public string? CronologiaApprovazione { get; set; }

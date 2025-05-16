@@ -20,13 +20,17 @@ namespace nvxapp.server.data.Entities.Tenant
 
 
         public StatoRichiesta RichiestaStato { get; set; }
-        public List<Dip_GG_Richiesta_Stato_Cronology> RichiestaApprovazioneData { get; set; } = new List<Dip_GG_Richiesta_Stato_Cronology>();
+        //TODO gestire json nativo
+        //public List<Dip_GG_Richiesta_Stato_Cronology>? RichiestaApprovazioneData { get; set; } = new List<Dip_GG_Richiesta_Stato_Cronology>();
+        public required string RichiestaApprovazioneData { get; set; } = string.Empty;
 
 
         // servono per gestire l'annullamento di una richiesta approvata
         public StatoRichiesta? RevocaStato { get; set; }
-        public List<Dip_GG_Richiesta_Stato_Cronology> RevocaApprovazioneData { get; set; } = new List<Dip_GG_Richiesta_Stato_Cronology>();
-        
+        //TODO gestire json nativo
+        //public List<Dip_GG_Richiesta_Stato_Cronology>? RevocaApprovazioneData { get; set; } = new List<Dip_GG_Richiesta_Stato_Cronology>();
+        public required string RevocaApprovazioneData { get; set; } = string.Empty;
+
 
         public ICollection<Dip_GG_Giustificativi>? Dip_GG_Giustificativi { get; set; }
         public ICollection<Dip_GG_Timbratura>? Dip_GG_Timbratura { get; set; }
@@ -35,9 +39,9 @@ namespace nvxapp.server.data.Entities.Tenant
 
     public class Dip_GG_Richiesta_Stato_Cronology
     {
-        public string IdAspNetUsers { get; set; } = string.Empty;
-        public StatoRichiesta RichiestaStato { get; set; }
-        public DateTime Data { get; set; }
+        public string? IdAspNetUsers { get; set; } = string.Empty;
+        public StatoRichiesta? RichiestaStato { get; set; }
+        public DateTime? Data { get; set; }
     }
 
 
