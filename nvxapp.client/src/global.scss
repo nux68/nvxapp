@@ -37,6 +37,26 @@
 @import "@ionic/angular/css/palettes/dark.system.css";
 
 
+//NVX
+ion-menu {
+  width: 300px; /* Dimensione predefinita del menu */
+  max-width: 300px;
+
+  @media (min-width: 992px) { /* Breakpoint per large screen */
+    width: 200px; /* Riduci la larghezza del menu */
+    max-width: 200px;
+  }
+}
+
+ion-menu-content {
+  margin-left: 300px; /* Spostamento predefinito del contenuto */
+
+  @media (min-width: 992px) { /* Breakpoint per large screen */
+    margin-left: 200px; /* Aggiorna lo spostamento del contenuto */
+  }
+}
+//NVX
+
 
 .nvx-standard-icon {
   font-size: 30px; /* Dimensione standard per tutte le icone */
