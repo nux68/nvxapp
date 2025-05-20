@@ -17,6 +17,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Mode
         public string? Descrizione { get; set; }
         public Boolean MainUser { get; set; }
         public string? RoleId { get; set; }
+        public List<string> Roles { get; set; } = new List<string>();
     }
     public class UserCompanyListInModel
     {

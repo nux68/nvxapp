@@ -4,13 +4,13 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using nvxapp.server.Base;
 using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Helpers;
 using nvxapp.server.service.HubAI;
-using nvxapp.server.Base;
 using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.ServerModels;
 using static nvxapp.server.data.Entities.AspNetUsersDataUtil;
@@ -558,7 +558,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
 
                     financialAdvisor = await _financialAdvisorRepository.UpsertAsync(financialAdvisor);
 
-                    string password = model.Data.FinancialAdvisorEdit.Pw!=null? model.Data.FinancialAdvisorEdit.Pw:"1234";
+                    string password = model.Data.FinancialAdvisorEdit.Pw != null ? model.Data.FinancialAdvisorEdit.Pw : "1234";
 
 
                     //DealerPowerAdmin
@@ -728,7 +728,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
 
                     company = await _companyRepository.UpsertAsync(company);
 
-                    string password = model.Data.CompanyEdit.Pw!=null ? model.Data.CompanyEdit.Pw : "1234";
+                    string password = model.Data.CompanyEdit.Pw != null ? model.Data.CompanyEdit.Pw : "1234";
 
 
                     //DealerPowerAdmin
@@ -810,7 +810,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                     var cur_user = ApplicationUser_List.Where(x => x.Id == item.IdAspNetUsers).FirstOrDefault();
                     var cur_role = IdentityUserRole_list.Where(x => x.UserId == item.IdAspNetUsers).FirstOrDefault();
 
-                    if (cur_role != null)
+                    if (cur_role != null && cur_user != null)
                     {
                         retVal.UserCompanyList.Add(new UserCompanyModel()
                         {
@@ -818,7 +818,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                             IdUserCompany = item.Id,
                             Descrizione = cur_user?.UserName,
                             MainUser = item.MainUser,
-                            RoleId = cur_role.RoleId
+                            RoleId = cur_role.RoleId,
+                            Roles = new List<string>(await _userManager.GetRolesAsync(cur_user!))
                         });
                     }
 
@@ -853,7 +854,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                             IdUserCompany = userCompany.Id,
                             Mail = applicationUser.Email,
                             MainUser = false,
-                            RoleId = identityUserRole.RoleId
+                            RoleId = identityUserRole.RoleId,
+                            Roles = new List<string>(await _userManager.GetRolesAsync(applicationUser))
                         };
                     }
                 }
@@ -886,6 +888,29 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                     //userCompany.Descrizione = model.Data.UserCompanyEdit.Descrizione;
 
                     await _userCompanyRepository.UpdateAsync(userCompany);
+
+
+                    var applicationUser = await _userManager.FindByIdAsync(userCompany.IdAspNetUsers);
+                    if(applicationUser!=null)
+                    {
+                        var ruoliAttuali = await _userManager.GetRolesAsync(applicationUser);
+
+                        // Trova i ruoli da aggiungere e rimuovere
+                        var ruoliDaAggiungere = model.Data.UserCompanyEdit.Roles.Where(ruolo => !ruoliAttuali.Contains(ruolo)).ToList();
+                        var ruoliDaRimuovere = ruoliAttuali.Where(ruolo => !model.Data.UserCompanyEdit.Roles.Contains(ruolo)).ToList();
+
+                        // Esegui gli aggiornamenti necessari
+                        if (ruoliDaAggiungere != null)
+                        {
+                            if (ruoliDaAggiungere.Count > 0)
+                                await _userManager.AddToRolesAsync(applicationUser, ruoliDaAggiungere);
+                        }
+                        if (ruoliDaRimuovere != null)
+                        {
+                            if (ruoliDaRimuovere.Count > 0)
+                                await _userManager.RemoveFromRolesAsync(applicationUser, ruoliDaRimuovere);
+                        }
+                    }
                 }
                 else
                 {
@@ -908,7 +933,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                     var result = await _userManager.CreateAsync(user, password);
                     if (result.Succeeded)
                     {
-                        result = await _userManager.AddToRoleAsync(user, "User");
+                        result = await _userManager.AddToRolesAsync(user, model.Data.UserCompanyEdit.Roles);
 
                         await _userCompanyRepository.UpsertAsync(new UserCompany()
                         {
@@ -1169,7 +1194,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
 
 
                     //DealerPowerAdmin
-                    string password = model.Data.UserDealerEdit.Pw!=null? model.Data.UserDealerEdit.Pw:"1234";
+                    string password = model.Data.UserDealerEdit.Pw != null ? model.Data.UserDealerEdit.Pw : "1234";
 
                     var user = new ApplicationUser
                     {
