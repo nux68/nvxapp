@@ -3,8 +3,12 @@ MAPPER
 prendi come spunto Dip_GG_Timbratura_AND_Dip_GG_TimbraturaModel_Mapper.cs e crea un mapper per le Dip_GG_Causali
 
 SERVICE C# & Models
-prendi come spunto My_Template1Service (cartella) e ricrea la stessa struttura (service e model) My_ProvaAI 
 
+premessa, se lancio questo comando, tutto quello è coinvolto , va ricreato
+prendi come spunto My_Template1Service (cartella) e ricrea la stessa struttura (service e model) My_ProvaAI2 , ci sarano operazioni da
+fare sia nei progetti c# che gestiscono il backand che cne progetto angular/ionic che gestisce il frontend
+
+backend:
 1) Aggiungi l'entità 
 2) Collega l'entità creata al ApplicationDbContext contenuto nel file nvxapp.server.data\Infrastructure\ApplicationDbContext_GestionePresenze.cs
 3) crea il repository e ricorda di importare  nvxapp.server.data.Interfaces e nvxapp.server.data.Infrastructure
@@ -12,3 +16,6 @@ prendi come spunto My_Template1Service (cartella) e ricrea la stessa struttura (
 5) collega le proprietà HasOne/WithMany/HasForeignKey/OnDelete  all entity Dip_RapportoLavoro in Gen_Init_GestionePresenze 
 6) crea il service con il model necessario
 7) in nvxapp.server\Controllers crea in nuovo controller che utilizza il servizio appena creato
+frontend:
+1) in nvxapp.client\src\nvx\ClientServer-Service\GestionePresenze prendendo sempre come spunto (mantieni lo stesso stile e attenzione agli import)
+	\src\nvx\ClientServer-Service\GestionePresenze\My_Template1Service crea il service e il model per il servizio appena creato

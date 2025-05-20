@@ -9,6 +9,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.My_templat
 {
     public class My_Template1Model
     {
+        public int Id { get; set; }
+        public int IdDip_RapportoLavoro { get; set; }
     }
 
     public class My_template1InModel

@@ -10,11 +10,11 @@ using nvxapp.server.data.Infrastructure;
 
 namespace nvxapp.server.data.Repositories.Tenant.GestionePresenze
 {
-    public interface IMy_template1Repository : IRepository<My_template1>
+    public interface IMy_template1Repository : IRepository<My_Template1>
     {
     }
 
-    public class My_template1Repository : Repository<ApplicationDbContext, My_template1>, IMy_template1Repository
+    public class My_template1Repository : Repository<ApplicationDbContext, My_Template1>, IMy_template1Repository
     {
         public My_template1Repository(ApplicationDbContext context, IServiceProvider serviceProvider, Microsoft.AspNetCore.Http.IHttpContextAccessor httpContextAccessor)
             : base(context, serviceProvider, httpContextAccessor)

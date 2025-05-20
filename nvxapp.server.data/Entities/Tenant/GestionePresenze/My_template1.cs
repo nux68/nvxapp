@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace nvxapp.server.data.Entities.Tenant
 {
-    public class My_template1 : BaseEntity
+    public class My_Template1 : BaseEntity
     {
         // Esempio di proprietà, aggiungi le tue secondo necessità
         [Required]
