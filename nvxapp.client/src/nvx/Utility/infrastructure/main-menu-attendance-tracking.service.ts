@@ -12,11 +12,13 @@ export class MainMenuAttendanceTrackingService implements iMainMenuService {
   public get Pages4Admin(): MainMenuItem[] { return []; }
   public get Pages4DealerAdmin(): MainMenuItem[] { return []; }
   public get Pages4FinancialAdvisorAdmin(): MainMenuItem[] { return []; }
+
   public get Pages4CompanyAdmin(): MainMenuItem[] {
 
     return [
       { title: 'Request List Admin', component: "JustificationListPageComponent", url: '/requestlistadmin', icon: 'ellipse' },
       { title: 'Admin Time Sheet', component: "TimeSheetAdminPageComponent", url: '/admintimesheet', icon: 'ellipse' },
+      { title: 'Power Admin Time Sheet', component: "TimeSheetPowerAdminPageComponent", url: '/poweradmintimesheet', icon: 'ellipse' },
       { title: 'Justifications', component: "JustificationListPageComponent", url: '/justificationlist', icon: 'ellipse' },
       { title: 'Departments', component: "DepartmentListPageComponent", url: '/departmentlist', icon: 'ellipse' },
       { title: 'Company cfg', component: "CompanyCfgPageComponent", url: '/companycfgedit', icon: 'ellipse' },

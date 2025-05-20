@@ -1,0 +1,82 @@
+.day-list-container {
+  margin-left: 20px;
+}
+
+.header-row {
+  font-weight: 600;
+  background: var(--ion-color-light, #f5f5f5);
+  border-bottom: 1px solid #f4f4f4;
+}
+
+.header-cell {
+  font-size: 1em;
+  padding: 6px 4px;
+}
+
+.day-row {
+  border-bottom: 1px solid var(--ion-item-background);
+  font-size: 0.95em;
+  align-items: center;
+  padding-top: 2px;
+  padding-bottom: 2px;
+}
+
+.day-cell {
+  font-weight: bold;
+}
+
+.day-number {
+  font-weight: bold;
+  margin-right: 4px;
+}
+
+.day-name {
+  color: #888;
+  font-size: 0.95em;
+}
+
+.weekend .day-number,
+.weekend .day-name {
+  color: #b71c1c;
+}
+
+.timestamp-badge {
+  display: inline-block;
+  background: #e3f2fd;
+  color: #1565c0;
+  border-radius: 4px;
+  padding: 2px 6px;
+  margin: 1px 2px 1px 0;
+  font-size: 0.85em;
+}
+
+.giustificativo-badge {
+  display: inline-block;
+  border-radius: 4px;
+  padding: 2px 6px;
+  margin: 1px 2px 1px 0;
+  font-size: 0.85em;
+}
+
+.status-icon {
+  font-size: 1em;
+  vertical-align: middle;
+  margin-left: 2px;
+}
+
+.no-data {
+  color: #bbb;
+  font-style: italic;
+  font-size: 0.95em;
+}
+
+
+.entry {
+  background-color: var(--ion-color-primary, #3880ff);
+  color: var(--ion-color-primary-contrast, #ffffff);
+}
+
+.exit {
+  background-color: var(--ion-color-medium, #92949c);
+  color: var(--ion-color-medium-contrast, #ffffff);
+}
