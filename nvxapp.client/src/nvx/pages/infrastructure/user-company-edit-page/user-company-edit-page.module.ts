@@ -12,7 +12,7 @@ import { UserCompanyEditPageComponent } from './user-company-edit-page.component
 
 @NgModule({
   imports: [
-    
+
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
