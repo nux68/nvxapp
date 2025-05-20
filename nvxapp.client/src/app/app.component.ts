@@ -176,5 +176,9 @@ export class AppComponent implements OnInit {
     
   }
 
+  public getMenuItem4CompanyAdmin() {
+
+    return this.appPages4CompanyAdmin;
+  }
 
 }
