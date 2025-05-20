@@ -50,12 +50,12 @@ export class MainMenuInfrastructureService implements iMainMenuService{
     }
     public get Pages4CompanyAdmin(): MainMenuItem[] {
 
+      
+
       return [
-        
-        { title: 'Users', component: "UserCompanyListPageComponent", url: '/usercompanylist', icon: 'list-circle' },
-        { title: 'Company Power Admin', component: "CompanyPowerAdminPageComponent", url: '/companypoweradmin', icon: 'ellipse' },
-        { title: 'Company Admin', component: "CompanyAdminPageComponent", url: '/companyadmin', icon: 'ellipse' },
-        
+        { title: 'Company Power Admin', roles: ['CompanyPowerAdmin', 'CompanyAdmin'],component: "CompanyPowerAdminPageComponent", url: '/companypoweradmin', icon: 'ellipse' },
+        { title: 'Company Admin'      , roles: ['CompanyPowerAdmin', 'CompanyAdmin'],component: "CompanyAdminPageComponent", url: '/companyadmin', icon: 'ellipse' },
+        { title: 'Users'              , roles: ['CompanyPowerAdmin', 'CompanyAdmin'], component: "UserCompanyListPageComponent", url: '/usercompanylist', icon: 'list-circle' },
       ];
 
     }

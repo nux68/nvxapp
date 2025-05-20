@@ -121,11 +121,13 @@ export class MainMenuItem {
   component: string;
   url: string;
   icon: string;
+  roles?: string[]; // aggiunta proprietà opzionale per i ruoli
 
-  constructor(title: string, component: string, url: string, icon: string) {
+  constructor(title: string, component: string, url: string, icon: string, roles?: string[]) {
     this.title = title;
     this.component = component;
     this.url = url;
     this.icon = icon;
+    this.roles = roles;
   }
 }
