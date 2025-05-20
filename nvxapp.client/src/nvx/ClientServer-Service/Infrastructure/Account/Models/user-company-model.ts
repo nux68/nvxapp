@@ -31,6 +31,7 @@ export class UserCompanyEditModel {
     public mail: string | null = null,
     public pw: string | null = null,
     public roleId: string = "",
+    public roles: string[] = []
   ) { }
 }
 
