@@ -1262,6 +1262,32 @@ namespace nvxapp.server.data.Migrations
                     b.ToTable("MyTable", "public");
                 });
 
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.My_template1", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("IdDip_RapportoLavoro")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("My_template1", "public");
+                });
+
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Par_Causali", b =>
                 {
                     b.Property<int>("Id")

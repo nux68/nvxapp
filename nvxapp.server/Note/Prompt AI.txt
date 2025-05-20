@@ -3,4 +3,12 @@ MAPPER
 prendi come spunto Dip_GG_Timbratura_AND_Dip_GG_TimbraturaModel_Mapper.cs e crea un mapper per le Dip_GG_Causali
 
 SERVICE C# & Models
-prendi come spunto Dip_GG_CausaliService (cartella) e ricrea la stessa strutture (service e model e repository) Dip_GG_MyParametro
+prendi come spunto My_Template1Service (cartella) e ricrea la stessa struttura (service e model) My_ProvaAI 
+
+1) Aggiungi l'entità 
+2) Collega l'entità creata al ApplicationDbContext contenuto nel file nvxapp.server.data\Infrastructure\ApplicationDbContext_GestionePresenze.cs
+3) crea il repository e ricorda di importare  nvxapp.server.data.Interfaces e nvxapp.server.data.Infrastructure
+4) Aggiungi la prorietà ICollection<T> all entity nvxapp.server.data\Entities\Tenant\GestionePresenze\Dip_RapportoLavoro.cs per avere la relazione uno a molti
+5) collega le proprietà HasOne/WithMany/HasForeignKey/OnDelete  all entity Dip_RapportoLavoro in Gen_Init_GestionePresenze 
+6) crea il service con il model necessario
+7) in nvxapp.server\Controllers crea in nuovo controller che utilizza il servizio appena creato

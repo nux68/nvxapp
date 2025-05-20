@@ -63,6 +63,23 @@ namespace nvxapp.server.data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "My_template1",
+                schema: "public",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    IdDip_RapportoLavoro = table.Column<int>(type: "integer", nullable: false),
+                    ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_My_template1", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Az_Cfg",
                 schema: "public",
                 columns: table => new
@@ -885,6 +902,10 @@ namespace nvxapp.server.data.Migrations
 
             migrationBuilder.DropTable(
                 name: "Dip_ProfiloOrario",
+                schema: "public");
+
+            migrationBuilder.DropTable(
+                name: "My_template1",
                 schema: "public");
 
             migrationBuilder.DropTable(
