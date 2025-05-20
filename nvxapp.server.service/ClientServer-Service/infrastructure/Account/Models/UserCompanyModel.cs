@@ -41,6 +41,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Mode
         public string? Mail { get; set; } = string.Empty;
         public string? Pw { get; set; } = string.Empty;
         public string? RoleId { get; set; }
+        public List<string> Roles { get; set; } = new List<string>();
     }
     public class UserCompanyGetInModel
     {
