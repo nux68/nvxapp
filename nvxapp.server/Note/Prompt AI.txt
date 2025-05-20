@@ -3,4 +3,4 @@ MAPPER
 prendi come spunto Dip_GG_Timbratura_AND_Dip_GG_TimbraturaModel_Mapper.cs e crea un mapper per le Dip_GG_Causali
 
 SERVICE C# & Models
-prendi come spunto Dip_GG_CausaliService (cartella) e ricrea la stessa strutture (service e model) Dip_GG_MyParametro
+prendi come spunto Dip_GG_CausaliService (cartella) e ricrea la stessa strutture (service e model e repository) Dip_GG_MyParametro
