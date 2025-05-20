@@ -178,7 +178,23 @@ export class AppComponent implements OnInit {
 
   public getMenuItem4CompanyAdmin() {
 
-    return this.appPages4CompanyAdmin;
+    let currRole = [];
+
+    if (this.authService.IsUser) {
+      currRole.push("User");
+    }
+    if (this.authService.IsCompanyAdmin) {
+      currRole.push("CompanyAdmin");
+    }
+    if (this.authService.IsCompanyPowerAdmin) {
+      currRole.push("CompanyPowerAdmin");
+    }
+
+    return this.appPages4CompanyAdmin.filter(item =>
+      !item.roles || item.roles.some(role => currRole.includes(role))
+    );
+
+    //return this.appPages4CompanyAdmin;
   }
 
     
