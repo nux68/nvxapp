@@ -50,8 +50,6 @@ export class MainMenuInfrastructureService implements iMainMenuService{
     }
     public get Pages4CompanyAdmin(): MainMenuItem[] {
 
-      
-
       return [
         { title: 'Company Power Admin', roles: ['CompanyPowerAdmin', 'CompanyAdmin'],component: "CompanyPowerAdminPageComponent", url: '/companypoweradmin', icon: 'ellipse' },
         { title: 'Company Admin'      , roles: ['CompanyPowerAdmin', 'CompanyAdmin'],component: "CompanyAdminPageComponent", url: '/companyadmin', icon: 'ellipse' },
