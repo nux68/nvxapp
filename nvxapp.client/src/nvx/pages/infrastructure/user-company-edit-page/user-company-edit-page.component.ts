@@ -19,7 +19,7 @@ import { RoleCode } from '../../../ClientServer-Service/Infrastructure/Account/M
   selector: 'app-user-company-edit-page',
   templateUrl: './user-company-edit-page.component.html',
   styleUrls: ['./user-company-edit-page.component.scss'],
-  standalone:false
+  standalone: false
 })
 export class UserCompanyEditPageComponent extends BasePageConfirmCancelComponent<UserCompanyEditModel> {
 
@@ -42,9 +42,16 @@ export class UserCompanyEditPageComponent extends BasePageConfirmCancelComponent
     return this.fb.group({
 
       descrizione: [null, [Validators.required, Validators.maxLength(50)]],
-      roleId: [null, [Validators.required ]],
+      roleId: [null, [Validators.required]],
+      roles: [[], this.minArrayLength(1)],
 
     });
+  }
+
+  minArrayLength(min: number) {
+    return (control: AbstractControl): ValidationErrors | null => {
+      return control.value && control.value.length >= min ? null : { minArrayLength: true };
+    };
   }
 
   LoadData = (): Observable<UserCompanyEditModel | null> => {
@@ -72,7 +79,7 @@ export class UserCompanyEditPageComponent extends BasePageConfirmCancelComponent
         this._editForm.setValidators(matchPasswords);
         this._editForm.updateValueAndValidity();
 
-        subscriber.next(new UserCompanyEditModel()); 
+        subscriber.next(new UserCompanyEditModel());
         subscriber.complete();
       });
     }
@@ -101,7 +108,43 @@ export class UserCompanyEditPageComponent extends BasePageConfirmCancelComponent
     return this.parameterService.Roles;
   }
 
-  
+
+  getRoles(): string[] {
+
+    if (this._editModel) {
+      const rolesPowerAdmin = this.parameterService.Roles.find(role => role.code == RoleCode.CompanyPowerAdmin);
+
+      if (this._editModel.roles.includes(rolesPowerAdmin.name)) {
+        return this.parameterService.Roles.filter(role => role.code == RoleCode.CompanyPowerAdmin)
+          .map(role => role.name);
+      }
+      else {
+        return this.parameterService.Roles.filter(role => role.code == RoleCode.User ||
+          role.code == RoleCode.CompanyAdmin)
+          .map(role => role.name);
+      }
+    }
+
+    return [];
+
+
+  }
+
+  //toggleSelectionRole(roleName: string, event: any) {
+
+  //  const existingEntry = this._editModel.roles.includes(roleName);
+
+  //  if (existingEntry) {
+  //    this._editModel.roles = this._editModel.roles.filter(x => x != roleName);
+  //  } else {
+  //    this._editModel.roles.push(roleName);
+  //  }
+
+  //}
+
+  //isSelectedRole(roleName: string): boolean {
+  //  return this._editModel.roles.includes(roleName);
+  //}
 
 
 }
