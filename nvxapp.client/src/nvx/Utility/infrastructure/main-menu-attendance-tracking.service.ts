@@ -16,12 +16,17 @@ export class MainMenuAttendanceTrackingService implements iMainMenuService {
   public get Pages4CompanyAdmin(): MainMenuItem[] {
 
     return [
-      { title: 'Request List Admin', component: "JustificationListPageComponent", url: '/requestlistadmin', icon: 'ellipse' },
-      { title: 'Admin Time Sheet', component: "TimeSheetAdminPageComponent", url: '/admintimesheet', icon: 'ellipse' },
-      { title: 'Power Admin Time Sheet', component: "TimeSheetPowerAdminPageComponent", url: '/poweradmintimesheet', icon: 'ellipse' },
-      { title: 'Justifications', component: "JustificationListPageComponent", url: '/justificationlist', icon: 'ellipse' },
-      { title: 'Departments', component: "DepartmentListPageComponent", url: '/departmentlist', icon: 'ellipse' },
-      { title: 'Company cfg', component: "CompanyCfgPageComponent", url: '/companycfgedit', icon: 'ellipse' },
+      // tutti e due
+      { title: 'Request List Admin', roles: ['CompanyPowerAdmin', 'CompanyAdmin'], component: "JustificationListPageComponent", url: '/requestlistadmin', icon: 'ellipse' },
+      //solo CompanyPowerAdmin
+      { title: 'Power Admin Time Sheet', roles: ['CompanyPowerAdmin'], component: "TimeSheetPowerAdminPageComponent", url: '/poweradmintimesheet', icon: 'ellipse' },
+      { title: 'Justifications', roles: ['CompanyPowerAdmin'], component: "JustificationListPageComponent", url: '/justificationlist', icon: 'ellipse' },
+      { title: 'Departments', roles: ['CompanyPowerAdmin'], component: "DepartmentListPageComponent", url: '/departmentlist', icon: 'ellipse' },
+      { title: 'Company cfg', roles: ['CompanyPowerAdmin'], component: "CompanyCfgPageComponent", url: '/companycfgedit', icon: 'ellipse' },
+      
+      //solo CompanyAdmin
+      { title: 'Admin Time Sheet', roles: ['CompanyAdmin'], component: "TimeSheetAdminPageComponent", url: '/admintimesheet', icon: 'ellipse' },
+      
     ];
 
   }
