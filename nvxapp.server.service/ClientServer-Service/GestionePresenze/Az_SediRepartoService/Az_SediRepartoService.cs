@@ -59,10 +59,20 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
             {
                 Az_SediReparto_GetAll_OutModel retVal = new Az_SediReparto_GetAll_OutModel();
 
+                int IdCompany;
+                int.TryParse(this.CurrentCompany, out IdCompany);
 
-                var az_Rep = _az_SediRepartoRepository.FindAll(x => x.Id > 0).ToList();
+                Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg company_DATA_COMB_AzAna_AzSedi_AzReparto = await _gestionePresenzeUserUtility.Get_AzAna_AzSedi_AzReparto_Az_Cfg(IdCompany, true);
 
-                retVal.Az_SediReparto = _mapper.Map<List<Az_SediRepartoModel>>(az_Rep);
+                if (company_DATA_COMB_AzAna_AzSedi_AzReparto != null && company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Sedi != null)
+                {
+                    var az_Rep = _az_SediRepartoRepository.FindAll(x => x.IdAz_Sedi == company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Sedi.Id).ToList();
+
+                    retVal.Az_SediReparto = _mapper.Map<List<Az_SediRepartoModel>>(az_Rep);
+                }
+
+
+                
 
                 //eliminare
                 // Nessun 'await' qui
