@@ -190,11 +190,22 @@ export class AppComponent implements OnInit {
       currRole.push("CompanyPowerAdmin");
     }
 
-    return this.appPages4CompanyAdmin.filter(item =>
+    let retVal =this.appPages4CompanyAdmin.filter(item =>
       !item.roles || item.roles.some(role => currRole.includes(role))
     );
 
-    //return this.appPages4CompanyAdmin;
+    //non permette di impersonarsi a un user che ha anche ruoli admin
+    if (this.authService.IsUser) {
+      return retVal.filter(x => x.component != "UserCompanyListPageComponent");
+    }
+
+    return retVal;
+
+    //return this.appPages4CompanyAdmin.filter(item =>
+    //  !item.roles || item.roles.some(role => currRole.includes(role))
+    //);
+
+    
   }
 
     
