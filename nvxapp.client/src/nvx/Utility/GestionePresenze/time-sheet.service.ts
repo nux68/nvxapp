@@ -10,6 +10,7 @@ import { GenericRequest } from '../../ClientServer-Service/ModelsBase/generic-re
 import { forkJoin } from 'rxjs/internal/observable/forkJoin';
 import { DipGGRichiestaService } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/dip-gg-richiesta.service';
 import { MonthData, TimeSheetRemoteData } from './time-sheet-common-data';
+import { SharedParameterGestionePresenzeService } from '../../shared/shared-parameter-gestione-presenze.service';
 
 
 
@@ -20,7 +21,8 @@ import { MonthData, TimeSheetRemoteData } from './time-sheet-common-data';
 })
 export class TimeSheetService {
 
-  constructor(private dipGGGiustificativiService: DipGGGiustificativiService,
+  constructor(private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
+              private dipGGGiustificativiService: DipGGGiustificativiService,
               private dipGGTimbraturaService: DipGGTimbraturaService,
               private dipGGRichiestaService: DipGGRichiestaService) {
   }
@@ -165,13 +167,116 @@ export class TimeSheetService {
     return [...timestamps].sort((a, b) => this.timeToMinutes(a.timbratura) - this.timeToMinutes(b.timbratura));
 
   }
-  
+
   private timeToMinutes(time: Date): number {
     if (!time) return 0;
     const hours = time.getHours();
     const minutes = time.getMinutes();
     return hours * 60 + minutes;
   }
+
+
+  get_StatoRichiesta_icon(status: StatoRichiesta): string {
+    switch (status) {
+      case StatoRichiesta.Diretta:
+        return 'checkmark-circle'; // Inserimento diretto
+      case StatoRichiesta.Immessa:
+        return 'time-outline'; // In attesa
+      case StatoRichiesta.ApprovazioneInCorso:
+        return 'hourglass-outline'; // In corso
+      case StatoRichiesta.ParzialmenteApprovata:
+        return 'alert-circle-outline'; // Parzialmente approvata
+      case StatoRichiesta.Approvata:
+        return 'checkmark-circle-outline'; // Approvata
+      case StatoRichiesta.Rifiutata:
+        return 'close-circle-outline'; // Rifiutata
+      case StatoRichiesta.Cancellata:
+        return 'trash-outline'; // Cancellata
+      default:
+        return 'help-circle-outline'; // Stato sconosciuto
+    }
+  }
+
+  get_StatoRichiesta_text(status: StatoRichiesta): string {
+    switch (status) {
+      case StatoRichiesta.Diretta:
+        return 'Inserimento Diretto';
+      case StatoRichiesta.Immessa:
+        return 'In Attesa';
+      case StatoRichiesta.ApprovazioneInCorso:
+        return 'Approvazione In Corso';
+      case StatoRichiesta.ParzialmenteApprovata:
+        return 'Parzialmente Approvata';
+      case StatoRichiesta.Approvata:
+        return 'Approvata';
+      case StatoRichiesta.Rifiutata:
+        return 'Rifiutata';
+      case StatoRichiesta.Cancellata:
+        return 'Cancellata';
+      default:
+        return 'Stato Sconosciuto';
+    }
+  }
+
+  get_Dip_GG_Giustificativi_backColor(ggJust: Dip_GG_GiustificativiModel): string {
+    const just = this.sharedParameterGestionePresenzeService.Par_Giustificativi.find(x => x.id == ggJust.idPar_Giustificativi);
+    if (just)
+      return just.backgroundColor;
+    else
+      return null;
+  }
+
+  get_Dip_GG_Giustificativi_txtColor(ggJust: Dip_GG_GiustificativiModel): string {
+    const just = this.sharedParameterGestionePresenzeService.Par_Giustificativi.find(x => x.id == ggJust.idPar_Giustificativi);
+    if (just)
+      return just.textColor;
+    else
+      return null;
+  }
+
+  get_Dip_GG_Timbratura_backColor(record: Dip_GG_TimbraturaModel): string {
+    // Ottieni il valore della variabile CSS dal root
+    const root = document.documentElement;
+
+    let value = '';
+
+    switch (record.timbraturaTipo) {
+      case TipoTimbratura.Entrata:
+        value = getComputedStyle(root).getPropertyValue('--ion-color-primary').trim();
+        return value || '#3880ff';
+        break;
+      case TipoTimbratura.Uscita:
+        value = getComputedStyle(root).getPropertyValue('--ion-color-medium').trim();
+        return value || '#92949c';
+        break;
+    }
+
+
+    return '#3880ff';
+  }
+
+  get_Dip_GG_Timbratura_txtColor(record: Dip_GG_TimbraturaModel): string {
+    // Ottieni il valore della variabile CSS dal root
+    const root = document.documentElement;
+
+    let value = '';
+
+    switch (record.timbraturaTipo) {
+      case TipoTimbratura.Entrata:
+        value = getComputedStyle(root).getPropertyValue('--ion-color-primary-contrast').trim();
+        return value || '#ffffff';
+        break;
+      case TipoTimbratura.Uscita:
+        value = getComputedStyle(root).getPropertyValue('--ion-color-medium-contrast').trim();
+        return value || '#ffffff';
+        break;
+    }
+
+
+    return '#ffffff';
+  }
+
+
 
 }
 

@@ -35,7 +35,7 @@ export class TimeSheetPowerAdminPageComponent implements OnInit {
   StatoRichiesta = StatoRichiesta;
 
   constructor(
-    private timeSheetService: TimeSheetService,
+    public timeSheetService: TimeSheetService,
     public userNavigationService: UserNavigationService,
     private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService
   ) {
@@ -88,73 +88,10 @@ export class TimeSheetPowerAdminPageComponent implements OnInit {
     return day === 0 || day === 6; // 0 = domenica, 6 = sabato
   }
 
-  getTimestampClass(record: Dip_GG_TimbraturaModel): { [key: string]: boolean } {
-    return {
-      'entry': record.timbraturaTipo === TipoTimbratura.Entrata,
-      'exit': record.timbraturaTipo === TipoTimbratura.Uscita
-    };
-  }
+  
 
-  // Helper method per ottenere l'icona appropriata per lo stato della richiesta
-  getStatusIcon(status: StatoRichiesta): string {
-    switch (status) {
-      case StatoRichiesta.Diretta:
-        return 'checkmark-circle'; // Inserimento diretto
-      case StatoRichiesta.Immessa:
-        return 'time-outline'; // In attesa
-      case StatoRichiesta.ApprovazioneInCorso:
-        return 'hourglass-outline'; // In corso
-      case StatoRichiesta.ParzialmenteApprovata:
-        return 'alert-circle-outline'; // Parzialmente approvata
-      case StatoRichiesta.Approvata:
-        return 'checkmark-circle-outline'; // Approvata
-      case StatoRichiesta.Rifiutata:
-        return 'close-circle-outline'; // Rifiutata
-      case StatoRichiesta.Cancellata:
-        return 'trash-outline'; // Cancellata
-      default:
-        return 'help-circle-outline'; // Stato sconosciuto
-    }
-  }
 
-  // Helper method per ottenere il testo descrittivo dello stato della richiesta
-  getStatusText(status: StatoRichiesta): string {
-    switch (status) {
-      case StatoRichiesta.Diretta:
-        return 'Inserimento Diretto';
-      case StatoRichiesta.Immessa:
-        return 'In Attesa';
-      case StatoRichiesta.ApprovazioneInCorso:
-        return 'Approvazione In Corso';
-      case StatoRichiesta.ParzialmenteApprovata:
-        return 'Parzialmente Approvata';
-      case StatoRichiesta.Approvata:
-        return 'Approvata';
-      case StatoRichiesta.Rifiutata:
-        return 'Rifiutata';
-      case StatoRichiesta.Cancellata:
-        return 'Cancellata';
-      default:
-        return 'Stato Sconosciuto';
-    }
-  }
-
-  get_dip_GG_Giustificativi_backColor(ggJust: Dip_GG_GiustificativiModel): string {
-    const just = this.sharedParameterGestionePresenzeService.Par_Giustificativi.find(x => x.id == ggJust.idPar_Giustificativi);
-    if (just)
-      return just.backgroundColor;
-    else
-      return null;
-  }
-
-  get_dip_GG_Giustificativi_txtColor(ggJust: Dip_GG_GiustificativiModel): string {
-    const just = this.sharedParameterGestionePresenzeService.Par_Giustificativi.find(x => x.id == ggJust.idPar_Giustificativi);
-    if (just)
-      return just.textColor;
-    else
-      return null;
-  }
-
+ 
   onPeriodChange(period: { year: number, month: number } | undefined): void {
     if (period) {
       this.currYear = period.year;
@@ -172,4 +109,8 @@ export class TimeSheetPowerAdminPageComponent implements OnInit {
   onSedeChanged(sediId: number | undefined): void { }
   onRepartiChanged(repartoIds: number[] | undefined): void { }
   onAllUsersInSelectionChanged(userIds: string[] | undefined): void { }
+
+  ///////
+
+
 }

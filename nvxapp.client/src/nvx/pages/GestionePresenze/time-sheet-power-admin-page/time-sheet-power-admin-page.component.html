@@ -30,7 +30,7 @@
           <ion-col size="5" class="header-cell">Giustificativi</ion-col>
         </ion-row>
 
-        <ion-row *ngFor="let day of currentDays" [ngClass]="{'weekend': isWeekend(day.date)}" class="day-row">
+        <ion-row *ngFor="let day of currentDays"   [ngClass]="{'weekend': isWeekend(day.date)}" class="day-row nvx-ion-row-4table">
 
           <ion-col size="2" class="day-cell">
             <span class="day-number">{{ day.date | date:'dd' }}</span>
@@ -38,14 +38,18 @@
           </ion-col>
           <ion-col size="5" class="timestamps-cell">
             <ng-container *ngIf="day.dip_GG_Timbratura?.length > 0; else noTimb">
-              <span *ngFor="let record of day.dip_GG_Timbratura" [ngClass]="getTimestampClass(record)" class="timestamp-badge">
+
+              <ion-button [disabled]="false" size="small" shape="round"
+                          *ngFor="let record of day.dip_GG_Timbratura"
+                          [ngStyle]="{
+                               '--background': timeSheetService.get_Dip_GG_Timbratura_backColor(record),
+                               '--color': timeSheetService.get_Dip_GG_Timbratura_txtColor(record)
+                             }">
                 {{ record.timbraturaTipo | tipoTimbraturaToShortText }} {{ record.timbratura | date:'HH:mm' }}
-                <ion-icon *ngIf="record.idDip_GG_Richiesta"
-                          [name]="getStatusIcon(record.richiestaStato)"
-                          class="status-icon"
-                          [title]="getStatusText(record.richiestaStato)">
-                </ion-icon>
-              </span>
+                <ion-icon slot="end" [name]="timeSheetService.get_StatoRichiesta_icon(record.richiestaStato)"></ion-icon>
+              </ion-button>
+
+
             </ng-container>
             <ng-template #noTimb>
               <span class="no-data">-</span>
@@ -53,17 +57,18 @@
           </ion-col>
           <ion-col size="5" class="justifications-cell">
             <ng-container *ngIf="day.dip_GG_Giustificativi?.length > 0; else noJust">
-              <span *ngFor="let just of day.dip_GG_Giustificativi"
-                    class="giustificativo-badge"
-                    [style.background-color]="get_dip_GG_Giustificativi_backColor(just)"
-                    [style.color]="get_dip_GG_Giustificativi_txtColor(just)">
+
+
+              <ion-button [disabled]="false" size="small" shape="round"
+                          *ngFor="let just of day.dip_GG_Giustificativi"
+                          [ngStyle]="{
+                                        '--background': timeSheetService.get_Dip_GG_Giustificativi_backColor(just),
+                                        '--color': timeSheetService.get_Dip_GG_Giustificativi_txtColor(just)
+                                      }">
                 {{ just.idPar_Giustificativi | parGiustificativiToLongText }}
-                <ion-icon *ngIf="just.idDip_GG_Richiesta"
-                          [name]="getStatusIcon(just.richiestaStato)"
-                          class="status-icon"
-                          [title]="getStatusText(just.richiestaStato)">
-                </ion-icon>
-              </span>
+                <ion-icon slot="end" [name]="timeSheetService.get_StatoRichiesta_icon(just.richiestaStato)"></ion-icon>
+              </ion-button>
+
             </ng-container>
             <ng-template #noJust>
               <span class="no-data">-</span>
@@ -73,54 +78,6 @@
       </ion-grid>
     </div>
 
-
-
-    <!--<div class="day-list-container" *ngIf="currentDays && currentDays.length > 0">
-      <div class="day-list-header">
-        <div class="day-column">Giorno</div>
-        <div class="timestamps-column">Timbrature</div>
-        <div class="justifications-column">Giustificativi</div>
-      </div>
-
-      <div class="day-row" *ngFor="let day of currentDays" [ngClass]="{'weekend': isWeekend(day.date)}">
-        <div class="day-column">
-          <div class="day-number">{{ day.date | date:'dd' }}</div>
-          <div class="day-name">{{ day.date | date:'EEEE' }}</div>
-
-        </div>
-
-        <div class="timestamps-column">
-          <div class="no-data" *ngIf="!day.dip_GG_Timbratura || day.dip_GG_Timbratura.length === 0">
-            Nessuna timbratura
-          </div>
-          <div class="timestamp-item" *ngFor="let record of day.dip_GG_Timbratura"
-               [ngClass]="getTimestampClass(record)">
-            <span>{{ record.timbraturaTipo | tipoTimbraturaToShortText }} {{ record.timbratura | date:'HH:mm' }}</span>
-            <ion-icon *ngIf="record.idDip_GG_Richiesta"
-                      [name]="getStatusIcon(record.richiestaStato)"
-                      class="status-icon"
-                      [title]="getStatusText(record.richiestaStato)">
-            </ion-icon>
-          </div>
-        </div>
-
-        <div class="justifications-column">
-          <div class="no-data" *ngIf="!day.dip_GG_Giustificativi || day.dip_GG_Giustificativi.length === 0">
-            Nessun giustificativo
-          </div>
-          <div class="justification-item" *ngFor="let just of day.dip_GG_Giustificativi"
-               [style.background-color]="get_dip_GG_Giustificativi_backColor(just)"
-               [style.color]="get_dip_GG_Giustificativi_txtColor(just)">
-            <span>{{ just.idPar_Giustificativi | parGiustificativiToLongText}}</span>
-            <ion-icon *ngIf="just.idDip_GG_Richiesta"
-                      [name]="getStatusIcon(just.richiestaStato)"
-                      class="status-icon"
-                      [title]="getStatusText(just.richiestaStato)">
-            </ion-icon>
-          </div>
-        </div>
-      </div>
-    </div>-->
 
 
   </div>
