@@ -9,6 +9,7 @@ import { Dip_GG_TimbraturaModel, TipoTimbratura } from '../../../ClientServer-Se
 import { Dip_GG_GiustificativiModel, JustificationInputType } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Giustificativi/Models/dip-gg-giustificativi-model';
 import { StatoRichiesta } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/Models/dip-gg-richiesta-model';
 import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
+import { ParGiustificativiToLongTextPipe } from '../../../shared/pipe/GestionePresenze/par-giustificativi-to-long-text.pipe';
 
 
 @Component({
@@ -36,6 +37,8 @@ export class TimeSheetUserPageComponent implements OnInit {
   
   public currYear: number
   public currMonth: number
+
+  
 
   constructor(
               private signalrService: SignalrService,
@@ -193,8 +196,42 @@ export class TimeSheetUserPageComponent implements OnInit {
     },
   ];
 
-  setOpen(isOpen: boolean) {
-    this.isActionSheetOpen = isOpen;
+  private actionSheetOpenSelectObj: Dip_GG_GiustificativiModel | Dip_GG_TimbraturaModel;
+  public actionSheetHeader = '';
+  public actionSheetSubHeader = '';
+
+  actionSheetOpen(obj: any) {
+    if ('idPar_Giustificativi' in obj) {
+
+      const parGiustificativiToLongTextPipe = new ParGiustificativiToLongTextPipe(this.sharedParameterGestionePresenzeService);
+
+      
+
+      const giustificativo = obj as Dip_GG_GiustificativiModel;
+      this.actionSheetOpenSelectObj = giustificativo;
+      this.actionSheetHeader = `Giustificativo : ${parGiustificativiToLongTextPipe.transform(giustificativo.idPar_Giustificativi)} ${this.timeSheetService.DateToSDate(giustificativo.data)}`;
+      this.actionSheetSubHeader = null;
+
+    } else if ('timbraturaTipo' in obj) {
+      const timbratura = obj as Dip_GG_TimbraturaModel;
+      this.actionSheetOpenSelectObj = timbratura;
+      this.actionSheetHeader = 'Timbratura';
+      this.actionSheetSubHeader = `Tipo: ${timbratura.timbraturaTipo}`;
+    }
+    this.isActionSheetOpen = true;
+  }
+
+  actionSheetExecute(event: any) {
+    this.isActionSheetOpen = false;
+
+    if ('idPar_Giustificativi' in this.actionSheetOpenSelectObj) {
+      const giustificativo = this.actionSheetOpenSelectObj as Dip_GG_GiustificativiModel;
+      
+
+    } else if ('timbraturaTipo' in this.actionSheetOpenSelectObj) {
+      const timbratura = this.actionSheetOpenSelectObj as Dip_GG_TimbraturaModel;
+    } 
+
   }
 
 }
