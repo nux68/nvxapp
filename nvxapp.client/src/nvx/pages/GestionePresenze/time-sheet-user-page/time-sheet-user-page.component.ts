@@ -7,12 +7,14 @@ import { TimeSheetService } from '../../../Utility/GestionePresenze/time-sheet.s
 import { MonthData } from '../../../Utility/GestionePresenze/time-sheet-common-data';
 import { Dip_GG_TimbraturaModel, TipoTimbratura } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Timbratura/Models/dip-gg-timbratura-model';
 import { Dip_GG_GiustificativiModel, JustificationInputType } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Giustificativi/Models/dip-gg-giustificativi-model';
-import { StatoRichiesta } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/Models/dip-gg-richiesta-model';
+import { Dip_GG_Richiesta_SetState_InModel, StatoRichiesta } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/Models/dip-gg-richiesta-model';
 import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
 import { ParGiustificativiToLongTextPipe } from '../../../shared/pipe/GestionePresenze/par-giustificativi-to-long-text.pipe';
 import { DateTimeUtilService } from '../../../Utility/infrastructure/date-time-util.service';
 import { TipoTimbraturaToShortTextPipe } from '../../../shared/pipe/GestionePresenze/tipo-timbratura-to-short-text.pipe';
 import { TipoTimbraturaToLongTextPipe } from '../../../shared/pipe/GestionePresenze/tipo-timbratura-to-long-text.pipe';
+import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
+import { DipGGRichiestaService } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/dip-gg-richiesta.service';
 
 
 @Component({
@@ -48,6 +50,7 @@ export class TimeSheetUserPageComponent implements OnInit {
               public monthNavigatorService: MonthNavigatorService,
               public timeSheetService: TimeSheetService,
               public dateTimeUtilService: DateTimeUtilService,
+              private dipGGRichiestaService: DipGGRichiestaService,
               private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService
   ) {
     this.title = 'TimeSheetUser';
@@ -179,25 +182,25 @@ export class TimeSheetUserPageComponent implements OnInit {
   isActionSheetOpen = false;
   public actionSheetButtons = [
     {
-      text: 'Delete',
-      role: 'destructive',
+      text: 'Cancella richiesta',
+      role: 'delete',
       data: {
         action: 'delete',
       },
     },
-    {
-      text: 'Share',
-      data: {
-        action: 'share',
-      },
-    },
-    {
-      text: 'Cancel',
-      role: 'cancel',
-      data: {
-        action: 'cancel',
-      },
-    },
+    //{
+    //  text: 'Share',
+    //  data: {
+    //    action: 'share',
+    //  },
+    //},
+    //{
+    //  text: 'Cancel',
+    //  role: 'cancel',
+    //  data: {
+    //    action: 'cancel',
+    //  },
+    //},
   ];
 
   private actionSheetOpenSelectObj: Dip_GG_GiustificativiModel | Dip_GG_TimbraturaModel;
@@ -209,22 +212,18 @@ export class TimeSheetUserPageComponent implements OnInit {
 
       const parGiustificativiToLongTextPipe = new ParGiustificativiToLongTextPipe(this.sharedParameterGestionePresenzeService);
 
-      
-
       const giustificativo = obj as Dip_GG_GiustificativiModel;
       this.actionSheetOpenSelectObj = giustificativo;
-      this.actionSheetHeader = `Giustificativo : ${parGiustificativiToLongTextPipe.transform(giustificativo.idPar_Giustificativi)} ${this.dateTimeUtilService.DateToSDate(giustificativo.data)}`;
+      this.actionSheetHeader = `Giustificativo : ${parGiustificativiToLongTextPipe.transform(giustificativo.idPar_Giustificativi)} ${this.dateTimeUtilService.DateTo_ggmmyyyy(giustificativo.data)}`;
       this.actionSheetSubHeader = null;
 
     } else if ('timbraturaTipo' in obj) {
 
       const tipoTimbraturaToLongTextPipe = new TipoTimbraturaToLongTextPipe();
 
-      
-
       const timbratura = obj as Dip_GG_TimbraturaModel;
       this.actionSheetOpenSelectObj = timbratura;
-      this.actionSheetHeader = `Timbratura : ${tipoTimbraturaToLongTextPipe.transform(timbratura.timbraturaTipo)} ${timbratura.timbratura}`;
+      this.actionSheetHeader = `Timbratura : ${tipoTimbraturaToLongTextPipe.transform(timbratura.timbraturaTipo)} ${this.dateTimeUtilService.DateTo_ggmmyyyy_hhmm(timbratura.timbratura)}`;
       this.actionSheetSubHeader = null;
     }
     this.isActionSheetOpen = true;
@@ -233,13 +232,29 @@ export class TimeSheetUserPageComponent implements OnInit {
   actionSheetExecute(event: any) {
     this.isActionSheetOpen = false;
 
-    if ('idPar_Giustificativi' in this.actionSheetOpenSelectObj) {
-      const giustificativo = this.actionSheetOpenSelectObj as Dip_GG_GiustificativiModel;
-      
+    if (event?.detail?.data?.action === 'delete') {
+      let IdDip_GG_Richiesta: number[] = [];
+      if ('idPar_Giustificativi' in this.actionSheetOpenSelectObj) {
+        const giustificativo = this.actionSheetOpenSelectObj as Dip_GG_GiustificativiModel;
+        IdDip_GG_Richiesta.push(giustificativo.idDip_GG_Richiesta);
 
-    } else if ('timbraturaTipo' in this.actionSheetOpenSelectObj) {
-      const timbratura = this.actionSheetOpenSelectObj as Dip_GG_TimbraturaModel;
-    } 
+      } else if ('timbraturaTipo' in this.actionSheetOpenSelectObj) {
+        const timbratura = this.actionSheetOpenSelectObj as Dip_GG_TimbraturaModel;
+        IdDip_GG_Richiesta.push(timbratura.idDip_GG_Richiesta);
+      }
+
+      if (IdDip_GG_Richiesta.length> 0) {
+        let request: GenericRequest<Dip_GG_Richiesta_SetState_InModel> = new GenericRequest<Dip_GG_Richiesta_SetState_InModel>(Dip_GG_Richiesta_SetState_InModel);
+        request.data.richiestaStato = StatoRichiesta.Cancellata;
+        request.data.IdDip_GG_Richiesta = IdDip_GG_Richiesta;
+        this.dipGGRichiestaService.SetState(request).subscribe(res => {
+          this.loadMonth();
+        });
+      }
+
+    }
+
+    
 
   }
 
