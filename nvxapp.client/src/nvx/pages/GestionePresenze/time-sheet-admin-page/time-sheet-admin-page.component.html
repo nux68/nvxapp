@@ -42,7 +42,7 @@
                   <ng-container *ngIf="day.dip_GG_Giustificativi?.length > 0; else noJust">
 
 
-                    <ion-button [disabled]="false" size="small" shape="round"
+                    <ion-button [disabled]="just.richiestaStato !== StatoRichiesta.Immessa" size="small" shape="round"
                                 *ngFor="let just of day.dip_GG_Giustificativi"
                                 [ngStyle]="{
                                               '--background': timeSheetService.get_Dip_GG_Giustificativi_backColor(just),
@@ -52,7 +52,8 @@
                                               'font-size': '0.5em',
                                               'margin-bottom':'1px',
                                               'margin-top':'0px'
-                                            }">
+                                            }"
+                                (click)="actionSheetOpen(just)">
                       {{ just.idPar_Giustificativi | parGiustificativiToLongText }}
                       <ion-icon slot="end" [name]="timeSheetService.get_StatoRichiesta_icon(just.richiestaStato)"></ion-icon>
                     </ion-button>
@@ -72,7 +73,7 @@
 
                   <ng-container *ngIf="day.dip_GG_Timbratura?.length > 0; else noTimb">
 
-                    <ion-button [disabled]="false" size="small" shape="round"
+                    <ion-button [disabled]="record.richiestaStato !== StatoRichiesta.Immessa" size="small" shape="round"
                                 *ngFor="let record of day.dip_GG_Timbratura"
                                 [ngStyle]="{
                                              '--background': timeSheetService.get_Dip_GG_Timbratura_backColor(record),
@@ -82,7 +83,8 @@
                                              'font-size': '0.5em',
                                              'margin-bottom':'1px',
                                              'margin-top':'0px'
-                                           }">
+                                           }"
+                                (click)="actionSheetOpen(record)">
                       {{ record.timbraturaTipo | tipoTimbraturaToShortText }}{{ record.timbratura | date:'HH:mm' }}
                       <ion-icon slot="end" [name]="timeSheetService.get_StatoRichiesta_icon(record.richiestaStato)"></ion-icon>
                     </ion-button>
@@ -107,4 +109,12 @@
     </div> <!-- Fine calendar-grid -->
 
   </div>
+
+  <ion-action-sheet [isOpen]="isActionSheetOpen"
+                    [header]="actionSheetHeader"
+                    [subHeader]="actionSheetSubHeader"
+                    [buttons]="actionSheetButtons"
+                    (didDismiss)="actionSheetExecute($event)"></ion-action-sheet>
+
+
 </ion-content>

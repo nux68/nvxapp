@@ -182,25 +182,20 @@ export class TimeSheetAdminPageComponent implements OnInit {
   isActionSheetOpen = false;
   public actionSheetButtons = [
     {
-      text: 'Cancella richiesta',
-      role: 'delete',
+      text: 'Approva richiesta',
+      role: 'approva',
       data: {
-        action: 'delete',
+        action: 'approva',
       },
     },
-    //{
-    //  text: 'Share',
-    //  data: {
-    //    action: 'share',
-    //  },
-    //},
-    //{
-    //  text: 'Cancel',
-    //  role: 'cancel',
-    //  data: {
-    //    action: 'cancel',
-    //  },
-    //},
+    {
+      text: 'Rifiuta richiesta',
+      role: 'rifiuta',
+      data: {
+        action: 'rifiuta',
+      },
+    },
+  
   ];
 
   private actionSheetOpenSelectObj: Dip_GG_GiustificativiModel | Dip_GG_TimbraturaModel;
@@ -232,7 +227,7 @@ export class TimeSheetAdminPageComponent implements OnInit {
   actionSheetExecute(event: any) {
     this.isActionSheetOpen = false;
 
-    if (event?.detail?.data?.action === 'delete') {
+    if (event?.detail?.data?.action === 'approva' || event?.detail?.data?.action === 'rifiuta') {
       let IdDip_GG_Richiesta: number[] = [];
       if ('idPar_Giustificativi' in this.actionSheetOpenSelectObj) {
         const giustificativo = this.actionSheetOpenSelectObj as Dip_GG_GiustificativiModel;
@@ -245,7 +240,14 @@ export class TimeSheetAdminPageComponent implements OnInit {
 
       if (IdDip_GG_Richiesta.length > 0) {
         let request: GenericRequest<Dip_GG_Richiesta_SetState_InModel> = new GenericRequest<Dip_GG_Richiesta_SetState_InModel>(Dip_GG_Richiesta_SetState_InModel);
-        request.data.richiestaStato = StatoRichiesta.Cancellata;
+        if (event?.detail?.data?.action === 'approva') {
+          request.data.richiestaStato = StatoRichiesta.Approvata;
+        } else if (event?.detail?.data?.action === 'rifiuta') {
+          request.data.richiestaStato = StatoRichiesta.Rifiutata;
+        }
+
+        
+
         request.data.IdDip_GG_Richiesta = IdDip_GG_Richiesta;
         this.dipGGRichiestaService.SetState(request).subscribe(res => {
           this.loadMonth();
