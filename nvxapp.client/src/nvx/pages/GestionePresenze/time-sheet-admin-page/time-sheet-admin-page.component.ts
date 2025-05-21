@@ -5,8 +5,13 @@ import { MonthData } from '../../../Utility/GestionePresenze/time-sheet-common-d
 import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
 import { Dip_GG_TimbraturaModel, TipoTimbratura } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Timbratura/Models/dip-gg-timbratura-model';
 import { Dip_GG_GiustificativiModel, JustificationInputType } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Giustificativi/Models/dip-gg-giustificativi-model';
-import { StatoRichiesta } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/Models/dip-gg-richiesta-model';
+import { Dip_GG_Richiesta_SetState_InModel, StatoRichiesta } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/Models/dip-gg-richiesta-model';
 import { MonthNavigatorService } from '../../../Utility/infrastructure/month-navigator.service';
+import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
+import { ParGiustificativiToLongTextPipe } from '../../../shared/pipe/GestionePresenze/par-giustificativi-to-long-text.pipe';
+import { TipoTimbraturaToLongTextPipe } from '../../../shared/pipe/GestionePresenze/tipo-timbratura-to-long-text.pipe';
+import { DipGGRichiestaService } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/dip-gg-richiesta.service';
+import { DateTimeUtilService } from '../../../Utility/infrastructure/date-time-util.service';
 
 interface DayData {
   date: Date;
@@ -44,6 +49,8 @@ export class TimeSheetAdminPageComponent implements OnInit {
   constructor(
     public monthNavigatorService: MonthNavigatorService,
     public timeSheetService: TimeSheetService,
+    private dipGGRichiestaService: DipGGRichiestaService,
+    public dateTimeUtilService: DateTimeUtilService,
     private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService
   ) {
     this.title = 'TimeSheetUser';
@@ -154,75 +161,6 @@ export class TimeSheetAdminPageComponent implements OnInit {
     };
   }
 
-  getTimestampClass(record: any): { [key: string]: boolean } {
-    return {
-      'entry': record.timbraturaTipo === TipoTimbratura.Entrata,
-      'exit': record.timbraturaTipo === TipoTimbratura.Uscita
-    };
-  }
-
-  // Helper method to get appropriate icon for request status
-  getStatusIcon(status: StatoRichiesta): string {
-    switch (status) {
-      case StatoRichiesta.Diretta:
-        return 'checkmark-circle'; // Direct entry
-      case StatoRichiesta.Immessa:
-        return 'time-outline'; // Submitted
-      case StatoRichiesta.ApprovazioneInCorso:
-        return 'hourglass-outline'; // In progress
-      case StatoRichiesta.ParzialmenteApprovata:
-        return 'alert-circle-outline'; // Partially approved
-      case StatoRichiesta.Approvata:
-        return 'checkmark-circle-outline'; // Approved
-      case StatoRichiesta.Rifiutata:
-        return 'close-circle-outline'; // Rejected
-      case StatoRichiesta.Cancellata:
-        return 'trash-outline'; // Cancelled
-      default:
-        return 'help-circle-outline'; // Unknown status
-    }
-  }
-
-  // Helper method to get text description for request status
-  getStatusText(status: StatoRichiesta): string {
-    switch (status) {
-      case StatoRichiesta.Diretta:
-        return 'Direct Entry';
-      case StatoRichiesta.Immessa:
-        return 'Submitted';
-      case StatoRichiesta.ApprovazioneInCorso:
-        return 'Approval In Progress';
-      case StatoRichiesta.ParzialmenteApprovata:
-        return 'Partially Approved';
-      case StatoRichiesta.Approvata:
-        return 'Approved';
-      case StatoRichiesta.Rifiutata:
-        return 'Rejected';
-      case StatoRichiesta.Cancellata:
-        return 'Cancelled';
-      default:
-        return 'Unknown Status';
-    }
-  }
-
-  get_dip_GG_Giustificativi_backColor(ggJust: Dip_GG_GiustificativiModel): string {
-
-    var just = this.sharedParameterGestionePresenzeService.Par_Giustificativi.find(x => x.id == ggJust.idPar_Giustificativi);
-    if (just)
-      return just.backgroundColor;
-    else
-      return null;
-  }
-
-  get_dip_GG_Giustificativi_txtColor(ggJust: Dip_GG_GiustificativiModel): string {
-
-    var just = this.sharedParameterGestionePresenzeService.Par_Giustificativi.find(x => x.id == ggJust.idPar_Giustificativi);
-    if (just)
-      return just.textColor;
-    else
-      return null;
-  }
-
   onPeriodChange(period: { year: number, month: number } | undefined): void {
     if (period) {
       this.currYear = period.year;
@@ -238,5 +176,87 @@ export class TimeSheetAdminPageComponent implements OnInit {
   onSedeChanged(sediId: number | undefined): void { }
   onRepartiChanged(repartoIds: number[] | undefined): void { }
   onAllUsersInSelectionChanged(userIds: string[] | undefined): void { }
+
+  //////
+
+  isActionSheetOpen = false;
+  public actionSheetButtons = [
+    {
+      text: 'Cancella richiesta',
+      role: 'delete',
+      data: {
+        action: 'delete',
+      },
+    },
+    //{
+    //  text: 'Share',
+    //  data: {
+    //    action: 'share',
+    //  },
+    //},
+    //{
+    //  text: 'Cancel',
+    //  role: 'cancel',
+    //  data: {
+    //    action: 'cancel',
+    //  },
+    //},
+  ];
+
+  private actionSheetOpenSelectObj: Dip_GG_GiustificativiModel | Dip_GG_TimbraturaModel;
+  public actionSheetHeader = '';
+  public actionSheetSubHeader = '';
+
+  actionSheetOpen(obj: any) {
+    if ('idPar_Giustificativi' in obj) {
+
+      const parGiustificativiToLongTextPipe = new ParGiustificativiToLongTextPipe(this.sharedParameterGestionePresenzeService);
+
+      const giustificativo = obj as Dip_GG_GiustificativiModel;
+      this.actionSheetOpenSelectObj = giustificativo;
+      this.actionSheetHeader = `Giustificativo : ${parGiustificativiToLongTextPipe.transform(giustificativo.idPar_Giustificativi)} ${this.dateTimeUtilService.DateTo_ggmmyyyy(giustificativo.data)}`;
+      this.actionSheetSubHeader = null;
+
+    } else if ('timbraturaTipo' in obj) {
+
+      const tipoTimbraturaToLongTextPipe = new TipoTimbraturaToLongTextPipe();
+
+      const timbratura = obj as Dip_GG_TimbraturaModel;
+      this.actionSheetOpenSelectObj = timbratura;
+      this.actionSheetHeader = `Timbratura : ${tipoTimbraturaToLongTextPipe.transform(timbratura.timbraturaTipo)} ${this.dateTimeUtilService.DateTo_ggmmyyyy_hhmm(timbratura.timbratura)}`;
+      this.actionSheetSubHeader = null;
+    }
+    this.isActionSheetOpen = true;
+  }
+
+  actionSheetExecute(event: any) {
+    this.isActionSheetOpen = false;
+
+    if (event?.detail?.data?.action === 'delete') {
+      let IdDip_GG_Richiesta: number[] = [];
+      if ('idPar_Giustificativi' in this.actionSheetOpenSelectObj) {
+        const giustificativo = this.actionSheetOpenSelectObj as Dip_GG_GiustificativiModel;
+        IdDip_GG_Richiesta.push(giustificativo.idDip_GG_Richiesta);
+
+      } else if ('timbraturaTipo' in this.actionSheetOpenSelectObj) {
+        const timbratura = this.actionSheetOpenSelectObj as Dip_GG_TimbraturaModel;
+        IdDip_GG_Richiesta.push(timbratura.idDip_GG_Richiesta);
+      }
+
+      if (IdDip_GG_Richiesta.length > 0) {
+        let request: GenericRequest<Dip_GG_Richiesta_SetState_InModel> = new GenericRequest<Dip_GG_Richiesta_SetState_InModel>(Dip_GG_Richiesta_SetState_InModel);
+        request.data.richiestaStato = StatoRichiesta.Cancellata;
+        request.data.IdDip_GG_Richiesta = IdDip_GG_Richiesta;
+        this.dipGGRichiestaService.SetState(request).subscribe(res => {
+          this.loadMonth();
+        });
+      }
+
+    }
+
+
+
+  }
+
 
 }

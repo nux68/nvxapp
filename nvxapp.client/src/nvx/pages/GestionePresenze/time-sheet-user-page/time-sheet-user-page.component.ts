@@ -162,7 +162,6 @@ export class TimeSheetUserPageComponent implements OnInit {
       'full-day-justification': this.hasFullDayJustification(day.dip_GG_Giustificativi)
     };
   }
-
   onPeriodChange(period: { year: number, month: number } | undefined): void {
 
     this.currYear = period.year;
@@ -170,8 +169,6 @@ export class TimeSheetUserPageComponent implements OnInit {
 
     this.loadMonth();
   }
-
-
 
   onSedeChanged(sediId: number | undefined): void {}
   onRepartiChanged(repartoIds: number[] | undefined): void {}
