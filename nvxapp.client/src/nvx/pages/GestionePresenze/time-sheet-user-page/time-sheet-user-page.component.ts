@@ -11,6 +11,8 @@ import { StatoRichiesta } from '../../../ClientServer-Service/GestionePresenze/D
 import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
 import { ParGiustificativiToLongTextPipe } from '../../../shared/pipe/GestionePresenze/par-giustificativi-to-long-text.pipe';
 import { DateTimeUtilService } from '../../../Utility/infrastructure/date-time-util.service';
+import { TipoTimbraturaToShortTextPipe } from '../../../shared/pipe/GestionePresenze/tipo-timbratura-to-short-text.pipe';
+import { TipoTimbraturaToLongTextPipe } from '../../../shared/pipe/GestionePresenze/tipo-timbratura-to-long-text.pipe';
 
 
 @Component({
@@ -215,10 +217,15 @@ export class TimeSheetUserPageComponent implements OnInit {
       this.actionSheetSubHeader = null;
 
     } else if ('timbraturaTipo' in obj) {
+
+      const tipoTimbraturaToLongTextPipe = new TipoTimbraturaToLongTextPipe();
+
+      
+
       const timbratura = obj as Dip_GG_TimbraturaModel;
       this.actionSheetOpenSelectObj = timbratura;
-      this.actionSheetHeader = 'Timbratura';
-      this.actionSheetSubHeader = `Tipo: ${timbratura.timbraturaTipo}`;
+      this.actionSheetHeader = `Timbratura : ${tipoTimbraturaToLongTextPipe.transform(timbratura.timbraturaTipo)} ${timbratura.timbratura}`;
+      this.actionSheetSubHeader = null;
     }
     this.isActionSheetOpen = true;
   }
