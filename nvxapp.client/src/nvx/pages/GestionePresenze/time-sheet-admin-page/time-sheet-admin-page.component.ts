@@ -43,7 +43,7 @@ export class TimeSheetAdminPageComponent implements OnInit {
 
   constructor(
     public monthNavigatorService: MonthNavigatorService,
-    private timeSheetService: TimeSheetService,
+    public timeSheetService: TimeSheetService,
     private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService
   ) {
     this.title = 'TimeSheetUser';

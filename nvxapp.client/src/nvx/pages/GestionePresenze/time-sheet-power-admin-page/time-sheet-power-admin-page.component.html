@@ -36,7 +36,7 @@
             <span class="day-number">{{ day.date | date:'dd' }}</span>
             <span class="day-name">{{ day.date | date:'EEE' }}</span>
           </ion-col>
-          <ion-col size="5" class="timestamps-cell">
+          <ion-col size="5">
             <ng-container *ngIf="day.dip_GG_Timbratura?.length > 0; else noTimb">
 
               <ion-button [disabled]="false" size="small" shape="round"
@@ -55,7 +55,7 @@
               <span class="no-data">-</span>
             </ng-template>
           </ion-col>
-          <ion-col size="5" class="justifications-cell">
+          <ion-col size="5">
             <ng-container *ngIf="day.dip_GG_Giustificativi?.length > 0; else noJust">
 
 
