@@ -40,7 +40,7 @@ export class TimeSheetUserPageComponent implements OnInit {
   constructor(
               private signalrService: SignalrService,
               public monthNavigatorService: MonthNavigatorService,
-              private timeSheetService: TimeSheetService,
+              public timeSheetService: TimeSheetService,
               private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService
   ) {
     this.title = 'TimeSheetUser';

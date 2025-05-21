@@ -4,9 +4,7 @@
 </app-page-toolbar>
 
 <ion-content [fullscreen]="true">
-
   <div class="calendar-container">
-
     <app-sedi-reparto-user-navigation [showPeriodSelect]="true"
                                       [showSediSelect]="false"
                                       [showRepartoSelect]="false"
@@ -17,19 +15,6 @@
                                       (allUsersIdChange)="onAllUsersInSelectionChanged($event)"
                                       (currUserIdChange)="onCurrentUserChanged($event)">
     </app-sedi-reparto-user-navigation>
-
-
-    <!-- Struttura Navigazione Mese -->
-    <!--<div class="month-header">
-      <ion-button (click)="previousMonth()" shape="round" color="primary">
-        <ion-icon slot="icon-only" name="chevron-back-outline"></ion-icon>
-      </ion-button>
-      <h2>{{ currentMonthDisplay }}</h2>
-      <ion-button (click)="nextMonth()" shape="round" color="primary">
-        <ion-icon slot="icon-only" name="chevron-forward-outline"></ion-icon>
-      </ion-button>
-    </div>-->
-
 
     <div class="calendar-grid">
       <!-- Intestazione giorni della settimana -->
@@ -48,42 +33,58 @@
 
             <div class="day-number">{{ day.day }}</div>
 
-            <!-- NUOVO: Contenitore per contenuto del giorno -->
             <div class="day-content">
-
 
               <ng-container *ngIf="day.dip_GG_Giustificativi && day.dip_GG_Giustificativi.length > 0">
                 <div class="justifications">
 
 
-                  <div class="justification" *ngFor="let just of day.dip_GG_Giustificativi"
-                       [style.background-color]="get_dip_GG_Giustificativi_backColor(just)"
-                       [style.color]="get_dip_GG_Giustificativi_txtColor(just)">
+                  <ng-container *ngIf="day.dip_GG_Giustificativi?.length > 0; else noJust">
 
 
-                    <span>{{ just.idPar_Giustificativi | parGiustificativiToLongText}}</span>
+                    <ion-button [disabled]="false" size="small" shape="round"
+                                *ngFor="let just of day.dip_GG_Giustificativi"
+                                [ngStyle]="{
+                                              '--background': timeSheetService.get_Dip_GG_Giustificativi_backColor(just),
+                                              '--color': timeSheetService.get_Dip_GG_Giustificativi_txtColor(just)
+                                            }">
+                      {{ just.idPar_Giustificativi | parGiustificativiToLongText }}
+                      <ion-icon slot="end" [name]="timeSheetService.get_StatoRichiesta_icon(just.richiestaStato)"></ion-icon>
+                    </ion-button>
 
-                    <ion-icon *ngIf="just.idDip_GG_Richiesta"
-                              [name]="getStatusIcon(just.richiestaStato)"
-                              class="status-icon"
-                              [title]="getStatusText(just.richiestaStato)">
-                    </ion-icon>
-                  </div>
+                  </ng-container>
+                  <ng-template #noJust>
+                    <span class="no-data">-</span>
+                  </ng-template>
+
+
                 </div>
               </ng-container>
 
 
               <ng-container *ngIf="day.dip_GG_Timbratura && day.dip_GG_Timbratura.length > 0">
                 <div class="timestamps">
-                  <div class="timestamp" *ngFor="let record of day.dip_GG_Timbratura" [ngClass]="getTimestampClass(record)">
-                    <span>{{ record.timbraturaTipo | tipoTimbraturaToShortText }} {{ record.timbratura | date:'HH:mm' }}</span>
 
-                    <ion-icon *ngIf="record.idDip_GG_Richiesta"
-                              [name]="getStatusIcon(record.richiestaStato)"
-                              class="status-icon"
-                              [title]="getStatusText(record.richiestaStato)">
-                    </ion-icon>
-                  </div>
+                  <ng-container *ngIf="day.dip_GG_Timbratura?.length > 0; else noTimb">
+
+                    <ion-button [disabled]="false" size="small" shape="round"
+                                *ngFor="let record of day.dip_GG_Timbratura"
+                                [ngStyle]="{
+                                             '--background': timeSheetService.get_Dip_GG_Timbratura_backColor(record),
+                                             '--color': timeSheetService.get_Dip_GG_Timbratura_txtColor(record)
+                                           }">
+                      {{ record.timbraturaTipo | tipoTimbraturaToShortText }} {{ record.timbratura | date:'HH:mm' }}
+                      <ion-icon slot="end" [name]="timeSheetService.get_StatoRichiesta_icon(record.richiestaStato)"></ion-icon>
+                    </ion-button>
+
+
+                  </ng-container>
+                  <ng-template #noTimb>
+                    <span class="no-data">-</span>
+                  </ng-template>
+
+
+
                 </div>
               </ng-container>
 
@@ -94,6 +95,9 @@
       </div> <!-- Fine calendar-weeks -->
 
     </div> <!-- Fine calendar-grid -->
+
+
+
 
 
   </div> <!-- Fine calendar-container -->

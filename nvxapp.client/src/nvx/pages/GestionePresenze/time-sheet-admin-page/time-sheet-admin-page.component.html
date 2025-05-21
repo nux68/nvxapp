@@ -4,7 +4,7 @@
 </app-page-toolbar>
 
 <ion-content [fullscreen]="true">
-  <div class="time-sheet-container">
+  <div class="calendar-container">
     <app-sedi-reparto-user-navigation [showPeriodSelect]="true"
                                       [showSediSelect]="false"
                                       [showRepartoSelect]="true"
@@ -32,7 +32,7 @@
           <div class="day" *ngFor="let day of week; let i = index" [ngClass]="getDayClass(day, i)">
 
             <div class="day-number">{{ day.day }}</div>
-            
+
             <div class="day-content">
 
               <ng-container *ngIf="day.dip_GG_Giustificativi && day.dip_GG_Giustificativi.length > 0">
