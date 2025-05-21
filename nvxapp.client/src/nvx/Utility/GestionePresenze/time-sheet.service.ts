@@ -11,6 +11,7 @@ import { forkJoin } from 'rxjs/internal/observable/forkJoin';
 import { DipGGRichiestaService } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/dip-gg-richiesta.service';
 import { MonthData, TimeSheetRemoteData } from './time-sheet-common-data';
 import { SharedParameterGestionePresenzeService } from '../../shared/shared-parameter-gestione-presenze.service';
+import { DateTimeUtilService } from '../infrastructure/date-time-util.service';
 
 
 
@@ -24,7 +25,8 @@ export class TimeSheetService {
   constructor(private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
               private dipGGGiustificativiService: DipGGGiustificativiService,
               private dipGGTimbraturaService: DipGGTimbraturaService,
-              private dipGGRichiestaService: DipGGRichiestaService) {
+              private dipGGRichiestaService: DipGGRichiestaService,
+              public dateTimeUtilService: DateTimeUtilService) {
   }
 
 
@@ -164,24 +166,24 @@ export class TimeSheetService {
   private sortTimestampsByTime(timestamps: Dip_GG_TimbraturaModel[] | undefined): Dip_GG_TimbraturaModel[] {
     if (!timestamps) return [];
 
-    return [...timestamps].sort((a, b) => this.timeToMinutes(a.timbratura) - this.timeToMinutes(b.timbratura));
+    return [...timestamps].sort((a, b) => this.dateTimeUtilService.timeToMinutes(a.timbratura) - this.dateTimeUtilService.timeToMinutes(b.timbratura));
 
   }
 
-  public timeToMinutes(time: Date): number {
-    if (!time) return 0;
-    const hours = time.getHours();
-    const minutes = time.getMinutes();
-    return hours * 60 + minutes;
-  }
+  //public timeToMinutes(time: Date): number {
+  //  if (!time) return 0;
+  //  const hours = time.getHours();
+  //  const minutes = time.getMinutes();
+  //  return hours * 60 + minutes;
+  //}
 
-  public DateToSDate(date: Date): string {
-    const d = new Date(date);
-    const day = String(d.getDate()).padStart(2, '0');
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const year = d.getFullYear();
-    return `${day}/${month}/${year}`;
-  }
+  //public DateToSDate(date: Date): string {
+  //  const d = new Date(date);
+  //  const day = String(d.getDate()).padStart(2, '0');
+  //  const month = String(d.getMonth() + 1).padStart(2, '0');
+  //  const year = d.getFullYear();
+  //  return `${day}/${month}/${year}`;
+  //}
 
 
   get_StatoRichiesta_icon(status: StatoRichiesta): string {

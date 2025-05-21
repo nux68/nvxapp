@@ -10,6 +10,7 @@ import { Dip_GG_GiustificativiModel, JustificationInputType } from '../../../Cli
 import { StatoRichiesta } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/Models/dip-gg-richiesta-model';
 import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
 import { ParGiustificativiToLongTextPipe } from '../../../shared/pipe/GestionePresenze/par-giustificativi-to-long-text.pipe';
+import { DateTimeUtilService } from '../../../Utility/infrastructure/date-time-util.service';
 
 
 @Component({
@@ -44,6 +45,7 @@ export class TimeSheetUserPageComponent implements OnInit {
               private signalrService: SignalrService,
               public monthNavigatorService: MonthNavigatorService,
               public timeSheetService: TimeSheetService,
+              public dateTimeUtilService: DateTimeUtilService,
               private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService
   ) {
     this.title = 'TimeSheetUser';
@@ -209,7 +211,7 @@ export class TimeSheetUserPageComponent implements OnInit {
 
       const giustificativo = obj as Dip_GG_GiustificativiModel;
       this.actionSheetOpenSelectObj = giustificativo;
-      this.actionSheetHeader = `Giustificativo : ${parGiustificativiToLongTextPipe.transform(giustificativo.idPar_Giustificativi)} ${this.timeSheetService.DateToSDate(giustificativo.data)}`;
+      this.actionSheetHeader = `Giustificativo : ${parGiustificativiToLongTextPipe.transform(giustificativo.idPar_Giustificativi)} ${this.dateTimeUtilService.DateToSDate(giustificativo.data)}`;
       this.actionSheetSubHeader = null;
 
     } else if ('timbraturaTipo' in obj) {
