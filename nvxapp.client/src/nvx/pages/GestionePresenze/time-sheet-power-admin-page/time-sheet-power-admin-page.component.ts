@@ -5,7 +5,12 @@ import { MonthData } from '../../../Utility/GestionePresenze/time-sheet-common-d
 import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
 import { Dip_GG_TimbraturaModel, TipoTimbratura } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Timbratura/Models/dip-gg-timbratura-model';
 import { Dip_GG_GiustificativiModel } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Giustificativi/Models/dip-gg-giustificativi-model';
-import { StatoRichiesta } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/Models/dip-gg-richiesta-model';
+import { Dip_GG_Richiesta_SetState_InModel, StatoRichiesta } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/Models/dip-gg-richiesta-model';
+import { DipGGRichiestaService } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/dip-gg-richiesta.service';
+import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
+import { ParGiustificativiToLongTextPipe } from '../../../shared/pipe/GestionePresenze/par-giustificativi-to-long-text.pipe';
+import { TipoTimbraturaToLongTextPipe } from '../../../shared/pipe/GestionePresenze/tipo-timbratura-to-long-text.pipe';
+import { DateTimeUtilService } from '../../../Utility/infrastructure/date-time-util.service';
 
 interface DayData {
   date: Date;
@@ -36,6 +41,8 @@ export class TimeSheetPowerAdminPageComponent implements OnInit {
 
   constructor(
     public timeSheetService: TimeSheetService,
+    private dipGGRichiestaService: DipGGRichiestaService,
+    public dateTimeUtilService: DateTimeUtilService,
     public userNavigationService: UserNavigationService,
     private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService
   ) {
@@ -110,7 +117,90 @@ export class TimeSheetPowerAdminPageComponent implements OnInit {
   onRepartiChanged(repartoIds: number[] | undefined): void { }
   onAllUsersInSelectionChanged(userIds: string[] | undefined): void { }
 
-  ///////
+  //////
+
+  isActionSheetOpen = false;
+  public actionSheetButtons = [
+    {
+      text: 'Approva richiesta',
+      role: 'approva',
+      data: {
+        action: 'approva',
+      },
+    },
+    {
+      text: 'Rifiuta richiesta',
+      role: 'rifiuta',
+      data: {
+        action: 'rifiuta',
+      },
+    },
+
+  ];
+
+  private actionSheetOpenSelectObj: Dip_GG_GiustificativiModel | Dip_GG_TimbraturaModel;
+  public actionSheetHeader = '';
+  public actionSheetSubHeader = '';
+
+  actionSheetOpen(obj: any) {
+    if ('idPar_Giustificativi' in obj) {
+
+      const parGiustificativiToLongTextPipe = new ParGiustificativiToLongTextPipe(this.sharedParameterGestionePresenzeService);
+
+      const giustificativo = obj as Dip_GG_GiustificativiModel;
+      this.actionSheetOpenSelectObj = giustificativo;
+      this.actionSheetHeader = `Giustificativo : ${parGiustificativiToLongTextPipe.transform(giustificativo.idPar_Giustificativi)} ${this.dateTimeUtilService.DateTo_ggmmyyyy(giustificativo.data)}`;
+      this.actionSheetSubHeader = null;
+
+    } else if ('timbraturaTipo' in obj) {
+
+      const tipoTimbraturaToLongTextPipe = new TipoTimbraturaToLongTextPipe();
+
+      const timbratura = obj as Dip_GG_TimbraturaModel;
+      this.actionSheetOpenSelectObj = timbratura;
+      this.actionSheetHeader = `Timbratura : ${tipoTimbraturaToLongTextPipe.transform(timbratura.timbraturaTipo)} ${this.dateTimeUtilService.DateTo_ggmmyyyy_hhmm(timbratura.timbratura)}`;
+      this.actionSheetSubHeader = null;
+    }
+    this.isActionSheetOpen = true;
+  }
+
+  actionSheetExecute(event: any) {
+    this.isActionSheetOpen = false;
+
+    if (event?.detail?.data?.action === 'approva' || event?.detail?.data?.action === 'rifiuta') {
+      let IdDip_GG_Richiesta: number[] = [];
+      if ('idPar_Giustificativi' in this.actionSheetOpenSelectObj) {
+        const giustificativo = this.actionSheetOpenSelectObj as Dip_GG_GiustificativiModel;
+        IdDip_GG_Richiesta.push(giustificativo.idDip_GG_Richiesta);
+
+      } else if ('timbraturaTipo' in this.actionSheetOpenSelectObj) {
+        const timbratura = this.actionSheetOpenSelectObj as Dip_GG_TimbraturaModel;
+        IdDip_GG_Richiesta.push(timbratura.idDip_GG_Richiesta);
+      }
+
+      if (IdDip_GG_Richiesta.length > 0) {
+        let request: GenericRequest<Dip_GG_Richiesta_SetState_InModel> = new GenericRequest<Dip_GG_Richiesta_SetState_InModel>(Dip_GG_Richiesta_SetState_InModel);
+        if (event?.detail?.data?.action === 'approva') {
+          request.data.richiestaStato = StatoRichiesta.Approvata;
+        } else if (event?.detail?.data?.action === 'rifiuta') {
+          request.data.richiestaStato = StatoRichiesta.Rifiutata;
+        }
+
+
+
+        request.data.IdDip_GG_Richiesta = IdDip_GG_Richiesta;
+        this.dipGGRichiestaService.SetState(request).subscribe(res => {
+          this.loadMonth();
+        });
+      }
+
+    }
+
+
+
+  }
+
+
 
 
 }

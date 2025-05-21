@@ -4,6 +4,7 @@
 </app-page-toolbar>
 
 <ion-content [fullscreen]="true">
+
   <div class="time-sheet-container">
     <app-sedi-reparto-user-navigation [showPeriodSelect]="true"
                                       [showSediSelect]="false"
@@ -30,7 +31,7 @@
           <ion-col size="5" class="header-cell">Giustificativi</ion-col>
         </ion-row>
 
-        <ion-row *ngFor="let day of currentDays"   [ngClass]="{'weekend': isWeekend(day.date)}" class="day-row nvx-ion-row-4table">
+        <ion-row *ngFor="let day of currentDays" [ngClass]="{'weekend': isWeekend(day.date)}" class="day-row nvx-ion-row-4table">
 
           <ion-col size="2" class="day-cell">
             <span class="day-number">{{ day.date | date:'dd' }}</span>
@@ -39,17 +40,18 @@
           <ion-col size="3">
             <ng-container *ngIf="day.dip_GG_Timbratura?.length > 0; else noTimb">
 
-              <ion-button [disabled]="false" size="small" shape="round"
+              <ion-button [disabled]="record.richiestaStato !== StatoRichiesta.Immessa" size="small" shape="round"
                           *ngFor="let record of day.dip_GG_Timbratura"
                           [ngStyle]="{
-                               '--background': timeSheetService.get_Dip_GG_Timbratura_backColor(record),
-                               '--color': timeSheetService.get_Dip_GG_Timbratura_txtColor(record),
-                               '--padding-top': '0px',
-                               '--padding-bottom': '0px',
-                               'font-size': '0.7em',
-                               'margin-bottom':'1px',
-                               'margin-top':'1px'
-                             }">
+                                       '--background': timeSheetService.get_Dip_GG_Timbratura_backColor(record),
+                                       '--color': timeSheetService.get_Dip_GG_Timbratura_txtColor(record),
+                                       '--padding-top': '0px',
+                                       '--padding-bottom': '0px',
+                                       'font-size': '0.7em',
+                                       'margin-bottom':'1px',
+                                       'margin-top':'1px'
+                                     }"
+                          (click)="actionSheetOpen(record)">
                 {{ record.timbraturaTipo | tipoTimbraturaToShortText }} {{ record.timbratura | date:'HH:mm' }}
                 <ion-icon slot="end" [name]="timeSheetService.get_StatoRichiesta_icon(record.richiestaStato)"></ion-icon>
               </ion-button>
@@ -64,7 +66,7 @@
             <ng-container *ngIf="day.dip_GG_Giustificativi?.length > 0; else noJust">
 
 
-              <ion-button [disabled]="false" size="small" shape="round"
+              <ion-button [disabled]="just.richiestaStato !== StatoRichiesta.Immessa" size="small" shape="round"
                           *ngFor="let just of day.dip_GG_Giustificativi"
                           [ngStyle]="{
                                         '--background': timeSheetService.get_Dip_GG_Giustificativi_backColor(just),
@@ -74,7 +76,8 @@
                                         'font-size': '0.7em',
                                         'margin-bottom':'1px',
                                         'margin-top':'1px'
-                                      }">
+                                      }"
+                          (click)="actionSheetOpen(just)">
                 {{ just.idPar_Giustificativi | parGiustificativiToLongText }}
                 <ion-icon slot="end" [name]="timeSheetService.get_StatoRichiesta_icon(just.richiestaStato)"></ion-icon>
               </ion-button>
@@ -91,5 +94,12 @@
 
 
   </div>
+
+  <ion-action-sheet [isOpen]="isActionSheetOpen"
+                    [header]="actionSheetHeader"
+                    [subHeader]="actionSheetSubHeader"
+                    [buttons]="actionSheetButtons"
+                    (didDismiss)="actionSheetExecute($event)"></ion-action-sheet>
+
 </ion-content>
 

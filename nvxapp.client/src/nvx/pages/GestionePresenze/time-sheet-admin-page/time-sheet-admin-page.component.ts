@@ -13,12 +13,7 @@ import { TipoTimbraturaToLongTextPipe } from '../../../shared/pipe/GestionePrese
 import { DipGGRichiestaService } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/dip-gg-richiesta.service';
 import { DateTimeUtilService } from '../../../Utility/infrastructure/date-time-util.service';
 
-interface DayData {
-  date: Date;
-  dayOfMonth: number;
-  dip_GG_Timbratura: Dip_GG_TimbraturaModel[];
-  dip_GG_Giustificativi: Dip_GG_GiustificativiModel[];
-}
+
 
 @Component({
   selector: 'app-time-sheet-admin-page',
@@ -47,11 +42,11 @@ export class TimeSheetAdminPageComponent implements OnInit {
   public currUserId: string | undefined;
 
   constructor(
-    public monthNavigatorService: MonthNavigatorService,
-    public timeSheetService: TimeSheetService,
-    private dipGGRichiestaService: DipGGRichiestaService,
-    public dateTimeUtilService: DateTimeUtilService,
-    private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService
+              public monthNavigatorService: MonthNavigatorService,
+              public timeSheetService: TimeSheetService,
+              private dipGGRichiestaService: DipGGRichiestaService,
+              public dateTimeUtilService: DateTimeUtilService,
+              private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService
   ) {
     this.title = 'TimeSheetUser';
     this.weeks = [];
@@ -209,6 +204,10 @@ export class TimeSheetAdminPageComponent implements OnInit {
 
       const giustificativo = obj as Dip_GG_GiustificativiModel;
       this.actionSheetOpenSelectObj = giustificativo;
+
+      //const dataDa = this.dateTimeUtilService.DateTo_ggmmyyyy(giustificativo.data);
+      
+
       this.actionSheetHeader = `Giustificativo : ${parGiustificativiToLongTextPipe.transform(giustificativo.idPar_Giustificativi)} ${this.dateTimeUtilService.DateTo_ggmmyyyy(giustificativo.data)}`;
       this.actionSheetSubHeader = null;
 

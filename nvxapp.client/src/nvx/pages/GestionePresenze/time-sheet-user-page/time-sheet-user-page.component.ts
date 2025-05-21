@@ -11,7 +11,6 @@ import { Dip_GG_Richiesta_SetState_InModel, StatoRichiesta } from '../../../Clie
 import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
 import { ParGiustificativiToLongTextPipe } from '../../../shared/pipe/GestionePresenze/par-giustificativi-to-long-text.pipe';
 import { DateTimeUtilService } from '../../../Utility/infrastructure/date-time-util.service';
-import { TipoTimbraturaToShortTextPipe } from '../../../shared/pipe/GestionePresenze/tipo-timbratura-to-short-text.pipe';
 import { TipoTimbraturaToLongTextPipe } from '../../../shared/pipe/GestionePresenze/tipo-timbratura-to-long-text.pipe';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { DipGGRichiestaService } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/dip-gg-richiesta.service';
@@ -55,7 +54,7 @@ export class TimeSheetUserPageComponent implements OnInit {
   ) {
     this.title = 'TimeSheetUser';
     this.weeks = [];
-    
+    // Inizializza con una struttura valida ma vuota
     this.currentMonth = { year: 0, month: 0, days: {} };
     
   }
@@ -185,19 +184,7 @@ export class TimeSheetUserPageComponent implements OnInit {
         action: 'delete',
       },
     },
-    //{
-    //  text: 'Share',
-    //  data: {
-    //    action: 'share',
-    //  },
-    //},
-    //{
-    //  text: 'Cancel',
-    //  role: 'cancel',
-    //  data: {
-    //    action: 'cancel',
-    //  },
-    //},
+
   ];
 
   private actionSheetOpenSelectObj: Dip_GG_GiustificativiModel | Dip_GG_TimbraturaModel;
