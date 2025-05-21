@@ -141,7 +141,7 @@ ion-menu-button {
   .day {
     border-right: 1px solid var(--ion-background-color-step-150, #e0e0e0); 
     position: relative;
-    padding: 5px;
+    padding: 0px;
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -176,7 +176,7 @@ ion-menu-button {
     }
 
     .day-content {
-      margin-top: 20px;
+      margin-top: 17px;
       display: flex;
       flex-direction: column;
       gap: 5px;

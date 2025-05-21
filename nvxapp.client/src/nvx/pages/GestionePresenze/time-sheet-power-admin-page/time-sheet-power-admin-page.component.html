@@ -36,14 +36,19 @@
             <span class="day-number">{{ day.date | date:'dd' }}</span>
             <span class="day-name">{{ day.date | date:'EEE' }}</span>
           </ion-col>
-          <ion-col size="5">
+          <ion-col size="3">
             <ng-container *ngIf="day.dip_GG_Timbratura?.length > 0; else noTimb">
 
               <ion-button [disabled]="false" size="small" shape="round"
                           *ngFor="let record of day.dip_GG_Timbratura"
                           [ngStyle]="{
                                '--background': timeSheetService.get_Dip_GG_Timbratura_backColor(record),
-                               '--color': timeSheetService.get_Dip_GG_Timbratura_txtColor(record)
+                               '--color': timeSheetService.get_Dip_GG_Timbratura_txtColor(record),
+                               '--padding-top': '0px',
+                               '--padding-bottom': '0px',
+                               'font-size': '0.7em',
+                               'margin-bottom':'1px',
+                               'margin-top':'1px'
                              }">
                 {{ record.timbraturaTipo | tipoTimbraturaToShortText }} {{ record.timbratura | date:'HH:mm' }}
                 <ion-icon slot="end" [name]="timeSheetService.get_StatoRichiesta_icon(record.richiestaStato)"></ion-icon>
@@ -55,7 +60,7 @@
               <span class="no-data">-</span>
             </ng-template>
           </ion-col>
-          <ion-col size="5">
+          <ion-col size="2">
             <ng-container *ngIf="day.dip_GG_Giustificativi?.length > 0; else noJust">
 
 
@@ -63,7 +68,12 @@
                           *ngFor="let just of day.dip_GG_Giustificativi"
                           [ngStyle]="{
                                         '--background': timeSheetService.get_Dip_GG_Giustificativi_backColor(just),
-                                        '--color': timeSheetService.get_Dip_GG_Giustificativi_txtColor(just)
+                                        '--color': timeSheetService.get_Dip_GG_Giustificativi_txtColor(just),
+                                        '--padding-top': '0px',
+                                        '--padding-bottom': '0px',
+                                        'font-size': '0.7em',
+                                        'margin-bottom':'1px',
+                                        'margin-top':'1px'
                                       }">
                 {{ just.idPar_Giustificativi | parGiustificativiToLongText }}
                 <ion-icon slot="end" [name]="timeSheetService.get_StatoRichiesta_icon(just.richiestaStato)"></ion-icon>

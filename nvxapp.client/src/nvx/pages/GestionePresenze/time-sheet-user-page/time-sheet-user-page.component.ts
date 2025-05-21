@@ -45,7 +45,7 @@ export class TimeSheetUserPageComponent implements OnInit {
   ) {
     this.title = 'TimeSheetUser';
     this.weeks = [];
-    // Inizializza con una struttura valida ma vuota
+    
     this.currentMonth = { year: 0, month: 0, days: {} };
     
   }
@@ -153,75 +153,6 @@ export class TimeSheetUserPageComponent implements OnInit {
     };
   }
 
-  getTimestampClass(record: any): { [key: string]: boolean } {
-    return {
-      'entry': record.timbraturaTipo === TipoTimbratura.Entrata,
-      'exit': record.timbraturaTipo === TipoTimbratura.Uscita
-    };
-  }
-
-  // Helper method to get appropriate icon for request status
-  getStatusIcon(status: StatoRichiesta): string {
-    switch (status) {
-      case StatoRichiesta.Diretta:
-        return 'checkmark-circle'; // Direct entry
-      case StatoRichiesta.Immessa:
-        return 'time-outline'; // Submitted
-      case StatoRichiesta.ApprovazioneInCorso:
-        return 'hourglass-outline'; // In progress
-      case StatoRichiesta.ParzialmenteApprovata:
-        return 'alert-circle-outline'; // Partially approved
-      case StatoRichiesta.Approvata:
-        return 'checkmark-circle-outline'; // Approved
-      case StatoRichiesta.Rifiutata:
-        return 'close-circle-outline'; // Rejected
-      case StatoRichiesta.Cancellata:
-        return 'trash-outline'; // Cancelled
-      default:
-        return 'help-circle-outline'; // Unknown status
-    }
-  }
-
-  // Helper method to get text description for request status
-  getStatusText(status: StatoRichiesta): string {
-    switch (status) {
-      case StatoRichiesta.Diretta:
-        return 'Direct Entry';
-      case StatoRichiesta.Immessa:
-        return 'Submitted';
-      case StatoRichiesta.ApprovazioneInCorso:
-        return 'Approval In Progress';
-      case StatoRichiesta.ParzialmenteApprovata:
-        return 'Partially Approved';
-      case StatoRichiesta.Approvata:
-        return 'Approved';
-      case StatoRichiesta.Rifiutata:
-        return 'Rejected';
-      case StatoRichiesta.Cancellata:
-        return 'Cancelled';
-      default:
-        return 'Unknown Status';
-    }
-  }
-
-  get_dip_GG_Giustificativi_backColor(ggJust: Dip_GG_GiustificativiModel): string {
-    
-    var just = this.sharedParameterGestionePresenzeService.Par_Giustificativi.find(x => x.id == ggJust.idPar_Giustificativi);
-    if (just)
-      return just.backgroundColor;
-    else
-      return null;
-  }
-
-  get_dip_GG_Giustificativi_txtColor(ggJust: Dip_GG_GiustificativiModel): string {
-
-    var just = this.sharedParameterGestionePresenzeService.Par_Giustificativi.find(x => x.id == ggJust.idPar_Giustificativi);
-    if (just)
-      return just.textColor;
-    else
-      return null;
-  }
-
   onPeriodChange(period: { year: number, month: number } | undefined): void {
 
     this.currYear = period.year;
@@ -236,5 +167,34 @@ export class TimeSheetUserPageComponent implements OnInit {
   onRepartiChanged(repartoIds: number[] | undefined): void {}
   onCurrentUserChanged(userId: string | undefined): void {}
   onAllUsersInSelectionChanged(userIds: string[] | undefined): void {}
+
+
+  isActionSheetOpen = false;
+  public actionSheetButtons = [
+    {
+      text: 'Delete',
+      role: 'destructive',
+      data: {
+        action: 'delete',
+      },
+    },
+    {
+      text: 'Share',
+      data: {
+        action: 'share',
+      },
+    },
+    {
+      text: 'Cancel',
+      role: 'cancel',
+      data: {
+        action: 'cancel',
+      },
+    },
+  ];
+
+  setOpen(isOpen: boolean) {
+    this.isActionSheetOpen = isOpen;
+  }
 
 }
