@@ -63,9 +63,8 @@ export class TimeSheetUserPageComponent implements OnInit {
   }
 
   ionViewWillEnter() {
-    if (environment.signalR.useSignalR) {
-      this.signalrService.send("SendMessage", { 'text': "ciao" });
-    }
+
+  
 
     this.fabMenuService.fabMenuItem = [
 
@@ -82,6 +81,10 @@ export class TimeSheetUserPageComponent implements OnInit {
       }),
 
     ];
+
+    if (environment.signalR.useSignalR) {
+      this.signalrService.send("SendMessage", { 'text': "ciao" });
+    }
 
   }
 
