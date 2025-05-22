@@ -11,6 +11,8 @@ import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic
 import { ParGiustificativiToLongTextPipe } from '../../../shared/pipe/GestionePresenze/par-giustificativi-to-long-text.pipe';
 import { TipoTimbraturaToLongTextPipe } from '../../../shared/pipe/GestionePresenze/tipo-timbratura-to-long-text.pipe';
 import { DateTimeUtilService } from '../../../Utility/infrastructure/date-time-util.service';
+import { NavController } from '@ionic/angular';
+import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 
 interface DayData {
   date: Date;
@@ -39,16 +41,45 @@ export class TimeSheetPowerAdminPageComponent implements OnInit {
   TipoTimbratura = TipoTimbratura;
   StatoRichiesta = StatoRichiesta;
 
-  constructor(
-    public timeSheetService: TimeSheetService,
-    private dipGGRichiestaService: DipGGRichiestaService,
-    public dateTimeUtilService: DateTimeUtilService,
-    public userNavigationService: UserNavigationService,
-    private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService
+  constructor(private navCtrl: NavController,
+              public fabMenuService: FabMenuService,
+              public timeSheetService: TimeSheetService,
+              private dipGGRichiestaService: DipGGRichiestaService,
+              public dateTimeUtilService: DateTimeUtilService,
+              public userNavigationService: UserNavigationService,
+              private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService
   ) {
     this.title = 'Controllo Presenze';
     this.currentMonth = { year: 0, month: 0, days: {} };
   }
+
+  ionViewWillEnter() {
+
+    //QUESTO NON LO POSSO FARE
+    //PASSARE
+    //this.currUserId
+
+    this.fabMenuService.fabMenuItem = [
+
+      new FabMenuItem('Elemento 1', 'calendar-number-outline', () => {
+        this.navCtrl.navigateForward('/requestjustificationuser', {
+          state: { currUserId: this.currUserId }
+        });
+      }),
+
+      new FabMenuItem('Elemento 1', 'time-outline', () => {
+        this.navCtrl.navigateForward('/requestclockinguser', {
+          state: { currUserId: this.currUserId }
+        });
+      }),
+
+    ];
+  }
+
+  ionViewWillLeave() {
+    this.fabMenuService.fabMenuItem = [];
+  }
+
 
   ngOnInit() {
     // Inizializzazione componente

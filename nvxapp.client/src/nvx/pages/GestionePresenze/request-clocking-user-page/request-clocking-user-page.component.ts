@@ -85,7 +85,12 @@ export class RequestClockingUserPageComponent implements OnInit {
 
     let request_rich = new GenericRequest<Dip_GG_Richiesta_Send_InModel>(Dip_GG_Richiesta_Send_InModel);
 
-  
+    const state = history.state;
+    if (state && state.currUserId) {
+      request_rich.data.idAspNetUsers = state.currUserId;
+    }
+
+
     let dip_GG_Richiesta_Body_Timbratura: Dip_GG_Richiesta_Body_Timbratura = new Dip_GG_Richiesta_Body_Timbratura();
     dip_GG_Richiesta_Body_Timbratura.hhmm = this.formattedTime;
 
@@ -98,7 +103,8 @@ export class RequestClockingUserPageComponent implements OnInit {
     request_rich.data.dip_GG_Richiesta.dati = this.stringHelperService.toJSONString(dip_GG_Richiesta_Body_Timbratura);
 
     this.dipGGRichiestaService.Send(request_rich).subscribe(res => {
-      this.navCtrl.navigateForward('/usertimesheet');
+      //this.navCtrl.navigateForward('/usertimesheet');
+      this.navCtrl.back();
     });
 
    
@@ -124,7 +130,8 @@ export class RequestClockingUserPageComponent implements OnInit {
 
   private _handleButtonCancelClick = (param: object) => {
 
-    this.navCtrl.navigateForward('/home');
+    //this.navCtrl.navigateForward('/home');
+    this.navCtrl.back();
 
   }
 

@@ -14,6 +14,8 @@ import { DateTimeUtilService } from '../../../Utility/infrastructure/date-time-u
 import { TipoTimbraturaToLongTextPipe } from '../../../shared/pipe/GestionePresenze/tipo-timbratura-to-long-text.pipe';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { DipGGRichiestaService } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/dip-gg-richiesta.service';
+import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
+import { NavController } from '@ionic/angular';
 
 
 @Component({
@@ -44,10 +46,11 @@ export class TimeSheetUserPageComponent implements OnInit {
 
   
 
-  constructor(
+  constructor(private navCtrl: NavController,
               private signalrService: SignalrService,
               public monthNavigatorService: MonthNavigatorService,
               public timeSheetService: TimeSheetService,
+              public fabMenuService: FabMenuService,
               public dateTimeUtilService: DateTimeUtilService,
               private dipGGRichiestaService: DipGGRichiestaService,
               private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService
@@ -63,6 +66,27 @@ export class TimeSheetUserPageComponent implements OnInit {
     if (environment.signalR.useSignalR) {
       this.signalrService.send("SendMessage", { 'text': "ciao" });
     }
+
+    this.fabMenuService.fabMenuItem = [
+
+      new FabMenuItem('Elemento 1', 'calendar-number-outline', () => {
+        this.navCtrl.navigateForward('/requestjustificationuser', {
+          state: {}
+        });
+      }),
+
+      new FabMenuItem('Elemento 1', 'time-outline', () => {
+        this.navCtrl.navigateForward('/requestclockinguser', {
+          state: {}
+        });
+      }),
+
+    ];
+
+  }
+
+  ionViewWillLeave() {
+    this.fabMenuService.fabMenuItem = [];
   }
 
   ngOnInit() {}

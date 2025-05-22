@@ -220,7 +220,15 @@ export class RequestJustificationUserPageComponent implements OnInit {
   }
 
   submitRequest() {
+
+  
+
     let request_rich = new GenericRequest<Dip_GG_Richiesta_Send_InModel>(Dip_GG_Richiesta_Send_InModel);
+
+    const state = history.state;
+    if (state && state.currUserId) {
+      request_rich.data.idAspNetUsers = state.currUserId;
+    }
 
     let dip_GG_Richiesta_Body_Giustificativo: Dip_GG_Richiesta_Body_Giustificativo = new Dip_GG_Richiesta_Body_Giustificativo();
     dip_GG_Richiesta_Body_Giustificativo.hhmm = this.hoursFormatted;
@@ -239,7 +247,8 @@ export class RequestJustificationUserPageComponent implements OnInit {
     request_rich.data.dip_GG_Richiesta.dati = this.stringHelperService.toJSONString(dip_GG_Richiesta_Body_Giustificativo);
 
     this.dipGGRichiestaService.Send(request_rich).subscribe(res => {
-      this.navCtrl.navigateForward('/usertimesheet');
+      //this.navCtrl.navigateForward('/usertimesheet');
+      this.navCtrl.back();
     });
   }
 
@@ -248,6 +257,7 @@ export class RequestJustificationUserPageComponent implements OnInit {
   }
 
   private _handleButtonCancelClick = (param: object) => {
-    this.navCtrl.navigateForward('/home');
+    //this.navCtrl.navigateForward('/home');
+    this.navCtrl.back();
   }
 }

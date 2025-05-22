@@ -12,6 +12,8 @@ import { ParGiustificativiToLongTextPipe } from '../../../shared/pipe/GestionePr
 import { TipoTimbraturaToLongTextPipe } from '../../../shared/pipe/GestionePresenze/tipo-timbratura-to-long-text.pipe';
 import { DipGGRichiestaService } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/dip-gg-richiesta.service';
 import { DateTimeUtilService } from '../../../Utility/infrastructure/date-time-util.service';
+import { NavController } from '@ionic/angular';
+import { FabMenuService, FabMenuItem } from '../../../Utility/infrastructure/fab-menu.service';
 
 
 
@@ -41,7 +43,8 @@ export class TimeSheetAdminPageComponent implements OnInit {
   public currMonth: number
   public currUserId: string | undefined;
 
-  constructor(
+  constructor(private navCtrl: NavController,
+              public fabMenuService: FabMenuService,
               public monthNavigatorService: MonthNavigatorService,
               public timeSheetService: TimeSheetService,
               private dipGGRichiestaService: DipGGRichiestaService,
@@ -57,6 +60,29 @@ export class TimeSheetAdminPageComponent implements OnInit {
 
   ionViewWillEnter() {
 
+    //QUESTO NON LO POSSO FARE
+    //PASSARE
+    //this.currUserId
+
+    this.fabMenuService.fabMenuItem = [
+
+      new FabMenuItem('Elemento 1', 'calendar-number-outline', () => {
+        this.navCtrl.navigateForward('/requestjustificationuser', {
+          state:  { currUserId: this.currUserId }
+        });
+      }),
+
+      new FabMenuItem('Elemento 1', 'time-outline', () => {
+        this.navCtrl.navigateForward('/requestclockinguser', {
+          state:  { currUserId: this.currUserId }
+        });
+      }),
+
+    ];
+  }
+
+  ionViewWillLeave() {
+    this.fabMenuService.fabMenuItem = [];
   }
 
   ngOnInit() { }

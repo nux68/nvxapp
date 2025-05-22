@@ -8,6 +8,9 @@ setTimeout(() => {
 
 javascript:void(0)
 
+//naviga alla pagina
+this.navCtrl.navigateForward('/usertimesheet');
+this.navCtrl.back();
 
 
 nesconde in funzione della risoluzione

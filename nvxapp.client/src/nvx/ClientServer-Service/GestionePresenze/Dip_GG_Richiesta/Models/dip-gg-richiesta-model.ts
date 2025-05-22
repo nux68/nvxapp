@@ -92,6 +92,7 @@ export class Dip_GG_Richiesta_GetAll4Admin_OutModel extends ModelResult {
 
 
 export class Dip_GG_Richiesta_Send_InModel {
+  public idAspNetUsers?: string
   public dip_GG_Richiesta: Dip_GG_RichiestaModel;
   constructor() {
     this.dip_GG_Richiesta = new Dip_GG_RichiestaModel(); 
