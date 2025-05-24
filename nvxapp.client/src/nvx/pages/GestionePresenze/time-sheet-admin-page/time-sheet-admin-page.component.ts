@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
 import { TimeSheetService } from '../../../Utility/GestionePresenze/time-sheet.service';
 import { MonthData } from '../../../Utility/GestionePresenze/time-sheet-common-data';
@@ -14,6 +14,8 @@ import { DipGGRichiestaService } from '../../../ClientServer-Service/GestionePre
 import { DateTimeUtilService } from '../../../Utility/infrastructure/date-time-util.service';
 import { NavController } from '@ionic/angular';
 import { FabMenuService, FabMenuItem } from '../../../Utility/infrastructure/fab-menu.service';
+import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
+import { Subscription } from 'rxjs';
 
 
 
@@ -23,11 +25,13 @@ import { FabMenuService, FabMenuItem } from '../../../Utility/infrastructure/fab
   styleUrls: ['./time-sheet-admin-page.component.scss'],
   standalone: false
 })
-export class TimeSheetAdminPageComponent implements OnInit {
+export class TimeSheetAdminPageComponent implements OnInit, OnDestroy {
   public title!: string;
 
   TipoTimbratura = TipoTimbratura;
   StatoRichiesta = StatoRichiesta;
+
+  private Dip_GG_Richiesta_refreshSub: Subscription;
 
   currentMonth: MonthData; // Usa l'interfaccia importata
   // Usa le interfacce importate nella definizione di 'weeks'
@@ -44,6 +48,7 @@ export class TimeSheetAdminPageComponent implements OnInit {
   public currUserId: string | undefined;
 
   constructor(private navCtrl: NavController,
+              private refresherService: RefresherService,
               public fabMenuService: FabMenuService,
               public monthNavigatorService: MonthNavigatorService,
               public timeSheetService: TimeSheetService,
@@ -60,10 +65,7 @@ export class TimeSheetAdminPageComponent implements OnInit {
 
   ionViewWillEnter() {
 
-    //QUESTO NON LO POSSO FARE
-    //PASSARE
-    //this.currUserId
-
+  
     this.fabMenuService.fabMenuItem = [
 
       new FabMenuItem('Elemento 1', 'calendar-number-outline', () => {
@@ -85,7 +87,24 @@ export class TimeSheetAdminPageComponent implements OnInit {
     this.fabMenuService.fabMenuItem = [];
   }
 
-  ngOnInit() { }
+  ngOnInit() {
+
+    // Registrazione all'observable per ricevere notifiche di ref
+    this.Dip_GG_Richiesta_refreshSub = this.refresherService.Dip_GG_Richiesta_refresh$.subscribe(() => {
+      this.loadMonth();
+    });
+
+  }
+
+  ngOnDestroy() {
+    // Deregistrazione per evitare memory leak
+    if (this.Dip_GG_Richiesta_refreshSub) {
+      this.Dip_GG_Richiesta_refreshSub.unsubscribe();
+    }
+
+  }
+
+
 
   loadMonth() {
 

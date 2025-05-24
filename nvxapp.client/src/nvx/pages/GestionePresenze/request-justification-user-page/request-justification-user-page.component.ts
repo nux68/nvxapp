@@ -8,6 +8,7 @@ import { DipGGRichiestaService } from '../../../ClientServer-Service/GestionePre
 import { StringHelperService } from '../../../Utility/infrastructure/string-helper.service';
 import { Par_GiustificativiModel } from '../../../ClientServer-Service/GestionePresenze/Par_Giustificativi/Models/par-giustificativi-model';
 import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
+import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
 
 @Component({
   selector: 'app-request-justification-user-page',
@@ -41,11 +42,13 @@ export class RequestJustificationUserPageComponent implements OnInit {
   public giustificativi: Par_GiustificativiModel[] = [];
 
   constructor(public userNavigationService: UserNavigationService,
-    private navCtrl: NavController,
-    private dipGGRichiestaService: DipGGRichiestaService,
-    private stringHelperService: StringHelperService,
-    private userInterfaceService: UserInterfaceService,
-    private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService) {
+              private refresherService: RefresherService,
+              private navCtrl: NavController,
+              private dipGGRichiestaService: DipGGRichiestaService,
+              private stringHelperService: StringHelperService,
+              private userInterfaceService: UserInterfaceService,
+              private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService)
+  {
     this.title = 'Richiesta ferie e permessi';
 
     this.btnInvia = userInterfaceService.Btn_Invia;
@@ -247,7 +250,7 @@ export class RequestJustificationUserPageComponent implements OnInit {
     request_rich.data.dip_GG_Richiesta.dati = this.stringHelperService.toJSONString(dip_GG_Richiesta_Body_Giustificativo);
 
     this.dipGGRichiestaService.Send(request_rich).subscribe(res => {
-      //this.navCtrl.navigateForward('/usertimesheet');
+      this.refresherService.Dip_GG_Richiesta_triggerRefresh();
       this.navCtrl.back();
     });
   }

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
 import { environment } from '../../../../environments/environment';
 import { MonthNavigatorService } from '../../../Utility/infrastructure/month-navigator.service';
@@ -16,6 +16,8 @@ import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic
 import { DipGGRichiestaService } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/dip-gg-richiesta.service';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { NavController } from '@ionic/angular';
+import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
+import { Subscription } from 'rxjs';
 
 
 @Component({
@@ -25,11 +27,13 @@ import { NavController } from '@ionic/angular';
   standalone: false
 })
 
-export class TimeSheetUserPageComponent implements OnInit {
+export class TimeSheetUserPageComponent implements OnInit, OnDestroy {
   public title!: string;
 
   TipoTimbratura = TipoTimbratura;
   StatoRichiesta = StatoRichiesta;
+
+  private Dip_GG_Richiesta_refreshSub: Subscription;
 
   currentMonth: MonthData; // Usa l'interfaccia importata
   // Usa le interfacce importate nella definizione di 'weeks'
@@ -48,6 +52,7 @@ export class TimeSheetUserPageComponent implements OnInit {
 
   constructor(private navCtrl: NavController,
               private signalrService: SignalrService,
+              private refresherService: RefresherService,
               public monthNavigatorService: MonthNavigatorService,
               public timeSheetService: TimeSheetService,
               public fabMenuService: FabMenuService,
@@ -92,7 +97,23 @@ export class TimeSheetUserPageComponent implements OnInit {
     this.fabMenuService.fabMenuItem = [];
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+
+    // Registrazione all'observable per ricevere notifiche di ref
+    this.Dip_GG_Richiesta_refreshSub = this.refresherService.Dip_GG_Richiesta_refresh$.subscribe(() => {
+      this.loadMonth();
+    });
+
+  }
+
+  ngOnDestroy() {
+    // Deregistrazione per evitare memory leak
+    if (this.Dip_GG_Richiesta_refreshSub) {
+      this.Dip_GG_Richiesta_refreshSub.unsubscribe();
+    }
+
+  }
+
 
   loadMonth() {
 

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
 import { TimeSheetService } from '../../../Utility/GestionePresenze/time-sheet.service';
 import { MonthData } from '../../../Utility/GestionePresenze/time-sheet-common-data';
@@ -13,6 +13,8 @@ import { TipoTimbraturaToLongTextPipe } from '../../../shared/pipe/GestionePrese
 import { DateTimeUtilService } from '../../../Utility/infrastructure/date-time-util.service';
 import { NavController } from '@ionic/angular';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
+import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
+import { Subscription } from 'rxjs';
 
 interface DayData {
   date: Date;
@@ -27,7 +29,7 @@ interface DayData {
   styleUrls: ['./time-sheet-power-admin-page.component.scss'],
   standalone: false
 }) 
-export class TimeSheetPowerAdminPageComponent implements OnInit {
+export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
 
   public currYear: number;
   public currMonth: number;
@@ -41,7 +43,10 @@ export class TimeSheetPowerAdminPageComponent implements OnInit {
   TipoTimbratura = TipoTimbratura;
   StatoRichiesta = StatoRichiesta;
 
+  private Dip_GG_Richiesta_refreshSub: Subscription;
+
   constructor(private navCtrl: NavController,
+              private refresherService: RefresherService,
               public fabMenuService: FabMenuService,
               public timeSheetService: TimeSheetService,
               private dipGGRichiestaService: DipGGRichiestaService,
@@ -55,10 +60,7 @@ export class TimeSheetPowerAdminPageComponent implements OnInit {
 
   ionViewWillEnter() {
 
-    //QUESTO NON LO POSSO FARE
-    //PASSARE
-    //this.currUserId
-
+  
     this.fabMenuService.fabMenuItem = [
 
       new FabMenuItem('Elemento 1', 'calendar-number-outline', () => {
@@ -76,13 +78,28 @@ export class TimeSheetPowerAdminPageComponent implements OnInit {
     ];
   }
 
+ 
+
   ionViewWillLeave() {
     this.fabMenuService.fabMenuItem = [];
   }
 
 
   ngOnInit() {
-    // Inizializzazione componente
+    
+    // Registrazione all'observable per ricevere notifiche di ref
+    this.Dip_GG_Richiesta_refreshSub = this.refresherService.Dip_GG_Richiesta_refresh$.subscribe(() => {
+      this.loadMonth();
+    });
+    
+  }
+
+  ngOnDestroy() {
+    // Deregistrazione per evitare memory leak
+    if (this.Dip_GG_Richiesta_refreshSub) {
+      this.Dip_GG_Richiesta_refreshSub.unsubscribe();
+    }
+    
   }
 
   loadMonth() {

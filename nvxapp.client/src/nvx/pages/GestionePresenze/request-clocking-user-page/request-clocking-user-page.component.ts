@@ -6,6 +6,7 @@ import { NavController } from '@ionic/angular';
 import { Dip_GG_Richiesta_Body_Timbratura, Dip_GG_Richiesta_Send_InModel, StatoRichiesta, TipoRichiesta } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/Models/dip-gg-richiesta-model';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
+import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
 
 @Component({
   selector: 'app-request-clocking-user-page',
@@ -28,6 +29,7 @@ export class RequestClockingUserPageComponent implements OnInit {
   public notes: string;
 
   constructor(private navCtrl: NavController,
+              private refresherService: RefresherService,
               public userNavigationService: UserNavigationService,
               private userInterfaceService: UserInterfaceService,
               private dipGGRichiestaService: DipGGRichiestaService,
@@ -103,22 +105,9 @@ export class RequestClockingUserPageComponent implements OnInit {
     request_rich.data.dip_GG_Richiesta.dati = this.stringHelperService.toJSONString(dip_GG_Richiesta_Body_Timbratura);
 
     this.dipGGRichiestaService.Send(request_rich).subscribe(res => {
-      //this.navCtrl.navigateForward('/usertimesheet');
+      this.refresherService.Dip_GG_Richiesta_triggerRefresh();
       this.navCtrl.back();
     });
-
-   
-
-    //console.log('Request submitted', {
-    //  type: this.requestType,
-    //  dateTime: this.dateTime,
-    //  //formattedDateTime: this.formattedDateTime,
-    //  supervisors: this.supervisors,
-    //  notes: this.notes
-    //});
-
-    //// In a real app, this would send the data to a service
-    //alert('Richiesta inviata con successo!');
 
   }
 
