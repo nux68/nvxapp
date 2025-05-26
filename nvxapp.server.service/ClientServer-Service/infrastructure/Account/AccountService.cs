@@ -143,8 +143,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
 
                 if (!string.IsNullOrEmpty(this.CurrentUserId))
                 {
-                    var applicationUser = await _userManager.FindByIdAsync(this.CurrentUserId);
+                    string userId = string.IsNullOrEmpty(model.Data.IdAspNetUsers) ? this.CurrentUserId : model.Data.IdAspNetUsers;
 
+                    var applicationUser = await _userManager.FindByIdAsync(userId);
 
                     if (applicationUser != null)
                     {
