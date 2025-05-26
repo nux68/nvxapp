@@ -789,7 +789,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
         }
 
 
-
+        //TODO MIGLIRARE XKE VERRA USATA MOLTO
         public virtual async Task<GenericResult<UserCompanyListOutModel>> UserCompanyList(GenericRequest<UserCompanyListInModel> model, Boolean isSubProcess)
         {
             return await ExecuteAction(model, async () =>

@@ -137,8 +137,23 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
 
                     List<Dip_GG_Richiesta_Stato_Cronology>  RichiestaApprovazioneData = new List<Dip_GG_Richiesta_Stato_Cronology>();
 
-                    RichiestaApprovazioneData.Add(new Dip_GG_Richiesta_Stato_Cronology() { IdAspNetUsers = "AAA" , RichiestaStato= StatoRichiesta.Immessa,Data= DateTime.Now});
-                    RichiestaApprovazioneData.Add(new Dip_GG_Richiesta_Stato_Cronology() { IdAspNetUsers = "BBB", RichiestaStato = StatoRichiesta.Immessa, Data = DateTime.Now });
+                    GenericRequest<UserCompanyListInModel> req = new GenericRequest<UserCompanyListInModel>();
+                    req.Data.FilteredRoles.AddRange("CompanyAdmin","CompanyPowerAdmin");
+                    var resUser = await _accountService.UserCompanyList(req,true);
+                    if(resUser.Success && resUser.Data != null)
+                    {
+                        resUser.Data.UserCompanyList.ForEach(x =>
+                        {
+                            if (!string.IsNullOrEmpty(x.IdAspNetUsers))
+                            {
+                                RichiestaApprovazioneData.Add(new Dip_GG_Richiesta_Stato_Cronology() { IdAspNetUsers = x.IdAspNetUsers, RichiestaStato = StatoRichiesta.Immessa, Data = DateTime.Now, UsrName_DEB =x.Descrizione });
+                            }
+                        });
+
+                        
+                    }
+
+                    
 
                     List<Dip_GG_Richiesta_Stato_Cronology> RevocaApprovazioneData = new List<Dip_GG_Richiesta_Stato_Cronology>();
 

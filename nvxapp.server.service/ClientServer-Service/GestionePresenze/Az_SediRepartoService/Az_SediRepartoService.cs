@@ -13,6 +13,7 @@ using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediReparto
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRepartoUserService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRepartoUserService.Models;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Account;
+using nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.ServerModels;
@@ -67,6 +68,21 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
                 if (company_DATA_COMB_AzAna_AzSedi_AzReparto != null && company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Sedi != null)
                 {
                     var az_Rep = _az_SediRepartoRepository.FindAll(x => x.IdAz_Sedi == company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Sedi.Id).ToList();
+
+                    GenericRequest<UserCompanyListInModel> req = new GenericRequest<UserCompanyListInModel>();
+                    req.Data.FilteredRoles.AddRange("CompanyAdmin","CompanyPowerAdmin");
+                    var resUser = await _accountService.UserCompanyList(req,true);
+                    if(resUser.Success && resUser.Data != null)
+                    {
+
+                    }
+
+                    //var applicationUser = await _userManager.FindByIdAsync(this.CurrentUserId);
+                    //if (applicationUser != null)
+                    //{
+                    //}
+                    //var roles = await _userManager.GetRolesAsync(applicationUser);
+
 
                     retVal.Az_SediReparto = _mapper.Map<List<Az_SediRepartoModel>>(az_Rep);
                 }

@@ -42,6 +42,9 @@ namespace nvxapp.server.data.Entities.Tenant
         public string? IdAspNetUsers { get; set; } = string.Empty;
         public StatoRichiesta? RichiestaStato { get; set; }
         public DateTime? Data { get; set; }
+
+
+        public string? UsrName_DEB { get; set; } = string.Empty;
     }
 
 
