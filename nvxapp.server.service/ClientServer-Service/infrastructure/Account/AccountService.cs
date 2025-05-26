@@ -818,8 +818,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                             IdUserCompany = item.Id,
                             Descrizione = cur_user?.UserName,
                             MainUser = item.MainUser,
-                            RoleId = cur_role.RoleId,
-                            Roles = new List<string>(await _userManager.GetRolesAsync(cur_user!))
+                            //RoleId = cur_role.RoleId,
+                            Roles = new List<string>((await _userManager.GetRolesAsync(cur_user!)).OrderBy(r => r))
                         });
                     }
 

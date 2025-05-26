@@ -8,7 +8,7 @@ export class UserCompanyListModel {
     public idAspNetUsers: string = "",
     public idUserCompany: number = 0,
     public mainUser: boolean = false,
-    public roleId: string = "",
+    //public roleId: string = "",
     public roles: string[] = []
   ) { }
 }
@@ -31,7 +31,7 @@ export class UserCompanyEditModel {
 
     public mail: string | null = null,
     public pw: string | null = null,
-    public roleId: string = "",
+    //public roleId: string = "",
     public roles:string[]=[]
   ) { }
 }

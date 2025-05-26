@@ -17,7 +17,7 @@ import { RoleCode } from '../../../ClientServer-Service/Infrastructure/Account/M
   styleUrls: ['./user-company-list-page.component.scss'],
   standalone: false
 })
-export class UserCompanyListPageComponent  implements OnInit {
+export class UserCompanyListPageComponent implements OnInit {
 
   public title!: string;
   public searchText!: string;
@@ -26,11 +26,11 @@ export class UserCompanyListPageComponent  implements OnInit {
   public btnEdit: ButtonItem;
 
   constructor(private navCtrl: NavController,
-              private accountService: AccountService,
-              public fabMenuService: FabMenuService,
-              private parameterService: ParameterService,
-              private userInterfaceService: UserInterfaceService,
-              private userNavigationService: UserNavigationService) {
+    private accountService: AccountService,
+    public fabMenuService: FabMenuService,
+    private parameterService: ParameterService,
+    private userInterfaceService: UserInterfaceService,
+    private userNavigationService: UserNavigationService) {
 
     this.title = 'Users';
 
@@ -64,7 +64,7 @@ export class UserCompanyListPageComponent  implements OnInit {
     this.fabMenuService.fabMenuItem = [];
   }
 
-  ngOnInit() {}
+  ngOnInit() { }
 
   handleButtonImpersonaClick = (item: any) => {
 
@@ -96,22 +96,45 @@ export class UserCompanyListPageComponent  implements OnInit {
     this.searchText = CurrFilter;
   }
 
-  getUser() {
+  getAdmin() {
 
-    const roles = this.parameterService.Roles.filter(role => role.code == RoleCode.User);
+    const roles = this.parameterService.Roles.filter(role => role.code == RoleCode.CompanyAdmin || role.code == RoleCode.CompanyPowerAdmin);
 
+    //const filteredUserCompanyList = this.userCompanyList.filter(usr =>
+    //  roles.some(role => role.id === usr.roleId)
+    //);
     const filteredUserCompanyList = this.userCompanyList.filter(usr =>
-      roles.some(role => role.id === usr.roleId)
+      usr.roles.some(userRole => roles.some(role => role.name === userRole))
     );
 
     return filteredUserCompanyList;
 
   }
 
+  getUser() {
+
+    const roles = this.parameterService.Roles.filter(role => role.code == RoleCode.User);
+
+    //const filteredUserCompanyList = this.userCompanyList.filter(usr =>
+    //  roles.some(role => role.id === usr.roleId)
+    //);
+
+    const filteredUserCompanyList = this.userCompanyList.filter(usr =>
+      usr.roles.some(userRole => roles.some(role => role.name === userRole))
+    );
+
+    return filteredUserCompanyList;
+
+  }
+
+
+
+
   getAll() {
     const sortedUserList = this.userCompanyList.sort((a, b) => {
-      const roleA = this.parameterService.Roles.find(role => role.id === a.roleId)?.code || 0;
-      const roleB = this.parameterService.Roles.find(role => role.id === b.roleId)?.code || 0;
+      const roleA = this.parameterService.Roles.find(role => role.name === a.roles[0])?.code || 0;
+      const roleB = this.parameterService.Roles.find(role => role.name === b.roles[0])?.code || 0;
+
 
       // Primo criterio: ordinamento decrescente su roleId
       if (roleB !== roleA) {
@@ -124,33 +147,16 @@ export class UserCompanyListPageComponent  implements OnInit {
     return sortedUserList;
   }
 
+
   isAdmin(item: UserCompanyListModel) {
 
+    const roles = this.parameterService.Roles.filter(role => role.code == RoleCode.User);
 
-    const rolesAdmin = this.parameterService.Roles.find(role => role.code == RoleCode.CompanyAdmin);
 
-    const rolesPowerAdmin = this.parameterService.Roles.find(role => role.code == RoleCode.CompanyPowerAdmin);
-
-    if (item.roles.includes(rolesAdmin.name) || item.roles.includes(rolesPowerAdmin.name)) {
+    if (item.roles.includes(roles[0].name))
+      return false;
+    else
       return true;
-    }
-    return false;
-
-  }
-
-  isUser(item: UserCompanyListModel) {
-
- 
-
-    const rolesUser = this.parameterService.Roles.find(role => role.code == RoleCode.User);
-
-   
-
-    if (item.roles.includes(rolesUser.name) ) {
-      return true;
-    }
-    return false;
-
   }
 
 }
