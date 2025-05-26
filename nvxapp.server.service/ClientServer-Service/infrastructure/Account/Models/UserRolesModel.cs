@@ -12,7 +12,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Mode
 {
     public class UserRolesInModel
     {
-
+        public string? IdAspNetUsers { get; set; }
     }
 
     public class UserRolesOutModel : ModelResult

@@ -3,7 +3,7 @@
 
 
 export class UserRolesInModel {
-
+  idAspNetUsers!: string;
 }
 
 export class UserRolesOutModel {
