@@ -151,7 +151,7 @@ export class UserCompanyListPageComponent implements OnInit {
   isAdmin(item: UserCompanyListModel) {
 
     const roles = this.parameterService.Roles.filter(role => role.code == RoleCode.User);
-
+    
 
     if (item.roles.includes(roles[0].name))
       return false;
