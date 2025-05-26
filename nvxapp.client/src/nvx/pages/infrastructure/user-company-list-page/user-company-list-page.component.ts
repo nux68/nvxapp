@@ -100,8 +100,11 @@ export class UserCompanyListPageComponent  implements OnInit {
 
     const roles = this.parameterService.Roles.filter(role => role.code == RoleCode.CompanyAdmin || role.code == RoleCode.CompanyPowerAdmin);
 
+    //const filteredUserCompanyList = this.userCompanyList.filter(usr =>
+    //  roles.some(role => role.id === usr.roleId)
+    //);
     const filteredUserCompanyList = this.userCompanyList.filter(usr =>
-      roles.some(role => role.id === usr.roleId)
+      usr.roles.some(userRole => roles.some(role => role.name === userRole))
     );
 
     return filteredUserCompanyList;
@@ -112,8 +115,12 @@ export class UserCompanyListPageComponent  implements OnInit {
 
     const roles = this.parameterService.Roles.filter(role => role.code == RoleCode.User);
 
+    //const filteredUserCompanyList = this.userCompanyList.filter(usr =>
+    //  roles.some(role => role.id === usr.roleId)
+    //);
+
     const filteredUserCompanyList = this.userCompanyList.filter(usr =>
-      roles.some(role => role.id === usr.roleId)
+      usr.roles.some(userRole => roles.some(role => role.name === userRole))
     );
 
     return filteredUserCompanyList;
@@ -125,8 +132,9 @@ export class UserCompanyListPageComponent  implements OnInit {
 
   getAll() {
     const sortedUserList = this.userCompanyList.sort((a, b) => {
-      const roleA = this.parameterService.Roles.find(role => role.id === a.roleId)?.code || 0;
-      const roleB = this.parameterService.Roles.find(role => role.id === b.roleId)?.code || 0;
+      const roleA = this.parameterService.Roles.find(role => role.name === a.roles[0])?.code || 0;
+      const roleB = this.parameterService.Roles.find(role => role.name === b.roles[0])?.code || 0;
+      
 
       // Primo criterio: ordinamento decrescente su roleId
       if (roleB !== roleA) {
@@ -143,8 +151,9 @@ export class UserCompanyListPageComponent  implements OnInit {
   isAdmin(item: UserCompanyListModel) {
 
     const roles = this.parameterService.Roles.filter(role => role.code == RoleCode.User);
+    
 
-    if (item.roleId == roles[0].id)
+    if (item.roles.includes(roles[0].name ))
       return false;
     else
       return true;
