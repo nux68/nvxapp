@@ -8,12 +8,16 @@ export class UserCompanyListModel {
     public idAspNetUsers: string = "",
     public idUserCompany: number = 0,
     public mainUser: boolean = false,
-    //public roleId: string = "",
+    
     public roles: string[] = []
   ) { }
 }
 export class UserCompanyListInModel {
-  
+
+  constructor(
+    public filteredRoles: string[] = []
+  ) { }
+
 }
 export class UserCompanyListOutModel extends ModelResult {
 
