@@ -10,6 +10,8 @@ using nvxapp.server.data.Entities.Tenant;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRepartoService;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRepartoService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_RichiestaService.Models;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Account;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Models;
@@ -25,6 +27,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
     public class Dip_GG_RichiestaService : ServiceBase, IDip_GG_RichiestaService
     {
         private readonly IAccountService _accountService;
+        private readonly IAz_SediRepartoService _az_SediRepartoService;
+
 
         private readonly IGestionePresenzeUserUtility _gestionePresenzeUserUtility;
         private readonly IDip_GG_RichiestaRepository _dip_GG_RichiestaRepository;
@@ -34,6 +38,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
 
         private readonly IDip_AnagraficaRepository _dip_AnagraficaRepository;
         private readonly IDip_RapportoLavoroRepository _dip_RapportoLavoroRepository;
+        private readonly IAz_SediRepartoUserRepository _az_SediRepartoUserRepository;
 
         public Dip_GG_RichiestaService(IMapper mapper,
                                   UserManager<ApplicationUser> userManager,
@@ -43,6 +48,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                                   IConfiguration configuration,
 
                                   IAccountService accountService,
+                                  IAz_SediRepartoService az_SediRepartoService,
+                                  IAz_SediRepartoUserRepository az_SediRepartoUserRepository,
                                   IDip_AnagraficaRepository dip_AnagraficaRepository,
                                   IDip_RapportoLavoroRepository dip_RapportoLavoroRepository,
                                   IGestionePresenzeUserUtility gestionePresenzeUserUtility,
@@ -52,6 +59,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                                   IDip_GG_GiustificativiRepository dip_GG_GiustificativiRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _accountService = accountService;
+            _az_SediRepartoService = az_SediRepartoService;
             _gestionePresenzeUserUtility = gestionePresenzeUserUtility;
             _dip_GG_RichiestaRepository = dip_GG_RichiestaRepository;
             _dip_GG_TimbraturaRepository = dip_GG_TimbraturaRepository;
@@ -59,6 +67,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
             _dip_GG_NotaSpesaRepository = dip_GG_NotaSpesaRepository;
             _dip_AnagraficaRepository = dip_AnagraficaRepository;
             _dip_RapportoLavoroRepository = dip_RapportoLavoroRepository;
+            _az_SediRepartoUserRepository = az_SediRepartoUserRepository;
 
         }
 
@@ -97,12 +106,12 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                 Dip_GG_Richiesta_GetAll4Admin_OutModel retVal = new Dip_GG_Richiesta_GetAll4Admin_OutModel();
 
                 GenericRequest<UserCompanyListInModel> req = new GenericRequest<UserCompanyListInModel>();
-                var res = await _accountService.UserCompanyList(req,true);
-                if(res.Success && res.Data != null)
+                var res = await _accountService.UserCompanyList(req, true);
+                if (res.Success && res.Data != null)
                 {
                     var UserCompanyList = res.Data.UserCompanyList;
                     List<string?> idAspNetUsers = UserCompanyList.Select(x => x.IdAspNetUsers).ToList();
-                    List<int> idDip_Anagrafica = _dip_AnagraficaRepository.FindAll(x=> idAspNetUsers.Contains(x.IdAspNetUsers)).Select(x=> x.Id).ToList();
+                    List<int> idDip_Anagrafica = _dip_AnagraficaRepository.FindAll(x => idAspNetUsers.Contains(x.IdAspNetUsers)).Select(x => x.Id).ToList();
                     List<int> idDip_RapportoLavoro = _dip_RapportoLavoroRepository.FindAll(x => idDip_Anagrafica.Contains(x.IdDip_Anagrafica)).Select(x => x.Id).ToList();
 
                     List<Dip_GG_Richiesta> richiesta = Get_Dip_GG_Richiesta(idDip_RapportoLavoro, model.Data.Year, model.Data.Month);
@@ -135,43 +144,70 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
 
                     dip_GG_Richiesta.RichiestaStato = StatoRichiesta.Immessa;
 
-                    List<Dip_GG_Richiesta_Stato_Cronology>  RichiestaApprovazioneData = new List<Dip_GG_Richiesta_Stato_Cronology>();
+                    List<Dip_GG_Richiesta_Stato_Cronology> RichiestaApprovazioneData = new List<Dip_GG_Richiesta_Stato_Cronology>();
 
-                    //GenericRequest<UserCompanyListInModel> req = new GenericRequest<UserCompanyListInModel>();
-                    //req.Data.FilteredRoles.AddRange("CompanyAdmin","CompanyPowerAdmin");
-                    //var resUser = await _accountService.UserCompanyList(req,true);
-                    //if(resUser.Success && resUser.Data != null)
-                    //{
-                    //    resUser.Data.UserCompanyList.ForEach(x =>
-                    //    {
-                    //        if (!string.IsNullOrEmpty(x.IdAspNetUsers))
-                    //        {
-                    //            RichiestaApprovazioneData.Add(new Dip_GG_Richiesta_Stato_Cronology() { IdAspNetUsers = x.IdAspNetUsers, RichiestaStato = StatoRichiesta.Immessa, Data = DateTime.Now, UsrName_DEB =x.Descrizione });
-                    //        }
-                    //    });
-                    //}
-
-                    
-
-                    List<Dip_GG_Richiesta_Stato_Cronology> RevocaApprovazioneData = new List<Dip_GG_Richiesta_Stato_Cronology>();
-
-                    dip_GG_Richiesta.RichiestaApprovazioneData = JsonConvert.SerializeObject(RichiestaApprovazioneData, Formatting.Indented);
-                    dip_GG_Richiesta.RevocaApprovazioneData = JsonConvert.SerializeObject(RevocaApprovazioneData, Formatting.Indented);
-
-                    dip_GG_Richiesta = await _dip_GG_RichiestaRepository.UpsertAsync(dip_GG_Richiesta);
-
-                    switch (dip_GG_Richiesta.RichiestaTipo)
+                    GenericRequest<Az_SediReparto_Get4User_InModel> reqSediRep = new GenericRequest<Az_SediReparto_Get4User_InModel>();
+                    var resSediRep = await _az_SediRepartoService.Get4User(reqSediRep, true);
+                    if (resSediRep.Success && resSediRep.Data != null)
                     {
-                        case TipoRichiesta.Timbratura:
-                            await Add_Dip_GG_Timbratura(dip_GG_Richiesta, user_DATA_COMB_DipAna_DipRapp);
-                            break;
+                        List<int> az_SediReparto = resSediRep.Data.Az_SediReparto.Select(x => x.Id).ToList();
 
-                        case TipoRichiesta.Giustificativo:
-                            await Add_Dip_GG_Giustificativi(dip_GG_Richiesta, user_DATA_COMB_DipAna_DipRapp);
+                        var sediRepartoUser = _az_SediRepartoUserRepository.FindAll(x => az_SediReparto.Contains(x.IdAz_SediReparto) && x.EnabledToAdmin && x.EnabledToApproval)
+                                                                           .GroupBy(x => x.IdAspNetUsers)
+                                                                           .Select(g => new
+                                                                           {
+                                                                               IdAspNetUsers = g.Key,
+                                                                               ApprovalZOrder = g.Min(x => x.ApprovalZOrder) // oppure Max, Average, First, ecc.
+                                                                           })
+                                                                           .OrderBy(x => x.ApprovalZOrder)
+                                                                           .ToList();
 
-                            break;
-                        case TipoRichiesta.NotaSpesa:
-                            break;
+                        if (sediRepartoUser.Any())
+                        {
+                            foreach (var item in sediRepartoUser)
+                            {
+                                //TODO ELIMINARE serve x debug
+                                var applicationUser = await _userManager.FindByIdAsync(item.IdAspNetUsers);
+                                if (applicationUser != null)
+                                {
+                                    RichiestaApprovazioneData.Add(new Dip_GG_Richiesta_Stato_Cronology()
+                                    {
+                                        IdAspNetUsers = item.IdAspNetUsers,
+                                        RichiestaStato = StatoRichiesta.Immessa,
+                                        Data = DateTime.Now,
+                                        UsrName_DEB = applicationUser.UserName
+                                    });
+                                }
+
+                            }
+
+                            List<Dip_GG_Richiesta_Stato_Cronology> RevocaApprovazioneData = new List<Dip_GG_Richiesta_Stato_Cronology>();
+
+                            dip_GG_Richiesta.RichiestaApprovazioneData = JsonConvert.SerializeObject(RichiestaApprovazioneData, Formatting.Indented);
+                            dip_GG_Richiesta.RevocaApprovazioneData = JsonConvert.SerializeObject(RevocaApprovazioneData, Formatting.Indented);
+
+                            dip_GG_Richiesta = await _dip_GG_RichiestaRepository.UpsertAsync(dip_GG_Richiesta);
+
+                            switch (dip_GG_Richiesta.RichiestaTipo)
+                            {
+                                case TipoRichiesta.Timbratura:
+                                    await Add_Dip_GG_Timbratura(dip_GG_Richiesta, user_DATA_COMB_DipAna_DipRapp);
+                                    break;
+
+                                case TipoRichiesta.Giustificativo:
+                                    await Add_Dip_GG_Giustificativi(dip_GG_Richiesta, user_DATA_COMB_DipAna_DipRapp);
+
+                                    break;
+                                case TipoRichiesta.NotaSpesa:
+                                    break;
+                            }
+                        }
+                        else
+                        {
+                            //TODO GESTIRE COMUNICAZIONE SERVER CON ERRORI != EXCEPTION
+                            retVal.Messages.Add(new Message("Nessun amministratore abilitato all'approvazione", MessageType.Exception));
+                        }
+
                     }
 
                 }
@@ -192,9 +228,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
             {
                 Dip_GG_Richiesta_SetState_OutModel retVal = new Dip_GG_Richiesta_SetState_OutModel();
 
-               
+
                 var richieste = _dip_GG_RichiestaRepository.FindAll(x => model.Data.IdDip_GG_Richiesta.Contains(x.Id)).ToList();
-                foreach(var item in richieste)
+                foreach (var item in richieste)
                 {
                     item.RichiestaStato = model.Data.RichiestaStato;
                     await _dip_GG_RichiestaRepository.UpdateAsync(item);
@@ -204,8 +240,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                         case StatoRichiesta.Cancellata:
                         case StatoRichiesta.Rifiutata:
 
-                          
-                            switch ( item.RichiestaTipo)
+
+                            switch (item.RichiestaTipo)
                             {
                                 case TipoRichiesta.Timbratura:
                                     var timbr = _dip_GG_TimbraturaRepository.FindAll(x => x.IdDip_GG_Richiesta == item.Id).ToList();
@@ -233,7 +269,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                             {
                                 case TipoRichiesta.Timbratura:
                                     var timbr = _dip_GG_TimbraturaRepository.FindAll(x => x.IdDip_GG_Richiesta == item.Id).ToList();
-                                    foreach(var idemDett in timbr)
+                                    foreach (var idemDett in timbr)
                                     {
                                         idemDett.RichiestaStato = model.Data.RichiestaStato;
                                         await _dip_GG_TimbraturaRepository.UpsertAsync(idemDett);
@@ -269,7 +305,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                 }
 
 
-             
+
 
 
                 //eliminare
