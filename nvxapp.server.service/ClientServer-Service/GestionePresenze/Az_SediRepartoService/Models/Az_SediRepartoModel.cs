@@ -21,6 +21,17 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
         
     }
 
+    public class Az_SediReparto_Get4User_InModel
+    {
+
+    }
+    public class Az_SediReparto_Get4User_OutModel : ModelResult
+    {
+        public List<Az_SediRepartoModel> Az_SediReparto { get; set; } = new List<Az_SediRepartoModel>();
+        
+    }
+
+
     public class Az_SediRepartoGetInModel
     {
         public int Id { get; set; } = 0;

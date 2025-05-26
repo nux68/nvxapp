@@ -37,6 +37,17 @@ namespace nvxapp.server.Controllers
 
         [Authorize]
         [HttpPost]
+        [Route("Get4User")]
+        public async Task<GenericResult<Az_SediReparto_Get4User_OutModel>> Get4User(GenericRequest<Az_SediReparto_Get4User_InModel> inModel)
+        {
+            var res = await _az_RepartoService.Get4User(inModel, false);
+
+            return res;
+        }
+
+
+        [Authorize]
+        [HttpPost]
         [Route("Az_SediRepartoGet")]
         public async Task<GenericResult<Az_SediRepartoGetOutModel>> Az_SediRepartoGet(GenericRequest<Az_SediRepartoGetInModel> inModel)
         {

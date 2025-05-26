@@ -4,7 +4,7 @@ import { AzSediService } from '../../../../ClientServer-Service/GestionePresenze
 import { AzSediRepartoUserServiceService } from '../../../../ClientServer-Service/GestionePresenze/Az_SediRepartoUser/az-sedi-reparto-user-service.service';
 import { Az_SediModel, Az_Sedi_GetAll_InModel } from '../../../../ClientServer-Service/GestionePresenze/Az_Sedi/Models/az-sedi-model';
 import { GenericRequest } from '../../../../ClientServer-Service/ModelsBase/generic-request';
-import { Az_SediReparto_GetAll_InModel, Az_SediRepartoModel } from '../../../../ClientServer-Service/GestionePresenze/Az_SediReparto/Models/az-sedi-reparto-model';
+import { Az_SediReparto_Get4User_InModel, Az_SediReparto_GetAll_InModel, Az_SediRepartoModel } from '../../../../ClientServer-Service/GestionePresenze/Az_SediReparto/Models/az-sedi-reparto-model';
 import { Az_SediRepartoUser_GetAll_Period_InModel, Az_SediRepartoUserModel } from '../../../../ClientServer-Service/GestionePresenze/Az_SediRepartoUser/Models/az-reparto-user-model';
 import { catchError, forkJoin, map, Observable, throwError } from 'rxjs';
 import { SharedParameterGestionePresenzeService } from '../../../shared-parameter-gestione-presenze.service';
@@ -157,8 +157,8 @@ export class SediRepartoUserNavigationComponent implements OnInit {
     let request1: GenericRequest<Az_Sedi_GetAll_InModel> = new GenericRequest<Az_Sedi_GetAll_InModel>(Az_Sedi_GetAll_InModel);
     const azSediResultObservable$ = this.azSediService.GetAll(request1);
 
-    let request2: GenericRequest<Az_SediReparto_GetAll_InModel> = new GenericRequest<Az_SediReparto_GetAll_InModel>(Az_SediReparto_GetAll_InModel);
-    const azSediRepartoResultObservable$ = this.azSediRepartoService.GetAll(request2);
+    let request2: GenericRequest<Az_SediReparto_Get4User_InModel> = new GenericRequest<Az_SediReparto_Get4User_InModel>(Az_SediReparto_Get4User_InModel);
+    const azSediRepartoResultObservable$ = this.azSediRepartoService.Get4User(request2);
 
     return forkJoin({
       sediResult: azSediResultObservable$,
