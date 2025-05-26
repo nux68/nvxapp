@@ -45,7 +45,18 @@ export class TimeSheetService {
   }
 
   getMonthDataFromServer(year: number, month: number, idAspNetUsers: string | null): Observable<TimeSheetRemoteData> {
-    
+
+    if (year == undefined || month == undefined) {
+      const remoteData: TimeSheetRemoteData = {
+        dip_GG_Giustificativi: [],
+        dip_GG_Timbratura: [],
+        dip_GG_Richiesta: []
+      };
+
+      return of(remoteData);
+    }
+
+
     let request_Just = new GenericRequest<Dip_GG_Giustificativi_GetAll_InModel>(Dip_GG_Giustificativi_GetAll_InModel);
     request_Just.data.year = year;
     request_Just.data.month = month + 1;
