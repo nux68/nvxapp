@@ -5,7 +5,7 @@ import { environment } from '../../../../environments/environment';
 import { GenericRequest } from '../../ModelsBase/generic-request';
 import { GenericResult } from '../../ModelsBase/generic-result';
 import { map, Observable } from 'rxjs';
-import { Az_SediRepartoGetInModel, Az_SediRepartoGetOutModel, Az_SediReparto_GetAll_InModel, Az_SediReparto_GetAll_OutModel, Az_SediRepartoPutInModel, Az_SediRepartoPutOutModel, Az_SediReparto_Get4User_InModel, Az_SediReparto_Get4User_OutModel } from './Models/az-sedi-reparto-model';
+import { Az_SediRepartoGetInModel, Az_SediRepartoGetOutModel, Az_SediReparto_GetAll_InModel, Az_SediReparto_GetAll_OutModel, Az_SediRepartoPutInModel, Az_SediRepartoPutOutModel, Az_SediReparto_Get4User_InModel, Az_SediReparto_Get4User_OutModel, Az_SediReparto_Get4Admin_InModel, Az_SediReparto_Get4Admin_OutModel, Az_SediReparto_Get4AdminApproval_InModel, Az_SediReparto_Get4AdminApproval_OutModel } from './Models/az-sedi-reparto-model';
 
 @Injectable({
   providedIn: 'root'
@@ -40,6 +40,29 @@ export class AzSediRepartoService {
 
   }
 
+  Get4Admin(model: GenericRequest<Az_SediReparto_Get4Admin_InModel>): Observable<GenericResult<Az_SediReparto_Get4Admin_OutModel>> {
+
+    return this.http.post<GenericResult<Az_SediReparto_Get4Admin_OutModel>>(environment.remoteData.apiUri + 'Az_SediReparto/Get4Admin', model)
+      .pipe(
+        map(r => {
+          return r;
+        }
+        )
+      );
+
+  }
+
+  Get4AdminApproval(model: GenericRequest<Az_SediReparto_Get4AdminApproval_InModel>): Observable<GenericResult<Az_SediReparto_Get4AdminApproval_OutModel>> {
+
+    return this.http.post<GenericResult<Az_SediReparto_Get4AdminApproval_OutModel>>(environment.remoteData.apiUri + 'Az_SediReparto/Get4AdminApproval', model)
+      .pipe(
+        map(r => {
+          return r;
+        }
+        )
+      );
+
+  }
 
   Az_SediRepartoGet(model: GenericRequest<Az_SediRepartoGetInModel>): Observable<GenericResult<Az_SediRepartoGetOutModel>> {
 

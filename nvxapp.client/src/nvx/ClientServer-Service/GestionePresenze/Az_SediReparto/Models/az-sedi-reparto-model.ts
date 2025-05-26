@@ -32,6 +32,25 @@ export class Az_SediReparto_Get4User_OutModel extends ModelResult {
 }
 
 
+export class Az_SediReparto_Get4Admin_InModel {
+
+}
+export class Az_SediReparto_Get4Admin_OutModel extends ModelResult {
+
+  public az_SediReparto: Az_SediRepartoModel[];
+
+}
+
+
+export class Az_SediReparto_Get4AdminApproval_InModel {
+
+}
+export class Az_SediReparto_Get4AdminApproval_OutModel extends ModelResult {
+
+  public az_SediReparto: Az_SediRepartoModel[];
+
+}
+
 
 export class Az_SediRepartoGetInModel {
   public id: number;

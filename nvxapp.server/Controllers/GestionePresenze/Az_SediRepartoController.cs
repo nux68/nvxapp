@@ -45,6 +45,26 @@ namespace nvxapp.server.Controllers
             return res;
         }
 
+        [Authorize]
+        [HttpPost]
+        [Route("Get4Admin")]
+        public async Task<GenericResult<Az_SediReparto_Get4Admin_OutModel>> Get4Admin(GenericRequest<Az_SediReparto_Get4Admin_InModel> inModel)
+        {
+            var res = await _az_RepartoService.Get4Admin(inModel, false);
+
+            return res;
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("Get4AdminApproval")]
+        public async Task<GenericResult<Az_SediReparto_Get4AdminApproval_OutModel>> Get4AdminApproval(GenericRequest<Az_SediReparto_Get4AdminApproval_InModel> inModel)
+        {
+            var res = await _az_RepartoService.Get4AdminApproval(inModel, false);
+
+            return res;
+        }
+
 
         [Authorize]
         [HttpPost]
