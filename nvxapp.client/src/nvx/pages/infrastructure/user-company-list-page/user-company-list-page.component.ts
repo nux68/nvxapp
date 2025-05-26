@@ -149,14 +149,22 @@ export class UserCompanyListPageComponent implements OnInit {
 
 
   isAdmin(item: UserCompanyListModel) {
-
-    const roles = this.parameterService.Roles.filter(role => role.code == RoleCode.User);
     
+    const adminRoles = this.parameterService.Roles
+      .filter(role => role.code == RoleCode.CompanyAdmin || role.code == RoleCode.CompanyPowerAdmin)
+      .map(x => x.name);
 
-    if (item.roles.includes(roles[0].name))
-      return false;
-    else
-      return true;
+    return item.roles.some(role => adminRoles.includes(role));
+  }
+
+
+  isUser(item: UserCompanyListModel) {
+
+    const adminRoles = this.parameterService.Roles
+      .filter(role => role.code == RoleCode.User )
+      .map(x => x.name);
+
+    return item.roles.some(role => adminRoles.includes(role));
   }
 
 }
