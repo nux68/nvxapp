@@ -13,6 +13,8 @@ using nvxapp.server.service.Helpers;
 using nvxapp.server.service.HubAI;
 using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.ServerModels;
+using System.Data;
+using System.Linq;
 using static nvxapp.server.data.Entities.AspNetUsersDataUtil;
 
 
@@ -805,12 +807,25 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
 
                 List<IdentityUserRole<string>> IdentityUserRole_list = _aspNetUserRolesRepository.FindAll(x => IdAspNetUsers_List.Contains(x.UserId)).ToList();
 
+                List<ApplicationRole> ApplicationRoleList = _aspNetRolesRepository.GetAll().ToList();
+
                 foreach (var item in userCompany_List)
                 {
                     var cur_user = ApplicationUser_List.Where(x => x.Id == item.IdAspNetUsers).FirstOrDefault();
-                    var cur_role = IdentityUserRole_list.Where(x => x.UserId == item.IdAspNetUsers).FirstOrDefault();
+                    var roles_of_user = IdentityUserRole_list.Where(x => x.UserId == item.IdAspNetUsers).ToList();
 
-                    if (cur_role != null && cur_user != null)
+                    var  cur_role_of_user_id =  roles_of_user.Select(cr=> cr.RoleId).ToList();
+                    var  cur_role_of_user_name = ApplicationRoleList.Where( x=> cur_role_of_user_id.Contains(x.Id) ).Select(x=> x.Name).ToList();
+
+
+                    Boolean FilteredRolesAbil = true;
+                    if(model.Data.FilteredRoles.Any())
+                    {
+                          if (!cur_role_of_user_name.Any(r => r != null && model.Data.FilteredRoles.Contains(r)))
+                              FilteredRolesAbil = false;
+                    }
+
+                    if (roles_of_user.Any()  && cur_user != null && FilteredRolesAbil)
                     {
                         retVal.UserCompanyList.Add(new UserCompanyModel()
                         {
@@ -818,7 +833,6 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                             IdUserCompany = item.Id,
                             Descrizione = cur_user?.UserName,
                             MainUser = item.MainUser,
-                            //RoleId = cur_role.RoleId,
                             Roles = new List<string>((await _userManager.GetRolesAsync(cur_user!)).OrderBy(r => r))
                         });
                     }

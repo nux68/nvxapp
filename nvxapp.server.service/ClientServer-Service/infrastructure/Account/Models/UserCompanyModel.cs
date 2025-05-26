@@ -16,11 +16,13 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Mode
         public int IdUserCompany { get; set; }
         public string? Descrizione { get; set; }
         public Boolean MainUser { get; set; }
-        //public string? RoleId { get; set; }
+        
         public List<string> Roles { get; set; } = new List<string>();
     }
     public class UserCompanyListInModel
     {
+        public List<string> FilteredRoles { get; set; } = new List<string>();
+        
     }
     public class UserCompanyListOutModel : ModelResult
     {
