@@ -20,7 +20,7 @@
 
         <ion-item-options side="end">
 
-          <ion-item-option color="{{btnImpersona.color}}" (click)="btnImpersona.event(item)" *ngIf="!isAdmin(item)">
+          <ion-item-option color="{{btnImpersona.color}}" (click)="btnImpersona.event(item)" *ngIf="isUser(item)">
             <ion-icon slot="start" name="{{btnImpersona.image}}"></ion-icon>
             Impersona
           </ion-item-option>
@@ -45,7 +45,7 @@
       </ion-col>
       <ion-col size="2" class="ion-hide-sm-down">
         <!--fill="solid" expand="block"-->
-        <ion-button size="small" shape="round" (click)="btnImpersona.event(item)" color="{{btnImpersona.color}}" *ngIf="!isAdmin(item)">
+        <ion-button size="small" shape="round" (click)="btnImpersona.event(item)" color="{{btnImpersona.color}}" *ngIf="isUser(item)">
           <ion-icon name="{{btnImpersona.image}}"></ion-icon>
           &nbsp;{{btnImpersona.text}}
         </ion-button>
