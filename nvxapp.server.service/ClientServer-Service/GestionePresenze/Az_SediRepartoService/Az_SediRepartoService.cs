@@ -91,19 +91,21 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
                 int IdCompany;
                 int.TryParse(this.CurrentCompany, out IdCompany);
 
+                string userId = string.IsNullOrEmpty(model.Data.IdAspNetUsers) ? this.CurrentUserId : model.Data.IdAspNetUsers;
+
                 Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg company_DATA_COMB_AzAna_AzSedi_AzReparto = await _gestionePresenzeUserUtility.Get_AzAna_AzSedi_AzReparto_Az_Cfg(IdCompany, true);
 
                 if (company_DATA_COMB_AzAna_AzSedi_AzReparto != null && company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Sedi != null)
                 {
                     GenericRequest<UserRolesInModel> reqRoles = new GenericRequest<UserRolesInModel>();
-                    reqRoles.Data.IdAspNetUsers = this.CurrentUserId;
+                    reqRoles.Data.IdAspNetUsers = userId;//this.CurrentUserId;
                     var resUserRoles = await _accountService.UserRoles(reqRoles, true);
                     if (resUserRoles.Success && resUserRoles.Data != null)
                     {
                         var userRoles = resUserRoles.Data.Roles.Select(x => x.Name).ToList();
                         if (userRoles.Contains("User"))
                         {
-                            var idAz_SediReparto = _az_RepartoUserRepository.FindAll(x => x.IdAspNetUsers == this.CurrentUserId && 
+                            var idAz_SediReparto = _az_RepartoUserRepository.FindAll(x => x.IdAspNetUsers == userId /*this.CurrentUserId*/ && 
                                                                                           x.UserInDepartment == true )
                                                                             .Select(x => x.IdAz_SediReparto).ToList();
                             
@@ -131,20 +133,21 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
 
                 int IdCompany;
                 int.TryParse(this.CurrentCompany, out IdCompany);
+                string userId = string.IsNullOrEmpty(model.Data.IdAspNetUsers) ? this.CurrentUserId : model.Data.IdAspNetUsers;
 
                 Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg company_DATA_COMB_AzAna_AzSedi_AzReparto = await _gestionePresenzeUserUtility.Get_AzAna_AzSedi_AzReparto_Az_Cfg(IdCompany, true);
 
                 if (company_DATA_COMB_AzAna_AzSedi_AzReparto != null && company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Sedi != null)
                 {
                     GenericRequest<UserRolesInModel> reqRoles = new GenericRequest<UserRolesInModel>();
-                    reqRoles.Data.IdAspNetUsers = this.CurrentUserId;
+                    reqRoles.Data.IdAspNetUsers = userId;//this.CurrentUserId;
                     var resUserRoles = await _accountService.UserRoles(reqRoles, true);
                     if (resUserRoles.Success && resUserRoles.Data != null)
                     {
                         var userRoles = resUserRoles.Data.Roles.Select(x => x.Name).ToList();
                         if (userRoles.Contains("CompanyPowerAdmin") || userRoles.Contains("CompanyAdmin"))
                         {
-                            var idAz_SediReparto = _az_RepartoUserRepository.FindAll(x => x.IdAspNetUsers == this.CurrentUserId && 
+                            var idAz_SediReparto = _az_RepartoUserRepository.FindAll(x => x.IdAspNetUsers == userId /*this.CurrentUserId*/ && 
                                                                                           x.EnabledToAdmin == true)
                                                                             .Select(x => x.IdAz_SediReparto).ToList();
                             
@@ -172,20 +175,22 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
 
                 int IdCompany;
                 int.TryParse(this.CurrentCompany, out IdCompany);
+                
+                string userId = string.IsNullOrEmpty(model.Data.IdAspNetUsers) ? this.CurrentUserId : model.Data.IdAspNetUsers;
 
                 Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg company_DATA_COMB_AzAna_AzSedi_AzReparto = await _gestionePresenzeUserUtility.Get_AzAna_AzSedi_AzReparto_Az_Cfg(IdCompany, true);
 
                 if (company_DATA_COMB_AzAna_AzSedi_AzReparto != null && company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Sedi != null)
                 {
                     GenericRequest<UserRolesInModel> reqRoles = new GenericRequest<UserRolesInModel>();
-                    reqRoles.Data.IdAspNetUsers = this.CurrentUserId;
+                    reqRoles.Data.IdAspNetUsers = userId;//this.CurrentUserId;
                     var resUserRoles = await _accountService.UserRoles(reqRoles, true);
                     if (resUserRoles.Success && resUserRoles.Data != null)
                     {
                         var userRoles = resUserRoles.Data.Roles.Select(x => x.Name).ToList();
                         if (userRoles.Contains("CompanyPowerAdmin") || userRoles.Contains("CompanyAdmin"))
                         {
-                            var idAz_SediReparto = _az_RepartoUserRepository.FindAll(x => x.IdAspNetUsers == this.CurrentUserId && 
+                            var idAz_SediReparto = _az_RepartoUserRepository.FindAll(x => x.IdAspNetUsers == userId /*this.CurrentUserId*/ && 
                                                                                           x.EnabledToApproval == true && 
                                                                                           x.EnabledToAdmin == true)
                                                                             .Select(x => x.IdAz_SediReparto).ToList();

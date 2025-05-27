@@ -23,7 +23,7 @@ export class Az_SediReparto_GetAll_OutModel extends ModelResult {
 
 
 export class Az_SediReparto_Get4User_InModel {
-
+  idAspNetUsers!: string;
 }
 export class Az_SediReparto_Get4User_OutModel extends ModelResult {
 
@@ -33,7 +33,7 @@ export class Az_SediReparto_Get4User_OutModel extends ModelResult {
 
 
 export class Az_SediReparto_Get4Admin_InModel {
-
+  idAspNetUsers!: string;
 }
 export class Az_SediReparto_Get4Admin_OutModel extends ModelResult {
 
@@ -43,7 +43,7 @@ export class Az_SediReparto_Get4Admin_OutModel extends ModelResult {
 
 
 export class Az_SediReparto_Get4AdminApproval_InModel {
-
+  idAspNetUsers!: string;
 }
 export class Az_SediReparto_Get4AdminApproval_OutModel extends ModelResult {
 

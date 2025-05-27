@@ -87,7 +87,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                     idDip_RapportoLavoro.Add(user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.Id);
 
                     List<Dip_GG_Richiesta> richiesta = Get_Dip_GG_Richiesta(idDip_RapportoLavoro, model.Data.Year, model.Data.Month);
-                    richiesta = richiesta.OrderBy(x => x.Data).ToList();
+                    
 
                     retVal.Dip_GG_Richiesta = _mapper.Map<List<Dip_GG_RichiestaModel>>(richiesta);
                 }
@@ -115,7 +115,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                     List<int> idDip_RapportoLavoro = _dip_RapportoLavoroRepository.FindAll(x => idDip_Anagrafica.Contains(x.IdDip_Anagrafica)).Select(x => x.Id).ToList();
 
                     List<Dip_GG_Richiesta> richiesta = Get_Dip_GG_Richiesta(idDip_RapportoLavoro, model.Data.Year, model.Data.Month);
-                    richiesta = richiesta.OrderBy(x => x.Data).ToList();
+                    
 
                     retVal.Dip_GG_Richiesta = _mapper.Map<List<Dip_GG_RichiestaModel>>(richiesta);
                 }
@@ -147,6 +147,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                     List<Dip_GG_Richiesta_Stato_Cronology> RichiestaApprovazioneData = new List<Dip_GG_Richiesta_Stato_Cronology>();
 
                     GenericRequest<Az_SediReparto_Get4User_InModel> reqSediRep = new GenericRequest<Az_SediReparto_Get4User_InModel>();
+                    reqSediRep.Data.IdAspNetUsers = userId;
                     var resSediRep = await _az_SediRepartoService.Get4User(reqSediRep, true);
                     if (resSediRep.Success && resSediRep.Data != null)
                     {
@@ -393,14 +394,17 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
         }
         private List<Dip_GG_Richiesta> Get_Dip_GG_Richiesta(List<int> idDipRappList, int Year, int Month)
         {
-            List<Dip_GG_Richiesta> richiesta = _dip_GG_RichiestaRepository.FindAll(x => idDipRappList.Contains(x.IdDip_RapportoLavoro) &&
-                                                                                        (
-                                                                                            (x.Data.Year == Year && x.Data.Month == Month) ||
-                                                                                            (x.DataA.Year == Year && x.DataA.Month == Month) ||
-                                                                                            (x.Data.Year < Year || (x.Data.Year == Year && x.Data.Month < Month)) && (x.DataA.Year > Year || (x.DataA.Year == Year && x.DataA.Month > Month))
-                                                                                        )
+            List<Dip_GG_Richiesta> richiesta = _dip_GG_RichiestaRepository.FindAll(x => idDipRappList.Contains(x.IdDip_RapportoLavoro) 
+                                                                                        //&&
+                                                                                        //(
+                                                                                        //    (x.Data.Year == Year && x.Data.Month == Month) ||
+                                                                                        //    (x.DataA.Year == Year && x.DataA.Month == Month) ||
+                                                                                        //    (x.Data.Year < Year || (x.Data.Year == Year && x.Data.Month < Month)) && (x.DataA.Year > Year || (x.DataA.Year == Year && x.DataA.Month > Month))
+                                                                                        //)
                                                                                   )
                                                                           .ToList();
+
+            richiesta = richiesta.OrderByDescending(x => x.Data).ToList();
 
             return richiesta;
         }

@@ -24,7 +24,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
     
     public class Az_SediReparto_Get4User_InModel
     {
-
+        public string? IdAspNetUsers { get; set; }
     }
     public class Az_SediReparto_Get4User_OutModel : ModelResult
     {
@@ -34,7 +34,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
 
     public class Az_SediReparto_Get4Admin_InModel
     {
-
+        public string? IdAspNetUsers { get; set; }
     }
     public class Az_SediReparto_Get4Admin_OutModel : ModelResult
     {
@@ -44,7 +44,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
 
     public class Az_SediReparto_Get4AdminApproval_InModel
     {
-
+        public string? IdAspNetUsers { get; set; }
     }
     public class Az_SediReparto_Get4AdminApproval_OutModel : ModelResult
     {
