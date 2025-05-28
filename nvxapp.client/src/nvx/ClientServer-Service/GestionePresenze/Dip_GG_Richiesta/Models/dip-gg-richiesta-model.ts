@@ -94,6 +94,7 @@ export class Dip_GG_Richiesta_GetAll4Admin_OutModel extends ModelResult {
 export class Dip_GG_Richiesta_Send_InModel {
   public idAspNetUsers?: string
   public dip_GG_Richiesta: Dip_GG_RichiestaModel;
+  public fromHR: boolean;
   constructor() {
     this.dip_GG_Richiesta = new Dip_GG_RichiestaModel(); 
   }
@@ -110,8 +111,9 @@ export class Dip_GG_Richiesta_Send_OutModel extends ModelResult {
 
 export class Dip_GG_Richiesta_SetState_InModel {
 
-  richiestaStato!: StatoRichiesta;
-  IdDip_GG_Richiesta: number[] = [];
+  public richiestaStato!: StatoRichiesta;
+  public idDip_GG_Richiesta: number[] = [];
+  public fromHR: boolean;
 
   constructor() {
     

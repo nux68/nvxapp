@@ -181,7 +181,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                     Dip_GG_Richiesta dip_GG_Richiesta = _mapper.Map<Dip_GG_Richiesta>(model.Data.Dip_GG_Richiesta);
                     dip_GG_Richiesta.IdDip_RapportoLavoro = user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.Id;
 
-                    dip_GG_Richiesta.RichiestaStato = StatoRichiesta.Immessa;
+                    dip_GG_Richiesta.RichiestaStato = model.Data.FromHR ? StatoRichiesta.Approvata : StatoRichiesta.Immessa;
 
                     var RichiestaApprovazioneData = new List<Dip_GG_Richiesta_Stato_Cronology>();
 
@@ -210,11 +210,20 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                                 var applicationUser = await _userManager.FindByIdAsync(item.IdAspNetUsers);
                                 if (applicationUser != null)
                                 {
+                                    StatoRichiesta statoRichiesta = StatoRichiesta.Immessa;
+
+                                    if (model.Data.FromHR)
+                                        if (item.IdAspNetUsers == CurrentUserId)
+                                            statoRichiesta = StatoRichiesta.Approvata;
+
+
+
                                     RichiestaApprovazioneData.Add(new Dip_GG_Richiesta_Stato_Cronology()
                                     {
                                         IdAspNetUsers = item.IdAspNetUsers,
-                                        RichiestaStato = StatoRichiesta.Immessa,
+                                        RichiestaStato = statoRichiesta,
                                         Data = DateTime.Now,
+                                        //TODO ELIMINARE serve x debug
                                         UsrName_DEB = applicationUser.UserName
                                     });
                                 }
@@ -277,13 +286,13 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                 if (resAz_Cfg.Success && resAz_Cfg.Data != null && resAz_Cfg.Data.Az_Cfg != null)
                 {
                     var richieste = _dip_GG_RichiestaRepository.FindAll(x => model.Data.IdDip_GG_Richiesta.Contains(x.Id)).ToList();
-                    foreach (var item in richieste)
+                    foreach (var curr_richiesta in richieste)
                     {
 
                         for (var idxStato = 0; idxStato <= 1; idxStato++) // 0= richiesta, 1=revoca
                         {
-                            StatoRichiesta? Stato = idxStato == 0 ? item.RichiestaStato : item.RevocaStato;
-                            string? jsonReq = idxStato == 0 ? item.RichiestaApprovazioneData : item.RevocaApprovazioneData;
+                            StatoRichiesta? Stato = idxStato == 0 ? curr_richiesta.RichiestaStato : curr_richiesta.RevocaStato;
+                            string? jsonReq = idxStato == 0 ? curr_richiesta.RichiestaApprovazioneData : curr_richiesta.RevocaApprovazioneData;
 
                             switch (model.Data.RichiestaStato)
                             {
@@ -295,7 +304,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                                     else
                                     {
                                         // prendo la lista che ho usato nell'approvazione , azzero lo stato e la metto in RevocaApprovazioneData
-                                        List<Dip_GG_Richiesta_Stato_Cronology> listaAppr = !string.IsNullOrEmpty(item.RichiestaApprovazioneData) ? JsonConvert.DeserializeObject<List<Dip_GG_Richiesta_Stato_Cronology>>(item.RichiestaApprovazioneData) ?? new List<Dip_GG_Richiesta_Stato_Cronology>() : new List<Dip_GG_Richiesta_Stato_Cronology>();
+                                        List<Dip_GG_Richiesta_Stato_Cronology> listaAppr = !string.IsNullOrEmpty(curr_richiesta.RichiestaApprovazioneData) ? JsonConvert.DeserializeObject<List<Dip_GG_Richiesta_Stato_Cronology>>(curr_richiesta.RichiestaApprovazioneData) ?? new List<Dip_GG_Richiesta_Stato_Cronology>() : new List<Dip_GG_Richiesta_Stato_Cronology>();
 
                                         foreach (var o in listaAppr)
                                         {
@@ -303,9 +312,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                                             o.Data = DateTime.Now;
                                         }
 
-                                        item.RevocaApprovazioneData = JsonConvert.SerializeObject(listaAppr, Formatting.Indented);
-                                        item.RevocaStato = model.Data.RichiestaStato;
-                                        await _dip_GG_RichiestaRepository.UpdateAsync(item);
+                                        curr_richiesta.RevocaApprovazioneData = JsonConvert.SerializeObject(listaAppr, Formatting.Indented);
+                                        curr_richiesta.RevocaStato = model.Data.RichiestaStato;
+                                        await _dip_GG_RichiestaRepository.UpdateAsync(curr_richiesta);
                                         continue;
                                     }
                                 case StatoRichiesta.Cancellata:
@@ -316,19 +325,19 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                                     {
                                         if (Stato == StatoRichiesta.Immessa || Stato == StatoRichiesta.ApprovazioneInCorso || Stato == StatoRichiesta.ParzialmenteApprovata)
                                         {
-                                            item.RichiestaStato = model.Data.RichiestaStato;
-                                            await _dip_GG_RichiestaRepository.UpdateAsync(item);
+                                            curr_richiesta.RichiestaStato = model.Data.RichiestaStato;
+                                            await _dip_GG_RichiestaRepository.UpdateAsync(curr_richiesta);
 
                                             //posso cancellare i dettagli
-                                            await Dip_GG_Richiesta_Canc_Dettaglio(item);
+                                            await Dip_GG_Richiesta_Canc_Dettaglio(curr_richiesta);
                                         }
                                     }
                                     else
                                     {
 
-                                        item.RevocaStato = null;
-                                        item.RevocaApprovazioneData = JsonConvert.SerializeObject(new List<Dip_GG_Richiesta_Stato_Cronology>(), Formatting.Indented); ;
-                                        await _dip_GG_RichiestaRepository.UpdateAsync(item);
+                                        curr_richiesta.RevocaStato = null;
+                                        curr_richiesta.RevocaApprovazioneData = JsonConvert.SerializeObject(new List<Dip_GG_Richiesta_Stato_Cronology>(), Formatting.Indented); ;
+                                        await _dip_GG_RichiestaRepository.UpdateAsync(curr_richiesta);
                                     }
 
 
@@ -349,50 +358,51 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
 
                                         StatoRichiesta? RichiestaStato_Orig;
                                         if (idxStato == 0)
-                                            RichiestaStato_Orig = item.RichiestaStato;
+                                            RichiestaStato_Orig = curr_richiesta.RichiestaStato;
                                         else
-                                            RichiestaStato_Orig = item.RevocaStato;
+                                            RichiestaStato_Orig = curr_richiesta.RevocaStato;
 
                                         switch (resAz_Cfg.Data.Az_Cfg.ApprovazioneTipo)
                                         {
                                             case TipoApprovazione.SigleAdmin:
                                                 if (idxStato == 0)
-                                                    item.RichiestaStato = model.Data.RichiestaStato;
+                                                    curr_richiesta.RichiestaStato = model.Data.RichiestaStato;
                                                 else
-                                                    item.RevocaStato = model.Data.RichiestaStato;
+                                                    curr_richiesta.RevocaStato = model.Data.RichiestaStato;
                                                 break;
                                             case TipoApprovazione.AllAdmin:
                                             case TipoApprovazione.AllAdminHierarchy:
                                                 if (listaAppr.Where(x => x.RichiestaStato != StatoRichiesta.Approvata).Any())
+                                                    //se FromHR forzatura
                                                     if (idxStato == 0)
-                                                        item.RichiestaStato = StatoRichiesta.ApprovazioneInCorso;
+                                                        curr_richiesta.RichiestaStato = model.Data.FromHR ? model.Data.RichiestaStato : StatoRichiesta.ApprovazioneInCorso;
                                                     else
-                                                        item.RevocaStato = StatoRichiesta.ApprovazioneInCorso;
+                                                        curr_richiesta.RevocaStato = model.Data.FromHR ? model.Data.RichiestaStato : StatoRichiesta.ApprovazioneInCorso;
                                                 else
                                                     if (idxStato == 0)
-                                                    item.RichiestaStato = model.Data.RichiestaStato;
+                                                    curr_richiesta.RichiestaStato = model.Data.RichiestaStato;
                                                 else
-                                                    item.RevocaStato = model.Data.RichiestaStato;
+                                                    curr_richiesta.RevocaStato = model.Data.RichiestaStato;
 
 
                                                 break;
                                         }
                                         if (idxStato == 0)
-                                            item.RichiestaApprovazioneData = JsonConvert.SerializeObject(listaAppr, Formatting.Indented);
+                                            curr_richiesta.RichiestaApprovazioneData = JsonConvert.SerializeObject(listaAppr, Formatting.Indented);
                                         else
-                                            item.RevocaApprovazioneData = JsonConvert.SerializeObject(listaAppr, Formatting.Indented);
+                                            curr_richiesta.RevocaApprovazioneData = JsonConvert.SerializeObject(listaAppr, Formatting.Indented);
 
-                                        await _dip_GG_RichiestaRepository.UpdateAsync(item);
+                                        await _dip_GG_RichiestaRepository.UpdateAsync(curr_richiesta);
 
-                                        if (idxStato == 0 && RichiestaStato_Orig != item.RichiestaStato) // Aggiorno i dettagli solo se lo stato è cambiato  e solo per le richieste approvazioni
+                                        if (idxStato == 0 && RichiestaStato_Orig != curr_richiesta.RichiestaStato) // Aggiorno i dettagli solo se lo stato è cambiato  e solo per le richieste approvazioni
                                         {
-                                            switch (item.RichiestaTipo)
+                                            switch (curr_richiesta.RichiestaTipo)
                                             {
                                                 case TipoRichiesta.Timbratura:
-                                                    var timbr = _dip_GG_TimbraturaRepository.FindAll(x => x.IdDip_GG_Richiesta == item.Id).ToList();
+                                                    var timbr = _dip_GG_TimbraturaRepository.FindAll(x => x.IdDip_GG_Richiesta == curr_richiesta.Id).ToList();
                                                     foreach (var idemDett in timbr)
                                                     {
-                                                        idemDett.RichiestaStato = item.RichiestaStato;
+                                                        idemDett.RichiestaStato = curr_richiesta.RichiestaStato;
                                                         await _dip_GG_TimbraturaRepository.UpsertAsync(idemDett);
                                                     }
 
@@ -400,20 +410,20 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                                                     break;
                                                 case TipoRichiesta.Giustificativo:
 
-                                                    var just = _dip_GG_GiustificativiRepository.FindAll(x => x.IdDip_GG_Richiesta == item.Id).ToList();
+                                                    var just = _dip_GG_GiustificativiRepository.FindAll(x => x.IdDip_GG_Richiesta == curr_richiesta.Id).ToList();
                                                     foreach (var idemDett in just)
                                                     {
-                                                        idemDett.RichiestaStato = item.RichiestaStato;
+                                                        idemDett.RichiestaStato = curr_richiesta.RichiestaStato;
                                                         await _dip_GG_GiustificativiRepository.UpsertAsync(idemDett);
                                                     }
 
                                                     break;
                                                 case TipoRichiesta.NotaSpesa:
 
-                                                    var nota = _dip_GG_NotaSpesaRepository.FindAll(x => x.IdDip_GG_Richiesta == item.Id).ToList();
+                                                    var nota = _dip_GG_NotaSpesaRepository.FindAll(x => x.IdDip_GG_Richiesta == curr_richiesta.Id).ToList();
                                                     foreach (var idemDett in nota)
                                                     {
-                                                        idemDett.RichiestaStato = item.RichiestaStato;
+                                                        idemDett.RichiestaStato = curr_richiesta.RichiestaStato;
                                                         await _dip_GG_NotaSpesaRepository.UpsertAsync(idemDett);
                                                     }
 
@@ -423,8 +433,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                                         else
                                         {
                                             //approvazione revoca, cancello i dettagli
-                                            if( listaAppr.Where(x=> x.RichiestaStato !=  StatoRichiesta.Approvata).Count()==0)
-                                                await Dip_GG_Richiesta_Canc_Dettaglio(item);
+                                            if (listaAppr.Where(x => x.RichiestaStato != StatoRichiesta.Approvata).Count() == 0)
+                                                await Dip_GG_Richiesta_Canc_Dettaglio(curr_richiesta);
                                         }
 
                                     }
@@ -443,66 +453,46 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
 
                                         StatoRichiesta? RichiestaStato_Orig;
                                         if (idxStato == 0)
-                                            RichiestaStato_Orig = item.RichiestaStato;
+                                            RichiestaStato_Orig = curr_richiesta.RichiestaStato;
                                         else
-                                            RichiestaStato_Orig = item.RevocaStato;
+                                            RichiestaStato_Orig = curr_richiesta.RevocaStato;
 
                                         switch (resAz_Cfg.Data.Az_Cfg.ApprovazioneTipo)
                                         {
                                             case TipoApprovazione.SigleAdmin:
                                                 if (idxStato == 0)
-                                                    item.RichiestaStato = model.Data.RichiestaStato;
+                                                    curr_richiesta.RichiestaStato = model.Data.RichiestaStato;
                                                 else
-                                                    item.RevocaStato = model.Data.RichiestaStato;
+                                                    curr_richiesta.RevocaStato = model.Data.RichiestaStato;
                                                 break;
                                             case TipoApprovazione.AllAdmin:
                                             case TipoApprovazione.AllAdminHierarchy:
                                                 if (listaAppr.Where(x => x.RichiestaStato == StatoRichiesta.Rifiutata).Any())
                                                     // se almeno uno ha rifiutato, allora la richiesta è rifiutata
                                                     if (idxStato == 0)
-                                                        item.RichiestaStato = StatoRichiesta.Rifiutata;
+                                                        curr_richiesta.RichiestaStato = StatoRichiesta.Rifiutata;
                                                     else
-                                                        item.RevocaStato = StatoRichiesta.Rifiutata;
+                                                        curr_richiesta.RevocaStato = StatoRichiesta.Rifiutata;
                                                 else
                                                     if (idxStato == 0)
-                                                    item.RichiestaStato = StatoRichiesta.ApprovazioneInCorso;
+                                                    curr_richiesta.RichiestaStato = StatoRichiesta.ApprovazioneInCorso;
                                                 else
-                                                    item.RevocaStato = StatoRichiesta.ApprovazioneInCorso;
+                                                    curr_richiesta.RevocaStato = StatoRichiesta.ApprovazioneInCorso;
 
                                                 break;
                                         }
                                         if (idxStato == 0)
-                                            item.RichiestaApprovazioneData = JsonConvert.SerializeObject(listaAppr, Formatting.Indented);
+                                            curr_richiesta.RichiestaApprovazioneData = JsonConvert.SerializeObject(listaAppr, Formatting.Indented);
                                         else
-                                            item.RevocaApprovazioneData = JsonConvert.SerializeObject(listaAppr, Formatting.Indented);
+                                            curr_richiesta.RevocaApprovazioneData = JsonConvert.SerializeObject(listaAppr, Formatting.Indented);
 
-                                        await _dip_GG_RichiestaRepository.UpdateAsync(item);
+                                        await _dip_GG_RichiestaRepository.UpdateAsync(curr_richiesta);
 
 
-                                        if (idxStato == 0 && RichiestaStato_Orig != item.RichiestaStato) // Aggiorno i dettagli solo se lo stato è cambiato  e solo per le richieste approvazioni
+                                        if (idxStato == 0 && RichiestaStato_Orig != curr_richiesta.RichiestaStato) // Aggiorno i dettagli solo se lo stato è cambiato  e solo per le richieste approvazioni
                                         {
                                             //posso cancellare i dettagli
-                                            await Dip_GG_Richiesta_Canc_Dettaglio(item);
-                                            //switch (item.RichiestaTipo)
-                                            //{
-                                            //    case TipoRichiesta.Timbratura:
-                                            //        var timbr = _dip_GG_TimbraturaRepository.FindAll(x => x.IdDip_GG_Richiesta == item.Id).ToList();
-                                            //        await _dip_GG_TimbraturaRepository.DeleteRangeAsync(timbr);
-
-                                            //        break;
-                                            //    case TipoRichiesta.Giustificativo:
-
-                                            //        var just = _dip_GG_GiustificativiRepository.FindAll(x => x.IdDip_GG_Richiesta == item.Id).ToList();
-                                            //        await _dip_GG_GiustificativiRepository.DeleteRangeAsync(just);
-
-                                            //        break;
-                                            //    case TipoRichiesta.NotaSpesa:
-
-                                            //        var nota = _dip_GG_NotaSpesaRepository.FindAll(x => x.IdDip_GG_Richiesta == item.Id).ToList();
-                                            //        await _dip_GG_NotaSpesaRepository.DeleteRangeAsync(nota);
-
-                                            //        break;
-                                            //}
+                                            await Dip_GG_Richiesta_Canc_Dettaglio(curr_richiesta);
 
                                         }
                                     }

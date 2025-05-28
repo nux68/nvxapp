@@ -81,6 +81,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
     {
         public string? IdAspNetUsers { get; set; }
         public Dip_GG_RichiestaModel? Dip_GG_Richiesta { get; set; } 
+        public Boolean FromHR { get; set; }
     }
     public class Dip_GG_Richiesta_Send_OutModel : ModelResult
     {
@@ -93,6 +94,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
         public List<int> IdDip_GG_Richiesta { get; set; } = new List<int>();
 
         public StatoRichiesta RichiestaStato { get; set; }
+        public Boolean FromHR { get; set; }
 
     }
     public class Dip_GG_Richiesta_SetState_OutModel : ModelResult

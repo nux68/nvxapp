@@ -90,6 +90,10 @@ export class RequestClockingUserPageComponent implements OnInit {
     const state = history.state;
     if (state && state.currUserId) {
       request_rich.data.idAspNetUsers = state.currUserId;
+      if (state.fromHR) {
+        request_rich.data.fromHR = state.fromHR;
+      }
+
     }
 
 

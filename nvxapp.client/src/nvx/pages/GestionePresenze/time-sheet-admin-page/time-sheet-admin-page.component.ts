@@ -292,7 +292,7 @@ export class TimeSheetAdminPageComponent implements OnInit, OnDestroy {
 
         
 
-        request.data.IdDip_GG_Richiesta = IdDip_GG_Richiesta;
+        request.data.idDip_GG_Richiesta = IdDip_GG_Richiesta;
         this.dipGGRichiestaService.SetState(request).subscribe(res => {
           this.loadMonth();
         });

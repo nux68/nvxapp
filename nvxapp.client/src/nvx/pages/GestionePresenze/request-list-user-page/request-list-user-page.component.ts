@@ -89,7 +89,7 @@ export class RequestListUserPageComponent implements OnInit {
     else
       request.data.richiestaStato = StatoRichiesta.Cancellata;
 
-    request.data.IdDip_GG_Richiesta = IdDip_GG_Richiesta;
+    request.data.idDip_GG_Richiesta = IdDip_GG_Richiesta;
     this.dipGGRichiestaService.SetState(request).subscribe(res => {
       this.loadData();
     });

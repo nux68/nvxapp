@@ -65,13 +65,13 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
 
       new FabMenuItem('Elemento 1', 'calendar-number-outline', () => {
         this.navCtrl.navigateForward('/requestjustificationuser', {
-          state: { currUserId: this.currUserId }
+          state: { currUserId: this.currUserId, fromHR:true }
         });
       }),
 
       new FabMenuItem('Elemento 1', 'time-outline', () => {
         this.navCtrl.navigateForward('/requestclockinguser', {
-          state: { currUserId: this.currUserId }
+          state: { currUserId: this.currUserId, fromHR: true }
         });
       }),
 
@@ -228,6 +228,9 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
 
       if (IdDip_GG_Richiesta.length > 0) {
         let request: GenericRequest<Dip_GG_Richiesta_SetState_InModel> = new GenericRequest<Dip_GG_Richiesta_SetState_InModel>(Dip_GG_Richiesta_SetState_InModel);
+
+        request.data.fromHR = true;
+
         if (event?.detail?.data?.action === 'approva') {
           request.data.richiestaStato = StatoRichiesta.Approvata;
         } else if (event?.detail?.data?.action === 'rifiuta') {
@@ -236,7 +239,7 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
 
 
 
-        request.data.IdDip_GG_Richiesta = IdDip_GG_Richiesta;
+        request.data.idDip_GG_Richiesta = IdDip_GG_Richiesta;
         this.dipGGRichiestaService.SetState(request).subscribe(res => {
           this.loadMonth();
         });

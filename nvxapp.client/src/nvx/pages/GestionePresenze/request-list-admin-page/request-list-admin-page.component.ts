@@ -124,7 +124,7 @@ export class RequestListAdminPageComponent implements OnInit {
 
     let request: GenericRequest<Dip_GG_Richiesta_SetState_InModel> = new GenericRequest<Dip_GG_Richiesta_SetState_InModel>(Dip_GG_Richiesta_SetState_InModel);
     request.data.richiestaStato = statoRichiesta;
-    request.data.IdDip_GG_Richiesta = IdDip_GG_Richiesta;
+    request.data.idDip_GG_Richiesta = IdDip_GG_Richiesta;
     this.dipGGRichiestaService.SetState(request).subscribe(res => {
       this.loadData();
     });
