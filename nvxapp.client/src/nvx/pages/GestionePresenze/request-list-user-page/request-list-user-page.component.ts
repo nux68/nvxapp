@@ -132,24 +132,6 @@ export class RequestListUserPageComponent implements OnInit {
   }
 
 
-  public showBtnDelete(item: Dip_GG_RichiestaModel): boolean {
-
-    if (item.revocaStato == null) {
-      if (item.richiestaStato == StatoRichiesta.Immessa ||
-        item.richiestaStato == StatoRichiesta.ApprovazioneInCorso ||
-        item.richiestaStato == StatoRichiesta.Approvata)
-        return true;
-      return false;
-    }
-    else {
-      if (item.revocaStato == StatoRichiesta.Immessa ||
-        item.revocaStato == StatoRichiesta.ApprovazioneInCorso )
-        return true;
-      return false;
-    }
-
-    
-  }
 
   public getItemText1(item: Dip_GG_RichiestaModel): string {
     let retVal = "";

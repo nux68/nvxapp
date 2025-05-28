@@ -16,6 +16,8 @@ export interface MonthData {
   year: number;
   month: number;  // 0-11 (gennaio = 0)
   days: { [key: number]: DayRecord };  // Mappa giorno -> record
+
+  dip_GG_Richiesta: Dip_GG_RichiestaModel[];
 }
 
 

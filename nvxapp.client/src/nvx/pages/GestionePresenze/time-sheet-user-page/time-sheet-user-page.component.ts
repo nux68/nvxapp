@@ -7,7 +7,7 @@ import { TimeSheetService } from '../../../Utility/GestionePresenze/time-sheet.s
 import { MonthData } from '../../../Utility/GestionePresenze/time-sheet-common-data';
 import { Dip_GG_TimbraturaModel, TipoTimbratura } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Timbratura/Models/dip-gg-timbratura-model';
 import { Dip_GG_GiustificativiModel, JustificationInputType } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Giustificativi/Models/dip-gg-giustificativi-model';
-import { Dip_GG_Richiesta_SetState_InModel, StatoRichiesta } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/Models/dip-gg-richiesta-model';
+import { Dip_GG_Richiesta_SetState_InModel, Dip_GG_RichiestaModel, StatoRichiesta } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/Models/dip-gg-richiesta-model';
 import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
 import { ParGiustificativiToLongTextPipe } from '../../../shared/pipe/GestionePresenze/par-giustificativi-to-long-text.pipe';
 import { DateTimeUtilService } from '../../../Utility/infrastructure/date-time-util.service';
@@ -63,7 +63,7 @@ export class TimeSheetUserPageComponent implements OnInit, OnDestroy {
     this.title = 'TimeSheetUser';
     this.weeks = [];
     // Inizializza con una struttura valida ma vuota
-    this.currentMonth = { year: 0, month: 0, days: {} };
+    this.currentMonth = { year: 0, month: 0, days: {}, dip_GG_Richiesta:[] };
     
   }
 
@@ -239,6 +239,27 @@ export class TimeSheetUserPageComponent implements OnInit, OnDestroy {
   public actionSheetHeader = '';
   public actionSheetSubHeader = '';
 
+  public ShowActionSheet(idDip_GG_Richiesta?: number) {
+
+    if (idDip_GG_Richiesta != null) {
+
+      const req = this.currentMonth.dip_GG_Richiesta.find(x => x.id === idDip_GG_Richiesta);
+      if (req != null) {
+
+        return this.timeSheetService.show_Btn_Delete_Dip_GG_Richiesta_4User(req);
+
+      }
+
+      return false;
+    }
+
+    return false;
+
+
+  }
+
+  
+
   actionSheetOpen(obj: any) {
     if ('idPar_Giustificativi' in obj) {
 
@@ -269,11 +290,6 @@ export class TimeSheetUserPageComponent implements OnInit, OnDestroy {
       let tipoReq = this.StatoRichiesta.Cancellata;
 
 
-      if (event.richiestaStato == StatoRichiesta.Approvata && event.revocaStato == null)
-        tipoReq = this.StatoRichiesta.Immessa
-      else
-        tipoReq = this.StatoRichiesta.Cancellata;
-
       let IdDip_GG_Richiesta: number[] = [];
       if ('idPar_Giustificativi' in this.actionSheetOpenSelectObj) {
         const giustificativo = this.actionSheetOpenSelectObj as Dip_GG_GiustificativiModel;
@@ -287,8 +303,16 @@ export class TimeSheetUserPageComponent implements OnInit, OnDestroy {
       if (IdDip_GG_Richiesta.length> 0) {
         let request: GenericRequest<Dip_GG_Richiesta_SetState_InModel> = new GenericRequest<Dip_GG_Richiesta_SetState_InModel>(Dip_GG_Richiesta_SetState_InModel);
 
+        const item = this.currentMonth.dip_GG_Richiesta.find(x => x.id === IdDip_GG_Richiesta[0]);
+        if (item != null) {
 
-        request.data.richiestaStato = tipoReq;//StatoRichiesta.Cancellata;
+          if (item.richiestaStato == this.StatoRichiesta.Approvata && (item.revocaStato == null || (item.revocaStato !== null && item.revocaStato == this.StatoRichiesta.Cancellata)))
+            tipoReq = StatoRichiesta.Immessa; //revoca
+          else
+            tipoReq = StatoRichiesta.Cancellata;
+        }
+
+        request.data.richiestaStato = tipoReq; 
 
         request.data.IdDip_GG_Richiesta = IdDip_GG_Richiesta;
         this.dipGGRichiestaService.SetState(request).subscribe(res => {

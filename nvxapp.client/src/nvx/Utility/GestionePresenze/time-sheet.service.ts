@@ -40,7 +40,8 @@ export class TimeSheetService {
           return of({
             year: year,
             month: month,
-            days: {}
+            days: {},
+            dip_GG_Richiesta: [],
           });
       })
     );
@@ -120,8 +121,11 @@ export class TimeSheetService {
     const monthData: MonthData = {
       year: year,
       month: month,
-      days: {}
+      days: {},
+      dip_GG_Richiesta:[] 
     };
+
+    monthData.dip_GG_Richiesta = remoteData.dip_GG_Richiesta;
 
     // Raggruppa le timbrature per giorno
     const timbratureByDay = new Map<number, Dip_GG_TimbraturaModel[]>();
@@ -280,6 +284,23 @@ export class TimeSheetService {
       return "(" + this.get_StatoRichiesta_text(dip_GG_Richiesta.richiestaStato) + ") Revoca " + this.get_StatoRichiesta_text(dip_GG_Richiesta.revocaStato); 
     }
     
+  }
+
+  public show_Btn_Delete_Dip_GG_Richiesta_4User(item: Dip_GG_RichiestaModel) {
+
+    if (item.revocaStato == null) {
+      if (item.richiestaStato == StatoRichiesta.Immessa ||
+        item.richiestaStato == StatoRichiesta.ApprovazioneInCorso ||
+        item.richiestaStato == StatoRichiesta.Approvata)
+        return true;
+      return false;
+    }
+    else {
+      if (item.revocaStato == StatoRichiesta.Immessa ||
+        item.revocaStato == StatoRichiesta.ApprovazioneInCorso)
+        return true;
+      return false;
+    }
   }
 
 }

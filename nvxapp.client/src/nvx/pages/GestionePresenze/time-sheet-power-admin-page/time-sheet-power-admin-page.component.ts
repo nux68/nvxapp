@@ -55,7 +55,7 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
               private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService
   ) {
     this.title = 'Controllo Presenze';
-    this.currentMonth = { year: 0, month: 0, days: {} };
+    this.currentMonth = { year: 0, month: 0, days: {}, dip_GG_Richiesta: [] };
   }
 
   ionViewWillEnter() {
