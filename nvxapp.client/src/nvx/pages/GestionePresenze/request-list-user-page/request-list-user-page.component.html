@@ -33,7 +33,7 @@
         </ion-item>
 
         <ion-item-options side="end">
-          <ion-item-option *ngIf="timeSheetService.show_Btn_Delete_Dip_GG_Richiesta_4User(item)" color="{{btnDelete.color}}" (click)="btnDelete.event(item)">
+          <ion-item-option *ngIf="timeSheetService.Dip_GG_Richiesta_User_Can_Delete(item)" color="{{btnDelete.color}}" (click)="btnDelete.event(item)">
             <ion-icon slot="start" name="{{btnDelete.image}}"></ion-icon>
             {{btnDelete.text}}
           </ion-item-option>
@@ -75,7 +75,7 @@
       </ion-col>
 
       <ion-col class="ion-hide-sm-down">
-        <ion-button size="small" *ngIf="timeSheetService.show_Btn_Delete_Dip_GG_Richiesta_4User(item)" shape="round" (click)="btnDelete.event(item)" color="{{btnDelete.color}}">
+        <ion-button size="small" *ngIf="timeSheetService.Dip_GG_Richiesta_User_Can_Delete(item)" shape="round" (click)="btnDelete.event(item)" color="{{btnDelete.color}}">
           <ion-icon name="{{btnDelete.image}}"></ion-icon>
           &nbsp;{{btnDelete.text}}
         </ion-button>

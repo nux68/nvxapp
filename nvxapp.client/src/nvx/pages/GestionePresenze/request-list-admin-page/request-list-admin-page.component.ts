@@ -158,38 +158,37 @@ export class RequestListAdminPageComponent implements OnInit {
 
   }
 
-  public showBtnApprova(item: Dip_GG_RichiestaModel): boolean {
+  //public showBtnApprova(item: Dip_GG_RichiestaModel): boolean {
 
-    if (item.revocaStato == null) {
-      if (item.richiestaStato != StatoRichiesta.Immessa)
-        return false;
+  //  if (item.revocaStato == null) {
+  //    if (item.richiestaStato != StatoRichiesta.Immessa)
+  //      return false;
 
-      return true;
-    }
-    else {
-      if (item.revocaStato != StatoRichiesta.Immessa)
-        return false;
+  //    return true;
+  //  }
+  //  else {
+  //    if (item.revocaStato != StatoRichiesta.Immessa)
+  //      return false;
 
-      return true;
-    }
-
+  //    return true;
+  //  }
     
-  }
+  //}
 
-  public showBtnRifiuta(item: Dip_GG_RichiestaModel): boolean{
-    if (item.revocaStato == null) {
-      if (item.richiestaStato != StatoRichiesta.Immessa)
-        return false;
+  //public showBtnRifiuta(item: Dip_GG_RichiestaModel): boolean{
+  //  if (item.revocaStato == null) {
+  //    if (item.richiestaStato != StatoRichiesta.Immessa)
+  //      return false;
 
-      return true;
-    }
-    else {
-      if (item.revocaStato != StatoRichiesta.Immessa)
-        return false;
+  //    return true;
+  //  }
+  //  else {
+  //    if (item.revocaStato != StatoRichiesta.Immessa)
+  //      return false;
 
-      return true;
-    }
-  }
+  //    return true;
+  //  }
+  //}
 
   public getItemText1(item: Dip_GG_RichiestaModel):string {
     let retVal = "";

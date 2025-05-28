@@ -224,17 +224,45 @@ export class TimeSheetUserPageComponent implements OnInit, OnDestroy {
 
 
   isActionSheetOpen = false;
-  public actionSheetButtons = [
-    {
-      text: 'Cancella richiesta',
-      role: 'delete',
-      data: {
-        action: 'delete',
+  //public actionSheetButtons = [
+  //  {
+  //    text: 'Cancella richiesta',
+  //    role: 'delete',
+  //    data: {
+  //      action: 'delete',
+  //    },
+  //  },
+
+  //];
+
+  public getActionSheetButtons(): any {
+
+    let text = 'Cancella richiesta';
+    if (this.actionSheet_Dip_GG_Richiesta != null) {
+      if (this.actionSheet_Dip_GG_Richiesta.revocaStato == null)
+        text = 'Cancella richiesta';
+      else
+        text = 'Cancella revoca';
+
+    }
+
+
+    let actionSheetButtons = [
+      {
+        text: text,
+        role: 'delete',
+        data: {
+          action: 'delete',
+        },
       },
-    },
 
-  ];
+    ];
 
+    return actionSheetButtons;
+
+  }
+
+  private actionSheet_Dip_GG_Richiesta: Dip_GG_RichiestaModel | null;
   private actionSheetOpenSelectObj: Dip_GG_GiustificativiModel | Dip_GG_TimbraturaModel;
   public actionSheetHeader = '';
   public actionSheetSubHeader = '';
@@ -246,7 +274,7 @@ export class TimeSheetUserPageComponent implements OnInit, OnDestroy {
       const req = this.currentMonth.dip_GG_Richiesta.find(x => x.id === idDip_GG_Richiesta);
       if (req != null) {
 
-        return this.timeSheetService.show_Btn_Delete_Dip_GG_Richiesta_4User(req);
+        return this.timeSheetService.Dip_GG_Richiesta_User_Can_Delete(req);
 
       }
 
@@ -270,6 +298,9 @@ export class TimeSheetUserPageComponent implements OnInit, OnDestroy {
       this.actionSheetHeader = `Giustificativo : ${parGiustificativiToLongTextPipe.transform(giustificativo.idPar_Giustificativi)} ${this.dateTimeUtilService.DateTo_ggmmyyyy(giustificativo.data)}`;
       this.actionSheetSubHeader = null;
 
+      this.actionSheet_Dip_GG_Richiesta = this.get_Dip_GG_Richiesta(giustificativo.idDip_GG_Richiesta);
+
+
     } else if ('timbraturaTipo' in obj) {
 
       const tipoTimbraturaToLongTextPipe = new TipoTimbraturaToLongTextPipe();
@@ -278,6 +309,8 @@ export class TimeSheetUserPageComponent implements OnInit, OnDestroy {
       this.actionSheetOpenSelectObj = timbratura;
       this.actionSheetHeader = `Timbratura : ${tipoTimbraturaToLongTextPipe.transform(timbratura.timbraturaTipo)} ${this.dateTimeUtilService.DateTo_ggmmyyyy_hhmm(timbratura.timbratura)}`;
       this.actionSheetSubHeader = null;
+
+      this.actionSheet_Dip_GG_Richiesta = this.get_Dip_GG_Richiesta(timbratura.idDip_GG_Richiesta);
     }
     this.isActionSheetOpen = true;
   }
@@ -323,6 +356,13 @@ export class TimeSheetUserPageComponent implements OnInit, OnDestroy {
     }
 
     
+
+  }
+
+  get_Dip_GG_Richiesta(idDip_GG_Richiesta?: number): Dip_GG_RichiestaModel | null {
+
+    const req = this.currentMonth.dip_GG_Richiesta.find(x => x.id === idDip_GG_Richiesta);
+    return req;
 
   }
 

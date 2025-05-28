@@ -188,25 +188,51 @@ export class TimeSheetService {
   }
 
 
-  get_StatoRichiesta_icon(status: StatoRichiesta): string {
-    switch (status) {
-      case StatoRichiesta.Diretta:
-        return 'checkmark-circle'; // Inserimento diretto
-      case StatoRichiesta.Immessa:
-        return 'time-outline'; // In attesa
-      case StatoRichiesta.ApprovazioneInCorso:
-        return 'hourglass-outline'; // In corso
-      case StatoRichiesta.ParzialmenteApprovata:
-        return 'alert-circle-outline'; // Parzialmente approvata
-      case StatoRichiesta.Approvata:
-        return 'checkmark-circle-outline'; // Approvata
-      case StatoRichiesta.Rifiutata:
-        return 'close-circle-outline'; // Rifiutata
-      case StatoRichiesta.Cancellata:
-        return 'trash-outline'; // Cancellata
-      default:
-        return 'help-circle-outline'; // Stato sconosciuto
+  get_StatoRichiesta_icon(dip_GG_Richiesta: Dip_GG_RichiestaModel): string {
+
+    if (dip_GG_Richiesta.revocaStato == null) {
+      switch (dip_GG_Richiesta.richiestaStato) {
+        case StatoRichiesta.Diretta:
+          return 'checkmark-circle'; // Inserimento diretto
+        case StatoRichiesta.Immessa:
+          return 'time-outline'; // In attesa
+        case StatoRichiesta.ApprovazioneInCorso:
+          return 'hourglass-outline'; // In corso
+        case StatoRichiesta.ParzialmenteApprovata:
+          return 'alert-circle-outline'; // Parzialmente approvata
+        case StatoRichiesta.Approvata:
+          return 'checkmark-circle-outline'; // Approvata
+        case StatoRichiesta.Rifiutata:
+          return 'close-circle-outline'; // Rifiutata
+        case StatoRichiesta.Cancellata:
+          return 'trash-outline'; // Cancellata
+        default:
+          return 'help-circle-outline'; // Stato sconosciuto
+      }
     }
+    else {
+      switch (dip_GG_Richiesta.revocaStato) {
+        case StatoRichiesta.Diretta:
+          return 'checkmark-circle'; // Inserimento diretto
+        case StatoRichiesta.Immessa:
+          return 'time-outline'; // In attesa
+        case StatoRichiesta.ApprovazioneInCorso:
+          return 'hourglass-outline'; // In corso
+        case StatoRichiesta.ParzialmenteApprovata:
+          return 'alert-circle-outline'; // Parzialmente approvata
+        case StatoRichiesta.Approvata:
+          return 'checkmark-circle-outline'; // Approvata
+        case StatoRichiesta.Rifiutata:
+          return 'close-circle-outline'; // Rifiutata
+        case StatoRichiesta.Cancellata:
+          return 'trash-outline'; // Cancellata
+        default:
+          return 'help-circle-outline'; // Stato sconosciuto
+      }
+    }
+
+   
+
   }
 
   get_StatoRichiesta_text(status: StatoRichiesta): string {
@@ -286,7 +312,8 @@ export class TimeSheetService {
     
   }
 
-  public show_Btn_Delete_Dip_GG_Richiesta_4User(item: Dip_GG_RichiestaModel) {
+
+  public Dip_GG_Richiesta_User_Can_Delete(item: Dip_GG_RichiestaModel) {
 
     if (item.revocaStato == null) {
       if (item.richiestaStato == StatoRichiesta.Immessa ||
@@ -302,6 +329,42 @@ export class TimeSheetService {
       return false;
     }
   }
+
+  public Dip_GG_Richiesta_Admin_Can_Approve(item: Dip_GG_RichiestaModel) {
+
+    if (item.revocaStato == null) {
+      if (item.richiestaStato != StatoRichiesta.Immessa)
+        return false;
+
+      return true;
+    }
+    else {
+      if (item.revocaStato != StatoRichiesta.Immessa)
+        return false;
+
+      return true;
+    }
+
+  }
+
+  public Dip_GG_Richiesta_Admin_Can_Reject(item: Dip_GG_RichiestaModel) {
+
+    if (item.revocaStato == null) {
+      if (item.richiestaStato != StatoRichiesta.Immessa)
+        return false;
+
+      return true;
+    }
+    else {
+      if (item.revocaStato != StatoRichiesta.Immessa)
+        return false;
+
+      return true;
+    }
+
+  }
+
+  
 
 }
 

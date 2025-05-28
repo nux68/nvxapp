@@ -55,7 +55,7 @@
                                             }"
                                 (click)="actionSheetOpen(just)">
                       {{ just.idPar_Giustificativi | parGiustificativiToLongText }}
-                      <ion-icon slot="end" [name]="timeSheetService.get_StatoRichiesta_icon(just.richiestaStato)"></ion-icon>
+                      <ion-icon slot="end" [name]="timeSheetService.get_StatoRichiesta_icon(get_Dip_GG_Richiesta(just.idDip_GG_Richiesta))"></ion-icon>
                     </ion-button>
 
                   </ng-container>
@@ -86,7 +86,7 @@
                                            }"
                                 (click)="actionSheetOpen(record)">
                       {{ record.timbraturaTipo | tipoTimbraturaToShortText }}{{ record.timbratura | date:'HH:mm' }}
-                      <ion-icon slot="end" [name]="timeSheetService.get_StatoRichiesta_icon(record.richiestaStato)"></ion-icon>
+                      <ion-icon slot="end" [name]="timeSheetService.get_StatoRichiesta_icon(get_Dip_GG_Richiesta(record.idDip_GG_Richiesta))"></ion-icon>
                     </ion-button>
 
 
@@ -114,7 +114,7 @@
   <ion-action-sheet [isOpen]="isActionSheetOpen"
                     [header]="actionSheetHeader"
                     [subHeader]="actionSheetSubHeader"
-                    [buttons]="actionSheetButtons"
+                    [buttons]="getActionSheetButtons()"
                     (didDismiss)="actionSheetExecute($event)"></ion-action-sheet>
 
 

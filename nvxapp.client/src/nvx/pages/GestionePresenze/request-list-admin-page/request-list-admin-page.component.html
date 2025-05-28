@@ -44,12 +44,12 @@
 
         <ion-item-options side="end">
 
-          <ion-item-option *ngIf="showBtnApprova(item)" color="{{btnApprova.color}}" (click)="btnApprova.event(item)">
+          <ion-item-option *ngIf="timeSheetService.Dip_GG_Richiesta_Admin_Can_Approve(item)" color="{{btnApprova.color}}" (click)="btnApprova.event(item)">
             <ion-icon slot="start" name="{{btnApprova.image}}"></ion-icon>
             {{btnApprova.text}}
           </ion-item-option>
 
-          <ion-item-option *ngIf="showBtnRifiuta(item)" color="{{btnRifiuta.color}}" (click)="btnRifiuta.event(item)">
+          <ion-item-option *ngIf="timeSheetService.Dip_GG_Richiesta_Admin_Can_Reject(item)" color="{{btnRifiuta.color}}" (click)="btnRifiuta.event(item)">
             <ion-icon slot="start" name="{{btnRifiuta.image}}"></ion-icon>
             {{btnRifiuta.text}}
           </ion-item-option>
@@ -107,14 +107,14 @@
       </ion-col>
 
       <ion-col class="ion-hide-sm-down">
-        <ion-button size="small" *ngIf="showBtnApprova(item)" shape="round" (click)="btnApprova.event(item)" color="{{btnApprova.color}}">
+        <ion-button size="small" *ngIf="timeSheetService.Dip_GG_Richiesta_Admin_Can_Approve(item)" shape="round" (click)="btnApprova.event(item)" color="{{btnApprova.color}}">
           <ion-icon name="{{btnApprova.image}}"></ion-icon>
           &nbsp;{{btnApprova.text}}
         </ion-button>
       </ion-col>
 
       <ion-col class="ion-hide-sm-down">
-        <ion-button size="small" *ngIf="showBtnRifiuta(item)" shape="round" (click)="btnRifiuta.event(item)" color="{{btnRifiuta.color}}">
+        <ion-button size="small" *ngIf="timeSheetService.Dip_GG_Richiesta_Admin_Can_Reject(item)" shape="round" (click)="btnRifiuta.event(item)" color="{{btnRifiuta.color}}">
           <ion-icon name="{{btnRifiuta.image}}"></ion-icon>
           &nbsp;{{btnRifiuta.text}}
         </ion-button>

@@ -423,7 +423,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                                         else
                                         {
                                             //approvazione revoca, cancello i dettagli
-                                            await Dip_GG_Richiesta_Canc_Dettaglio(item);
+                                            if( listaAppr.Where(x=> x.RichiestaStato !=  StatoRichiesta.Approvata).Count()==0)
+                                                await Dip_GG_Richiesta_Canc_Dettaglio(item);
                                         }
 
                                     }
