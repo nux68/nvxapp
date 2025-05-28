@@ -21,6 +21,11 @@ export class AuthService {
     return this.rolesSubject.asObservable();
   }
 
+  // x forzare l'evento
+  public forceRolesEmission(): void {
+    this.rolesSubject.next(this.rolesSubject.getValue());
+  }
+
   private _Token$: BehaviorSubject<string | null> = new BehaviorSubject<string>(null);
   public get Token$(): Observable<string | null> {
     return this._Token$.asObservable();
