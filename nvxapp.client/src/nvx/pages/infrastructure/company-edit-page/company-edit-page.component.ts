@@ -10,6 +10,7 @@ import { map, catchError } from 'rxjs';
 import { CompanyEditModel, CompanyGetInModel, CompanyPutInModel } from '../../../ClientServer-Service/Infrastructure/Account/Models/company-model';
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { StringHelperService } from '../../../Utility/infrastructure/string-helper.service';
+import { AuthService } from '../../../Utility/infrastructure/auth.service';
 
 @Component({
   selector: 'app-company-edit-page',
@@ -25,6 +26,7 @@ export class CompanyEditPageComponent extends BasePageConfirmCancelComponent<Com
     protected override userInterfaceService: UserInterfaceService,
     protected override fb: FormBuilder,
     private stringHelperService: StringHelperService,
+    private authService: AuthService,
     private accountService: AccountService) {
 
     super(navCtrl, userInterfaceService, fb);
@@ -78,7 +80,10 @@ export class CompanyEditPageComponent extends BasePageConfirmCancelComponent<Com
     request.data.companyEdit = editModel;
 
     return this.accountService.CompanyPut(request).pipe(
-      map(() => true), // Restituisce true in caso di successo
+      map(() => {
+        this.authService.forceRolesEmission(); // Forza l'emissione dei ruoli per aggiornare i parametri
+        return true;
+      }), // Restituisce true in caso di successo
       catchError((error) => {
         console.error('Errore durante la chiamata API:', error);
         return [false]; // Restituisce false in caso di errore
