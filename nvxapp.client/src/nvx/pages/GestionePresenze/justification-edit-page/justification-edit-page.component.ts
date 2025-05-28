@@ -12,6 +12,7 @@ import { ParameterService } from '../../../ClientServer-Service/Infrastructure/P
 import { Par_GiustificativiGetInModel, Par_GiustificativiInModel, Par_GiustificativiModel, Par_GiustificativiPutInModel } from '../../../ClientServer-Service/GestionePresenze/Par_Giustificativi/Models/par-giustificativi-model';
 import { ParGiustificativiService } from '../../../ClientServer-Service/GestionePresenze/Par_Giustificativi/par-giustificativi.service';
 import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
+import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
 
 @Component({
   selector: 'app-justification-edit-page',
@@ -29,7 +30,8 @@ export class JustificationEditPageComponent extends BasePageConfirmCancelCompone
     private parameterService: ParameterService,
     private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
     private stringHelperService: StringHelperService,
-    private parGiustificativiService: ParGiustificativiService) {
+    private parGiustificativiService: ParGiustificativiService,
+    private refresherService: RefresherService) {
 
     super(navCtrl, userInterfaceService, fb);
 
@@ -88,6 +90,8 @@ export class JustificationEditPageComponent extends BasePageConfirmCancelCompone
 
     return this.parGiustificativiService.Par_GiustificativiPut(request).pipe(
       map(() => {
+
+        this.refresherService.SharedParameterGestionePresenze_triggerRefresh(); 
 
         //TODO DISAB SHARED DATA
         // Aggiorno il dato condiviso

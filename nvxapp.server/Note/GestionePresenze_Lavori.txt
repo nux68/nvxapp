@@ -1,0 +1,7 @@
+﻿Refreah parametri
+Filtro lista approvazione
+Divisione menu /titolo
+lista utenti all / presenze
+gestione notifica errore != exception
+
+aggiunta poweradmin (infrastructure)

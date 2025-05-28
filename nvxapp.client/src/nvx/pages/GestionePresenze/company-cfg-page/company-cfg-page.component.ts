@@ -9,6 +9,7 @@ import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { StringHelperService } from '../../../Utility/infrastructure/string-helper.service';
 import { AzCfgService } from '../../../ClientServer-Service/GestionePresenze/Az_Cfg/az-cfg.service';
 import { Az_Cfg_Get_InModel, Az_Cfg_Put_InModel, Az_CfgModel, TipoApprovazione } from '../../../ClientServer-Service/GestionePresenze/Az_Cfg/Models/az-cfg-model';
+import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
 
 interface TipoApprovazioneOption {
   value: TipoApprovazione;
@@ -35,7 +36,8 @@ export class CompanyCfgPageComponent extends BasePageConfirmCancelComponent<Az_C
     protected override userInterfaceService: UserInterfaceService,
     protected override fb: FormBuilder,
     private stringHelperService: StringHelperService,
-    private azCfgService: AzCfgService) {
+    private azCfgService: AzCfgService,
+    private refresherService: RefresherService) {
 
     super(navCtrl, userInterfaceService, fb);
 
@@ -78,7 +80,12 @@ export class CompanyCfgPageComponent extends BasePageConfirmCancelComponent<Az_C
     request.data.az_Cfg = editModel;
 
     return this.azCfgService.Az_CfgPut(request).pipe(
-      map(() => true), // Restituisce true in caso di successo
+      map(() => {
+        // Notifica il refresh dei parametri condivisi
+        this.refresherService.SharedParameterGestionePresenze_triggerRefresh(); 
+
+        return true;
+      }), // Restituisce true in caso di successo
       catchError((error) => {
         console.error('Errore durante la chiamata API:', error);
         return [false]; // Restituisce false in caso di errore
