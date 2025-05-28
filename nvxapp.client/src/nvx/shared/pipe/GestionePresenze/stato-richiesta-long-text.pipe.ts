@@ -23,9 +23,9 @@ export class StatoRichiestaLongTextPipe implements PipeTransform {
       case StatoRichiesta.Rifiutata:
         return 'Rifiutata';
       case StatoRichiesta.ApprovazioneInCorso:
-        return 'ApprovazioneInCorso';
+        return 'Approvazione In Corso';
       case StatoRichiesta.ParzialmenteApprovata:
-        return 'ParzialmenteApprovata';
+        return 'Parzialmente Approvata';
       case StatoRichiesta.Approvata:
         return 'Approvata';
 

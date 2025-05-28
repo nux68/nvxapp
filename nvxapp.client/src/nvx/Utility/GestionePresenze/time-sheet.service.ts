@@ -210,7 +210,7 @@ export class TimeSheetService {
       case StatoRichiesta.Immessa:
         return 'In Attesa';
       case StatoRichiesta.ApprovazioneInCorso:
-        return 'Approvazione In Corso';
+        return 'In Approvazione';
       case StatoRichiesta.ParzialmenteApprovata:
         return 'Parzialmente Approvata';
       case StatoRichiesta.Approvata:

@@ -82,6 +82,12 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
                 return retVal;
             }, isSubProcess);
         }
+        /// <summary>
+        /// Ritorna la lista di Az_SediReparto dove l'utente figura come user
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="isSubProcess"></param>
+        /// <returns></returns>
         public virtual async Task<GenericResult<Az_SediReparto_Get4User_OutModel>> Get4User(GenericRequest<Az_SediReparto_Get4User_InModel> model, Boolean isSubProcess)
         {
             return await ExecuteAction(model, async () =>
@@ -125,6 +131,12 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
                 return retVal;
             }, isSubProcess);
         }
+        /// <summary>
+        /// Ritorna la lista di Az_SediReparto dove l'utente ha un ruolo amministartore Admin/PowerAdmin
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="isSubProcess"></param>
+        /// <returns></returns>
         public virtual async Task<GenericResult<Az_SediReparto_Get4Admin_OutModel>> Get4Admin(GenericRequest<Az_SediReparto_Get4Admin_InModel> model, Boolean isSubProcess)
         {
             return await ExecuteAction(model, async () =>
@@ -167,6 +179,12 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
                 return retVal;
             }, isSubProcess);
         }
+        /// <summary>
+        /// Ritorna la lista di Az_SediReparto dove l'utente ha un ruolo amministatore approvatore
+        /// </summary>
+        /// <param name="model"></param>
+        /// <param name="isSubProcess"></param>
+        /// <returns></returns>
         public virtual async Task<GenericResult<Az_SediReparto_Get4AdminApproval_OutModel>> Get4AdminApproval(GenericRequest<Az_SediReparto_Get4AdminApproval_InModel> model, Boolean isSubProcess)
         {
             return await ExecuteAction(model, async () =>

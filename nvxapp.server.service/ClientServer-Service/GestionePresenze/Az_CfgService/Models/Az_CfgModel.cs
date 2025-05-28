@@ -33,7 +33,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_CfgServ
 
     public class Az_Cfg_Get_InModel
     {
-        public  Az_CfgModel? Az_Cfg {  get; set; }
+        
     }
     public class Az_Cfg_Get_OutModel : ModelResult
     {

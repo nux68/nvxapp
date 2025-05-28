@@ -42,7 +42,9 @@
                   <ng-container *ngIf="day.dip_GG_Giustificativi?.length > 0; else noJust">
 
 
-                    <ion-button [disabled]="just.richiestaStato !== StatoRichiesta.Immessa" size="small" shape="round"
+                    <ion-button [disabled]=" !(just.richiestaStato === StatoRichiesta.Immessa ||
+                                               just.richiestaStato === StatoRichiesta.ApprovazioneInCorso ||
+                                               just.richiestaStato === StatoRichiesta.Approvata)" size="small" shape="round"
                                 *ngFor="let just of day.dip_GG_Giustificativi"
                                 [ngStyle]="{
                                               '--background': timeSheetService.get_Dip_GG_Giustificativi_backColor(just),
@@ -73,7 +75,9 @@
 
                   <ng-container *ngIf="day.dip_GG_Timbratura?.length > 0; else noTimb">
 
-                    <ion-button [disabled]="record.richiestaStato !== StatoRichiesta.Immessa" size="small" shape="round"
+                    <ion-button [disabled]="!(record.richiestaStato === StatoRichiesta.Immessa ||
+                                              record.richiestaStato === StatoRichiesta.ApprovazioneInCorso ||
+                                              record.richiestaStato === StatoRichiesta.Approvata)" size="small" shape="round"
                                 *ngFor="let record of day.dip_GG_Timbratura"
                                 [ngStyle]="{
                                              '--background': timeSheetService.get_Dip_GG_Timbratura_backColor(record),

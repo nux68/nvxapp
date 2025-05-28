@@ -27,7 +27,7 @@ export class RequestListUserPageComponent implements OnInit {
   public searchText!: string;
   public dip_GG_RichiestaList: Dip_GG_RichiestaModel[] | null = null;
   public btnDelete: ButtonItem;
-  
+  public StatoRichiesta = StatoRichiesta;
 
   constructor(private navCtrl: NavController,
     private dipGGRichiestaService: DipGGRichiestaService,
@@ -81,7 +81,12 @@ export class RequestListUserPageComponent implements OnInit {
     IdDip_GG_Richiesta.push(item.id);
 
     let request: GenericRequest<Dip_GG_Richiesta_SetState_InModel> = new GenericRequest<Dip_GG_Richiesta_SetState_InModel>(Dip_GG_Richiesta_SetState_InModel);
-    request.data.richiestaStato = StatoRichiesta.Cancellata;
+
+    if (item.richiestaStato == this.StatoRichiesta.Approvata && item.revocaStato == null)
+      request.data.richiestaStato = StatoRichiesta.Immessa; //revoca
+    else
+      request.data.richiestaStato = StatoRichiesta.Cancellata;
+
     request.data.IdDip_GG_Richiesta = IdDip_GG_Richiesta;
     this.dipGGRichiestaService.SetState(request).subscribe(res => {
       this.loadData();
@@ -126,7 +131,9 @@ export class RequestListUserPageComponent implements OnInit {
 
 
   public showBtnDelete(item: Dip_GG_RichiestaModel): boolean {
-    if (item.richiestaStato == StatoRichiesta.Immessa)
+    if (item.richiestaStato == StatoRichiesta.Immessa ||
+        item.richiestaStato == StatoRichiesta.ApprovazioneInCorso ||
+        item.richiestaStato == StatoRichiesta.Approvata)
       return true;
     return false;
   }

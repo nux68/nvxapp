@@ -265,6 +265,15 @@ export class TimeSheetUserPageComponent implements OnInit, OnDestroy {
     this.isActionSheetOpen = false;
 
     if (event?.detail?.data?.action === 'delete') {
+
+      let tipoReq = this.StatoRichiesta.Cancellata;
+
+
+      if (event.richiestaStato == StatoRichiesta.Approvata && event.revocaStato == null)
+        tipoReq = this.StatoRichiesta.Immessa
+      else
+        tipoReq = this.StatoRichiesta.Cancellata;
+
       let IdDip_GG_Richiesta: number[] = [];
       if ('idPar_Giustificativi' in this.actionSheetOpenSelectObj) {
         const giustificativo = this.actionSheetOpenSelectObj as Dip_GG_GiustificativiModel;
@@ -277,7 +286,10 @@ export class TimeSheetUserPageComponent implements OnInit, OnDestroy {
 
       if (IdDip_GG_Richiesta.length> 0) {
         let request: GenericRequest<Dip_GG_Richiesta_SetState_InModel> = new GenericRequest<Dip_GG_Richiesta_SetState_InModel>(Dip_GG_Richiesta_SetState_InModel);
-        request.data.richiestaStato = StatoRichiesta.Cancellata;
+
+
+        request.data.richiestaStato = tipoReq;//StatoRichiesta.Cancellata;
+
         request.data.IdDip_GG_Richiesta = IdDip_GG_Richiesta;
         this.dipGGRichiestaService.SetState(request).subscribe(res => {
           this.loadMonth();

@@ -1,5 +1,4 @@
-﻿using nvxapp.server.data.Entities.Public;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace nvxapp.server.data.Entities.Tenant
@@ -39,9 +38,9 @@ namespace nvxapp.server.data.Entities.Tenant
 
     public class Dip_GG_Richiesta_Stato_Cronology
     {
-        public string? IdAspNetUsers { get; set; } = string.Empty;
-        public StatoRichiesta? RichiestaStato { get; set; }
-        public DateTime? Data { get; set; }
+        public string IdAspNetUsers { get; set; } = string.Empty;
+        public StatoRichiesta RichiestaStato { get; set; }
+        public DateTime Data { get; set; }
 
 
         public string? UsrName_DEB { get; set; } = string.Empty;
