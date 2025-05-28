@@ -15,6 +15,7 @@ import { TipoRichiestaToLongTextPipe } from '../../../shared/pipe/GestionePresen
 import { TipoRichiestaToShortTextPipe } from '../../../shared/pipe/GestionePresenze/tipo-richiesta-to-short-text.pipe';
 import { StatoRichiestaShortTextPipe } from '../../../shared/pipe/GestionePresenze/stato-richiesta-short-text.pipe';
 import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
+import { TimeSheetService } from '../../../Utility/GestionePresenze/time-sheet.service';
 
 
 
@@ -41,6 +42,7 @@ export class RequestListAdminPageComponent implements OnInit {
   
 
   constructor(private navCtrl: NavController,
+    public timeSheetService: TimeSheetService,
     private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
     private dipGGRichiestaService: DipGGRichiestaService,
     public fabMenuService: FabMenuService,
@@ -158,16 +160,35 @@ export class RequestListAdminPageComponent implements OnInit {
 
   public showBtnApprova(item: Dip_GG_RichiestaModel): boolean {
 
-    if (item.richiestaStato != StatoRichiesta.Immessa)
-      return false;
+    if (item.revocaStato == null) {
+      if (item.richiestaStato != StatoRichiesta.Immessa)
+        return false;
 
-    return true;
+      return true;
+    }
+    else {
+      if (item.revocaStato != StatoRichiesta.Immessa)
+        return false;
+
+      return true;
+    }
+
+    
   }
 
   public showBtnRifiuta(item: Dip_GG_RichiestaModel): boolean{
-    if (item.richiestaStato != StatoRichiesta.Immessa)
-      return false;
-    return true;
+    if (item.revocaStato == null) {
+      if (item.richiestaStato != StatoRichiesta.Immessa)
+        return false;
+
+      return true;
+    }
+    else {
+      if (item.revocaStato != StatoRichiesta.Immessa)
+        return false;
+
+      return true;
+    }
   }
 
   public getItemText1(item: Dip_GG_RichiestaModel):string {

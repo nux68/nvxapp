@@ -12,6 +12,8 @@ import { DipGGRichiestaService } from '../../ClientServer-Service/GestionePresen
 import { MonthData, TimeSheetRemoteData } from './time-sheet-common-data';
 import { SharedParameterGestionePresenzeService } from '../../shared/shared-parameter-gestione-presenze.service';
 import { DateTimeUtilService } from '../infrastructure/date-time-util.service';
+import { TipoRichiestaToShortTextPipe } from '../../shared/pipe/GestionePresenze/tipo-richiesta-to-short-text.pipe';
+import { StatoRichiestaLongTextPipe } from '../../shared/pipe/GestionePresenze/stato-richiesta-long-text.pipe';
 
 
 
@@ -204,24 +206,10 @@ export class TimeSheetService {
   }
 
   get_StatoRichiesta_text(status: StatoRichiesta): string {
-    switch (status) {
-      case StatoRichiesta.Diretta:
-        return 'Inserimento Diretto';
-      case StatoRichiesta.Immessa:
-        return 'In Attesa';
-      case StatoRichiesta.ApprovazioneInCorso:
-        return 'In Approvazione';
-      case StatoRichiesta.ParzialmenteApprovata:
-        return 'Parzialmente Approvata';
-      case StatoRichiesta.Approvata:
-        return 'Approvata';
-      case StatoRichiesta.Rifiutata:
-        return 'Rifiutata';
-      case StatoRichiesta.Cancellata:
-        return 'Cancellata';
-      default:
-        return 'Stato Sconosciuto';
-    }
+
+    const statoRichiesta = new StatoRichiestaLongTextPipe();
+    return statoRichiesta.transform(status);
+    
   }
 
   get_Dip_GG_Giustificativi_backColor(ggJust: Dip_GG_GiustificativiModel): string {
@@ -283,6 +271,16 @@ export class TimeSheetService {
   }
 
 
+  get_StatoRichiesta_Approval_text(dip_GG_Richiesta: Dip_GG_RichiestaModel): string {
+
+    if (dip_GG_Richiesta.revocaStato == null) {
+      return this.get_StatoRichiesta_text(dip_GG_Richiesta.richiestaStato);
+    }
+    else {
+      return "(" + this.get_StatoRichiesta_text(dip_GG_Richiesta.richiestaStato) + ") Revoca " + this.get_StatoRichiesta_text(dip_GG_Richiesta.revocaStato); 
+    }
+    
+  }
 
 }
 

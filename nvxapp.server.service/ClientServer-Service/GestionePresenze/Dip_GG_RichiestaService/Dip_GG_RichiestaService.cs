@@ -311,45 +311,27 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                                 case StatoRichiesta.Cancellata:
                                     // la cancellazione è possibile solo se la richiesta non è stata approvata
 
-                                    if (Stato == StatoRichiesta.Immessa || Stato == StatoRichiesta.ApprovazioneInCorso || Stato == StatoRichiesta.ParzialmenteApprovata)
+
+                                    if (idxStato == 0)
                                     {
-                                        if (idxStato == 0)
+                                        if (Stato == StatoRichiesta.Immessa || Stato == StatoRichiesta.ApprovazioneInCorso || Stato == StatoRichiesta.ParzialmenteApprovata)
                                         {
                                             item.RichiestaStato = model.Data.RichiestaStato;
                                             await _dip_GG_RichiestaRepository.UpdateAsync(item);
 
                                             //posso cancellare i dettagli
-                                            switch (item.RichiestaTipo)
-                                            {
-                                                case TipoRichiesta.Timbratura:
-                                                    var timbr = _dip_GG_TimbraturaRepository.FindAll(x => x.IdDip_GG_Richiesta == item.Id).ToList();
-                                                    await _dip_GG_TimbraturaRepository.DeleteRangeAsync(timbr);
-
-                                                    break;
-                                                case TipoRichiesta.Giustificativo:
-
-                                                    var just = _dip_GG_GiustificativiRepository.FindAll(x => x.IdDip_GG_Richiesta == item.Id).ToList();
-                                                    await _dip_GG_GiustificativiRepository.DeleteRangeAsync(just);
-
-                                                    break;
-                                                case TipoRichiesta.NotaSpesa:
-
-                                                    var nota = _dip_GG_NotaSpesaRepository.FindAll(x => x.IdDip_GG_Richiesta == item.Id).ToList();
-                                                    await _dip_GG_NotaSpesaRepository.DeleteRangeAsync(nota);
-
-                                                    break;
-                                            }
-
+                                            await Dip_GG_Richiesta_Canc_Dettaglio(item);
                                         }
-                                        else
-                                        {
-                                            
-                                            item.RevocaStato = StatoRichiesta.Cancellata;
-                                            item.RevocaApprovazioneData = JsonConvert.SerializeObject(new List<Dip_GG_Richiesta_Stato_Cronology>(), Formatting.Indented);;
-                                            await _dip_GG_RichiestaRepository.UpdateAsync(item);
-                                        }
-
                                     }
+                                    else
+                                    {
+
+                                        item.RevocaStato = null;
+                                        item.RevocaApprovazioneData = JsonConvert.SerializeObject(new List<Dip_GG_Richiesta_Stato_Cronology>(), Formatting.Indented); ;
+                                        await _dip_GG_RichiestaRepository.UpdateAsync(item);
+                                    }
+
+
 
                                     break;
 
@@ -438,6 +420,12 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                                                     break;
                                             }
                                         }
+                                        else
+                                        {
+                                            //approvazione revoca, cancello i dettagli
+                                            await Dip_GG_Richiesta_Canc_Dettaglio(item);
+                                        }
+
                                     }
                                     break;
                                 case StatoRichiesta.Rifiutata:
@@ -493,26 +481,27 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                                         if (idxStato == 0 && RichiestaStato_Orig != item.RichiestaStato) // Aggiorno i dettagli solo se lo stato è cambiato  e solo per le richieste approvazioni
                                         {
                                             //posso cancellare i dettagli
-                                            switch (item.RichiestaTipo)
-                                            {
-                                                case TipoRichiesta.Timbratura:
-                                                    var timbr = _dip_GG_TimbraturaRepository.FindAll(x => x.IdDip_GG_Richiesta == item.Id).ToList();
-                                                    await _dip_GG_TimbraturaRepository.DeleteRangeAsync(timbr);
+                                            await Dip_GG_Richiesta_Canc_Dettaglio(item);
+                                            //switch (item.RichiestaTipo)
+                                            //{
+                                            //    case TipoRichiesta.Timbratura:
+                                            //        var timbr = _dip_GG_TimbraturaRepository.FindAll(x => x.IdDip_GG_Richiesta == item.Id).ToList();
+                                            //        await _dip_GG_TimbraturaRepository.DeleteRangeAsync(timbr);
 
-                                                    break;
-                                                case TipoRichiesta.Giustificativo:
+                                            //        break;
+                                            //    case TipoRichiesta.Giustificativo:
 
-                                                    var just = _dip_GG_GiustificativiRepository.FindAll(x => x.IdDip_GG_Richiesta == item.Id).ToList();
-                                                    await _dip_GG_GiustificativiRepository.DeleteRangeAsync(just);
+                                            //        var just = _dip_GG_GiustificativiRepository.FindAll(x => x.IdDip_GG_Richiesta == item.Id).ToList();
+                                            //        await _dip_GG_GiustificativiRepository.DeleteRangeAsync(just);
 
-                                                    break;
-                                                case TipoRichiesta.NotaSpesa:
+                                            //        break;
+                                            //    case TipoRichiesta.NotaSpesa:
 
-                                                    var nota = _dip_GG_NotaSpesaRepository.FindAll(x => x.IdDip_GG_Richiesta == item.Id).ToList();
-                                                    await _dip_GG_NotaSpesaRepository.DeleteRangeAsync(nota);
+                                            //        var nota = _dip_GG_NotaSpesaRepository.FindAll(x => x.IdDip_GG_Richiesta == item.Id).ToList();
+                                            //        await _dip_GG_NotaSpesaRepository.DeleteRangeAsync(nota);
 
-                                                    break;
-                                            }
+                                            //        break;
+                                            //}
 
                                         }
                                     }
@@ -531,6 +520,32 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                 return retVal;
             }, isSubProcess);
         }
+
+
+        private async Task Dip_GG_Richiesta_Canc_Dettaglio(Dip_GG_Richiesta item)
+        {
+            switch (item.RichiestaTipo)
+            {
+                case TipoRichiesta.Timbratura:
+                    var timbr = _dip_GG_TimbraturaRepository.FindAll(x => x.IdDip_GG_Richiesta == item.Id).ToList();
+                    await _dip_GG_TimbraturaRepository.DeleteRangeAsync(timbr);
+
+                    break;
+                case TipoRichiesta.Giustificativo:
+
+                    var just = _dip_GG_GiustificativiRepository.FindAll(x => x.IdDip_GG_Richiesta == item.Id).ToList();
+                    await _dip_GG_GiustificativiRepository.DeleteRangeAsync(just);
+
+                    break;
+                case TipoRichiesta.NotaSpesa:
+
+                    var nota = _dip_GG_NotaSpesaRepository.FindAll(x => x.IdDip_GG_Richiesta == item.Id).ToList();
+                    await _dip_GG_NotaSpesaRepository.DeleteRangeAsync(nota);
+
+                    break;
+            }
+        }
+
 
         private async Task Add_Dip_GG_Timbratura(Dip_GG_Richiesta dip_GG_Richiesta,
                                                  User_DATA_COMB_DipAna_DipRapp user_DATA_COMB_DipAna_DipRapp)
@@ -659,33 +674,60 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                                         {
                                             Boolean showReq = false;
 
-                                            if (resAz_Cfg.Data.Az_Cfg.ApprovazioneTipo == TipoApprovazione.AllAdminHierarchy)
+                                            switch (resAz_Cfg.Data.Az_Cfg.ApprovazioneTipo)
                                             {
-                                                if (lista[idxReq - 1].RichiestaStato == StatoRichiesta.Approvata)
-                                                {
+                                                case TipoApprovazione.AllAdminHierarchy:
+                                                    if (lista[idxReq - 1].RichiestaStato == StatoRichiesta.Approvata)
+                                                    {
+                                                        showReq = true;
+                                                        //forzatura 
+                                                        if (idxStato == 0)
+                                                            item.RichiestaStato = (StatoRichiesta)lista[idxReq].RichiestaStato;
+                                                        else
+                                                            item.RevocaStato = (StatoRichiesta)lista[idxReq].RichiestaStato;
+                                                    }
+                                                    break;
+                                                case TipoApprovazione.AllAdmin:
+                                                case TipoApprovazione.SigleAdmin:
                                                     showReq = true;
-                                                    //forzatura 
-                                                    item.RichiestaStato = (StatoRichiesta)lista[idxReq].RichiestaStato; //StatoRichiesta.Immessa;
-                                                }
+                                                    if (lista[idxReq].RichiestaStato == StatoRichiesta.Immessa)
+                                                    {
+                                                        //forzatura 
+                                                        if (idxStato == 0)
+                                                            item.RichiestaStato = (StatoRichiesta)lista[idxReq].RichiestaStato;
+                                                        else
+                                                            item.RevocaStato = (StatoRichiesta)lista[idxReq].RichiestaStato;
+                                                    }
+                                                    break;
                                             }
-                                            else if (resAz_Cfg.Data.Az_Cfg.ApprovazioneTipo == TipoApprovazione.AllAdmin)
-                                            {
-                                                showReq = true;
-                                                if (lista[idxReq].RichiestaStato == StatoRichiesta.Immessa)
-                                                {
-                                                    //forzatura 
-                                                    item.RichiestaStato = (StatoRichiesta)lista[idxReq].RichiestaStato; //StatoRichiesta.Immessa;
-                                                }
-                                            }
-                                            if (resAz_Cfg.Data.Az_Cfg.ApprovazioneTipo == TipoApprovazione.SigleAdmin)
-                                            {
-                                                showReq = true;
-                                                if (lista[idxReq].RichiestaStato == StatoRichiesta.Immessa)
-                                                {
-                                                    //forzatura 
-                                                    item.RichiestaStato = (StatoRichiesta)lista[idxReq].RichiestaStato; //StatoRichiesta.Immessa;
-                                                }
-                                            }
+
+                                            //////if (resAz_Cfg.Data.Az_Cfg.ApprovazioneTipo == TipoApprovazione.AllAdminHierarchy)
+                                            //////{
+                                            //////    if (lista[idxReq - 1].RichiestaStato == StatoRichiesta.Approvata)
+                                            //////    {
+                                            //////        showReq = true;
+                                            //////        //forzatura 
+                                            //////        item.RichiestaStato = (StatoRichiesta)lista[idxReq].RichiestaStato; //StatoRichiesta.Immessa;
+                                            //////    }
+                                            //////}
+                                            //////else if (resAz_Cfg.Data.Az_Cfg.ApprovazioneTipo == TipoApprovazione.AllAdmin)
+                                            //////{
+                                            //////    showReq = true;
+                                            //////    if (lista[idxReq].RichiestaStato == StatoRichiesta.Immessa)
+                                            //////    {
+                                            //////        //forzatura 
+                                            //////        item.RichiestaStato = (StatoRichiesta)lista[idxReq].RichiestaStato; //StatoRichiesta.Immessa;
+                                            //////    }
+                                            //////}
+                                            //////if (resAz_Cfg.Data.Az_Cfg.ApprovazioneTipo == TipoApprovazione.SigleAdmin)
+                                            //////{
+                                            //////    showReq = true;
+                                            //////    if (lista[idxReq].RichiestaStato == StatoRichiesta.Immessa)
+                                            //////    {
+                                            //////        //forzatura 
+                                            //////        item.RichiestaStato = (StatoRichiesta)lista[idxReq].RichiestaStato; //StatoRichiesta.Immessa;
+                                            //////    }
+                                            //////}
 
                                             if (showReq)
                                             {

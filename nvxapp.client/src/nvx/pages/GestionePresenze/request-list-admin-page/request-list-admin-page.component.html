@@ -95,13 +95,14 @@
       </ion-col>
 
       <ion-col class="ion-hide-sm-down">
-        <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
+        <!--<ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
           {{ item.richiestaStato | statoRichiestaLongText }}
+        </ion-label>-->
+
+        <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
+          {{ timeSheetService.get_StatoRichiesta_Approval_text(item) }}
         </ion-label>
-  
-        <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }" *ngIf="item.revocaStato==StatoRichiesta.Immessa">
-          Revoca
-        </ion-label>
+
 
       </ion-col>
 

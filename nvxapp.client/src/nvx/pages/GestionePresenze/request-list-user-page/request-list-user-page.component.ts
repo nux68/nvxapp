@@ -12,6 +12,7 @@ import { MonthNavigatorService } from '../../../Utility/infrastructure/month-nav
 import { TimeSheetUtilityService } from '../../../Utility/GestionePresenze/time-sheet-utility.service';
 import { StatoRichiestaShortTextPipe } from '../../../shared/pipe/GestionePresenze/stato-richiesta-short-text.pipe';
 import { TipoRichiestaToShortTextPipe } from '../../../shared/pipe/GestionePresenze/tipo-richiesta-to-short-text.pipe';
+import { TimeSheetService } from '../../../Utility/GestionePresenze/time-sheet.service';
 
 
 
@@ -32,6 +33,7 @@ export class RequestListUserPageComponent implements OnInit {
   constructor(private navCtrl: NavController,
     private dipGGRichiestaService: DipGGRichiestaService,
     public fabMenuService: FabMenuService,
+    public timeSheetService: TimeSheetService,
     private monthNavigatorService: MonthNavigatorService,
     private userInterfaceService: UserInterfaceService,
     private dipGGTimbraturaUtilityService: TimeSheetUtilityService,
@@ -131,11 +133,22 @@ export class RequestListUserPageComponent implements OnInit {
 
 
   public showBtnDelete(item: Dip_GG_RichiestaModel): boolean {
-    if (item.richiestaStato == StatoRichiesta.Immessa ||
+
+    if (item.revocaStato == null) {
+      if (item.richiestaStato == StatoRichiesta.Immessa ||
         item.richiestaStato == StatoRichiesta.ApprovazioneInCorso ||
         item.richiestaStato == StatoRichiesta.Approvata)
-      return true;
-    return false;
+        return true;
+      return false;
+    }
+    else {
+      if (item.revocaStato == StatoRichiesta.Immessa ||
+        item.revocaStato == StatoRichiesta.ApprovazioneInCorso )
+        return true;
+      return false;
+    }
+
+    
   }
 
   public getItemText1(item: Dip_GG_RichiestaModel): string {
