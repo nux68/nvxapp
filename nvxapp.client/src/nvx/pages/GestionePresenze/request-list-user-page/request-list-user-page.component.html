@@ -72,6 +72,9 @@
         <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
           {{ item.richiestaStato | statoRichiestaLongText }}
         </ion-label>
+        <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }" *ngIf="item.revocaStato==StatoRichiesta.Immessa">
+          ({{ item.revocaStato | statoRichiestaLongText }} Revoca)
+        </ion-label>
       </ion-col>
 
       <ion-col class="ion-hide-sm-down">

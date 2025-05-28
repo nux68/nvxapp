@@ -82,7 +82,7 @@ export class RequestListUserPageComponent implements OnInit {
 
     let request: GenericRequest<Dip_GG_Richiesta_SetState_InModel> = new GenericRequest<Dip_GG_Richiesta_SetState_InModel>(Dip_GG_Richiesta_SetState_InModel);
 
-    if (item.richiestaStato == this.StatoRichiesta.Approvata && item.revocaStato == null)
+    if (item.richiestaStato == this.StatoRichiesta.Approvata && (item.revocaStato == null || (item.revocaStato !== null && item.revocaStato == this.StatoRichiesta.Cancellata) )  )
       request.data.richiestaStato = StatoRichiesta.Immessa; //revoca
     else
       request.data.richiestaStato = StatoRichiesta.Cancellata;

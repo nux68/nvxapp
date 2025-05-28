@@ -35,6 +35,7 @@ export class RequestListAdminPageComponent implements OnInit {
   public currRappLavSel: number[] = [];
   public currYear: number
   public currMonth: number
+  public StatoRichiesta = StatoRichiesta;
 
   //public tipoRichiestaToLongTextPipe: TipoRichiestaToLongTextPipe,
   

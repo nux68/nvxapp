@@ -345,7 +345,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                                         {
                                             
                                             item.RevocaStato = StatoRichiesta.Cancellata;
-                                            item.RevocaApprovazioneData = "";//string.Empty;
+                                            item.RevocaApprovazioneData = JsonConvert.SerializeObject(new List<Dip_GG_Richiesta_Stato_Cronology>(), Formatting.Indented);;
                                             await _dip_GG_RichiestaRepository.UpdateAsync(item);
                                         }
 
