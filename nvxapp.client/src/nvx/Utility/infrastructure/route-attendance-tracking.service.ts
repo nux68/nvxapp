@@ -30,7 +30,7 @@ export class RouteAttendanceTrackingService {
       { path: 'departmentlist', loadChildren: () => import('../../pages/GestionePresenze/department-list-page/department-list-page.module').then(m => m.DepartmentListPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
       { path: 'departmentedit', loadChildren: () => import('../../pages/GestionePresenze/department-edit-page/department-edit-page.module').then(m => m.DepartmentEditPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
       { path: 'companycfgedit', loadChildren: () => import('../../pages/GestionePresenze/company-cfg-page/company-cfg-page.module').then(m => m.CompanyCfgPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
-      { path: 'userdepartmentlist', loadChildren: () => import('../../pages/GestionePresenze/user-department-list-page/user-department-list-page.module').then(m => m.UserDepartmentListPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
+      { path: 'userdepartmentlist', loadChildren: () => import('../../pages/GestionePresenze/user-department-list-page/user-department-list-page.module').then(m => m.UserDepartmentListPageModule), canActivate: [RoleGuard4CompanyAdmin] },
 
       //admin
       { path: 'admintimesheet', loadChildren: () => import('../../pages/GestionePresenze/time-sheet-admin-page/time-sheet-admin-page.module').then(m => m.TimeSheetAdminModule), canActivate: [RoleGuard4CompanyAdmin] },
