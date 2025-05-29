@@ -19,7 +19,19 @@
 
 		Az_Sedi(1-N)
 			Az_Reparto(1-N)              -> Ricorsivo
-				Az_RepartoAttivita(1-N)
+			 ~Az_RepartoAttivita(1-N)
+	    
+			*Az_SediAttivita
+
+
+		*Az_Competenza(1-N)
+		*Az_Attivita(1-N)
+			*Az_AttivitaCompetenza
+		*Az_Commessa(1-N)
+			*Az_SubCommessa(1-N)
+				*Az_Attivita(1-N)
+			Az_CommessaCliente(1-1)
+		*Az_Cliente(1-N)
 
 		
 
@@ -29,8 +41,10 @@
 		Dip_RapportoLavoro(1-N)
 		    Dip_ProfiloOrario(1-N)       -> Par_ProfiloOrario
 			Dip_GG_Giustificativi(1-N)   -> Par_Giustificativi
-			Dip_GG_Timbratura(1-N)
+			Dip_GG_Timbratura(1-N)   mettere attivita sub commessa
 			Dip_GG_NotaSpesa(1-N)
 			Dip_GG_Richiesta(1-N)
 			--
 			Dip_GG_Causali(1-N)          -> Par_Causali
+     ****
+	 Dip_Competenza  ->Az_Competenza

@@ -52,26 +52,29 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Giusti
                 Par_Giustificativi? par_Giustificativi = null;
                 if (company_DATA_COMB_AzAna_AzSedi_AzReparto != null && company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Anagrafica != null)
                 {
-                    //MA
-                    par_Giustificativi = _par_GiustificativiRepository.FindAll(x => x.IdAz_Anagrafica == company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Anagrafica.Id &&
-                                                                               x.Codice == "MA").FirstOrDefault();
+                    var par_Giustificativi_all = _par_GiustificativiRepository.FindAll(x => x.IdAz_Anagrafica == company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Anagrafica.Id ).ToList();
+
+
+                    if(!par_Giustificativi_all.Any())
+                    {
+                        //MA
+                    par_Giustificativi  = par_Giustificativi_all.Where(x=> x.Codice=="MAL").FirstOrDefault();
                     if (par_Giustificativi == null)
                     {
                         par_Giustificativi = new Par_Giustificativi()
                         {
                             IdAz_Anagrafica = company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Anagrafica.Id,
-                            Codice = "MA",
+                            Codice = "MAL",
                             Descrizione = "Malattia",
                             BackgroundColor = "#ff0000",
                             TextColor = "#ffffff"
                         };
                         par_Giustificativi = await _par_GiustificativiRepository.UpsertAsync(par_Giustificativi);
+                        par_Giustificativi_all.Add(par_Giustificativi);
                     }
-                    retVal.Par_Giustificativi.Add(_mapper.Map<Par_GiustificativiModel>(par_Giustificativi));
 
                     //ROL
-                    par_Giustificativi = _par_GiustificativiRepository.FindAll(x => x.IdAz_Anagrafica == company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Anagrafica.Id &&
-                                                                               x.Codice == "ROL").FirstOrDefault();
+                    par_Giustificativi  = par_Giustificativi_all.Where(x=> x.Codice=="ROL").FirstOrDefault();
                     if (par_Giustificativi == null)
                     {
                         par_Giustificativi = new Par_Giustificativi()
@@ -83,12 +86,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Giusti
                             TextColor = "#000000"
                         };
                         par_Giustificativi = await _par_GiustificativiRepository.UpsertAsync(par_Giustificativi);
+                        par_Giustificativi_all.Add(par_Giustificativi);
                     }
-                    retVal.Par_Giustificativi.Add(_mapper.Map<Par_GiustificativiModel>(par_Giustificativi));
 
                     //FERIE
-                    par_Giustificativi = _par_GiustificativiRepository.FindAll(x => x.IdAz_Anagrafica == company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Anagrafica.Id &&
-                                                                               x.Codice == "FE").FirstOrDefault();
+                    par_Giustificativi  = par_Giustificativi_all.Where(x=> x.Codice=="FE").FirstOrDefault();
                     if (par_Giustificativi == null)
                     {
                         par_Giustificativi = new Par_Giustificativi()
@@ -100,8 +102,15 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Giusti
                             TextColor = "#ffffff"
                         };
                         par_Giustificativi = await _par_GiustificativiRepository.UpsertAsync(par_Giustificativi);
+                        par_Giustificativi_all.Add(par_Giustificativi);
                     }
-                    retVal.Par_Giustificativi.Add(_mapper.Map<Par_GiustificativiModel>(par_Giustificativi));
+                    }
+
+                    
+
+                    retVal.Par_Giustificativi = _mapper.Map<List<Par_GiustificativiModel>>(par_Giustificativi_all);
+
+
                 }
 
 
