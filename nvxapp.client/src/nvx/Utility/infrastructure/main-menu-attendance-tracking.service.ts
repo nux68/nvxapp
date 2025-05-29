@@ -22,6 +22,7 @@ export class MainMenuAttendanceTrackingService implements iMainMenuService {
       { title: 'Power Admin Time Sheet', roles: ['CompanyPowerAdmin'], component: "TimeSheetPowerAdminPageComponent", url: '/poweradmintimesheet', icon: 'ellipse' },
       { title: 'Justifications', roles: ['CompanyPowerAdmin'], component: "JustificationListPageComponent", url: '/justificationlist', icon: 'ellipse' },
       { title: 'Departments', roles: ['CompanyPowerAdmin'], component: "DepartmentListPageComponent", url: '/departmentlist', icon: 'ellipse' },
+      { title: 'User Department List', roles: ['CompanyPowerAdmin'], component: "UserDepartmentListPageComponent", url: '/userdepartmentlist', icon: 'people' },
       { title: 'Company cfg', roles: ['CompanyPowerAdmin'], component: "CompanyCfgPageComponent", url: '/companycfgedit', icon: 'ellipse' },
       
       //solo CompanyAdmin
