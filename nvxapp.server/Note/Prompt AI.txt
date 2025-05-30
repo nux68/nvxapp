@@ -5,6 +5,7 @@ prendi come spunto Dip_GG_Timbratura_AND_Dip_GG_TimbraturaModel_Mapper.cs e crea
 SERVICE C# & Models
 
 premessa, se lancio questo comando, tutto quello è coinvolto , va ricreato
+
 prendi come spunto My_Template1Service (cartella) e ricrea la stessa struttura (service e model) My_ProvaAI2 , ci sarano operazioni da
 fare sia nei progetti c# che gestiscono il backand che cne progetto angular/ionic che gestisce il frontend
 
@@ -19,3 +20,18 @@ backend:
 frontend:
 1) in nvxapp.client\src\nvx\ClientServer-Service\GestionePresenze prendendo sempre come spunto (mantieni lo stesso stile e attenzione agli import)
 	\src\nvx\ClientServer-Service\GestionePresenze\My_Template1Service crea il service e il model per il servizio appena creato
+
+
+
+Prendi come spunto Az_SediService.cs  che gestisce l'entita Az_Sedi,  e ricrea la stessa struttura per Az_Competenza
+dovrai creare:
+backend:
+1) entità Az_Competenza collegando le ralazione uno a molti sull entita Az_Anagrafica (progetto nvxapp.server.data)
+2) repository (progetto nvxapp.server.data)
+3) crea il mapper (nvxapp.server.service)
+4) Az_CompetenzaService con tutte le classi model (nvxapp.server.service)
+5) Il controller (progetto nvxapp.server)
+frontend:
+6) Il service angular  con i vari model ( prendi spunto da ClientServer-Service\src\ClientServer-Service\Az_Sedi)
+
+Attenzioni mantieni la stessa convenzione nella creazione della cartelle

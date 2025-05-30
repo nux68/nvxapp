@@ -26,6 +26,7 @@ namespace nvxapp.server.data.Entities.Tenant
         public ICollection<Par_Arrotondamenti>? Par_Arrotondamenti { get; set; }
         public ICollection<Par_Orario>? Par_Orario { get; set; }
         public ICollection<Par_ProfiloOrario>? Par_ProfiloOrario { get; set; }
+        public ICollection<Az_Competenza>? Az_Competenza { get; set; }
 
     }
 
