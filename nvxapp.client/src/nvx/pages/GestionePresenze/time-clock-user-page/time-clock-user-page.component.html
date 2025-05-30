@@ -5,6 +5,11 @@
 
 <ion-content [fullscreen]="true">
 
+  <br />
+  <br />
+  <br />
+  <br />
+
   <!--<div class="location-badge">
     <ion-icon name="location"></ion-icon>
     <span>{{ location }}</span>
@@ -21,30 +26,33 @@
     <div class="time">{{ currentTime }}</div>
   </div>
 
-  <div class="last-action">
-    <!--<div >-->
-      <p>Ultima timbratura: {{ lastAction }}</p>
-    </div>
+  <ion-card class="ion-text-center ion-padding" style="background: var(--ion-toolbar-background); color: var(--ion-toolbar-color);">
+    <ion-card-content>
+      <ion-label class="ion-text-uppercase">
+        Ultima timbratura: {{ lastAction }}
+      </ion-label>
+    </ion-card-content>
+  </ion-card>
 
-    <!--<div class="button-container">
-      <button class="clock-button clock-in-out" (click)="clockInOut()">
-        <ion-icon name="time-outline"></ion-icon>
-        <span>TIMBRA</span>
-      </button>
-    </div>-->
-    <!-- Modals remain the same -->
-    <ion-modal [keepContentsMounted]="true">
-      <ng-template>
-        <ion-datetime id="startDatetime"
-                      [(ngModel)]="startDateBtn"
-                      presentation="date"
-                      [showDefaultButtons]="true"
-                      doneText="Fatto"
-                      cancelText="Annulla"
-                      locale="it-IT">
-        </ion-datetime>
-      </ng-template>
-    </ion-modal>
+  <!--<div class="button-container">
+    <button class="clock-button clock-in-out" (click)="clockInOut()">
+      <ion-icon name="time-outline"></ion-icon>
+      <span>TIMBRA</span>
+    </button>
+  </div>-->
+  <!-- Modals remain the same -->
+  <ion-modal [keepContentsMounted]="true">
+    <ng-template>
+      <ion-datetime id="startDatetime"
+                    [(ngModel)]="startDateBtn"
+                    presentation="date"
+                    [showDefaultButtons]="true"
+                    doneText="Fatto"
+                    cancelText="Annulla"
+                    locale="it-IT">
+      </ion-datetime>
+    </ng-template>
+  </ion-modal>
 
 </ion-content>
 
