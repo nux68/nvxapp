@@ -39,7 +39,7 @@ export class RequestListUserPageComponent implements OnInit {
     private dipGGTimbraturaUtilityService: TimeSheetUtilityService,
     private userNavigationService: UserNavigationService) {
 
-    this.title = 'Request List User';
+    this.title = 'Richieste';
     this.btnDelete = userInterfaceService.Btn_Cancella;
     this.btnDelete.event = this.handleButtonDeleteClick;
   }

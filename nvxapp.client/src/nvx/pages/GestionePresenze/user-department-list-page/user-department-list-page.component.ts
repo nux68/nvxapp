@@ -31,16 +31,18 @@ export class UserDepartmentListPageComponent implements OnInit {
   public btnImpersona: ButtonItem;
   public btnEdit: ButtonItem;
   constructor(private navCtrl: NavController,
-    private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
-    private accountService: AccountService,
-    public fabMenuService: FabMenuService,
-    private azSediService: AzSediService,
-    private azSediRepartoService: AzSediRepartoService,
-    private azSediRepartoUserServiceService: AzSediRepartoUserServiceService,
-    private parameterService: ParameterService,
-    private userInterfaceService: UserInterfaceService,
-    private userNavigationService: UserNavigationService) {
-    this.title = 'Users';
+              private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
+              private accountService: AccountService,
+              public fabMenuService: FabMenuService,
+              private azSediService: AzSediService,
+              private azSediRepartoService: AzSediRepartoService,
+              private azSediRepartoUserServiceService: AzSediRepartoUserServiceService,
+              private parameterService: ParameterService,
+              private userInterfaceService: UserInterfaceService,
+              private userNavigationService: UserNavigationService)
+  {
+
+    this.title = 'Utenti';
     this.btnImpersona = userInterfaceService.Btn_Impersona;
     this.btnImpersona.event = this.handleButtonImpersonaClick;
     this.btnEdit = userInterfaceService.Btn_Modifica;

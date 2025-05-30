@@ -54,7 +54,7 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
               public userNavigationService: UserNavigationService,
               private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService
   ) {
-    this.title = 'Controllo Presenze';
+    this.title = 'Calendario HR';
     this.currentMonth = { year: 0, month: 0, days: {}, dip_GG_Richiesta: [] };
   }
 

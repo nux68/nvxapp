@@ -52,7 +52,7 @@ export class RequestListAdminPageComponent implements OnInit {
     private dipGGTimbraturaUtilityService: TimeSheetUtilityService,
     private userNavigationService: UserNavigationService) {
 
-    this.title = 'Request List Admin';
+    this.title = 'Richieste';
     this.btnApprova = userInterfaceService.Btn_Approva;
     this.btnApprova.event = this.handleButtonApprovaClick;
 

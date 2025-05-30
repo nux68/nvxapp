@@ -16,15 +16,15 @@ export class MainMenuAttendanceTrackingService implements iMainMenuService {
   public get Pages4CompanyAdmin(): MainMenuItem[] {
 
     return [
-      { menuType: MenuType.MenuItem, zorder: 1000,   title: 'Richieste Admin'  , roles: ['CompanyPowerAdmin', 'CompanyAdmin'], component: "JustificationListPageComponent", url: '/requestlistadmin', icon: 'ellipse' },
-      { menuType: MenuType.MenuItem, zorder: 2000,   title: 'Calendario HR'    , roles: ['CompanyPowerAdmin']                , component: "TimeSheetPowerAdminPageComponent", url: '/poweradmintimesheet', icon: 'ellipse' },
-      { menuType: MenuType.MenuItem, zorder: 2000,   title: 'Calendario'       , roles: ['CompanyAdmin']                     , component: "TimeSheetAdminPageComponent", url: '/admintimesheet', icon: 'ellipse' },
-      { menuType: MenuType.MenuItem, zorder: 3000,   title: 'Utenti reparto'   , roles: ['CompanyAdmin']                     , component: "UserDepartmentListPageComponent", url: '/userdepartmentlist', icon: 'people' },
+      { menuType: MenuType.MenuItem, zorder: 2100,   title: 'Richieste'        , roles: ['CompanyPowerAdmin', 'CompanyAdmin'], component: "JustificationListPageComponent", url: '/requestlistadmin', icon: 'ellipse' },
+      { menuType: MenuType.MenuItem, zorder: 2200,   title: 'Calendario HR'    , roles: ['CompanyPowerAdmin']                , component: "TimeSheetPowerAdminPageComponent", url: '/poweradmintimesheet', icon: 'ellipse' },
+      { menuType: MenuType.MenuItem, zorder: 2300,   title: 'Calendario'       , roles: ['CompanyAdmin']                     , component: "TimeSheetAdminPageComponent", url: '/admintimesheet', icon: 'ellipse' },
+      { menuType: MenuType.MenuItem, zorder: 3000,   title: 'Utenti '          , roles: ['CompanyAdmin']                     , component: "UserDepartmentListPageComponent", url: '/userdepartmentlist', icon: 'people' },
 
-      { menuType: MenuType.MenuNote, zorder: 100000, title: 'Parametri'                                                      , component: '', url: '', icon: '' },
-      { menuType: MenuType.MenuItem, zorder: 100100, title: 'Giustificativi' , roles: ['CompanyPowerAdmin']                  , component: "JustificationListPageComponent", url: '/justificationlist', icon: 'ellipse' },
-      { menuType: MenuType.MenuItem, zorder: 100200, title: 'Reparti'        , roles: ['CompanyPowerAdmin']                  , component: "DepartmentListPageComponent", url: '/departmentlist', icon: 'ellipse' },
-      { menuType: MenuType.MenuItem, zorder: 100300, title: 'Configurazione' , roles: ['CompanyPowerAdmin']                  , component: "CompanyCfgPageComponent", url: '/companycfgedit', icon: 'ellipse' },
+      { menuType: MenuType.MenuNote, zorder: 201000, title: 'Parametri'      , roles: ['CompanyPowerAdmin']                  , component: '', url: '', icon: '' },
+      { menuType: MenuType.MenuItem, zorder: 202000, title: 'Giustificativi' , roles: ['CompanyPowerAdmin']                  , component: "JustificationListPageComponent", url: '/justificationlist', icon: 'ellipse' },
+      { menuType: MenuType.MenuItem, zorder: 203000, title: 'Reparti'        , roles: ['CompanyPowerAdmin']                  , component: "DepartmentListPageComponent", url: '/departmentlist', icon: 'ellipse' },
+      { menuType: MenuType.MenuItem, zorder: 204000, title: 'Configurazione' , roles: ['CompanyPowerAdmin']                  , component: "CompanyCfgPageComponent", url: '/companycfgedit', icon: 'ellipse' },
       
     ];
 

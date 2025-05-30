@@ -60,7 +60,7 @@ export class TimeSheetUserPageComponent implements OnInit, OnDestroy {
               private dipGGRichiestaService: DipGGRichiestaService,
               private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService
   ) {
-    this.title = 'TimeSheetUser';
+    this.title = 'Calendario';
     this.weeks = [];
     // Inizializza con una struttura valida ma vuota
     this.currentMonth = { year: 0, month: 0, days: {}, dip_GG_Richiesta:[] };
