@@ -176,6 +176,23 @@ export class AppComponent implements OnInit {
     
   }
 
+  public getMenuItem4User() {
+
+    return this.appPages4User;
+
+    let currRole = [];
+
+    if (this.authService.IsUser) {
+      currRole.push("User");
+    }
+
+    let retVal = this.appPages4User.filter(item =>
+      !item.roles || item.roles.some(role => currRole.includes(role))
+    );
+
+  }
+
+
   public getMenuItem4CompanyAdmin() {
 
     let currRole = [];
@@ -200,10 +217,6 @@ export class AppComponent implements OnInit {
     }
 
     return retVal;
-
-    //return this.appPages4CompanyAdmin.filter(item =>
-    //  !item.roles || item.roles.some(role => currRole.includes(role))
-    //);
 
     
   }

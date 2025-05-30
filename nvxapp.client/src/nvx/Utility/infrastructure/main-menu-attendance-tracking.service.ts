@@ -31,12 +31,12 @@ export class MainMenuAttendanceTrackingService implements iMainMenuService {
   }
   public get Pages4User(): MainMenuItem[] {
     return [
-      { menuType: MenuType.MenuNote, zorder: 1000, title: 'Presenze', component: '', url: '', icon: '' },
-      { menuType: MenuType.MenuItem, zorder: 1000, title: 'Timbratura', component: "TimeClockUserPageComponent", url: '/timeclockuser', icon: 'person' },
-      { menuType: MenuType.MenuItem, zorder: 2000, title: 'Richieste', component: "RequestListUserPageComponent", url: '/requestlistuser', icon: 'person' },
-      { menuType: MenuType.MenuItem, zorder: 3000, title: 'Calendario', component: "TimeSheetUserPageComponent", url: '/usertimesheet', icon: 'person' },
-      { menuType: MenuType.MenuItem, zorder: 4000, title: 'Richiesta giustificativo', component: "RequestJustificationUserPageComponent", url: '/requestjustificationuser', icon: 'person' },
-      { menuType: MenuType.MenuItem, zorder: 5000, title: 'Richiesta timbratura', component: "RequestClockingUserPageComponent", url: '/requestclockinguser', icon: 'person' },
+      { menuType: MenuType.MenuNote, zorder: 1000, title: 'Presenze', roles: ['User'] , component: '', url: '', icon: '' },
+      { menuType: MenuType.MenuItem, zorder: 2000, title: 'Timbratura'                , component: "TimeClockUserPageComponent", url: '/timeclockuser', icon: 'person' },
+      { menuType: MenuType.MenuItem, zorder: 3000, title: 'Richieste'                 , component: "RequestListUserPageComponent", url: '/requestlistuser', icon: 'person' },
+      { menuType: MenuType.MenuItem, zorder: 4000, title: 'Calendario'                , component: "TimeSheetUserPageComponent", url: '/usertimesheet', icon: 'person' },
+      { menuType: MenuType.MenuItem, zorder: 5000, title: 'Richiesta giustificativo'  , component: "RequestJustificationUserPageComponent", url: '/requestjustificationuser', icon: 'person' },
+      { menuType: MenuType.MenuItem, zorder: 6000, title: 'Richiesta timbratura'      , component: "RequestClockingUserPageComponent", url: '/requestclockinguser', icon: 'person' },
     ];
   }
 
