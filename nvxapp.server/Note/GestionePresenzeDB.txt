@@ -25,7 +25,7 @@
 
 
 ok		*Az_Competenza(1-N)
-		*Az_Attivita(1-N)
+ok		*Az_Attivita(1-N)
 			*Az_AttivitaCompetenza
 		*Az_Commessa(1-N)
 			*Az_SubCommessa(1-N)

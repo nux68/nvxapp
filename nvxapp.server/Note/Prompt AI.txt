@@ -23,7 +23,7 @@ frontend:
 
 
 
-Prendi come spunto Az_SediService.cs  che gestisce l'entita Az_Sedi,  e ricrea la stessa struttura per Az_Competenza
+Prendi come spunto Az_SediService.cs  che gestisce l'entita Az_Sedi,  e ricrea la stessa struttura per Az_Attivita
 dovrai creare:
 backend:
 1) entità Az_Competenza collegando le ralazione uno a molti sull entita Az_Anagrafica (progetto nvxapp.server.data)
