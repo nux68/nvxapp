@@ -31,11 +31,12 @@ export class MainMenuAttendanceTrackingService implements iMainMenuService {
   }
   public get Pages4User(): MainMenuItem[] {
     return [
-      { menuType: MenuType.MenuItem, zorder: 0,   title: 'Richieste', component: "RequestListUserPageComponent", url: '/requestlistuser', icon: 'person' },
-      { menuType: MenuType.MenuItem, zorder: 100, title: 'Calendario', component: "TimeSheetUserPageComponent", url: '/usertimesheet', icon: 'person' },
-      { menuType: MenuType.MenuItem, zorder: 200, title: 'Tmbratura', component: "TimeClockUserPageComponent", url: '/timeclockuser', icon: 'person' },
-      { menuType: MenuType.MenuItem, zorder: 300, title: 'Richiesta giustificativo', component: "RequestJustificationUserPageComponent", url: '/requestjustificationuser', icon: 'person' },
-      { menuType: MenuType.MenuItem, zorder: 400, title: 'Richiesta timbratura', component: "RequestClockingUserPageComponent", url: '/requestclockinguser', icon: 'person' },
+      { menuType: MenuType.MenuNote, zorder: 1000, title: 'Presenze', component: '', url: '', icon: '' },
+      { menuType: MenuType.MenuItem, zorder: 1000, title: 'Timbratura', component: "TimeClockUserPageComponent", url: '/timeclockuser', icon: 'person' },
+      { menuType: MenuType.MenuItem, zorder: 2000, title: 'Richieste', component: "RequestListUserPageComponent", url: '/requestlistuser', icon: 'person' },
+      { menuType: MenuType.MenuItem, zorder: 3000, title: 'Calendario', component: "TimeSheetUserPageComponent", url: '/usertimesheet', icon: 'person' },
+      { menuType: MenuType.MenuItem, zorder: 4000, title: 'Richiesta giustificativo', component: "RequestJustificationUserPageComponent", url: '/requestjustificationuser', icon: 'person' },
+      { menuType: MenuType.MenuItem, zorder: 5000, title: 'Richiesta timbratura', component: "RequestClockingUserPageComponent", url: '/requestclockinguser', icon: 'person' },
     ];
   }
 
