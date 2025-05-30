@@ -89,19 +89,19 @@
         </ion-list>
 
         <ion-list id="nvx-list" *ngIf="authService.IsInGroupCompanyAdmin">
-          <ion-list-header>{{ getMenuHeaderTitle(appPages4CompanyAdmin) }}</ion-list-header>
-          @for (p of getMenuAll(appPages4CompanyAdmin); track p; let i = $index) {
-            <ng-container *ngIf="p.menuType === 0">
-              <ion-menu-toggle auto-hide="false" *ngIf="showPage4CompanyAdmin(p.component)">
-                <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
-                  <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-sharp'"></ion-icon>
-                  <ion-label>{{ p.title }}</ion-label>
-                </ion-item>
-              </ion-menu-toggle>
-            </ng-container>
-            <ng-container *ngIf="p.menuType === 2">
-              <ion-note>{{ p.title }}</ion-note>
-            </ng-container>
+          <ion-list-header>{{ getMenuHeaderTitle(  getMenuItem4CompanyAdmin()  ) }}</ion-list-header>
+          @for (p of getMenuAll(  getMenuItem4CompanyAdmin() ); track p; let i = $index) {
+          <ng-container *ngIf="p.menuType === 0">
+            <ion-menu-toggle auto-hide="false" *ngIf="showPage4CompanyAdmin(p.component)">
+              <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
+                <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-sharp'"></ion-icon>
+                <ion-label>{{ p.title }}</ion-label>
+              </ion-item>
+            </ion-menu-toggle>
+          </ng-container>
+          <ng-container *ngIf="p.menuType === 2">
+            <ion-note>{{ p.title }}</ion-note>
+          </ng-container>
           }
         </ion-list>
 
