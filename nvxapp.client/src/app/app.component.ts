@@ -178,7 +178,6 @@ export class AppComponent implements OnInit {
 
   public getMenuItem4User() {
 
-    return this.appPages4User;
 
     let currRole = [];
 
@@ -189,6 +188,8 @@ export class AppComponent implements OnInit {
     let retVal = this.appPages4User.filter(item =>
       !item.roles || item.roles.some(role => currRole.includes(role))
     );
+
+    return retVal;
 
   }
 
