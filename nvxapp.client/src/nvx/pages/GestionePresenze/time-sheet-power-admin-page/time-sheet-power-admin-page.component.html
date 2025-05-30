@@ -49,9 +49,9 @@
                                        '--color': timeSheetService.get_Dip_GG_Timbratura_txtColor(record),
                                        '--padding-top': '0px',
                                        '--padding-bottom': '0px',
-                                       'font-size': '0.7em',
-                                       'margin-bottom':'1px',
-                                       'margin-top':'1px'
+                                       'font-size': '0.6em',
+                                       'margin-bottom':'0px',
+                                       'margin-top':'0px'
                                      }"
                           (click)="actionSheetOpen(record)">
                 {{ record.timbraturaTipo | tipoTimbraturaToShortText }} {{ record.timbratura | date:'HH:mm' }}
@@ -77,9 +77,9 @@
                                         '--color': timeSheetService.get_Dip_GG_Giustificativi_txtColor(just),
                                         '--padding-top': '0px',
                                         '--padding-bottom': '0px',
-                                        'font-size': '0.7em',
-                                        'margin-bottom':'1px',
-                                        'margin-top':'1px'
+                                        'font-size': '0.6em',
+                                        'margin-bottom':'0px',
+                                        'margin-top':'0px'
                                       }"
                           (click)="actionSheetOpen(just)">
                 {{ just.idPar_Giustificativi | parGiustificativiToLongText }}

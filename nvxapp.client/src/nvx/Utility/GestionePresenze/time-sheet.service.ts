@@ -190,6 +190,9 @@ export class TimeSheetService {
 
   get_StatoRichiesta_icon(dip_GG_Richiesta: Dip_GG_RichiestaModel): string {
 
+    if (dip_GG_Richiesta == null || (dip_GG_Richiesta != null && (dip_GG_Richiesta.richiestaStato == undefined && dip_GG_Richiesta.revocaStato == undefined)))
+      return null;
+
     if (dip_GG_Richiesta.revocaStato == null) {
       switch (dip_GG_Richiesta.richiestaStato) {
         case StatoRichiesta.Diretta:
@@ -303,6 +306,9 @@ export class TimeSheetService {
 
   get_StatoRichiesta_Approval_text(dip_GG_Richiesta: Dip_GG_RichiestaModel): string {
 
+    if (dip_GG_Richiesta == null || (dip_GG_Richiesta != null && (dip_GG_Richiesta.richiestaStato == undefined && dip_GG_Richiesta.revocaStato == undefined)))
+      return '';
+
     if (dip_GG_Richiesta.revocaStato == null) {
       return this.get_StatoRichiesta_text(dip_GG_Richiesta.richiestaStato);
     }
@@ -313,33 +319,42 @@ export class TimeSheetService {
   }
 
 
-  public Dip_GG_Richiesta_User_Can_Delete(item: Dip_GG_RichiestaModel) {
+  public Dip_GG_Richiesta_User_Can_Delete(dip_GG_Richiesta: Dip_GG_RichiestaModel) {
 
-    if (item.revocaStato == null) {
-      if (item.richiestaStato == StatoRichiesta.Immessa ||
-        item.richiestaStato == StatoRichiesta.ApprovazioneInCorso ||
-        item.richiestaStato == StatoRichiesta.Approvata)
+    if (dip_GG_Richiesta == null || (dip_GG_Richiesta != null && (dip_GG_Richiesta.richiestaStato == undefined && dip_GG_Richiesta.revocaStato == undefined)))
+      return false;
+
+    if (dip_GG_Richiesta.revocaStato == null) {
+
+      if (dip_GG_Richiesta.richiestaStato == StatoRichiesta.Immessa ||
+        dip_GG_Richiesta.richiestaStato == StatoRichiesta.ApprovazioneInCorso ||
+        dip_GG_Richiesta.richiestaStato == StatoRichiesta.Approvata)
         return true;
       return false;
     }
     else {
-      if (item.revocaStato == StatoRichiesta.Immessa ||
-        item.revocaStato == StatoRichiesta.ApprovazioneInCorso)
+      if (dip_GG_Richiesta.revocaStato == StatoRichiesta.Immessa ||
+        dip_GG_Richiesta.revocaStato == StatoRichiesta.ApprovazioneInCorso)
         return true;
       return false;
     }
   }
 
-  public Dip_GG_Richiesta_Admin_Can_Approve(item: Dip_GG_RichiestaModel) {
+  public Dip_GG_Richiesta_Admin_Can_Approve(dip_GG_Richiesta: Dip_GG_RichiestaModel) {
 
-    if (item.revocaStato == null) {
-      if (item.richiestaStato != StatoRichiesta.Immessa)
+    if (dip_GG_Richiesta == null || (dip_GG_Richiesta != null && (dip_GG_Richiesta.richiestaStato == undefined && dip_GG_Richiesta.revocaStato == undefined)))
+      return false;
+
+    if (dip_GG_Richiesta.revocaStato == null) {
+      
+
+      if (dip_GG_Richiesta.richiestaStato != StatoRichiesta.Immessa)
         return false;
 
       return true;
     }
     else {
-      if (item.revocaStato != StatoRichiesta.Immessa)
+      if (dip_GG_Richiesta.revocaStato != StatoRichiesta.Immessa)
         return false;
 
       return true;
@@ -347,16 +362,20 @@ export class TimeSheetService {
 
   }
 
-  public Dip_GG_Richiesta_Admin_Can_Reject(item: Dip_GG_RichiestaModel) {
+  public Dip_GG_Richiesta_Admin_Can_Reject(dip_GG_Richiesta: Dip_GG_RichiestaModel) {
 
-    if (item.revocaStato == null) {
-      if (item.richiestaStato != StatoRichiesta.Immessa)
+
+    if (dip_GG_Richiesta == null || (dip_GG_Richiesta != null  && (dip_GG_Richiesta.richiestaStato == undefined && dip_GG_Richiesta.revocaStato == undefined) ) )
+      return false;
+
+    if (dip_GG_Richiesta.revocaStato == null) {
+      if (dip_GG_Richiesta.richiestaStato != StatoRichiesta.Immessa)
         return false;
 
       return true;
     }
     else {
-      if (item.revocaStato != StatoRichiesta.Immessa)
+      if (dip_GG_Richiesta.revocaStato != StatoRichiesta.Immessa)
         return false;
 
       return true;
