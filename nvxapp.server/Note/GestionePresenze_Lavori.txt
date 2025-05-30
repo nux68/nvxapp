@@ -1,9 +1,9 @@
 ﻿*Refreah parametri
-Filtro lista approvazione
-Divisione menu /titolo
-lista utenti all / presenze
-gestione notifica errore != exception
+*Divisione menu /titolo
+*lista utenti all / presenze
 
-aggiunta poweradmin (infrastructure)
+Filtro lista approvazione
+gestione notifica errore != exception
+dare la possibilita di aggiungere utente poweradmin (infrastructure)
 
 COMMESSE
