@@ -3,7 +3,7 @@ import { ModelResult } from "../../../ModelsBase/model-result";
 export class Az_CommessaModel {
   public id!: number;
   public idAz_Anagrafica!: number;
-  public descrizione?: string;
+  public descrizione: string;
 }
 
 export class Az_Commessa_GetAll_InModel {}
