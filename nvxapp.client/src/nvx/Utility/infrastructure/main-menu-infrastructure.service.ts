@@ -57,12 +57,16 @@ export class MainMenuInfrastructureService implements iMainMenuService{
   }
 
   public get Pages4User(): MainMenuItem[] {
+
+    
+    //const roles = ['SuperUser', 'PowerAdmin', 'Admin', 'DealerPowerAdmin', 'DealerAdmin', 'FinancialAdvisorPowerAdmin', 'FinancialAdvisorAdmin', 'CompanyPowerAdmin', 'CompanyAdmin', 'User'];
+
     return [
-      { menuType: MenuType.MenuItem, zorder: 100, title: 'Impersonate', component: "UserImpersonatePageComponent", url: '/userimpersonate', icon: 'people-circle' },
-      { menuType: MenuType.MenuItem, zorder: 200, title: 'Home', component: "HomePageComponent", url: '/home', icon: 'home' },
-      { menuType: MenuType.MenuItem, zorder: 300, title: 'Login', component: "LoginPageComponent", url: '/login', icon: 'enter' },
-      { menuType: MenuType.MenuItem, zorder: 400, title: 'Logout', component: "LogoutPageComponent", url: '/logout', icon: 'exit' },
-      { menuType: MenuType.MenuItem, zorder: 500, title: 'User Data', component: "UserPageComponent", url: '/user', icon: 'person' }
+      { menuType: MenuType.MenuItem, zorder: 100,  title: 'Impersonate', component: "UserImpersonatePageComponent", url: '/userimpersonate', icon: 'people-circle' },
+      { menuType: MenuType.MenuItem, zorder: 200,  title: 'Home', component: "HomePageComponent", url: '/home', icon: 'home' },
+      { menuType: MenuType.MenuItem, zorder: 300,  title: 'Login', component: "LoginPageComponent", url: '/login', icon: 'enter' },
+      { menuType: MenuType.MenuItem, zorder: 400,  title: 'Logout', component: "LogoutPageComponent", url: '/logout', icon: 'exit' },
+      { menuType: MenuType.MenuItem, zorder: 500,  title: 'User Data', component: "UserPageComponent", url: '/user', icon: 'person' }
     ];
   }
 
