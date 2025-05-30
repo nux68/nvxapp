@@ -49,10 +49,10 @@ export class MainMenuInfrastructureService implements iMainMenuService{
 
   public get Pages4CompanyAdmin(): MainMenuItem[] {
     return [
-      { menuType: MenuType.MenuHeader, zorder: 0, title: 'Azienda', component: '', url: '', icon: '' },
-      { menuType: MenuType.MenuItem, zorder: 100, title: 'Azienda Power Admin', roles: ['CompanyPowerAdmin'],component: "CompanyPowerAdminPageComponent", url: '/companypoweradmin', icon: 'ellipse' },
-      { menuType: MenuType.MenuItem, zorder: 200, title: 'Azienda Admin', roles: ['CompanyAdmin'],component: "CompanyAdminPageComponent", url: '/companyadmin', icon: 'ellipse' },
-      { menuType: MenuType.MenuItem, zorder: 300, title: 'Utenti', roles: ['CompanyPowerAdmin', 'CompanyAdmin'], component: "UserCompanyListPageComponent", url: '/usercompanylist', icon: 'list-circle' }
+      { menuType: MenuType.MenuHeader, zorder: 0, title: 'Azienda'                                            , component: '', url: '', icon: '' },
+      { menuType: MenuType.MenuItem, zorder: 100, title: 'Azienda Power Admin', roles: ['CompanyPowerAdmin']  , component: "CompanyPowerAdminPageComponent", url: '/companypoweradmin', icon: 'ellipse' },
+      { menuType: MenuType.MenuItem, zorder: 200, title: 'Azienda Admin'      , roles: ['CompanyAdmin']       , component: "CompanyAdminPageComponent", url: '/companyadmin', icon: 'ellipse' },
+      { menuType: MenuType.MenuItem, zorder: 3000, title: 'Utenti'            , roles: ['CompanyPowerAdmin' ] , component: "UserCompanyListPageComponent", url: '/usercompanylist', icon: 'list-circle' }
     ];
   }
 
