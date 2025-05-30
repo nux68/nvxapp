@@ -4,7 +4,7 @@ import { AuthService } from '../nvx/Utility/infrastructure/auth.service';
 import { UserNavigationService } from '../nvx/Utility/infrastructure/user-navigation.service';
 import { SignalrService } from '../nvx/Utility/infrastructure/signalr.service';
 import { environment } from '../environments/environment';
-import { MainMenuItem, MainMenuService } from '../nvx/Utility/infrastructure/main-menu.service';
+import { MainMenuItem, MainMenuService, MenuType } from '../nvx/Utility/infrastructure/main-menu.service';
 
 
 @Component({
@@ -27,7 +27,7 @@ export class AppComponent implements OnInit {
   public appPages = [
 
 
-    { title: 'Inbox', url: '/folder/inbox', icon: 'mail' },
+    { menuType: MenuType.MenuItem, zorder:0 , title: 'Inbox', url: '/folder/inbox', icon: 'mail' },
     { title: 'Outbox', url: '/folder/outbox', icon: 'paper-plane' },
     { title: 'Favorites', url: '/folder/favorites', icon: 'heart' },
     { title: 'Archived', url: '/folder/archived', icon: 'archive' },
@@ -206,6 +206,26 @@ export class AppComponent implements OnInit {
     //);
 
     
+  }
+
+  public getMenuItems(menu: MainMenuItem[]): MainMenuItem[] {
+    return menu
+      .filter(x => x.menuType === MenuType.MenuItem)
+      .sort((a, b) => a.zorder - b.zorder);
+  }
+
+  public getMenuAll(menu: MainMenuItem[]): MainMenuItem[] {
+    return menu.slice().sort((a, b) => a.zorder - b.zorder);
+  }
+
+  public getMenuHeaderTitle(menuItems: MainMenuItem[]): string {
+    const header = menuItems.find(item => item.menuType === MenuType.MenuHeader);
+    return header ? header.title : '';
+  }
+
+  public getMenuNoteTitle(menuItems: MainMenuItem[], noteIndex: number = 0): string {
+    const notes = menuItems.filter(item => item.menuType === MenuType.MenuNote).sort((a, b) => a.zorder - b.zorder);
+    return notes[noteIndex] ? notes[noteIndex].title : '';
   }
 
 }
