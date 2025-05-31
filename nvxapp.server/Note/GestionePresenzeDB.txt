@@ -26,10 +26,10 @@
 
 ok		*Az_Competenza(1-N)
 ok		*Az_Attivita(1-N)
-			*Az_AttivitaCompetenza
+ok			*Az_AttivitaCompetenza
 ok		*Az_Commessa(1-N)
-			*Az_SubCommessa(1-N)
-				*Az_Attivita(1-N)
+ok			*Az_SubCommessa(1-N)
+				*Az_SubCommessaAttivita(1-N)
 			Az_CommessaCliente(1-1)
 ok		*Az_Cliente(1-N)
 
