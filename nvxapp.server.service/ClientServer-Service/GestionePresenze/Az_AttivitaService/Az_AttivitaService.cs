@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using nvxapp.server.Base;
 using nvxapp.server.data.Entities.Public;
+using nvxapp.server.data.Entities.Tenant;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
@@ -45,7 +46,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_Attivit
                 int IdCompany;
                 int.TryParse(this.CurrentCompany, out IdCompany);
 
-                Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg company_DATA = await _gestionePresenzeUserUtility.Get_AzAna_AzSedi_AzReparto_Az_Cfg(IdCompany, true);
+                var company_DATA = await _gestionePresenzeUserUtility.Get_AzAna_AzSedi_AzReparto_Az_Cfg(IdCompany, true);
                 if (company_DATA != null && company_DATA.az_Anagrafica != null)
                 {
                     var az_Attivita = _az_AttivitaRepository.FindAll(x => x.IdAz_Anagrafica == company_DATA.az_Anagrafica.Id).ToList();
@@ -56,10 +57,61 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_Attivit
                 return retVal;
             }, isSubProcess);
         }
+
+        public virtual async Task<GenericResult<Az_AttivitaGetOutModel>> Az_AttivitaGet(GenericRequest<Az_AttivitaGetInModel> model, bool isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                Az_AttivitaGetOutModel retVal = new Az_AttivitaGetOutModel();
+                var az_Attivita = await _az_AttivitaRepository.FindByIdAsync(model.Data.Id);
+                if (az_Attivita != null)
+                {
+                    retVal.Az_Attivita = _mapper.Map<Az_AttivitaModel>(az_Attivita);
+                }
+                else
+                {
+                    retVal.Az_Attivita = new Az_AttivitaModel();
+                }
+                await Task.Delay(DelayAsyncMethod);
+                return retVal;
+            }, isSubProcess);
+        }
+
+        public virtual async Task<GenericResult<Az_AttivitaPutOutModel>> Az_AttivitaPut(GenericRequest<Az_AttivitaPutInModel> model, bool isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                Az_AttivitaPutOutModel retVal = new Az_AttivitaPutOutModel();
+                retVal.Az_Attivita = model.Data.Az_Attivita;
+
+                int IdCompany;
+                int.TryParse(this.CurrentCompany, out IdCompany);
+                var company_DATA = await _gestionePresenzeUserUtility.Get_AzAna_AzSedi_AzReparto_Az_Cfg(IdCompany, true);
+                if (company_DATA != null && company_DATA.az_Anagrafica != null)
+                {
+                    var az_Attivita = await _az_AttivitaRepository.FindByIdAsync(model.Data.Az_Attivita.Id);
+                    if (az_Attivita == null)
+                    {
+                        az_Attivita = _mapper.Map<Az_Attivita>(model.Data.Az_Attivita);
+                        az_Attivita.IdAz_Anagrafica = company_DATA.az_Anagrafica.Id;
+                    }
+                    else
+                    {
+                        az_Attivita = _mapper.Map<Az_Attivita>(model.Data.Az_Attivita);
+                    }
+                    az_Attivita = await _az_AttivitaRepository.UpsertAsync(az_Attivita);
+                    retVal.Az_Attivita = _mapper.Map<Az_AttivitaModel>(az_Attivita);
+                }
+                await Task.Delay(DelayAsyncMethod);
+                return retVal;
+            }, isSubProcess);
+        }
     }
 
     public interface IAz_AttivitaService : IServiceBase
     {
         Task<GenericResult<Az_Attivita_GetAll_OutModel>> GetAll(GenericRequest<Az_Attivita_GetAll_InModel> model, bool isSubProcess);
+        Task<GenericResult<Az_AttivitaGetOutModel>> Az_AttivitaGet(GenericRequest<Az_AttivitaGetInModel> model, bool isSubProcess);
+        Task<GenericResult<Az_AttivitaPutOutModel>> Az_AttivitaPut(GenericRequest<Az_AttivitaPutInModel> model, bool isSubProcess);
     }
 }

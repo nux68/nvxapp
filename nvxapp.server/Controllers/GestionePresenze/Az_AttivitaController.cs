@@ -28,5 +28,23 @@ namespace nvxapp.server.Controllers
             var res = await _az_AttivitaService.GetAll(inModel, false);
             return res;
         }
+
+        [Authorize]
+        [HttpPost]
+        [Route("Az_AttivitaGet")]
+        public async Task<GenericResult<Az_AttivitaGetOutModel>> Az_AttivitaGet(GenericRequest<Az_AttivitaGetInModel> inModel)
+        {
+            var res = await _az_AttivitaService.Az_AttivitaGet(inModel, false);
+            return res;
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("Az_AttivitaPut")]
+        public async Task<GenericResult<Az_AttivitaPutOutModel>> Az_AttivitaPut(GenericRequest<Az_AttivitaPutInModel> inModel)
+        {
+            var res = await _az_AttivitaService.Az_AttivitaPut(inModel, false);
+            return res;
+        }
     }
 }

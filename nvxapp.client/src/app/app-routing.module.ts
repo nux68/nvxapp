@@ -9,8 +9,6 @@ const routeAttendanceTrackingService = new RouteAttendanceTrackingService();
 const routeService = new RouteService(routeInfrastructureService, routeAttendanceTrackingService); // Creazione istanza del servizio
 const routes: Routes = routeService.getRoutes(); // Ottieni dinamicamente le rotte
 
-
-
 @NgModule({
   imports: [
     RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules })

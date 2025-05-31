@@ -25,7 +25,7 @@ ok			*Az_SediAttivita(1-N)
  
 
 
-ok		*Az_Competenza(1-N)
+ok	   E*Az_Competenza(1-N)
 ok		*Az_Attivita(1-N)
 ok			*Az_AttivitaCompetenza
 ok		*Az_Commessa(1-N)
