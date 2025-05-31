@@ -48,7 +48,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
                 Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg company_DATA = await _gestionePresenzeUserUtility.Get_AzAna_AzSedi_AzReparto_Az_Cfg(IdCompany, true);
                 if (company_DATA != null && company_DATA.az_Anagrafica != null)
                 {
-                    var az_SubCommessaAttivita = _az_SubCommessaAttivitaRepository.FindAll().ToList();
+                    var az_SubCommessaAttivita = await _az_SubCommessaAttivitaRepository.FindAll();
                     retVal.Az_SubCommessaAttivita = _mapper.Map<List<Az_SubCommessaAttivitaModel>>(az_SubCommessaAttivita);
                 }
 

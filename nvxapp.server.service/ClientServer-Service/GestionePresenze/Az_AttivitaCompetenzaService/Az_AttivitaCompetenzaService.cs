@@ -48,8 +48,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_Attivit
                 Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg company_DATA = await _gestionePresenzeUserUtility.Get_AzAna_AzSedi_AzReparto_Az_Cfg(IdCompany, true);
                 if (company_DATA != null && company_DATA.az_Anagrafica != null)
                 {
-                    // Qui puoi filtrare per IdAz_Attivita se necessario
-                    var az_AttivitaCompetenza = _az_AttivitaCompetenzaRepository.FindAll().ToList();
+                    var az_AttivitaCompetenza = await _az_AttivitaCompetenzaRepository.FindAll();
                     retVal.Az_AttivitaCompetenza = _mapper.Map<List<Az_AttivitaCompetenzaModel>>(az_AttivitaCompetenza);
                 }
 

@@ -48,7 +48,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Compet
                 Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg company_DATA = await _gestionePresenzeUserUtility.Get_AzAna_AzSedi_AzReparto_Az_Cfg(IdCompany, true);
                 if (company_DATA != null && company_DATA.az_Anagrafica != null)
                 {
-                    var dip_Competenza = _dip_CompetenzaRepository.FindAll().ToList();
+                    var dip_Competenza = await _dip_CompetenzaRepository.FindAll();
                     retVal.Dip_Competenza = _mapper.Map<List<Dip_CompetenzaModel>>(dip_Competenza);
                 }
 
