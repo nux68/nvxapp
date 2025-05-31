@@ -19,9 +19,9 @@
 
 		Az_Sedi(1-N)
 			Az_Reparto(1-N)              -> Ricorsivo
-			 ~Az_RepartoAttivita(1-N)
+			 ~Az_RepartoAttivita(1-N) 
 	    
-			*Az_SediAttivita
+ok			*Az_SediAttivita 
 
 
 ok		*Az_Competenza(1-N)
@@ -29,7 +29,7 @@ ok		*Az_Attivita(1-N)
 ok			*Az_AttivitaCompetenza
 ok		*Az_Commessa(1-N)
 ok			*Az_SubCommessa(1-N)
-ok				*Az_SubCommessaAttivita(1-N)
+ok				*Az_SubCommessaAttivita(1-N) 
 			Az_CommessaCliente(1-1) CAMPO no tab
 ok		*Az_Cliente(1-N)
 

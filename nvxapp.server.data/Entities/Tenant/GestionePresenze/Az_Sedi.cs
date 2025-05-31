@@ -18,6 +18,7 @@ namespace nvxapp.server.data.Entities.Tenant
         public string? Descrizione { get; set; }
 
         public ICollection<Az_SediReparto>? Az_Reparto { get; set; }
+        public ICollection<Az_SediAttivita>? Az_SediAttivita { get; set; }
     }
 
 
