@@ -19,6 +19,7 @@ namespace nvxapp.server.data.Infrastructure
         public virtual DbSet<Az_Attivita> Az_Attivita { get; set; }
         public virtual DbSet<Az_Commessa> Az_Commessa { get; set; }
         public virtual DbSet<Az_Cliente> Az_Cliente { get; set; }
+        public virtual DbSet<Az_AttivitaCompetenza> Az_AttivitaCompetenza { get; set; }
 
         public virtual DbSet<Dip_Anagrafica> Dip_Anagrafica { get; set; }
         public virtual DbSet<Dip_RapportoLavoro> Dip_RapportoLavoro { get; set; }
@@ -217,6 +218,13 @@ namespace nvxapp.server.data.Infrastructure
                 .HasOne(t_padre => t_padre.Az_AnagraficaNavigation)
                 .WithMany(t_figlio => t_figlio.Az_Attivita)
                 .HasForeignKey(key_esterna => key_esterna.IdAz_Anagrafica)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            /* Az_AttivitaCompetenza */
+            modelBuilder.Entity<Az_AttivitaCompetenza>()
+                .HasOne(t_padre => t_padre.Az_AttivitaNavigation)
+                .WithMany(t_figlio => t_figlio.Az_AttivitaCompetenza)
+                .HasForeignKey(key_esterna => key_esterna.IdAz_Attivita)
                 .OnDelete(DeleteBehavior.Cascade);
 
             /* Az_Commessa */

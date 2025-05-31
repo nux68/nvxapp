@@ -4,17 +4,15 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace nvxapp.server.data.Entities.Tenant
 {
-    public class Az_Attivita : BaseEntity
+    public class Az_AttivitaCompetenza : BaseEntity
     {
         [Required]
-        public required int IdAz_Anagrafica { get; set; }
-        [ForeignKey("IdAz_Anagrafica")]
-        public virtual Az_Anagrafica? Az_AnagraficaNavigation { get; set; }
+        public required int IdAz_Attivita { get; set; }
+        [ForeignKey("IdAz_Attivita")]
+        public virtual Az_Attivita? Az_AttivitaNavigation { get; set; }
 
         [Required]
         [MaxLength(50)]
         public string Descrizione { get; set; } = string.Empty;
-
-        public ICollection<Az_AttivitaCompetenza>? Az_AttivitaCompetenza { get; set; }
     }
 }
