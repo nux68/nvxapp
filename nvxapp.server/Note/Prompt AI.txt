@@ -35,3 +35,16 @@ frontend:
 6) Il service angular  con i vari model ( prendi spunto da ClientServer-Service\src\ClientServer-Service\Az_Sedi)
 
 Attenzioni mantieni la stessa convenzione nella creazione della cartelle
+
+
+
+prendi come spunto  
+ nvxapp.client\src\nvx\pages\GestionePresenze\justification-edit-page e
+ nvxapp.client\src\nvx\pages\GestionePresenze\department-list-page
+ questi due componenti gestiscono con l'utilizzo di ParGiustificativiService gestiscono
+ la lista e l editazione delle entita Par_Giustificativi
+
+ dovrai ricreare la stessa struttura per gestire Az_Competenza
+
+
+

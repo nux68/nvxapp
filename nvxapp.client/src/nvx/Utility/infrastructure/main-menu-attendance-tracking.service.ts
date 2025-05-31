@@ -25,7 +25,10 @@ export class MainMenuAttendanceTrackingService implements iMainMenuService {
       { menuType: MenuType.MenuItem, zorder: 202000, title: 'Giustificativi' , roles: ['CompanyPowerAdmin']                  , component: "JustificationListPageComponent", url: '/justificationlist', icon: 'ellipse' },
       { menuType: MenuType.MenuItem, zorder: 203000, title: 'Reparti'        , roles: ['CompanyPowerAdmin']                  , component: "DepartmentListPageComponent", url: '/departmentlist', icon: 'ellipse' },
       { menuType: MenuType.MenuItem, zorder: 204000, title: 'Configurazione' , roles: ['CompanyPowerAdmin']                  , component: "CompanyCfgPageComponent", url: '/companycfgedit', icon: 'ellipse' },
-      
+
+      { menuType: MenuType.MenuNote, zorder: 205000, title: 'Gestione Commesse' , roles: ['CompanyPowerAdmin']                  , component: '', url: '', icon: '' },
+      { menuType: MenuType.MenuItem, zorder: 205100, title: 'Competenze'        , roles: ['CompanyPowerAdmin']                  , component: "CompetenceListPageComponent", url: '/competencelist', icon: 'ellipse' },
+
     ];
 
   }
