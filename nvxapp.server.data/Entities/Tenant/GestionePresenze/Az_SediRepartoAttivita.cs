@@ -10,23 +10,23 @@ namespace nvxapp.server.data.Entities.Tenant
     public class Az_SediRepartoAttivita : BaseEntity
     {
         [Required]
+        public required int IdAz_Sedi { get; set; }
+        [ForeignKey("IdAz_Sedi")]
+        public virtual Az_Sedi? Az_SediNavigation { get; set; }
+
+        [Required]
         public required int IdAz_SediReparto { get; set; }
         [ForeignKey("IdAz_SediReparto")]
         public virtual Az_SediReparto? Az_SediRepartoNavigation { get; set; }
 
         [Required]
+        public required int IdAz_SediAttivita { get; set; }
+        [ForeignKey("IdAz_SediAttivita")]
+        public virtual Az_SediAttivita? Az_SediAttivitaNavigation { get; set; }
+
+        [Required]
         [MaxLength(50)]
         public string? Descrizione { get; set; }
-
-
-
-
-
-
-        // Relazione ricorsiva: Reparti figli
-        //public ICollection<Az_Reparto>? Az_Reparto_Sub { get; set; }
-        //public ICollection<Par_OrarioIntervalloHH>? Par_ProfiloOrarioIntervalloHH { get; set; }
-
     }
 
 

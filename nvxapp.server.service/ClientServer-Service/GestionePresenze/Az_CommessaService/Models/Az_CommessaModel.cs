@@ -1,6 +1,3 @@
-using nvxapp.server.service.ClientServer_Service.ModelsBase;
-using System.Collections.Generic;
-
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_CommessaService.Models
 {
     public class Az_CommessaModel
@@ -12,11 +9,13 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_Commess
 
     public class Az_Commessa_GetAll_InModel
     {
+        // Aggiungi qui eventuali parametri di filtro per la ricerca delle commesse
+        // Esempio:
+        // public int? IdAz_Anagrafica { get; set; }
     }
 
-    public class Az_Commessa_GetAll_OutModel : ModelResult
+    public class Az_Commessa_GetAll_OutModel
     {
-        public List<Az_CommessaModel> Az_Commessa { get; set; } = new List<Az_CommessaModel>();
-        public Az_Commessa_GetAll_OutModel() { }
+        public List<Az_CommessaModel> Az_Commessa { get; set; } = new();
     }
 }

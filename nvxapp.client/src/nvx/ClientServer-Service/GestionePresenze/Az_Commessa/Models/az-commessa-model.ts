@@ -4,6 +4,7 @@ export class Az_CommessaModel {
   public id!: number;
   public idAz_Anagrafica!: number;
   public descrizione: string;
+  public idAz_Cliente?: number; // Relazione con cliente
 }
 
 export class Az_Commessa_GetAll_InModel {}
