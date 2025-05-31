@@ -28,5 +28,23 @@ namespace nvxapp.server.Controllers
             var res = await _az_CompetenzaService.GetAll(inModel, false);
             return res;
         }
+
+        [Authorize]
+        [HttpPost]
+        [Route("Az_CompetenzaGet")]
+        public async Task<GenericResult<Az_CompetenzaGetOutModel>> Az_CompetenzaGet(GenericRequest<Az_CompetenzaGetInModel> inModel)
+        {
+            var res = await _az_CompetenzaService.Az_CompetenzaGet(inModel, false);
+            return res;
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("Az_CompetenzaPut")]
+        public async Task<GenericResult<Az_CompetenzaPutOutModel>> Az_CompetenzaPut(GenericRequest<Az_CompetenzaPutInModel> inModel)
+        {
+            var res = await _az_CompetenzaService.Az_CompetenzaPut(inModel, false);
+            return res;
+        }
     }
 }

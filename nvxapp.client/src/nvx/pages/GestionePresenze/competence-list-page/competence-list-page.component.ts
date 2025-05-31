@@ -38,7 +38,7 @@ export class CompetenceListPageComponent implements OnInit {
 
     this.fabMenuService.fabMenuItem = [
       new FabMenuItem('Nuova Competenza', 'add-circle-outline', () => {
-        this.navCtrl.navigateForward('/competenzaedit', { state: { id: 0 } });
+        this.navCtrl.navigateForward('/competenceedit', { state: { id: 0 } });
       }),
     ];
   }
@@ -50,7 +50,7 @@ export class CompetenceListPageComponent implements OnInit {
   ngOnInit() {}
 
   handleButtonEditClick = (item: any) => {
-    this.navCtrl.navigateForward('/competenzaedit', { state: { id: item.id } });
+    this.navCtrl.navigateForward('/competenceedit', { state: { id: item.id } });
   }
 
   Filter(CurrFilter: any) {

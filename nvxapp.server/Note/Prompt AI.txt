@@ -40,11 +40,20 @@ Attenzioni mantieni la stessa convenzione nella creazione della cartelle
 
 prendi come spunto  
  nvxapp.client\src\nvx\pages\GestionePresenze\justification-edit-page e
- nvxapp.client\src\nvx\pages\GestionePresenze\department-list-page
+ nvxapp.client\src\nvx\pages\GestionePresenze\justification-list-page
  questi due componenti gestiscono con l'utilizzo di ParGiustificativiService gestiscono
  la lista e l editazione delle entita Par_Giustificativi
 
  dovrai ricreare la stessa struttura per gestire Az_Competenza
+
+ prendi come spunto  
+ nvxapp.client\src\nvx\pages\GestionePresenze\justification-edit-page 
+ questo componente gestiscono con l'utilizzo di ParGiustificativiService gestiscono
+ l editazione delle entita Par_Giustificativi
+
+ ora
+ dovrai ricreare la stessa struttura per gestire Az_Competenza edit ATTENZIONE per i files che andrai a creare 
+ nella soluzione client non dovrai usare il termine "Competenza" ma "competence"
 
 
 
