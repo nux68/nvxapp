@@ -18,10 +18,11 @@
 				
 
 		Az_Sedi(1-N)
+ok			*Az_SediAttivita
 			Az_Reparto(1-N)              -> Ricorsivo
 			 ~Az_RepartoAttivita(1-N) 
 	    
-ok			*Az_SediAttivita 
+ 
 
 
 ok		*Az_Competenza(1-N)
