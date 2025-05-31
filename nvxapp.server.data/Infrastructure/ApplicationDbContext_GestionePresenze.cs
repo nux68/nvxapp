@@ -18,6 +18,7 @@ namespace nvxapp.server.data.Infrastructure
         public virtual DbSet<Az_Cfg> Az_Cfg { get; set; }
         public virtual DbSet<Az_Attivita> Az_Attivita { get; set; }
         public virtual DbSet<Az_Commessa> Az_Commessa { get; set; }
+        public virtual DbSet<Az_Cliente> Az_Cliente { get; set; }
 
         public virtual DbSet<Dip_Anagrafica> Dip_Anagrafica { get; set; }
         public virtual DbSet<Dip_RapportoLavoro> Dip_RapportoLavoro { get; set; }
@@ -225,6 +226,12 @@ namespace nvxapp.server.data.Infrastructure
                 .HasForeignKey(key_esterna => key_esterna.IdAz_Anagrafica)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            /* Az_Cliente */
+            modelBuilder.Entity<Az_Cliente>()
+                .HasOne(t_padre => t_padre.Az_AnagraficaNavigation)
+                .WithMany(t_figlio => t_figlio.Az_Cliente)
+                .HasForeignKey(key_esterna => key_esterna.IdAz_Anagrafica)
+                .OnDelete(DeleteBehavior.Cascade);
 
             /* Par_Causali */
             modelBuilder.Entity<Par_Causali>()

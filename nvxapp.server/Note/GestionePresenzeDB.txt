@@ -31,7 +31,7 @@ ok		*Az_Commessa(1-N)
 			*Az_SubCommessa(1-N)
 				*Az_Attivita(1-N)
 			Az_CommessaCliente(1-1)
-		*Az_Cliente(1-N)
+ok		*Az_Cliente(1-N)
 
 		
 
