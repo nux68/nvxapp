@@ -4,17 +4,15 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace nvxapp.server.data.Entities.Tenant
 {
-    public class Az_SubCommessa : BaseEntity
+    public class Az_SubCommessaAttivita : BaseEntity
     {
         [Required]
-        public required int IdAz_Commessa { get; set; }
-        [ForeignKey("IdAz_Commessa")]
-        public virtual Az_Commessa? Az_CommessaNavigation { get; set; }
+        public required int IdAz_SubCommessa { get; set; }
+        [ForeignKey("IdAz_SubCommessa")]
+        public virtual Az_SubCommessa? Az_SubCommessaNavigation { get; set; }
 
         [Required]
         [MaxLength(50)]
         public string Descrizione { get; set; } = string.Empty;
-
-        public ICollection<Az_SubCommessaAttivita>? Az_SubCommessaAttivita { get; set; }
     }
 }

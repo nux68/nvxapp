@@ -29,8 +29,8 @@ ok		*Az_Attivita(1-N)
 ok			*Az_AttivitaCompetenza
 ok		*Az_Commessa(1-N)
 ok			*Az_SubCommessa(1-N)
-				*Az_SubCommessaAttivita(1-N)
-			Az_CommessaCliente(1-1)
+ok				*Az_SubCommessaAttivita(1-N)
+			Az_CommessaCliente(1-1) CAMPO no tab
 ok		*Az_Cliente(1-N)
 
 		
