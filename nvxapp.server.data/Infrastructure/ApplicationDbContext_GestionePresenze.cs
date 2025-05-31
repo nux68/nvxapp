@@ -27,7 +27,7 @@ namespace nvxapp.server.data.Infrastructure
         public virtual DbSet<Dip_Anagrafica> Dip_Anagrafica { get; set; }
         public virtual DbSet<Dip_RapportoLavoro> Dip_RapportoLavoro { get; set; }
         public virtual DbSet<Dip_ProfiloOrario> Dip_ProfiloOrario { get; set; }
-
+        public virtual DbSet<Dip_Competenza> Dip_Competenza { get; set; }
 
         public virtual DbSet<Dip_GG_Giustificativi> Dip_GG_Giustificativi { get; set; }
         public virtual DbSet<Dip_GG_Timbratura> Dip_GG_Timbrature { get; set; }
@@ -325,6 +325,17 @@ namespace nvxapp.server.data.Infrastructure
                 .OnDelete(DeleteBehavior.Cascade);
 
 
+            /* Dip_Competenza */
+            modelBuilder.Entity<Dip_Competenza>()
+                .HasOne(t_padre => t_padre.Dip_AnagraficaNavigation)
+                .WithMany(t_figlio => t_figlio.Dip_Competenza)
+                .HasForeignKey(key_esterna => key_esterna.IdDip_Anagrafica)
+                .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Dip_Competenza>()
+                .HasOne(t_padre => t_padre.Az_CompetenzaNavigation)
+                .WithMany()
+                .HasForeignKey(key_esterna => key_esterna.IdAz_Competenza)
+                .OnDelete(DeleteBehavior.Cascade);
 
 
 
