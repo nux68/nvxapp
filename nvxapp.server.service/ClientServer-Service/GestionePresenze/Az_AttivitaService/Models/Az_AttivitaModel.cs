@@ -1,5 +1,6 @@
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_AttivitaService.Models
 {
@@ -8,6 +9,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_Attivit
         public int Id { get; set; }
         public int IdAz_Anagrafica { get; set; }
         public string Descrizione { get; set; } = string.Empty;
+               
+        public string? BackgroundColor { get; set; }
+
+        public string? TextColor { get; set; }
     }
 
     public class Az_Attivita_GetAll_InModel { }

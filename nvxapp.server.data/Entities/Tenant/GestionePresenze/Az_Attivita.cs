@@ -14,6 +14,10 @@ namespace nvxapp.server.data.Entities.Tenant
         [Required]
         [MaxLength(50)]
         public string Descrizione { get; set; } = string.Empty;
+        [MaxLength(7)]
+        public string? BackgroundColor { get; set; }
+        [MaxLength(7)]
+        public string? TextColor { get; set; }
 
         public ICollection<Az_AttivitaCompetenza>? Az_AttivitaCompetenza { get; set; }
     }

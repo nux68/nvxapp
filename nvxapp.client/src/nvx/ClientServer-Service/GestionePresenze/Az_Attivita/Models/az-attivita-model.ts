@@ -4,6 +4,8 @@ export class Az_AttivitaModel {
   id: number = 0;
   idAz_Anagrafica: number = 0;
   descrizione: string = '';
+  public backgroundColor!: string;
+  public textColor!: string;
 }
 
 export class Az_Attivita_GetAll_InModel {}

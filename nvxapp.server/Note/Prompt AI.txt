@@ -55,5 +55,20 @@ prendi come spunto
  dovrai ricreare la stessa struttura per gestire Az_Competenza edit ATTENZIONE per i files che andrai a creare 
  nella soluzione client non dovrai usare il termine "Competenza" ma "competence"
 
+ *************
+ prendi come spunto  
+ nvxapp.client\src\nvx\pages\GestionePresenze\justification-list-page 
+ questo componente gestisce con l'utilizzo di ParGiustificativiService gestiscono
+ l elenco delle entita Par_Giustificativi
+
+ ora
+ dovrai ricreare la stessa struttura per gestire Az_Cliente 
+ punti d'attenzione:
+ 1) per i files che andrai a creare nella soluzione client non dovrai usare il termine "Cliente" ma "customer"
+ 2) la toolbar della pagina, viene gestita dal coponente app-page-toolbar
+ 3) quando vai ad implementare i metodi del service per il frontend prendi spunto da ParGiustificativiService
+ 4) ricorda di implementare il controller nella sulution nvxapp.server
+ 5) ricorda di implementare il service del backend con tutti i model necessari
+
 
 
