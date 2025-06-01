@@ -12,8 +12,8 @@ namespace nvxapp.server.data.Entities.Tenant
         public virtual Dip_Anagrafica? Dip_AnagraficaNavigation { get; set; }
 
         [Required]
-        public required int IdAz_Competenza { get; set; }
-        [ForeignKey("IdAz_Competenza")]
-        public virtual Az_Competenza? Az_CompetenzaNavigation { get; set; }
+        public required int IdPar_Competenza { get; set; }
+        [ForeignKey("IdPar_Competenza")]
+        public virtual Par_Competenza? Par_CompetenzaNavigation { get; set; }
     }
 }

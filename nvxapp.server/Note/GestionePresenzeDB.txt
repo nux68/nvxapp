@@ -8,6 +8,9 @@
 [1]Company(AZIE)
 	UserCompany                       -> AspNetUsers
 	Az_Anagrafica(1-1)
+ok	   *Par_Attivita(1-N) 
+ok			*Par_AttivitaCompetenza
+ok	  E*Par_Competenza(1-N)
 		Par_Causali(1-N)
 		Par_Giustificativi(1-N)
 		Par_Arrotondamenti(1-N)
@@ -25,9 +28,9 @@ ok			*Az_SediAttivita(1-N)
  
 
 
-ok	   E*Az_Competenza(1-N)
-ok		*Az_Attivita(1-N)
-ok			*Az_AttivitaCompetenza
+
+
+
 ok		*Az_Commessa(1-N)
 ok			*Az_SubCommessa(1-N)
 ok				*Az_SubCommessaAttivita(1-N) -> Az_Cliente

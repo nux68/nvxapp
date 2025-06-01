@@ -3,9 +3,9 @@ import { NavController } from '@ionic/angular';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
-import { Az_CompetenzaModel, Az_Competenza_GetAll_InModel } from '../../../ClientServer-Service/GestionePresenze/Az_Competenza/Models/az-competenza-model';
+import { Par_CompetenzaModel, Par_Competenza_GetAll_InModel } from '../../../ClientServer-Service/GestionePresenze/Par_Competenza/Models/par-competenza-model';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
-import { AzCompetenzaService } from '../../../ClientServer-Service/GestionePresenze/Az_Competenza/az-competenza.service';
+import { ParCompetenzaService } from '../../../ClientServer-Service/GestionePresenze/Par_Competenza/par-competenza.service';
 
 @Component({
   selector: 'app-competence-list-page',
@@ -16,13 +16,13 @@ import { AzCompetenzaService } from '../../../ClientServer-Service/GestionePrese
 export class CompetenceListPageComponent implements OnInit {
   public title = 'Competenze';
   public searchText!: string;
-  public az_CompetenzaList: Az_CompetenzaModel[] | null = null;
+  public par_CompetenzaList: Par_CompetenzaModel[] | null = null;
   public btnEdit: ButtonItem;
 
   constructor(
     private navCtrl: NavController,
     public fabMenuService: FabMenuService,
-    private azCompetenzaService: AzCompetenzaService,
+    private parCompetenzaService: ParCompetenzaService,
     private userInterfaceService: UserInterfaceService,
     private userNavigationService: UserNavigationService
   ) {
@@ -31,9 +31,9 @@ export class CompetenceListPageComponent implements OnInit {
   }
 
   ionViewWillEnter() {
-    let request: GenericRequest<Az_Competenza_GetAll_InModel> = new GenericRequest<Az_Competenza_GetAll_InModel>(Az_Competenza_GetAll_InModel);
-    this.azCompetenzaService.GetAll(request).subscribe(res => {
-      this.az_CompetenzaList = res.data.az_Competenza;
+    let request: GenericRequest<Par_Competenza_GetAll_InModel> = new GenericRequest<Par_Competenza_GetAll_InModel>(Par_Competenza_GetAll_InModel);
+    this.parCompetenzaService.GetAll(request).subscribe(res => {
+      this.par_CompetenzaList = res.data.par_Competenza;
     });
 
     this.fabMenuService.fabMenuItem = [
@@ -58,6 +58,6 @@ export class CompetenceListPageComponent implements OnInit {
   }
 
   getAll() {
-    return this.az_CompetenzaList?.sort((a, b) => a.descrizione.localeCompare(b.descrizione));
+    return this.par_CompetenzaList?.sort((a, b) => a.descrizione.localeCompare(b.descrizione));
   }
 }

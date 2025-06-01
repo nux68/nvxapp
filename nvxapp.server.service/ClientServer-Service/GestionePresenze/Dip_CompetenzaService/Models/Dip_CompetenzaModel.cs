@@ -6,7 +6,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Compet
     {
         public int Id { get; set; }
         public int IdDip_Anagrafica { get; set; }
-        public int IdAz_Competenza { get; set; }
+        public int IdPar_Competenza { get; set; }
     }
 
     public class Dip_Competenza_GetAll_InModel { }

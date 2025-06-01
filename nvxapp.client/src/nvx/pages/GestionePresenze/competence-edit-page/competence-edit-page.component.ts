@@ -9,8 +9,8 @@ import { map, catchError } from 'rxjs';
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { StringHelperService } from '../../../Utility/infrastructure/string-helper.service';
 import { ParameterService } from '../../../ClientServer-Service/Infrastructure/Parameter/parameter.service';
-import { Az_CompetenzaModel, Az_CompetenzaGetInModel, Az_CompetenzaPutInModel } from '../../../ClientServer-Service/GestionePresenze/Az_Competenza/Models/az-competenza-model';
-import { AzCompetenzaService } from '../../../ClientServer-Service/GestionePresenze/Az_Competenza/az-competenza.service';
+import { Par_CompetenzaModel, Par_CompetenzaGetInModel, Par_CompetenzaPutInModel } from '../../../ClientServer-Service/GestionePresenze/Par_Competenza/Models/par-competenza-model';
+import { ParCompetenzaService } from '../../../ClientServer-Service/GestionePresenze/Par_Competenza/par-competenza.service';
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
 
 @Component({
@@ -19,13 +19,13 @@ import { RefresherService } from '../../../Utility/GestionePresenze/refresher.se
   styleUrls: ['./competence-edit-page.component.scss'],
   standalone: false
 })
-export class CompetenceEditPageComponent extends BasePageConfirmCancelComponent<Az_CompetenzaModel> {
+export class CompetenceEditPageComponent extends BasePageConfirmCancelComponent<Par_CompetenzaModel> {
   constructor(protected override navCtrl: NavController,
     protected override userInterfaceService: UserInterfaceService,
     protected override fb: FormBuilder,
     private parameterService: ParameterService,
     private stringHelperService: StringHelperService,
-    private azCompetenzaService: AzCompetenzaService,
+    private azCompetenzaService: ParCompetenzaService,
     private refresherService: RefresherService) {
     super(navCtrl, userInterfaceService, fb);
   }
@@ -40,33 +40,33 @@ export class CompetenceEditPageComponent extends BasePageConfirmCancelComponent<
     });
   }
 
-  LoadData = (): Observable<Az_CompetenzaModel | null> => {
+  LoadData = (): Observable<Par_CompetenzaModel | null> => {
     const state = history.state;
     if (state && state.id) {
-      let request: GenericRequest<Az_CompetenzaGetInModel> = new GenericRequest<Az_CompetenzaGetInModel>(Az_CompetenzaGetInModel);
+      let request: GenericRequest<Par_CompetenzaGetInModel> = new GenericRequest<Par_CompetenzaGetInModel>(Par_CompetenzaGetInModel);
       request.data.id = state.id;
-      return this.azCompetenzaService.Az_CompetenzaGet(request).pipe(
-        map((res) => res.data.az_Competenza),
+      return this.azCompetenzaService.Par_CompetenzaGet(request).pipe(
+        map((res) => res.data.par_Competenza),
         catchError((error) => {
           console.error('Errore durante la chiamata API:', error);
           return [null];
         })
       );
     } else {
-      return new Observable<Az_CompetenzaModel | null>((subscriber) => {
+      return new Observable<Par_CompetenzaModel | null>((subscriber) => {
         this._editForm.setValidators(matchData);
         this._editForm.updateValueAndValidity();
-        subscriber.next(new Az_CompetenzaModel());
+        subscriber.next(new Par_CompetenzaModel());
         subscriber.complete();
       });
     }
   };
 
-  SaveData = (editModel: Az_CompetenzaModel): Observable<boolean> => {
-    let request: GenericRequest<Az_CompetenzaPutInModel> =
-      new GenericRequest<Az_CompetenzaPutInModel>(Az_CompetenzaPutInModel);
-    request.data.az_Competenza = editModel;
-    return this.azCompetenzaService.Az_CompetenzaPut(request).pipe(
+  SaveData = (editModel: Par_CompetenzaModel): Observable<boolean> => {
+    let request: GenericRequest<Par_CompetenzaPutInModel> =
+      new GenericRequest<Par_CompetenzaPutInModel>(Par_CompetenzaPutInModel);
+    request.data.par_Competenza = editModel;
+    return this.azCompetenzaService.Par_CompetenzaPut(request).pipe(
       map(() => {
         this.refresherService.SharedParameterGestionePresenze_triggerRefresh();
         return true;

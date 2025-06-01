@@ -16,10 +16,10 @@ namespace nvxapp.server.data.Infrastructure
         public virtual DbSet<Az_SediRepartoAttivita> Az_SediRepartoAttivita { get; set; }
         public virtual DbSet<Az_SediRepartoUser> Az_SediRepartoUser { get; set; }
         public virtual DbSet<Az_Cfg> Az_Cfg { get; set; }
-        public virtual DbSet<Az_Attivita> Az_Attivita { get; set; }
+        public virtual DbSet<Par_Attivita> Par_Attivita { get; set; }
         public virtual DbSet<Az_Commessa> Az_Commessa { get; set; }
         public virtual DbSet<Az_Cliente> Az_Cliente { get; set; }
-        public virtual DbSet<Az_AttivitaCompetenza> Az_AttivitaCompetenza { get; set; }
+        public virtual DbSet<Par_AttivitaCompetenza> Par_AttivitaCompetenza { get; set; }
         public virtual DbSet<Az_SubCommessa> Az_SubCommessa { get; set; }
         public virtual DbSet<Az_SubCommessaAttivita> Az_SubCommessaAttivita { get; set; }
         public virtual DbSet<Az_SediAttivita> Az_SediAttivita { get; set; }
@@ -233,17 +233,17 @@ namespace nvxapp.server.data.Infrastructure
 
 
             /* Az_Attivita */
-            modelBuilder.Entity<Az_Attivita>()
+            modelBuilder.Entity<Par_Attivita>()
                 .HasOne(t_padre => t_padre.Az_AnagraficaNavigation)
-                .WithMany(t_figlio => t_figlio.Az_Attivita)
+                .WithMany(t_figlio => t_figlio.Par_Attivita)
                 .HasForeignKey(key_esterna => key_esterna.IdAz_Anagrafica)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            /* Az_AttivitaCompetenza */
-            modelBuilder.Entity<Az_AttivitaCompetenza>()
-                .HasOne(t_padre => t_padre.Az_AttivitaNavigation)
-                .WithMany(t_figlio => t_figlio.Az_AttivitaCompetenza)
-                .HasForeignKey(key_esterna => key_esterna.IdAz_Attivita)
+            /* Par_AttivitaCompetenza */
+            modelBuilder.Entity<Par_AttivitaCompetenza>()
+                .HasOne(t_padre => t_padre.Par_AttivitaNavigation)
+                .WithMany(t_figlio => t_figlio.Par_AttivitaCompetenza)
+                .HasForeignKey(key_esterna => key_esterna.IdPar_Attivita)
                 .OnDelete(DeleteBehavior.Cascade);
 
             /* Az_Commessa */
@@ -355,9 +355,9 @@ namespace nvxapp.server.data.Infrastructure
                 .HasForeignKey(key_esterna => key_esterna.IdDip_Anagrafica)
                 .OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<Dip_Competenza>()
-                .HasOne(t_padre => t_padre.Az_CompetenzaNavigation)
+                .HasOne(t_padre => t_padre.Par_CompetenzaNavigation)
                 .WithMany()
-                .HasForeignKey(key_esterna => key_esterna.IdAz_Competenza)
+                .HasForeignKey(key_esterna => key_esterna.IdPar_Competenza)
                 .OnDelete(DeleteBehavior.Cascade);
 
 
