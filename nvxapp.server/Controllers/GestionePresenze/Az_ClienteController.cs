@@ -28,5 +28,23 @@ namespace nvxapp.server.Controllers
             var res = await _az_ClienteService.GetAll(inModel, false);
             return res;
         }
+
+        [Authorize]
+        [HttpPost]
+        [Route("Az_ClienteGet")]
+        public async Task<GenericResult<Az_ClienteGetOutModel>> Az_ClienteGet(GenericRequest<Az_ClienteGetInModel> inModel)
+        {
+            var res = await _az_ClienteService.Az_ClienteGet(inModel, false);
+            return res;
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("Az_ClientePut")]
+        public async Task<GenericResult<Az_ClientePutOutModel>> Az_ClientePut(GenericRequest<Az_ClientePutInModel> inModel)
+        {
+            var res = await _az_ClienteService.Az_ClientePut(inModel, false);
+            return res;
+        }
     }
 }
