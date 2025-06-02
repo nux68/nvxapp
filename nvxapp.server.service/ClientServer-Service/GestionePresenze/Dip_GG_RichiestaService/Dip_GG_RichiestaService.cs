@@ -432,9 +432,20 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                                         }
                                         else
                                         {
-                                            //approvazione revoca, cancello i dettagli
-                                            if (listaAppr.Where(x => x.RichiestaStato != StatoRichiesta.Approvata).Count() == 0)
-                                                await Dip_GG_Richiesta_Canc_Dettaglio(curr_richiesta);
+                                            switch (resAz_Cfg.Data.Az_Cfg.ApprovazioneTipo)
+                                            {
+                                                case TipoApprovazione.SigleAdmin:
+                                                        await Dip_GG_Richiesta_Canc_Dettaglio(curr_richiesta);
+                                                    break;
+                                                case TipoApprovazione.AllAdmin:
+                                                case TipoApprovazione.AllAdminHierarchy:
+                                                       //approvazione revoca, cancello i dettagli
+                                                        if (listaAppr.Where(x => x.RichiestaStato != StatoRichiesta.Approvata).Count() == 0)
+                                                            await Dip_GG_Richiesta_Canc_Dettaglio(curr_richiesta);
+                                                    break;
+                                            }
+
+                                         
                                         }
 
                                     }
