@@ -28,5 +28,23 @@ namespace nvxapp.server.Controllers
             var res = await _az_CommessaService.GetAll(inModel, false);
             return res;
         }
+
+        [Authorize]
+        [HttpPost]
+        [Route("AZ_CommessaGet")]
+        public async Task<GenericResult<Az_CommessaGetOutModel>> AZ_CommessaGet(GenericRequest<Az_CommessaGetInModel> inModel)
+        {
+            var res = await _az_CommessaService.AZ_CommessaGet(inModel, false);
+            return res;
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("AZ_CommessaPut")]
+        public async Task<GenericResult<Az_CommessaPutOutModel>> AZ_CommessaPut(GenericRequest<Az_CommessaPutInModel> inModel)
+        {
+            var res = await _az_CommessaService.AZ_CommessaPut(inModel, false);
+            return res;
+        }
     }
 }

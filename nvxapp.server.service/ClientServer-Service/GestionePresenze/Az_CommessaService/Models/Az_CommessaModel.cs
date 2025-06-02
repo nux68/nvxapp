@@ -2,8 +2,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_Commess
 {
     public class Az_CommessaModel
     {
-        public required int Id { get; set; }
-        public required int IdAz_Anagrafica { get; set; }
+        public  int Id { get; set; }
+        public  int IdAz_Anagrafica { get; set; }
         public string Descrizione { get; set; } = string.Empty;
     }
 
@@ -17,5 +17,25 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_Commess
     public class Az_Commessa_GetAll_OutModel
     {
         public List<Az_CommessaModel> Az_Commessa { get; set; } = new();
+    }
+
+    public class Az_CommessaGetInModel
+    {
+        public int Id { get; set; } = 0;
+    }
+
+    public class Az_CommessaGetOutModel
+    {
+        public Az_CommessaModel Az_Commessa { get; set; } = new Az_CommessaModel();
+    }
+
+    public class Az_CommessaPutInModel
+    {
+        public Az_CommessaModel Az_Commessa { get; set; } = new Az_CommessaModel();
+    }
+
+    public class Az_CommessaPutOutModel
+    {
+        public Az_CommessaModel Az_Commessa { get; set; } = new Az_CommessaModel();
     }
 }

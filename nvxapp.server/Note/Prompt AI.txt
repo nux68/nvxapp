@@ -62,7 +62,7 @@ prendi come spunto
  l elenco delle entita Par_Giustificativi
 
  ora
- dovrai ricreare la stessa struttura per gestire Az_Cliente 
+ dovrai ricreare la stessa struttura per gestire Az_Commessa 
  punti d'attenzione:
  1)
  2) la toolbar della pagina, viene gestita dal coponente app-page-toolbar
@@ -70,7 +70,7 @@ prendi come spunto
  4) ricorda di implementare il controller nella sulution nvxapp.server
  5) ricorda di implementare il service del backend con tutti i model necessari
  6) ricorda di aggiungere SharedComponentInfrastructureModule al modulo che vai a creare
- 7) collega il nuovo componente al menu
+ 7) collega il nuovo componente al menu e al routing
 
  *************EDit
  prendi come spunto JustificationEditPageComponent 
@@ -78,14 +78,14 @@ prendi come spunto
  questo componente gestisce con l'utilizzo di ParGiustificativiService gestiscono
  l editzione delle entita Par_Giustificativi
  ora
- dovrai ricreare la stessa struttura per gestire Az_Cliente 
+ dovrai ricreare la stessa struttura per gestire Az_Commessa 
  punti d'attenzione:
- 1)
+ 1) nei model non impostare campi required
  2) la toolbar della pagina, viene gestita dal coponente app-page-toolbar
  3) quando vai ad implementare i metodi del service per il frontend prendi spunto da ParGiustificativiService
  4) ricorda di implementare il controller nella sulution nvxapp.server
  5) ricorda di implementare il service del backend con tutti i model necessari
  6) ricorda di aggiungere SharedComponentInfrastructureModule al modulo che vai a creare
- 7) ricorda di prendere spunto da Par_GiustificativiGet ePar_GiustificativiPut di ParGiustificativiService per dialogare con il backend
+ 7) ricorda di prendere spunto da Par_GiustificativiGet e Par_GiustificativiPut di ParGiustificativiService per dialogare con il backend
 
 

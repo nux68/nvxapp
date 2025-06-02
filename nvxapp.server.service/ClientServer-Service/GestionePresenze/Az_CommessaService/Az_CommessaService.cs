@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using nvxapp.server.Base;
 using nvxapp.server.data.Entities.Public;
+using nvxapp.server.data.Entities.Tenant;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
@@ -56,10 +57,61 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_Commess
                 return retVal;
             }, isSubProcess);
         }
+
+        public virtual async Task<GenericResult<Az_CommessaGetOutModel>> AZ_CommessaGet(GenericRequest<Az_CommessaGetInModel> model, bool isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                Az_CommessaGetOutModel retVal = new Az_CommessaGetOutModel();
+                var commessa = await _az_CommessaRepository.FindByIdAsync(model.Data.Id);
+                if (commessa != null)
+                {
+                    retVal.Az_Commessa = _mapper.Map<Az_CommessaModel>(commessa);
+                }
+                else
+                {
+                    retVal.Az_Commessa = new Az_CommessaModel();
+                }
+                await Task.Delay(DelayAsyncMethod);
+                return retVal;
+            }, isSubProcess);
+        }
+
+        public virtual async Task<GenericResult<Az_CommessaPutOutModel>> AZ_CommessaPut(GenericRequest<Az_CommessaPutInModel> model, bool isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                Az_CommessaPutOutModel retVal = new Az_CommessaPutOutModel();
+                retVal.Az_Commessa = model.Data.Az_Commessa;
+                int IdCompany;
+                int.TryParse(this.CurrentCompany, out IdCompany);
+                Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg company_DATA = await _gestionePresenzeUserUtility.Get_AzAna_AzSedi_AzReparto_Az_Cfg(IdCompany, true);
+                if (company_DATA != null && company_DATA.az_Anagrafica != null)
+                {
+                    var commessa = await _az_CommessaRepository.FindByIdAsync(model.Data.Az_Commessa.Id);
+                    if (commessa == null)
+                    {
+                        commessa = _mapper.Map<Az_Commessa>(model.Data.Az_Commessa);
+                        commessa.IdAz_Anagrafica = company_DATA.az_Anagrafica.Id;
+                        commessa.IdAz_Cliente = 1;
+                    }
+                    else
+                    {
+                        commessa = _mapper.Map<Az_Commessa>(model.Data.Az_Commessa);
+                    }
+                    commessa = await _az_CommessaRepository.UpsertAsync(commessa);
+                    retVal.Az_Commessa = _mapper.Map<Az_CommessaModel>(commessa);
+                }
+                await Task.Delay(DelayAsyncMethod);
+                return retVal;
+            }, isSubProcess);
+        }
     }
 
     public interface IAz_CommessaService : IServiceBase
     {
         Task<GenericResult<Az_Commessa_GetAll_OutModel>> GetAll(GenericRequest<Az_Commessa_GetAll_InModel> model, bool isSubProcess);
+        Task<GenericResult<Az_CommessaGetOutModel>> AZ_CommessaGet(GenericRequest<Az_CommessaGetInModel> model, bool isSubProcess);
+        Task<GenericResult<Az_CommessaPutOutModel>> AZ_CommessaPut(GenericRequest<Az_CommessaPutInModel> model, bool isSubProcess);
     }
 }
