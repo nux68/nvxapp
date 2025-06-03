@@ -40,4 +40,15 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Compet
     {
         public Par_CompetenzaModel Par_Competenza { get; set; } = new Par_CompetenzaModel();
     }
+
+    public class Par_CompetenzaDeleteInModel
+    {
+        public int Id { get; set; } = 0;
+    }
+
+    public class Par_CompetenzaDeleteOutModel : ModelResult
+    {
+        public Par_CompetenzaModel Par_Competenza { get; set; } = new Par_CompetenzaModel();
+    }
+
 }

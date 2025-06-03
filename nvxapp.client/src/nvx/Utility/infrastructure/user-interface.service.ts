@@ -166,7 +166,7 @@ export class UserInterfaceService {
     return new ButtonItem(
       'Cancella',
       'trash-outline',
-      'medium',
+      'danger',
       false,
       () => { console.log('Btn_Cancella cliccato'); }
     );

@@ -30,3 +30,12 @@ export class Par_CompetenzaPutInModel extends ModelResult {
 export class Par_CompetenzaPutOutModel extends ModelResult {
   public par_Competenza: Par_CompetenzaModel = new Par_CompetenzaModel();
 }
+
+
+export class Par_CompetenzaDeleteInModel {
+  public id: number = 0;
+}
+
+export class Par_CompetenzaDeleteOutModel extends ModelResult {
+  public par_Competenza: Par_CompetenzaModel = new Par_CompetenzaModel();
+}

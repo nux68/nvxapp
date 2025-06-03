@@ -76,7 +76,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Compet
                 return retVal;
             }, isSubProcess);
         }
-
         public virtual async Task<GenericResult<Par_CompetenzaPutOutModel>> Par_CompetenzaPut(GenericRequest<Par_CompetenzaPutInModel> model, bool isSubProcess)
         {
             return await ExecuteAction(model, async () =>
@@ -106,6 +105,22 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Compet
                 return retVal;
             }, isSubProcess);
         }
+        public virtual async Task<GenericResult<Par_CompetenzaDeleteOutModel>> Par_CompetenzaDelete(GenericRequest<Par_CompetenzaDeleteInModel> model, bool isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                Par_CompetenzaDeleteOutModel retVal = new Par_CompetenzaDeleteOutModel();
+                var az_Competenza = await _par_CompetenzaRepository.FindByIdAsync(model.Data.Id);
+                if (az_Competenza != null)
+                {
+                    retVal.Par_Competenza = _mapper.Map<Par_CompetenzaModel>(az_Competenza);
+                    await _par_CompetenzaRepository.DeleteAsync(az_Competenza);
+                    
+                }
+                await Task.Delay(DelayAsyncMethod);
+                return retVal;
+            }, isSubProcess);
+        }
     }
 
     public interface IPar_CompetenzaService : IServiceBase
@@ -113,5 +128,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Compet
         Task<GenericResult<Par_Competenza_GetAll_OutModel>> GetAll(GenericRequest<Par_Competenza_GetAll_InModel> model, bool isSubProcess);
         Task<GenericResult<Par_CompetenzaGetOutModel>> Par_CompetenzaGet(GenericRequest<Par_CompetenzaGetInModel> model, bool isSubProcess);
         Task<GenericResult<Par_CompetenzaPutOutModel>> Par_CompetenzaPut(GenericRequest<Par_CompetenzaPutInModel> model, bool isSubProcess);
+        Task<GenericResult<Par_CompetenzaDeleteOutModel>> Par_CompetenzaDelete(GenericRequest<Par_CompetenzaDeleteInModel> model, bool isSubProcess);
     }
 }

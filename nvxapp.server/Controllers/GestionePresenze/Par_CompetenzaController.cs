@@ -46,5 +46,14 @@ namespace nvxapp.server.Controllers
             var res = await _par_CompetenzaService.Par_CompetenzaPut(inModel, false);
             return res;
         }
+
+        [Authorize]
+        [HttpPost]
+        [Route("Par_CompetenzaDelete")]
+        public async Task<GenericResult<Par_CompetenzaDeleteOutModel>> Par_CompetenzaDelete(GenericRequest<Par_CompetenzaDeleteInModel> inModel)
+        {
+            var res = await _par_CompetenzaService.Par_CompetenzaDelete(inModel, false);
+            return res;
+        }
     }
 }

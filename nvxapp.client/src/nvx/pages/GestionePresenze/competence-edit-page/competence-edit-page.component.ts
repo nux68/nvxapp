@@ -30,7 +30,7 @@ export class CompetenceEditPageComponent extends BasePageConfirmCancelComponent<
     super(navCtrl, userInterfaceService, fb);
   }
 
-  get Title(): string { return 'Comtetenze'; }
+  get Title(): string { return 'Competenze'; }
   get EditForm(): FormGroup {
     return this.fb.group({
       descrizione: [null, [Validators.required, Validators.maxLength(50)]],
