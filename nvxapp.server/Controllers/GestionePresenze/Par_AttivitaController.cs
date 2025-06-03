@@ -46,5 +46,14 @@ namespace nvxapp.server.Controllers
             var res = await _par_AttivitaService.Par_AttivitaPut(inModel, false);
             return res;
         }
+
+        [Authorize]
+        [HttpPost]
+        [Route("Par_AttivitaDelete")]
+        public async Task<GenericResult<Par_AttivitaDeleteOutModel>> Par_AttivitaDelete(GenericRequest<Par_AttivitaDeleteInModel> inModel)
+        {
+            var res = await _par_AttivitaService.Par_AttivitaDelete(inModel, false);
+            return res;
+        }
     }
 }

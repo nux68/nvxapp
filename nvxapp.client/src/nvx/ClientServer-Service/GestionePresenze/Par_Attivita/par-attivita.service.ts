@@ -5,7 +5,7 @@ import { environment } from '../../../../environments/environment';
 import { GenericRequest } from '../../ModelsBase/generic-request';
 import { GenericResult } from '../../ModelsBase/generic-result';
 import { map, Observable } from 'rxjs';
-import { Par_AttivitaModel, Par_Attivita_GetAll_InModel, Par_Attivita_GetAll_OutModel, Par_AttivitaGetInModel, Par_AttivitaGetOutModel, Par_AttivitaPutInModel, Par_AttivitaPutOutModel } from './Models/par-attivita-model';
+import { Par_AttivitaModel, Par_Attivita_GetAll_InModel, Par_Attivita_GetAll_OutModel, Par_AttivitaGetInModel, Par_AttivitaGetOutModel, Par_AttivitaPutInModel, Par_AttivitaPutOutModel, Par_AttivitaDeleteInModel, Par_AttivitaDeleteOutModel } from './Models/par-attivita-model';
 
 @Injectable({
   providedIn: 'root'
@@ -32,6 +32,13 @@ export class ParAttivitaService {
 
   Par_AttivitaPut(model: GenericRequest<Par_AttivitaPutInModel>): Observable<GenericResult<Par_AttivitaPutOutModel>> {
     return this.http.post<GenericResult<Par_AttivitaPutOutModel>>(environment.remoteData.apiUri + 'Par_Attivita/Par_AttivitaPut', model)
+      .pipe(
+        map(r => r)
+      );
+  }
+
+  Par_AttivitaDelete(model: GenericRequest<Par_AttivitaDeleteInModel>): Observable<GenericResult<Par_AttivitaDeleteOutModel>> {
+    return this.http.post<GenericResult<Par_AttivitaDeleteOutModel>>(environment.remoteData.apiUri + 'Par_Attivita/Par_AttivitaDelete', model)
       .pipe(
         map(r => r)
       );

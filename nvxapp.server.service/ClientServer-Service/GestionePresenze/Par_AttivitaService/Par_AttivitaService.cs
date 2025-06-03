@@ -16,6 +16,7 @@ using nvxapp.server.service.ServerModels;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System;
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_AttivitaService
 {
@@ -70,8 +71,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Attivi
                 }
                 else
                 {
-                         
-
                     retVal.Par_Attivita = new Par_AttivitaModel(){ BackgroundColor  = "#ff0000",TextColor="#ff0000" };
                 }
                 await Task.Delay(DelayAsyncMethod);
@@ -108,6 +107,26 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Attivi
                 return retVal;
             }, isSubProcess);
         }
+
+        public virtual async Task<GenericResult<Par_AttivitaDeleteOutModel>> Par_AttivitaDelete(GenericRequest<Par_AttivitaDeleteInModel> model, bool isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                Par_AttivitaDeleteOutModel retVal = new Par_AttivitaDeleteOutModel();
+                var par_Attivita = await _par_AttivitaRepository.FindByIdAsync(model.Data.Id);
+                if (par_Attivita != null)
+                {
+                    await _par_AttivitaRepository.DeleteAsync(par_Attivita);
+                    retVal.Par_Attivita = _mapper.Map<Par_AttivitaModel>(par_Attivita);
+                }
+                else
+                {
+                    retVal.AddMessage($"Attività con Id {model.Data.Id} non trovata.", MessageType.Warning);
+                }
+                await Task.Delay(DelayAsyncMethod);
+                return retVal;
+            }, isSubProcess);
+        }
     }
 
     public interface IPar_AttivitaService : IServiceBase
@@ -115,5 +134,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Attivi
         Task<GenericResult<Par_Attivita_GetAll_OutModel>> GetAll(GenericRequest<Par_Attivita_GetAll_InModel> model, bool isSubProcess);
         Task<GenericResult<Par_AttivitaGetOutModel>> Par_AttivitaGet(GenericRequest<Par_AttivitaGetInModel> model, bool isSubProcess);
         Task<GenericResult<Par_AttivitaPutOutModel>> Par_AttivitaPut(GenericRequest<Par_AttivitaPutInModel> model, bool isSubProcess);
+        Task<GenericResult<Par_AttivitaDeleteOutModel>> Par_AttivitaDelete(GenericRequest<Par_AttivitaDeleteInModel> model, bool isSubProcess);
     }
 }

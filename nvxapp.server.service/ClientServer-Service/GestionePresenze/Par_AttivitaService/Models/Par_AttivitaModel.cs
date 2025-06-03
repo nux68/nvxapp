@@ -35,4 +35,12 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Attivi
     {
         public Par_AttivitaModel Par_Attivita { get; set; } = new Par_AttivitaModel();
     }
+    public class Par_AttivitaDeleteInModel
+    {
+        public int Id { get; set; } = 0;
+    }
+    public class Par_AttivitaDeleteOutModel : ModelResult
+    {
+        public Par_AttivitaModel Par_Attivita { get; set; } = new Par_AttivitaModel();
+    }
 }

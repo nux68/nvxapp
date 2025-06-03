@@ -19,3 +19,11 @@ export class Par_AttivitaGetInModel { id: number = 0; }
 export class Par_AttivitaGetOutModel { par_Attivita: Par_AttivitaModel = new Par_AttivitaModel(); }
 export class Par_AttivitaPutInModel { par_Attivita: Par_AttivitaModel = new Par_AttivitaModel(); }
 export class Par_AttivitaPutOutModel { par_Attivita: Par_AttivitaModel = new Par_AttivitaModel(); }
+
+export class Par_AttivitaDeleteInModel {
+  public id: number = 0;
+}
+
+export class Par_AttivitaDeleteOutModel extends ModelResult {
+  public par_Attivita: Par_AttivitaModel = new Par_AttivitaModel();
+}
