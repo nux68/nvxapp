@@ -5,6 +5,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_Commess
         public  int Id { get; set; }
         public  int IdAz_Anagrafica { get; set; }
         public string Descrizione { get; set; } = string.Empty;
+        public  int IdAz_Cliente { get; set; }
     }
 
     public class Az_Commessa_GetAll_InModel

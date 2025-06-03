@@ -10,7 +10,7 @@ import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { StringHelperService } from '../../../Utility/infrastructure/string-helper.service';
 import { Az_ClienteGetInModel, Az_ClienteModel, Az_ClientePutInModel } from '../../../ClientServer-Service/GestionePresenze/Az_Cliente/Models/az-cliente-model';
 import { AzClienteService } from '../../../ClientServer-Service/GestionePresenze/Az_Cliente/az-cliente.service';
-
+import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
 
 @Component({
   selector: 'app-customer-edit-page',
@@ -24,7 +24,8 @@ export class CustomerEditPageComponent extends BasePageConfirmCancelComponent<Az
     protected override userInterfaceService: UserInterfaceService,
     protected override fb: FormBuilder,
     private stringHelperService: StringHelperService,
-    private azClienteService: AzClienteService) {
+    private azClienteService: AzClienteService,
+    private refresherService: RefresherService) {
     super(navCtrl, userInterfaceService, fb);
   }
 
@@ -59,7 +60,10 @@ export class CustomerEditPageComponent extends BasePageConfirmCancelComponent<Az
     let request: GenericRequest<Az_ClientePutInModel> = new GenericRequest<Az_ClientePutInModel>(Az_ClientePutInModel);
     request.data.az_Cliente = editModel;
     return this.azClienteService.Az_ClientePut(request).pipe(
-      map(() => true),
+      map(() => {
+        this.refresherService.SharedParameterGestionePresenze_triggerRefresh();
+        return true;
+      }),
       catchError((error) => {
         console.error('Errore durante la chiamata API:', error);
         return [false];

@@ -16,6 +16,19 @@
     <ion-note color="danger" *ngIf="_editForm.get('descrizione')?.hasError('maxlength') && _editForm.get('descrizione')?.touched">
       Descrizione non può superare i 50 caratteri.
     </ion-note>
+
+    <!-- Combo per selezione cliente -->
+    <ion-item>
+      <ion-label position="floating">Cliente</ion-label>
+      <ion-select formControlName="idAz_Cliente" placeholder="Seleziona cliente">
+        <ion-select-option *ngFor="let cliente of _az_ClienteModelList" [value]="cliente.id">
+          {{ cliente.descrizione }}
+        </ion-select-option>
+      </ion-select>
+    </ion-item>
+    <ion-note color="danger" *ngIf="_editForm.get('idAz_Cliente')?.hasError('required') && _editForm.get('idAz_Cliente')?.touched">
+      Cliente è obbligatorio.
+    </ion-note>
   </form>
   <br />
 </ion-content>

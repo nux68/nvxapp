@@ -10,6 +10,9 @@ import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { StringHelperService } from '../../../Utility/infrastructure/string-helper.service';
 import { Az_CommessaModel } from '../../../ClientServer-Service/GestionePresenze/Az_Commessa/Models/az-commessa-model';
 import { AzCommessaService, Az_CommessaGetInModel, Az_CommessaPutInModel } from '../../../ClientServer-Service/GestionePresenze/Az_Commessa/az-commessa.service';
+import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
+import { Az_ClienteModel } from '../../../ClientServer-Service/GestionePresenze/Az_Cliente/Models/az-cliente-model';
+import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
 
 @Component({
   selector: 'app-commessa-edit-page',
@@ -19,20 +22,33 @@ import { AzCommessaService, Az_CommessaGetInModel, Az_CommessaPutInModel } from 
 })
 export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az_CommessaModel> {
 
+  public override _editForm: FormGroup;
+  public _az_ClienteModelList: Az_ClienteModel[] = [];
+
   constructor(protected override navCtrl: NavController,
     protected override userInterfaceService: UserInterfaceService,
+    private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
     protected override fb: FormBuilder,
     private stringHelperService: StringHelperService,
-    private azCommessaService: AzCommessaService) {
+    private azCommessaService: AzCommessaService,
+    private refresherService: RefresherService) {
     super(navCtrl, userInterfaceService, fb);
+    this._editForm = this.fb.group({
+      descrizione: [null, [Validators.required, Validators.maxLength(50)]],
+      idAz_Cliente: [null, [Validators.required]]
+    });
+  }
+
+  override get EditForm(): FormGroup {
+    return this._editForm;
+  }
+
+  override ionViewWillEnter() {
+    super.ionViewWillEnter();
+    this._az_ClienteModelList = this.sharedParameterGestionePresenzeService.Az_Cliente;
   }
 
   get Title(): string { return 'Commessa'; }
-  get EditForm(): FormGroup {
-    return this.fb.group({
-      descrizione: [null, [Validators.required, Validators.maxLength(50)]]
-    });
-  }
 
   LoadData = (): Observable<Az_CommessaModel | null> => {
     const state = history.state;
@@ -40,10 +56,10 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
       let request: GenericRequest<Az_CommessaGetInModel> = new GenericRequest<Az_CommessaGetInModel>(Az_CommessaGetInModel);
       request.data.id = state.id;
       return this.azCommessaService.AZ_CommessaGet(request).pipe(
-        map((res) => res.data.az_Commessa),
+        map((res) => res.data.az_Commessa), // Estrae il dato richiesto
         catchError((error) => {
           console.error('Errore durante la chiamata API:', error);
-          return [null];
+          return [null]; // Restituisce null in caso di errore
         })
       );
     } else {
@@ -54,19 +70,18 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
     }
   };
 
-  SaveData = (editModel: Az_CommessaModel): Observable<boolean> => {
+  public SaveData(editModel: Az_CommessaModel): Observable<boolean> {
     let request: GenericRequest<Az_CommessaPutInModel> = new GenericRequest<Az_CommessaPutInModel>(Az_CommessaPutInModel);
     request.data.az_Commessa = editModel;
     return this.azCommessaService.AZ_CommessaPut(request).pipe(
-      map(() => true),
+      map(() => {
+        this.refresherService.SharedParameterGestionePresenze_triggerRefresh();
+        return true;
+      }),
       catchError((error) => {
         console.error('Errore durante la chiamata API:', error);
         return [false];
       })
     );
-  };
+  }
 }
-
-const matchData: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
-  return null;
-};

@@ -93,7 +93,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_Commess
                     {
                         commessa = _mapper.Map<Az_Commessa>(model.Data.Az_Commessa);
                         commessa.IdAz_Anagrafica = company_DATA.az_Anagrafica.Id;
-                        commessa.IdAz_Cliente = 1;
                     }
                     else
                     {
