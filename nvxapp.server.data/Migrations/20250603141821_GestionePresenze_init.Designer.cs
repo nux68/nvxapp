@@ -12,7 +12,7 @@ using nvxapp.server.data.Infrastructure;
 namespace nvxapp.server.data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250603133754_GestionePresenze_init")]
+    [Migration("20250603141821_GestionePresenze_init")]
     partial class GestionePresenze_init
     {
         /// <inheritdoc />
@@ -602,7 +602,7 @@ namespace nvxapp.server.data.Migrations
                     b.Property<int>("IdAz_Anagrafica")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("IdAz_Cliente")
+                    b.Property<int>("IdAz_Cliente")
                         .HasColumnType("integer");
 
                     b.Property<DateTime?>("ModifiedDate")
@@ -1908,7 +1908,8 @@ namespace nvxapp.server.data.Migrations
                     b.HasOne("nvxapp.server.data.Entities.Tenant.Az_Cliente", "Az_ClienteNavigation")
                         .WithMany()
                         .HasForeignKey("IdAz_Cliente")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("Az_AnagraficaNavigation");
 

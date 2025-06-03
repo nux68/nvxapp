@@ -8,9 +8,9 @@
 [1]Company(AZIE)
 	UserCompany                       -> AspNetUsers
 	Az_Anagrafica(1-1)
-ok	  E*Par_Attivita(1-N) 
-ok			*Par_AttivitaCompetenza
-ok	  E*Par_Competenza(1-N)
+	    Par_Competenza(1-N)
+		Par_Attivita(1-N) 
+			Par_AttivitaCompetenza
 		Par_Causali(1-N)
 		Par_Giustificativi(1-N)
 		Par_Arrotondamenti(1-N)
@@ -21,9 +21,9 @@ ok	  E*Par_Competenza(1-N)
 				
 
 		Az_Sedi(1-N)
-ok			*Az_SediAttivita(1-N)   
+			Az_SediAttivita(1-N)   
 			Az_SediReparto(1-N)              -> Ricorsivo
-			 ~Az_SediRepartoAttivita(1-N) 
+				Az_SediRepartoAttivita(1-N) 
 	    
  
 
@@ -31,10 +31,10 @@ ok			*Az_SediAttivita(1-N)
 
 
 
-ok	   E*Az_Commessa(1-N)
-ok			*Az_SubCommessa(1-N)
-ok				*Az_SubCommessaAttivita(1-N) -> Az_Cliente
-ok	   E*Az_Cliente(1-N)
+		Az_Commessa(1-N)
+			Az_SubCommessa(1-N)
+				Az_SubCommessaAttivita(1-N) -> Az_Cliente
+		Az_Cliente(1-N)
 
 		
 
@@ -49,5 +49,5 @@ ok	   E*Az_Cliente(1-N)
 			Dip_GG_Richiesta(1-N)
 			--
 			Dip_GG_Causali(1-N)          -> Par_Causali
-     ****
-ok	 *Dip_Competenza  ->Az_Competenza
+     
+	Dip_Competenza  ->Az_Competenza

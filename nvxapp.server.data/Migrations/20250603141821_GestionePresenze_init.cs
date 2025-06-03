@@ -384,7 +384,7 @@ namespace nvxapp.server.data.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     IdAz_Anagrafica = table.Column<int>(type: "integer", nullable: false),
                     Descrizione = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    IdAz_Cliente = table.Column<int>(type: "integer", nullable: true),
+                    IdAz_Cliente = table.Column<int>(type: "integer", nullable: false),
                     Default = table.Column<bool>(type: "boolean", nullable: false),
                     Data = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     DataA = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),

@@ -599,7 +599,7 @@ namespace nvxapp.server.data.Migrations
                     b.Property<int>("IdAz_Anagrafica")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("IdAz_Cliente")
+                    b.Property<int>("IdAz_Cliente")
                         .HasColumnType("integer");
 
                     b.Property<DateTime?>("ModifiedDate")
@@ -1905,7 +1905,8 @@ namespace nvxapp.server.data.Migrations
                     b.HasOne("nvxapp.server.data.Entities.Tenant.Az_Cliente", "Az_ClienteNavigation")
                         .WithMany()
                         .HasForeignKey("IdAz_Cliente")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("Az_AnagraficaNavigation");
 
