@@ -14,5 +14,6 @@ namespace nvxapp.server.data.Entities.Tenant
         [Required]
         [MaxLength(100)]
         public string Descrizione { get; set; } = string.Empty;
+        public Boolean Default { get; set; }
     }
 }

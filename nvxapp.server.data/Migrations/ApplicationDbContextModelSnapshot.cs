@@ -546,6 +546,9 @@ namespace nvxapp.server.data.Migrations
                     b.Property<DateTime?>("CreationDate")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<bool>("Default")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("Descrizione")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -578,6 +581,15 @@ namespace nvxapp.server.data.Migrations
 
                     b.Property<DateTime?>("CreationDate")
                         .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("Data")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("DataA")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<bool>("Default")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Descrizione")
                         .IsRequired()
@@ -617,6 +629,9 @@ namespace nvxapp.server.data.Migrations
                     b.Property<DateTime?>("CreationDate")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<bool>("Default")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("Descrizione")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -650,12 +665,10 @@ namespace nvxapp.server.data.Migrations
                     b.Property<DateTime?>("CreationDate")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<string>("Descrizione")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
                     b.Property<int>("IdAz_Sedi")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("IdPar_Attivita")
                         .HasColumnType("integer");
 
                     b.Property<DateTime?>("ModifiedDate")
@@ -664,6 +677,8 @@ namespace nvxapp.server.data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("IdAz_Sedi");
+
+                    b.HasIndex("IdPar_Attivita");
 
                     b.ToTable("Az_SediAttivita", "public");
                 });
@@ -682,6 +697,9 @@ namespace nvxapp.server.data.Migrations
 
                     b.Property<DateTime?>("CreationDate")
                         .HasColumnType("timestamp without time zone");
+
+                    b.Property<bool>("Default")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Descrizione")
                         .IsRequired()
@@ -721,14 +739,6 @@ namespace nvxapp.server.data.Migrations
                     b.Property<DateTime?>("CreationDate")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<string>("Descrizione")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<int>("IdAz_Sedi")
-                        .HasColumnType("integer");
-
                     b.Property<int>("IdAz_SediAttivita")
                         .HasColumnType("integer");
 
@@ -742,9 +752,7 @@ namespace nvxapp.server.data.Migrations
 
                     b.HasIndex("IdAz_SediAttivita");
 
-                    b.HasIndex("IdAz_SediReparto");
-
-                    b.HasIndex("IdAz_Sedi", "IdAz_SediReparto", "IdAz_SediAttivita")
+                    b.HasIndex("IdAz_SediReparto", "IdAz_SediAttivita")
                         .IsUnique();
 
                     b.ToTable("Az_SediRepartoAttivita", "public");
@@ -817,6 +825,9 @@ namespace nvxapp.server.data.Migrations
                     b.Property<DateTime?>("CreationDate")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<bool>("Default")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("Descrizione")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -850,10 +861,11 @@ namespace nvxapp.server.data.Migrations
                     b.Property<DateTime?>("CreationDate")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<string>("Descrizione")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                    b.Property<bool>("Default")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("IdAz_SediAttivita")
+                        .HasColumnType("integer");
 
                     b.Property<int>("IdAz_SubCommessa")
                         .HasColumnType("integer");
@@ -862,6 +874,8 @@ namespace nvxapp.server.data.Migrations
                         .HasColumnType("timestamp without time zone");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("IdAz_SediAttivita");
 
                     b.HasIndex("IdAz_SubCommessa");
 
@@ -1521,6 +1535,9 @@ namespace nvxapp.server.data.Migrations
                     b.Property<DateTime?>("CreationDate")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<bool>("Default")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("Descrizione")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -1558,12 +1575,10 @@ namespace nvxapp.server.data.Migrations
                     b.Property<DateTime?>("CreationDate")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<string>("Descrizione")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
                     b.Property<int>("IdPar_Attivita")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("IdPar_Competenza")
                         .HasColumnType("integer");
 
                     b.Property<DateTime?>("ModifiedDate")
@@ -1572,6 +1587,8 @@ namespace nvxapp.server.data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("IdPar_Attivita");
+
+                    b.HasIndex("IdPar_Competenza");
 
                     b.ToTable("Par_AttivitaCompetenza", "public");
                 });
@@ -1628,6 +1645,9 @@ namespace nvxapp.server.data.Migrations
 
                     b.Property<DateTime?>("CreationDate")
                         .HasColumnType("timestamp without time zone");
+
+                    b.Property<bool>("Default")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Descrizione")
                         .IsRequired()
@@ -1911,7 +1931,15 @@ namespace nvxapp.server.data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Par_Attivita", "Par_AttivitaNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdPar_Attivita")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Az_SediNavigation");
+
+                    b.Navigation("Par_AttivitaNavigation");
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Az_SediReparto", b =>
@@ -1934,12 +1962,6 @@ namespace nvxapp.server.data.Migrations
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Az_SediRepartoAttivita", b =>
                 {
-                    b.HasOne("nvxapp.server.data.Entities.Tenant.Az_Sedi", "Az_SediNavigation")
-                        .WithMany()
-                        .HasForeignKey("IdAz_Sedi")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("nvxapp.server.data.Entities.Tenant.Az_SediAttivita", "Az_SediAttivitaNavigation")
                         .WithMany()
                         .HasForeignKey("IdAz_SediAttivita")
@@ -1953,8 +1975,6 @@ namespace nvxapp.server.data.Migrations
                         .IsRequired();
 
                     b.Navigation("Az_SediAttivitaNavigation");
-
-                    b.Navigation("Az_SediNavigation");
 
                     b.Navigation("Az_SediRepartoNavigation");
                 });
@@ -1991,11 +2011,19 @@ namespace nvxapp.server.data.Migrations
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Az_SubCommessaAttivita", b =>
                 {
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Az_SediAttivita", "Az_SediAttivitaNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdAz_SediAttivita")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("nvxapp.server.data.Entities.Tenant.Az_SubCommessa", "Az_SubCommessaNavigation")
                         .WithMany("Az_SubCommessaAttivita")
                         .HasForeignKey("IdAz_SubCommessa")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Az_SediAttivitaNavigation");
 
                     b.Navigation("Az_SubCommessaNavigation");
                 });
@@ -2225,7 +2253,15 @@ namespace nvxapp.server.data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Par_Competenza", "Par_CompetenzaNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdPar_Competenza")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Par_AttivitaNavigation");
+
+                    b.Navigation("Par_CompetenzaNavigation");
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Par_Causali", b =>

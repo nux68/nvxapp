@@ -8,6 +8,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
         public int IdAz_Sedi { get; set; }
         public string? Descrizione { get; set; }
         public int? IdAz_SediReparto { get; set; }
+        public Boolean Default { get; set; }
     }
 
 

@@ -3,7 +3,7 @@ import { ModelResult } from "../../../ModelsBase/model-result";
 export class Par_AttivitaCompetenzaModel {
   public id!: number;
   public idPar_Attivita!: number;
-  public descrizione: string;
+  public idPar_Competenza!: number;
 }
 
 export class Par_AttivitaCompetenza_GetAll_InModel {}

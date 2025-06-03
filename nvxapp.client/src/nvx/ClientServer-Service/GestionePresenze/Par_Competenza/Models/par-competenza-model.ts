@@ -4,6 +4,7 @@ export class Par_CompetenzaModel {
   public id!: number;
   public idAz_Anagrafica!: number;
   public descrizione: string;
+  public default: boolean;
 }
 
 export class Par_Competenza_GetAll_InModel {}

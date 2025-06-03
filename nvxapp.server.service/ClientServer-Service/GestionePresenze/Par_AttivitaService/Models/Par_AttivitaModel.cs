@@ -13,6 +13,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Attivi
         public string? BackgroundColor { get; set; }
 
         public string? TextColor { get; set; }
+        public Boolean Default { get; set; }
     }
 
     public class Par_Attivita_GetAll_InModel { }

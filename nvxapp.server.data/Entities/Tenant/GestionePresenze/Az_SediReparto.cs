@@ -16,6 +16,7 @@ namespace nvxapp.server.data.Entities.Tenant
         [Required]
         [MaxLength(50)]
         public string? Descrizione { get; set; }
+        public Boolean Default { get; set; }
 
 
         // Relazione ricorsiva: Reparto padre

@@ -6,6 +6,7 @@ export class Par_AttivitaModel {
   descrizione: string = '';
   public backgroundColor!: string;
   public textColor!: string;
+  public default: boolean;
 }
 
 export class Par_Attivita_GetAll_InModel {}

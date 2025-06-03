@@ -193,12 +193,6 @@ namespace nvxapp.server.data.Infrastructure
 
             /* Az_RepartoAttivita */
             modelBuilder.Entity<Az_SediRepartoAttivita>()
-                .HasOne(t => t.Az_SediNavigation)
-                .WithMany()
-                .HasForeignKey(t => t.IdAz_Sedi)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder.Entity<Az_SediRepartoAttivita>()
                 .HasOne(t => t.Az_SediRepartoNavigation)
                 .WithMany(t_figlio => t_figlio.Az_SediRepartoAttivita)
                 .HasForeignKey(t => t.IdAz_SediReparto)
@@ -211,7 +205,7 @@ namespace nvxapp.server.data.Infrastructure
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Az_SediRepartoAttivita>()
-                .HasIndex(t => new { t.IdAz_Sedi, t.IdAz_SediReparto, t.IdAz_SediAttivita })
+                .HasIndex(t => new { t.IdAz_SediReparto, t.IdAz_SediAttivita })
                 .IsUnique();
             
             /* Az_SediRepartoUser */
@@ -246,6 +240,12 @@ namespace nvxapp.server.data.Infrastructure
                 .HasForeignKey(key_esterna => key_esterna.IdPar_Attivita)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            modelBuilder.Entity<Par_AttivitaCompetenza>()
+                .HasOne(t => t.Par_CompetenzaNavigation)
+                .WithMany()
+                .HasForeignKey(t => t.IdPar_Competenza)
+                .OnDelete(DeleteBehavior.Cascade);
+
             /* Az_Commessa */
             modelBuilder.Entity<Az_Commessa>()
                 .HasOne(t_padre => t_padre.Az_AnagraficaNavigation)
@@ -258,7 +258,8 @@ namespace nvxapp.server.data.Infrastructure
                 .HasOne(t => t.Az_ClienteNavigation)
                 .WithMany()
                 .HasForeignKey(t => t.IdAz_Cliente)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Restrict)
+                .IsRequired();
 
             /* Az_SubCommessa */
             modelBuilder.Entity<Az_SubCommessa>()
@@ -269,9 +270,15 @@ namespace nvxapp.server.data.Infrastructure
 
             /* Az_SubCommessaAttivita */
             modelBuilder.Entity<Az_SubCommessaAttivita>()
-                .HasOne(t_padre => t_padre.Az_SubCommessaNavigation)
+                .HasOne(t => t.Az_SubCommessaNavigation)
                 .WithMany(t_figlio => t_figlio.Az_SubCommessaAttivita)
-                .HasForeignKey(key_esterna => key_esterna.IdAz_SubCommessa)
+                .HasForeignKey(t => t.IdAz_SubCommessa)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Az_SubCommessaAttivita>()
+                .HasOne(t => t.Az_SediAttivitaNavigation)
+                .WithMany()
+                .HasForeignKey(t => t.IdAz_SediAttivita)
                 .OnDelete(DeleteBehavior.Cascade);
 
             /* Az_Cliente */
@@ -286,6 +293,12 @@ namespace nvxapp.server.data.Infrastructure
                 .HasOne(t_padre => t_padre.Az_SediNavigation)
                 .WithMany(t_figlio => t_figlio.Az_SediAttivita)
                 .HasForeignKey(key_esterna => key_esterna.IdAz_Sedi)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Az_SediAttivita>()
+                .HasOne(t => t.Par_AttivitaNavigation)
+                .WithMany()
+                .HasForeignKey(t => t.IdPar_Attivita)
                 .OnDelete(DeleteBehavior.Cascade);
 
             /* Par_Causali */

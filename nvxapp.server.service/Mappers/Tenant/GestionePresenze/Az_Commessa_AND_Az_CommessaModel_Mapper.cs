@@ -8,7 +8,9 @@ namespace nvxapp.server.service.Mappers.Tenant.GestionePresenze
     {
         public Az_Commessa_To_Az_CommessaModel_Mapper()
         {
-            CreateMap<Az_Commessa, Az_CommessaModel>();
+            CreateMap<Az_Commessa, Az_CommessaModel>()
+                .ForMember(dest => dest.Data, opt => opt.MapFrom(src => src.Data.ToString("dd/MM/yyyy")))
+                .ForMember(dest => dest.DataA, opt => opt.MapFrom(src => src.DataA.ToString("dd/MM/yyyy")));
         }
     }
 
@@ -16,7 +18,9 @@ namespace nvxapp.server.service.Mappers.Tenant.GestionePresenze
     {
         public Az_CommessaModel_To_Az_Commessa_Mapper()
         {
-            CreateMap<Az_CommessaModel, Az_Commessa>();
+            CreateMap<Az_CommessaModel, Az_Commessa>()
+                .ForMember(dest => dest.Data, opt => opt.MapFrom(src => DateTime.ParseExact(src.Data, "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture)))
+                .ForMember(dest => dest.DataA, opt => opt.MapFrom(src => DateTime.ParseExact(src.DataA, "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture)));
         }
     }
 }

@@ -6,7 +6,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Attivi
     {
         public int Id { get; set; }
         public int IdPar_Attivita { get; set; }
-        public string? Descrizione { get; set; }
+        public int IdPar_Competenza { get; set; }
     }
 
     public class Par_AttivitaCompetenza_GetAll_InModel { }

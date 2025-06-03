@@ -18,6 +18,7 @@ namespace nvxapp.server.data.Entities.Tenant
         public string? BackgroundColor { get; set; }
         [MaxLength(7)]
         public string? TextColor { get; set; }
+        public Boolean Default { get; set; }
 
         public ICollection<Par_AttivitaCompetenza>? Par_AttivitaCompetenza { get; set; }
     }

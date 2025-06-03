@@ -15,10 +15,14 @@ namespace nvxapp.server.data.Entities.Tenant
         [MaxLength(50)]
         public string Descrizione { get; set; } = string.Empty;
 
-        // Relazione con Az_Cliente (1-1)
-        public int? IdAz_Cliente { get; set; }
+        [Required]
+        public required int IdAz_Cliente { get; set; }
         [ForeignKey("IdAz_Cliente")]
         public virtual Az_Cliente? Az_ClienteNavigation { get; set; }
+
+        public Boolean Default { get; set; }
+        public DateTime Data { get; set; }
+        public DateTime DataA { get; set; }
 
         public ICollection<Az_SubCommessa>? Az_SubCommessa { get; set; }
     }

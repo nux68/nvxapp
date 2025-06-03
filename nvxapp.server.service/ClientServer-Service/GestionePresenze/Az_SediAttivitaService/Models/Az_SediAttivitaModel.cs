@@ -6,7 +6,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediAtt
     {
         public int Id { get; set; }
         public int IdAz_Sedi { get; set; }
-        public string? Descrizione { get; set; }
+        public int IdPar_Attivita { get; set; }
     }
 
     public class Az_SediAttivita_GetAll_InModel { }

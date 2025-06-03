@@ -5,15 +5,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace nvxapp.server.data.Entities.Tenant
 {
-
-    
     public class Az_SediRepartoAttivita : BaseEntity
     {
-        [Required]
-        public required int IdAz_Sedi { get; set; }
-        [ForeignKey("IdAz_Sedi")]
-        public virtual Az_Sedi? Az_SediNavigation { get; set; }
-
         [Required]
         public required int IdAz_SediReparto { get; set; }
         [ForeignKey("IdAz_SediReparto")]
@@ -23,12 +16,5 @@ namespace nvxapp.server.data.Entities.Tenant
         public required int IdAz_SediAttivita { get; set; }
         [ForeignKey("IdAz_SediAttivita")]
         public virtual Az_SediAttivita? Az_SediAttivitaNavigation { get; set; }
-
-        [Required]
-        [MaxLength(50)]
-        public string? Descrizione { get; set; }
     }
-
-
-
 }

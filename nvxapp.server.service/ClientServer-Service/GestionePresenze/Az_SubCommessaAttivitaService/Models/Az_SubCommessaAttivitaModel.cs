@@ -6,7 +6,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
     {
         public int Id { get; set; }
         public int IdAz_SubCommessa { get; set; }
-        public string? Descrizione { get; set; }
+        public int IdAz_SediAttivita { get; set; }
+        public Boolean Default { get; set; }
     }
 
     public class Az_SubCommessaAttivita_GetAll_InModel { }

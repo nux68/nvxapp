@@ -8,6 +8,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Compet
         public  int Id { get; set; }
         public  int IdAz_Anagrafica { get; set; }
         public string Descrizione { get; set; }  = string.Empty;
+        public Boolean Default { get; set; }
     }
 
     public class Par_Competenza_GetAll_InModel

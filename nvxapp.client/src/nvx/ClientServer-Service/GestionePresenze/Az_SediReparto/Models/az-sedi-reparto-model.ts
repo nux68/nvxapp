@@ -8,7 +8,7 @@ export class Az_SediRepartoModel {
   public idAz_Sedi!: number; 
   public descrizione!: string;
   public idAz_SediReparto?: number; 
-
+  public default: boolean;
 }
 
 

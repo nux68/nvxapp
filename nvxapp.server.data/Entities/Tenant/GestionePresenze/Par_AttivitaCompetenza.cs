@@ -12,7 +12,8 @@ namespace nvxapp.server.data.Entities.Tenant
         public virtual Par_Attivita? Par_AttivitaNavigation { get; set; }
 
         [Required]
-        [MaxLength(50)]
-        public string Descrizione { get; set; } = string.Empty;
+        public required int IdPar_Competenza { get; set; }
+        [ForeignKey("IdPar_Competenza")]
+        public virtual Par_Competenza? Par_CompetenzaNavigation { get; set; }
     }
 }

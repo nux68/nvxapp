@@ -8,6 +8,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_Cliente
         public int Id { get; set; }
         public int IdAz_Anagrafica { get; set; }
         public string? Descrizione { get; set; }
+        public Boolean Default { get; set; }
     }
 
     public class Az_Cliente_GetAll_InModel

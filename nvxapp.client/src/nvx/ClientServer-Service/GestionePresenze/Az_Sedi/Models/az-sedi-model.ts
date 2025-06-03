@@ -6,6 +6,7 @@ export class Az_SediModel {
   public id!: number;
   public idAz_Anagrafica!: string;
   public descrizione: string;
+  public default: boolean;
 
 }
 

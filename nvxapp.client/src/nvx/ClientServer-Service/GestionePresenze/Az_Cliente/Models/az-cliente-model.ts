@@ -5,6 +5,7 @@ export class Az_ClienteModel {
   public id!: number;
   public idAz_Anagrafica!: number;
   public descrizione: string = '';
+  public default: boolean;
 }
 
 export class Az_Cliente_GetAll_InModel {}
