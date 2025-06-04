@@ -5,20 +5,26 @@
 
 <ion-content [fullscreen]="true">
 
-  <br />
+  <ion-card>
+    <ion-card-content>
 
-  <ion-radio-group [(ngModel)]="selectedValue">
-    <div *ngFor="let p of userCronology">
-      <ion-radio labelPlacement="end" [value]="p.userData.id">
-        {{p.userData.userName}} {{p.userDataAdditional.gotoBackPage}}
-      </ion-radio>
+
+
       <br />
-    </div>
-  </ion-radio-group>
 
-  <br />
+      <ion-radio-group [(ngModel)]="selectedValue">
+        <div *ngFor="let p of userCronology">
+          <ion-radio labelPlacement="end" [value]="p.userData.id">
+            {{p.userData.userName}} {{p.userDataAdditional.gotoBackPage}}
+          </ion-radio>
+          <br />
+        </div>
+      </ion-radio-group>
 
+      <br />
 
+    </ion-card-content>
+  </ion-card>
 
 </ion-content>
 
