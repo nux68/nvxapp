@@ -5,7 +5,7 @@ import { environment } from '../../../../environments/environment';
 import { GenericRequest } from '../../ModelsBase/generic-request';
 import { GenericResult } from '../../ModelsBase/generic-result';
 import { map, Observable } from 'rxjs';
-import { Az_Cliente_GetAll_InModel, Az_Cliente_GetAll_OutModel, Az_ClienteGetInModel, Az_ClienteGetOutModel, Az_ClientePutInModel, Az_ClientePutOutModel } from './Models/az-cliente-model';
+import { Az_Cliente_GetAll_InModel, Az_Cliente_GetAll_OutModel, Az_ClienteGetInModel, Az_ClienteGetOutModel, Az_ClientePutInModel, Az_ClientePutOutModel, Az_ClienteDeleteInModel, Az_ClienteDeleteOutModel } from './Models/az-cliente-model';
 
 @Injectable({
   providedIn: 'root'
@@ -24,6 +24,11 @@ export class AzClienteService {
 
   Az_ClientePut(model: GenericRequest<Az_ClientePutInModel>): Observable<GenericResult<Az_ClientePutOutModel>> {
     return this.http.post<GenericResult<Az_ClientePutOutModel>>(environment.remoteData.apiUri + 'Az_Cliente/Az_ClientePut', model)
+      .pipe(map(r => r));
+  }
+
+  Az_ClienteDelete(model: GenericRequest<Az_ClienteDeleteInModel>): Observable<GenericResult<Az_ClienteDeleteOutModel>> {
+    return this.http.post<GenericResult<Az_ClienteDeleteOutModel>>(environment.remoteData.apiUri + 'Az_Cliente/Az_ClienteDelete', model)
       .pipe(map(r => r));
   }
 }

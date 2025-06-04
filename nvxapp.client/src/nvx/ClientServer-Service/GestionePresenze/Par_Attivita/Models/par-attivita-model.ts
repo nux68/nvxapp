@@ -11,19 +11,34 @@ export class Par_AttivitaModel {
 
 export class Par_Attivita_GetAll_InModel {}
 
-export class Par_Attivita_GetAll_OutModel extends ModelResult {
+export class Par_Attivita_GetAll_OutModel extends ModelResult
+{
   public par_Attivita: Par_AttivitaModel[] = [];
 }
 
-export class Par_AttivitaGetInModel { id: number = 0; }
-export class Par_AttivitaGetOutModel { par_Attivita: Par_AttivitaModel = new Par_AttivitaModel(); }
-export class Par_AttivitaPutInModel { par_Attivita: Par_AttivitaModel = new Par_AttivitaModel(); }
-export class Par_AttivitaPutOutModel { par_Attivita: Par_AttivitaModel = new Par_AttivitaModel(); }
+export class Par_AttivitaGetInModel
+{
+    id: number = 0;
+}
+export class Par_AttivitaGetOutModel extends ModelResult
+{
+    par_Attivita: Par_AttivitaModel = new Par_AttivitaModel();
+}
+export class Par_AttivitaPutInModel
+{
+    par_Attivita: Par_AttivitaModel = new Par_AttivitaModel();
+}
+export class Par_AttivitaPutOutModel extends ModelResult
+{
+    par_Attivita: Par_AttivitaModel = new Par_AttivitaModel();
+}
 
-export class Par_AttivitaDeleteInModel {
+export class Par_AttivitaDeleteInModel
+{
   public id: number = 0;
 }
 
-export class Par_AttivitaDeleteOutModel extends ModelResult {
+export class Par_AttivitaDeleteOutModel extends ModelResult
+{
   public par_Attivita: Par_AttivitaModel = new Par_AttivitaModel();
 }

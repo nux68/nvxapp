@@ -107,6 +107,22 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_Cliente
                 return retVal;
             }, isSubProcess);
         }
+
+        public virtual async Task<GenericResult<Az_ClienteDeleteOutModel>> Az_ClienteDelete(GenericRequest<Az_ClienteDeleteInModel> model, bool isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                Az_ClienteDeleteOutModel retVal = new Az_ClienteDeleteOutModel();
+                var az_Cliente = await _az_ClienteRepository.FindByIdAsync(model.Data.Id);
+                if (az_Cliente != null)
+                {
+                    retVal.Az_Cliente = _mapper.Map<Az_ClienteModel>(az_Cliente);
+                    await _az_ClienteRepository.DeleteAsync(az_Cliente);
+                }
+                await Task.Delay(DelayAsyncMethod);
+                return retVal;
+            }, isSubProcess);
+        }
     }
 
     public interface IAz_ClienteService : IServiceBase
@@ -114,5 +130,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_Cliente
         Task<GenericResult<Az_Cliente_GetAll_OutModel>> GetAll(GenericRequest<Az_Cliente_GetAll_InModel> model, bool isSubProcess);
         Task<GenericResult<Az_ClienteGetOutModel>> Az_ClienteGet(GenericRequest<Az_ClienteGetInModel> model, bool isSubProcess);
         Task<GenericResult<Az_ClientePutOutModel>> Az_ClientePut(GenericRequest<Az_ClientePutInModel> model, bool isSubProcess);
+        Task<GenericResult<Az_ClienteDeleteOutModel>> Az_ClienteDelete(GenericRequest<Az_ClienteDeleteInModel> model, bool isSubProcess);
     }
 }

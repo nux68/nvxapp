@@ -52,4 +52,18 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_Cliente
             Az_Cliente = new Az_ClienteModel { Id = 0, IdAz_Anagrafica = 0 };
         }
     }
+
+    public class Az_ClienteDeleteInModel
+    {
+        public int Id { get; set; } = 0;
+    }
+
+    public class Az_ClienteDeleteOutModel : ModelResult
+    {
+        public Az_ClienteModel Az_Cliente { get; set; }
+        public Az_ClienteDeleteOutModel()
+        {
+            Az_Cliente = new Az_ClienteModel { Id = 0, IdAz_Anagrafica = 0 };
+        }
+    }
 }

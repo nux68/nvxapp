@@ -46,5 +46,14 @@ namespace nvxapp.server.Controllers
             var res = await _az_ClienteService.Az_ClientePut(inModel, false);
             return res;
         }
+
+        [Authorize]
+        [HttpPost]
+        [Route("Az_ClienteDelete")]
+        public async Task<GenericResult<Az_ClienteDeleteOutModel>> Az_ClienteDelete(GenericRequest<Az_ClienteDeleteInModel> inModel)
+        {
+            var res = await _az_ClienteService.Az_ClienteDelete(inModel, false);
+            return res;
+        }
     }
 }

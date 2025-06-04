@@ -46,5 +46,14 @@ namespace nvxapp.server.Controllers
             var res = await _az_CommessaService.AZ_CommessaPut(inModel, false);
             return res;
         }
+
+        [Authorize]
+        [HttpPost]
+        [Route("AZ_CommessaDelete")]
+        public async Task<GenericResult<Az_CommessaDeleteOutModel>> AZ_CommessaDelete(GenericRequest<Az_CommessaDeleteInModel> inModel)
+        {
+            var res = await _az_CommessaService.AZ_CommessaDelete(inModel, false);
+            return res;
+        }
     }
 }

@@ -105,6 +105,22 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_Commess
                 return retVal;
             }, isSubProcess);
         }
+
+        public virtual async Task<GenericResult<Az_CommessaDeleteOutModel>> AZ_CommessaDelete(GenericRequest<Az_CommessaDeleteInModel> model, bool isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                Az_CommessaDeleteOutModel retVal = new Az_CommessaDeleteOutModel();
+                var commessa = await _az_CommessaRepository.FindByIdAsync(model.Data.Id);
+                if (commessa != null)
+                {
+                    retVal.Az_Commessa = _mapper.Map<Az_CommessaModel>(commessa);
+                    await _az_CommessaRepository.DeleteAsync(commessa);
+                }
+                await Task.Delay(DelayAsyncMethod);
+                return retVal;
+            }, isSubProcess);
+        }
     }
 
     public interface IAz_CommessaService : IServiceBase
@@ -112,5 +128,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_Commess
         Task<GenericResult<Az_Commessa_GetAll_OutModel>> GetAll(GenericRequest<Az_Commessa_GetAll_InModel> model, bool isSubProcess);
         Task<GenericResult<Az_CommessaGetOutModel>> AZ_CommessaGet(GenericRequest<Az_CommessaGetInModel> model, bool isSubProcess);
         Task<GenericResult<Az_CommessaPutOutModel>> AZ_CommessaPut(GenericRequest<Az_CommessaPutInModel> model, bool isSubProcess);
+        Task<GenericResult<Az_CommessaDeleteOutModel>> AZ_CommessaDelete(GenericRequest<Az_CommessaDeleteInModel> model, bool isSubProcess);
     }
 }

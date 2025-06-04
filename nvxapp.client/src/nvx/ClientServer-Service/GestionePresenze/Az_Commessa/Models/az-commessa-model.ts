@@ -1,5 +1,6 @@
 import { ModelResult } from "../../../ModelsBase/model-result";
 
+
 export class Az_CommessaModel {
   public id!: number;
   public idAz_Anagrafica!: number;
@@ -11,7 +12,27 @@ export class Az_CommessaModel {
 }
 
 export class Az_Commessa_GetAll_InModel {}
-
 export class Az_Commessa_GetAll_OutModel extends ModelResult {
   public az_Commessa: Az_CommessaModel[] = [];
+}
+
+export class Az_CommessaGetInModel {
+  public id: number = 0;
+}
+export class Az_CommessaGetOutModel extends ModelResult {
+  public az_Commessa!: Az_CommessaModel;
+}
+
+export class Az_CommessaPutInModel {
+  public az_Commessa!: Az_CommessaModel;
+}
+export class Az_CommessaPutOutModel extends ModelResult {
+  az_Commessa!: Az_CommessaModel;
+}
+
+export class Az_CommessaDeleteInModel {
+  public id: number = 0;
+}
+export class Az_CommessaDeleteOutModel extends ModelResult {
+  public az_Commessa!: Az_CommessaModel;
 }

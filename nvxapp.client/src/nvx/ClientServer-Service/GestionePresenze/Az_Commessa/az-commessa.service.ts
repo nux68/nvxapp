@@ -5,20 +5,11 @@ import { environment } from '../../../../environments/environment';
 import { GenericRequest } from '../../ModelsBase/generic-request';
 import { GenericResult } from '../../ModelsBase/generic-result';
 import { map, Observable } from 'rxjs';
-import { Az_Commessa_GetAll_InModel, Az_Commessa_GetAll_OutModel, Az_CommessaModel } from './Models/az-commessa-model';
+import { Az_Commessa_GetAll_InModel, Az_Commessa_GetAll_OutModel, Az_CommessaGetInModel, Az_CommessaGetOutModel, Az_CommessaPutInModel, Az_CommessaPutOutModel, Az_CommessaDeleteInModel, Az_CommessaDeleteOutModel } from './Models/az-commessa-model';
 
-export class Az_CommessaGetInModel {
-  id: number = 0;
-}
-export class Az_CommessaGetOutModel extends GenericResult<Az_CommessaModel> {
-  az_Commessa!: Az_CommessaModel;
-}
-export class Az_CommessaPutInModel {
-  az_Commessa!: Az_CommessaModel;
-}
-export class Az_CommessaPutOutModel extends GenericResult<Az_CommessaModel> {
-  az_Commessa!: Az_CommessaModel;
-}
+
+
+
 
 @Injectable({
   providedIn: 'root'
@@ -34,13 +25,18 @@ export class AzCommessaService {
       .pipe(map(r => r));
   }
 
-  AZ_CommessaGet(model: GenericRequest<Az_CommessaGetInModel>): Observable<GenericResult<Az_CommessaGetOutModel>> {
+  Az_CommessaGet(model: GenericRequest<Az_CommessaGetInModel>): Observable<GenericResult<Az_CommessaGetOutModel>> {
     return this.http.post<GenericResult<Az_CommessaGetOutModel>>(environment.remoteData.apiUri + 'Az_Commessa/AZ_CommessaGet', model)
       .pipe(map(r => r));
   }
 
-  AZ_CommessaPut(model: GenericRequest<Az_CommessaPutInModel>): Observable<GenericResult<Az_CommessaPutOutModel>> {
+  Az_CommessaPut(model: GenericRequest<Az_CommessaPutInModel>): Observable<GenericResult<Az_CommessaPutOutModel>> {
     return this.http.post<GenericResult<Az_CommessaPutOutModel>>(environment.remoteData.apiUri + 'Az_Commessa/AZ_CommessaPut', model)
+      .pipe(map(r => r));
+  }
+
+  Az_CommessaDelete(model: GenericRequest<Az_CommessaDeleteInModel>): Observable<GenericResult<Az_CommessaDeleteOutModel>> {
+    return this.http.post<GenericResult<Az_CommessaDeleteOutModel>>(environment.remoteData.apiUri + 'Az_Commessa/Az_CommessaDelete', model)
       .pipe(map(r => r));
   }
 }

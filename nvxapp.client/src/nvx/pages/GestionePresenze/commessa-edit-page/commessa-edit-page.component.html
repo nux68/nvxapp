@@ -29,7 +29,51 @@
     <ion-note color="danger" *ngIf="_editForm.get('idAz_Cliente')?.hasError('required') && _editForm.get('idAz_Cliente')?.touched">
       Cliente è obbligatorio.
     </ion-note>
+
+    <!-- Campo Data -->
+    <ion-item>
+      <ion-label position="floating">Data inizio</ion-label>
+      <ion-datetime-button datetime="startDatetime"></ion-datetime-button>
+    </ion-item>
+
+    <!-- Campo DataA -->
+    <ion-item>
+      <ion-label position="floating">Data fine</ion-label>
+      <ion-datetime-button datetime="endDatetime"></ion-datetime-button>
+    </ion-item>
+
   </form>
   <br />
+
+  <ion-modal [keepContentsMounted]="true">
+    <ng-template>
+      <ion-datetime id="startDatetime"
+                    [(ngModel)]="startDate"
+                    presentation="date"
+                    [showDefaultButtons]="true"
+                    doneText="Fatto"
+                    cancelText="Annulla"
+                    (ionChange)="updateStartDate($event)"
+                    locale="it-IT">
+      </ion-datetime>
+    </ng-template>
+  </ion-modal>
+
+  <ion-modal [keepContentsMounted]="true">
+    <ng-template>
+      <ion-datetime id="endDatetime"
+                    [(ngModel)]="endDate"
+                    presentation="date"
+                    [showDefaultButtons]="true"
+                    doneText="Fatto"
+                    cancelText="Annulla"
+                    (ionChange)="updateEndDate($event)"
+                    locale="it-IT">
+      </ion-datetime>
+    </ng-template>
+  </ion-modal>
+
+
+
 </ion-content>
 <app-page-buttonbar [buttonbar]="buttonbar"></app-page-buttonbar>

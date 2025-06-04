@@ -42,4 +42,14 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_Commess
     {
         public Az_CommessaModel Az_Commessa { get; set; } = new Az_CommessaModel();
     }
+
+    public class Az_CommessaDeleteInModel
+    {
+        public int Id { get; set; } = 0;
+    }
+
+    public class Az_CommessaDeleteOutModel
+    {
+        public Az_CommessaModel Az_Commessa { get; set; } = new Az_CommessaModel();
+    }
 }
