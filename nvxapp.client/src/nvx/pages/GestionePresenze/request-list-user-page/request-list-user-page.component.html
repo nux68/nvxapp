@@ -78,7 +78,7 @@
           </ion-col>
 
           <ion-col class="ion-hide-sm-down">
-            <ion-button size="small" *ngIf="timeSheetService.Dip_GG_Richiesta_User_Can_Delete(item)" shape="round" (click)="btnDelete.event(item)" color="{{btnDelete.color}}">
+            <ion-button size="small" fill="outline" *ngIf="timeSheetService.Dip_GG_Richiesta_User_Can_Delete(item)" shape="round" (click)="btnDelete.event(item)" color="{{btnDelete.color}}">
               <ion-icon name="{{btnDelete.image}}"></ion-icon>
               &nbsp;{{btnDelete.text}}
             </ion-button>

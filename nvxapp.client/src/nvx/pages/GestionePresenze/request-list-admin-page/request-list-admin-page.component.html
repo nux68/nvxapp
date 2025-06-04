@@ -114,14 +114,14 @@
           </ion-col>
 
           <ion-col class="ion-hide-sm-down">
-            <ion-button size="small" *ngIf="timeSheetService.Dip_GG_Richiesta_Admin_Can_Approve(item)" shape="round" (click)="btnApprova.event(item)" color="{{btnApprova.color}}">
+            <ion-button size="small" fill="outline" *ngIf="timeSheetService.Dip_GG_Richiesta_Admin_Can_Approve(item)" shape="round" (click)="btnApprova.event(item)" color="{{btnApprova.color}}">
               <ion-icon name="{{btnApprova.image}}"></ion-icon>
               &nbsp;{{btnApprova.text}}
             </ion-button>
           </ion-col>
 
           <ion-col class="ion-hide-sm-down">
-            <ion-button size="small" *ngIf="timeSheetService.Dip_GG_Richiesta_Admin_Can_Reject(item)" shape="round" (click)="btnRifiuta.event(item)" color="{{btnRifiuta.color}}">
+            <ion-button size="small" fill="outline" *ngIf="timeSheetService.Dip_GG_Richiesta_Admin_Can_Reject(item)" shape="round" (click)="btnRifiuta.event(item)" color="{{btnRifiuta.color}}">
               <ion-icon name="{{btnRifiuta.image}}"></ion-icon>
               &nbsp;{{btnRifiuta.text}}
             </ion-button>
