@@ -25,7 +25,12 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
   public override _editForm: FormGroup;
   public _az_ClienteModelList: Az_ClienteModel[] = [];
 
-
+  //date x il backend
+  public formattedStartDate: string;
+  public formattedEndDate: string;
+  //date per i controlli ionic
+  public startDate: string;
+  public endDate: string;
 
   constructor(protected override navCtrl: NavController,
     protected override userInterfaceService: UserInterfaceService,
@@ -38,8 +43,6 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
     this._editForm = this.fb.group({
       descrizione: [null, [Validators.required, Validators.maxLength(50)]],
       idAz_Cliente: [null, [Validators.required]],
-      //data: [null, [Validators.required]],
-      //dataA: [null, [Validators.required]]
     });
   }
 
@@ -72,11 +75,11 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
       return this.azCommessaService.Az_CommessaGet(request).pipe(
         map((res) => {
 
-          this.startDate = res.data.az_Commessa.data; //this.stringHelperService.DateCurr_To_ISOString();
-          this.endDate = res.data.az_Commessa.dataA; //this.stringHelperService.DateCurr_To_ISOString();
-
-          this.formattedStartDate = res.data.az_Commessa.data; //this.stringHelperService.Date_To_S_ddmmyyyy(now);
-          this.formattedEndDate = res.data.az_Commessa.dataA; //this.stringHelperService.Date_To_S_ddmmyyyy(now);
+          //la classe base non gestisce questo tipo di dato DEVO assegnare i valori a manina
+          this.startDate = this.stringHelperService.DateString_ddMMyyyy_To_ISOString(res.data.az_Commessa.data);
+          this.endDate = this.stringHelperService.DateString_ddMMyyyy_To_ISOString(res.data.az_Commessa.dataA); 
+          this.formattedStartDate = res.data.az_Commessa.data; 
+          this.formattedEndDate = res.data.az_Commessa.dataA; 
 
           return res.data.az_Commessa;
 
@@ -98,7 +101,7 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
     let request: GenericRequest<Az_CommessaPutInModel> = new GenericRequest<Az_CommessaPutInModel>(Az_CommessaPutInModel);
     request.data.az_Commessa = editModel;
 
-    
+    //la classe base non gestisce questo tipo di dato DEVO assegnare i valori a manina
     request.data.az_Commessa.data = this.formattedStartDate;
     request.data.az_Commessa.dataA = this.formattedEndDate;
 
@@ -116,34 +119,43 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
   }
 
 
-  public startDate: string;
-  public formattedStartDate: string;
-  public endDate: string;
-  public formattedEndDate: string;
+  
+  
 
   updateStartDate(event: any) {
     const selectedDate = new Date(event.detail.value);
     this.formattedStartDate = this.stringHelperService.Date_To_S_ddmmyyyy(selectedDate);
 
-    //// Controlla se la data di inizio è successiva alla data di fine
-    //if (this.compareDates(this.formattedStartDate, this.formattedEndDate) > 0) {
-    //  // Aggiorna la data di fine per farla coincidere con la data di inizio
-    //  this.endDate = event.detail.value;
-    //  this.formattedEndDate = this.formattedStartDate;
-    //}
+    // Controlla se la data di inizio è successiva alla data di fine
+    if (this.compareDates(this.formattedStartDate, this.formattedEndDate) > 0) {
+      // Aggiorna la data di fine per farla coincidere con la data di inizio
+      this.endDate = event.detail.value;
+      this.formattedEndDate = this.formattedStartDate;
+    }
   }
 
   updateEndDate(event: any) {
     const selectedDate = new Date(event.detail.value);
     this.formattedEndDate = this.stringHelperService.Date_To_S_ddmmyyyy(selectedDate);
 
-    //// Controlla se la data di fine è precedente alla data di inizio
-    //if (this.compareDates(this.formattedEndDate, this.formattedStartDate) < 0) {
-    //  // Aggiorna la data di inizio per farla coincidere con la data di fine
-    //  this.startDate = event.detail.value;
-    //  this.formattedStartDate = this.formattedEndDate;
-    //}
+    // Controlla se la data di fine è precedente alla data di inizio
+    if (this.compareDates(this.formattedEndDate, this.formattedStartDate) < 0) {
+      // Aggiorna la data di inizio per farla coincidere con la data di fine
+      this.startDate = event.detail.value;
+      this.formattedStartDate = this.formattedEndDate;
+    }
   }
 
+  compareDates(date1: string, date2: string): number {
+    // Converte da formato dd/mm/yyyy a Date objects per confronto
+    const [day1, month1, year1] = date1.split('/').map(Number);
+    const [day2, month2, year2] = date2.split('/').map(Number);
+
+    const d1 = new Date(year1, month1 - 1, day1);
+    const d2 = new Date(year2, month2 - 1, day2);
+
+    // Ritorna -1 se d1 < d2, 0 se uguali, 1 se d1 > d2
+    return d1 < d2 ? -1 : d1 > d2 ? 1 : 0;
+  }
 
 }

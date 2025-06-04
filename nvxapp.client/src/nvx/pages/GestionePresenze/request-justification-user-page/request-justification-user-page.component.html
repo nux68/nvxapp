@@ -6,8 +6,7 @@
 
 <ion-content [fullscreen]="true">
   <!-- Rest of the content remains the same -->
-
-  <div class="form-section">
+  <!--<div class="form-section">
     <div class="form-label">Giustificativo</div>
     <div class="form-input">
       <ion-select [(ngModel)]="justificationType" interface="action-sheet" placeholder="Seleziona">
@@ -16,22 +15,49 @@
         </ion-select-option>
       </ion-select>
     </div>
-  </div>
+  </div>-->
+
+  <br />
+
+  <ion-item>
+    <ion-label position="stacked" style="margin-bottom:13px;">Giustificativo</ion-label>
+    <ion-select [(ngModel)]="justificationType" interface="action-sheet" placeholder="Seleziona">
+      <ion-select-option *ngFor="let giustificativo of giustificativi" [value]="giustificativo.codice">
+        {{giustificativo.descrizione}}
+      </ion-select-option>
+    </ion-select>
+  </ion-item>
+
 
   <!-- Rimossa la sezione Tipo richiesta come richiesto -->
-
-  <div class="form-section">
+  <!--<div class="form-section">
     <div class="form-label">Inizio</div>
     <div class="form-input date-input-container">
       <ion-datetime-button datetime="startDatetime"></ion-datetime-button>
     </div>
-  </div>
+  </div>-->
+  <ion-item>
+    <ion-label position="stacked" style="margin-bottom:13px;">Data inizio</ion-label>
+    <ion-datetime-button datetime="startDatetime"></ion-datetime-button>
+  </ion-item>
 
-  <div class="form-section">
+
+  <!--<div class="form-section">
     <div class="form-label">Fine</div>
     <div class="form-input date-input-container">
       <ion-datetime-button datetime="endDatetime"></ion-datetime-button>
     </div>
+  </div>-->
+
+  <ion-item>
+    <ion-label position="stacked" style="margin-bottom:13px;">Data fine</ion-label>
+    <ion-datetime-button datetime="endDatetime"></ion-datetime-button>
+  </ion-item>
+
+
+  <div class="form-section toggle-section">
+    <span>Giorno intero</span>
+    <ion-toggle [(ngModel)]="fullDay" (ionChange)="toggleFullDay()"></ion-toggle>
   </div>
 
   <!-- La sezione ore sarà visibile solo se fullDay è false -->
@@ -72,10 +98,7 @@
     </div>
   </div>
 
-  <div class="form-section toggle-section">
-    <span>Giorno intero</span>
-    <ion-toggle [(ngModel)]="fullDay" (ionChange)="toggleFullDay()"></ion-toggle>
-  </div>
+
 
   <!--<div class="form-section">
     <div class="form-label">Responsabili</div>
