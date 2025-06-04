@@ -5,23 +5,33 @@
 
 <ion-content [fullscreen]="true">
 
-  
-  <form [formGroup]="loginForm">
-    <ion-item>
-      <ion-label position="floating">User Name</ion-label>
-      <ion-input type="email" formControlName="email"></ion-input>
-    </ion-item>
+  <ion-card>
+    <ion-card-content>
+      <ion-list >
 
-    <ion-item>
-      <ion-label position="floating">Password</ion-label>
-      <ion-input type="password" formControlName="password"></ion-input>
-    </ion-item>
+        <form [formGroup]="loginForm">
+          <ion-item>
+            <ion-label position="floating">User Name</ion-label>
+            <ion-input type="email" formControlName="email"></ion-input>
+          </ion-item>
 
-    <div *ngIf="loginError" class="error-container">
-      <p class="error-text">{{ loginError }}</p>
-    </div>
+          <ion-item>
+            <ion-label position="floating">Password</ion-label>
+            <ion-input type="password" formControlName="password"></ion-input>
+          </ion-item>
 
-  </form>
+          <div *ngIf="loginError" class="error-container">
+            <p class="error-text">{{ loginError }}</p>
+          </div>
+
+        </form>
+
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+
+
+
 
 </ion-content>
 

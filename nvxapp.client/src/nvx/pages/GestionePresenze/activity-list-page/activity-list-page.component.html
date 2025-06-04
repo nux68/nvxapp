@@ -5,6 +5,12 @@
 </app-page-toolbar>
 
 <ion-content [fullscreen]="true">
+
+  <ion-card>
+    <ion-card-content>
+
+
+
   <ion-grid *ngIf="par_AttivitaList != null">
     <ion-row *ngFor="let item of getAll() | genericFilter: 'descrizione' : searchText" class="nvx-ion-row-4table">
       <ion-item-sliding class="ion-hide-sm-up">
@@ -45,4 +51,8 @@
       </ion-col>
     </ion-row>
   </ion-grid>
+
+  </ion-card-content>
+  </ion-card>
+
 </ion-content>

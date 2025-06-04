@@ -5,151 +5,160 @@
 </app-page-toolbar>
 
 <ion-content [fullscreen]="true">
-  <!-- Rest of the content remains the same -->
-  <!--<div class="form-section">
-    <div class="form-label">Giustificativo</div>
-    <div class="form-input">
-      <ion-select [(ngModel)]="justificationType" interface="action-sheet" placeholder="Seleziona">
-        <ion-select-option *ngFor="let giustificativo of giustificativi" [value]="giustificativo.codice">
-          {{giustificativo.descrizione}}
-        </ion-select-option>
-      </ion-select>
-    </div>
-  </div>-->
 
-  <br />
+  <ion-card>
+    <ion-card-content>
 
-  <ion-item>
-    <ion-label position="stacked" style="margin-bottom:13px;">Giustificativo</ion-label>
-    <ion-select [(ngModel)]="justificationType" interface="action-sheet" placeholder="Seleziona">
-      <ion-select-option *ngFor="let giustificativo of giustificativi" [value]="giustificativo.codice">
-        {{giustificativo.descrizione}}
-      </ion-select-option>
-    </ion-select>
-  </ion-item>
+      <!-- Rest of the content remains the same -->
+      <!--<div class="form-section">
+        <div class="form-label">Giustificativo</div>
+        <div class="form-input">
+          <ion-select [(ngModel)]="justificationType" interface="action-sheet" placeholder="Seleziona">
+            <ion-select-option *ngFor="let giustificativo of giustificativi" [value]="giustificativo.codice">
+              {{giustificativo.descrizione}}
+            </ion-select-option>
+          </ion-select>
+        </div>
+      </div>-->
 
+      <br />
 
-  <!-- Rimossa la sezione Tipo richiesta come richiesto -->
-  <!--<div class="form-section">
-    <div class="form-label">Inizio</div>
-    <div class="form-input date-input-container">
-      <ion-datetime-button datetime="startDatetime"></ion-datetime-button>
-    </div>
-  </div>-->
-  <ion-item>
-    <ion-label position="stacked" style="margin-bottom:13px;">Data inizio</ion-label>
-    <ion-datetime-button datetime="startDatetime"></ion-datetime-button>
-  </ion-item>
+      <ion-item>
+        <ion-label position="stacked" style="margin-bottom:13px;">Giustificativo</ion-label>
+        <ion-select [(ngModel)]="justificationType" interface="action-sheet" placeholder="Seleziona">
+          <ion-select-option *ngFor="let giustificativo of giustificativi" [value]="giustificativo.codice">
+            {{giustificativo.descrizione}}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
 
 
-  <!--<div class="form-section">
-    <div class="form-label">Fine</div>
-    <div class="form-input date-input-container">
-      <ion-datetime-button datetime="endDatetime"></ion-datetime-button>
-    </div>
-  </div>-->
+      <!-- Rimossa la sezione Tipo richiesta come richiesto -->
+      <!--<div class="form-section">
+        <div class="form-label">Inizio</div>
+        <div class="form-input date-input-container">
+          <ion-datetime-button datetime="startDatetime"></ion-datetime-button>
+        </div>
+      </div>-->
+      <ion-item>
+        <ion-label position="stacked" style="margin-bottom:13px;">Data inizio</ion-label>
+        <ion-datetime-button datetime="startDatetime"></ion-datetime-button>
+      </ion-item>
 
-  <ion-item>
-    <ion-label position="stacked" style="margin-bottom:13px;">Data fine</ion-label>
-    <ion-datetime-button datetime="endDatetime"></ion-datetime-button>
-  </ion-item>
+
+      <!--<div class="form-section">
+        <div class="form-label">Fine</div>
+        <div class="form-input date-input-container">
+          <ion-datetime-button datetime="endDatetime"></ion-datetime-button>
+        </div>
+      </div>-->
+
+      <ion-item>
+        <ion-label position="stacked" style="margin-bottom:13px;">Data fine</ion-label>
+        <ion-datetime-button datetime="endDatetime"></ion-datetime-button>
+      </ion-item>
 
 
-  <div class="form-section toggle-section">
-    <span>Giorno intero</span>
-    <ion-toggle [(ngModel)]="fullDay" (ionChange)="toggleFullDay()"></ion-toggle>
-  </div>
+      <div class="form-section toggle-section">
+        <span>Giorno intero</span>
+        <ion-toggle [(ngModel)]="fullDay" (ionChange)="toggleFullDay()"></ion-toggle>
+      </div>
 
-  <!-- La sezione ore sarà visibile solo se fullDay è false -->
-  <div class="form-section" *ngIf="!fullDay">
-    <div class="form-label">Ore</div>
-    <div class="time-input">
-      <!-- Hours control -->
-      <div class="time-control-group">
-        <div class="time-label">Ore</div>
-        <div class="time-controls">
-          <button class="time-button decrease" (click)="decreaseHours()">
-            <ion-icon name="remove"></ion-icon>
-          </button>
-          <div class="time-display">{{(hours || 0).toString().padStart(2, '0')}}</div>
-          <button class="time-button increase" (click)="increaseHours()">
+      <!-- La sezione ore sarà visibile solo se fullDay è false -->
+      <div class="form-section" *ngIf="!fullDay">
+        <div class="form-label">Ore</div>
+        <div class="time-input">
+          <!-- Hours control -->
+          <div class="time-control-group">
+            <div class="time-label">Ore</div>
+            <div class="time-controls">
+              <button class="time-button decrease" (click)="decreaseHours()">
+                <ion-icon name="remove"></ion-icon>
+              </button>
+              <div class="time-display">{{(hours || 0).toString().padStart(2, '0')}}</div>
+              <button class="time-button increase" (click)="increaseHours()">
+                <ion-icon name="add"></ion-icon>
+              </button>
+            </div>
+          </div>
+          <!-- Minutes control -->
+          <div class="time-control-group">
+            <div class="time-label">Min</div>
+            <div class="time-controls">
+              <button class="time-button decrease" (click)="decreaseMinutes()">
+                <ion-icon name="remove"></ion-icon>
+              </button>
+              <div class="time-display">{{(minutes || 0).toString().padStart(2, '0')}}</div>
+              <button class="time-button increase" (click)="increaseMinutes()">
+                <ion-icon name="add"></ion-icon>
+              </button>
+            </div>
+          </div>
+          <!-- Total time display -->
+          <div class="time-total">
+            <div class="time-total-label">Totale</div>
+            <div class="time-total-value">{{hoursFormatted || '00:00'}}</div>
+          </div>
+        </div>
+      </div>
+
+
+
+      <!--<div class="form-section">
+        <div class="form-label">Responsabili</div>
+        <div class="form-input supervisors">
+          <div class="chips-container">
+            <div class="chip" *ngFor="let supervisor of supervisors; let i = index">
+              <span>{{ supervisor }}</span>
+              <ion-icon name="trash" (click)="removeSupervisor(i)"></ion-icon>
+            </div>
+          </div>
+          <button class="add-button" (click)="addSupervisor()">
             <ion-icon name="add"></ion-icon>
           </button>
         </div>
-      </div>
-      <!-- Minutes control -->
-      <div class="time-control-group">
-        <div class="time-label">Min</div>
-        <div class="time-controls">
-          <button class="time-button decrease" (click)="decreaseMinutes()">
-            <ion-icon name="remove"></ion-icon>
-          </button>
-          <div class="time-display">{{(minutes || 0).toString().padStart(2, '0')}}</div>
-          <button class="time-button increase" (click)="increaseMinutes()">
-            <ion-icon name="add"></ion-icon>
-          </button>
+      </div>-->
+
+      <div class="form-section notes-section">
+        <div class="form-label">Note</div>
+        <div class="form-input">
+          <ion-textarea [(ngModel)]="notes" placeholder="Inserisci note..." rows="4"></ion-textarea>
         </div>
       </div>
-      <!-- Total time display -->
-      <div class="time-total">
-        <div class="time-total-label">Totale</div>
-        <div class="time-total-value">{{hoursFormatted || '00:00'}}</div>
-      </div>
-    </div>
-  </div>
+
+      <!-- Modals remain the same -->
+      <ion-modal [keepContentsMounted]="true">
+        <ng-template>
+          <ion-datetime id="startDatetime"
+                        [(ngModel)]="startDate"
+                        presentation="date"
+                        [showDefaultButtons]="true"
+                        doneText="Fatto"
+                        cancelText="Annulla"
+                        (ionChange)="updateStartDate($event)"
+                        locale="it-IT">
+          </ion-datetime>
+        </ng-template>
+      </ion-modal>
+
+      <ion-modal [keepContentsMounted]="true">
+        <ng-template>
+          <ion-datetime id="endDatetime"
+                        [(ngModel)]="endDate"
+                        presentation="date"
+                        [showDefaultButtons]="true"
+                        doneText="Fatto"
+                        cancelText="Annulla"
+                        (ionChange)="updateEndDate($event)"
+                        locale="it-IT">
+          </ion-datetime>
+        </ng-template>
+      </ion-modal>
 
 
 
-  <!--<div class="form-section">
-    <div class="form-label">Responsabili</div>
-    <div class="form-input supervisors">
-      <div class="chips-container">
-        <div class="chip" *ngFor="let supervisor of supervisors; let i = index">
-          <span>{{ supervisor }}</span>
-          <ion-icon name="trash" (click)="removeSupervisor(i)"></ion-icon>
-        </div>
-      </div>
-      <button class="add-button" (click)="addSupervisor()">
-        <ion-icon name="add"></ion-icon>
-      </button>
-    </div>
-  </div>-->
-
-  <div class="form-section notes-section">
-    <div class="form-label">Note</div>
-    <div class="form-input">
-      <ion-textarea [(ngModel)]="notes" placeholder="Inserisci note..." rows="4"></ion-textarea>
-    </div>
-  </div>
-
-  <!-- Modals remain the same -->
-  <ion-modal [keepContentsMounted]="true">
-    <ng-template>
-      <ion-datetime id="startDatetime"
-                    [(ngModel)]="startDate"
-                    presentation="date"
-                    [showDefaultButtons]="true"
-                    doneText="Fatto"
-                    cancelText="Annulla"
-                    (ionChange)="updateStartDate($event)"
-                    locale="it-IT">
-      </ion-datetime>
-    </ng-template>
-  </ion-modal>
-
-  <ion-modal [keepContentsMounted]="true">
-    <ng-template>
-      <ion-datetime id="endDatetime"
-                    [(ngModel)]="endDate"
-                    presentation="date"
-                    [showDefaultButtons]="true"
-                    doneText="Fatto"
-                    cancelText="Annulla"
-                    (ionChange)="updateEndDate($event)"
-                    locale="it-IT">
-      </ion-datetime>
-    </ng-template>
-  </ion-modal>
+    </ion-card-content>
+  </ion-card>
 
 </ion-content>
 

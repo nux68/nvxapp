@@ -4,49 +4,55 @@
 </app-page-toolbar>
 
 <ion-content [fullscreen]="true">
-  <div class="calendar-container">
-    <app-sedi-reparto-user-navigation [showPeriodSelect]="true"
-                                      [showSediSelect]="false"
-                                      [showRepartoSelect]="true"
-                                      [showUserSelect]="true"
-                                      (periodChange)="onPeriodChange($event)"
-                                      (sediIdChange)="onSedeChanged($event)"
-                                      (repartoIdChange)="onRepartiChanged($event)"
-                                      (allUsersIdChange)="onAllUsersInSelectionChanged($event)"
-                                      (currUserIdChange)="onCurrentUserChanged($event)">
-    </app-sedi-reparto-user-navigation>
 
-    <div class="calendar-grid">
-      <!-- Intestazione giorni della settimana -->
-      <div class="weekday-header">
-        <div class="weekday" *ngFor="let day of monthNavigatorService.weekDays; let i = index"
-             [ngClass]="{'weekend': i > 4}">
-          {{ day }}
-        </div>
-      </div>
-
-      <!-- Griglia del calendario -->
-      <div class="calendar-weeks">
-        <div class="week" *ngFor="let week of weeks">
-
-          <div class="day" *ngFor="let day of week; let i = index" [ngClass]="getDayClass(day, i)">
-
-            <div class="day-number">{{ day.day }}</div>
-
-            <div class="day-content">
-
-              <ng-container *ngIf="day.dip_GG_Giustificativi && day.dip_GG_Giustificativi.length > 0">
-                <div class="justifications">
+  <ion-card>
+    <ion-card-content>
 
 
-                  <ng-container *ngIf="day.dip_GG_Giustificativi?.length > 0; else noJust">
+
+      <div class="calendar-container">
+        <app-sedi-reparto-user-navigation [showPeriodSelect]="true"
+                                          [showSediSelect]="false"
+                                          [showRepartoSelect]="true"
+                                          [showUserSelect]="true"
+                                          (periodChange)="onPeriodChange($event)"
+                                          (sediIdChange)="onSedeChanged($event)"
+                                          (repartoIdChange)="onRepartiChanged($event)"
+                                          (allUsersIdChange)="onAllUsersInSelectionChanged($event)"
+                                          (currUserIdChange)="onCurrentUserChanged($event)">
+        </app-sedi-reparto-user-navigation>
+
+        <div class="calendar-grid">
+          <!-- Intestazione giorni della settimana -->
+          <div class="weekday-header">
+            <div class="weekday" *ngFor="let day of monthNavigatorService.weekDays; let i = index"
+                 [ngClass]="{'weekend': i > 4}">
+              {{ day }}
+            </div>
+          </div>
+
+          <!-- Griglia del calendario -->
+          <div class="calendar-weeks">
+            <div class="week" *ngFor="let week of weeks">
+
+              <div class="day" *ngFor="let day of week; let i = index" [ngClass]="getDayClass(day, i)">
+
+                <div class="day-number">{{ day.day }}</div>
+
+                <div class="day-content">
+
+                  <ng-container *ngIf="day.dip_GG_Giustificativi && day.dip_GG_Giustificativi.length > 0">
+                    <div class="justifications">
 
 
-                    <ion-button [disabled]="(!timeSheetService.Dip_GG_Richiesta_Admin_Can_Approve( get_Dip_GG_Richiesta(just.idDip_GG_Richiesta) ) &&
+                      <ng-container *ngIf="day.dip_GG_Giustificativi?.length > 0; else noJust">
+
+
+                        <ion-button [disabled]="(!timeSheetService.Dip_GG_Richiesta_Admin_Can_Approve( get_Dip_GG_Richiesta(just.idDip_GG_Richiesta) ) &&
                                              !timeSheetService.Dip_GG_Richiesta_Admin_Can_Reject(get_Dip_GG_Richiesta(just.idDip_GG_Richiesta)) )"
-                                size="small" shape="round"
-                                *ngFor="let just of day.dip_GG_Giustificativi"
-                                [ngStyle]="{
+                                    size="small" shape="round"
+                                    *ngFor="let just of day.dip_GG_Giustificativi"
+                                    [ngStyle]="{
                                               '--background': timeSheetService.get_Dip_GG_Giustificativi_backColor(just),
                                               '--color': timeSheetService.get_Dip_GG_Giustificativi_txtColor(just),
                                               '--padding-top': '0px',
@@ -55,31 +61,31 @@
                                               'margin-bottom':'1px',
                                               'margin-top':'0px'
                                             }"
-                                (click)="actionSheetOpen(just)">
-                      {{ just.idPar_Giustificativi | parGiustificativiToLongText }}
-                      <ion-icon slot="end" [name]="timeSheetService.get_StatoRichiesta_icon(get_Dip_GG_Richiesta(just.idDip_GG_Richiesta))"></ion-icon>
-                    </ion-button>
+                                    (click)="actionSheetOpen(just)">
+                          {{ just.idPar_Giustificativi | parGiustificativiToLongText }}
+                          <ion-icon slot="end" [name]="timeSheetService.get_StatoRichiesta_icon(get_Dip_GG_Richiesta(just.idDip_GG_Richiesta))"></ion-icon>
+                        </ion-button>
 
+                      </ng-container>
+                      <ng-template #noJust>
+                        <span class="no-data">-</span>
+                      </ng-template>
+
+
+                    </div>
                   </ng-container>
-                  <ng-template #noJust>
-                    <span class="no-data">-</span>
-                  </ng-template>
 
 
-                </div>
-              </ng-container>
+                  <ng-container *ngIf="day.dip_GG_Timbratura && day.dip_GG_Timbratura.length > 0">
+                    <div class="timestamps">
 
+                      <ng-container *ngIf="day.dip_GG_Timbratura?.length > 0; else noTimb">
 
-              <ng-container *ngIf="day.dip_GG_Timbratura && day.dip_GG_Timbratura.length > 0">
-                <div class="timestamps">
-
-                  <ng-container *ngIf="day.dip_GG_Timbratura?.length > 0; else noTimb">
-
-                    <ion-button [disabled]="(!timeSheetService.Dip_GG_Richiesta_Admin_Can_Approve( get_Dip_GG_Richiesta(record.idDip_GG_Richiesta) ) &&
+                        <ion-button [disabled]="(!timeSheetService.Dip_GG_Richiesta_Admin_Can_Approve( get_Dip_GG_Richiesta(record.idDip_GG_Richiesta) ) &&
                                              !timeSheetService.Dip_GG_Richiesta_Admin_Can_Reject(get_Dip_GG_Richiesta(record.idDip_GG_Richiesta)) )"
-                                size="small" shape="round"
-                                *ngFor="let record of day.dip_GG_Timbratura"
-                                [ngStyle]="{
+                                    size="small" shape="round"
+                                    *ngFor="let record of day.dip_GG_Timbratura"
+                                    [ngStyle]="{
                                              '--background': timeSheetService.get_Dip_GG_Timbratura_backColor(record),
                                              '--color': timeSheetService.get_Dip_GG_Timbratura_txtColor(record),
                                              '--padding-top': '0px',
@@ -88,37 +94,39 @@
                                              'margin-bottom':'1px',
                                              'margin-top':'0px'
                                            }"
-                                (click)="actionSheetOpen(record)">
-                      {{ record.timbraturaTipo | tipoTimbraturaToShortText }}{{ record.timbratura | date:'HH:mm' }}
-                      <ion-icon slot="end" [name]="timeSheetService.get_StatoRichiesta_icon(get_Dip_GG_Richiesta(record.idDip_GG_Richiesta))"></ion-icon>
-                    </ion-button>
+                                    (click)="actionSheetOpen(record)">
+                          {{ record.timbraturaTipo | tipoTimbraturaToShortText }}{{ record.timbratura | date:'HH:mm' }}
+                          <ion-icon slot="end" [name]="timeSheetService.get_StatoRichiesta_icon(get_Dip_GG_Richiesta(record.idDip_GG_Richiesta))"></ion-icon>
+                        </ion-button>
 
 
+                      </ng-container>
+                      <ng-template #noTimb>
+                        <span class="no-data">-</span>
+                      </ng-template>
+
+
+
+                    </div>
                   </ng-container>
-                  <ng-template #noTimb>
-                    <span class="no-data">-</span>
-                  </ng-template>
 
+                </div> <!-- Fine day-content -->
 
+              </div> <!-- Fine day -->
+            </div> <!-- Fine week -->
+          </div> <!-- Fine calendar-weeks -->
 
-                </div>
-              </ng-container>
+        </div> <!-- Fine calendar-grid -->
 
-            </div> <!-- Fine day-content -->
+      </div>
 
-          </div> <!-- Fine day -->
-        </div> <!-- Fine week -->
-      </div> <!-- Fine calendar-weeks -->
+      <ion-action-sheet [isOpen]="isActionSheetOpen"
+                        [header]="actionSheetHeader"
+                        [subHeader]="actionSheetSubHeader"
+                        [buttons]="actionSheetButtons"
+                        (didDismiss)="actionSheetExecute($event)"></ion-action-sheet>
 
-    </div> <!-- Fine calendar-grid -->
-
-  </div>
-
-  <ion-action-sheet [isOpen]="isActionSheetOpen"
-                    [header]="actionSheetHeader"
-                    [subHeader]="actionSheetSubHeader"
-                    [buttons]="actionSheetButtons"
-                    (didDismiss)="actionSheetExecute($event)"></ion-action-sheet>
-
+    </ion-card-content>
+  </ion-card>
 
 </ion-content>

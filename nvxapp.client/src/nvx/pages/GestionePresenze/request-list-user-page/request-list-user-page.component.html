@@ -6,91 +6,95 @@
 
 <ion-content [fullscreen]="true">
 
+  <ion-card>
+    <ion-card-content>
 
 
-  <ion-grid *ngIf="dip_GG_RichiestaList!=null">
 
-    <ion-row *ngFor="let item of getAll() | genericFilter: 'descrizione' : searchText" class="nvx-ion-row-4table">
+      <ion-grid *ngIf="dip_GG_RichiestaList!=null">
 
-      <ion-item-sliding class="ion-hide-sm-up">
+        <ion-row *ngFor="let item of getAll() | genericFilter: 'descrizione' : searchText" class="nvx-ion-row-4table">
 
-        <ion-item>
+          <ion-item-sliding class="ion-hide-sm-up">
 
-          <ion-item>
-            <ion-label>
+            <ion-item>
 
-              <ion-text style="white-space:nowrap;">
-                {{getItemText1(item)}}
-              </ion-text>
+              <ion-item>
+                <ion-label>
 
-              <ion-note color="medium" style="white-space:nowrap;">
-                {{getItemText2(item)}}
-              </ion-note>
+                  <ion-text style="white-space:nowrap;">
+                    {{getItemText1(item)}}
+                  </ion-text>
 
+                  <ion-note color="medium" style="white-space:nowrap;">
+                    {{getItemText2(item)}}
+                  </ion-note>
+
+                </ion-label>
+              </ion-item>
+
+            </ion-item>
+
+            <ion-item-options side="end">
+              <ion-item-option *ngIf="timeSheetService.Dip_GG_Richiesta_User_Can_Delete(item)" color="{{btnDelete.color}}" (click)="btnDelete.event(item)">
+                <ion-icon slot="start" name="{{btnDelete.image}}"></ion-icon>
+                {{btnDelete.text}}
+              </ion-item-option>
+            </ion-item-options>
+
+          </ion-item-sliding>
+
+
+
+
+          <ion-col class="ion-hide-sm-down">
+            <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
+              {{ item.data }}
             </ion-label>
-          </ion-item>
+          </ion-col>
 
-        </ion-item>
+          <ion-col class="ion-hide-sm-down">
+            <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
+              {{ getDataA(item) }}
+            </ion-label>
+          </ion-col>
 
-        <ion-item-options side="end">
-          <ion-item-option *ngIf="timeSheetService.Dip_GG_Richiesta_User_Can_Delete(item)" color="{{btnDelete.color}}" (click)="btnDelete.event(item)">
-            <ion-icon slot="start" name="{{btnDelete.image}}"></ion-icon>
-            {{btnDelete.text}}
-          </ion-item-option>
-        </ion-item-options>
+          <ion-col class="ion-hide-sm-down">
+            <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
+              {{ item.richiestaTipo | tipoRichiestaToLongText }}
+            </ion-label>
+          </ion-col>
 
-      </ion-item-sliding>
+          <ion-col class="ion-hide-sm-down">
+            <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
+              {{getDati(item)}}
+            </ion-label>
+          </ion-col>
 
+          <ion-col class="ion-hide-sm-down">
+            <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
+              {{ timeSheetService.get_StatoRichiesta_Approval_text(item) }}
+            </ion-label>
+          </ion-col>
 
-
-
-      <ion-col class="ion-hide-sm-down">
-        <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
-          {{ item.data }}
-        </ion-label>
-      </ion-col>
-
-      <ion-col class="ion-hide-sm-down">
-        <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
-          {{ getDataA(item) }}
-        </ion-label>
-      </ion-col>
-
-      <ion-col class="ion-hide-sm-down">
-        <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
-          {{ item.richiestaTipo | tipoRichiestaToLongText }}
-        </ion-label>
-      </ion-col>
-
-      <ion-col class="ion-hide-sm-down">
-        <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
-          {{getDati(item)}}
-        </ion-label>
-      </ion-col>
-
-      <ion-col class="ion-hide-sm-down">
-        <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
-          {{ timeSheetService.get_StatoRichiesta_Approval_text(item) }}
-        </ion-label>
-      </ion-col>
-
-      <ion-col class="ion-hide-sm-down">
-        <ion-button size="small" *ngIf="timeSheetService.Dip_GG_Richiesta_User_Can_Delete(item)" shape="round" (click)="btnDelete.event(item)" color="{{btnDelete.color}}">
-          <ion-icon name="{{btnDelete.image}}"></ion-icon>
-          &nbsp;{{btnDelete.text}}
-        </ion-button>
-      </ion-col>
+          <ion-col class="ion-hide-sm-down">
+            <ion-button size="small" *ngIf="timeSheetService.Dip_GG_Richiesta_User_Can_Delete(item)" shape="round" (click)="btnDelete.event(item)" color="{{btnDelete.color}}">
+              <ion-icon name="{{btnDelete.image}}"></ion-icon>
+              &nbsp;{{btnDelete.text}}
+            </ion-button>
+          </ion-col>
 
 
 
 
-    </ion-row>
+        </ion-row>
 
 
-  </ion-grid>
+      </ion-grid>
 
 
-
+    </ion-card-content>
+  </ion-card>
 
 
 </ion-content>

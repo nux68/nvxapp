@@ -6,50 +6,54 @@
 
 <ion-content [fullscreen]="true">
 
+  <ion-card>
+    <ion-card-content>
 
 
-  <ion-grid *ngIf="az_SediRepartoList!=null">
 
-    <ion-row *ngFor="let item of getAll() | genericFilter: 'descrizione' : searchText" class="nvx-ion-row-4table">
+      <ion-grid *ngIf="az_SediRepartoList!=null">
 
-      <ion-item-sliding class="ion-hide-sm-up">
-        <ion-item>
-          <ion-icon [name]="isAdmin(item) ? 'server-outline' : 'server-outline'"></ion-icon>
-          <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
-            {{ item.descrizione }}
-          </ion-label>
-        </ion-item>
+        <ion-row *ngFor="let item of getAll() | genericFilter: 'descrizione' : searchText" class="nvx-ion-row-4table">
 
-        <ion-item-options side="end">
-          <ion-item-option color="{{btnEdit.color}}" (click)="btnEdit.event(item)">
-            <ion-icon slot="start" name="{{btnEdit.image}}"></ion-icon>
-            Modifica
-          </ion-item-option>
+          <ion-item-sliding class="ion-hide-sm-up">
+            <ion-item>
+              <ion-icon [name]="isAdmin(item) ? 'server-outline' : 'server-outline'"></ion-icon>
+              <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
+                {{ item.descrizione }}
+              </ion-label>
+            </ion-item>
 
-        </ion-item-options>
-      </ion-item-sliding>
+            <ion-item-options side="end">
+              <ion-item-option color="{{btnEdit.color}}" (click)="btnEdit.event(item)">
+                <ion-icon slot="start" name="{{btnEdit.image}}"></ion-icon>
+                Modifica
+              </ion-item-option>
 
-
-      <ion-col size="10" class="ion-hide-sm-down">
-        <ion-icon [name]="isAdmin(item) ? 'server-outline' : 'server-outline'"></ion-icon>
-        <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
-          {{ item.descrizione }}
-        </ion-label>
-      </ion-col>
-      <ion-col size="2" class="ion-hide-sm-down">
-        <ion-button size="small" shape="round" (click)="btnEdit.event(item)" color="{{btnEdit.color}}">
-          <ion-icon name="{{btnEdit.image}}"></ion-icon>
-          &nbsp;{{btnEdit.text}}
-        </ion-button>
-      </ion-col>
+            </ion-item-options>
+          </ion-item-sliding>
 
 
-    </ion-row>
+          <ion-col size="10" class="ion-hide-sm-down">
+            <ion-icon [name]="isAdmin(item) ? 'server-outline' : 'server-outline'"></ion-icon>
+            <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
+              {{ item.descrizione }}
+            </ion-label>
+          </ion-col>
+          <ion-col size="2" class="ion-hide-sm-down">
+            <ion-button size="small" shape="round" (click)="btnEdit.event(item)" color="{{btnEdit.color}}">
+              <ion-icon name="{{btnEdit.image}}"></ion-icon>
+              &nbsp;{{btnEdit.text}}
+            </ion-button>
+          </ion-col>
 
 
-  </ion-grid>
+        </ion-row>
 
 
+      </ion-grid>
+
+    </ion-card-content>
+  </ion-card>
 
 
 
