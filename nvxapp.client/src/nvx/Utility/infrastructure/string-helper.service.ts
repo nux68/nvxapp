@@ -53,6 +53,22 @@ export class StringHelperService {
     return localTime; // Ritorna il risultato formattato
   }
 
+  DateString_ddMMyyyy_To_ISOString(dateString: string): string {
+    // Esempio input: '07/06/2025'
+    const [day, month, year] = dateString.split('/').map(Number);
+
+    // Crea la data alle 00:00 locali
+    const customDate = new Date(year, month - 1, day, 0, 0);
+
+    // Calcola l'offset locale
+    const localOffset = customDate.getTimezoneOffset() * 60000;
+
+    // Adatta l'orario al fuso orario locale e restituisce la stringa ISO fino ai minuti
+    const localTime = new Date(customDate.getTime() - localOffset).toISOString().slice(0, 16);
+
+    return localTime;
+  }
+
   Date_To_S_ddmmyyyy_hhmm(date: Date): string {
     const day = date.getDate().toString().padStart(2, '0');
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
