@@ -390,6 +390,24 @@ namespace nvxapp.server.data.Infrastructure
                 .HasIndex(t => new { t.IdAz_SubCommessa, t.IdAz_SediReparto })
                 .IsUnique();
 
+            /////////////
+            /* Az_SubCommessaUser */
+            modelBuilder.Entity<Az_SubCommessaUser>()
+                .HasOne(t => t.Az_SubCommessaNavigation)
+                .WithMany(t => t.Az_SubCommessaUser)
+                .HasForeignKey(t => t.IdAz_SubCommessa)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            //modelBuilder.Entity<Az_SubCommessaUser>()
+            //    .HasOne(t => t.AspNetUsersNavigation)
+            //    .WithMany(t => t.Az_SubCommessaUser)
+            //    .HasForeignKey(t => t.IdAz_SediReparto)
+            //    .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Az_SubCommessaUser>()
+                .HasIndex(t => new { t.IdAz_SubCommessa, t.IdAspNetUsers })
+                .IsUnique();
+
         }
 
 

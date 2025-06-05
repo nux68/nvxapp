@@ -19,5 +19,6 @@ namespace nvxapp.server.data.Entities.Tenant
 
         public ICollection<Az_SubCommessaAttivita>? Az_SubCommessaAttivita { get; set; }
         public ICollection<Az_SubCommessaSediReparto>? Az_SubCommessaSediReparto { get; set; }
+        public ICollection<Az_SubCommessaUser>? Az_SubCommessaUser { get; set; }
     }
 }
