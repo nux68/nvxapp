@@ -34,9 +34,9 @@ namespace nvxapp.server.data.Infrastructure
         public virtual DbSet<Dip_GG_NotaSpesa> Dip_GG_NotaSpese { get; set; }
         public virtual DbSet<Dip_GG_Richiesta> Dip_GG_Richieste { get; set; }
         public virtual DbSet<Dip_GG_Causali> Dip_GG_Causali { get; set; }
-        
-        
-        
+
+
+
 
         public virtual DbSet<Par_Causali> Par_Causali { get; set; }
         public virtual DbSet<Par_Giustificativi> Par_Giustificativi { get; set; }
@@ -47,7 +47,7 @@ namespace nvxapp.server.data.Infrastructure
         public virtual DbSet<Par_OrarioIntervalloHH> Par_ProfiloOrarioIntervalloHH { get; set; }
 
         public virtual DbSet<My_Template1> My_template1 { get; set; }
-
+        public virtual DbSet<Az_SubCommessaSediReparto> Az_SubCommessaSediReparto { get; set; }
 
 
         private void Define_Table_DbContext_GestionePresenze(ModelBuilder modelBuilder)
@@ -67,9 +67,9 @@ namespace nvxapp.server.data.Infrastructure
 
             /* Dip_RapportoLavoro */
             modelBuilder.Entity<Dip_RapportoLavoro>()
-                .HasOne(t_padre=> t_padre.Dip_AnagraficaNavigation)
-                .WithMany(t_figlio=> t_figlio.Dip_RapportoLavoro)
-                .HasForeignKey(key_esterna=> key_esterna.IdDip_Anagrafica)
+                .HasOne(t_padre => t_padre.Dip_AnagraficaNavigation)
+                .WithMany(t_figlio => t_figlio.Dip_RapportoLavoro)
+                .HasForeignKey(key_esterna => key_esterna.IdDip_Anagrafica)
                 .OnDelete(DeleteBehavior.Cascade);
 
             /* Dip_ProfiloOrario */
@@ -140,7 +140,7 @@ namespace nvxapp.server.data.Infrastructure
                 .WithMany(t_figlio => t_figlio.Dip_GG_NotaSpesa)
                 .HasForeignKey(key_esterna => key_esterna.IdDip_GG_Richiesta)
                 .OnDelete(DeleteBehavior.Cascade);
-         
+
 
             /* Dip_GG_Timbratura */
             modelBuilder.Entity<Dip_GG_Timbratura>()
@@ -207,7 +207,7 @@ namespace nvxapp.server.data.Infrastructure
             modelBuilder.Entity<Az_SediRepartoAttivita>()
                 .HasIndex(t => new { t.IdAz_SediReparto, t.IdAz_SediAttivita })
                 .IsUnique();
-            
+
             /* Az_SediRepartoUser */
             modelBuilder.Entity<Az_SediRepartoUser>()
                 .HasOne(t_padre => t_padre.Az_SediRepartoNavigation)
@@ -215,7 +215,7 @@ namespace nvxapp.server.data.Infrastructure
                 .HasForeignKey(key_esterna => key_esterna.IdAz_SediReparto)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            
+
 
 
             /* Az_RepartoUser */
@@ -373,7 +373,22 @@ namespace nvxapp.server.data.Infrastructure
                 .HasForeignKey(key_esterna => key_esterna.IdPar_Competenza)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            /* Az_SubCommessaSediReparto */
+            modelBuilder.Entity<Az_SubCommessaSediReparto>()
+                .HasOne(t => t.Az_SubCommessaNavigation)
+                .WithMany(t => t.Az_SubCommessaSediReparto)
+                .HasForeignKey(t => t.IdAz_SubCommessa)
+                .OnDelete(DeleteBehavior.Cascade);
 
+            modelBuilder.Entity<Az_SubCommessaSediReparto>()
+                .HasOne(t => t.Az_SediRepartoNavigation)
+                .WithMany(t => t.Az_SubCommessaSediReparto)
+                .HasForeignKey(t => t.IdAz_SediReparto)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Az_SubCommessaSediReparto>()
+                .HasIndex(t => new { t.IdAz_SubCommessa, t.IdAz_SediReparto })
+                .IsUnique();
 
         }
 

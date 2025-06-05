@@ -1,4 +1,5 @@
 using nvxapp.server.data.Entities.Public;
+using nvxapp.server.data.Entities.Tenant.GestionePresenze;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -17,5 +18,6 @@ namespace nvxapp.server.data.Entities.Tenant
         public Boolean Default { get; set; }
 
         public ICollection<Az_SubCommessaAttivita>? Az_SubCommessaAttivita { get; set; }
+        public ICollection<Az_SubCommessaSediReparto>? Az_SubCommessaSediReparto { get; set; }
     }
 }
