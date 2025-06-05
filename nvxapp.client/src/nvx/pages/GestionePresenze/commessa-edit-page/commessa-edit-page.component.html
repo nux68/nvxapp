@@ -9,41 +9,104 @@
     <ion-card-content>
 
       <form [formGroup]="_editForm">
-        <ion-item>
-          <ion-label position="floating">Descrizione</ion-label>
-          <ion-input type="text" formControlName="descrizione"></ion-input>
-        </ion-item>
-        <ion-note color="danger" *ngIf="_editForm.get('descrizione')?.hasError('required') && _editForm.get('descrizione')?.touched">
-          Descrizione è obbligatorio.
-        </ion-note>
-        <ion-note color="danger" *ngIf="_editForm.get('descrizione')?.hasError('maxlength') && _editForm.get('descrizione')?.touched">
-          Descrizione non può superare i 50 caratteri.
-        </ion-note>
 
-        <!-- Combo per selezione cliente -->
-        <ion-item>
-          <ion-label position="floating">Cliente</ion-label>
-          <ion-select formControlName="idAz_Cliente" placeholder="Seleziona cliente">
-            <ion-select-option *ngFor="let cliente of _az_ClienteModelList" [value]="cliente.id">
-              {{ cliente.descrizione }}
-            </ion-select-option>
-          </ion-select>
-        </ion-item>
-        <ion-note color="danger" *ngIf="_editForm.get('idAz_Cliente')?.hasError('required') && _editForm.get('idAz_Cliente')?.touched">
-          Cliente è obbligatorio.
-        </ion-note>
 
-        <!-- Campo Data -->
-        <ion-item>
-          <ion-label position="stacked" style="margin-bottom:13px;">Data inizio</ion-label>
-          <ion-datetime-button datetime="startDatetime"></ion-datetime-button>
-        </ion-item>
+        <ion-segment (ionChange)="segmentChanged($event)" [value]="currSection">
+          <ion-segment-button value="first" content-id="first">
+            <ion-label>Generale</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="second" content-id="second">
+            <ion-label>Reparti collegati</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="third" content-id="third">
+            <ion-label>Utenti collegati</ion-label>
+          </ion-segment-button>
+        </ion-segment>
 
-        <!-- Campo DataA -->
-        <ion-item>
-          <ion-label position="stacked" style="margin-bottom:13px;">Data fine</ion-label>
-          <ion-datetime-button datetime="endDatetime"></ion-datetime-button>
-        </ion-item>
+        <div [hidden]="currSection!='first'">
+          <br />
+          <ion-item>
+            <ion-label position="floating">Descrizione</ion-label>
+            <ion-input type="text" formControlName="descrizione"></ion-input>
+          </ion-item>
+          <ion-note color="danger" *ngIf="_editForm.get('descrizione')?.hasError('required') && _editForm.get('descrizione')?.touched">
+            Descrizione è obbligatorio.
+          </ion-note>
+          <ion-note color="danger" *ngIf="_editForm.get('descrizione')?.hasError('maxlength') && _editForm.get('descrizione')?.touched">
+            Descrizione non può superare i 50 caratteri.
+          </ion-note>
+
+          <!-- Combo per selezione cliente -->
+          <ion-item>
+            <ion-label position="floating">Cliente</ion-label>
+            <ion-select formControlName="idAz_Cliente" placeholder="Seleziona cliente">
+              <ion-select-option *ngFor="let cliente of _az_ClienteModelList" [value]="cliente.id">
+                {{ cliente.descrizione }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-note color="danger" *ngIf="_editForm.get('idAz_Cliente')?.hasError('required') && _editForm.get('idAz_Cliente')?.touched">
+            Cliente è obbligatorio.
+          </ion-note>
+
+          <!-- Campo Data -->
+          <ion-item>
+            <ion-label position="stacked" style="margin-bottom:13px;">Data inizio</ion-label>
+            <ion-datetime-button datetime="startDatetime"></ion-datetime-button>
+          </ion-item>
+
+          <!-- Campo DataA -->
+          <ion-item>
+            <ion-label position="stacked" style="margin-bottom:13px;">Data fine</ion-label>
+            <ion-datetime-button datetime="endDatetime"></ion-datetime-button>
+          </ion-item>
+
+        </div>
+        <div [hidden]="currSection!='second'">
+          <br />
+        </div>
+        <div [hidden]="currSection!='third'">
+          <br />
+          <div *ngIf="dip_Anagrafica!=null">
+
+            <!-- Mobile View -->
+            <ion-item-sliding *ngFor="let item of getUser() | genericFilter: 'descrizione' : searchText" class="ion-hide-sm-up">
+              <ion-item>
+                <ion-checkbox slot="start" [checked]="isSelectedUser(item.id)" (ionChange)="toggleSelectionUser(item.id, $event)"></ion-checkbox>
+                <ion-label>
+                  {{ item.id | idAspNetUsersToCognome }}  {{ item.id | idAspNetUsersToNome }}
+                </ion-label>
+              </ion-item>
+            </ion-item-sliding>
+
+            <!-- Desktop View -->
+            <ion-grid class="ion-hide-sm-down">
+              <ion-row>
+                <ion-col size="1">User</ion-col>
+                <ion-col>Cognome</ion-col>
+                <ion-col>Nome</ion-col>
+              </ion-row>
+              <ion-row *ngFor="let item of getUser() | genericFilter: 'descrizione' : searchText" class="nvx-ion-row-4table">
+                <ion-col size="1">
+                  <ion-checkbox [checked]="isSelectedUser(item.id)" (ionChange)="toggleSelectionUser(item.id, $event)"></ion-checkbox>
+                </ion-col>
+                <ion-col>
+                  <ion-label>
+                    {{ item.id | idAspNetUsersToCognome }}
+                  </ion-label>
+                </ion-col>
+                <ion-col>
+                  <ion-label>
+                    {{ item.id | idAspNetUsersToNome }}
+                  </ion-label>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+
+          </div>
+        </div>
+
+
 
       </form>
 

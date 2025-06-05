@@ -1,4 +1,6 @@
+import { CheckObjOn_Id_Text } from "../../../ModelsBase/check-obj";
 import { ModelResult } from "../../../ModelsBase/model-result";
+import { CheckObjOn_Id_Text_4ApprovalZorder } from "../../Az_SediReparto/Models/az-sedi-reparto-model";
 
 
 export class Az_CommessaModel {
@@ -21,13 +23,19 @@ export class Az_CommessaGetInModel {
 }
 export class Az_CommessaGetOutModel extends ModelResult {
   public az_Commessa!: Az_CommessaModel;
+  public selected_User: CheckObjOn_Id_Text[];
+  public selected_Az_SediReparto: CheckObjOn_Id_Text[];
 }
 
 export class Az_CommessaPutInModel {
   public az_Commessa!: Az_CommessaModel;
+  public selected_User: CheckObjOn_Id_Text[];
+  public selected_Az_SediReparto: CheckObjOn_Id_Text[];
 }
 export class Az_CommessaPutOutModel extends ModelResult {
   az_Commessa!: Az_CommessaModel;
+  public selected_User: CheckObjOn_Id_Text[];
+  public selected_Az_SediReparto: CheckObjOn_Id_Text[];
 }
 
 export class Az_CommessaDeleteInModel {

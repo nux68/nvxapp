@@ -17,6 +17,8 @@ import { DipAnagraficaService } from '../ClientServer-Service/GestionePresenze/D
 import { AzCfgService } from '../ClientServer-Service/GestionePresenze/Az_Cfg/az-cfg.service';
 import { Az_Cfg_Get_InModel, Az_Cfg_GetAll_InModel, Az_CfgModel } from '../ClientServer-Service/GestionePresenze/Az_Cfg/Models/az-cfg-model';
 import { RoleCode } from '../ClientServer-Service/Infrastructure/Account/Models/user-roles-model';
+import { Az_SediReparto_GetAll_InModel, Az_SediRepartoModel } from '../ClientServer-Service/GestionePresenze/Az_SediReparto/Models/az-sedi-reparto-model';
+import { AzSediRepartoService } from '../ClientServer-Service/GestionePresenze/Az_SediReparto/az-sedi-reparto.service';
 
 @Injectable({
   providedIn: 'root'
@@ -34,6 +36,7 @@ export class SharedParameterGestionePresenzeService {
     private azCommessaService: AzCommessaService,
     private azClienteService: AzClienteService,
     private dipAnagraficaService: DipAnagraficaService,
+    private azSediRepartoService: AzSediRepartoService,
     private azCfgService: AzCfgService
   ) { }
 
@@ -142,6 +145,24 @@ export class SharedParameterGestionePresenzeService {
           console.error(`Errore durante il caricamento delle anagrafiche:`, error);
           return of(null);
         })),
+
+      this.azSediRepartoService.GetAll(new GenericRequest<Az_SediReparto_GetAll_InModel>(Az_SediReparto_GetAll_InModel)).pipe(
+        tap((result) => {
+          this.Az_SediReparto = result.data.az_SediReparto;
+          updateProgress(calls);
+        }),
+        retry({
+          count: 20,
+          delay: (error, retryCount) => {
+            console.error(`Errore rilevato, ritento dopo ${retryCount} secondi:`, error);
+            return timer(500);
+          }
+        }),
+        catchError((error) => {
+          console.error(`Errore durante il caricamento dei reparti:`, error);
+          return of(null);
+        })
+      ),
 
       this.azCfgService.Az_CfgGet(new GenericRequest<Az_Cfg_Get_InModel>(Az_Cfg_Get_InModel)).pipe(
         tap((result) => {
@@ -268,4 +289,19 @@ export class SharedParameterGestionePresenzeService {
   public get Az_Cfg$(): Observable<Az_CfgModel | {}> {
     return this._az_CfgSubject.asObservable();
   }
+
+
+  private _az_SediReparto: Az_SediRepartoModel[] | null = [];
+  public get Az_SediReparto(): Az_SediRepartoModel[] | null {
+    return this._az_SediReparto;
+  }
+  public set Az_SediReparto(value: Az_SediRepartoModel[] | null) {
+    this._az_SediReparto = value;
+    this._az_SediRepartoSubject.next(value);
+  }
+  private _az_SediRepartoSubject = new BehaviorSubject<Az_SediRepartoModel[]>([]);
+  public get Az_SediReparto$(): Observable<Az_SediRepartoModel[] | []> {
+    return this._az_SediRepartoSubject.asObservable();
+  }
+
 }

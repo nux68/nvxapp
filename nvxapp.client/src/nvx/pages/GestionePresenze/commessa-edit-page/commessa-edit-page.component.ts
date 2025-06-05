@@ -13,6 +13,9 @@ import { RefresherService } from '../../../Utility/GestionePresenze/refresher.se
 import { Az_ClienteModel } from '../../../ClientServer-Service/GestionePresenze/Az_Cliente/Models/az-cliente-model';
 import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
 import { AzCommessaService } from '../../../ClientServer-Service/GestionePresenze/Az_Commessa/az-commessa.service';
+import { CheckObjOn_Id_Text } from '../../../ClientServer-Service/ModelsBase/check-obj';
+import { Dip_AnagraficaModel } from '../../../ClientServer-Service/GestionePresenze/Dip_Anagrafica/Models/dip-anagrafica-model';
+import { RoleCode } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-roles-model';
 
 @Component({
   selector: 'app-commessa-edit-page',
@@ -25,12 +28,22 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
   public override _editForm: FormGroup;
   public _az_ClienteModelList: Az_ClienteModel[] = [];
 
+  public searchText!: string;
+  public currSection: string = "first";
+
   //date x il backend
   public formattedStartDate: string;
   public formattedEndDate: string;
   //date per i controlli ionic
   public startDate: string;
   public endDate: string;
+
+  ////
+  public dip_Anagrafica: Dip_AnagraficaModel[];
+  selected_Az_SediReparto: CheckObjOn_Id_Text[] = [];
+  selected_User: CheckObjOn_Id_Text[] = [];
+  ////
+
 
   constructor(protected override navCtrl: NavController,
     protected override userInterfaceService: UserInterfaceService,
@@ -62,6 +75,8 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
     this.endDate = this.stringHelperService.DateCurr_To_ISOString();
     this.formattedStartDate = this.stringHelperService.Date_To_S_ddmmyyyy(now);
     this.formattedEndDate = this.stringHelperService.Date_To_S_ddmmyyyy(now);
+    //
+    this.dip_Anagrafica = this.sharedParameterGestionePresenzeService.Dip_Anagrafica;
 
   }
 
@@ -79,7 +94,10 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
           this.startDate = this.stringHelperService.DateString_ddMMyyyy_To_ISOString(res.data.az_Commessa.data);
           this.endDate = this.stringHelperService.DateString_ddMMyyyy_To_ISOString(res.data.az_Commessa.dataA); 
           this.formattedStartDate = res.data.az_Commessa.data; 
-          this.formattedEndDate = res.data.az_Commessa.dataA; 
+          this.formattedEndDate = res.data.az_Commessa.dataA;
+          //
+          this.selected_Az_SediReparto = res.data.selected_Az_SediReparto;
+          this.selected_User = res.data.selected_User;
 
           return res.data.az_Commessa;
 
@@ -91,6 +109,10 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
       );
     } else {
       return new Observable<Az_CommessaModel | null>((subscriber) => {
+
+        this.selected_Az_SediReparto = [];
+        this.selected_User = [];
+        ///
         subscriber.next(new Az_CommessaModel());
         subscriber.complete();
       });
@@ -104,7 +126,9 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
     //la classe base non gestisce questo tipo di dato DEVO assegnare i valori a manina
     request.data.az_Commessa.data = this.formattedStartDate;
     request.data.az_Commessa.dataA = this.formattedEndDate;
-
+    //
+    request.data.selected_Az_SediReparto = this.selected_Az_SediReparto;
+    request.data.selected_User = this.selected_User;
 
     return this.azCommessaService.Az_CommessaPut(request).pipe(
       map(() => {
@@ -118,9 +142,6 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
     );
   }
 
-
-  
-  
 
   updateStartDate(event: any) {
     const selectedDate = new Date(event.detail.value);
@@ -157,5 +178,52 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
     // Ritorna -1 se d1 < d2, 0 se uguali, 1 se d1 > d2
     return d1 < d2 ? -1 : d1 > d2 ? 1 : 0;
   }
+
+  segmentChanged(event: any) {
+    console.log('Segment cambiato:', event.detail.value);
+    this.currSection = event.detail.value;
+  }
+
+  /////
+
+
+  toggleSelectionUser(itemId: string, event: any) {
+
+
+
+    const existingEntry = this.selected_User.find(entry => entry.id === itemId);
+
+    if (existingEntry) {
+      // Se l'elemento esiste, aggiorna solo lo stato selected
+      existingEntry.checked = event.detail.checked;
+    } else {
+      // Se l'elemento non è presente, lo aggiunge alla lista
+      this.selected_User.push({ id: itemId, checked: event.detail.checked });
+    }
+
+  }
+
+  isSelectedUser(itemId: string): boolean {
+
+    return this.selected_User.find(entry => entry.id === itemId)?.checked ?? false;
+
+  }
+
+  public getUser(): CheckObjOn_Id_Text[] {
+
+    let retVal: CheckObjOn_Id_Text[] = [];
+
+    this.dip_Anagrafica.filter(dip =>
+      dip.roleCode.includes(RoleCode.User)
+    ).forEach(item => {
+      let appo = { id: item.idAspNetUsers, checked: false, enabledToApproval: false, approvalZOrder: 0 };
+      retVal.push(appo);
+    });
+
+
+    return retVal;
+  }
+
+
 
 }

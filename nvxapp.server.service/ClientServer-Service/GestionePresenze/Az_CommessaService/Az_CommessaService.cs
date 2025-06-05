@@ -13,9 +13,6 @@ using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_CommessaSer
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.ServerModels;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_CommessaService
 {
@@ -63,15 +60,27 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_Commess
             return await ExecuteAction(model, async () =>
             {
                 Az_CommessaGetOutModel retVal = new Az_CommessaGetOutModel();
-                var commessa = await _az_CommessaRepository.FindByIdAsync(model.Data.Id);
-                if (commessa != null)
+
+                int IdCompany;
+                int.TryParse(this.CurrentCompany, out IdCompany);
+                Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg company_DATA = await _gestionePresenzeUserUtility.Get_AzAna_AzSedi_AzReparto_Az_Cfg(IdCompany, true);
+                if (company_DATA != null && company_DATA.az_Anagrafica != null)
                 {
-                    retVal.Az_Commessa = _mapper.Map<Az_CommessaModel>(commessa);
+
+                    //ApplicationRole? userRole = _aspNetRolesRepository.GetAll().Where(x => x.Code == RoleCode.User).FirstOrDefault();
+
+                    var commessa = await _az_CommessaRepository.FindByIdAsync(model.Data.Id);
+                    if (commessa != null)
+                    {
+                        retVal.Az_Commessa = _mapper.Map<Az_CommessaModel>(commessa);
+                    }
+                    else
+                    {
+                        retVal.Az_Commessa = new Az_CommessaModel();
+                    }
                 }
-                else
-                {
-                    retVal.Az_Commessa = new Az_CommessaModel();
-                }
+
+
                 await Task.Delay(DelayAsyncMethod);
                 return retVal;
             }, isSubProcess);

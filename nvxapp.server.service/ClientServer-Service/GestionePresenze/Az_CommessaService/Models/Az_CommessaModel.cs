@@ -1,3 +1,6 @@
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRepartoService.Models;
+using nvxapp.server.service.ClientServer_Service.ModelsBase;
+
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_CommessaService.Models
 {
     public class Az_CommessaModel
@@ -31,16 +34,22 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_Commess
     public class Az_CommessaGetOutModel
     {
         public Az_CommessaModel Az_Commessa { get; set; } = new Az_CommessaModel();
+        public List<CheckObjOn_Id_Text> Selected_User { get; set; } = new List<CheckObjOn_Id_Text>();
+        public List<CheckObjOn_Id_Text> Selected_Az_SediReparto { get; set; } = new List<CheckObjOn_Id_Text>();
     }
 
     public class Az_CommessaPutInModel
     {
         public Az_CommessaModel Az_Commessa { get; set; } = new Az_CommessaModel();
+        public List<CheckObjOn_Id_Text> Selected_User { get; set; } = new List<CheckObjOn_Id_Text>();
+        public List<CheckObjOn_Id_Text> Selected_Az_SediReparto { get; set; } = new List<CheckObjOn_Id_Text>();
     }
 
     public class Az_CommessaPutOutModel
     {
         public Az_CommessaModel Az_Commessa { get; set; } = new Az_CommessaModel();
+        public List<CheckObjOn_Id_Text> Selected_User { get; set; } = new List<CheckObjOn_Id_Text>();
+        public List<CheckObjOn_Id_Text> Selected_Az_SediReparto { get; set; } = new List<CheckObjOn_Id_Text>();
     }
 
     public class Az_CommessaDeleteInModel

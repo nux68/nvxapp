@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using nvxapp.server.data.Entities.Tenant;
+using nvxapp.server.data.Entities.Tenant.GestionePresenze;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
 using nvxapp.server.service.Interfaces;
 
@@ -27,7 +28,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
         private readonly IAz_SediAttivitaRepository _az_SediAttivitaRepository;
         private readonly IAz_SediRepartoAttivitaRepository _az_SediRepartoAttivitaRepository;
 
-        
+        private readonly IAz_SubCommessaSediRepartoRepository _az_SubCommessaSediRepartoRepository;
 
 
 
@@ -46,7 +47,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                                            IAz_SubCommessaRepository az_SubCommessaRepository,
                                            IAz_SubCommessaAttivitaRepository az_SubCommessaAttivitaRepository,
                                            IAz_SediAttivitaRepository az_SediAttivitaRepository,
-                                           IAz_SediRepartoAttivitaRepository az_SediRepartoAttivitaRepository
+                                           IAz_SediRepartoAttivitaRepository az_SediRepartoAttivitaRepository,
+                                           IAz_SubCommessaSediRepartoRepository az_SubCommessaSediRepartoRepository
                                            )
         {
             _dip_AnagraficaRepository = dip_AnagraficaRepository;
@@ -66,6 +68,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
             _az_SubCommessaAttivitaRepository = az_SubCommessaAttivitaRepository;
             _az_SediAttivitaRepository = az_SediAttivitaRepository;
             _az_SediRepartoAttivitaRepository =az_SediRepartoAttivitaRepository;
+            _az_SubCommessaSediRepartoRepository = az_SubCommessaSediRepartoRepository;
         }
 
         public async Task<User_DATA_COMB_DipAna_DipRapp> Get_DipAna_DipRapp(string IdAspNetUsers, bool InitIfNotExsist)
@@ -176,18 +179,18 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
             }
 
             //reparto
-            company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Reparto = await _az_RepartoRepository.FindAll(x => x.IdAz_Sedi == company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Sedi.Id).FirstOrDefaultAsync();
-            if (company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Reparto == null)
+            company_DATA_COMB_AzAna_AzSedi_AzReparto.az_SediReparto = await _az_RepartoRepository.FindAll(x => x.IdAz_Sedi == company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Sedi.Id).FirstOrDefaultAsync();
+            if (company_DATA_COMB_AzAna_AzSedi_AzReparto.az_SediReparto == null)
             {
                 if (InitIfNotExsist)
                 {
-                    company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Reparto = new Az_SediReparto
+                    company_DATA_COMB_AzAna_AzSedi_AzReparto.az_SediReparto = new Az_SediReparto
                     {
                         IdAz_Sedi = company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Sedi.Id,
                         Descrizione = "Default",
                         Default = true
                     };
-                    company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Reparto = await _az_RepartoRepository.UpsertAsync(company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Reparto);
+                    company_DATA_COMB_AzAna_AzSedi_AzReparto.az_SediReparto = await _az_RepartoRepository.UpsertAsync(company_DATA_COMB_AzAna_AzSedi_AzReparto.az_SediReparto);
                 }
                 else
                 {
@@ -249,7 +252,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                         IdAz_Cliente = az_Cliente.Id
                     });
 
-                    if (az_Cliente != null && az_Commessa != null && company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Sedi != null && company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Reparto != null)
+                    if (az_Cliente != null && az_Commessa != null && company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Sedi != null && company_DATA_COMB_AzAna_AzSedi_AzReparto.az_SediReparto != null)
                     {
                         var az_SediAttivita = await _az_SediAttivitaRepository.UpsertAsync(new Az_SediAttivita()
                         {
@@ -262,7 +265,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                             var az_SediRepartoAttivita = await _az_SediRepartoAttivitaRepository.UpsertAsync(new Az_SediRepartoAttivita()
                             {
                                  IdAz_SediAttivita = az_SediAttivita.Id,
-                                 IdAz_SediReparto = company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Reparto.Id
+                                 IdAz_SediReparto = company_DATA_COMB_AzAna_AzSedi_AzReparto.az_SediReparto.Id
                             });
 
 
@@ -281,6 +284,13 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                                     IdAz_SediAttivita = az_SediAttivita.Id,
                                     Default = true,
                                 });
+
+                                var az_SubCommessaSediReparto = await _az_SubCommessaSediRepartoRepository.UpsertAsync(new Az_SubCommessaSediReparto()
+                                {
+                                    IdAz_SediReparto = company_DATA_COMB_AzAna_AzSedi_AzReparto.az_SediReparto.Id,
+                                    IdAz_SubCommessa = az_SubCommessaAttivita.Id
+                                });
+
                             }
 
 
@@ -305,7 +315,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
     {
         public Az_Anagrafica? az_Anagrafica;
         public Az_Sedi? az_Sedi;
-        public Az_SediReparto? az_Reparto;
+        public Az_SediReparto? az_SediReparto;
         public Az_Cfg? az_Cfg;
     }
 
