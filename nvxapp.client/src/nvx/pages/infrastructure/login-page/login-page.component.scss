@@ -45,11 +45,20 @@ ion-menu-button {
   text-align: center;
 }
 
-
 .login-content-center {
   display: flex;
   flex-direction: column;
-  justify-content: center; /* centra verticalmente */
-  align-items: center; /* centra orizzontalmente */
-  min-height: 100vh; /* assicura che occupi tutta l'altezza */
+  justify-content: center;
+  align-items: stretch;
+  height: 100%;
+  min-height: 100%;
+  width: 100%;
+}
+
+.login-content-center ion-card {
+  width: calc(100% - 20px); /* 10px margine a destra e sinistra */
+  margin-left: 10px;
+  margin-right: 10px;
+  box-sizing: border-box;
+  align-self: center;
 }
