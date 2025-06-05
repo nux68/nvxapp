@@ -5,9 +5,11 @@ using System.ComponentModel.DataAnnotations;
 
 namespace nvxapp.server.data.Entities.Public
 {
-    //public partial class ApplicationUser
-    //{
-    //    // Aggiungi la proprietà di navigazione per Az_SubCommessaUser
-    //    public ICollection<Az_SubCommessaUser>? Az_SubCommessaUser { get; set; }
-    //}
+    public partial class ApplicationUser
+    {
+        
+        public ICollection<Az_SubCommessaUser>? Az_SubCommessaUser { get; set; }
+
+        public ICollection<Az_SediRepartoUser>? Az_SediRepartoUser { get; set; }
+    }
 }

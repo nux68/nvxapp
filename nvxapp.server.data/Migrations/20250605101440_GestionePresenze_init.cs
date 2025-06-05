@@ -965,6 +965,70 @@ namespace nvxapp.server.data.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Az_SubCommessaSediReparto",
+                schema: "public",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    IdAz_SubCommessa = table.Column<int>(type: "integer", nullable: false),
+                    IdAz_SediReparto = table.Column<int>(type: "integer", nullable: false),
+                    ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Az_SubCommessaSediReparto", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Az_SubCommessaSediReparto_Az_SediReparto_IdAz_SediReparto",
+                        column: x => x.IdAz_SediReparto,
+                        principalSchema: "public",
+                        principalTable: "Az_SediReparto",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Az_SubCommessaSediReparto_Az_SubCommessa_IdAz_SubCommessa",
+                        column: x => x.IdAz_SubCommessa,
+                        principalSchema: "public",
+                        principalTable: "Az_SubCommessa",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Az_SubCommessaUser",
+                schema: "public",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    IdAz_SubCommessa = table.Column<int>(type: "integer", nullable: false),
+                    IdAspNetUsers = table.Column<string>(type: "text", nullable: false),
+                    ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Az_SubCommessaUser", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Az_SubCommessaUser_AspNetUsers_IdAspNetUsers",
+                        column: x => x.IdAspNetUsers,
+                        principalSchema: "public",
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Az_SubCommessaUser_Az_SubCommessa_IdAz_SubCommessa",
+                        column: x => x.IdAz_SubCommessa,
+                        principalSchema: "public",
+                        principalTable: "Az_SubCommessa",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Az_Anagrafica_IdCompany",
                 schema: "public",
@@ -1047,10 +1111,11 @@ namespace nvxapp.server.data.Migrations
                 column: "IdAspNetUsers");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Az_SediRepartoUser_IdAz_SediReparto",
+                name: "IX_Az_SediRepartoUser_IdAz_SediReparto_IdAspNetUsers",
                 schema: "public",
                 table: "Az_SediRepartoUser",
-                column: "IdAz_SediReparto");
+                columns: new[] { "IdAz_SediReparto", "IdAspNetUsers" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Az_SubCommessa_IdAz_Commessa",
@@ -1069,6 +1134,32 @@ namespace nvxapp.server.data.Migrations
                 schema: "public",
                 table: "Az_SubCommessaAttivita",
                 column: "IdAz_SubCommessa");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Az_SubCommessaSediReparto_IdAz_SediReparto",
+                schema: "public",
+                table: "Az_SubCommessaSediReparto",
+                column: "IdAz_SediReparto");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Az_SubCommessaSediReparto_IdAz_SubCommessa_IdAz_SediReparto",
+                schema: "public",
+                table: "Az_SubCommessaSediReparto",
+                columns: new[] { "IdAz_SubCommessa", "IdAz_SediReparto" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Az_SubCommessaUser_IdAspNetUsers",
+                schema: "public",
+                table: "Az_SubCommessaUser",
+                column: "IdAspNetUsers");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Az_SubCommessaUser_IdAz_SubCommessa_IdAspNetUsers",
+                schema: "public",
+                table: "Az_SubCommessaUser",
+                columns: new[] { "IdAz_SubCommessa", "IdAspNetUsers" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Dip_Anagrafica_IdAspNetUsers",
@@ -1260,6 +1351,14 @@ namespace nvxapp.server.data.Migrations
                 schema: "public");
 
             migrationBuilder.DropTable(
+                name: "Az_SubCommessaSediReparto",
+                schema: "public");
+
+            migrationBuilder.DropTable(
+                name: "Az_SubCommessaUser",
+                schema: "public");
+
+            migrationBuilder.DropTable(
                 name: "Dip_Competenza",
                 schema: "public");
 
@@ -1304,11 +1403,11 @@ namespace nvxapp.server.data.Migrations
                 schema: "public");
 
             migrationBuilder.DropTable(
-                name: "Az_SediReparto",
+                name: "Az_SediAttivita",
                 schema: "public");
 
             migrationBuilder.DropTable(
-                name: "Az_SediAttivita",
+                name: "Az_SediReparto",
                 schema: "public");
 
             migrationBuilder.DropTable(
@@ -1340,11 +1439,11 @@ namespace nvxapp.server.data.Migrations
                 schema: "public");
 
             migrationBuilder.DropTable(
-                name: "Az_Sedi",
+                name: "Par_Attivita",
                 schema: "public");
 
             migrationBuilder.DropTable(
-                name: "Par_Attivita",
+                name: "Az_Sedi",
                 schema: "public");
 
             migrationBuilder.DropTable(

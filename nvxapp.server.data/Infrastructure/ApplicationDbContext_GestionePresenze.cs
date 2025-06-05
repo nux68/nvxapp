@@ -215,15 +215,15 @@ namespace nvxapp.server.data.Infrastructure
                 .HasForeignKey(key_esterna => key_esterna.IdAz_SediReparto)
                 .OnDelete(DeleteBehavior.Cascade);
 
-
-
-
-            /* Az_RepartoUser */
             modelBuilder.Entity<Az_SediRepartoUser>()
-                .HasOne(t_padre => t_padre.Az_SediRepartoNavigation)
-                .WithMany(t_figlio => t_figlio.Az_SediRepartoUser)
-                .HasForeignKey(key_esterna => key_esterna.IdAz_SediReparto)
+                .HasOne(t => t.AspNetUsersNavigation)
+                .WithMany(t => t.Az_SediRepartoUser)
+                .HasForeignKey(t => t.IdAspNetUsers)
                 .OnDelete(DeleteBehavior.Cascade);
+            
+            modelBuilder.Entity<Az_SediRepartoUser>()
+                .HasIndex(t => new { t.IdAz_SediReparto, t.IdAspNetUsers })
+                .IsUnique();
 
 
             /* Az_Attivita */
@@ -390,7 +390,7 @@ namespace nvxapp.server.data.Infrastructure
                 .HasIndex(t => new { t.IdAz_SubCommessa, t.IdAz_SediReparto })
                 .IsUnique();
 
-            /////////////
+            
             /* Az_SubCommessaUser */
             modelBuilder.Entity<Az_SubCommessaUser>()
                 .HasOne(t => t.Az_SubCommessaNavigation)
@@ -398,11 +398,11 @@ namespace nvxapp.server.data.Infrastructure
                 .HasForeignKey(t => t.IdAz_SubCommessa)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            //modelBuilder.Entity<Az_SubCommessaUser>()
-            //    .HasOne(t => t.AspNetUsersNavigation)
-            //    .WithMany(t => t.Az_SubCommessaUser)
-            //    .HasForeignKey(t => t.IdAz_SediReparto)
-            //    .OnDelete(DeleteBehavior.Cascade);
+            modelBuilder.Entity<Az_SubCommessaUser>()
+                .HasOne(t => t.AspNetUsersNavigation)
+                .WithMany(t => t.Az_SubCommessaUser)
+                .HasForeignKey(t => t.IdAspNetUsers)
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Az_SubCommessaUser>()
                 .HasIndex(t => new { t.IdAz_SubCommessa, t.IdAspNetUsers })

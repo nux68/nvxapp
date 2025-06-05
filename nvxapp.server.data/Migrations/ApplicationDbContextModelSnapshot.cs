@@ -805,7 +805,8 @@ namespace nvxapp.server.data.Migrations
 
                     b.HasIndex("IdAspNetUsers");
 
-                    b.HasIndex("IdAz_SediReparto");
+                    b.HasIndex("IdAz_SediReparto", "IdAspNetUsers")
+                        .IsUnique();
 
                     b.ToTable("Az_SediRepartoUser", "public");
                 });
@@ -1263,6 +1264,75 @@ namespace nvxapp.server.data.Migrations
                     b.HasIndex("IdDip_Anagrafica");
 
                     b.ToTable("Dip_RapportoLavoro", "public");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.GestionePresenze.Az_SubCommessaSediReparto", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("IdAz_SediReparto")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("IdAz_SubCommessa")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdAz_SediReparto");
+
+                    b.HasIndex("IdAz_SubCommessa", "IdAz_SediReparto")
+                        .IsUnique();
+
+                    b.ToTable("Az_SubCommessaSediReparto", "public");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.GestionePresenze.Az_SubCommessaUser", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("IdAspNetUsers")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("IdAz_SubCommessa")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdAspNetUsers");
+
+                    b.HasIndex("IdAz_SubCommessa", "IdAspNetUsers")
+                        .IsUnique();
+
+                    b.ToTable("Az_SubCommessaUser", "public");
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.GestionePresenze.Par_Arrotondamenti", b =>
@@ -1983,7 +2053,7 @@ namespace nvxapp.server.data.Migrations
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Az_SediRepartoUser", b =>
                 {
                     b.HasOne("nvxapp.server.data.Entities.Public.ApplicationUser", "AspNetUsersNavigation")
-                        .WithMany()
+                        .WithMany("Az_SediRepartoUser")
                         .HasForeignKey("IdAspNetUsers")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -2180,6 +2250,44 @@ namespace nvxapp.server.data.Migrations
                     b.Navigation("Dip_AnagraficaNavigation");
                 });
 
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.GestionePresenze.Az_SubCommessaSediReparto", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Az_SediReparto", "Az_SediRepartoNavigation")
+                        .WithMany("Az_SubCommessaSediReparto")
+                        .HasForeignKey("IdAz_SediReparto")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Az_SubCommessa", "Az_SubCommessaNavigation")
+                        .WithMany("Az_SubCommessaSediReparto")
+                        .HasForeignKey("IdAz_SubCommessa")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Az_SediRepartoNavigation");
+
+                    b.Navigation("Az_SubCommessaNavigation");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.GestionePresenze.Az_SubCommessaUser", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Public.ApplicationUser", "AspNetUsersNavigation")
+                        .WithMany("Az_SubCommessaUser")
+                        .HasForeignKey("IdAspNetUsers")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Az_SubCommessa", "Az_SubCommessaNavigation")
+                        .WithMany("Az_SubCommessaUser")
+                        .HasForeignKey("IdAz_SubCommessa")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AspNetUsersNavigation");
+
+                    b.Navigation("Az_SubCommessaNavigation");
+                });
+
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.GestionePresenze.Par_Arrotondamenti", b =>
                 {
                     b.HasOne("nvxapp.server.data.Entities.Tenant.Az_Anagrafica", "Az_AnagraficaNavigation")
@@ -2300,6 +2408,10 @@ namespace nvxapp.server.data.Migrations
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Public.ApplicationUser", b =>
                 {
+                    b.Navigation("Az_SediRepartoUser");
+
+                    b.Navigation("Az_SubCommessaUser");
+
                     b.Navigation("Dip_Anagrafica");
 
                     b.Navigation("UserCompany");
@@ -2374,11 +2486,17 @@ namespace nvxapp.server.data.Migrations
                     b.Navigation("Az_SediRepartoUser");
 
                     b.Navigation("Az_SediReparto_Sub");
+
+                    b.Navigation("Az_SubCommessaSediReparto");
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Az_SubCommessa", b =>
                 {
                     b.Navigation("Az_SubCommessaAttivita");
+
+                    b.Navigation("Az_SubCommessaSediReparto");
+
+                    b.Navigation("Az_SubCommessaUser");
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Dip_Anagrafica", b =>
