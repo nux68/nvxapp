@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace nvxapp.server.data.Entities.Public
 {
-    public class ApplicationUser : IdentityUser<string>, IDataChangeStatEntity
+    public partial class ApplicationUser : IdentityUser<string>, IDataChangeStatEntity
     {
         public DateTime? ModifiedDate { get; set; }
         public DateTime? CreationDate { get; set; }
