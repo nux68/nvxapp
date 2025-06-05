@@ -1,4 +1,6 @@
+
 ion-menu-button {
+
   color: var(--ion-color-primary);
 }
 
@@ -41,4 +43,13 @@ ion-menu-button {
   color: red;
   font-weight: bold;
   text-align: center;
+}
+
+
+.login-content-center {
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* centra verticalmente */
+  align-items: center; /* centra orizzontalmente */
+  min-height: 100vh; /* assicura che occupi tutta l'altezza */
 }
