@@ -67,7 +67,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
             _az_SubCommessaRepository = az_SubCommessaRepository;
             _az_SubCommessaAttivitaRepository = az_SubCommessaAttivitaRepository;
             _az_SediAttivitaRepository = az_SediAttivitaRepository;
-            _az_SediRepartoAttivitaRepository =az_SediRepartoAttivitaRepository;
+            _az_SediRepartoAttivitaRepository = az_SediRepartoAttivitaRepository;
             _az_SubCommessaSediRepartoRepository = az_SubCommessaSediRepartoRepository;
         }
 
@@ -243,13 +243,16 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                         Default = true,
                         Descrizione = "Default",
                     });
+                    
 
                     var az_Commessa = await _az_CommessaRepository.UpsertAsync(new Az_Commessa()
                     {
                         IdAz_Anagrafica = company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Anagrafica.Id,
                         Default = true,
                         Descrizione = "Default",
-                        IdAz_Cliente = az_Cliente.Id
+                        IdAz_Cliente = az_Cliente.Id,
+                        Data = DateTime.Today,                  // Data inizio = oggi
+                        DataA = new DateTime(DateTime.Today.Year, 12, 31)              // Data fine = 31/12 dell'anno corrente
                     });
 
                     if (az_Cliente != null && az_Commessa != null && company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Sedi != null && company_DATA_COMB_AzAna_AzSedi_AzReparto.az_SediReparto != null)
