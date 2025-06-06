@@ -28,6 +28,9 @@
 
         <div [hidden]="currSection!='first'">
           <br />
+          <ion-item class="nvx-item-4-title">
+            <ion-label>Info reparto</ion-label>
+          </ion-item>
           <ion-item>
             <ion-label position="floating">Descrizione reparto</ion-label>
             <ion-input type="text" formControlName="descrizione" (ionChange)="UpdateDescription()"></ion-input>
@@ -41,6 +44,9 @@
         </div>
         <div [hidden]="currSection!='second'">
           <br />
+          <ion-item class="nvx-item-4-title">
+            <ion-label>Amministratori reparto e approvatori richieste</ion-label>
+          </ion-item>
           <div *ngIf="dip_Anagrafica!=null">
             <!-- Mobile View -->
             <ion-reorder-group class="ion-hide-sm-up" (ionItemReorder)="handleReorderAdmin($event)" [disabled]="!reorderEnabled">
@@ -62,7 +68,7 @@
                 <ion-col size="1">Admin</ion-col>
                 <ion-col>Cognome</ion-col>
                 <ion-col>Nome</ion-col>
-                <ion-col size="1">Approval</ion-col>
+                <ion-col size="1">Approva richieste</ion-col>
                 <ion-col size="1" *ngIf="reorderEnabled">Ordine</ion-col>
               </ion-row>
               <ion-reorder-group (ionItemReorder)="handleReorderAdmin($event)" [disabled]="!reorderEnabled">
@@ -95,6 +101,9 @@
         </div>
         <div [hidden]="currSection!='third'">
           <br />
+          <ion-item class="nvx-item-4-title">
+            <ion-label>Utenti collegati al reparto</ion-label>
+          </ion-item>
           <div *ngIf="dip_Anagrafica!=null">
             <!-- Mobile View -->
             <ion-item-sliding *ngFor="let item of getUser() | genericFilter: 'descrizione' : searchText" class="ion-hide-sm-up">
