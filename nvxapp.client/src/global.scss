@@ -57,6 +57,17 @@ ion-menu-content {
 }
 //NVX
 
+.nvx-primary-soft {
+  --background: rgba(var(--ion-color-primary-rgb), 0.5);
+}
+
+.nvx-item-4-title {
+  --background: rgba(var(--ion-color-primary-rgb), 0.5);
+  --border-radius: 5px; // Arrotonda gli angoli
+  text-align: center;
+}
+
+
 
 .nvx-standard-icon {
   font-size: 30px; /* Dimensione standard per tutte le icone */
