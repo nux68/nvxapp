@@ -102,8 +102,8 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
           this.formattedStartDate = res.data.az_Commessa.data; 
           this.formattedEndDate = res.data.az_Commessa.dataA;
           //
-          this.selected_Az_SediReparto = res.data.selected_Az_SediReparto;
-          this.selected_User = res.data.selected_User;
+          this.selected_Az_SediReparto = [];//res.data.selected_Az_SediReparto;
+          this.selected_User = []; // res.data.selected_User;
 
           return res.data.az_Commessa;
 

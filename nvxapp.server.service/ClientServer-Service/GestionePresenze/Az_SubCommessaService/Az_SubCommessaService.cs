@@ -56,10 +56,35 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
                 return retVal;
             }, isSubProcess);
         }
+
+        public virtual async Task<GenericResult<Az_SubCommessa_GetAll_4Edit_OutModel>> GetAll_4Edit(GenericRequest<Az_SubCommessa_GetAll_4Edit_InModel> model, bool isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                Az_SubCommessa_GetAll_4Edit_OutModel retVal = new Az_SubCommessa_GetAll_4Edit_OutModel();
+
+                int IdCompany;
+                int.TryParse(this.CurrentCompany, out IdCompany);
+
+                Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg company_DATA = await _gestionePresenzeUserUtility.Get_AzAna_AzSedi_AzReparto_Az_Cfg(IdCompany, true);
+                if (company_DATA != null && company_DATA.az_Anagrafica != null)
+                {
+                    //var az_SubCommessa = (await _az_SubCommessaRepository.FindAll()).ToList();
+                    //retVal.Az_SubCommessa = _mapper.Map<List<Az_SubCommessaModel>>(az_SubCommessa);
+                }
+
+                await Task.Delay(DelayAsyncMethod);
+                return retVal;
+            }, isSubProcess);
+        }
+
     }
 
     public interface IAz_SubCommessaService : IServiceBase
     {
         Task<GenericResult<Az_SubCommessa_GetAll_OutModel>> GetAll(GenericRequest<Az_SubCommessa_GetAll_InModel> model, bool isSubProcess);
+
+        Task<GenericResult<Az_SubCommessa_GetAll_4Edit_OutModel>> GetAll_4Edit(GenericRequest<Az_SubCommessa_GetAll_4Edit_InModel> model, bool isSubProcess);
+        
     }
 }

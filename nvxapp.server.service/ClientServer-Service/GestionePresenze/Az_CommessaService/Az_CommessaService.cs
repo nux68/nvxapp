@@ -10,6 +10,8 @@ using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_CommessaService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubCommessaService;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubCommessaService.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.ServerModels;
@@ -18,8 +20,16 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_Commess
 {
     public class Az_CommessaService : ServiceBase, IAz_CommessaService
     {
+
+
+        private readonly IAz_SubCommessaService _az_SubCommessaService;
+
         private readonly IAz_CommessaRepository _az_CommessaRepository;
         private readonly IGestionePresenzeUserUtility _gestionePresenzeUserUtility;
+
+        private readonly IAz_SubCommessaSediRepartoRepository _az_SubCommessaSediRepartoRepository;
+
+
 
         public Az_CommessaService(IMapper mapper,
                                   UserManager<ApplicationUser> userManager,
@@ -27,11 +37,15 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_Commess
                                   IOptions<JwtParameter> jwtParameter,
                                   IHttpContextAccessor httpContextAccessor,
                                   IConfiguration configuration,
+                                  IAz_SubCommessaService az_SubCommessaService,
+                                  IAz_SubCommessaSediRepartoRepository az_SubCommessaSediRepartoRepository,
                                   IGestionePresenzeUserUtility gestionePresenzeUserUtility,
                                   IAz_CommessaRepository az_CommessaRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _az_CommessaRepository = az_CommessaRepository;
+            _az_SubCommessaService = az_SubCommessaService;
             _gestionePresenzeUserUtility = gestionePresenzeUserUtility;
+            _az_SubCommessaSediRepartoRepository = az_SubCommessaSediRepartoRepository;
         }
 
         public virtual async Task<GenericResult<Az_Commessa_GetAll_OutModel>> GetAll(GenericRequest<Az_Commessa_GetAll_InModel> model, bool isSubProcess)
@@ -69,15 +83,45 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_Commess
 
                     //ApplicationRole? userRole = _aspNetRolesRepository.GetAll().Where(x => x.Code == RoleCode.User).FirstOrDefault();
 
-                    var commessa = await _az_CommessaRepository.FindByIdAsync(model.Data.Id);
-                    if (commessa != null)
+                    
+                    var reqAz_Sub = new GenericRequest<Az_SubCommessa_GetAll_4Edit_InModel>();
+                    reqAz_Sub.Data.Id= model.Data.Id; // id della commessa
+                    var resAz_Sub = await _az_SubCommessaService.GetAll_4Edit(reqAz_Sub, true);
+
+                    if (resAz_Sub.Success && resAz_Sub.Data != null)
                     {
-                        retVal.Az_Commessa = _mapper.Map<Az_CommessaModel>(commessa);
+                        var commessa = await _az_CommessaRepository.FindByIdAsync(model.Data.Id);
+                        if (commessa != null)
+                            retVal.Az_Commessa = _mapper.Map<Az_CommessaModel>(commessa);
+                        else
+                            retVal.Az_Commessa = new Az_CommessaModel();
+
+                        retVal.Az_SubCommessa = resAz_Sub.Data.Az_SubCommessa;
+
                     }
-                    else
-                    {
-                        retVal.Az_Commessa = new Az_CommessaModel();
-                    }
+
+
+
+
+
+                    //var az_SubCommessaSediReparto = _az_SubCommessaSediRepartoRepository.FindAll(x=> x.);
+
+                    //retVal.Selected_Az_SediReparto
+                    //retVal.Selected_User
+
+                    //Az_SediReparto
+                    //Az_Sedi
+
+                    //Az_Commessa
+                    //  Az_SubCommessa
+                    //      Az_SubCommessaAttivita
+                    //      Az_SubCommessaSediReparto
+                    //      Az_SubCommessaUser
+                    //  Az_SubCommessa
+                    //      Az_SubCommessaAttivita
+                    //      Az_SubCommessaSediReparto
+                    //      Az_SubCommessaUser
+
                 }
 
 
