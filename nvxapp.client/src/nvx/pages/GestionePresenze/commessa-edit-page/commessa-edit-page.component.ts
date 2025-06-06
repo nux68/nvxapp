@@ -17,6 +17,7 @@ import { CheckObjOn_Id_Number, CheckObjOn_Id_Text } from '../../../ClientServer-
 import { Dip_AnagraficaModel } from '../../../ClientServer-Service/GestionePresenze/Dip_Anagrafica/Models/dip-anagrafica-model';
 import { RoleCode } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-roles-model';
 import { Az_SediRepartoModel } from '../../../ClientServer-Service/GestionePresenze/Az_SediReparto/Models/az-sedi-reparto-model';
+import { Par_AttivitaModel } from '../../../ClientServer-Service/GestionePresenze/Par_Attivita/Models/par-attivita-model';
 
 @Component({
   selector: 'app-commessa-edit-page',
@@ -29,11 +30,12 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
   public override _editForm: FormGroup;
   public _az_ClienteModelList: Az_ClienteModel[] = [];
   public _az_SediRepartoList: Az_SediRepartoModel[] = [];
-  
+  public _par_Attivita: Par_AttivitaModel[] = [];
 
   public searchText!: string;
   public currSection: string = "first";
   public currSection_sub: string = "sub_1";
+  public idxCurrCommessa: number = -1;
   
 
   //date x il backend
@@ -61,6 +63,8 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
               super(navCtrl, userInterfaceService, fb);
               this._editForm = this.fb.group({
                 
+                tmp_az_SubCommessa: [null, []],
+
                 //SUB FORM PER OGGETTi DI OGGETTI
                 az_Commessa: this.fb.group({
                   descrizione: [null, [Validators.required, Validators.maxLength(50)]],
@@ -78,7 +82,7 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
     super.ionViewWillEnter();
     this._az_ClienteModelList = this.sharedParameterGestionePresenzeService.Az_Cliente;
     this._az_SediRepartoList = this.sharedParameterGestionePresenzeService.Az_SediReparto;
-    
+    this._par_Attivita = this.sharedParameterGestionePresenzeService.Par_Attivita;
 
     const now = new Date();
 
@@ -111,6 +115,15 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
           //
           this.selected_Az_SediReparto = [];//res.data.selected_Az_SediReparto;
           this.selected_User = []; // res.data.selected_User;
+
+          if (res.data.az_SubCommessa.length > 0) {
+            res.data.tmp_az_SubCommessa = res.data.az_SubCommessa[0].id;
+            this.idxCurrCommessa = 0;
+          }
+          else {
+            this.idxCurrCommessa = -1;
+          }
+            
 
           return res.data;
 
@@ -203,28 +216,13 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
 
   /////
 
-
-  toggleSelectionUser(itemId: string, event: any) {
-
-
-
-    const existingEntry = this.selected_User.find(entry => entry.id === itemId);
-
-    if (existingEntry) {
-      // Se l'elemento esiste, aggiorna solo lo stato selected
-      existingEntry.checked = event.detail.checked;
-    } else {
-      // Se l'elemento non è presente, lo aggiunge alla lista
-      this.selected_User.push({ id: itemId, checked: event.detail.checked });
-    }
-
+  onSubCommessaChange(event: any) {
+    const selectedId = event.detail.value;
+    this.idxCurrCommessa = this._editModel.az_SubCommessa.findIndex(x => x.id === selectedId);
   }
 
-  isSelectedUser(itemId: string): boolean {
 
-    return this.selected_User.find(entry => entry.id === itemId)?.checked ?? false;
 
-  }
 
   public getUser(): CheckObjOn_Id_Text[] {
 
@@ -241,6 +239,27 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
     return retVal;
   }
 
+  isSelectedUser(itemId: string): boolean {
+    
+    return this._editModel.az_SubCommessa[this.idxCurrCommessa].az_SubCommessaUser.find(entry => entry.id === itemId)?.checked ?? false;
+
+  }
+
+
+  toggleSelectionUser(itemId: string, event: any) {
+
+
+    const existingEntry = this._editModel.az_SubCommessa[this.idxCurrCommessa].az_SubCommessaUser.find(entry => entry.id === itemId);
+
+    if (existingEntry) {
+      // Se l'elemento esiste, aggiorna solo lo stato selected
+      existingEntry.checked = event.detail.checked;
+    } else {
+      // Se l'elemento non è presente, lo aggiunge alla lista
+      this._editModel.az_SubCommessa[this.idxCurrCommessa].az_SubCommessaUser.push({ id: itemId, checked: event.detail.checked });
+    }
+
+  }
 
 
 
@@ -261,22 +280,72 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
 
   isSelectedAz_SediReparto(itemId: number): boolean {
 
-    return this.selected_Az_SediReparto.find(entry => entry.id === itemId)?.checked ?? false;
+    if (this.idxCurrCommessa == -1)
+      return false;
+
+    return this._editModel.az_SubCommessa[this.idxCurrCommessa].az_SubCommessaSediReparto.find(entry => entry.id === itemId)?.checked ?? false;
 
   }
 
   toggleSelectionAz_SediReparto(itemId: number, event: any) {
 
+    if (this.idxCurrCommessa == -1)
+      return ;
 
 
-    const existingEntry = this.selected_Az_SediReparto.find(entry => entry.id === itemId);
+    const existingEntry = this._editModel.az_SubCommessa[this.idxCurrCommessa].az_SubCommessaSediReparto.find(entry => entry.id === itemId);
 
     if (existingEntry) {
       // Se l'elemento esiste, aggiorna solo lo stato selected
       existingEntry.checked = event.detail.checked;
     } else {
       // Se l'elemento non è presente, lo aggiunge alla lista
-      this.selected_Az_SediReparto.push({ id: itemId, checked: event.detail.checked });
+      this._editModel.az_SubCommessa[this.idxCurrCommessa].az_SubCommessaSediReparto.push({ id: itemId, checked: event.detail.checked });
+    }
+
+  }
+
+  //az_SubCommessaAttivita
+  //_par_Attivita
+
+  public getPar_Attivita(): CheckObjOn_Id_Number[] {
+
+    let retVal: CheckObjOn_Id_Number[] = [];
+
+    this._par_Attivita.filter(rep =>
+      rep.id > 0
+    ).forEach(item => {
+      let appo = { id: item.id, checked: false };
+      retVal.push(appo);
+    });
+
+
+    return retVal;
+  }
+
+  isSelectedaz_SubCommessaAttivita(itemId: number): boolean {
+
+    if (this.idxCurrCommessa == -1)
+      return false;
+
+    return this._editModel.az_SubCommessa[this.idxCurrCommessa].az_SubCommessaAttivita.find(entry => entry.id === itemId)?.checked ?? false;
+
+  }
+
+  toggleSelectionaz_SubCommessaAttivita(itemId: number, event: any) {
+
+    if (this.idxCurrCommessa == -1)
+      return;
+
+
+    const existingEntry = this._editModel.az_SubCommessa[this.idxCurrCommessa].az_SubCommessaAttivita.find(entry => entry.id === itemId);
+
+    if (existingEntry) {
+      // Se l'elemento esiste, aggiorna solo lo stato selected
+      existingEntry.checked = event.detail.checked;
+    } else {
+      // Se l'elemento non è presente, lo aggiunge alla lista
+      this._editModel.az_SubCommessa[this.idxCurrCommessa].az_SubCommessaAttivita.push({ id: itemId, checked: event.detail.checked });
     }
 
   }

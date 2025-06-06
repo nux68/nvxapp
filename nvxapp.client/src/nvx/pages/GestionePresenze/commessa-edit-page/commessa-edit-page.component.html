@@ -6,7 +6,7 @@
 <ion-content [fullscreen]="true">
 
   <ion-card>
-    <ion-card-content>
+    <ion-card-content *ngIf="_editModel!=null">
 
       <form [formGroup]="_editForm">
 
@@ -73,64 +73,154 @@
 
         <div [hidden]="currSection!='second'">
           <br />
-          <ion-item class="nvx-item-4-title">
+          <!--<ion-item class="nvx-item-4-title">
             <ion-label>Sub commesse</ion-label>
+          </ion-item>-->
+
+
+          <ion-item>
+            <ion-label position="floating">Sub commessa</ion-label>
+            <ion-select formControlName="tmp_az_SubCommessa" placeholder="Seleziona la Sub Commessa" (ionChange)="onSubCommessaChange($event)">
+              <ion-select-option *ngFor="let az_SubCommessa of _editModel.az_SubCommessa" [value]="az_SubCommessa.id">
+                {{ az_SubCommessa.descrizione }}
+              </ion-select-option>
+            </ion-select>
           </ion-item>
 
-          <div formGroupName="az_Commessa">
 
-            <!-- Combo per selezione cliente -->
-            <ion-item>
-              <ion-label position="floating">Sub commessa</ion-label>
-              <ion-select formControlName="idAz_Cliente" placeholder="Seleziona cliente">
-                <ion-select-option *ngFor="let cliente of _az_ClienteModelList" [value]="cliente.id">
-                  {{ cliente.descrizione }}
-                </ion-select-option>
-              </ion-select>
+
+          <ion-segment (ionChange)="segmentChanged_sub($event)" [value]="currSection_sub">
+            <ion-segment-button value="sub_1" content-id="first">
+              <ion-label>Attività</ion-label>
+            </ion-segment-button>
+            <ion-segment-button value="sub_2" content-id="second">
+              <ion-label>Reparti</ion-label>
+            </ion-segment-button>
+            <ion-segment-button value="sub_3" content-id="second">
+              <ion-label>Utenti</ion-label>
+            </ion-segment-button>
+          </ion-segment>
+
+
+          <div [hidden]="currSection_sub!='sub_1'">
+            <br />
+            <ion-item class="nvx-item-4-title">
+              <ion-label>Attività collegate alla commessa</ion-label>
             </ion-item>
-            <ion-note color="danger" *ngIf="_editForm.get('az_Commessa.idAz_Cliente')?.hasError('required') && _editForm.get('az_Commessa.idAz_Cliente')?.touched">
-              Cliente è obbligatorio.
-            </ion-note>
 
-
-            <ion-segment (ionChange)="segmentChanged_sub($event)" [value]="currSection_sub">
-              <ion-segment-button value="sub_1" content-id="first">
-                <ion-label>Attività</ion-label>
-              </ion-segment-button>
-              <ion-segment-button value="sub_2" content-id="second">
-                <ion-label>Reparti</ion-label>
-              </ion-segment-button>
-              <ion-segment-button value="sub_3" content-id="second">
-                <ion-label>Utenti</ion-label>
-              </ion-segment-button>
-            </ion-segment>
-
-
-            <div [hidden]="currSection_sub!='sub_1'">
-              <br />
-              <ion-item class="nvx-item-4-title">
-                <ion-label>sub_1</ion-label>
+            <ion-item-sliding *ngFor="let item of getPar_Attivita() | genericFilter: 'descrizione' : searchText" class="ion-hide-sm-up">
+              <ion-item>
+                <ion-checkbox slot="start" [checked]="isSelectedaz_SubCommessaAttivita(item.id)" (ionChange)="toggleSelectionaz_SubCommessaAttivita(item.id, $event)"></ion-checkbox>
+                <ion-label>
+                  {{ item.id | parAttivitaToLongText }}
+                </ion-label>
               </ion-item>
-            </div>
-            <div [hidden]="currSection_sub!='sub_2'">
-              <br />
-              <ion-item class="nvx-item-4-title">
-                <ion-label>sub_2</ion-label>
-              </ion-item>
-            </div>
-            <div [hidden]="currSection_sub!='sub_3'">
-              <br />
-              <ion-item class="nvx-item-4-title">
-                <ion-label>sub_3</ion-label>
-              </ion-item>
-            </div>
+            </ion-item-sliding>
+
+            <ion-grid class="ion-hide-sm-down">
+              <ion-row>
+                <ion-col size="1">Abil</ion-col>
+                <ion-col>Descr</ion-col>
+
+              </ion-row>
+              <ion-row *ngFor="let item of getPar_Attivita() | genericFilter: 'descrizione' : searchText" class="nvx-ion-row-4table">
+                <ion-col size="1">
+                  <ion-checkbox [checked]="isSelectedaz_SubCommessaAttivita(item.id)" (ionChange)="toggleSelectionaz_SubCommessaAttivita(item.id, $event)"></ion-checkbox>
+                </ion-col>
+                <ion-col>
+                  <ion-label>
+                    {{ item.id | parAttivitaToLongText }}
+                  </ion-label>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+
 
           </div>
+
+          <div [hidden]="currSection_sub!='sub_2'">
+            <br />
+            <ion-item class="nvx-item-4-title">
+              <ion-label>Reparti collegati alla commessa</ion-label>
+            </ion-item>
+            <ion-item-sliding *ngFor="let item of getAz_SediReparto() | genericFilter: 'descrizione' : searchText" class="ion-hide-sm-up">
+              <ion-item>
+                <ion-checkbox slot="start" [checked]="isSelectedAz_SediReparto(item.id)" (ionChange)="toggleSelectionAz_SediReparto(item.id, $event)"></ion-checkbox>
+                <ion-label>
+                  {{ item.id | azSediRepartoToLongText }}
+                </ion-label>
+              </ion-item>
+            </ion-item-sliding>
+
+            <ion-grid class="ion-hide-sm-down">
+              <ion-row>
+                <ion-col size="1">Abil</ion-col>
+                <ion-col>Descr</ion-col>
+
+              </ion-row>
+              <ion-row *ngFor="let item of getAz_SediReparto() | genericFilter: 'descrizione' : searchText" class="nvx-ion-row-4table">
+                <ion-col size="1">
+                  <ion-checkbox [checked]="isSelectedAz_SediReparto(item.id)" (ionChange)="toggleSelectionAz_SediReparto(item.id, $event)"></ion-checkbox>
+                </ion-col>
+                <ion-col>
+                  <ion-label>
+                    {{ item.id | azSediRepartoToLongText }}
+                  </ion-label>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+
+
+          </div>
+
+          <div [hidden]="currSection_sub!='sub_3'">
+            <br />
+            <div *ngIf="dip_Anagrafica!=null">
+
+              <ion-item class="nvx-item-4-title">
+                <ion-label>Utenti collegati alla commessa</ion-label>
+              </ion-item>
+
+
+              <ion-item-sliding *ngFor="let item of getUser() | genericFilter: 'descrizione' : searchText" class="ion-hide-sm-up">
+                <ion-item>
+                  <ion-checkbox slot="start" [checked]="isSelectedUser(item.id)" (ionChange)="toggleSelectionUser(item.id, $event)"></ion-checkbox>
+                  <ion-label>
+                    {{ item.id | idAspNetUsersToCognome }}  {{ item.id | idAspNetUsersToNome }}
+                  </ion-label>
+                </ion-item>
+              </ion-item-sliding>
+
+
+              <ion-grid class="ion-hide-sm-down">
+                <ion-row>
+                  <ion-col size="1">Abil</ion-col>
+                  <ion-col>Cognome</ion-col>
+                  <ion-col>Nome</ion-col>
+                </ion-row>
+                <ion-row *ngFor="let item of getUser() | genericFilter: 'descrizione' : searchText" class="nvx-ion-row-4table">
+                  <ion-col size="1">
+                    <ion-checkbox [checked]="isSelectedUser(item.id)" (ionChange)="toggleSelectionUser(item.id, $event)"></ion-checkbox>
+                  </ion-col>
+                  <ion-col>
+                    <ion-label>
+                      {{ item.id | idAspNetUsersToCognome }}
+                    </ion-label>
+                  </ion-col>
+                  <ion-col>
+                    <ion-label>
+                      {{ item.id | idAspNetUsersToNome }}
+                    </ion-label>
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
+
+            </div>
+          </div>
+
+         
+
         </div>
-
-
-
-
 
       </form>
 

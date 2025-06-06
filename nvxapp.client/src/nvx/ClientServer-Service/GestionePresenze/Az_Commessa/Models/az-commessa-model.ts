@@ -36,6 +36,8 @@ export class Az_CommessaGetInModel {
 export class Az_CommessaGetOutModel extends ModelResult {
   public az_Commessa!: Az_CommessaModel;
   public az_SubCommessa: Az_SubCommessa_4EditModel[] = [];
+
+  public tmp_az_SubCommessa : number;
 }
 
 export class Az_CommessaPutInModel {
