@@ -8,12 +8,14 @@ import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-ca
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { StringHelperService } from '../../../Utility/infrastructure/string-helper.service';
 import { AzSediRepartoService } from '../../../ClientServer-Service/GestionePresenze/Az_SediReparto/az-sedi-reparto.service';
-import { Az_SediRepartoGetInModel, Az_SediRepartoModel, Az_SediRepartoPutInModel, CheckObjOn_Id_Text_4ApprovalZorder } from '../../../ClientServer-Service/GestionePresenze/Az_SediReparto/Models/az-sedi-reparto-model';
+import { Az_SediRepartoGetInModel, Az_SediRepartoGetOutModel, Az_SediRepartoModel, Az_SediRepartoPutInModel, CheckObjOn_Id_Text_4ApprovalZorder } from '../../../ClientServer-Service/GestionePresenze/Az_SediReparto/Models/az-sedi-reparto-model';
 import { Dip_AnagraficaModel } from '../../../ClientServer-Service/GestionePresenze/Dip_Anagrafica/Models/dip-anagrafica-model';
 import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
 import { RoleCode } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-roles-model';
 import { ItemReorderEventDetail } from '@ionic/angular';
 import { TipoApprovazione } from '../../../ClientServer-Service/GestionePresenze/Az_Cfg/Models/az-cfg-model';
+import { Par_AttivitaModel } from '../../../ClientServer-Service/GestionePresenze/Par_Attivita/Models/par-attivita-model';
+import { CheckObjOn_Id_Number } from '../../../ClientServer-Service/ModelsBase/check-obj';
 
 @Component({
   selector: 'app-department-edit-page',
@@ -21,19 +23,20 @@ import { TipoApprovazione } from '../../../ClientServer-Service/GestionePresenze
   styleUrls: ['./department-edit-page.component.scss'],
   standalone: false
 })
-export class DepartmentEditPageComponent extends BasePageConfirmCancelComponent<Az_SediRepartoModel> {
+export class DepartmentEditPageComponent extends BasePageConfirmCancelComponent<Az_SediRepartoGetOutModel> {
 
   modifiedDescription: string | null = null;
 
   public searchText!: string;
-  public currSection: string ="first";
+  public currSection: string ="sez1";
   public dip_Anagrafica: Dip_AnagraficaModel[];
+  public _par_Attivita: Par_AttivitaModel[] = [];
 
   // Flag per abilitare/disabilitare il riordino
   reorderEnabled: boolean = false;
 
-  selectedAdmin: CheckObjOn_Id_Text_4ApprovalZorder[] = [];
-  selectedUser: CheckObjOn_Id_Text_4ApprovalZorder[] = [];
+
+
 
   constructor(protected override navCtrl: NavController,
     protected override userInterfaceService: UserInterfaceService,
@@ -51,20 +54,23 @@ export class DepartmentEditPageComponent extends BasePageConfirmCancelComponent<
     super.ionViewWillEnter();
     this.reorderEnabled = (this.sharedParameterGestionePresenzeService.Az_Cfg.approvazioneTipo == TipoApprovazione.AllAdminHierarchy);
     this.dip_Anagrafica = this.sharedParameterGestionePresenzeService.Dip_Anagrafica;
-
+    this._par_Attivita = this.sharedParameterGestionePresenzeService.Par_Attivita;
   }
 
-  get Title(): string { return "Department"; }
+  get Title(): string { return "Reparti"; }
   get EditForm(): FormGroup {
     return this.
       fb.group({
 
-        descrizione: [null, [Validators.required, Validators.maxLength(20)]],
+        //SUB FORM PER OGGETTi DI OGGETTI
+        az_SediReparto: this.fb.group({
+          descrizione: [null, [Validators.required, Validators.maxLength(20)]],
+        })
 
       });
   }
 
-  LoadData = (): Observable<Az_SediRepartoModel | null> => {
+  LoadData = (): Observable<Az_SediRepartoGetOutModel | null> => {
     const state = history.state;
 
     if (state && state.id) {
@@ -73,9 +79,8 @@ export class DepartmentEditPageComponent extends BasePageConfirmCancelComponent<
 
       return this.azSediRepartoService.Az_SediRepartoGet(request).pipe(
         map((res) => {
-          this.selectedAdmin = res.data.selectedAdmin;
-          this.selectedUser = res.data.selectedUser;
-          return res.data.az_SediReparto;
+     
+          return res.data; 
 
         }), // Estrae il dato richiesto
         catchError((error) => {
@@ -85,22 +90,18 @@ export class DepartmentEditPageComponent extends BasePageConfirmCancelComponent<
       );
     }
     else {
-      return new Observable<Az_SediRepartoModel | null>((subscriber) => {
-
-        this.selectedAdmin = [];
-        this.selectedUser = [];
-
-        subscriber.next(new Az_SediRepartoModel());
+      return new Observable<Az_SediRepartoGetOutModel | null>((subscriber) => {
+        subscriber.next(new Az_SediRepartoGetOutModel());
         subscriber.complete();
       });
     }
   };
 
-  SaveData = (editModel: Az_SediRepartoModel): Observable<boolean> => {
+  SaveData = (editModel: Az_SediRepartoGetOutModel): Observable<boolean> => {
     let request: GenericRequest<Az_SediRepartoPutInModel> = new GenericRequest<Az_SediRepartoPutInModel>(Az_SediRepartoPutInModel);
-    request.data.az_SediReparto = editModel;
-    request.data.selectedAdmin = this.selectedAdmin;
-    request.data.selectedUser = this.selectedUser;
+    request.data.az_SediReparto = editModel.az_SediReparto;
+    request.data.selectedAdmin = editModel.selectedAdmin;
+    request.data.selectedUser = editModel.selectedUser;
 
 
     return this.azSediRepartoService.Az_SediRepartoPut(request).pipe(
@@ -148,7 +149,7 @@ export class DepartmentEditPageComponent extends BasePageConfirmCancelComponent<
     const combinedAdmins: CheckObjOn_Id_Text_4ApprovalZorder[] = [];
 
     // Prima aggiungi tutti quelli che hanno un approvalZOrder > 0 (indipendentemente da enabledToApproval)
-    this.selectedAdmin
+    this._editModel.selectedAdmin
       .filter(admin => admin.approvalZOrder > 0)
       .sort((a, b) => a.approvalZOrder - b.approvalZOrder)
       .forEach(admin => {
@@ -160,7 +161,7 @@ export class DepartmentEditPageComponent extends BasePageConfirmCancelComponent<
       const existingAdmin = combinedAdmins.find(a => a.id === admin.id);
       if (!existingAdmin) {
         // Cerca se esiste già nel selectedAdmin
-        const selectedOne = this.selectedAdmin.find(a => a.id === admin.id);
+        const selectedOne = this._editModel.selectedAdmin.find(a => a.id === admin.id);
         if (selectedOne) {
           combinedAdmins.push(selectedOne);
         } else {
@@ -190,63 +191,63 @@ export class DepartmentEditPageComponent extends BasePageConfirmCancelComponent<
   toggleSelectionAdmin(itemId: string, event: any) {
 
 
-    const existingEntry = this.selectedAdmin.find(entry => entry.id === itemId);
+    const existingEntry = this._editModel.selectedAdmin.find(entry => entry.id === itemId);
 
     if (existingEntry) {
       // Se l'elemento esiste, aggiorna solo lo stato selected
       existingEntry.checked = event.detail.checked;
     } else {
       // Se l'elemento non è presente, lo aggiunge alla lista
-      this.selectedAdmin.push({ id: itemId, checked: event.detail.checked, enabledToApproval: false, approvalZOrder: 0 });
+      this._editModel.selectedAdmin.push({ id: itemId, checked: event.detail.checked, enabledToApproval: false, approvalZOrder: 0 });
     }
 
   }
 
   isSelectedAdmin(itemId: string): boolean {
 
-    return this.selectedAdmin.find(entry => entry.id === itemId)?.checked ?? false;
+    return this._editModel.selectedAdmin.find(entry => entry.id === itemId)?.checked ?? false;
   }
 
   toggleSelectionUser(itemId: string, event: any) {
 
 
 
-    const existingEntry = this.selectedUser.find(entry => entry.id === itemId);
+    const existingEntry = this._editModel.selectedUser.find(entry => entry.id === itemId);
 
     if (existingEntry) {
       // Se l'elemento esiste, aggiorna solo lo stato selected
       existingEntry.checked = event.detail.checked;
     } else {
       // Se l'elemento non è presente, lo aggiunge alla lista
-      this.selectedUser.push({ id: itemId, checked: event.detail.checked, enabledToApproval: false, approvalZOrder: 0 });
+      this._editModel.selectedUser.push({ id: itemId, checked: event.detail.checked, enabledToApproval: false, approvalZOrder: 0 });
     }
 
   }
 
   isSelectedUser(itemId: string): boolean {
 
-    return this.selectedUser.find(entry => entry.id === itemId)?.checked ?? false;
+    return this._editModel.selectedUser.find(entry => entry.id === itemId)?.checked ?? false;
 
   }
 
   toggleSelectionApproval(itemId: string, event: any) {
 
 
-    const existingEntry = this.selectedAdmin.find(entry => entry.id === itemId);
+    const existingEntry = this._editModel.selectedAdmin.find(entry => entry.id === itemId);
 
     if (existingEntry) {
       // Se l'elemento esiste, aggiorna solo lo stato selected
       existingEntry.enabledToApproval = event.detail.checked;
     } else {
       // Se l'elemento non è presente, lo aggiunge alla lista
-      this.selectedAdmin.push({ id: itemId, checked: false, enabledToApproval: event.detail.checked, approvalZOrder: 0 });
+      this._editModel.selectedAdmin.push({ id: itemId, checked: false, enabledToApproval: event.detail.checked, approvalZOrder: 0 });
     }
 
   }
 
   isSelectedApproval(itemId: string): boolean {
 
-    return this.selectedAdmin.find(entry => entry.id === itemId)?.enabledToApproval ?? false;
+    return this._editModel.selectedAdmin.find(entry => entry.id === itemId)?.enabledToApproval ?? false;
   }
 
   // Gestisce l'evento di riordinamento
@@ -268,7 +269,7 @@ export class DepartmentEditPageComponent extends BasePageConfirmCancelComponent<
     event.detail.complete();
 
     // Debug
-    console.log('Nuovo ordine di amministratori:', this.selectedAdmin
+    console.log('Nuovo ordine di amministratori:', this._editModel.selectedAdmin
       .sort((a, b) => a.approvalZOrder - b.approvalZOrder)
       .map(admin => `${admin.id}: ${admin.approvalZOrder}`));
   }
@@ -289,14 +290,14 @@ export class DepartmentEditPageComponent extends BasePageConfirmCancelComponent<
       // Aggiorna l'ordine di approvazione per tutti gli elementi
       filteredList.forEach((item, index) => {
         // Cerca l'elemento corrispondente in selectedAdmin
-        const adminEntry = this.selectedAdmin.find(admin => admin.id === item.id);
+        const adminEntry = this._editModel.selectedAdmin.find(admin => admin.id === item.id);
 
         if (adminEntry) {
           // Aggiorna l'ordine
           adminEntry.approvalZOrder = index + 1;
         } else {
           // Se non esiste, aggiungilo a selectedAdmin con l'ordine corretto
-          this.selectedAdmin.push({
+          this._editModel.selectedAdmin.push({
             id: item.id,
             checked: false,
             enabledToApproval: false,
@@ -311,7 +312,48 @@ export class DepartmentEditPageComponent extends BasePageConfirmCancelComponent<
     console.log('Segment cambiato:', event.detail.value);
     this.currSection = event.detail.value;
   }
-  
+
+
+
+  public getPar_Attivita(): CheckObjOn_Id_Number[] {
+
+    let retVal: CheckObjOn_Id_Number[] = [];
+
+    this._par_Attivita.filter(rep =>
+      rep.id > 0
+    ).forEach(item => {
+      let appo = { id: item.id, checked: false };
+      retVal.push(appo);
+    });
+
+
+    return retVal;
+  }
+
+  isSelectedaz_Az_SediRepartoAttivita(itemId: number): boolean {
+
+   
+
+    return this._editModel.az_SediRepartoAttivita.find(entry => entry.id === itemId)?.checked ?? false;
+
+  }
+
+  toggleSelectionaz_Az_SediRepartoAttivita(itemId: number, event: any) {
+
+
+
+    const existingEntry = this._editModel.az_SediRepartoAttivita.find(entry => entry.id === itemId);
+
+    if (existingEntry) {
+      // Se l'elemento esiste, aggiorna solo lo stato selected
+      existingEntry.checked = event.detail.checked;
+    } else {
+      // Se l'elemento non è presente, lo aggiunge alla lista
+      this._editModel.az_SediRepartoAttivita.push({ id: itemId, checked: event.detail.checked });
+    }
+
+  }
+
 }
 
 

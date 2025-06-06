@@ -1,4 +1,4 @@
-import { CheckObjOn_Id_Text } from "../../../ModelsBase/check-obj";
+import { CheckObjOn_Id_Number, CheckObjOn_Id_Text } from "../../../ModelsBase/check-obj";
 import { ModelResult } from "../../../ModelsBase/model-result";
 
 
@@ -59,6 +59,8 @@ export class Az_SediRepartoGetOutModel extends ModelResult {
   public az_SediReparto: Az_SediRepartoModel;
   public selectedAdmin: CheckObjOn_Id_Text_4ApprovalZorder[];
   public selectedUser: CheckObjOn_Id_Text_4ApprovalZorder[];
+  public az_SediRepartoAttivita: CheckObjOn_Id_Number[];
+
 }
 
 export class CheckObjOn_Id_Text_4ApprovalZorder extends CheckObjOn_Id_Text {
@@ -70,10 +72,12 @@ export class Az_SediRepartoPutInModel {
   public az_SediReparto: Az_SediRepartoModel;
   public selectedAdmin: CheckObjOn_Id_Text_4ApprovalZorder[];
   public selectedUser: CheckObjOn_Id_Text_4ApprovalZorder[];
+  public az_SediRepartoAttivita: CheckObjOn_Id_Number[];
 }
 export class Az_SediRepartoPutOutModel extends ModelResult {
   public az_SediReparto: Az_SediRepartoModel;
   public selectedAdmin: CheckObjOn_Id_Text_4ApprovalZorder[];
   public selectedUser: CheckObjOn_Id_Text_4ApprovalZorder[];
+  public az_SediRepartoAttivita: CheckObjOn_Id_Number[];
 }
 

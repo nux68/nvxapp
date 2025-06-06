@@ -305,8 +305,8 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
 
   }
 
-  //az_SubCommessaAttivita
-  //_par_Attivita
+
+
 
   public getPar_Attivita(): CheckObjOn_Id_Number[] {
 
