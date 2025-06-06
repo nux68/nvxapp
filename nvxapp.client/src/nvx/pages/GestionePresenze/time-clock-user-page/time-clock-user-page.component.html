@@ -16,9 +16,9 @@
       <br />
 
       <!--<div class="location-badge">
-        <ion-icon name="location"></ion-icon>
-        <span>{{ location }}</span>
-      </div>-->
+    <ion-icon name="location"></ion-icon>
+    <span>{{ location }}</span>
+  </div>-->
 
       <div class="form-section">
         <div class="form-input date-input-container">
@@ -31,20 +31,24 @@
         <div class="time">{{ currentTime }}</div>
       </div>
 
-      <ion-card class="ion-text-center ion-padding" style="background: var(--ion-toolbar-background); color: var(--ion-toolbar-color);">
+      <!--<ion-card class="ion-text-center ion-padding" style="background: var(--ion-toolbar-background); color: var(--ion-toolbar-color);">
         <ion-card-content>
           <ion-label class="ion-text-uppercase">
             Ultima timbratura: {{ lastAction }}
           </ion-label>
         </ion-card-content>
-      </ion-card>
+      </ion-card>-->
+
+      <ion-item class="nvx-item-4-title">
+        <ion-label>Ultima timbratura: {{ lastAction }}</ion-label>
+      </ion-item>
 
       <!--<div class="button-container">
-        <button class="clock-button clock-in-out" (click)="clockInOut()">
-          <ion-icon name="time-outline"></ion-icon>
-          <span>TIMBRA</span>
-        </button>
-      </div>-->
+    <button class="clock-button clock-in-out" (click)="clockInOut()">
+      <ion-icon name="time-outline"></ion-icon>
+      <span>TIMBRA</span>
+    </button>
+  </div>-->
       <!-- Modals remain the same -->
       <ion-modal [keepContentsMounted]="true">
         <ng-template>

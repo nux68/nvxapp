@@ -27,9 +27,9 @@ export class CompanyCfgPageComponent extends BasePageConfirmCancelComponent<Az_C
   public currSection: string = "first";
   modifiedDescription: string | null = null;
   tipoApprovazioneOptions: TipoApprovazioneOption[] = [
-    { value: TipoApprovazione.SigleAdmin, label: 'Single Admin' },
-    { value: TipoApprovazione.AllAdmin, label: 'All Admin' },
-    { value: TipoApprovazione.AllAdminHierarchy, label: 'All Admin Hierarchy' }
+    { value: TipoApprovazione.SigleAdmin, label: 'Singolo amministratore' },
+    { value: TipoApprovazione.AllAdmin, label: 'Tutti gli amministratori' },
+    { value: TipoApprovazione.AllAdminHierarchy, label: 'Tutti gli amministratori gerarchicamente' }
   ];
 
   constructor(protected override navCtrl: NavController,

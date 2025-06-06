@@ -38,7 +38,7 @@ export class JustificationEditPageComponent extends BasePageConfirmCancelCompone
   }
 
 
-  get Title(): string { return "Justification"; }
+  get Title(): string { return "Giustificativi"; }
   get EditForm(): FormGroup {
     return this.fb.group({
 
