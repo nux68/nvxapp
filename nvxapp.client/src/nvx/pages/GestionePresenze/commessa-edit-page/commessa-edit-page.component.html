@@ -24,48 +24,51 @@
         </ion-segment>
 
         <div [hidden]="currSection!='first'">
-          <br />
 
-          <ion-item class="nvx-item-4-title">
-            <ion-label>Info commessa</ion-label>
-          </ion-item>
+          <div formGroupName="az_Commessa">
 
-          <ion-item>
-            <ion-label position="floating">Descrizione</ion-label>
-            <ion-input type="text" formControlName="descrizione"></ion-input>
-          </ion-item>
-          <ion-note color="danger" *ngIf="_editForm.get('descrizione')?.hasError('required') && _editForm.get('descrizione')?.touched">
-            Descrizione è obbligatorio.
-          </ion-note>
-          <ion-note color="danger" *ngIf="_editForm.get('descrizione')?.hasError('maxlength') && _editForm.get('descrizione')?.touched">
-            Descrizione non può superare i 50 caratteri.
-          </ion-note>
+            <br />
 
-          <!-- Combo per selezione cliente -->
-          <ion-item>
-            <ion-label position="floating">Cliente</ion-label>
-            <ion-select formControlName="idAz_Cliente" placeholder="Seleziona cliente">
-              <ion-select-option *ngFor="let cliente of _az_ClienteModelList" [value]="cliente.id">
-                {{ cliente.descrizione }}
-              </ion-select-option>
-            </ion-select>
-          </ion-item>
-          <ion-note color="danger" *ngIf="_editForm.get('idAz_Cliente')?.hasError('required') && _editForm.get('idAz_Cliente')?.touched">
-            Cliente è obbligatorio.
-          </ion-note>
+            <ion-item class="nvx-item-4-title">
+              <ion-label>Info commessa</ion-label>
+            </ion-item>
 
-          <!-- Campo Data -->
-          <ion-item>
-            <ion-label position="stacked" style="margin-bottom:13px;">Data inizio</ion-label>
-            <ion-datetime-button datetime="startDatetime"></ion-datetime-button>
-          </ion-item>
+            <ion-item>
+              <ion-label position="floating">Descrizione</ion-label>
+              <ion-input type="text" formControlName="descrizione"></ion-input>
+            </ion-item>
+            <ion-note color="danger" *ngIf="_editForm.get('az_Commessa.descrizione')?.hasError('required') && _editForm.get('az_Commessa.descrizione')?.touched">
+              Descrizione è obbligatorio.
+            </ion-note>
+            <ion-note color="danger" *ngIf="_editForm.get('az_Commessa.descrizione')?.hasError('maxlength') && _editForm.get('az_Commessa.descrizione')?.touched">
+              Descrizione non può superare i 50 caratteri.
+            </ion-note>
 
-          <!-- Campo DataA -->
-          <ion-item>
-            <ion-label position="stacked" style="margin-bottom:13px;">Data fine</ion-label>
-            <ion-datetime-button datetime="endDatetime"></ion-datetime-button>
-          </ion-item>
+            <!-- Combo per selezione cliente -->
+            <ion-item>
+              <ion-label position="floating">Cliente</ion-label>
+              <ion-select formControlName="idAz_Cliente" placeholder="Seleziona cliente">
+                <ion-select-option *ngFor="let cliente of _az_ClienteModelList" [value]="cliente.id">
+                  {{ cliente.descrizione }}
+                </ion-select-option>
+              </ion-select>
+            </ion-item>
+            <ion-note color="danger" *ngIf="_editForm.get('az_Commessa.idAz_Cliente')?.hasError('required') && _editForm.get('az_Commessa.idAz_Cliente')?.touched">
+              Cliente è obbligatorio.
+            </ion-note>
 
+            <!-- Campo Data -->
+            <ion-item>
+              <ion-label position="stacked" style="margin-bottom:13px;">Data inizio</ion-label>
+              <ion-datetime-button datetime="startDatetime"></ion-datetime-button>
+            </ion-item>
+
+            <!-- Campo DataA -->
+            <ion-item>
+              <ion-label position="stacked" style="margin-bottom:13px;">Data fine</ion-label>
+              <ion-datetime-button datetime="endDatetime"></ion-datetime-button>
+            </ion-item>
+          </div>
         </div>
         <div [hidden]="currSection!='second'">
           <br />

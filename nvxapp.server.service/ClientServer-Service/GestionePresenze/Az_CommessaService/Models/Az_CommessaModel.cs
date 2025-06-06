@@ -26,6 +26,17 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_Commess
     {
         public List<Az_CommessaModel> Az_Commessa { get; set; } = new();
     }
+    public class Az_CommessaDeleteInModel
+    {
+        public int Id { get; set; } = 0;
+    }
+
+    public class Az_CommessaDeleteOutModel
+    {
+        public Az_CommessaModel Az_Commessa { get; set; } = new Az_CommessaModel();
+    }
+
+
 
     public class Az_CommessaGetInModel
     {
@@ -50,13 +61,4 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_Commess
         public List<Az_SubCommessa_4EditModel> Az_SubCommessa { get; set; } = new List<Az_SubCommessa_4EditModel>();
     }
 
-    public class Az_CommessaDeleteInModel
-    {
-        public int Id { get; set; } = 0;
-    }
-
-    public class Az_CommessaDeleteOutModel
-    {
-        public Az_CommessaModel Az_Commessa { get; set; } = new Az_CommessaModel();
-    }
 }

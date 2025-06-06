@@ -8,7 +8,7 @@ import { Observable } from 'rxjs/internal/Observable';
 import { map, catchError } from 'rxjs';
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { StringHelperService } from '../../../Utility/infrastructure/string-helper.service';
-import { Az_CommessaGetInModel, Az_CommessaModel, Az_CommessaPutInModel } from '../../../ClientServer-Service/GestionePresenze/Az_Commessa/Models/az-commessa-model';
+import { Az_CommessaGetInModel, Az_CommessaGetOutModel, Az_CommessaModel, Az_CommessaPutInModel } from '../../../ClientServer-Service/GestionePresenze/Az_Commessa/Models/az-commessa-model';
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
 import { Az_ClienteModel } from '../../../ClientServer-Service/GestionePresenze/Az_Cliente/Models/az-cliente-model';
 import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
@@ -24,7 +24,7 @@ import { Az_SediRepartoModel } from '../../../ClientServer-Service/GestionePrese
   styleUrls: ['./commessa-edit-page.component.scss'],
   standalone: false
 })
-export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az_CommessaModel> {
+export class CommessaEditPageComponent extends BasePageConfirmCancelComponent</*Az_CommessaModel*/Az_CommessaGetOutModel> {
 
   public override _editForm: FormGroup;
   public _az_ClienteModelList: Az_ClienteModel[] = [];
@@ -58,8 +58,17 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
   {
               super(navCtrl, userInterfaceService, fb);
               this._editForm = this.fb.group({
-                descrizione: [null, [Validators.required, Validators.maxLength(50)]],
-                idAz_Cliente: [null, [Validators.required]],
+                //descrizione: [null, [Validators.required, Validators.maxLength(50)]],
+                //idAz_Cliente: [null, [Validators.required]],
+
+                //'az_Commessa.descrizione': [null, [Validators.required, Validators.maxLength(50)]],
+                //'az_Commessa.idAz_Cliente': [null, [Validators.required]],
+
+                az_Commessa: this.fb.group({
+                  descrizione: [null, [Validators.required, Validators.maxLength(50)]],
+                  idAz_Cliente: [null, [Validators.required]],
+                })
+
               });
   }
 
@@ -88,7 +97,7 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
 
   get Title(): string { return 'Commessa'; }
 
-  LoadData = (): Observable<Az_CommessaModel | null> => {
+  LoadData = (): Observable</*Az_CommessaModel*/Az_CommessaGetOutModel | null> => {
     const state = history.state;
     if (state && state.id) {
       let request: GenericRequest<Az_CommessaGetInModel> = new GenericRequest<Az_CommessaGetInModel>(Az_CommessaGetInModel);
@@ -105,7 +114,7 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
           this.selected_Az_SediReparto = [];//res.data.selected_Az_SediReparto;
           this.selected_User = []; // res.data.selected_User;
 
-          return res.data.az_Commessa;
+          return res.data;//.az_Commessa;
 
         }), // Estrae il dato richiesto
         catchError((error) => {
@@ -114,27 +123,27 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
         })
       );
     } else {
-      return new Observable<Az_CommessaModel | null>((subscriber) => {
+      return new Observable</*Az_CommessaModel*/Az_CommessaGetOutModel | null>((subscriber) => {
 
         this.selected_Az_SediReparto = [];
         this.selected_User = [];
         ///
-        subscriber.next(new Az_CommessaModel());
+        subscriber.next(new /*Az_CommessaModel()*/ Az_CommessaGetOutModel());
         subscriber.complete();
       });
     }
   };
 
-  public SaveData(editModel: Az_CommessaModel): Observable<boolean> {
+  public SaveData(editModel: /*Az_CommessaModel*/Az_CommessaGetOutModel): Observable<boolean> {
     let request: GenericRequest<Az_CommessaPutInModel> = new GenericRequest<Az_CommessaPutInModel>(Az_CommessaPutInModel);
-    request.data.az_Commessa = editModel;
+    request.data.az_Commessa = editModel.az_Commessa;
 
     //la classe base non gestisce questo tipo di dato DEVO assegnare i valori a manina
     request.data.az_Commessa.data = this.formattedStartDate;
     request.data.az_Commessa.dataA = this.formattedEndDate;
     //
-    request.data.selected_Az_SediReparto = this.selected_Az_SediReparto;
-    request.data.selected_User = this.selected_User;
+    //request.data.selected_Az_SediReparto = this.selected_Az_SediReparto;
+    //request.data.selected_User = this.selected_User;
 
     return this.azCommessaService.Az_CommessaPut(request).pipe(
       map(() => {
