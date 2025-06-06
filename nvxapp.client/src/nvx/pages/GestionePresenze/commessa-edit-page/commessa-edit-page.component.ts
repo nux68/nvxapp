@@ -24,7 +24,7 @@ import { Az_SediRepartoModel } from '../../../ClientServer-Service/GestionePrese
   styleUrls: ['./commessa-edit-page.component.scss'],
   standalone: false
 })
-export class CommessaEditPageComponent extends BasePageConfirmCancelComponent</*Az_CommessaModel*/Az_CommessaGetOutModel> {
+export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az_CommessaGetOutModel> {
 
   public override _editForm: FormGroup;
   public _az_ClienteModelList: Az_ClienteModel[] = [];
@@ -33,6 +33,8 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent</*
 
   public searchText!: string;
   public currSection: string = "first";
+  public currSection_sub: string = "sub_1";
+  
 
   //date x il backend
   public formattedStartDate: string;
@@ -58,12 +60,8 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent</*
   {
               super(navCtrl, userInterfaceService, fb);
               this._editForm = this.fb.group({
-                //descrizione: [null, [Validators.required, Validators.maxLength(50)]],
-                //idAz_Cliente: [null, [Validators.required]],
-
-                //'az_Commessa.descrizione': [null, [Validators.required, Validators.maxLength(50)]],
-                //'az_Commessa.idAz_Cliente': [null, [Validators.required]],
-
+                
+                //SUB FORM PER OGGETTi DI OGGETTI
                 az_Commessa: this.fb.group({
                   descrizione: [null, [Validators.required, Validators.maxLength(50)]],
                   idAz_Cliente: [null, [Validators.required]],
@@ -97,7 +95,7 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent</*
 
   get Title(): string { return 'Commessa'; }
 
-  LoadData = (): Observable</*Az_CommessaModel*/Az_CommessaGetOutModel | null> => {
+  LoadData = (): Observable<Az_CommessaGetOutModel | null> => {
     const state = history.state;
     if (state && state.id) {
       let request: GenericRequest<Az_CommessaGetInModel> = new GenericRequest<Az_CommessaGetInModel>(Az_CommessaGetInModel);
@@ -114,7 +112,7 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent</*
           this.selected_Az_SediReparto = [];//res.data.selected_Az_SediReparto;
           this.selected_User = []; // res.data.selected_User;
 
-          return res.data;//.az_Commessa;
+          return res.data;
 
         }), // Estrae il dato richiesto
         catchError((error) => {
@@ -123,27 +121,25 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent</*
         })
       );
     } else {
-      return new Observable</*Az_CommessaModel*/Az_CommessaGetOutModel | null>((subscriber) => {
+      return new Observable<Az_CommessaGetOutModel | null>((subscriber) => {
 
         this.selected_Az_SediReparto = [];
         this.selected_User = [];
         ///
-        subscriber.next(new /*Az_CommessaModel()*/ Az_CommessaGetOutModel());
+        subscriber.next(new  Az_CommessaGetOutModel());
         subscriber.complete();
       });
     }
   };
 
-  public SaveData(editModel: /*Az_CommessaModel*/Az_CommessaGetOutModel): Observable<boolean> {
+  public SaveData(editModel: Az_CommessaGetOutModel): Observable<boolean> {
     let request: GenericRequest<Az_CommessaPutInModel> = new GenericRequest<Az_CommessaPutInModel>(Az_CommessaPutInModel);
     request.data.az_Commessa = editModel.az_Commessa;
 
     //la classe base non gestisce questo tipo di dato DEVO assegnare i valori a manina
     request.data.az_Commessa.data = this.formattedStartDate;
     request.data.az_Commessa.dataA = this.formattedEndDate;
-    //
-    //request.data.selected_Az_SediReparto = this.selected_Az_SediReparto;
-    //request.data.selected_User = this.selected_User;
+    
 
     return this.azCommessaService.Az_CommessaPut(request).pipe(
       map(() => {
@@ -198,6 +194,12 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent</*
     console.log('Segment cambiato:', event.detail.value);
     this.currSection = event.detail.value;
   }
+  segmentChanged_sub(event: any) {
+    console.log('Segment cambiato:', event.detail.value);
+    this.currSection_sub = event.detail.value;
+  }
+
+  
 
   /////
 

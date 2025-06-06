@@ -32,23 +32,18 @@ export class Az_CommessaDeleteOutModel extends ModelResult {
 export class Az_CommessaGetInModel {
   public id: number = 0;
 }
+
 export class Az_CommessaGetOutModel extends ModelResult {
   public az_Commessa!: Az_CommessaModel;
   public az_SubCommessa: Az_SubCommessa_4EditModel[] = [];
-  //public selected_User: CheckObjOn_Id_Text[];
-  //public selected_Az_SediReparto: CheckObjOn_Id_Number[];
 }
 
 export class Az_CommessaPutInModel {
   public az_Commessa: Az_CommessaModel = new Az_CommessaModel();
   public az_SubCommessa: Az_SubCommessa_4EditModel[] = [];
-
-  //public selected_User: CheckObjOn_Id_Text[];
-  //public selected_Az_SediReparto: CheckObjOn_Id_Number[];
 }
+
 export class Az_CommessaPutOutModel extends ModelResult {
   az_Commessa!: Az_CommessaModel;
   public az_SubCommessa: Az_SubCommessa_4EditModel[] = [];
-  //public selected_User: CheckObjOn_Id_Text[];
-  //public selected_Az_SediReparto: CheckObjOn_Id_Number[];
 }
