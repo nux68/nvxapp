@@ -27,10 +27,12 @@ export class MainMenuAttendanceTrackingService implements iMainMenuService {
       { menuType: MenuType.MenuItem, zorder: 204000, title: 'Configurazione' , roles: ['CompanyPowerAdmin']                  , component: "CompanyCfgPageComponent", url: '/companycfgedit', icon: 'ellipse' },
 
       { menuType: MenuType.MenuNote, zorder: 205000, title: 'Gestione Commesse' , roles: ['CompanyPowerAdmin']                  , component: '', url: '', icon: '' },
-      { menuType: MenuType.MenuItem, zorder: 205100, title: 'Competenze'        , roles: ['CompanyPowerAdmin']                  , component: "CompetenceListPageComponent", url: '/competencelist', icon: 'ellipse' },
-      { menuType: MenuType.MenuItem, zorder: 205200, title: 'Attività'          , roles: ['CompanyPowerAdmin']                  , component: "ActivityListPageComponent", url: '/activitylist', icon: 'ellipse' },
-      { menuType: MenuType.MenuItem, zorder: 205300, title: 'Clienti'           , roles: ['CompanyPowerAdmin']                  , component: "CustomerListPageComponent", url: '/customerlist', icon: 'people' },
-      { menuType: MenuType.MenuItem, zorder: 205400, title: 'Commesse'          , roles: ['CompanyPowerAdmin']                  , component: "CommessaListPageComponent", url: '/commessalist', icon: 'ellipse' },
+      { menuType: MenuType.MenuItem, zorder: 205100, title: 'Commesse'          , roles: ['CompanyPowerAdmin'], component: "CommessaListPageComponent", url: '/commessalist', icon: 'ellipse' },
+      { menuType: MenuType.MenuItem, zorder: 205200, title: 'Clienti'           , roles: ['CompanyPowerAdmin'], component: "CustomerListPageComponent", url: '/customerlist', icon: 'people' },
+      { menuType: MenuType.MenuItem, zorder: 205300, title: 'Competenze'        , roles: ['CompanyPowerAdmin'], component: "CompetenceListPageComponent", url: '/competencelist', icon: 'ellipse' },
+      { menuType: MenuType.MenuItem, zorder: 205400, title: 'Attività'          , roles: ['CompanyPowerAdmin']                  , component: "ActivityListPageComponent", url: '/activitylist', icon: 'ellipse' },
+      
+      
 
     ];
 
