@@ -66,7 +66,9 @@ export abstract class BasePageConfirmCancelComponent<T> implements OnInit {
    
 
     if (this._editForm.valid) {
-      Object.assign(this._editModel, this._editForm.value);
+      //Object.assign(this._editModel, this._editForm.value);
+      this.patchObject(this._editModel, this._editForm.value);
+
 
       this.SaveData(this._editModel).subscribe(res => {
         this.navCtrl.back();
@@ -78,6 +80,24 @@ export abstract class BasePageConfirmCancelComponent<T> implements OnInit {
   ButtonCancelClickEv = (param: object) => {
     this.navCtrl.back();
   }
+
+  //Assegna le var degli oggetti di ogegtti
+  private patchObject(target: any, source: any) {
+    if (!target || !source) return;
+    Object.keys(source).forEach(key => {
+      if (
+        source[key] !== null &&
+        typeof source[key] === 'object' &&
+        !Array.isArray(source[key]) &&
+        target[key] !== undefined
+      ) {
+        this.patchObject(target[key], source[key]);
+      } else {
+        target[key] = source[key];
+      }
+    });
+  }
+
 
   private forceValidation() {
     // Forza la validazione su tutto il form
@@ -99,6 +119,8 @@ export abstract class BasePageConfirmCancelComponent<T> implements OnInit {
   abstract get Title(): string;
     
   abstract get EditForm(): FormGroup | null;
+
+
 
 }
 
