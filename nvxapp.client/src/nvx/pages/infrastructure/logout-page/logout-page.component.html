@@ -4,9 +4,21 @@
 </app-page-toolbar>
 
 <ion-content [fullscreen]="true">
-  
-    <form [formGroup]="logoutForm" >
-    </form>
+
+  <div class="login-content-center">
+    <ion-card>
+      <ion-card-content>
+
+        <ion-item class="nvx-item-4-title">
+          <ion-label>Vuoi abbandonare il programma ?</ion-label>
+        </ion-item>
+
+
+        <form [formGroup]="logoutForm">
+        </form>
+      </ion-card-content>
+    </ion-card>
+  </div>
 
 </ion-content>
 
