@@ -10,4 +10,10 @@ export class CheckObjOn_Id_Text {
 }
 
 
+export class CheckObjOn_Id_Number {
 
+
+  public id: number;
+  public checked: boolean;
+
+}
