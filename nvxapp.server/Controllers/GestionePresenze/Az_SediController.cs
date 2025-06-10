@@ -23,22 +23,40 @@ namespace nvxapp.server.Controllers
             _az_SediService = az_SediService;
         }
 
-        
-
         [Authorize]
         [HttpPost]
         [Route("GetAll")]
         public async Task<GenericResult<Az_Sedi_GetAll_OutModel>> GetAll(GenericRequest<Az_Sedi_GetAll_InModel> inModel)
         {
             var res = await _az_SediService.GetAll(inModel, false);
-
             return res;
         }
 
-        
+        [Authorize]
+        [HttpPost]
+        [Route("AzSediGet")]
+        public async Task<GenericResult<Az_SediGetOutModel>> AzSediGet(GenericRequest<Az_SediGetInModel> inModel)
+        {
+            var res = await _az_SediService.AzSediGet(inModel, false);
+            return res;
+        }
 
+        [Authorize]
+        [HttpPost]
+        [Route("AzSediPut")]
+        public async Task<GenericResult<Az_SediPutOutModel>> AzSediPut(GenericRequest<Az_SediPutInModel> inModel)
+        {
+            var res = await _az_SediService.AzSediPut(inModel, false);
+            return res;
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("AzSediDelete")]
+        public async Task<GenericResult<Az_SediDeleteOutModel>> AzSediDelete(GenericRequest<Az_SediDeleteInModel> inModel)
+        {
+            var res = await _az_SediService.AzSediDelete(inModel, false);
+            return res;
+        }
     }
-
-
-
 }

@@ -5,7 +5,6 @@ import { RoleGuard4User } from '../../pages/RoleGuard/infrastructure/role-guard-
 import { RoleGuard4CompanyPowerAdmin } from '../../pages/RoleGuard/infrastructure/role-guard-4-company-power-admin';
 import { RoleGuard4JustClockRequest } from '../../pages/RoleGuard/infrastructure/role-guard-4-just-clock-request';
 
-
 @Injectable({
   providedIn: 'root'
 })
@@ -21,7 +20,6 @@ export class RouteAttendanceTrackingService {
       { path: 'requestjustificationuser', loadChildren: () => import('../../pages/GestionePresenze/request-justification-user-page/request-justification-user-page.module').then(m => m.RequestJustificationUserPageModule), canActivate: [RoleGuard4JustClockRequest] },
       { path: 'requestclockinguser', loadChildren: () => import('../../pages/GestionePresenze/request-clocking-user-page/request-clocking-user-page.module').then(m => m.RequestClockingUserPageModule), canActivate: [RoleGuard4JustClockRequest] },
       { path: 'requestlistuser', loadChildren: () => import('../../pages/GestionePresenze/request-list-user-page/request-list-user-page.module').then(m => m.RequestListUserPageModule), canActivate: [RoleGuard4User] },
-
 
       //power admin
       { path: 'poweradmintimesheet', loadChildren: () => import('../../pages/GestionePresenze/time-sheet-power-admin-page/time-sheet-power-admin-page.module').then(m => m.TimeSheetPowerAdminPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
@@ -41,14 +39,12 @@ export class RouteAttendanceTrackingService {
       { path: 'commessaedit', loadChildren: () => import('../../pages/GestionePresenze/commessa-edit-page/commessa-edit-page.module').then(m => m.CommessaEditPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
       { path: 'mytemplate1list', loadChildren: () => import('../../pages/GestionePresenze/mytemplate1-list-page/mytemplate1-list-page.module').then(m => m.MyTemplate1ListPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
       { path: 'mytemplate1edit', loadChildren: () => import('../../pages/GestionePresenze/mytemplate1-edit-page/mytemplate1-edit-page.module').then(m => m.MyTemplate1EditPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
+      { path: 'azsedilist', loadChildren: () => import('../../pages/GestionePresenze/az-sedi-list-page/az-sedi-list-page.module').then(m => m.AzSediListPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
+      { path: 'azsediedit', loadChildren: () => import('../../pages/GestionePresenze/az-sedi-edit-page/az-sedi-edit-page.module').then(m => m.AzSediEditPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
 
       //admin
       { path: 'admintimesheet', loadChildren: () => import('../../pages/GestionePresenze/time-sheet-admin-page/time-sheet-admin-page.module').then(m => m.TimeSheetAdminModule), canActivate: [RoleGuard4CompanyAdmin] },
       { path: 'requestlistadmin', loadChildren: () => import('../../pages/GestionePresenze/request-list-admin-page/request-list-admin-page.module').then(m => m.RequestListAdminPageModule), canActivate: [RoleGuard4CompanyAdmin] },
-
-      
-      
-      
     ];
   }
 }

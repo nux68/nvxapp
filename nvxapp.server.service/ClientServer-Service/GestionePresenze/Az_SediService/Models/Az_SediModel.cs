@@ -9,8 +9,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediSer
 {
     public class Az_SediModel
     {
-        public required int Id { get; set; }
-        public required int IdAz_Anagrafica { get; set; }
+        public int Id { get; set; }
+        public int IdAz_Anagrafica { get; set; }
         public string? Descrizione { get; set; }
         public Boolean Default { get; set; }
     }
@@ -30,7 +30,33 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediSer
         }
     }
 
-   
+    
+    public class Az_SediGetInModel
+    {
+        public int Id { get; set; }
+    }
+    public class Az_SediGetOutModel : ModelResult
+    {
+        public Az_SediModel Az_Sedi { get; set; } = new Az_SediModel { Id = 0, IdAz_Anagrafica = 0 };
+    }
 
+    
+    public class Az_SediPutInModel
+    {
+        public Az_SediModel Az_Sedi { get; set; } = new Az_SediModel { Id = 0, IdAz_Anagrafica = 0 };
+    }
+    public class Az_SediPutOutModel : ModelResult
+    {
+        public Az_SediModel Az_Sedi { get; set; } = new Az_SediModel { Id = 0, IdAz_Anagrafica = 0 };
+    }
 
+    
+    public class Az_SediDeleteInModel
+    {
+        public int Id { get; set; }
+    }
+    public class Az_SediDeleteOutModel : ModelResult
+    {
+        public Az_SediModel Az_Sedi { get; set; } = new Az_SediModel { Id = 0, IdAz_Anagrafica = 0 };
+    }
 }
