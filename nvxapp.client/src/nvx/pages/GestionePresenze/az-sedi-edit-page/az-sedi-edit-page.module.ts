@@ -5,6 +5,7 @@ import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
 import { SharedComponentInfrastructureModule } from '../../../shared/shared-component-infrastructure.module';
 import { AzSediEditPageComponent } from './az-sedi-edit-page.component';
+import { SharedComponentGestionePresenzeModuleModule } from '../../../shared/shared-component-gestione-presenze-module.module';
 
 @NgModule({
   imports: [
@@ -19,6 +20,7 @@ import { AzSediEditPageComponent } from './az-sedi-edit-page.component';
       }
     ]),
     SharedComponentInfrastructureModule,
+    SharedComponentGestionePresenzeModuleModule
   ],
   declarations: [AzSediEditPageComponent],
 })

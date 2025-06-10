@@ -1,3 +1,4 @@
+import { CheckObjOn_Id_Number } from "../../../ModelsBase/check-obj";
 import { ModelResult } from "../../../ModelsBase/model-result";
 
 export class Az_SediModel {
@@ -19,14 +20,17 @@ export class Az_SediGetInModel {
 }
 export class Az_SediGetOutModel extends ModelResult {
   public az_Sedi!: Az_SediModel;
+  public az_SediAttivita: CheckObjOn_Id_Number[];
 }
 
 
 export class Az_SediPutInModel {
   public az_Sedi!: Az_SediModel;
+  public az_SediAttivita: CheckObjOn_Id_Number[];
 }
 export class Az_SediPutOutModel extends ModelResult {
   public az_Sedi!: Az_SediModel;
+  public az_SediAttivita: CheckObjOn_Id_Number[];
 }
 
 

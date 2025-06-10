@@ -38,16 +38,19 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediSer
     public class Az_SediGetOutModel : ModelResult
     {
         public Az_SediModel Az_Sedi { get; set; } = new Az_SediModel { Id = 0, IdAz_Anagrafica = 0 };
+        public List<CheckObjOn_Id_Number> Az_SediAttivita { get; set; } = new List<CheckObjOn_Id_Number>();
     }
 
     
     public class Az_SediPutInModel
     {
         public Az_SediModel Az_Sedi { get; set; } = new Az_SediModel { Id = 0, IdAz_Anagrafica = 0 };
+        public List<CheckObjOn_Id_Number> Az_SediAttivita { get; set; } = new List<CheckObjOn_Id_Number>();
     }
     public class Az_SediPutOutModel : ModelResult
     {
         public Az_SediModel Az_Sedi { get; set; } = new Az_SediModel { Id = 0, IdAz_Anagrafica = 0 };
+        public List<CheckObjOn_Id_Number> Az_SediAttivita { get; set; } = new List<CheckObjOn_Id_Number>();
     }
 
     
