@@ -32,4 +32,12 @@ export class My_template1_PutOutModel extends ModelResult {
   public my_Template1: My_Template1Model;
 }
 
+// DELETE MODELS
+export class My_template1_DeleteInModel {
+  public id: number;
+}
+export class My_template1_DeleteOutModel extends ModelResult {
+  public my_Template1: My_Template1Model;
+}
+
 

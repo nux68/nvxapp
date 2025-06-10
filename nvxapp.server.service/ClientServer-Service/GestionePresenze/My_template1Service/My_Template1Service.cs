@@ -107,6 +107,27 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.My_templat
                 return retVal;
             }, isSubProcess);
         }
+
+        // DELETE
+        public virtual async Task<GenericResult<My_template1_DeleteOutModel>> MyTemplate1Delete(GenericRequest<My_template1_DeleteInModel> model, bool isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                My_template1_DeleteOutModel retVal = new My_template1_DeleteOutModel();
+                var entity = await _my_template1Repository.FindByIdAsync(model.Data.Id);
+                if (entity != null)
+                {
+                    await _my_template1Repository.DeleteAsync(entity);
+                    retVal.my_Template1 = _mapper.Map<My_Template1Model>(entity);
+                }
+                else
+                {
+                    retVal.AddMessage($"Elemento con Id {model.Data.Id} non trovato.", MessageType.Warning);
+                }
+                await Task.Delay(DelayAsyncMethod);
+                return retVal;
+            }, isSubProcess);
+        }
     }
 
     public interface IMy_template1Service : IServiceBase
@@ -114,5 +135,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.My_templat
         public Task<GenericResult<My_template1_GetAllOutModel>> GetAll(GenericRequest<My_template1_GetAllInModel> model, Boolean isSubProcess);
         public Task<GenericResult<My_template1_GetOutModel>> MyTemplate1Get(GenericRequest<My_template1_GetInModel> model, Boolean isSubProcess);
         public Task<GenericResult<My_template1_PutOutModel>> MyTemplate1Put(GenericRequest<My_template1_PutInModel> model, Boolean isSubProcess);
+        public Task<GenericResult<My_template1_DeleteOutModel>> MyTemplate1Delete(GenericRequest<My_template1_DeleteInModel> model, Boolean isSubProcess);
     }
 }

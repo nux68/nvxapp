@@ -14,10 +14,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.My_templat
         public string Descrizione { get; set; } = string.Empty;
     }
 
-    
-    public class My_template1_GetAllInModel
-    {
-    }
+    public class My_template1_GetAllInModel { }
     public class My_template1_GetAllOutModel : ModelResult
     {
         public List<My_Template1Model> my_Template1 { get; set; }
@@ -27,22 +24,27 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.My_templat
         }
     }
 
-    
-    public class My_template1_GetInModel
-    {
-        public int Id { get; set; }
-    }
+    public class My_template1_GetInModel { public int Id { get; set; } }
     public class My_template1_GetOutModel : ModelResult
     {
         public My_Template1Model my_Template1 { get; set; } = new My_Template1Model();
     }
 
-    
     public class My_template1_PutInModel
     {
         public My_Template1Model my_Template1 { get; set; } = new My_Template1Model();
     }
     public class My_template1_PutOutModel : ModelResult
+    {
+        public My_Template1Model my_Template1 { get; set; } = new My_Template1Model();
+    }
+
+    
+    public class My_template1_DeleteInModel
+    {
+        public int Id { get; set; } = 0;
+    }
+    public class My_template1_DeleteOutModel : ModelResult
     {
         public My_Template1Model my_Template1 { get; set; } = new My_Template1Model();
     }

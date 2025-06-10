@@ -49,5 +49,14 @@ namespace nvxapp.server.Controllers
             var res = await _my_Template1Service.MyTemplate1Put(inModel, false);
             return res;
         }
+
+        [Authorize]
+        [HttpPost]
+        [Route("MyTemplate1Delete")]
+        public async Task<GenericResult<My_template1_DeleteOutModel>> MyTemplate1Delete(GenericRequest<My_template1_DeleteInModel> inModel)
+        {
+            var res = await _my_Template1Service.MyTemplate1Delete(inModel, false);
+            return res;
+        }
     }
 }
