@@ -39,6 +39,8 @@ export class RouteAttendanceTrackingService {
       { path: 'customeredit', loadChildren: () => import('../../pages/GestionePresenze/customer-edit-page/customer-edit-page.module').then(m => m.CustomerEditPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
       { path: 'commessalist', loadChildren: () => import('../../pages/GestionePresenze/commessa-list-page/commessa-list-page.module').then(m => m.CommessaListPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
       { path: 'commessaedit', loadChildren: () => import('../../pages/GestionePresenze/commessa-edit-page/commessa-edit-page.module').then(m => m.CommessaEditPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
+      { path: 'mytemplate1list', loadChildren: () => import('../../pages/GestionePresenze/mytemplate1-list-page/mytemplate1-list-page.module').then(m => m.MyTemplate1ListPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
+      { path: 'mytemplate1edit', loadChildren: () => import('../../pages/GestionePresenze/mytemplate1-edit-page/mytemplate1-edit-page.module').then(m => m.MyTemplate1EditPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
 
       //admin
       { path: 'admintimesheet', loadChildren: () => import('../../pages/GestionePresenze/time-sheet-admin-page/time-sheet-admin-page.module').then(m => m.TimeSheetAdminModule), canActivate: [RoleGuard4CompanyAdmin] },

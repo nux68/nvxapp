@@ -1,0 +1,18 @@
+<app-page-toolbar [title]="title"
+                  [showFilter]="true"
+                  [showBreadcrumbs]="true"
+                  (ev_Filter)="Filter($event)">
+</app-page-toolbar>
+
+<ion-content>
+  <ion-list>
+    <ion-item *ngFor="let item of myTemplate1List">
+      <ion-label>
+        {{ item.id }} - {{ item.idDip_RapportoLavoro }}
+      </ion-label>
+      <ion-button fill="clear" slot="end" (click)="btnEdit.event(item)">
+        <ion-icon name="create-outline"></ion-icon>
+      </ion-button>
+    </ion-item>
+  </ion-list>
+</ion-content>

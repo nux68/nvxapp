@@ -31,6 +31,7 @@ export class MainMenuAttendanceTrackingService implements iMainMenuService {
       { menuType: MenuType.MenuItem, zorder: 205200, title: 'Clienti'           , roles: ['CompanyPowerAdmin'], component: "CustomerListPageComponent", url: '/customerlist', icon: 'people' },
       { menuType: MenuType.MenuItem, zorder: 205300, title: 'Competenze'        , roles: ['CompanyPowerAdmin'], component: "CompetenceListPageComponent", url: '/competencelist', icon: 'ellipse' },
       { menuType: MenuType.MenuItem, zorder: 205400, title: 'Attività'          , roles: ['CompanyPowerAdmin']                  , component: "ActivityListPageComponent", url: '/activitylist', icon: 'ellipse' },
+      { menuType: MenuType.MenuItem, zorder: 205500, title: 'MyTemplate1', roles: ['CompanyPowerAdmin'], component: "MyTemplate1ListPageComponent", url: '/mytemplate1list', icon: 'ellipse' },
       
       
 

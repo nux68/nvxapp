@@ -7,8 +7,6 @@ using nvxapp.server.service.ClientServer_Service.GestionePresenze.My_template1Se
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.My_template1Service.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 
-
-
 namespace nvxapp.server.Controllers
 {
     [ApiController]
@@ -18,14 +16,12 @@ namespace nvxapp.server.Controllers
         private readonly IMy_template1Service _my_Template1Service;
 
         public My_Template1Controller(
-                                        IHttpContextAccessor httpContextAccessor,
-                                        IMy_template1Service dip_GG_CausaliService
+            IHttpContextAccessor httpContextAccessor,
+            IMy_template1Service myTemplate1Service
         ) : base(httpContextAccessor)
         {
-            _my_Template1Service = dip_GG_CausaliService;
+            _my_Template1Service = myTemplate1Service;
         }
-
-        
 
         [Authorize]
         [HttpPost]
@@ -33,14 +29,25 @@ namespace nvxapp.server.Controllers
         public async Task<GenericResult<My_template1OutModel>> GetAll(GenericRequest<My_template1InModel> inModel)
         {
             var res = await _my_Template1Service.GetAll(inModel, false);
-
             return res;
         }
 
-        
+        [Authorize]
+        [HttpPost]
+        [Route("MyTemplate1Get")]
+        public async Task<GenericResult<My_template1_GetOutModel>> MyTemplate1Get(GenericRequest<My_template1_GetInModel> inModel)
+        {
+            var res = await _my_Template1Service.MyTemplate1Get(inModel, false);
+            return res;
+        }
 
+        [Authorize]
+        [HttpPost]
+        [Route("MyTemplate1Put")]
+        public async Task<GenericResult<My_template1_PutOutModel>> MyTemplate1Put(GenericRequest<My_template1_PutInModel> inModel)
+        {
+            var res = await _my_Template1Service.MyTemplate1Put(inModel, false);
+            return res;
+        }
     }
-
-
-
 }
