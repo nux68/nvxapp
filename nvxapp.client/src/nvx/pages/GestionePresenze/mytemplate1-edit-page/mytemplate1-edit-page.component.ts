@@ -43,7 +43,9 @@ export class MyTemplate1EditPageComponent extends BasePageConfirmCancelComponent
       let request: GenericRequest<My_template1_GetInModel> = new GenericRequest<My_template1_GetInModel>(My_template1_GetInModel);
       request.data.id = state.id;
       return this.myTemplate1Service.MyTemplate1Get(request).pipe(
-        map((res) => res.data.my_Template1), // Estrae il dato richiesto
+        map((res) => {
+          return res.data.my_Template1;
+        }), // Estrae il dato richiesto
         catchError((error) => {
           console.error('Errore durante la chiamata API:', error);
           return [null];

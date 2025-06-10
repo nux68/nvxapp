@@ -26,7 +26,7 @@ namespace nvxapp.server.Controllers
         [Authorize]
         [HttpPost]
         [Route("GetAll")]
-        public async Task<GenericResult<My_template1OutModel>> GetAll(GenericRequest<My_template1InModel> inModel)
+        public async Task<GenericResult<My_template1_GetAllOutModel>> GetAll(GenericRequest<My_template1_GetAllInModel> inModel)
         {
             var res = await _my_Template1Service.GetAll(inModel, false);
             return res;

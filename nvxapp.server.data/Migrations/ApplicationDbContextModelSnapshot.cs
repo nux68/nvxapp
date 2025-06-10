@@ -18,7 +18,7 @@ namespace nvxapp.server.data.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("public")
-                .HasAnnotation("ProductVersion", "9.0.3")
+                .HasAnnotation("ProductVersion", "9.0.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -1575,7 +1575,12 @@ namespace nvxapp.server.data.Migrations
                     b.Property<DateTime?>("CreationDate")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int>("IdDip_RapportoLavoro")
+                    b.Property<string>("Descrizione")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<int>("IdAz_Anagrafica")
                         .HasColumnType("integer");
 
                     b.Property<DateTime?>("ModifiedDate")

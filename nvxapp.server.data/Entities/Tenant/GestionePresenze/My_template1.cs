@@ -6,9 +6,11 @@ namespace nvxapp.server.data.Entities.Tenant
 {
     public class My_Template1 : BaseEntity
     {
-        // Esempio di proprietà, aggiungi le tue secondo necessità
         [Required]
-        public int IdDip_RapportoLavoro { get; set; }
+        public int IdAz_Anagrafica { get; set; }
+        [Required]
+        [MaxLength(50)]
+        public string Descrizione { get; set; } = string.Empty;
         
     }
 }

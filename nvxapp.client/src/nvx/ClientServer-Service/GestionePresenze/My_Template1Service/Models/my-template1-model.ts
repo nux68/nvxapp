@@ -3,8 +3,8 @@ import { ModelResult } from "../../../ModelsBase/model-result";
 export class My_Template1Model {
 
   public id: number;
-  public idDip_RapportoLavoro!: number; 
-    
+  public idAz_Anagrafica!: number;
+  public descrizione!: string; 
 
 }
 

@@ -61,6 +61,11 @@ export class MyTemplate1ListPageComponent implements OnInit {
     this.searchText = CurrFilter;
   }
 
+  isAdmin(item: any) {
+    // Personalizza la logica se necessario
+    return false;
+  }
+
   getAll() {
     if (!this.myTemplate1List) return [];
     // Ordina per 'id' come fallback
