@@ -3,9 +3,11 @@ import { NavController } from '@ionic/angular';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
-import { Az_Sedi_GetAll_InModel, Az_SediModel } from '../../../ClientServer-Service/GestionePresenze/Az_Sedi/Models/az-sedi-model';
+import { Az_Sedi_GetAll_InModel, Az_SediModel, Az_SediDeleteInModel } from '../../../ClientServer-Service/GestionePresenze/Az_Sedi/Models/az-sedi-model';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { AzSediService } from '../../../ClientServer-Service/GestionePresenze/Az_Sedi/az-sedi.service';
+import { map, catchError } from 'rxjs';
+import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
 
 @Component({
   selector: 'app-az-sedi-list-page',
@@ -19,23 +21,30 @@ export class AzSediListPageComponent implements OnInit {
   public searchText!: string;
   public azSediList: Az_SediModel[] | null = null;
   public btnEdit: ButtonItem;
+  public btnDelete: ButtonItem;
 
   constructor(private navCtrl: NavController,
               public fabMenuService: FabMenuService,
               private azSediService: AzSediService,
               private userInterfaceService: UserInterfaceService,
-              private userNavigationService: UserNavigationService) {
+              private userNavigationService: UserNavigationService,
+              private refresherService: RefresherService) {
 
     this.btnEdit = userInterfaceService.Btn_Modifica;
     this.btnEdit.event = this.handleButtonEditClick;
+    this.btnDelete = userInterfaceService.Btn_Cancella;
+    this.btnDelete.event = this.handleButtonDeleteClick;
   }
 
-  ionViewWillEnter() {
+  private loadData() {
     let request: GenericRequest<Az_Sedi_GetAll_InModel> = new GenericRequest<Az_Sedi_GetAll_InModel>(Az_Sedi_GetAll_InModel);
     this.azSediService.GetAll(request).subscribe(res => {
       this.azSediList = res.data.az_Sedi;
     });
+  }
 
+  ionViewWillEnter() {
+    this.loadData();
     this.fabMenuService.fabMenuItem = [
       new FabMenuItem('Nuova Sede', 'add-circle-outline', () => {
         this.navCtrl.navigateForward('/azsediedit', {
@@ -55,6 +64,22 @@ export class AzSediListPageComponent implements OnInit {
     this.navCtrl.navigateForward('/azsediedit', {
       state: { id: item.id }
     });
+  }
+
+  handleButtonDeleteClick = (item: any) => {
+    let request: GenericRequest<Az_SediDeleteInModel> = new GenericRequest<Az_SediDeleteInModel>(Az_SediDeleteInModel);
+    request.data.id = item.id;
+    return this.azSediService.AzSediDelete(request).pipe(
+      map(() => {
+        this.refresherService.SharedParameterGestionePresenze_triggerRefresh();
+        this.loadData();
+        return true;
+      }),
+      catchError((error) => {
+        console.error('Errore durante la chiamata API:', error);
+        return [false];
+      })
+    ).subscribe();
   }
 
   Filter(CurrFilter: any) {

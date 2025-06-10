@@ -17,10 +17,7 @@
         <ion-note color="danger" *ngIf="_editForm.get('descrizione')?.hasError('maxlength') && _editForm.get('descrizione')?.touched">
           La descrizione non può superare i 50 caratteri.
         </ion-note>
-        <ion-item>
-          <ion-label>Default</ion-label>
-          <ion-checkbox formControlName="default"></ion-checkbox>
-        </ion-item>
+      
       </form>
     </ion-card-content>
   </ion-card>
