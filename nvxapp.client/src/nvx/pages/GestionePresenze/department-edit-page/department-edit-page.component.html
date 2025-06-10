@@ -62,7 +62,7 @@
                   <ion-label>
                     {{ item.id | idAspNetUsersToCognome }}  {{ item.id | idAspNetUsersToNome }}
                   </ion-label>
-                  <ion-checkbox slot="end" [checked]="isSelectedApproval(item.id)" (ionChange)="toggleSelectionApproval(item.id, $event)"></ion-checkbox>
+                  <ion-checkbox slot="end" *ngIf="isSelectedAdmin(item.id)" [checked]="isSelectedApproval(item.id)" (ionChange)="toggleSelectionApproval(item.id, $event)"></ion-checkbox>
                   <ion-reorder slot="end" *ngIf="reorderEnabled"></ion-reorder>
                 </ion-item>
               </ion-item-sliding>
@@ -93,7 +93,7 @@
                     </ion-label>
                   </ion-col>
                   <ion-col size="1">
-                    <ion-checkbox [checked]="isSelectedApproval(item.id)" (ionChange)="toggleSelectionApproval(item.id, $event)"></ion-checkbox>
+                    <ion-checkbox  *ngIf="isSelectedAdmin(item.id)" [checked]="isSelectedApproval(item.id)" (ionChange)="toggleSelectionApproval(item.id, $event)"></ion-checkbox>
                   </ion-col>
                   <ion-col size="1" *ngIf="reorderEnabled">
                     <ion-reorder></ion-reorder>
