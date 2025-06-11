@@ -325,7 +325,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
                     if (az_SediReparto == null)
                     {
                         az_SediReparto = _mapper.Map<Az_SediReparto>(model.Data.Az_SediReparto);
-                        az_SediReparto.IdAz_Sedi = model.Data.Az_SediReparto.IdAz_Sedi;//company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Sedi.Id;
+                        az_SediReparto.IdAz_Sedi = model.Data.Az_SediReparto.IdAz_Sedi;
                     }
                     else
                     {
@@ -386,7 +386,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
                         var AllAdmin = model.Data.SelectedAdmin.Where(x => x.Checked == true).ToList();
                         foreach (var item in AllAdmin)
                         {
-                            var recDB = _az_RepartoUserRepository.FindAll(x => x.IdAz_SediReparto == model.Data.Az_SediReparto.Id &&
+                            var recDB = _az_RepartoUserRepository.FindAll(x => x.IdAz_SediReparto == retVal.Az_SediReparto.Id &&
                                                                                x.IdAspNetUsers == item.Id).FirstOrDefault();
 
                             if (recDB == null)
@@ -394,7 +394,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
                                 recDB = new Az_SediRepartoUser()
                                 {
                                     IdAspNetUsers = item.Id,
-                                    IdAz_SediReparto = model.Data.Az_SediReparto.Id
+                                    IdAz_SediReparto = retVal.Az_SediReparto.Id
                                 };
                             }
 
@@ -407,7 +407,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
                         var AllUser = model.Data.SelectedUser.Where(x => x.Checked == true).ToList();
                         foreach (var item in AllUser)
                         {
-                            var recDB = _az_RepartoUserRepository.FindAll(x => x.IdAz_SediReparto == model.Data.Az_SediReparto.Id &&
+                            var recDB = _az_RepartoUserRepository.FindAll(x => x.IdAz_SediReparto == retVal.Az_SediReparto.Id &&
                                                                                x.IdAspNetUsers == item.Id).FirstOrDefault();
 
                             if (recDB == null)
@@ -415,7 +415,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
                                 recDB = new Az_SediRepartoUser()
                                 {
                                     IdAspNetUsers = item.Id,
-                                    IdAz_SediReparto = model.Data.Az_SediReparto.Id
+                                    IdAz_SediReparto = retVal.Az_SediReparto.Id
                                 };
                             }
 
