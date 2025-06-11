@@ -92,6 +92,14 @@ export class AzSediListPageComponent implements OnInit {
 
   getAll() {
     if (!this.azSediList) return [];
-    return this.azSediList.sort((a, b) => a.descrizione.localeCompare(b.descrizione));
+    return this.azSediList.sort((a, b) => {
+      // Prima ordina per default (true prima di false)
+      if (a.default === b.default) {
+        // Poi ordina per descrizione
+        return a.descrizione.localeCompare(b.descrizione);
+      }
+      return a.default ? -1 : 1;
+    });
   }
+
 }

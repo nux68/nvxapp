@@ -85,6 +85,13 @@ export class ActivityListPageComponent implements OnInit {
   }
 
   getAll() {
-    return this.par_AttivitaList?.sort((a, b) => a.descrizione.localeCompare(b.descrizione));
+    return this.par_AttivitaList?.sort((a, b) => {
+      // Prima ordina per default (true prima di false)
+      if (a.default === b.default) {
+        // Poi ordina per descrizione
+        return a.descrizione.localeCompare(b.descrizione);
+      }
+      return a.default ? -1 : 1;
+    });
   }
 }

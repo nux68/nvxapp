@@ -112,9 +112,14 @@ export class DepartmentListPageComponent implements OnInit {
   getAll() {
     if (!this.az_SediRepartoList) return [];
     const filteredList = this.az_SediRepartoList.filter(x => x.idAz_Sedi === this.curr_SedeId);
-    const sorted_SediList = filteredList.sort((a, b) =>
-      a.descrizione.localeCompare(b.descrizione)
-    );
+    const sorted_SediList = filteredList.sort((a, b) => {
+      // Prima ordina per default (true prima di false)
+      if (a.default === b.default) {
+        // Poi ordina per descrizione
+        return a.descrizione.localeCompare(b.descrizione);
+      }
+      return a.default ? -1 : 1;
+    });
     return sorted_SediList;
   }
 
