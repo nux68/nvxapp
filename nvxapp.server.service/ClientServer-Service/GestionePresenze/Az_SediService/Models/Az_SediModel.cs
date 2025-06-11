@@ -1,9 +1,4 @@
 ﻿using nvxapp.server.service.ClientServer_Service.ModelsBase;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediService.Models
 {
@@ -20,17 +15,17 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediSer
 
     }
 
-    public class Az_Sedi_GetAll_OutModel : ModelResult 
+    public class Az_Sedi_GetAll_OutModel : ModelResult
     {
         public List<Az_SediModel> Az_Sedi { get; set; } = new List<Az_SediModel>();
 
-        public Az_Sedi_GetAll_OutModel() 
+        public Az_Sedi_GetAll_OutModel()
         {
-        
+
         }
     }
 
-    
+
     public class Az_SediGetInModel
     {
         public int Id { get; set; }
@@ -41,7 +36,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediSer
         public List<CheckObjOn_Id_Number> Az_SediAttivita { get; set; } = new List<CheckObjOn_Id_Number>();
     }
 
-    
+
     public class Az_SediPutInModel
     {
         public Az_SediModel Az_Sedi { get; set; } = new Az_SediModel { Id = 0, IdAz_Anagrafica = 0 };
@@ -53,7 +48,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediSer
         public List<CheckObjOn_Id_Number> Az_SediAttivita { get; set; } = new List<CheckObjOn_Id_Number>();
     }
 
-    
+
     public class Az_SediDeleteInModel
     {
         public int Id { get; set; }

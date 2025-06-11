@@ -82,7 +82,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediSer
                     retVal.Az_Sedi = new Az_SediModel();
                 }
 
-                var az_SediAttivita = _az_SediAttivitaRepository.FindAll(x => x.IdAz_Sedi == model.Data.Id);
+                var az_SediAttivita = _az_SediAttivitaRepository.FindAll(x => x.IdAz_Sedi == retVal.Az_Sedi.Id);
                 if (az_SediAttivita != null)
                     foreach (var item in az_SediAttivita)
                         retVal.Az_SediAttivita.Add(new CheckObjOn_Id_Number()

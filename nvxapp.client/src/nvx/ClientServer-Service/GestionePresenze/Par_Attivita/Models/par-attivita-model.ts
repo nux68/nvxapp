@@ -1,3 +1,4 @@
+import { CheckObjOn_Id_Number } from "../../../ModelsBase/check-obj";
 import { ModelResult } from "../../../ModelsBase/model-result";
 
 export class Par_AttivitaModel {
@@ -22,15 +23,18 @@ export class Par_AttivitaGetInModel
 }
 export class Par_AttivitaGetOutModel extends ModelResult
 {
-    par_Attivita: Par_AttivitaModel = new Par_AttivitaModel();
+  public par_Attivita: Par_AttivitaModel = new Par_AttivitaModel();
+  public par_Competenza: CheckObjOn_Id_Number[];
 }
 export class Par_AttivitaPutInModel
 {
-    par_Attivita: Par_AttivitaModel = new Par_AttivitaModel();
+  public par_Attivita: Par_AttivitaModel = new Par_AttivitaModel();
+  public par_Competenza: CheckObjOn_Id_Number[];
 }
 export class Par_AttivitaPutOutModel extends ModelResult
 {
-    par_Attivita: Par_AttivitaModel = new Par_AttivitaModel();
+  public par_Attivita: Par_AttivitaModel = new Par_AttivitaModel();
+  public par_Competenza: CheckObjOn_Id_Number[];
 }
 
 export class Par_AttivitaDeleteInModel

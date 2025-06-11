@@ -23,15 +23,16 @@ export class MainMenuAttendanceTrackingService implements iMainMenuService {
 
       { menuType: MenuType.MenuNote, zorder: 201000, title: 'Parametri'      , roles: ['CompanyPowerAdmin']                  , component: '', url: '', icon: '' },
       { menuType: MenuType.MenuItem, zorder: 202000, title: 'Giustificativi' , roles: ['CompanyPowerAdmin']                  , component: "JustificationListPageComponent", url: '/justificationlist', icon: 'ellipse' },
-      { menuType: MenuType.MenuItem, zorder: 203000, title: 'Reparti'        , roles: ['CompanyPowerAdmin']                  , component: "DepartmentListPageComponent", url: '/departmentlist', icon: 'ellipse' },
       { menuType: MenuType.MenuItem, zorder: 204000, title: 'Configurazione' , roles: ['CompanyPowerAdmin']                  , component: "CompanyCfgPageComponent", url: '/companycfgedit', icon: 'ellipse' },
 
       { menuType: MenuType.MenuNote, zorder: 205000, title: 'Gestione Commesse' , roles: ['CompanyPowerAdmin']                  , component: '', url: '', icon: '' },
       { menuType: MenuType.MenuItem, zorder: 205100, title: 'Commesse'          , roles: ['CompanyPowerAdmin'], component: "CommessaListPageComponent", url: '/commessalist', icon: 'ellipse' },
       { menuType: MenuType.MenuItem, zorder: 205200, title: 'Clienti'           , roles: ['CompanyPowerAdmin'], component: "CustomerListPageComponent", url: '/customerlist', icon: 'people' },
-      { menuType: MenuType.MenuItem, zorder: 205300, title: 'Competenze'        , roles: ['CompanyPowerAdmin'], component: "CompetenceListPageComponent", url: '/competencelist', icon: 'ellipse' },
-      { menuType: MenuType.MenuItem, zorder: 205400, title: 'Attività'          , roles: ['CompanyPowerAdmin']                  , component: "ActivityListPageComponent", url: '/activitylist', icon: 'ellipse' },
-      { menuType: MenuType.MenuItem, zorder: 205600, title: 'Sedi', roles: ['CompanyPowerAdmin'], component: "AzSediListPageComponent", url: '/azsedilist', icon: 'business' },
+      { menuType: MenuType.MenuItem, zorder: 205300, title: 'Reparti'           , roles: ['CompanyPowerAdmin'], component: "DepartmentListPageComponent", url: '/departmentlist', icon: 'ellipse' },
+      { menuType: MenuType.MenuItem, zorder: 205400, title: 'Sedi'              , roles: ['CompanyPowerAdmin'], component: "AzSediListPageComponent", url: '/azsedilist', icon: 'business' },
+      { menuType: MenuType.MenuItem, zorder: 205500, title: 'Attività'          , roles: ['CompanyPowerAdmin'], component: "ActivityListPageComponent", url: '/activitylist', icon: 'ellipse' },
+      { menuType: MenuType.MenuItem, zorder: 205600, title: 'Competenze'        , roles: ['CompanyPowerAdmin'], component: "CompetenceListPageComponent", url: '/competencelist', icon: 'ellipse' },
+
       //{ menuType: MenuType.MenuItem, zorder: 205500, title: 'MyTemplate1', roles: ['CompanyPowerAdmin'], component: "MyTemplate1ListPageComponent", url: '/mytemplate1list', icon: 'ellipse' },
       
       
