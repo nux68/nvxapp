@@ -9,8 +9,6 @@ using nvxapp.server.data.Entities.Tenant;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
-using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_CfgService.Models;
-using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRepartoService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediService.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Interfaces;
@@ -23,6 +21,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediSer
     {
         private readonly IAz_SediRepository _az_SediRepository;
         private readonly IGestionePresenzeUserUtility _gestionePresenzeUserUtility;
+        private readonly IAz_SediAttivitaRepository _az_SediAttivitaRepository;
+
 
         public Az_SediService(IMapper mapper,
                                   UserManager<ApplicationUser> userManager,
@@ -31,11 +31,13 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediSer
                                   IHttpContextAccessor httpContextAccessor,
                                   IConfiguration configuration,
                                   IGestionePresenzeUserUtility gestionePresenzeUserUtility,
+                                  IAz_SediAttivitaRepository az_SediAttivitaRepository,
 
-                                  IAz_SediRepository az_SediRepository) : base(mapper , userManager  , aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
+                                  IAz_SediRepository az_SediRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _az_SediRepository = az_SediRepository;
             _gestionePresenzeUserUtility = gestionePresenzeUserUtility;
+            _az_SediAttivitaRepository = az_SediAttivitaRepository;
         }
 
         public virtual async Task<GenericResult<Az_Sedi_GetAll_OutModel>> GetAll(GenericRequest<Az_Sedi_GetAll_InModel> model, Boolean isSubProcess)
@@ -52,11 +54,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediSer
                 if (company_DATA_COMB_AzAna_AzSedi_AzReparto != null && company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Cfg != null)
                 {
                     var az_Sedi = _az_SediRepository.FindAll(x => x.IdAz_Anagrafica == company_DATA_COMB_AzAna_AzSedi_AzReparto!.az_Anagrafica!.Id).ToList();
-                    retVal.Az_Sedi = _mapper.Map<List<Az_SediModel>>(az_Sedi);    
-                }    
+                    retVal.Az_Sedi = _mapper.Map<List<Az_SediModel>>(az_Sedi);
+                }
 
 
-                
+
 
                 //eliminare
                 // Nessun 'await' qui
@@ -79,6 +81,16 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediSer
                 {
                     retVal.Az_Sedi = new Az_SediModel();
                 }
+
+                var az_SediAttivita = _az_SediAttivitaRepository.FindAll(x => x.IdAz_Sedi == model.Data.Id);
+                if (az_SediAttivita != null)
+                    foreach (var item in az_SediAttivita)
+                        retVal.Az_SediAttivita.Add(new CheckObjOn_Id_Number()
+                        {
+                            Id = item.IdPar_Attivita,
+                            Checked = true
+                        });
+
                 return retVal;
             }, isSubProcess);
         }
@@ -105,6 +117,37 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediSer
                     }
                     az_Sedi = await _az_SediRepository.UpsertAsync(az_Sedi);
                     retVal.Az_Sedi = _mapper.Map<Az_SediModel>(az_Sedi);
+
+                    //cancellazione
+                    var az_SediAttivitaList = _az_SediAttivitaRepository.FindAll(x => x.IdAz_Sedi == model.Data.Az_Sedi.Id).ToList();
+                    if (az_SediAttivitaList != null)
+                    {
+                        foreach (var item in az_SediAttivitaList)
+                        {
+                            // ciclo i dati a db, se non presente nella lista tornata dal client, allora è stata cancellato
+                            // e lo elimino dal db
+                            var rec = model.Data.Az_SediAttivita.Where(x => x.Id == item.IdPar_Attivita && x.Checked == true).FirstOrDefault();
+                            if (rec == null)
+                            {
+                                await _az_SediAttivitaRepository.DeleteAsync(item);
+                            }
+                        }
+                    }
+                    //aggiornamento
+                    var Az_SediAttivitaChecked = model.Data.Az_SediAttivita.Where(x => x.Checked == true).ToList();
+                    foreach (var item in Az_SediAttivitaChecked)
+                    {
+                        var az_SediAttivita = _az_SediAttivitaRepository.FindAll(x => x.IdAz_Sedi == retVal.Az_Sedi.Id && x.IdPar_Attivita == item.Id).FirstOrDefault();
+                        if (az_SediAttivita == null)
+                        {
+                            az_SediAttivita = new Az_SediAttivita() { IdAz_Sedi = retVal.Az_Sedi.Id, IdPar_Attivita = item.Id };
+                        }
+                        await _az_SediAttivitaRepository.UpsertAsync(az_SediAttivita);
+                    }
+
+
+
+
                 }
                 return retVal;
             }, isSubProcess);
@@ -132,7 +175,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediSer
 
     public interface IAz_SediService : IServiceBase
     {
-        public Task<GenericResult<Az_Sedi_GetAll_OutModel>> GetAll( GenericRequest<Az_Sedi_GetAll_InModel> model, Boolean isSubProcess);
+        public Task<GenericResult<Az_Sedi_GetAll_OutModel>> GetAll(GenericRequest<Az_Sedi_GetAll_InModel> model, Boolean isSubProcess);
         public Task<GenericResult<Az_SediGetOutModel>> AzSediGet(GenericRequest<Az_SediGetInModel> model, Boolean isSubProcess);
         public Task<GenericResult<Az_SediPutOutModel>> AzSediPut(GenericRequest<Az_SediPutInModel> model, Boolean isSubProcess);
         public Task<GenericResult<Az_SediDeleteOutModel>> AzSediDelete(GenericRequest<Az_SediDeleteInModel> model, Boolean isSubProcess);
