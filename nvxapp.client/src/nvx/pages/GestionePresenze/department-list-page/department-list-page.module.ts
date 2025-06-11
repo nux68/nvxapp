@@ -5,6 +5,7 @@ import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
 import { SharedComponentInfrastructureModule } from '../../../shared/shared-component-infrastructure.module';
 import { DepartmentListPageComponent } from './department-list-page.component';
+import { SharedComponentGestionePresenzeModuleModule } from '../../../shared/shared-component-gestione-presenze-module.module';
 
 
 
@@ -20,6 +21,7 @@ import { DepartmentListPageComponent } from './department-list-page.component';
       }
     ]),
     SharedComponentInfrastructureModule,
+    SharedComponentGestionePresenzeModuleModule
   ],
 
   declarations: [DepartmentListPageComponent],

@@ -81,3 +81,14 @@ export class Az_SediRepartoPutOutModel extends ModelResult {
   public az_SediRepartoAttivita: CheckObjOn_Id_Number[];
 }
 
+export class Az_SediRepartoDeleteInModel {
+  public id: number;
+  constructor() {
+    this.id = 0;
+  }
+}
+
+export class Az_SediRepartoDeleteOutModel extends ModelResult {
+  public az_SediReparto: Az_SediRepartoModel;
+}
+

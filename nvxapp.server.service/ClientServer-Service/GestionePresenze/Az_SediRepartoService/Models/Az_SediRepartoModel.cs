@@ -91,4 +91,14 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
         public List<CheckObjOn_Id_Text_4ApprovalZorder> SelectedUser { get; set; } = new List<CheckObjOn_Id_Text_4ApprovalZorder>();
         public List<CheckObjOn_Id_Number> Az_SediRepartoAttivita { get; set; } = new List<CheckObjOn_Id_Number>();
     }
+
+    public class Az_SediRepartoDeleteInModel
+    {
+        public int Id { get; set; }
+    }
+
+    public class Az_SediRepartoDeleteOutModel : ModelResult
+    {
+        public Az_SediRepartoModel? Az_SediReparto { get; set; }
+    }
 }

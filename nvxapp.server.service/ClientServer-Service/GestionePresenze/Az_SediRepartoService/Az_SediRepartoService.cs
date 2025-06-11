@@ -73,7 +73,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
                 }
 
 
-                
 
                 //eliminare
                 // Nessun 'await' qui
@@ -111,10 +110,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
                         var userRoles = resUserRoles.Data.Roles.Select(x => x.Name).ToList();
                         if (userRoles.Contains("User"))
                         {
-                            var idAz_SediReparto = _az_RepartoUserRepository.FindAll(x => x.IdAspNetUsers == userId /*this.CurrentUserId*/ && 
-                                                                                          x.UserInDepartment == true )
+                            var idAz_SediReparto = _az_RepartoUserRepository.FindAll(x => x.IdAspNetUsers == userId /*this.CurrentUserId*/ &&
+                                                                                          x.UserInDepartment == true)
                                                                             .Select(x => x.IdAz_SediReparto).ToList();
-                            
+
                             var az_Rep = _az_SediRepartoRepository.FindAll(x => idAz_SediReparto.Contains(x.Id)).ToList();
 
 
@@ -159,10 +158,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
                         var userRoles = resUserRoles.Data.Roles.Select(x => x.Name).ToList();
                         if (userRoles.Contains("CompanyPowerAdmin") || userRoles.Contains("CompanyAdmin"))
                         {
-                            var idAz_SediReparto = _az_RepartoUserRepository.FindAll(x => x.IdAspNetUsers == userId /*this.CurrentUserId*/ && 
+                            var idAz_SediReparto = _az_RepartoUserRepository.FindAll(x => x.IdAspNetUsers == userId /*this.CurrentUserId*/ &&
                                                                                           x.EnabledToAdmin == true)
                                                                             .Select(x => x.IdAz_SediReparto).ToList();
-                            
+
                             var az_Rep = _az_SediRepartoRepository.FindAll(x => idAz_SediReparto.Contains(x.Id)).ToList();
 
 
@@ -193,7 +192,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
 
                 int IdCompany;
                 int.TryParse(this.CurrentCompany, out IdCompany);
-                
+
                 string userId = string.IsNullOrEmpty(model.Data.IdAspNetUsers) ? this.CurrentUserId : model.Data.IdAspNetUsers;
 
                 Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg company_DATA_COMB_AzAna_AzSedi_AzReparto = await _gestionePresenzeUserUtility.Get_AzAna_AzSedi_AzReparto_Az_Cfg(IdCompany, true);
@@ -208,11 +207,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
                         var userRoles = resUserRoles.Data.Roles.Select(x => x.Name).ToList();
                         if (userRoles.Contains("CompanyPowerAdmin") || userRoles.Contains("CompanyAdmin"))
                         {
-                            var idAz_SediReparto = _az_RepartoUserRepository.FindAll(x => x.IdAspNetUsers == userId /*this.CurrentUserId*/ && 
-                                                                                          x.EnabledToApproval == true && 
+                            var idAz_SediReparto = _az_RepartoUserRepository.FindAll(x => x.IdAspNetUsers == userId /*this.CurrentUserId*/ &&
+                                                                                          x.EnabledToApproval == true &&
                                                                                           x.EnabledToAdmin == true)
                                                                             .Select(x => x.IdAz_SediReparto).ToList();
-                            
+
                             var az_Rep = _az_SediRepartoRepository.FindAll(x => idAz_SediReparto.Contains(x.Id)).ToList();
 
 
@@ -229,7 +228,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
                 return retVal;
             }, isSubProcess);
         }
-        
+
 
         public virtual async Task<GenericResult<Az_SediRepartoGetOutModel>> Az_SediRepartoGet(GenericRequest<Az_SediRepartoGetInModel> model, Boolean isSubProcess)
         {
@@ -350,7 +349,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
                         {
                             // ciclo i valori originali, se non presente nei valori ritornati (o Checked=falso) dal client
                             // allora è stato eliminato e procedo alla cancellazione (logica)
-                            
+
                             var recDB = _az_RepartoUserRepository.FindAll(x => x.IdAz_SediReparto == model.Data.Az_SediReparto.Id &&
                                                                                x.IdAspNetUsers == item.IdAspNetUsers).FirstOrDefault();
 
@@ -373,12 +372,12 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
                                     recDB.UserInDepartment = false;
                                     updateRec = true;
                                 }
-                                
-                                if(updateRec)
+
+                                if (updateRec)
                                     await _az_RepartoUserRepository.UpsertAsync(recDB);
-                                
+
                             }
-                            
+
                         }
 
 
@@ -439,6 +438,28 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
             }, isSubProcess);
         }
 
+        public virtual async Task<GenericResult<Az_SediRepartoDeleteOutModel>> Az_SediRepartoDelete(GenericRequest<Az_SediRepartoDeleteInModel> model, bool isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                Az_SediRepartoDeleteOutModel retVal = new Az_SediRepartoDeleteOutModel();
+
+                var entity = await _az_SediRepartoRepository.FindByIdAsync(model.Data.Id);
+                if (entity != null)
+                {
+                    await _az_SediRepartoRepository.DeleteAsync(entity);
+                    retVal.Az_SediReparto = _mapper.Map<Az_SediRepartoModel>(entity);
+                }
+                else
+                {
+                    retVal.Messages.Add(new Message("Reparto non trovato.", MessageType.Error));
+                }
+
+                await Task.Delay(DelayAsyncMethod);
+                return retVal;
+            }, isSubProcess);
+        }
+
     }
 
     public interface IAz_SediRepartoService : IServiceBase
@@ -449,6 +470,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
         public Task<GenericResult<Az_SediReparto_Get4AdminApproval_OutModel>> Get4AdminApproval(GenericRequest<Az_SediReparto_Get4AdminApproval_InModel> model, Boolean isSubProcess);
         public Task<GenericResult<Az_SediRepartoGetOutModel>> Az_SediRepartoGet(GenericRequest<Az_SediRepartoGetInModel> model, Boolean isSubProcess);
         public Task<GenericResult<Az_SediRepartoPutOutModel>> Az_SediRepartoPut(GenericRequest<Az_SediRepartoPutInModel> model, Boolean isSubProcess);
+        public Task<GenericResult<Az_SediRepartoDeleteOutModel>> Az_SediRepartoDelete(GenericRequest<Az_SediRepartoDeleteInModel> model, bool isSubProcess);
     }
 
 

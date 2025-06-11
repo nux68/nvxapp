@@ -5,7 +5,7 @@ import { environment } from '../../../../environments/environment';
 import { GenericRequest } from '../../ModelsBase/generic-request';
 import { GenericResult } from '../../ModelsBase/generic-result';
 import { map, Observable } from 'rxjs';
-import { Az_SediRepartoGetInModel, Az_SediRepartoGetOutModel, Az_SediReparto_GetAll_InModel, Az_SediReparto_GetAll_OutModel, Az_SediRepartoPutInModel, Az_SediRepartoPutOutModel, Az_SediReparto_Get4User_InModel, Az_SediReparto_Get4User_OutModel, Az_SediReparto_Get4Admin_InModel, Az_SediReparto_Get4Admin_OutModel, Az_SediReparto_Get4AdminApproval_InModel, Az_SediReparto_Get4AdminApproval_OutModel } from './Models/az-sedi-reparto-model';
+import { Az_SediRepartoGetInModel, Az_SediRepartoGetOutModel, Az_SediReparto_GetAll_InModel, Az_SediReparto_GetAll_OutModel, Az_SediRepartoPutInModel, Az_SediRepartoPutOutModel, Az_SediReparto_Get4User_InModel, Az_SediReparto_Get4User_OutModel, Az_SediReparto_Get4Admin_InModel, Az_SediReparto_Get4Admin_OutModel, Az_SediReparto_Get4AdminApproval_InModel, Az_SediReparto_Get4AdminApproval_OutModel, Az_SediRepartoDeleteInModel, Az_SediRepartoDeleteOutModel } from './Models/az-sedi-reparto-model';
 
 @Injectable({
   providedIn: 'root'
@@ -88,5 +88,9 @@ export class AzSediRepartoService {
 
   }
 
+  Az_SediRepartoDelete(model: GenericRequest<Az_SediRepartoDeleteInModel>): Observable<GenericResult<Az_SediRepartoDeleteOutModel>> {
+    return this.http.post<GenericResult<Az_SediRepartoDeleteOutModel>>(environment.remoteData.apiUri + 'Az_SediReparto/Az_SediRepartoDelete', model)
+      .pipe(map(r => r));
+  }
 
 }

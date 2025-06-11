@@ -87,7 +87,14 @@ namespace nvxapp.server.Controllers
             return res;
         }
 
-
+        [Authorize]
+        [HttpPost]
+        [Route("Az_SediRepartoDelete")]
+        public async Task<GenericResult<Az_SediRepartoDeleteOutModel>> Az_SediRepartoDelete(GenericRequest<Az_SediRepartoDeleteInModel> inModel)
+        {
+            var res = await _az_RepartoService.Az_SediRepartoDelete(inModel, false);
+            return res;
+        }
 
     }
 
