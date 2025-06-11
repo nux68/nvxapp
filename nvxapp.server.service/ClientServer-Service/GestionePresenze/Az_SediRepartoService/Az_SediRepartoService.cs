@@ -67,7 +67,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
 
                 if (company_DATA_COMB_AzAna_AzSedi_AzReparto != null && company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Sedi != null)
                 {
-                    var az_Rep = _az_SediRepartoRepository.FindAll(x => x.IdAz_Sedi == company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Sedi.Id).ToList();
+                    //var az_Rep = _az_SediRepartoRepository.FindAll(x => x.IdAz_Sedi == company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Sedi.Id).ToList();
+                    var az_Rep = _az_SediRepartoRepository.FindAll(x=> x.Id>0).ToList();
 
                     retVal.Az_SediReparto = _mapper.Map<List<Az_SediRepartoModel>>(az_Rep);
                 }
@@ -324,7 +325,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
                     if (az_SediReparto == null)
                     {
                         az_SediReparto = _mapper.Map<Az_SediReparto>(model.Data.Az_SediReparto);
-                        az_SediReparto.IdAz_Sedi = company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Sedi.Id;
+                        az_SediReparto.IdAz_Sedi = model.Data.Az_SediReparto.IdAz_Sedi;//company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Sedi.Id;
                     }
                     else
                     {

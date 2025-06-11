@@ -21,10 +21,20 @@ export class Par_AttivitaGetInModel
 {
     id: number = 0;
 }
-export class Par_AttivitaGetOutModel extends ModelResult
-{
-  public par_Attivita: Par_AttivitaModel = new Par_AttivitaModel();
+//export class Par_AttivitaGetOutModel extends ModelResult
+//{
+//  public par_Attivita: Par_AttivitaModel = new Par_AttivitaModel();
+//  public par_Competenza: CheckObjOn_Id_Number[];
+//}
+export class Par_AttivitaGetOutModel extends ModelResult {
+  public par_Attivita: Par_AttivitaModel;
   public par_Competenza: CheckObjOn_Id_Number[];
+
+  constructor() {
+    super();
+    this.par_Attivita = new Par_AttivitaModel();
+    this.par_Competenza = [];
+  }
 }
 export class Par_AttivitaPutInModel
 {

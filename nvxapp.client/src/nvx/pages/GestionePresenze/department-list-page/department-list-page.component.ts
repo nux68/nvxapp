@@ -24,7 +24,7 @@ export class DepartmentListPageComponent implements OnInit {
   public az_SediRepartoList: Az_SediRepartoModel[] | null = null;
   public btnEdit: ButtonItem;
   public btnDelete: ButtonItem;
-  public curr_SedeId: number;
+  public curr_idAz_Sedi: number;
 
   constructor(private navCtrl: NavController,
     private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
@@ -62,7 +62,7 @@ export class DepartmentListPageComponent implements OnInit {
 
       new FabMenuItem('Elemento 1', 'add-circle-outline', () => {
         this.navCtrl.navigateForward('/departmentedit', {
-          state: { id: 0 }
+          state: { id: 0, idAz_Sedi: this.curr_idAz_Sedi }
         });
       }),
 
@@ -111,7 +111,7 @@ export class DepartmentListPageComponent implements OnInit {
 
   getAll() {
     if (!this.az_SediRepartoList) return [];
-    const filteredList = this.az_SediRepartoList.filter(x => x.idAz_Sedi === this.curr_SedeId);
+    const filteredList = this.az_SediRepartoList.filter(x => x.idAz_Sedi === this.curr_idAz_Sedi);
     const sorted_SediList = filteredList.sort((a, b) => {
       // Prima ordina per default (true prima di false)
       if (a.default === b.default) {
@@ -127,7 +127,7 @@ export class DepartmentListPageComponent implements OnInit {
   onPeriodChange(period: { year: number, month: number } | undefined): void { }
   onCurrentUserChanged(userId: string | undefined): void { }
   onSedeChanged(sediId: number | undefined): void {
-    this.curr_SedeId = sediId;
+    this.curr_idAz_Sedi = sediId;
   }
   onRepartiChanged(repartoIds: number[] | undefined): void { }
   onAllUsersInSelectionChanged(userIds: string[] | undefined): void { }

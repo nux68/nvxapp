@@ -73,28 +73,36 @@ export class DepartmentEditPageComponent extends BasePageConfirmCancelComponent<
   LoadData = (): Observable<Az_SediRepartoGetOutModel | null> => {
     const state = history.state;
 
-    if (state && state.id) {
-      let request: GenericRequest<Az_SediRepartoGetInModel> = new GenericRequest<Az_SediRepartoGetInModel>(Az_SediRepartoGetInModel);
-      request.data.id = state.id;
+    
+      if (state.id) {
+        let request: GenericRequest<Az_SediRepartoGetInModel> = new GenericRequest<Az_SediRepartoGetInModel>(Az_SediRepartoGetInModel);
+        request.data.id = state.id;
 
-      return this.azSediRepartoService.Az_SediRepartoGet(request).pipe(
-        map((res) => {
-     
-          return res.data; 
+        return this.azSediRepartoService.Az_SediRepartoGet(request).pipe(
+          map((res) => {
 
-        }), // Estrae il dato richiesto
-        catchError((error) => {
-          console.error('Errore durante la chiamata API:', error);
-          return [null]; // Restituisce null in caso di errore
-        })
-      );
-    }
-    else {
-      return new Observable<Az_SediRepartoGetOutModel | null>((subscriber) => {
-        subscriber.next(new Az_SediRepartoGetOutModel());
-        subscriber.complete();
-      });
-    }
+            return res.data;
+
+          }), // Estrae il dato richiesto
+          catchError((error) => {
+            console.error('Errore durante la chiamata API:', error);
+            return [null]; // Restituisce null in caso di errore
+          })
+        );
+      }
+      else {
+        return new Observable<Az_SediRepartoGetOutModel | null>((subscriber) => {
+          let az_SediRepartoGetOutModel = new Az_SediRepartoGetOutModel();
+          //az_SediRepartoGetOutModel.az_SediReparto = new Az_SediRepartoModel();
+
+          az_SediRepartoGetOutModel.az_SediReparto.idAz_Sedi = state.idAz_Sedi;
+
+          subscriber.next(az_SediRepartoGetOutModel);
+          subscriber.complete();
+        });
+      }
+    
+    
   };
 
   SaveData = (editModel: Az_SediRepartoGetOutModel): Observable<boolean> => {

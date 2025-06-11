@@ -55,13 +55,29 @@ export class Az_SediReparto_Get4AdminApproval_OutModel extends ModelResult {
 export class Az_SediRepartoGetInModel {
   public id: number;
 }
+//export class Az_SediRepartoGetOutModel extends ModelResult {
+//  public az_SediReparto: Az_SediRepartoModel;
+//  public selectedAdmin: CheckObjOn_Id_Text_4ApprovalZorder[];
+//  public selectedUser: CheckObjOn_Id_Text_4ApprovalZorder[];
+//  public az_SediRepartoAttivita: CheckObjOn_Id_Number[];
+
+//}
+
 export class Az_SediRepartoGetOutModel extends ModelResult {
   public az_SediReparto: Az_SediRepartoModel;
   public selectedAdmin: CheckObjOn_Id_Text_4ApprovalZorder[];
   public selectedUser: CheckObjOn_Id_Text_4ApprovalZorder[];
   public az_SediRepartoAttivita: CheckObjOn_Id_Number[];
 
+  constructor() {
+    super();
+    this.az_SediReparto = new Az_SediRepartoModel();
+    this.selectedAdmin = [];
+    this.selectedUser = [];
+    this.az_SediRepartoAttivita = [];
+  }
 }
+
 
 export class CheckObjOn_Id_Text_4ApprovalZorder extends CheckObjOn_Id_Text {
   public enabledToApproval!: boolean;
