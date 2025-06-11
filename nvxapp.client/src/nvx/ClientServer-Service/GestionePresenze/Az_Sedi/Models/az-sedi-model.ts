@@ -18,9 +18,19 @@ export class Az_Sedi_GetAll_OutModel extends ModelResult {
 export class Az_SediGetInModel {
   public id!: number;
 }
+//export class Az_SediGetOutModel extends ModelResult {
+//  public az_Sedi!: Az_SediModel;
+//  public az_SediAttivita: CheckObjOn_Id_Number[];
+//}
 export class Az_SediGetOutModel extends ModelResult {
-  public az_Sedi!: Az_SediModel;
+  public az_Sedi: Az_SediModel;
   public az_SediAttivita: CheckObjOn_Id_Number[];
+
+  constructor() {
+    super();
+    this.az_Sedi = new Az_SediModel();
+    this.az_SediAttivita = [];
+  }
 }
 
 
