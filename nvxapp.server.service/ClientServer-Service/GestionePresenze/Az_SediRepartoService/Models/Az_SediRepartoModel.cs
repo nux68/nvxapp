@@ -1,4 +1,6 @@
-﻿using nvxapp.server.service.ClientServer_Service.ModelsBase;
+﻿using nvxapp.server.data.Entities.Tenant;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediAttivitaService.Models;
+using nvxapp.server.service.ClientServer_Service.ModelsBase;
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRepartoService.Models
 {
@@ -58,11 +60,13 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
     public class Az_SediRepartoGetInModel
     {
         public int Id { get; set; } = 0;
+        public int IdAz_Sedi { get; set; } = 0;
     }
     public class Az_SediRepartoGetOutModel : ModelResult
     {
 
         public Az_SediRepartoModel Az_SediReparto { get; set; } = new Az_SediRepartoModel();
+        public List<Az_SediAttivitaModel> Az_SediAttivita { get; set; } = new List<Az_SediAttivitaModel>();
         public List<CheckObjOn_Id_Text_4ApprovalZorder> SelectedAdmin { get; set; } = new List<CheckObjOn_Id_Text_4ApprovalZorder>();
         public List<CheckObjOn_Id_Text_4ApprovalZorder> SelectedUser { get; set; } = new List<CheckObjOn_Id_Text_4ApprovalZorder>();
         public List<CheckObjOn_Id_Number> Az_SediRepartoAttivita { get; set; } = new List<CheckObjOn_Id_Number>();

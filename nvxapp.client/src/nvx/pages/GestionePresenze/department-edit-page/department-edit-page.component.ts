@@ -71,38 +71,23 @@ export class DepartmentEditPageComponent extends BasePageConfirmCancelComponent<
   }
 
   LoadData = (): Observable<Az_SediRepartoGetOutModel | null> => {
-    const state = history.state;
+      const state = history.state;
+ 
+      let request: GenericRequest<Az_SediRepartoGetInModel> = new GenericRequest<Az_SediRepartoGetInModel>(Az_SediRepartoGetInModel);
+      request.data.id = state.id;
+      request.data.idAz_Sedi = state.idAz_Sedi;
 
-    
-      if (state.id) {
-        let request: GenericRequest<Az_SediRepartoGetInModel> = new GenericRequest<Az_SediRepartoGetInModel>(Az_SediRepartoGetInModel);
-        request.data.id = state.id;
+      return this.azSediRepartoService.Az_SediRepartoGet(request).pipe(
+        map((res) => {
 
-        return this.azSediRepartoService.Az_SediRepartoGet(request).pipe(
-          map((res) => {
+          return res.data;
 
-            return res.data;
-
-          }), // Estrae il dato richiesto
-          catchError((error) => {
-            console.error('Errore durante la chiamata API:', error);
-            return [null]; // Restituisce null in caso di errore
-          })
-        );
-      }
-      else {
-        return new Observable<Az_SediRepartoGetOutModel | null>((subscriber) => {
-          let az_SediRepartoGetOutModel = new Az_SediRepartoGetOutModel();
-          //az_SediRepartoGetOutModel.az_SediReparto = new Az_SediRepartoModel();
-
-          az_SediRepartoGetOutModel.az_SediReparto.idAz_Sedi = state.idAz_Sedi;
-
-          subscriber.next(az_SediRepartoGetOutModel);
-          subscriber.complete();
-        });
-      }
-    
-    
+        }), // Estrae il dato richiesto
+        catchError((error) => {
+          console.error('Errore durante la chiamata API:', error);
+          return [null]; // Restituisce null in caso di errore
+        })
+      );
   };
 
   SaveData = (editModel: Az_SediRepartoGetOutModel): Observable<boolean> => {
@@ -321,26 +306,26 @@ export class DepartmentEditPageComponent extends BasePageConfirmCancelComponent<
     this.currSection = event.detail.value;
   }
 
-
-
   public getPar_Attivita(): CheckObjOn_Id_Number[] {
-
     let retVal: CheckObjOn_Id_Number[] = [];
 
-    this._par_Attivita.filter(rep =>
-      rep.id > 0
-    ).forEach(item => {
-      let appo = { id: item.id, checked: false };
-      retVal.push(appo);
-    });
+    if (this._editModel == null)
+      return retVal;
 
+    // Ottieni gli id delle attività selezionate
+    const selectedIds = this._editModel.az_SediAttivita?.map((a: any) => a.idPar_Attivita) ?? [];
+
+    this._par_Attivita
+      .filter(item => selectedIds.includes(item.id))
+      .forEach(item => {
+        let appo = { id: item.id, checked: false };
+        retVal.push(appo);
+      });
 
     return retVal;
   }
 
   isSelectedaz_Az_SediRepartoAttivita(itemId: number): boolean {
-
-   
 
     return this._editModel.az_SediRepartoAttivita.find(entry => entry.id === itemId)?.checked ?? false;
 

@@ -79,7 +79,7 @@ export class DepartmentListPageComponent implements OnInit {
 
   handleButtonEditClick = (item: any) => {
     this.navCtrl.navigateForward('/departmentedit', {
-      state: { id: item.id }
+      state: { id: item.id, idAz_Sedi: this.curr_idAz_Sedi }
     });
   }
 

@@ -9,6 +9,7 @@ using nvxapp.server.data.Entities.Tenant;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediAttivitaService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRepartoService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRepartoUserService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRepartoUserService.Models;
@@ -17,6 +18,7 @@ using nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.ServerModels;
+using System.Collections.Generic;
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRepartoService
 {
@@ -31,6 +33,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
         private readonly IAspNetRolesRepository _aspNetRolesRepository;
         private readonly IAz_SediRepartoUserRepository _az_RepartoUserRepository;
 
+        private readonly IAz_SediAttivitaRepository _az_SediAttivitaRepository;
+        
+        
 
         public Az_SediRepartoService(IMapper mapper,
                                   UserManager<ApplicationUser> userManager,
@@ -40,6 +45,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
                                   IConfiguration configuration,
 
                                   IAz_SediRepartoUserRepository az_RepartoUserRepository,
+                                  IAz_SediAttivitaRepository az_SediAttivitaRepository,
                                   IAspNetRolesRepository aspNetRolesRepository,
                                   IAccountService accountService,
                                   IAz_SediRepartoUserService az_SediRepartoUserService,
@@ -52,6 +58,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
             _az_SediRepartoUserService = az_SediRepartoUserService;
             _aspNetRolesRepository = aspNetRolesRepository;
             _az_RepartoUserRepository = az_RepartoUserRepository;
+            _az_SediAttivitaRepository = az_SediAttivitaRepository;
         }
 
         public virtual async Task<GenericResult<Az_SediReparto_GetAll_OutModel>> GetAll(GenericRequest<Az_SediReparto_GetAll_InModel> model, Boolean isSubProcess)
@@ -68,7 +75,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
                 if (company_DATA_COMB_AzAna_AzSedi_AzReparto != null && company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Sedi != null)
                 {
                     //var az_Rep = _az_SediRepartoRepository.FindAll(x => x.IdAz_Sedi == company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Sedi.Id).ToList();
-                    var az_Rep = _az_SediRepartoRepository.FindAll(x=> x.Id>0).ToList();
+                    var az_Rep = _az_SediRepartoRepository.FindAll(x => x.Id > 0).ToList();
 
                     retVal.Az_SediReparto = _mapper.Map<List<Az_SediRepartoModel>>(az_Rep);
                 }
@@ -239,9 +246,21 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
                 Az_SediRepartoGetOutModel retVal = new Az_SediRepartoGetOutModel();
 
                 var az_SediReparto = await _az_SediRepartoRepository.FindByIdAsync(model.Data.Id);
+                if (az_SediReparto == null)
+                {
+                    az_SediReparto = new Az_SediReparto()
+                    {
+                        IdAz_Sedi = model.Data.IdAz_Sedi
+                    };
+                }
+
                 if (az_SediReparto != null)
                 {
                     retVal.Az_SediReparto = _mapper.Map<Az_SediRepartoModel>(az_SediReparto);
+
+                    var az_SediAttivita =  _az_SediAttivitaRepository.FindAll(x=>x.IdAz_Sedi==model.Data.IdAz_Sedi).ToList();
+
+                    retVal.Az_SediAttivita = _mapper.Map<List<Az_SediAttivitaModel>>(az_SediAttivita);
 
                     GenericRequest<Az_SediRepartoUser_GetAll_InModel> req1 = new GenericRequest<Az_SediRepartoUser_GetAll_InModel>();
                     req1.Data.IdAz_SediReparto = retVal.Az_SediReparto.Id;
@@ -292,10 +311,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
                         }
                     }
                 }
-                else
-                {
-                    retVal.Az_SediReparto = new Az_SediRepartoModel() { };
-                }
+                //else
+                //{
+                //    retVal.Az_SediReparto = new Az_SediRepartoModel() { };
+                //}
 
                 //eliminare
                 // Nessun 'await' qui

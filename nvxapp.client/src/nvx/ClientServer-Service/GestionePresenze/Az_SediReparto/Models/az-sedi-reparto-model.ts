@@ -1,6 +1,6 @@
 import { CheckObjOn_Id_Number, CheckObjOn_Id_Text } from "../../../ModelsBase/check-obj";
 import { ModelResult } from "../../../ModelsBase/model-result";
-
+import { Az_SediAttivitaModel } from "../../Az_SediAttivita/Models/az-sediattivita-model";
 
 export class Az_SediRepartoModel {
 
@@ -54,20 +54,16 @@ export class Az_SediReparto_Get4AdminApproval_OutModel extends ModelResult {
 
 export class Az_SediRepartoGetInModel {
   public id: number;
+  public idAz_Sedi: number;
 }
-//export class Az_SediRepartoGetOutModel extends ModelResult {
-//  public az_SediReparto: Az_SediRepartoModel;
-//  public selectedAdmin: CheckObjOn_Id_Text_4ApprovalZorder[];
-//  public selectedUser: CheckObjOn_Id_Text_4ApprovalZorder[];
-//  public az_SediRepartoAttivita: CheckObjOn_Id_Number[];
 
-//}
 
 export class Az_SediRepartoGetOutModel extends ModelResult {
   public az_SediReparto: Az_SediRepartoModel;
   public selectedAdmin: CheckObjOn_Id_Text_4ApprovalZorder[];
   public selectedUser: CheckObjOn_Id_Text_4ApprovalZorder[];
   public az_SediRepartoAttivita: CheckObjOn_Id_Number[];
+  public az_SediAttivita: Az_SediAttivitaModel[];
 
   constructor() {
     super();
@@ -75,6 +71,7 @@ export class Az_SediRepartoGetOutModel extends ModelResult {
     this.selectedAdmin = [];
     this.selectedUser = [];
     this.az_SediRepartoAttivita = [];
+    this.az_SediAttivita = [];
   }
 }
 
