@@ -138,4 +138,14 @@ export class AzSediEditPageComponent extends BasePageConfirmCancelComponent<Az_S
 
   }
 
+  public getSedeDescr(): string {
+
+    if (this?._editModel?.az_Sedi?.descrizione) {
+      return ' di : "' + this._editModel.az_Sedi.descrizione + '"';
+    }
+    else
+      return '';
+
+  }
+
 }
