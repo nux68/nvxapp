@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
 import { UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
-import { NavController } from '@ionic/angular';
+import { ModalController, NavController } from '@ionic/angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { Observable } from 'rxjs/internal/Observable';
@@ -19,6 +19,7 @@ import { RoleCode } from '../../../ClientServer-Service/Infrastructure/Account/M
 import { Az_SediRepartoModel } from '../../../ClientServer-Service/GestionePresenze/Az_SediReparto/Models/az-sedi-reparto-model';
 import { Par_AttivitaModel } from '../../../ClientServer-Service/GestionePresenze/Par_Attivita/Models/par-attivita-model';
 import { FabMenuService, FabMenuItem } from '../../../Utility/infrastructure/fab-menu.service';
+import { SeletionSediRepartoDialogComponent } from '../../../shared/components/GestionePresenze/seletion-sedi-reparto-dialog/seletion-sedi-reparto-dialog.component';
 
 @Component({
   selector: 'app-commessa-edit-page',
@@ -60,7 +61,8 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
               public fabMenuService: FabMenuService,
               private stringHelperService: StringHelperService,
               private azCommessaService: AzCommessaService,
-              private refresherService: RefresherService)
+              private refresherService: RefresherService,
+              private modalCtrl: ModalController)
   {
 
     super(navCtrl, userInterfaceService, fb);
@@ -99,9 +101,12 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
     this.fabMenuService.fabMenuItem = [
 
       new FabMenuItem('xxx', 'add-circle-outline', () => {
-        this.navCtrl.navigateForward('/seletionsedirepartopage', {
-          state: { id: 0 }
-        });
+        //this.navCtrl.navigateForward('/seletionsedirepartopage', {
+        //  state: { id: 0 }
+        //});
+
+        this.apriDialog();
+
       }),
 
     ];
@@ -363,6 +368,34 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
       this._editModel.az_SubCommessa[this.idxCurrCommessa].az_SubCommessaAttivita.push({ id: itemId, checked: event.detail.checked });
     }
 
+  }
+
+
+  async apriDialog() {
+    // Crea l'istanza del modal
+    const modal = await this.modalCtrl.create({
+      component: SeletionSediRepartoDialogComponent, // Il componente da usare
+      // Passa i dati al modal tramite componentProps
+      // Questi dati saranno accessibili tramite @Input() nel DialogExampleComponent
+      componentProps: {
+        nomeUtente: 'Mario Rossi'
+      }
+    });
+
+    // Presenta il modal all'utente
+    await modal.present();
+
+    // Aspetta che il modal venga chiuso e ottieni i dati restituiti
+    // 'data' contiene i dati passati a dismiss()
+    // 'role' è il secondo parametro di dismiss() (es. 'confirm' o 'cancel')
+    const { data, role } = await modal.onWillDismiss();
+
+    // Gestisci i dati solo se il ruolo è 'confirm'
+    //if (role === 'confirm') {
+    //  this.risultatoDialog = `L'utente ha confermato con il messaggio: "${data.messaggio}"`;
+    //} else {
+    //  this.risultatoDialog = `L'utente ha annullato l'operazione.`;
+    //}
   }
 
 }

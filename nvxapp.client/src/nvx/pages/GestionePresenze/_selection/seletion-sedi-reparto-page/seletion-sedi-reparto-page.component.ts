@@ -34,4 +34,12 @@ export class SeletionSediRepartoPageComponent  implements OnInit {
   }
 
 
+  //onPeriodChange(period: { year: number, month: number } | undefined): void { }
+  //onCurrentUserChanged(userId: string | undefined): void { }
+  //onSedeChanged(sediId: number | undefined): void {}
+  //onRepartiChanged(repartoIds: number[] | undefined): void { }
+  //onAllUsersInSelectionChanged(userIds: string[] | undefined): void { }
+
+
+
 }

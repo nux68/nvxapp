@@ -20,10 +20,13 @@ import { SediRepartoUserNavigationComponent } from './components/GestionePresenz
 import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 import { AzSediRepartoToLongTextPipe } from './pipe/GestionePresenze/az-sedireparto-to-long-text.pipe';
+import { SeletionSediRepartoDialogComponent } from './components/GestionePresenze/seletion-sedi-reparto-dialog/seletion-sedi-reparto-dialog.component';
+import { SharedComponentInfrastructureModule } from './shared-component-infrastructure.module';
 
 @NgModule({
-  declarations: [SediRepartoUserNavigationComponent],
+  declarations: [SediRepartoUserNavigationComponent, SeletionSediRepartoDialogComponent],
   imports: [
+    SharedComponentInfrastructureModule,
     CommonModule,
     IonicModule,
     FormsModule,
@@ -39,6 +42,6 @@ import { AzSediRepartoToLongTextPipe } from './pipe/GestionePresenze/az-sedirepa
     IdDipRapportoLavoroToNomePipe, IdDipRapportoLavoroToCognomePipe,
     IdAspNetUsersToCognomePipe, IdAspNetUsersToNomePipe,
     ParAttivitaToLongTextPipe, ParCompetenzaToLongTextPipe, AzCommessaToLongTextPipe, AzClienteToLongTextPipe,
-    SediRepartoUserNavigationComponent, AzSediRepartoToLongTextPipe]
+    SediRepartoUserNavigationComponent, SeletionSediRepartoDialogComponent,AzSediRepartoToLongTextPipe]
 })
 export class SharedComponentGestionePresenzeModuleModule { }
