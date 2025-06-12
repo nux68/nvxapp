@@ -18,6 +18,7 @@ import { Dip_AnagraficaModel } from '../../../ClientServer-Service/GestionePrese
 import { RoleCode } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-roles-model';
 import { Az_SediRepartoModel } from '../../../ClientServer-Service/GestionePresenze/Az_SediReparto/Models/az-sedi-reparto-model';
 import { Par_AttivitaModel } from '../../../ClientServer-Service/GestionePresenze/Par_Attivita/Models/par-attivita-model';
+import { FabMenuService, FabMenuItem } from '../../../Utility/infrastructure/fab-menu.service';
 
 @Component({
   selector: 'app-commessa-edit-page',
@@ -56,22 +57,22 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
               protected override userInterfaceService: UserInterfaceService,
               private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
               protected override fb: FormBuilder,
+              public fabMenuService: FabMenuService,
               private stringHelperService: StringHelperService,
               private azCommessaService: AzCommessaService,
               private refresherService: RefresherService)
   {
-              super(navCtrl, userInterfaceService, fb);
-              this._editForm = this.fb.group({
-                
-                tmp_az_SubCommessa: [null, []],
 
-                //SUB FORM PER OGGETTi DI OGGETTI
-                az_Commessa: this.fb.group({
-                  descrizione: [null, [Validators.required, Validators.maxLength(50)]],
-                  idAz_Cliente: [null, [Validators.required]],
-                })
+    super(navCtrl, userInterfaceService, fb);
 
-              });
+    this._editForm = this.fb.group({
+        tmp_az_SubCommessa: [null, []],
+            //SUB FORM PER OGGETTi DI OGGETTI
+            az_Commessa: this.fb.group({
+              descrizione: [null, [Validators.required, Validators.maxLength(50)]],
+              idAz_Cliente: [null, [Validators.required]],
+            })
+        });
   }
 
   override get EditForm(): FormGroup {
@@ -95,6 +96,20 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
     //
     this.dip_Anagrafica = this.sharedParameterGestionePresenzeService.Dip_Anagrafica;
 
+    this.fabMenuService.fabMenuItem = [
+
+      new FabMenuItem('xxx', 'add-circle-outline', () => {
+        this.navCtrl.navigateForward('/seletionsedirepartopage', {
+          state: { id: 0 }
+        });
+      }),
+
+    ];
+  }
+
+
+  ionViewWillLeave() {
+    this.fabMenuService.fabMenuItem = [];
   }
 
   get Title(): string { return 'Commessa'; }

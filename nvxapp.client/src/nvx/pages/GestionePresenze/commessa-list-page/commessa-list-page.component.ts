@@ -49,11 +49,15 @@ export class CommessaListPageComponent implements OnInit {
     this.loadData();
 
     this.fabMenuService.fabMenuItem = [
+
       new FabMenuItem('Nuova Commessa', 'add-circle-outline', () => {
         this.navCtrl.navigateForward('/commessaedit', {
           state: { id: 0 }
         });
       }),
+
+
+
     ];
   }
 
