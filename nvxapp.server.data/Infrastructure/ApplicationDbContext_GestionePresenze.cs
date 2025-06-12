@@ -199,13 +199,13 @@ namespace nvxapp.server.data.Infrastructure
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Az_SediRepartoAttivita>()
-                .HasOne(t => t.Az_SediAttivitaNavigation)
+                .HasOne(t => t.Par_AttivitaNavigation)
                 .WithMany()
-                .HasForeignKey(t => t.IdAz_SediAttivita)
+                .HasForeignKey(t => t.IdPar_Attivita)
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Az_SediRepartoAttivita>()
-                .HasIndex(t => new { t.IdAz_SediReparto, t.IdAz_SediAttivita })
+                .HasIndex(t => new { t.IdAz_SediReparto, t.IdPar_Attivita })
                 .IsUnique();
 
             /* Az_SediRepartoUser */

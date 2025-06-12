@@ -10,6 +10,8 @@ using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediAttivitaService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRepartoAttivitaService;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRepartoAttivitaService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRepartoService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRepartoUserService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRepartoUserService.Models;
@@ -18,7 +20,6 @@ using nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.ServerModels;
-using System.Collections.Generic;
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRepartoService
 {
@@ -28,14 +29,17 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
 
         private readonly IAz_SediRepartoUserService _az_SediRepartoUserService;
         private readonly IAccountService _accountService;
+        private readonly IAz_SediRepartoAttivitaService _az_SediRepartoAttivitaService;
+
+
         private readonly IAz_SediRepartoRepository _az_SediRepartoRepository;
         private readonly IGestionePresenzeUserUtility _gestionePresenzeUserUtility;
         private readonly IAspNetRolesRepository _aspNetRolesRepository;
         private readonly IAz_SediRepartoUserRepository _az_RepartoUserRepository;
 
         private readonly IAz_SediAttivitaRepository _az_SediAttivitaRepository;
-        
-        
+
+
 
         public Az_SediRepartoService(IMapper mapper,
                                   UserManager<ApplicationUser> userManager,
@@ -44,6 +48,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
                                   IHttpContextAccessor httpContextAccessor,
                                   IConfiguration configuration,
 
+                                  IAz_SediRepartoAttivitaService az_SediRepartoAttivitaService,
                                   IAz_SediRepartoUserRepository az_RepartoUserRepository,
                                   IAz_SediAttivitaRepository az_SediAttivitaRepository,
                                   IAspNetRolesRepository aspNetRolesRepository,
@@ -59,6 +64,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
             _aspNetRolesRepository = aspNetRolesRepository;
             _az_RepartoUserRepository = az_RepartoUserRepository;
             _az_SediAttivitaRepository = az_SediAttivitaRepository;
+            _az_SediRepartoAttivitaService = az_SediRepartoAttivitaService;
         }
 
         public virtual async Task<GenericResult<Az_SediReparto_GetAll_OutModel>> GetAll(GenericRequest<Az_SediReparto_GetAll_InModel> model, Boolean isSubProcess)
@@ -254,67 +260,80 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
                     };
                 }
 
-                if (az_SediReparto != null)
+
+                retVal.Az_SediReparto = _mapper.Map<Az_SediRepartoModel>(az_SediReparto);
+
+                var az_SediAttivita = _az_SediAttivitaRepository.FindAll(x => x.IdAz_Sedi == model.Data.IdAz_Sedi).ToList();
+
+                retVal.Az_SediAttivita = _mapper.Map<List<Az_SediAttivitaModel>>(az_SediAttivita);
+
+                GenericRequest<Az_SediRepartoUser_GetAll_InModel> req1 = new GenericRequest<Az_SediRepartoUser_GetAll_InModel>();
+                req1.Data.IdAz_SediReparto = retVal.Az_SediReparto.Id;
+
+                var res1 = await _az_SediRepartoUserService.GetAll(req1, true);
+                if (res1.Success && res1.Data != null)
                 {
-                    retVal.Az_SediReparto = _mapper.Map<Az_SediRepartoModel>(az_SediReparto);
+                    ApplicationRole? userRole = _aspNetRolesRepository.GetAll().Where(x => x.Code == RoleCode.User).FirstOrDefault();
+                    ApplicationRole? companyAdminRole = _aspNetRolesRepository.GetAll().Where(x => x.Code == RoleCode.CompanyAdmin).FirstOrDefault();
+                    ApplicationRole? companyPowerAdminRole = _aspNetRolesRepository.GetAll().Where(x => x.Code == RoleCode.CompanyPowerAdmin).FirstOrDefault();
 
-                    var az_SediAttivita =  _az_SediAttivitaRepository.FindAll(x=>x.IdAz_Sedi==model.Data.IdAz_Sedi).ToList();
-
-                    retVal.Az_SediAttivita = _mapper.Map<List<Az_SediAttivitaModel>>(az_SediAttivita);
-
-                    GenericRequest<Az_SediRepartoUser_GetAll_InModel> req1 = new GenericRequest<Az_SediRepartoUser_GetAll_InModel>();
-                    req1.Data.IdAz_SediReparto = retVal.Az_SediReparto.Id;
-
-                    var res1 = await _az_SediRepartoUserService.GetAll(req1, true);
-                    if (res1.Success && res1.Data != null)
+                    foreach (var item in res1.Data.Az_RepartoUser)
                     {
-                        ApplicationRole? userRole = _aspNetRolesRepository.GetAll().Where(x => x.Code == RoleCode.User).FirstOrDefault();
-                        ApplicationRole? companyAdminRole = _aspNetRolesRepository.GetAll().Where(x => x.Code == RoleCode.CompanyAdmin).FirstOrDefault();
-                        ApplicationRole? companyPowerAdminRole = _aspNetRolesRepository.GetAll().Where(x => x.Code == RoleCode.CompanyPowerAdmin).FirstOrDefault();
-
-                        foreach (var item in res1.Data.Az_RepartoUser)
+                        var applicationUser = await _userManager.FindByIdAsync(item.IdAspNetUsers);
+                        if (applicationUser != null)
                         {
-                            var applicationUser = await _userManager.FindByIdAsync(item.IdAspNetUsers);
-                            if (applicationUser != null)
+                            var roles = await _userManager.GetRolesAsync(applicationUser);
+                            if (roles != null)
                             {
-                                var roles = await _userManager.GetRolesAsync(applicationUser);
-                                if (roles != null)
+                                //user
+                                if (userRole != null && userRole.Name != null && item.UserInDepartment)
                                 {
-                                    //user
-                                    if (userRole != null && userRole.Name != null && item.UserInDepartment)
+                                    if (roles.Contains(userRole.Name))
                                     {
-                                        if (roles.Contains(userRole.Name))
+                                        retVal.SelectedUser.Add(new CheckObjOn_Id_Text_4ApprovalZorder()
                                         {
-                                            retVal.SelectedUser.Add(new CheckObjOn_Id_Text_4ApprovalZorder()
-                                            {
-                                                Id = item.IdAspNetUsers,
-                                                Checked = true
-                                            });
-                                        }
+                                            Id = item.IdAspNetUsers,
+                                            Checked = true
+                                        });
                                     }
-                                    //admin
-                                    if (companyAdminRole != null && companyAdminRole.Name != null && companyPowerAdminRole != null && companyPowerAdminRole.Name != null && item.EnabledToAdmin)
+                                }
+                                //admin
+                                if (companyAdminRole != null && companyAdminRole.Name != null && companyPowerAdminRole != null && companyPowerAdminRole.Name != null && item.EnabledToAdmin)
+                                {
+                                    if (roles.Contains(companyAdminRole.Name) || roles.Contains(companyPowerAdminRole.Name))
                                     {
-                                        if (roles.Contains(companyAdminRole.Name) || roles.Contains(companyPowerAdminRole.Name))
+                                        retVal.SelectedAdmin.Add(new CheckObjOn_Id_Text_4ApprovalZorder()
                                         {
-                                            retVal.SelectedAdmin.Add(new CheckObjOn_Id_Text_4ApprovalZorder()
-                                            {
-                                                Id = item.IdAspNetUsers,
-                                                Checked = true,
-                                                ApprovalZOrder = item.ApprovalZOrder,
-                                                EnabledToApproval = item.EnabledToApproval
-                                            });
-                                        }
+                                            Id = item.IdAspNetUsers,
+                                            Checked = true,
+                                            ApprovalZOrder = item.ApprovalZOrder,
+                                            EnabledToApproval = item.EnabledToApproval
+                                        });
                                     }
                                 }
                             }
                         }
                     }
                 }
-                //else
-                //{
-                //    retVal.Az_SediReparto = new Az_SediRepartoModel() { };
-                //}
+
+
+                GenericRequest<Az_SediRepartoAttivita_Selected_GetInModel> az_SediRepartoAttivita_Selected_GetInModel = new GenericRequest<Az_SediRepartoAttivita_Selected_GetInModel>();
+                az_SediRepartoAttivita_Selected_GetInModel.Data.IdAz_SediReparto = retVal.Az_SediReparto.Id;
+
+                var res2 = await _az_SediRepartoAttivitaService.GetSelected_On_Az_SediReparto(az_SediRepartoAttivita_Selected_GetInModel, true);
+                if (res2.Success && res2.Data != null)
+                {
+                    res2.Data.Az_SediRepartoAttivita.ForEach(item =>
+                    {
+                        retVal.Az_SediRepartoAttivita.Add(new CheckObjOn_Id_Number()
+                        {
+                            Id = item.IdPar_Attivita,
+                            Checked = true
+                        });
+                    });
+                }
+
+
 
                 //eliminare
                 // Nessun 'await' qui
@@ -445,10 +464,22 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
                     }
 
 
+                    //Az_SediRepartoAttivita
+                    GenericRequest<Az_SediRepartoAttivita_Selected_PutInModel> az_SediRepartoAttivita_Selected_PutInModel = new GenericRequest<Az_SediRepartoAttivita_Selected_PutInModel>();
+                    az_SediRepartoAttivita_Selected_PutInModel.Data.IdAz_SediReparto = retVal.Az_SediReparto.Id;
+
+                    foreach (var item in model.Data.Az_SediRepartoAttivita.Where(x=>x.Checked).ToList())
+                    {
+                        az_SediRepartoAttivita_Selected_PutInModel.Data.Az_SediRepartoAttivita.Add(new Az_SediRepartoAttivitaModel()
+                        {
+                             IdPar_Attivita= item.Id,
+                             IdAz_SediReparto = retVal.Az_SediReparto.Id
+                        });
+                    }
+
+                    var res2 = await _az_SediRepartoAttivitaService.PutSelected_On_Az_SediReparto(az_SediRepartoAttivita_Selected_PutInModel, true);
+                    if (res2.Success && res2.Data != null){}
                 }
-
-
-
 
                 //eliminare
                 // Nessun 'await' qui

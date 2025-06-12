@@ -739,10 +739,10 @@ namespace nvxapp.server.data.Migrations
                     b.Property<DateTime?>("CreationDate")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int>("IdAz_SediAttivita")
+                    b.Property<int>("IdAz_SediReparto")
                         .HasColumnType("integer");
 
-                    b.Property<int>("IdAz_SediReparto")
+                    b.Property<int>("IdPar_Attivita")
                         .HasColumnType("integer");
 
                     b.Property<DateTime?>("ModifiedDate")
@@ -750,9 +750,9 @@ namespace nvxapp.server.data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("IdAz_SediAttivita");
+                    b.HasIndex("IdPar_Attivita");
 
-                    b.HasIndex("IdAz_SediReparto", "IdAz_SediAttivita")
+                    b.HasIndex("IdAz_SediReparto", "IdPar_Attivita")
                         .IsUnique();
 
                     b.ToTable("Az_SediRepartoAttivita", "public");
@@ -2038,21 +2038,21 @@ namespace nvxapp.server.data.Migrations
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Az_SediRepartoAttivita", b =>
                 {
-                    b.HasOne("nvxapp.server.data.Entities.Tenant.Az_SediAttivita", "Az_SediAttivitaNavigation")
-                        .WithMany()
-                        .HasForeignKey("IdAz_SediAttivita")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("nvxapp.server.data.Entities.Tenant.Az_SediReparto", "Az_SediRepartoNavigation")
                         .WithMany("Az_SediRepartoAttivita")
                         .HasForeignKey("IdAz_SediReparto")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Az_SediAttivitaNavigation");
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Par_Attivita", "Par_AttivitaNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdPar_Attivita")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Az_SediRepartoNavigation");
+
+                    b.Navigation("Par_AttivitaNavigation");
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Az_SediRepartoUser", b =>

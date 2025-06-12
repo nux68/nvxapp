@@ -26,3 +26,8 @@ CAST
 tipo dati
 orario
 public TimeOnly? Dalle { get; set; }
+
+
+Per gestire la selezione su tabella dettaglio perndere come spunto 
+    Az_SediRepartoAttivitaService.GetSelected_On_Az_SediReparto
+    Az_SediRepartoAttivitaService.PutSelected_On_Az_SediReparto

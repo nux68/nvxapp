@@ -3,7 +3,7 @@ import { ModelResult } from "../../../ModelsBase/model-result";
 export class Az_RepartoAttivitaModel {
   public id!: number;
   public idAz_SediReparto!: number;
-  public idAz_SediAttivita!: number;
+  public idPar_Attivita!: number;
 }
 
 export class Az_RepartoAttivitaInModel {}

@@ -267,7 +267,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                         {
                             var az_SediRepartoAttivita = await _az_SediRepartoAttivitaRepository.UpsertAsync(new Az_SediRepartoAttivita()
                             {
-                                 IdAz_SediAttivita = az_SediAttivita.Id,
+                                 IdPar_Attivita = az_SediAttivita.IdPar_Attivita,
                                  IdAz_SediReparto = company_DATA_COMB_AzAna_AzSedi_AzReparto.az_SediReparto.Id
                             });
 

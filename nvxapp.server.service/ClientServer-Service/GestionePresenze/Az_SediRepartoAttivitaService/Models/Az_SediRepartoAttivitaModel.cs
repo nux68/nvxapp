@@ -11,7 +11,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
     {
         public int Id { get; set; }
         public int IdAz_SediReparto { get; set; }
-        public int IdAz_SediAttivita { get; set; }
+        public int IdPar_Attivita { get; set; }
     }
 
     public class Az_SediRepartoAttivitaInModel
@@ -22,4 +22,25 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
     {
         public List<Az_SediRepartoAttivitaModel> Az_SediRepartoAttivita { get; set; } = new List<Az_SediRepartoAttivitaModel>();
     }
+
+
+    public class Az_SediRepartoAttivita_Selected_GetInModel
+    {
+        public int IdAz_SediReparto { get; set; }
+    }
+    public class Az_SediRepartoAttivita_Selected_GetOutModel: ModelResult
+    {
+        public List<Az_SediRepartoAttivitaModel> Az_SediRepartoAttivita { get; set; } = new List<Az_SediRepartoAttivitaModel>();
+    }
+
+    public class Az_SediRepartoAttivita_Selected_PutInModel
+    {
+        public int IdAz_SediReparto { get; set; }
+        public List<Az_SediRepartoAttivitaModel> Az_SediRepartoAttivita { get; set; } = new List<Az_SediRepartoAttivitaModel>();
+    }
+    public class Az_SediRepartoAttivita_Selected_PutOutModel: ModelResult
+    {
+        public List<Az_SediRepartoAttivitaModel> Az_SediRepartoAttivita { get; set; } = new List<Az_SediRepartoAttivitaModel>();
+    }
+
 }

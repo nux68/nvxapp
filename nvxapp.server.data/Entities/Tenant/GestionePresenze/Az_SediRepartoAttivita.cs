@@ -13,8 +13,8 @@ namespace nvxapp.server.data.Entities.Tenant
         public virtual Az_SediReparto? Az_SediRepartoNavigation { get; set; }
 
         [Required]
-        public required int IdAz_SediAttivita { get; set; }
-        [ForeignKey("IdAz_SediAttivita")]
-        public virtual Az_SediAttivita? Az_SediAttivitaNavigation { get; set; }
+        public required int IdPar_Attivita { get; set; }
+        [ForeignKey("IdPar_Attivita")]
+        public virtual Par_Attivita? Par_AttivitaNavigation { get; set; }
     }
 }

@@ -95,7 +95,8 @@ export class DepartmentEditPageComponent extends BasePageConfirmCancelComponent<
     request.data.az_SediReparto = editModel.az_SediReparto;
     request.data.selectedAdmin = editModel.selectedAdmin;
     request.data.selectedUser = editModel.selectedUser;
-
+    request.data.az_SediRepartoAttivita = editModel.az_SediRepartoAttivita;
+    
 
     return this.azSediRepartoService.Az_SediRepartoPut(request).pipe(
       map(() => true), // Restituisce true in caso di successo

@@ -719,6 +719,38 @@ namespace nvxapp.server.data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Az_SediRepartoAttivita",
+                schema: "public",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    IdAz_SediReparto = table.Column<int>(type: "integer", nullable: false),
+                    IdPar_Attivita = table.Column<int>(type: "integer", nullable: false),
+                    ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Az_SediRepartoAttivita", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Az_SediRepartoAttivita_Az_SediReparto_IdAz_SediReparto",
+                        column: x => x.IdAz_SediReparto,
+                        principalSchema: "public",
+                        principalTable: "Az_SediReparto",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Az_SediRepartoAttivita_Par_Attivita_IdPar_Attivita",
+                        column: x => x.IdPar_Attivita,
+                        principalSchema: "public",
+                        principalTable: "Par_Attivita",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Az_SediRepartoUser",
                 schema: "public",
                 columns: table => new
@@ -749,38 +781,6 @@ namespace nvxapp.server.data.Migrations
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Az_SediRepartoUser_Az_SediReparto_IdAz_SediReparto",
-                        column: x => x.IdAz_SediReparto,
-                        principalSchema: "public",
-                        principalTable: "Az_SediReparto",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Az_SediRepartoAttivita",
-                schema: "public",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    IdAz_SediReparto = table.Column<int>(type: "integer", nullable: false),
-                    IdAz_SediAttivita = table.Column<int>(type: "integer", nullable: false),
-                    ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Az_SediRepartoAttivita", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Az_SediRepartoAttivita_Az_SediAttivita_IdAz_SediAttivita",
-                        column: x => x.IdAz_SediAttivita,
-                        principalSchema: "public",
-                        principalTable: "Az_SediAttivita",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Az_SediRepartoAttivita_Az_SediReparto_IdAz_SediReparto",
                         column: x => x.IdAz_SediReparto,
                         principalSchema: "public",
                         principalTable: "Az_SediReparto",
@@ -1093,17 +1093,17 @@ namespace nvxapp.server.data.Migrations
                 column: "IdAz_SediReparto");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Az_SediRepartoAttivita_IdAz_SediAttivita",
+                name: "IX_Az_SediRepartoAttivita_IdAz_SediReparto_IdPar_Attivita",
                 schema: "public",
                 table: "Az_SediRepartoAttivita",
-                column: "IdAz_SediAttivita");
+                columns: new[] { "IdAz_SediReparto", "IdPar_Attivita" },
+                unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Az_SediRepartoAttivita_IdAz_SediReparto_IdAz_SediAttivita",
+                name: "IX_Az_SediRepartoAttivita_IdPar_Attivita",
                 schema: "public",
                 table: "Az_SediRepartoAttivita",
-                columns: new[] { "IdAz_SediReparto", "IdAz_SediAttivita" },
-                unique: true);
+                column: "IdPar_Attivita");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Az_SediRepartoUser_IdAspNetUsers",
