@@ -9,14 +9,17 @@ using nvxapp.server.data.Entities.Tenant;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediAttivitaService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_AttivitaCompetenzaService;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_AttivitaCompetenzaService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_AttivitaService.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.ServerModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System;
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_AttivitaService
 {
@@ -26,7 +29,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Attivi
         private readonly IGestionePresenzeUserUtility _gestionePresenzeUserUtility;
         private readonly IPar_CompetenzaRepository _par_CompetenzaRepository;
         private readonly IPar_AttivitaCompetenzaRepository _par_AttivitaCompetenzaRepository;
-
+        private readonly IPar_AttivitaCompetenzaService _par_AttivitaCompetenzaService;
         
 
         public Par_AttivitaService(IMapper mapper,
@@ -34,6 +37,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Attivi
                                   IAspNetUsersRepository aspNetUsersRepository,
                                   IOptions<JwtParameter> jwtParameter,
                                   IHttpContextAccessor httpContextAccessor,
+                                  IPar_AttivitaCompetenzaService par_AttivitaCompetenzaService,
                                   IConfiguration configuration,
                                   IGestionePresenzeUserUtility gestionePresenzeUserUtility,
                                   IPar_CompetenzaRepository par_CompetenzaRepository,
@@ -44,6 +48,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Attivi
             _gestionePresenzeUserUtility = gestionePresenzeUserUtility;
             _par_CompetenzaRepository = par_CompetenzaRepository;
             _par_AttivitaCompetenzaRepository = par_AttivitaCompetenzaRepository;
+            _par_AttivitaCompetenzaService = par_AttivitaCompetenzaService;
         }
 
         public virtual async Task<GenericResult<Par_Attivita_GetAll_OutModel>> GetAll(GenericRequest<Par_Attivita_GetAll_InModel> model, bool isSubProcess)
@@ -83,16 +88,21 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Attivi
                 }
 
 
-                var par_AttivitaCompetenza = _par_AttivitaCompetenzaRepository.FindAll(x => x.IdPar_Attivita == retVal.Par_Attivita.Id);
-                if (par_AttivitaCompetenza != null)
-                    foreach (var item in par_AttivitaCompetenza)
+                GenericRequest<Par_AttivitaCompetenza_Selected_GetInModel> par_AttivitaCompetenza_Selected_GetInModel = new GenericRequest<Par_AttivitaCompetenza_Selected_GetInModel>();
+                par_AttivitaCompetenza_Selected_GetInModel.Data.IdPar_Attivita = retVal.Par_Attivita.Id;
+
+                var res2 = await _par_AttivitaCompetenzaService.GetSelected_On_Az_Par_Attivita(par_AttivitaCompetenza_Selected_GetInModel, true);
+                if (res2.Success && res2.Data != null)
+                {
+                    res2.Data.Par_AttivitaCompetenza.ForEach(item =>
+                    {
                         retVal.Par_Competenza.Add(new CheckObjOn_Id_Number()
                         {
                             Id = item.IdPar_Competenza,
                             Checked = true
                         });
-
-
+                    });
+                }
 
                 await Task.Delay(DelayAsyncMethod);
                 return retVal;
@@ -136,32 +146,20 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Attivi
                     }
 
 
-                    //cancellazione
-                    var par_AttivitaCompetenzaList = _par_AttivitaCompetenzaRepository.FindAll(x => x.IdPar_Attivita == model.Data.Par_Attivita.Id).ToList();
-                    if (par_AttivitaCompetenzaList != null)
+                    GenericRequest<Par_AttivitaCompetenza_Selected_PutInModel> par_AttivitaCompetenza_Selected_PutInModel = new GenericRequest<Par_AttivitaCompetenza_Selected_PutInModel>();
+                    par_AttivitaCompetenza_Selected_PutInModel.Data.IdPar_Attivita = retVal.Par_Attivita.Id;
+
+                    foreach (var item in model.Data.Par_Competenza.Where(x=>x.Checked).ToList())
                     {
-                        foreach (var item in par_AttivitaCompetenzaList)
+                        par_AttivitaCompetenza_Selected_PutInModel.Data.Par_AttivitaCompetenza.Add(new Par_AttivitaCompetenzaModel()
                         {
-                            // ciclo i dati a db, se non presente nella lista tornata dal client, allora è stata cancellato
-                            // e lo elimino dal db
-                            var rec = model.Data.Par_Competenza.Where(x => x.Id == item.IdPar_Attivita && x.Checked == true).FirstOrDefault();
-                            if (rec == null)
-                            {
-                                await _par_AttivitaCompetenzaRepository.DeleteAsync(item);
-                            }
-                        }
+                             IdPar_Competenza= item.Id,
+                             IdPar_Attivita = retVal.Par_Attivita.Id
+                        });
                     }
-                    //aggiornamento
-                    var par_AttivitaCompetenzaChecked = model.Data.Par_Competenza.Where(x => x.Checked == true).ToList();
-                    foreach (var item in par_AttivitaCompetenzaChecked)
-                    {
-                        var par_AttivitaCompetenza = _par_AttivitaCompetenzaRepository.FindAll(x => x.IdPar_Attivita == retVal.Par_Attivita.Id && x.IdPar_Competenza == item.Id).FirstOrDefault();
-                        if (par_AttivitaCompetenza == null)
-                        {
-                            par_AttivitaCompetenza = new Par_AttivitaCompetenza() {  IdPar_Attivita = retVal.Par_Attivita.Id,  IdPar_Competenza = item.Id };
-                        }
-                        await _par_AttivitaCompetenzaRepository.UpsertAsync(par_AttivitaCompetenza);
-                    }
+                    var res2 = await _par_AttivitaCompetenzaService.PutSelected_On_Az_Par_Attivita(par_AttivitaCompetenza_Selected_PutInModel, true);
+                    if (res2.Success && res2.Data != null){}
+
 
                 }
                 await Task.Delay(DelayAsyncMethod);

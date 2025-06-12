@@ -105,7 +105,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
                 return retVal;
             }, isSubProcess);
         }
-    }
+    
+        }
 
     public interface IAz_SediRepartoAttivitaService : IServiceBase
     {

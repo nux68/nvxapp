@@ -9,6 +9,9 @@ using nvxapp.server.data.Entities.Tenant;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediAttivitaService;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediAttivitaService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRepartoAttivitaService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediService.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Interfaces;
@@ -22,6 +25,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediSer
         private readonly IAz_SediRepository _az_SediRepository;
         private readonly IGestionePresenzeUserUtility _gestionePresenzeUserUtility;
         private readonly IAz_SediAttivitaRepository _az_SediAttivitaRepository;
+        private readonly IAz_SediAttivitaService _az_SediAttivitaService;
+        
 
 
         public Az_SediService(IMapper mapper,
@@ -32,12 +37,14 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediSer
                                   IConfiguration configuration,
                                   IGestionePresenzeUserUtility gestionePresenzeUserUtility,
                                   IAz_SediAttivitaRepository az_SediAttivitaRepository,
+                                  IAz_SediAttivitaService az_SediAttivitaService,
 
                                   IAz_SediRepository az_SediRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _az_SediRepository = az_SediRepository;
             _gestionePresenzeUserUtility = gestionePresenzeUserUtility;
             _az_SediAttivitaRepository = az_SediAttivitaRepository;
+            _az_SediAttivitaService = az_SediAttivitaService;
         }
 
         public virtual async Task<GenericResult<Az_Sedi_GetAll_OutModel>> GetAll(GenericRequest<Az_Sedi_GetAll_InModel> model, Boolean isSubProcess)
@@ -82,14 +89,22 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediSer
                     retVal.Az_Sedi = new Az_SediModel();
                 }
 
-                var az_SediAttivita = _az_SediAttivitaRepository.FindAll(x => x.IdAz_Sedi == retVal.Az_Sedi.Id);
-                if (az_SediAttivita != null)
-                    foreach (var item in az_SediAttivita)
+                GenericRequest<Az_SediAttivita_Selected_GetInModel> az_SediAttivita_Selected_GetInModel = new GenericRequest<Az_SediAttivita_Selected_GetInModel>();
+                az_SediAttivita_Selected_GetInModel.Data.IdAz_Sedi = retVal.Az_Sedi.Id;
+
+                var res2 = await _az_SediAttivitaService.GetSelected_On_Az_Sedi(az_SediAttivita_Selected_GetInModel, true);
+                if (res2.Success && res2.Data != null)
+                {
+                    res2.Data.Az_SediAttivita.ForEach(item =>
+                    {
                         retVal.Az_SediAttivita.Add(new CheckObjOn_Id_Number()
                         {
                             Id = item.IdPar_Attivita,
                             Checked = true
                         });
+                    });
+                }
+
 
                 return retVal;
             }, isSubProcess);
@@ -118,33 +133,20 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediSer
                     az_Sedi = await _az_SediRepository.UpsertAsync(az_Sedi);
                     retVal.Az_Sedi = _mapper.Map<Az_SediModel>(az_Sedi);
 
-                    //cancellazione
-                    var az_SediAttivitaList = _az_SediAttivitaRepository.FindAll(x => x.IdAz_Sedi == model.Data.Az_Sedi.Id).ToList();
-                    if (az_SediAttivitaList != null)
-                    {
-                        foreach (var item in az_SediAttivitaList)
-                        {
-                            // ciclo i dati a db, se non presente nella lista tornata dal client, allora è stata cancellato
-                            // e lo elimino dal db
-                            var rec = model.Data.Az_SediAttivita.Where(x => x.Id == item.IdPar_Attivita && x.Checked == true).FirstOrDefault();
-                            if (rec == null)
-                            {
-                                await _az_SediAttivitaRepository.DeleteAsync(item);
-                            }
-                        }
-                    }
-                    //aggiornamento
-                    var Az_SediAttivitaChecked = model.Data.Az_SediAttivita.Where(x => x.Checked == true).ToList();
-                    foreach (var item in Az_SediAttivitaChecked)
-                    {
-                        var az_SediAttivita = _az_SediAttivitaRepository.FindAll(x => x.IdAz_Sedi == retVal.Az_Sedi.Id && x.IdPar_Attivita == item.Id).FirstOrDefault();
-                        if (az_SediAttivita == null)
-                        {
-                            az_SediAttivita = new Az_SediAttivita() { IdAz_Sedi = retVal.Az_Sedi.Id, IdPar_Attivita = item.Id };
-                        }
-                        await _az_SediAttivitaRepository.UpsertAsync(az_SediAttivita);
-                    }
 
+                    GenericRequest<Az_SediAttivita_Selected_PutInModel> az_SediAttivita_Selected_PutInModel = new GenericRequest<Az_SediAttivita_Selected_PutInModel>();
+                    az_SediAttivita_Selected_PutInModel.Data.IdAz_Sedi = retVal.Az_Sedi.Id;
+
+                    foreach (var item in model.Data.Az_SediAttivita.Where(x=>x.Checked).ToList())
+                    {
+                        az_SediAttivita_Selected_PutInModel.Data.Az_SediAttivita.Add(new Az_SediAttivitaModel()
+                        {
+                             IdPar_Attivita= item.Id,
+                             IdAz_Sedi = retVal.Az_Sedi.Id
+                        });
+                    }
+                    var res2 = await _az_SediAttivitaService.PutSelected_On_Az_Sedi(az_SediAttivita_Selected_PutInModel, true);
+                    if (res2.Success && res2.Data != null){}
 
 
 
