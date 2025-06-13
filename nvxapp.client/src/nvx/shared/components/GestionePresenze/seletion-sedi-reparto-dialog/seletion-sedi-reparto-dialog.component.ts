@@ -13,14 +13,18 @@ export class SeletionSediRepartoDialogComponent  implements OnInit {
   public title!: string;
   public buttonbar: ButtonItem[] = [];
 
+  result: SeletionSediRepartoDialogResult = {
+    idSede: 0,   
+    idReparto: 0 
+  };
+
   constructor(protected userInterfaceService: UserInterfaceService,
               private modalCtrl: ModalController
-    //private navCtrl: NavController
-    )
+              )
   {
     this.title = 'Seleziona';
 
-    this.buttonbar = userInterfaceService.Btn_LogInAnnulla;
+    this.buttonbar = userInterfaceService.Btn_ConfermaAnnulla;
     this.buttonbar[0].event = this._handleButtonConfirmClick;
     this.buttonbar[1].event = this._handleButtonCancelClick;
 
@@ -29,26 +33,33 @@ export class SeletionSediRepartoDialogComponent  implements OnInit {
   ngOnInit() { }
 
   private _handleButtonConfirmClick = (param: object) => {
-    //this.navCtrl.back();
-
-    
-
-    return this.modalCtrl.dismiss({}, 'confirm');
+    return this.modalCtrl.dismiss(this.result, 'confirm');
   }
 
   private _handleButtonCancelClick = (param: object) => {
-    //this.navCtrl.back();
-    return this.modalCtrl.dismiss({}, 'confirm');
+    return this.modalCtrl.dismiss(null, 'confirm');
   }
 
 
 
   onPeriodChange(period: { year: number, month: number } | undefined): void { }
   onCurrentUserChanged(userId: string | undefined): void { }
-  onSedeChanged(sediId: number | undefined): void { }
-  onRepartiChanged(repartoIds: number[] | undefined): void { }
+  onSedeChanged(sediId: number | undefined): void {
+    this.result.idSede = sediId;
+  }
+  onRepartiChanged(repartoIds: number[] | undefined): void {
+    if (repartoIds.length == 0)
+      this.result.idReparto = 0;
+    else
+      this.result.idReparto = repartoIds[0];
+  }
   onAllUsersInSelectionChanged(userIds: string[] | undefined): void { }
 
 
 
+}
+
+export interface SeletionSediRepartoDialogResult {
+  idSede: number;
+  idReparto: number;
 }

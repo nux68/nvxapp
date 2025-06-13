@@ -24,6 +24,11 @@ export class SediRepartoUserNavigationComponent implements OnInit {
   @Input() showRepartoSelect: boolean = true;
   @Input() showUserSelect: boolean = true;
 
+  @Input() singleFieldOnRow: boolean = false;
+  @Input() singleSelect: boolean = false;
+  
+
+
   // Output parameters for selected values
   @Output() sediIdChange = new EventEmitter<number | undefined>();
   @Output() repartoIdChange = new EventEmitter<number[] | undefined>();
@@ -172,7 +177,11 @@ export class SediRepartoUserNavigationComponent implements OnInit {
           this.selectedSediId = null;
           this.filteredReparti = [...this.az_SediRepartoList];
           if (this.showRepartoSelect && this.filteredReparti.length > 0) {
-            this.selectedRepartoId = this.filteredReparti.map(reparto => reparto.id);
+            if (this.singleSelect) 
+              this.selectedRepartoId = [this.filteredReparti[0].id];
+            else
+              this.selectedRepartoId = this.filteredReparti.map(reparto => reparto.id);
+
             this.onRepartoChange();
           } else {
             this.selectedRepartoId = null;
@@ -223,7 +232,12 @@ export class SediRepartoUserNavigationComponent implements OnInit {
     this.sediIdChange.emit(this.selectedSediId !== null ? this.selectedSediId : undefined);
 
     if (this.showRepartoSelect && this.selectedSediId !== null && this.filteredReparti.length > 0) {
-      this.selectedRepartoId = this.filteredReparti.map(reparto => reparto.id);
+
+      if (this.singleSelect)
+          this.selectedRepartoId = [this.filteredReparti[0].id];
+      else
+          this.selectedRepartoId = this.filteredReparti.map(reparto => reparto.id);
+
       this.onRepartoChange();
     } else {
       this.onRepartoChange();
@@ -304,4 +318,35 @@ export class SediRepartoUserNavigationComponent implements OnInit {
   public get canNavigateNext(): boolean {
     return this.az_SediRepartoUserList.length > 0 && this.currentUserIndex < this.az_SediRepartoUserList.length - 1;
   }
+
+  public  columSize_4Sede():string {
+    if (this.singleFieldOnRow)
+      
+      return 'col-sm-12' ;
+    else
+      
+      return 'col-sm-2';
+  }
+
+  public columSize_4Reparto(): string {
+    if (this.singleFieldOnRow)
+
+      return 'col-sm-12';
+    else
+
+      return 'col-sm-5';
+  }
+
+  public columSize_4User(): string {
+    if (this.singleFieldOnRow)
+
+      return 'col-sm-12';
+    else
+
+      return 'col-sm-5';
+  }
+
+  
+
+
 }

@@ -36,13 +36,14 @@
   <!-- Existing Sedi/Reparto/User Selection Row -->
   <ion-row class="ion-align-items-end">
     <!-- Sedi Select -->
-    <ion-col size-xs="12" size-sm="2" *ngIf="showSediSelect">
+
+    <ion-col size-xs="12" [ngClass]="columSize_4Sede()" *ngIf="showSediSelect">
       <ion-item>
         <ion-label position="stacked">Sede</ion-label>
         <ion-select [(ngModel)]="selectedSediId"
                     (ionChange)="onSediChange()"
                     placeholder="Seleziona una sede"
-                    interface="popover">
+                    interface="modal">
           <ion-select-option [value]="sede.id" *ngFor="let sede of az_SediList">
             {{ sede.descrizione }}
           </ion-select-option>
@@ -51,7 +52,7 @@
     </ion-col>
 
     <!-- Reparto Select -->
-    <ion-col size-xs="12" size-sm="5" *ngIf="showRepartoSelect">
+    <ion-col size-xs="12" [ngClass]="columSize_4Reparto()" *ngIf="showRepartoSelect">
       <ion-item>
         <ion-label position="stacked">Reparto</ion-label>
         <ion-select [(ngModel)]="selectedRepartoId"
@@ -59,7 +60,7 @@
                     placeholder="Seleziona uno o più reparti"
                     interface="modal"
                     [disabled]="(showSediSelect && !selectedSediId) || filteredReparti.length === 0"
-                    multiple="true">
+                    [multiple]="!singleSelect">
           <ion-select-option [value]="reparto.id" *ngFor="let reparto of filteredReparti">
             {{ reparto.descrizione }}
           </ion-select-option>
@@ -68,7 +69,7 @@
     </ion-col>
 
     <!-- User Select and Navigation -->
-    <ion-col size-xs="12" size-sm="5" *ngIf="showUserSelect">
+    <ion-col size-xs="12" [ngClass]="columSize_4User()" *ngIf="showUserSelect">
       <div class="user-select-container">
         <ion-item class="user-select-item">
           <ion-label position="stacked">Utente</ion-label>

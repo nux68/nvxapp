@@ -19,7 +19,7 @@ import { RoleCode } from '../../../ClientServer-Service/Infrastructure/Account/M
 import { Az_SediRepartoModel } from '../../../ClientServer-Service/GestionePresenze/Az_SediReparto/Models/az-sedi-reparto-model';
 import { Par_AttivitaModel } from '../../../ClientServer-Service/GestionePresenze/Par_Attivita/Models/par-attivita-model';
 import { FabMenuService, FabMenuItem } from '../../../Utility/infrastructure/fab-menu.service';
-import { SeletionSediRepartoDialogComponent } from '../../../shared/components/GestionePresenze/seletion-sedi-reparto-dialog/seletion-sedi-reparto-dialog.component';
+import { SeletionSediRepartoDialogComponent, SeletionSediRepartoDialogResult } from '../../../shared/components/GestionePresenze/seletion-sedi-reparto-dialog/seletion-sedi-reparto-dialog.component';
 
 @Component({
   selector: 'app-commessa-edit-page',
@@ -379,23 +379,22 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
       // Questi dati saranno accessibili tramite @Input() nel DialogExampleComponent
       componentProps: {
         nomeUtente: 'Mario Rossi'
-      }
+      },
+      //cssClass:'nvx-modal'
     });
 
     // Presenta il modal all'utente
     await modal.present();
+    
 
-    // Aspetta che il modal venga chiuso e ottieni i dati restituiti
-    // 'data' contiene i dati passati a dismiss()
-    // 'role' è il secondo parametro di dismiss() (es. 'confirm' o 'cancel')
-    const { data, role } = await modal.onWillDismiss();
+    const { data, role } = await modal.onWillDismiss<SeletionSediRepartoDialogResult|null>();
 
-    // Gestisci i dati solo se il ruolo è 'confirm'
-    //if (role === 'confirm') {
-    //  this.risultatoDialog = `L'utente ha confermato con il messaggio: "${data.messaggio}"`;
-    //} else {
-    //  this.risultatoDialog = `L'utente ha annullato l'operazione.`;
-    //}
+    
+    if (role === 'confirm') {
+      //this.risultatoDialog = `L'utente ha confermato con il messaggio: "${data.messaggio}"`;
+    } else {
+      //this.risultatoDialog = `L'utente ha annullato l'operazione.`;
+    }
   }
 
 }
