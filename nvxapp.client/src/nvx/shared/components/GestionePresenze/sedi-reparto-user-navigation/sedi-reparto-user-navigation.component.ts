@@ -253,7 +253,20 @@ export class SediRepartoUserNavigationComponent implements OnInit {
     if (this.selectedRepartoId && this.selectedRepartoId.length > 0) {
       this.LoadAz_SediRepartoUser(this.selectedRepartoId);
     }
-    this.repartoIdChange.emit(this.selectedRepartoId && this.selectedRepartoId.length > 0 ? this.selectedRepartoId : undefined);
+    //this.repartoIdChange.emit(this.selectedRepartoId && this.selectedRepartoId.length > 0 ? this.selectedRepartoId : undefined);
+
+    let repartoIds: number[] | undefined;
+
+    if (this.selectedRepartoId && Array.isArray(this.selectedRepartoId) && this.selectedRepartoId.length > 0) {
+      repartoIds = this.selectedRepartoId;
+    } else if (this.selectedRepartoId && !Array.isArray(this.selectedRepartoId)) {
+      repartoIds = [this.selectedRepartoId];
+    } else {
+      repartoIds = undefined;
+    }
+
+    this.repartoIdChange.emit(repartoIds);
+
   }
 
   public onUserChange() {
