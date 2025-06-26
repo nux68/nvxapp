@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
-import { UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
+import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { ModalController, NavController } from '@ionic/angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
@@ -35,10 +35,13 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
   public _par_Attivita: Par_AttivitaModel[] = [];
 
   public searchText!: string;
-  public currSection: string = "first";
-  public currSection_sub: string = "sub_1";
+  public currSection: string = "sez_1";
+  public currSection_sub: string = "sez_1_sub_1";
   public idxCurrCommessa: number = -1;
-  
+
+
+  public btnDeleteReparto: ButtonItem;
+
 
   //date x il backend
   public formattedStartDate: string;
@@ -66,6 +69,9 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
   {
 
     super(navCtrl, userInterfaceService, fb);
+
+    this.btnDeleteReparto = userInterfaceService.Btn_Cancella;
+    this.btnDeleteReparto.event = this.handleButtonDeleteRepartoClick;
 
     this._editForm = this.fb.group({
         tmp_az_SubCommessa: [null, []],
@@ -105,11 +111,14 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
         //  state: { id: 0 }
         //});
 
-        this.apriDialog();
+        this.SeletionSediRepartoDialogOpen();
 
       }),
 
     ];
+
+    this.setfabMenuService();
+
   }
 
 
@@ -226,12 +235,51 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
   segmentChanged(event: any) {
     console.log('Segment cambiato:', event.detail.value);
     this.currSection = event.detail.value;
+    this.setfabMenuService();
   }
   segmentChanged_sub(event: any) {
     console.log('Segment cambiato:', event.detail.value);
     this.currSection_sub = event.detail.value;
+    this.setfabMenuService();
   }
 
+  setfabMenuService() {
+
+    this.fabMenuService.fabMenuItem = [];
+
+    switch (this.currSection) {
+      case 'sez_1':
+        break;
+      case 'sez_2':
+
+        switch (this.currSection_sub) {
+          case 'sez_1_sub_1':
+            break;
+          case 'sez_1_sub_2':
+
+            this.fabMenuService.fabMenuItem = [
+
+              new FabMenuItem('xxx', 'add-circle-outline', () => {
+                this.SeletionSediRepartoDialogOpen();
+              }),
+
+              //new FabMenuItem('xxx', 'add-circle-outline', () => {
+              //  this.SeletionSediRepartoDialogOpen();
+              //}),
+
+            ];
+
+
+            break;
+          case 'sez_1_sub_3':
+            break;
+        }
+
+        break;
+    }
+
+
+  }
   
 
   /////
@@ -283,22 +331,15 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
 
 
 
-  public getAz_SediReparto(): CheckObjOn_Id_Number[] {
-
-    let retVal: CheckObjOn_Id_Number[] = [];
-
-    this._az_SediRepartoList.filter(rep =>
-      rep.id>0
-    ).forEach(item => {
-      let appo = { id: item.id, checked: false };
-      retVal.push(appo);
-    });
-
-
-    return retVal;
+  public Az_SediReparto_Get(): CheckObjOn_Id_Number[] {
+    if (this.idxCurrCommessa === -1 || !this._editModel.az_SubCommessa?.[this.idxCurrCommessa]) {
+      return [];
+    }
+    return this._editModel.az_SubCommessa[this.idxCurrCommessa].az_SubCommessaSediReparto
+      .filter(item => item.checked === true);
   }
 
-  isSelectedAz_SediReparto(itemId: number): boolean {
+  Az_SediReparto_IsSelected(itemId: number): boolean {
 
     if (this.idxCurrCommessa == -1)
       return false;
@@ -307,7 +348,7 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
 
   }
 
-  toggleSelectionAz_SediReparto(itemId: number, event: any) {
+  Az_SediReparto_Toggle(itemId: number, event: any) {
 
     if (this.idxCurrCommessa == -1)
       return ;
@@ -325,6 +366,32 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
 
   }
 
+  Az_SediReparto_SetCheck(itemId: number, checked:boolean) {
+
+    if (this.idxCurrCommessa == -1)
+      return;
+
+
+    const existingEntry = this._editModel.az_SubCommessa[this.idxCurrCommessa].az_SubCommessaSediReparto.find(entry => entry.id === itemId);
+
+    if (existingEntry) {
+      // Se l'elemento esiste, aggiorna solo lo stato selected
+      existingEntry.checked = checked;
+      
+    } else {
+      // Se l'elemento non è presente, lo aggiunge alla lista
+      this._editModel.az_SubCommessa[this.idxCurrCommessa].az_SubCommessaSediReparto.push({ id: itemId, checked: checked });
+    }
+
+  }
+
+  handleButtonDeleteRepartoClick = (item: any) => {
+
+    this.Az_SediReparto_SetCheck(item.id,false);
+
+  }
+
+  
 
 
 
@@ -371,7 +438,7 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
   }
 
 
-  async apriDialog() {
+  async SeletionSediRepartoDialogOpen() {
     // Crea l'istanza del modal
     const modal = await this.modalCtrl.create({
       component: SeletionSediRepartoDialogComponent, // Il componente da usare
@@ -388,10 +455,10 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
     
 
     const { data, role } = await modal.onWillDismiss<SeletionSediRepartoDialogResult|null>();
-
+    
     
     if (role === 'confirm') {
-      //this.risultatoDialog = `L'utente ha confermato con il messaggio: "${data.messaggio}"`;
+      this.Az_SediReparto_SetCheck(data.idReparto,true);
     } else {
       //this.risultatoDialog = `L'utente ha annullato l'operazione.`;
     }
