@@ -21,10 +21,15 @@ import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 import { AzSediRepartoToLongTextPipe } from './pipe/GestionePresenze/az-sedireparto-to-long-text.pipe';
 import { SeletionSediRepartoDialogComponent } from './components/GestionePresenze/seletion-sedi-reparto-dialog/seletion-sedi-reparto-dialog.component';
+import { SeletionSediRepartoUserDialogComponent } from './components/GestionePresenze/seletion-sedi-reparto-user-dialog/seletion-sedi-reparto-user-dialog.component';
 import { SharedComponentInfrastructureModule } from './shared-component-infrastructure.module';
 
 @NgModule({
-  declarations: [SediRepartoUserNavigationComponent, SeletionSediRepartoDialogComponent],
+  declarations: [
+    SediRepartoUserNavigationComponent,
+    SeletionSediRepartoDialogComponent,
+    SeletionSediRepartoUserDialogComponent
+  ],
   imports: [
     SharedComponentInfrastructureModule,
     CommonModule,
@@ -37,11 +42,13 @@ import { SharedComponentInfrastructureModule } from './shared-component-infrastr
     ParAttivitaToLongTextPipe, ParCompetenzaToLongTextPipe, AzCommessaToLongTextPipe, AzClienteToLongTextPipe,
     AzSediRepartoToLongTextPipe
   ],
-  exports: [TipoTimbraturaToLongTextPipe, TipoTimbraturaToShortTextPipe, ParGiustificativiToLongTextPipe, ParGiustificativiToShortTextPipe,
+  exports: [
+    TipoTimbraturaToLongTextPipe, TipoTimbraturaToShortTextPipe, ParGiustificativiToLongTextPipe, ParGiustificativiToShortTextPipe,
     TipoRichiestaToShortTextPipe, TipoRichiestaToLongTextPipe, StatoRichiestaLongTextPipe, StatoRichiestaShortTextPipe,
     IdDipRapportoLavoroToNomePipe, IdDipRapportoLavoroToCognomePipe,
     IdAspNetUsersToCognomePipe, IdAspNetUsersToNomePipe,
     ParAttivitaToLongTextPipe, ParCompetenzaToLongTextPipe, AzCommessaToLongTextPipe, AzClienteToLongTextPipe,
-    SediRepartoUserNavigationComponent, SeletionSediRepartoDialogComponent,AzSediRepartoToLongTextPipe]
+    SediRepartoUserNavigationComponent, SeletionSediRepartoDialogComponent, SeletionSediRepartoUserDialogComponent, AzSediRepartoToLongTextPipe
+  ]
 })
 export class SharedComponentGestionePresenzeModuleModule { }

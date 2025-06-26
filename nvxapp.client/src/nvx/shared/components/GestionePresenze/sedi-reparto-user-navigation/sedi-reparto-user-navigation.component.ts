@@ -25,7 +25,7 @@ export class SediRepartoUserNavigationComponent implements OnInit {
   @Input() showUserSelect: boolean = true;
 
   @Input() singleFieldOnRow: boolean = false;
-  @Input() singleSelect: boolean = false;
+  @Input() singleSelectReparti: boolean = false;
   
 
 
@@ -177,7 +177,7 @@ export class SediRepartoUserNavigationComponent implements OnInit {
           this.selectedSediId = null;
           this.filteredReparti = [...this.az_SediRepartoList];
           if (this.showRepartoSelect && this.filteredReparti.length > 0) {
-            if (this.singleSelect) 
+            if (this.singleSelectReparti) 
               this.selectedRepartoId = [this.filteredReparti[0].id];
             else
               this.selectedRepartoId = this.filteredReparti.map(reparto => reparto.id);
@@ -233,7 +233,7 @@ export class SediRepartoUserNavigationComponent implements OnInit {
 
     if (this.showRepartoSelect && this.selectedSediId !== null && this.filteredReparti.length > 0) {
 
-      if (this.singleSelect)
+      if (this.singleSelectReparti)
           this.selectedRepartoId = [this.filteredReparti[0].id];
       else
           this.selectedRepartoId = this.filteredReparti.map(reparto => reparto.id);

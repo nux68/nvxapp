@@ -60,7 +60,7 @@
                     placeholder="Seleziona uno o più reparti"
                     interface="modal"
                     [disabled]="(showSediSelect && !selectedSediId) || filteredReparti.length === 0"
-                    [multiple]="!singleSelect">
+                    [multiple]="!singleSelectReparti">
           <ion-select-option [value]="reparto.id" *ngFor="let reparto of filteredReparti">
             {{ reparto.descrizione }}
           </ion-select-option>

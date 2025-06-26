@@ -11,6 +11,5 @@
     <Folder Include="schema-generator\" />
     <Folder Include="src\nvx\pages\GestionePresenze\_selection\" />
     <Folder Include="src\nvx\pages\_BASE\" />
-    <Folder Include="src\nvx\shared\components\GestionePresenze\" />
   </ItemGroup>
 </Project>

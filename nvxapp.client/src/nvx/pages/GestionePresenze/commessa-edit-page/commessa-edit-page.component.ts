@@ -20,6 +20,7 @@ import { Az_SediRepartoModel } from '../../../ClientServer-Service/GestionePrese
 import { Par_AttivitaModel } from '../../../ClientServer-Service/GestionePresenze/Par_Attivita/Models/par-attivita-model';
 import { FabMenuService, FabMenuItem } from '../../../Utility/infrastructure/fab-menu.service';
 import { SeletionSediRepartoDialogComponent, SeletionSediRepartoDialogResult } from '../../../shared/components/GestionePresenze/seletion-sedi-reparto-dialog/seletion-sedi-reparto-dialog.component';
+import { SeletionSediRepartoUserDialogComponent, SeletionSediRepartoUserDialogResult } from '../../../shared/components/GestionePresenze/seletion-sedi-reparto-user-dialog/seletion-sedi-reparto-user-dialog.component';
 
 @Component({
   selector: 'app-commessa-edit-page',
@@ -104,18 +105,18 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
     //
     this.dip_Anagrafica = this.sharedParameterGestionePresenzeService.Dip_Anagrafica;
 
-    this.fabMenuService.fabMenuItem = [
+    //this.fabMenuService.fabMenuItem = [
 
-      new FabMenuItem('xxx', 'add-circle-outline', () => {
-        //this.navCtrl.navigateForward('/seletionsedirepartopage', {
-        //  state: { id: 0 }
-        //});
+    //  new FabMenuItem('xxx', 'add-circle-outline', () => {
+    //    //this.navCtrl.navigateForward('/seletionsedirepartopage', {
+    //    //  state: { id: 0 }
+    //    //});
 
-        this.SeletionSediRepartoDialogOpen();
+    //    this.SeletionSediRepartoDialogOpen();
 
-      }),
+    //  }),
 
-    ];
+    //];
 
     this.setfabMenuService();
 
@@ -272,6 +273,17 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
 
             break;
           case 'sez_1_sub_3':
+
+            this.fabMenuService.fabMenuItem = [
+
+              new FabMenuItem('xxx', 'add-circle-outline', () => {
+                this.SeletionSediRepartoUserDialogOpen();
+              }),
+
+            ];
+
+            
+
             break;
         }
 
@@ -463,5 +475,35 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
       //this.risultatoDialog = `L'utente ha annullato l'operazione.`;
     }
   }
+
+
+  async SeletionSediRepartoUserDialogOpen() {
+    // Crea l'istanza del modal
+    const modal = await this.modalCtrl.create({
+      component: SeletionSediRepartoUserDialogComponent, // Il componente da usare
+      // Passa i dati al modal tramite componentProps
+      // Questi dati saranno accessibili tramite @Input() nel DialogExampleComponent
+      componentProps: {
+        nomeUtente: 'Mario Rossi'
+      },
+      //cssClass:'nvx-modal'
+    });
+
+    // Presenta il modal all'utente
+    await modal.present();
+
+
+    const { data, role } = await modal.onWillDismiss<SeletionSediRepartoUserDialogResult | null>();
+
+
+    //if (role === 'confirm') {
+    //  this.Az_SediReparto_SetCheck(data.idReparto, true);
+    //} else {
+    //  //this.risultatoDialog = `L'utente ha annullato l'operazione.`;
+    //}
+
+  }
+
+  
 
 }
