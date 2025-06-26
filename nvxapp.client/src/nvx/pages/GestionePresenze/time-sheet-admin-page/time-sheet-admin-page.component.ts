@@ -208,8 +208,8 @@ export class TimeSheetAdminPageComponent implements OnInit, OnDestroy {
       this.loadMonth();
     }
   }
-  onCurrentUserChanged(userId: string | undefined): void {
-    this.currUserId = userId;
+  onCurrentUserChanged(userId: string[] | undefined): void {
+    this.currUserId = userId[0];
     this.loadMonth();
   }
   // Metodi per gestire altri eventi dall'app-sedi-reparto-user-navigation

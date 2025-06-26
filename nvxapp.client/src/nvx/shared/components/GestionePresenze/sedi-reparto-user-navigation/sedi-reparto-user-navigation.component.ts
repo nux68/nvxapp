@@ -26,6 +26,7 @@ export class SediRepartoUserNavigationComponent implements OnInit {
 
   @Input() singleFieldOnRow: boolean = false;
   @Input() singleSelectReparti: boolean = false;
+  @Input() singleSelectUser: boolean = true;
   
 
 
@@ -33,7 +34,7 @@ export class SediRepartoUserNavigationComponent implements OnInit {
   @Output() sediIdChange = new EventEmitter<number | undefined>();
   @Output() repartoIdChange = new EventEmitter<number[] | undefined>();
   @Output() allUsersIdChange = new EventEmitter<string[] | undefined>();
-  @Output() currUserIdChange = new EventEmitter<string | undefined>();
+  @Output() currUserIdChange = new EventEmitter<string[] | undefined>();
   @Output() periodChange = new EventEmitter<{ year: number, month: number }>(); // Output for year/month period
 
   // Data lists
@@ -45,7 +46,7 @@ export class SediRepartoUserNavigationComponent implements OnInit {
   // Selected values
   public selectedSediId: number | null = null;
   public selectedRepartoId: number[] | null = null;
-  public selectedUserId: string | null = null;
+  public selectedUserId: string |string[] | null = null;
 
   // Period selection state
   public selectedYear: number | null = null;
@@ -270,18 +271,45 @@ export class SediRepartoUserNavigationComponent implements OnInit {
   }
 
   public onUserChange() {
-    if (this.selectedUserId && this.az_SediRepartoUserList.length > 0) {
-      const newIndex = this.az_SediRepartoUserList.findIndex(user => user.idAspNetUsers === this.selectedUserId);
-      if (newIndex !== -1) {
-        this.currentUserIndex = newIndex;
+    if (this.singleSelectUser) {
+      
+      if (this.selectedUserId && this.selectedUserId.length>0 && this.az_SediRepartoUserList.length > 0) {
+
+        let currID = '';
+        if (Array.isArray(this.selectedUserId))
+          currID = this.selectedUserId[0];
+        else
+          currID = this.selectedUserId;
+        
+
+        const newIndex = this.az_SediRepartoUserList.findIndex(user => user.idAspNetUsers === currID);
+
+        if (newIndex !== -1) {
+          this.currentUserIndex = newIndex;
+        } else {
+          this.selectedUserId = null;
+          this.currentUserIndex = -1;
+        }
       } else {
-        this.selectedUserId = null;
         this.currentUserIndex = -1;
       }
-    } else {
+    }
+    else {
       this.currentUserIndex = -1;
     }
-    this.currUserIdChange.emit(this.selectedUserId !== null ? this.selectedUserId : undefined);
+
+    let selectedUserId: string[] | undefined;
+
+    if (this.selectedUserId && Array.isArray(this.selectedUserId) && this.selectedUserId.length > 0) {
+      selectedUserId = this.selectedUserId;
+    } else if (this.selectedUserId && !Array.isArray(this.selectedUserId)) {
+      selectedUserId = [this.selectedUserId];
+    } else {
+      selectedUserId = undefined;
+    }
+
+    
+    this.currUserIdChange.emit(selectedUserId);
   }
 
   private LoadAz_SediRepartoUser(idAz_SediRepartoList: number[]) {
@@ -296,7 +324,11 @@ export class SediRepartoUserNavigationComponent implements OnInit {
         this.allUsersIdChange.emit(this.az_SediRepartoUserList.map(x => x.idAspNetUsers));
 
         if (this.showUserSelect && this.az_SediRepartoUserList.length > 0) {
-          this.selectedUserId = this.az_SediRepartoUserList[0].idAspNetUsers;
+          if (this.singleSelectUser)
+            this.selectedUserId = [this.az_SediRepartoUserList[0].idAspNetUsers];
+          else
+            this.selectedUserId = null;
+
           this.onUserChange();
         }
       },
@@ -311,7 +343,7 @@ export class SediRepartoUserNavigationComponent implements OnInit {
   public navigateToPreviousUser(): void {
     if (this.canNavigatePrevious) {
       this.currentUserIndex--;
-      this.selectedUserId = this.az_SediRepartoUserList[this.currentUserIndex].idAspNetUsers;
+      this.selectedUserId = [this.az_SediRepartoUserList[this.currentUserIndex].idAspNetUsers];
       this.onUserChange();
     }
   }
@@ -319,7 +351,7 @@ export class SediRepartoUserNavigationComponent implements OnInit {
   public navigateToNextUser(): void {
     if (this.canNavigateNext) {
       this.currentUserIndex++;
-      this.selectedUserId = this.az_SediRepartoUserList[this.currentUserIndex].idAspNetUsers;
+      this.selectedUserId = [this.az_SediRepartoUserList[this.currentUserIndex].idAspNetUsers];
       this.onUserChange();
     }
   }

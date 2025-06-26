@@ -219,7 +219,7 @@ export class TimeSheetUserPageComponent implements OnInit, OnDestroy {
 
   onSedeChanged(sediId: number | undefined): void {}
   onRepartiChanged(repartoIds: number[] | undefined): void {}
-  onCurrentUserChanged(userId: string | undefined): void {}
+  onCurrentUserChanged(userId: string[] | undefined): void {}
   onAllUsersInSelectionChanged(userIds: string[] | undefined): void {}
 
 

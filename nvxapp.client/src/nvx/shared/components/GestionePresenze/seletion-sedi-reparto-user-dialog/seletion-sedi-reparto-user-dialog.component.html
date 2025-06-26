@@ -14,9 +14,11 @@
         <app-sedi-reparto-user-navigation [showPeriodSelect]="false"
                                           [showSediSelect]="true"
                                           [showRepartoSelect]="true"
-                                          [showUserSelect]="false"
+                                          [showUserSelect]="true"
+
                                           [singleFieldOnRow]="true"
                                           [singleSelectReparti]="true"
+                                          [singleSelectUser]="false"
 
                                           (periodChange)="onPeriodChange($event)"
                                           (sediIdChange)="onSedeChanged($event)"

@@ -125,7 +125,7 @@ export class DepartmentListPageComponent implements OnInit {
 
 
   onPeriodChange(period: { year: number, month: number } | undefined): void { }
-  onCurrentUserChanged(userId: string | undefined): void { }
+  onCurrentUserChanged(userId: string[] | undefined): void { }
   onSedeChanged(sediId: number | undefined): void {
     this.curr_idAz_Sedi = sediId;
   }

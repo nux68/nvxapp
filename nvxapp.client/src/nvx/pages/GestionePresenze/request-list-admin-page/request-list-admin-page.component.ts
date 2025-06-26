@@ -237,7 +237,7 @@ export class RequestListAdminPageComponent implements OnInit {
     // However, if we want to show data aggregated by reparti even if no user is selected,
     // then we might fetch here. For this example, let's assume we act on user change.
   }
-  onCurrentUserChanged(userId: string | undefined): void {
+  onCurrentUserChanged(userId: string[] | undefined): void {
     //this.currentNavigationUserId = userId;
     //console.log('Parent: Current User ID changed to:', userId);
     //this.fetchRelevantData();

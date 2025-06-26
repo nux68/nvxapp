@@ -155,8 +155,10 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
     }
   }
 
-  onCurrentUserChanged(userId: string | undefined): void {
-    this.currUserId = userId;
+  onCurrentUserChanged(userId: string[] | undefined): void {
+    if (userId == undefined)
+      return;
+    this.currUserId = userId[0];
     this.loadMonth();
   }
 
