@@ -195,51 +195,51 @@
 
           <div [hidden]="currSection_sub!='sez_1_sub_3'">
             <br />
-            <div *ngIf="dip_Anagrafica!=null">
 
-              <ion-item class="nvx-item-4-title">
-                <ion-label>Utenti collegati alla commessa</ion-label>
+
+            <ion-item class="nvx-item-4-title">
+              <ion-label>Utenti collegati alla commessa</ion-label>
+            </ion-item>
+
+            <!--mobile-->
+            <ion-item-sliding *ngFor="let item of Az_SubCommessaUser_Get() | genericFilter: 'descrizione' : searchText" class="ion-hide-sm-up">
+              <ion-item>
+                <ion-label>
+                  {{ item.id | idAspNetUsersToCognome }}  {{ item.id | idAspNetUsersToNome }}
+                </ion-label>
               </ion-item>
 
-              <!--mobile-->
-              <ion-item-sliding *ngFor="let item of Az_SubCommessaUser_Get() | genericFilter: 'descrizione' : searchText" class="ion-hide-sm-up">
-                <ion-item>
+              <ion-item-options side="end">
+                <ion-item-option *ngIf="!item.default" color="{{btnDeleteUser.color}}" (click)="btnDeleteUser.event(item)">
+                  <ion-icon slot="start" name="{{btnDeleteUser.image}}"></ion-icon>
+                  {{btnDeleteUser.text}}
+                </ion-item-option>
+              </ion-item-options>
+
+            </ion-item-sliding>
+            <!--deskTop-->
+            <ion-grid class="ion-hide-sm-down">
+              <ion-row *ngFor="let item of Az_SubCommessaUser_Get() | genericFilter: 'descrizione' : searchText" class="nvx-ion-row-4table">
+                <ion-col size="5">
                   <ion-label>
-                    {{ item.id | idAspNetUsersToCognome }}  {{ item.id | idAspNetUsersToNome }}
+                    {{ item.id | idAspNetUsersToCognome }}
                   </ion-label>
-                </ion-item>
+                </ion-col>
+                <ion-col size="5">
+                  <ion-label>
+                    {{ item.id | idAspNetUsersToNome }}
+                  </ion-label>
+                </ion-col>
+                <ion-col size="2">
+                  <ion-button *ngIf="!item.default" size="small" fill="outline" shape="round" (click)="btnDeleteUser.event(item)" color="{{btnDeleteUser.color}}">
+                    <ion-icon name="{{btnDeleteUser.image}}"></ion-icon>
+                    &nbsp;{{btnDeleteUser.text}}
+                  </ion-button>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
 
-                <ion-item-options side="end">
-                  <ion-item-option *ngIf="!item.default" color="{{btnDeleteUser.color}}" (click)="btnDeleteUser.event(item)">
-                    <ion-icon slot="start" name="{{btnDeleteUser.image}}"></ion-icon>
-                    {{btnDeleteUser.text}}
-                  </ion-item-option>
-                </ion-item-options>
 
-              </ion-item-sliding>
-              <!--deskTop-->
-              <ion-grid class="ion-hide-sm-down">
-                <ion-row *ngFor="let item of Az_SubCommessaUser_Get() | genericFilter: 'descrizione' : searchText" class="nvx-ion-row-4table">
-                  <ion-col size="5">
-                    <ion-label>
-                      {{ item.id | idAspNetUsersToCognome }}
-                    </ion-label>
-                  </ion-col>
-                  <ion-col size="5">
-                    <ion-label>
-                      {{ item.id | idAspNetUsersToNome }}
-                    </ion-label>
-                  </ion-col>
-                  <ion-col size="2">
-                    <ion-button *ngIf="!item.default" size="small" fill="outline" shape="round" (click)="btnDeleteUser.event(item)" color="{{btnDeleteUser.color}}">
-                      <ion-icon name="{{btnDeleteUser.image}}"></ion-icon>
-                      &nbsp;{{btnDeleteUser.text}}
-                    </ion-button>
-                  </ion-col>
-                </ion-row>
-              </ion-grid>
-
-            </div>
           </div>
 
 

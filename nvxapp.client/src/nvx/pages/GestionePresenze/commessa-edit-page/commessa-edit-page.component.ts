@@ -6,16 +6,13 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { Observable } from 'rxjs/internal/Observable';
 import { map, catchError } from 'rxjs';
-import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { StringHelperService } from '../../../Utility/infrastructure/string-helper.service';
-import { Az_CommessaGetInModel, Az_CommessaGetOutModel, Az_CommessaModel, Az_CommessaPutInModel } from '../../../ClientServer-Service/GestionePresenze/Az_Commessa/Models/az-commessa-model';
+import { Az_CommessaGetInModel, Az_CommessaGetOutModel, Az_CommessaPutInModel } from '../../../ClientServer-Service/GestionePresenze/Az_Commessa/Models/az-commessa-model';
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
 import { Az_ClienteModel } from '../../../ClientServer-Service/GestionePresenze/Az_Cliente/Models/az-cliente-model';
 import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
 import { AzCommessaService } from '../../../ClientServer-Service/GestionePresenze/Az_Commessa/az-commessa.service';
 import { CheckObjOn_Id_Number, CheckObjOn_Id_Text } from '../../../ClientServer-Service/ModelsBase/check-obj';
-import { Dip_AnagraficaModel } from '../../../ClientServer-Service/GestionePresenze/Dip_Anagrafica/Models/dip-anagrafica-model';
-import { RoleCode } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-roles-model';
 import { Az_SediRepartoModel } from '../../../ClientServer-Service/GestionePresenze/Az_SediReparto/Models/az-sedi-reparto-model';
 import { Par_AttivitaModel } from '../../../ClientServer-Service/GestionePresenze/Par_Attivita/Models/par-attivita-model';
 import { FabMenuService, FabMenuItem } from '../../../Utility/infrastructure/fab-menu.service';
@@ -54,11 +51,7 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
   public startDate: string;
   public endDate: string;
 
-  ////
-  public dip_Anagrafica: Dip_AnagraficaModel[];
-  selected_Az_SediReparto: CheckObjOn_Id_Number[] = [];
-  selected_User: CheckObjOn_Id_Text[] = [];
-  ////
+  
 
 
   constructor(protected override navCtrl: NavController,
@@ -111,8 +104,6 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
     this.endDate = this.stringHelperService.DateCurr_To_ISOString();
     this.formattedStartDate = this.stringHelperService.Date_To_S_ddmmyyyy(now);
     this.formattedEndDate = this.stringHelperService.Date_To_S_ddmmyyyy(now);
-    //
-    this.dip_Anagrafica = this.sharedParameterGestionePresenzeService.Dip_Anagrafica;
 
 
     this.setfabMenuService();
@@ -139,9 +130,6 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
           this.endDate = this.stringHelperService.DateString_ddMMyyyy_To_ISOString(res.data.az_Commessa.dataA); 
           this.formattedStartDate = res.data.az_Commessa.data; 
           this.formattedEndDate = res.data.az_Commessa.dataA;
-          //
-          this.selected_Az_SediReparto = [];//res.data.selected_Az_SediReparto;
-          this.selected_User = []; // res.data.selected_User;
 
           if (res.data.az_SubCommessa.length > 0) {
             res.data.tmp_az_SubCommessa = res.data.az_SubCommessa[0].id;
@@ -162,10 +150,7 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
       );
     } else {
       return new Observable<Az_CommessaGetOutModel | null>((subscriber) => {
-
-        this.selected_Az_SediReparto = [];
-        this.selected_User = [];
-        ///
+        
         subscriber.next(new  Az_CommessaGetOutModel());
         subscriber.complete();
       });
@@ -175,6 +160,8 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
   public SaveData(editModel: Az_CommessaGetOutModel): Observable<boolean> {
     let request: GenericRequest<Az_CommessaPutInModel> = new GenericRequest<Az_CommessaPutInModel>(Az_CommessaPutInModel);
     request.data.az_Commessa = editModel.az_Commessa;
+    request.data.az_SubCommessa = editModel.az_SubCommessa;
+    
 
     //la classe base non gestisce questo tipo di dato DEVO assegnare i valori a manina
     request.data.az_Commessa.data = this.formattedStartDate;
@@ -192,7 +179,6 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
       })
     );
   }
-
 
   updateStartDate(event: any) {
     const selectedDate = new Date(event.detail.value);
@@ -235,6 +221,7 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
     this.currSection = event.detail.value;
     this.setfabMenuService();
   }
+
   segmentChanged_sub(event: any) {
     console.log('Segment cambiato:', event.detail.value);
     this.currSection_sub = event.detail.value;
@@ -294,9 +281,6 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
 
   }
   
-
-  
-
   onSubCommessaChange(event: any) {
     const selectedId = event.detail.value;
     this.idxCurrCommessa = this._editModel.az_SubCommessa.findIndex(x => x.id === selectedId);
@@ -306,17 +290,6 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
 
   /*SCHEDA USER*/
   public Az_SubCommessaUser_Get(): CheckObjOn_Id_Text[] {
-
-    //let retVal: CheckObjOn_Id_Text[] = [];
-
-    //this.dip_Anagrafica.filter(dip =>
-    //  dip.roleCode.includes(RoleCode.User)
-    //).forEach(item => {
-    //  let appo = { id: item.idAspNetUsers, checked: false };
-    //  retVal.push(appo);
-    //});
-
-    //return retVal;
 
     if (this.idxCurrCommessa === -1 || !this._editModel.az_SubCommessa?.[this.idxCurrCommessa]) {
       return [];
@@ -495,17 +468,6 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
 
   /*SCHEDA ATTIVITA*/
   public Az_SubCommessaAttivita_Get(): CheckObjOn_Id_Number[] {
-
-    //let retVal: CheckObjOn_Id_Number[] = [];
-
-    //this._par_Attivita.filter(rep =>
-    //  rep.id > 0
-    //).forEach(item => {
-    //  let appo = { id: item.id, checked: false };
-    //  retVal.push(appo);
-    //});
-
-    //return retVal;
 
     if (this.idxCurrCommessa === -1 || !this._editModel.az_SubCommessa?.[this.idxCurrCommessa]) {
       return [];
