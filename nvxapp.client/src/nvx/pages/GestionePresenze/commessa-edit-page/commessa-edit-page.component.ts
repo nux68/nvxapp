@@ -44,6 +44,7 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
 
   public btnDeleteReparto: ButtonItem;
   public btnDeleteUser: ButtonItem;
+  public btnDeleteAttivita: ButtonItem;
 
 
   //date x il backend
@@ -79,7 +80,8 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
     this.btnDeleteUser = userInterfaceService.Btn_Cancella;
     this.btnDeleteUser.event = this.Az_SubCommessaUser_HandleButtonDelete;
 
-    
+    this.btnDeleteAttivita = userInterfaceService.Btn_Cancella;
+    this.btnDeleteAttivita.event = this.Az_SubCommessaAttivita_HandleButtonDelete;
 
     this._editForm = this.fb.group({
         tmp_az_SubCommessa: [null, []],
@@ -254,7 +256,7 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
             this.fabMenuService.fabMenuItem = [
 
               new FabMenuItem('xxx', 'add-circle-outline', () => {
-                this.Par_Attivita_DialogOpen();
+                this.Az_SubCommessaAttivita_DialogOpen();
               }),
 
             ];
@@ -270,12 +272,7 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
                 this.Az_SediReparto_DialogOpen();
               }),
 
-              //new FabMenuItem('xxx', 'add-circle-outline', () => {
-              //  this.SeletionSediRepartoDialogOpen();
-              //}),
-
             ];
-
 
             break;
           case 'sez_1_sub_3':
@@ -496,23 +493,29 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
 
 
 
+  /*SCHEDA ATTIVITA*/
+  public Az_SubCommessaAttivita_Get(): CheckObjOn_Id_Number[] {
 
-  public getPar_Attivita(): CheckObjOn_Id_Number[] {
+    //let retVal: CheckObjOn_Id_Number[] = [];
 
-    let retVal: CheckObjOn_Id_Number[] = [];
+    //this._par_Attivita.filter(rep =>
+    //  rep.id > 0
+    //).forEach(item => {
+    //  let appo = { id: item.id, checked: false };
+    //  retVal.push(appo);
+    //});
 
-    this._par_Attivita.filter(rep =>
-      rep.id > 0
-    ).forEach(item => {
-      let appo = { id: item.id, checked: false };
-      retVal.push(appo);
-    });
+    //return retVal;
 
+    if (this.idxCurrCommessa === -1 || !this._editModel.az_SubCommessa?.[this.idxCurrCommessa]) {
+      return [];
+    }
+    return this._editModel.az_SubCommessa[this.idxCurrCommessa].az_SubCommessaAttivita
+      .filter(item => item.checked === true);
 
-    return retVal;
   }
 
-  isSelectedaz_SubCommessaAttivita(itemId: number): boolean {
+  Az_SubCommessaAttivita_IsSelected(itemId: number): boolean {
 
     if (this.idxCurrCommessa == -1)
       return false;
@@ -521,7 +524,7 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
 
   }
 
-  toggleSelectionaz_SubCommessaAttivita(itemId: number, event: any) {
+  Az_SubCommessaAttivita_Toggle(itemId: number, event: any) {
 
     if (this.idxCurrCommessa == -1)
       return;
@@ -539,8 +542,32 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
 
   }
 
+  Az_SubCommessaAttivita_SetCheck(itemId: number, checked: boolean) {
 
-  async Par_Attivita_DialogOpen() {
+    if (this.idxCurrCommessa == -1)
+      return;
+
+
+    const existingEntry = this._editModel.az_SubCommessa[this.idxCurrCommessa].az_SubCommessaAttivita.find(entry => entry.id === itemId);
+
+    if (existingEntry) {
+      // Se l'elemento esiste, aggiorna solo lo stato selected
+      existingEntry.checked = checked;
+
+    } else {
+      // Se l'elemento non è presente, lo aggiunge alla lista
+      this._editModel.az_SubCommessa[this.idxCurrCommessa].az_SubCommessaAttivita.push({ id: itemId, checked: checked });
+    }
+
+  }
+
+  Az_SubCommessaAttivita_HandleButtonDelete = (item: any) => {
+
+    this.Az_SubCommessaAttivita_SetCheck(item.id, false);
+
+  }
+
+  async Az_SubCommessaAttivita_DialogOpen() {
     // Crea l'istanza del modal
     const modal = await this.modalCtrl.create({
       component: SeletionParAttivitaDialogComponent, // Il componente da usare
@@ -563,7 +590,7 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
 
       if (data.id) {
         data.id.forEach(item => {
-          //this.Az_SubCommessaUser_SetCheck(item, true);
+          this.Az_SubCommessaAttivita_SetCheck(item, true);
         });
       }
     } else { }
