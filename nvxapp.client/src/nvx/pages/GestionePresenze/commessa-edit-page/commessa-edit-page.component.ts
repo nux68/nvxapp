@@ -73,10 +73,10 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
     super(navCtrl, userInterfaceService, fb);
 
     this.btnDeleteReparto = userInterfaceService.Btn_Cancella;
-    this.btnDeleteReparto.event = this.handleButtonDeleteRepartoClick;
+    this.btnDeleteReparto.event = this.Az_SediReparto_HandleButtonDelete;
 
     this.btnDeleteUser = userInterfaceService.Btn_Cancella;
-    this.btnDeleteUser.event = this.handleButtonDeleteUserClick;
+    this.btnDeleteUser.event = this.Az_SubCommessaUser_HandleButtonDelete;
 
     
 
@@ -111,18 +111,6 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
     //
     this.dip_Anagrafica = this.sharedParameterGestionePresenzeService.Dip_Anagrafica;
 
-    //this.fabMenuService.fabMenuItem = [
-
-    //  new FabMenuItem('xxx', 'add-circle-outline', () => {
-    //    //this.navCtrl.navigateForward('/seletionsedirepartopage', {
-    //    //  state: { id: 0 }
-    //    //});
-
-    //    this.SeletionSediRepartoDialogOpen();
-
-    //  }),
-
-    //];
 
     this.setfabMenuService();
 
@@ -267,7 +255,7 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
             this.fabMenuService.fabMenuItem = [
 
               new FabMenuItem('xxx', 'add-circle-outline', () => {
-                this.SeletionSediRepartoDialogOpen();
+                this.Az_SediReparto_DialogOpen();
               }),
 
               //new FabMenuItem('xxx', 'add-circle-outline', () => {
@@ -283,7 +271,7 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
             this.fabMenuService.fabMenuItem = [
 
               new FabMenuItem('xxx', 'add-circle-outline', () => {
-                this.SeletionSediRepartoUserDialogOpen();
+                this.Az_SubCommessaUser_DialogOpen();
               }),
 
             ];
@@ -300,7 +288,7 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
   }
   
 
-  /////
+  
 
   onSubCommessaChange(event: any) {
     const selectedId = event.detail.value;
@@ -309,7 +297,7 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
 
 
 
-
+  /*SCHEDA USER*/
   public Az_SubCommessaUser_Get(): CheckObjOn_Id_Text[] {
 
     //let retVal: CheckObjOn_Id_Text[] = [];
@@ -371,13 +359,13 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
 
   }
 
-  handleButtonDeleteUserClick = (item: any) => {
+  Az_SubCommessaUser_HandleButtonDelete = (item: any) => {
 
     this.Az_SubCommessaUser_SetCheck(item.id, false);
 
   }
 
-  async SeletionSediRepartoUserDialogOpen() {
+  async Az_SubCommessaUser_DialogOpen() {
     // Crea l'istanza del modal
     const modal = await this.modalCtrl.create({
       component: SeletionSediRepartoUserDialogComponent, // Il componente da usare
@@ -409,8 +397,7 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
 
 
 
-
-
+  /*SCHEDA REPARTI*/
   public Az_SediReparto_Get(): CheckObjOn_Id_Number[] {
     if (this.idxCurrCommessa === -1 || !this._editModel.az_SubCommessa?.[this.idxCurrCommessa]) {
       return [];
@@ -465,13 +452,13 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
 
   }
 
-  handleButtonDeleteRepartoClick = (item: any) => {
+  Az_SediReparto_HandleButtonDelete = (item: any) => {
 
     this.Az_SediReparto_SetCheck(item.id,false);
 
   }
 
-  async SeletionSediRepartoDialogOpen() {
+  async Az_SediReparto_DialogOpen() {
     // Crea l'istanza del modal
     const modal = await this.modalCtrl.create({
       component: SeletionSediRepartoDialogComponent, // Il componente da usare
