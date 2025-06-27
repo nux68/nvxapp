@@ -21,6 +21,7 @@ import { Par_AttivitaModel } from '../../../ClientServer-Service/GestionePresenz
 import { FabMenuService, FabMenuItem } from '../../../Utility/infrastructure/fab-menu.service';
 import { SeletionSediRepartoDialogComponent, SeletionSediRepartoDialogResult } from '../../../shared/components/GestionePresenze/seletion-sedi-reparto-dialog/seletion-sedi-reparto-dialog.component';
 import { SeletionSediRepartoUserDialogComponent, SeletionSediRepartoUserDialogResult } from '../../../shared/components/GestionePresenze/seletion-sedi-reparto-user-dialog/seletion-sedi-reparto-user-dialog.component';
+import { SeletionParAttivitaDialogComponent, SeletionParAttivitaDialogResult } from '../../../shared/components/GestionePresenze/seletion-par-attivita-dialog/seletion-par-attivita-dialog.component';
 
 @Component({
   selector: 'app-commessa-edit-page',
@@ -249,7 +250,18 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
 
         switch (this.currSection_sub) {
           case 'sez_1_sub_1':
+
+            this.fabMenuService.fabMenuItem = [
+
+              new FabMenuItem('xxx', 'add-circle-outline', () => {
+                this.Par_Attivita_DialogOpen();
+              }),
+
+            ];
+
             break;
+
+
           case 'sez_1_sub_2':
 
             this.fabMenuService.fabMenuItem = [
@@ -275,8 +287,6 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
               }),
 
             ];
-
-            
 
             break;
         }
@@ -529,6 +539,36 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
 
   }
 
+
+  async Par_Attivita_DialogOpen() {
+    // Crea l'istanza del modal
+    const modal = await this.modalCtrl.create({
+      component: SeletionParAttivitaDialogComponent, // Il componente da usare
+      // Passa i dati al modal tramite componentProps
+      // Questi dati saranno accessibili tramite @Input() nel DialogExampleComponent
+      componentProps: {
+        nomeUtente: 'Mario Rossi'
+      },
+      //cssClass:'nvx-modal'
+    });
+
+    // Presenta il modal all'utente
+    await modal.present();
+
+
+    const { data, role } = await modal.onWillDismiss<SeletionParAttivitaDialogResult | null>();
+
+
+    if (role === 'confirm') {
+
+      if (data.id) {
+        data.id.forEach(item => {
+          //this.Az_SubCommessaUser_SetCheck(item, true);
+        });
+      }
+    } else { }
+
+  }
 
 
 }

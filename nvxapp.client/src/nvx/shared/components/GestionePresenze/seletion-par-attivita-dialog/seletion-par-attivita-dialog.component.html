@@ -1,0 +1,36 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Seleziona Attività</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="login-content-center">
+    <ion-card>
+      <ion-card-content>
+        
+        <ion-grid>
+          <ion-row>
+            <ion-col size="1"></ion-col>
+            <ion-col>Descrizione</ion-col>
+
+          </ion-row>
+          <ion-row *ngFor="let item of getPar_Attivita() | genericFilter: 'descrizione' : searchText" class="nvx-ion-row-4table">
+            <ion-col size="1">
+              <ion-checkbox [checked]="Par_Attivita_IsSelected(item.id)" (ionChange)="Par_Attivita_Toggle(item.id, $event)"></ion-checkbox>
+            </ion-col>
+            <ion-col>
+              <ion-label>
+                {{ item.id | parAttivitaToLongText }}
+              </ion-label>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+
+
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>
+
+<app-page-buttonbar [buttonbar]="buttonbar"></app-page-buttonbar>
