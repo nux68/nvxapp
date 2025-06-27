@@ -153,6 +153,19 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_Commess
                     }
                     commessa = await _az_CommessaRepository.UpsertAsync(commessa);
                     retVal.Az_Commessa = _mapper.Map<Az_CommessaModel>(commessa);
+
+
+                    var reqAz_Sub = new GenericRequest<Az_SubCommessa_PutAll_4Edit_InModel>();
+                    reqAz_Sub.Data.Id= retVal.Az_Commessa.Id; 
+                    reqAz_Sub.Data.Az_SubCommessa = model.Data.Az_SubCommessa;
+                    var resAz_Sub = await _az_SubCommessaService.PutAll_4Edit(reqAz_Sub, true);
+
+                    if (resAz_Sub.Success && resAz_Sub.Data != null)
+                    {
+                        retVal.Az_SubCommessa = resAz_Sub.Data.Az_SubCommessa;
+                    }
+
+
                 }
                 await Task.Delay(DelayAsyncMethod);
                 return retVal;

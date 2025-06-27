@@ -110,7 +110,6 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
 
   }
 
-
   ionViewWillLeave() {
     this.fabMenuService.fabMenuItem = [];
   }
@@ -179,6 +178,9 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
       })
     );
   }
+
+
+
 
   updateStartDate(event: any) {
     const selectedDate = new Date(event.detail.value);

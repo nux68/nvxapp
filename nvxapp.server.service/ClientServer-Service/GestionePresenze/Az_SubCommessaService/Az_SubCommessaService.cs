@@ -5,9 +5,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using nvxapp.server.Base;
 using nvxapp.server.data.Entities.Public;
+using nvxapp.server.data.Entities.Tenant;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRepartoService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubCommessaService.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Interfaces;
@@ -63,7 +65,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
                 return retVal;
             }, isSubProcess);
         }
-
         public virtual async Task<GenericResult<Az_SubCommessa_GetAll_4Edit_OutModel>> GetAll_4Edit(GenericRequest<Az_SubCommessa_GetAll_4Edit_InModel> model, bool isSubProcess)
         {
             return await ExecuteAction(model, async () =>
@@ -92,8 +93,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
                             {
                                 itemSubCommessa.Az_SubCommessaUser.Add(new CheckObjOn_Id_Text()
                                 {
-                                     Id= x.IdAspNetUsers,
-                                      Checked= true
+                                    Id = x.IdAspNetUsers,
+                                    Checked = true
                                 });
                             });
 
@@ -101,8 +102,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
                             {
                                 itemSubCommessa.Az_SubCommessaAttivita.Add(new CheckObjOn_Id_Number()
                                 {
-                                     Id= x.IdAz_SediAttivita,
-                                      Checked= true
+                                    Id = x.IdAz_SediAttivita,
+                                    Checked = true
                                 });
                             });
 
@@ -110,8 +111,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
                             {
                                 itemSubCommessa.Az_SubCommessaSediReparto.Add(new CheckObjOn_Id_Number()
                                 {
-                                     Id= x.IdAz_SediReparto,
-                                      Checked= true
+                                    Id = x.IdAz_SediReparto,
+                                    Checked = true
                                 });
                             });
                         }
@@ -122,14 +123,70 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
                 return retVal;
             }, isSubProcess);
         }
+        public virtual async Task<GenericResult<Az_SubCommessa_PutAll_4Edit_OutModel>> PutAll_4Edit(GenericRequest<Az_SubCommessa_PutAll_4Edit_InModel> model, bool isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                Az_SubCommessa_PutAll_4Edit_OutModel retVal = new Az_SubCommessa_PutAll_4Edit_OutModel();
+                retVal.Id = model.Data.Id;
 
+                int IdCompany;
+                int.TryParse(this.CurrentCompany, out IdCompany);
+
+
+                var az_SubCommessaList = _az_SubCommessaRepository.FindAll(x => x.IdAz_Commessa == model.Data.Id).ToList();
+                //cancellazione
+                foreach (var item in az_SubCommessaList)
+                {
+                    var recRemote = model.Data.Az_SubCommessa.Where(x => x.Id == item.Id).FirstOrDefault();
+                    if (recRemote == null)
+                    {
+                        _az_SubCommessaRepository.DeleteAsync(item).Wait();
+                    }
+                }
+
+                //aggiornamento
+                foreach (var item in model.Data.Az_SubCommessa)
+                {
+                    Az_SubCommessa? az_SubCommessa = _az_SubCommessaRepository.FindAll(x => x.IdAz_Commessa == item.Id).FirstOrDefault();
+                    if(az_SubCommessa==null)
+                    {
+                        az_SubCommessa = _mapper.Map<Az_SubCommessa>(item);
+                        az_SubCommessa.IdAz_Commessa = model.Data.Id;
+                    }
+                    else
+                    {
+                        az_SubCommessa = _mapper.Map<Az_SubCommessa>(item);
+                    }
+                    //aggiurna il valore ritornato al client
+                    az_SubCommessa = await _az_SubCommessaRepository.UpsertAsync(az_SubCommessa);
+                    
+                    //sooka
+                }
+
+                
+                //rileggo i dati 
+                var reqAz_Sub = new GenericRequest<Az_SubCommessa_GetAll_4Edit_InModel>();
+                reqAz_Sub.Data.Id= model.Data.Id; 
+                var resAz_Sub = await GetAll_4Edit(reqAz_Sub, true);
+                if (resAz_Sub.Success && resAz_Sub.Data != null)
+                {
+                    retVal.Az_SubCommessa = resAz_Sub.Data.Az_SubCommessa;
+                }
+
+
+
+                await Task.Delay(DelayAsyncMethod);
+                return retVal;
+            }, isSubProcess);
+        }
     }
 
     public interface IAz_SubCommessaService : IServiceBase
     {
         Task<GenericResult<Az_SubCommessa_GetAll_OutModel>> GetAll(GenericRequest<Az_SubCommessa_GetAll_InModel> model, bool isSubProcess);
-
         Task<GenericResult<Az_SubCommessa_GetAll_4Edit_OutModel>> GetAll_4Edit(GenericRequest<Az_SubCommessa_GetAll_4Edit_InModel> model, bool isSubProcess);
+        Task<GenericResult<Az_SubCommessa_PutAll_4Edit_OutModel>> PutAll_4Edit(GenericRequest<Az_SubCommessa_PutAll_4Edit_InModel> model, bool isSubProcess);
 
     }
 }

@@ -8,7 +8,10 @@ namespace nvxapp.server.service.Mappers.Tenant.GestionePresenze
     {
         public Az_SubCommessa_To_Az_SubCommessa_4EditModel_Mapper()
         {
-            CreateMap<Az_SubCommessa, Az_SubCommessa_4EditModel>();
+            CreateMap<Az_SubCommessa, Az_SubCommessa_4EditModel>()
+                .ForMember(dest => dest.Az_SubCommessaUser, opt => opt.Ignore())
+                .ForMember(dest => dest.Az_SubCommessaAttivita, opt => opt.Ignore())
+                .ForMember(dest => dest.Az_SubCommessaSediReparto, opt => opt.Ignore());
         }
     }
 
@@ -16,7 +19,10 @@ namespace nvxapp.server.service.Mappers.Tenant.GestionePresenze
     {
         public Az_SubCommessa_4EditModel_To_Az_SubCommessa_Mapper()
         {
-            CreateMap<Az_SubCommessa_4EditModel, Az_SubCommessa>();
+            CreateMap<Az_SubCommessa_4EditModel, Az_SubCommessa>()
+                .ForMember(dest => dest.Az_SubCommessaUser, opt => opt.Ignore())
+                .ForMember(dest => dest.Az_SubCommessaAttivita, opt => opt.Ignore())
+                .ForMember(dest => dest.Az_SubCommessaSediReparto, opt => opt.Ignore());
         }
     }
 }

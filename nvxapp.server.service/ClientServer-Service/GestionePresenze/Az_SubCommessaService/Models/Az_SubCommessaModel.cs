@@ -31,7 +31,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
 
     public class Az_SubCommessa_GetAll_4Edit_InModel
     {
-        public int Id { get; set; }  // id della collasse
+        public int Id { get; set; }  // id della commessa
     }
 
     public class Az_SubCommessa_GetAll_4Edit_OutModel : ModelResult
@@ -39,5 +39,17 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
         public List<Az_SubCommessa_4EditModel> Az_SubCommessa { get; set; } = new List<Az_SubCommessa_4EditModel>();
     }
 
+
+    public class Az_SubCommessa_PutAll_4Edit_InModel
+    {
+        public int Id { get; set; }  // id della commessa
+        public List<Az_SubCommessa_4EditModel> Az_SubCommessa { get; set; } = new List<Az_SubCommessa_4EditModel>();
+    }
+
+    public class Az_SubCommessa_PutAll_4Edit_OutModel : ModelResult
+    {
+        public int Id { get; set; }  // id della commessa
+        public List<Az_SubCommessa_4EditModel> Az_SubCommessa { get; set; } = new List<Az_SubCommessa_4EditModel>();
+    }
 
 }
