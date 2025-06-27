@@ -14,8 +14,9 @@ export class SeletionSediRepartoUserDialogComponent  implements OnInit {
   public buttonbar: ButtonItem[] = [];
 
   result: SeletionSediRepartoUserDialogResult = {
-    idSede: 0,   
-    idReparto: 0 
+    idSede: 0,
+    idReparto: 0,
+    userIds: []
   };
 
   constructor(protected userInterfaceService: UserInterfaceService,
@@ -48,16 +49,16 @@ export class SeletionSediRepartoUserDialogComponent  implements OnInit {
     this.result.idSede = sediId;
   }
   onRepartiChanged(repartoIds: number[] | undefined): void {
-  
+
     if (repartoIds.length == 0)
       this.result.idReparto = 0;
     else
       this.result.idReparto = repartoIds[0];
 
-  
-
   }
-  onAllUsersInSelectionChanged(userIds: string[] | undefined): void { }
+  onAllUsersInSelectionChanged(userIds: string[] | undefined): void {
+    this.result.userIds = userIds;
+  }
 
 
 
@@ -66,4 +67,5 @@ export class SeletionSediRepartoUserDialogComponent  implements OnInit {
 export interface SeletionSediRepartoUserDialogResult {
   idSede: number;
   idReparto: number;
+  userIds: string[] | undefined;
 }

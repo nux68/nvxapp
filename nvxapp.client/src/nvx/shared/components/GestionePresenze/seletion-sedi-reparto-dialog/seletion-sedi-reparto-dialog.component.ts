@@ -54,8 +54,6 @@ export class SeletionSediRepartoDialogComponent  implements OnInit {
     else
       this.result.idReparto = repartoIds[0];
 
-  
-
   }
   onAllUsersInSelectionChanged(userIds: string[] | undefined): void { }
 

@@ -42,6 +42,7 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
 
 
   public btnDeleteReparto: ButtonItem;
+  public btnDeleteUser: ButtonItem;
 
 
   //date x il backend
@@ -73,6 +74,11 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
 
     this.btnDeleteReparto = userInterfaceService.Btn_Cancella;
     this.btnDeleteReparto.event = this.handleButtonDeleteRepartoClick;
+
+    this.btnDeleteUser = userInterfaceService.Btn_Cancella;
+    this.btnDeleteUser.event = this.handleButtonDeleteUserClick;
+
+    
 
     this._editForm = this.fb.group({
         tmp_az_SubCommessa: [null, []],
@@ -304,29 +310,34 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
 
 
 
-  public getUser(): CheckObjOn_Id_Text[] {
+  public Az_SubCommessaUser_Get(): CheckObjOn_Id_Text[] {
 
-    let retVal: CheckObjOn_Id_Text[] = [];
+    //let retVal: CheckObjOn_Id_Text[] = [];
 
-    this.dip_Anagrafica.filter(dip =>
-      dip.roleCode.includes(RoleCode.User)
-    ).forEach(item => {
-      let appo = { id: item.idAspNetUsers, checked: false };
-      retVal.push(appo);
-    });
+    //this.dip_Anagrafica.filter(dip =>
+    //  dip.roleCode.includes(RoleCode.User)
+    //).forEach(item => {
+    //  let appo = { id: item.idAspNetUsers, checked: false };
+    //  retVal.push(appo);
+    //});
 
+    //return retVal;
 
-    return retVal;
+    if (this.idxCurrCommessa === -1 || !this._editModel.az_SubCommessa?.[this.idxCurrCommessa]) {
+      return [];
+    }
+    return this._editModel.az_SubCommessa[this.idxCurrCommessa].az_SubCommessaUser
+      .filter(item => item.checked === true);
+
   }
 
-  isSelectedUser(itemId: string): boolean {
+  Az_SubCommessaUser_IsSelected(itemId: string): boolean {
     
     return this._editModel.az_SubCommessa[this.idxCurrCommessa].az_SubCommessaUser.find(entry => entry.id === itemId)?.checked ?? false;
 
   }
 
-
-  toggleSelectionUser(itemId: string, event: any) {
+  Az_SubCommessaUser_Toggle(itemId: string, event: any) {
 
 
     const existingEntry = this._editModel.az_SubCommessa[this.idxCurrCommessa].az_SubCommessaUser.find(entry => entry.id === itemId);
@@ -340,6 +351,63 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
     }
 
   }
+
+  Az_SubCommessaUser_SetCheck(itemId: string, checked: boolean) {
+
+    if (this.idxCurrCommessa == -1)
+      return;
+
+
+    const existingEntry = this._editModel.az_SubCommessa[this.idxCurrCommessa].az_SubCommessaUser.find(entry => entry.id === itemId);
+
+    if (existingEntry) {
+      // Se l'elemento esiste, aggiorna solo lo stato selected
+      existingEntry.checked = checked;
+
+    } else {
+      // Se l'elemento non è presente, lo aggiunge alla lista
+      this._editModel.az_SubCommessa[this.idxCurrCommessa].az_SubCommessaUser.push({ id: itemId, checked: checked });
+    }
+
+  }
+
+  handleButtonDeleteUserClick = (item: any) => {
+
+    this.Az_SubCommessaUser_SetCheck(item.id, false);
+
+  }
+
+  async SeletionSediRepartoUserDialogOpen() {
+    // Crea l'istanza del modal
+    const modal = await this.modalCtrl.create({
+      component: SeletionSediRepartoUserDialogComponent, // Il componente da usare
+      // Passa i dati al modal tramite componentProps
+      // Questi dati saranno accessibili tramite @Input() nel DialogExampleComponent
+      componentProps: {
+        nomeUtente: 'Mario Rossi'
+      },
+      //cssClass:'nvx-modal'
+    });
+
+    // Presenta il modal all'utente
+    await modal.present();
+
+
+    const { data, role } = await modal.onWillDismiss<SeletionSediRepartoUserDialogResult | null>();
+
+
+    if (role === 'confirm') {
+
+      if (data.userIds) {
+        data.userIds.forEach(item => {
+          this.Az_SubCommessaUser_SetCheck(item, true);
+        });
+      }
+    } else {}
+
+  }
+
+
 
 
 
@@ -403,7 +471,32 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
 
   }
 
-  
+  async SeletionSediRepartoDialogOpen() {
+    // Crea l'istanza del modal
+    const modal = await this.modalCtrl.create({
+      component: SeletionSediRepartoDialogComponent, // Il componente da usare
+      // Passa i dati al modal tramite componentProps
+      // Questi dati saranno accessibili tramite @Input() nel DialogExampleComponent
+      componentProps: {
+        nomeUtente: 'Mario Rossi'
+      },
+      //cssClass:'nvx-modal'
+    });
+
+    // Presenta il modal all'utente
+    await modal.present();
+
+
+    const { data, role } = await modal.onWillDismiss<SeletionSediRepartoDialogResult | null>();
+
+
+    if (role === 'confirm') {
+      this.Az_SediReparto_SetCheck(data.idReparto, true);
+    } else {
+      //this.risultatoDialog = `L'utente ha annullato l'operazione.`;
+    }
+  }
+
 
 
 
@@ -450,60 +543,5 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
   }
 
 
-  async SeletionSediRepartoDialogOpen() {
-    // Crea l'istanza del modal
-    const modal = await this.modalCtrl.create({
-      component: SeletionSediRepartoDialogComponent, // Il componente da usare
-      // Passa i dati al modal tramite componentProps
-      // Questi dati saranno accessibili tramite @Input() nel DialogExampleComponent
-      componentProps: {
-        nomeUtente: 'Mario Rossi'
-      },
-      //cssClass:'nvx-modal'
-    });
-
-    // Presenta il modal all'utente
-    await modal.present();
-    
-
-    const { data, role } = await modal.onWillDismiss<SeletionSediRepartoDialogResult|null>();
-    
-    
-    if (role === 'confirm') {
-      this.Az_SediReparto_SetCheck(data.idReparto,true);
-    } else {
-      //this.risultatoDialog = `L'utente ha annullato l'operazione.`;
-    }
-  }
-
-
-  async SeletionSediRepartoUserDialogOpen() {
-    // Crea l'istanza del modal
-    const modal = await this.modalCtrl.create({
-      component: SeletionSediRepartoUserDialogComponent, // Il componente da usare
-      // Passa i dati al modal tramite componentProps
-      // Questi dati saranno accessibili tramite @Input() nel DialogExampleComponent
-      componentProps: {
-        nomeUtente: 'Mario Rossi'
-      },
-      //cssClass:'nvx-modal'
-    });
-
-    // Presenta il modal all'utente
-    await modal.present();
-
-
-    const { data, role } = await modal.onWillDismiss<SeletionSediRepartoUserDialogResult | null>();
-
-
-    //if (role === 'confirm') {
-    //  this.Az_SediReparto_SetCheck(data.idReparto, true);
-    //} else {
-    //  //this.risultatoDialog = `L'utente ha annullato l'operazione.`;
-    //}
-
-  }
-
-  
 
 }
