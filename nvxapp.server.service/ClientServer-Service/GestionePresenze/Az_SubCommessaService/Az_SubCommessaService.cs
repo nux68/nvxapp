@@ -9,7 +9,6 @@ using nvxapp.server.data.Entities.Tenant;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
-using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRepartoService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubCommessaService.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Interfaces;
@@ -134,45 +133,123 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
                 int.TryParse(this.CurrentCompany, out IdCompany);
 
 
-                var az_SubCommessaList = _az_SubCommessaRepository.FindAll(x => x.IdAz_Commessa == model.Data.Id).ToList();
-                //cancellazione
-                foreach (var item in az_SubCommessaList)
-                {
-                    var recRemote = model.Data.Az_SubCommessa.Where(x => x.Id == item.Id).FirstOrDefault();
-                    if (recRemote == null)
-                    {
-                        _az_SubCommessaRepository.DeleteAsync(item).Wait();
-                    }
-                }
-
-                //aggiornamento
-                foreach (var item in model.Data.Az_SubCommessa)
-                {
-                    Az_SubCommessa? az_SubCommessa = _az_SubCommessaRepository.FindAll(x => x.IdAz_Commessa == item.Id).FirstOrDefault();
-                    if(az_SubCommessa==null)
-                    {
-                        az_SubCommessa = _mapper.Map<Az_SubCommessa>(item);
-                        az_SubCommessa.IdAz_Commessa = model.Data.Id;
-                    }
-                    else
-                    {
-                        az_SubCommessa = _mapper.Map<Az_SubCommessa>(item);
-                    }
-                    //aggiurna il valore ritornato al client
-                    az_SubCommessa = await _az_SubCommessaRepository.UpsertAsync(az_SubCommessa);
-                    
-                    //sooka
-                }
-
-                
-                //rileggo i dati 
+                //rileggo i dati originali
                 var reqAz_Sub = new GenericRequest<Az_SubCommessa_GetAll_4Edit_InModel>();
-                reqAz_Sub.Data.Id= model.Data.Id; 
+                reqAz_Sub.Data.Id = model.Data.Id;
+
                 var resAz_Sub = await GetAll_4Edit(reqAz_Sub, true);
                 if (resAz_Sub.Success && resAz_Sub.Data != null)
                 {
-                    retVal.Az_SubCommessa = resAz_Sub.Data.Az_SubCommessa;
+
+                    //cancellazione sub commesse eliminate
+                    foreach (var item in resAz_Sub.Data.Az_SubCommessa)
+                    {   //ciclo le commesse originali
+
+                        //ottengo il record orig del db
+                        Az_SubCommessa? az_SubCommessa = _az_SubCommessaRepository.FindAll(x => x.IdAz_Commessa == item.Id).FirstOrDefault();
+
+                        if (az_SubCommessa != null)
+                        {
+                            //cerco la commessa nei dati tornati dal client
+                            var orig_TMP = model.Data.Az_SubCommessa.Where(x => x.Id == item.Id).FirstOrDefault();
+
+                            //se non trovo la corrispondenza nei dati del client, vul dire che è stata eliminata
+                            if (orig_TMP == null)
+                            {
+                                //procedo alla cancelazione
+                                await _az_SubCommessaRepository.DeleteAsync(az_SubCommessa);
+                            }
+                        }
+                    }
+                    //upsert commesse
+                    foreach (var item in model.Data.Az_SubCommessa)
+                    {
+                        //ottengo il record orig del db
+                        Az_SubCommessa? az_SubCommessa = _az_SubCommessaRepository.FindAll(x => x.IdAz_Commessa == item.Id).FirstOrDefault();
+                        if (az_SubCommessa == null)
+                        {
+                            az_SubCommessa = _mapper.Map<Az_SubCommessa>(item);
+                            az_SubCommessa.IdAz_Commessa = model.Data.Id;
+                        }
+                        else
+                        {
+                            az_SubCommessa = _mapper.Map<Az_SubCommessa>(item);
+                        }
+                        az_SubCommessa = await _az_SubCommessaRepository.UpsertAsync(az_SubCommessa);
+
+                    }
+
+                    //else
+                    //  {
+                    //      //aggiorno
+                    //      az_SubCommessa = _mapper.Map<Az_SubCommessa>(item);
+                    //      az_SubCommessa = await _az_SubCommessaRepository.UpsertAsync(az_SubCommessa);
+
+
+
+                    //  }
+
+                    //rileggo i dati dopo le varizioni per ritornare il valore corrente
+                    resAz_Sub = await GetAll_4Edit(reqAz_Sub, true);
+                    if (resAz_Sub.Success && resAz_Sub.Data != null)
+                    {
+                        retVal.Az_SubCommessa = resAz_Sub.Data.Az_SubCommessa;
+                    }
                 }
+
+
+
+                //var az_SubCommessaList = _az_SubCommessaRepository.FindAll(x => x.IdAz_Commessa == model.Data.Id).ToList();
+                ////cancellazione
+                //foreach (var item in az_SubCommessaList)
+                //{
+                //    var recRemote = model.Data.Az_SubCommessa.Where(x => x.Id == item.Id).FirstOrDefault();
+                //    if (recRemote == null)
+                //    {
+                //        _az_SubCommessaRepository.DeleteAsync(item).Wait();
+                //    }
+                //}
+
+                ////aggiornamento
+                //foreach (var item in model.Data.Az_SubCommessa)
+                //{
+                //    Az_SubCommessa? az_SubCommessa = _az_SubCommessaRepository.FindAll(x => x.IdAz_Commessa == item.Id).FirstOrDefault();
+                //    if(az_SubCommessa==null)
+                //    {
+                //        az_SubCommessa = _mapper.Map<Az_SubCommessa>(item);
+                //        az_SubCommessa.IdAz_Commessa = model.Data.Id;
+                //    }
+                //    else
+                //    {
+                //        az_SubCommessa = _mapper.Map<Az_SubCommessa>(item);
+                //    }
+                //    //aggiurna il valore ritornato al client
+                //    az_SubCommessa = await _az_SubCommessaRepository.UpsertAsync(az_SubCommessa);
+
+                //    //sooka
+                //}
+
+                ////rileggo i dati originali
+                //var reqAz_Sub = new GenericRequest<Az_SubCommessa_GetAll_4Edit_InModel>();
+                //reqAz_Sub.Data.Id= model.Data.Id; 
+
+                //var resAz_Sub = await GetAll_4Edit(reqAz_Sub, true);
+                //if (resAz_Sub.Success && resAz_Sub.Data != null)
+                //{
+
+                //    resAz_Sub.Data.Az_SubCommessa
+
+
+                //    //rileggo i dati dopo le varizioni per ritornare il valore corrente
+                //    resAz_Sub = await GetAll_4Edit(reqAz_Sub, true);
+                //    if (resAz_Sub.Success && resAz_Sub.Data != null)
+                //    {
+                //        retVal.Az_SubCommessa = resAz_Sub.Data.Az_SubCommessa;
+                //    }
+                //}
+
+
+
 
 
 
