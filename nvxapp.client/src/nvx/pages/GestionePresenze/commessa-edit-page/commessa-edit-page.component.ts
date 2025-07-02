@@ -19,6 +19,7 @@ import { FabMenuService, FabMenuItem } from '../../../Utility/infrastructure/fab
 import { SeletionSediRepartoDialogComponent, SeletionSediRepartoDialogResult } from '../../../shared/components/GestionePresenze/seletion-sedi-reparto-dialog/seletion-sedi-reparto-dialog.component';
 import { SeletionSediRepartoUserDialogComponent, SeletionSediRepartoUserDialogResult } from '../../../shared/components/GestionePresenze/seletion-sedi-reparto-user-dialog/seletion-sedi-reparto-user-dialog.component';
 import { SeletionParAttivitaDialogComponent, SeletionParAttivitaDialogResult } from '../../../shared/components/GestionePresenze/seletion-par-attivita-dialog/seletion-par-attivita-dialog.component';
+import { Az_SubCommessaUser4EditModel } from '../../../ClientServer-Service/GestionePresenze/Az_SubCommessaUser/Models/az-subcommessa-user-model';
 
 @Component({
   selector: 'app-commessa-edit-page',
@@ -291,7 +292,7 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
 
 
   /*SCHEDA USER*/
-  public Az_SubCommessaUser_Get(): CheckObjOn_Id_Text[] {
+  public Az_SubCommessaUser_Get(): Az_SubCommessaUser4EditModel[] {
 
     if (this.idxCurrCommessa === -1 || !this._editModel.az_SubCommessa?.[this.idxCurrCommessa]) {
       return [];
@@ -301,34 +302,39 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
 
   }
 
-  Az_SubCommessaUser_IsSelected(itemId: string): boolean {
+  Az_SubCommessaUser_IsSelected(idAspNetUsers: string): boolean {
     
-    return this._editModel.az_SubCommessa[this.idxCurrCommessa].az_SubCommessaUser.find(entry => entry.id === itemId)?.checked ?? false;
+    return this._editModel.az_SubCommessa[this.idxCurrCommessa].az_SubCommessaUser.find(entry => entry.idAspNetUsers === idAspNetUsers)?.checked ?? false;
 
   }
 
-  Az_SubCommessaUser_Toggle(itemId: string, event: any) {
+  Az_SubCommessaUser_Toggle(idAspNetUsers: string, event: any) {
 
 
-    const existingEntry = this._editModel.az_SubCommessa[this.idxCurrCommessa].az_SubCommessaUser.find(entry => entry.id === itemId);
+    const existingEntry = this._editModel.az_SubCommessa[this.idxCurrCommessa].az_SubCommessaUser.find(entry => entry.idAspNetUsers === idAspNetUsers);
 
     if (existingEntry) {
       // Se l'elemento esiste, aggiorna solo lo stato selected
       existingEntry.checked = event.detail.checked;
     } else {
       // Se l'elemento non è presente, lo aggiunge alla lista
-      this._editModel.az_SubCommessa[this.idxCurrCommessa].az_SubCommessaUser.push({ id: itemId, checked: event.detail.checked });
+      this._editModel.az_SubCommessa[this.idxCurrCommessa].az_SubCommessaUser.push({
+        id:0,
+        idAz_SubCommessa:0,
+        idAspNetUsers: idAspNetUsers,
+        checked: event.detail.checked
+      });
     }
 
   }
 
-  Az_SubCommessaUser_SetCheck(itemId: string, checked: boolean) {
+  Az_SubCommessaUser_SetCheck(idAspNetUsers: string, checked: boolean) {
 
     if (this.idxCurrCommessa == -1)
       return;
 
 
-    const existingEntry = this._editModel.az_SubCommessa[this.idxCurrCommessa].az_SubCommessaUser.find(entry => entry.id === itemId);
+    const existingEntry = this._editModel.az_SubCommessa[this.idxCurrCommessa].az_SubCommessaUser.find(entry => entry.idAspNetUsers === idAspNetUsers);
 
     if (existingEntry) {
       // Se l'elemento esiste, aggiorna solo lo stato selected
@@ -336,14 +342,19 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
 
     } else {
       // Se l'elemento non è presente, lo aggiunge alla lista
-      this._editModel.az_SubCommessa[this.idxCurrCommessa].az_SubCommessaUser.push({ id: itemId, checked: checked });
+      this._editModel.az_SubCommessa[this.idxCurrCommessa].az_SubCommessaUser.push({
+        id: 0,
+        idAz_SubCommessa:0,
+        idAspNetUsers: idAspNetUsers,
+        checked: checked
+      });
     }
 
   }
 
   Az_SubCommessaUser_HandleButtonDelete = (item: any) => {
 
-    this.Az_SubCommessaUser_SetCheck(item.id, false);
+    this.Az_SubCommessaUser_SetCheck(item.idAspNetUsers, false);
 
   }
 

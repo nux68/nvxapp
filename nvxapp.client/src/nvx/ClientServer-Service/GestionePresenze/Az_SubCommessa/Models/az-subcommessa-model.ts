@@ -1,5 +1,6 @@
 import { ModelResult } from "../../../ModelsBase/model-result";
 import { CheckObjOn_Id_Number, CheckObjOn_Id_Text } from "../../../ModelsBase/check-obj";
+import { Az_SubCommessaUser4EditModel } from "../../Az_SubCommessaUser/Models/az-subcommessa-user-model";
 
 export class Az_SubCommessaModel {
   public id: number = 0;
@@ -16,7 +17,11 @@ export class Az_SubCommessa_GetAll_OutModel extends ModelResult {
 
 // Modello per l'edit (incorpora tutti i dati che compongono la sub commessa)
 export class Az_SubCommessa_4EditModel extends Az_SubCommessaModel {
-  public az_SubCommessaUser: CheckObjOn_Id_Text[] = [];
+  //public az_SubCommessaUser: CheckObjOn_Id_Text[] = [];
+  public az_SubCommessaUser: Az_SubCommessaUser4EditModel[] = [];
+
+  
+
   public az_SubCommessaAttivita: CheckObjOn_Id_Number[] = [];
   public az_SubCommessaSediReparto: CheckObjOn_Id_Number[] = [];
 }

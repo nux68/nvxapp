@@ -1,3 +1,4 @@
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubCommessaUserService.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubCommessaService.Models
@@ -23,7 +24,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
     //incorpora tutti i dati che compongono la sub commessa
     public class Az_SubCommessa_4EditModel : Az_SubCommessaModel
     {
-        public List<CheckObjOn_Id_Text> Az_SubCommessaUser { get; set; } = new List<CheckObjOn_Id_Text>();
+        //public List<CheckObjOn_Id_Text> Az_SubCommessaUser { get; set; } = new List<CheckObjOn_Id_Text>();
+        public List<Az_SubCommessaUser4EditModel> Az_SubCommessaUser { get; set; } = new List<Az_SubCommessaUser4EditModel>();
+
         public List<CheckObjOn_Id_Number> Az_SubCommessaAttivita { get; set; } = new List<CheckObjOn_Id_Number>();
         public List<CheckObjOn_Id_Number> Az_SubCommessaSediReparto { get; set; } = new List<CheckObjOn_Id_Number>();
     }
