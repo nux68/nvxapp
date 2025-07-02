@@ -160,7 +160,7 @@
             <ion-item-sliding *ngFor="let item of Az_SediReparto_Get() | genericFilter: 'descrizione' : searchText" class="ion-hide-sm-up">
               <ion-item>
                 <ion-label>
-                  {{ item.id | azSediRepartoToLongText }}
+                  {{ item.idAz_SediReparto | azSediRepartoToLongText }}
                 </ion-label>
               </ion-item>
 
@@ -177,7 +177,7 @@
               <ion-row *ngFor="let item of Az_SediReparto_Get() | genericFilter: 'descrizione' : searchText" class="nvx-ion-row-4table">
                 <ion-col size="10">
                   <ion-label>
-                    {{ item.id | azSediRepartoToLongText }}
+                    {{ item.idAz_SediReparto | azSediRepartoToLongText }}
                   </ion-label>
                 </ion-col>
 

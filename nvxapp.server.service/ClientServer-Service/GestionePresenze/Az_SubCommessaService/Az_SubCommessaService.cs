@@ -14,6 +14,8 @@ using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubCommessa
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubCommessaUserService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubCommessaAttivitaService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubCommessaAttivitaService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubCommessaSediRepartoService;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubCommessaSediRepartoService.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.ServerModels;
@@ -31,6 +33,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
 
         private readonly IAz_SubCommessaUserService _az_SubCommessaUserService;
         private readonly IAz_SubCommessaAttivitaService _az_SubCommessaAttivitaService;
+        private readonly IAz_SubCommessaSediRepartoService _az_SubCommessaSediRepartoService;
 
         public Az_SubCommessaService(IMapper mapper,
                                   UserManager<ApplicationUser> userManager,
@@ -46,7 +49,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
                                   IAz_SubCommessaAttivitaRepository az_SubCommessaAttivitaRepository,
                                   IAz_SubCommessaAttivitaService az_SubCommessaAttivitaService,
                                   IAz_SubCommessaSediRepartoRepository az_SubCommessaSediRepartoRepository,
-                                  IAz_SubCommessaRepository az_SubCommessaRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
+                                  IAz_SubCommessaRepository az_SubCommessaRepository,
+                                  IAz_SubCommessaSediRepartoService az_SubCommessaSediRepartoService) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _az_SubCommessaRepository = az_SubCommessaRepository;
             _gestionePresenzeUserUtility = gestionePresenzeUserUtility;
@@ -56,6 +60,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
 
             _az_SubCommessaUserService = az_SubCommessaUserService;
             _az_SubCommessaAttivitaService = az_SubCommessaAttivitaService;
+            _az_SubCommessaSediRepartoService = az_SubCommessaSediRepartoService;
         }
 
         public virtual async Task<GenericResult<Az_SubCommessa_GetAll_OutModel>> GetAll(GenericRequest<Az_SubCommessa_GetAll_InModel> model, bool isSubProcess)
@@ -94,11 +99,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
                     retVal.Az_SubCommessa = _mapper.Map<List<Az_SubCommessa_4EditModel>>(az_SubCommessa);
                     if (retVal.Az_SubCommessa != null)
                     {
-                        var Az_SubCommessa_Id = retVal.Az_SubCommessa.Select(x => x.Id).ToList();
+                        //var Az_SubCommessa_Id = retVal.Az_SubCommessa.Select(x => x.Id).ToList();
 
-                        var az_SubCommessaUser = _az_SubCommessaUserRepository.FindAll(x => Az_SubCommessa_Id.Contains(x.IdAz_SubCommessa)).ToList();
-                        var az_SubCommessaAttivita = _az_SubCommessaAttivitaRepository.FindAll(x => Az_SubCommessa_Id.Contains(x.IdAz_SubCommessa)).ToList();
-                        var az_SubCommessaSediReparto = _az_SubCommessaSediRepartoRepository.FindAll(x => Az_SubCommessa_Id.Contains(x.IdAz_SubCommessa)).ToList();
+                        //var az_SubCommessaUser = _az_SubCommessaUserRepository.FindAll(x => Az_SubCommessa_Id.Contains(x.IdAz_SubCommessa)).ToList();
+                        //var az_SubCommessaAttivita = _az_SubCommessaAttivitaRepository.FindAll(x => Az_SubCommessa_Id.Contains(x.IdAz_SubCommessa)).ToList();
+                        //var az_SubCommessaSediReparto = _az_SubCommessaSediRepartoRepository.FindAll(x => Az_SubCommessa_Id.Contains(x.IdAz_SubCommessa)).ToList();
 
                         foreach (var itemSubCommessa in retVal.Az_SubCommessa)
                         {
@@ -116,15 +121,14 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
                             if (res_SubCommessaAttivita.Success && res_SubCommessaAttivita.Data != null)
                                 itemSubCommessa.Az_SubCommessaAttivita = res_SubCommessaAttivita.Data.Az_SubCommessaAttivita;
 
-                            // Az_SubCommessaSediReparto assignment
-                            az_SubCommessaSediReparto.Where(x => x.IdAz_SubCommessa == itemSubCommessa.Id).ToList().ForEach(x =>
-                            {
-                                itemSubCommessa.Az_SubCommessaSediReparto.Add(new CheckObjOn_Id_Number()
-                                {
-                                    Id = x.IdAz_SediReparto,
-                                    Checked = true
-                                });
-                            });
+                            // Az_SubCommessaSediReparto assignment (chiamata service invece di repository)
+                            var req_SubCommessaSediReparto = new GenericRequest<Az_SubCommessaSediReparto_Get4SubCommessa_InModel>();
+                            req_SubCommessaSediReparto.Data.IdAz_SubCommessa = itemSubCommessa.Id;
+                            var res_SubCommessaSediReparto = await _az_SubCommessaSediRepartoService.Get4SubCommessa(req_SubCommessaSediReparto, true);
+                            if (res_SubCommessaSediReparto.Success && res_SubCommessaSediReparto.Data != null)
+                                itemSubCommessa.Az_SubCommessaSediReparto = res_SubCommessaSediReparto.Data.Az_SubCommessaSediReparto;
+                                    
+                            
                         }
                     }
                 }
@@ -195,6 +199,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
                         req_SubCommessaAttivita.Data.IdAz_SubCommessa = item.Id;
                         req_SubCommessaAttivita.Data.Az_SubCommessaAttivita = item.Az_SubCommessaAttivita;
                         var res_SubCommessaAttivita = await _az_SubCommessaAttivitaService.Put4SubCommessa(req_SubCommessaAttivita, true);
+
+                        var req_SubCommessaSediReparto = new GenericRequest<Az_SubCommessaSediReparto_Put4SubCommessa_InModel>();
+                        req_SubCommessaSediReparto.Data.IdAz_SubCommessa = item.Id;
+                        req_SubCommessaSediReparto.Data.Az_SubCommessaSediReparto = item.Az_SubCommessaSediReparto;
+                        await _az_SubCommessaSediRepartoService.Put4SubCommessa(req_SubCommessaSediReparto, true);
                     }
 
                     //rileggo i dati dopo le varizioni per ritornare il valore corrente

@@ -2,6 +2,7 @@ import { ModelResult } from "../../../ModelsBase/model-result";
 import { CheckObjOn_Id_Number, CheckObjOn_Id_Text } from "../../../ModelsBase/check-obj";
 import { Az_SubCommessaUser4EditModel } from "../../Az_SubCommessaUser/Models/az-subcommessa-user-model";
 import { Az_SubCommessaAttivita4EditModel } from "../../Az_SubCommessaAttivita/Models/az-subcommessa-attivita-model";
+import { Az_SubCommessaSediRepartoModel4EditModel } from "../../Az_SubCommessaSediReparto/Models/az-subcommessa-sedi-reparto-model";
 
 export class Az_SubCommessaModel {
   public id: number = 0;
@@ -20,7 +21,7 @@ export class Az_SubCommessa_GetAll_OutModel extends ModelResult {
 export class Az_SubCommessa_4EditModel extends Az_SubCommessaModel {
   public az_SubCommessaUser: Az_SubCommessaUser4EditModel[] = [];
   public az_SubCommessaAttivita: Az_SubCommessaAttivita4EditModel[] = [];
-  public az_SubCommessaSediReparto: CheckObjOn_Id_Number[] = [];
+  public az_SubCommessaSediReparto: Az_SubCommessaSediRepartoModel4EditModel[] = [];
 }
 
 export class Az_SubCommessa_GetAll_4Edit_InModel {

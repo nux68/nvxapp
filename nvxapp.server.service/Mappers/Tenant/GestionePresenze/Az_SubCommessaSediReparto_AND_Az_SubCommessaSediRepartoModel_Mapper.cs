@@ -9,6 +9,7 @@ namespace nvxapp.server.service.Mappers.Tenant.GestionePresenze
         public Az_SubCommessaSediReparto_To_Az_SubCommessaSediRepartoModel_Mapper()
         {
             CreateMap<Az_SubCommessaSediReparto, Az_SubCommessaSediRepartoModel>();
+            CreateMap<Az_SubCommessaSediReparto, Az_SubCommessaSediReparto4EditModel>();
         }
     }
 
@@ -17,6 +18,7 @@ namespace nvxapp.server.service.Mappers.Tenant.GestionePresenze
         public Az_SubCommessaSediRepartoModel_To_Az_SubCommessaSediReparto_Mapper()
         {
             CreateMap<Az_SubCommessaSediRepartoModel, Az_SubCommessaSediReparto>();
+            CreateMap<Az_SubCommessaSediReparto4EditModel, Az_SubCommessaSediReparto>();
         }
     }
 }
