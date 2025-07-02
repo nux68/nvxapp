@@ -13,6 +13,18 @@
     }
 
 
+    public class CheckObjOn_Id<T> : ICheckObj<T>
+    {
+        public T Id { get; set; }
+        public bool Checked { get; set; }
+
+        public CheckObjOn_Id(T id, bool checkedValue)
+        {
+            Id = id;
+            Checked = checkedValue;
+        }
+    }
+
     public interface ICheckObj<T>
     {
         T Id { get; set; }
