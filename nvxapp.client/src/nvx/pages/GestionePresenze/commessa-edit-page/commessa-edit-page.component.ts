@@ -20,6 +20,7 @@ import { SeletionSediRepartoDialogComponent, SeletionSediRepartoDialogResult } f
 import { SeletionSediRepartoUserDialogComponent, SeletionSediRepartoUserDialogResult } from '../../../shared/components/GestionePresenze/seletion-sedi-reparto-user-dialog/seletion-sedi-reparto-user-dialog.component';
 import { SeletionParAttivitaDialogComponent, SeletionParAttivitaDialogResult } from '../../../shared/components/GestionePresenze/seletion-par-attivita-dialog/seletion-par-attivita-dialog.component';
 import { Az_SubCommessaUser4EditModel } from '../../../ClientServer-Service/GestionePresenze/Az_SubCommessaUser/Models/az-subcommessa-user-model';
+import { Az_SubCommessaAttivita4EditModel } from '../../../ClientServer-Service/GestionePresenze/Az_SubCommessaAttivita/Models/az-subcommessa-attivita-model';
 
 @Component({
   selector: 'app-commessa-edit-page',
@@ -480,7 +481,7 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
 
 
   /*SCHEDA ATTIVITA*/
-  public Az_SubCommessaAttivita_Get(): CheckObjOn_Id_Number[] {
+  public Az_SubCommessaAttivita_Get(): Az_SubCommessaAttivita4EditModel[] {
 
     if (this.idxCurrCommessa === -1 || !this._editModel.az_SubCommessa?.[this.idxCurrCommessa]) {
       return [];
@@ -512,7 +513,13 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
       existingEntry.checked = event.detail.checked;
     } else {
       // Se l'elemento non è presente, lo aggiunge alla lista
-      this._editModel.az_SubCommessa[this.idxCurrCommessa].az_SubCommessaAttivita.push({ id: itemId, checked: event.detail.checked });
+      this._editModel.az_SubCommessa[this.idxCurrCommessa].az_SubCommessaAttivita.push({
+        id: itemId,
+        idAz_SubCommessa: 0,
+        idAz_SediAttivita: 0,
+        checked: event.detail.checked,
+        default: false
+      });
     }
 
   }
@@ -531,7 +538,13 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
 
     } else {
       // Se l'elemento non è presente, lo aggiunge alla lista
-      this._editModel.az_SubCommessa[this.idxCurrCommessa].az_SubCommessaAttivita.push({ id: itemId, checked: checked });
+      this._editModel.az_SubCommessa[this.idxCurrCommessa].az_SubCommessaAttivita.push({
+        idAz_SubCommessa: 0,
+        idAz_SediAttivita: 0,
+        id: itemId,
+        checked: checked,
+        default: false 
+      });
     }
 
   }

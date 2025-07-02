@@ -12,6 +12,8 @@ using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubCommessaService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubCommessaUserService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubCommessaUserService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubCommessaAttivitaService;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubCommessaAttivitaService.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.ServerModels;
@@ -27,10 +29,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
         private readonly IAz_SubCommessaAttivitaRepository _az_SubCommessaAttivitaRepository;
         private readonly IAz_SubCommessaSediRepartoRepository _az_SubCommessaSediRepartoRepository;
 
-
         private readonly IAz_SubCommessaUserService _az_SubCommessaUserService;
-
-        
+        private readonly IAz_SubCommessaAttivitaService _az_SubCommessaAttivitaService;
 
         public Az_SubCommessaService(IMapper mapper,
                                   UserManager<ApplicationUser> userManager,
@@ -44,6 +44,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
                                   IGestionePresenzeUserUtility gestionePresenzeUserUtility,
                                   IAz_SubCommessaUserRepository az_SubCommessaUserRepository,
                                   IAz_SubCommessaAttivitaRepository az_SubCommessaAttivitaRepository,
+                                  IAz_SubCommessaAttivitaService az_SubCommessaAttivitaService,
                                   IAz_SubCommessaSediRepartoRepository az_SubCommessaSediRepartoRepository,
                                   IAz_SubCommessaRepository az_SubCommessaRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
@@ -52,9 +53,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
             _az_SubCommessaUserRepository = az_SubCommessaUserRepository;
             _az_SubCommessaAttivitaRepository = az_SubCommessaAttivitaRepository;
             _az_SubCommessaSediRepartoRepository = az_SubCommessaSediRepartoRepository;
-            
-            _az_SubCommessaUserService = az_SubCommessaUserService;
 
+            _az_SubCommessaUserService = az_SubCommessaUserService;
+            _az_SubCommessaAttivitaService = az_SubCommessaAttivitaService;
         }
 
         public virtual async Task<GenericResult<Az_SubCommessa_GetAll_OutModel>> GetAll(GenericRequest<Az_SubCommessa_GetAll_InModel> model, bool isSubProcess)
@@ -99,38 +100,23 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
                         var az_SubCommessaAttivita = _az_SubCommessaAttivitaRepository.FindAll(x => Az_SubCommessa_Id.Contains(x.IdAz_SubCommessa)).ToList();
                         var az_SubCommessaSediReparto = _az_SubCommessaSediRepartoRepository.FindAll(x => Az_SubCommessa_Id.Contains(x.IdAz_SubCommessa)).ToList();
 
-                        
-                        
-                        
-
                         foreach (var itemSubCommessa in retVal.Az_SubCommessa)
                         {
-                            //az_SubCommessaUser.Where(x => x.IdAz_SubCommessa == itemSubCommessa.Id).ToList().ForEach(x =>
-                            //{
-                            //    itemSubCommessa.Az_SubCommessaUser.Add(new CheckObjOn_Id_Text()
-                            //    {
-                            //        Id = x.IdAspNetUsers,
-                            //        Checked = true
-                            //    });
-                            //});
-                            var req_SubCommessaUser = new GenericRequest<Az_SubCommessaUser_Get4Commessa_InModel>();
+                            // Az_SubCommessaUser assignment
+                            var req_SubCommessaUser = new GenericRequest<Az_SubCommessaUser_Get4SubCommessa_InModel>();
                             req_SubCommessaUser.Data.IdAz_Commessa = model.Data.Id;
-                            var res_SubCommessaUser = await _az_SubCommessaUserService.Get4Commessa(req_SubCommessaUser,true);
-                            if (res_SubCommessaUser.Success && res_SubCommessaUser.Data!=null)
+                            var res_SubCommessaUser = await _az_SubCommessaUserService.Get4Commessa(req_SubCommessaUser, true);
+                            if (res_SubCommessaUser.Success && res_SubCommessaUser.Data != null)
                                 itemSubCommessa.Az_SubCommessaUser = res_SubCommessaUser.Data.Az_SubCommessaUser;
-                            
 
+                            // Az_SubCommessaAttivita assignment
+                            var req_SubCommessaAttivita = new GenericRequest<Az_SubCommessaAttivita_Get4SubCommessa_InModel>();
+                            req_SubCommessaAttivita.Data.IdAz_SubCommessa = itemSubCommessa.Id;
+                            var res_SubCommessaAttivita = await _az_SubCommessaAttivitaService.Get4SubCommessa(req_SubCommessaAttivita, true);
+                            if (res_SubCommessaAttivita.Success && res_SubCommessaAttivita.Data != null)
+                                itemSubCommessa.Az_SubCommessaAttivita = res_SubCommessaAttivita.Data.Az_SubCommessaAttivita;
 
-
-                            az_SubCommessaAttivita.Where(x => x.IdAz_SubCommessa == itemSubCommessa.Id).ToList().ForEach(x =>
-                            {
-                                itemSubCommessa.Az_SubCommessaAttivita.Add(new CheckObjOn_Id_Number()
-                                {
-                                    Id = x.IdAz_SediAttivita,
-                                    Checked = true
-                                });
-                            });
-
+                            // Az_SubCommessaSediReparto assignment
                             az_SubCommessaSediReparto.Where(x => x.IdAz_SubCommessa == itemSubCommessa.Id).ToList().ForEach(x =>
                             {
                                 itemSubCommessa.Az_SubCommessaSediReparto.Add(new CheckObjOn_Id_Number()
@@ -157,7 +143,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
                 int IdCompany;
                 int.TryParse(this.CurrentCompany, out IdCompany);
 
-
                 //rileggo i dati originali
                 var reqAz_Sub = new GenericRequest<Az_SubCommessa_GetAll_4Edit_InModel>();
                 reqAz_Sub.Data.Id = model.Data.Id;
@@ -165,7 +150,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
                 var resAz_Sub = await GetAll_4Edit(reqAz_Sub, true);
                 if (resAz_Sub.Success && resAz_Sub.Data != null)
                 {
-
                     //cancellazione sub commesse eliminate
                     foreach (var item in resAz_Sub.Data.Az_SubCommessa)
                     {   //ciclo le commesse originali
@@ -202,15 +186,17 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
                         }
                         az_SubCommessa = await _az_SubCommessaRepository.UpsertAsync(az_SubCommessa);
 
-
-                        var req_SubCommessaUser = new GenericRequest<Az_SubCommessaUser_Put4Commessa_InModel>();
+                        var req_SubCommessaUser = new GenericRequest<Az_SubCommessaUser_Put4SubCommessa_InModel>();
                         req_SubCommessaUser.Data.IdAz_Commessa = az_SubCommessa.IdAz_Commessa;
                         req_SubCommessaUser.Data.Az_SubCommessaUser = item.Az_SubCommessaUser;
-                        var res_SubCommessaUser = await _az_SubCommessaUserService.Put4Commessa(req_SubCommessaUser,true);
+                        var res_SubCommessaUser = await _az_SubCommessaUserService.Put4Commessa(req_SubCommessaUser, true);
 
+                        var req_SubCommessaAttivita = new GenericRequest<Az_SubCommessaAttivita_Put4SubCommessa_InModel>();
+                        req_SubCommessaAttivita.Data.IdAz_SubCommessa = item.Id;
+                        req_SubCommessaAttivita.Data.Az_SubCommessaAttivita = item.Az_SubCommessaAttivita;
+                        var res_SubCommessaAttivita = await _az_SubCommessaAttivitaService.Put4SubCommessa(req_SubCommessaAttivita, true);
                     }
 
-                    
                     //rileggo i dati dopo le varizioni per ritornare il valore corrente
                     resAz_Sub = await GetAll_4Edit(reqAz_Sub, true);
                     if (resAz_Sub.Success && resAz_Sub.Data != null)
@@ -218,62 +204,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
                         retVal.Az_SubCommessa = resAz_Sub.Data.Az_SubCommessa;
                     }
                 }
-
-
-
-                //var az_SubCommessaList = _az_SubCommessaRepository.FindAll(x => x.IdAz_Commessa == model.Data.Id).ToList();
-                ////cancellazione
-                //foreach (var item in az_SubCommessaList)
-                //{
-                //    var recRemote = model.Data.Az_SubCommessa.Where(x => x.Id == item.Id).FirstOrDefault();
-                //    if (recRemote == null)
-                //    {
-                //        _az_SubCommessaRepository.DeleteAsync(item).Wait();
-                //    }
-                //}
-
-                ////aggiornamento
-                //foreach (var item in model.Data.Az_SubCommessa)
-                //{
-                //    Az_SubCommessa? az_SubCommessa = _az_SubCommessaRepository.FindAll(x => x.IdAz_Commessa == item.Id).FirstOrDefault();
-                //    if(az_SubCommessa==null)
-                //    {
-                //        az_SubCommessa = _mapper.Map<Az_SubCommessa>(item);
-                //        az_SubCommessa.IdAz_Commessa = model.Data.Id;
-                //    }
-                //    else
-                //    {
-                //        az_SubCommessa = _mapper.Map<Az_SubCommessa>(item);
-                //    }
-                //    //aggiurna il valore ritornato al client
-                //    az_SubCommessa = await _az_SubCommessaRepository.UpsertAsync(az_SubCommessa);
-
-                //    //sooka
-                //}
-
-                ////rileggo i dati originali
-                //var reqAz_Sub = new GenericRequest<Az_SubCommessa_GetAll_4Edit_InModel>();
-                //reqAz_Sub.Data.Id= model.Data.Id; 
-
-                //var resAz_Sub = await GetAll_4Edit(reqAz_Sub, true);
-                //if (resAz_Sub.Success && resAz_Sub.Data != null)
-                //{
-
-                //    resAz_Sub.Data.Az_SubCommessa
-
-
-                //    //rileggo i dati dopo le varizioni per ritornare il valore corrente
-                //    resAz_Sub = await GetAll_4Edit(reqAz_Sub, true);
-                //    if (resAz_Sub.Success && resAz_Sub.Data != null)
-                //    {
-                //        retVal.Az_SubCommessa = resAz_Sub.Data.Az_SubCommessa;
-                //    }
-                //}
-
-
-
-
-
 
                 await Task.Delay(DelayAsyncMethod);
                 return retVal;
@@ -286,6 +216,5 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
         Task<GenericResult<Az_SubCommessa_GetAll_OutModel>> GetAll(GenericRequest<Az_SubCommessa_GetAll_InModel> model, bool isSubProcess);
         Task<GenericResult<Az_SubCommessa_GetAll_4Edit_OutModel>> GetAll_4Edit(GenericRequest<Az_SubCommessa_GetAll_4Edit_InModel> model, bool isSubProcess);
         Task<GenericResult<Az_SubCommessa_PutAll_4Edit_OutModel>> PutAll_4Edit(GenericRequest<Az_SubCommessa_PutAll_4Edit_InModel> model, bool isSubProcess);
-
     }
 }

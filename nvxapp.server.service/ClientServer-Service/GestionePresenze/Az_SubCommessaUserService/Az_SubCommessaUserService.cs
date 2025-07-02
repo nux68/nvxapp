@@ -55,11 +55,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
         }
 
 
-        public virtual async Task<GenericResult<Az_SubCommessaUser_Get4Commessa_OutModel>> Get4Commessa(GenericRequest<Az_SubCommessaUser_Get4Commessa_InModel> model, bool isSubProcess)
+        public virtual async Task<GenericResult<Az_SubCommessaUser_Get4SubCommessa_OutModel>> Get4Commessa(GenericRequest<Az_SubCommessaUser_Get4SubCommessa_InModel> model, bool isSubProcess)
         {
             return await ExecuteAction(model, async () =>
             {
-                Az_SubCommessaUser_Get4Commessa_OutModel retVal = new Az_SubCommessaUser_Get4Commessa_OutModel();
+                Az_SubCommessaUser_Get4SubCommessa_OutModel retVal = new Az_SubCommessaUser_Get4SubCommessa_OutModel();
 
                 int IdCompany;
                 int.TryParse(this.CurrentCompany, out IdCompany);
@@ -80,14 +80,14 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
         }
 
 
-        public virtual async Task<GenericResult<Az_SubCommessaUser_Put4Commessa_OutModel>> Put4Commessa(GenericRequest<Az_SubCommessaUser_Put4Commessa_InModel> model, bool isSubProcess)
+        public virtual async Task<GenericResult<Az_SubCommessaUser_Put4SubCommessa_OutModel>> Put4Commessa(GenericRequest<Az_SubCommessaUser_Put4SubCommessa_InModel> model, bool isSubProcess)
         {
             return await ExecuteAction(model, async () =>
             {
-                Az_SubCommessaUser_Put4Commessa_OutModel retVal = new Az_SubCommessaUser_Put4Commessa_OutModel();
+                Az_SubCommessaUser_Put4SubCommessa_OutModel retVal = new Az_SubCommessaUser_Put4SubCommessa_OutModel();
 
                 //rileggo i dati originali
-                var reqSubCommessaUser = new GenericRequest<Az_SubCommessaUser_Get4Commessa_InModel>();
+                var reqSubCommessaUser = new GenericRequest<Az_SubCommessaUser_Get4SubCommessa_InModel>();
                 reqSubCommessaUser.Data.IdAz_Commessa = model.Data.IdAz_Commessa;
 
                 var resSubCommessaUser = await Get4Commessa(reqSubCommessaUser, true);
@@ -141,8 +141,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
     public interface IAz_SubCommessaUserService : IServiceBase
     {
         Task<GenericResult<Az_SubCommessaUser_GetAll_OutModel>> GetAll(GenericRequest<Az_SubCommessaUser_GetAll_InModel> model, bool isSubProcess);
-        Task<GenericResult<Az_SubCommessaUser_Get4Commessa_OutModel>> Get4Commessa(GenericRequest<Az_SubCommessaUser_Get4Commessa_InModel> model, bool isSubProcess);
-        Task<GenericResult<Az_SubCommessaUser_Put4Commessa_OutModel>> Put4Commessa(GenericRequest<Az_SubCommessaUser_Put4Commessa_InModel> model, bool isSubProcess);
+        Task<GenericResult<Az_SubCommessaUser_Get4SubCommessa_OutModel>> Get4Commessa(GenericRequest<Az_SubCommessaUser_Get4SubCommessa_InModel> model, bool isSubProcess);
+        Task<GenericResult<Az_SubCommessaUser_Put4SubCommessa_OutModel>> Put4Commessa(GenericRequest<Az_SubCommessaUser_Put4SubCommessa_InModel> model, bool isSubProcess);
 
 
 

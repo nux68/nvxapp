@@ -9,6 +9,7 @@ namespace nvxapp.server.service.Mappers.Tenant.GestionePresenze
         public Az_SubCommessaAttivita_To_Az_SubCommessaAttivitaModel_Mapper()
         {
             CreateMap<Az_SubCommessaAttivita, Az_SubCommessaAttivitaModel>();
+            CreateMap<Az_SubCommessaAttivita, Az_SubCommessaAttivita4EditModel>();
         }
     }
 
@@ -17,6 +18,7 @@ namespace nvxapp.server.service.Mappers.Tenant.GestionePresenze
         public Az_SubCommessaAttivitaModel_To_Az_SubCommessaAttivita_Mapper()
         {
             CreateMap<Az_SubCommessaAttivitaModel, Az_SubCommessaAttivita>();
+            CreateMap<Az_SubCommessaAttivita4EditModel, Az_SubCommessaAttivita>();
         }
     }
 }
