@@ -110,12 +110,12 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
                     //upsert
                     foreach (var item in model.Data.Az_SubCommessaAttivita.Where(x => x.Checked == true).ToList())
                     {
-                        var orig = _az_SubCommessaAttivitaRepository.FindAll(x => x.IdAz_SubCommessa == item.IdAz_SubCommessa && x.IdAz_SediAttivita == item.IdAz_SediAttivita).FirstOrDefault();
+                        var orig = _az_SubCommessaAttivitaRepository.FindAll(x => x.IdAz_SubCommessa == item.IdAz_SubCommessa && x.IdPar_Attivita == item.IdPar_Attivita).FirstOrDefault();
                         if (orig == null)
                         {
                             orig = _mapper.Map<Az_SubCommessaAttivita>(item);
                             orig.IdAz_SubCommessa = model.Data.IdAz_SubCommessa;
-                            orig.IdAz_SediAttivita = item.IdAz_SediAttivita;
+                            orig.IdPar_Attivita = item.IdPar_Attivita;
                         }
                         else
                         {

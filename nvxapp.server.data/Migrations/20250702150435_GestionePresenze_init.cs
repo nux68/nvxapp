@@ -941,7 +941,7 @@ namespace nvxapp.server.data.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     IdAz_SubCommessa = table.Column<int>(type: "integer", nullable: false),
-                    IdAz_SediAttivita = table.Column<int>(type: "integer", nullable: false),
+                    IdPar_Attivita = table.Column<int>(type: "integer", nullable: false),
                     Default = table.Column<bool>(type: "boolean", nullable: false),
                     ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
@@ -951,17 +951,17 @@ namespace nvxapp.server.data.Migrations
                 {
                     table.PrimaryKey("PK_Az_SubCommessaAttivita", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Az_SubCommessaAttivita_Az_SediAttivita_IdAz_SediAttivita",
-                        column: x => x.IdAz_SediAttivita,
-                        principalSchema: "public",
-                        principalTable: "Az_SediAttivita",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
                         name: "FK_Az_SubCommessaAttivita_Az_SubCommessa_IdAz_SubCommessa",
                         column: x => x.IdAz_SubCommessa,
                         principalSchema: "public",
                         principalTable: "Az_SubCommessa",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Az_SubCommessaAttivita_Par_Attivita_IdPar_Attivita",
+                        column: x => x.IdPar_Attivita,
+                        principalSchema: "public",
+                        principalTable: "Par_Attivita",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -1125,16 +1125,16 @@ namespace nvxapp.server.data.Migrations
                 column: "IdAz_Commessa");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Az_SubCommessaAttivita_IdAz_SediAttivita",
-                schema: "public",
-                table: "Az_SubCommessaAttivita",
-                column: "IdAz_SediAttivita");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Az_SubCommessaAttivita_IdAz_SubCommessa",
                 schema: "public",
                 table: "Az_SubCommessaAttivita",
                 column: "IdAz_SubCommessa");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Az_SubCommessaAttivita_IdPar_Attivita",
+                schema: "public",
+                table: "Az_SubCommessaAttivita",
+                column: "IdPar_Attivita");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Az_SubCommessaSediReparto_IdAz_SediReparto",
@@ -1340,6 +1340,10 @@ namespace nvxapp.server.data.Migrations
                 schema: "public");
 
             migrationBuilder.DropTable(
+                name: "Az_SediAttivita",
+                schema: "public");
+
+            migrationBuilder.DropTable(
                 name: "Az_SediRepartoAttivita",
                 schema: "public");
 
@@ -1404,10 +1408,6 @@ namespace nvxapp.server.data.Migrations
                 schema: "public");
 
             migrationBuilder.DropTable(
-                name: "Az_SediAttivita",
-                schema: "public");
-
-            migrationBuilder.DropTable(
                 name: "Az_SediReparto",
                 schema: "public");
 
@@ -1428,6 +1428,10 @@ namespace nvxapp.server.data.Migrations
                 schema: "public");
 
             migrationBuilder.DropTable(
+                name: "Par_Attivita",
+                schema: "public");
+
+            migrationBuilder.DropTable(
                 name: "Par_Competenza",
                 schema: "public");
 
@@ -1437,10 +1441,6 @@ namespace nvxapp.server.data.Migrations
 
             migrationBuilder.DropTable(
                 name: "Par_Orario",
-                schema: "public");
-
-            migrationBuilder.DropTable(
-                name: "Par_Attivita",
                 schema: "public");
 
             migrationBuilder.DropTable(

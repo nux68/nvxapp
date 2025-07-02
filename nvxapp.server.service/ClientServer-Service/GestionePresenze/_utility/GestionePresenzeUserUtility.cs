@@ -284,7 +284,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                                 var az_SubCommessaAttivita = await _az_SubCommessaAttivitaRepository.UpsertAsync(new Az_SubCommessaAttivita()
                                 {
                                     IdAz_SubCommessa = az_SubCommessa.Id,
-                                    IdAz_SediAttivita = az_SediAttivita.Id,
+                                    IdPar_Attivita = par_Attivita.Id,
                                     Default = true,
                                 });
 

@@ -865,10 +865,10 @@ namespace nvxapp.server.data.Migrations
                     b.Property<bool>("Default")
                         .HasColumnType("boolean");
 
-                    b.Property<int>("IdAz_SediAttivita")
+                    b.Property<int>("IdAz_SubCommessa")
                         .HasColumnType("integer");
 
-                    b.Property<int>("IdAz_SubCommessa")
+                    b.Property<int>("IdPar_Attivita")
                         .HasColumnType("integer");
 
                     b.Property<DateTime?>("ModifiedDate")
@@ -876,9 +876,9 @@ namespace nvxapp.server.data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("IdAz_SediAttivita");
-
                     b.HasIndex("IdAz_SubCommessa");
+
+                    b.HasIndex("IdPar_Attivita");
 
                     b.ToTable("Az_SubCommessaAttivita", "public");
                 });
@@ -2087,21 +2087,21 @@ namespace nvxapp.server.data.Migrations
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Az_SubCommessaAttivita", b =>
                 {
-                    b.HasOne("nvxapp.server.data.Entities.Tenant.Az_SediAttivita", "Az_SediAttivitaNavigation")
-                        .WithMany()
-                        .HasForeignKey("IdAz_SediAttivita")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("nvxapp.server.data.Entities.Tenant.Az_SubCommessa", "Az_SubCommessaNavigation")
                         .WithMany("Az_SubCommessaAttivita")
                         .HasForeignKey("IdAz_SubCommessa")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Az_SediAttivitaNavigation");
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Par_Attivita", "Par_AttivitaNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdPar_Attivita")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Az_SubCommessaNavigation");
+
+                    b.Navigation("Par_AttivitaNavigation");
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Dip_Anagrafica", b =>

@@ -491,22 +491,22 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
 
   }
 
-  Az_SubCommessaAttivita_IsSelected(itemId: number): boolean {
+  Az_SubCommessaAttivita_IsSelected(idPar_Attivita: number): boolean {
 
     if (this.idxCurrCommessa == -1)
       return false;
 
-    return this._editModel.az_SubCommessa[this.idxCurrCommessa].az_SubCommessaAttivita.find(entry => entry.id === itemId)?.checked ?? false;
+    return this._editModel.az_SubCommessa[this.idxCurrCommessa].az_SubCommessaAttivita.find(entry => entry.idPar_Attivita === idPar_Attivita)?.checked ?? false;
 
   }
 
-  Az_SubCommessaAttivita_Toggle(itemId: number, event: any) {
+  Az_SubCommessaAttivita_Toggle(idPar_Attivita: number, event: any) {
 
     if (this.idxCurrCommessa == -1)
       return;
 
 
-    const existingEntry = this._editModel.az_SubCommessa[this.idxCurrCommessa].az_SubCommessaAttivita.find(entry => entry.id === itemId);
+    const existingEntry = this._editModel.az_SubCommessa[this.idxCurrCommessa].az_SubCommessaAttivita.find(entry => entry.idPar_Attivita === idPar_Attivita);
 
     if (existingEntry) {
       // Se l'elemento esiste, aggiorna solo lo stato selected
@@ -514,9 +514,9 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
     } else {
       // Se l'elemento non è presente, lo aggiunge alla lista
       this._editModel.az_SubCommessa[this.idxCurrCommessa].az_SubCommessaAttivita.push({
-        id: itemId,
+        id: 0,
         idAz_SubCommessa: 0,
-        idAz_SediAttivita: 0,
+        idPar_Attivita: idPar_Attivita,
         checked: event.detail.checked,
         default: false
       });
@@ -524,13 +524,13 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
 
   }
 
-  Az_SubCommessaAttivita_SetCheck(itemId: number, checked: boolean) {
+  Az_SubCommessaAttivita_SetCheck(idPar_Attivita: number, checked: boolean) {
 
     if (this.idxCurrCommessa == -1)
       return;
 
 
-    const existingEntry = this._editModel.az_SubCommessa[this.idxCurrCommessa].az_SubCommessaAttivita.find(entry => entry.id === itemId);
+    const existingEntry = this._editModel.az_SubCommessa[this.idxCurrCommessa].az_SubCommessaAttivita.find(entry => entry.idPar_Attivita === idPar_Attivita);
 
     if (existingEntry) {
       // Se l'elemento esiste, aggiorna solo lo stato selected
@@ -540,8 +540,8 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
       // Se l'elemento non è presente, lo aggiunge alla lista
       this._editModel.az_SubCommessa[this.idxCurrCommessa].az_SubCommessaAttivita.push({
         idAz_SubCommessa: 0,
-        idAz_SediAttivita: 0,
-        id: itemId,
+        idPar_Attivita: idPar_Attivita,
+        id: 0,
         checked: checked,
         default: false 
       });
@@ -551,7 +551,7 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
 
   Az_SubCommessaAttivita_HandleButtonDelete = (item: any) => {
 
-    this.Az_SubCommessaAttivita_SetCheck(item.id, false);
+    this.Az_SubCommessaAttivita_SetCheck(item.idPar_Attivita, false);
 
   }
 

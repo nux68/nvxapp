@@ -276,9 +276,9 @@ namespace nvxapp.server.data.Infrastructure
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Az_SubCommessaAttivita>()
-                .HasOne(t => t.Az_SediAttivitaNavigation)
+                .HasOne(t => t.Par_AttivitaNavigation)
                 .WithMany()
-                .HasForeignKey(t => t.IdAz_SediAttivita)
+                .HasForeignKey(t => t.IdPar_Attivita)
                 .OnDelete(DeleteBehavior.Cascade);
 
             /* Az_Cliente */
