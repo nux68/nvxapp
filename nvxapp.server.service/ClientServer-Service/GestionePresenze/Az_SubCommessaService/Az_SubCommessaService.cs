@@ -103,7 +103,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
                         {
                             // Az_SubCommessaUser assignment
                             var req_SubCommessaUser = new GenericRequest<Az_SubCommessaUser_Get4SubCommessa_InModel>();
-                            req_SubCommessaUser.Data.IdAz_Commessa = model.Data.Id;
+                            req_SubCommessaUser.Data.IdAz_SubCommessa = itemSubCommessa.Id;
                             var res_SubCommessaUser = await _az_SubCommessaUserService.Get4Commessa(req_SubCommessaUser, true);
                             if (res_SubCommessaUser.Success && res_SubCommessaUser.Data != null)
                                 itemSubCommessa.Az_SubCommessaUser = res_SubCommessaUser.Data.Az_SubCommessaUser;
@@ -151,7 +151,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
                     {   //ciclo le commesse originali
 
                         //ottengo il record orig del db
-                        Az_SubCommessa? az_SubCommessa = _az_SubCommessaRepository.FindAll(x => x.IdAz_Commessa == item.Id).FirstOrDefault();
+                        Az_SubCommessa? az_SubCommessa = _az_SubCommessaRepository.FindAll(x => x.Id == item.Id).FirstOrDefault();
 
                         if (az_SubCommessa != null)
                         {
@@ -170,11 +170,12 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
                     foreach (var item in model.Data.Az_SubCommessa)
                     {
                         //ottengo il record orig del db
-                        Az_SubCommessa? az_SubCommessa = _az_SubCommessaRepository.FindAll(x => x.IdAz_Commessa == item.Id).FirstOrDefault();
+                        Az_SubCommessa? az_SubCommessa = _az_SubCommessaRepository.FindAll(x => x.Id == item.Id).FirstOrDefault();
                         if (az_SubCommessa == null)
                         {
                             az_SubCommessa = _mapper.Map<Az_SubCommessa>(item);
                             az_SubCommessa.IdAz_Commessa = model.Data.Id;
+                            az_SubCommessa.Id = 0;
                         }
                         else
                         {
@@ -183,17 +184,17 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
                         az_SubCommessa = await _az_SubCommessaRepository.UpsertAsync(az_SubCommessa);
 
                         var req_SubCommessaUser = new GenericRequest<Az_SubCommessaUser_Put4SubCommessa_InModel>();
-                        req_SubCommessaUser.Data.IdAz_Commessa = az_SubCommessa.IdAz_Commessa;
+                        req_SubCommessaUser.Data.IdAz_SubCommessa = az_SubCommessa.Id;
                         req_SubCommessaUser.Data.Az_SubCommessaUser = item.Az_SubCommessaUser;
                         var res_SubCommessaUser = await _az_SubCommessaUserService.Put4Commessa(req_SubCommessaUser, true);
 
                         var req_SubCommessaAttivita = new GenericRequest<Az_SubCommessaAttivita_Put4SubCommessa_InModel>();
-                        req_SubCommessaAttivita.Data.IdAz_SubCommessa = item.Id;
+                        req_SubCommessaAttivita.Data.IdAz_SubCommessa = az_SubCommessa.Id;
                         req_SubCommessaAttivita.Data.Az_SubCommessaAttivita = item.Az_SubCommessaAttivita;
                         var res_SubCommessaAttivita = await _az_SubCommessaAttivitaService.Put4SubCommessa(req_SubCommessaAttivita, true);
 
                         var req_SubCommessaSediReparto = new GenericRequest<Az_SubCommessaSediReparto_Put4SubCommessa_InModel>();
-                        req_SubCommessaSediReparto.Data.IdAz_SubCommessa = item.Id;
+                        req_SubCommessaSediReparto.Data.IdAz_SubCommessa = az_SubCommessa.Id;
                         req_SubCommessaSediReparto.Data.Az_SubCommessaSediReparto = item.Az_SubCommessaSediReparto;
                         await _az_SubCommessaSediRepartoService.Put4SubCommessa(req_SubCommessaSediReparto, true);
                     }

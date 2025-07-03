@@ -67,7 +67,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
                 Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg company_DATA = await _gestionePresenzeUserUtility.Get_AzAna_AzSedi_AzReparto_Az_Cfg(IdCompany, true);
                 if (company_DATA != null && company_DATA.az_Anagrafica != null)
                 {
-                    var entities = _az_SubCommessaUserRepository.FindAll(x => x.IdAz_SubCommessa == model.Data.IdAz_Commessa).ToList();
+                    var entities = _az_SubCommessaUserRepository.FindAll(x => x.IdAz_SubCommessa == model.Data.IdAz_SubCommessa).ToList();
                     retVal.Az_SubCommessaUser = _mapper.Map<List<Az_SubCommessaUser4EditModel>>(entities);
                 }
 
@@ -88,7 +88,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
 
                 //rileggo i dati originali
                 var reqSubCommessaUser = new GenericRequest<Az_SubCommessaUser_Get4SubCommessa_InModel>();
-                reqSubCommessaUser.Data.IdAz_Commessa = model.Data.IdAz_Commessa;
+                reqSubCommessaUser.Data.IdAz_SubCommessa = model.Data.IdAz_SubCommessa;
 
                 var resSubCommessaUser = await Get4Commessa(reqSubCommessaUser, true);
                 if (resSubCommessaUser.Success && resSubCommessaUser.Data != null)
@@ -119,7 +119,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
                         if (az_SubCommessaUser == null)
                         {
                             az_SubCommessaUser = _mapper.Map<Az_SubCommessaUser>(item);
-                            az_SubCommessaUser.IdAz_SubCommessa = model.Data.IdAz_Commessa;
+                            az_SubCommessaUser.IdAz_SubCommessa = model.Data.IdAz_SubCommessa;
                             az_SubCommessaUser.IdAspNetUsers = item.IdAspNetUsers;
                         }
                         else

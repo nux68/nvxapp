@@ -38,7 +38,7 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
 
   public searchText!: string;
   public currSection: string = "sez_1";
-  public currSection_sub: string = "sez_1_sub_1";
+  public currSection_sub: string = "sez_1_sub_4";
   public idxCurrCommessa: number = -1;
 
   public btnDeleteReparto: ButtonItem;
@@ -210,6 +210,23 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
     const selectedId = event.detail.value;
     this.idxCurrCommessa = this._editModel.az_SubCommessa.findIndex(x => x.id === selectedId);
     this.setSubCommessaDates(this.idxCurrCommessa);
+    this.setfabMenuService();
+  }
+
+  
+
+  updateSubCommessaDescrizione(event: any) {
+    const value = (event.target as HTMLInputElement).value;
+    if (this.idxCurrCommessa !== -1) {
+      this._editModel.az_SubCommessa[this.idxCurrCommessa].descrizione = value;
+      const ctrl = this._editForm.get('tmp_az_SubCommessa');
+      if (ctrl) {
+        const currentId = this._editModel.az_SubCommessa[this.idxCurrCommessa].id;
+        // Forza il cambio valore per triggerare il change detection
+        ctrl.setValue(null, { emitEvent: false });
+        ctrl.setValue(currentId, { emitEvent: true });
+      }
+    }
   }
 
   setSubCommessaDates(idx: number) {
@@ -243,10 +260,35 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
     this.fabMenuService.fabMenuItem = [];
 
     switch (this.currSection) {
+      
+
       case 'sez_1':
         break;
       case 'sez_2':
         switch (this.currSection_sub) {
+
+          case 'sez_1_sub_4':
+            this.fabMenuService.fabMenuItem = [
+              new FabMenuItem('xxx', 'add-circle-outline', () => {
+                this.Az_SubCommessaAdd();
+              }),
+            ];
+            
+
+            if (this.idxCurrCommessa !== -1) {
+              if (!this._editModel.az_SubCommessa[this.idxCurrCommessa].default) {
+                this.fabMenuService.fabMenuItem.push(
+                  new FabMenuItem('xxx', 'remove-circle-outline', () => {
+                    this.Az_SubCommessaDelete();
+                  }),
+                );
+              }
+            }
+
+
+            break;
+
+
           case 'sez_1_sub_1':
             this.fabMenuService.fabMenuItem = [
               new FabMenuItem('xxx', 'add-circle-outline', () => {
@@ -489,4 +531,59 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
       }
     }
   }
+
+  async Az_SubCommessaAdd() {
+    // Crea un nuovo id temporaneo negativo (per evitare collisioni con quelli del backend)
+    const minId = Math.min(0, ...this._editModel.az_SubCommessa.map(x => x.id || 0));
+    const newId = minId - 1;
+
+
+    const now = new Date();
+    
+
+    // Crea la nuova subcommessa con valori di default
+    const nuovaSub: any = {
+      id: newId,
+      descrizione: 'Nuova sub commessa',
+      data: this.stringHelperService.Date_To_S_ddmmyyyy(now),
+      dataA: this.stringHelperService.Date_To_S_ddmmyyyy(new Date(now.getFullYear(), 11, 31)),
+      default: false,
+      az_SubCommessaUser: [],
+      az_SubCommessaAttivita: [],
+      az_SubCommessaSediReparto: []
+    };
+
+    // Aggiungi la nuova subcommessa all'array
+    this._editModel.az_SubCommessa.push(nuovaSub);
+
+    // Seleziona la nuova subcommessa
+    this.idxCurrCommessa = this._editModel.az_SubCommessa.length - 1;
+    this._editForm.get('tmp_az_SubCommessa')?.setValue(nuovaSub.id);
+
+    // Aggiorna le date mostrate
+    this.setSubCommessaDates(this.idxCurrCommessa);
+  }
+
+  async Az_SubCommessaDelete() {
+    if (this.idxCurrCommessa !== -1) {
+      if (!this._editModel.az_SubCommessa[this.idxCurrCommessa].default) {
+        // Rimuovi l'elemento dall'array
+        this._editModel.az_SubCommessa.splice(this.idxCurrCommessa, 1);
+
+        // Aggiorna l'indice corrente
+        if (this._editModel.az_SubCommessa.length > 0) {
+          this.idxCurrCommessa = 0;
+          // Aggiorna il controllo del form con il nuovo id selezionato
+          this._editForm.get('tmp_az_SubCommessa')?.setValue(this._editModel.az_SubCommessa[0].id);
+          this.setSubCommessaDates(this.idxCurrCommessa);
+        } else {
+          this.idxCurrCommessa = -1;
+          this._editForm.get('tmp_az_SubCommessa')?.setValue(null);
+          this.setSubCommessaDates(-1);
+        }
+      }
+    }
+  }
+
+
 }

@@ -1,3 +1,4 @@
+
 <app-page-toolbar [title]="Title"
                   [showFilter]="ShowFilter"
                   [showBreadcrumbs]="true">
@@ -43,7 +44,7 @@
 
         <ion-segment (ionChange)="segmentChanged($event)" [value]="currSection">
           <ion-segment-button value="sez_1" content-id="sez_1">
-            <ion-label>Generale</ion-label>
+            <ion-label>Commessa</ion-label>
           </ion-segment-button>
           <ion-segment-button value="sez_2" content-id="sez_2">
             <ion-label>Sub commesse</ion-label>
@@ -95,24 +96,19 @@
 
           <ion-item>
             <ion-label position="floating">Sub commessa</ion-label>
-            <ion-select formControlName="tmp_az_SubCommessa" placeholder="Seleziona la Sub Commessa" (ionChange)="onSubCommessaChange($event)">
+            <ion-select formControlName="tmp_az_SubCommessa" interface="modal" placeholder="Seleziona la Sub Commessa" (ionChange)="onSubCommessaChange($event)">
               <ion-select-option *ngFor="let az_SubCommessa of _editModel.az_SubCommessa" [value]="az_SubCommessa.id">
                 {{ az_SubCommessa.descrizione }}
               </ion-select-option>
             </ion-select>
           </ion-item>
 
-          <!-- BOTTONI CHE ATTIVANO I MODALI SPOSTATI ALL'INIZIO DEL FILE -->
-          <ion-item *ngIf="idxCurrCommessa !== -1">
-            <ion-label position="stacked" style="margin-bottom:13px;">Data inizio</ion-label>
-            <ion-datetime-button datetime="startDatetime"></ion-datetime-button>
-          </ion-item>
-          <ion-item *ngIf="idxCurrCommessa !== -1">
-            <ion-label position="stacked" style="margin-bottom:13px;">Data fine</ion-label>
-            <ion-datetime-button datetime="endDatetime"></ion-datetime-button>
-          </ion-item>
+
 
           <ion-segment (ionChange)="segmentChanged_sub($event)" [value]="currSection_sub">
+            <ion-segment-button value="sez_1_sub_4" content-id="sez_1_sub_4">
+              <ion-label>Sub Commessa</ion-label>
+            </ion-segment-button>
             <ion-segment-button value="sez_1_sub_1" content-id="sez_1_sub_1">
               <ion-label>Attività</ion-label>
             </ion-segment-button>
@@ -123,6 +119,38 @@
               <ion-label>Utenti</ion-label>
             </ion-segment-button>
           </ion-segment>
+
+
+          <div [hidden]="currSection_sub!='sez_1_sub_4'">
+            <br />
+            <ion-item class="nvx-item-4-title">
+              <ion-label>Info sub commessa</ion-label>
+            </ion-item>
+
+            <!-- Sezione editabile per la sub-commessa selezionata -->
+            <div *ngIf="idxCurrCommessa !== -1">
+
+              <ion-item>
+                <ion-label position="stacked">Descrizione subcommessa</ion-label>
+                <ion-input type="text"
+                           [value]="_editModel.az_SubCommessa[idxCurrCommessa]?.descrizione || ''"
+                           (ionInput)="updateSubCommessaDescrizione($event)">
+                </ion-input>
+              </ion-item>
+
+              <ion-item>
+                <ion-label position="stacked" style="margin-bottom:13px;">Data inizio</ion-label>
+                <ion-datetime-button datetime="startDatetime"></ion-datetime-button>
+              </ion-item>
+
+              <ion-item>
+                <ion-label position="stacked" style="margin-bottom:13px;">Data fine</ion-label>
+                <ion-datetime-button datetime="endDatetime"></ion-datetime-button>
+              </ion-item>
+
+            </div>
+
+          </div>
 
 
           <div [hidden]="currSection_sub!='sez_1_sub_1'">

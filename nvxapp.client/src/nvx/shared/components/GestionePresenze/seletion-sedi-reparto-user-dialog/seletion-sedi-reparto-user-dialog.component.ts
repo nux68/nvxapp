@@ -44,7 +44,9 @@ export class SeletionSediRepartoUserDialogComponent  implements OnInit {
 
 
   onPeriodChange(period: { year: number, month: number } | undefined): void { }
-  onCurrentUserChanged(userId: string[] | undefined): void { }
+  onCurrentUserChanged(userId: string[] | undefined): void {
+    this.result.userIds = userId;
+  }
   onSedeChanged(sediId: number | undefined): void {
     this.result.idSede = sediId;
   }
@@ -57,7 +59,7 @@ export class SeletionSediRepartoUserDialogComponent  implements OnInit {
 
   }
   onAllUsersInSelectionChanged(userIds: string[] | undefined): void {
-    this.result.userIds = userIds;
+    //this.result.userIds = userIds;
   }
 
 
