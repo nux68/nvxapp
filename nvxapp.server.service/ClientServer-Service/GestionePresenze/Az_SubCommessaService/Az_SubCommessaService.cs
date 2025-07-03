@@ -99,12 +99,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
                     retVal.Az_SubCommessa = _mapper.Map<List<Az_SubCommessa_4EditModel>>(az_SubCommessa);
                     if (retVal.Az_SubCommessa != null)
                     {
-                        //var Az_SubCommessa_Id = retVal.Az_SubCommessa.Select(x => x.Id).ToList();
-
-                        //var az_SubCommessaUser = _az_SubCommessaUserRepository.FindAll(x => Az_SubCommessa_Id.Contains(x.IdAz_SubCommessa)).ToList();
-                        //var az_SubCommessaAttivita = _az_SubCommessaAttivitaRepository.FindAll(x => Az_SubCommessa_Id.Contains(x.IdAz_SubCommessa)).ToList();
-                        //var az_SubCommessaSediReparto = _az_SubCommessaSediRepartoRepository.FindAll(x => Az_SubCommessa_Id.Contains(x.IdAz_SubCommessa)).ToList();
-
                         foreach (var itemSubCommessa in retVal.Az_SubCommessa)
                         {
                             // Az_SubCommessaUser assignment
@@ -127,8 +121,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
                             var res_SubCommessaSediReparto = await _az_SubCommessaSediRepartoService.Get4SubCommessa(req_SubCommessaSediReparto, true);
                             if (res_SubCommessaSediReparto.Success && res_SubCommessaSediReparto.Data != null)
                                 itemSubCommessa.Az_SubCommessaSediReparto = res_SubCommessaSediReparto.Data.Az_SubCommessaSediReparto;
-                                    
-                            
                         }
                     }
                 }

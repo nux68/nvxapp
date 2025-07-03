@@ -80,10 +80,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_Commess
                 Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg company_DATA = await _gestionePresenzeUserUtility.Get_AzAna_AzSedi_AzReparto_Az_Cfg(IdCompany, true);
                 if (company_DATA != null && company_DATA.az_Anagrafica != null)
                 {
-
-                    //ApplicationRole? userRole = _aspNetRolesRepository.GetAll().Where(x => x.Code == RoleCode.User).FirstOrDefault();
-
-                    
                     var reqAz_Sub = new GenericRequest<Az_SubCommessa_GetAll_4Edit_InModel>();
                     reqAz_Sub.Data.Id= model.Data.Id; // id della commessa
                     var resAz_Sub = await _az_SubCommessaService.GetAll_4Edit(reqAz_Sub, true);
@@ -97,31 +93,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_Commess
                             retVal.Az_Commessa = new Az_CommessaModel();
 
                         retVal.Az_SubCommessa = resAz_Sub.Data.Az_SubCommessa;
-
                     }
-
-
-
-
-
-                    //var az_SubCommessaSediReparto = _az_SubCommessaSediRepartoRepository.FindAll(x=> x.);
-
-                    //retVal.Selected_Az_SediReparto
-                    //retVal.Selected_User
-
-                    //Az_SediReparto
-                    //Az_Sedi
-
-                    //Az_Commessa
-                    //  Az_SubCommessa
-                    //      Az_SubCommessaAttivita
-                    //      Az_SubCommessaSediReparto
-                    //      Az_SubCommessaUser
-                    //  Az_SubCommessa
-                    //      Az_SubCommessaAttivita
-                    //      Az_SubCommessaSediReparto
-                    //      Az_SubCommessaUser
-
                 }
 
 
