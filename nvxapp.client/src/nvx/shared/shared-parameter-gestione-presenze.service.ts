@@ -19,6 +19,8 @@ import { Az_Cfg_Get_InModel, Az_Cfg_GetAll_InModel, Az_CfgModel } from '../Clien
 import { RoleCode } from '../ClientServer-Service/Infrastructure/Account/Models/user-roles-model';
 import { Az_SediReparto_GetAll_InModel, Az_SediRepartoModel } from '../ClientServer-Service/GestionePresenze/Az_SediReparto/Models/az-sedi-reparto-model';
 import { AzSediRepartoService } from '../ClientServer-Service/GestionePresenze/Az_SediReparto/az-sedi-reparto.service';
+import { AzSediService } from '../ClientServer-Service/GestionePresenze/Az_Sedi/az-sedi.service';
+import { Az_Sedi_GetAll_InModel, Az_SediModel } from '../ClientServer-Service/GestionePresenze/Az_Sedi/Models/az-sedi-model';
 
 @Injectable({
   providedIn: 'root'
@@ -37,6 +39,7 @@ export class SharedParameterGestionePresenzeService {
     private azClienteService: AzClienteService,
     private dipAnagraficaService: DipAnagraficaService,
     private azSediRepartoService: AzSediRepartoService,
+    private azSediService: AzSediService,
     private azCfgService: AzCfgService
   ) { }
 
@@ -163,6 +166,25 @@ export class SharedParameterGestionePresenzeService {
           return of(null);
         })
       ),
+
+      this.azSediService.GetAll(new GenericRequest<Az_Sedi_GetAll_InModel>(Az_Sedi_GetAll_InModel)).pipe(
+        tap((result) => {
+          this.Az_Sedi = result.data.az_Sedi;
+          updateProgress(calls);
+        }),
+        retry({
+          count: 20,
+          delay: (error, retryCount) => {
+            console.error(`Errore rilevato, ritento dopo ${retryCount} secondi:`, error);
+            return timer(500);
+          }
+        }),
+        catchError((error) => {
+          console.error(`Errore durante il caricamento dei reparti:`, error);
+          return of(null);
+        })
+      ),
+
 
       this.azCfgService.Az_CfgGet(new GenericRequest<Az_Cfg_Get_InModel>(Az_Cfg_Get_InModel)).pipe(
         tap((result) => {
@@ -302,6 +324,20 @@ export class SharedParameterGestionePresenzeService {
   private _az_SediRepartoSubject = new BehaviorSubject<Az_SediRepartoModel[]>([]);
   public get Az_SediReparto$(): Observable<Az_SediRepartoModel[] | []> {
     return this._az_SediRepartoSubject.asObservable();
+  }
+
+
+  private _az_Sedi: Az_SediModel[] | null = [];
+  public get Az_Sedi(): Az_SediModel[] | null {
+    return this._az_Sedi;
+  }
+  public set Az_Sedi(value: Az_SediModel[] | null) {
+    this._az_Sedi = value;
+    this._az_SediSubject.next(value);
+  }
+  private _az_SediSubject = new BehaviorSubject<Az_SediModel[]>([]);
+  public get Az_Sedi$(): Observable<Az_SediModel[] | []> {
+    return this._az_SediSubject.asObservable();
   }
 
 }

@@ -24,6 +24,7 @@ import { SeletionSediRepartoDialogComponent } from './components/GestionePresenz
 import { SeletionSediRepartoUserDialogComponent } from './components/GestionePresenze/seletion-sedi-reparto-user-dialog/seletion-sedi-reparto-user-dialog.component';
 import { SharedComponentInfrastructureModule } from './shared-component-infrastructure.module';
 import { SeletionParAttivitaDialogComponent } from './components/GestionePresenze/seletion-par-attivita-dialog/seletion-par-attivita-dialog.component';
+import { AzSediRepartoToShortTextPipe } from './pipe/GestionePresenze/az-sedireparto-to-short-text.pipe';
 
 @NgModule({
   declarations: [
@@ -42,7 +43,7 @@ import { SeletionParAttivitaDialogComponent } from './components/GestionePresenz
     IdDipRapportoLavoroToNomePipe, IdDipRapportoLavoroToCognomePipe,
     IdAspNetUsersToCognomePipe, IdAspNetUsersToNomePipe,
     ParAttivitaToLongTextPipe, ParCompetenzaToLongTextPipe, AzCommessaToLongTextPipe, AzClienteToLongTextPipe,
-    AzSediRepartoToLongTextPipe
+    AzSediRepartoToLongTextPipe, AzSediRepartoToShortTextPipe
   ],
   exports: [
     TipoTimbraturaToLongTextPipe, TipoTimbraturaToShortTextPipe, ParGiustificativiToLongTextPipe, ParGiustificativiToShortTextPipe,

@@ -1,13 +1,12 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { SharedParameterGestionePresenzeService } from '../../shared-parameter-gestione-presenze.service';
 import { Az_SediRepartoModel } from '../../../ClientServer-Service/GestionePresenze/Az_SediReparto/Models/az-sedi-reparto-model';
-import { Az_SediModel } from '../../../ClientServer-Service/GestionePresenze/Az_Sedi/Models/az-sedi-model';
 
 @Pipe({
-  name: 'azSediRepartoToLongText',
+  name: 'azSediRepartoToShortText',
   standalone: true
 })
-export class AzSediRepartoToLongTextPipe implements PipeTransform {
+export class AzSediRepartoToShortTextPipe implements PipeTransform {
   constructor(private sharedParameterService: SharedParameterGestionePresenzeService) {}
 
   transform(value: unknown, ...args: unknown[]): string | number | null {
@@ -19,25 +18,7 @@ export class AzSediRepartoToLongTextPipe implements PipeTransform {
     if (!repartoList || repartoList.length === 0) {
       return repartoId;
     }
-
-    const sediList: Az_SediModel[] | null = this.sharedParameterService.Az_Sedi;
-    
-
     const found = repartoList.find(item => item.id === repartoId);
-    if (found) {
-      let retVal = found.descrizione;
-
-      const foundSede = sediList.find(item => item.id === found.idAz_Sedi);
-      if (foundSede)
-        retVal = retVal + " - " + foundSede.descrizione
-
-      return retVal;
-    }
-    else {
-      return repartoId;
-    }
-
-
-    //return found ? found.descrizione : repartoId;
+    return found ? found.descrizione : repartoId;
   }
 }
