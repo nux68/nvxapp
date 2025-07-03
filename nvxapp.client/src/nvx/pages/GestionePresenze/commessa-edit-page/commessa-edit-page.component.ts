@@ -41,33 +41,27 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
   public currSection_sub: string = "sez_1_sub_1";
   public idxCurrCommessa: number = -1;
 
-
   public btnDeleteReparto: ButtonItem;
   public btnDeleteUser: ButtonItem;
   public btnDeleteAttivita: ButtonItem;
 
-
   //date x il backend
-  public formattedStartDate: string;
-  public formattedEndDate: string;
-  //date per i controlli ionic
-  public startDate: string;
-  public endDate: string;
+  public formattedStartDate: string | null = null;
+  public formattedEndDate: string | null = null;
 
-  
-
+  // --- MODIFICA: Tipizzate come string | null e inizializzate a null per evitare l'errore di parsing di ion-datetime ---
+  public startDate: string | null = null;
+  public endDate: string | null = null;
 
   constructor(protected override navCtrl: NavController,
-              protected override userInterfaceService: UserInterfaceService,
-              private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
-              protected override fb: FormBuilder,
-              public fabMenuService: FabMenuService,
-              private stringHelperService: StringHelperService,
-              private azCommessaService: AzCommessaService,
-              private refresherService: RefresherService,
-              private modalCtrl: ModalController)
-  {
-
+    protected override userInterfaceService: UserInterfaceService,
+    private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
+    protected override fb: FormBuilder,
+    public fabMenuService: FabMenuService,
+    private stringHelperService: StringHelperService,
+    private azCommessaService: AzCommessaService,
+    private refresherService: RefresherService,
+    private modalCtrl: ModalController) {
     super(navCtrl, userInterfaceService, fb);
 
     this.btnDeleteReparto = userInterfaceService.Btn_Cancella;
@@ -80,13 +74,13 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
     this.btnDeleteAttivita.event = this.Az_SubCommessaAttivita_HandleButtonDelete;
 
     this._editForm = this.fb.group({
-        tmp_az_SubCommessa: [null, []],
-            //SUB FORM PER OGGETTi DI OGGETTI
-            az_Commessa: this.fb.group({
-              descrizione: [null, [Validators.required, Validators.maxLength(50)]],
-              idAz_Cliente: [null, [Validators.required]],
-            })
-        });
+      tmp_az_SubCommessa: [null, []],
+      //SUB FORM PER OGGETTi DI OGGETTI
+      az_Commessa: this.fb.group({
+        descrizione: [null, [Validators.required, Validators.maxLength(50)]],
+        idAz_Cliente: [null, [Validators.required]],
+      })
+    });
   }
 
   override get EditForm(): FormGroup {
@@ -98,19 +92,7 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
     this._az_ClienteModelList = this.sharedParameterGestionePresenzeService.Az_Cliente;
     this._az_SediRepartoList = this.sharedParameterGestionePresenzeService.Az_SediReparto;
     this._par_Attivita = this.sharedParameterGestionePresenzeService.Par_Attivita;
-
-    const now = new Date();
-
-    // Set time to midnight for consistency when dealing with dates only
-    now.setHours(0, 0, 0, 0);
-    this.startDate = this.stringHelperService.DateCurr_To_ISOString();
-    this.endDate = this.stringHelperService.DateCurr_To_ISOString();
-    this.formattedStartDate = this.stringHelperService.Date_To_S_ddmmyyyy(now);
-    this.formattedEndDate = this.stringHelperService.Date_To_S_ddmmyyyy(now);
-
-
     this.setfabMenuService();
-
   }
 
   ionViewWillLeave() {
@@ -126,34 +108,31 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
       request.data.id = state.id;
       return this.azCommessaService.Az_CommessaGet(request).pipe(
         map((res) => {
-
-          //la classe base non gestisce questo tipo di dato DEVO assegnare i valori a manina
-          this.startDate = this.stringHelperService.DateString_ddMMyyyy_To_ISOString(res.data.az_Commessa.data);
-          this.endDate = this.stringHelperService.DateString_ddMMyyyy_To_ISOString(res.data.az_Commessa.dataA); 
-          this.formattedStartDate = res.data.az_Commessa.data; 
-          this.formattedEndDate = res.data.az_Commessa.dataA;
-
           if (res.data.az_SubCommessa.length > 0) {
             res.data.tmp_az_SubCommessa = res.data.az_SubCommessa[0].id;
             this.idxCurrCommessa = 0;
-          }
-          else {
+
+            this._editModel = res.data;
+
+            this.setSubCommessaDates(this.idxCurrCommessa);
+          } else {
             this.idxCurrCommessa = -1;
+            // --- MODIFICA: Assegna null invece di stringa vuota
+            this.startDate = null;
+            this.endDate = null;
+            this.formattedStartDate = null;
+            this.formattedEndDate = null;
           }
-            
-
           return res.data;
-
-        }), // Estrae il dato richiesto
+        }),
         catchError((error) => {
           console.error('Errore durante la chiamata API:', error);
-          return [null]; // Restituisce null in caso di errore
+          return [null];
         })
       );
     } else {
       return new Observable<Az_CommessaGetOutModel | null>((subscriber) => {
-        
-        subscriber.next(new  Az_CommessaGetOutModel());
+        subscriber.next(new Az_CommessaGetOutModel());
         subscriber.complete();
       });
     }
@@ -163,13 +142,6 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
     let request: GenericRequest<Az_CommessaPutInModel> = new GenericRequest<Az_CommessaPutInModel>(Az_CommessaPutInModel);
     request.data.az_Commessa = editModel.az_Commessa;
     request.data.az_SubCommessa = editModel.az_SubCommessa;
-    
-
-    //la classe base non gestisce questo tipo di dato DEVO assegnare i valori a manina
-    request.data.az_Commessa.data = this.formattedStartDate;
-    request.data.az_Commessa.dataA = this.formattedEndDate;
-    
-
     return this.azCommessaService.Az_CommessaPut(request).pipe(
       map(() => {
         this.refresherService.SharedParameterGestionePresenze_triggerRefresh();
@@ -182,215 +154,194 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
     );
   }
 
-
-
-
   updateStartDate(event: any) {
-    const selectedDate = new Date(event.detail.value);
+    const selectedISODate = event.detail.value;
+    if (!selectedISODate) return;
+
+    this.startDate = selectedISODate; // Mantiene il formato ISO per il controllo
+    const selectedDate = new Date(selectedISODate);
     this.formattedStartDate = this.stringHelperService.Date_To_S_ddmmyyyy(selectedDate);
 
-    // Controlla se la data di inizio è successiva alla data di fine
-    if (this.compareDates(this.formattedStartDate, this.formattedEndDate) > 0) {
-      // Aggiorna la data di fine per farla coincidere con la data di inizio
-      this.endDate = event.detail.value;
+    if (this.idxCurrCommessa !== -1) {
+      this._editModel.az_SubCommessa[this.idxCurrCommessa].data = this.formattedStartDate;
+    }
+    if (!this.endDate || this.compareDates(this.formattedStartDate, this.formattedEndDate) > 0) {
+      this.endDate = this.startDate;
       this.formattedEndDate = this.formattedStartDate;
+      if (this.idxCurrCommessa !== -1) {
+        this._editModel.az_SubCommessa[this.idxCurrCommessa].dataA = this.formattedEndDate;
+      }
     }
   }
 
   updateEndDate(event: any) {
-    const selectedDate = new Date(event.detail.value);
+    const selectedISODate = event.detail.value;
+    if (!selectedISODate) return;
+
+    this.endDate = selectedISODate; // Mantiene il formato ISO per il controllo
+    const selectedDate = new Date(selectedISODate);
     this.formattedEndDate = this.stringHelperService.Date_To_S_ddmmyyyy(selectedDate);
 
-    // Controlla se la data di fine è precedente alla data di inizio
-    if (this.compareDates(this.formattedEndDate, this.formattedStartDate) < 0) {
-      // Aggiorna la data di inizio per farla coincidere con la data di fine
-      this.startDate = event.detail.value;
+    if (this.idxCurrCommessa !== -1) {
+      this._editModel.az_SubCommessa[this.idxCurrCommessa].dataA = this.formattedEndDate;
+    }
+    if (!this.startDate || this.compareDates(this.formattedEndDate, this.formattedStartDate) < 0) {
+      this.startDate = this.endDate;
       this.formattedStartDate = this.formattedEndDate;
+      if (this.idxCurrCommessa !== -1) {
+        this._editModel.az_SubCommessa[this.idxCurrCommessa].data = this.formattedStartDate;
+      }
     }
   }
 
   compareDates(date1: string, date2: string): number {
-    // Converte da formato dd/mm/yyyy a Date objects per confronto
+    // Aggiunto un controllo per date nulle o non valide
+    if (!date1 || !date2) return 0;
     const [day1, month1, year1] = date1.split('/').map(Number);
     const [day2, month2, year2] = date2.split('/').map(Number);
 
     const d1 = new Date(year1, month1 - 1, day1);
     const d2 = new Date(year2, month2 - 1, day2);
 
-    // Ritorna -1 se d1 < d2, 0 se uguali, 1 se d1 > d2
     return d1 < d2 ? -1 : d1 > d2 ? 1 : 0;
   }
 
+  onSubCommessaChange(event: any) {
+    const selectedId = event.detail.value;
+    this.idxCurrCommessa = this._editModel.az_SubCommessa.findIndex(x => x.id === selectedId);
+    this.setSubCommessaDates(this.idxCurrCommessa);
+  }
+
+  setSubCommessaDates(idx: number) {
+    if (idx === -1 || !this._editModel?.az_SubCommessa?.[idx]) {
+      // --- MODIFICA: Assegna null invece di stringa vuota
+      this.startDate = null;
+      this.endDate = null;
+      this.formattedStartDate = null;
+      this.formattedEndDate = null;
+      return;
+    }
+    const sub = this._editModel.az_SubCommessa[idx];
+    // Assicurarsi che la funzione di conversione restituisca null se la data in input è nulla o vuota
+    this.startDate = this.stringHelperService.DateString_ddMMyyyy_To_ISOString(sub.data);
+    this.endDate = this.stringHelperService.DateString_ddMMyyyy_To_ISOString(sub.dataA);
+    this.formattedStartDate = sub.data || null;
+    this.formattedEndDate = sub.dataA || null;
+  }
+
   segmentChanged(event: any) {
-    console.log('Segment cambiato:', event.detail.value);
     this.currSection = event.detail.value;
     this.setfabMenuService();
   }
 
   segmentChanged_sub(event: any) {
-    console.log('Segment cambiato:', event.detail.value);
     this.currSection_sub = event.detail.value;
     this.setfabMenuService();
   }
 
   setfabMenuService() {
-
     this.fabMenuService.fabMenuItem = [];
 
     switch (this.currSection) {
       case 'sez_1':
         break;
       case 'sez_2':
-
         switch (this.currSection_sub) {
           case 'sez_1_sub_1':
-
             this.fabMenuService.fabMenuItem = [
-
               new FabMenuItem('xxx', 'add-circle-outline', () => {
                 this.Az_SubCommessaAttivita_DialogOpen();
               }),
-
             ];
-
             break;
-
-
           case 'sez_1_sub_2':
-
             this.fabMenuService.fabMenuItem = [
-
               new FabMenuItem('xxx', 'add-circle-outline', () => {
                 this.Az_SediReparto_DialogOpen();
               }),
-
             ];
-
             break;
           case 'sez_1_sub_3':
-
             this.fabMenuService.fabMenuItem = [
-
               new FabMenuItem('xxx', 'add-circle-outline', () => {
                 this.Az_SubCommessaUser_DialogOpen();
               }),
-
             ];
-
             break;
         }
-
         break;
     }
-
-
   }
-  
-  onSubCommessaChange(event: any) {
-    const selectedId = event.detail.value;
-    this.idxCurrCommessa = this._editModel.az_SubCommessa.findIndex(x => x.id === selectedId);
-  }
-
-
 
   /*SCHEDA USER*/
   public Az_SubCommessaUser_Get(): Az_SubCommessaUser4EditModel[] {
-
     if (this.idxCurrCommessa === -1 || !this._editModel.az_SubCommessa?.[this.idxCurrCommessa]) {
       return [];
     }
     return this._editModel.az_SubCommessa[this.idxCurrCommessa].az_SubCommessaUser
       .filter(item => item.checked === true);
-
   }
 
   Az_SubCommessaUser_IsSelected(idAspNetUsers: string): boolean {
-    
     return this._editModel.az_SubCommessa[this.idxCurrCommessa].az_SubCommessaUser.find(entry => entry.idAspNetUsers === idAspNetUsers)?.checked ?? false;
-
   }
 
   Az_SubCommessaUser_Toggle(idAspNetUsers: string, event: any) {
-
-
     const existingEntry = this._editModel.az_SubCommessa[this.idxCurrCommessa].az_SubCommessaUser.find(entry => entry.idAspNetUsers === idAspNetUsers);
 
     if (existingEntry) {
-      // Se l'elemento esiste, aggiorna solo lo stato selected
       existingEntry.checked = event.detail.checked;
     } else {
-      // Se l'elemento non è presente, lo aggiunge alla lista
       this._editModel.az_SubCommessa[this.idxCurrCommessa].az_SubCommessaUser.push({
-        id:0,
-        idAz_SubCommessa:0,
+        id: 0,
+        idAz_SubCommessa: 0,
         idAspNetUsers: idAspNetUsers,
         checked: event.detail.checked
       });
     }
-
   }
 
   Az_SubCommessaUser_SetCheck(idAspNetUsers: string, checked: boolean) {
-
-    if (this.idxCurrCommessa == -1)
-      return;
-
+    if (this.idxCurrCommessa == -1) return;
 
     const existingEntry = this._editModel.az_SubCommessa[this.idxCurrCommessa].az_SubCommessaUser.find(entry => entry.idAspNetUsers === idAspNetUsers);
 
     if (existingEntry) {
-      // Se l'elemento esiste, aggiorna solo lo stato selected
       existingEntry.checked = checked;
-
     } else {
-      // Se l'elemento non è presente, lo aggiunge alla lista
       this._editModel.az_SubCommessa[this.idxCurrCommessa].az_SubCommessaUser.push({
         id: 0,
-        idAz_SubCommessa:0,
+        idAz_SubCommessa: 0,
         idAspNetUsers: idAspNetUsers,
         checked: checked
       });
     }
-
   }
 
   Az_SubCommessaUser_HandleButtonDelete = (item: any) => {
-
     this.Az_SubCommessaUser_SetCheck(item.idAspNetUsers, false);
-
   }
 
   async Az_SubCommessaUser_DialogOpen() {
-    // Crea l'istanza del modal
     const modal = await this.modalCtrl.create({
-      component: SeletionSediRepartoUserDialogComponent, // Il componente da usare
-      // Passa i dati al modal tramite componentProps
-      // Questi dati saranno accessibili tramite @Input() nel DialogExampleComponent
+      component: SeletionSediRepartoUserDialogComponent,
       componentProps: {
         nomeUtente: 'Mario Rossi'
       },
-      //cssClass:'nvx-modal'
     });
 
-    // Presenta il modal all'utente
     await modal.present();
-
 
     const { data, role } = await modal.onWillDismiss<SeletionSediRepartoUserDialogResult | null>();
 
-
-    if (role === 'confirm') {
-
+    if (role === 'confirm' && data) {
       if (data.userIds) {
         data.userIds.forEach(item => {
           this.Az_SubCommessaUser_SetCheck(item, true);
         });
       }
-    } else {}
-
+    }
   }
-
-
 
   /*SCHEDA REPARTI*/
   public Az_SediReparto_Get(): Az_SubCommessaSediRepartoModel4EditModel[] {
@@ -402,27 +353,19 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
   }
 
   Az_SediReparto_IsSelected(idAz_SediReparto: number): boolean {
-
-    if (this.idxCurrCommessa == -1)
-      return false;
+    if (this.idxCurrCommessa == -1) return false;
 
     return this._editModel.az_SubCommessa[this.idxCurrCommessa].az_SubCommessaSediReparto.find(entry => entry.idAz_SediReparto === idAz_SediReparto)?.checked ?? false;
-
   }
 
   Az_SediReparto_Toggle(itemId: number, event: any) {
-
-    if (this.idxCurrCommessa == -1)
-      return ;
-
+    if (this.idxCurrCommessa == -1) return;
 
     const existingEntry = this._editModel.az_SubCommessa[this.idxCurrCommessa].az_SubCommessaSediReparto.find(entry => entry.idAz_SediReparto === itemId);
 
     if (existingEntry) {
-      // Se l'elemento esiste, aggiorna solo lo stato selected
       existingEntry.checked = event.detail.checked;
     } else {
-      // Se l'elemento non è presente, lo aggiunge alla lista
       this._editModel.az_SubCommessa[this.idxCurrCommessa].az_SubCommessaSediReparto.push({
         id: 0,
         checked: event.detail.checked,
@@ -430,100 +373,70 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
         idAz_SediReparto: itemId
       });
     }
-
   }
 
-  Az_SediReparto_SetCheck(itemId: number, checked:boolean) {
+  Az_SediReparto_SetCheck(itemId: number, checked: boolean) {
+    if (this.idxCurrCommessa == -1) return;
 
-    if (this.idxCurrCommessa == -1)
-      return;
-
-
-    const existingEntry = this._editModel.az_SubCommessa[this.idxCurrCommessa].az_SubCommessaSediReparto.find(entry => entry.id === itemId);
+    const existingEntry = this._editModel.az_SubCommessa[this.idxCurrCommessa].az_SubCommessaSediReparto.find(entry => entry.idAz_SediReparto === itemId);
 
     if (existingEntry) {
-      // Se l'elemento esiste, aggiorna solo lo stato selected
       existingEntry.checked = checked;
-      
     } else {
-      // Se l'elemento non è presente, lo aggiunge alla lista
       this._editModel.az_SubCommessa[this.idxCurrCommessa].az_SubCommessaSediReparto.push({
         id: 0,
         checked: checked,
         idAz_SediReparto: itemId,
-        idAz_SubCommessa:0
+        idAz_SubCommessa: 0
       });
     }
-
   }
 
   Az_SediReparto_HandleButtonDelete = (item: any) => {
-
-    this.Az_SediReparto_SetCheck(item.id,false);
-
+    // --- MODIFICA: L'item passato è l'oggetto stesso, quindi l'id da usare è item.idAz_SediReparto
+    this.Az_SediReparto_SetCheck(item.idAz_SediReparto, false);
   }
 
   async Az_SediReparto_DialogOpen() {
-    // Crea l'istanza del modal
     const modal = await this.modalCtrl.create({
-      component: SeletionSediRepartoDialogComponent, // Il componente da usare
-      // Passa i dati al modal tramite componentProps
-      // Questi dati saranno accessibili tramite @Input() nel DialogExampleComponent
+      component: SeletionSediRepartoDialogComponent,
       componentProps: {
         nomeUtente: 'Mario Rossi'
       },
-      //cssClass:'nvx-modal'
     });
 
-    // Presenta il modal all'utente
     await modal.present();
-
 
     const { data, role } = await modal.onWillDismiss<SeletionSediRepartoDialogResult | null>();
 
-
-    if (role === 'confirm') {
+    if (role === 'confirm' && data) {
       this.Az_SediReparto_SetCheck(data.idReparto, true);
-    } else {
-      //this.risultatoDialog = `L'utente ha annullato l'operazione.`;
     }
   }
 
-
-
   /*SCHEDA ATTIVITA*/
   public Az_SubCommessaAttivita_Get(): Az_SubCommessaAttivita4EditModel[] {
-
     if (this.idxCurrCommessa === -1 || !this._editModel.az_SubCommessa?.[this.idxCurrCommessa]) {
       return [];
     }
     return this._editModel.az_SubCommessa[this.idxCurrCommessa].az_SubCommessaAttivita
       .filter(item => item.checked === true);
-
   }
 
   Az_SubCommessaAttivita_IsSelected(idPar_Attivita: number): boolean {
-
-    if (this.idxCurrCommessa == -1)
-      return false;
+    if (this.idxCurrCommessa == -1) return false;
 
     return this._editModel.az_SubCommessa[this.idxCurrCommessa].az_SubCommessaAttivita.find(entry => entry.idPar_Attivita === idPar_Attivita)?.checked ?? false;
-
   }
 
   Az_SubCommessaAttivita_Toggle(idPar_Attivita: number, event: any) {
-
-    if (this.idxCurrCommessa == -1)
-      return;
-
+    if (this.idxCurrCommessa == -1) return;
 
     const existingEntry = this._editModel.az_SubCommessa[this.idxCurrCommessa].az_SubCommessaAttivita.find(entry => entry.idPar_Attivita === idPar_Attivita);
 
     if (existingEntry) {
-      // Se l'elemento esiste, aggiorna solo lo stato selected
       existingEntry.checked = event.detail.checked;
     } else {
-      // Se l'elemento non è presente, lo aggiunge alla lista
       this._editModel.az_SubCommessa[this.idxCurrCommessa].az_SubCommessaAttivita.push({
         id: 0,
         idAz_SubCommessa: 0,
@@ -532,69 +445,48 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
         default: false
       });
     }
-
   }
 
   Az_SubCommessaAttivita_SetCheck(idPar_Attivita: number, checked: boolean) {
-
-    if (this.idxCurrCommessa == -1)
-      return;
-
+    if (this.idxCurrCommessa == -1) return;
 
     const existingEntry = this._editModel.az_SubCommessa[this.idxCurrCommessa].az_SubCommessaAttivita.find(entry => entry.idPar_Attivita === idPar_Attivita);
 
     if (existingEntry) {
-      // Se l'elemento esiste, aggiorna solo lo stato selected
       existingEntry.checked = checked;
-
     } else {
-      // Se l'elemento non è presente, lo aggiunge alla lista
       this._editModel.az_SubCommessa[this.idxCurrCommessa].az_SubCommessaAttivita.push({
         idAz_SubCommessa: 0,
         idPar_Attivita: idPar_Attivita,
         id: 0,
         checked: checked,
-        default: false 
+        default: false
       });
     }
-
   }
 
   Az_SubCommessaAttivita_HandleButtonDelete = (item: any) => {
-
     this.Az_SubCommessaAttivita_SetCheck(item.idPar_Attivita, false);
-
   }
 
   async Az_SubCommessaAttivita_DialogOpen() {
-    // Crea l'istanza del modal
     const modal = await this.modalCtrl.create({
-      component: SeletionParAttivitaDialogComponent, // Il componente da usare
-      // Passa i dati al modal tramite componentProps
-      // Questi dati saranno accessibili tramite @Input() nel DialogExampleComponent
+      component: SeletionParAttivitaDialogComponent,
       componentProps: {
         nomeUtente: 'Mario Rossi'
       },
-      //cssClass:'nvx-modal'
     });
 
-    // Presenta il modal all'utente
     await modal.present();
-
 
     const { data, role } = await modal.onWillDismiss<SeletionParAttivitaDialogResult | null>();
 
-
-    if (role === 'confirm') {
-
+    if (role === 'confirm' && data) {
       if (data.id) {
         data.id.forEach(item => {
           this.Az_SubCommessaAttivita_SetCheck(item, true);
         });
       }
-    } else { }
-
+    }
   }
-
-
 }
