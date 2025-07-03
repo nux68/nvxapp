@@ -9,8 +9,6 @@ export class Az_CommessaModel {
   public descrizione: string;
   public idAz_Cliente!: number; 
   public default: boolean;
-  public data!: string;
-  public dataA!: string;
 }
 
 export class Az_Commessa_GetAll_InModel {}

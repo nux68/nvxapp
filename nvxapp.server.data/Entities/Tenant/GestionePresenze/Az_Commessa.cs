@@ -21,8 +21,6 @@ namespace nvxapp.server.data.Entities.Tenant
         public virtual Az_Cliente? Az_ClienteNavigation { get; set; }
 
         public Boolean Default { get; set; }
-        public DateTime Data { get; set; }
-        public DateTime DataA { get; set; }
 
         public ICollection<Az_SubCommessa>? Az_SubCommessa { get; set; }
     }

@@ -16,6 +16,8 @@ namespace nvxapp.server.data.Entities.Tenant
         [MaxLength(50)]
         public string Descrizione { get; set; } = string.Empty;
         public Boolean Default { get; set; }
+        public DateTime Data { get; set; }
+        public DateTime DataA { get; set; }
 
         public ICollection<Az_SubCommessaAttivita>? Az_SubCommessaAttivita { get; set; }
         public ICollection<Az_SubCommessaSediReparto>? Az_SubCommessaSediReparto { get; set; }

@@ -11,8 +11,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_Commess
         public string Descrizione { get; set; } = string.Empty;
         public  int IdAz_Cliente { get; set; }
         public Boolean Default { get; set; }
-        public string Data { get; set; } = string.Empty;
-        public string DataA { get; set; } = string.Empty;
     }
 
     public class Az_Commessa_GetAll_InModel

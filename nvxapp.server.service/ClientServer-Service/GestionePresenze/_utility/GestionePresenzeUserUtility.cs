@@ -250,9 +250,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                         IdAz_Anagrafica = company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Anagrafica.Id,
                         Default = true,
                         Descrizione = "Default",
-                        IdAz_Cliente = az_Cliente.Id,
-                        Data = DateTime.Today,                  // Data inizio = oggi
-                        DataA = new DateTime(DateTime.Today.Year, 12, 31)              // Data fine = 31/12 dell'anno corrente
+                        IdAz_Cliente = az_Cliente.Id
                     });
 
                     if (az_Cliente != null && az_Commessa != null && company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Sedi != null && company_DATA_COMB_AzAna_AzSedi_AzReparto.az_SediReparto != null)
@@ -276,7 +274,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                             {
                                 IdAz_Commessa = az_Commessa.Id,
                                 Default = true,
-                                Descrizione = "Default"
+                                Descrizione = "Default",
+                                Data= DateTime.Today,
+                                DataA= new DateTime(DateTime.Today.Year,12,31)
                             });
 
                             if (az_SubCommessa != null)

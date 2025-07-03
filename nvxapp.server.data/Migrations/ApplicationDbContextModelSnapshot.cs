@@ -582,12 +582,6 @@ namespace nvxapp.server.data.Migrations
                     b.Property<DateTime?>("CreationDate")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<DateTime>("Data")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<DateTime>("DataA")
-                        .HasColumnType("timestamp without time zone");
-
                     b.Property<bool>("Default")
                         .HasColumnType("boolean");
 
@@ -824,6 +818,12 @@ namespace nvxapp.server.data.Migrations
                         .HasColumnType("character varying(256)");
 
                     b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("Data")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("DataA")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<bool>("Default")

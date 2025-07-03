@@ -12,7 +12,7 @@ using nvxapp.server.data.Infrastructure;
 namespace nvxapp.server.data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250702150435_GestionePresenze_init")]
+    [Migration("20250703080509_GestionePresenze_init")]
     partial class GestionePresenze_init
     {
         /// <inheritdoc />
@@ -585,12 +585,6 @@ namespace nvxapp.server.data.Migrations
                     b.Property<DateTime?>("CreationDate")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<DateTime>("Data")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<DateTime>("DataA")
-                        .HasColumnType("timestamp without time zone");
-
                     b.Property<bool>("Default")
                         .HasColumnType("boolean");
 
@@ -827,6 +821,12 @@ namespace nvxapp.server.data.Migrations
                         .HasColumnType("character varying(256)");
 
                     b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("Data")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("DataA")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<bool>("Default")

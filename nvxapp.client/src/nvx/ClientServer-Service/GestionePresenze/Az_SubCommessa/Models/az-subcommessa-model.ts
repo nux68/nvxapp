@@ -9,6 +9,8 @@ export class Az_SubCommessaModel {
   public idAz_Commessa: number = 0;
   public descrizione?: string;
   public default: boolean = false;
+  public data: string = '';
+  public dataA: string = '';
 }
 
 export class Az_SubCommessa_GetAll_InModel {}
