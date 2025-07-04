@@ -16,6 +16,7 @@ import { TipoRichiestaToShortTextPipe } from '../../../shared/pipe/GestionePrese
 import { StatoRichiestaShortTextPipe } from '../../../shared/pipe/GestionePresenze/stato-richiesta-short-text.pipe';
 import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
 import { TimeSheetService } from '../../../Utility/GestionePresenze/time-sheet.service';
+import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
 
 
 
@@ -46,6 +47,7 @@ export class RequestListAdminPageComponent implements OnInit {
     private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
     private dipGGRichiestaService: DipGGRichiestaService,
     public fabMenuService: FabMenuService,
+    private collectionDialogService: CollectionDialogService,
     
     //private monthNavigatorService: MonthNavigatorService,
     private userInterfaceService: UserInterfaceService,
@@ -89,17 +91,21 @@ export class RequestListAdminPageComponent implements OnInit {
   ngOnInit() { }
 
 
-  handleButtonApprovaClick = (item: any) => {
-    this.sendStato(item, StatoRichiesta.Approvata );
-    //this.navCtrl.navigateForward('/justificationedit', {
-    //  state: { id: item.id }
-    //});
+  handleButtonApprovaClick = async (item: any) => {
+
+    const result = await this.collectionDialogService.ConfirmCancelDialog('Confermi l\' approvazione della richiesta?');
+    if (result) {
+      this.sendStato(item, StatoRichiesta.Approvata);
+    }
+    
+    
   }
-  handleButtonRifiutaClick = (item: any) => {
-    this.sendStato(item, StatoRichiesta.Rifiutata);
-    //this.navCtrl.navigateForward('/justificationedit', {
-    //  state: { id: item.id }
-    //});
+  handleButtonRifiutaClick = async (item: any) => {
+    
+    const result = await this.collectionDialogService.ConfirmCancelDialog('Confermi il rifiuto della richiesta?');
+    if (result) {
+      this.sendStato(item, StatoRichiesta.Rifiutata);
+    }
   }
 
   Filter(CurrFilter: any) {

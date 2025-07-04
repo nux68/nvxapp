@@ -8,6 +8,7 @@ import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic
 import { AzSediService } from '../../../ClientServer-Service/GestionePresenze/Az_Sedi/az-sedi.service';
 import { map, catchError } from 'rxjs';
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
+import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
 
 @Component({
   selector: 'app-az-sedi-list-page',
@@ -28,6 +29,7 @@ export class AzSediListPageComponent implements OnInit {
               private azSediService: AzSediService,
               private userInterfaceService: UserInterfaceService,
               private userNavigationService: UserNavigationService,
+              private collectionDialogService: CollectionDialogService,
               private refresherService: RefresherService) {
 
     this.btnEdit = userInterfaceService.Btn_Modifica;
@@ -66,20 +68,28 @@ export class AzSediListPageComponent implements OnInit {
     });
   }
 
-  handleButtonDeleteClick = (item: any) => {
-    let request: GenericRequest<Az_SediDeleteInModel> = new GenericRequest<Az_SediDeleteInModel>(Az_SediDeleteInModel);
-    request.data.id = item.id;
-    return this.azSediService.AzSediDelete(request).pipe(
-      map(() => {
-        this.refresherService.SharedParameterGestionePresenze_triggerRefresh();
-        this.loadData();
-        return true;
-      }),
-      catchError((error) => {
-        console.error('Errore durante la chiamata API:', error);
-        return [false];
-      })
-    ).subscribe();
+  
+  handleButtonDeleteClick = async (item: any) => {
+
+    const result = await this.collectionDialogService.ConfirmCancelDialog('Confermi la cancellazione della sede?');
+    if (result) {
+
+        let request: GenericRequest<Az_SediDeleteInModel> = new GenericRequest<Az_SediDeleteInModel>(Az_SediDeleteInModel);
+        request.data.id = item.id;
+        return this.azSediService.AzSediDelete(request).pipe(
+          map(() => {
+            this.refresherService.SharedParameterGestionePresenze_triggerRefresh();
+            this.loadData();
+            return true;
+          }),
+          catchError((error) => {
+            console.error('Errore durante la chiamata API:', error);
+            return [false];
+          })
+          ).subscribe();
+    }
+
+    return true;
   }
 
   Filter(CurrFilter: any) {

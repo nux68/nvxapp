@@ -10,6 +10,7 @@ import { AzSediRepartoService } from '../../../ClientServer-Service/GestionePres
 import { Az_SediReparto_GetAll_InModel, Az_SediRepartoModel, Az_SediRepartoDeleteInModel } from '../../../ClientServer-Service/GestionePresenze/Az_SediReparto/Models/az-sedi-reparto-model';
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
 import { map, catchError } from 'rxjs';
+import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
 
 @Component({
   selector: 'app-department-list-page',
@@ -32,9 +33,10 @@ export class DepartmentListPageComponent implements OnInit {
     private azSediRepartoService: AzSediRepartoService,
     private userInterfaceService: UserInterfaceService,
     private userNavigationService: UserNavigationService,
+    private collectionDialogService: CollectionDialogService,
     private refresherService: RefresherService) {
 
-    this.title = 'Departments';
+    this.title = 'Reparti';
     this.btnEdit = userInterfaceService.Btn_Modifica;
     this.btnEdit.event = this.handleButtonEditClick;
 
@@ -83,21 +85,27 @@ export class DepartmentListPageComponent implements OnInit {
     });
   }
 
-  handleButtonDeleteClick = (item: any) => {
-    // Model per la cancellazione
-    const request: GenericRequest<Az_SediRepartoDeleteInModel> = new GenericRequest<Az_SediRepartoDeleteInModel>(Az_SediRepartoDeleteInModel);
-    request.data.id = item.id;
-    this.azSediRepartoService.Az_SediRepartoDelete(request).pipe(
-      map(() => {
-        this.refresherService.SharedParameterGestionePresenze_triggerRefresh();
-        this.loadData();
-        return true;
-      }),
-      catchError((error: any) => {
-        console.error('Errore durante la chiamata API:', error);
-        return [false];
-      })
-    ).subscribe();
+  handleButtonDeleteClick = async (item: any) => {
+
+    const result = await this.collectionDialogService.ConfirmCancelDialog('Confermi la cancellazione del reparto');
+    if (result) {
+
+        const request: GenericRequest<Az_SediRepartoDeleteInModel> = new GenericRequest<Az_SediRepartoDeleteInModel>(Az_SediRepartoDeleteInModel);
+        request.data.id = item.id;
+        this.azSediRepartoService.Az_SediRepartoDelete(request).pipe(
+          map(() => {
+            this.refresherService.SharedParameterGestionePresenze_triggerRefresh();
+            this.loadData();
+            return true;
+          }),
+          catchError((error: any) => {
+            console.error('Errore durante la chiamata API:', error);
+            return [false];
+          })
+        ).subscribe();
+
+    }
+
   }
 
   Filter(CurrFilter: any) {

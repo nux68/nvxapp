@@ -22,6 +22,7 @@ import { SeletionParAttivitaDialogComponent, SeletionParAttivitaDialogResult } f
 import { Az_SubCommessaUser4EditModel } from '../../../ClientServer-Service/GestionePresenze/Az_SubCommessaUser/Models/az-subcommessa-user-model';
 import { Az_SubCommessaAttivita4EditModel } from '../../../ClientServer-Service/GestionePresenze/Az_SubCommessaAttivita/Models/az-subcommessa-attivita-model';
 import { Az_SubCommessaSediRepartoModel4EditModel } from '../../../ClientServer-Service/GestionePresenze/Az_SubCommessaSediReparto/Models/az-subcommessa-sedi-reparto-model';
+import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
 
 @Component({
   selector: 'app-commessa-edit-page',
@@ -61,7 +62,8 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
     private stringHelperService: StringHelperService,
     private azCommessaService: AzCommessaService,
     private refresherService: RefresherService,
-    private modalCtrl: ModalController) {
+    private modalCtrl: ModalController,
+    private collectionDialogService: CollectionDialogService) {
     super(navCtrl, userInterfaceService, fb);
 
     this.btnDeleteReparto = userInterfaceService.Btn_Cancella;
@@ -315,6 +317,83 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
     }
   }
 
+  async Az_SubCommessaAdd() {
+
+    const result = await this.collectionDialogService.ConfirmCancelDialog('Confermi l\'inserimento di una nuova sub commessa');
+
+    if (result) {
+
+      // Crea un nuovo id temporaneo negativo (per evitare collisioni con quelli del backend)
+      const minId = Math.min(0, ...this._editModel.az_SubCommessa.map(x => x.id || 0));
+      const newId = minId - 1;
+
+
+      const now = new Date();
+
+
+      // Crea la nuova subcommessa con valori di default
+      const nuovaSub: any = {
+        id: newId,
+        descrizione: 'Nuova sub commessa',
+        data: this.stringHelperService.Date_To_S_ddmmyyyy(now),
+        dataA: this.stringHelperService.Date_To_S_ddmmyyyy(new Date(now.getFullYear(), 11, 31)),
+        default: false,
+        az_SubCommessaUser: [],
+        az_SubCommessaAttivita: [],
+        az_SubCommessaSediReparto: []
+      };
+
+      // Aggiungi la nuova subcommessa all'array
+      this._editModel.az_SubCommessa.push(nuovaSub);
+
+      // Seleziona la nuova subcommessa
+      this.idxCurrCommessa = this._editModel.az_SubCommessa.length - 1;
+      this._editForm.get('tmp_az_SubCommessa')?.setValue(nuovaSub.id);
+
+      // Aggiorna le date mostrate
+      this.setSubCommessaDates(this.idxCurrCommessa);
+
+    }
+
+  }
+
+  async Az_SubCommessaDelete() {
+
+
+
+    if (this.idxCurrCommessa !== -1) {
+
+      const result = await this.collectionDialogService.ConfirmCancelDialog('Confermi la cancellazione sub commessa');
+      if (result) {
+
+        if (!this._editModel.az_SubCommessa[this.idxCurrCommessa].default) {
+          // Rimuovi l'elemento dall'array
+          this._editModel.az_SubCommessa.splice(this.idxCurrCommessa, 1);
+
+          // Aggiorna l'indice corrente
+          if (this._editModel.az_SubCommessa.length > 0) {
+            this.idxCurrCommessa = 0;
+            // Aggiorna il controllo del form con il nuovo id selezionato
+            this._editForm.get('tmp_az_SubCommessa')?.setValue(this._editModel.az_SubCommessa[0].id);
+            this.setSubCommessaDates(this.idxCurrCommessa);
+          } else {
+            this.idxCurrCommessa = -1;
+            this._editForm.get('tmp_az_SubCommessa')?.setValue(null);
+            this.setSubCommessaDates(-1);
+          }
+        }
+
+      }
+
+    }
+
+
+  }
+
+
+
+
+
   /*SCHEDA USER*/
   public Az_SubCommessaUser_Get(): Az_SubCommessaUser4EditModel[] {
     if (this.idxCurrCommessa === -1 || !this._editModel.az_SubCommessa?.[this.idxCurrCommessa]) {
@@ -360,8 +439,14 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
     }
   }
 
-  Az_SubCommessaUser_HandleButtonDelete = (item: any) => {
-    this.Az_SubCommessaUser_SetCheck(item.idAspNetUsers, false);
+  Az_SubCommessaUser_HandleButtonDelete = async  (item: any) => {
+    
+
+    const result = await this.collectionDialogService.ConfirmCancelDialog('Vuoi scollegare l\'utente?');
+    if (result) {
+      this.Az_SubCommessaUser_SetCheck(item.idAspNetUsers, false);
+    }
+
   }
 
   async Az_SubCommessaUser_DialogOpen() {
@@ -434,9 +519,15 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
     }
   }
 
-  Az_SediReparto_HandleButtonDelete = (item: any) => {
-    // --- MODIFICA: L'item passato è l'oggetto stesso, quindi l'id da usare è item.idAz_SediReparto
-    this.Az_SediReparto_SetCheck(item.idAz_SediReparto, false);
+  Az_SediReparto_HandleButtonDelete = async (item: any) => {
+
+    const result = await this.collectionDialogService.ConfirmCancelDialog('Vuoi scollegare il reparto?');
+    if (result)
+    {
+      this.Az_SediReparto_SetCheck(item.idAz_SediReparto, false);
+    }
+
+    
   }
 
   async Az_SediReparto_DialogOpen() {
@@ -507,8 +598,13 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
     }
   }
 
-  Az_SubCommessaAttivita_HandleButtonDelete = (item: any) => {
-    this.Az_SubCommessaAttivita_SetCheck(item.idPar_Attivita, false);
+  Az_SubCommessaAttivita_HandleButtonDelete = async (item: any) => {
+
+    const result = await this.collectionDialogService.ConfirmCancelDialog('Vuoi scollegare l\'attività?');
+    if (result) {
+      this.Az_SubCommessaAttivita_SetCheck(item.idPar_Attivita, false);
+    }
+
   }
 
   async Az_SubCommessaAttivita_DialogOpen() {
@@ -532,58 +628,7 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
     }
   }
 
-  async Az_SubCommessaAdd() {
-    // Crea un nuovo id temporaneo negativo (per evitare collisioni con quelli del backend)
-    const minId = Math.min(0, ...this._editModel.az_SubCommessa.map(x => x.id || 0));
-    const newId = minId - 1;
 
-
-    const now = new Date();
-    
-
-    // Crea la nuova subcommessa con valori di default
-    const nuovaSub: any = {
-      id: newId,
-      descrizione: 'Nuova sub commessa',
-      data: this.stringHelperService.Date_To_S_ddmmyyyy(now),
-      dataA: this.stringHelperService.Date_To_S_ddmmyyyy(new Date(now.getFullYear(), 11, 31)),
-      default: false,
-      az_SubCommessaUser: [],
-      az_SubCommessaAttivita: [],
-      az_SubCommessaSediReparto: []
-    };
-
-    // Aggiungi la nuova subcommessa all'array
-    this._editModel.az_SubCommessa.push(nuovaSub);
-
-    // Seleziona la nuova subcommessa
-    this.idxCurrCommessa = this._editModel.az_SubCommessa.length - 1;
-    this._editForm.get('tmp_az_SubCommessa')?.setValue(nuovaSub.id);
-
-    // Aggiorna le date mostrate
-    this.setSubCommessaDates(this.idxCurrCommessa);
-  }
-
-  async Az_SubCommessaDelete() {
-    if (this.idxCurrCommessa !== -1) {
-      if (!this._editModel.az_SubCommessa[this.idxCurrCommessa].default) {
-        // Rimuovi l'elemento dall'array
-        this._editModel.az_SubCommessa.splice(this.idxCurrCommessa, 1);
-
-        // Aggiorna l'indice corrente
-        if (this._editModel.az_SubCommessa.length > 0) {
-          this.idxCurrCommessa = 0;
-          // Aggiorna il controllo del form con il nuovo id selezionato
-          this._editForm.get('tmp_az_SubCommessa')?.setValue(this._editModel.az_SubCommessa[0].id);
-          this.setSubCommessaDates(this.idxCurrCommessa);
-        } else {
-          this.idxCurrCommessa = -1;
-          this._editForm.get('tmp_az_SubCommessa')?.setValue(null);
-          this.setSubCommessaDates(-1);
-        }
-      }
-    }
-  }
 
 
 }

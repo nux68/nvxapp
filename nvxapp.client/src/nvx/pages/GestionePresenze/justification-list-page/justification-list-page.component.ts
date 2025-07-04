@@ -7,6 +7,7 @@ import { Par_GiustificativiInModel, Par_GiustificativiModel } from '../../../Cli
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { ParGiustificativiService } from '../../../ClientServer-Service/GestionePresenze/Par_Giustificativi/par-giustificativi.service';
 import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
+import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
 
 
 @Component({
@@ -27,9 +28,10 @@ export class JustificationListPageComponent implements OnInit {
               public fabMenuService: FabMenuService,
               private parGiustificativiService: ParGiustificativiService,
               private userInterfaceService: UserInterfaceService,
+              private collectionDialogService: CollectionDialogService,
               private userNavigationService: UserNavigationService) {
 
-    this.title = 'Justifications';
+    this.title = 'Giustificativi';
     this.btnEdit = userInterfaceService.Btn_Modifica;
     this.btnEdit.event = this.handleButtonEditClick;
 

@@ -8,6 +8,7 @@ import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic
 import { AzCommessaService } from '../../../ClientServer-Service/GestionePresenze/Az_Commessa/az-commessa.service';
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
 import { map, catchError } from 'rxjs';
+import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
 
 @Component({
   selector: 'app-commessa-list-page',
@@ -28,6 +29,7 @@ export class CommessaListPageComponent implements OnInit {
               private azCommessaService: AzCommessaService,
               private userInterfaceService: UserInterfaceService,
               private userNavigationService: UserNavigationService,
+              private collectionDialogService: CollectionDialogService,
               private refresherService: RefresherService) {
 
     this.title = 'Commesse';
@@ -73,20 +75,27 @@ export class CommessaListPageComponent implements OnInit {
     });
   }
 
-  handleButtonDeleteClick = (item: any) => {
-    let request: GenericRequest<Az_CommessaDeleteInModel> = new GenericRequest<Az_CommessaDeleteInModel>(Az_CommessaDeleteInModel);
-    request.data.id = item.id;
-    this.azCommessaService.Az_CommessaDelete(request).pipe(
-      map(() => {
-        this.refresherService.SharedParameterGestionePresenze_triggerRefresh();
-        this.loadData();
-        return true;
-      }),
-      catchError((error) => {
-        console.error('Errore durante la chiamata API:', error);
-        return [false];
-      })
-    ).subscribe();
+  handleButtonDeleteClick = async (item: any) => {
+
+    const result = await this.collectionDialogService.ConfirmCancelDialog('Confermi la cancellazione della commessa?');
+    if (result) {
+
+      let request: GenericRequest<Az_CommessaDeleteInModel> = new GenericRequest<Az_CommessaDeleteInModel>(Az_CommessaDeleteInModel);
+      request.data.id = item.id;
+      this.azCommessaService.Az_CommessaDelete(request).pipe(
+        map(() => {
+          this.refresherService.SharedParameterGestionePresenze_triggerRefresh();
+          this.loadData();
+          return true;
+        }),
+        catchError((error) => {
+          console.error('Errore durante la chiamata API:', error);
+          return [false];
+        })
+        ).subscribe();
+
+    }
+
   }
 
   Filter(CurrFilter: any) {

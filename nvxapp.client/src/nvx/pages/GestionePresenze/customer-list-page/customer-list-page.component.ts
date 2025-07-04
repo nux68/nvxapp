@@ -8,6 +8,7 @@ import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic
 import { AzClienteService } from '../../../ClientServer-Service/GestionePresenze/Az_Cliente/az-cliente.service';
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
 import { map, catchError } from 'rxjs';
+import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
 
 @Component({
   selector: 'app-customer-list-page',
@@ -28,9 +29,10 @@ export class CustomerListPageComponent implements OnInit {
               private azClienteService: AzClienteService,
               private userInterfaceService: UserInterfaceService,
               private userNavigationService: UserNavigationService,
+              private collectionDialogService: CollectionDialogService,
               private refresherService: RefresherService) {
 
-    this.title = 'Customers';
+    this.title = 'Clienti';
     this.btnEdit = userInterfaceService.Btn_Modifica;
     this.btnEdit.event = this.handleButtonEditClick;
     this.btnDelete = userInterfaceService.Btn_Cancella;
@@ -68,20 +70,27 @@ export class CustomerListPageComponent implements OnInit {
     });
   }
 
-  handleButtonDeleteClick = (item: any) => {
-    let request: GenericRequest<Az_ClienteDeleteInModel> = new GenericRequest<Az_ClienteDeleteInModel>(Az_ClienteDeleteInModel);
-    request.data.id = item.id;
-    this.azClienteService.Az_ClienteDelete(request).pipe(
-      map(() => {
-        this.refresherService.SharedParameterGestionePresenze_triggerRefresh();
-        this.loadData();
-        return true;
-      }),
-      catchError((error) => {
-        console.error('Errore durante la chiamata API:', error);
-        return [false];
-      })
-    ).subscribe();
+  handleButtonDeleteClick = async (item: any) => {
+
+    const result = await this.collectionDialogService.ConfirmCancelDialog('Confermi la cancellazione del cliente?');
+    if (result) {
+
+      let request: GenericRequest<Az_ClienteDeleteInModel> = new GenericRequest<Az_ClienteDeleteInModel>(Az_ClienteDeleteInModel);
+      request.data.id = item.id;
+      this.azClienteService.Az_ClienteDelete(request).pipe(
+        map(() => {
+          this.refresherService.SharedParameterGestionePresenze_triggerRefresh();
+          this.loadData();
+          return true;
+        }),
+        catchError((error) => {
+          console.error('Errore durante la chiamata API:', error);
+          return [false];
+        })
+        ).subscribe();
+
+    }
+
   }
 
   Filter(CurrFilter: any) {

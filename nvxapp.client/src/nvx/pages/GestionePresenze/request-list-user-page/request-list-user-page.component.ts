@@ -13,6 +13,7 @@ import { TimeSheetUtilityService } from '../../../Utility/GestionePresenze/time-
 import { StatoRichiestaShortTextPipe } from '../../../shared/pipe/GestionePresenze/stato-richiesta-short-text.pipe';
 import { TipoRichiestaToShortTextPipe } from '../../../shared/pipe/GestionePresenze/tipo-richiesta-to-short-text.pipe';
 import { TimeSheetService } from '../../../Utility/GestionePresenze/time-sheet.service';
+import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
 
 
 
@@ -36,6 +37,7 @@ export class RequestListUserPageComponent implements OnInit {
     public timeSheetService: TimeSheetService,
     private monthNavigatorService: MonthNavigatorService,
     private userInterfaceService: UserInterfaceService,
+    private collectionDialogService: CollectionDialogService,
     private dipGGTimbraturaUtilityService: TimeSheetUtilityService,
     private userNavigationService: UserNavigationService) {
 
@@ -78,25 +80,29 @@ export class RequestListUserPageComponent implements OnInit {
   ngOnInit() { }
 
 
-  handleButtonDeleteClick = (item: any) => {
-    let IdDip_GG_Richiesta: number[] = [];
-    IdDip_GG_Richiesta.push(item.id);
+  handleButtonDeleteClick = async (item: any) => {
 
-    let request: GenericRequest<Dip_GG_Richiesta_SetState_InModel> = new GenericRequest<Dip_GG_Richiesta_SetState_InModel>(Dip_GG_Richiesta_SetState_InModel);
+    const result = await this.collectionDialogService.ConfirmCancelDialog('Confermi la cancellazione della richiesta?');
+    if (result) {
 
-    if (item.richiestaStato == this.StatoRichiesta.Approvata && (item.revocaStato == null || (item.revocaStato !== null && item.revocaStato == this.StatoRichiesta.Cancellata) )  )
-      request.data.richiestaStato = StatoRichiesta.Immessa; //revoca
-    else
-      request.data.richiestaStato = StatoRichiesta.Cancellata;
+        let IdDip_GG_Richiesta: number[] = [];
+        IdDip_GG_Richiesta.push(item.id);
 
-    request.data.idDip_GG_Richiesta = IdDip_GG_Richiesta;
-    this.dipGGRichiestaService.SetState(request).subscribe(res => {
-      this.loadData();
-    });
+        let request: GenericRequest<Dip_GG_Richiesta_SetState_InModel> = new GenericRequest<Dip_GG_Richiesta_SetState_InModel>(Dip_GG_Richiesta_SetState_InModel);
 
-    //this.navCtrl.navigateForward('/justificationedit', {
-    //  state: { id: item.id }
-    //});
+        if (item.richiestaStato == this.StatoRichiesta.Approvata && (item.revocaStato == null || (item.revocaStato !== null && item.revocaStato == this.StatoRichiesta.Cancellata) )  )
+          request.data.richiestaStato = StatoRichiesta.Immessa; //revoca
+        else
+          request.data.richiestaStato = StatoRichiesta.Cancellata;
+
+        request.data.idDip_GG_Richiesta = IdDip_GG_Richiesta;
+        this.dipGGRichiestaService.SetState(request).subscribe(res => {
+          this.loadData();
+        });
+
+    }
+
+  
   }
 
   Filter(CurrFilter: any) {

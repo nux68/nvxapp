@@ -8,6 +8,7 @@ import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic
 import { ParAttivitaService } from '../../../ClientServer-Service/GestionePresenze/Par_Attivita/par-attivita.service';
 import { map, catchError } from 'rxjs';
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
+import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
 
 @Component({
   selector: 'app-activity-list-page',
@@ -28,6 +29,7 @@ export class ActivityListPageComponent implements OnInit {
     private azAttivitaService: ParAttivitaService,
     private userInterfaceService: UserInterfaceService,
     private userNavigationService: UserNavigationService,
+    private collectionDialogService: CollectionDialogService,
     private refresherService: RefresherService
   ) {
     this.btnEdit = userInterfaceService.Btn_Modifica;
@@ -64,20 +66,28 @@ export class ActivityListPageComponent implements OnInit {
     this.navCtrl.navigateForward('/activityedit', { state: { id: item.id } });
   }
 
-  handleButtonDeleteClick = (item: any) => {
-    let request: GenericRequest<Par_AttivitaDeleteInModel> = new GenericRequest<Par_AttivitaDeleteInModel>(Par_AttivitaDeleteInModel);
-    request.data.id = item.id;
-    return this.azAttivitaService.Par_AttivitaDelete(request).pipe(
-      map(() => {
-        this.refresherService.SharedParameterGestionePresenze_triggerRefresh();
-        this.loadData();
-        return true;
-      }),
-      catchError((error) => {
-        console.error('Errore durante la chiamata API:', error);
-        return [false];
-      })
-    ).subscribe();
+  handleButtonDeleteClick = async (item: any) => {
+
+    const result = await this.collectionDialogService.ConfirmCancelDialog('Confermi la cancellazione dell\'attività');
+    if (result) {
+
+        let request: GenericRequest<Par_AttivitaDeleteInModel> = new GenericRequest<Par_AttivitaDeleteInModel>(Par_AttivitaDeleteInModel);
+        request.data.id = item.id;
+        return this.azAttivitaService.Par_AttivitaDelete(request).pipe(
+          map(() => {
+            this.refresherService.SharedParameterGestionePresenze_triggerRefresh();
+            this.loadData();
+            return true;
+          }),
+          catchError((error) => {
+            console.error('Errore durante la chiamata API:', error);
+            return [false];
+          })
+          ).subscribe();
+    }
+
+    return true;
+
   }
 
   Filter(CurrFilter: any) {
