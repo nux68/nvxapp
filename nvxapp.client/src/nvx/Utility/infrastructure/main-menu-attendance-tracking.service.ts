@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { iMainMenuService, MainMenuItem, MenuType } from './main-menu.service';
+import { iMainMenuService, MainMenuItem, MenuType, WorkingMode } from './main-menu.service';
 
 @Injectable({
   providedIn: 'root'
@@ -50,5 +50,4 @@ export class MainMenuAttendanceTrackingService implements iMainMenuService {
       { menuType: MenuType.MenuItem, zorder: 6000, title: 'Richiesta timbratura'      , component: "RequestClockingUserPageComponent", url: '/requestclockinguser', icon: 'person' },
     ];
   }
-
 }
