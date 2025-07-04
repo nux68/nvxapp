@@ -7,6 +7,7 @@ import { PageToolbarComponent } from './components/infrastructure/page-toolbar/p
 import { FabMenuComponent } from './components/infrastructure/fab-menu/fab-menu.component';
 import { FormsModule } from '@angular/forms';
 import { PageButtonbarComponent } from './components/infrastructure/page-buttonbar/page-buttonbar.component';
+import { GenericDialogComponent } from './components/infrastructure/generic-dialog/generic-dialog.component';
 
 
 @NgModule({
@@ -14,9 +15,9 @@ import { PageButtonbarComponent } from './components/infrastructure/page-buttonb
     CommonModule,
     FormsModule,
     IonicModule,
-    GenericFilterPipe
+    GenericFilterPipe,
   ],
-  declarations: [BreadcrumbsImpersonateComponent, PageToolbarComponent, PageButtonbarComponent/*, FabMenuComponent*/],
-  exports: [BreadcrumbsImpersonateComponent, GenericFilterPipe, PageToolbarComponent, PageButtonbarComponent /*, FabMenuComponent*/]
+  declarations: [BreadcrumbsImpersonateComponent, PageToolbarComponent, PageButtonbarComponent, GenericDialogComponent/*, FabMenuComponent*/],
+  exports: [BreadcrumbsImpersonateComponent, GenericFilterPipe, PageToolbarComponent, PageButtonbarComponent, /*, FabMenuComponent*/]
 })
 export class SharedComponentInfrastructureModule { }
