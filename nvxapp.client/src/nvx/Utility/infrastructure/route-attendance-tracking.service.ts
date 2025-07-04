@@ -45,6 +45,8 @@ export class RouteAttendanceTrackingService {
       { path: 'seletionsedirepartopage', loadChildren: () => import('../../pages/GestionePresenze/_selection/seletion-sedi-reparto-page/seletion-sedi-reparto-page.module').then(m => m.SeletionSediRepartoPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
 
 
+      { path: 'userdepartmentedit', loadChildren: () => import('../../pages/GestionePresenze/user-department-edit-page/user-department-edit-page.module').then(m => m.UserDepartmentEditPageModule), canActivate: [RoleGuard4CompanyAdmin] },
+
       //admin
       { path: 'admintimesheet', loadChildren: () => import('../../pages/GestionePresenze/time-sheet-admin-page/time-sheet-admin-page.module').then(m => m.TimeSheetAdminModule), canActivate: [RoleGuard4CompanyAdmin] },
       { path: 'requestlistadmin', loadChildren: () => import('../../pages/GestionePresenze/request-list-admin-page/request-list-admin-page.module').then(m => m.RequestListAdminPageModule), canActivate: [RoleGuard4CompanyAdmin] },

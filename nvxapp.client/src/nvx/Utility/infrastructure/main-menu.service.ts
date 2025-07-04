@@ -119,7 +119,7 @@ export class MainMenuService implements iMainMenuService {
     else {
       switch (pageName) {
         case 'usercompanyedit':
-          return 'usercompanyedit';
+          return 'userdepartmentedit';
           break;
         case 'xx1':
           return 'xx1';
