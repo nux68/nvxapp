@@ -12,7 +12,6 @@ export class MainMenuAttendanceTrackingService implements iMainMenuService {
   public get Pages4Admin(): MainMenuItem[] { return []; }
   public get Pages4DealerAdmin(): MainMenuItem[] { return []; }
   public get Pages4FinancialAdvisorAdmin(): MainMenuItem[] { return []; }
-
   public get Pages4CompanyAdmin(): MainMenuItem[] {
 
     return [
@@ -50,4 +49,5 @@ export class MainMenuAttendanceTrackingService implements iMainMenuService {
       { menuType: MenuType.MenuItem, zorder: 6000, title: 'Richiesta timbratura'      , component: "RequestClockingUserPageComponent", url: '/requestclockinguser', icon: 'person' },
     ];
   }
+  public get GetWorkingMode(): WorkingMode { return WorkingMode.AttendanceTracking; }
 }
