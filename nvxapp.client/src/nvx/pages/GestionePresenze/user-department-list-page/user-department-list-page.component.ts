@@ -18,6 +18,7 @@ import { Az_SediReparto_Get4Admin_InModel, Az_SediRepartoModel } from '../../../
 import { Az_SediRepartoUser_GetAll_Period_InModel, Az_SediRepartoUserModel } from '../../../ClientServer-Service/GestionePresenze/Az_SediRepartoUser/Models/az-reparto-user-model';
 import { AzSediRepartoUserServiceService } from '../../../ClientServer-Service/GestionePresenze/Az_SediRepartoUser/az-sedi-reparto-user-service.service';
 import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
+import { MainMenuService } from '../../../Utility/infrastructure/main-menu.service';
 @Component({
   selector: 'app-user-department-list-page',
   templateUrl: './user-department-list-page.component.html',
@@ -38,6 +39,7 @@ export class UserDepartmentListPageComponent implements OnInit {
               private azSediRepartoService: AzSediRepartoService,
               private azSediRepartoUserServiceService: AzSediRepartoUserServiceService,
               private parameterService: ParameterService,
+              private mainMenuService: MainMenuService,
               private userInterfaceService: UserInterfaceService,
               private userNavigationService: UserNavigationService)
   {
@@ -119,12 +121,12 @@ export class UserDepartmentListPageComponent implements OnInit {
 
     });
 
-    
+    const pageName = this.mainMenuService.RedefineNameOfPages('usercompanyedit');
 
 
     this.fabMenuService.fabMenuItem = [
       new FabMenuItem('Elemento 1', 'add-circle-outline', () => {
-        this.navCtrl.navigateForward('/usercompanyedit', {
+        this.navCtrl.navigateForward('/' + pageName, {
           state: { id: 0 }
         });
       }),

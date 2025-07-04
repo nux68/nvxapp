@@ -10,6 +10,7 @@ import { ParameterService } from '../../../ClientServer-Service/Infrastructure/P
 import { UserLoadInModel } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-load-model';
 import { UserCompanyListModel, UserCompanyListInModel } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-company-model';
 import { RoleCode } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-roles-model';
+import { MainMenuService } from '../../../Utility/infrastructure/main-menu.service';
 
 @Component({
   selector: 'app-user-company-list-page',
@@ -29,6 +30,7 @@ export class UserCompanyListPageComponent implements OnInit {
     private accountService: AccountService,
     public fabMenuService: FabMenuService,
     private parameterService: ParameterService,
+              private mainMenuService: MainMenuService,
     private userInterfaceService: UserInterfaceService,
     private userNavigationService: UserNavigationService) {
 
@@ -48,10 +50,12 @@ export class UserCompanyListPageComponent implements OnInit {
 
     });
 
+    const pageName = this.mainMenuService.RedefineNameOfPages('usercompanyedit');
+
     this.fabMenuService.fabMenuItem = [
 
       new FabMenuItem('Elemento 1', 'add-circle-outline', () => {
-        this.navCtrl.navigateForward('/usercompanyedit', {
+        this.navCtrl.navigateForward('/' + pageName, {
           state: { id: 0 }
         });
       }),
