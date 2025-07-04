@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, TemplateRef } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { GenericDialogComponent } from './generic-dialog.component';
 import { ButtonItem } from '../../../../Utility/infrastructure/user-interface.service';
@@ -33,13 +33,15 @@ export class GenericDialogService {
     return data;
   }
 
+
+
 }
 
 
 
 export interface DialogOptions {
   title: string;
-  message: string;
+  message: string | TemplateRef<any>;
   buttons: ButtonItem[];
   backdropDismiss?: boolean; // Permette di chiudere il dialogo cliccando sullo sfondo
 }

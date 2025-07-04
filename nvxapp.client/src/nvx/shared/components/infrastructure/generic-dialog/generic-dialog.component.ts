@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, TemplateRef } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { ButtonItem } from '../../../../Utility/infrastructure/user-interface.service';
 
@@ -41,6 +41,11 @@ export class GenericDialogComponent {
     });
 
   }
+
+  public isTemplateRef(value: any): value is TemplateRef<any> {
+    return value instanceof TemplateRef;
+  }
+
 
   ///**
   // * Chiude il modale, ritornando il valore associato al bottone.

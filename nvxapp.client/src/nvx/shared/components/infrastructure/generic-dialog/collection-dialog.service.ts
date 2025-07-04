@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, TemplateRef } from '@angular/core';
 import { GenericDialogService } from './generic-dialog.service';
 import { ButtonItem, UserInterfaceService } from '../../../../Utility/infrastructure/user-interface.service';
 
@@ -12,7 +12,7 @@ export class CollectionDialogService {
   {
   }
 
-  public async ConfirmCancelDialog(message: string = 'Sei sicuro di voler procedere?'):Promise<any> {
+  public async ConfirmCancelDialog(message: string| TemplateRef<any> = 'Sei sicuro di voler procedere?'):Promise<any> {
 
     let TMP_buttonbar: ButtonItem[] = [];
 
