@@ -101,6 +101,50 @@ export class MainMenuService implements iMainMenuService {
     return mainMenuItem;
 
   }
+
+  public get GetMode(): WorkingMode {
+
+    return Math.max(
+      this.mainMenuInfrastructureService.GetWorkingMode,
+      this.mainMenuAttendanceTrackingService.GetWorkingMode
+    );
+
+  }
+
+  public RedefineNameOfPages(pageName: string): string {
+
+    if (this.GetMode == WorkingMode.Infrastructure) {
+      return pageName;
+    }
+    else {
+      switch (pageName) {
+        case 'usercompanyedit':
+          return 'usercompanyedit';
+          break;
+        case 'xx1':
+          return 'xx1';
+          break;
+        case 'xx2':
+          return 'xx2';
+          break;
+        case 'xx3':
+          return 'xx3';
+          break;
+        case 'xx4':
+          return 'xx4';
+          break;
+
+
+        default:
+          return pageName;
+          break;
+      }
+    }
+
+
+
+  }
+
 }
 
 export interface iMainMenuService {
