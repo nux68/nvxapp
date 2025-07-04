@@ -9,8 +9,6 @@
   <ion-card>
     <ion-card-content>
 
-      <!--<p>{{ message }}</p>-->
-
       <ng-container *ngIf="isTemplateRef(message); else stringMessage">
         <ng-container *ngTemplateOutlet="message"></ng-container>
       </ng-container>

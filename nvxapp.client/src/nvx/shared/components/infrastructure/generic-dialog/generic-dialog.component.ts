@@ -15,11 +15,9 @@ export class GenericDialogComponent {
   @Input() buttons: ButtonItem[] = [];
   @Input() local_buttons: ButtonItem[] = [];
 
-  get Title(): string { return "User"; }
-
+  
 
   constructor(private modalCtrl: ModalController) {
-
   }
 
   ionViewWillEnter() {
@@ -47,22 +45,6 @@ export class GenericDialogComponent {
   }
 
 
-  ///**
-  // * Chiude il modale, ritornando il valore associato al bottone.
-  // * @param button Il bottone cliccato
-  // */
-  //async onButtonClick(button: DialogButton) {
-  //  // Se è definito un handler, lo eseguiamo
-  //  if (button.handler) {
-  //    // Se l'handler ritorna `false`, non chiudiamo il modale
-  //    const result = await Promise.resolve(button.handler(button.value));
-  //    if (result === false) {
-  //      return;
-  //    }
-  //  }
-  //  // Chiudiamo il modale e passiamo il valore del bottone
-  //  this.modalCtrl.dismiss(button.value, button.role);
-  //}
 }
 
 
