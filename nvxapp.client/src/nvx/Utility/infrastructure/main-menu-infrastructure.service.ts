@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { iMainMenuService, MainMenuItem, MenuType } from './main-menu.service';
+import { iMainMenuService, MainMenuItem, MenuType, WorkingMode } from './main-menu.service';
 
 @Injectable({
   providedIn: 'root'
@@ -69,5 +69,7 @@ export class MainMenuInfrastructureService implements iMainMenuService{
       { menuType: MenuType.MenuItem, zorder: 500,  title: 'User Data', component: "UserPageComponent", url: '/user', icon: 'person' }
     ];
   }
+
+  public get GetWorkingMode(): WorkingMode {    return WorkingMode.Infrastructure;  }
 
 }

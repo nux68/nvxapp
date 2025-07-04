@@ -146,3 +146,11 @@ export enum MenuType {
   MenuNote = 2
 
 }
+
+
+export enum WorkingMode {
+
+  Infrastructure = 0,
+  AttendanceTracking = 1
+
+}
