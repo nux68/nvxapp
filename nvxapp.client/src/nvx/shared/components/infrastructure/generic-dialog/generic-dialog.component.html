@@ -1,0 +1,26 @@
+
+<app-page-toolbar [title]="title"
+                  [showFilter]="false"
+                  [showBreadcrumbs]="false">
+</app-page-toolbar>
+
+<ion-content [fullscreen]="true">
+
+  <ion-card>
+    <ion-card-content>
+
+      <ng-container *ngIf="isTemplateRef(message); else stringMessage">
+        <ng-container *ngTemplateOutlet="message"></ng-container>
+      </ng-container>
+      <ng-template #stringMessage>
+        <div [innerHTML]="message"></div>
+      </ng-template>
+
+    </ion-card-content>
+  </ion-card>
+
+</ion-content>
+
+<app-page-buttonbar [buttonbar]="local_buttons"></app-page-buttonbar>
+
+
