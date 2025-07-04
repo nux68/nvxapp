@@ -91,7 +91,8 @@ export class UserCompanyListPageComponent  implements OnInit {
   }
 
   handleButtonEditClick = (item: any) => {
-    this.navCtrl.navigateForward('/usercompanyedit', {
+    const pageName = this.mainMenuService.RedefineNameOfPages('usercompanyedit');
+    this.navCtrl.navigateForward('/' + pageName, {
       state: { id: item.idUserCompany }
     });
   }
