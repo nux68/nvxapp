@@ -20,11 +20,12 @@ export class MainMenuAttendanceTrackingService implements iMainMenuService {
       { menuType: MenuType.MenuItem, zorder: 2300,   title: 'Calendario'       , roles: ['CompanyAdmin']                     , component: "TimeSheetAdminPageComponent", url: '/admintimesheet', icon: 'ellipse' },
       { menuType: MenuType.MenuItem, zorder: 3000,   title: 'Utenti '          , roles: ['CompanyAdmin']                     , component: "UserDepartmentListPageComponent", url: '/userdepartmentlist', icon: 'people' },
 
-      { menuType: MenuType.MenuNote, zorder: 201000, title: 'Parametri'      , roles: ['CompanyPowerAdmin']                  , component: '', url: '', icon: '' },
-      { menuType: MenuType.MenuItem, zorder: 202000, title: 'Giustificativi' , roles: ['CompanyPowerAdmin']                  , component: "JustificationListPageComponent", url: '/justificationlist', icon: 'ellipse' },
-      { menuType: MenuType.MenuItem, zorder: 204000, title: 'Configurazione' , roles: ['CompanyPowerAdmin']                  , component: "CompanyCfgPageComponent", url: '/companycfgedit', icon: 'ellipse' },
+      { menuType: MenuType.MenuNote, zorder: 201000, title: 'Parametri'        , roles: ['CompanyPowerAdmin'], component: '', url: '', icon: '' },
+      { menuType: MenuType.MenuItem, zorder: 202000, title: 'Giustificativi'   , roles: ['CompanyPowerAdmin'], component: "JustificationListPageComponent", url: '/justificationlist', icon: 'ellipse' },
+      { menuType: MenuType.MenuItem, zorder: 203000, title: 'Causali'          , roles: ['CompanyPowerAdmin'], component: "CausaliListPageComponent", url: '/causalilist', icon: 'ellipse' },
+      { menuType: MenuType.MenuItem, zorder: 204000, title: 'Configurazione'   , roles: ['CompanyPowerAdmin'], component: "CompanyCfgPageComponent", url: '/companycfgedit', icon: 'ellipse' },
 
-      { menuType: MenuType.MenuNote, zorder: 205000, title: 'Gestione Commesse' , roles: ['CompanyPowerAdmin']                  , component: '', url: '', icon: '' },
+      { menuType: MenuType.MenuNote, zorder: 205000, title: 'Gestione Commesse' , roles: ['CompanyPowerAdmin'], component: '', url: '', icon: '' },
       { menuType: MenuType.MenuItem, zorder: 205100, title: 'Commesse'          , roles: ['CompanyPowerAdmin'], component: "CommessaListPageComponent", url: '/commessalist', icon: 'ellipse' },
       { menuType: MenuType.MenuItem, zorder: 205200, title: 'Clienti'           , roles: ['CompanyPowerAdmin'], component: "CustomerListPageComponent", url: '/customerlist', icon: 'people' },
       { menuType: MenuType.MenuItem, zorder: 205300, title: 'Reparti'           , roles: ['CompanyPowerAdmin'], component: "DepartmentListPageComponent", url: '/departmentlist', icon: 'ellipse' },

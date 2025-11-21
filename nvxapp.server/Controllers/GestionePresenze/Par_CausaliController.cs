@@ -33,7 +33,27 @@ namespace nvxapp.server.Controllers
             return res;
         }
 
-        
+        [Authorize]
+        [HttpPost]
+        [Route("Par_CausaliGet")]
+        public async Task<GenericResult<Par_CausaliGetOutModel>> Par_CausaliGet(GenericRequest<Par_CausaliGetInModel> inModel)
+        {
+            var res = await _par_CausaliService.Par_CausaliGet(inModel, false);
+
+            return res;
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("Par_CausaliPut")]
+        public async Task<GenericResult<Par_CausaliPutOutModel>> Par_CausaliPut(GenericRequest<Par_CausaliPutInModel> inModel)
+        {
+            var res = await _par_CausaliService.Par_CausaliPut(inModel, false);
+
+            return res;
+        }
+
+
 
     }
 
