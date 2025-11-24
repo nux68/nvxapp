@@ -8,15 +8,15 @@ namespace nvxapp.server.service.Mappers.Tenant.GestionePresenze
     {
         public Par_Causali_To_Par_CausaliModel_Mapper()
         {
-            CreateMap<Par_Causali, Par_CausaliModel>();
+            CreateMap<Par_Causali, Par_CausaliModel>().ReverseMap();;
         }
     }
 
-    public class Par_CausaliModel_To_Par_Causali_Mapper : Profile
-    {
-        public Par_CausaliModel_To_Par_Causali_Mapper()
-        {
-            CreateMap<Par_CausaliModel, Par_Causali>();
-        }
-    }
+    //public class Par_CausaliModel_To_Par_Causali_Mapper : Profile
+    //{
+    //    public Par_CausaliModel_To_Par_Causali_Mapper()
+    //    {
+    //        CreateMap<Par_CausaliModel, Par_Causali>();
+    //    }
+    //}
 }
