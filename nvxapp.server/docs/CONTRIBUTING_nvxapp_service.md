@@ -210,7 +210,7 @@ public class MyTabellaPutOutModel : ModelResult
 
 public class MyTabellaDeleteInModel : ModelResult
 {
-    public MyTabellaModel MyTabella { get; set; } = new MyTabellaModel();
+    public int Id { get; set; } = 0;
 }
 public class MyTabellaDeleteOutModel : ModelResult
 {
