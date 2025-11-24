@@ -1,0 +1,19 @@
+nvxapp.client		
+	src
+		nvx
+		  ClientServer-Service
+		  	GestionePresenze
+		  	Infrastructure
+		  pages
+		  	GestionePresenze
+		  	infrastructure
+    	Utility
+    	  GestionePresenze
+    	  infrastructure
+    	shared
+    		components
+    		  GestionePresenze
+    		  infrastructure
+    	pipe
+    	    GestionePresenze
+    		  infrastructure
