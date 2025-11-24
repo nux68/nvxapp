@@ -16,7 +16,7 @@ Questo documento fornisce linee guida per contribuire ai dati di nvxapp. Seguire
 
 
 ## Punti d'attenzione
- 1. Le tabelle nel context non vanno al plurale
+ 1. Il nome delle tabelle nel context non va al plurale
 
 
 

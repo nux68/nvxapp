@@ -132,6 +132,7 @@ Ecco un esempio di come definire un service che gestisce l'accesso alla tabella 
     ```linguaggio
     public virtual async Task<GenericResult<Par_CausaliOutModel>> GetAll(GenericRequest<Par_CausaliInModel> model, bool isSubProcess)
     ```
+ 5. Ogni metodo del service deve definire i prori dati per l'input e per l'output 
 
 
 
@@ -184,7 +185,7 @@ public class MyTabellaPutOutModel : ModelResult
 
 ## Punti d'attenzione
  1. Nei models le variabili che rappresentano le liste, non vanno messe al plurale
- 2. La classe che definisce il model di OUT della cancellazione deve essere come quella di OUD della Put
+ 
 
 
 - [Home](./CONTRIBUTING.md)
