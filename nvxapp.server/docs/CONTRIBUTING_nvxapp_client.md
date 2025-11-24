@@ -27,6 +27,68 @@ che si stia sviluppando codice comune o codice specifico per la gestione presenz
 ## Service
 I service che dialogano con il back end dovranno essere posizionati nella cartella `nvxapp.client/src/app/nvx/ClientServer-Service/` a seconda del branch corrente (Infrastructure o GestionePresenze).
 
+```linguaggio
+@Injectable({
+  providedIn: 'root'
+})
+export class MyTabellaService {
+
+  constructor(private http: HttpClient,
+    private authService: AuthService
+  ) { }
+
+  GetAll(model: GenericRequest<MyTabellaGetInAllModel>): Observable<GenericResult<MyTabellaGetOutAllModel >> {
+
+    return this.http.post<GenericResult<MyTabellaGetOutAllModel >>(environment.remoteData.apiUri + 'MyTabella/MyTabellaGetAll', model)
+      .pipe(
+        map(r => {
+          return r;
+        }
+        )
+      );
+
+  }
+
+  MyTabellaGet(model: GenericRequest<MyTabellaGetInModel>): Observable<GenericResult<MyTabellaGetOutModel>> {
+
+    return this.http.post<GenericResult<MyTabellaGetOutModel>>(environment.remoteData.apiUri + 'MyTabella/MyTabellaGet', model)
+      .pipe(
+          map(r => {
+            return r;
+          }
+        )
+      );
+
+  }
+
+  MyTabellaPut(model: GenericRequest<MyTabellaPutInModel>): Observable<GenericResult<MyTabellaPutOutModel>> {
+
+    return this.http.post<GenericResult<MyTabellaPutOutModel>>(environment.remoteData.apiUri + 'MyTabella/MyTabellaPut', model)
+      .pipe(
+          map(r => {
+              return r;
+            }
+          )
+      );
+
+  }
+  
+  MyTabellaDelete(model: GenericRequest<MyTabellaDeleteInModel>): Observable<GenericResult<MyTabellaDeleteOutModel>> {
+
+    return this.http.post<GenericResult<MyTabellaDeleteOutModel>>(environment.remoteData.apiUri + 'MyTabella/MyTabellaDelete', model)
+      .pipe(
+          map(r => {
+              return r;
+            }
+          )
+      );
+
+  }
+
+}
+```
+
+
 
 ## Pagine
     
