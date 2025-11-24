@@ -124,10 +124,17 @@ Ecco un esempio di come definire un service che gestisce l'accesso alla tabella 
 
 ```
 
+## Punti d'attenzione
+ 1. Lo scambio dati con il client, vengono sempre utilizzati dei modelli (Model) specifici che stanno nella sottocartella \Models di ogni service.
+ 2. GenericResult e GenericRequest sono classi che avvolgono i dati in ingresso e in uscita per le chiamate ai servizi.
+ 3. Il nome del modelli per il trasferimento dei dati tra client e server non deve terminare con Dto ma con Models
+ 4. La firma dei metodi del ha sempre questo formato : 
+    ```linguaggio
+    public virtual async Task<GenericResult<Par_CausaliOutModel>> GetAll(GenericRequest<Par_CausaliInModel> model, bool isSubProcess)
+    ```
 
-<u>Attenzione !!! </u> per lo scambio dati con il client, vengono sempre utilizzati dei modelli (Model) specifici che stanno nella sottocartella \Models di ogni service.
 
-In oltre, `GenericResult e GenericRequest sono classi che avvolgono i dati in ingresso e in uscita per le chiamate ai servizi.`
+
 
 
 ## Models
