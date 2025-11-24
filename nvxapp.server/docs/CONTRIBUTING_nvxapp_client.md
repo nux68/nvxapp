@@ -23,7 +23,13 @@ Queste macro categorie vengono siddivise in sottocartelle a seconda del branch c
 che si stia sviluppando codice comune o codice specifico per la gestione presenze.
 
 
-## Specifiche di sviluppo    
+# Specifiche di sviluppo
+## Service
+I service che dialogano con il back end dovranno essere posizionati nella cartella `nvxapp.client/src/app/nvx/ClientServer-Service/` a seconda del branch corrente (Infrastructure o GestionePresenze).
+
+
+## Pagine
+    
 1) Tutte la pagine che espogono una toolbar  (che siano liste o form di inserimento dati) dovranno utilizzare il componente `app-page-toolbar` 
 
 
