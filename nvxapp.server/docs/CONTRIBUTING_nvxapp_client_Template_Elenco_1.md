@@ -165,68 +165,6 @@ export class CausaliListPageComponent implements OnInit {
 ```
 
 
-## HTML
-```linguaggio
-
-<app-page-toolbar [title]="title"
-                  [showFilter]="true"
-                  [showBreadcrumbs]="true"
-                  (ev_Filter)="Filter($event)">
-</app-page-toolbar>
-
-<ion-content [fullscreen]="true">
-
-  <ion-card>
-    <ion-card-content>
-
-      <ion-grid *ngIf="par_CausaliList!=null">
-
-        <ion-row *ngFor="let item of getAll() | genericFilter: 'descrizione' : searchText" class="nvx-ion-row-4table">
-
-          <ion-item-sliding class="ion-hide-sm-up">
-            <ion-item>
-              <ion-icon [name]="isAdmin(item) ? 'server-outline' : 'server-outline'"></ion-icon>
-              <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
-                <h2>{{ item.descrizione }}</h2>
-                <p>{{ item.codice }}</p>
-              </ion-label>
-            </ion-item>
-
-            <ion-item-options side="end">
-              <ion-item-option color="{{btnEdit.color}}" (click)="btnEdit.event(item)">
-                <ion-icon slot="start" name="{{btnEdit.image}}"></ion-icon>
-                {{ btnEdit.text }}
-              </ion-item-option>
-
-            </ion-item-options>
-          </ion-item-sliding>
-
-
-          <ion-col size="10" class="ion-hide-sm-down">
-            <ion-icon [name]="isAdmin(item) ? 'server-outline' : 'server-outline'"></ion-icon>
-            <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
-              {{ item.descrizione }}
-            </ion-label>
-          </ion-col>
-          <ion-col size="2" class="ion-hide-sm-down">
-            <ion-button size="small" fill="outline" shape="round" (click)="btnEdit.event(item)" color="{{btnEdit.color}}">
-              <ion-icon name="{{btnEdit.image}}"></ion-icon>
-              &nbsp;{{btnEdit.text}}
-            </ion-button>
-          </ion-col>
-
-        </ion-row>
-
-      </ion-grid>
-
-    </ion-card-content>
-  </ion-card>
-
-</ion-content>
-
-
-
-```
 
 
 ## CSS
