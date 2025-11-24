@@ -22,7 +22,10 @@ Le classi che definiscono le entita per il database derivano da BaseEntity
 ```linguaggio
 public class MyTabella : BaseEntity
 {
-   // altri campi della tabella
+   /* campi della tabella  */
+   public int IdAz_Anagrafica { get; set; }
+   public string? Codice { get; set; }
+   public string? Descrizione { get; set; }
 }
 ```
 Vengono posizionate nella sottocartella `Entities\public` se contengono dati comuni o nella sottocartella `Entities\Tenant`  se sono dedicate a un argomento specifico es GestionePresenze (comunque in fase di generazione , tenere sempre presente il branch corrente)

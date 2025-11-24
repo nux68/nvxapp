@@ -27,26 +27,10 @@ This document provides guidelines for contributing to the nvxapp project. Follow
 - Quando il branch corrente è `AttendanceTracking` o `AttendanceTracking_Dev`, la creazione dei nuovi fileavviene solo nelle cartelle `GestionePresenze` dell argomento opportuno , a seconda che stia creando files per data,service,page ecc.
 
 
-**sadeawseqw eqweqwe**
-*sadeawseqw eqweqwe*
 
-```linguaggio
-{
-  "chiave": "valore"
-}
-```
-
-| Colonna 1 | Colonna 2 |
-|-----------|-----------|
-| Valore A  | Valore B  |
-| Valore C  | Valore D  |
-
----
-***
-> Una citazione famosa
 
 - [Infrastruttura](./CONTRIBUTING_infrastruttura.md)
-- [Solution Client](./CONTRIBUTING_solution_client.md)
+- [Solution Client](./CONTRIBUTING_nvxapp_client.md)
 - [Solution Server](./CONTRIBUTING_nvxapp_server.md)
 - [Solution Data](./CONTRIBUTING_nvxapp_data.md)
 - [Solution Service](./CONTRIBUTING_nvxapp_service.md)
