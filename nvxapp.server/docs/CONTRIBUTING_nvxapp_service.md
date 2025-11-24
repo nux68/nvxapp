@@ -181,3 +181,10 @@ public class MyTabellaPutOutModel : ModelResult
 }
 
 ```
+
+## Punti d'attenzione
+ 1. Nei models le variabili che rappresentano le liste, non vanno messe al plurale
+ 2. La classe che definisce il model di OUT della cancellazione deve essere come quella di OUD della Put
+
+
+- [Home](./CONTRIBUTING.md)
