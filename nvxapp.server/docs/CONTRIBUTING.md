@@ -45,9 +45,9 @@ This document provides guidelines for contributing to the nvxapp project. Follow
 ***
 > Una citazione famosa
 
-- [Infrastruttura Guidelines](./CONTRIBUTING_infrastruttura.md)
-- [Solution client Guidelines](./CONTRIBUTING_solution_client.md)
-- [Solution server](./CONTRIBUTING_nvxapp_server.md)
-- [Solution data](./CONTRIBUTING_nvxapp_data.md)
-- [Solution service Guidelines](./CONTRIBUTING_nvxapp_service.md)
+- [Infrastruttura](./CONTRIBUTING_infrastruttura.md)
+- [Solution Client](./CONTRIBUTING_solution_client.md)
+- [Solution Server](./CONTRIBUTING_nvxapp_server.md)
+- [Solution Data](./CONTRIBUTING_nvxapp_data.md)
+- [Solution Service](./CONTRIBUTING_nvxapp_service.md)
 
