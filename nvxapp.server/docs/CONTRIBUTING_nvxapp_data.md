@@ -15,6 +15,12 @@ Questo documento fornisce linee guida per contribuire ai dati di nvxapp. Seguire
 - `Cartella Entities`: La cartelle Entities è composta da piu sotto cartelle. In Infrastructure ci canno le entità comuni, in Public\Tenant\GestionePresenze ci sono le entità specifiche per la gestione presenze.
 
 
+## Punti d'attenzione
+ 1. Le tabelle nel context non vanno al plurale
+
+
+
+
 ## Entità
 
 Le classi che definiscono le entita per il database derivano da BaseEntity
@@ -53,8 +59,13 @@ public class MyTabellaRepository : Repository<ApplicationDbContext, MyTabella>, 
 I repository vengono posizionate nella sottocartella `Repositories\public` se contengono dati comuni o nella sottocartella `Repositories\Tenant`  se sono dedicate a un argomento specifico es GestionePresenze (comunque in fase di generazione , tenere sempre presente il branch corrente)
 
 
+## Punti d'attenzione
+ 1. La definizione dell interface del repository deve essere sempre posizionata nello stesso file della classe che implementa il repository
 
 
+
+
+- [Home](./CONTRIBUTING.md)
 
 
 

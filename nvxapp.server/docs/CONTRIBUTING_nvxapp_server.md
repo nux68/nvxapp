@@ -72,3 +72,4 @@ public class MyTabellaController : NvxControllerBase
 
 I controller vengono posizionate nella sottocartella `Controllers\Infrastructure` se espongono metodi comuni o nella sottocartella `Controllers\GestionePresenze`  se sono dedicate a un argomento specifico es GestionePresenze (comunque in fase di generazione , tenere sempre presente il branch corrente)
 
+- [Home](./CONTRIBUTING.md)
