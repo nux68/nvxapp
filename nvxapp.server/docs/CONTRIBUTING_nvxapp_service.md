@@ -113,6 +113,28 @@ Ecco un esempio di come definire un service che gestisce l'accesso alla tabella 
                 return retVal;
             }, isSubProcess);
         }
+
+
+        public virtual async Task<GenericResult<MyTabellaDeleteOutModel>> MyTabellaDelete(GenericRequest<MyTabellaDeleteInModel> model, bool isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                MyTabellaDeleteOutModel retVal = new MyTabellaDeleteOutModel();
+                var par_Attivita = await _myTabellaRepository.FindByIdAsync(model.Data.Id);
+                if (par_Attivita != null)
+                {
+                    await _myTabellaRepository.DeleteAsync(par_Attivita);
+                    myTabella = _mapper.Map<MyTabella>(model.Data.MyTabella);
+                }
+                else
+                {
+                    retVal.AddMessage($"MyTabella con Id {model.Data.Id} non trovata.", MessageType.Warning);
+                }
+                await Task.Delay(DelayAsyncMethod);
+                return retVal;
+            }, isSubProcess);
+        }
+
     }
 
     public interface IMyTabellaService : IServiceBase
@@ -120,6 +142,7 @@ Ecco un esempio di come definire un service che gestisce l'accesso alla tabella 
         public Task<GenericResult<MyTabellaGetOutAllModel>> MyTabellaGetAll(GenericRequest<MyTabellaGetInAllModel> model, bool isSubProcess);
         public Task<GenericResult<MyTabellaGetOutModel>> MyTabellaGet(GenericRequest<MyTabellaGetInModel> model, bool isSubProcess);
         public Task<GenericResult<MyTabellaPutOutModel>> MyTabellaPut(GenericRequest<MyTabellaPutInModel> model, bool isSubProcess);
+        public Task<GenericResult<MyTabellaDeleteOutModel>> MyTabellaDeleteOutModel(GenericRequest<MyTabellaDeleteInModel> model, bool isSubProcess);
     }
 
 ```
@@ -164,6 +187,7 @@ public class MyTabellaGetOutAllModel : ModelResult
     }
 }
 
+
 public class MyTabellaGetInModel
 {
     public int Id { get; set; } = 0;
@@ -172,11 +196,23 @@ public class MyTabellaGetOutModel : ModelResult
 {
     public MyTabellaModel MyTabella { get; set; } = new MyTabellaModel();
 }
+
+
 public class MyTabellaPutInModel : ModelResult
 {
     public MyTabellaModel MyTabella { get; set; } = new MyTabellaModel();
 }
 public class MyTabellaPutOutModel : ModelResult
+{
+    public MyTabellaModel MyTabella { get; set; } = new MyTabellaModel();
+}
+
+
+public class MyTabellaDeleteInModel : ModelResult
+{
+    public MyTabellaModel MyTabella { get; set; } = new MyTabellaModel();
+}
+public class MyTabellaDeleteOutModel : ModelResult
 {
     public MyTabellaModel MyTabella { get; set; } = new MyTabellaModel();
 }
