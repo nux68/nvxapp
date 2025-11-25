@@ -5,6 +5,7 @@ This document provides guidelines for contributing to the nvxapp project. Follow
 ## Architectural Guidelines
 
 
+
 # Solution Structure
 ### Il progetto è organizzato in più soluzioni. Le soluzioni principali sono:
 - `nvxapp.server`: Contiene il backend dell'applicazione.
@@ -29,7 +30,7 @@ This document provides guidelines for contributing to the nvxapp project. Follow
 
 
 
-- [Infrastruttura](./CONTRIBUTING_infrastruttura.md)
+- [Linee guida ](./CONTRIBUTING_infrastruttura.md)
 - [Solution Client](./CONTRIBUTING_nvxapp_client.md)
 - [Solution Server](./CONTRIBUTING_nvxapp_server.md)
 - [Solution Data](./CONTRIBUTING_nvxapp_data.md)

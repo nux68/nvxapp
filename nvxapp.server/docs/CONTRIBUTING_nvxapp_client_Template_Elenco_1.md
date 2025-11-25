@@ -9,7 +9,6 @@ Questo documento fornisce linee guida per creare una pagina di elenco (lista) ne
 - [Home](./CONTRIBUTING.md)
 
 
-
 ## Componet
 ```linguaggio
 

@@ -2,6 +2,7 @@
 
 Questo documento fornisce linee guida per contribuire ai dati di nvxapp. Seguire queste istruzioni per garantire che i vostri contributi siano conformi agli standard del progetto.
 
+
 ## Architectural Guidelines
 - **Database**: Il progetto utilizza un Db postgreSQL
 - **Accesso**: Mediante entity framework core
@@ -17,24 +18,38 @@ Questo documento fornisce linee guida per contribuire ai dati di nvxapp. Seguire
 
 ## Punti d'attenzione
  1. Il nome delle tabelle nel context non va al plurale
-
-
+ 2. le entita vanno aggiunte ad dbcontext con le key public virtual 
+ 3. Prima di generare le classi Entity, è fondamantale verificare il branch corrente (Infrastructure o GestionePresenze) e posizionare le entita nella cartella corretta
+ 4. Se il branch corrente è Infrastructure o Infrastructure_Dev  posizionare le entita nella cartella nvxapp.server.data\Entities\Public con namespace namespace nvxapp.server.data.Entities.Public
+ 5. Se il branch corrente è GestionePresenze o GestionePresenze_Dev posizionare le entita nella cartella nvxapp.server.data\Entities\Tenant\GestionePresenze con namespace nvxapp.server.data.Entities.Tenant    
 
 
 ## Entità
 
-Le classi che definiscono le entita per il database derivano da BaseEntity
+Le classi che definiscono le entita per il database derivano da BaseEntity prendere come esempio l' entità riportata di seguito
 
 ```linguaggio
-public class MyTabella : BaseEntity
+using nvxapp.server.data.Entities.Public;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace nvxapp.server.data.Entities.Tenant
 {
-   /* campi della tabella  */
-   public int IdAz_Anagrafica { get; set; }
-   public string? Codice { get; set; }
-   public string? Descrizione { get; set; }
+    public class MyTabella : BaseEntity
+    {
+       /* campi della tabella  */
+       public int IdAz_Anagrafica { get; set; }
+       public string? Codice { get; set; }
+       public string? Descrizione { get; set; }
+    }
 }
 ```
-Vengono posizionate nella sottocartella `Entities\public` se contengono dati comuni o nella sottocartella `Entities\Tenant`  se sono dedicate a un argomento specifico es GestionePresenze (comunque in fase di generazione , tenere sempre presente il branch corrente)
+
+Dopo la creazione della entità, aggiungere la tabella al DbContext
+```linguaggio
+    public virtual DbSet<MyTabella> MyTabella { get; set; }
+```
+e creare la migrazione per aggiornare il database
 
 
 ## Repository
@@ -42,26 +57,43 @@ Il Repository è il componente utilizzato per accedere al database
 
 Creare un repository (che deriva dalla classe Repository) per ogni entità definita
 ```linguaggio
-public class MyTabellaRepository : Repository<ApplicationDbContext, MyTabella>, IMyTabellaRepository
-{
-    public MyTabellaRepository(ApplicationDbContext dbContext,
-                               IServiceProvider provider,
-                               IHttpContextAccessor httpContextAccessor) : base(dbContext, provider, httpContextAccessor)
-    {
-    }
-}
-    public interface IMyTabellaRepository : IRepository<MyTabella>
-{
 
+using nvxapp.server.data.Entities.Tenant;
+using nvxapp.server.data.Entities.Public;
+using nvxapp.server.data;
+using nvxapp.server.data.Repositories;
+using nvxapp.server.data.Repositories.Tenant;
+using nvxapp.server.data.Repositories.Public;
+using System;
+using nvxapp.server.data.Interfaces;
+using nvxapp.server.data.Infrastructure;
+
+namespace nvxapp.server.data.Repositories.Tenant.GestionePresenze
+{
+    public class MyTabellaRepository : Repository<ApplicationDbContext, MyTabella>, IMyTabellaRepository
+    {
+        public MyTabellaRepository(ApplicationDbContext dbContext,
+                                   IServiceProvider provider,
+                                   IHttpContextAccessor httpContextAccessor) : base(dbContext, provider, httpContextAccessor)
+        {
+        }
+    }
+        public interface IMyTabellaRepository : IRepository<MyTabella>
+    {
+
+    } 
 }
+
+
+
 ```
 
-I repository vengono posizionate nella sottocartella `Repositories\public` se contengono dati comuni o nella sottocartella `Repositories\Tenant`  se sono dedicate a un argomento specifico es GestionePresenze (comunque in fase di generazione , tenere sempre presente il branch corrente)
+I repository vengono posizionate nella sottocartella `nvxapp.server.data\Repositories\public` se contengono dati comuni o nella sottocartella `nvxapp.server.data\Repositories\Tenant\GestionePresenze`  se sono dedicate a un argomento specifico es GestionePresenze (comunque in fase di generazione , tenere sempre presente il branch corrente)
 
 
-## Punti d'attenzione
+## Punti d'attenzione Repository
  1. La definizione dell interface del repository deve essere sempre posizionata nello stesso file della classe che implementa il repository
-
+ 2. Il namespace del repository deve rispecchiare la cartella in cui viene posizionato ad esempio nvxapp.server.data.Repositories.Tenant.GestionePresenze
 
 
 
