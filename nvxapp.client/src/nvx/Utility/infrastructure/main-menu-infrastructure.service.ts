@@ -10,7 +10,8 @@ export class MainMenuInfrastructureService implements iMainMenuService{
 
   public get Pages4SuperUser(): MainMenuItem[] {
     return [
-      { menuType: MenuType.MenuHeader, zorder: 0, title: 'TITOLO MENU', component: '', url: '', icon: '' },
+      //{ menuType: MenuType.MenuHeader, zorder: 0, title: 'TITOLO MENU', component: '', url: '', icon: '' },
+      { menuType: MenuType.MenuHeader, zorder: 0, title: 'Menu superuser', component: '', url: '', icon: '' },
       { menuType: MenuType.MenuItem, zorder: 100, title: 'SuperUser', component: "SuperUserPageComponent", url: '/superuser', icon: 'triangle' },
       { menuType: MenuType.MenuItem, zorder: 200, title: 'Dealers', component: "DealerListPageComponent", url: '/dealerlist', icon: 'list-circle' },
       { menuType: MenuType.MenuItem, zorder: 300, title: 'Users', component: "UserListPageComponent", url: '/userlist', icon: 'list-circle' }
