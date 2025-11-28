@@ -163,7 +163,8 @@ export interface iMainMenuService {
 export class MainMenuItem {
 
   menuType: MenuType;
-  zorder: number; 
+  zorder: number;
+  group: number; 
 
   title: string;
   component: string;
@@ -171,9 +172,10 @@ export class MainMenuItem {
   icon: string;
   roles?: string[]; // aggiunta proprietà opzionale per i ruoli
 
-  constructor(menuType: MenuType, zorder: number,title: string, component: string, url: string, icon: string, roles?: string[]) {
+  constructor(menuType: MenuType, zorder: number, group: number,title: string, component: string, url: string, icon: string, roles?: string[]) {
     this.menuType = menuType;
     this.zorder = zorder;
+    this.group = zorder;
     this.title = title;
     this.component = component;
     this.url = url;
@@ -185,9 +187,10 @@ export class MainMenuItem {
 
 export enum MenuType {
 
-  MenuItem = 0,
   MenuHeader = 1,
-  MenuNote = 2
+  MenuNote = 2,
+  MenuItem = 0,
+  
 
 }
 

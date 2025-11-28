@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, DoCheck, OnInit } from '@angular/core';
 import { AccountService } from '../nvx/ClientServer-Service/Infrastructure/Account/account.service';
 import { AuthService } from '../nvx/Utility/infrastructure/auth.service';
 import { UserNavigationService } from '../nvx/Utility/infrastructure/user-navigation.service';
 import { SignalrService } from '../nvx/Utility/infrastructure/signalr.service';
 import { environment } from '../environments/environment';
 import { MainMenuItem, MainMenuService, MenuType } from '../nvx/Utility/infrastructure/main-menu.service';
+import { MainMenuInfrastructureService } from '../nvx/Utility/infrastructure/main-menu-infrastructure.service';
 
 
 @Component({
@@ -13,7 +14,7 @@ import { MainMenuItem, MainMenuService, MenuType } from '../nvx/Utility/infrastr
   styleUrls: ['app.component.scss'],
   standalone: false,
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, DoCheck {
 
   public appPages4SuperUser: MainMenuItem[] = [];
   public appPages4Admin: MainMenuItem[] = [];
@@ -22,7 +23,26 @@ export class AppComponent implements OnInit {
   public appPages4CompanyAdmin: MainMenuItem[] = [];
   public appPages4User: MainMenuItem[] = [];
 
+  public groupedCompanyAdminMenu: GroupMainMenuItem[] = [];
+  public groupedFinancialAdvisorAdminMenu: GroupMainMenuItem[] = [];
+  public groupedDealerAdminMenu: GroupMainMenuItem[] = [];
+  public groupedAdminMenu: GroupMainMenuItem[] = [];
+  public groupedSuperUserMenu: GroupMainMenuItem[] = [];
+  public groupedUserMenu: GroupMainMenuItem[] = [];
+  public selectedMenu: string[] = [(this.mainMenuInfrastructureService.GetMenuHeaderMenu(this.mainMenuService.Pages4User)).title];
   
+  IsInGroupCompanyAdmin: boolean = false;
+  IsInGroupDealerAdmin: boolean = false;
+  IsSuperUser: boolean = false;
+  IsInGroupFinancialAdvisorAdmin: boolean = false;
+  IsCompanyAdmin: boolean = false;
+  IsInGroupAdmin: boolean = false;
+  IsUser: boolean = false;
+
+
+  
+
+  private lastAuthStatus: boolean = false;
 
   public appPages = [
 
@@ -38,7 +58,8 @@ export class AppComponent implements OnInit {
   constructor(public authService: AuthService,
               public userNavigationService: UserNavigationService,
               public signalrService: SignalrService,
-              private mainMenuService: MainMenuService
+              private mainMenuService: MainMenuService,
+              private mainMenuInfrastructureService: MainMenuInfrastructureService
               )
   {
 
@@ -48,6 +69,10 @@ export class AppComponent implements OnInit {
     this.appPages4FinancialAdvisorAdmin = this.mainMenuService.Pages4FinancialAdvisorAdmin;
     this.appPages4CompanyAdmin = this.mainMenuService.Pages4CompanyAdmin;
     this.appPages4User = this.mainMenuService.Pages4User;
+
+    
+
+    
   }
 
   ngOnInit() {
@@ -70,6 +95,64 @@ export class AppComponent implements OnInit {
 
       });
     }
+
+    this.authService.Roles$.subscribe(x => {
+      this.groupedCompanyAdminMenu = this.getGroupedCompanyAdminMenu();
+      this.groupedFinancialAdvisorAdminMenu = this.getGroupedFinancialAdvisorAdmin();
+      this.groupedDealerAdminMenu = this.getGroupedDealerAdmin();
+      this.groupedAdminMenu = this.getGroupedAdmin();
+      this.groupedSuperUserMenu = this.getGroupedSuperUser();
+      this.groupedUserMenu = this.getGroupedUser();
+
+      
+
+      
+      
+    });
+
+  }
+
+  
+  ngDoCheck(): void {
+
+
+    if (this.IsSuperUser !== this.authService.IsSuperUser) {
+      this.IsSuperUser = this.authService.IsSuperUser;
+      if (this.IsSuperUser)
+        this.selectedMenu = [(this.mainMenuInfrastructureService.GetMenuHeaderMenu(this.mainMenuService.Pages4SuperUser)).title ];
+    }
+
+    if (this.IsInGroupAdmin !== this.authService.IsInGroupAdmin) {
+      this.IsInGroupAdmin = this.authService.IsInGroupAdmin;
+      if (this.IsInGroupAdmin)
+        this.selectedMenu = [(this.mainMenuInfrastructureService.GetMenuHeaderMenu(this.mainMenuService.Pages4Admin)).title ];
+    }
+
+    if (this.IsInGroupDealerAdmin !== this.authService.IsInGroupDealerAdmin) {
+      this.IsInGroupDealerAdmin = this.authService.IsInGroupDealerAdmin;
+      if (this.IsInGroupDealerAdmin)
+        this.selectedMenu = [(this.mainMenuInfrastructureService.GetMenuHeaderMenu(this.mainMenuService.Pages4DealerAdmin)).title];
+    }
+
+    if (this.IsInGroupFinancialAdvisorAdmin !== this.authService.IsInGroupFinancialAdvisorAdmin) {
+      this.IsInGroupFinancialAdvisorAdmin = this.authService.IsInGroupFinancialAdvisorAdmin;
+      if (this.IsInGroupFinancialAdvisorAdmin)
+        this.selectedMenu = [(this.mainMenuInfrastructureService.GetMenuHeaderMenu(this.mainMenuService.Pages4FinancialAdvisorAdmin)).title];
+    }
+
+    if (this.IsInGroupCompanyAdmin !== this.authService.IsInGroupCompanyAdmin) {
+      this.IsInGroupCompanyAdmin = this.authService.IsInGroupCompanyAdmin;
+      if (this.IsInGroupCompanyAdmin)
+        this.selectedMenu = [(this.mainMenuInfrastructureService.GetMenuHeaderMenu(this.mainMenuService.Pages4CompanyAdmin)).title];
+    }
+
+    if (this.IsUser !== this.authService.IsUser) {
+      this.IsUser = this.authService.IsUser;
+      if (this.IsUser)
+        this.selectedMenu = [(this.mainMenuInfrastructureService.GetMenuHeaderMenu(this.mainMenuService.Pages4User)).title];
+    }
+
+
   }
 
   public showPage4SuperUser(component: string): boolean {
@@ -242,4 +325,81 @@ export class AppComponent implements OnInit {
     return notes[noteIndex] ? notes[noteIndex].title : '';
   }
 
+  groupMenu(menuItems: MainMenuItem[]): GroupMainMenuItem[] {
+
+    const groups: GroupMainMenuItem[] = [];
+
+    // 1. Estrai tutti i valori di 'group' in un array
+    const allGroups = menuItems.map(item => item.group);
+    // Risultato: [0, 0, 1, 1, 1]
+
+    // 2. Usa un Set per ottenere solo i valori unici e riconvertilo in array
+    const uniqueGroups = [...new Set(allGroups)];
+
+    for (const groupNumber of uniqueGroups) {
+
+      
+      const header = menuItems.find(item => item.group === groupNumber && item.menuType === MenuType.MenuHeader);
+      const items = menuItems.filter(item => item.group === groupNumber && item.menuType === MenuType.MenuItem);
+
+      // 5. Se esiste un header, crea il nuovo oggetto gruppo e aggiungilo all'array
+      if (header) {
+        const newGroup = new GroupMainMenuItem(header, items);
+        groups.push(newGroup);
+      }
+
+    }
+
+
+    return groups;
+
+  }
+
+  public getGroupedCompanyAdminMenu(): GroupMainMenuItem[] {
+    const menuItems = this.getMenuItem4CompanyAdmin();
+    return this.groupMenu(menuItems);
+  }
+
+  public getGroupedFinancialAdvisorAdmin(): GroupMainMenuItem[] {
+    const menuItems = this.appPages4FinancialAdvisorAdmin;
+    return this.groupMenu(menuItems);
+  }
+
+  public getGroupedDealerAdmin(): GroupMainMenuItem[] {
+    const menuItems = this.appPages4DealerAdmin;
+    return this.groupMenu(menuItems);
+  }
+
+  public getGroupedAdmin(): GroupMainMenuItem[] {
+    const menuItems = this.appPages4Admin;
+    return this.groupMenu(menuItems);
+  }
+
+  public getGroupedSuperUser(): GroupMainMenuItem[] {
+    const menuItems = this.appPages4SuperUser;
+    return this.groupMenu(menuItems);
+  }
+
+  public getGroupedUser(): GroupMainMenuItem[] {
+    const menuItems = this.appPages4User;
+    return this.groupMenu(menuItems);
+  }
+
+  
+
+}
+
+
+
+export class GroupMainMenuItem {
+
+  menuHeader: MainMenuItem;
+  menuItem:   MainMenuItem[];
+  
+
+  constructor(menuHeader: MainMenuItem, menuItem: MainMenuItem[]) {
+    this.menuHeader = menuHeader;
+    this.menuItem = menuItem;
+    
+  }
 }
