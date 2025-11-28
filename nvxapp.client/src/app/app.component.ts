@@ -381,8 +381,20 @@ export class AppComponent implements OnInit, DoCheck {
   }
 
   public getGroupedUser(): GroupMainMenuItem[] {
-    const menuItems = this.appPages4User;
-    return this.groupMenu(menuItems);
+
+
+    let currRole = [];
+
+    if (this.authService.IsUser) {
+      currRole.push("User");
+    }
+
+    let retVal = this.appPages4User.filter(item =>
+      !item.roles || item.roles.some(role => currRole.includes(role))
+    );
+
+
+    return this.groupMenu(retVal);
   }
 
   
