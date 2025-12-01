@@ -149,7 +149,7 @@ export class AppComponent implements OnInit, DoCheck {
     if (this.IsUser !== this.authService.IsUser) {
       this.IsUser = this.authService.IsUser;
       if (this.IsUser)
-        this.selectedMenu = [(this.mainMenuInfrastructureService.GetMenuHeaderMenu(this.mainMenuService.Pages4User)).title];
+        this.selectedMenu = [(this.mainMenuInfrastructureService.GetMenuHeaderMenu(this.mainMenuService.Pages4User,1)).title];
     }
 
 

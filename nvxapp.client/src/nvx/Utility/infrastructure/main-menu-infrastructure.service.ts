@@ -8,9 +8,13 @@ export class MainMenuInfrastructureService implements iMainMenuService{
 
   constructor() { }
 
-  public  GetMenuHeaderMenu(MainMenuItem: MainMenuItem[]): MainMenuItem|undefined {
+  public GetMenuHeaderMenu(MainMenuItem: MainMenuItem[], group: number = 0): MainMenuItem | undefined {
 
-    const menu = MainMenuItem.find(x => x.menuType == MenuType.MenuHeader && x.group == 0);
+    let menu = MainMenuItem.find(x => x.menuType == MenuType.MenuHeader && x.group == group);
+
+    if (menu == null)
+        menu = MainMenuItem.find(x => x.menuType == MenuType.MenuHeader && x.group == 0);
+
     return menu;
   }
 
