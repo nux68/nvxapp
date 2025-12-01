@@ -28,14 +28,36 @@ namespace nvxapp.server.Controllers
         [Authorize]
         [HttpPost]
         [Route("GetAll")]
-        public async Task<GenericResult<Par_ProfiloOrarioOutModel>> GetAll(GenericRequest<Par_ProfiloOrarioInModel> inModel)
+        public async Task<GenericResult<Par_ProfiloOrario_GetAllOutModel>> GetAll(GenericRequest<Par_ProfiloOrario_GetAllInModel> inModel)
         {
             var res = await _par_ProfiloOrarioService.GetAll(inModel, false);
 
             return res;
         }
 
-        
+        [Authorize]
+        [HttpPost]
+        [Route("Par_ProfiloOrarioGet")]
+        public async Task<GenericResult<Par_ProfiloOrario_GetOutModel>> Par_ProfiloOrarioGet(GenericRequest<Par_ProfiloOrario_GetInModel> inModel)
+        {
+            return await _par_ProfiloOrarioService.Par_ProfiloOrarioGet(inModel, false);
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("Par_ProfiloOrarioPut")]
+        public async Task<GenericResult<Par_ProfiloOrario_PutOutModel>> Par_ProfiloOrarioPut(GenericRequest<Par_ProfiloOrario_PutInModel> inModel)
+        {
+            return await _par_ProfiloOrarioService.Par_ProfiloOrarioPut(inModel, false);
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("Par_ProfiloOrarioDelete")]
+        public async Task<GenericResult<Par_ProfiloOrario_DeleteOutModel>> Par_ProfiloOrarioDelete(GenericRequest<Par_ProfiloOrario_DeleteInModel> inModel)
+        {
+            return await _par_ProfiloOrarioService.Par_ProfiloOrarioDelete(inModel, false);
+        }
 
     }
 

@@ -1,0 +1,57 @@
+<app-page-toolbar [title]="Title"
+                  [showFilter]="ShowFilter"
+                  [showBreadcrumbs]="true">
+</app-page-toolbar>
+
+<ion-content [fullscreen]="true">
+
+  <ion-card>
+    <ion-card-content>
+
+
+
+      <br />
+      <ion-item class="nvx-item-4-title">
+        <ion-label>Info </ion-label>
+      </ion-item>
+
+
+      <form [formGroup]="_editForm">
+
+        <ion-item>
+          <ion-label position="floating">Descrizione</ion-label>
+          <ion-input type="text" formControlName="descrizione"></ion-input>
+        </ion-item>
+        <ion-note color="danger" *ngIf="_editForm.get('descrizione')?.hasError('required') && _editForm.get('descrizione')?.touched">
+          Descrizione è obbligatorio.
+        </ion-note>
+        <ion-note color="danger" *ngIf="_editForm.get('descrizione')?.hasError('maxlength') && _editForm.get('descrizione')?.touched">
+          Descrizione non può superare i 20 caratteri.
+        </ion-note>
+
+
+        <ion-item>
+          <ion-label position="floating">Codice</ion-label>
+          <ion-input type="text" formControlName="codice"></ion-input>
+        </ion-item>
+        <ion-note color="danger" *ngIf="_editForm.get('codice')?.hasError('required') && _editForm.get('codice')?.touched">
+          codice è obbligatorio.
+        </ion-note>
+        <ion-note color="danger" *ngIf="_editForm.get('codice')?.hasError('maxlength') && _editForm.get('codice')?.touched">
+          codice non può superare i 5 caratteri.
+        </ion-note>
+
+
+
+      </form>
+
+      <br />
+
+
+    </ion-card-content>
+  </ion-card>
+
+</ion-content>
+
+<app-page-buttonbar [buttonbar]="buttonbar"></app-page-buttonbar>
+

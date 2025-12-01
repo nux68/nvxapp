@@ -9,22 +9,40 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Profil
 {
     public class Par_ProfiloOrarioModel
     {
+        public int Id { get; set; }
+        public int IdAz_Anagrafica { get; set; }
+        public string Codice { get; set; } = string.Empty;
+        public string Descrizione { get; set; } = string.Empty;
+        public int NumGiorniCiclo { get; set; }
     }
 
-    public class Par_ProfiloOrarioInModel
+    public class Par_ProfiloOrario_GetAllInModel { }
+    public class Par_ProfiloOrario_GetAllOutModel : ModelResult
     {
-
+        public List<Par_ProfiloOrarioModel> Par_ProfiloOrario { get; set; } = new List<Par_ProfiloOrarioModel>();
     }
 
-    public class Par_ProfiloOrarioOutModel : ModelResult 
+    public class Par_ProfiloOrario_GetInModel
     {
-        public Par_ProfiloOrarioOutModel() 
-        {
-        
-        }
+        public int Id { get; set; }
+    }
+    public class Par_ProfiloOrario_GetOutModel : ModelResult
+    {
+        public Par_ProfiloOrarioModel? Par_ProfiloOrario { get; set; }
     }
 
-   
+    public class Par_ProfiloOrario_PutInModel
+    {
+        public Par_ProfiloOrarioModel Par_ProfiloOrario { get; set; } = new Par_ProfiloOrarioModel();
+    }
+    public class Par_ProfiloOrario_PutOutModel : ModelResult
+    {
+        public Par_ProfiloOrarioModel? Par_ProfiloOrario { get; set; }
+    }
 
-
+    public class Par_ProfiloOrario_DeleteInModel
+    {
+        public int Id { get; set; }
+    }
+    public class Par_ProfiloOrario_DeleteOutModel : ModelResult { }
 }
