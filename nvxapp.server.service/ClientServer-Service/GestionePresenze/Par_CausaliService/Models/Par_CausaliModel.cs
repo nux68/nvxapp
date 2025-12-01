@@ -41,4 +41,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Causal
     {
         public Par_CausaliModel Par_Causale { get; set; } = new Par_CausaliModel();
     }
+
+    public class Par_Causali_DeleteInModel
+    {
+        public int Id { get; set; }
+    }
+    public class Par_Causali_DeleteOutModel : ModelResult { }
 }

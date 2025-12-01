@@ -23,6 +23,10 @@
             </ion-item>
 
             <ion-item-options side="end">
+              <ion-item-option *ngIf="!item.default" color="{{btnDelete.color}}" (click)="btnDelete.event(item)">
+                <ion-icon slot="start" name="{{btnDelete.image}}"></ion-icon>
+                {{btnDelete.text}}
+              </ion-item-option>
               <ion-item-option color="{{btnEdit.color}}" (click)="btnEdit.event(item)">
                 <ion-icon slot="start" name="{{btnEdit.image}}"></ion-icon>
                 {{ btnEdit.text }}
@@ -32,11 +36,17 @@
           </ion-item-sliding>
 
 
-          <ion-col size="10" class="ion-hide-sm-down">
+          <ion-col size="8" class="ion-hide-sm-down">
             <ion-icon [name]="isAdmin(item) ? 'server-outline' : 'server-outline'"></ion-icon>
             <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
               {{ item.descrizione }}
             </ion-label>
+          </ion-col>
+          <ion-col size="2" class="ion-hide-sm-down">
+            <ion-button *ngIf="!item.default" size="small" fill="outline" shape="round" (click)="btnDelete.event(item)" color="{{btnDelete.color}}">
+              <ion-icon name="{{btnDelete.image}}"></ion-icon>
+              &nbsp;{{btnDelete.text}}
+            </ion-button>
           </ion-col>
           <ion-col size="2" class="ion-hide-sm-down">
             <ion-button size="small" fill="outline" shape="round" (click)="btnEdit.event(item)" color="{{btnEdit.color}}">

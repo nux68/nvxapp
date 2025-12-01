@@ -30,3 +30,8 @@ export class Par_CausaliPutOutModel extends ModelResult {
     public par_Causale: Par_CausaliModel;
 }
 
+export class Par_Causali_DeleteInModel {
+  id: number;
+}
+export class Par_Causali_DeleteOutModel extends ModelResult {
+}

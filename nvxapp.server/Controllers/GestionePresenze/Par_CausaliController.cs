@@ -53,7 +53,13 @@ namespace nvxapp.server.Controllers
             return res;
         }
 
-
+        [Authorize]
+        [HttpPost]
+        [Route("Par_CausaliDelete")]
+        public async Task<GenericResult<Par_Causali_DeleteOutModel>> Par_CausaliDelete(GenericRequest<Par_Causali_DeleteInModel> inModel)
+        {
+            return await _par_CausaliService.Par_CausaliDelete(inModel, false);
+        }
 
     }
 

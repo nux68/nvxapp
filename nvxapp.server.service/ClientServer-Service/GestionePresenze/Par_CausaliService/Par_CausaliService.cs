@@ -120,6 +120,20 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Causal
                 return retVal;
             }, isSubProcess);
         }
+    
+        public virtual async Task<GenericResult<Par_Causali_DeleteOutModel>> Par_CausaliDelete(GenericRequest<Par_Causali_DeleteInModel> model, bool isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                var entity = await _par_CausaliRepository.FindByIdAsync(model.Data.Id);
+                if (entity != null)
+                {
+                    await _par_CausaliRepository.DeleteAsync(entity);
+                }
+                return new Par_Causali_DeleteOutModel();
+            }, isSubProcess);
+        }
+        
     }
 
     public interface IPar_CausaliService : IServiceBase
@@ -127,5 +141,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Causal
         public Task<GenericResult<Par_CausaliOutModel>> GetAll(GenericRequest<Par_CausaliInModel> model, bool isSubProcess);
         public Task<GenericResult<Par_CausaliGetOutModel>> Par_CausaliGet(GenericRequest<Par_CausaliGetInModel> model, bool isSubProcess);
         public Task<GenericResult<Par_CausaliPutOutModel>> Par_CausaliPut(GenericRequest<Par_CausaliPutInModel> model, bool isSubProcess);
+        public Task<GenericResult<Par_Causali_DeleteOutModel>> Par_CausaliDelete(GenericRequest<Par_Causali_DeleteInModel> model, bool isSubProcess);
     }
 }

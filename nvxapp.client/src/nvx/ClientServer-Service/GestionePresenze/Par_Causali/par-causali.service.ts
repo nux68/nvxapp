@@ -5,7 +5,7 @@ import { environment } from '../../../../environments/environment';
 import { GenericRequest } from '../../ModelsBase/generic-request';
 import { GenericResult } from '../../ModelsBase/generic-result';
 import { map, Observable } from 'rxjs';
-import { Par_CausaliGetInModel, Par_CausaliGetOutModel, Par_CausaliInModel, Par_CausaliOutModel, Par_CausaliPutInModel, Par_CausaliPutOutModel } from './Models/par-causali-model';
+import { Par_Causali_DeleteInModel, Par_Causali_DeleteOutModel, Par_CausaliGetInModel, Par_CausaliGetOutModel, Par_CausaliInModel, Par_CausaliOutModel, Par_CausaliPutInModel, Par_CausaliPutOutModel } from './Models/par-causali-model';
 
 @Injectable({
   providedIn: 'root'
@@ -52,4 +52,12 @@ export class ParCausaliService {
 
   }
 
+  Par_CausaliDelete(model: GenericRequest<Par_Causali_DeleteInModel>): Observable<GenericResult<Par_Causali_DeleteOutModel>> {
+    return this.http.post<GenericResult<Par_Causali_DeleteOutModel>>(environment.remoteData.apiUri + 'Par_Causali/Par_CausaliDelete', model)
+      .pipe(
+        map(r => {
+          return r;
+        })
+      );
+  }
 }
