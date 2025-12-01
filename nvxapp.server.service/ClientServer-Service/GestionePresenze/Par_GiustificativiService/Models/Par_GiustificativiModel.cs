@@ -57,6 +57,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Giusti
         public Par_GiustificativiModel Par_Giustificativi { get; set; } = new Par_GiustificativiModel();
     }
 
-
-
+    public class Par_Giustificativi_DeleteInModel
+    {
+        public int Id { get; set; }
+    }
+    public class Par_Giustificativi_DeleteOutModel : ModelResult
+    {
+    }
 }

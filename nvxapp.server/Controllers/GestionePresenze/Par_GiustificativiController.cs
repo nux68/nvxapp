@@ -55,7 +55,13 @@ namespace nvxapp.server.Controllers
             return res;
         }
 
-
+        [Authorize]
+        [HttpPost]
+        [Route("Par_GiustificativiDelete")]
+        public async Task<GenericResult<Par_Giustificativi_DeleteOutModel>> Par_GiustificativiDelete(GenericRequest<Par_Giustificativi_DeleteInModel> inModel)
+        {
+            return await _par_GiustificativiService.Par_GiustificativiDelete(inModel, false);
+        }
 
     }
 

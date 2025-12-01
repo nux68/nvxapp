@@ -5,7 +5,7 @@ import { environment } from '../../../../environments/environment';
 import { GenericRequest } from '../../ModelsBase/generic-request';
 import { GenericResult } from '../../ModelsBase/generic-result';
 import { map, Observable } from 'rxjs';
-import { Par_GiustificativiGetInModel, Par_GiustificativiGetOutModel, Par_GiustificativiInModel, Par_GiustificativiOutModel, Par_GiustificativiPutInModel, Par_GiustificativiPutOutModel } from './Models/par-giustificativi-model';
+import { Par_Giustificativi_DeleteInModel, Par_Giustificativi_DeleteOutModel, Par_GiustificativiGetInModel, Par_GiustificativiGetOutModel, Par_GiustificativiInModel, Par_GiustificativiOutModel, Par_GiustificativiPutInModel, Par_GiustificativiPutOutModel } from './Models/par-giustificativi-model';
 
 @Injectable({
   providedIn: 'root'
@@ -50,6 +50,15 @@ export class ParGiustificativiService {
           )
       );
 
+  }
+
+  Par_GiustificativiDelete(model: GenericRequest<Par_Giustificativi_DeleteInModel>): Observable<GenericResult<Par_Giustificativi_DeleteOutModel>> {
+    return this.http.post<GenericResult<Par_Giustificativi_DeleteOutModel>>(environment.remoteData.apiUri + 'Par_Giustificativi/Par_GiustificativiDelete', model)
+      .pipe(
+        map(r => {
+          return r;
+        })
+      );
   }
 
 }

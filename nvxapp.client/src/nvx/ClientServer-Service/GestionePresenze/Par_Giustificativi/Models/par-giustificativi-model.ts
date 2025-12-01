@@ -46,4 +46,10 @@ export class Par_GiustificativiPutOutModel extends ModelResult {
   public par_Giustificativi: Par_GiustificativiModel;
 }
 
+export class Par_Giustificativi_DeleteInModel {
+  id: number;
+}
+export class Par_Giustificativi_DeleteOutModel extends ModelResult {
+}
+
 

@@ -190,6 +190,20 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Giusti
                 return retVal;
             }, isSubProcess);
         }
+    
+        public virtual async Task<GenericResult<Par_Giustificativi_DeleteOutModel>> Par_GiustificativiDelete(GenericRequest<Par_Giustificativi_DeleteInModel> model, bool isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                var entity = await _par_GiustificativiRepository.FindByIdAsync(model.Data.Id);
+                if (entity != null)
+                {
+                    await _par_GiustificativiRepository.DeleteAsync(entity);
+                }
+                return new Par_Giustificativi_DeleteOutModel();
+            }, isSubProcess);
+        }
+        
     }
 
     public interface IPar_GiustificativiService : IServiceBase
@@ -197,5 +211,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Giusti
         public Task<GenericResult<Par_GiustificativiOutModel>> GetAll(GenericRequest<Par_GiustificativiInModel> model, Boolean isSubProcess);
         public Task<GenericResult<Par_GiustificativiGetOutModel>> Par_GiustificativiGet(GenericRequest<Par_GiustificativiGetInModel> model, Boolean isSubProcess);
         public Task<GenericResult<Par_GiustificativiPutOutModel>> Par_GiustificativiPut(GenericRequest<Par_GiustificativiPutInModel> model, Boolean isSubProcess);
+        public Task<GenericResult<Par_Giustificativi_DeleteOutModel>> Par_GiustificativiDelete(GenericRequest<Par_Giustificativi_DeleteInModel> model, bool isSubProcess);
     }
 }
