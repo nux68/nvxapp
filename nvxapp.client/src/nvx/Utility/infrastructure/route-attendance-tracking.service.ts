@@ -44,6 +44,10 @@ export class RouteAttendanceTrackingService {
       { path: 'azsedilist', loadChildren: () => import('../../pages/GestionePresenze/az-sedi-list-page/az-sedi-list-page.module').then(m => m.AzSediListPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
       { path: 'azsediedit', loadChildren: () => import('../../pages/GestionePresenze/az-sedi-edit-page/az-sedi-edit-page.module').then(m => m.AzSediEditPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
 
+      { path: 'orarilist', loadChildren: () => import('../../pages/GestionePresenze/orari-list-page/orari-list.module').then(m => m.OrariListPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
+      { path: 'orariedit', loadChildren: () => import('../../pages/GestionePresenze/orari-edit-page/orari-edit-page.module').then(m => m.OrariEditPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
+
+
       { path: 'seletionsedirepartopage', loadChildren: () => import('../../pages/GestionePresenze/_selection/seletion-sedi-reparto-page/seletion-sedi-reparto-page.module').then(m => m.SeletionSediRepartoPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
 
 
