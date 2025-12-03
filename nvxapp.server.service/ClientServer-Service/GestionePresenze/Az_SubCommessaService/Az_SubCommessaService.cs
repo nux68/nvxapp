@@ -139,71 +139,75 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
                 int IdCompany;
                 int.TryParse(this.CurrentCompany, out IdCompany);
 
-                //rileggo i dati originali
-                var reqAz_Sub = new GenericRequest<Az_SubCommessa_GetAll_4Edit_InModel>();
-                reqAz_Sub.Data.Id = model.Data.Id;
-
-                var resAz_Sub = await GetAll_4Edit(reqAz_Sub, true);
-                if (resAz_Sub.Success && resAz_Sub.Data != null)
+                Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg company_DATA = await _gestionePresenzeUserUtility.Get_AzAna_AzSedi_AzReparto_Az_Cfg(IdCompany, true);
+                if (company_DATA != null && company_DATA.az_Anagrafica != null)
                 {
-                    //cancellazione sub commesse eliminate
-                    foreach (var item in resAz_Sub.Data.Az_SubCommessa)
-                    {   //ciclo le commesse originali
+                    //rileggo i dati originali
+                    var reqAz_Sub = new GenericRequest<Az_SubCommessa_GetAll_4Edit_InModel>();
+                    reqAz_Sub.Data.Id = model.Data.Id;
 
-                        //ottengo il record orig del db
-                        Az_SubCommessa? az_SubCommessa = _az_SubCommessaRepository.FindAll(x => x.Id == item.Id).FirstOrDefault();
-
-                        if (az_SubCommessa != null)
-                        {
-                            //cerco la commessa nei dati tornati dal client
-                            var orig_TMP = model.Data.Az_SubCommessa.Where(x => x.Id == item.Id).FirstOrDefault();
-
-                            //se non trovo la corrispondenza nei dati del client, vul dire che è stata eliminata
-                            if (orig_TMP == null)
-                            {
-                                //procedo alla cancelazione
-                                await _az_SubCommessaRepository.DeleteAsync(az_SubCommessa);
-                            }
-                        }
-                    }
-                    //upsert commesse
-                    foreach (var item in model.Data.Az_SubCommessa)
-                    {
-                        //ottengo il record orig del db
-                        Az_SubCommessa? az_SubCommessa = _az_SubCommessaRepository.FindAll(x => x.Id == item.Id).FirstOrDefault();
-                        if (az_SubCommessa == null)
-                        {
-                            az_SubCommessa = _mapper.Map<Az_SubCommessa>(item);
-                            az_SubCommessa.IdAz_Commessa = model.Data.Id;
-                            az_SubCommessa.Id = 0;
-                        }
-                        else
-                        {
-                            az_SubCommessa = _mapper.Map<Az_SubCommessa>(item);
-                        }
-                        az_SubCommessa = await _az_SubCommessaRepository.UpsertAsync(az_SubCommessa);
-
-                        var req_SubCommessaUser = new GenericRequest<Az_SubCommessaUser_Put4SubCommessa_InModel>();
-                        req_SubCommessaUser.Data.IdAz_SubCommessa = az_SubCommessa.Id;
-                        req_SubCommessaUser.Data.Az_SubCommessaUser = item.Az_SubCommessaUser;
-                        var res_SubCommessaUser = await _az_SubCommessaUserService.Put4Commessa(req_SubCommessaUser, true);
-
-                        var req_SubCommessaAttivita = new GenericRequest<Az_SubCommessaAttivita_Put4SubCommessa_InModel>();
-                        req_SubCommessaAttivita.Data.IdAz_SubCommessa = az_SubCommessa.Id;
-                        req_SubCommessaAttivita.Data.Az_SubCommessaAttivita = item.Az_SubCommessaAttivita;
-                        var res_SubCommessaAttivita = await _az_SubCommessaAttivitaService.Put4SubCommessa(req_SubCommessaAttivita, true);
-
-                        var req_SubCommessaSediReparto = new GenericRequest<Az_SubCommessaSediReparto_Put4SubCommessa_InModel>();
-                        req_SubCommessaSediReparto.Data.IdAz_SubCommessa = az_SubCommessa.Id;
-                        req_SubCommessaSediReparto.Data.Az_SubCommessaSediReparto = item.Az_SubCommessaSediReparto;
-                        await _az_SubCommessaSediRepartoService.Put4SubCommessa(req_SubCommessaSediReparto, true);
-                    }
-
-                    //rileggo i dati dopo le varizioni per ritornare il valore corrente
-                    resAz_Sub = await GetAll_4Edit(reqAz_Sub, true);
+                    var resAz_Sub = await GetAll_4Edit(reqAz_Sub, true);
                     if (resAz_Sub.Success && resAz_Sub.Data != null)
                     {
-                        retVal.Az_SubCommessa = resAz_Sub.Data.Az_SubCommessa;
+                        //cancellazione sub commesse eliminate
+                        foreach (var item in resAz_Sub.Data.Az_SubCommessa)
+                        {   //ciclo le commesse originali
+
+                            //ottengo il record orig del db
+                            Az_SubCommessa? az_SubCommessa = _az_SubCommessaRepository.FindAll(x => x.Id == item.Id).FirstOrDefault();
+
+                            if (az_SubCommessa != null)
+                            {
+                                //cerco la commessa nei dati tornati dal client
+                                var orig_TMP = model.Data.Az_SubCommessa.Where(x => x.Id == item.Id).FirstOrDefault();
+
+                                //se non trovo la corrispondenza nei dati del client, vul dire che è stata eliminata
+                                if (orig_TMP == null)
+                                {
+                                    //procedo alla cancelazione
+                                    await _az_SubCommessaRepository.DeleteAsync(az_SubCommessa);
+                                }
+                            }
+                        }
+                        //upsert commesse
+                        foreach (var item in model.Data.Az_SubCommessa)
+                        {
+                            //ottengo il record orig del db
+                            Az_SubCommessa? az_SubCommessa = _az_SubCommessaRepository.FindAll(x => x.Id == item.Id).FirstOrDefault();
+                            if (az_SubCommessa == null)
+                            {
+                                az_SubCommessa = _mapper.Map<Az_SubCommessa>(item);
+                                az_SubCommessa.IdAz_Commessa = model.Data.Id;
+                                az_SubCommessa.Id = 0;
+                            }
+                            else
+                            {
+                                az_SubCommessa = _mapper.Map<Az_SubCommessa>(item);
+                            }
+                            az_SubCommessa = await _az_SubCommessaRepository.UpsertAsync(az_SubCommessa);
+
+                            var req_SubCommessaUser = new GenericRequest<Az_SubCommessaUser_Put4SubCommessa_InModel>();
+                            req_SubCommessaUser.Data.IdAz_SubCommessa = az_SubCommessa.Id;
+                            req_SubCommessaUser.Data.Az_SubCommessaUser = item.Az_SubCommessaUser;
+                            var res_SubCommessaUser = await _az_SubCommessaUserService.Put4Commessa(req_SubCommessaUser, true);
+
+                            var req_SubCommessaAttivita = new GenericRequest<Az_SubCommessaAttivita_Put4SubCommessa_InModel>();
+                            req_SubCommessaAttivita.Data.IdAz_SubCommessa = az_SubCommessa.Id;
+                            req_SubCommessaAttivita.Data.Az_SubCommessaAttivita = item.Az_SubCommessaAttivita;
+                            var res_SubCommessaAttivita = await _az_SubCommessaAttivitaService.Put4SubCommessa(req_SubCommessaAttivita, true);
+
+                            var req_SubCommessaSediReparto = new GenericRequest<Az_SubCommessaSediReparto_Put4SubCommessa_InModel>();
+                            req_SubCommessaSediReparto.Data.IdAz_SubCommessa = az_SubCommessa.Id;
+                            req_SubCommessaSediReparto.Data.Az_SubCommessaSediReparto = item.Az_SubCommessaSediReparto;
+                            await _az_SubCommessaSediRepartoService.Put4SubCommessa(req_SubCommessaSediReparto, true);
+                        }
+
+                        //rileggo i dati dopo le varizioni per ritornare il valore corrente
+                        resAz_Sub = await GetAll_4Edit(reqAz_Sub, true);
+                        if (resAz_Sub.Success && resAz_Sub.Data != null)
+                        {
+                            retVal.Az_SubCommessa = resAz_Sub.Data.Az_SubCommessa;
+                        }
                     }
                 }
 

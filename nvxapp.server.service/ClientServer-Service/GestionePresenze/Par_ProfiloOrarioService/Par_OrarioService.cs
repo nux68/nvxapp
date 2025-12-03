@@ -5,11 +5,16 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using nvxapp.server.Base;
 using nvxapp.server.data.Entities.Public;
+using nvxapp.server.data.Entities.Tenant;
 using nvxapp.server.data.Entities.Tenant.GestionePresenze;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_CommessaService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubCommessaService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_OrarioService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_ProfiloOrarioGGService;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_ProfiloOrarioGGService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_ProfiloOrarioService.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Interfaces;
@@ -21,6 +26,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Profil
     {
         private readonly IPar_ProfiloOrarioRepository _par_ProfiloOrarioRepository;
         private readonly IGestionePresenzeUserUtility _gestionePresenzeUserUtility;
+        private readonly IPar_ProfiloOrarioGGService _par_ProfiloOrarioGGService;
+        
 
         public Par_ProfiloOrarioService(IMapper mapper,
                                   UserManager<ApplicationUser> userManager,
@@ -29,11 +36,13 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Profil
                                   IHttpContextAccessor httpContextAccessor,
                                   IGestionePresenzeUserUtility gestionePresenzeUserUtility,
                                   IConfiguration configuration,
+                                  IPar_ProfiloOrarioGGService par_ProfiloOrarioGGService,
 
                                   IPar_ProfiloOrarioRepository par_ProfiloOrarioRepository) : base(mapper , userManager  , aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _par_ProfiloOrarioRepository = par_ProfiloOrarioRepository;
             _gestionePresenzeUserUtility = gestionePresenzeUserUtility;
+            _par_ProfiloOrarioGGService = par_ProfiloOrarioGGService;
         }
 
         public virtual async Task<GenericResult<Par_ProfiloOrario_GetAllOutModel>> GetAll(GenericRequest<Par_ProfiloOrario_GetAllInModel> model, Boolean isSubProcess)
@@ -48,21 +57,42 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Profil
             }, isSubProcess);
         }
 
-
-        
-
-         public virtual async Task<GenericResult<Par_ProfiloOrario_GetOutModel>> Par_ProfiloOrarioGet(GenericRequest<Par_ProfiloOrario_GetInModel> model, bool isSubProcess)
+        public virtual async Task<GenericResult<Par_ProfiloOrario_GetOutModel>> Par_ProfiloOrarioGet(GenericRequest<Par_ProfiloOrario_GetInModel> model, bool isSubProcess)
         {
             return await ExecuteAction(model, async () =>
             {
                 var retVal = new Par_ProfiloOrario_GetOutModel();
-                var entity = await _par_ProfiloOrarioRepository.FindByIdAsync(model.Data.Id);
-                retVal.Par_ProfiloOrario = _mapper.Map<Par_ProfiloOrarioModel>(entity);
+
+                int IdCompany;
+                int.TryParse(this.CurrentCompany, out IdCompany);
+                Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg company_DATA = await _gestionePresenzeUserUtility.Get_AzAna_AzSedi_AzReparto_Az_Cfg(IdCompany, true);
+                if (company_DATA != null && company_DATA.az_Anagrafica != null)
+                {
+                    
+                    var reqAz_Sub = new GenericRequest<Par_ProfiloOrarioGG_Get_4Edit_InModel>();
+                    reqAz_Sub.Data.Id= model.Data.Id; // id del profilo orario
+                    var resAz_Sub = await _par_ProfiloOrarioGGService.Par_ProfiloOrarioGG_Get(reqAz_Sub, true);
+
+                    if (resAz_Sub.Success && resAz_Sub.Data != null)
+                    {
+                        var profilo = await _par_ProfiloOrarioRepository.FindByIdAsync(model.Data.Id);
+                        if (profilo != null)
+                            retVal.Par_ProfiloOrario = _mapper.Map<Par_ProfiloOrarioModel>(profilo);
+                        else
+                            retVal.Par_ProfiloOrario = new  Par_ProfiloOrarioModel();
+
+                        retVal.Par_ProfiloOrarioGG = resAz_Sub.Data.Par_ProfiloOrarioGG;
+                    }
+                }
+
+                await Task.Delay(DelayAsyncMethod);
                 return retVal;
+
+                
             }, isSubProcess);
         }
 
-         public virtual async Task<GenericResult<Par_ProfiloOrario_PutOutModel>> Par_ProfiloOrarioPut(GenericRequest<Par_ProfiloOrario_PutInModel> model, bool isSubProcess)
+        public virtual async Task<GenericResult<Par_ProfiloOrario_PutOutModel>> Par_ProfiloOrarioPut(GenericRequest<Par_ProfiloOrario_PutInModel> model, bool isSubProcess)
         {
             return await ExecuteAction(model, async () =>
             {
@@ -70,14 +100,36 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Profil
                 var entity = _mapper.Map<Par_ProfiloOrario>(model.Data.Par_ProfiloOrario);
 
                 int.TryParse(this.CurrentCompany, out int idCompany);
-                var companyData = await _gestionePresenzeUserUtility.Get_AzAna_AzSedi_AzReparto_Az_Cfg(idCompany, true);
-                if (companyData?.az_Anagrafica != null)
+                Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg company_DATA = await _gestionePresenzeUserUtility.Get_AzAna_AzSedi_AzReparto_Az_Cfg(idCompany, true);
+                if (company_DATA != null && company_DATA.az_Anagrafica != null)
                 {
-                    entity.IdAz_Anagrafica = companyData.az_Anagrafica.Id;
-                }
+                    entity.IdAz_Anagrafica = company_DATA.az_Anagrafica.Id;
 
-                var updatedEntity = await _par_ProfiloOrarioRepository.UpsertAsync(entity);
-                retVal.Par_ProfiloOrario = _mapper.Map<Par_ProfiloOrarioModel>(updatedEntity);
+                    var par_ProfiloOrario = await _par_ProfiloOrarioRepository.UpsertAsync(entity);
+                    if (par_ProfiloOrario == null)
+                    {
+                        par_ProfiloOrario = _mapper.Map<Par_ProfiloOrario>(model.Data.Par_ProfiloOrario);
+                        par_ProfiloOrario.IdAz_Anagrafica = company_DATA.az_Anagrafica.Id;
+                    }
+                    else
+                    {
+                        par_ProfiloOrario = _mapper.Map<Par_ProfiloOrario>(model.Data.Par_ProfiloOrario);
+                    }
+                    retVal.Par_ProfiloOrario = _mapper.Map<Par_ProfiloOrarioModel>(par_ProfiloOrario);
+
+                    
+                    var reqPar_ProfiloOrarioGG = new GenericRequest<Par_ProfiloOrarioGG_Put_4Edit_InModel>();
+                    reqPar_ProfiloOrarioGG.Data.Id= retVal.Par_ProfiloOrario.Id; 
+                    reqPar_ProfiloOrarioGG.Data.Par_ProfiloOrarioGG = model.Data.Par_ProfiloOrarioGG;
+                    var resAz_Sub = await _par_ProfiloOrarioGGService.Par_ProfiloOrarioGG_Put(reqPar_ProfiloOrarioGG, true);
+
+                    if (resAz_Sub.Success && resAz_Sub.Data != null)
+                    {
+                        retVal.Par_ProfiloOrarioGG = resAz_Sub.Data.Par_ProfiloOrarioGG;
+                    }
+
+                }
+                
                 return retVal;
             }, isSubProcess);
         }

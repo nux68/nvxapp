@@ -5,16 +5,9 @@ import { environment } from '../../../../environments/environment';
 import { GenericRequest } from '../../ModelsBase/generic-request';
 import { GenericResult } from '../../ModelsBase/generic-result';
 import { map, Observable } from 'rxjs';
-import {
-  Par_Orario_GetAllInModel,
-  Par_Orario_GetAllOutModel,
-  Par_Orario_GetInModel,
-  Par_Orario_GetOutModel,
-  Par_Orario_PutInModel,
-  Par_Orario_PutOutModel,
-  Par_Orario_DeleteInModel,
-  Par_Orario_DeleteOutModel
-} from './Models/par-orario-model';
+import { Par_Orario_GetAllInModel, Par_Orario_GetAllOutModel, Par_Orario_GetInModel, Par_Orario_GetOutModel, Par_Orario_PutInModel, Par_Orario_PutOutModel, Par_Orario_DeleteInModel, Par_Orario_DeleteOutModel } from './Models/par-orario-model';
+
+
 
 @Injectable({
   providedIn: 'root'

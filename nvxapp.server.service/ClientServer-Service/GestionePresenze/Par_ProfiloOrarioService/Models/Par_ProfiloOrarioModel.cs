@@ -1,4 +1,6 @@
-﻿using nvxapp.server.service.ClientServer_Service.ModelsBase;
+﻿using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubCommessaService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_ProfiloOrarioGGService.Models;
+using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,15 +31,19 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Profil
     public class Par_ProfiloOrario_GetOutModel : ModelResult
     {
         public Par_ProfiloOrarioModel? Par_ProfiloOrario { get; set; }
+        public List<Par_ProfiloOrarioGGModel> Par_ProfiloOrarioGG { get; set; } = new List<Par_ProfiloOrarioGGModel>();
+
     }
 
     public class Par_ProfiloOrario_PutInModel
     {
         public Par_ProfiloOrarioModel Par_ProfiloOrario { get; set; } = new Par_ProfiloOrarioModel();
+        public List<Par_ProfiloOrarioGGModel> Par_ProfiloOrarioGG { get; set; } = new List<Par_ProfiloOrarioGGModel>();
     }
     public class Par_ProfiloOrario_PutOutModel : ModelResult
     {
         public Par_ProfiloOrarioModel? Par_ProfiloOrario { get; set; }
+        public List<Par_ProfiloOrarioGGModel> Par_ProfiloOrarioGG { get; set; } = new List<Par_ProfiloOrarioGGModel>();
     }
 
     public class Par_ProfiloOrario_DeleteInModel

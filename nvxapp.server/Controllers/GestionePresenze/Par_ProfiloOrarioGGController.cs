@@ -27,10 +27,20 @@ namespace nvxapp.server.Controllers
 
         [Authorize]
         [HttpPost]
-        [Route("GetAll")]
-        public async Task<GenericResult<Par_ProfiloOrarioGGOutModel>> GetAll(GenericRequest<Par_ProfiloOrarioGGInModel> inModel)
+        [Route("Par_ProfiloOrarioGG_Get")]
+        public async Task<GenericResult<Par_ProfiloOrarioGG_Get_4Edit_OutModel>> Par_ProfiloOrarioGG_Get(GenericRequest<Par_ProfiloOrarioGG_Get_4Edit_InModel> inModel)
         {
-            var res = await _par_ProfiloOrarioGGService.GetAll(inModel, false);
+            var res = await _par_ProfiloOrarioGGService.Par_ProfiloOrarioGG_Get(inModel, false);
+
+            return res;
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("Par_ProfiloOrarioGG_Put")]
+        public async Task<GenericResult<Par_ProfiloOrarioGG_Put_4Edit_OutModel>> Par_ProfiloOrarioGG_Put(GenericRequest<Par_ProfiloOrarioGG_Put_4Edit_InModel> inModel)
+        {
+            var res = await _par_ProfiloOrarioGGService.Par_ProfiloOrarioGG_Put(inModel, false);
 
             return res;
         }
