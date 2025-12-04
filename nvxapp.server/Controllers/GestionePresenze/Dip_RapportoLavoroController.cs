@@ -28,12 +28,18 @@ namespace nvxapp.server.Controllers
 
         [Authorize]
         [HttpPost]
-        [Route("GetAll")]
-        public async Task<GenericResult<Dip_RapportoLavoro_GetAll_OutModel>> GetAll(GenericRequest<Dip_RapportoLavoro_GetAll_InModel> inModel)
+        [Route("Dip_RapportoLavoroGet")]
+        public async Task<GenericResult<Dip_RapportoLavoro_Get_OutModel>> Dip_RapportoLavoroGet(GenericRequest<Dip_RapportoLavoro_Get_InModel> inModel)
         {
-            var res = await _dip_RapportoLavoroService.GetAll(inModel, false);
+            return await _dip_RapportoLavoroService.Dip_RapportoLavoroGet(inModel, false);
+        }
 
-            return res;
+        [Authorize]
+        [HttpPost]
+        [Route("Dip_RapportoLavoroPut")]
+        public async Task<GenericResult<Dip_RapportoLavoro_Put_OutModel>> Dip_RapportoLavoroPut(GenericRequest<Dip_RapportoLavoro_Put_InModel> inModel)
+        {
+            return await _dip_RapportoLavoroService.Dip_RapportoLavoroPut(inModel, false);
         }
 
         

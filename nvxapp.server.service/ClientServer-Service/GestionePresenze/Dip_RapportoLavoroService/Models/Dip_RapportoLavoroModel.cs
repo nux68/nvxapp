@@ -10,22 +10,28 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Rappor
     public class Dip_RapportoLavoroModel
     {
         public int Id { get; set; }
+        public int IdAz_Anagrafica { get; set; }
     }
 
-    public class Dip_RapportoLavoro_GetAll_InModel
+    public class Dip_RapportoLavoro_Get_InModel
     {
-
+        public int Id { get; set; }  // = IdDip_Anagrafica
     }
-
-    public class Dip_RapportoLavoro_GetAll_OutModel : ModelResult 
+    public class Dip_RapportoLavoro_Get_OutModel : ModelResult
     {
-        public Dip_RapportoLavoro_GetAll_OutModel() 
-        {
-        
-        }
+        public List<Dip_RapportoLavoroModel> Dip_RapportoLavoro { get; set; } = new List<Dip_RapportoLavoroModel>();
     }
 
-   
+    public class Dip_RapportoLavoro_Put_InModel
+    {
+        public int Id { get; set; } // = IdDip_Anagrafica
+        public List<Dip_RapportoLavoroModel> Dip_RapportoLavoro { get; set; } = new List<Dip_RapportoLavoroModel>();
+    }
+    public class Dip_RapportoLavoro_Put_OutModel : ModelResult
+    {
+        public int Id { get; set; } // = IdDip_Anagrafica
+        public List<Dip_RapportoLavoroModel> Dip_RapportoLavoro { get; set; } = new List<Dip_RapportoLavoroModel>();
+    }
 
 
 }

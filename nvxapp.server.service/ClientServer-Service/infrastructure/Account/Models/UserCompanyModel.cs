@@ -1,4 +1,6 @@
 ﻿using nvxapp.server.data.Entities.Public;
+using nvxapp.server.data.Entities.Tenant;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_RapportoLavoroService.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using System;
 using System.Collections.Generic;
@@ -45,7 +47,15 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Mode
         public string? Pw { get; set; } = string.Empty;
         public string? RoleId { get; set; }
         public List<string> Roles { get; set; } = new List<string>();
+
+        public List<Dip_RapportoLavoroModel> Dip_RapportoLavoro { get; set; } = new List<Dip_RapportoLavoroModel>();
+        public List<Dip_ProfiloOrario> Dip_ProfiloOrario { get; set; } = new List<Dip_ProfiloOrario>();
+
+        
+        
     }
+    
+    
     public class UserCompanyGetInModel
     {
         public int Id { get; set; } = 0;
@@ -54,6 +64,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Mode
     {
         public UserCompanyEditModel UserCompanyEdit { get; set; } = new UserCompanyEditModel();
     }
+  
+    
     public class UserCompanyPutInModel : ModelResult
     {
         public UserCompanyEditModel UserCompanyEdit { get; set; } = new UserCompanyEditModel();

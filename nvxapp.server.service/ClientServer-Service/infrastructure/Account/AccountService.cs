@@ -7,6 +7,11 @@ using Microsoft.Extensions.Options;
 using nvxapp.server.Base;
 using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Repositories.Public;
+using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_RapportoLavoroService;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_RapportoLavoroService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_ProfiloOrarioGGService.Models;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Helpers;
@@ -35,8 +40,14 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
         private readonly ICompanyRepository _companyRepository;
         private readonly IUserCompanyRepository _userCompanyRepository;
 
+        private readonly IDip_RapportoLavoroService _dip_RapportoLavoroService;
+        
+        private readonly IGestionePresenzeUserUtility _gestionePresenzeUserUtility;
+        
+
         private readonly IHubContext<SignalRHub> _hubContext;
 
+        private readonly IDip_RapportoLavoroRepository _dip_RapportoLavoroRepository;
 
 
         public AccountService(IMapper mapper,
@@ -51,9 +62,13 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
 
                               IDealerRepository dealerRepository,
                               IUserDealerRepository userDealerRepository,
+                              IGestionePresenzeUserUtility gestionePresenzeUserUtility,
 
                               IFinancialAdvisorRepository financialAdvisorRepository,
                               IUserFinancialAdvisorRepository userFinancialAdvisorRepository,
+
+                              IDip_RapportoLavoroRepository dip_RapportoLavoroRepository,
+                              IDip_RapportoLavoroService dip_RapportoLavoroService,
 
                               ICompanyRepository companyRepository,
                               IUserCompanyRepository userCompanyRepository,
@@ -72,6 +87,11 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
             _userFinancialAdvisorRepository = userFinancialAdvisorRepository;
             _companyRepository = companyRepository;
             _userCompanyRepository = userCompanyRepository;
+
+            _dip_RapportoLavoroRepository = dip_RapportoLavoroRepository;
+            _dip_RapportoLavoroService = dip_RapportoLavoroService;
+
+            _gestionePresenzeUserUtility = gestionePresenzeUserUtility;
 
             _hubContext = hubContext;
         }
@@ -872,6 +892,21 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                             RoleId = identityUserRole.RoleId,
                             Roles = new List<string>(await _userManager.GetRolesAsync(applicationUser))
                         };
+
+                        var dipAna =  await _gestionePresenzeUserUtility.Get_DipAna_DipRapp(userCompany.IdAspNetUsers, true);
+                        if(dipAna.dip_RapportoLavoro!=null)
+                        {
+                            var req_1 = new GenericRequest<Dip_RapportoLavoro_Get_InModel>();
+                            req_1.Data.Id= dipAna.dip_Anagrafica!.Id; 
+                            var resAz_Sub = await _dip_RapportoLavoroService.Dip_RapportoLavoroGet(req_1, true);
+
+                            if (resAz_Sub.Success && resAz_Sub.Data != null)
+                            {
+                                retVal.UserCompanyEdit.Dip_RapportoLavoro = resAz_Sub.Data.Dip_RapportoLavoro;
+                            }
+                        }
+                        
+                        
                     }
                 }
                 else
@@ -880,7 +915,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                     {
                         Descrizione = "",
                         //IdAspNetUsers = string.Empty
-                        IdUserCompany = 0
+                        IdUserCompany = 0,
+                        Dip_RapportoLavoro = new List<Dip_RapportoLavoroModel>()
                     };
                 }
 
@@ -925,6 +961,18 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                             if (ruoliDaRimuovere.Count > 0)
                                 await _userManager.RemoveFromRolesAsync(applicationUser, ruoliDaRimuovere);
                         }
+
+                        var dipAna =  await _gestionePresenzeUserUtility.Get_DipAna_DipRapp(userCompany.IdAspNetUsers, true);
+                        if(dipAna.dip_RapportoLavoro!=null)
+                        {
+                            var req_1 = new GenericRequest<Dip_RapportoLavoro_Put_InModel>();
+                            req_1.Data.Id= dipAna.dip_Anagrafica!.Id; 
+                            var resAz_Sub = await _dip_RapportoLavoroService.Dip_RapportoLavoroPut(req_1, true);
+                            retVal.UserCompanyEdit.Dip_RapportoLavoro = resAz_Sub.Data!.Dip_RapportoLavoro;
+                        }
+
+                        
+
                     }
                 }
                 else
