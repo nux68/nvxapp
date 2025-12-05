@@ -1,5 +1,6 @@
 ﻿using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Entities.Tenant;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_ProfiloOrarioService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_RapportoLavoroService.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using System;
@@ -49,7 +50,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Mode
         public List<string> Roles { get; set; } = new List<string>();
 
         public List<Dip_RapportoLavoroModel> Dip_RapportoLavoro { get; set; } = new List<Dip_RapportoLavoroModel>();
-        public List<Dip_ProfiloOrario> Dip_ProfiloOrario { get; set; } = new List<Dip_ProfiloOrario>();
+        public List<Dip_ProfiloOrarioModel> Dip_ProfiloOrario { get; set; } = new List<Dip_ProfiloOrarioModel>();
 
         
         

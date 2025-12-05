@@ -9,6 +9,8 @@ using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_ProfiloOrarioService;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_ProfiloOrarioService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_RapportoLavoroService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_RapportoLavoroService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_ProfiloOrarioGGService.Models;
@@ -41,6 +43,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
         private readonly IUserCompanyRepository _userCompanyRepository;
 
         private readonly IDip_RapportoLavoroService _dip_RapportoLavoroService;
+        private readonly IDip_ProfiloOrarioService _dip_ProfiloOrarioService;
+        
+        
         
         private readonly IGestionePresenzeUserUtility _gestionePresenzeUserUtility;
         
@@ -69,6 +74,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
 
                               IDip_RapportoLavoroRepository dip_RapportoLavoroRepository,
                               IDip_RapportoLavoroService dip_RapportoLavoroService,
+                              IDip_ProfiloOrarioService dip_ProfiloOrarioService,
 
                               ICompanyRepository companyRepository,
                               IUserCompanyRepository userCompanyRepository,
@@ -90,6 +96,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
 
             _dip_RapportoLavoroRepository = dip_RapportoLavoroRepository;
             _dip_RapportoLavoroService = dip_RapportoLavoroService;
+            _dip_ProfiloOrarioService = dip_ProfiloOrarioService;
 
             _gestionePresenzeUserUtility = gestionePresenzeUserUtility;
 
@@ -903,6 +910,18 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                             if (resAz_Sub.Success && resAz_Sub.Data != null)
                             {
                                 retVal.UserCompanyEdit.Dip_RapportoLavoro = resAz_Sub.Data.Dip_RapportoLavoro;
+
+                                foreach(var item in retVal.UserCompanyEdit.Dip_RapportoLavoro)
+                                {
+                                    var req_2 = new GenericRequest<Dip_ProfiloOrario_Get_InModel>();
+                                    req_2.Data.Id= item.Id; 
+                                    var resAz_Sub_2 = await _dip_ProfiloOrarioService.Dip_ProfiloOrarioGet(req_2, true);
+                                    if (resAz_Sub_2.Success && resAz_Sub_2.Data != null)
+                                    {
+                                        retVal.UserCompanyEdit.Dip_ProfiloOrario.AddRange( resAz_Sub_2.Data.Dip_ProfiloOrario);
+                                    }
+                                }
+
                             }
                         }
                         
@@ -916,7 +935,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                         Descrizione = "",
                         //IdAspNetUsers = string.Empty
                         IdUserCompany = 0,
-                        Dip_RapportoLavoro = new List<Dip_RapportoLavoroModel>()
+                        Dip_RapportoLavoro = new List<Dip_RapportoLavoroModel>(),
+                        Dip_ProfiloOrario = new List<Dip_ProfiloOrarioModel>()
                     };
                 }
 
@@ -969,10 +989,22 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                             req_1.Data.Id= dipAna.dip_Anagrafica!.Id; 
                             var resAz_Sub = await _dip_RapportoLavoroService.Dip_RapportoLavoroPut(req_1, true);
                             retVal.UserCompanyEdit.Dip_RapportoLavoro = resAz_Sub.Data!.Dip_RapportoLavoro;
+
+
+                            retVal.UserCompanyEdit.Dip_ProfiloOrario = new List<Dip_ProfiloOrarioModel>(); // azzero la lista da tornare
+                            foreach (var item in retVal.UserCompanyEdit.Dip_RapportoLavoro)
+                            {
+                                var req_2 = new GenericRequest<Dip_ProfiloOrario_Put_InModel>();
+                                req_2.Data.Id= item.Id; 
+                                req_2.Data.Dip_ProfiloOrario = model.Data.UserCompanyEdit.Dip_ProfiloOrario.Where(x=> x.IdDip_RapportoLavoro == item.Id).ToList();
+
+                                var resAz_Sub_2 = await _dip_ProfiloOrarioService.Dip_ProfiloOrarioPut(req_2, true);
+                                if (resAz_Sub_2.Success && resAz_Sub_2.Data != null)
+                                {
+                                    retVal.UserCompanyEdit.Dip_ProfiloOrario.AddRange( resAz_Sub_2.Data.Dip_ProfiloOrario);
+                                }
+                            }
                         }
-
-                        
-
                     }
                 }
                 else

@@ -1,4 +1,5 @@
-﻿using nvxapp.server.service.ClientServer_Service.ModelsBase;
+﻿using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_RapportoLavoroService.Models;
+using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,20 +10,31 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Profil
 {
     public class Dip_ProfiloOrarioModel
     {
+         public int Id { get; set; }
+         public int IdDip_RapportoLavoro { get; set; }
     }
 
-    public class Dip_ProfiloOrarioInModel
+    
+    public class Dip_ProfiloOrario_Get_InModel
     {
-
+        public int Id { get; set; }  // = IdDip_RapportoLavoro
     }
-
-    public class Dip_ProfiloOrarioOutModel : ModelResult 
+    public class Dip_ProfiloOrario_Get_OutModel : ModelResult
     {
-        public Dip_ProfiloOrarioOutModel() 
-        {
-        
-        }
+        public List<Dip_ProfiloOrarioModel> Dip_ProfiloOrario { get; set; } = new List<Dip_ProfiloOrarioModel>();
     }
+
+    public class Dip_ProfiloOrario_Put_InModel
+    {
+        public int Id { get; set; } // = IdDip_RapportoLavoro
+        public List<Dip_ProfiloOrarioModel> Dip_ProfiloOrario { get; set; } = new List<Dip_ProfiloOrarioModel>();
+    }
+    public class Dip_ProfiloOrario_Put_OutModel : ModelResult
+    {
+        public int Id { get; set; } // = IdDip_RapportoLavoro
+        public List<Dip_ProfiloOrarioModel> Dip_ProfiloOrario { get; set; } = new List<Dip_ProfiloOrarioModel>();
+    }
+
 
    
 
