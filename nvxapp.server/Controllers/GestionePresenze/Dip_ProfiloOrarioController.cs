@@ -26,14 +26,20 @@ namespace nvxapp.server.Controllers
 
         
 
+       [Authorize]
+        [HttpPost]
+        [Route("Dip_ProfiloOrarioGet")]
+        public async Task<GenericResult<Dip_ProfiloOrario_Get_OutModel>> Dip_ProfiloOrarioGet(GenericRequest<Dip_ProfiloOrario_Get_InModel> inModel)
+        {
+            return await _dip_ProfiloOrarioService.Dip_ProfiloOrarioGet(inModel, false);
+        }
+
         [Authorize]
         [HttpPost]
-        [Route("GetAll")]
-        public async Task<GenericResult<Dip_ProfiloOrarioOutModel>> GetAll(GenericRequest<Dip_ProfiloOrarioInModel> inModel)
+        [Route("Dip_ProfiloOrarioPut")]
+        public async Task<GenericResult<Dip_ProfiloOrario_Put_OutModel>> Dip_ProfiloOrarioPut(GenericRequest<Dip_ProfiloOrario_Put_InModel> inModel)
         {
-            var res = await _dip_ProfiloOrarioService.GetAll(inModel, false);
-
-            return res;
+            return await _dip_ProfiloOrarioService.Dip_ProfiloOrarioPut(inModel, false);
         }
 
         
