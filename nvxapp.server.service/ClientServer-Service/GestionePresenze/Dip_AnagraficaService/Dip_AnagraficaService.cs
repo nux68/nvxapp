@@ -1,5 +1,4 @@
-﻿using System.Data;
-using AutoMapper;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
@@ -16,7 +15,9 @@ using nvxapp.server.service.ClientServer_Service.Infrastructure.Account;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Interfaces;
+using nvxapp.server.service.Mappers.Public;
 using nvxapp.server.service.ServerModels;
+using System.Data;
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_AnagraficaService
 {
@@ -107,11 +108,93 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
             }, isSubProcess);
         }
 
+
+        public virtual async Task<GenericResult<Dip_Anagrafica_Get_OutModel>> Dip_AnagraficaGet(GenericRequest<Dip_Anagrafica_Get_InModel> model, bool isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                var retVal = new Dip_Anagrafica_Get_OutModel();
+                
+                int IdCompany;
+                int.TryParse(this.CurrentCompany, out IdCompany);
+                Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg company_DATA = await _gestionePresenzeUserUtility.Get_AzAna_AzSedi_AzReparto_Az_Cfg(IdCompany, true);
+                if (company_DATA != null && company_DATA.az_Anagrafica != null)
+                {
+                    var applicationUser = await _userManager.FindByIdAsync(model.Data.Id);
+                    if(applicationUser!=null)
+                    {
+                        var aspNetRoles = _aspNetRolesRepository.GetAll().ToList();
+                        var usrRoles = new List<string>(await _userManager.GetRolesAsync(applicationUser));
+
+                        var entity = _dip_AnagraficaRepository.GetAll().Where( x=> x.IdAspNetUsers == model.Data.Id).FirstOrDefault();
+                        retVal.Dip_Anagrafica = _mapper.Map<Dip_AnagraficaModel>(entity);
+                        retVal.Dip_Anagrafica.RoleCode = aspNetRoles.Where(x=> x.Name!= null && usrRoles.Contains(x.Name)).Select(x=> x.Code).ToList();
+                    }
+
+                    
+                }
+                await Task.Delay(DelayAsyncMethod);
+                
+                return retVal;
+            }, isSubProcess);
+        }
+
+        public virtual async Task<GenericResult<Dip_Anagrafica_Put_OutModel>> Dip_AnagraficaPut(GenericRequest<Dip_Anagrafica_Put_InModel> model, bool isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                var retVal = new Dip_Anagrafica_Put_OutModel();
+                //var entity = _mapper.Map<Dip_Anagrafica>(model.Data.Dip_Anagrafica);
+
+                
+                int IdCompany;
+                int.TryParse(this.CurrentCompany, out IdCompany);
+                Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg company_DATA = await _gestionePresenzeUserUtility.Get_AzAna_AzSedi_AzReparto_Az_Cfg(IdCompany, true);
+                if (company_DATA != null && company_DATA.az_Anagrafica != null)
+                {
+
+
+                    var applicationUser = await _userManager.FindByIdAsync(model.Data.Id);
+                    if(applicationUser!=null)
+                    {
+                        var aspNetRoles = _aspNetRolesRepository.GetAll().ToList();
+                        var usrRoles = new List<string>(await _userManager.GetRolesAsync(applicationUser));
+
+                        var entity = _dip_AnagraficaRepository.GetAll().Where( x=> x.IdAspNetUsers == model.Data.Id).FirstOrDefault();
+                        
+                        if(entity==null)
+                        {
+                            //entity = _mapper.Map<Dip_Anagrafica>(model.Data.Dip_Anagrafica);
+                            //entity.IdAspNetUsers = model.Data.Id;
+                            //entity.Id = 0;
+                        }
+                        else
+                        {
+                            entity = _mapper.Map<Dip_Anagrafica>(model.Data.Dip_Anagrafica);
+                            await _dip_AnagraficaRepository.UpsertAsyncGuid(entity);
+                        }
+
+                    }
+
+                    
+                }
+
+                await Task.Delay(DelayAsyncMethod);
+                return retVal;
+
+            }, isSubProcess);
+        }
+
+
     }
 
     public interface IDip_AnagraficaService : IServiceBase
     {
         public Task<GenericResult<Dip_Anagrafica_GetAll_OutModel>> GetAll(GenericRequest<Dip_Anagrafica_GetAll_InModel> model, Boolean isSubProcess);
+
+        public Task<GenericResult<Dip_Anagrafica_Get_OutModel>> Dip_AnagraficaGet(GenericRequest<Dip_Anagrafica_Get_InModel> model, bool isSubProcess);
+        public Task<GenericResult<Dip_Anagrafica_Put_OutModel>> Dip_AnagraficaPut(GenericRequest<Dip_Anagrafica_Put_InModel> model, bool isSubProcess);
+
     }
 
   

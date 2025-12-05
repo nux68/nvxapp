@@ -12,8 +12,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
         public int Id { get; set; }
         public string? Cognome { get; set; }
         public string? Nome { get; set; }
-        public List<Dip_RapportoLavoroModel> Dip_RapportoLavoro { get; set; } = new List<Dip_RapportoLavoroModel>();
         public List<RoleCode> RoleCode { get; set; } = new List<RoleCode>();
+
+        // questi vengono usati per visualizzare i dati, ma le editazioni lavorano dievrsamente con propri ogegtti
+        public List<Dip_RapportoLavoroModel> Dip_RapportoLavoro { get; set; } = new List<Dip_RapportoLavoroModel>();
 
     }
 
@@ -33,6 +35,26 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
     }
 
 
+    
+    public class Dip_Anagrafica_Get_InModel
+    {
+        public string Id { get; set; }  = string.Empty; // = IdAspNetUsers
+    }
+    public class Dip_Anagrafica_Get_OutModel : ModelResult
+    {
+        public Dip_AnagraficaModel Dip_Anagrafica { get; set; } = new Dip_AnagraficaModel();
+    }
+
+    public class Dip_Anagrafica_Put_InModel
+    {
+        public string Id { get; set; } = string.Empty;// = IdAspNetUsers
+        public Dip_AnagraficaModel Dip_Anagrafica { get; set; } = new Dip_AnagraficaModel();
+    }
+    public class Dip_Anagrafica_Put_OutModel : ModelResult
+    {
+        public string Id { get; set; } = string.Empty;// = IdAspNetUsers
+        public Dip_AnagraficaModel Dip_Anagrafica { get; set; } = new Dip_AnagraficaModel();
+    }
 
 
 }
