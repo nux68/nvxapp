@@ -1,3 +1,6 @@
+import { Dip_AnagraficaModel } from "../../../GestionePresenze/Dip_Anagrafica/Models/dip-anagrafica-model";
+import { Dip_ProfiloOrarioModel } from "../../../GestionePresenze/Dip_ProfiloOrario/Models/dip-profilo-orario-model";
+import { Dip_RapportoLavoroModel } from "../../../GestionePresenze/Dip_RapportoLavoro/Models/dip-rapporto-lavoro-model";
 import { ModelResult } from "../../../ModelsBase/model-result";
 import { RolesModel } from "./user-roles-model";
 
@@ -26,6 +29,9 @@ export class UserCompanyListOutModel extends ModelResult {
 }
 
 
+ 
+  
+
 
 export class UserCompanyEditModel {
   constructor(
@@ -35,8 +41,10 @@ export class UserCompanyEditModel {
 
     public mail: string | null = null,
     public pw: string | null = null,
-    //public roleId: string = "",
-    public roles:string[]=[]
+    
+    public roles: string[] = []
+
+    
   ) { }
 }
 

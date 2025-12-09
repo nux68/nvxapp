@@ -35,7 +35,21 @@ namespace nvxapp.server.Controllers
             return res;
         }
 
-        
+        [Authorize]
+        [HttpPost]
+        [Route("Dip_AnagraficaGet")]
+        public async Task<GenericResult<Dip_Anagrafica_Get_OutModel>> Dip_AnagraficaGet(GenericRequest<Dip_Anagrafica_Get_InModel> inModel)
+        {
+            return await _dip_AnagraficaService.Dip_AnagraficaGet(inModel, false);
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("Dip_AnagraficaPut")]
+        public async Task<GenericResult<Dip_Anagrafica_Put_OutModel>> Dip_AnagraficaPut(GenericRequest<Dip_Anagrafica_Put_InModel> inModel)
+        {
+            return await _dip_AnagraficaService.Dip_AnagraficaPut(inModel, false);
+        }
 
     }
 

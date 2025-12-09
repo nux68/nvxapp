@@ -29,6 +29,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
         private readonly IDip_RapportoLavoroRepository _dip_RapportoLavoroRepository;
         private readonly IGestionePresenzeUserUtility _gestionePresenzeUserUtility;
         private readonly IAspNetRolesRepository _aspNetRolesRepository;
+        private readonly IAspNetUserRolesRepository _aspNetUserRolesRepository;
 
         public Dip_AnagraficaService(IMapper mapper,
                                   UserManager<ApplicationUser> userManager,
@@ -37,6 +38,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
                                   IHttpContextAccessor httpContextAccessor,
                                   IConfiguration configuration,
 
+                                  IAspNetUserRolesRepository aspNetUserRolesRepository,
                                   IAspNetRolesRepository aspNetRolesRepository,
                                   IGestionePresenzeUserUtility gestionePresenzeUserUtility,
                                   IAccountService accountService,
@@ -48,6 +50,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
             _accountService = accountService;
             _gestionePresenzeUserUtility = gestionePresenzeUserUtility;
             _aspNetRolesRepository = aspNetRolesRepository;
+            _aspNetUserRolesRepository = aspNetUserRolesRepository;
         }
 
         public virtual async Task<GenericResult<Dip_Anagrafica_GetAll_OutModel>> GetAll(GenericRequest<Dip_Anagrafica_GetAll_InModel> model, Boolean isSubProcess)
@@ -127,8 +130,18 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
                         var usrRoles = new List<string>(await _userManager.GetRolesAsync(applicationUser));
 
                         var entity = _dip_AnagraficaRepository.GetAll().Where( x=> x.IdAspNetUsers == model.Data.Id).FirstOrDefault();
-                        retVal.Dip_Anagrafica = _mapper.Map<Dip_AnagraficaModel>(entity);
+                        retVal.Dip_Anagrafica = _mapper.Map<Dip_Anagrafica4EditModel>(entity);
                         retVal.Dip_Anagrafica.RoleCode = aspNetRoles.Where(x=> x.Name!= null && usrRoles.Contains(x.Name)).Select(x=> x.Code).ToList();
+
+                        ////
+                        IdentityUserRole<string>? identityUserRole = _aspNetUserRolesRepository.FindAll(x => x.UserId == model.Data.Id).FirstOrDefault();
+                        if(identityUserRole!=null)
+                        {
+                            retVal.Dip_Anagrafica.Descrizione = !string.IsNullOrEmpty(applicationUser.UserName)? applicationUser.UserName:"";
+                            retVal.Dip_Anagrafica.IdUserCompany = IdCompany;
+                            retVal.Dip_Anagrafica.RoleId = identityUserRole.RoleId;
+                            retVal.Dip_Anagrafica.Roles = new List<string>(await _userManager.GetRolesAsync(applicationUser));
+                        }
                     }
 
                     

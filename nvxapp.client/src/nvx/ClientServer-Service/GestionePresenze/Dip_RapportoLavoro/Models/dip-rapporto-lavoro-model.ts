@@ -2,18 +2,23 @@ import { ModelResult } from "../../../ModelsBase/model-result";
 
 export class Dip_RapportoLavoroModel {
   public id!: number;
-
-}
-
-
-export class Dip_RapportoLavoro_GetAll_InModel {
  
 }
 
-export class Dip_RapportoLavoro_GetAll_OutModel extends ModelResult {
+export class Dip_RapportoLavoro_Get_InModel {
+  id: number; // = IdDip_Anagrafica
+}
+export class Dip_RapportoLavoro_Get_OutModel extends ModelResult {
+  dip_RapportoLavoro: Dip_RapportoLavoroModel[] = [];
+}
 
-  public Dip_RapportoLavoroModel: Dip_RapportoLavoroModel;
-
+export class Dip_RapportoLavoro_Put_InModel {
+  id: number; // = IdDip_Anagrafica
+  dip_RapportoLavoro: Dip_RapportoLavoroModel[] = [];
+}
+export class Dip_RapportoLavoro_Put_OutModel extends ModelResult {
+  id: number; // = IdDip_Anagrafica
+  dip_RapportoLavoro: Dip_RapportoLavoroModel[] = [];
 }
 
 

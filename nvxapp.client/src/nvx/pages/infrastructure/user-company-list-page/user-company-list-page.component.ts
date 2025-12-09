@@ -56,7 +56,7 @@ export class UserCompanyListPageComponent implements OnInit {
 
       new FabMenuItem('Elemento 1', 'add-circle-outline', () => {
         this.navCtrl.navigateForward('/' + pageName, {
-          state: { id: 0 }
+          state: { id: '' }
         });
       }),
 
@@ -93,7 +93,7 @@ export class UserCompanyListPageComponent implements OnInit {
   handleButtonEditClick = (item: any) => {
     const pageName = this.mainMenuService.RedefineNameOfPages('usercompanyedit');
     this.navCtrl.navigateForward('/' + pageName, {
-      state: { id: item.idUserCompany }
+      state: { id: item.idAspNetUsers }
     });
   }
 

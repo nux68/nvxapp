@@ -35,6 +35,17 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
     }
 
 
+
+
+    public class Dip_Anagrafica4EditModel:Dip_AnagraficaModel
+    {
+        
+        public string Descrizione { get; set; } = string.Empty;
+        public int IdUserCompany { get; set; }
+        public string? RoleId { get; set; }
+        public List<string> Roles { get; set; } = new List<string>();
+
+    }
     
     public class Dip_Anagrafica_Get_InModel
     {
@@ -42,18 +53,18 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
     }
     public class Dip_Anagrafica_Get_OutModel : ModelResult
     {
-        public Dip_AnagraficaModel Dip_Anagrafica { get; set; } = new Dip_AnagraficaModel();
+        public Dip_Anagrafica4EditModel Dip_Anagrafica { get; set; } = new Dip_Anagrafica4EditModel();
     }
 
     public class Dip_Anagrafica_Put_InModel
     {
         public string Id { get; set; } = string.Empty;// = IdAspNetUsers
-        public Dip_AnagraficaModel Dip_Anagrafica { get; set; } = new Dip_AnagraficaModel();
+        public Dip_Anagrafica4EditModel Dip_Anagrafica { get; set; } = new Dip_Anagrafica4EditModel();
     }
     public class Dip_Anagrafica_Put_OutModel : ModelResult
     {
         public string Id { get; set; } = string.Empty;// = IdAspNetUsers
-        public Dip_AnagraficaModel Dip_Anagrafica { get; set; } = new Dip_AnagraficaModel();
+        public Dip_Anagrafica4EditModel Dip_Anagrafica { get; set; } = new Dip_Anagrafica4EditModel();
     }
 
 

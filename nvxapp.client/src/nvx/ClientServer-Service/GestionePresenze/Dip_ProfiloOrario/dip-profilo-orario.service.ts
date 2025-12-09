@@ -5,7 +5,8 @@ import { environment } from '../../../../environments/environment';
 import { GenericRequest } from '../../ModelsBase/generic-request';
 import { GenericResult } from '../../ModelsBase/generic-result';
 import { map, Observable } from 'rxjs';
-import { Dip_ProfiloOrarioInModel, Dip_ProfiloOrarioOutModel } from './Models/dip-profilo-orario-model';
+import { Dip_ProfiloOrario_Get_InModel, Dip_ProfiloOrario_Get_OutModel, Dip_ProfiloOrario_Put_InModel, Dip_ProfiloOrario_Put_OutModel } from './Models/dip-profilo-orario-model';
+
 
 @Injectable({
   providedIn: 'root'
@@ -16,16 +17,22 @@ export class DipProfiloOrarioService {
     private authService: AuthService
   ) { }
 
-  GetAll(model: GenericRequest<Dip_ProfiloOrarioInModel>): Observable<GenericResult<Dip_ProfiloOrarioOutModel>> {
-
-    return this.http.post<GenericResult<Dip_ProfiloOrarioOutModel>>(environment.remoteData.apiUri + 'Dip_ProfiloOrario/GetAll', model)
+  Dip_ProfiloOrarioGet(model: GenericRequest<Dip_ProfiloOrario_Get_InModel>): Observable<GenericResult<Dip_ProfiloOrario_Get_OutModel>> {
+    return this.http.post<GenericResult<Dip_ProfiloOrario_Get_OutModel>>(environment.remoteData.apiUri + 'Dip_ProfiloOrario/Dip_ProfiloOrarioGet', model)
       .pipe(
         map(r => {
           return r;
-        }
-        )
+        })
       );
+  }
 
+  Dip_ProfiloOrarioPut(model: GenericRequest<Dip_ProfiloOrario_Put_InModel>): Observable<GenericResult<Dip_ProfiloOrario_Put_OutModel>> {
+    return this.http.post<GenericResult<Dip_ProfiloOrario_Put_OutModel>>(environment.remoteData.apiUri + 'Dip_ProfiloOrario/Dip_ProfiloOrarioPut', model)
+      .pipe(
+        map(r => {
+          return r;
+        })
+      );
   }
 
 }

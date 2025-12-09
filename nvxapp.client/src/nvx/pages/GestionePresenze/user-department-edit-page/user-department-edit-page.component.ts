@@ -12,8 +12,10 @@ import { StringHelperService } from '../../../Utility/infrastructure/string-help
 import { ParameterService } from '../../../ClientServer-Service/Infrastructure/Parameter/parameter.service';
 import { RolesModel } from '../../../ClientServer-Service/Infrastructure/Parameter/Models/roles-model';
 
-import { UserCompanyEditModel, UserCompanyGetInModel, UserCompanyPutInModel } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-company-model';
+
 import { RoleCode } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-roles-model';
+import { Dip_Anagrafica4EditModel, Dip_Anagrafica_Get_InModel, Dip_Anagrafica_Put_InModel } from '../../../ClientServer-Service/GestionePresenze/Dip_Anagrafica/Models/dip-anagrafica-model';
+import { DipAnagraficaService } from '../../../ClientServer-Service/GestionePresenze/Dip_Anagrafica/dip-anagrafica.service';
 
 @Component({
   selector: 'app-user-department-edit-page',
@@ -21,7 +23,7 @@ import { RoleCode } from '../../../ClientServer-Service/Infrastructure/Account/M
   styleUrls: ['./user-department-edit-page.component.scss'],
   standalone: false
 })
-export class UserDepartmentEditPageComponent extends BasePageConfirmCancelComponent<UserCompanyEditModel> {
+export class UserDepartmentEditPageComponent extends BasePageConfirmCancelComponent<Dip_Anagrafica4EditModel> {
 
   modifiedDescription: string | null = null;
 
@@ -30,7 +32,8 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
     protected override fb: FormBuilder,
     private parameterService: ParameterService,
     private stringHelperService: StringHelperService,
-    private accountService: AccountService) {
+    //private accountService: AccountService,
+    private dipAnagraficaService: DipAnagraficaService) {
 
     super(navCtrl, userInterfaceService, fb);
 
@@ -50,36 +53,36 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
     };
   }
 
-  LoadData = (): Observable<UserCompanyEditModel | null> => {
+  LoadData = (): Observable<Dip_Anagrafica4EditModel | null> => {
     const state = history.state;
     if (state && state.id) {
-      let request: GenericRequest<UserCompanyGetInModel> = new GenericRequest<UserCompanyGetInModel>(UserCompanyGetInModel);
+      let request: GenericRequest<Dip_Anagrafica_Get_InModel> = new GenericRequest<Dip_Anagrafica_Get_InModel>(Dip_Anagrafica_Get_InModel);
       request.data.id = state.id;
-      return this.accountService.UserCompanyGet(request).pipe(
-        map((res) => res.data.userCompanyEdit),
+      return this.dipAnagraficaService.Dip_AnagraficaGet(request).pipe(
+        map((res) => res.data.dip_Anagrafica),
         catchError((error) => {
           console.error('Errore durante la chiamata API:', error);
           return [null];
         })
       );
     } else {
-      return new Observable<UserCompanyEditModel | null>((subscriber) => {
+      return new Observable<Dip_Anagrafica4EditModel | null>((subscriber) => {
         this._editForm.addControl('mail', this.fb.control(null, [Validators.required, Validators.email]));
         this._editForm.addControl('pw', this.fb.control(null, [Validators.required]));
         this._editForm.addControl('confirmPassword', this.fb.control(null, [Validators.required]));
         this._editForm.setValidators(matchPasswords);
         this._editForm.updateValueAndValidity();
-        subscriber.next(new UserCompanyEditModel());
+        subscriber.next(new Dip_Anagrafica4EditModel());
         subscriber.complete();
       });
     }
   };
 
-  SaveData = (editModel: UserCompanyEditModel): Observable<boolean> => {
-    let request: GenericRequest<UserCompanyPutInModel> =
-      new GenericRequest<UserCompanyPutInModel>(UserCompanyPutInModel);
-    request.data.userCompanyEdit = editModel;
-    return this.accountService.UserCompanyPut(request).pipe(
+  SaveData = (editModel: Dip_Anagrafica4EditModel): Observable<boolean> => {
+    let request: GenericRequest<Dip_Anagrafica_Put_InModel> =
+      new GenericRequest<Dip_Anagrafica_Put_InModel>(Dip_Anagrafica_Put_InModel);
+    request.data.dip_Anagrafica = editModel;
+    return this.dipAnagraficaService.Dip_AnagraficaPut(request).pipe(
       map(() => true),
       catchError((error) => {
         console.error('Errore durante la chiamata API:', error);

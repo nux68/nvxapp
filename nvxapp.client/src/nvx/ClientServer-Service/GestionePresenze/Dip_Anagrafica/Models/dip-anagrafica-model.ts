@@ -31,3 +31,26 @@ export class Dip_Anagrafica_GetAll_OutModel extends ModelResult {
 
 
 
+export class Dip_Anagrafica4EditModel extends Dip_AnagraficaModel {
+  
+  public roles: string[] = [];
+  public idUserCompany: number = 0;
+  public descrizione: string;
+  
+
+}
+
+export class Dip_Anagrafica_Get_InModel {
+  public id: string;
+}
+export class Dip_Anagrafica_Get_OutModel {
+  public dip_Anagrafica: Dip_Anagrafica4EditModel;
+}
+export class Dip_Anagrafica_Put_InModel {
+  public id: string;
+  public dip_Anagrafica: Dip_Anagrafica4EditModel;
+}
+export class Dip_Anagrafica_Put_OutModel {
+  public id: string;
+  public dip_Anagrafica: Dip_Anagrafica4EditModel;
+}
