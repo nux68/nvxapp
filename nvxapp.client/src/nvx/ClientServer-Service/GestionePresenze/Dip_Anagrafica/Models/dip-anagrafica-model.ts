@@ -36,7 +36,7 @@ export class Dip_Anagrafica4EditModel extends Dip_AnagraficaModel {
   public roles: string[] = [];
   public idUserCompany: number = 0;
   public descrizione: string;
-  
+  public roleId: string;
 
 }
 
