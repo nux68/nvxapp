@@ -184,7 +184,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
                         else
                         {
                             entity = _mapper.Map<Dip_Anagrafica>(model.Data.Dip_Anagrafica);
-                            await _dip_AnagraficaRepository.UpsertAsyncGuid(entity);
+                            //await _dip_AnagraficaRepository.UpsertAsyncGuid(entity);
+                            await _dip_AnagraficaRepository.UpsertAsync(entity);
                         }
 
                     }

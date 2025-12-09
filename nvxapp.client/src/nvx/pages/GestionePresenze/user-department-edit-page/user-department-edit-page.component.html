@@ -97,6 +97,31 @@
               Il ruolo è obbligatorio.
             </ion-note>
 
+
+            <ion-item>
+              <ion-label position="floating">Cognome</ion-label>
+              <ion-input type="text" formControlName="cognome"></ion-input>
+            </ion-item>
+            <ion-note color="danger" *ngIf="_editForm.get('cognome')?.hasError('required') && _editForm.get('cognome')?.touched">
+              cognome è obbligatorio.
+            </ion-note>
+            <ion-note color="danger" *ngIf="_editForm.get('cognome')?.hasError('maxlength') && _editForm.get('cognome')?.touched">
+              cognome non può superare i 20 caratteri.
+            </ion-note>
+
+
+            <ion-item>
+              <ion-label position="floating">Nome</ion-label>
+              <ion-input type="text" formControlName="nome"></ion-input>
+            </ion-item>
+            <ion-note color="danger" *ngIf="_editForm.get('nome')?.hasError('required') && _editForm.get('nome')?.touched">
+              nome è obbligatorio.
+            </ion-note>
+            <ion-note color="danger" *ngIf="_editForm.get('nome')?.hasError('maxlength') && _editForm.get('nome')?.touched">
+              nome non può superare i 20 caratteri.
+            </ion-note>
+
+
             <br />
           </ion-segment-content>
           <ion-segment-content id="B0"></ion-segment-content>
