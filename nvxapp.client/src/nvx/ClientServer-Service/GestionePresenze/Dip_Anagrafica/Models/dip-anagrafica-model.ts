@@ -1,5 +1,6 @@
 import { RoleCode } from "../../../Infrastructure/Account/Models/user-roles-model";
 import { ModelResult } from "../../../ModelsBase/model-result";
+import { Dip_ProfiloOrarioModel } from "../../Dip_ProfiloOrario/Models/dip-profilo-orario-model";
 import { Dip_RapportoLavoroModel } from "../../Dip_RapportoLavoro/Models/dip-rapporto-lavoro-model";
 
 
@@ -37,6 +38,8 @@ export class Dip_Anagrafica4EditModel extends Dip_AnagraficaModel {
   public idUserCompany: number = 0;
   public descrizione: string;
   public roleId: string;
+
+  public dip_ProfiloOrario: Dip_ProfiloOrarioModel[];
 
 }
 

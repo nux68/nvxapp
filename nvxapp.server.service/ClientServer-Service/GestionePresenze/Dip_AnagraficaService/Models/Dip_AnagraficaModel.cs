@@ -1,5 +1,6 @@
 ﻿using nvxapp.server.data.Entities.Public;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_RichiestaService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_ProfiloOrarioService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_RapportoLavoroService.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 
@@ -44,6 +45,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
         public int IdUserCompany { get; set; }
         public string? RoleId { get; set; }
         public List<string> Roles { get; set; } = new List<string>();
+        ////
+
+        public List<Dip_ProfiloOrarioModel> Dip_ProfiloOrario  { get; set; } = new List<Dip_ProfiloOrarioModel>();
 
     }
     

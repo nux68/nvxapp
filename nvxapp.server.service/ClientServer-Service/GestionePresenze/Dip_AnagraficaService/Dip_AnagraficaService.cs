@@ -10,6 +10,9 @@ using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_AnagraficaService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_ProfiloOrarioService;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_ProfiloOrarioService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_RapportoLavoroService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_RapportoLavoroService.Models;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Account;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Models;
@@ -31,6 +34,13 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
         private readonly IAspNetRolesRepository _aspNetRolesRepository;
         private readonly IAspNetUserRolesRepository _aspNetUserRolesRepository;
 
+        private readonly IDip_RapportoLavoroService _dip_RapportoLavoroService;
+        private readonly IDip_ProfiloOrarioService _dip_ProfiloOrarioService;
+        
+        
+
+        private readonly IUserCompanyRepository _userCompanyRepository;
+
         public Dip_AnagraficaService(IMapper mapper,
                                   UserManager<ApplicationUser> userManager,
                                   IAspNetUsersRepository aspNetUsersRepository,
@@ -38,6 +48,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
                                   IHttpContextAccessor httpContextAccessor,
                                   IConfiguration configuration,
 
+                                  IDip_RapportoLavoroService dip_RapportoLavoroService,
+                                  IDip_ProfiloOrarioService dip_ProfiloOrarioService,
+                                  IUserCompanyRepository userCompanyRepository,
                                   IAspNetUserRolesRepository aspNetUserRolesRepository,
                                   IAspNetRolesRepository aspNetRolesRepository,
                                   IGestionePresenzeUserUtility gestionePresenzeUserUtility,
@@ -51,6 +64,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
             _gestionePresenzeUserUtility = gestionePresenzeUserUtility;
             _aspNetRolesRepository = aspNetRolesRepository;
             _aspNetUserRolesRepository = aspNetUserRolesRepository;
+            _userCompanyRepository = userCompanyRepository;
+            _dip_RapportoLavoroService = dip_RapportoLavoroService;
+            _dip_ProfiloOrarioService = dip_ProfiloOrarioService;
         }
 
         public virtual async Task<GenericResult<Dip_Anagrafica_GetAll_OutModel>> GetAll(GenericRequest<Dip_Anagrafica_GetAll_InModel> model, Boolean isSubProcess)
@@ -124,27 +140,54 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
                 if (company_DATA != null && company_DATA.az_Anagrafica != null)
                 {
                     var applicationUser = await _userManager.FindByIdAsync(model.Data.Id);
-                    if(applicationUser!=null)
+                    if( applicationUser != null )
                     {
                         var aspNetRoles = _aspNetRolesRepository.GetAll().ToList();
                         var usrRoles = new List<string>(await _userManager.GetRolesAsync(applicationUser));
 
-                        var entity = _dip_AnagraficaRepository.GetAll().Where( x=> x.IdAspNetUsers == model.Data.Id).FirstOrDefault();
-                        retVal.Dip_Anagrafica = _mapper.Map<Dip_Anagrafica4EditModel>(entity);
-                        retVal.Dip_Anagrafica.RoleCode = aspNetRoles.Where(x=> x.Name!= null && usrRoles.Contains(x.Name)).Select(x=> x.Code).ToList();
-
-                        ////
-                        IdentityUserRole<string>? identityUserRole = _aspNetUserRolesRepository.FindAll(x => x.UserId == model.Data.Id).FirstOrDefault();
-                        if(identityUserRole!=null)
+                        var dip_Anagrafica = _dip_AnagraficaRepository.GetAll().Where( x=> x.IdAspNetUsers == model.Data.Id).FirstOrDefault();
+                        if( dip_Anagrafica != null )
                         {
-                            retVal.Dip_Anagrafica.Descrizione = !string.IsNullOrEmpty(applicationUser.UserName)? applicationUser.UserName:"";
-                            retVal.Dip_Anagrafica.IdUserCompany = IdCompany;
-                            retVal.Dip_Anagrafica.RoleId = identityUserRole.RoleId;
-                            retVal.Dip_Anagrafica.Roles = new List<string>(await _userManager.GetRolesAsync(applicationUser));
+                            retVal.Dip_Anagrafica = _mapper.Map<Dip_Anagrafica4EditModel>(dip_Anagrafica);
+                            retVal.Dip_Anagrafica.RoleCode = aspNetRoles.Where(x=> x.Name!= null && usrRoles.Contains(x.Name)).Select(x=> x.Code).ToList();
+
+                            var usrC =  _userCompanyRepository.GetAll().Where(x => x.IdAspNetUsers == model.Data.Id && x.IdCompany == IdCompany).FirstOrDefault();
+
+                            if ( usrC != null )
+                            {
+                                var req_2 = new GenericRequest<UserCompanyGetInModel>();
+                                req_2.Data =  new UserCompanyGetInModel() { Id= usrC.Id };
+
+                                var res_2 = await _accountService.UserCompanyGet(req_2, true);
+                                if(res_2.Success && res_2.Data != null)
+                                {
+                                    retVal.Dip_Anagrafica.Descrizione = !string.IsNullOrEmpty(applicationUser.UserName)? applicationUser.UserName:"";
+                                    retVal.Dip_Anagrafica.IdUserCompany = IdCompany;
+                                    retVal.Dip_Anagrafica.RoleId =res_2.Data.UserCompanyEdit.RoleId;
+                                    retVal.Dip_Anagrafica.Roles = res_2.Data.UserCompanyEdit.Roles;  
+                                }
+
+                                var req_1 = new GenericRequest<Dip_RapportoLavoro_Get_InModel>();
+                                req_1.Data.Id = retVal.Dip_Anagrafica.Id; 
+                                var res_1 = await _dip_RapportoLavoroService.Dip_RapportoLavoroGet(req_1, true);
+                                if(res_1.Success && res_1.Data != null)
+                                {
+                                    retVal.Dip_Anagrafica.Dip_RapportoLavoro = res_1.Data.Dip_RapportoLavoro;
+                                }
+                                
+                                var req_3 = new GenericRequest<Dip_ProfiloOrario_Get_InModel>();
+                                req_3.Data.Id = retVal.Dip_Anagrafica.Id; 
+                                var res_3 = await _dip_ProfiloOrarioService.Dip_ProfiloOrarioGet(req_3, true);
+                                if(res_3.Success && res_3.Data != null)
+                                {
+                                    retVal.Dip_Anagrafica.Dip_ProfiloOrario = res_3.Data.Dip_ProfiloOrario;
+                                }
+
+                                
+
+                            }
                         }
                     }
-
-                    
                 }
                 await Task.Delay(DelayAsyncMethod);
                 
@@ -186,6 +229,51 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
                             entity = _mapper.Map<Dip_Anagrafica>(model.Data.Dip_Anagrafica);
                             //await _dip_AnagraficaRepository.UpsertAsyncGuid(entity);
                             await _dip_AnagraficaRepository.UpsertAsync(entity);
+                            
+
+                            var usrC =  _userCompanyRepository.GetAll().Where(x => x.IdAspNetUsers == model.Data.Id && x.IdCompany == IdCompany).FirstOrDefault();
+
+                            if ( usrC != null )
+                            {
+                                var req_2 = new GenericRequest<UserCompanyPutInModel>();
+                                req_2.Data = new UserCompanyPutInModel()
+                                {
+                                    UserCompanyEdit = new UserCompanyEditModel()
+                                    {
+                                        IdUserCompany = usrC.Id,
+                                        Descrizione = !string.IsNullOrEmpty(applicationUser.UserName) ? applicationUser.UserName : "",
+                                        MainUser = usrC.MainUser,
+                                        Mail = applicationUser.Email != null ? applicationUser.Email : "",
+                                        Pw = null,
+                                        RoleId = model.Data.Dip_Anagrafica.RoleId,
+                                        Roles = model.Data.Dip_Anagrafica.Roles
+                                    }
+                                };
+    
+                                await _accountService.UserCompanyPut(req_2, true);
+
+
+                                var req_1 = new GenericRequest<Dip_RapportoLavoro_Put_InModel>();
+                                req_1.Data.Id = retVal.Dip_Anagrafica.Id; 
+                                req_1.Data.Dip_RapportoLavoro = retVal.Dip_Anagrafica.Dip_RapportoLavoro; 
+                                var res_1 = await _dip_RapportoLavoroService.Dip_RapportoLavoroPut(req_1, true);
+                                if(res_1.Success && res_1.Data != null)
+                                {
+                                    retVal.Dip_Anagrafica.Dip_RapportoLavoro = res_1.Data.Dip_RapportoLavoro;
+                                }
+                                
+                                var req_3 = new GenericRequest<Dip_ProfiloOrario_Put_InModel>();
+                                req_3.Data.Id = retVal.Dip_Anagrafica.Id; 
+                                req_3.Data.Dip_ProfiloOrario = retVal.Dip_Anagrafica.Dip_ProfiloOrario; 
+                                var res_3 = await _dip_ProfiloOrarioService.Dip_ProfiloOrarioPut(req_3, true);
+                                if(res_3.Success && res_3.Data != null)
+                                {
+                                    retVal.Dip_Anagrafica.Dip_ProfiloOrario = res_3.Data.Dip_ProfiloOrario;
+                                }
+
+                            }
+                            
+
                         }
 
                     }

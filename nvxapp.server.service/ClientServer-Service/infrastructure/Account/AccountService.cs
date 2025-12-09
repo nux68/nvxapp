@@ -902,7 +902,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                               Mail = applicationUser.Email,
                               MainUser = false,
                               RoleId = identityUserRole.RoleId,
-                              Roles = new List<string>(await _userManager.GetRolesAsync(applicationUser))
+                              Roles = new List<string>(await _userManager.GetRolesAsync(applicationUser)),
+                               
                           };
                       }
                   }
