@@ -8,37 +8,29 @@
     <ion-card-content>
 
       <ion-segment>
+        <!--SEG anagrafica-->
         <ion-segment-button value="A0" content-id="A0">
           <ion-label>Anagrafica</ion-label>
         </ion-segment-button>
+        <!--SEG varie-->
         <ion-segment-button value="B0" content-id="B0">
-          <ion-label>Orari</ion-label>
+          <ion-label>Varie</ion-label>
         </ion-segment-button>
-        <ion-segment-button value="C0" content-id="C0">
-          <ion-label>Commessa</ion-label>
-        </ion-segment-button>
-        <ion-segment-button value="A1" content-id="A1">
-          <ion-label>aaa</ion-label>
-        </ion-segment-button>
-        <ion-segment-button value="B1" content-id="B1">
-          <ion-label>bbb</ion-label>
-        </ion-segment-button>
-        <ion-segment-button value="C1" content-id="C1">
-          <ion-label>ccc</ion-label>
-        </ion-segment-button>
-        <ion-segment-button value="A2" content-id="A2">
-          <ion-label>ddd</ion-label>
-        </ion-segment-button>
-        <ion-segment-button value="B2" content-id="B2">
-          <ion-label>eee</ion-label>
-        </ion-segment-button>
-        <ion-segment-button value="C2" content-id="C2">
-          <ion-label>fff</ion-label>
-        </ion-segment-button>
+        <!--SEG rapporto lavoro-->
+        <ng-container *ngIf="_editModel !=null && _editModel.dip_RapportoLavoro!=null">
+
+          @for (item of _editModel.dip_RapportoLavoro; track item.id; let idxRapp = $index) {
+          <ion-segment-button value="C{{idxRapp}}" [attr.content-id]="'C' + idxRapp">
+            <ion-label>Rapporto Lavoro (ID {{ _editModel.dip_RapportoLavoro[idxRapp].id}})</ion-label>
+          </ion-segment-button>
+          }
+        </ng-container>
+
       </ion-segment>
 
       <form [formGroup]="_editForm">
         <ion-segment-view>
+          <!--SEG anagrafica-->
           <ion-segment-content id="A0">
             <br />
             <ion-item class="nvx-item-4-title">
@@ -124,8 +116,22 @@
 
             <br />
           </ion-segment-content>
+          <!--SEG varie-->
           <ion-segment-content id="B0"></ion-segment-content>
-          <ion-segment-content id="C0"></ion-segment-content>
+          <!--SEG rapporto lavoro-->
+          <ng-container *ngIf="_editModel !=null && _editModel.dip_RapportoLavoro!=null">
+            @for (item of _editModel.dip_RapportoLavoro; track item.id; let idxRapp = $index) {
+            <ion-segment-content [attr.id]="'C' + idxRapp">
+
+              <br />
+              <ion-item class="nvx-item-4-title">
+                <ion-label>Info rapporto (ID {{ _editModel.dip_RapportoLavoro[idxRapp].id}}) </ion-label>
+              </ion-item>
+
+            </ion-segment-content>
+            }
+          </ng-container>
+
         </ion-segment-view>
       </form>
 
