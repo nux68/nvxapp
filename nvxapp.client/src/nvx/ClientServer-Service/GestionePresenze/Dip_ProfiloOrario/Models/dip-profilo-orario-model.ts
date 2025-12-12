@@ -5,6 +5,8 @@ import { ModelResult } from "../../../ModelsBase/model-result";
 export class Dip_ProfiloOrarioModel {
   id: number;
   idDip_RapportoLavoro: number;
+  idPar_ProfiloOrario: number;
+  numGiornoPartenzaCiclo: number;
 }
 
 export class Dip_ProfiloOrario_Get_InModel {

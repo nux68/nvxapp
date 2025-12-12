@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
-import { UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
+import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { ModalController, NavController } from '@ionic/angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AccountService } from '../../../ClientServer-Service/Infrastructure/Account/account.service';
@@ -18,6 +18,7 @@ import { Dip_Anagrafica4EditModel, Dip_Anagrafica_Get_InModel, Dip_Anagrafica_Pu
 import { DipAnagraficaService } from '../../../ClientServer-Service/GestionePresenze/Dip_Anagrafica/dip-anagrafica.service';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { EditDipProfiloOrarioDialogComponent, EditDipProfiloOrarioDialogComponentResult } from '../../../shared/components/GestionePresenze/edit-dip-profilo-orario-dialog/edit-dip-profilo-orario-dialog.component';
+import { Dip_ProfiloOrarioModel } from '../../../ClientServer-Service/GestionePresenze/Dip_ProfiloOrario/Models/dip-profilo-orario-model';
 
 @Component({
   selector: 'app-user-department-edit-page',
@@ -27,13 +28,23 @@ import { EditDipProfiloOrarioDialogComponent, EditDipProfiloOrarioDialogComponen
 })
 export class UserDepartmentEditPageComponent extends BasePageConfirmCancelComponent<Dip_Anagrafica4EditModel> {
 
-  public readonly SEGMENT_MAIN_ANAGRAFICA = 'ANA_0';
-  public readonly SEGMENT_MAIN_VARIE = 'VAR_0';
-  public readonly SEGMENT_MAIN_RAPP_LAV = 'RAPP_LAV_';
+  public readonly SEGMENT_MAIN_ANAGRAFICA = 'MAIN_ANA_0';
+  public readonly SEGMENT_MAIN_VARIE = 'MAIN_VAR_0';
+  public readonly SEGMENT_MAIN_RAPP_LAV = 'MAIN_RAPP_LAV_';
+
+  public readonly SEGMENT_DIPRAPP_PROF_HH = 'DIPRAPP_DETT_PROF_HH';
+  public readonly SEGMENT_DIPRAPP_VARIE = 'DIPRAPP_DETT_VARIE';
+
+
+  public btnEdit_Dip_ProfiloOrario: ButtonItem;
+  public btnDelete_Dip_ProfiloOrario: ButtonItem;
+
 
   public currSection_segment_main: string = this.SEGMENT_MAIN_ANAGRAFICA;
-
-
+  //public currSection_segment_dip_rapp: string = this.SEGMENT_DIPRAPP_PROF_HH;
+  public currSection_segment_dip_rapp: { [key: number]: string } = {};
+  
+  public searchText: string = '';
   modifiedDescription: string | null = null;
 
   constructor(protected override navCtrl: NavController,
@@ -48,7 +59,18 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
 
     super(navCtrl, userInterfaceService, fb);
 
+
+    this.btnEdit_Dip_ProfiloOrario = this.userInterfaceService.Btn_Modifica;
+    this.btnEdit_Dip_ProfiloOrario.event = this.handleButton_Dip_ProfiloOrario_EditClick;
+
+    this.btnDelete_Dip_ProfiloOrario = userInterfaceService.Btn_Cancella;
+    this.btnDelete_Dip_ProfiloOrario.event = this.handleButton_Dip_ProfiloOrario_DeleteClick;
+
   }
+
+
+
+
 
 
   override ionViewWillEnter() {
@@ -67,15 +89,21 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
       // non faccio nulla
     } else if (this.currSection_segment_main.startsWith(this.SEGMENT_MAIN_RAPP_LAV)) {
 
-      this.fabMenuService.fabMenuItem = [
-        new FabMenuItem('xxx', 'add-circle-outline', () => {
-          this.EditDipProfiloOrarioDialog_Open();
-        }),
-      ];
+
+      const curr_RappLav = this.getCurr_RappLav_Id();
+      const currKey = this.currSection_segment_dip_rapp[curr_RappLav];
+
+      if (currKey.includes(this.SEGMENT_DIPRAPP_VARIE)) {
+
+      }else  if (currKey.includes(this.SEGMENT_DIPRAPP_PROF_HH)) {
+          this.fabMenuService.fabMenuItem = [
+            new FabMenuItem('xxx', 'add-circle-outline', () => {
+              this.EditDipProfiloOrarioDialog_Open();
+            }),
+          ];
+      }
 
     }
-
-
 
   }
 
@@ -100,11 +128,24 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
 
 
   segment_main_segmentChanged(event: any) {
-    console.log('Segment cambiato:', event.detail.value);
+    console.log('Segment principale cambiato:', event.detail.value);
     this.currSection_segment_main = event.detail.value;
+    
+    const rappLavId = this.getCurr_RappLav_Id();
+    if (rappLavId !== -1 && !this.currSection_segment_dip_rapp[rappLavId]) {
+      this.currSection_segment_dip_rapp[rappLavId] = this.SEGMENT_MAIN_RAPP_LAV + rappLavId + '_' + this.SEGMENT_DIPRAPP_PROF_HH;
+    }
 
     this.setfabMenuService();
   }
+
+  segment_dip_rapp_segmentChanged(event: any, rappLavId: number) {
+    console.log(`Sotto-segment per Rapporto ID ${rappLavId} cambiato:`, event.detail.value);
+    this.currSection_segment_dip_rapp[rappLavId] = event.detail.value;
+
+    this.setfabMenuService();
+  }
+
 
   get Title(): string { return "User Department Edit"; }
   get EditForm(): FormGroup {
@@ -188,9 +229,26 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
   }
 
 
-  
-  
 
+  getAll_Dip_ProfiloOrario() {
+
+    !this._editModel
+
+    if (!this._editModel) return [];
+
+    const curr_RappLav = this.getCurr_RappLav_Id();
+    return this._editModel.dip_ProfiloOrario.filter(x => x.idDip_RapportoLavoro == curr_RappLav);
+    
+  }
+    
+  handleButton_Dip_ProfiloOrario_EditClick = (item: Dip_ProfiloOrarioModel) => {
+
+  }
+
+  handleButton_Dip_ProfiloOrario_DeleteClick = async (item: any) => {
+
+
+  }
 
 
 
@@ -218,7 +276,10 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
 
   }
 
+  isAdmin(item: any) {
 
+    return false;
+  }
 
 
 }

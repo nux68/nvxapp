@@ -8,6 +8,7 @@ import { Observable } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { Par_ProfiloOrarioModel, Par_ProfiloOrario_GetInModel, Par_ProfiloOrario_PutInModel } from '../../../ClientServer-Service/GestionePresenze/Par_ProfiloOrario/Models/par-profilo-orario-model';
 import { ParProfiloOrarioService } from '../../../ClientServer-Service/GestionePresenze/Par_ProfiloOrario/par-profilo-orario.service';
+import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
 
 @Component({
   selector: 'app-profilo-orario-edit-page',
@@ -21,7 +22,8 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
     protected override navCtrl: NavController,
     protected override userInterfaceService: UserInterfaceService,
     protected override fb: FormBuilder,
-    private parProfiloOrarioService: ParProfiloOrarioService
+    private parProfiloOrarioService: ParProfiloOrarioService,
+    private refresherService: RefresherService
   ) {
     super(navCtrl, userInterfaceService, fb);
   }
@@ -72,7 +74,7 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
 
     return this.parProfiloOrarioService.Par_ProfiloOrarioPut(request).pipe(
       map(() => {
-        // Qui si potrebbe aggiungere un refresh della lista se necessario
+        this.refresherService.SharedParameterGestionePresenze_triggerRefresh(); 
         return true;
       }),
       catchError((error) => {

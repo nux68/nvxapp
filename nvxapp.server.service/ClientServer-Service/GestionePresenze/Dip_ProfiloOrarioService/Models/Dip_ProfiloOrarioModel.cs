@@ -12,6 +12,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Profil
     {
          public int Id { get; set; }
          public int IdDip_RapportoLavoro { get; set; }
+         public int IdPar_ProfiloOrario { get; set; }
+         public int NumGiornoPartenzaCiclo { get; set; }
+        
+            
     }
 
     

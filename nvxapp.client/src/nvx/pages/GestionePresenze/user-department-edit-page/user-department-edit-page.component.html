@@ -23,9 +23,9 @@
 
         <!-- BUTTON Rapporto lavoro (Dinamico) -->
         <ng-container *ngIf="_editModel !=null && _editModel.dip_RapportoLavoro!=null">
-          @for (item of _editModel.dip_RapportoLavoro; track item.id; let idxRapp = $index) {
-          <ion-segment-button value="{{SEGMENT_MAIN_RAPP_LAV}}{{item.id}}">
-            <ion-label>Rapporto Lavoro (ID {{ item.id }})</ion-label>
+          @for (item_main of _editModel.dip_RapportoLavoro; track item_main.id; let idxRapp = $index) {
+          <ion-segment-button value="{{SEGMENT_MAIN_RAPP_LAV}}{{item_main.id}}">
+            <ion-label>Rapporto Lavoro (ID {{ item_main.id }})</ion-label>
           </ion-segment-button>
           }
         </ng-container>
@@ -90,7 +90,7 @@
           <ion-item>
             <ion-label position="floating">Ruolo</ion-label>
             <ion-select formControlName="roles" aria-label="Ruoli" [multiple]="true">
-              <ion-select-option value="{{item}}" *ngFor="let item of getRoles()">{{ item }}</ion-select-option>
+              <ion-select-option value="{{item_role}}" *ngFor="let item_role of getRoles()">{{ item_role }}</ion-select-option>
             </ion-select>
           </ion-item>
           <ion-note color="danger" *ngIf="_editForm.get('roles')?.hasError('minArrayLength') && _editForm.get('roles')?.touched">
@@ -129,15 +129,72 @@
 
         <!-- CONTENUTO: Rapporto lavoro (Dinamico) -->
         <ng-container *ngIf="_editModel !=null && _editModel.dip_RapportoLavoro!=null">
-          @for (item of _editModel.dip_RapportoLavoro; track item.id; let idxRapp = $index) {
+          @for (item_main of _editModel.dip_RapportoLavoro; track item_main.id; let idxRapp = $index) {
 
-          <!-- Questo blocco appare SOLO se la selezione corrente corrisponde all'ID di questo item -->
-          <div *ngIf="currSection_segment_main === (SEGMENT_MAIN_RAPP_LAV + item.id)">
-            <br />
-            <ion-item class="nvx-item-4-title">
-              <ion-label>Info rapporto (ID {{ item.id }}) </ion-label>
-            </ion-item>
-            <!-- Qui aggiungi i campi specifici del rapporto lavoro -->
+
+          <div *ngIf="currSection_segment_main === (SEGMENT_MAIN_RAPP_LAV + item_main.id)">
+
+
+            <ion-segment [value]="currSection_segment_dip_rapp[item_main.id]" (ionChange)="segment_dip_rapp_segmentChanged($event, item_main.id)">
+
+              <ion-segment-button value="{{SEGMENT_MAIN_RAPP_LAV}}{{item_main.id}}_{{SEGMENT_DIPRAPP_PROF_HH}}">
+                <ion-label>Profili orari</ion-label>
+              </ion-segment-button>
+
+
+              <ion-segment-button value="{{SEGMENT_MAIN_RAPP_LAV}}{{item_main.id}}_{{SEGMENT_DIPRAPP_VARIE}}">
+                <ion-label>Varie</ion-label>
+              </ion-segment-button>
+
+            </ion-segment>
+
+            <!-- CONTENUTO: Rapporto lavoro Profilo orario -->
+            <div *ngIf="currSection_segment_dip_rapp[item_main.id] === (SEGMENT_MAIN_RAPP_LAV + item_main.id + '_' + SEGMENT_DIPRAPP_PROF_HH)">
+
+              <br />
+              <ion-item class="nvx-item-4-title">
+                <ion-label>Profili orari </ion-label>
+              </ion-item>
+
+              <ion-grid >
+                <ion-row *ngFor="let item of getAll_Dip_ProfiloOrario() | genericFilter: 'descrizione' : searchText" class="nvx-ion-row-4table">
+
+
+                  <ion-col size="8" class="ion-hide-sm-down">
+                    <ion-icon [name]="isAdmin(item) ? 'server-outline' : 'server-outline'"></ion-icon>
+                    <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
+                      {{ item.idPar_ProfiloOrario  | parProfiloOrarioToLongTextPipe}}
+                    </ion-label>
+                  </ion-col>
+                  <ion-col size="2" class="ion-hide-sm-down">
+                    <ion-button *ngIf="!item.default" size="small" fill="outline" shape="round" (click)="btnDelete_Dip_ProfiloOrario.event(item)" color="{{btnDelete_Dip_ProfiloOrario.color}}">
+                      <ion-icon name="{{btnDelete_Dip_ProfiloOrario.image}}"></ion-icon>
+                      &nbsp;{{btnDelete_Dip_ProfiloOrario.text}}
+                    </ion-button>
+                  </ion-col>
+                  <ion-col size="2" class="ion-hide-sm-down">
+                    <ion-button size="small" fill="outline" shape="round" (click)="btnEdit_Dip_ProfiloOrario.event(item)" color="{{btnEdit_Dip_ProfiloOrario.color}}">
+                      <ion-icon name="{{btnEdit_Dip_ProfiloOrario.image}}"></ion-icon>
+                      &nbsp;{{btnEdit_Dip_ProfiloOrario.text}}
+                    </ion-button>
+                  </ion-col>
+
+
+
+                </ion-row>
+              </ion-grid>
+
+            </div>
+            <!-- CONTENUTO: Rapporto lavoro Varie -->
+            <div *ngIf="currSection_segment_dip_rapp[item_main.id] === (SEGMENT_MAIN_RAPP_LAV + item_main.id + '_' + SEGMENT_DIPRAPP_VARIE)">
+              <br />
+              <ion-item class="nvx-item-4-title">
+                <ion-label>contenuto varie </ion-label>
+              </ion-item>
+            </div>
+
+
+
           </div>
 
           }

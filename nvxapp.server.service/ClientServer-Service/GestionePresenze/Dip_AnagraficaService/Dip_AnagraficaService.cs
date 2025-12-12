@@ -175,13 +175,19 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
                                     retVal.Dip_Anagrafica.Dip_RapportoLavoro = res_1.Data.Dip_RapportoLavoro;
                                 }
                                 
-                                var req_3 = new GenericRequest<Dip_ProfiloOrario_Get_InModel>();
-                                req_3.Data.Id = retVal.Dip_Anagrafica.Id; 
-                                var res_3 = await _dip_ProfiloOrarioService.Dip_ProfiloOrarioGet(req_3, true);
-                                if(res_3.Success && res_3.Data != null)
+
+                                foreach(var item in retVal.Dip_Anagrafica.Dip_RapportoLavoro)
                                 {
-                                    retVal.Dip_Anagrafica.Dip_ProfiloOrario = res_3.Data.Dip_ProfiloOrario;
+                                    var req_3 = new GenericRequest<Dip_ProfiloOrario_Get_InModel>();
+                                    req_3.Data.Id = item.Id; 
+                                    var res_3 = await _dip_ProfiloOrarioService.Dip_ProfiloOrarioGet(req_3, true);
+                                    if(res_3.Success && res_3.Data != null)
+                                    {
+                                        retVal.Dip_Anagrafica.Dip_ProfiloOrario.AddRange( res_3.Data.Dip_ProfiloOrario);
+                                    }
                                 }
+
+                                
 
                                 
 

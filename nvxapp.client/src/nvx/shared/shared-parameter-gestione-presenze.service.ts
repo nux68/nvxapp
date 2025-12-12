@@ -21,6 +21,8 @@ import { Az_SediReparto_GetAll_InModel, Az_SediRepartoModel } from '../ClientSer
 import { AzSediRepartoService } from '../ClientServer-Service/GestionePresenze/Az_SediReparto/az-sedi-reparto.service';
 import { AzSediService } from '../ClientServer-Service/GestionePresenze/Az_Sedi/az-sedi.service';
 import { Az_Sedi_GetAll_InModel, Az_SediModel } from '../ClientServer-Service/GestionePresenze/Az_Sedi/Models/az-sedi-model';
+import { Par_ProfiloOrario_GetAllInModel, Par_ProfiloOrarioModel } from '../ClientServer-Service/GestionePresenze/Par_ProfiloOrario/Models/par-profilo-orario-model';
+import { ParProfiloOrarioService } from '../ClientServer-Service/GestionePresenze/Par_ProfiloOrario/par-profilo-orario.service';
 
 @Injectable({
   providedIn: 'root'
@@ -40,7 +42,8 @@ export class SharedParameterGestionePresenzeService {
     private dipAnagraficaService: DipAnagraficaService,
     private azSediRepartoService: AzSediRepartoService,
     private azSediService: AzSediService,
-    private azCfgService: AzCfgService
+    private azCfgService: AzCfgService,
+    private parProfiloOrarioService: ParProfiloOrarioService,
   ) { }
 
   public InitCall(updateProgress: (calls: any[]) => void): any[] {
@@ -185,7 +188,6 @@ export class SharedParameterGestionePresenzeService {
         })
       ),
 
-
       this.azCfgService.Az_CfgGet(new GenericRequest<Az_Cfg_Get_InModel>(Az_Cfg_Get_InModel)).pipe(
         tap((result) => {
           this.Az_Cfg = result.data.az_Cfg
@@ -202,6 +204,24 @@ export class SharedParameterGestionePresenzeService {
           console.error(`Errore durante il caricamento dell condigurazione azienda:`, error);
           return of(null);
         })),
+
+      this.parProfiloOrarioService.GetAll(new GenericRequest<Par_ProfiloOrario_GetAllInModel>(Par_ProfiloOrario_GetAllInModel)).pipe(
+        tap((result) => {
+          this.Par_ProfiloOrario = result.data.par_ProfiloOrario
+          updateProgress(calls)
+        }),
+        retry({
+          count: 20,
+          delay: (error, retryCount) => {
+            console.error(`Errore rilevato, ritento dopo ${retryCount} secondi:`, error);
+            return timer(500);
+          }
+        }),
+        catchError((error) => {
+          console.error(`Errore durante il caricamento dei profili orari:`, error);
+          return of(null);
+        })),
+
     );
     return calls;
   }
@@ -339,5 +359,22 @@ export class SharedParameterGestionePresenzeService {
   public get Az_Sedi$(): Observable<Az_SediModel[] | []> {
     return this._az_SediSubject.asObservable();
   }
+
+
+  
+
+  private _par_ProfiloOrario: Par_ProfiloOrarioModel[] | null = [];
+  public get Par_ProfiloOrario(): Par_ProfiloOrarioModel[] | null {
+    return this._par_ProfiloOrario;
+  }
+  public set Par_ProfiloOrario(value: Par_ProfiloOrarioModel[] | null) {
+    this._par_ProfiloOrario = value;
+    this._par_ProfiloOrarioSubject.next(value);
+  }
+  private _par_ProfiloOrarioSubject = new BehaviorSubject<Par_ProfiloOrarioModel[]>([]);
+  public get Par_ProfiloOrario$(): Observable<Par_ProfiloOrarioModel[] | []> {
+    return this._par_ProfiloOrarioSubject.asObservable();
+  }
+
 
 }
