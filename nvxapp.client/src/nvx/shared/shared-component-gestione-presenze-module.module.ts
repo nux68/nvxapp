@@ -25,13 +25,15 @@ import { SeletionSediRepartoUserDialogComponent } from './components/GestionePre
 import { SharedComponentInfrastructureModule } from './shared-component-infrastructure.module';
 import { SeletionParAttivitaDialogComponent } from './components/GestionePresenze/seletion-par-attivita-dialog/seletion-par-attivita-dialog.component';
 import { AzSediRepartoToShortTextPipe } from './pipe/GestionePresenze/az-sedireparto-to-short-text.pipe';
+import { EditDipProfiloOrarioDialogComponent } from './components/GestionePresenze/edit-dip-profilo-orario-dialog/edit-dip-profilo-orario-dialog.component';
 
 @NgModule({
   declarations: [
     SediRepartoUserNavigationComponent,
     SeletionSediRepartoDialogComponent,
     SeletionSediRepartoUserDialogComponent,
-    SeletionParAttivitaDialogComponent
+    SeletionParAttivitaDialogComponent,
+    EditDipProfiloOrarioDialogComponent
   ],
   imports: [
     SharedComponentInfrastructureModule,
@@ -51,7 +53,8 @@ import { AzSediRepartoToShortTextPipe } from './pipe/GestionePresenze/az-sedirep
     IdDipRapportoLavoroToNomePipe, IdDipRapportoLavoroToCognomePipe,
     IdAspNetUsersToCognomePipe, IdAspNetUsersToNomePipe,
     ParAttivitaToLongTextPipe, ParCompetenzaToLongTextPipe, AzCommessaToLongTextPipe, AzClienteToLongTextPipe,
-    SediRepartoUserNavigationComponent, SeletionSediRepartoDialogComponent, SeletionSediRepartoUserDialogComponent, SeletionParAttivitaDialogComponent, AzSediRepartoToLongTextPipe
+    SediRepartoUserNavigationComponent, SeletionSediRepartoDialogComponent, SeletionSediRepartoUserDialogComponent, SeletionParAttivitaDialogComponent, AzSediRepartoToLongTextPipe,
+    EditDipProfiloOrarioDialogComponent
   ]
 })
 export class SharedComponentGestionePresenzeModuleModule { }

@@ -5,6 +5,7 @@ import { IonicModule } from '@ionic/angular';
 import { UserDepartmentEditPageComponent } from './user-department-edit-page.component';
 import { RouterModule } from '@angular/router';
 import { SharedComponentInfrastructureModule } from '../../../shared/shared-component-infrastructure.module';
+import { SharedComponentGestionePresenzeModuleModule } from '../../../shared/shared-component-gestione-presenze-module.module';
 
 @NgModule({
   
@@ -19,7 +20,8 @@ import { SharedComponentInfrastructureModule } from '../../../shared/shared-comp
         component: UserDepartmentEditPageComponent
       }
     ]),
-    SharedComponentInfrastructureModule
+    SharedComponentInfrastructureModule,
+    SharedComponentGestionePresenzeModuleModule
   ],
   declarations: [UserDepartmentEditPageComponent],
 })

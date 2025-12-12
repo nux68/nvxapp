@@ -5,139 +5,145 @@
 
 <ion-content [fullscreen]="true">
   <ion-card>
-    <ion-card-content>
+    <ion-card-content *ngIf="_editModel!=null">
 
-      <ion-segment>
-        <!--SEG anagrafica-->
-        <ion-segment-button value="A0" content-id="A0">
+      <!-- MENU DEI SEGMENTI -->
+      <!-- Nota: Rimosso [attr.content-id] dai bottoni -->
+      <ion-segment [value]="currSection_segment_main" (ionChange)="segment_main_segmentChanged($event)">
+
+        <!-- BUTTON Anagrafica -->
+        <ion-segment-button value="{{SEGMENT_MAIN_ANAGRAFICA}}">
           <ion-label>Anagrafica</ion-label>
         </ion-segment-button>
-        <!--SEG varie-->
-        <ion-segment-button value="B0" content-id="B0">
+
+        <!-- BUTTON Varie -->
+        <ion-segment-button value="{{SEGMENT_MAIN_VARIE}}">
           <ion-label>Varie</ion-label>
         </ion-segment-button>
-        <!--SEG rapporto lavoro-->
-        <ng-container *ngIf="_editModel !=null && _editModel.dip_RapportoLavoro!=null">
 
+        <!-- BUTTON Rapporto lavoro (Dinamico) -->
+        <ng-container *ngIf="_editModel !=null && _editModel.dip_RapportoLavoro!=null">
           @for (item of _editModel.dip_RapportoLavoro; track item.id; let idxRapp = $index) {
-          <ion-segment-button value="C{{idxRapp}}" [attr.content-id]="'C' + idxRapp">
-            <ion-label>Rapporto Lavoro (ID {{ _editModel.dip_RapportoLavoro[idxRapp].id}})</ion-label>
+          <ion-segment-button value="{{SEGMENT_MAIN_RAPP_LAV}}{{item.id}}">
+            <ion-label>Rapporto Lavoro (ID {{ item.id }})</ion-label>
           </ion-segment-button>
           }
         </ng-container>
 
       </ion-segment>
 
+      <!-- CONTENUTO DEL FORM -->
       <form [formGroup]="_editForm">
-        <ion-segment-view>
-          <!--SEG anagrafica-->
-          <ion-segment-content id="A0">
-            <br />
-            <ion-item class="nvx-item-4-title">
-              <ion-label>Info </ion-label>
-            </ion-item>
 
+        <!-- CONTENUTO: Anagrafica -->
+        <!-- Visibile solo se il segmento corrente è ANAGRAFICA -->
+        <div *ngIf="currSection_segment_main === SEGMENT_MAIN_ANAGRAFICA">
+          <br />
+          <ion-item class="nvx-item-4-title">
+            <ion-label>Info </ion-label>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="floating">UserName</ion-label>
+            <ion-input type="text" formControlName="descrizione" [readonly]="_editModel!=null && _editModel.idUserCompany > 0"></ion-input>
+          </ion-item>
+          <ion-note color="danger" *ngIf="_editForm.get('descrizione')?.hasError('required') && _editForm.get('descrizione')?.touched">
+            UserName è obbligatorio.
+          </ion-note>
+          <ion-note color="danger" *ngIf="_editForm.get('descrizione')?.hasError('maxlength') && _editForm.get('descrizione')?.touched">
+            UserName non può superare i 20 caratteri.
+          </ion-note>
+          <ion-note color="warning" *ngIf="modifiedDescription">
+            {{ modifiedDescription }}
+          </ion-note>
+
+          <ng-container *ngIf="_editModel!=null && _editModel.idUserCompany == 0">
             <ion-item>
-              <ion-label position="floating">UserName</ion-label>
-              <ion-input type="text" formControlName="descrizione" [readonly]="_editModel!=null && _editModel.idUserCompany > 0"></ion-input>
+              <ion-label position="floating">Email</ion-label>
+              <ion-input type="email" formControlName="mail"></ion-input>
             </ion-item>
-            <ion-note color="danger" *ngIf="_editForm.get('descrizione')?.hasError('required') && _editForm.get('descrizione')?.touched">
-              UserName è obbligatorio.
+            <ion-note color="danger" *ngIf="_editForm.get('mail')?.hasError('required') && _editForm.get('mail')?.touched">
+              L'email è obbligatoria.
             </ion-note>
-            <ion-note color="danger" *ngIf="_editForm.get('descrizione')?.hasError('maxlength') && _editForm.get('descrizione')?.touched">
-              UserName non può superare i 20 caratteri.
+            <ion-note color="danger" *ngIf="_editForm.get('mail')?.hasError('email') && _editForm.get('mail')?.touched">
+              Inserisci un'email valida.
             </ion-note>
-            <ion-note color="warning" *ngIf="modifiedDescription">
-              {{ modifiedDescription }}
-            </ion-note>
-            <ng-container *ngIf="_editModel!=null && _editModel.idUserCompany == 0">
-              <ion-item>
-                <ion-label position="floating">Email</ion-label>
-                <ion-input type="email" formControlName="mail"></ion-input>
-              </ion-item>
-              <ion-note color="danger" *ngIf="_editForm.get('mail')?.hasError('required') && _editForm.get('mail')?.touched">
-                L'email è obbligatoria.
-              </ion-note>
-              <ion-note color="danger" *ngIf="_editForm.get('mail')?.hasError('email') && _editForm.get('mail')?.touched">
-                Inserisci un'email valida.
-              </ion-note>
-              <ion-item>
-                <ion-label position="floating">Password</ion-label>
-                <ion-input type="password" formControlName="pw"></ion-input>
-              </ion-item>
-              <ion-note color="danger" *ngIf="_editForm.get('pw')?.hasError('required') && _editForm.get('pw')?.touched">
-                La password è obbligatoria.
-              </ion-note>
-              <ion-item>
-                <ion-label position="floating">Conferma Password</ion-label>
-                <ion-input type="password" formControlName="confirmPassword"></ion-input>
-              </ion-item>
-              <ion-note color="danger" *ngIf="_editForm.get('confirmPassword')?.hasError('required') && _editForm.get('confirmPassword')?.touched">
-                La conferma della password è obbligatoria.
-              </ion-note>
-              <ion-note color="danger" *ngIf="_editForm.hasError('notMatching') && _editForm.get('confirmPassword')?.touched">
-                Le password non corrispondono.
-              </ion-note>
-            </ng-container>
             <ion-item>
-              <ion-label position="floating">Ruolo</ion-label>
-              <ion-select formControlName="roles" aria-label="Ruoli" [multiple]="true">
-                <ion-select-option value="{{item}}" *ngFor="let item of getRoles()">{{ item }}</ion-select-option>
-              </ion-select>
+              <ion-label position="floating">Password</ion-label>
+              <ion-input type="password" formControlName="pw"></ion-input>
             </ion-item>
-            <ion-note color="danger" *ngIf="_editForm.get('roles')?.hasError('minArrayLength') && _editForm.get('roles')?.touched">
-              Il ruolo è obbligatorio.
+            <ion-note color="danger" *ngIf="_editForm.get('pw')?.hasError('required') && _editForm.get('pw')?.touched">
+              La password è obbligatoria.
             </ion-note>
-
-
             <ion-item>
-              <ion-label position="floating">Cognome</ion-label>
-              <ion-input type="text" formControlName="cognome"></ion-input>
+              <ion-label position="floating">Conferma Password</ion-label>
+              <ion-input type="password" formControlName="confirmPassword"></ion-input>
             </ion-item>
-            <ion-note color="danger" *ngIf="_editForm.get('cognome')?.hasError('required') && _editForm.get('cognome')?.touched">
-              cognome è obbligatorio.
+            <ion-note color="danger" *ngIf="_editForm.get('confirmPassword')?.hasError('required') && _editForm.get('confirmPassword')?.touched">
+              La conferma della password è obbligatoria.
             </ion-note>
-            <ion-note color="danger" *ngIf="_editForm.get('cognome')?.hasError('maxlength') && _editForm.get('cognome')?.touched">
-              cognome non può superare i 20 caratteri.
+            <ion-note color="danger" *ngIf="_editForm.hasError('notMatching') && _editForm.get('confirmPassword')?.touched">
+              Le password non corrispondono.
             </ion-note>
-
-
-            <ion-item>
-              <ion-label position="floating">Nome</ion-label>
-              <ion-input type="text" formControlName="nome"></ion-input>
-            </ion-item>
-            <ion-note color="danger" *ngIf="_editForm.get('nome')?.hasError('required') && _editForm.get('nome')?.touched">
-              nome è obbligatorio.
-            </ion-note>
-            <ion-note color="danger" *ngIf="_editForm.get('nome')?.hasError('maxlength') && _editForm.get('nome')?.touched">
-              nome non può superare i 20 caratteri.
-            </ion-note>
-
-
-            <br />
-          </ion-segment-content>
-          <!--SEG varie-->
-          <ion-segment-content id="B0"></ion-segment-content>
-          <!--SEG rapporto lavoro-->
-          <ng-container *ngIf="_editModel !=null && _editModel.dip_RapportoLavoro!=null">
-            @for (item of _editModel.dip_RapportoLavoro; track item.id; let idxRapp = $index) {
-            <ion-segment-content [attr.id]="'C' + idxRapp">
-
-              <br />
-              <ion-item class="nvx-item-4-title">
-                <ion-label>Info rapporto (ID {{ _editModel.dip_RapportoLavoro[idxRapp].id}}) </ion-label>
-              </ion-item>
-
-            </ion-segment-content>
-            }
           </ng-container>
 
-        </ion-segment-view>
+          <ion-item>
+            <ion-label position="floating">Ruolo</ion-label>
+            <ion-select formControlName="roles" aria-label="Ruoli" [multiple]="true">
+              <ion-select-option value="{{item}}" *ngFor="let item of getRoles()">{{ item }}</ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-note color="danger" *ngIf="_editForm.get('roles')?.hasError('minArrayLength') && _editForm.get('roles')?.touched">
+            Il ruolo è obbligatorio.
+          </ion-note>
+
+          <ion-item>
+            <ion-label position="floating">Cognome</ion-label>
+            <ion-input type="text" formControlName="cognome"></ion-input>
+          </ion-item>
+          <ion-note color="danger" *ngIf="_editForm.get('cognome')?.hasError('required') && _editForm.get('cognome')?.touched">
+            cognome è obbligatorio.
+          </ion-note>
+          <ion-note color="danger" *ngIf="_editForm.get('cognome')?.hasError('maxlength') && _editForm.get('cognome')?.touched">
+            cognome non può superare i 20 caratteri.
+          </ion-note>
+
+          <ion-item>
+            <ion-label position="floating">Nome</ion-label>
+            <ion-input type="text" formControlName="nome"></ion-input>
+          </ion-item>
+          <ion-note color="danger" *ngIf="_editForm.get('nome')?.hasError('required') && _editForm.get('nome')?.touched">
+            nome è obbligatorio.
+          </ion-note>
+          <ion-note color="danger" *ngIf="_editForm.get('nome')?.hasError('maxlength') && _editForm.get('nome')?.touched">
+            nome non può superare i 20 caratteri.
+          </ion-note>
+
+          <br />
+        </div>
+
+        <!-- CONTENUTO: Varie -->
+        <div *ngIf="currSection_segment_main === SEGMENT_MAIN_VARIE">
+          <!-- Contenuto Varie vuoto come nell'originale -->
+        </div>
+
+        <!-- CONTENUTO: Rapporto lavoro (Dinamico) -->
+        <ng-container *ngIf="_editModel !=null && _editModel.dip_RapportoLavoro!=null">
+          @for (item of _editModel.dip_RapportoLavoro; track item.id; let idxRapp = $index) {
+
+          <!-- Questo blocco appare SOLO se la selezione corrente corrisponde all'ID di questo item -->
+          <div *ngIf="currSection_segment_main === (SEGMENT_MAIN_RAPP_LAV + item.id)">
+            <br />
+            <ion-item class="nvx-item-4-title">
+              <ion-label>Info rapporto (ID {{ item.id }}) </ion-label>
+            </ion-item>
+            <!-- Qui aggiungi i campi specifici del rapporto lavoro -->
+          </div>
+
+          }
+        </ng-container>
+
       </form>
-
-
-
-
 
     </ion-card-content>
   </ion-card>

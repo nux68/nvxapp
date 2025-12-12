@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
 import { UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
-import { NavController } from '@ionic/angular';
+import { ModalController, NavController } from '@ionic/angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AccountService } from '../../../ClientServer-Service/Infrastructure/Account/account.service';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
@@ -16,6 +16,8 @@ import { RolesModel } from '../../../ClientServer-Service/Infrastructure/Paramet
 import { RoleCode } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-roles-model';
 import { Dip_Anagrafica4EditModel, Dip_Anagrafica_Get_InModel, Dip_Anagrafica_Put_InModel } from '../../../ClientServer-Service/GestionePresenze/Dip_Anagrafica/Models/dip-anagrafica-model';
 import { DipAnagraficaService } from '../../../ClientServer-Service/GestionePresenze/Dip_Anagrafica/dip-anagrafica.service';
+import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
+import { EditDipProfiloOrarioDialogComponent, EditDipProfiloOrarioDialogComponentResult } from '../../../shared/components/GestionePresenze/edit-dip-profilo-orario-dialog/edit-dip-profilo-orario-dialog.component';
 
 @Component({
   selector: 'app-user-department-edit-page',
@@ -25,6 +27,13 @@ import { DipAnagraficaService } from '../../../ClientServer-Service/GestionePres
 })
 export class UserDepartmentEditPageComponent extends BasePageConfirmCancelComponent<Dip_Anagrafica4EditModel> {
 
+  public readonly SEGMENT_MAIN_ANAGRAFICA = 'ANA_0';
+  public readonly SEGMENT_MAIN_VARIE = 'VAR_0';
+  public readonly SEGMENT_MAIN_RAPP_LAV = 'RAPP_LAV_';
+
+  public currSection_segment_main: string = this.SEGMENT_MAIN_ANAGRAFICA;
+
+
   modifiedDescription: string | null = null;
 
   constructor(protected override navCtrl: NavController,
@@ -32,11 +41,69 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
     protected override fb: FormBuilder,
     private parameterService: ParameterService,
     private stringHelperService: StringHelperService,
-    //private accountService: AccountService,
-    private dipAnagraficaService: DipAnagraficaService) {
+    private modalCtrl: ModalController,
+    public fabMenuService: FabMenuService,
+    private dipAnagraficaService: DipAnagraficaService,
+    private cdr: ChangeDetectorRef) {
 
     super(navCtrl, userInterfaceService, fb);
 
+  }
+
+
+  override ionViewWillEnter() {
+    super.ionViewWillEnter();
+    this.setfabMenuService();
+  }
+
+
+  setfabMenuService() {
+    this.fabMenuService.fabMenuItem = [];
+
+
+    if (this.currSection_segment_main == this.SEGMENT_MAIN_ANAGRAFICA) {
+      // non faccio nulla
+    } else if (this.currSection_segment_main == this.SEGMENT_MAIN_VARIE) {
+      // non faccio nulla
+    } else if (this.currSection_segment_main.startsWith(this.SEGMENT_MAIN_RAPP_LAV)) {
+
+      this.fabMenuService.fabMenuItem = [
+        new FabMenuItem('xxx', 'add-circle-outline', () => {
+          this.EditDipProfiloOrarioDialog_Open();
+        }),
+      ];
+
+    }
+
+
+
+  }
+
+
+  async EditDipProfiloOrarioDialog_Open() {
+    const modal = await this.modalCtrl.create({
+      component: EditDipProfiloOrarioDialogComponent,
+      componentProps: {
+        nomeUtente: 'Mario Rossi'
+      },
+    });
+
+    await modal.present();
+
+    const { data, role } = await modal.onWillDismiss<EditDipProfiloOrarioDialogComponentResult | null>();
+
+    //if (role === 'confirm' && data) {
+    //  this.Az_SediReparto_SetCheck(data.idReparto, true);
+    //}
+  }
+
+
+
+  segment_main_segmentChanged(event: any) {
+    console.log('Segment cambiato:', event.detail.value);
+    this.currSection_segment_main = event.detail.value;
+
+    this.setfabMenuService();
   }
 
   get Title(): string { return "User Department Edit"; }
@@ -56,6 +123,10 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
   }
 
   LoadData = (): Observable<Dip_Anagrafica4EditModel | null> => {
+
+    this._editModel = null;
+    this.cdr.detectChanges();
+
     const state = history.state;
     if (state && state.id) {
       let request: GenericRequest<Dip_Anagrafica_Get_InModel> = new GenericRequest<Dip_Anagrafica_Get_InModel>(Dip_Anagrafica_Get_InModel);
@@ -115,6 +186,41 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
     }
     return [];
   }
+
+
+  
+  
+
+
+
+
+
+
+
+  getCurr_RappLav_Id(): number {
+    if (this.currSection_segment_main && this.currSection_segment_main.startsWith(this.SEGMENT_MAIN_RAPP_LAV)) {
+      const idString = this.currSection_segment_main.replace(this.SEGMENT_MAIN_RAPP_LAV, '');
+      const id = parseInt(idString, 10);
+      return !isNaN(id) ? id : 0;
+    }
+    return 0;
+  }
+
+  getCurr_RappLav_Idx(): number {
+
+    let currId: number = this.getCurr_RappLav_Id();
+
+    if (currId != 0) {
+      return this._editModel.dip_RapportoLavoro.findIndex(x => x.id == currId);
+    }
+
+    return -1;
+
+  }
+
+
+
+
 }
 
 const matchPasswords: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
