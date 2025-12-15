@@ -7,6 +7,14 @@ export class Dip_ProfiloOrarioModel {
   idDip_RapportoLavoro: number;
   idPar_ProfiloOrario: number;
   numGiornoPartenzaCiclo: number;
+
+  constructor() {
+    this.id = 0;
+    this.idDip_RapportoLavoro = 0;
+    this.idPar_ProfiloOrario = 0;
+    this.numGiornoPartenzaCiclo = 0;
+  }
+
 }
 
 export class Dip_ProfiloOrario_Get_InModel {

@@ -17,7 +17,7 @@ import { RoleCode } from '../../../ClientServer-Service/Infrastructure/Account/M
 import { Dip_Anagrafica4EditModel, Dip_Anagrafica_Get_InModel, Dip_Anagrafica_Put_InModel } from '../../../ClientServer-Service/GestionePresenze/Dip_Anagrafica/Models/dip-anagrafica-model';
 import { DipAnagraficaService } from '../../../ClientServer-Service/GestionePresenze/Dip_Anagrafica/dip-anagrafica.service';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
-import { EditDipProfiloOrarioDialogComponent, EditDipProfiloOrarioDialogComponentResult } from '../../../shared/components/GestionePresenze/edit-dip-profilo-orario-dialog/edit-dip-profilo-orario-dialog.component';
+import { EditDipProfiloOrarioDialogComponent } from '../../../shared/components/GestionePresenze/edit-dip-profilo-orario-dialog/edit-dip-profilo-orario-dialog.component';
 import { Dip_ProfiloOrarioModel } from '../../../ClientServer-Service/GestionePresenze/Dip_ProfiloOrario/Models/dip-profilo-orario-model';
 
 @Component({
@@ -96,9 +96,13 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
       if (currKey.includes(this.SEGMENT_DIPRAPP_VARIE)) {
 
       }else  if (currKey.includes(this.SEGMENT_DIPRAPP_PROF_HH)) {
-          this.fabMenuService.fabMenuItem = [
+
+        let pip_ProfiloOrario: Dip_ProfiloOrarioModel = new Dip_ProfiloOrarioModel();
+        
+
+        this.fabMenuService.fabMenuItem = [
             new FabMenuItem('xxx', 'add-circle-outline', () => {
-              this.EditDipProfiloOrarioDialog_Open();
+              this.EditDipProfiloOrarioDialog_Open(pip_ProfiloOrario);
             }),
           ];
       }
@@ -108,17 +112,17 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
   }
 
 
-  async EditDipProfiloOrarioDialog_Open() {
+  async EditDipProfiloOrarioDialog_Open(dip_ProfiloOrario: Dip_ProfiloOrarioModel) {
     const modal = await this.modalCtrl.create({
       component: EditDipProfiloOrarioDialogComponent,
       componentProps: {
-        nomeUtente: 'Mario Rossi'
+        dip_ProfiloOrario: dip_ProfiloOrario
       },
     });
 
     await modal.present();
 
-    const { data, role } = await modal.onWillDismiss<EditDipProfiloOrarioDialogComponentResult | null>();
+    const { data, role } = await modal.onWillDismiss<Dip_ProfiloOrarioModel | null>();
 
     //if (role === 'confirm' && data) {
     //  this.Az_SediReparto_SetCheck(data.idReparto, true);
@@ -242,7 +246,7 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
   }
     
   handleButton_Dip_ProfiloOrario_EditClick = (item: Dip_ProfiloOrarioModel) => {
-
+    this.EditDipProfiloOrarioDialog_Open(item);
   }
 
   handleButton_Dip_ProfiloOrario_DeleteClick = async (item: any) => {

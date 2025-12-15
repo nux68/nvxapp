@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { ButtonItem, UserInterfaceService } from '../../../../Utility/infrastructure/user-interface.service';
 import { ModalController } from '@ionic/angular';
+import { Dip_ProfiloOrarioModel } from '../../../../ClientServer-Service/GestionePresenze/Dip_ProfiloOrario/Models/dip-profilo-orario-model';
 
 @Component({
   selector: 'app-edit-dip-profilo-orario-dialog',
@@ -10,11 +11,13 @@ import { ModalController } from '@ionic/angular';
 })
 export class EditDipProfiloOrarioDialogComponent  implements OnInit {
 
+  @Input() dip_ProfiloOrario: Dip_ProfiloOrarioModel;
+
   public title!: string;
   public buttonbar: ButtonItem[] = [];
 
-  result: EditDipProfiloOrarioDialogComponentResult = {
-  };
+  //result: EditDipProfiloOrarioDialogComponentResult = {
+  //};
 
   constructor(protected userInterfaceService: UserInterfaceService,
     private modalCtrl: ModalController
@@ -28,10 +31,12 @@ export class EditDipProfiloOrarioDialogComponent  implements OnInit {
     this.buttonbar[1].event = this._handleButtonCancelClick;
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+
+  }
 
   private _handleButtonConfirmClick = (param: object) => {
-    return this.modalCtrl.dismiss(this.result, 'confirm');
+    return this.modalCtrl.dismiss(this.dip_ProfiloOrario, 'confirm');
   }
 
   private _handleButtonCancelClick = (param: object) => {
@@ -41,7 +46,7 @@ export class EditDipProfiloOrarioDialogComponent  implements OnInit {
 }
 
 
-export interface EditDipProfiloOrarioDialogComponentResult {
-  //idSede: number;
-  //idReparto: number;
-}
+//export interface EditDipProfiloOrarioDialogComponentResult {
+//  //idSede: number;
+//  //idReparto: number;
+//}
