@@ -9,6 +9,5 @@
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="schema-generator\" />
-    <Folder Include="src\nvx\pages\_BASE\" />
   </ItemGroup>
 </Project>
