@@ -14,6 +14,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Orario
         public int IdAz_Anagrafica { get; set; }
         public string Codice { get; set; } = string.Empty;
         public string Descrizione { get; set; } = string.Empty;
+        public int NumGiorniCiclo { get; set; }
+        
     }
 
     public class Par_Orario_GetAllInModel { }

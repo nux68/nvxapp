@@ -10,6 +10,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Rappor
     public class Dip_RapportoLavoroModel
     {
         public int Id { get; set; }
+        public int IdDip_Anagrafica { get; set; }
     }
 
     public class Dip_RapportoLavoro_Get_InModel

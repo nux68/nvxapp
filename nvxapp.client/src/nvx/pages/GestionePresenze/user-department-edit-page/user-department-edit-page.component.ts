@@ -19,6 +19,8 @@ import { DipAnagraficaService } from '../../../ClientServer-Service/GestionePres
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { EditDipProfiloOrarioDialogComponent } from '../../../shared/components/GestionePresenze/edit-dip-profilo-orario-dialog/edit-dip-profilo-orario-dialog.component';
 import { Dip_ProfiloOrarioModel } from '../../../ClientServer-Service/GestionePresenze/Dip_ProfiloOrario/Models/dip-profilo-orario-model';
+import { DbUtilService } from '../../../Utility/infrastructure/db-util.service';
+import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
 
 @Component({
   selector: 'app-user-department-edit-page',
@@ -55,6 +57,8 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
     private modalCtrl: ModalController,
     public fabMenuService: FabMenuService,
     private dipAnagraficaService: DipAnagraficaService,
+    private dbUtilService: DbUtilService,
+    private collectionDialogService: CollectionDialogService,
     private cdr: ChangeDetectorRef) {
 
     super(navCtrl, userInterfaceService, fb);
@@ -83,26 +87,28 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
     this.fabMenuService.fabMenuItem = [];
 
 
+    
+    
+
     if (this.currSection_segment_main == this.SEGMENT_MAIN_ANAGRAFICA) {
       // non faccio nulla
     } else if (this.currSection_segment_main == this.SEGMENT_MAIN_VARIE) {
       // non faccio nulla
     } else if (this.currSection_segment_main.startsWith(this.SEGMENT_MAIN_RAPP_LAV)) {
 
-
       const curr_RappLav = this.getCurr_RappLav_Id();
       const currKey = this.currSection_segment_dip_rapp[curr_RappLav];
+      
 
       if (currKey.includes(this.SEGMENT_DIPRAPP_VARIE)) {
 
       }else  if (currKey.includes(this.SEGMENT_DIPRAPP_PROF_HH)) {
 
-        let pip_ProfiloOrario: Dip_ProfiloOrarioModel = new Dip_ProfiloOrarioModel();
         
 
         this.fabMenuService.fabMenuItem = [
             new FabMenuItem('xxx', 'add-circle-outline', () => {
-              this.EditDipProfiloOrarioDialog_Open(pip_ProfiloOrario);
+              this.EditDipProfiloOrarioDialog_Open( 0 );
             }),
           ];
       }
@@ -110,25 +116,6 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
     }
 
   }
-
-
-  async EditDipProfiloOrarioDialog_Open(dip_ProfiloOrario: Dip_ProfiloOrarioModel) {
-    const modal = await this.modalCtrl.create({
-      component: EditDipProfiloOrarioDialogComponent,
-      componentProps: {
-        dip_ProfiloOrario: dip_ProfiloOrario
-      },
-    });
-
-    await modal.present();
-
-    const { data, role } = await modal.onWillDismiss<Dip_ProfiloOrarioModel | null>();
-
-    //if (role === 'confirm' && data) {
-    //  this.Az_SediReparto_SetCheck(data.idReparto, true);
-    //}
-  }
-
 
 
   segment_main_segmentChanged(event: any) {
@@ -244,14 +231,69 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
     return this._editModel.dip_ProfiloOrario.filter(x => x.idDip_RapportoLavoro == curr_RappLav);
     
   }
+
+
     
   handleButton_Dip_ProfiloOrario_EditClick = (item: Dip_ProfiloOrarioModel) => {
-    this.EditDipProfiloOrarioDialog_Open(item);
+    this.EditDipProfiloOrarioDialog_Open(item.id);
   }
 
   handleButton_Dip_ProfiloOrario_DeleteClick = async (item: any) => {
 
+    const index = this._editModel.dip_ProfiloOrario.findIndex(p => p.id === item.id);
 
+    const result = await this.collectionDialogService.ConfirmCancelDialog('Confermi la cancellazione del profilo orario');
+    if (result) {
+
+      if (index > -1) {
+        this._editModel.dip_ProfiloOrario.splice(index, 1);
+      }  
+
+    }
+
+  }
+
+  async EditDipProfiloOrarioDialog_Open(id: number) {
+
+    const curr_RappLav = this.getCurr_RappLav_Id();
+    const currKey = this.currSection_segment_dip_rapp[curr_RappLav];
+
+    let dip_ProfiloOrario: Dip_ProfiloOrarioModel = null;
+
+    if (id === 0) { //new
+      dip_ProfiloOrario = new Dip_ProfiloOrarioModel();
+      dip_ProfiloOrario.idDip_RapportoLavoro = curr_RappLav;
+      dip_ProfiloOrario.id = this.dbUtilService.GenerateCounterKey();
+      dip_ProfiloOrario.numGiornoPartenzaCiclo = 1;
+    }
+    else {
+      dip_ProfiloOrario = this._editModel.dip_ProfiloOrario.find(p => p.id === id);
+    }
+
+
+
+    const modal = await this.modalCtrl.create({
+      component: EditDipProfiloOrarioDialogComponent,
+      componentProps: {
+        dip_ProfiloOrario: dip_ProfiloOrario
+      },
+    });
+
+    await modal.present();
+
+    const { data, role } = await modal.onWillDismiss<Dip_ProfiloOrarioModel | null>();
+
+    if (role === 'confirm' && data) {
+
+      const index = this._editModel.dip_ProfiloOrario.findIndex(p => p.id === data.id);
+
+      if (index > -1) {
+        this._editModel.dip_ProfiloOrario[index] = data;
+      } else {
+        this._editModel.dip_ProfiloOrario.push(data);
+      }
+
+    }
   }
 
 

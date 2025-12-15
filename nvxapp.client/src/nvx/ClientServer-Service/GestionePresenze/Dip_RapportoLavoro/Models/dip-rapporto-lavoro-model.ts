@@ -2,7 +2,9 @@ import { ModelResult } from "../../../ModelsBase/model-result";
 
 export class Dip_RapportoLavoroModel {
   public id!: number;
- 
+  public idDip_Anagrafica!: number;
+  
+
 }
 
 export class Dip_RapportoLavoro_Get_InModel {

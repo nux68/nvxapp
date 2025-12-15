@@ -234,7 +234,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
                         {
                             entity = _mapper.Map<Dip_Anagrafica>(model.Data.Dip_Anagrafica);
                             //await _dip_AnagraficaRepository.UpsertAsyncGuid(entity);
-                            await _dip_AnagraficaRepository.UpsertAsync(entity);
+                            entity = await _dip_AnagraficaRepository.UpsertAsync(entity);
                             
 
                             var usrC =  _userCompanyRepository.GetAll().Where(x => x.IdAspNetUsers == model.Data.Id && x.IdCompany == IdCompany).FirstOrDefault();
@@ -260,31 +260,28 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
 
 
                                 var req_1 = new GenericRequest<Dip_RapportoLavoro_Put_InModel>();
-                                req_1.Data.Id = retVal.Dip_Anagrafica.Id; 
-                                req_1.Data.Dip_RapportoLavoro = retVal.Dip_Anagrafica.Dip_RapportoLavoro; 
+                                req_1.Data.Id = entity.Id; 
+                                req_1.Data.Dip_RapportoLavoro =  model.Data.Dip_Anagrafica.Dip_RapportoLavoro; 
                                 var res_1 = await _dip_RapportoLavoroService.Dip_RapportoLavoroPut(req_1, true);
                                 if(res_1.Success && res_1.Data != null)
                                 {
                                     retVal.Dip_Anagrafica.Dip_RapportoLavoro = res_1.Data.Dip_RapportoLavoro;
-                                }
-                                
-                                var req_3 = new GenericRequest<Dip_ProfiloOrario_Put_InModel>();
-                                req_3.Data.Id = retVal.Dip_Anagrafica.Id; 
-                                req_3.Data.Dip_ProfiloOrario = retVal.Dip_Anagrafica.Dip_ProfiloOrario; 
-                                var res_3 = await _dip_ProfiloOrarioService.Dip_ProfiloOrarioPut(req_3, true);
-                                if(res_3.Success && res_3.Data != null)
-                                {
-                                    retVal.Dip_Anagrafica.Dip_ProfiloOrario = res_3.Data.Dip_ProfiloOrario;
-                                }
 
+                                    foreach(var itemRapp in retVal.Dip_Anagrafica.Dip_RapportoLavoro)
+                                    {
+                                        var req_3 = new GenericRequest<Dip_ProfiloOrario_Put_InModel>();
+                                        req_3.Data.Id = itemRapp.Id; 
+                                        req_3.Data.Dip_ProfiloOrario = model.Data.Dip_Anagrafica.Dip_ProfiloOrario.Where(x=> x.IdDip_RapportoLavoro == itemRapp.Id).ToList(); 
+                                        var res_3 = await _dip_ProfiloOrarioService.Dip_ProfiloOrarioPut(req_3, true);
+                                        if(res_3.Success && res_3.Data != null)
+                                        {
+                                            retVal.Dip_Anagrafica.Dip_ProfiloOrario = res_3.Data.Dip_ProfiloOrario;
+                                        }
+                                    }
+                                }
                             }
-                            
-
                         }
-
                     }
-
-                    
                 }
 
                 await Task.Delay(DelayAsyncMethod);

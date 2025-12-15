@@ -36,6 +36,7 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
     return this.fb.group({
       codice: [null, [Validators.required, Validators.maxLength(10)]],
       descrizione: [null, [Validators.required, Validators.maxLength(50)]],
+      numGiorniCiclo: [null, [Validators.required, Validators.min(1) ]],
     });
   }
 

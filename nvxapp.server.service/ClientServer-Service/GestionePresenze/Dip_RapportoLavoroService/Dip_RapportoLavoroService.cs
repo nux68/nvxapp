@@ -121,9 +121,14 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Rappor
 
                         //rileggo i dati dopo le varizioni per ritornare il valore corrente
                         Orig_Data = await Dip_RapportoLavoroGet(reqOrig_Data, true);    
+                        if(Orig_Data.Success && Orig_Data.Data != null)
+                            retVal.Dip_RapportoLavoro = Orig_Data.Data.Dip_RapportoLavoro;
                     }
 
                 }
+
+           
+
 
                 await Task.Delay(DelayAsyncMethod);
                 return retVal;

@@ -70,6 +70,16 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Profil
                 Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg company_DATA = await _gestionePresenzeUserUtility.Get_AzAna_AzSedi_AzReparto_Az_Cfg(IdCompany, true);
                 if (company_DATA != null && company_DATA.az_Anagrafica != null)
                 {
+
+                    // sostituisce il valore negativo
+                    var newRow = model.Data.Dip_ProfiloOrario.Where(x=> x.Id<0).ToList();
+                    foreach(var item in newRow)
+                    {
+                        item.Id=0;
+                        item.IdPar_ProfiloOrario  = 6;
+                    }
+                        
+
                     
                     //rileggo i dati originali
                     var reqOrig_Data = new GenericRequest<Dip_ProfiloOrario_Get_InModel>();

@@ -2,6 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { ButtonItem, UserInterfaceService } from '../../../../Utility/infrastructure/user-interface.service';
 import { ModalController } from '@ionic/angular';
 import { Dip_ProfiloOrarioModel } from '../../../../ClientServer-Service/GestionePresenze/Dip_ProfiloOrario/Models/dip-profilo-orario-model';
+import { SharedParameterGestionePresenzeService } from '../../../shared-parameter-gestione-presenze.service';
 
 @Component({
   selector: 'app-edit-dip-profilo-orario-dialog',
@@ -16,13 +17,10 @@ export class EditDipProfiloOrarioDialogComponent  implements OnInit {
   public title!: string;
   public buttonbar: ButtonItem[] = [];
 
-  //result: EditDipProfiloOrarioDialogComponentResult = {
-  //};
-
+ 
   constructor(protected userInterfaceService: UserInterfaceService,
-    private modalCtrl: ModalController
-  )
-
+              public sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
+              private modalCtrl: ModalController)
   {
     this.title = 'Profilo orario';
 
@@ -32,6 +30,9 @@ export class EditDipProfiloOrarioDialogComponent  implements OnInit {
   }
 
   ngOnInit() {
+    let mimmo = this.dip_ProfiloOrario;
+
+    
 
   }
 
@@ -43,10 +44,22 @@ export class EditDipProfiloOrarioDialogComponent  implements OnInit {
     return this.modalCtrl.dismiss(null, 'confirm');
   }
 
+
+  getDayProf(): number {
+
+    if (this.dip_ProfiloOrario.idPar_ProfiloOrario == 0)
+      return 1;
+
+    let prof = this.sharedParameterGestionePresenzeService.Par_ProfiloOrario.find(x => x.id == this.dip_ProfiloOrario.idPar_ProfiloOrario);
+
+    if (prof != null)
+      return prof.numGiorniCiclo;
+
+    return 1;
+    
+
+  }
+
+
 }
 
-
-//export interface EditDipProfiloOrarioDialogComponentResult {
-//  //idSede: number;
-//  //idReparto: number;
-//}

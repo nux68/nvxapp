@@ -6,7 +6,37 @@
 
 <ion-content [fullscreen]="true">
   <div class="login-content-center">
-  </div>
+
+
+    <ion-card>
+      <ion-card-content>
+
+        <ion-item>
+          <ion-label position="stacked">Profilo orario</ion-label>
+          <ion-select [(ngModel)]="dip_ProfiloOrario.idPar_ProfiloOrario"
+                      placeholder="Seleziona un profilo orario"
+                      interface="modal">
+            <ion-select-option [value]="profilo.id" *ngFor="let profilo of sharedParameterGestionePresenzeService.Par_ProfiloOrario">
+              {{ profilo.id | parProfiloOrarioToLongTextPipe }}
+            </ion-select-option>
+          </ion-select>
+        </ion-item>
+
+
+        <ion-item>
+          <ion-label position="floating">Num. Giorno partenza ciclo ( {{dip_ProfiloOrario.numGiornoPartenzaCiclo}} / {{getDayProf()}} )</ion-label>
+          <!--<ion-input type="text" [(ngModel)]="dip_ProfiloOrario.numGiornoPartenzaCiclo"></ion-input>-->
+
+          <ion-range aria-label="Range with ticks" [(ngModel)]="dip_ProfiloOrario.numGiornoPartenzaCiclo" [ticks]="true" [snaps]="true" [min]="1" [max]="getDayProf()"></ion-range>
+
+        </ion-item>
+
+      </ion-card-content>
+      </ion-card>
+
+
+
+</div>
 </ion-content>
 
 
