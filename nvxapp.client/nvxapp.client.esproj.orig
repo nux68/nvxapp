@@ -9,6 +9,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="schema-generator\" />
+<<<<<<< HEAD
     <Folder Include="src\nvx\pages\GestionePresenze\_selection\" />
+    <Folder Include="src\nvx\pages\_BASE\" />
+=======
+>>>>>>> Infrastructure_Dev
   </ItemGroup>
 </Project>
