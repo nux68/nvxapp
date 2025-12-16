@@ -17,6 +17,13 @@ export class Dip_AnagraficaModel {
 
   public roleCode: RoleCode[];
 
+  constructor() {
+    this.idAspNetUsers = '';
+    this.userName = '';
+    this.dip_RapportoLavoro = [];
+    this.roleCode = [];
+  }
+
 }
 
 export class Dip_Anagrafica_GetAll_InModel {
@@ -40,6 +47,14 @@ export class Dip_Anagrafica4EditModel extends Dip_AnagraficaModel {
   public roleId: string;
 
   public dip_ProfiloOrario: Dip_ProfiloOrarioModel[];
+
+
+  constructor() {
+    super();
+    this.descrizione = '';
+    this.roleId = '';
+    this.dip_ProfiloOrario = [];
+  }
 
 }
 

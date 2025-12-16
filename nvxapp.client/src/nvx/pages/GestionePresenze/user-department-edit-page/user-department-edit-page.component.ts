@@ -21,6 +21,7 @@ import { EditDipProfiloOrarioDialogComponent } from '../../../shared/components/
 import { Dip_ProfiloOrarioModel } from '../../../ClientServer-Service/GestionePresenze/Dip_ProfiloOrario/Models/dip-profilo-orario-model';
 import { DbUtilService } from '../../../Utility/infrastructure/db-util.service';
 import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
+import { Dip_RapportoLavoroModel } from '../../../ClientServer-Service/GestionePresenze/Dip_RapportoLavoro/Models/dip-rapporto-lavoro-model';
 
 @Component({
   selector: 'app-user-department-edit-page',
@@ -172,12 +173,25 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
       );
     } else {
       return new Observable<Dip_Anagrafica4EditModel | null>((subscriber) => {
+
         this._editForm.addControl('mail', this.fb.control(null, [Validators.required, Validators.email]));
         this._editForm.addControl('pw', this.fb.control(null, [Validators.required]));
         this._editForm.addControl('confirmPassword', this.fb.control(null, [Validators.required]));
         this._editForm.setValidators(matchPasswords);
         this._editForm.updateValueAndValidity();
-        subscriber.next(new Dip_Anagrafica4EditModel());
+
+        let dip_Anagrafica4Edit = new Dip_Anagrafica4EditModel();
+        dip_Anagrafica4Edit.dip_RapportoLavoro = [];
+        dip_Anagrafica4Edit.id = this.dbUtilService.GenerateCounterKey();
+
+        let Dip_RapportoLavoro = new Dip_RapportoLavoroModel();
+        Dip_RapportoLavoro.idDip_Anagrafica = dip_Anagrafica4Edit.id;
+        Dip_RapportoLavoro.id = this.dbUtilService.GenerateCounterKey();
+        dip_Anagrafica4Edit.dip_RapportoLavoro.push(Dip_RapportoLavoro);
+        
+
+
+        subscriber.next(dip_Anagrafica4Edit);
         subscriber.complete();
       });
     }
