@@ -3,6 +3,11 @@ import { ButtonItem, UserInterfaceService } from '../../../../Utility/infrastruc
 import { ModalController } from '@ionic/angular';
 import { Dip_ProfiloOrarioModel } from '../../../../ClientServer-Service/GestionePresenze/Dip_ProfiloOrario/Models/dip-profilo-orario-model';
 import { SharedParameterGestionePresenzeService } from '../../../shared-parameter-gestione-presenze.service';
+import { BasePageConfirmCancelComponent } from '../../../../pages/_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
+import { BaseDialogConfirmCancelComponent } from '../../../../pages/_BASE/base-dialog-confirm-cancel/base-dialog-confirm-cancel.component';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Observable  } from 'rxjs';
+import { of } from 'rxjs/internal/observable/of';
 
 @Component({
   selector: 'app-edit-dip-profilo-orario-dialog',
@@ -10,39 +15,41 @@ import { SharedParameterGestionePresenzeService } from '../../../shared-paramete
   styleUrls: ['./edit-dip-profilo-orario-dialog.component.scss'],
   standalone: false
 })
-export class EditDipProfiloOrarioDialogComponent  implements OnInit {
+export class EditDipProfiloOrarioDialogComponent extends BaseDialogConfirmCancelComponent<Dip_ProfiloOrarioModel>  {
 
   @Input() dip_ProfiloOrario: Dip_ProfiloOrarioModel;
 
-  public title!: string;
-  public buttonbar: ButtonItem[] = [];
-
  
-  constructor(protected userInterfaceService: UserInterfaceService,
-              public sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
-              private modalCtrl: ModalController)
+  constructor(
+              protected override userInterfaceService: UserInterfaceService,
+              protected override fb: FormBuilder,
+              protected override modalCtrl: ModalController,
+              public sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService
+              )
   {
-    this.title = 'Profilo orario';
-
-    this.buttonbar = userInterfaceService.Btn_ConfermaAnnulla;
-    this.buttonbar[0].event = this._handleButtonConfirmClick;
-    this.buttonbar[1].event = this._handleButtonCancelClick;
+    super( userInterfaceService, fb, modalCtrl);
   }
 
-  ngOnInit() {
-    let mimmo = this.dip_ProfiloOrario;
+
+  get Title(): string { return "Profilo orario"; }
+
+  get EditForm(): FormGroup {
+    return this.fb.group({
+      idPar_ProfiloOrario: [this.dip_ProfiloOrario.idPar_ProfiloOrario, [Validators.required, Validators.min(1)]],
+      numGiornoPartenzaCiclo: [null, [Validators.required, Validators.min(1), Validators.max(this.getDayProf())]],
+    });
 
     
 
   }
 
-  private _handleButtonConfirmClick = (param: object) => {
-    return this.modalCtrl.dismiss(this.dip_ProfiloOrario, 'confirm');
-  }
+  LoadData = (): Observable<Dip_ProfiloOrarioModel | null> => {
+    return of(this.dip_ProfiloOrario);
+  };
 
-  private _handleButtonCancelClick = (param: object) => {
-    return this.modalCtrl.dismiss(null, 'confirm');
-  }
+  SaveData = (editModel: Dip_ProfiloOrarioModel): Observable<Dip_ProfiloOrarioModel> => {
+    return of(this._editModel);
+  };
 
 
   getDayProf(): number {

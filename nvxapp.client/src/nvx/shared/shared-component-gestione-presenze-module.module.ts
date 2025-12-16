@@ -18,7 +18,7 @@ import { AzCommessaToLongTextPipe } from './pipe/GestionePresenze/az-commessa-to
 import { AzClienteToLongTextPipe } from './pipe/GestionePresenze/az-cliente-to-long-text.pipe';
 import { SediRepartoUserNavigationComponent } from './components/GestionePresenze/sedi-reparto-user-navigation/sedi-reparto-user-navigation.component';
 import { IonicModule } from '@ionic/angular';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AzSediRepartoToLongTextPipe } from './pipe/GestionePresenze/az-sedireparto-to-long-text.pipe';
 import { SeletionSediRepartoDialogComponent } from './components/GestionePresenze/seletion-sedi-reparto-dialog/seletion-sedi-reparto-dialog.component';
 import { SeletionSediRepartoUserDialogComponent } from './components/GestionePresenze/seletion-sedi-reparto-user-dialog/seletion-sedi-reparto-user-dialog.component';
@@ -41,6 +41,7 @@ import { ParProfiloOrarioToLongTextPipePipe } from './pipe/GestionePresenze/par-
     CommonModule,
     IonicModule,
     FormsModule,
+    ReactiveFormsModule,
     TipoTimbraturaToLongTextPipe, TipoTimbraturaToShortTextPipe, ParGiustificativiToLongTextPipe, ParGiustificativiToShortTextPipe,
     TipoRichiestaToShortTextPipe, TipoRichiestaToLongTextPipe, StatoRichiestaLongTextPipe, StatoRichiestaShortTextPipe,
     IdDipRapportoLavoroToNomePipe, IdDipRapportoLavoroToCognomePipe,

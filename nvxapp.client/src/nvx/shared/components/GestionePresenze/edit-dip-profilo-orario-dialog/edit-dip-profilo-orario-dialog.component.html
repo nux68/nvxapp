@@ -1,19 +1,21 @@
 <ion-header>
   <ion-toolbar color="primary">
-    <ion-title>{{title}}</ion-title>
+    <ion-title>{{Title}}</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <div class="login-content-center">
 
+  <form [formGroup]="_editForm">
 
     <ion-card>
       <ion-card-content>
 
+
+
         <ion-item>
           <ion-label position="stacked">Profilo orario</ion-label>
-          <ion-select [(ngModel)]="dip_ProfiloOrario.idPar_ProfiloOrario"
+          <ion-select formControlName="idPar_ProfiloOrario"
                       placeholder="Seleziona un profilo orario"
                       interface="modal">
             <ion-select-option [value]="profilo.id" *ngFor="let profilo of sharedParameterGestionePresenzeService.Par_ProfiloOrario">
@@ -24,19 +26,18 @@
 
 
         <ion-item>
-          <ion-label position="floating">Num. Giorno partenza ciclo ( {{dip_ProfiloOrario.numGiornoPartenzaCiclo}} / {{getDayProf()}} )</ion-label>
-          <!--<ion-input type="text" [(ngModel)]="dip_ProfiloOrario.numGiornoPartenzaCiclo"></ion-input>-->
-
-          <ion-range aria-label="Range with ticks" [(ngModel)]="dip_ProfiloOrario.numGiornoPartenzaCiclo" [ticks]="true" [snaps]="true" [min]="1" [max]="getDayProf()"></ion-range>
-
+          <ion-label position="floating">Num. Giorno partenza ciclo ( {{_editForm.get('numGiornoPartenzaCiclo')?.value}} / {{getDayProf()}} )</ion-label>
+          <!--<ion-input type="number" formControlName="numGiornoPartenzaCiclo"></ion-input>-->
+          <ion-range aria-label="Range with ticks" formControlName="numGiornoPartenzaCiclo" [ticks]="true" [snaps]="true" [min]="1" [max]="getDayProf()"></ion-range>
         </ion-item>
 
+
       </ion-card-content>
-      </ion-card>
+    </ion-card>
+
+  </form>
 
 
-
-</div>
 </ion-content>
 
 
