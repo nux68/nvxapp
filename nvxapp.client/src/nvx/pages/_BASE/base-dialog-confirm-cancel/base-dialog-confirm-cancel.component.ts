@@ -1,6 +1,6 @@
 import { Component, Injectable, OnInit } from '@angular/core';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
-import { NavController } from '@ionic/angular';
+import { ModalController, NavController } from '@ionic/angular';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Observable, of } from 'rxjs';
 
@@ -15,9 +15,9 @@ export abstract class BaseDialogConfirmCancelComponent<T> implements OnInit {
   public _editModel: T | null = null;
   public _editForm: FormGroup;
 
-  constructor(/*protected navCtrl: NavController,*/
-              protected userInterfaceService: UserInterfaceService,
-              protected fb: FormBuilder) {
+  constructor(protected userInterfaceService: UserInterfaceService,
+              protected fb: FormBuilder,
+              protected modalCtrl: ModalController) {
 
     this.buttonbar = userInterfaceService.Btn_ConfermaAnnulla;
     this.buttonbar[0].event = this._handleButtonConfirmClick;
@@ -34,52 +34,50 @@ export abstract class BaseDialogConfirmCancelComponent<T> implements OnInit {
 
   }
 
-  //ionViewWillEnter() {
-  //  this.LoadData().subscribe(res => {
-
-  //    this._editModel = res;
-
-  //    // Popola il form con i dati ottenuti
-  //    if (this._editModel) {
-  //      this._editForm.patchValue(this._editModel);
-  //    }
-  //    else {
-  //      this._editForm.setErrors({ formInvalid: true });
-  //    }
-
-  //  });
-  //}
-
-  private _handleButtonConfirmClick = (param: object) => {
-
+  private _handleButtonConfirmClick = () => {
     this.forceValidation();
-    this.ButtonConfirmClickEv(param);
-
-  }
-
-  private _handleButtonCancelClick = (param: object) => {
-    this.ButtonCancelClickEv(param);
-  }
-      
-  ButtonConfirmClickEv = (param: object) => {
-
-   
 
     if (this._editForm.valid) {
-      //Object.assign(this._editModel, this._editForm.value);
+      // Applica le modifiche del form al modello dati
       this.patchObject(this._editModel, this._editForm.value);
 
+      this.LoadData().subscribe(res => {
 
-      //this.SaveData(this._editModel).subscribe(res => {
-      //  this.navCtrl.back();
-      //});
+        // Chiude il modal e restituisce l'oggetto aggiornato con il ruolo 'confirm'
+        this.modalCtrl.dismiss(res, 'confirm');
+
+      });
+
+
+      
     }
+  }
+
+  private _handleButtonCancelClick = () => {
+    // Chiude il modal senza restituire dati, con il ruolo 'cancel'
+    this.modalCtrl.dismiss(null, 'cancel');
+  }
+
+
+  ionViewWillEnter() {
+
+    this.LoadData().subscribe(res => {
+
+      this._editModel = res;
+
+      // Popola il form con i dati ottenuti
+      if (this._editModel) {
+        this._editForm.patchValue(this._editModel);
+      }
+      else {
+        this._editForm.setErrors({ formInvalid: true });
+      }
+
+    });
 
   }
 
-  ButtonCancelClickEv = (param: object) => {
-    //this.navCtrl.back();
-  }
+  
 
   //Assegna le var degli oggetti di ogegtti
   private patchObject(target: any, source: any) {
@@ -114,7 +112,7 @@ export abstract class BaseDialogConfirmCancelComponent<T> implements OnInit {
 
   abstract LoadData(): Observable<T>;
 
-  abstract SaveData(editModel: T): Observable<boolean>;
+  abstract SaveData(editModel: T): Observable<T>;
 
   abstract get Title(): string;
     
