@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using nvxapp.server.Base;
 using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Entities.Tenant;
+using nvxapp.server.data.Extensions;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
@@ -142,6 +143,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
                     var applicationUser = await _userManager.FindByIdAsync(model.Data.Id);
                     if( applicationUser != null )
                     {
+
+                        
+
                         var aspNetRoles = _aspNetRolesRepository.GetAll().ToList();
                         var usrRoles = new List<string>(await _userManager.GetRolesAsync(applicationUser));
 
@@ -150,11 +154,15 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
                         {
                             retVal.Dip_Anagrafica = _mapper.Map<Dip_Anagrafica4EditModel>(dip_Anagrafica);
                             retVal.Dip_Anagrafica.RoleCode = aspNetRoles.Where(x=> x.Name!= null && usrRoles.Contains(x.Name)).Select(x=> x.Code).ToList();
+                            retVal.Dip_Anagrafica.UserName = applicationUser.UserName != null ? applicationUser.UserName : "";
+                            retVal.Dip_Anagrafica.Mail = applicationUser.Email != null ? applicationUser.Email : "";
 
                             var usrC =  _userCompanyRepository.GetAll().Where(x => x.IdAspNetUsers == model.Data.Id && x.IdCompany == IdCompany).FirstOrDefault();
 
                             if ( usrC != null )
                             {
+                                retVal.Dip_Anagrafica.MainUser = usrC.MainUser;
+
                                 var req_2 = new GenericRequest<UserCompanyGetInModel>();
                                 req_2.Data =  new UserCompanyGetInModel() { Id= usrC.Id };
 
@@ -174,7 +182,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
                                 {
                                     retVal.Dip_Anagrafica.Dip_RapportoLavoro = res_1.Data.Dip_RapportoLavoro;
                                 }
-                                
 
                                 foreach(var item in retVal.Dip_Anagrafica.Dip_RapportoLavoro)
                                 {
@@ -186,9 +193,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
                                         retVal.Dip_Anagrafica.Dip_ProfiloOrario.AddRange( res_3.Data.Dip_ProfiloOrario);
                                     }
                                 }
-
-                                
-
                                 
 
                             }
@@ -206,8 +210,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
             return await ExecuteAction(model, async () =>
             {
                 var retVal = new Dip_Anagrafica_Put_OutModel();
-                //var entity = _mapper.Map<Dip_Anagrafica>(model.Data.Dip_Anagrafica);
-
                 
                 int IdCompany;
                 int.TryParse(this.CurrentCompany, out IdCompany);
@@ -216,69 +218,87 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
                 {
 
 
-                    var applicationUser = await _userManager.FindByIdAsync(model.Data.Id);
-                    if(applicationUser!=null)
+                    var req_UsrComp = new GenericRequest<UserCompanyPutInModel>();
+                    req_UsrComp.Data = new UserCompanyPutInModel()
                     {
-                        var aspNetRoles = _aspNetRolesRepository.GetAll().ToList();
-                        var usrRoles = new List<string>(await _userManager.GetRolesAsync(applicationUser));
-
-                        var entity = _dip_AnagraficaRepository.GetAll().Where( x=> x.IdAspNetUsers == model.Data.Id).FirstOrDefault();
-                        
-                        if(entity==null)
+                        UserCompanyEdit = new UserCompanyEditModel()
                         {
-                            //entity = _mapper.Map<Dip_Anagrafica>(model.Data.Dip_Anagrafica);
-                            //entity.IdAspNetUsers = model.Data.Id;
-                            //entity.Id = 0;
+                            IdUserCompany = model.Data.Dip_Anagrafica.IdUserCompany,
+                            Descrizione = !string.IsNullOrEmpty(model.Data.Dip_Anagrafica.Descrizione) ? model.Data.Dip_Anagrafica.Descrizione : "",
+                            MainUser = model.Data.Dip_Anagrafica.MainUser,
+                            Mail = model.Data.Dip_Anagrafica.Mail,
+                            Pw = model.Data.Dip_Anagrafica.Pw,
+                            RoleId = model.Data.Dip_Anagrafica.RoleId,
+                            Roles = model.Data.Dip_Anagrafica.Roles
                         }
-                        else
-                        {
-                            entity = _mapper.Map<Dip_Anagrafica>(model.Data.Dip_Anagrafica);
-                            //await _dip_AnagraficaRepository.UpsertAsyncGuid(entity);
-                            entity = await _dip_AnagraficaRepository.UpsertAsync(entity);
-                            
-
-                            var usrC =  _userCompanyRepository.GetAll().Where(x => x.IdAspNetUsers == model.Data.Id && x.IdCompany == IdCompany).FirstOrDefault();
-
-                            if ( usrC != null )
-                            {
-                                var req_2 = new GenericRequest<UserCompanyPutInModel>();
-                                req_2.Data = new UserCompanyPutInModel()
-                                {
-                                    UserCompanyEdit = new UserCompanyEditModel()
-                                    {
-                                        IdUserCompany = usrC.Id,
-                                        Descrizione = !string.IsNullOrEmpty(applicationUser.UserName) ? applicationUser.UserName : "",
-                                        MainUser = usrC.MainUser,
-                                        Mail = applicationUser.Email != null ? applicationUser.Email : "",
-                                        Pw = null,
-                                        RoleId = model.Data.Dip_Anagrafica.RoleId,
-                                        Roles = model.Data.Dip_Anagrafica.Roles
-                                    }
-                                };
+                    };
     
-                                await _accountService.UserCompanyPut(req_2, true);
+                    var res_UsrComp = await _accountService.UserCompanyPut(req_UsrComp, true);
+                    if(res_UsrComp.Success && res_UsrComp.Data != null)
+                    {
+                        var usrC =  await _userCompanyRepository.FindByIdAsync(res_UsrComp.Data.UserCompanyEdit.IdUserCompany);
+
+                        if(usrC != null )
+                        {
+                            var applicationUser = await _userManager.FindByIdAsync(usrC.IdAspNetUsers);
+                            if( applicationUser != null )
+                            {
+
+                                var aspNetRoles = _aspNetRolesRepository.GetAll().ToList();
+                                var usrRoles = new List<string>(await _userManager.GetRolesAsync(applicationUser));
+                                var entity = _dip_AnagraficaRepository.GetAll().Where(x => x.IdAspNetUsers == applicationUser.Id).FirstOrDefault();
+
+                                if(entity == null)
+                                {
+                                    entity = _mapper.Map<Dip_Anagrafica>(model.Data.Dip_Anagrafica);
+                                    entity.IdAspNetUsers = applicationUser.Id;
+                                    entity.Id = 0 ;
+                                    entity.Dip_RapportoLavoro = null;
+                                    entity = await _dip_AnagraficaRepository.UpsertAsync(entity);
+
+                                    foreach(var item in model.Data.Dip_Anagrafica.Dip_RapportoLavoro)
+                                        item.IdDip_Anagrafica = entity.Id;
+                                }
+                                else
+                                {
+                                    entity = _mapper.Map<Dip_Anagrafica>(model.Data.Dip_Anagrafica);
+                                    entity = await _dip_AnagraficaRepository.UpsertAsync(entity);
+                                }
 
 
                                 var req_1 = new GenericRequest<Dip_RapportoLavoro_Put_InModel>();
-                                req_1.Data.Id = entity.Id; 
-                                req_1.Data.Dip_RapportoLavoro =  model.Data.Dip_Anagrafica.Dip_RapportoLavoro; 
+                                req_1.Data.Id = entity.Id;
+                                req_1.Data.Dip_RapportoLavoro = model.Data.Dip_Anagrafica.Dip_RapportoLavoro;
                                 var res_1 = await _dip_RapportoLavoroService.Dip_RapportoLavoroPut(req_1, true);
-                                if(res_1.Success && res_1.Data != null)
+                                if (res_1.Success && res_1.Data != null)
                                 {
                                     retVal.Dip_Anagrafica.Dip_RapportoLavoro = res_1.Data.Dip_RapportoLavoro;
 
-                                    foreach(var itemRapp in retVal.Dip_Anagrafica.Dip_RapportoLavoro)
+                                    
+
+
+                                    foreach (var itemRapp in retVal.Dip_Anagrafica.Dip_RapportoLavoro)
                                     {
                                         var req_3 = new GenericRequest<Dip_ProfiloOrario_Put_InModel>();
-                                        req_3.Data.Id = itemRapp.Id; 
-                                        req_3.Data.Dip_ProfiloOrario = model.Data.Dip_Anagrafica.Dip_ProfiloOrario.Where(x=> x.IdDip_RapportoLavoro == itemRapp.Id).ToList(); 
+                                        req_3.Data.Id = itemRapp.Id;
+
+                                        //se è un nuovo rapporto lavoro, i nuovi profili orari verranno agganciati a quello
+                                        if( model.Data.Dip_Anagrafica.Dip_RapportoLavoro.Where(x=> x.Id<0).Any()   )
+                                        {
+                                            foreach(var itemProfHH in model.Data.Dip_Anagrafica.Dip_ProfiloOrario)
+                                                itemProfHH.IdDip_RapportoLavoro = itemRapp.Id;
+                                        }
+
+
+                                        req_3.Data.Dip_ProfiloOrario = model.Data.Dip_Anagrafica.Dip_ProfiloOrario.Where(x => x.IdDip_RapportoLavoro == itemRapp.Id).ToList();
                                         var res_3 = await _dip_ProfiloOrarioService.Dip_ProfiloOrarioPut(req_3, true);
-                                        if(res_3.Success && res_3.Data != null)
+                                        if (res_3.Success && res_3.Data != null)
                                         {
                                             retVal.Dip_Anagrafica.Dip_ProfiloOrario = res_3.Data.Dip_ProfiloOrario;
                                         }
                                     }
                                 }
+
                             }
                         }
                     }

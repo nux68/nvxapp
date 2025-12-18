@@ -31,6 +31,17 @@ export class EditDipProfiloOrarioDialogComponent extends BaseDialogConfirmCancel
   }
 
 
+  override ionViewWillEnter() {
+
+    if (this.dip_ProfiloOrario.idPar_ProfiloOrario == 0 && this.sharedParameterGestionePresenzeService.Par_ProfiloOrario.length>0) {
+
+      this.dip_ProfiloOrario.idPar_ProfiloOrario = this.sharedParameterGestionePresenzeService.Par_ProfiloOrario[0].id;
+
+    }
+
+    super.ionViewWillEnter();
+  }
+
   get Title(): string { return "Profilo orario"; }
 
   get EditForm(): FormGroup {

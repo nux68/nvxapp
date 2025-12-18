@@ -46,6 +46,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
         public string? RoleId { get; set; }
         public List<string> Roles { get; set; } = new List<string>();
         ////
+        public Boolean MainUser { get; set; }
+        public string? Mail { get; set; } = string.Empty;
+        public string? Pw { get; set; } = string.Empty;
 
         public List<Dip_ProfiloOrarioModel> Dip_ProfiloOrario  { get; set; } = new List<Dip_ProfiloOrarioModel>();
 

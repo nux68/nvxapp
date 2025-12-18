@@ -983,17 +983,26 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
               {
                   result = await _userManager.AddToRolesAsync(user, model.Data.UserCompanyEdit.Roles);
 
-                  await _userCompanyRepository.UpsertAsync(new UserCompany()
+                  var comUser = await _userCompanyRepository.UpsertAsync(new UserCompany()
+                                        {
+                                            IdAspNetUsers = user.Id,
+                                            IdCompany = IdCompany,
+                                            MainUser = false
+                                        });
+                  if(comUser!=null)
                   {
-                      IdAspNetUsers = user.Id,
-                      IdCompany = IdCompany,
-                      MainUser = false
-                  });
+                      model.Data.UserCompanyEdit.IdUserCompany = comUser.Id;
+                  }
               }
 
           }
 
+          var req_2 = new GenericRequest<UserCompanyGetInModel>();
+          req_2.Data =  new UserCompanyGetInModel() { Id= model.Data.UserCompanyEdit.IdUserCompany };
 
+          var res_2 = await  UserCompanyGet(req_2,true);
+          if(res_2.Success && res_2.Data != null)
+            retVal.UserCompanyEdit = res_2.Data.UserCompanyEdit;
 
 
           //eliminare

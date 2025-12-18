@@ -22,6 +22,7 @@ import { Dip_ProfiloOrarioModel } from '../../../ClientServer-Service/GestionePr
 import { DbUtilService } from '../../../Utility/infrastructure/db-util.service';
 import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
 import { Dip_RapportoLavoroModel } from '../../../ClientServer-Service/GestionePresenze/Dip_RapportoLavoro/Models/dip-rapporto-lavoro-model';
+import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
 
 @Component({
   selector: 'app-user-department-edit-page',
@@ -58,6 +59,7 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
     private modalCtrl: ModalController,
     public fabMenuService: FabMenuService,
     private dipAnagraficaService: DipAnagraficaService,
+    private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
     private dbUtilService: DbUtilService,
     private collectionDialogService: CollectionDialogService,
     private cdr: ChangeDetectorRef) {
@@ -189,6 +191,18 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
         Dip_RapportoLavoro.id = this.dbUtilService.GenerateCounterKey();
         dip_Anagrafica4Edit.dip_RapportoLavoro.push(Dip_RapportoLavoro);
         
+
+        if (this.sharedParameterGestionePresenzeService.Par_ProfiloOrario.length > 0) {
+          let dip_ProfiloOrarioModel: Dip_ProfiloOrarioModel = new Dip_ProfiloOrarioModel();
+
+          dip_ProfiloOrarioModel.id = this.dbUtilService.GenerateCounterKey();
+          dip_ProfiloOrarioModel.idDip_RapportoLavoro = Dip_RapportoLavoro.id;
+          dip_ProfiloOrarioModel.numGiornoPartenzaCiclo = 1;
+          dip_ProfiloOrarioModel.idPar_ProfiloOrario = this.sharedParameterGestionePresenzeService.Par_ProfiloOrario[0].id;
+
+          dip_Anagrafica4Edit.dip_ProfiloOrario.push(dip_ProfiloOrarioModel);
+
+        }
 
 
         subscriber.next(dip_Anagrafica4Edit);

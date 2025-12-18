@@ -74,10 +74,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Profil
                     // sostituisce il valore negativo
                     var newRow = model.Data.Dip_ProfiloOrario.Where(x=> x.Id<0).ToList();
                     foreach(var item in newRow)
-                    {
-                        item.Id=0;
-                        item.IdPar_ProfiloOrario  = 6;
-                    }
+                        item.Id = 0;
                         
 
                     
@@ -130,6 +127,12 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Profil
 
                         //rileggo i dati dopo le varizioni per ritornare il valore corrente
                         Orig_Data = await Dip_ProfiloOrarioGet(reqOrig_Data, true);    
+                        if (Orig_Data.Success && Orig_Data.Data != null)
+                        {
+                            retVal.Dip_ProfiloOrario = Orig_Data.Data.Dip_ProfiloOrario;
+                        }
+
+
                     }
 
                 }

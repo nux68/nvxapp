@@ -46,6 +46,10 @@ export class Dip_Anagrafica4EditModel extends Dip_AnagraficaModel {
   public descrizione: string;
   public roleId: string;
 
+  public mainUser: boolean;
+  public mail: string;
+  public pw: string;
+
   public dip_ProfiloOrario: Dip_ProfiloOrarioModel[];
 
 
@@ -53,6 +57,11 @@ export class Dip_Anagrafica4EditModel extends Dip_AnagraficaModel {
     super();
     this.descrizione = '';
     this.roleId = '';
+
+    this.mail = '';
+    this.pw = '';
+    this.mainUser = false;
+
     this.dip_ProfiloOrario = [];
   }
 
