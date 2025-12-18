@@ -285,7 +285,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
                                         //se è un nuovo rapporto lavoro, i nuovi profili orari verranno agganciati a quello
                                         if( model.Data.Dip_Anagrafica.Dip_RapportoLavoro.Where(x=> x.Id<0).Any()   )
                                         {
-                                            foreach(var itemProfHH in model.Data.Dip_Anagrafica.Dip_ProfiloOrario)
+                                            foreach(var itemProfHH in model.Data.Dip_Anagrafica.Dip_ProfiloOrario.Where(x=> x.IdDip_RapportoLavoro<0))
                                                 itemProfHH.IdDip_RapportoLavoro = itemRapp.Id;
                                         }
 
