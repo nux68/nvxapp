@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { SignalrService } from '../../../Utility/infrastructure/signalr.service';
 import { environment } from '../../../../environments/environment';
 import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
+import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 
 
 
@@ -14,14 +15,22 @@ import { UserNavigationService } from '../../../Utility/infrastructure/user-navi
   templateUrl: './user-page.component.html',
   styleUrls: ['./user-page.component.scss'],
   standalone: false
-}) 
+})
 export class UserPageComponent implements OnInit {
 
   public title!: string;
 
+
+  public btnTask: ButtonItem;
+
   constructor(private signalrService: SignalrService,
-              public userNavigationService: UserNavigationService) {
+    public userNavigationService: UserNavigationService,
+    private userInterfaceService: UserInterfaceService) {
     this.title = 'UserPage';
+
+    this.btnTask = userInterfaceService.Btn_Esegui;
+    this.btnTask.event = this.handleButtontaskClick;
+
   }
 
   ionViewWillEnter() {
@@ -32,5 +41,9 @@ export class UserPageComponent implements OnInit {
 
 
   ngOnInit() { }
+
+
+  handleButtontaskClick = async (item:any) => {
+  }
 
 }

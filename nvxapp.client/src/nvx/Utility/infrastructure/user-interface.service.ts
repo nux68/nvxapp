@@ -14,7 +14,7 @@ export class UserInterfaceService {
       'checkmark-circle-outline',
       'primary',
       false,
-      () => { console.log('Btn_Conferma cliccato'); } 
+      () => { console.log('Btn_Conferma cliccato'); }
     );
   }
 
@@ -39,9 +39,9 @@ export class UserInterfaceService {
     buttonItem.push(btn_Annulla);
 
     return buttonItem;
-    
+
   }
-  
+
   get Btn_Modifica(): ButtonItem {
     return new ButtonItem(
       'Modifica',
@@ -51,7 +51,7 @@ export class UserInterfaceService {
       () => { console.log('Btn_Modifica cliccato'); }
     );
   }
-  
+
   get Btn_Impersona(): ButtonItem {
     return new ButtonItem(
       'Impersona',
@@ -72,7 +72,7 @@ export class UserInterfaceService {
     );
   }
 
-  
+
 
   get Btn_LogIn(): ButtonItem {
     return new ButtonItem(
@@ -140,7 +140,51 @@ export class UserInterfaceService {
     );
   }
 
-  
+
+
+  get Btn_Approva(): ButtonItem {
+    return new ButtonItem(
+      'Approva',
+      'checkmark-outline',
+      'primary',
+      false,
+      () => { console.log('Btn_Approva cliccato'); }
+    );
+  }
+
+  get Btn_Rifiuta(): ButtonItem {
+    return new ButtonItem(
+      'Rifiuta',
+      'close-outline',
+      'danger',
+      false,
+      () => { console.log('Btn_Rifiuta cliccato'); }
+    );
+  }
+
+  get Btn_Cancella(): ButtonItem {
+    return new ButtonItem(
+      'Cancella',
+      'trash-outline',
+      'danger',
+      false,
+      () => { console.log('Btn_Cancella cliccato'); }
+    );
+  }
+
+  get Btn_Esegui(): ButtonItem {
+    return new ButtonItem(
+      'Esegui',
+      'flash-outline',
+      'warning',
+      false,
+      () => { console.log('Btn_Esegui cliccato'); }
+    );
+  }
+
+
+  //trash-outline
+
 }
 
 
@@ -152,7 +196,7 @@ export class ButtonItem {
     public color: string | null = null,
     public disabled: boolean = false,
     public event: (param: any) => void = (param: any) => { } // Arrow function di default
-    
+
   ) { }
 
 }
