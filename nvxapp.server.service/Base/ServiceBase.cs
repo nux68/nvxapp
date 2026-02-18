@@ -23,7 +23,7 @@ namespace nvxapp.server.Base
         protected readonly UserManager<ApplicationUser> _userManager;
         protected readonly IAspNetUsersRepository _aspNetUsersRepository;
         protected readonly JwtParameter _jwtParameter;
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        protected readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IConfiguration _configuration;
         // Serve per forzare le proprietà contenute nel token http
         // i modo da poterle salvare ed usare quando il contesto http non è disponibile
