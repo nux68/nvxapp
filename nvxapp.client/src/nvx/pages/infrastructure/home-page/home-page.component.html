@@ -5,12 +5,18 @@
 
 <ion-content [fullscreen]="true">
 
-  <ion-card>
+  <!-- Contenitore per l'immagine splash -->
+  <div *ngIf="showSplash" class="splash-container" [class.fade-out]="startFadeOut">
+    <h1>Progetto</h1>
+    <img src="assets/SiSignore.JPG" alt="Splash Image" />
+  </div>
+
+  <ion-card *ngIf="!showSplash">
     <ion-card-content>
 
       <br />
 
-      <div id="container">
+      <div id="container" >
         <strong class="capitalize">{{ title }}</strong>
         <p>{{title}}Component works...</p>
 
