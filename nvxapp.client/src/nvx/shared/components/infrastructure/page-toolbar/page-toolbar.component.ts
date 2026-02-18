@@ -1,5 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { UserNavigationService } from '../../../../Utility/infrastructure/user-navigation.service';
+import { LongJobNotifierService, LongJobProgressUpdate } from '../../../../Utility/infrastructure/long-job-notifier.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-page-toolbar',
@@ -18,7 +20,13 @@ export class PageToolbarComponent  implements OnInit {
   @Input() title: string;
   public queryText: string;
 
-  constructor(public userNavigationService: UserNavigationService) { }
+  public activeJobs$: Observable<LongJobProgressUpdate[]>;
+
+  constructor(public userNavigationService: UserNavigationService,
+              public longJobNotifierService: LongJobNotifierService)
+  {
+    this.activeJobs$ = this.longJobNotifierService.activeJobs$;
+  }
 
   ngOnInit() {
     

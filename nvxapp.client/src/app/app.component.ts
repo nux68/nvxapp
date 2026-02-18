@@ -6,6 +6,7 @@ import { SignalrService } from '../nvx/Utility/infrastructure/signalr.service';
 import { environment } from '../environments/environment';
 import { MainMenuItem, MainMenuService, MenuType } from '../nvx/Utility/infrastructure/main-menu.service';
 import { MainMenuInfrastructureService } from '../nvx/Utility/infrastructure/main-menu-infrastructure.service';
+import { LongJobNotifierService } from '../nvx/Utility/infrastructure/long-job-notifier.service';
 
 
 @Component({
@@ -59,7 +60,8 @@ export class AppComponent implements OnInit, DoCheck {
               public userNavigationService: UserNavigationService,
               public signalrService: SignalrService,
               private mainMenuService: MainMenuService,
-              private mainMenuInfrastructureService: MainMenuInfrastructureService
+              private mainMenuInfrastructureService: MainMenuInfrastructureService,
+              private longJobNotifierService: LongJobNotifierService
               )
   {
 
@@ -91,6 +93,16 @@ export class AppComponent implements OnInit, DoCheck {
           this.signalrService.on('UpdateData').subscribe((data) => {
             console.log('🔄 Dati aggiornati:', data);
           });
+
+          this.signalrService.on('LongJobProgress').subscribe((data) => {
+            console.log('🔄 ReceiveJob Progress:', data);
+
+            this.longJobNotifierService.addOrUpdateJob(data);
+
+          });
+
+
+
         }
 
       });

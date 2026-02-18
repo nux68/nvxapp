@@ -7,6 +7,12 @@
         public string? Text { get; set; }
         public MessageType MsgType { get; set; }
 
+        public Message()
+        {
+
+        }
+
+
         public Message(string? text, MessageType msgType)
         {
             Text = text;

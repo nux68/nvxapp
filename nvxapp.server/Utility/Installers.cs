@@ -9,6 +9,7 @@ using NpgsqlTypes;
 using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Infrastructure;
 using nvxapp.server.data.Interfaces;
+using nvxapp.server.service.ClientServer_Service.infrastructure.Notifications;
 using nvxapp.server.service.HubAI;
 using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.RabbitMQ;
@@ -155,7 +156,7 @@ namespace nvxapp.server.Utility
 
 
 
-
+            builder.Services.AddScoped<ILongJobNotifier, LongJobNotifier>();
 
 
 
