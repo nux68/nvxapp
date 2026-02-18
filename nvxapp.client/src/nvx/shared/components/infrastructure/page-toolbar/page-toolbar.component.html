@@ -16,16 +16,21 @@
     </app-breadcrumbs-impersonate>
 
     <!-- Active Jobs List -->
-    <div class="active-jobs-container ion-padding-start ion-padding-end" *ngIf="(activeJobs$ | async) as jobs">
-      <ion-list *ngIf="jobs.length > 0" class="ion-no-padding">
-        <ion-item *ngFor="let job of jobs" lines="none" class="job-item">
-          <ion-icon name="hourglass-outline" slot="start" class="ion-margin-end"></ion-icon>
-          <ion-label>
-            <p class="job-message">{{ job.message?.text }}</p>
-            <ion-progress-bar [value]="job.progressPercentage / 100"></ion-progress-bar>
-          </ion-label>
-        </ion-item>
-      </ion-list>
+    <div class="active-jobs-container" *ngIf="(activeJobs$ | async) as jobs">
+      <ion-grid *ngIf="jobs.length > 0" class="ion-no-padding">
+        <ion-row>
+          <!-- Loop su ogni colonna -->
+          <ion-col *ngFor="let job of jobs" size="12" size-md="3">
+            <ion-item lines="none" class="job-item">
+              <ion-icon name="hourglass-outline" slot="start" class="ion-margin-end"></ion-icon>
+              <ion-label>
+                <p class="job-message">{{ job.message?.text }}</p>
+                <ion-progress-bar [value]="job.progressPercentage / 100"></ion-progress-bar>
+              </ion-label>
+            </ion-item>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
     </div>
     <!-- End of Active Jobs List -->
 
