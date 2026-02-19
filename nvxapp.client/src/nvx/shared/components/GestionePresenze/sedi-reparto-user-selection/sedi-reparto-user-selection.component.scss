@@ -1,0 +1,72 @@
+ion-select {
+  width: 100%;
+}
+
+ion-item {
+  --padding-start: 0;
+  --inner-padding-end: 0;
+}
+
+ion-col {
+  padding: 5px;
+}
+
+/* sedi-reparto-user-navigation.component.scss */
+
+.user-select-container {
+  display: flex;
+  align-items: flex-end; /* This is overridden by the later .user-select-container rule for align-items */
+  gap: 8px; /* Adds space between the select item and the button group */
+
+  .user-select-item {
+    flex-grow: 1; /* Allows the select item to take up available space */
+  }
+
+  .user-navigation-buttons {
+    display: flex;
+    gap: 8px; /* Space between the two navigation buttons */
+  }
+}
+
+.month-navigation-container {
+  display: flex;
+  align-items: center; /* MODIFIED: Aligns items vertically to the center */
+  gap: 8px; /* Adds space between the select item and buttons */
+  width: 100%;
+
+  .month-select-item {
+    flex-grow: 1; /* Allows the select item to take up available space */
+    // --inner-padding-end: 0; // Optional: if buttons are too close
+  }
+  // ion-button for month navigation already has shape="round"
+  // and color="primary". The gap property handles spacing.
+}
+
+// Ensure ion-items within flex containers behave well
+ion-item {
+  --inner-padding-end: 8px; // Default is often larger, adjust if needed
+}
+
+// Ensure ion-item doesn't add extra padding that misaligns it in flex
+ion-item.user-select-item {
+  --inner-padding-end: 0; // Remove default inner padding if it causes issues with flex item
+  --padding-start: 0; // Adjust as needed
+}
+
+.user-select-container {
+  display: flex;
+  align-items: center; // Modificato da flex-end a center per allineare verticalmente l'item e il gruppo di bottoni
+
+  .user-select-item {
+    flex-grow: 1; // Permette all'ion-item (select) di occupare lo spazio disponibile
+  }
+
+  .user-navigation-buttons {
+    display: flex; // Mantiene i bottoni in linea
+    align-items: center; // Allinea verticalmente i bottoni tra loro (utile se avessero altezze diverse)
+    margin-left: 4px; // Piccolo spazio tra select e bottoni
+    // I bottoni Ionic di solito si allineano bene in un contenitore flex.
+    // Se l'ion-item ha un padding/margin di default che influisce sulla linea di base visuale,
+    // potrebbe essere necessario un aggiustamento, ma align-items: center è solitamente efficace.
+  }
+}

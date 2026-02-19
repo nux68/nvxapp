@@ -165,7 +165,10 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
   // Metodi per gestire altri eventi dall'app-sedi-reparto-user-navigation
   onSedeChanged(sediId: number | undefined): void { }
   onRepartiChanged(repartoIds: number[] | undefined): void { }
-  onAllUsersInSelectionChanged(userIds: string[] | undefined): void { }
+  onAllUsersInSelectionChanged(userIds: string[] | undefined): void {
+  }
+  onAllUsersInSelectionChanged2(userIds: string[] | undefined): void {
+  }
 
   //////
 

@@ -1,0 +1,99 @@
+<div class="ion-padding">
+  <!-- New Row for Year/Month Selection -->
+  <ion-row class="ion-align-items-end ion-margin-bottom" *ngIf="showPeriodSelect">
+    <ion-col size-xs="12" size-sm="3">
+      <ion-item>
+        <ion-label position="stacked">Anno</ion-label>
+        <ion-select [(ngModel)]="selectedYear" (ionChange)="onYearOrMonthChange()"
+                    interface="popover" placeholder="Anno"
+                    [disabled]="yearList.length === 0">
+          <ion-select-option *ngFor="let year of yearList" [value]="year">{{ year }}</ion-select-option>
+        </ion-select>
+      </ion-item>
+    </ion-col>
+
+    <ion-col size-xs="12" size-sm="5">
+      <!-- Adjusted size for better fit -->
+      <div class="month-navigation-container">
+        <ion-item class="month-select-item">
+          <ion-label position="stacked">Mese</ion-label>
+          <ion-select [(ngModel)]="selectedMonth" (ionChange)="onYearOrMonthChange()"
+                      interface="popover" placeholder="Mese"
+                      [disabled]="monthList.length === 0 || !selectedYear">
+            <ion-select-option *ngFor="let month of monthList" [value]="month.value">{{ month.name }}</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <ion-button (click)="navigateToPreviousMonth()" [disabled]="!selectedYear || !selectedMonth" shape="round" color="primary" aria-label="Mese precedente">
+          <ion-icon name="chevron-back-outline" slot="icon-only"></ion-icon>
+        </ion-button>
+        <ion-button (click)="navigateToNextMonth()" [disabled]="!selectedYear || !selectedMonth" shape="round" color="primary" aria-label="Mese successivo">
+          <ion-icon name="chevron-forward-outline" slot="icon-only"></ion-icon>
+        </ion-button>
+      </div>
+    </ion-col>
+  </ion-row>
+
+  <!-- Existing Sedi/Reparto/User Selection Row -->
+  <ion-row class="ion-align-items-end">
+    <!-- Sedi Select -->
+
+    <ion-col size-xs="12" [ngClass]="columSize_4Sede()" *ngIf="showSediSelect">
+      <ion-item>
+        <ion-label position="stacked">Sede</ion-label>
+        <ion-select [(ngModel)]="selectedSediId"
+                    (ionChange)="onSediChange()"
+                    placeholder="Seleziona una sede"
+                    interface="modal">
+          <ion-select-option [value]="sede.id" *ngFor="let sede of az_SediList">
+            {{ sede.descrizione }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+    </ion-col>
+
+    <!-- Reparto Select -->
+    <ion-col size-xs="12" [ngClass]="columSize_4Reparto()" *ngIf="showRepartoSelect">
+      <ion-item>
+        <ion-label position="stacked">Reparto</ion-label>
+        <ion-select [(ngModel)]="selectedRepartoId"
+                    (ionChange)="onRepartoChange()"
+                    placeholder="Seleziona uno o più reparti"
+                    interface="modal"
+                    [disabled]="(showSediSelect && !selectedSediId) || filteredReparti.length === 0"
+                    [multiple]="!singleSelectReparti">
+          <ion-select-option [value]="reparto.id" *ngFor="let reparto of filteredReparti">
+            {{ reparto.descrizione }}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+    </ion-col>
+
+    <!-- User Select and Navigation -->
+    <ion-col size-xs="12" [ngClass]="columSize_4User()" *ngIf="showUserSelect">
+      <div class="user-select-container">
+        <ion-item class="user-select-item">
+          <ion-label position="stacked">Utente</ion-label>
+          <ion-select [(ngModel)]="selectedUserId"
+                      (ionChange)="onUserChange()"
+                      placeholder="Seleziona un utente"
+                      interface="modal"
+                      [disabled]="(!selectedRepartoId || selectedRepartoId.length === 0) || az_SediRepartoUserList.length === 0"
+                      [multiple]="!singleSelectUser">
+            <ion-select-option [value]="user.idAspNetUsers" *ngFor="let user of az_SediRepartoUserList">
+              {{ user.idAspNetUsers | idAspNetUsersToCognome }} {{ user.idAspNetUsers | idAspNetUsersToNome }}
+            </ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <div class="user-navigation-buttons" *ngIf="az_SediRepartoUserList.length > 1 && singleSelectUser">
+          <ion-button (click)="navigateToPreviousUser()" [disabled]="!canNavigatePrevious" shape="round" color="primary" aria-label="Utente precedente">
+            <ion-icon name="chevron-back-outline" slot="icon-only"></ion-icon>
+          </ion-button>
+          <ion-button (click)="navigateToNextUser()" [disabled]="!canNavigateNext" shape="round" color="primary" aria-label="Utente successivo">
+            <ion-icon name="chevron-forward-outline" slot="icon-only"></ion-icon>
+          </ion-button>
+        </div>
+      </div>
+    </ion-col>
+  </ion-row>
+</div>

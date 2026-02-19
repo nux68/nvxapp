@@ -10,15 +10,16 @@ import { catchError, forkJoin, map, Observable, throwError } from 'rxjs';
 import { SharedParameterGestionePresenzeService } from '../../../shared-parameter-gestione-presenze.service';
 import { RoleCode } from '../../../../ClientServer-Service/Infrastructure/Account/Models/user-roles-model';
 
+
 @Component({
-  selector: 'app-sedi-reparto-user-navigation',
-  templateUrl: './sedi-reparto-user-navigation.component.html',
-  styleUrls: ['./sedi-reparto-user-navigation.component.scss'],
+  selector: 'app-sedi-reparto-user-selection',
+  templateUrl: './sedi-reparto-user-selection.component.html',
+  styleUrls: ['./sedi-reparto-user-selection.component.scss'],
   standalone: false
 })
-export class SediRepartoUserNavigationComponent implements OnInit {
+export class SediRepartoUserSelectionComponent implements OnInit {
   // Input parameters to show/hide selects
-  
+
   @Input() showPeriodSelect: boolean = true;
   @Input() showSediSelect: boolean = true;
   @Input() showRepartoSelect: boolean = true;
@@ -27,7 +28,7 @@ export class SediRepartoUserNavigationComponent implements OnInit {
   @Input() singleFieldOnRow: boolean = false;
   @Input() singleSelectReparti: boolean = false;
   @Input() singleSelectUser: boolean = true;
-  
+
 
 
   // Output parameters for selected values
@@ -46,7 +47,7 @@ export class SediRepartoUserNavigationComponent implements OnInit {
   // Selected values
   public selectedSediId: number | null = null;
   public selectedRepartoId: number[] | null = null;
-  public selectedUserId: string |string[] | null = null;
+  public selectedUserId: string | string[] | null = null;
 
   // Period selection state
   public selectedYear: number | null = null;
@@ -80,7 +81,7 @@ export class SediRepartoUserNavigationComponent implements OnInit {
       });
     }
 
-    
+
 
   }
 
@@ -178,7 +179,7 @@ export class SediRepartoUserNavigationComponent implements OnInit {
           this.selectedSediId = null;
           this.filteredReparti = [...this.az_SediRepartoList];
           if (this.showRepartoSelect && this.filteredReparti.length > 0) {
-            if (this.singleSelectReparti) 
+            if (this.singleSelectReparti)
               this.selectedRepartoId = [this.filteredReparti[0].id];
             else
               this.selectedRepartoId = this.filteredReparti.map(reparto => reparto.id);
@@ -235,9 +236,9 @@ export class SediRepartoUserNavigationComponent implements OnInit {
     if (this.showRepartoSelect && this.selectedSediId !== null && this.filteredReparti.length > 0) {
 
       if (this.singleSelectReparti)
-          this.selectedRepartoId = [this.filteredReparti[0].id];
+        this.selectedRepartoId = [this.filteredReparti[0].id];
       else
-          this.selectedRepartoId = this.filteredReparti.map(reparto => reparto.id);
+        this.selectedRepartoId = this.filteredReparti.map(reparto => reparto.id);
 
       this.onRepartoChange();
     } else {
@@ -272,15 +273,15 @@ export class SediRepartoUserNavigationComponent implements OnInit {
 
   public onUserChange() {
     if (this.singleSelectUser) {
-      
-      if (this.selectedUserId && this.selectedUserId.length>0 && this.az_SediRepartoUserList.length > 0) {
+
+      if (this.selectedUserId && this.selectedUserId.length > 0 && this.az_SediRepartoUserList.length > 0) {
 
         let currID = '';
         if (Array.isArray(this.selectedUserId))
           currID = this.selectedUserId[0];
         else
           currID = this.selectedUserId;
-        
+
 
         const newIndex = this.az_SediRepartoUserList.findIndex(user => user.idAspNetUsers === currID);
 
@@ -308,7 +309,7 @@ export class SediRepartoUserNavigationComponent implements OnInit {
       selectedUserId = undefined;
     }
 
-    
+
     if (this.singleSelectUser) {
       this.currUserIdChange.emit(selectedUserId);
     }
@@ -325,7 +326,7 @@ export class SediRepartoUserNavigationComponent implements OnInit {
       next: res => {
         var repUser = res.data?.az_RepartoUser || [];
         var idAspNetUsers = this.sharedParameterGestionePresenzeService.Dip_Anagrafica_OnRoles([RoleCode.User]).map(x => x.idAspNetUsers);
-        this.az_SediRepartoUserList = repUser.filter(x => idAspNetUsers.includes(x.idAspNetUsers) && x.userInDepartment==true);
+        this.az_SediRepartoUserList = repUser.filter(x => idAspNetUsers.includes(x.idAspNetUsers) && x.userInDepartment == true);
         this.allUsersIdChange.emit(this.az_SediRepartoUserList.map(x => x.idAspNetUsers));
 
         if (this.showUserSelect && this.az_SediRepartoUserList.length > 0) {
@@ -369,12 +370,12 @@ export class SediRepartoUserNavigationComponent implements OnInit {
     return this.az_SediRepartoUserList.length > 0 && this.currentUserIndex < this.az_SediRepartoUserList.length - 1;
   }
 
-  public  columSize_4Sede():string {
+  public columSize_4Sede(): string {
     if (this.singleFieldOnRow)
-      
-      return 'col-sm-12' ;
+
+      return 'col-sm-12';
     else
-      
+
       return 'col-sm-2';
   }
 
@@ -396,7 +397,7 @@ export class SediRepartoUserNavigationComponent implements OnInit {
       return 'col-sm-5';
   }
 
-  
+
 
 
 }
