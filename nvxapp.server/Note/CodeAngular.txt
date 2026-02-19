@@ -17,7 +17,7 @@ nesconde in funzione della risoluzione
     ion-hide-xs-down
     ion-hide-xl-up
 
-
+class="ion-hide-sm-down"
     
 xs	0–576px	Extra small (mobile)
 sm	577–768px	Small (tablet verticale)

@@ -1,7 +1,7 @@
 <div class="ion-padding">
   <!-- New Row for Year/Month Selection -->
   <ion-row class="ion-align-items-end ion-margin-bottom" *ngIf="showPeriodSelect">
-    <ion-col size-xs="12" size-sm="3">
+    <ion-col size-xs="5" size-sm="3">
       <ion-item>
         <ion-label position="stacked">Anno</ion-label>
         <ion-select [(ngModel)]="selectedYear" (ionChange)="onYearOrMonthChange()"
@@ -12,7 +12,7 @@
       </ion-item>
     </ion-col>
 
-    <ion-col size-xs="12" size-sm="5">
+    <ion-col size-xs="7" size-sm="5">
       <!-- Adjusted size for better fit -->
       <div class="month-navigation-container">
         <ion-item class="month-select-item">
@@ -23,10 +23,10 @@
             <ion-select-option *ngFor="let month of monthList" [value]="month.value">{{ month.name }}</ion-select-option>
           </ion-select>
         </ion-item>
-        <ion-button (click)="navigateToPreviousMonth()" [disabled]="!selectedYear || !selectedMonth" shape="round" color="primary" aria-label="Mese precedente">
+        <ion-button class="ion-hide-sm-down" (click)="navigateToPreviousMonth()" [disabled]="!selectedYear || !selectedMonth" shape="round" color="primary" aria-label="Mese precedente">
           <ion-icon name="chevron-back-outline" slot="icon-only"></ion-icon>
         </ion-button>
-        <ion-button (click)="navigateToNextMonth()" [disabled]="!selectedYear || !selectedMonth" shape="round" color="primary" aria-label="Mese successivo">
+        <ion-button class="ion-hide-sm-down" (click)="navigateToNextMonth()" [disabled]="!selectedYear || !selectedMonth" shape="round" color="primary" aria-label="Mese successivo">
           <ion-icon name="chevron-forward-outline" slot="icon-only"></ion-icon>
         </ion-button>
       </div>
