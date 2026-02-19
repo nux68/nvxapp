@@ -22,19 +22,6 @@
                                           (currUserIdChange)="onCurrentUserChanged($event)">
         </app-sedi-reparto-user-navigation>
 
-        <app-sedi-reparto-user-selection [showPeriodSelect]="true"
-                                          [showSediSelect]="false"
-                                          [showRepartoSelect]="true"
-                                          [showUserSelect]="true"
-                                          [singleSelectUser]="false"
-                                          (periodChange)="onPeriodChange($event)"
-                                          (sediIdChange)="onSedeChanged($event)"
-                                          (repartoIdChange)="onRepartiChanged($event)"
-                                          (allUsersIdChange)="onAllUsersInSelectionChanged2($event)"
-                                          (currUserIdChange)="onCurrentUserChanged($event)">
-        </app-sedi-reparto-user-selection>
-
-
         <div *ngIf="!currentDays || currentDays.length === 0" class="no-data-message">
           <p>Seleziona un utente per visualizzare i dati</p>
         </div>

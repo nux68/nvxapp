@@ -167,9 +167,6 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
   onRepartiChanged(repartoIds: number[] | undefined): void { }
   onAllUsersInSelectionChanged(userIds: string[] | undefined): void {
   }
-  onAllUsersInSelectionChanged2(userIds: string[] | undefined): void {
-  }
-
   //////
 
   isActionSheetOpen = false;
