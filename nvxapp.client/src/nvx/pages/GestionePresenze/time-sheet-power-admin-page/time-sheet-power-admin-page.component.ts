@@ -15,6 +15,7 @@ import { NavController } from '@ionic/angular';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
 import { Subscription } from 'rxjs';
+import { DatePipe } from '@angular/common';
 
 interface DayData {
   date: Date;
@@ -27,6 +28,7 @@ interface DayData {
   selector: 'app-time-sheet-power-admin-page',
   templateUrl: './time-sheet-power-admin-page.component.html',
   styleUrls: ['./time-sheet-power-admin-page.component.scss'],
+  providers: [DatePipe],
   standalone: false
 }) 
 export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
@@ -52,7 +54,8 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
               private dipGGRichiestaService: DipGGRichiestaService,
               public dateTimeUtilService: DateTimeUtilService,
               public userNavigationService: UserNavigationService,
-              private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService
+              private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
+              private datePipe: DatePipe 
   ) {
     this.title = 'Calendario HR';
     this.currentMonth = { year: 0, month: 0, days: {}, dip_GG_Richiesta: [] };
@@ -170,7 +173,17 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
   //////
 
   isActionSheetOpen = false;
-  public actionSheetButtons = [
+
+  public actionSheetButtons = [{
+          text: '',
+          role: '',
+          data: {
+            action: '',
+          },
+        }
+    ];
+
+  public actionSheetButtonsRequest = [
     {
       text: 'Approva richiesta',
       role: 'approva',
@@ -188,12 +201,33 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
 
   ];
 
-  private actionSheetOpenSelectObj: Dip_GG_GiustificativiModel | Dip_GG_TimbraturaModel;
+  public actionSheetButtonsDay = [
+    {
+      text: 'Aggiusta Timbrature',
+      role: 'AggiustaTimbr',
+      data: {
+        action: 'AggiustaTimbr',
+      },
+    },
+    //{
+    //  text: 'Rifiuta richiesta',
+    //  role: 'rifiuta',
+    //  data: {
+    //    action: 'rifiuta',
+    //  },
+    //},
+
+  ];
+
+
+  private actionSheetOpenSelectObj: Dip_GG_GiustificativiModel | Dip_GG_TimbraturaModel | DayData;
   public actionSheetHeader = '';
   public actionSheetSubHeader = '';
 
   actionSheetOpen(obj: any) {
     if ('idPar_Giustificativi' in obj) {
+
+      this.actionSheetButtons = this.actionSheetButtonsRequest;
 
       const parGiustificativiToLongTextPipe = new ParGiustificativiToLongTextPipe(this.sharedParameterGestionePresenzeService);
 
@@ -204,12 +238,25 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
 
     } else if ('timbraturaTipo' in obj) {
 
+      this.actionSheetButtons = this.actionSheetButtonsRequest;
+
       const tipoTimbraturaToLongTextPipe = new TipoTimbraturaToLongTextPipe();
 
       const timbratura = obj as Dip_GG_TimbraturaModel;
       this.actionSheetOpenSelectObj = timbratura;
       this.actionSheetHeader = `Timbratura : ${tipoTimbraturaToLongTextPipe.transform(timbratura.timbraturaTipo)} ${this.dateTimeUtilService.DateTo_ggmmyyyy_hhmm(timbratura.timbratura)}`;
       this.actionSheetSubHeader = null;
+    } else if ('dayOfMonth' in obj) {
+      //menu giorno
+      this.actionSheetButtons = this.actionSheetButtonsDay;
+      const currDay = obj as DayData;
+      this.actionSheetOpenSelectObj = currDay;
+      this.actionSheetHeader = "Giorno " + this.datePipe.transform(currDay.date, 'dd EEE');
+
+      
+
+      this.actionSheetSubHeader = null;
+
     }
     this.isActionSheetOpen = true;
   }
@@ -247,6 +294,8 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
         });
       }
 
+    } else if (event?.detail?.data?.action === 'AggiustaTimbr') {
+      this.loadMonth();
     }
 
 

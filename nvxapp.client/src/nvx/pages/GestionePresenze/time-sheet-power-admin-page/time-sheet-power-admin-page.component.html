@@ -39,13 +39,6 @@
             <ion-row *ngFor="let day of currentDays" [ngClass]="{'weekend': isWeekend(day.date)}" class="day-row nvx-ion-row-4table">
 
               <ion-col size="2" class="day-cell">
-                <!--
-                <span class="day-number">{{ day.date | date:'dd' }}</span>
-                <span class="day-name">{{ day.date | date:'EEE' }}</span>
-                  -->
-
-                <!--'--background': timeSheetService.get_Dip_GG_Giustificativi_backColor(just),
-                '--color': timeSheetService.get_Dip_GG_Giustificativi_txtColor(just),-->
 
                 <ion-button fill="clear" size="small" [ngStyle]="{
                                                       '--color': get_label_day_color(day.date),
@@ -54,7 +47,8 @@
                                                       'font-size': '0.8em',
                                                       'margin-bottom':'0px',
                                                       'margin-top':'0px'
-                                                    }">
+                                                    }"
+                            (click)="actionSheetOpen(day)">
                   {{ day.date | date:'dd' }} {{ day.date | date:'EEE' }}
                 </ion-button>
 
