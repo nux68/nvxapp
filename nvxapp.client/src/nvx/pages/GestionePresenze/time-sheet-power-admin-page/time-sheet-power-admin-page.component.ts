@@ -261,6 +261,15 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
 
   }
 
+  get_label_day_color(day: any): string | null {
 
+    if (this.isWeekend(day))
+      return "var(--ion-color-primary)";
+    else
+      return "var(--ion-color-medium)";
+
+  }
+
+  
 
 }
