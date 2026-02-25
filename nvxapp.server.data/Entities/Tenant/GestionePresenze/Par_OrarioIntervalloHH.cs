@@ -6,7 +6,7 @@ namespace nvxapp.server.data.Entities.Tenant.GestionePresenze
 {
 
     
-    [Table("Par_OrarioIntervalloHH")]
+    //[Table("Par_OrarioIntervalloHH")]
     public class Par_OrarioIntervalloHH : BaseEntity
     {
 
@@ -24,7 +24,7 @@ namespace nvxapp.server.data.Entities.Tenant.GestionePresenze
         public TimeOnly? Alle_Limite_DX { get; set; }
 
 
-        public int NumCoppia { get; set; }  = 0; // relazione con Par_Orario->NumeroCoppie
+        public int NumCoppia { get; set; }  = 1; // relazione con Par_Orario->NumeroCoppie
         
         
 

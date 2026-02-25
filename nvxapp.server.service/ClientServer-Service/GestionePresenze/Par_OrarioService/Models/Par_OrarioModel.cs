@@ -1,4 +1,6 @@
-﻿using nvxapp.server.service.ClientServer_Service.ModelsBase;
+﻿using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubCommessaService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_OrarioIntervalloHHService.Models;
+using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -14,7 +16,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Orario
         public int IdAz_Anagrafica { get; set; }
         public string Codice { get; set; } = string.Empty;
         public string Descrizione { get; set; } = string.Empty;
-        public int NumGiorniCiclo { get; set; }
+        public int NumeroCoppie { get; set; }
+        public decimal SogliaHHStrao { get; set; }
         
     }
 
@@ -24,6 +27,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Orario
         public List<Par_OrarioModel> Par_Orario { get; set; } = new List<Par_OrarioModel>();
     }
 
+
+
+
     public class Par_Orario_GetInModel
     {
         public int Id { get; set; }
@@ -31,15 +37,20 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Orario
     public class Par_Orario_GetOutModel : ModelResult
     {
         public Par_OrarioModel? Par_Orario { get; set; }
+
+        public List<Par_OrarioIntervalloHHModel> Par_OrarioIntervalloHH { get; set; } = new List<Par_OrarioIntervalloHHModel>();
+
     }
 
     public class Par_Orario_PutInModel
     {
         public Par_OrarioModel Par_Orario { get; set; } = new Par_OrarioModel();
+        public List<Par_OrarioIntervalloHHModel> Par_OrarioIntervalloHH { get; set; } = new List<Par_OrarioIntervalloHHModel>();
     }
     public class Par_Orario_PutOutModel : ModelResult
     {
         public Par_OrarioModel? Par_Orario { get; set; }
+        public List<Par_OrarioIntervalloHHModel> Par_OrarioIntervalloHH { get; set; } = new List<Par_OrarioIntervalloHHModel>();
     }
 
     public class Par_Orario_DeleteInModel

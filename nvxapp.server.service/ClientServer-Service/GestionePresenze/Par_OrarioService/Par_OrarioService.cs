@@ -9,6 +9,8 @@ using nvxapp.server.data.Entities.Tenant.GestionePresenze;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_OrarioIntervalloHHService;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_OrarioIntervalloHHService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_OrarioService.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Interfaces;
@@ -22,6 +24,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Orario
     {
         private readonly IPar_OrarioRepository _par_OrarioRepository;
         private readonly IGestionePresenzeUserUtility _gestionePresenzeUserUtility;
+        private readonly IPar_OrarioIntervalloHHService _par_OrarioIntervalloHHService;
+
+        
 
         public Par_OrarioService(IMapper mapper,
                                   UserManager<ApplicationUser> userManager,
@@ -30,10 +35,12 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Orario
                                   IHttpContextAccessor httpContextAccessor,
                                   IConfiguration configuration,
                                   IGestionePresenzeUserUtility gestionePresenzeUserUtility,
+                                  IPar_OrarioIntervalloHHService par_OrarioIntervalloHHService,
                                   IPar_OrarioRepository par_OrarioRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _par_OrarioRepository = par_OrarioRepository;
             _gestionePresenzeUserUtility = gestionePresenzeUserUtility;
+            _par_OrarioIntervalloHHService = par_OrarioIntervalloHHService;
         }
 
         public virtual async Task<GenericResult<Par_Orario_GetAllOutModel>> GetAll(GenericRequest<Par_Orario_GetAllInModel> model, bool isSubProcess)
@@ -52,8 +59,26 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Orario
             return await ExecuteAction(model, async () =>
             {
                 var retVal = new Par_Orario_GetOutModel();
-                var entity = await _par_OrarioRepository.FindByIdAsync(model.Data.Id);
-                retVal.Par_Orario = _mapper.Map<Par_OrarioModel>(entity);
+                
+                int IdCompany;
+                int.TryParse(this.CurrentCompany, out IdCompany);
+
+                Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg company_DATA = await _gestionePresenzeUserUtility.Get_AzAna_AzSedi_AzReparto_Az_Cfg(IdCompany, true);
+                if (company_DATA != null && company_DATA.az_Anagrafica != null)
+                {
+                    var entity = await _par_OrarioRepository.FindByIdAsync(model.Data.Id);
+                    retVal.Par_Orario = _mapper.Map<Par_OrarioModel>(entity);
+
+                    var req_1 = new GenericRequest<Par_OrarioIntervalloHH_GetAll_4Edit_InModel>();
+                    req_1.Data =  new Par_OrarioIntervalloHH_GetAll_4Edit_InModel(){ Id = model.Data.Id };
+                    var res_1 = await _par_OrarioIntervalloHHService.GetAll_4Edit(req_1,true);
+                    if (res_1.Success && res_1.Data != null)
+                    {
+                        retVal.Par_OrarioIntervalloHH = res_1.Data.Par_OrarioIntervalloHH;
+                    }
+
+                }
+                
                 return retVal;
             }, isSubProcess);
         }
@@ -71,9 +96,19 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Orario
                 {
                     entity.IdAz_Anagrafica = companyData.az_Anagrafica.Id;
                 }
-
                 var updatedEntity = await _par_OrarioRepository.UpsertAsync(entity);
                 retVal.Par_Orario = _mapper.Map<Par_OrarioModel>(updatedEntity);
+
+                
+                var req_1 = new GenericRequest<Par_OrarioIntervalloHH_PutAll_4Edit_InModel>();
+                req_1.Data =  new Par_OrarioIntervalloHH_PutAll_4Edit_InModel(){ Id = retVal.Par_Orario.Id , 
+                                                                                 Par_OrarioIntervalloHH = model.Data.Par_OrarioIntervalloHH };
+                var res_1 = await _par_OrarioIntervalloHHService.PutAll_4Edit(req_1,true);
+                if (res_1.Success && res_1.Data != null)
+                {
+                    retVal.Par_OrarioIntervalloHH = res_1.Data.Par_OrarioIntervalloHH;
+                }
+                
                 return retVal;
             }, isSubProcess);
         }

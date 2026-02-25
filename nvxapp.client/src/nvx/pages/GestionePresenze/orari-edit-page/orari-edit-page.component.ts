@@ -8,6 +8,7 @@ import { Observable } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { Par_Orario_GetInModel, Par_Orario_PutInModel, Par_OrarioModel } from '../../../ClientServer-Service/GestionePresenze/Par_Orario/Models/par-orario-model';
 import { ParOrarioService } from '../../../ClientServer-Service/GestionePresenze/Par_Orario/par-orario.service';
+import { Par_OrarioIntervalloHHModel } from '../../../ClientServer-Service/GestionePresenze/Par_OrarioIntervalloHH/Models/par-orario-intervallo-hh-model';
 
 
 @Component({
@@ -17,6 +18,8 @@ import { ParOrarioService } from '../../../ClientServer-Service/GestionePresenze
   standalone: false
 })
 export class OrariEditPageComponent extends BasePageConfirmCancelComponent<Par_OrarioModel> implements OnInit {
+
+  public par_OrarioIntervalloHH: Par_OrarioIntervalloHHModel[];
 
   constructor(
     protected override navCtrl: NavController,
@@ -46,7 +49,11 @@ export class OrariEditPageComponent extends BasePageConfirmCancelComponent<Par_O
       request.data.id = state.id;
 
       return this.parOrarioService.Par_OrarioGet(request).pipe(
-        map((res) => res.data.par_Orario),
+        map((res) => {
+            this.par_OrarioIntervalloHH = res.data.par_OrarioIntervalloHH;
+            return res.data.par_Orario;
+          }
+        ),
         catchError((error) => {
           console.error('Errore durante il caricamento dei dati:', error);
           return [null];
@@ -70,6 +77,7 @@ export class OrariEditPageComponent extends BasePageConfirmCancelComponent<Par_O
     let request: GenericRequest<Par_Orario_PutInModel> =
       new GenericRequest<Par_Orario_PutInModel>(Par_Orario_PutInModel);
     request.data.par_Orario = editModel;
+    request.data.par_OrarioIntervalloHH = this.par_OrarioIntervalloHH;
 
     return this.parOrarioService.Par_OrarioPut(request).pipe(
       map(() => {
