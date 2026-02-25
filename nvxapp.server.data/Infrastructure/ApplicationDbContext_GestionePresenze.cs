@@ -44,7 +44,7 @@ namespace nvxapp.server.data.Infrastructure
         public virtual DbSet<Par_Orario> Par_Orario { get; set; }
         public virtual DbSet<Par_ProfiloOrario> Par_ProfiloOrario { get; set; }
         public virtual DbSet<Par_ProfiloOrarioGG> Par_ProfiloOrarioGG { get; set; }
-        public virtual DbSet<Par_OrarioIntervalloHH> Par_ProfiloOrarioIntervalloHH { get; set; }
+        public virtual DbSet<Par_OrarioIntervalloHH> Par_OrarioIntervalloHH { get; set; }
 
         public virtual DbSet<My_Template1> My_template1 { get; set; }
         public virtual DbSet<Az_SubCommessaSediReparto> Az_SubCommessaSediReparto { get; set; }

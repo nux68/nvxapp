@@ -6,7 +6,7 @@ namespace nvxapp.server.data.Entities.Tenant.GestionePresenze
 {
 
     
-
+    [Table("Par_OrarioIntervalloHH")]
     public class Par_OrarioIntervalloHH : BaseEntity
     {
 
