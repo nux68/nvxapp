@@ -9,6 +9,7 @@ import { map, catchError } from 'rxjs/operators';
 import { Par_ProfiloOrarioModel, Par_ProfiloOrario_GetInModel, Par_ProfiloOrario_PutInModel } from '../../../ClientServer-Service/GestionePresenze/Par_ProfiloOrario/Models/par-profilo-orario-model';
 import { ParProfiloOrarioService } from '../../../ClientServer-Service/GestionePresenze/Par_ProfiloOrario/par-profilo-orario.service';
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
+import { Par_ProfiloOrarioGGModel } from '../../../ClientServer-Service/GestionePresenze/Par_ProfiloOrarioGG/Models/par-profilo-orario-gg-model';
 
 @Component({
   selector: 'app-profilo-orario-edit-page',
@@ -17,6 +18,9 @@ import { RefresherService } from '../../../Utility/GestionePresenze/refresher.se
   standalone: false
 })
 export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelComponent<Par_ProfiloOrarioModel> implements OnInit {
+
+
+  public par_ProfiloOrarioGG: Par_ProfiloOrarioGGModel[];
 
   constructor(
     protected override navCtrl: NavController,
@@ -48,7 +52,10 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
       request.data.id = state.id;
 
       return this.parProfiloOrarioService.Par_ProfiloOrarioGet(request).pipe(
-        map((res) => res.data.par_ProfiloOrario),
+        map((res) => {
+          this.par_ProfiloOrarioGG = res.data.par_ProfiloOrarioGG;
+          return res.data.par_ProfiloOrario;
+        }),
         catchError((error) => {
           console.error('Errore durante il caricamento dei dati:', error);
           return [null];
@@ -70,8 +77,9 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
 
 
     let request: GenericRequest<Par_ProfiloOrario_PutInModel> =
-      new GenericRequest<Par_ProfiloOrario_PutInModel>(Par_ProfiloOrario_PutInModel);
+    new GenericRequest<Par_ProfiloOrario_PutInModel>(Par_ProfiloOrario_PutInModel);
     request.data.par_ProfiloOrario = editModel;
+    request.data.par_ProfiloOrarioGG = this.par_ProfiloOrarioGG;
 
     return this.parProfiloOrarioService.Par_ProfiloOrarioPut(request).pipe(
       map(() => {
