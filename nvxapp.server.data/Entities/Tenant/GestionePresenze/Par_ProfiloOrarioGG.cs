@@ -15,6 +15,7 @@ namespace nvxapp.server.data.Entities.Tenant.GestionePresenze
         [ForeignKey("IdPar_ProfiloOrario")]
         public virtual Par_ProfiloOrario? Par_ProfiloOrarioNavigation { get; set; }
 
+        public int NumGiorno { get; set; } = 0; // relazione con Par_ProfiloOrario->NumGiorniCiclo
 
 
         public ICollection<Par_Orario>? Par_Orario { get; set; }

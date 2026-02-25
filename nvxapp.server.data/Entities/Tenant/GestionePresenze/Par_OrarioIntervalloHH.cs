@@ -18,6 +18,14 @@ namespace nvxapp.server.data.Entities.Tenant.GestionePresenze
         public TimeOnly? Dalle { get; set; }
         public TimeOnly? Alle { get; set; }
 
+        public TimeOnly? Dalle_Limite_SX { get; set; }
+        public TimeOnly? Dalle_Limite_DX { get; set; }
+        public TimeOnly? Alle_Limite_SX { get; set; }
+        public TimeOnly? Alle_Limite_DX { get; set; }
+
+
+        public int NumCoppia { get; set; }  = 0; // relazione con Par_Orario->NumeroCoppie
+        
         
 
     }

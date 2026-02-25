@@ -23,7 +23,7 @@ namespace nvxapp.server.data.Entities.Tenant.GestionePresenze
         [MaxLength(50)]
         public string? Descrizione { get; set; }
 
-        public int NumGiorniCiclo { get; set; }
+        public int NumGiorniCiclo { get; set; } = 0; // stabilisce quante righe di Par_ProfiloOrarioGG ci devono essere
 
         public ICollection<Par_ProfiloOrarioGG>? Par_ProfiloOrarioGG { get; set; }
         public ICollection<Dip_ProfiloOrario>? Dip_ProfiloOrario { get; set; }
