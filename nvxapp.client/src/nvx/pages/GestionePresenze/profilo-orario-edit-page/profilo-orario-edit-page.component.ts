@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
-import { UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
+import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { NavController } from '@ionic/angular';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
@@ -10,6 +10,7 @@ import { Par_ProfiloOrarioModel, Par_ProfiloOrario_GetInModel, Par_ProfiloOrario
 import { ParProfiloOrarioService } from '../../../ClientServer-Service/GestionePresenze/Par_ProfiloOrario/par-profilo-orario.service';
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
 import { Par_ProfiloOrarioGGModel } from '../../../ClientServer-Service/GestionePresenze/Par_ProfiloOrarioGG/Models/par-profilo-orario-gg-model';
+import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
 
 @Component({
   selector: 'app-profilo-orario-edit-page',
@@ -21,15 +22,23 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
 
   public currSection: string = "sez1";
   public par_ProfiloOrarioGG: Par_ProfiloOrarioGGModel[];
+  public btnEdit: ButtonItem;
+  public btnDelete: ButtonItem;
 
   constructor(
     protected override navCtrl: NavController,
     protected override userInterfaceService: UserInterfaceService,
     protected override fb: FormBuilder,
     private parProfiloOrarioService: ParProfiloOrarioService,
+    private collectionDialogService: CollectionDialogService,
     private refresherService: RefresherService
   ) {
     super(navCtrl, userInterfaceService, fb);
+    this.btnEdit = this.userInterfaceService.Btn_Modifica;
+    this.btnEdit.event = this.handleButtonEditClick;
+
+    this.btnDelete = userInterfaceService.Btn_Cancella;
+    this.btnDelete.event = this.handleButtonDeleteClick;
   }
 
 
@@ -164,14 +173,11 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
 
   }
 
-
   getDays(): number {
 
     return 15;
 
   }
-
-
 
   public get_par_ProfiloOrarioGG(day: number): Par_ProfiloOrarioGGModel[] {
     if (!this.par_ProfiloOrarioGG) {
@@ -185,6 +191,35 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
     }
 
     return retVal;
+  }
+
+  handleButtonEditClick = (item: Par_ProfiloOrarioModel) => {
+    //this.navCtrl.navigateForward('/profiliorariedit', {
+    //  state: { id: item.id }
+    //});
+  }
+
+  handleButtonDeleteClick = async (item: any) => {
+
+    const result = await this.collectionDialogService.ConfirmCancelDialog('Confermi la cancellazione dell  Orario');
+    if (result) {
+
+      //const request: GenericRequest<Par_ProfiloOrario_DeleteInModel> = new GenericRequest<Par_ProfiloOrario_DeleteInModel>(Par_ProfiloOrario_DeleteInModel);
+      //request.data.id = item.id;
+      //this.parProfiloOrarioService.Par_ProfiloOrarioDelete(request).pipe(
+      //  map(() => {
+      //    this.refresherService.SharedParameterGestionePresenze_triggerRefresh();
+      //    this.loadData();
+      //    return true;
+      //  }),
+      //  catchError((error: any) => {
+      //    console.error('Errore durante la chiamata API:', error);
+      //    return [false];
+      //  })
+      //).subscribe();
+
+    }
+
   }
 
 }

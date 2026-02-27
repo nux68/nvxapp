@@ -78,16 +78,46 @@
               <ion-card-content>
                 <ion-card-title>Giorno {{ idxDay + 1 }} </ion-card-title>
 
-                <p *ngFor="let giornoDett of get_par_ProfiloOrarioGG( idxDay + 1 ); let idx = index">
-                  Element {{ giornoDett.zOrder }}
+                <ion-grid>
+                  <ion-row class="nvx-ion-row-4table" *ngFor="let giornoDett of get_par_ProfiloOrarioGG( idxDay + 1 ); let idx = index , let last = last">
 
-                  Codice {{ giornoDett.idPar_Orario | parOrarioToCodice }}
-                  Descr  {{ giornoDett.idPar_Orario | parOrarioToLongText }}
+                    <ion-col size="4" class="ion-hide-sm-down">
+                      <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
+                        {{ giornoDett.idPar_Orario | parOrarioToLongText }}
+                      </ion-label>
+                    </ion-col>
+                    <ion-col size="4" class="ion-hide-sm-down">
+                      <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
+                        {{ giornoDett.idPar_Orario | parOrarioToCodice }}
+                      </ion-label>
+                    </ion-col>
+                    <ion-col size="2" class="ion-hide-sm-down" >
+
+                      <ion-button size="small" fill="outline" shape="round" (click)="btnDelete.event(null)" color="{{btnDelete.color}}" *ngIf="last && idx > 0">
+                        <ion-icon name="{{btnDelete.image}}"></ion-icon>
+                        &nbsp;{{btnDelete.text}}
+                      </ion-button>
+
+                    </ion-col>
+                    <ion-col size="2" class="ion-hide-sm-down" >
+                      <ion-button size="small" fill="outline" shape="round" (click)="btnEdit.event(null)" color="{{btnEdit.color}}" >
+                        <ion-icon name="{{btnEdit.image}}"></ion-icon>
+                        &nbsp;{{btnEdit.text}}
+                      </ion-button>
+                    </ion-col>
 
 
+                  </ion-row>
+                </ion-grid>
 
 
-                </p>
+                  <!--<p *ngFor="let giornoDett of get_par_ProfiloOrarioGG( idxDay + 1 ); let idx = index">
+
+                    Element {{ giornoDett.zOrder }}
+                    Codice {{ giornoDett.idPar_Orario | parOrarioToCodice }}
+                    Descr  {{ giornoDett.idPar_Orario | parOrarioToLongText }}
+
+                  </p>-->
 
               </ion-card-content>
             </ion-card>
