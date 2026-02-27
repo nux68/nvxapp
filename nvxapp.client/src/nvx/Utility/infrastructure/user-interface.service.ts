@@ -182,6 +182,15 @@ export class UserInterfaceService {
     );
   }
 
+  get Btn_Aggiungi(): ButtonItem {
+    return new ButtonItem(
+      'Aggiungi',
+      'add-circle-outline',
+      'primary',
+      false,
+      () => { console.log('Btn_Aggiungi cliccato'); }
+    );
+  }
 
   //trash-outline
 
