@@ -24,6 +24,7 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
   public par_ProfiloOrarioGG: Par_ProfiloOrarioGGModel[];
   public btnEdit: ButtonItem;
   public btnDelete: ButtonItem;
+  public btnAdd: ButtonItem;
 
   constructor(
     protected override navCtrl: NavController,
@@ -39,6 +40,9 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
 
     this.btnDelete = userInterfaceService.Btn_Cancella;
     this.btnDelete.event = this.handleButtonDeleteClick;
+
+    this.btnAdd = userInterfaceService.Btn_Aggiungi;
+    this.btnAdd.event = this.handleButtonAddClick;
   }
 
 
@@ -198,6 +202,14 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
     //  state: { id: item.id }
     //});
   }
+
+  handleButtonAddClick = (item: Par_ProfiloOrarioModel) => {
+    //this.navCtrl.navigateForward('/profiliorariedit', {
+    //  state: { id: item.id }
+    //});
+  }
+
+  
 
   handleButtonDeleteClick = async (item: any) => {
 
