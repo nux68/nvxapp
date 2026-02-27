@@ -5,6 +5,7 @@ import { RouterModule } from '@angular/router';
 import { SharedComponentInfrastructureModule } from '../../../shared/shared-component-infrastructure.module';
 import { NgModule } from '@angular/core';
 import { ProfiloOrarioEditPageComponent } from './profilo-orario-edit-page.component';
+import { SharedComponentGestionePresenzeModuleModule } from '../../../shared/shared-component-gestione-presenze-module.module';
 
 
 
@@ -24,7 +25,8 @@ import { ProfiloOrarioEditPageComponent } from './profilo-orario-edit-page.compo
         component: ProfiloOrarioEditPageComponent
       }
     ]),
-    SharedComponentInfrastructureModule
+    SharedComponentInfrastructureModule,
+    SharedComponentGestionePresenzeModuleModule
   ],
 
   declarations: [ProfiloOrarioEditPageComponent],

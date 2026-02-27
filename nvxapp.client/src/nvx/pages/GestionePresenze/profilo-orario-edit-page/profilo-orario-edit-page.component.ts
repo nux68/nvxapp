@@ -33,35 +33,49 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
   }
 
 
-  override ngOnInit(): void {
-    super.ngOnInit();
 
-    // Sottoscrive le modifiche al campo numGiorniCiclo
-    this._editForm.get('numGiorniCiclo')?.valueChanges.pipe(
-    ).subscribe(newValue => {
-
-      if (this.par_ProfiloOrarioGG.length != newValue) {
-        if (newValue > this.par_ProfiloOrarioGG.length) {
-
-          for (let i:number = this.par_ProfiloOrarioGG.length; i <= newValue; i++) {
-            let _par_ProfiloOrarioGG: Par_ProfiloOrarioGGModel = new Par_ProfiloOrarioGGModel();
-            _par_ProfiloOrarioGG.zOrder = 1;
-            _par_ProfiloOrarioGG.numGiorno = i+1;
-            _par_ProfiloOrarioGG.idPar_Orario = this.par_ProfiloOrarioGG[0].idPar_Orario;
-            _par_ProfiloOrarioGG.idPar_ProfiloOrario = this.par_ProfiloOrarioGG[0].idPar_ProfiloOrario;
-            this.par_ProfiloOrarioGG.push(_par_ProfiloOrarioGG);
-          }
-
-        }
-        else {
-          this.par_ProfiloOrarioGG.splice(newValue);
-        }
-      }
-
-    });
+  public getUniqueDays(): number[] {
+    if (!this.par_ProfiloOrarioGG) {
+      return [];
+    }
+    // Estrae tutti i numGiorno
+    const allDays = this.par_ProfiloOrarioGG.map(g => g.numGiorno);
+    // Rimuove i duplicati e ordina
+    return [...new Set(allDays)].sort((a, b) => a - b);
   }
 
-  
+
+  public onRangeChange(event: any): void {
+
+        const newValue = event.detail.value;
+        const UniqueDays = this.getUniqueDays();
+
+        if (UniqueDays.length != newValue) {
+          if (newValue > UniqueDays.length) {
+
+            for (let i: number = UniqueDays.length; i <= newValue; i++) 
+              this.add_par_ProfiloOrarioGG(i + 1, 1, this.par_ProfiloOrarioGG[0].idPar_Orario);
+            
+          }
+          else {
+            this.par_ProfiloOrarioGG = this.par_ProfiloOrarioGG.filter(g => g.numGiorno <= newValue);
+          }
+        }
+    
+  }
+
+  public add_par_ProfiloOrarioGG(numGiorno: number, zOrder: number, idPar_Orario:number): void {
+
+    let _par_ProfiloOrarioGG: Par_ProfiloOrarioGGModel = new Par_ProfiloOrarioGGModel();
+    _par_ProfiloOrarioGG.zOrder = zOrder;
+    _par_ProfiloOrarioGG.numGiorno = numGiorno;
+    _par_ProfiloOrarioGG.idPar_ProfiloOrario = (this._editModel != null) ? this._editModel.id : 0;
+    _par_ProfiloOrarioGG.idPar_Orario = idPar_Orario;
+
+    this.par_ProfiloOrarioGG.push(_par_ProfiloOrarioGG);
+  }
+
+
 
   get Title(): string {
     return "Profilo Orario";
@@ -97,7 +111,20 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
         this._editForm.setValidators(matchData);
         this._editForm.updateValueAndValidity();
 
-        subscriber.next(new Par_ProfiloOrarioModel());
+        let par_ProfiloOrarioModel = new Par_ProfiloOrarioModel();
+        par_ProfiloOrarioModel.codice = "0000";
+        par_ProfiloOrarioModel.descrizione = "Nuovo profilo"
+        par_ProfiloOrarioModel.numGiorniCiclo = 7;
+        this.par_ProfiloOrarioGG = [];
+
+        for (let i: number = 1; i <= par_ProfiloOrarioModel.numGiorniCiclo; i++) {
+          this.add_par_ProfiloOrarioGG(i,1,1);
+        }
+
+        
+
+
+        subscriber.next(par_ProfiloOrarioModel);
         subscriber.complete();
       });
     }
@@ -129,17 +156,35 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
     this.currSection = event.detail.value;
   }
 
-  getDayProf(): number {
+  getDayMock(): any {
+
+    let v= Array(this._editForm.get('numGiorniCiclo')?.value).fill(0);
+
+    return v;
+
+  }
+
+
+  getDays(): number {
 
     return 15;
 
   }
 
-  public get_par_ProfiloOrarioGG(): Par_ProfiloOrarioGGModel[] {
+
+
+  public get_par_ProfiloOrarioGG(day: number): Par_ProfiloOrarioGGModel[] {
     if (!this.par_ProfiloOrarioGG) {
       return [];
     }
-    return this.par_ProfiloOrarioGG.sort((a, b) => a.numGiorno - b.numGiorno);
+    let retVal =  this.par_ProfiloOrarioGG.filter(g => g.numGiorno === day)
+      .sort((a, b) => a.zOrder - b.zOrder);
+
+    if (retVal.length > 1) {
+      var c = 0;
+    }
+
+    return retVal;
   }
 
 }

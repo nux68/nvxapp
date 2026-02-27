@@ -6,7 +6,7 @@
 <ion-content [fullscreen]="true">
 
   <ion-card>
-    <ion-card-content>
+    <ion-card-content *ngIf="_editForm!=null">
 
 
 
@@ -24,7 +24,6 @@
         </ion-segment>
 
         <div [hidden]="currSection!='sez1'">
-
 
           <br />
           <ion-item class="nvx-item-4-title">
@@ -55,18 +54,14 @@
           </ion-note>
 
           <ion-item>
-            <ion-label position="floating">Num. Giorni Ciclo ( {{_editForm.get('numGiorniCiclo')?.value}} / {{getDayProf()}} )</ion-label>
-            <ion-range aria-label="Range with ticks" formControlName="numGiorniCiclo" [ticks]="true" [snaps]="true" [min]="1" [max]="getDayProf()"></ion-range>
+            <ion-label position="floating">Num. Giorni Ciclo ( {{_editForm.get('numGiorniCiclo')?.value}} / {{getDays()}} )</ion-label>
+            <ion-range aria-label="Range with ticks" (ionChange)="onRangeChange($event)" formControlName="numGiorniCiclo" [ticks]="true" [snaps]="true" [min]="1" [max]="getDays()"></ion-range>
 
 
           </ion-item>
           <ion-note color="danger" *ngIf="_editForm.get('numGiorniCiclo')?.hasError('required') && _editForm.get('numGiorniCiclo')?.touched">
             Num. Giorni Ciclo è obbligatorio.
           </ion-note>
-
-
-
-
 
         </div>
         <div [hidden]="currSection!='sez2'">
@@ -78,21 +73,30 @@
 
           <div *ngIf="_editModel ">
 
-            <ion-card *ngFor="let giorno of get_par_ProfiloOrarioGG(); let i = index">
+
+            <ion-card *ngFor="let giorno of getDayMock(); let idxDay = index">
               <ion-card-content>
-                <ion-card-title>Giorno {{ giorno.numGiorno }}</ion-card-title>
+                <ion-card-title>Giorno {{ idxDay + 1 }} </ion-card-title>
+
+                <p *ngFor="let giornoDett of get_par_ProfiloOrarioGG( idxDay + 1 ); let idx = index">
+                  Element {{ giornoDett.zOrder }}
+
+                  Codice {{ giornoDett.idPar_Orario | parOrarioToCodice }}
+                  Descr  {{ giornoDett.idPar_Orario | parOrarioToLongText }}
+
+
+
+
+                </p>
+
               </ion-card-content>
             </ion-card>
-          </div>
 
+          </div>
 
         </div>
 
-
-
       </form>
-
-      <br />
 
 
     </ion-card-content>

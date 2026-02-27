@@ -28,6 +28,8 @@ import { AzSediRepartoToShortTextPipe } from './pipe/GestionePresenze/az-sedirep
 import { EditDipProfiloOrarioDialogComponent } from './components/GestionePresenze/edit-dip-profilo-orario-dialog/edit-dip-profilo-orario-dialog.component';
 import { ParProfiloOrarioToLongTextPipePipe } from './pipe/GestionePresenze/par-profilo-orario-to-long-text-pipe.pipe';
 import { SediRepartoUserSelectionComponent } from './components/GestionePresenze/sedi-reparto-user-selection/sedi-reparto-user-selection.component';
+import { ParOrarioToCodicePipe } from './pipe/GestionePresenze/par-orario-to-codice.pipe';
+import { ParOrarioToLongTextPipe } from './pipe/GestionePresenze/par-orario-to-long-text.pipe';
 
 @NgModule({
   declarations: [
@@ -48,7 +50,8 @@ import { SediRepartoUserSelectionComponent } from './components/GestionePresenze
     IdDipRapportoLavoroToNomePipe, IdDipRapportoLavoroToCognomePipe,
     IdAspNetUsersToCognomePipe, IdAspNetUsersToNomePipe,
     ParAttivitaToLongTextPipe, ParCompetenzaToLongTextPipe, AzCommessaToLongTextPipe, AzClienteToLongTextPipe,
-    AzSediRepartoToLongTextPipe, AzSediRepartoToShortTextPipe, ParProfiloOrarioToLongTextPipePipe
+    AzSediRepartoToLongTextPipe, AzSediRepartoToShortTextPipe, ParProfiloOrarioToLongTextPipePipe,
+    ParOrarioToCodicePipe, ParOrarioToLongTextPipe
   ],
   exports: [
     TipoTimbraturaToLongTextPipe, TipoTimbraturaToShortTextPipe, ParGiustificativiToLongTextPipe, ParGiustificativiToShortTextPipe,
@@ -57,7 +60,8 @@ import { SediRepartoUserSelectionComponent } from './components/GestionePresenze
     IdAspNetUsersToCognomePipe, IdAspNetUsersToNomePipe,
     ParAttivitaToLongTextPipe, ParCompetenzaToLongTextPipe, AzCommessaToLongTextPipe, AzClienteToLongTextPipe,
     SediRepartoUserNavigationComponent, SediRepartoUserSelectionComponent , SeletionSediRepartoDialogComponent, SeletionSediRepartoUserDialogComponent, SeletionParAttivitaDialogComponent, AzSediRepartoToLongTextPipe,
-    EditDipProfiloOrarioDialogComponent, ParProfiloOrarioToLongTextPipePipe
+    EditDipProfiloOrarioDialogComponent, ParProfiloOrarioToLongTextPipePipe,
+    ParOrarioToCodicePipe, ParOrarioToLongTextPipe
   ]
 })
 export class SharedComponentGestionePresenzeModuleModule { }
