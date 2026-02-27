@@ -9,6 +9,7 @@ import { map, catchError } from 'rxjs/operators';
 import { Par_Orario_GetInModel, Par_Orario_PutInModel, Par_OrarioModel } from '../../../ClientServer-Service/GestionePresenze/Par_Orario/Models/par-orario-model';
 import { ParOrarioService } from '../../../ClientServer-Service/GestionePresenze/Par_Orario/par-orario.service';
 import { Par_OrarioIntervalloHHModel } from '../../../ClientServer-Service/GestionePresenze/Par_OrarioIntervalloHH/Models/par-orario-intervallo-hh-model';
+import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
 
 
 @Component({
@@ -25,6 +26,7 @@ export class OrariEditPageComponent extends BasePageConfirmCancelComponent<Par_O
     protected override navCtrl: NavController,
     protected override userInterfaceService: UserInterfaceService,
     protected override fb: FormBuilder,
+    private refresherService: RefresherService,
     private parOrarioService: ParOrarioService
   ) {
     super(navCtrl, userInterfaceService, fb);
@@ -81,7 +83,7 @@ export class OrariEditPageComponent extends BasePageConfirmCancelComponent<Par_O
 
     return this.parOrarioService.Par_OrarioPut(request).pipe(
       map(() => {
-        // Qui si potrebbe aggiungere un refresh della lista se necessario
+        this.refresherService.SharedParameterGestionePresenze_triggerRefresh(); 
         return true;
       }),
       catchError((error) => {

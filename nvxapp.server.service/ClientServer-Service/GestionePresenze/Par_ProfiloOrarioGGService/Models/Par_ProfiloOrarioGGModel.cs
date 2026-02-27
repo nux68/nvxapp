@@ -13,8 +13,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Profil
         public int Id { get; set; }
         public int IdPar_ProfiloOrario { get; set; }
         public int NumGiorno { get; set; }
-
-        
+        public int ZOrder { get; set; }
+        public int IdPar_Orario { get; set; }
     }
 
 

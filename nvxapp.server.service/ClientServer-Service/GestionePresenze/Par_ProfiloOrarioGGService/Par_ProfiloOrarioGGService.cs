@@ -20,6 +20,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Profil
 
     public class Par_ProfiloOrarioGGService : ServiceBase, IPar_ProfiloOrarioGGService
     {
+        private readonly IPar_OrarioRepository _par_OrarioRepository;
         private readonly IPar_ProfiloOrarioRepository _par_ProfiloOrarioRepository;
         private readonly IPar_ProfiloOrarioGGRepository _par_ProfiloOrarioGGRepository;
         private readonly IGestionePresenzeUserUtility _gestionePresenzeUserUtility;
@@ -32,11 +33,13 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Profil
                                   IHttpContextAccessor httpContextAccessor,
                                   IConfiguration configuration,
 
+                                  IPar_OrarioRepository par_OrarioRepository,
                                   IPar_ProfiloOrarioRepository par_ProfiloOrarioRepository,
                                   IPar_ProfiloOrarioGGRepository par_ProfiloOrarioGGRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _par_ProfiloOrarioGGRepository = par_ProfiloOrarioGGRepository;
             _gestionePresenzeUserUtility = gestionePresenzeUserUtility;
+            _par_OrarioRepository = par_OrarioRepository;
             _par_ProfiloOrarioRepository = par_ProfiloOrarioRepository;
         }
 
@@ -61,15 +64,20 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Profil
                         var par_ProfiloOrarioGG = _par_ProfiloOrarioGGRepository.GetAll().Where(x => x.IdPar_ProfiloOrario == model.Data.Id).ToList();
                         retVal.Par_ProfiloOrarioGG = _mapper.Map<List<Par_ProfiloOrarioGGModel>>(par_ProfiloOrarioGG);
 
+                        var par_Orario = _par_OrarioRepository.GetAll().FirstOrDefault();
+                        
+
                         for(var i=1; i<= par_ProfiloOrario.NumGiorniCiclo; i++)
                         {
-                            if (!retVal.Par_ProfiloOrarioGG.Any(x => x.NumGiorno == i))
+                            if (!retVal.Par_ProfiloOrarioGG.Any(x => x.NumGiorno == i && x.ZOrder == 1))
                             {
                                 retVal.Par_ProfiloOrarioGG.Add(new Par_ProfiloOrarioGGModel()
                                 {
                                     Id = 0,
                                     IdPar_ProfiloOrario  = model.Data.Id,
                                     NumGiorno  = i,
+                                    ZOrder = 1,
+                                    IdPar_Orario = par_Orario!=null?par_Orario.Id:0 //MIGLIORARE
                                 });
                             }
                         }
@@ -132,6 +140,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Profil
                             {
                                 par_ProfiloOrarioGG = _mapper.Map<Par_ProfiloOrarioGG>(item);
                                 par_ProfiloOrarioGG.IdPar_ProfiloOrario = model.Data.Id;
+                                par_ProfiloOrarioGG.ZOrder = item.ZOrder;
+                                par_ProfiloOrarioGG.IdPar_ProfiloOrario = item.IdPar_ProfiloOrario;
                                 par_ProfiloOrarioGG.Id = 0;
                             }
                             else

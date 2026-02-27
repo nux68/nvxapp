@@ -10,46 +10,83 @@
 
 
 
-      <br />
-      <ion-item class="nvx-item-4-title">
-        <ion-label>Info </ion-label>
-      </ion-item>
 
 
       <form [formGroup]="_editForm">
 
-        <ion-item>
-          <ion-label position="floating">Descrizione</ion-label>
-          <ion-input type="text" formControlName="descrizione"></ion-input>
-        </ion-item>
-        <ion-note color="danger" *ngIf="_editForm.get('descrizione')?.hasError('required') && _editForm.get('descrizione')?.touched">
-          Descrizione è obbligatorio.
-        </ion-note>
-        <ion-note color="danger" *ngIf="_editForm.get('descrizione')?.hasError('maxlength') && _editForm.get('descrizione')?.touched">
-          Descrizione non può superare i 20 caratteri.
-        </ion-note>
+        <ion-segment (ionChange)="segmentChanged($event)" [value]="currSection">
+          <ion-segment-button value="sez1" content-id="sez1">
+            <ion-label>Generale</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="sez2" content-id="sez2">
+            <ion-label>Giorni</ion-label>
+          </ion-segment-button>
+        </ion-segment>
+
+        <div [hidden]="currSection!='sez1'">
 
 
-        <ion-item>
-          <ion-label position="floating">Codice</ion-label>
-          <ion-input type="text" formControlName="codice"></ion-input>
-        </ion-item>
-        <ion-note color="danger" *ngIf="_editForm.get('codice')?.hasError('required') && _editForm.get('codice')?.touched">
-          codice è obbligatorio.
-        </ion-note>
-        <ion-note color="danger" *ngIf="_editForm.get('codice')?.hasError('maxlength') && _editForm.get('codice')?.touched">
-          codice non può superare i 5 caratteri.
-        </ion-note>
+          <br />
+          <ion-item class="nvx-item-4-title">
+            <ion-label>Info </ion-label>
+          </ion-item>
 
-        <ion-item>
-          <ion-label position="floating">Num. Giorni Ciclo</ion-label>
-          <ion-input type="text" formControlName="numGiorniCiclo"></ion-input>
-        </ion-item>
-        <ion-note color="danger" *ngIf="_editForm.get('numGiorniCiclo')?.hasError('required') && _editForm.get('numGiorniCiclo')?.touched">
-          Num. Giorni Ciclo è obbligatorio.
-        </ion-note>
+          <ion-item>
+            <ion-label position="floating">Descrizione</ion-label>
+            <ion-input type="text" formControlName="descrizione"></ion-input>
+          </ion-item>
+          <ion-note color="danger" *ngIf="_editForm.get('descrizione')?.hasError('required') && _editForm.get('descrizione')?.touched">
+            Descrizione è obbligatorio.
+          </ion-note>
+          <ion-note color="danger" *ngIf="_editForm.get('descrizione')?.hasError('maxlength') && _editForm.get('descrizione')?.touched">
+            Descrizione non può superare i 20 caratteri.
+          </ion-note>
 
-        
+
+          <ion-item>
+            <ion-label position="floating">Codice</ion-label>
+            <ion-input type="text" formControlName="codice"></ion-input>
+          </ion-item>
+          <ion-note color="danger" *ngIf="_editForm.get('codice')?.hasError('required') && _editForm.get('codice')?.touched">
+            codice è obbligatorio.
+          </ion-note>
+          <ion-note color="danger" *ngIf="_editForm.get('codice')?.hasError('maxlength') && _editForm.get('codice')?.touched">
+            codice non può superare i 5 caratteri.
+          </ion-note>
+
+          <ion-item>
+            <ion-label position="floating">Num. Giorni Ciclo ( {{_editForm.get('numGiorniCiclo')?.value}} / {{getDayProf()}} )</ion-label>
+            <ion-range aria-label="Range with ticks" formControlName="numGiorniCiclo" [ticks]="true" [snaps]="true" [min]="1" [max]="getDayProf()"></ion-range>
+
+
+          </ion-item>
+          <ion-note color="danger" *ngIf="_editForm.get('numGiorniCiclo')?.hasError('required') && _editForm.get('numGiorniCiclo')?.touched">
+            Num. Giorni Ciclo è obbligatorio.
+          </ion-note>
+
+
+
+
+
+        </div>
+        <div [hidden]="currSection!='sez2'">
+
+          <br />
+          <ion-item class="nvx-item-4-title">
+            <ion-label>Giorni del profilo </ion-label>
+          </ion-item>
+
+          <div *ngIf="_editModel ">
+
+            <ion-card *ngFor="let giorno of get_par_ProfiloOrarioGG(); let i = index">
+              <ion-card-content>
+                <ion-card-title>Giorno {{ giorno.numGiorno }}</ion-card-title>
+              </ion-card-content>
+            </ion-card>
+          </div>
+
+
+        </div>
 
 
 

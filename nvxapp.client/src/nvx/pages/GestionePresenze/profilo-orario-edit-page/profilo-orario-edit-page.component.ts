@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
 import { UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { NavController } from '@ionic/angular';
-import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { Observable } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
@@ -19,7 +19,7 @@ import { Par_ProfiloOrarioGGModel } from '../../../ClientServer-Service/Gestione
 })
 export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelComponent<Par_ProfiloOrarioModel> implements OnInit {
 
-
+  public currSection: string = "sez1";
   public par_ProfiloOrarioGG: Par_ProfiloOrarioGGModel[];
 
   constructor(
@@ -31,6 +31,37 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
   ) {
     super(navCtrl, userInterfaceService, fb);
   }
+
+
+  override ngOnInit(): void {
+    super.ngOnInit();
+
+    // Sottoscrive le modifiche al campo numGiorniCiclo
+    this._editForm.get('numGiorniCiclo')?.valueChanges.pipe(
+    ).subscribe(newValue => {
+
+      if (this.par_ProfiloOrarioGG.length != newValue) {
+        if (newValue > this.par_ProfiloOrarioGG.length) {
+
+          for (let i:number = this.par_ProfiloOrarioGG.length; i <= newValue; i++) {
+            let _par_ProfiloOrarioGG: Par_ProfiloOrarioGGModel = new Par_ProfiloOrarioGGModel();
+            _par_ProfiloOrarioGG.zOrder = 1;
+            _par_ProfiloOrarioGG.numGiorno = i+1;
+            _par_ProfiloOrarioGG.idPar_Orario = this.par_ProfiloOrarioGG[0].idPar_Orario;
+            _par_ProfiloOrarioGG.idPar_ProfiloOrario = this.par_ProfiloOrarioGG[0].idPar_ProfiloOrario;
+            this.par_ProfiloOrarioGG.push(_par_ProfiloOrarioGG);
+          }
+
+        }
+        else {
+          this.par_ProfiloOrarioGG.splice(newValue);
+        }
+      }
+
+    });
+  }
+
+  
 
   get Title(): string {
     return "Profilo Orario";
@@ -92,6 +123,25 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
       })
     );
   };
+
+  segmentChanged(event: any) {
+    console.log('Segment cambiato:', event.detail.value);
+    this.currSection = event.detail.value;
+  }
+
+  getDayProf(): number {
+
+    return 15;
+
+  }
+
+  public get_par_ProfiloOrarioGG(): Par_ProfiloOrarioGGModel[] {
+    if (!this.par_ProfiloOrarioGG) {
+      return [];
+    }
+    return this.par_ProfiloOrarioGG.sort((a, b) => a.numGiorno - b.numGiorno);
+  }
+
 }
 
 
@@ -103,3 +153,5 @@ const matchData: ValidatorFn = (control: AbstractControl): ValidationErrors | nu
 
   return null;
 };
+
+

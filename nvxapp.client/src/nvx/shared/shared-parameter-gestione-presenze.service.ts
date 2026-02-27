@@ -23,6 +23,8 @@ import { AzSediService } from '../ClientServer-Service/GestionePresenze/Az_Sedi/
 import { Az_Sedi_GetAll_InModel, Az_SediModel } from '../ClientServer-Service/GestionePresenze/Az_Sedi/Models/az-sedi-model';
 import { Par_ProfiloOrario_GetAllInModel, Par_ProfiloOrarioModel } from '../ClientServer-Service/GestionePresenze/Par_ProfiloOrario/Models/par-profilo-orario-model';
 import { ParProfiloOrarioService } from '../ClientServer-Service/GestionePresenze/Par_ProfiloOrario/par-profilo-orario.service';
+import { ParOrarioService } from '../ClientServer-Service/GestionePresenze/Par_Orario/par-orario.service';
+import { Par_Orario_GetAllInModel, Par_OrarioModel } from '../ClientServer-Service/GestionePresenze/Par_Orario/Models/par-orario-model';
 
 @Injectable({
   providedIn: 'root'
@@ -44,6 +46,7 @@ export class SharedParameterGestionePresenzeService {
     private azSediService: AzSediService,
     private azCfgService: AzCfgService,
     private parProfiloOrarioService: ParProfiloOrarioService,
+    private parOrarioService: ParOrarioService,
   ) { }
 
   public InitCall(updateProgress: (calls: any[]) => void): any[] {
@@ -222,6 +225,23 @@ export class SharedParameterGestionePresenzeService {
           return of(null);
         })),
 
+      this.parOrarioService.GetAll(new GenericRequest<Par_Orario_GetAllInModel>(Par_Orario_GetAllInModel)).pipe(
+        tap((result) => {
+          this.Par_Orario = result.data.par_Orario
+          updateProgress(calls)
+        }),
+        retry({
+          count: 20,
+          delay: (error, retryCount) => {
+            console.error(`Errore rilevato, ritento dopo ${retryCount} secondi:`, error);
+            return timer(500);
+          }
+        }),
+        catchError((error) => {
+          console.error(`Errore durante il caricamento dei profili orari:`, error);
+          return of(null);
+        })),
+
     );
     return calls;
   }
@@ -374,6 +394,20 @@ export class SharedParameterGestionePresenzeService {
   private _par_ProfiloOrarioSubject = new BehaviorSubject<Par_ProfiloOrarioModel[]>([]);
   public get Par_ProfiloOrario$(): Observable<Par_ProfiloOrarioModel[] | []> {
     return this._par_ProfiloOrarioSubject.asObservable();
+  }
+
+
+  private _par_Orario: Par_OrarioModel[] | null = [];
+  public get Par_Orario(): Par_OrarioModel[] | null {
+    return this._par_Orario;
+  }
+  public set Par_Orario(value: Par_OrarioModel[] | null) {
+    this._par_Orario = value;
+    this._par_OrarioSubject.next(value);
+  }
+  private _par_OrarioSubject = new BehaviorSubject<Par_OrarioModel[]>([]);
+  public get Par_Orario$(): Observable<Par_OrarioModel[] | []> {
+    return this._par_OrarioSubject.asObservable();
   }
 
 

@@ -17,6 +17,17 @@ namespace nvxapp.server.data.Entities.Tenant.GestionePresenze
 
         public int NumGiorno { get; set; } = 0; // relazione con Par_ProfiloOrario->NumGiorniCiclo
 
+        public int ZOrder { get; set; }  //1 = riga defaul, che deve essere sempre presente
+        
+
+        [Required]
+        public required int IdPar_Orario { get; set; }
+        [ForeignKey("IdPar_Orario")]
+        public virtual Par_Orario? Par_OrarioNavigation { get; set; }
+        
+
+
+        
 
         public ICollection<Par_Orario>? Par_Orario { get; set; }
 

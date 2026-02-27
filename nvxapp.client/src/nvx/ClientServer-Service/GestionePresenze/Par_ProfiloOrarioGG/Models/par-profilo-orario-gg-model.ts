@@ -3,6 +3,9 @@ import { ModelResult } from "../../../ModelsBase/model-result";
 export class Par_ProfiloOrarioGGModel {
   id: number;
   idPar_ProfiloOrario: number;
+  numGiorno: number;
+  zOrder: number;
+  idPar_Orario: number;
 }
 
 // Modelli per la gestione dell'edit
