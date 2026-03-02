@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
-import { NavController } from '@ionic/angular';
+import { ModalController, NavController } from '@ionic/angular';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { Observable } from 'rxjs';
@@ -11,6 +11,7 @@ import { ParProfiloOrarioService } from '../../../ClientServer-Service/GestioneP
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
 import { Par_ProfiloOrarioGGModel } from '../../../ClientServer-Service/GestionePresenze/Par_ProfiloOrarioGG/Models/par-profilo-orario-gg-model';
 import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
+import { EditParProfiloOrarioDettaglioOrarioDialogComponent } from '../../../shared/components/GestionePresenze/edit-par-profilo-orario-dettaglio-orario-dialog/edit-par-profilo-orario-dettaglio-orario-dialog.component';
 
 @Component({
   selector: 'app-profilo-orario-edit-page',
@@ -25,6 +26,7 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
   public btnEdit: ButtonItem;
   public btnDelete: ButtonItem;
   public btnAdd: ButtonItem;
+  public TMP_counter: number = 0;
 
   constructor(
     protected override navCtrl: NavController,
@@ -32,7 +34,8 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
     protected override fb: FormBuilder,
     private parProfiloOrarioService: ParProfiloOrarioService,
     private collectionDialogService: CollectionDialogService,
-    private refresherService: RefresherService
+    private refresherService: RefresherService,
+    private modalCtrl: ModalController,
   ) {
     super(navCtrl, userInterfaceService, fb);
     this.btnEdit = this.userInterfaceService.Btn_Modifica;
@@ -66,8 +69,11 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
         if (UniqueDays.length != newValue) {
           if (newValue > UniqueDays.length) {
 
-            for (let i: number = UniqueDays.length; i <= newValue; i++) 
-              this.add_par_ProfiloOrarioGG(i + 1, 1, this.par_ProfiloOrarioGG[0].idPar_Orario);
+            for (let i: number = UniqueDays.length; i <= newValue; i++) {
+
+              this.par_ProfiloOrarioGG.push(this.init_par_ProfiloOrarioGG(i + 1, 1, this.par_ProfiloOrarioGG[0].idPar_Orario) );
+            }
+              
             
           }
           else {
@@ -77,15 +83,18 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
     
   }
 
-  public add_par_ProfiloOrarioGG(numGiorno: number, zOrder: number, idPar_Orario:number): void {
+  public init_par_ProfiloOrarioGG(numGiorno: number, zOrder: number, idPar_Orario: number): Par_ProfiloOrarioGGModel {
+
+    this.TMP_counter--;
 
     let _par_ProfiloOrarioGG: Par_ProfiloOrarioGGModel = new Par_ProfiloOrarioGGModel();
+    _par_ProfiloOrarioGG.id = this.TMP_counter;
     _par_ProfiloOrarioGG.zOrder = zOrder;
     _par_ProfiloOrarioGG.numGiorno = numGiorno;
     _par_ProfiloOrarioGG.idPar_ProfiloOrario = (this._editModel != null) ? this._editModel.id : 0;
     _par_ProfiloOrarioGG.idPar_Orario = idPar_Orario;
 
-    this.par_ProfiloOrarioGG.push(_par_ProfiloOrarioGG);
+    return _par_ProfiloOrarioGG;
   }
 
 
@@ -131,7 +140,7 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
         this.par_ProfiloOrarioGG = [];
 
         for (let i: number = 1; i <= par_ProfiloOrarioModel.numGiorniCiclo; i++) {
-          this.add_par_ProfiloOrarioGG(i,1,1);
+          this.par_ProfiloOrarioGG.push(this.init_par_ProfiloOrarioGG(i, 1, 1));
         }
 
         
@@ -150,6 +159,15 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
     let request: GenericRequest<Par_ProfiloOrario_PutInModel> =
     new GenericRequest<Par_ProfiloOrario_PutInModel>(Par_ProfiloOrario_PutInModel);
     request.data.par_ProfiloOrario = editModel;
+
+    //elimino i contatori temporanei
+    this.par_ProfiloOrarioGG = this.par_ProfiloOrarioGG.map(x => {
+      if (x.id < 0)
+        x.id = 0;
+      return x;
+    })
+
+
     request.data.par_ProfiloOrarioGG = this.par_ProfiloOrarioGG;
 
     return this.parProfiloOrarioService.Par_ProfiloOrarioPut(request).pipe(
@@ -197,42 +215,62 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
     return retVal;
   }
 
-  handleButtonEditClick = (item: Par_ProfiloOrarioModel) => {
-    //this.navCtrl.navigateForward('/profiliorariedit', {
-    //  state: { id: item.id }
-    //});
+  handleButtonEditClick = (par_ProfiloOrarioGG: Par_ProfiloOrarioGGModel) => {
+    this.EdiProfiloOrarioDettDialog_Open(par_ProfiloOrarioGG);
   }
 
-  handleButtonAddClick = (item: Par_ProfiloOrarioModel) => {
-    //this.navCtrl.navigateForward('/profiliorariedit', {
-    //  state: { id: item.id }
-    //});
+  handleButtonAddClick = (giorno: any) => {
+
+    const last = this.get_par_ProfiloOrarioGG(giorno);
+    let zOrder = last[last.length - 1].zOrder + 1;
+    let idPar_Orario = last[last.length - 1].idPar_Orario;
+
+    let par_ProfiloOrarioGG: Par_ProfiloOrarioGGModel = this.init_par_ProfiloOrarioGG(giorno, zOrder, this._editModel.id);
+
+    par_ProfiloOrarioGG.idPar_Orario = idPar_Orario;
+
+    this.EdiProfiloOrarioDettDialog_Open(par_ProfiloOrarioGG);
   }
 
   
 
-  handleButtonDeleteClick = async (item: any) => {
+  handleButtonDeleteClick = async (item: Par_ProfiloOrarioGGModel) => {
 
     const result = await this.collectionDialogService.ConfirmCancelDialog('Confermi la cancellazione dell  Orario');
     if (result) {
-
-      //const request: GenericRequest<Par_ProfiloOrario_DeleteInModel> = new GenericRequest<Par_ProfiloOrario_DeleteInModel>(Par_ProfiloOrario_DeleteInModel);
-      //request.data.id = item.id;
-      //this.parProfiloOrarioService.Par_ProfiloOrarioDelete(request).pipe(
-      //  map(() => {
-      //    this.refresherService.SharedParameterGestionePresenze_triggerRefresh();
-      //    this.loadData();
-      //    return true;
-      //  }),
-      //  catchError((error: any) => {
-      //    console.error('Errore durante la chiamata API:', error);
-      //    return [false];
-      //  })
-      //).subscribe();
-
+      this.par_ProfiloOrarioGG = this.par_ProfiloOrarioGG.filter(g => g.id !== item.id);
     }
 
   }
+
+
+  async EdiProfiloOrarioDettDialog_Open(par_ProfiloOrarioGG: Par_ProfiloOrarioGGModel) {
+
+  
+    const modal = await this.modalCtrl.create({
+      component: EditParProfiloOrarioDettaglioOrarioDialogComponent,
+      componentProps: {
+          par_ProfiloOrarioGG: par_ProfiloOrarioGG
+      },
+    });
+
+    await modal.present();
+
+    const { data, role } = await modal.onWillDismiss<Par_ProfiloOrarioGGModel | null>();
+
+    if (role === 'confirm' && data) {
+
+      const index = this.par_ProfiloOrarioGG.findIndex(p => p.id === data.id);
+
+      if (index > -1) {
+        this.par_ProfiloOrarioGG[index] = data;
+      } else {
+        this.par_ProfiloOrarioGG.push(data);
+      }
+
+    }
+  }
+
 
 }
 

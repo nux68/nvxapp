@@ -7,6 +7,15 @@ export class Par_ProfiloOrarioModel {
   codice: string;
   descrizione: string;
   numGiorniCiclo: number;
+
+  constructor() {
+    this.id = 0;
+    this.idAz_Anagrafica = 0;
+    this.codice = '';
+    this.descrizione = '';
+    this.numGiorniCiclo = 0;
+  }
+
 }
 
 export class Par_ProfiloOrario_GetAllInModel { }
