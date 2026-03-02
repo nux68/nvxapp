@@ -97,29 +97,22 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Profil
             return await ExecuteAction(model, async () =>
             {
                 var retVal = new Par_ProfiloOrario_PutOutModel();
-                var entity = _mapper.Map<Par_ProfiloOrario>(model.Data.Par_ProfiloOrario);
+                
 
                 int.TryParse(this.CurrentCompany, out int idCompany);
                 Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg company_DATA = await _gestionePresenzeUserUtility.Get_AzAna_AzSedi_AzReparto_Az_Cfg(idCompany, true);
                 if (company_DATA != null && company_DATA.az_Anagrafica != null)
                 {
-                    entity.IdAz_Anagrafica = company_DATA.az_Anagrafica.Id;
+
+                    var entity = _mapper.Map<Par_ProfiloOrario>(model.Data.Par_ProfiloOrario);
+                    if(model.Data.Par_ProfiloOrario.IdAz_Anagrafica==0)
+                       entity.IdAz_Anagrafica = company_DATA.az_Anagrafica.Id;
 
                     var par_ProfiloOrario = await _par_ProfiloOrarioRepository.UpsertAsync(entity);
-                    if (par_ProfiloOrario == null)
-                    {
-                        par_ProfiloOrario = _mapper.Map<Par_ProfiloOrario>(model.Data.Par_ProfiloOrario);
-                        par_ProfiloOrario.IdAz_Anagrafica = company_DATA.az_Anagrafica.Id;
-                    }
-                    else
-                    {
-                        par_ProfiloOrario = _mapper.Map<Par_ProfiloOrario>(model.Data.Par_ProfiloOrario);
-                    }
                     retVal.Par_ProfiloOrario = _mapper.Map<Par_ProfiloOrarioModel>(par_ProfiloOrario);
-
                     
                     var reqPar_ProfiloOrarioGG = new GenericRequest<Par_ProfiloOrarioGG_Put_4Edit_InModel>();
-                    reqPar_ProfiloOrarioGG.Data.Id= retVal.Par_ProfiloOrario.Id; 
+                    reqPar_ProfiloOrarioGG.Data.Id = retVal.Par_ProfiloOrario.Id; 
                     reqPar_ProfiloOrarioGG.Data.Par_ProfiloOrarioGG = model.Data.Par_ProfiloOrarioGG;
                     var resAz_Sub = await _par_ProfiloOrarioGGService.Par_ProfiloOrarioGG_Put(reqPar_ProfiloOrarioGG, true);
 

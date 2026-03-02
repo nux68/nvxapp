@@ -141,7 +141,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Profil
                                 par_ProfiloOrarioGG = _mapper.Map<Par_ProfiloOrarioGG>(item);
                                 par_ProfiloOrarioGG.IdPar_ProfiloOrario = model.Data.Id;
                                 par_ProfiloOrarioGG.ZOrder = item.ZOrder;
-                                par_ProfiloOrarioGG.IdPar_ProfiloOrario = item.IdPar_ProfiloOrario;
+                                par_ProfiloOrarioGG.IdPar_ProfiloOrario = model.Data.Id;
                                 par_ProfiloOrarioGG.Id = 0;
                             }
                             else
