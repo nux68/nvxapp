@@ -124,6 +124,25 @@ export class StringHelperService {
 
   }
 
- 
+
+  hhmmss_ToSeconds(timeStr: any): number {
+
+    const parts = timeStr.split(":").map(Number); // Se il formato è HH:MM aggiungo i secondi = 00 
+
+    if (parts.length === 2) { parts.push(0); }
+
+    const [h, m, s] = parts;
+
+    return h * 3600 + m * 60 + s;
+
+  }
+
+  secondsTo_hhmmss(totalSeconds: number): string {
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+    const pad = (n: number) => String(n).padStart(2, "0");
+    return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+  }
 
 }
