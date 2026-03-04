@@ -48,6 +48,8 @@ export class EditDipProfiloOrarioDialogComponent extends BaseDialogConfirmCancel
     return this.fb.group({
       idPar_ProfiloOrario: [this.dip_ProfiloOrario.idPar_ProfiloOrario, [Validators.required, Validators.min(1)]],
       numGiornoPartenzaCiclo: [null, [Validators.required, Validators.min(1), Validators.max(this.getDayProf())]],
+      dal: [this.dip_ProfiloOrario.idPar_ProfiloOrario, [Validators.required]],
+      al: [this.dip_ProfiloOrario.idPar_ProfiloOrario, [Validators.required]],
     });
 
     

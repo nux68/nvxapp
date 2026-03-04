@@ -293,6 +293,8 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
       dip_ProfiloOrario.idDip_RapportoLavoro = curr_RappLav;
       dip_ProfiloOrario.id = this.dbUtilService.GenerateCounterKey();
       dip_ProfiloOrario.numGiornoPartenzaCiclo = 1;
+      dip_ProfiloOrario.dal = new Date().toISOString();;
+      dip_ProfiloOrario.al = new Date().toISOString();;
     }
     else {
       dip_ProfiloOrario = this._editModel.dip_ProfiloOrario.find(p => p.id === id);

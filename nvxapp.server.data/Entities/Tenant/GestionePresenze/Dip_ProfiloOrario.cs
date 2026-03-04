@@ -12,8 +12,9 @@ namespace nvxapp.server.data.Entities.Tenant
         [ForeignKey("IdDip_RapportoLavoro")]
         public virtual Dip_RapportoLavoro? Dip_RapportoLavoroNavigation { get; set; }
 
-        
+        [Column(TypeName = "date")]
         public DateTime Dal { get; set; }
+        [Column(TypeName = "date")]
         public DateTime Al { get; set; }
         
         public int? IdPar_ProfiloOrario { get; set; }
