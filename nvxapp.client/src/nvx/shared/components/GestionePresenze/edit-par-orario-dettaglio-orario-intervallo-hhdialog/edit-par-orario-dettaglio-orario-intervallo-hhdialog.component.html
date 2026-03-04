@@ -1,0 +1,166 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>{{Title}}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+
+
+  <form [formGroup]="_editForm">
+
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Orario di Entrata</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+
+        <ion-grid>
+          <ion-row class="ion-align-items-center">
+            <!-- Dalle Limite SX -->
+            <ion-col>
+              <ion-item>
+                <ion-label position="floating">Limite Sinistro</ion-label>
+                <ion-datetime-button class="datetime-button-with-label" datetime="dalle-limite-sx-modal"></ion-datetime-button>
+                <ion-modal [keepContentsMounted]="true">
+                  <ng-template>
+                    <ion-datetime id="dalle-limite-sx-modal"
+                                  formControlName="dalle_Limite_SX"
+                                  presentation="time"
+                                  [showDefaultButtons]="true"
+                                  doneText="OK"
+                                  cancelText="Annulla">
+                    </ion-datetime>
+                  </ng-template>
+                </ion-modal>
+              </ion-item>
+            </ion-col>
+
+            <!-- Dalle -->
+            <ion-col>
+              <ion-item>
+                <ion-label position="floating">Dalle</ion-label>
+                <ion-datetime-button class="datetime-button-with-label" datetime="dalle-modal"></ion-datetime-button>
+                <ion-modal [keepContentsMounted]="true">
+                  <ng-template>
+                    <ion-datetime id="dalle-modal"
+                                  formControlName="dalle"
+                                  presentation="time"
+                                  [showDefaultButtons]="true"
+                                  doneText="OK"
+                                  cancelText="Annulla" (ionChange)="updateDateTimeDalle($event)">
+                    </ion-datetime>
+                  </ng-template>
+                </ion-modal>
+              </ion-item>
+            </ion-col>
+
+            <!-- Dalle Limite DX -->
+            <ion-col>
+              <ion-item>
+                <ion-label position="floating">Limite Destro</ion-label>
+                <ion-datetime-button class="datetime-button-with-label" datetime="dalle-limite-dx-modal"></ion-datetime-button>
+                <ion-modal [keepContentsMounted]="true">
+                  <ng-template>
+                    <ion-datetime id="dalle-limite-dx-modal"
+                                  formControlName="dalle_Limite_DX"
+                                  presentation="time"
+                                  [showDefaultButtons]="true"
+                                  doneText="OK"
+                                  cancelText="Annulla" >
+                    </ion-datetime>
+                  </ng-template>
+                </ion-modal>
+              </ion-item>
+            </ion-col>
+
+          </ion-row>
+        </ion-grid>
+
+
+      </ion-card-content>
+    </ion-card>
+
+
+
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Orario di Uscita</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+
+        <ion-grid>
+          <ion-row class="ion-align-items-center">
+            <!-- Alle Limite SX -->
+            <ion-col>
+              <ion-item>
+                <ion-label position="floating">Limite Sinistro</ion-label>
+                <ion-datetime-button class="datetime-button-with-label" datetime="alle-limite-sx-modal"></ion-datetime-button>
+                <ion-modal [keepContentsMounted]="true">
+                  <ng-template>
+                    <ion-datetime id="alle-limite-sx-modal"
+                                  formControlName="alle_Limite_SX"
+                                  presentation="time"
+                                  [showDefaultButtons]="true"
+                                  doneText="OK"
+                                  cancelText="Annulla">
+                    </ion-datetime>
+                  </ng-template>
+                </ion-modal>
+              </ion-item>
+            </ion-col>
+
+            <!-- alle -->
+            <ion-col>
+              <ion-item>
+                <ion-label position="floating">Alle</ion-label>
+                <ion-datetime-button class="datetime-button-with-label" datetime="alle-modal"></ion-datetime-button>
+                <ion-modal [keepContentsMounted]="true">
+                  <ng-template>
+                    <ion-datetime id="alle-modal"
+                                  formControlName="alle"
+                                  presentation="time"
+                                  [showDefaultButtons]="true"
+                                  doneText="OK"
+                                  cancelText="Annulla" (ionChange)="updateDateTimeAlle($event)">
+                    </ion-datetime>
+                  </ng-template>
+                </ion-modal>
+              </ion-item>
+            </ion-col>
+
+            <!-- alle Limite DX -->
+            <ion-col>
+              <ion-item>
+                <ion-label position="floating">Limite Destro</ion-label>
+                <ion-datetime-button class="datetime-button-with-label" datetime="alle-limite-dx-modal"></ion-datetime-button>
+                <ion-modal [keepContentsMounted]="true">
+                  <ng-template>
+                    <ion-datetime id="alle-limite-dx-modal"
+                                  formControlName="alle_Limite_DX"
+                                  presentation="time"
+                                  [showDefaultButtons]="true"
+                                  doneText="OK"
+                                  cancelText="Annulla">
+                    </ion-datetime>
+                  </ng-template>
+                </ion-modal>
+              </ion-item>
+            </ion-col>
+
+          </ion-row>
+        </ion-grid>
+
+
+      </ion-card-content>
+    </ion-card>
+
+
+
+
+  </form>
+
+
+</ion-content>
+
+<app-page-buttonbar [buttonbar]="buttonbar"></app-page-buttonbar>

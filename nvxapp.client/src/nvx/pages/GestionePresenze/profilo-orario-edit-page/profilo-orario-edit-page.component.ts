@@ -153,8 +153,6 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
   };
 
   SaveData = (editModel: Par_ProfiloOrarioModel): Observable<boolean> => {
-    //let request = new GenericRequest<Par_ProfiloOrario_PutInModel>(Par_ProfiloOrario_PutInModel)
-
 
     let request: GenericRequest<Par_ProfiloOrario_PutInModel> =
     new GenericRequest<Par_ProfiloOrario_PutInModel>(Par_ProfiloOrario_PutInModel);

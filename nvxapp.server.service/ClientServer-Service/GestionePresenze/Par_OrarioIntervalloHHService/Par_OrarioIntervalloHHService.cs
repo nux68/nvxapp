@@ -136,6 +136,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Orario
                         foreach (var item in model.Data.Par_OrarioIntervalloHH)
                         {
                             var    par_OrarioIntervalloHH = _mapper.Map<Par_OrarioIntervalloHH>(item);
+                            par_OrarioIntervalloHH.IdPar_Orario = model.Data.Id;
                             await _par_OrarioIntervalloHHRepository.UpsertAsync(par_OrarioIntervalloHH);
                         }
 

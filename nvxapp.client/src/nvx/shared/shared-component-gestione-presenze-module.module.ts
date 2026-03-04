@@ -31,6 +31,7 @@ import { SediRepartoUserSelectionComponent } from './components/GestionePresenze
 import { ParOrarioToCodicePipe } from './pipe/GestionePresenze/par-orario-to-codice.pipe';
 import { ParOrarioToLongTextPipe } from './pipe/GestionePresenze/par-orario-to-long-text.pipe';
 import { EditParProfiloOrarioDettaglioOrarioDialogComponent } from './components/GestionePresenze/edit-par-profilo-orario-dettaglio-orario-dialog/edit-par-profilo-orario-dettaglio-orario-dialog.component';
+import { EditParOrarioDettaglioOrarioIntervalloHHDialogComponent } from './components/GestionePresenze/edit-par-orario-dettaglio-orario-intervallo-hhdialog/edit-par-orario-dettaglio-orario-intervallo-hhdialog.component';
 
 @NgModule({
   declarations: [
@@ -38,7 +39,8 @@ import { EditParProfiloOrarioDettaglioOrarioDialogComponent } from './components
     SeletionSediRepartoDialogComponent,
     SeletionSediRepartoUserDialogComponent,
     SeletionParAttivitaDialogComponent,
-    EditDipProfiloOrarioDialogComponent, EditParProfiloOrarioDettaglioOrarioDialogComponent
+    EditDipProfiloOrarioDialogComponent, EditParProfiloOrarioDettaglioOrarioDialogComponent,
+    EditParOrarioDettaglioOrarioIntervalloHHDialogComponent
   ],
   imports: [
     SharedComponentInfrastructureModule,
@@ -62,6 +64,7 @@ import { EditParProfiloOrarioDettaglioOrarioDialogComponent } from './components
     ParAttivitaToLongTextPipe, ParCompetenzaToLongTextPipe, AzCommessaToLongTextPipe, AzClienteToLongTextPipe,
     SediRepartoUserNavigationComponent, SediRepartoUserSelectionComponent , SeletionSediRepartoDialogComponent, SeletionSediRepartoUserDialogComponent, SeletionParAttivitaDialogComponent, AzSediRepartoToLongTextPipe,
     EditDipProfiloOrarioDialogComponent, ParProfiloOrarioToLongTextPipePipe, EditParProfiloOrarioDettaglioOrarioDialogComponent,
+    EditParOrarioDettaglioOrarioIntervalloHHDialogComponent,
     ParOrarioToCodicePipe, ParOrarioToLongTextPipe
   ]
 })

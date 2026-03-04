@@ -6,42 +6,183 @@
 <ion-content [fullscreen]="true">
 
   <ion-card>
-    <ion-card-content>
+    <ion-card-content *ngIf="_editForm!=null">
 
 
 
-      <br />
-      <ion-item class="nvx-item-4-title">
-        <ion-label>Info </ion-label>
-      </ion-item>
 
 
       <form [formGroup]="_editForm">
 
-        <ion-item>
-          <ion-label position="floating">Descrizione</ion-label>
-          <ion-input type="text" formControlName="descrizione"></ion-input>
-        </ion-item>
-        <ion-note color="danger" *ngIf="_editForm.get('descrizione')?.hasError('required') && _editForm.get('descrizione')?.touched">
-          Descrizione è obbligatorio.
-        </ion-note>
-        <ion-note color="danger" *ngIf="_editForm.get('descrizione')?.hasError('maxlength') && _editForm.get('descrizione')?.touched">
-          Descrizione non può superare i 20 caratteri.
-        </ion-note>
+
+        <ion-segment (ionChange)="segmentChanged($event)" [value]="currSection">
+          <ion-segment-button value="sez1" content-id="sez1">
+            <ion-label>Generale</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="sez2" content-id="sez2">
+            <ion-label>Intervalli orari</ion-label>
+          </ion-segment-button>
+        </ion-segment>
+
+        <div [hidden]="currSection!='sez1'">
+          <br />
+          <ion-item class="nvx-item-4-title">
+            <ion-label>Generale </ion-label>
+          </ion-item>
 
 
-        <ion-item>
-          <ion-label position="floating">Codice</ion-label>
-          <ion-input type="text" formControlName="codice"></ion-input>
-        </ion-item>
-        <ion-note color="danger" *ngIf="_editForm.get('codice')?.hasError('required') && _editForm.get('codice')?.touched">
-          codice è obbligatorio.
-        </ion-note>
-        <ion-note color="danger" *ngIf="_editForm.get('codice')?.hasError('maxlength') && _editForm.get('codice')?.touched">
-          codice non può superare i 5 caratteri.
-        </ion-note>
+          <ion-item>
+            <ion-label position="floating">Descrizione</ion-label>
+            <ion-input type="text" formControlName="descrizione"></ion-input>
+          </ion-item>
+          <ion-note color="danger" *ngIf="_editForm.get('descrizione')?.hasError('required') && _editForm.get('descrizione')?.touched">
+            Descrizione è obbligatorio.
+          </ion-note>
+          <ion-note color="danger" *ngIf="_editForm.get('descrizione')?.hasError('maxlength') && _editForm.get('descrizione')?.touched">
+            Descrizione non può superare i 20 caratteri.
+          </ion-note>
 
 
+          <ion-item>
+            <ion-label position="floating">Codice</ion-label>
+            <ion-input type="text" formControlName="codice"></ion-input>
+          </ion-item>
+          <ion-note color="danger" *ngIf="_editForm.get('codice')?.hasError('required') && _editForm.get('codice')?.touched">
+            codice è obbligatorio.
+          </ion-note>
+          <ion-note color="danger" *ngIf="_editForm.get('codice')?.hasError('maxlength') && _editForm.get('codice')?.touched">
+            codice non può superare i 5 caratteri.
+          </ion-note>
+
+
+          <ion-item>
+            <ion-label position="floating">Numero Coppie</ion-label>
+            <ion-select formControlName="numeroCoppie" interface="popover" (ionChange)="onRangeChange($event)">
+              <ion-select-option [value]="1">1</ion-select-option>
+              <ion-select-option [value]="2">2</ion-select-option>
+              <ion-select-option [value]="3">3</ion-select-option>
+              <ion-select-option [value]="4">4</ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-note color="danger" *ngIf="_editForm.get('numeroCoppie')?.hasError('required') && _editForm.get('numeroCoppie')?.touched">
+            Il numero di coppie è obbligatorio.
+          </ion-note>
+
+
+        </div>
+
+        <div [hidden]="currSection!='sez2'">
+          <br />
+          <ion-item class="nvx-item-4-title">
+            <ion-label>Intervalli orari </ion-label>
+          </ion-item>
+
+          <div *ngIf="_editModel ">
+
+            <ion-card>
+              <ion-card-content>
+
+                <ion-grid>
+                  <ion-row class="ion-hide-sm-down">
+
+                    <ion-col size="1" class="ion-hide-sm-down">
+                      <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
+                        Coppia
+                      </ion-label>
+                    </ion-col>
+
+                    <ion-col size="1" class="ion-hide-sm-down">
+                      <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
+                        Dalle Limite SX 
+                      </ion-label>
+                    </ion-col>
+                    <ion-col size="1" class="ion-hide-sm-down">
+                      <ion-label [ngStyle]="{ color: true ? 'var(--ion-color-primary)' : '' }">
+                        DALLE
+                      </ion-label>
+                    </ion-col>
+                    <ion-col size="2" class="ion-hide-sm-down">
+                      <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
+                        Dalle Limite DX
+                      </ion-label>
+                    </ion-col>
+
+                    <ion-col size="1" class="ion-hide-sm-down">
+                      <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
+                        Alle Limite SX 
+                      </ion-label>
+                    </ion-col>
+                    <ion-col size="1" class="ion-hide-sm-down">
+                      <ion-label [ngStyle]="{ color: true ? 'var(--ion-color-primary)' : '' }">
+                        ALLE
+                      </ion-label>
+                    </ion-col>
+                    <ion-col size="3" class="ion-hide-sm-down">
+                      <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
+                        Alle Limite DX
+                      </ion-label>
+                    </ion-col>
+
+                  </ion-row>
+                  <ion-row class="nvx-ion-row-4table" *ngFor="let coppia of get_Par_OrarioIntervalloHH(); let idxDay = index">
+
+                    <!--desktop-->
+                    <ion-col size="1" class="ion-hide-sm-down">
+                      <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
+                        {{ coppia.numCoppia  }}
+                      </ion-label>
+                    </ion-col>
+
+                    <ion-col size="1" class="ion-hide-sm-down">
+                      <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
+                        {{ coppia.dalle_Limite_SX  | slice:0:5 }}
+                      </ion-label>
+                    </ion-col>
+                    <ion-col size="1" class="ion-hide-sm-down">
+                      <ion-label [ngStyle]="{ color: true ? 'var(--ion-color-primary)' : '' }">
+                        {{ coppia.dalle  | slice:0:5 }}
+                      </ion-label>
+                    </ion-col>
+                    <ion-col size="2" class="ion-hide-sm-down">
+                      <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
+                        {{ coppia.dalle_Limite_DX  | slice:0:5 }}
+                      </ion-label>
+                    </ion-col>
+
+                    <ion-col size="1" class="ion-hide-sm-down">
+                      <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
+                        {{ coppia.alle_Limite_SX  | slice:0:5 }}
+                      </ion-label>
+                    </ion-col>
+                    <ion-col size="1" class="ion-hide-sm-down">
+                      <ion-label [ngStyle]="{ color: true ? 'var(--ion-color-primary)' : '' }">
+                        {{ coppia.alle  | slice:0:5 }}
+                      </ion-label>
+                    </ion-col>
+                    <ion-col size="3" class="ion-hide-sm-down">
+                      <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
+                        {{ coppia.alle_Limite_DX  | slice:0:5 }}
+                      </ion-label>
+                    </ion-col>
+
+
+
+                    <ion-col size="2" class="ion-hide-sm-down">
+                      <ion-button size="small" fill="outline" shape="round" (click)="btnEdit.event(coppia)" color="{{btnEdit.color}}">
+                        <ion-icon name="{{btnEdit.image}}"></ion-icon>
+                        &nbsp;{{btnEdit.text}}
+                      </ion-button>
+                    </ion-col>
+
+                  </ion-row>
+                </ion-grid>
+
+              </ion-card-content>
+            </ion-card>
+
+          </div>
+
+        </div>
 
       </form>
 
