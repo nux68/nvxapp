@@ -74,18 +74,18 @@ export class EditParOrarioDettaglioOrarioIntervalloHHDialogComponent extends Bas
 
   updateDateTimeDalle(event: any) {
 
-    const old_value_dalle_in_S:number = this.hhmmss_ToSeconds(this._editModel.dalle);
-    const new_value_dalle_in_S: number = this.hhmmss_ToSeconds(event.detail.value);
+    const old_value_dalle_in_S: number = this.stringHelperService.hhmmss_ToSeconds(this._editModel.dalle);
+    const new_value_dalle_in_S: number = this.stringHelperService.hhmmss_ToSeconds(event.detail.value);
     const dif_dalle = new_value_dalle_in_S - old_value_dalle_in_S;
     this._editModel.dalle = event.detail.value;
 
-    const old_value_dalle_SX_in_S: number = this.hhmmss_ToSeconds(this._editModel.dalle_Limite_SX);
+    const old_value_dalle_SX_in_S: number = this.stringHelperService.hhmmss_ToSeconds(this._editModel.dalle_Limite_SX);
     const new_value_dalle_SX_in_S = old_value_dalle_SX_in_S + dif_dalle;
-    this._editModel.dalle_Limite_SX = this.secondsTo_hhmmss(new_value_dalle_SX_in_S);
+    this._editModel.dalle_Limite_SX = this.stringHelperService.secondsTo_hhmmss(new_value_dalle_SX_in_S);
 
-    const old_value_dalle_DX_in_S: number = this.hhmmss_ToSeconds(this._editModel.dalle_Limite_DX);
+    const old_value_dalle_DX_in_S: number = this.stringHelperService.hhmmss_ToSeconds(this._editModel.dalle_Limite_DX);
     const new_value_dalle_DX_in_S = old_value_dalle_DX_in_S + dif_dalle;
-    this._editModel.dalle_Limite_DX = this.secondsTo_hhmmss(new_value_dalle_DX_in_S);
+    this._editModel.dalle_Limite_DX = this.stringHelperService.secondsTo_hhmmss(new_value_dalle_DX_in_S);
     
     this._editForm.patchValue({
       dalle: this._editModel.dalle,
@@ -96,18 +96,18 @@ export class EditParOrarioDettaglioOrarioIntervalloHHDialogComponent extends Bas
   }
 
   updateDateTimeAlle(event: any) {
-    const old_value_alle_in_S: number = this.hhmmss_ToSeconds(this._editModel.alle);
-    const new_value_alle_in_S: number = this.hhmmss_ToSeconds(event.detail.value);
+    const old_value_alle_in_S: number = this.stringHelperService.hhmmss_ToSeconds(this._editModel.alle);
+    const new_value_alle_in_S: number = this.stringHelperService.hhmmss_ToSeconds(event.detail.value);
     const dif_alle = new_value_alle_in_S - old_value_alle_in_S;
     this._editModel.alle = event.detail.value;
 
-    const old_value_alle_SX_in_S: number = this.hhmmss_ToSeconds(this._editModel.alle_Limite_SX);
+    const old_value_alle_SX_in_S: number = this.stringHelperService.hhmmss_ToSeconds(this._editModel.alle_Limite_SX);
     const new_value_alle_SX_in_S = old_value_alle_SX_in_S + dif_alle;
-    this._editModel.alle_Limite_SX = this.secondsTo_hhmmss(new_value_alle_SX_in_S);
+    this._editModel.alle_Limite_SX = this.stringHelperService.secondsTo_hhmmss(new_value_alle_SX_in_S);
 
-    const old_value_alle_DX_in_S: number = this.hhmmss_ToSeconds(this._editModel.alle_Limite_DX);
+    const old_value_alle_DX_in_S: number = this.stringHelperService.hhmmss_ToSeconds(this._editModel.alle_Limite_DX);
     const new_value_alle_DX_in_S = old_value_alle_DX_in_S + dif_alle;
-    this._editModel.alle_Limite_DX = this.secondsTo_hhmmss(new_value_alle_DX_in_S);
+    this._editModel.alle_Limite_DX = this.stringHelperService.secondsTo_hhmmss(new_value_alle_DX_in_S);
 
     this._editForm.patchValue({
       alle: this._editModel.alle,
@@ -116,25 +116,6 @@ export class EditParOrarioDettaglioOrarioIntervalloHHDialogComponent extends Bas
     });
   }
 
-  hhmmss_ToSeconds(timeStr: any):number {
 
-    const parts = timeStr.split(":").map(Number); // Se il formato è HH:MM aggiungo i secondi = 00 
-
-    if (parts.length === 2) { parts.push(0); }
-
-    const [h, m, s] = parts;
-
-    return h * 3600 + m * 60 + s;
-
-  }
-
-  secondsTo_hhmmss(totalSeconds: number): string
-  {
-    const hours = Math.floor(totalSeconds / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const seconds = totalSeconds % 60;
-    const pad = (n: number) => String(n).padStart(2, "0");
-    return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
-  }
 
 }
