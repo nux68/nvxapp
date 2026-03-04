@@ -54,6 +54,19 @@
           </ion-note>
 
           <ion-item>
+            <ion-label position="floating">Tipo Profilo</ion-label>
+            <ion-select formControlName="tipoProfilo" interface="popover" (ionChange)="onTipoProfiloChange($event)">
+              <ion-select-option [value]="0">Settimanale</ion-select-option>
+              <ion-select-option [value]="1">Turno</ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-note color="danger" *ngIf="_editForm.get('tipoProfilo')?.hasError('required') && _editForm.get('tipoProfilo')?.touched">
+            Il numero di tipoProfilo è obbligatorio.
+          </ion-note>
+
+
+
+          <ion-item>
             <ion-label position="floating">Num. Giorni Ciclo ( {{_editForm.get('numGiorniCiclo')?.value}} / {{getDays()}} )</ion-label>
             <ion-range aria-label="Range with ticks" (ionChange)="onRangeChange($event)" formControlName="numGiorniCiclo" [ticks]="true" [snaps]="true" [min]="1" [max]="getDays()"></ion-range>
 

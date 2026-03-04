@@ -107,7 +107,8 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
     return this.fb.group({
       codice: [null, [Validators.required, Validators.maxLength(10)]],
       descrizione: [null, [Validators.required, Validators.maxLength(50)]],
-      numGiorniCiclo: [null, [Validators.required, Validators.min(1) ]],
+      numGiorniCiclo: [0, [Validators.required, Validators.min(1)]],
+      tipoProfilo: [0, [Validators.required ]],
     });
   }
 
@@ -137,6 +138,7 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
         par_ProfiloOrarioModel.codice = "0000";
         par_ProfiloOrarioModel.descrizione = "Nuovo profilo"
         par_ProfiloOrarioModel.numGiorniCiclo = 7;
+        par_ProfiloOrarioModel.tipoProfilo = 0;
         this.par_ProfiloOrarioGG = [];
 
         for (let i: number = 1; i <= par_ProfiloOrarioModel.numGiorniCiclo; i++) {
@@ -269,6 +271,16 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
     }
   }
 
+  public onTipoProfiloChange(event: any): void {
+
+    //const tipoProfilo = event.detail.value;
+    //if (tipoProfilo === 0) { // Settimanale
+    //  this._editForm.get('numGiorniCiclo')?.setValue(7);
+    //}
+
+  }
+
+  
 
 }
 

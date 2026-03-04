@@ -7,6 +7,7 @@ export class Par_ProfiloOrarioModel {
   codice: string;
   descrizione: string;
   numGiorniCiclo: number;
+  tipoProfilo: number; // 0= settimanale , 1= ciclico
 
   constructor() {
     this.id = 0;
@@ -14,6 +15,7 @@ export class Par_ProfiloOrarioModel {
     this.codice = '';
     this.descrizione = '';
     this.numGiorniCiclo = 0;
+    this.tipoProfilo = 0;
   }
 
 }

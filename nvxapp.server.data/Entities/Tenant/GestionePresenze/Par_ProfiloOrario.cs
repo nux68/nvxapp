@@ -25,6 +25,8 @@ namespace nvxapp.server.data.Entities.Tenant.GestionePresenze
 
         public int NumGiorniCiclo { get; set; } = 0; // stabilisce quante righe di Par_ProfiloOrarioGG ci devono essere
 
+        public int TipoProfilo { get; set; } = 0;  // 0= settimanale , 1= ciclico
+
         public ICollection<Par_ProfiloOrarioGG>? Par_ProfiloOrarioGG { get; set; }
         public ICollection<Dip_ProfiloOrario>? Dip_ProfiloOrario { get; set; }
 
