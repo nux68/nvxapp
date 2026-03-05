@@ -12,6 +12,7 @@ import { RefresherService } from '../../../Utility/GestionePresenze/refresher.se
 import { Par_ProfiloOrarioGGModel } from '../../../ClientServer-Service/GestionePresenze/Par_ProfiloOrarioGG/Models/par-profilo-orario-gg-model';
 import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
 import { EditParProfiloOrarioDettaglioOrarioDialogComponent } from '../../../shared/components/GestionePresenze/edit-par-profilo-orario-dettaglio-orario-dialog/edit-par-profilo-orario-dettaglio-orario-dialog.component';
+import { Par_OrarioIntervalloHHModel } from '../../../ClientServer-Service/GestionePresenze/Par_OrarioIntervalloHH/Models/par-orario-intervallo-hh-model';
 
 @Component({
   selector: 'app-profilo-orario-edit-page',
@@ -23,6 +24,7 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
 
   public currSection: string = "sez1";
   public par_ProfiloOrarioGG: Par_ProfiloOrarioGGModel[];
+  public par_OrarioIntervalloHHModel: Par_OrarioIntervalloHHModel[];
   public btnEdit: ButtonItem;
   public btnDelete: ButtonItem;
   public btnAdd: ButtonItem;
@@ -122,6 +124,7 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
       return this.parProfiloOrarioService.Par_ProfiloOrarioGet(request).pipe(
         map((res) => {
           this.par_ProfiloOrarioGG = res.data.par_ProfiloOrarioGG;
+          this.par_OrarioIntervalloHHModel = res.data.par_OrarioIntervalloHH;
           return res.data.par_ProfiloOrario;
         }),
         catchError((error) => {
@@ -207,6 +210,16 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
     
 
   }
+
+
+  
+
+  public par_OrarioIntervalloHH(idPar_Orario: number): Par_OrarioIntervalloHHModel[] {
+
+    return this.par_OrarioIntervalloHHModel.filter(x => x.idPar_Orario == idPar_Orario).sort(x => x.numCoppia);
+
+  }
+
 
   public get_par_ProfiloOrarioGG(day: number): Par_ProfiloOrarioGGModel[] {
     if (!this.par_ProfiloOrarioGG) {

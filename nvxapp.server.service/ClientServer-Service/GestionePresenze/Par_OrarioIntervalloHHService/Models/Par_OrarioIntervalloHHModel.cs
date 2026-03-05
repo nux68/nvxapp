@@ -1,13 +1,4 @@
-﻿using nvxapp.server.data.Entities.Tenant.GestionePresenze;
-using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubCommessaService.Models;
-using nvxapp.server.service.ClientServer_Service.ModelsBase;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using nvxapp.server.service.ClientServer_Service.ModelsBase;
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_OrarioIntervalloHHService.Models
 {
@@ -16,13 +7,13 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Orario
 
         public int Id { get; set; }
         public int IdPar_Orario { get; set; }
-        public TimeOnly? Dalle { get; set; } 
+        public TimeOnly? Dalle { get; set; }
         public TimeOnly? Alle { get; set; }
         public TimeOnly? Dalle_Limite_SX { get; set; }
         public TimeOnly? Dalle_Limite_DX { get; set; }
         public TimeOnly? Alle_Limite_SX { get; set; }
         public TimeOnly? Alle_Limite_DX { get; set; }
-        public int NumCoppia { get; set; }  = 0; 
+        public int NumCoppia { get; set; } = 0;
 
     }
 
@@ -31,15 +22,17 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Orario
 
     }
 
-    public class Par_OrarioIntervalloHHOutModel : ModelResult 
+    public class Par_OrarioIntervalloHHOutModel : ModelResult
     {
-        public Par_OrarioIntervalloHHOutModel() 
+        public List<Par_OrarioIntervalloHHModel> Par_OrarioIntervalloHH { get; set; } = new List<Par_OrarioIntervalloHHModel>();
+
+        public Par_OrarioIntervalloHHOutModel()
         {
-        
+
         }
     }
 
-   
+
 
     public class Par_OrarioIntervalloHH_GetAll_4Edit_InModel
     {

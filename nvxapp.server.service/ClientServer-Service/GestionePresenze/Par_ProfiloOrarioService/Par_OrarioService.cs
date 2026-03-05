@@ -12,6 +12,8 @@ using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_CommessaService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubCommessaService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_OrarioIntervalloHHService;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_OrarioIntervalloHHService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_OrarioService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_ProfiloOrarioGGService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_ProfiloOrarioGGService.Models;
@@ -27,6 +29,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Profil
         private readonly IPar_ProfiloOrarioRepository _par_ProfiloOrarioRepository;
         private readonly IGestionePresenzeUserUtility _gestionePresenzeUserUtility;
         private readonly IPar_ProfiloOrarioGGService _par_ProfiloOrarioGGService;
+        private readonly IPar_OrarioIntervalloHHService _par_OrarioIntervalloHHService;
         
 
         public Par_ProfiloOrarioService(IMapper mapper,
@@ -37,12 +40,14 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Profil
                                   IGestionePresenzeUserUtility gestionePresenzeUserUtility,
                                   IConfiguration configuration,
                                   IPar_ProfiloOrarioGGService par_ProfiloOrarioGGService,
+                                  IPar_OrarioIntervalloHHService par_OrarioIntervalloHHService,
 
                                   IPar_ProfiloOrarioRepository par_ProfiloOrarioRepository) : base(mapper , userManager  , aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _par_ProfiloOrarioRepository = par_ProfiloOrarioRepository;
             _gestionePresenzeUserUtility = gestionePresenzeUserUtility;
             _par_ProfiloOrarioGGService = par_ProfiloOrarioGGService;
+            _par_OrarioIntervalloHHService = par_OrarioIntervalloHHService;
         }
 
         public virtual async Task<GenericResult<Par_ProfiloOrario_GetAllOutModel>> GetAll(GenericRequest<Par_ProfiloOrario_GetAllInModel> model, Boolean isSubProcess)
@@ -83,6 +88,15 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Profil
 
                         retVal.Par_ProfiloOrarioGG = resAz_Sub.Data.Par_ProfiloOrarioGG;
                     }
+
+                    var reqAz_OreHH = new GenericRequest<Par_OrarioIntervalloHHInModel>();
+
+                    var resAz_OreHH = await _par_OrarioIntervalloHHService.GetAll( reqAz_OreHH,true);
+                    if (resAz_OreHH.Success && resAz_OreHH.Data != null)
+                    {
+                        retVal.Par_OrarioIntervalloHH = resAz_OreHH.Data.Par_OrarioIntervalloHH;
+                    }
+
                 }
 
                 await Task.Delay(DelayAsyncMethod);

@@ -49,6 +49,17 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Orario
             {
                 Par_OrarioIntervalloHHOutModel retVal = new Par_OrarioIntervalloHHOutModel();
 
+
+                int IdCompany;
+                int.TryParse(this.CurrentCompany, out IdCompany);
+
+                Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg company_DATA = await _gestionePresenzeUserUtility.Get_AzAna_AzSedi_AzReparto_Az_Cfg(IdCompany, true);
+                if (company_DATA != null && company_DATA.az_Anagrafica != null)
+                {
+                    var par_OrarioIntervalloHH = _par_OrarioIntervalloHHRepository.GetAll().ToList();
+                    retVal.Par_OrarioIntervalloHH = _mapper.Map<List<Par_OrarioIntervalloHHModel>>(par_OrarioIntervalloHH);
+                }
+
                 //eliminare
                 // Nessun 'await' qui
                 await Task.Delay(DelayAsyncMethod);
