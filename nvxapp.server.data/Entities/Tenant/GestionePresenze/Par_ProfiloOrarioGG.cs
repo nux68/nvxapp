@@ -26,7 +26,6 @@ namespace nvxapp.server.data.Entities.Tenant.GestionePresenze
         public virtual Par_Orario? Par_OrarioNavigation { get; set; }
         
 
-
         
 
         public ICollection<Par_Orario>? Par_Orario { get; set; }

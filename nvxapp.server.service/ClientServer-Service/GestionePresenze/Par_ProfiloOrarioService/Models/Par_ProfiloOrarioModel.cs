@@ -18,6 +18,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Profil
         public string Descrizione { get; set; } = string.Empty;
         public int NumGiorniCiclo { get; set; }
         public int TipoProfilo { get; set; }
+        public int idPar_Orario_Festivo { get; set; }
+        
     }
 
     public class Par_ProfiloOrario_GetAllInModel { }

@@ -13,6 +13,8 @@ import { Par_ProfiloOrarioGGModel } from '../../../ClientServer-Service/Gestione
 import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
 import { EditParProfiloOrarioDettaglioOrarioDialogComponent } from '../../../shared/components/GestionePresenze/edit-par-profilo-orario-dettaglio-orario-dialog/edit-par-profilo-orario-dettaglio-orario-dialog.component';
 import { Par_OrarioIntervalloHHModel } from '../../../ClientServer-Service/GestionePresenze/Par_OrarioIntervalloHH/Models/par-orario-intervallo-hh-model';
+import { Par_OrarioModel } from '../../../ClientServer-Service/GestionePresenze/Par_Orario/Models/par-orario-model';
+import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
 
 @Component({
   selector: 'app-profilo-orario-edit-page',
@@ -23,6 +25,7 @@ import { Par_OrarioIntervalloHHModel } from '../../../ClientServer-Service/Gesti
 export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelComponent<Par_ProfiloOrarioModel> implements OnInit {
 
   public currSection: string = "sez1";
+  public par_OrarioModelList: Par_OrarioModel[] = [];
   public par_ProfiloOrarioGG: Par_ProfiloOrarioGGModel[];
   public par_OrarioIntervalloHHModel: Par_OrarioIntervalloHHModel[];
   public btnEdit: ButtonItem;
@@ -38,6 +41,7 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
     private collectionDialogService: CollectionDialogService,
     private refresherService: RefresherService,
     private modalCtrl: ModalController,
+    public sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService
   ) {
     super(navCtrl, userInterfaceService, fb);
     this.btnEdit = this.userInterfaceService.Btn_Modifica;
@@ -111,11 +115,14 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
       descrizione: [null, [Validators.required, Validators.maxLength(50)]],
       numGiorniCiclo: [0, [Validators.required, Validators.min(1)]],
       tipoProfilo: [0, [Validators.required ]],
+      idPar_Orario_Festivo: [0, [Validators.required ]]
     });
   }
 
   LoadData = (): Observable<Par_ProfiloOrarioModel | null> => {
     const state = history.state;
+
+    this.par_OrarioModelList = this.sharedParameterGestionePresenzeService.Par_Orario;
 
     if (state && state.id) {
       let request = new GenericRequest<Par_ProfiloOrario_GetInModel>(Par_ProfiloOrario_GetInModel);
@@ -142,10 +149,12 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
         par_ProfiloOrarioModel.descrizione = "Nuovo profilo"
         par_ProfiloOrarioModel.numGiorniCiclo = 7;
         par_ProfiloOrarioModel.tipoProfilo = 0;
+        par_ProfiloOrarioModel.idPar_Orario_Festivo = this.par_OrarioModelList[0].id;
         this.par_ProfiloOrarioGG = [];
+        this.par_OrarioIntervalloHHModel = [];
 
         for (let i: number = 1; i <= par_ProfiloOrarioModel.numGiorniCiclo; i++) {
-          this.par_ProfiloOrarioGG.push(this.init_par_ProfiloOrarioGG(i, 1, 1));
+          this.par_ProfiloOrarioGG.push(this.init_par_ProfiloOrarioGG(i, 1, this.par_OrarioModelList[0].id));
         }
 
         
@@ -216,7 +225,7 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
 
   public par_OrarioIntervalloHH(idPar_Orario: number): Par_OrarioIntervalloHHModel[] {
 
-    return this.par_OrarioIntervalloHHModel.filter(x => x.idPar_Orario == idPar_Orario).sort(x => x.numCoppia);
+    return  this.par_OrarioIntervalloHHModel.filter(x => x.idPar_Orario == idPar_Orario).sort(x => x.numCoppia);
 
   }
 

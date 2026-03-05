@@ -335,6 +335,14 @@ namespace nvxapp.server.data.Infrastructure
                 .WithMany(t_figlio => t_figlio.Par_ProfiloOrario)
                 .HasForeignKey(key_esterna => key_esterna.IdAz_Anagrafica)
                 .OnDelete(DeleteBehavior.Cascade);
+               
+             modelBuilder.Entity<Par_ProfiloOrario>()
+                .HasOne(p => p.Par_Orario_FestivoNavigation)
+                .WithMany() 
+                .HasForeignKey(p => p.IdPar_Orario_Festivo)
+                .OnDelete(DeleteBehavior.Restrict); 
+
+
 
             /* Par_ProfiloOrarioGG */
             modelBuilder.Entity<Par_ProfiloOrarioGG>()

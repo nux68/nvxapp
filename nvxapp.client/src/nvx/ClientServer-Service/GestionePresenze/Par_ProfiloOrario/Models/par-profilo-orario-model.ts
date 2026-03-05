@@ -9,6 +9,7 @@ export class Par_ProfiloOrarioModel {
   descrizione: string;
   numGiorniCiclo: number;
   tipoProfilo: number; // 0= settimanale , 1= ciclico
+  idPar_Orario_Festivo: number
 
   constructor() {
     this.id = 0;

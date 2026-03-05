@@ -75,6 +75,21 @@
             </ion-note>
           </ng-container>
 
+          <!-- Combo per selezione orario -->
+          <ion-item>
+            <ion-label position="floating">Orario festivo</ion-label>
+            <ion-select formControlName="idPar_Orario_Festivo" placeholder="Seleziona l'orario">
+              <ion-select-option *ngFor="let orario of par_OrarioModelList" [value]="orario.id">
+                {{ orario.descrizione }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-note color="danger" *ngIf="_editForm.get('_editForm.idPar_Orario_Festivo')?.hasError('required') && _editForm.get('_editForm.idPar_Orario_Festivo')?.touched">
+            Orario è obbligatorio.
+          </ion-note>
+
+
+
         </div>
         <div [hidden]="currSection!='sez2'">
 
