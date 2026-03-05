@@ -64,17 +64,16 @@
             Il numero di tipoProfilo è obbligatorio.
           </ion-note>
 
+          <ng-container *ngIf="_editForm.get('tipoProfilo')?.value != 0">
+            <ion-item>
+              <ion-label position="floating">Num. Giorni Ciclo ( {{_editForm.get('numGiorniCiclo')?.value}} / {{getDays()}} )</ion-label>
+              <ion-range aria-label="Range with ticks" (ionChange)="onRangeChange($event)" formControlName="numGiorniCiclo" [ticks]="true" [snaps]="true" [min]="1" [max]="getDays()"></ion-range>
 
-
-          <ion-item>
-            <ion-label position="floating">Num. Giorni Ciclo ( {{_editForm.get('numGiorniCiclo')?.value}} / {{getDays()}} )</ion-label>
-            <ion-range aria-label="Range with ticks" (ionChange)="onRangeChange($event)" formControlName="numGiorniCiclo" [ticks]="true" [snaps]="true" [min]="1" [max]="getDays()"></ion-range>
-
-
-          </ion-item>
-          <ion-note color="danger" *ngIf="_editForm.get('numGiorniCiclo')?.hasError('required') && _editForm.get('numGiorniCiclo')?.touched">
-            Num. Giorni Ciclo è obbligatorio.
-          </ion-note>
+            </ion-item>
+            <ion-note color="danger" *ngIf="_editForm.get('numGiorniCiclo')?.hasError('required') && _editForm.get('numGiorniCiclo')?.touched">
+              Num. Giorni Ciclo è obbligatorio.
+            </ion-note>
+          </ng-container>
 
         </div>
         <div [hidden]="currSection!='sez2'">

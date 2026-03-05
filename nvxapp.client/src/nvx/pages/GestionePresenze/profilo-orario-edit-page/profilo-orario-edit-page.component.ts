@@ -192,12 +192,19 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
     let v= Array(this._editForm.get('numGiorniCiclo')?.value).fill(0);
 
     return v;
+    
 
   }
 
   getDays(): number {
 
-    return 15;
+    if (this._editForm.get('tipoProfilo')?.value == 0) {
+      return 7;
+    }
+    else {
+      return 15;
+    }
+    
 
   }
 
@@ -273,10 +280,11 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
 
   public onTipoProfiloChange(event: any): void {
 
-    //const tipoProfilo = event.detail.value;
-    //if (tipoProfilo === 0) { // Settimanale
-    //  this._editForm.get('numGiorniCiclo')?.setValue(7);
-    //}
+    if (this._editForm.get('tipoProfilo')?.value == 0) {
+      this._editForm.patchValue({
+        numGiorniCiclo: 7
+      });
+    }
 
   }
 
