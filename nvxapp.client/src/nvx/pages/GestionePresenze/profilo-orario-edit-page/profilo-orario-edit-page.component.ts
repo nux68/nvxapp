@@ -27,7 +27,7 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
   public currSection: string = "sez1";
   public par_OrarioModelList: Par_OrarioModel[] = [];
   public par_ProfiloOrarioGG: Par_ProfiloOrarioGGModel[];
-  public par_OrarioIntervalloHHModel: Par_OrarioIntervalloHHModel[];
+  public par_OrarioIntervalloHH: Par_OrarioIntervalloHHModel[];
   public btnEdit: ButtonItem;
   public btnDelete: ButtonItem;
   public btnAdd: ButtonItem;
@@ -123,6 +123,10 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
     const state = history.state;
 
     this.par_OrarioModelList = this.sharedParameterGestionePresenzeService.Par_Orario;
+    this.par_OrarioIntervalloHH = this.sharedParameterGestionePresenzeService.Par_OrarioIntervalloHH;
+
+    
+
 
     if (state && state.id) {
       let request = new GenericRequest<Par_ProfiloOrario_GetInModel>(Par_ProfiloOrario_GetInModel);
@@ -131,7 +135,7 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
       return this.parProfiloOrarioService.Par_ProfiloOrarioGet(request).pipe(
         map((res) => {
           this.par_ProfiloOrarioGG = res.data.par_ProfiloOrarioGG;
-          this.par_OrarioIntervalloHHModel = res.data.par_OrarioIntervalloHH;
+          //this.par_OrarioIntervalloHHModel = res.data.par_OrarioIntervalloHH;
           return res.data.par_ProfiloOrario;
         }),
         catchError((error) => {
@@ -151,7 +155,6 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
         par_ProfiloOrarioModel.tipoProfilo = 0;
         par_ProfiloOrarioModel.idPar_Orario_Festivo = this.par_OrarioModelList[0].id;
         this.par_ProfiloOrarioGG = [];
-        this.par_OrarioIntervalloHHModel = [];
 
         for (let i: number = 1; i <= par_ProfiloOrarioModel.numGiorniCiclo; i++) {
           this.par_ProfiloOrarioGG.push(this.init_par_ProfiloOrarioGG(i, 1, this.par_OrarioModelList[0].id));
@@ -223,9 +226,9 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
 
   
 
-  public par_OrarioIntervalloHH(idPar_Orario: number): Par_OrarioIntervalloHHModel[] {
+  public get_par_OrarioIntervalloHH(idPar_Orario: number): Par_OrarioIntervalloHHModel[] {
 
-    return  this.par_OrarioIntervalloHHModel.filter(x => x.idPar_Orario == idPar_Orario).sort(x => x.numCoppia);
+    return  this.par_OrarioIntervalloHH.filter(x => x.idPar_Orario == idPar_Orario).sort(x => x.numCoppia);
 
   }
 

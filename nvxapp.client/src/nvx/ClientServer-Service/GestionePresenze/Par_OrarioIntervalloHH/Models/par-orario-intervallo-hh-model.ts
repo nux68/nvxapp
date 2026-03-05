@@ -25,7 +25,7 @@ export class Par_OrarioIntervalloHHInModel {
 }
 export class Par_OrarioIntervalloHHOutModel extends ModelResult {
 
-  public Par_OrarioIntervalloHHModel: Par_OrarioIntervalloHHModel;
+  public par_OrarioIntervalloHH: Par_OrarioIntervalloHHModel[] = [];
 
 }
 

@@ -36,7 +36,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Profil
     {
         public Par_ProfiloOrarioModel? Par_ProfiloOrario { get; set; }
         public List<Par_ProfiloOrarioGGModel> Par_ProfiloOrarioGG { get; set; } = new List<Par_ProfiloOrarioGGModel>();
-        public List<Par_OrarioIntervalloHHModel> Par_OrarioIntervalloHH { get; set; } = new List<Par_OrarioIntervalloHHModel>();
+        //public List<Par_OrarioIntervalloHHModel> Par_OrarioIntervalloHH { get; set; } = new List<Par_OrarioIntervalloHHModel>();
 
     }
 

@@ -153,7 +153,7 @@
 
                     <ion-col size="2" class="ion-hide-sm-down">
                       <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
-                        <p *ngFor="let parHH of par_OrarioIntervalloHH( giornoDett.idPar_Orario ); let idxParHH = index ">
+                        <p *ngFor="let parHH of get_par_OrarioIntervalloHH( giornoDett.idPar_Orario ); let idxParHH = index ">
                           {{ parHH.dalle }} - {{ parHH.alle }}
                         </p>
                       </ion-label>

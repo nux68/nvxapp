@@ -37,7 +37,7 @@ export class Par_ProfiloOrario_GetInModel {
 export class Par_ProfiloOrario_GetOutModel extends ModelResult {
   par_ProfiloOrario: Par_ProfiloOrarioModel;
   par_ProfiloOrarioGG: Par_ProfiloOrarioGGModel[];
-  par_OrarioIntervalloHH: Par_OrarioIntervalloHHModel[];
+  //par_OrarioIntervalloHH: Par_OrarioIntervalloHHModel[];
   constructor() {
     super();
     this.par_ProfiloOrario = new Par_ProfiloOrarioModel();

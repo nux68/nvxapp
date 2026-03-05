@@ -25,6 +25,8 @@ import { Par_ProfiloOrario_GetAllInModel, Par_ProfiloOrarioModel } from '../Clie
 import { ParProfiloOrarioService } from '../ClientServer-Service/GestionePresenze/Par_ProfiloOrario/par-profilo-orario.service';
 import { ParOrarioService } from '../ClientServer-Service/GestionePresenze/Par_Orario/par-orario.service';
 import { Par_Orario_GetAllInModel, Par_OrarioModel } from '../ClientServer-Service/GestionePresenze/Par_Orario/Models/par-orario-model';
+import { ParOrarioIntervalloHHService } from '../ClientServer-Service/GestionePresenze/Par_OrarioIntervalloHH/par-orario-intervallo-hh.service';
+import { Par_OrarioIntervalloHHInModel, Par_OrarioIntervalloHHModel } from '../ClientServer-Service/GestionePresenze/Par_OrarioIntervalloHH/Models/par-orario-intervallo-hh-model';
 
 @Injectable({
   providedIn: 'root'
@@ -47,6 +49,8 @@ export class SharedParameterGestionePresenzeService {
     private azCfgService: AzCfgService,
     private parProfiloOrarioService: ParProfiloOrarioService,
     private parOrarioService: ParOrarioService,
+    private parOrarioIntervalloHHService: ParOrarioIntervalloHHService,
+    
   ) { }
 
   public InitCall(updateProgress: (calls: any[]) => void): any[] {
@@ -242,6 +246,23 @@ export class SharedParameterGestionePresenzeService {
           return of(null);
         })),
 
+      this.parOrarioIntervalloHHService.GetAll(new GenericRequest<Par_OrarioIntervalloHHInModel>(Par_OrarioIntervalloHHInModel)).pipe(
+        tap((result) => {
+          this._par_OrarioIntervalloHH = result.data.par_OrarioIntervalloHH
+          updateProgress(calls)
+        }),
+        retry({
+          count: 20,
+          delay: (error, retryCount) => {
+            console.error(`Errore rilevato, ritento dopo ${retryCount} secondi:`, error);
+            return timer(500);
+          }
+        }),
+        catchError((error) => {
+          console.error(`Errore durante il caricamento dei profili orari:`, error);
+          return of(null);
+        })),
+
     );
     return calls;
   }
@@ -410,5 +431,19 @@ export class SharedParameterGestionePresenzeService {
     return this._par_OrarioSubject.asObservable();
   }
 
+
+
+  private _par_OrarioIntervalloHH: Par_OrarioIntervalloHHModel[] | null = [];
+  public get Par_OrarioIntervalloHH(): Par_OrarioIntervalloHHModel[] | null {
+    return this._par_OrarioIntervalloHH;
+  }
+  public set Par_OrarioIntervalloHH(value: Par_OrarioIntervalloHHModel[] | null) {
+    this._par_OrarioIntervalloHH = value;
+    this._par_OrarioIntervalloHHSubject.next(value);
+  }
+  private _par_OrarioIntervalloHHSubject = new BehaviorSubject<Par_OrarioIntervalloHHModel[]>([]);
+  public get Par_OrarioIntervalloHH$(): Observable<Par_OrarioIntervalloHHModel[] | []> {
+    return this._par_OrarioIntervalloHHSubject.asObservable();
+  }
 
 }
