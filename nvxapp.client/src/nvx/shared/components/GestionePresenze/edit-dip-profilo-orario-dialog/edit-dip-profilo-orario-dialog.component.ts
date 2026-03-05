@@ -8,6 +8,7 @@ import { BaseDialogConfirmCancelComponent } from '../../../../pages/_BASE/base-d
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Observable  } from 'rxjs';
 import { of } from 'rxjs/internal/observable/of';
+import { Par_ProfiloOrarioModel } from '../../../../ClientServer-Service/GestionePresenze/Par_ProfiloOrario/Models/par-profilo-orario-model';
 
 @Component({
   selector: 'app-edit-dip-profilo-orario-dialog',
@@ -19,7 +20,9 @@ export class EditDipProfiloOrarioDialogComponent extends BaseDialogConfirmCancel
 
   @Input() dip_ProfiloOrario: Dip_ProfiloOrarioModel;
 
- 
+
+  public curr_Par_ProfiloOrario: Par_ProfiloOrarioModel;
+
   constructor(
               protected override userInterfaceService: UserInterfaceService,
               protected override fb: FormBuilder,
@@ -57,6 +60,7 @@ export class EditDipProfiloOrarioDialogComponent extends BaseDialogConfirmCancel
   }
 
   LoadData = (): Observable<Dip_ProfiloOrarioModel | null> => {
+    this.Sett_Curr_Par_ProfiloOrario(this.dip_ProfiloOrario.id);
     return of(this.dip_ProfiloOrario);
   };
 
@@ -78,6 +82,43 @@ export class EditDipProfiloOrarioDialogComponent extends BaseDialogConfirmCancel
     return 1;
     
 
+  }
+
+  updateDateTimeDalle(event: any) {
+    var dataInizio = new Date(event.detail.value);
+    
+    if (this.curr_Par_ProfiloOrario.tipoProfilo == 0) {
+      let giorno = this.calcolaGiornoProfilo(dataInizio);
+
+      this._editForm.patchValue({
+        numGiornoPartenzaCiclo: giorno,
+      });
+    }
+
+
+  }
+
+  calcolaGiornoProfilo(day: Date): number{
+
+    let giorno = day.getDay();
+
+    // Convertiamo: Sunday (0) → 7
+    if (giorno === 0) {
+      giorno = 7;
+    }
+
+    return giorno;
+
+  }
+
+  onProfiloOrarioChange(event: any) {
+    const selectedId = event.detail.value;
+    this.Sett_Curr_Par_ProfiloOrario(selectedId);
+  }
+
+
+  Sett_Curr_Par_ProfiloOrario(id:number) {
+    this.curr_Par_ProfiloOrario = this.sharedParameterGestionePresenzeService.Par_ProfiloOrario.find(x=> x.id==id);
   }
 
 
