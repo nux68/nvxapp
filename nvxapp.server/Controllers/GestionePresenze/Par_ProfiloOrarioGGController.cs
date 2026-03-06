@@ -45,6 +45,16 @@ namespace nvxapp.server.Controllers
             return res;
         }
 
+
+        [Authorize]
+        [HttpPost]
+        [Route("Par_ProfiloOrarioGG_Arrange_NumDay")]
+        public async Task<GenericResult<Par_ProfiloOrarioGG_Arrange_NumDay_OutModel>> Par_ProfiloOrarioGG_Arrange_NumDay(GenericRequest<Par_ProfiloOrarioGG_Arrange_NumDay_InModel> inModel)
+        {
+            var res = await _par_ProfiloOrarioGGService.Par_ProfiloOrarioGG_Arrange_NumDay(inModel, false);
+
+            return res;
+        }
         
 
     }

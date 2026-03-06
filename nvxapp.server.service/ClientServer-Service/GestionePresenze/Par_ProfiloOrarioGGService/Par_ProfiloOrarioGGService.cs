@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using nvxapp.server.Base;
@@ -9,7 +10,6 @@ using nvxapp.server.data.Entities.Tenant.GestionePresenze;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
-using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_OrarioIntervalloHHService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_ProfiloOrarioGGService.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Interfaces;
@@ -58,28 +58,29 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Profil
                 Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg company_DATA = await _gestionePresenzeUserUtility.Get_AzAna_AzSedi_AzReparto_Az_Cfg(IdCompany, true);
                 if (company_DATA != null && company_DATA.az_Anagrafica != null)
                 {
+                    int NumGiorniCiclo = 7; //default 
                     var par_ProfiloOrario = _par_ProfiloOrarioRepository.FindById(model.Data.Id);
                     if (par_ProfiloOrario != null)
+                        NumGiorniCiclo = par_ProfiloOrario.NumGiorniCiclo;
+
+                    var par_ProfiloOrarioGG = _par_ProfiloOrarioGGRepository.GetAll().Where(x => x.IdPar_ProfiloOrario == model.Data.Id).ToList();
+                    retVal.Par_ProfiloOrarioGG = _mapper.Map<List<Par_ProfiloOrarioGGModel>>(par_ProfiloOrarioGG);
+
+                    var par_Orario = _par_OrarioRepository.GetAll().FirstOrDefault();
+
+                    int tmp_counter = 0;
+                    for (var i = 1; i <= NumGiorniCiclo; i++)
                     {
-                        var par_ProfiloOrarioGG = _par_ProfiloOrarioGGRepository.GetAll().Where(x => x.IdPar_ProfiloOrario == model.Data.Id).ToList();
-                        retVal.Par_ProfiloOrarioGG = _mapper.Map<List<Par_ProfiloOrarioGGModel>>(par_ProfiloOrarioGG);
-
-                        var par_Orario = _par_OrarioRepository.GetAll().FirstOrDefault();
-                        
-
-                        for(var i=1; i<= par_ProfiloOrario.NumGiorniCiclo; i++)
+                        if (!retVal.Par_ProfiloOrarioGG.Any(x => x.NumGiorno == i && x.ZOrder == 1))
                         {
-                            if (!retVal.Par_ProfiloOrarioGG.Any(x => x.NumGiorno == i && x.ZOrder == 1))
+                            retVal.Par_ProfiloOrarioGG.Add(new Par_ProfiloOrarioGGModel()
                             {
-                                retVal.Par_ProfiloOrarioGG.Add(new Par_ProfiloOrarioGGModel()
-                                {
-                                    Id = 0,
-                                    IdPar_ProfiloOrario  = model.Data.Id,
-                                    NumGiorno  = i,
-                                    ZOrder = 1,
-                                    IdPar_Orario = par_Orario!=null?par_Orario.Id:0 //MIGLIORARE
-                                });
-                            }
+                                Id = --tmp_counter,
+                                IdPar_ProfiloOrario = model.Data.Id,
+                                NumGiorno = i,
+                                ZOrder = 1,
+                                IdPar_Orario = par_Orario != null ? par_Orario.Id : 0 //MIGLIORARE
+                            });
                         }
                     }
                 }
@@ -90,7 +91,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Profil
                 return retVal;
             }, isSubProcess);
         }
-
         public virtual async Task<GenericResult<Par_ProfiloOrarioGG_Put_4Edit_OutModel>> Par_ProfiloOrarioGG_Put(GenericRequest<Par_ProfiloOrarioGG_Put_4Edit_InModel> model, bool isSubProcess)
         {
             return await ExecuteAction(model, async () =>
@@ -166,6 +166,108 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Profil
                 return retVal;
             }, isSubProcess);
         }
+        public virtual async Task<GenericResult<Par_ProfiloOrarioGG_Arrange_NumDay_OutModel>> Par_ProfiloOrarioGG_Arrange_NumDay(GenericRequest<Par_ProfiloOrarioGG_Arrange_NumDay_InModel> model, bool isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                Par_ProfiloOrarioGG_Arrange_NumDay_OutModel retVal = new Par_ProfiloOrarioGG_Arrange_NumDay_OutModel();
+
+                int IdCompany;
+                int.TryParse(this.CurrentCompany, out IdCompany);
+                Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg company_DATA = await _gestionePresenzeUserUtility.Get_AzAna_AzSedi_AzReparto_Az_Cfg(IdCompany, true);
+                if (company_DATA != null && company_DATA.az_Anagrafica != null)
+                {
+                    var currentGG = model.Data.Par_ProfiloOrarioGG;
+
+                    var uniqueDays = currentGG.Select(g => g.NumGiorno).Distinct().ToList();
+                    int newValue = model.Data.NumGiorniCiclo;
+
+                    int defaultIdParOrario = 0;
+                    if (uniqueDays.Count < newValue)
+                    {
+                        // Aggiungi giorni mancanti
+                        if (currentGG.Any())
+                        {
+                            defaultIdParOrario = currentGG.First().IdPar_Orario;
+                        }
+                        else
+                        {
+                            var firstOrario = await _par_OrarioRepository.GetAll().FirstOrDefaultAsync();
+                            if (firstOrario != null)
+                            {
+                                defaultIdParOrario = firstOrario.Id;
+                            }
+                        }
+
+                        int tmpCounter = currentGG.Any(g => g.Id < 0) ? currentGG.Where(g => g.Id < 0).Min(g => g.Id) : 0;
+                        for (int i = 1; i <= newValue; i++)
+                        {
+                            if (!uniqueDays.Contains(i))
+                            {
+                                currentGG.Add(new Par_ProfiloOrarioGGModel
+                                {
+                                    Id = --tmpCounter, // ID temporaneo negativo
+                                    IdPar_ProfiloOrario = model.Data.Id,
+                                    NumGiorno = i,
+                                    ZOrder = 1,
+                                    IdPar_Orario = defaultIdParOrario
+                                });
+                            }
+                        }
+                    }
+                    else if (uniqueDays.Count > newValue)
+                    {
+                        // Rimuovi giorni in eccesso
+                        currentGG.RemoveAll(g => g.NumGiorno > newValue);
+                    }
+                    else if (uniqueDays.Count == newValue)
+                    {
+                        // stiamo alterando le righe all'interno di un giorno
+                        retVal.Par_ProfiloOrarioGG = model.Data.Par_ProfiloOrarioGG;
+
+                        if (model.Data.NumGiorno_Incrementa != 0)
+                        {
+                            if(model.Data.NumGiorno_Incrementa>0)
+                            {
+                                int tmpCounter = currentGG.Any(g => g.Id < 0) ? currentGG.Where(g => g.Id < 0).Min(g => g.Id) : 0;
+
+                                int numGiorno =  Math.Abs( model.Data.NumGiorno_Incrementa);
+
+                                var recOfDay = retVal.Par_ProfiloOrarioGG.Where( x=> x.NumGiorno == numGiorno ).OrderBy(x=> x.ZOrder).ToList();
+                                var ZOrder = recOfDay[recOfDay.Count-1].ZOrder; 
+                                defaultIdParOrario = recOfDay.First().IdPar_Orario;
+
+                                currentGG.Add(new Par_ProfiloOrarioGGModel
+                                {
+                                    Id = --tmpCounter, // ID temporaneo negativo
+                                    IdPar_ProfiloOrario = model.Data.Id,
+                                    NumGiorno = numGiorno,
+                                    ZOrder = ++ZOrder,
+                                    IdPar_Orario = defaultIdParOrario
+                                });
+                            }
+                            else
+                            {
+                                // Trova il record con ZOrder più alto (l'ultimo)
+                                var recordToRemove = currentGG.OrderByDescending(g => g.ZOrder).First();
+                                currentGG.Remove(recordToRemove);
+                            }
+
+                        }
+                    }
+
+                    retVal.Par_ProfiloOrarioGG = currentGG.OrderBy(g => g.NumGiorno).ThenBy(g => g.ZOrder).ToList();
+                }
+
+                //eliminare
+                await Task.Delay(DelayAsyncMethod);
+
+                return retVal;
+            }, isSubProcess);
+        }
+
+
+
 
     }
 
@@ -173,5 +275,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Profil
     {
         public Task<GenericResult<Par_ProfiloOrarioGG_Get_4Edit_OutModel>> Par_ProfiloOrarioGG_Get(GenericRequest<Par_ProfiloOrarioGG_Get_4Edit_InModel> model, bool isSubProcess);
         public Task<GenericResult<Par_ProfiloOrarioGG_Put_4Edit_OutModel>> Par_ProfiloOrarioGG_Put(GenericRequest<Par_ProfiloOrarioGG_Put_4Edit_InModel> model, bool isSubProcess);
+
+        public Task<GenericResult<Par_ProfiloOrarioGG_Arrange_NumDay_OutModel>> Par_ProfiloOrarioGG_Arrange_NumDay(GenericRequest<Par_ProfiloOrarioGG_Arrange_NumDay_InModel> model, bool isSubProcess);
     }
 }

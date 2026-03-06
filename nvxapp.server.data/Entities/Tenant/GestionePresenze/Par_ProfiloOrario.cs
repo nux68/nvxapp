@@ -24,7 +24,7 @@ namespace nvxapp.server.data.Entities.Tenant.GestionePresenze
 
         public int NumGiorniCiclo { get; set; } = 0; // stabilisce quante righe di Par_ProfiloOrarioGG ci devono essere
 
-        public TipoProfilo TipoProfilo { get; set; } = TipoProfilo.Settimanale;  
+        public TipoProfilo TipoProfilo { get; set; } = TipoProfilo.Settimanale;
 
         public TimeOnly? StraoSogliaHHFullTime { get; set; }
         public StraoTipoConteggio StraoTipoConteggio { get; set; } = StraoTipoConteggio.Giornaliero;

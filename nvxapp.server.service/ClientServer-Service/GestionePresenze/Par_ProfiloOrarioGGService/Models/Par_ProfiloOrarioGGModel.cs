@@ -54,4 +54,21 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Profil
         public List<Par_ProfiloOrarioGGModel> Par_ProfiloOrarioGG { get; set; } = new List<Par_ProfiloOrarioGGModel>();
     }
 
+
+    public class Par_ProfiloOrarioGG_Arrange_NumDay_InModel 
+    {
+        public int Id { get; set; }  // id del profilo orario
+        public int NumGiorniCiclo { get; set; }  
+
+        public int NumGiorno_Incrementa { get; set; }  
+        
+
+        public List<Par_ProfiloOrarioGGModel> Par_ProfiloOrarioGG { get; set; } = new List<Par_ProfiloOrarioGGModel>();
+    }
+    public class Par_ProfiloOrarioGG_Arrange_NumDay_OutModel : ModelResult
+    {
+        public int Id { get; set; }  // id del profilo orario
+        public List<Par_ProfiloOrarioGGModel> Par_ProfiloOrarioGG { get; set; } = new List<Par_ProfiloOrarioGGModel>();
+    }
+
 }

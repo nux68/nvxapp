@@ -9,12 +9,14 @@ import { map, catchError } from 'rxjs/operators';
 import { Par_ProfiloOrarioModel, Par_ProfiloOrario_GetInModel, Par_ProfiloOrario_PutInModel, StraoTipoConteggio, TipoProfilo } from '../../../ClientServer-Service/GestionePresenze/Par_ProfiloOrario/Models/par-profilo-orario-model';
 import { ParProfiloOrarioService } from '../../../ClientServer-Service/GestionePresenze/Par_ProfiloOrario/par-profilo-orario.service';
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
-import { Par_ProfiloOrarioGGModel } from '../../../ClientServer-Service/GestionePresenze/Par_ProfiloOrarioGG/Models/par-profilo-orario-gg-model';
+import { Par_ProfiloOrarioGG_Arrange_NumDay_InModel, Par_ProfiloOrarioGGModel } from '../../../ClientServer-Service/GestionePresenze/Par_ProfiloOrarioGG/Models/par-profilo-orario-gg-model';
 import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
 import { EditParProfiloOrarioDettaglioOrarioDialogComponent } from '../../../shared/components/GestionePresenze/edit-par-profilo-orario-dettaglio-orario-dialog/edit-par-profilo-orario-dettaglio-orario-dialog.component';
 import { Par_OrarioIntervalloHHModel } from '../../../ClientServer-Service/GestionePresenze/Par_OrarioIntervalloHH/Models/par-orario-intervallo-hh-model';
 import { Par_OrarioModel } from '../../../ClientServer-Service/GestionePresenze/Par_Orario/Models/par-orario-model';
 import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
+import { state } from '@angular/animations';
+import { ParProfiloOrarioGGService } from '../../../ClientServer-Service/GestionePresenze/Par_ProfiloOrarioGG/par-profilo-orario-gg.service';
 
 @Component({
   selector: 'app-profilo-orario-edit-page',
@@ -37,15 +39,15 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
   
   
 
-  constructor(
-    protected override navCtrl: NavController,
-    protected override userInterfaceService: UserInterfaceService,
-    protected override fb: FormBuilder,
-    private parProfiloOrarioService: ParProfiloOrarioService,
-    private collectionDialogService: CollectionDialogService,
-    private refresherService: RefresherService,
-    private modalCtrl: ModalController,
-    public sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService
+  constructor(protected override navCtrl: NavController,
+              protected override userInterfaceService: UserInterfaceService,
+              protected override fb: FormBuilder,
+              private parProfiloOrarioService: ParProfiloOrarioService,
+              private parProfiloOrarioGGService: ParProfiloOrarioGGService,
+              private collectionDialogService: CollectionDialogService,
+              private refresherService: RefresherService,
+              private modalCtrl: ModalController,
+              public sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService
   ) {
     super(navCtrl, userInterfaceService, fb);
     this.btnEdit = this.userInterfaceService.Btn_Modifica;
@@ -54,67 +56,11 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
     this.btnDelete = userInterfaceService.Btn_Cancella;
     this.btnDelete.event = this.handleButtonDeleteClick;
 
-    
-
     this.btnAdd = userInterfaceService.Btn_Aggiungi;
     this.btnAdd.event = this.handleButtonAddClick;
   }
 
-
-
-  public getUniqueDays(): number[] {
-    if (!this.par_ProfiloOrarioGG) {
-      return [];
-    }
-    // Estrae tutti i numGiorno
-    const allDays = this.par_ProfiloOrarioGG.map(g => g.numGiorno);
-    // Rimuove i duplicati e ordina
-    return [...new Set(allDays)].sort((a, b) => a - b);
-  }
-
-
-  public onRangeChange(event: any): void {
-
-        const newValue = event.detail.value;
-        const UniqueDays = this.getUniqueDays();
-
-        if (UniqueDays.length != newValue) {
-          if (newValue > UniqueDays.length) {
-
-            for (let i: number = UniqueDays.length; i <= newValue; i++) {
-
-              this.par_ProfiloOrarioGG.push(this.init_par_ProfiloOrarioGG(i + 1, 1, this.par_ProfiloOrarioGG[0].idPar_Orario) );
-            }
-              
-            
-          }
-          else {
-            this.par_ProfiloOrarioGG = this.par_ProfiloOrarioGG.filter(g => g.numGiorno <= newValue);
-          }
-        }
-    
-  }
-
-  public init_par_ProfiloOrarioGG(numGiorno: number, zOrder: number, idPar_Orario: number): Par_ProfiloOrarioGGModel {
-
-    this.TMP_counter--;
-
-    let _par_ProfiloOrarioGG: Par_ProfiloOrarioGGModel = new Par_ProfiloOrarioGGModel();
-    _par_ProfiloOrarioGG.id = this.TMP_counter;
-    _par_ProfiloOrarioGG.zOrder = zOrder;
-    _par_ProfiloOrarioGG.numGiorno = numGiorno;
-    _par_ProfiloOrarioGG.idPar_ProfiloOrario = (this._editModel != null) ? this._editModel.id : 0;
-    _par_ProfiloOrarioGG.idPar_Orario = idPar_Orario;
-
-    return _par_ProfiloOrarioGG;
-  }
-
-
-
-  get Title(): string {
-    return "Profilo Orario";
-  }
-
+  get Title(): string {     return "Profilo Orario"; }
   get EditForm(): FormGroup {
     return this.fb.group({
       codice: [null, [Validators.required, Validators.maxLength(10)]],
@@ -136,54 +82,26 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
     this.par_OrarioModelList = this.sharedParameterGestionePresenzeService.Par_Orario;
     this.par_OrarioIntervalloHH = this.sharedParameterGestionePresenzeService.Par_OrarioIntervalloHH;
 
-    
+    if (state) {
+        let request = new GenericRequest<Par_ProfiloOrario_GetInModel>(Par_ProfiloOrario_GetInModel);
+        request.data.id = state.id;
 
-
-    if (state && state.id) {
-      let request = new GenericRequest<Par_ProfiloOrario_GetInModel>(Par_ProfiloOrario_GetInModel);
-      request.data.id = state.id;
-
-      return this.parProfiloOrarioService.Par_ProfiloOrarioGet(request).pipe(
-        map((res) => {
-          this.par_ProfiloOrarioGG = res.data.par_ProfiloOrarioGG;
-          //this.par_OrarioIntervalloHHModel = res.data.par_OrarioIntervalloHH;
-          return res.data.par_ProfiloOrario;
-        }),
-        catchError((error) => {
-          console.error('Errore durante il caricamento dei dati:', error);
-          return [null];
-        })
-      );
-    } else {
-      return new Observable<Par_ProfiloOrarioModel | null>((subscriber) => {
-        this._editForm.setValidators(matchData);
-        this._editForm.updateValueAndValidity();
-
-        let par_ProfiloOrarioModel = new Par_ProfiloOrarioModel();
-        par_ProfiloOrarioModel.codice = "0000";
-        par_ProfiloOrarioModel.descrizione = "Nuovo profilo"
-        par_ProfiloOrarioModel.numGiorniCiclo = 7;
-        par_ProfiloOrarioModel.tipoProfilo = 0;
-
-        par_ProfiloOrarioModel.tipoProfilo = this.tipoProfiloEnum.Settimanale;
-        par_ProfiloOrarioModel.straoTipoConteggio = this.straoTipoConteggioEnum.Giornaliero;
-        par_ProfiloOrarioModel.supplTipoConteggio = this.straoTipoConteggioEnum.Giornaliero;
-        par_ProfiloOrarioModel.straoSogliaHHFullTime = "08:00:00";
-  
-
-        par_ProfiloOrarioModel.idPar_Orario_Festivo = this.par_OrarioModelList[0].id;
-        this.par_ProfiloOrarioGG = [];
-
-        for (let i: number = 1; i <= par_ProfiloOrarioModel.numGiorniCiclo; i++) {
-          this.par_ProfiloOrarioGG.push(this.init_par_ProfiloOrarioGG(i, 1, this.par_OrarioModelList[0].id));
-        }
-
-
-
-        subscriber.next(par_ProfiloOrarioModel);
-        subscriber.complete();
-      });
+        return this.parProfiloOrarioService.Par_ProfiloOrarioGet(request).pipe(
+          map((res) => {
+            this.par_ProfiloOrarioGG = res.data.par_ProfiloOrarioGG;
+            return res.data.par_ProfiloOrario;
+          }),
+          catchError((error) => {
+            console.error('Errore durante il caricamento dei dati:', error);
+            return [null];
+          })
+        );
     }
+    else {
+      return null;
+    }
+
+
   };
 
   SaveData = (editModel: Par_ProfiloOrarioModel): Observable<boolean> => {
@@ -240,26 +158,63 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
 
   }
 
+  /**
+   * 
+   * @param newValue determina il numero di giorni del profilo
+   * @param numGiorno_Incrementa , indica il numero di giorno sul quale agire, se positico aginge una riga, se negativo la cancella
+   */
+  public daysArrange(newValue: number, numGiorno_Incrementa: number): void {
 
-  
+    let request = new GenericRequest<Par_ProfiloOrarioGG_Arrange_NumDay_InModel>(Par_ProfiloOrarioGG_Arrange_NumDay_InModel);
+    request.data.id = this._editModel.id;
+    request.data.numGiorniCiclo = newValue;
+    request.data.par_ProfiloOrarioGG = this.par_ProfiloOrarioGG;
 
+    if (numGiorno_Incrementa != 0) {
+      request.data.numGiorno_Incrementa = numGiorno_Incrementa
+    }
+
+    this.parProfiloOrarioGGService.Par_ProfiloOrarioGG_Arrange_NumDay(request).pipe(
+      map((res) => {
+        this.par_ProfiloOrarioGG = res.data.par_ProfiloOrarioGG;
+      }),
+      catchError((error) => {
+        console.error('Errore durante il caricamento dei dati:', error);
+        return [null];
+      })
+    ).subscribe();
+
+  }
+
+  public onDayRangeChange(event: any): void {
+
+    const newValue = event.detail.value;
+    this.daysArrange(newValue, 0)
+
+  }
+
+  /**
+   * Serve per fornire le righe per la descrizione degli intervalli orari dell'orario selezionato nel giorno
+   * @param idPar_Orario 
+   * @returns
+   */
   public get_par_OrarioIntervalloHH(idPar_Orario: number): Par_OrarioIntervalloHHModel[] {
 
     return  this.par_OrarioIntervalloHH.filter(x => x.idPar_Orario == idPar_Orario).sort(x => x.numCoppia);
 
   }
 
-
-  public get_par_ProfiloOrarioGG(day: number): Par_ProfiloOrarioGGModel[] {
+  /**
+   * Ottiene le righe di par_ProfiloOrarioGG per il giorno selezionato
+   * @param day
+   * @returns
+   */
+  public get_par_ProfiloOrarioGG_4Day(day: number): Par_ProfiloOrarioGGModel[] {
     if (!this.par_ProfiloOrarioGG) {
       return [];
     }
     let retVal =  this.par_ProfiloOrarioGG.filter(g => g.numGiorno === day)
-      .sort((a, b) => a.zOrder - b.zOrder);
-
-    if (retVal.length > 1) {
-      var c = 0;
-    }
+                                          .sort((a, b) => a.zOrder - b.zOrder);
 
     return retVal;
   }
@@ -269,29 +224,15 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
   }
 
   handleButtonAddClick = (giorno: any) => {
-
-    const last = this.get_par_ProfiloOrarioGG(giorno);
-    let zOrder = last[last.length - 1].zOrder + 1;
-    let idPar_Orario = last[last.length - 1].idPar_Orario;
-
-    let par_ProfiloOrarioGG: Par_ProfiloOrarioGGModel = this.init_par_ProfiloOrarioGG(giorno, zOrder, this._editModel.id);
-
-    par_ProfiloOrarioGG.idPar_Orario = idPar_Orario;
-
-    this.EdiProfiloOrarioDettDialog_Open(par_ProfiloOrarioGG);
+    this.daysArrange(this._editForm.get('numGiorniCiclo')?.value, giorno)
   }
-
   
-
-  handleButtonDeleteClick = async (item: Par_ProfiloOrarioGGModel) => {
-
+  handleButtonDeleteClick = async (giorno: any) => {
     const result = await this.collectionDialogService.ConfirmCancelDialog('Confermi la cancellazione dell  Orario');
     if (result) {
-      this.par_ProfiloOrarioGG = this.par_ProfiloOrarioGG.filter(g => g.id !== item.id);
+      this.daysArrange(this._editForm.get('numGiorniCiclo')?.value, (giorno * -1) )
     }
-
   }
-
 
   async EdiProfiloOrarioDettDialog_Open(par_ProfiloOrarioGG: Par_ProfiloOrarioGGModel) {
 
@@ -323,13 +264,16 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
   public onTipoProfiloChange(event: any): void {
 
     if (this._editForm.get('tipoProfilo')?.value == 0) {
+
       this._editForm.patchValue({
         numGiorniCiclo: 7
       });
+
+      this.daysArrange(7,0);
+
     }
 
   }
-
   
 
 }

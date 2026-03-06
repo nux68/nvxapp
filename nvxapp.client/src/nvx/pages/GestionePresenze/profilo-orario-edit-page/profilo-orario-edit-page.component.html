@@ -63,7 +63,7 @@
           <ng-container *ngIf="_editForm.get('tipoProfilo')?.value != 0">
             <ion-item>
               <ion-label position="floating">Num. Giorni Ciclo ( {{_editForm.get('numGiorniCiclo')?.value}} / {{getDays()}} )</ion-label>
-              <ion-range aria-label="Range with ticks" (ionChange)="onRangeChange($event)" formControlName="numGiorniCiclo" [ticks]="true" [snaps]="true" [min]="1" [max]="getDays()"></ion-range>
+              <ion-range aria-label="Range with ticks" (ionChange)="onDayRangeChange($event)" formControlName="numGiorniCiclo" [ticks]="true" [snaps]="true" [min]="1" [max]="getDays()"></ion-range>
 
             </ion-item>
             <ion-note color="danger" *ngIf="_editForm.get('numGiorniCiclo')?.hasError('required') && _editForm.get('numGiorniCiclo')?.touched">
@@ -135,7 +135,7 @@
                 <ion-card-title>Giorno {{ idxDay + 1 }} </ion-card-title>
 
                 <ion-grid>
-                  <ion-row class="nvx-ion-row-4table" *ngFor="let giornoDett of get_par_ProfiloOrarioGG( idxDay + 1 ); let idx = index , let last = last">
+                  <ion-row class="nvx-ion-row-4table" *ngFor="let giornoDett of get_par_ProfiloOrarioGG_4Day( idxDay + 1 ); let idx = index , let last = last">
 
                     <!--mobile-->
                     <ion-item-sliding class="ion-hide-sm-up">
@@ -147,7 +147,7 @@
                       </ion-item>
 
                       <ion-item-options side="end">
-                        <ion-item-option color="{{btnDelete.color}}" (click)="btnDelete.event(giornoDett)" *ngIf="last && idx > 0">
+                        <ion-item-option color="{{btnDelete.color}}" (click)="btnDelete.event(idxDay+1)" *ngIf="last && idx > 0">
                           <ion-icon slot="start" name="{{btnDelete.image}}"></ion-icon>
                           {{btnDelete.text}}
                         </ion-item-option>
@@ -189,7 +189,7 @@
                     </ion-col>
                     <ion-col size="2" class="ion-hide-sm-down">
 
-                      <ion-button size="small" fill="outline" shape="round" (click)="btnDelete.event(giornoDett)" color="{{btnDelete.color}}" *ngIf="last && idx > 0">
+                      <ion-button size="small" fill="outline" shape="round" (click)="btnDelete.event(idxDay+1)" color="{{btnDelete.color}}" *ngIf="last && idx > 0">
                         <ion-icon name="{{btnDelete.image}}"></ion-icon>
                         &nbsp;{{btnDelete.text}}
                       </ion-button>
