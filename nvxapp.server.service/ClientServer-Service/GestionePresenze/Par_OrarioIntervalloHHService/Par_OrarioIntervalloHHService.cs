@@ -5,13 +5,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using nvxapp.server.Base;
 using nvxapp.server.data.Entities.Public;
-using nvxapp.server.data.Entities.Tenant;
 using nvxapp.server.data.Entities.Tenant.GestionePresenze;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
-using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubCommessaService.Models;
-using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubCommessaUserService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_OrarioIntervalloHHService.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Interfaces;
@@ -36,7 +33,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Orario
 
                                   IGestionePresenzeUserUtility gestionePresenzeUserUtility,
                                   IPar_OrarioRepository par_OrarioRepository,
-                                  IPar_OrarioIntervalloHHRepository par_OrarioIntervalloHHRepository) : base(mapper , userManager  , aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
+                                  IPar_OrarioIntervalloHHRepository par_OrarioIntervalloHHRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _gestionePresenzeUserUtility = gestionePresenzeUserUtility;
             _par_OrarioIntervalloHHRepository = par_OrarioIntervalloHHRepository;
@@ -67,13 +64,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Orario
                 return retVal;
             }, isSubProcess);
         }
-
-
-        public virtual async Task<GenericResult<Par_OrarioIntervalloHH_GetAll_4Edit_OutModel>> GetAll_4Edit(GenericRequest<Par_OrarioIntervalloHH_GetAll_4Edit_InModel> model, bool isSubProcess)
+        public virtual async Task<GenericResult<Par_OrarioIntervalloHH_Get_4Edit_OutModel>> Par_OrarioIntervalloHH_Get(GenericRequest<Par_OrarioIntervalloHH_Get_4Edit_InModel> model, bool isSubProcess)
         {
             return await ExecuteAction(model, async () =>
             {
-                Par_OrarioIntervalloHH_GetAll_4Edit_OutModel retVal = new Par_OrarioIntervalloHH_GetAll_4Edit_OutModel();
+                Par_OrarioIntervalloHH_Get_4Edit_OutModel retVal = new Par_OrarioIntervalloHH_Get_4Edit_OutModel();
 
                 int IdCompany;
                 int.TryParse(this.CurrentCompany, out IdCompany);
@@ -81,27 +76,25 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Orario
                 Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg company_DATA = await _gestionePresenzeUserUtility.Get_AzAna_AzSedi_AzReparto_Az_Cfg(IdCompany, true);
                 if (company_DATA != null && company_DATA.az_Anagrafica != null)
                 {
+                    int NumeroCoppie = 1;
+                    var par_Orario = _par_OrarioRepository.FindById(model.Data.Id);
+                    if (par_Orario != null)
+                        NumeroCoppie = par_Orario.NumeroCoppie;
 
-                    var par_Orario =_par_OrarioRepository.FindById(model.Data.Id);
-                    if( par_Orario != null )
+                    var par_OrarioIntervalloHH = _par_OrarioIntervalloHHRepository.FindAll(x => x.IdPar_Orario == model.Data.Id).ToList();
+                    retVal.Par_OrarioIntervalloHH = _mapper.Map<List<Par_OrarioIntervalloHHModel>>(par_OrarioIntervalloHH);
+
+                    for (var i = 1; i <= NumeroCoppie; i++)
                     {
-                        var par_OrarioIntervalloHH = _par_OrarioIntervalloHHRepository.FindAll(x=>x.IdPar_Orario == model.Data.Id).ToList();
-                        retVal.Par_OrarioIntervalloHH = _mapper.Map<List<Par_OrarioIntervalloHHModel>>(par_OrarioIntervalloHH);
-
-                        for(var i=1; i<= par_Orario.NumeroCoppie; i++)
+                        if (!retVal.Par_OrarioIntervalloHH.Any(x => x.NumCoppia == i))
                         {
-                            if (!retVal.Par_OrarioIntervalloHH.Any(x => x.NumCoppia == i))
-                            {
-                                retVal.Par_OrarioIntervalloHH.Add(new Par_OrarioIntervalloHHModel()
-                                {
-                                    Id = 0,
-                                    IdPar_Orario = model.Data.Id,
-                                    NumCoppia = i,
-                                });
-                            }
+                            var cop = init_Par_OrarioIntervalloHH(i);
+                            cop.IdPar_Orario = model.Data.Id;
+                            retVal.Par_OrarioIntervalloHH.Add(cop);
                         }
-                        retVal.Par_OrarioIntervalloHH = retVal.Par_OrarioIntervalloHH.OrderBy(x => x.NumCoppia).ToList();
                     }
+                    retVal.Par_OrarioIntervalloHH = retVal.Par_OrarioIntervalloHH.OrderBy(x => x.NumCoppia).ToList();
+                    
                 }
 
                 //eliminare
@@ -111,12 +104,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Orario
                 return retVal;
             }, isSubProcess);
         }
-
-        public virtual async Task<GenericResult<Par_OrarioIntervalloHH_PutAll_4Edit_OutModel>> PutAll_4Edit(GenericRequest<Par_OrarioIntervalloHH_PutAll_4Edit_InModel> model, bool isSubProcess)
+        public virtual async Task<GenericResult<Par_OrarioIntervalloHH_Put_4Edit_OutModel>> Par_OrarioIntervalloHH_Put(GenericRequest<Par_OrarioIntervalloHH_Put_4Edit_InModel> model, bool isSubProcess)
         {
             return await ExecuteAction(model, async () =>
             {
-                Par_OrarioIntervalloHH_PutAll_4Edit_OutModel retVal = new Par_OrarioIntervalloHH_PutAll_4Edit_OutModel();
+                Par_OrarioIntervalloHH_Put_4Edit_OutModel retVal = new Par_OrarioIntervalloHH_Put_4Edit_OutModel();
 
 
                 int IdCompany;
@@ -125,12 +117,12 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Orario
                 Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg company_DATA = await _gestionePresenzeUserUtility.Get_AzAna_AzSedi_AzReparto_Az_Cfg(IdCompany, true);
                 if (company_DATA != null && company_DATA.az_Anagrafica != null)
                 {
-                    var par_Orario =_par_OrarioRepository.FindById(model.Data.Id);
-                    if( par_Orario != null )
+                    var par_Orario = _par_OrarioRepository.FindById(model.Data.Id);
+                    if (par_Orario != null)
                     {
                         retVal.Id = model.Data.Id;
 
-                        var par_OrarioIntervalloHH_All = _par_OrarioIntervalloHHRepository.FindAll(x=>x.IdPar_Orario == model.Data.Id).ToList();
+                        var par_OrarioIntervalloHH_All = _par_OrarioIntervalloHHRepository.FindAll(x => x.IdPar_Orario == model.Data.Id).ToList();
                         //cancellazione sub commesse eliminate
                         foreach (var item in par_OrarioIntervalloHH_All)
                         {
@@ -146,15 +138,15 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Orario
 
                         foreach (var item in model.Data.Par_OrarioIntervalloHH)
                         {
-                            var    par_OrarioIntervalloHH = _mapper.Map<Par_OrarioIntervalloHH>(item);
+                            var par_OrarioIntervalloHH = _mapper.Map<Par_OrarioIntervalloHH>(item);
                             par_OrarioIntervalloHH.IdPar_Orario = model.Data.Id;
                             await _par_OrarioIntervalloHHRepository.UpsertAsync(par_OrarioIntervalloHH);
                         }
 
                         //rireggo gli i dati
-                        var req_1 = new GenericRequest<Par_OrarioIntervalloHH_GetAll_4Edit_InModel>();
-                        req_1.Data =  new Par_OrarioIntervalloHH_GetAll_4Edit_InModel(){ Id = model.Data.Id };
-                        var res_1 = await GetAll_4Edit(req_1,true);
+                        var req_1 = new GenericRequest<Par_OrarioIntervalloHH_Get_4Edit_InModel>();
+                        req_1.Data = new Par_OrarioIntervalloHH_Get_4Edit_InModel() { Id = model.Data.Id };
+                        var res_1 = await Par_OrarioIntervalloHH_Get(req_1, true);
                         if (res_1.Success && res_1.Data != null)
                         {
                             retVal.Par_OrarioIntervalloHH = res_1.Data.Par_OrarioIntervalloHH;
@@ -170,16 +162,108 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Orario
                 return retVal;
             }, isSubProcess);
         }
-         
+        public virtual async Task<GenericResult<Par_OrarioIntervalloHH_Arrange_Coppie_OutModel>> Par_OrarioIntervalloHH_Arrange_NumCoppie(GenericRequest<Par_OrarioIntervalloHH_Arrange_Coppie_InModel> model, bool isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                Par_OrarioIntervalloHH_Arrange_Coppie_OutModel retVal = new Par_OrarioIntervalloHH_Arrange_Coppie_OutModel();
+
+
+                int IdCompany;
+                int.TryParse(this.CurrentCompany, out IdCompany);
+
+                Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg company_DATA = await _gestionePresenzeUserUtility.Get_AzAna_AzSedi_AzReparto_Az_Cfg(IdCompany, true);
+                if (company_DATA != null && company_DATA.az_Anagrafica != null)
+                {
+                    retVal.Par_OrarioIntervalloHH = model.Data.Par_OrarioIntervalloHH;
+
+                    if (model.Data.NumCoppie > model.Data.Par_OrarioIntervalloHH.Count)
+                    {
+                        for (var i = model.Data.Par_OrarioIntervalloHH.Count; i < model.Data.NumCoppie; i++)
+                        {
+                            var cop = init_Par_OrarioIntervalloHH(i+1);
+                            cop.IdPar_Orario = model.Data.Id;
+                            retVal.Par_OrarioIntervalloHH.Add(cop);
+                        }
+                    }
+                    else if (model.Data.NumCoppie < model.Data.Par_OrarioIntervalloHH.Count)
+                    {
+                        retVal.Par_OrarioIntervalloHH = retVal.Par_OrarioIntervalloHH.Where(x => x.NumCoppia <= model.Data.NumCoppie).ToList();
+                    }
+
+
+
+                }
+
+                //eliminare
+                // Nessun 'await' qui
+                await Task.Delay(DelayAsyncMethod);
+
+                return retVal;
+            }, isSubProcess);
+        }
+
+
+        private Par_OrarioIntervalloHHModel init_Par_OrarioIntervalloHH(int numCoppia)
+        {
+            Par_OrarioIntervalloHHModel _par_OrarioIntervalloHH = new Par_OrarioIntervalloHHModel();
+
+            _par_OrarioIntervalloHH.NumCoppia = numCoppia;
+
+            switch (numCoppia)
+            {
+                case 1:
+                    _par_OrarioIntervalloHH.Dalle_Limite_SX = new TimeOnly(8,50,0);  
+                    _par_OrarioIntervalloHH.Dalle = new TimeOnly(9,0,0);
+                    _par_OrarioIntervalloHH.Dalle_Limite_DX = new TimeOnly(9,10,0);
+
+                    _par_OrarioIntervalloHH.Alle_Limite_SX =  new TimeOnly(13,0,0);
+                    _par_OrarioIntervalloHH.Alle = new TimeOnly(13,0,0);
+                    _par_OrarioIntervalloHH.Alle_Limite_DX = new TimeOnly(13,10,0);
+                    break;
+
+                case 2:
+                    _par_OrarioIntervalloHH.Dalle_Limite_SX = new TimeOnly(13,50,0);
+                    _par_OrarioIntervalloHH.Dalle = new TimeOnly(14,0,0);
+                    _par_OrarioIntervalloHH.Dalle_Limite_DX = new TimeOnly(14,0,0);
+
+                    _par_OrarioIntervalloHH.Alle_Limite_SX = new TimeOnly(18,0,0);
+                    _par_OrarioIntervalloHH.Alle = new TimeOnly(18,0,0);
+                    _par_OrarioIntervalloHH.Alle_Limite_DX = new TimeOnly(18,10,0);
+                    break;
+
+                case 3:
+                    _par_OrarioIntervalloHH.Dalle_Limite_SX = new TimeOnly(19,50,0);
+                    _par_OrarioIntervalloHH.Dalle = new TimeOnly(20,0,0);
+                    _par_OrarioIntervalloHH.Dalle_Limite_DX = new TimeOnly(20,10,0);
+
+                    _par_OrarioIntervalloHH.Alle_Limite_SX = new TimeOnly(21,0,0);
+                    _par_OrarioIntervalloHH.Alle = new TimeOnly(21,0,0);
+                    _par_OrarioIntervalloHH.Alle_Limite_DX = new TimeOnly(21,10,0);
+                    break;
+
+                case 4:
+                    _par_OrarioIntervalloHH.Dalle_Limite_SX = new TimeOnly(21,50,0);
+                    _par_OrarioIntervalloHH.Dalle = new TimeOnly(22,0,0);
+                    _par_OrarioIntervalloHH.Dalle_Limite_DX = new TimeOnly(22,10,0);
+
+                    _par_OrarioIntervalloHH.Alle_Limite_SX = new TimeOnly(23,0,0);
+                    _par_OrarioIntervalloHH.Alle = new TimeOnly(23,0,0);
+                    _par_OrarioIntervalloHH.Alle_Limite_DX = new TimeOnly(23,10,0);
+                    break;
+            }
+
+            return _par_OrarioIntervalloHH;
+        }
+
     }
 
     public interface IPar_OrarioIntervalloHHService : IServiceBase
     {
-        public Task<GenericResult<Par_OrarioIntervalloHHOutModel>> GetAll( GenericRequest<Par_OrarioIntervalloHHInModel> model, Boolean isSubProcess);
-
-
-        Task<GenericResult<Par_OrarioIntervalloHH_GetAll_4Edit_OutModel>> GetAll_4Edit(GenericRequest<Par_OrarioIntervalloHH_GetAll_4Edit_InModel> model, bool isSubProcess);
-        Task<GenericResult<Par_OrarioIntervalloHH_PutAll_4Edit_OutModel>> PutAll_4Edit(GenericRequest<Par_OrarioIntervalloHH_PutAll_4Edit_InModel> model, bool isSubProcess);
+        public Task<GenericResult<Par_OrarioIntervalloHHOutModel>> GetAll(GenericRequest<Par_OrarioIntervalloHHInModel> model, Boolean isSubProcess);
+        Task<GenericResult<Par_OrarioIntervalloHH_Get_4Edit_OutModel>> Par_OrarioIntervalloHH_Get(GenericRequest<Par_OrarioIntervalloHH_Get_4Edit_InModel> model, bool isSubProcess);
+        Task<GenericResult<Par_OrarioIntervalloHH_Put_4Edit_OutModel>> Par_OrarioIntervalloHH_Put(GenericRequest<Par_OrarioIntervalloHH_Put_4Edit_InModel> model, bool isSubProcess);
+        Task<GenericResult<Par_OrarioIntervalloHH_Arrange_Coppie_OutModel>> Par_OrarioIntervalloHH_Arrange_NumCoppie(GenericRequest<Par_OrarioIntervalloHH_Arrange_Coppie_InModel> model, bool isSubProcess);
 
     }
 }

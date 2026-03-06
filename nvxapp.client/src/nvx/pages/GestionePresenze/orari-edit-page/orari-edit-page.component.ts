@@ -8,9 +8,11 @@ import { Observable } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { Par_Orario_GetInModel, Par_Orario_PutInModel, Par_OrarioModel } from '../../../ClientServer-Service/GestionePresenze/Par_Orario/Models/par-orario-model';
 import { ParOrarioService } from '../../../ClientServer-Service/GestionePresenze/Par_Orario/par-orario.service';
-import { Par_OrarioIntervalloHHModel } from '../../../ClientServer-Service/GestionePresenze/Par_OrarioIntervalloHH/Models/par-orario-intervallo-hh-model';
+import { Par_OrarioIntervalloHH_Arrange_Coppie_InModel, Par_OrarioIntervalloHHModel } from '../../../ClientServer-Service/GestionePresenze/Par_OrarioIntervalloHH/Models/par-orario-intervallo-hh-model';
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
 import { EditParOrarioDettaglioOrarioIntervalloHHDialogComponent } from '../../../shared/components/GestionePresenze/edit-par-orario-dettaglio-orario-intervallo-hhdialog/edit-par-orario-dettaglio-orario-intervallo-hhdialog.component';
+import { ParOrarioIntervalloHHService } from '../../../ClientServer-Service/GestionePresenze/Par_OrarioIntervalloHH/par-orario-intervallo-hh.service';
+
 
 
 @Component({
@@ -32,6 +34,7 @@ export class OrariEditPageComponent extends BasePageConfirmCancelComponent<Par_O
     protected override fb: FormBuilder,
     private refresherService: RefresherService,
     private parOrarioService: ParOrarioService,
+    private parOrarioIntervalloHHService: ParOrarioIntervalloHHService,
     private modalCtrl: ModalController,
   ) {
     super(navCtrl, userInterfaceService, fb);
@@ -56,40 +59,27 @@ export class OrariEditPageComponent extends BasePageConfirmCancelComponent<Par_O
   LoadData = (): Observable<Par_OrarioModel | null> => {
     const state = history.state;
 
-    if (state && state.id ) {
-      let request = new GenericRequest<Par_Orario_GetInModel>(Par_Orario_GetInModel);
-      request.data.id = state.id;
+    if (state) {
 
-      return this.parOrarioService.Par_OrarioGet(request).pipe(
-        map((res) => {
+        let request = new GenericRequest<Par_Orario_GetInModel>(Par_Orario_GetInModel);
+        request.data.id = state.id;
+
+        return this.parOrarioService.Par_OrarioGet(request).pipe(
+          map((res) => {
             this.par_OrarioIntervalloHH = res.data.par_OrarioIntervalloHH;
             return res.data.par_Orario;
           }
-        ),
-        catchError((error) => {
-          console.error('Errore durante il caricamento dei dati:', error);
-          return [null];
-        })
-      );
-    } else {
-      return new Observable<Par_OrarioModel | null>((subscriber) => {
-        this._editForm.setValidators(matchData);
-        this._editForm.updateValueAndValidity();
-
-        let par_OrarioModel: Par_OrarioModel = new Par_OrarioModel()
-        par_OrarioModel.codice = "0000";
-        par_OrarioModel.descrizione = "Nuovo orario";
-        par_OrarioModel.numeroCoppie = 1;
-        this.par_OrarioIntervalloHH = [];
-
-        for (let i: number = 1; i <= par_OrarioModel.numeroCoppie; i++) {
-          this.par_OrarioIntervalloHH.push(this.init_Par_OrarioIntervalloHH(i));
-        }
-
-        subscriber.next(par_OrarioModel);
-        subscriber.complete();
-      });
+          ),
+          catchError((error) => {
+            console.error('Errore durante il caricamento dei dati:', error);
+            return [null];
+          })
+        );
     }
+    else {
+      return null;
+    }
+    
   };
 
   SaveData = (editModel: Par_OrarioModel): Observable<boolean> => {
@@ -118,14 +108,6 @@ export class OrariEditPageComponent extends BasePageConfirmCancelComponent<Par_O
     this.currSection = event.detail.value;
   }
 
-  getCoppieMock(): any {
-
-    let v = Array(this._editForm.get('numeroCoppie')?.value).fill(0);
-
-    return v;
-
-  }
-
   public get_Par_OrarioIntervalloHH(): Par_OrarioIntervalloHHModel[] {
     if (!this.par_OrarioIntervalloHH) {
       return [];
@@ -147,74 +129,29 @@ export class OrariEditPageComponent extends BasePageConfirmCancelComponent<Par_O
   public onRangeChange(event: any): void {
 
     const newValue = event.detail.value;
-    
-
-    if (this.par_OrarioIntervalloHH.length != newValue) {
-      if (newValue > this.par_OrarioIntervalloHH.length) {
-
-        for (let i: number = this.par_OrarioIntervalloHH.length; i < newValue; i++) {
-          this.par_OrarioIntervalloHH.push(this.init_Par_OrarioIntervalloHH(i + 1));
-        }
-      }
-      else {
-        this.par_OrarioIntervalloHH = this.par_OrarioIntervalloHH.filter(g => g.numCoppia <= newValue);
-      }
-    }
+    this.coppieArrange(newValue);
 
   }
 
+  public coppieArrange(newValue: number): void {
 
-  public init_Par_OrarioIntervalloHH(numCoppia: number): Par_OrarioIntervalloHHModel {
+    let request = new GenericRequest<Par_OrarioIntervalloHH_Arrange_Coppie_InModel>(Par_OrarioIntervalloHH_Arrange_Coppie_InModel);
+    request.data.id = this._editModel.id;
+    request.data.numCoppie = newValue;
+    request.data.par_OrarioIntervalloHH = this.par_OrarioIntervalloHH;
+    
+    
 
-    this.TMP_counter--;
+    this.parOrarioIntervalloHHService.Par_OrarioIntervalloHH_Arrange_NumCoppie(request).pipe(
+      map((res) => {
+        this.par_OrarioIntervalloHH = res.data.par_OrarioIntervalloHH;
+      }),
+      catchError((error) => {
+        console.error('Errore durante il caricamento dei dati:', error);
+        return [null];
+      })
+    ).subscribe();
 
-    let _par_OrarioIntervalloHH: Par_OrarioIntervalloHHModel = new Par_OrarioIntervalloHHModel();
-    _par_OrarioIntervalloHH.numCoppia = numCoppia;
-
-    switch (numCoppia) {
-      case 1:
-        _par_OrarioIntervalloHH.dalle_Limite_SX = "08:50:00";
-        _par_OrarioIntervalloHH.dalle = "09:00:00";
-        _par_OrarioIntervalloHH.dalle_Limite_DX = "09:10:00";
-
-        _par_OrarioIntervalloHH.alle_Limite_SX = "13:00:00";
-        _par_OrarioIntervalloHH.alle = "13:00:00";
-        _par_OrarioIntervalloHH.alle_Limite_DX = "13:10:00";
-        break;
-
-      case 2:
-        _par_OrarioIntervalloHH.dalle_Limite_SX = "13:50:00";
-        _par_OrarioIntervalloHH.dalle = "14:00:00";
-        _par_OrarioIntervalloHH.dalle_Limite_DX = "14:10:00";
-
-        _par_OrarioIntervalloHH.alle_Limite_SX = "18:00:00";
-        _par_OrarioIntervalloHH.alle = "18:00:00";
-        _par_OrarioIntervalloHH.alle_Limite_DX = "18:10:00";
-        break;
-
-      case 3:
-        _par_OrarioIntervalloHH.dalle_Limite_SX = "19:50:00";
-        _par_OrarioIntervalloHH.dalle = "20:00:00";
-        _par_OrarioIntervalloHH.dalle_Limite_DX = "20:10:00";
-
-        _par_OrarioIntervalloHH.alle_Limite_SX = "21:00:00";
-        _par_OrarioIntervalloHH.alle = "21:00:00";
-        _par_OrarioIntervalloHH.alle_Limite_DX = "21:10:00";
-        break;
-
-      case 4:
-        _par_OrarioIntervalloHH.dalle_Limite_SX = "21:50:00";
-        _par_OrarioIntervalloHH.dalle = "22:00:00";
-        _par_OrarioIntervalloHH.dalle_Limite_DX = "22:10:00";
-
-        _par_OrarioIntervalloHH.alle_Limite_SX = "23:00:00";
-        _par_OrarioIntervalloHH.alle = "23:00:00";
-        _par_OrarioIntervalloHH.alle_Limite_DX = "23:10:00";
-        break;
-    }
-
-
-    return _par_OrarioIntervalloHH;
   }
 
   async EdiProfiloOrarioDettDialog_Open(par_OrarioIntervalloHH: Par_OrarioIntervalloHHModel) {

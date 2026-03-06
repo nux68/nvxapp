@@ -35,7 +35,36 @@ namespace nvxapp.server.Controllers
             return res;
         }
 
+        [Authorize]
+        [HttpPost]
+        [Route("Par_OrarioIntervalloHH_Get")]
+        public async Task<GenericResult<Par_OrarioIntervalloHH_Get_4Edit_OutModel>> Par_OrarioIntervalloHH_Get(GenericRequest<Par_OrarioIntervalloHH_Get_4Edit_InModel> inModel)
+        {
+            var res = await _par_OrarioIntervalloHHService.Par_OrarioIntervalloHH_Get(inModel, false);
+
+            return res;
+        }
         
+
+        [Authorize]
+        [HttpPost]
+        [Route("Par_OrarioIntervalloHH_Put")]
+        public async Task<GenericResult<Par_OrarioIntervalloHH_Put_4Edit_OutModel>> Par_OrarioIntervalloHH_Put(GenericRequest<Par_OrarioIntervalloHH_Put_4Edit_InModel> inModel)
+        {
+            var res = await _par_OrarioIntervalloHHService.Par_OrarioIntervalloHH_Put(inModel, false);
+
+            return res;
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("Par_OrarioIntervalloHH_Arrange_NumCoppie")]
+        public async Task<GenericResult<Par_OrarioIntervalloHH_Arrange_Coppie_OutModel>> Par_OrarioIntervalloHH_Arrange_NumCoppie(GenericRequest<Par_OrarioIntervalloHH_Arrange_Coppie_InModel> inModel)
+        {
+            var res = await _par_OrarioIntervalloHHService.Par_OrarioIntervalloHH_Arrange_NumCoppie(inModel, false);
+
+            return res;
+        }
 
     }
 

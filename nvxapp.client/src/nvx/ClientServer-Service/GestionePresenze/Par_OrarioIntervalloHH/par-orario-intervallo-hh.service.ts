@@ -5,7 +5,7 @@ import { environment } from '../../../../environments/environment';
 import { GenericRequest } from '../../ModelsBase/generic-request';
 import { GenericResult } from '../../ModelsBase/generic-result';
 import { map, Observable } from 'rxjs';
-import { Par_OrarioIntervalloHH_Get_4Edit_InModel, Par_OrarioIntervalloHH_Get_4Edit_OutModel, Par_OrarioIntervalloHH_Put_4Edit_InModel, Par_OrarioIntervalloHH_Put_4Edit_OutModel, Par_OrarioIntervalloHHInModel, Par_OrarioIntervalloHHOutModel } from './Models/par-orario-intervallo-hh-model';
+import { Par_OrarioIntervalloHH_Arrange_Coppie_InModel, Par_OrarioIntervalloHH_Arrange_Coppie_OutModel, Par_OrarioIntervalloHH_Get_4Edit_InModel, Par_OrarioIntervalloHH_Get_4Edit_OutModel, Par_OrarioIntervalloHH_Put_4Edit_InModel, Par_OrarioIntervalloHH_Put_4Edit_OutModel, Par_OrarioIntervalloHHInModel, Par_OrarioIntervalloHHOutModel } from './Models/par-orario-intervallo-hh-model';
 
 @Injectable({
   providedIn: 'root'
@@ -28,7 +28,6 @@ export class ParOrarioIntervalloHHService {
 
   }
 
-
   Par_OrarioIntervalloHH_Get(model: GenericRequest<Par_OrarioIntervalloHH_Get_4Edit_InModel>): Observable<GenericResult<Par_OrarioIntervalloHH_Get_4Edit_OutModel>> {
     return this.http.post<GenericResult<Par_OrarioIntervalloHH_Get_4Edit_OutModel>>(environment.remoteData.apiUri + 'Par_OrarioIntervalloHH/Par_OrarioIntervalloHH_Get', model)
       .pipe(
@@ -40,6 +39,15 @@ export class ParOrarioIntervalloHHService {
 
   Par_OrarioIntervalloHH_Put(model: GenericRequest<Par_OrarioIntervalloHH_Put_4Edit_InModel>): Observable<GenericResult<Par_OrarioIntervalloHH_Put_4Edit_OutModel>> {
     return this.http.post<GenericResult<Par_OrarioIntervalloHH_Put_4Edit_OutModel>>(environment.remoteData.apiUri + 'Par_OrarioIntervalloHH/Par_OrarioIntervalloHH_Put', model)
+      .pipe(
+        map(r => {
+          return r;
+        })
+      );
+  }
+
+  Par_OrarioIntervalloHH_Arrange_NumCoppie(model: GenericRequest<Par_OrarioIntervalloHH_Arrange_Coppie_InModel>): Observable<GenericResult<Par_OrarioIntervalloHH_Arrange_Coppie_OutModel>> {
+    return this.http.post<GenericResult<Par_OrarioIntervalloHH_Arrange_Coppie_OutModel>>(environment.remoteData.apiUri + 'Par_OrarioIntervalloHH/Par_OrarioIntervalloHH_Arrange_NumCoppie', model)
       .pipe(
         map(r => {
           return r;

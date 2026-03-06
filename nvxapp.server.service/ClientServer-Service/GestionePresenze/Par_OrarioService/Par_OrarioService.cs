@@ -15,8 +15,6 @@ using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_OrarioServ
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.ServerModels;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_OrarioService
 {
@@ -26,7 +24,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Orario
         private readonly IGestionePresenzeUserUtility _gestionePresenzeUserUtility;
         private readonly IPar_OrarioIntervalloHHService _par_OrarioIntervalloHHService;
 
-        
+
 
         public Par_OrarioService(IMapper mapper,
                                   UserManager<ApplicationUser> userManager,
@@ -59,7 +57,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Orario
             return await ExecuteAction(model, async () =>
             {
                 var retVal = new Par_Orario_GetOutModel();
-                
+
                 int IdCompany;
                 int.TryParse(this.CurrentCompany, out IdCompany);
 
@@ -67,18 +65,28 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Orario
                 if (company_DATA != null && company_DATA.az_Anagrafica != null)
                 {
                     var entity = await _par_OrarioRepository.FindByIdAsync(model.Data.Id);
+                    if (entity == null)
+                    {
+                        entity = new Par_Orario()
+                        {
+                            IdAz_Anagrafica = company_DATA.az_Anagrafica.Id,
+                            Codice = "0000",
+                            NumeroCoppie = 1,
+                            Descrizione = "Nuovo Orario",
+                        };
+                    }
                     retVal.Par_Orario = _mapper.Map<Par_OrarioModel>(entity);
 
-                    var req_1 = new GenericRequest<Par_OrarioIntervalloHH_GetAll_4Edit_InModel>();
-                    req_1.Data =  new Par_OrarioIntervalloHH_GetAll_4Edit_InModel(){ Id = model.Data.Id };
-                    var res_1 = await _par_OrarioIntervalloHHService.GetAll_4Edit(req_1,true);
+                    var req_1 = new GenericRequest<Par_OrarioIntervalloHH_Get_4Edit_InModel>();
+                    req_1.Data = new Par_OrarioIntervalloHH_Get_4Edit_InModel() { Id = model.Data.Id };
+                    var res_1 = await _par_OrarioIntervalloHHService.Par_OrarioIntervalloHH_Get(req_1, true);
                     if (res_1.Success && res_1.Data != null)
                     {
                         retVal.Par_OrarioIntervalloHH = res_1.Data.Par_OrarioIntervalloHH;
                     }
 
                 }
-                
+
                 return retVal;
             }, isSubProcess);
         }
@@ -99,16 +107,19 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Orario
                 var updatedEntity = await _par_OrarioRepository.UpsertAsync(entity);
                 retVal.Par_Orario = _mapper.Map<Par_OrarioModel>(updatedEntity);
 
-                
-                var req_1 = new GenericRequest<Par_OrarioIntervalloHH_PutAll_4Edit_InModel>();
-                req_1.Data =  new Par_OrarioIntervalloHH_PutAll_4Edit_InModel(){ Id = retVal.Par_Orario.Id , 
-                                                                                 Par_OrarioIntervalloHH = model.Data.Par_OrarioIntervalloHH };
-                var res_1 = await _par_OrarioIntervalloHHService.PutAll_4Edit(req_1,true);
+
+                var req_1 = new GenericRequest<Par_OrarioIntervalloHH_Put_4Edit_InModel>();
+                req_1.Data = new Par_OrarioIntervalloHH_Put_4Edit_InModel()
+                {
+                    Id = retVal.Par_Orario.Id,
+                    Par_OrarioIntervalloHH = model.Data.Par_OrarioIntervalloHH
+                };
+                var res_1 = await _par_OrarioIntervalloHHService.Par_OrarioIntervalloHH_Put(req_1, true);
                 if (res_1.Success && res_1.Data != null)
                 {
                     retVal.Par_OrarioIntervalloHH = res_1.Data.Par_OrarioIntervalloHH;
                 }
-                
+
                 return retVal;
             }, isSubProcess);
         }

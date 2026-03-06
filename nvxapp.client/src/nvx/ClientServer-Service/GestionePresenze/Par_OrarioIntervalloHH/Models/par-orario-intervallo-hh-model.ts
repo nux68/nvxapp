@@ -47,3 +47,14 @@ export class Par_OrarioIntervalloHH_Put_4Edit_OutModel extends ModelResult {
   id: number = 0; // id del profilo
   par_OrarioIntervalloHHM: Par_OrarioIntervalloHHModel[] = [];
 }
+
+
+export class Par_OrarioIntervalloHH_Arrange_Coppie_InModel {
+  id: number = 0; // id del profilo
+  numCoppie: number = 0; 
+  par_OrarioIntervalloHH: Par_OrarioIntervalloHHModel[] = [];
+}
+export class Par_OrarioIntervalloHH_Arrange_Coppie_OutModel extends ModelResult {
+  id: number = 0; // id del profilo
+  par_OrarioIntervalloHH: Par_OrarioIntervalloHHModel[] = [];
+}

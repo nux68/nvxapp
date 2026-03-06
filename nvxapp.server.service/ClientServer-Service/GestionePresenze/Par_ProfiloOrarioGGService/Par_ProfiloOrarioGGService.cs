@@ -44,8 +44,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Profil
         }
 
 
-
-
         public virtual async Task<GenericResult<Par_ProfiloOrarioGG_Get_4Edit_OutModel>> Par_ProfiloOrarioGG_Get(GenericRequest<Par_ProfiloOrarioGG_Get_4Edit_InModel> model, bool isSubProcess)
         {
             return await ExecuteAction(model, async () =>
@@ -266,16 +264,12 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Profil
             }, isSubProcess);
         }
 
-
-
-
     }
 
     public interface IPar_ProfiloOrarioGGService : IServiceBase
     {
         public Task<GenericResult<Par_ProfiloOrarioGG_Get_4Edit_OutModel>> Par_ProfiloOrarioGG_Get(GenericRequest<Par_ProfiloOrarioGG_Get_4Edit_InModel> model, bool isSubProcess);
         public Task<GenericResult<Par_ProfiloOrarioGG_Put_4Edit_OutModel>> Par_ProfiloOrarioGG_Put(GenericRequest<Par_ProfiloOrarioGG_Put_4Edit_InModel> model, bool isSubProcess);
-
         public Task<GenericResult<Par_ProfiloOrarioGG_Arrange_NumDay_OutModel>> Par_ProfiloOrarioGG_Arrange_NumDay(GenericRequest<Par_ProfiloOrarioGG_Arrange_NumDay_InModel> model, bool isSubProcess);
     }
 }

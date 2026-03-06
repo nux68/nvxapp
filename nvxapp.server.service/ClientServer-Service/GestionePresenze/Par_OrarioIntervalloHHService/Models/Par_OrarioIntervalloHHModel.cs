@@ -34,21 +34,34 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Orario
 
 
 
-    public class Par_OrarioIntervalloHH_GetAll_4Edit_InModel
+    public class Par_OrarioIntervalloHH_Get_4Edit_InModel
     {
         public int Id { get; set; }  // id del orario
     }
-    public class Par_OrarioIntervalloHH_GetAll_4Edit_OutModel
+    public class Par_OrarioIntervalloHH_Get_4Edit_OutModel
     {
         public List<Par_OrarioIntervalloHHModel> Par_OrarioIntervalloHH { get; set; } = new List<Par_OrarioIntervalloHHModel>();
     }
 
-    public class Par_OrarioIntervalloHH_PutAll_4Edit_InModel
+    public class Par_OrarioIntervalloHH_Put_4Edit_InModel
     {
         public int Id { get; set; }  // id del orario
         public List<Par_OrarioIntervalloHHModel> Par_OrarioIntervalloHH { get; set; } = new List<Par_OrarioIntervalloHHModel>();
     }
-    public class Par_OrarioIntervalloHH_PutAll_4Edit_OutModel
+    public class Par_OrarioIntervalloHH_Put_4Edit_OutModel
+    {
+        public int Id { get; set; }  // id del orario
+        public List<Par_OrarioIntervalloHHModel> Par_OrarioIntervalloHH { get; set; } = new List<Par_OrarioIntervalloHHModel>();
+    }
+
+
+    public class Par_OrarioIntervalloHH_Arrange_Coppie_InModel
+    {
+        public int Id { get; set; }  // id del orario
+        public int NumCoppie { get; set; }  
+        public List<Par_OrarioIntervalloHHModel> Par_OrarioIntervalloHH { get; set; } = new List<Par_OrarioIntervalloHHModel>();
+    }
+    public class Par_OrarioIntervalloHH_Arrange_Coppie_OutModel
     {
         public int Id { get; set; }  // id del orario
         public List<Par_OrarioIntervalloHHModel> Par_OrarioIntervalloHH { get; set; } = new List<Par_OrarioIntervalloHHModel>();
