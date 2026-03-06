@@ -30,6 +30,7 @@
             <ion-label>Info </ion-label>
           </ion-item>
 
+          <!--descrizione-->
           <ion-item>
             <ion-label position="floating">Descrizione</ion-label>
             <ion-input type="text" formControlName="descrizione"></ion-input>
@@ -40,8 +41,7 @@
           <ion-note color="danger" *ngIf="_editForm.get('descrizione')?.hasError('maxlength') && _editForm.get('descrizione')?.touched">
             Descrizione non può superare i 20 caratteri.
           </ion-note>
-
-
+          <!--codice-->
           <ion-item>
             <ion-label position="floating">Codice</ion-label>
             <ion-input type="text" formControlName="codice"></ion-input>
@@ -53,11 +53,13 @@
             codice non può superare i 5 caratteri.
           </ion-note>
 
+
+          <!--Tipo Profilo-->
           <ion-item>
             <ion-label position="floating">Tipo Profilo</ion-label>
             <ion-select formControlName="tipoProfilo" interface="popover" (ionChange)="onTipoProfiloChange($event)">
-              <ion-select-option [value]="0">Settimanale</ion-select-option>
-              <ion-select-option [value]="1">Turno</ion-select-option>
+              <ion-select-option [value]="tipoProfiloEnum.Settimanale">Settimanale</ion-select-option>
+              <ion-select-option [value]="tipoProfiloEnum.Ciclico">Turno</ion-select-option>
             </ion-select>
           </ion-item>
           <ion-note color="danger" *ngIf="_editForm.get('tipoProfilo')?.hasError('required') && _editForm.get('tipoProfilo')?.touched">
@@ -75,7 +77,7 @@
             </ion-note>
           </ng-container>
 
-          <!-- Combo per selezione orario -->
+          <!-- Combo per selezione orario Festivo-->
           <ion-item>
             <ion-label position="floating">Orario festivo</ion-label>
             <ion-select formControlName="idPar_Orario_Festivo" placeholder="Seleziona l'orario">
@@ -88,6 +90,33 @@
             Orario è obbligatorio.
           </ion-note>
 
+          <!--strao Soglia HH FullTime -->
+          <ion-item>
+            <ion-label position="floating">Strao Soglia HH Full Time</ion-label>
+            <ion-datetime-button class="datetime-button-with-label" datetime="straoSogliaHHFullTime"></ion-datetime-button>
+            <ion-modal [keepContentsMounted]="true">
+              <ng-template>
+                <ion-datetime id="straoSogliaHHFullTime"
+                              formControlName="straoSogliaHHFullTime"
+                              presentation="time"
+                              [showDefaultButtons]="true"
+                              doneText="OK"
+                              cancelText="Annulla">
+                </ion-datetime>
+              </ng-template>
+            </ion-modal>
+          </ion-item>
+
+          <!--Strao Tipo Conteggio-->
+          <ion-item>
+            <!--(ionChange)="onTipoProfiloChange($event)"-->
+            <ion-label position="floating">Tipo Conteggio Straordinario</ion-label>
+            <ion-select formControlName="straoTipoConteggio" interface="popover">
+              <ion-select-option [value]="straoTipoConteggioEnum.Giornaliero">Giornaliero</ion-select-option>
+              <ion-select-option [value]="straoTipoConteggioEnum.Settimanale">Settimanale</ion-select-option>
+              <ion-select-option [value]="straoTipoConteggioEnum.Mensile">Mensile</ion-select-option>
+            </ion-select>
+          </ion-item>
 
 
         </div>

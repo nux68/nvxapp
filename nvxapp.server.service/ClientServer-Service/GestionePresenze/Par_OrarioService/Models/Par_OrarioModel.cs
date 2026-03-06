@@ -17,7 +17,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Orario
         public string Codice { get; set; } = string.Empty;
         public string Descrizione { get; set; } = string.Empty;
         public int NumeroCoppie { get; set; }
-        public decimal SogliaHHStrao { get; set; }
+        
         
     }
 

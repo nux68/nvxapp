@@ -10,6 +10,7 @@ dotnet ef migrations add GestionePresenze_Orari_Step_2  -v --context nvxapp.serv
 dotnet ef migrations add GestionePresenze_Orari_Step_3  -v --context nvxapp.server.data.Infrastructure.ApplicationDbContext --project nvxapp.server.data --startup-project nvxapp.server\nvxapp.server.csproj
 dotnet ef migrations add GestionePresenze_Orari_Step_4  -v --context nvxapp.server.data.Infrastructure.ApplicationDbContext --project nvxapp.server.data --startup-project nvxapp.server\nvxapp.server.csproj
 dotnet ef migrations add GestionePresenze_Orari_Step_5  -v --context nvxapp.server.data.Infrastructure.ApplicationDbContext --project nvxapp.server.data --startup-project nvxapp.server\nvxapp.server.csproj
+dotnet ef migrations add GestionePresenze_Orari_Step_6  -v --context nvxapp.server.data.Infrastructure.ApplicationDbContext --project nvxapp.server.data --startup-project nvxapp.server\nvxapp.server.csproj
 
 
 
@@ -25,6 +26,7 @@ dotnet ef database update GestionePresenze_Orari_Step_2 --project nvxapp.server.
 dotnet ef database update GestionePresenze_Orari_Step_3 --project nvxapp.server.data --startup-project nvxapp.server
 dotnet ef database update GestionePresenze_Orari_Step_4 --project nvxapp.server.data --startup-project nvxapp.server
 dotnet ef database update GestionePresenze_Orari_Step_5 --project nvxapp.server.data --startup-project nvxapp.server
+dotnet ef database update GestionePresenze_Orari_Step_6 --project nvxapp.server.data --startup-project nvxapp.server
 cancella
 dotnet ef migrations remove --project nvxapp.server.data --startup-project nvxapp.server
 

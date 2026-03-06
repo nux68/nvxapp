@@ -8,8 +8,11 @@ export class Par_ProfiloOrarioModel {
   codice: string;
   descrizione: string;
   numGiorniCiclo: number;
-  tipoProfilo: number; // 0= settimanale , 1= ciclico
+  tipoProfilo: TipoProfilo; 
   idPar_Orario_Festivo: number
+
+  straoSogliaHHFullTime: string | null;
+  straoTipoConteggio: StraoTipoConteggio;
 
   constructor() {
     this.id = 0;
@@ -21,6 +24,20 @@ export class Par_ProfiloOrarioModel {
   }
 
 }
+
+
+
+export enum TipoProfilo {
+  Settimanale,
+  Ciclico
+}
+
+export enum StraoTipoConteggio {
+  Giornaliero,
+  Settimanale,
+  Mensile
+}
+
 
 export class Par_ProfiloOrario_GetAllInModel { }
 export class Par_ProfiloOrario_GetAllOutModel extends ModelResult {

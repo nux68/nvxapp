@@ -1,4 +1,5 @@
-﻿using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubCommessaService.Models;
+﻿using nvxapp.server.data.Entities.Tenant.GestionePresenze;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubCommessaService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_OrarioIntervalloHHService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_ProfiloOrarioGGService.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
@@ -17,8 +18,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Profil
         public string Codice { get; set; } = string.Empty;
         public string Descrizione { get; set; } = string.Empty;
         public int NumGiorniCiclo { get; set; }
-        public int TipoProfilo { get; set; }
+        public TipoProfilo TipoProfilo { get; set; }
         public int idPar_Orario_Festivo { get; set; }
+        public TimeOnly? StraoSogliaHHFullTime { get; set; }
+        public StraoTipoConteggio StraoTipoConteggio { get; set; } 
         
     }
 

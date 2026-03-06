@@ -6,7 +6,7 @@ import { AbstractControl, FormArray, FormBuilder, FormGroup, ValidationErrors, V
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { Observable } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
-import { Par_ProfiloOrarioModel, Par_ProfiloOrario_GetInModel, Par_ProfiloOrario_PutInModel } from '../../../ClientServer-Service/GestionePresenze/Par_ProfiloOrario/Models/par-profilo-orario-model';
+import { Par_ProfiloOrarioModel, Par_ProfiloOrario_GetInModel, Par_ProfiloOrario_PutInModel, StraoTipoConteggio, TipoProfilo } from '../../../ClientServer-Service/GestionePresenze/Par_ProfiloOrario/Models/par-profilo-orario-model';
 import { ParProfiloOrarioService } from '../../../ClientServer-Service/GestionePresenze/Par_ProfiloOrario/par-profilo-orario.service';
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
 import { Par_ProfiloOrarioGGModel } from '../../../ClientServer-Service/GestionePresenze/Par_ProfiloOrarioGG/Models/par-profilo-orario-gg-model';
@@ -32,6 +32,10 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
   public btnDelete: ButtonItem;
   public btnAdd: ButtonItem;
   public TMP_counter: number = 0;
+  public tipoProfiloEnum = TipoProfilo;
+  public straoTipoConteggioEnum = StraoTipoConteggio; 
+  
+  
 
   constructor(
     protected override navCtrl: NavController,
@@ -49,6 +53,8 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
 
     this.btnDelete = userInterfaceService.Btn_Cancella;
     this.btnDelete.event = this.handleButtonDeleteClick;
+
+    
 
     this.btnAdd = userInterfaceService.Btn_Aggiungi;
     this.btnAdd.event = this.handleButtonAddClick;
@@ -115,7 +121,11 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
       descrizione: [null, [Validators.required, Validators.maxLength(50)]],
       numGiorniCiclo: [0, [Validators.required, Validators.min(1)]],
       tipoProfilo: [0, [Validators.required ]],
-      idPar_Orario_Festivo: [0, [Validators.required ]]
+      idPar_Orario_Festivo: [0, [Validators.required]],
+
+      straoSogliaHHFullTime: [0, [Validators.required]],
+      straoTipoConteggio: [0, [Validators.required]]
+
     });
   }
 
@@ -153,6 +163,12 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
         par_ProfiloOrarioModel.descrizione = "Nuovo profilo"
         par_ProfiloOrarioModel.numGiorniCiclo = 7;
         par_ProfiloOrarioModel.tipoProfilo = 0;
+
+        par_ProfiloOrarioModel.tipoProfilo = this.tipoProfiloEnum.Settimanale;
+        par_ProfiloOrarioModel.straoTipoConteggio = this.straoTipoConteggioEnum.Giornaliero;
+        par_ProfiloOrarioModel.straoSogliaHHFullTime = "08:00:00";
+  
+
         par_ProfiloOrarioModel.idPar_Orario_Festivo = this.par_OrarioModelList[0].id;
         this.par_ProfiloOrarioGG = [];
 

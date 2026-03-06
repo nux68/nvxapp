@@ -7,7 +7,7 @@ export class Par_OrarioModel {
   codice: string;
   descrizione: string;
   numeroCoppie: number;
-  sogliaHHStrao: number;
+  
 }
 
 export class Par_Orario_GetAllInModel { }

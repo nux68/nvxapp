@@ -25,9 +25,7 @@ namespace nvxapp.server.data.Entities.Tenant.GestionePresenze
 
         public int NumeroCoppie { get; set; }  = 0;  // stabilisce quante righe di Par_OrarioIntervalloHH co devo essere
 
-        [Column(TypeName = "numeric(4,2)")] 
-        public decimal SogliaHHStrao { get; set; }  // definisce dopo quante ore le ore diventano strao
-        /* definire meccanismo x ore strao */
+        
 
         public ICollection<Par_OrarioIntervalloHH>? Par_OrarioIntervalloHH { get; set; }
 
