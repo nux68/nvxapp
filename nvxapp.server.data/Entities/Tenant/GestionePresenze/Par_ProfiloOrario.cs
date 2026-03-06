@@ -29,6 +29,8 @@ namespace nvxapp.server.data.Entities.Tenant.GestionePresenze
         public TimeOnly? StraoSogliaHHFullTime { get; set; }
         public StraoTipoConteggio StraoTipoConteggio { get; set; } = StraoTipoConteggio.Giornaliero;
 
+        public StraoTipoConteggio SupplTipoConteggio { get; set; } = StraoTipoConteggio.Giornaliero;
+
 
         [Required]
         public required int IdPar_Orario_Festivo { get; set; }

@@ -124,8 +124,9 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
       idPar_Orario_Festivo: [0, [Validators.required]],
 
       straoSogliaHHFullTime: [0, [Validators.required]],
-      straoTipoConteggio: [0, [Validators.required]]
-
+      straoTipoConteggio: [0, [Validators.required]],
+      supplTipoConteggio: [0, [Validators.required]]
+      
     });
   }
 
@@ -166,6 +167,7 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
 
         par_ProfiloOrarioModel.tipoProfilo = this.tipoProfiloEnum.Settimanale;
         par_ProfiloOrarioModel.straoTipoConteggio = this.straoTipoConteggioEnum.Giornaliero;
+        par_ProfiloOrarioModel.supplTipoConteggio = this.straoTipoConteggioEnum.Giornaliero;
         par_ProfiloOrarioModel.straoSogliaHHFullTime = "08:00:00";
   
 
@@ -176,7 +178,6 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
           this.par_ProfiloOrarioGG.push(this.init_par_ProfiloOrarioGG(i, 1, this.par_OrarioModelList[0].id));
         }
 
-        
 
 
         subscriber.next(par_ProfiloOrarioModel);

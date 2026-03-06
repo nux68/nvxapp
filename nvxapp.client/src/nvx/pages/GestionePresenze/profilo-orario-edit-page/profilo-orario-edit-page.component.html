@@ -8,12 +8,8 @@
   <ion-card>
     <ion-card-content *ngIf="_editForm!=null">
 
-
-
-
-
       <form [formGroup]="_editForm">
-
+        <!--tabs-->
         <ion-segment (ionChange)="segmentChanged($event)" [value]="currSection">
           <ion-segment-button value="sez1" content-id="sez1">
             <ion-label>Generale</ion-label>
@@ -22,7 +18,7 @@
             <ion-label>Giorni</ion-label>
           </ion-segment-button>
         </ion-segment>
-
+        <!--Sez-1-->
         <div [hidden]="currSection!='sez1'">
 
           <br />
@@ -52,8 +48,6 @@
           <ion-note color="danger" *ngIf="_editForm.get('codice')?.hasError('maxlength') && _editForm.get('codice')?.touched">
             codice non può superare i 5 caratteri.
           </ion-note>
-
-
           <!--Tipo Profilo-->
           <ion-item>
             <ion-label position="floating">Tipo Profilo</ion-label>
@@ -65,7 +59,7 @@
           <ion-note color="danger" *ngIf="_editForm.get('tipoProfilo')?.hasError('required') && _editForm.get('tipoProfilo')?.touched">
             Il numero di tipoProfilo è obbligatorio.
           </ion-note>
-
+          <!--Nnm giorni ciclo-->
           <ng-container *ngIf="_editForm.get('tipoProfilo')?.value != 0">
             <ion-item>
               <ion-label position="floating">Num. Giorni Ciclo ( {{_editForm.get('numGiorniCiclo')?.value}} / {{getDays()}} )</ion-label>
@@ -76,7 +70,6 @@
               Num. Giorni Ciclo è obbligatorio.
             </ion-note>
           </ng-container>
-
           <!-- Combo per selezione orario Festivo-->
           <ion-item>
             <ion-label position="floating">Orario festivo</ion-label>
@@ -89,7 +82,6 @@
           <ion-note color="danger" *ngIf="_editForm.get('_editForm.idPar_Orario_Festivo')?.hasError('required') && _editForm.get('_editForm.idPar_Orario_Festivo')?.touched">
             Orario è obbligatorio.
           </ion-note>
-
           <!--strao Soglia HH FullTime -->
           <ion-item>
             <ion-label position="floating">Strao Soglia HH Full Time</ion-label>
@@ -106,20 +98,29 @@
               </ng-template>
             </ion-modal>
           </ion-item>
-
           <!--Strao Tipo Conteggio-->
           <ion-item>
             <!--(ionChange)="onTipoProfiloChange($event)"-->
-            <ion-label position="floating">Tipo Conteggio Straordinario</ion-label>
+            <ion-label position="floating">Conteggio HH Straordianrio</ion-label>
             <ion-select formControlName="straoTipoConteggio" interface="popover">
               <ion-select-option [value]="straoTipoConteggioEnum.Giornaliero">Giornaliero</ion-select-option>
               <ion-select-option [value]="straoTipoConteggioEnum.Settimanale">Settimanale</ion-select-option>
               <ion-select-option [value]="straoTipoConteggioEnum.Mensile">Mensile</ion-select-option>
             </ion-select>
           </ion-item>
-
+          <!--Suppl Tipo Conteggio-->
+          <ion-item>
+            <!--(ionChange)="onTipoProfiloChange($event)"-->
+            <ion-label position="floating">Conteggio HH supplementari</ion-label>
+            <ion-select formControlName="supplTipoConteggio" interface="popover">
+              <ion-select-option [value]="straoTipoConteggioEnum.Giornaliero">Giornaliero</ion-select-option>
+              <ion-select-option [value]="straoTipoConteggioEnum.Settimanale">Settimanale</ion-select-option>
+              <ion-select-option [value]="straoTipoConteggioEnum.Mensile">Mensile</ion-select-option>
+            </ion-select>
+          </ion-item>
 
         </div>
+        <!--Sez-2-->
         <div [hidden]="currSection!='sez2'">
 
           <br />
@@ -179,7 +180,6 @@
                         {{ giornoDett.idPar_Orario | parOrarioToCodice }}
                       </ion-label>
                     </ion-col>
-
                     <ion-col size="2" class="ion-hide-sm-down">
                       <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
                         <p *ngFor="let parHH of get_par_OrarioIntervalloHH( giornoDett.idPar_Orario ); let idxParHH = index ">
@@ -187,8 +187,6 @@
                         </p>
                       </ion-label>
                     </ion-col>
-
-
                     <ion-col size="2" class="ion-hide-sm-down">
 
                       <ion-button size="small" fill="outline" shape="round" (click)="btnDelete.event(giornoDett)" color="{{btnDelete.color}}" *ngIf="last && idx > 0">
@@ -220,7 +218,6 @@
         </div>
 
       </form>
-
 
     </ion-card-content>
   </ion-card>

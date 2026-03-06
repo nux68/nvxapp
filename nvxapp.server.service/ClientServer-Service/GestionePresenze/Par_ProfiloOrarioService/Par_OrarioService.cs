@@ -89,14 +89,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Profil
                         retVal.Par_ProfiloOrarioGG = resAz_Sub.Data.Par_ProfiloOrarioGG;
                     }
 
-                    //var reqAz_OreHH = new GenericRequest<Par_OrarioIntervalloHHInModel>();
-
-                    //var resAz_OreHH = await _par_OrarioIntervalloHHService.GetAll( reqAz_OreHH,true);
-                    //if (resAz_OreHH.Success && resAz_OreHH.Data != null)
-                    //{
-                    //    retVal.Par_OrarioIntervalloHH = resAz_OreHH.Data.Par_OrarioIntervalloHH;
-                    //}
-
                 }
 
                 await Task.Delay(DelayAsyncMethod);

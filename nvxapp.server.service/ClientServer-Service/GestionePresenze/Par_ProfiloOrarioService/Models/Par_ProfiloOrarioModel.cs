@@ -22,7 +22,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Profil
         public int idPar_Orario_Festivo { get; set; }
         public TimeOnly? StraoSogliaHHFullTime { get; set; }
         public StraoTipoConteggio StraoTipoConteggio { get; set; } 
-        
+        public StraoTipoConteggio SupplTipoConteggio { get; set; } 
     }
 
     public class Par_ProfiloOrario_GetAllInModel { }
@@ -39,8 +39,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Profil
     {
         public Par_ProfiloOrarioModel? Par_ProfiloOrario { get; set; }
         public List<Par_ProfiloOrarioGGModel> Par_ProfiloOrarioGG { get; set; } = new List<Par_ProfiloOrarioGGModel>();
-        //public List<Par_OrarioIntervalloHHModel> Par_OrarioIntervalloHH { get; set; } = new List<Par_OrarioIntervalloHHModel>();
-
     }
 
     public class Par_ProfiloOrario_PutInModel

@@ -13,6 +13,7 @@ export class Par_ProfiloOrarioModel {
 
   straoSogliaHHFullTime: string | null;
   straoTipoConteggio: StraoTipoConteggio;
+  supplTipoConteggio: StraoTipoConteggio;
 
   constructor() {
     this.id = 0;
@@ -21,6 +22,10 @@ export class Par_ProfiloOrarioModel {
     this.descrizione = '';
     this.numGiorniCiclo = 0;
     this.tipoProfilo = 0;
+
+    this.straoSogliaHHFullTime = '08:00:00';
+    this.straoTipoConteggio = StraoTipoConteggio.Giornaliero;
+    this.supplTipoConteggio = StraoTipoConteggio.Giornaliero;
   }
 
 }
