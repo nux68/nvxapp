@@ -101,6 +101,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Profil
                 Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg company_DATA = await _gestionePresenzeUserUtility.Get_AzAna_AzSedi_AzReparto_Az_Cfg(IdCompany, true);
                 if (company_DATA != null && company_DATA.az_Anagrafica != null)
                 {
+                    
+                    //elimino gli id <0
+                    model.Data.Par_ProfiloOrarioGG.Where(x => x.Id < 0).ToList().ForEach(x => x.Id = 0);
+
                     //rileggo i dati originali
                     var reqPar_ProfiloOrarioGG = new GenericRequest<Par_ProfiloOrarioGG_Get_4Edit_InModel>();
                     reqPar_ProfiloOrarioGG.Data.Id = model.Data.Id;

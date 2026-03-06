@@ -110,14 +110,6 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
     new GenericRequest<Par_ProfiloOrario_PutInModel>(Par_ProfiloOrario_PutInModel);
     request.data.par_ProfiloOrario = editModel;
 
-    //elimino i contatori temporanei
-    this.par_ProfiloOrarioGG = this.par_ProfiloOrarioGG.map(x => {
-      if (x.id < 0)
-        x.id = 0;
-      return x;
-    })
-
-
     request.data.par_ProfiloOrarioGG = this.par_ProfiloOrarioGG;
 
     return this.parProfiloOrarioService.Par_ProfiloOrarioPut(request).pipe(

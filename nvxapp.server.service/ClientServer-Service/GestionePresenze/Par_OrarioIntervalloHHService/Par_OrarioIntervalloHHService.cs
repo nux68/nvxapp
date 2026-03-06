@@ -84,12 +84,14 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Orario
                     var par_OrarioIntervalloHH = _par_OrarioIntervalloHHRepository.FindAll(x => x.IdPar_Orario == model.Data.Id).ToList();
                     retVal.Par_OrarioIntervalloHH = _mapper.Map<List<Par_OrarioIntervalloHHModel>>(par_OrarioIntervalloHH);
 
+                    int tmpCounter = retVal.Par_OrarioIntervalloHH.Any(g => g.Id < 0) ? retVal.Par_OrarioIntervalloHH.Where(g => g.Id < 0).Min(g => g.Id) : 0;
                     for (var i = 1; i <= NumeroCoppie; i++)
                     {
                         if (!retVal.Par_OrarioIntervalloHH.Any(x => x.NumCoppia == i))
                         {
                             var cop = init_Par_OrarioIntervalloHH(i);
                             cop.IdPar_Orario = model.Data.Id;
+                            cop.Id = --tmpCounter;
                             retVal.Par_OrarioIntervalloHH.Add(cop);
                         }
                     }
@@ -121,6 +123,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Orario
                     if (par_Orario != null)
                     {
                         retVal.Id = model.Data.Id;
+
+                        //elimino gli id <0
+                        model.Data.Par_OrarioIntervalloHH.Where(x => x.Id < 0).ToList().ForEach(x => x.Id = 0);
 
                         var par_OrarioIntervalloHH_All = _par_OrarioIntervalloHHRepository.FindAll(x => x.IdPar_Orario == model.Data.Id).ToList();
                         //cancellazione sub commesse eliminate
@@ -177,12 +182,15 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Orario
                 {
                     retVal.Par_OrarioIntervalloHH = model.Data.Par_OrarioIntervalloHH;
 
+                    int tmpCounter = retVal.Par_OrarioIntervalloHH.Any(g => g.Id < 0) ? retVal.Par_OrarioIntervalloHH.Where(g => g.Id < 0).Min(g => g.Id) : 0;
+
                     if (model.Data.NumCoppie > model.Data.Par_OrarioIntervalloHH.Count)
                     {
                         for (var i = model.Data.Par_OrarioIntervalloHH.Count; i < model.Data.NumCoppie; i++)
                         {
                             var cop = init_Par_OrarioIntervalloHH(i+1);
                             cop.IdPar_Orario = model.Data.Id;
+                            cop.Id = --tmpCounter;
                             retVal.Par_OrarioIntervalloHH.Add(cop);
                         }
                     }
