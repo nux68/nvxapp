@@ -28,7 +28,7 @@ export class SediRepartoUserSelectionComponent implements OnInit {
   @Input() singleFieldOnRow: boolean = false;
   @Input() singleSelectReparti: boolean = false;
   @Input() singleSelectUser: boolean = true;
-
+  @Input() initialSelectedUserId: string | string[] | null = null;  // forza la selezione del utente all avvio
 
 
   // Output parameters for selected values
@@ -185,6 +185,9 @@ export class SediRepartoUserSelectionComponent implements OnInit {
               this.selectedRepartoId = this.filteredReparti.map(reparto => reparto.id);
 
             this.onRepartoChange();
+
+            
+
           } else {
             this.selectedRepartoId = null;
             this.onRepartoChange();
@@ -330,10 +333,29 @@ export class SediRepartoUserSelectionComponent implements OnInit {
         this.allUsersIdChange.emit(this.az_SediRepartoUserList.map(x => x.idAspNetUsers));
 
         if (this.showUserSelect && this.az_SediRepartoUserList.length > 0) {
-          if (this.singleSelectUser)
-            this.selectedUserId = [this.az_SediRepartoUserList[0].idAspNetUsers];
-          else
-            this.selectedUserId = this.az_SediRepartoUserList.map(x => x.idAspNetUsers);
+
+          // Controlla se è stato fornito un utente iniziale da selezionare
+          if (this.initialSelectedUserId) {
+            const userExists = this.az_SediRepartoUserList.some(user =>
+              Array.isArray(this.initialSelectedUserId)
+                ? this.initialSelectedUserId.includes(user.idAspNetUsers)
+                : this.initialSelectedUserId === user.idAspNetUsers
+            );
+
+            if (userExists) {
+              this.selectedUserId = this.initialSelectedUserId;
+              // Resetta initialSelectedUserId per non forzare la selezione nelle successive chiamate
+              this.initialSelectedUserId = null;
+            }
+          }
+
+          // Se nessun utente è stato preselezionato, applica la logica di default
+          if (!this.selectedUserId) {
+            if (this.singleSelectUser)
+              this.selectedUserId = [this.az_SediRepartoUserList[0].idAspNetUsers];
+            else
+              this.selectedUserId = this.az_SediRepartoUserList.map(x => x.idAspNetUsers);
+          }
 
           this.onUserChange();
         }
@@ -345,6 +367,36 @@ export class SediRepartoUserSelectionComponent implements OnInit {
       }
     });
   }
+
+
+  //private LoadAz_SediRepartoUser(idAz_SediRepartoList: number[]) {
+  //  let request: GenericRequest<Az_SediRepartoUser_GetAll_Period_InModel> = new GenericRequest<Az_SediRepartoUser_GetAll_Period_InModel>(Az_SediRepartoUser_GetAll_Period_InModel);
+  //  request.data.idAz_SediReparto = [...idAz_SediRepartoList];
+
+  //  this.azSediRepartoUserServiceService.GetAllPeriod(request).subscribe({
+  //    next: res => {
+  //      var repUser = res.data?.az_RepartoUser || [];
+  //      var idAspNetUsers = this.sharedParameterGestionePresenzeService.Dip_Anagrafica_OnRoles([RoleCode.User]).map(x => x.idAspNetUsers);
+  //      this.az_SediRepartoUserList = repUser.filter(x => idAspNetUsers.includes(x.idAspNetUsers) && x.userInDepartment == true);
+  //      this.allUsersIdChange.emit(this.az_SediRepartoUserList.map(x => x.idAspNetUsers));
+
+  //      if (this.showUserSelect && this.az_SediRepartoUserList.length > 0) {
+  //        if (this.singleSelectUser)
+  //          this.selectedUserId = [this.az_SediRepartoUserList[0].idAspNetUsers];
+  //        else
+  //          this.selectedUserId = this.az_SediRepartoUserList.map(x => x.idAspNetUsers);
+
+
+  //        this.onUserChange();
+  //      }
+  //    },
+  //    error: err => {
+  //      console.error("Error loading users for reparti:", err);
+  //      this.az_SediRepartoUserList = [];
+  //      this.allUsersIdChange.emit(this.az_SediRepartoUserList.map(x => x.idAspNetUsers));
+  //    }
+  //  });
+  //}
 
   public navigateToPreviousUser(): void {
     if (this.canNavigatePrevious) {
