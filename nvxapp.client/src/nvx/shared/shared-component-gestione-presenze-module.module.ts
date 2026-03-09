@@ -32,6 +32,7 @@ import { ParOrarioToCodicePipe } from './pipe/GestionePresenze/par-orario-to-cod
 import { ParOrarioToLongTextPipe } from './pipe/GestionePresenze/par-orario-to-long-text.pipe';
 import { EditParProfiloOrarioDettaglioOrarioDialogComponent } from './components/GestionePresenze/edit-par-profilo-orario-dettaglio-orario-dialog/edit-par-profilo-orario-dettaglio-orario-dialog.component';
 import { EditParOrarioDettaglioOrarioIntervalloHHDialogComponent } from './components/GestionePresenze/edit-par-orario-dettaglio-orario-intervallo-hhdialog/edit-par-orario-dettaglio-orario-intervallo-hhdialog.component';
+import { TimeSheetEngineCallerComponent } from './components/GestionePresenze/time-sheet-engine-caller/time-sheet-engine-caller.component';
 
 @NgModule({
   declarations: [
@@ -40,7 +41,7 @@ import { EditParOrarioDettaglioOrarioIntervalloHHDialogComponent } from './compo
     SeletionSediRepartoUserDialogComponent,
     SeletionParAttivitaDialogComponent,
     EditDipProfiloOrarioDialogComponent, EditParProfiloOrarioDettaglioOrarioDialogComponent,
-    EditParOrarioDettaglioOrarioIntervalloHHDialogComponent
+    EditParOrarioDettaglioOrarioIntervalloHHDialogComponent, TimeSheetEngineCallerComponent,
   ],
   imports: [
     SharedComponentInfrastructureModule,
@@ -64,7 +65,7 @@ import { EditParOrarioDettaglioOrarioIntervalloHHDialogComponent } from './compo
     ParAttivitaToLongTextPipe, ParCompetenzaToLongTextPipe, AzCommessaToLongTextPipe, AzClienteToLongTextPipe,
     SediRepartoUserNavigationComponent, SediRepartoUserSelectionComponent , SeletionSediRepartoDialogComponent, SeletionSediRepartoUserDialogComponent, SeletionParAttivitaDialogComponent, AzSediRepartoToLongTextPipe,
     EditDipProfiloOrarioDialogComponent, ParProfiloOrarioToLongTextPipePipe, EditParProfiloOrarioDettaglioOrarioDialogComponent,
-    EditParOrarioDettaglioOrarioIntervalloHHDialogComponent,
+    EditParOrarioDettaglioOrarioIntervalloHHDialogComponent, TimeSheetEngineCallerComponent,
     ParOrarioToCodicePipe, ParOrarioToLongTextPipe
   ]
 })

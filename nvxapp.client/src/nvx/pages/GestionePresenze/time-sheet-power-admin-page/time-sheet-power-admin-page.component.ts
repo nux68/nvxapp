@@ -11,11 +11,13 @@ import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic
 import { ParGiustificativiToLongTextPipe } from '../../../shared/pipe/GestionePresenze/par-giustificativi-to-long-text.pipe';
 import { TipoTimbraturaToLongTextPipe } from '../../../shared/pipe/GestionePresenze/tipo-timbratura-to-long-text.pipe';
 import { DateTimeUtilService } from '../../../Utility/infrastructure/date-time-util.service';
-import { NavController } from '@ionic/angular';
+import { ModalController, NavController } from '@ionic/angular';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
 import { Subscription } from 'rxjs';
 import { DatePipe } from '@angular/common';
+import { TimeSheetEngineCallerComponent, TimeSheetEngineCallerData } from '../../../shared/components/GestionePresenze/time-sheet-engine-caller/time-sheet-engine-caller.component';
+
 
 interface DayData {
   date: Date;
@@ -54,6 +56,7 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
               private dipGGRichiestaService: DipGGRichiestaService,
               public dateTimeUtilService: DateTimeUtilService,
               public userNavigationService: UserNavigationService,
+              private modalCtrl: ModalController,
               private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
               private datePipe: DatePipe 
   ) {
@@ -295,7 +298,10 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
       }
 
     } else if (event?.detail?.data?.action === 'AggiustaTimbr') {
-      this.loadMonth();
+
+      this.TimeSheetEngineCallerDialog_Open();
+
+      //this.loadMonth();
     }
 
 
@@ -319,6 +325,34 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
 
   }
 
-  
+
+
+  async TimeSheetEngineCallerDialog_Open(/*par_ProfiloOrarioGG: Par_ProfiloOrarioGGModel*/) {
+
+
+    const modal = await this.modalCtrl.create({
+      component: TimeSheetEngineCallerComponent,
+      componentProps: {
+        timeSheetEngineCallerDataIn: null
+      },
+    });
+
+    await modal.present();
+
+    const { data, role } = await modal.onWillDismiss<TimeSheetEngineCallerData | null>();
+
+    if (role === 'confirm' && data) {
+
+      //const index = this.par_ProfiloOrarioGG.findIndex(p => p.id === data.id);
+
+      //if (index > -1) {
+      //  this.par_ProfiloOrarioGG[index] = data;
+      //} else {
+      //  this.par_ProfiloOrarioGG.push(data);
+      //}
+
+    }
+  }
+
 
 }

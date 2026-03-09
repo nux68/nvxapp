@@ -1,0 +1,46 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>{{Title}}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+
+<ion-content [fullscreen]="true">
+
+  <form [formGroup]="_editForm">
+
+    <ion-segment (ionChange)="segmentChanged($event)" [value]="currSection">
+      <ion-segment-button value="sez1" content-id="sez1">
+        <ion-label>Tipo calcolo</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="sez2" content-id="sez2">
+        <ion-label>Selezione</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+
+    <div [hidden]="currSection!='sez1'">
+
+    </div>
+
+    <div [hidden]="currSection!='sez2'">
+
+      <app-sedi-reparto-user-selection [showPeriodSelect]="false"
+                                       [showSediSelect]="false"
+                                       [showRepartoSelect]="true"
+                                       [showUserSelect]="true"
+                                       [singleSelectUser]="false"
+                                       (periodChange)="onPeriodChange($event)"
+                                       (sediIdChange)="onSedeChanged($event)"
+                                       (repartoIdChange)="onRepartiChanged($event)"
+                                       (allUsersIdChange)="onAllUsersInSelectionChanged($event)"
+                                       (currUserIdChange)="onCurrentUserChanged($event)">
+      </app-sedi-reparto-user-selection>
+
+    </div>
+
+
+  </form>
+
+</ion-content>
+
+<app-page-buttonbar [buttonbar]="buttonbar"></app-page-buttonbar>
