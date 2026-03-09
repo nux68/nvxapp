@@ -6,7 +6,7 @@ import { BaseDialogConfirmCancelComponent } from '../../../../pages/_BASE/base-d
 import { UserInterfaceService } from '../../../../Utility/infrastructure/user-interface.service';
 import { SharedParameterGestionePresenzeService } from '../../../shared-parameter-gestione-presenze.service';
 import { Observable, of } from 'rxjs';
-import { Par_OrarioIntervalloHHModel } from '../../../../ClientServer-Service/GestionePresenze/Par_OrarioIntervalloHH/Models/par-orario-intervallo-hh-model';
+import { Par_OrarioIntervalloHHModel, RoundDirection, TimeRoundInterval } from '../../../../ClientServer-Service/GestionePresenze/Par_OrarioIntervalloHH/Models/par-orario-intervallo-hh-model';
 import { StringHelperService } from '../../../../Utility/infrastructure/string-helper.service';
 
 @Component({
@@ -25,6 +25,8 @@ export class EditParOrarioDettaglioOrarioIntervalloHHDialogComponent extends Bas
   public dateTime: string;
   public formattedDate: string;
   public formattedTime: string;
+  public timeRoundIntervalEnum =  TimeRoundInterval;
+  public roundDirectionEnum = RoundDirection;
 
   constructor(
     protected override userInterfaceService: UserInterfaceService,
@@ -47,11 +49,14 @@ export class EditParOrarioDettaglioOrarioIntervalloHHDialogComponent extends Bas
       dalle: [null, [Validators.required]],
       dalle_Limite_DX: [null, [Validators.required]],
       dalle_Limite_SX: [null, [Validators.required]],
+      dalle_Arrotondamento: [null, [Validators.required]],
+      dalle_Arrotondamento_Verso: [null, [Validators.required]],
 
       alle: [null, [Validators.required]],
       alle_Limite_DX: [null, [Validators.required]],
       alle_Limite_SX: [null, [Validators.required]],
-      
+      alle_Arrotondamento: [null, [Validators.required]],
+      alle_Arrotondamento_Verso: [null, [Validators.required]],
 
     });
   }
@@ -62,8 +67,6 @@ export class EditParOrarioDettaglioOrarioIntervalloHHDialogComponent extends Bas
     this.dateTime = this.stringHelperService.DateCurr_To_ISOString();
     this.formattedDate = this.stringHelperService.Date_To_S_ddmmyyyy(now)
     this.formattedTime = this.stringHelperService.Date_To_S_hhmm(now);
-
-    //this.par_OrarioIntervalloHH.dalle = this.stringHelperService.DateCurr_To_ISOString();
 
     return of(this.par_OrarioIntervalloHH);
   };

@@ -23,6 +23,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Profil
         public TimeOnly? StraoSogliaHHFullTime { get; set; }
         public StraoTipoConteggio StraoTipoConteggio { get; set; } 
         public StraoTipoConteggio SupplTipoConteggio { get; set; } 
+
+
+        public int IdCausale_Lavoro_Strao { get; set; }
+        public int IdCausale_Lavoro_Suppl { get; set; }
+
     }
 
     public class Par_ProfiloOrario_GetAllInModel { }

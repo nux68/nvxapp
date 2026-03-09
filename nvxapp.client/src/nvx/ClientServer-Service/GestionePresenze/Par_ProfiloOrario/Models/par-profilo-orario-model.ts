@@ -14,6 +14,8 @@ export class Par_ProfiloOrarioModel {
   straoSogliaHHFullTime: string | null;
   straoTipoConteggio: StraoTipoConteggio;
   supplTipoConteggio: StraoTipoConteggio;
+  idCausale_Lavoro_Strao: number;
+  idCausale_Lavoro_Suppl: number; 
 
   constructor() {
     this.id = 0;
@@ -25,6 +27,8 @@ export class Par_ProfiloOrarioModel {
 
     this.straoSogliaHHFullTime = '08:00:00';
     this.straoTipoConteggio = StraoTipoConteggio.Giornaliero;
+    this.idCausale_Lavoro_Strao = 0;
+    this.idCausale_Lavoro_Suppl = 0;
     this.supplTipoConteggio = StraoTipoConteggio.Giornaliero;
   }
 

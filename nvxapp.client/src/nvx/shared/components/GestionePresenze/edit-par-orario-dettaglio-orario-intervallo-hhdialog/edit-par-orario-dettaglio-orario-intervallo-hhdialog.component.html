@@ -67,7 +67,7 @@
                                   presentation="time"
                                   [showDefaultButtons]="true"
                                   doneText="OK"
-                                  cancelText="Annulla" >
+                                  cancelText="Annulla">
                     </ion-datetime>
                   </ng-template>
                 </ion-modal>
@@ -75,6 +75,40 @@
             </ion-col>
 
           </ion-row>
+
+          <ion-row class="ion-align-items-center">
+            <ion-col>
+              <ion-item>
+                <ion-label position="floating">Tipo arrotondamento</ion-label>
+                <ion-select formControlName="dalle_Arrotondamento" interface="popover">
+                  <ion-select-option [value]="timeRoundIntervalEnum.Min1">1 Min</ion-select-option>
+                  <ion-select-option [value]="timeRoundIntervalEnum.Min5">5 Min</ion-select-option>
+                  <ion-select-option [value]="timeRoundIntervalEnum.Min15">15 Min</ion-select-option>
+                  <ion-select-option [value]="timeRoundIntervalEnum.Min30">30 Min</ion-select-option>
+                  <ion-select-option [value]="timeRoundIntervalEnum.Min60">60 Min</ion-select-option>
+                </ion-select>
+              </ion-item>
+              <ion-note color="danger" *ngIf="_editForm.get('dalle_Arrotondamento')?.hasError('required') && _editForm.get('dalle_Arrotondamento')?.touched">
+                Il tipo arrotondamento è obbligatorio.
+              </ion-note>
+            </ion-col>
+
+            <ion-col>
+              <ion-item>
+                <ion-label position="floating">Segno arrotondamento</ion-label>
+                <ion-select formControlName="dalle_Arrotondamento_Verso" interface="popover">
+                  <ion-select-option [value]="roundDirectionEnum.Up">+</ion-select-option>
+                  <ion-select-option [value]="roundDirectionEnum.Down">-</ion-select-option>
+                </ion-select>
+              </ion-item>
+              <ion-note color="danger" *ngIf="_editForm.get('dalle_Arrotondamento_Verso')?.hasError('required') && _editForm.get('dalle_Arrotondamento_Verso')?.touched">
+                Il segno arrotondamento è obbligatorio.
+              </ion-note>
+            </ion-col>
+
+          </ion-row>
+
+
         </ion-grid>
 
 
@@ -149,6 +183,42 @@
             </ion-col>
 
           </ion-row>
+
+
+          <ion-row class="ion-align-items-center">
+            <ion-col>
+              <ion-item>
+                <ion-label position="floating">Tipo arrotondamento</ion-label>
+                <ion-select formControlName="alle_Arrotondamento" interface="popover">
+                  <ion-select-option [value]="timeRoundIntervalEnum.Min1">1 Min</ion-select-option>
+                  <ion-select-option [value]="timeRoundIntervalEnum.Min5">5 Min</ion-select-option>
+                  <ion-select-option [value]="timeRoundIntervalEnum.Min15">15 Min</ion-select-option>
+                  <ion-select-option [value]="timeRoundIntervalEnum.Min30">30 Min</ion-select-option>
+                  <ion-select-option [value]="timeRoundIntervalEnum.Min60">60 Min</ion-select-option>
+                </ion-select>
+              </ion-item>
+              <ion-note color="danger" *ngIf="_editForm.get('alle_Arrotondamento')?.hasError('required') && _editForm.get('alle_Arrotondamento')?.touched">
+                Il tipo arrotondamento è obbligatorio.
+              </ion-note>
+            </ion-col>
+
+            <ion-col>
+              <ion-item>
+                <ion-label position="floating">Segno arrotondamento</ion-label>
+                <ion-select formControlName="alle_Arrotondamento_Verso" interface="popover">
+                  <ion-select-option [value]="roundDirectionEnum.Up">+</ion-select-option>
+                  <ion-select-option [value]="roundDirectionEnum.Down">-</ion-select-option>
+                </ion-select>
+              </ion-item>
+              <ion-note color="danger" *ngIf="_editForm.get('alle_Arrotondamento_Verso')?.hasError('required') && _editForm.get('alle_Arrotondamento_Verso')?.touched">
+                Il segno arrotondamento è obbligatorio.
+              </ion-note>
+            </ion-col>
+
+          </ion-row>
+
+
+
         </ion-grid>
 
 

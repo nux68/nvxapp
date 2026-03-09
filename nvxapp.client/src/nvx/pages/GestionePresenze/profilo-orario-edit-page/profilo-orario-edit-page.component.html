@@ -98,26 +98,63 @@
               </ng-template>
             </ion-modal>
           </ion-item>
-          <!--Strao Tipo Conteggio-->
-          <ion-item>
-            <!--(ionChange)="onTipoProfiloChange($event)"-->
-            <ion-label position="floating">Conteggio HH Straordianrio</ion-label>
-            <ion-select formControlName="straoTipoConteggio" interface="popover">
-              <ion-select-option [value]="straoTipoConteggioEnum.Giornaliero">Giornaliero</ion-select-option>
-              <ion-select-option [value]="straoTipoConteggioEnum.Settimanale">Settimanale</ion-select-option>
-              <ion-select-option [value]="straoTipoConteggioEnum.Mensile">Mensile</ion-select-option>
-            </ion-select>
-          </ion-item>
-          <!--Suppl Tipo Conteggio-->
-          <ion-item>
-            <!--(ionChange)="onTipoProfiloChange($event)"-->
-            <ion-label position="floating">Conteggio HH supplementari</ion-label>
-            <ion-select formControlName="supplTipoConteggio" interface="popover">
-              <ion-select-option [value]="straoTipoConteggioEnum.Giornaliero">Giornaliero</ion-select-option>
-              <ion-select-option [value]="straoTipoConteggioEnum.Settimanale">Settimanale</ion-select-option>
-              <ion-select-option [value]="straoTipoConteggioEnum.Mensile">Mensile</ion-select-option>
-            </ion-select>
-          </ion-item>
+
+          <ion-grid>
+            <ion-row>
+              <!--Strao Tipo Conteggio-->
+              <ion-col size="12" size-md="6">
+                <ion-item>
+                  <ion-label position="floating">Conteggio HH Straordianrio</ion-label>
+                  <ion-select formControlName="straoTipoConteggio" interface="popover">
+                    <ion-select-option [value]="straoTipoConteggioEnum.Giornaliero">Giornaliero</ion-select-option>
+                    <ion-select-option [value]="straoTipoConteggioEnum.Settimanale">Settimanale</ion-select-option>
+                    <ion-select-option [value]="straoTipoConteggioEnum.Mensile">Mensile</ion-select-option>
+                  </ion-select>
+                </ion-item>
+              </ion-col>
+              <!-- Combo per selezione dalla causale straordinario-->
+              <ion-col size="12" size-md="6">
+                <ion-item>
+                  <ion-label position="floating">Causale lavoro Straordinario</ion-label>
+                  <ion-select formControlName="idCausale_Lavoro_Strao" placeholder="Seleziona la causale">
+                    <ion-select-option *ngFor="let causali of par_CausaliModelList" [value]="causali.id">
+                      {{ causali.descrizione }}
+                    </ion-select-option>
+                  </ion-select>
+                </ion-item>
+                <ion-note color="danger" *ngIf="_editForm.get('idCausale_Lavoro_Strao')?.hasError('required') && _editForm.get('idCausale_Lavoro_Strao')?.touched">
+                  La causale è obbligatoria.
+                </ion-note>
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <!--Suppl Tipo Conteggio-->
+              <ion-col size="12" size-md="6">
+                <ion-item>
+                  <ion-label position="floating">Conteggio HH supplementari</ion-label>
+                  <ion-select formControlName="supplTipoConteggio" interface="popover">
+                    <ion-select-option [value]="straoTipoConteggioEnum.Giornaliero">Giornaliero</ion-select-option>
+                    <ion-select-option [value]="straoTipoConteggioEnum.Settimanale">Settimanale</ion-select-option>
+                    <ion-select-option [value]="straoTipoConteggioEnum.Mensile">Mensile</ion-select-option>
+                  </ion-select>
+                </ion-item>
+              </ion-col>
+              <!-- Combo per selezione dalla causale lavoro sipplementare-->
+              <ion-col size="12" size-md="6">
+                <ion-item>
+                  <ion-label position="floating">Causale lavoro Supplementare</ion-label>
+                  <ion-select formControlName="idCausale_Lavoro_Suppl" placeholder="Seleziona la causale">
+                    <ion-select-option *ngFor="let causali of par_CausaliModelList" [value]="causali.id">
+                      {{ causali.descrizione }}
+                    </ion-select-option>
+                  </ion-select>
+                </ion-item>
+                <ion-note color="danger" *ngIf="_editForm.get('idCausale_Lavoro_Suppl')?.hasError('required') && _editForm.get('idCausale_Lavoro_Suppl')?.touched">
+                  La causale è obbligatoria.
+                </ion-note>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
 
         </div>
         <!--Sez-2-->

@@ -37,6 +37,20 @@ namespace nvxapp.server.data.Entities.Tenant.GestionePresenze
         [ForeignKey("IdPar_Orario_Festivo")]
         public virtual Par_Orario? Par_Orario_FestivoNavigation { get; set; }
 
+
+        [Required]
+        public required int IdCausale_Lavoro_Strao { get; set; }
+        [ForeignKey("IdCausale_Lavoro_Strao")]
+        public virtual Par_Causali? Causale_Lavoro_StraoNavigation { get; set; }
+
+        [Required]
+        public required int IdCausale_Lavoro_Suppl { get; set; }
+        [ForeignKey("IdCausale_Lavoro_Suppl")]
+        public virtual Par_Causali? Causale_Lavoro_SupplNavigation { get; set; }
+
+
+
+
         public ICollection<Par_ProfiloOrarioGG>? Par_ProfiloOrarioGG { get; set; }
         public ICollection<Dip_ProfiloOrario>? Dip_ProfiloOrario { get; set; }
 

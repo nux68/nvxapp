@@ -3,21 +3,38 @@ import { ModelResult } from "../../../ModelsBase/model-result";
 
 
 export class Par_OrarioIntervalloHHModel {
-
   id: number;
   idPar_Orario: number;
 
   public dalle: string | null;
-  public alle: string | null;
-
   public dalle_Limite_SX: string | null;
   public dalle_Limite_DX: string | null;
+  public dalle_Arrotondamento: TimeRoundInterval;
+  public dalle_Arrotondamento_Verso: RoundDirection;
 
+  public alle: string | null;
   public alle_Limite_SX: string | null;
   public alle_Limite_DX: string | null;
+  public alle_Arrotondamento: TimeRoundInterval;
+  public alle_Arrotondamento_Verso: RoundDirection;
 
   numCoppia: number;
 }
+
+
+export enum TimeRoundInterval {
+  Min1 = 1,
+  Min5 = 5,
+  Min15 = 15,
+  Min30 = 30,
+  Min60 = 60
+}
+
+export enum RoundDirection {
+  Down,
+  Up
+}
+
 
 
 export class Par_OrarioIntervalloHHInModel {

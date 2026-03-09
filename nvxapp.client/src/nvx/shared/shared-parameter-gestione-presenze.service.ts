@@ -27,6 +27,8 @@ import { ParOrarioService } from '../ClientServer-Service/GestionePresenze/Par_O
 import { Par_Orario_GetAllInModel, Par_OrarioModel } from '../ClientServer-Service/GestionePresenze/Par_Orario/Models/par-orario-model';
 import { ParOrarioIntervalloHHService } from '../ClientServer-Service/GestionePresenze/Par_OrarioIntervalloHH/par-orario-intervallo-hh.service';
 import { Par_OrarioIntervalloHHInModel, Par_OrarioIntervalloHHModel } from '../ClientServer-Service/GestionePresenze/Par_OrarioIntervalloHH/Models/par-orario-intervallo-hh-model';
+import { Par_CausaliInModel, Par_CausaliModel } from '../ClientServer-Service/GestionePresenze/Par_Causali/Models/par-causali-model';
+import { ParCausaliService } from '../ClientServer-Service/GestionePresenze/Par_Causali/par-causali.service';
 
 @Injectable({
   providedIn: 'root'
@@ -49,6 +51,7 @@ export class SharedParameterGestionePresenzeService {
     private azCfgService: AzCfgService,
     private parProfiloOrarioService: ParProfiloOrarioService,
     private parOrarioService: ParOrarioService,
+    private parCausaliService: ParCausaliService,
     private parOrarioIntervalloHHService: ParOrarioIntervalloHHService,
     
   ) { }
@@ -263,6 +266,25 @@ export class SharedParameterGestionePresenzeService {
           return of(null);
         })),
 
+
+
+      this.parCausaliService.GetAll(new GenericRequest<Par_CausaliInModel>(Par_CausaliInModel)).pipe(
+        tap((result) => {
+          this.Par_Causali = result.data.par_Causali
+          updateProgress(calls)
+        }),
+        retry({
+          count: 20,
+          delay: (error, retryCount) => {
+            console.error(`Errore rilevato, ritento dopo ${retryCount} secondi:`, error);
+            return timer(500);
+          }
+        }),
+        catchError((error) => {
+          console.error(`Errore durante il caricamento dei profili orari:`, error);
+          return of(null);
+        })),
+
     );
     return calls;
   }
@@ -445,5 +467,20 @@ export class SharedParameterGestionePresenzeService {
   public get Par_OrarioIntervalloHH$(): Observable<Par_OrarioIntervalloHHModel[] | []> {
     return this._par_OrarioIntervalloHHSubject.asObservable();
   }
+
+
+  private _par_Causali: Par_CausaliModel[] | null = [];
+  public get Par_Causali(): Par_CausaliModel[] | null {
+    return this._par_Causali;
+  }
+  public set Par_Causali(value: Par_CausaliModel[] | null) {
+    this._par_Causali = value;
+    this._par_CausaliSubject.next(value);
+  }
+  private _par_CausaliSubject = new BehaviorSubject<Par_CausaliModel[]>([]);
+  public get Par_Causali$(): Observable<Par_CausaliModel[] | []> {
+    return this._par_CausaliSubject.asObservable();
+  }
+
 
 }
