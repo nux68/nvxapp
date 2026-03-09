@@ -17,6 +17,8 @@ import { RefresherService } from '../../../Utility/GestionePresenze/refresher.se
 import { Subscription } from 'rxjs';
 import { DatePipe } from '@angular/common';
 import { TimeSheetEngineCallerComponent, TimeSheetEngineCallerData } from '../../../shared/components/GestionePresenze/time-sheet-engine-caller/time-sheet-engine-caller.component';
+import { TimeSheetEngineService } from '../../../ClientServer-Service/GestionePresenze/TimeSheet_EngineService/time-sheet-engine.service';
+import { TimeSheet_CalculateInModel } from '../../../ClientServer-Service/GestionePresenze/TimeSheet_EngineService/Models/time-sheet-engine-model';
 
 
 interface DayData {
@@ -38,6 +40,7 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
   public currYear: number;
   public currMonth: number;
   public currUserId: string | undefined;
+  public repartoIds: number[];
 
   public title: string;
 
@@ -58,7 +61,8 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
               public userNavigationService: UserNavigationService,
               private modalCtrl: ModalController,
               private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
-              private datePipe: DatePipe 
+              private datePipe: DatePipe,
+              public timeSheetEngineService: TimeSheetEngineService
   ) {
     this.title = 'Calendario HR';
     this.currentMonth = { year: 0, month: 0, days: {}, dip_GG_Richiesta: [] };
@@ -170,7 +174,9 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
 
   // Metodi per gestire altri eventi dall'app-sedi-reparto-user-navigation
   onSedeChanged(sediId: number | undefined): void { }
-  onRepartiChanged(repartoIds: number[] | undefined): void { }
+  onRepartiChanged(repartoIds: number[] | undefined): void {
+    this.repartoIds = repartoIds;
+  }
   onAllUsersInSelectionChanged(userIds: string[] | undefined): void {
   }
   //////
@@ -330,10 +336,14 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
   async TimeSheetEngineCallerDialog_Open(/*par_ProfiloOrarioGG: Par_ProfiloOrarioGGModel*/) {
 
 
+    
+    let timeSheetEngineCallerData: TimeSheetEngineCallerData = new TimeSheetEngineCallerData();
+    timeSheetEngineCallerData.initialSelectedUserId = this.currUserId;
+
     const modal = await this.modalCtrl.create({
       component: TimeSheetEngineCallerComponent,
       componentProps: {
-        timeSheetEngineCallerDataIn: null
+        timeSheetEngineCallerData: timeSheetEngineCallerData
       },
     });
 
@@ -341,15 +351,13 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
 
     const { data, role } = await modal.onWillDismiss<TimeSheetEngineCallerData | null>();
 
-    if (role === 'confirm' && data) {
+    if (role === 'confirm' /*&& data*/) {
+      
 
-      //const index = this.par_ProfiloOrarioGG.findIndex(p => p.id === data.id);
+      let request: GenericRequest<TimeSheet_CalculateInModel> = new GenericRequest<TimeSheet_CalculateInModel>(TimeSheet_CalculateInModel);
 
-      //if (index > -1) {
-      //  this.par_ProfiloOrarioGG[index] = data;
-      //} else {
-      //  this.par_ProfiloOrarioGG.push(data);
-      //}
+      this.timeSheetEngineService.Calculate(request).subscribe();
+      
 
     }
   }

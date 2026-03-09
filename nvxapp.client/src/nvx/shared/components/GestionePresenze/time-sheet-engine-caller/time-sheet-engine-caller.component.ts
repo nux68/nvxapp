@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { BaseDialogConfirmCancelComponent } from '../../../../pages/_BASE/base-dialog-confirm-cancel/base-dialog-confirm-cancel.component';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
 import { UserInterfaceService } from '../../../../Utility/infrastructure/user-interface.service';
 import { SharedParameterGestionePresenzeService } from '../../../shared-parameter-gestione-presenze.service';
@@ -42,6 +42,7 @@ export class TimeSheetEngineCallerComponent extends BaseDialogConfirmCancelCompo
 
   get EditForm(): FormGroup {
     return this.fb.group({
+      codice: [null, [ Validators.maxLength(10)]],
       //idPar_ProfiloOrario: [this.dip_ProfiloOrario.idPar_ProfiloOrario, [Validators.required, Validators.min(1)]],
       //numGiornoPartenzaCiclo: [null, [Validators.required, Validators.min(1), Validators.max(this.getDayProf())]],
       //dal: [this.dip_ProfiloOrario.idPar_ProfiloOrario, [Validators.required]],
@@ -67,7 +68,13 @@ export class TimeSheetEngineCallerComponent extends BaseDialogConfirmCancelCompo
 
 
 export class TimeSheetEngineCallerData {
-  //public int NumCoppia { get; set; } = 0;
+  public initialSelectedUserId: string | string[] | null = null
+
+  constructor() {
+    this.initialSelectedUserId = null;
+  }
+
+
 }
 
 
