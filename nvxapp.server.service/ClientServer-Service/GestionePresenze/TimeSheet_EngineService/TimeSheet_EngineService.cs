@@ -14,7 +14,54 @@ using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.ServerModels;
 using Serilog;
+/*
 
+ premesa:
+  questo calcolo verra esequito:
+    1) su richiesta
+    2) su alterazione timbrature (timbratura [inserimento/alterazione HR] / approvazione/cancellazione richiesta timbratura [HR/user]  )
+    3) su alterazione giustificativo (giust [inserimento/alterazione HR] / approvazione/cancellazione richiesta [HR/user])
+    4) su alterazione profilo / orario (FORSE)
+
+ input :
+   range Day
+   user List
+
+
+1) individua profilo
+   se OK
+    
+    (dopo aver individuato il profilo posso capire se devo caricare solo le timbrature del giorno o di tutto il periodo [conteggio STRAO/SUPPL])
+
+
+    2) check timbrature
+        se ok
+            arrotonda
+        else
+            genera / completa  (se richiesto)
+            arrotonda
+
+    3) calcola ore ord
+
+    4) se =! da ore profilo
+       se >
+	      se strao/suppl GG
+	        calcola strao/suppl
+	      else
+		    se perido strao/suppl è ok
+		    calcola strat/suppl
+       else
+          calcola assenza
+   
+    else
+      Notifico
+
+
+ 
+
+ 
+ 
+ */
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_EngineService
 {

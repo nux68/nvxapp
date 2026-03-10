@@ -351,7 +351,7 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
 
     const { data, role } = await modal.onWillDismiss<TimeSheetEngineCallerData | null>();
 
-    if (role === 'confirm' /*&& data*/) {
+    if (role === 'confirm' && data) {
       
 
       let request: GenericRequest<TimeSheet_CalculateInModel> = new GenericRequest<TimeSheet_CalculateInModel>(TimeSheet_CalculateInModel);

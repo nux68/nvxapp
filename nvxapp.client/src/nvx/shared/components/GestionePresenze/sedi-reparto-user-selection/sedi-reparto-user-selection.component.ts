@@ -274,6 +274,53 @@ export class SediRepartoUserSelectionComponent implements OnInit {
 
   }
 
+  //public onUserChange() {
+  //  if (this.singleSelectUser) {
+
+  //    if (this.selectedUserId && this.selectedUserId.length > 0 && this.az_SediRepartoUserList.length > 0) {
+
+  //      let currID = '';
+  //      if (Array.isArray(this.selectedUserId))
+  //        currID = this.selectedUserId[0];
+  //      else
+  //        currID = this.selectedUserId;
+
+
+  //      const newIndex = this.az_SediRepartoUserList.findIndex(user => user.idAspNetUsers === currID);
+
+  //      if (newIndex !== -1) {
+  //        this.currentUserIndex = newIndex;
+  //      } else {
+  //        this.selectedUserId = null;
+  //        this.currentUserIndex = -1;
+  //      }
+  //    } else {
+  //      this.currentUserIndex = -1;
+  //    }
+  //  }
+  //  else {
+  //    this.currentUserIndex = -1;
+  //  }
+
+  //  let selectedUserId: string[] | undefined;
+
+  //  if (this.selectedUserId && Array.isArray(this.selectedUserId) && this.selectedUserId.length > 0) {
+  //    selectedUserId = this.selectedUserId;
+  //  } else if (this.selectedUserId && !Array.isArray(this.selectedUserId)) {
+  //    selectedUserId = [this.selectedUserId];
+  //  } else {
+  //    selectedUserId = undefined;
+  //  }
+
+
+  //  if (this.singleSelectUser) {
+  //    this.currUserIdChange.emit(selectedUserId);
+  //  }
+  //  else {
+  //    this.allUsersIdChange.emit(this.az_SediRepartoUserList.map(x => x.idAspNetUsers));
+  //  }
+  //}
+
   public onUserChange() {
     if (this.singleSelectUser) {
 
@@ -302,22 +349,27 @@ export class SediRepartoUserSelectionComponent implements OnInit {
       this.currentUserIndex = -1;
     }
 
-    let selectedUserId: string[] | undefined;
+    let finalSelectedUserIds: string[] | undefined;
 
     if (this.selectedUserId && Array.isArray(this.selectedUserId) && this.selectedUserId.length > 0) {
-      selectedUserId = this.selectedUserId;
+      finalSelectedUserIds = this.selectedUserId;
     } else if (this.selectedUserId && !Array.isArray(this.selectedUserId)) {
-      selectedUserId = [this.selectedUserId];
+      finalSelectedUserIds = [this.selectedUserId];
     } else {
-      selectedUserId = undefined;
+      finalSelectedUserIds = undefined;
     }
 
 
     if (this.singleSelectUser) {
-      this.currUserIdChange.emit(selectedUserId);
+      this.currUserIdChange.emit(finalSelectedUserIds);
+      // Quando la selezione è singola, allUsersIdChange non deve emettere nulla o un array vuoto
+      // per evitare di sovrascrivere la selezione nel componente padre.
+      this.allUsersIdChange.emit(finalSelectedUserIds);
     }
     else {
-      this.allUsersIdChange.emit(this.az_SediRepartoUserList.map(x => x.idAspNetUsers));
+      // Quando la selezione è multipla, emettiamo gli utenti selezionati.
+      this.allUsersIdChange.emit(finalSelectedUserIds);
+      this.currUserIdChange.emit(undefined); // Nessun utente singolo selezionato
     }
   }
 
@@ -330,7 +382,8 @@ export class SediRepartoUserSelectionComponent implements OnInit {
         var repUser = res.data?.az_RepartoUser || [];
         var idAspNetUsers = this.sharedParameterGestionePresenzeService.Dip_Anagrafica_OnRoles([RoleCode.User]).map(x => x.idAspNetUsers);
         this.az_SediRepartoUserList = repUser.filter(x => idAspNetUsers.includes(x.idAspNetUsers) && x.userInDepartment == true);
-        this.allUsersIdChange.emit(this.az_SediRepartoUserList.map(x => x.idAspNetUsers));
+
+        // NON emettere qui allUsersIdChange, verrà gestito da onUserChange
 
         if (this.showUserSelect && this.az_SediRepartoUserList.length > 0) {
 
@@ -358,15 +411,67 @@ export class SediRepartoUserSelectionComponent implements OnInit {
           }
 
           this.onUserChange();
+        } else {
+          // Se non ci sono utenti o il select è nascosto, emetti un valore vuoto
+          this.allUsersIdChange.emit([]);
+          this.currUserIdChange.emit(undefined);
         }
       },
       error: err => {
         console.error("Error loading users for reparti:", err);
         this.az_SediRepartoUserList = [];
-        this.allUsersIdChange.emit(this.az_SediRepartoUserList.map(x => x.idAspNetUsers));
+        this.allUsersIdChange.emit([]);
+        this.currUserIdChange.emit(undefined);
       }
     });
   }
+
+  //private LoadAz_SediRepartoUser(idAz_SediRepartoList: number[]) {
+  //  let request: GenericRequest<Az_SediRepartoUser_GetAll_Period_InModel> = new GenericRequest<Az_SediRepartoUser_GetAll_Period_InModel>(Az_SediRepartoUser_GetAll_Period_InModel);
+  //  request.data.idAz_SediReparto = [...idAz_SediRepartoList];
+
+  //  this.azSediRepartoUserServiceService.GetAllPeriod(request).subscribe({
+  //    next: res => {
+  //      var repUser = res.data?.az_RepartoUser || [];
+  //      var idAspNetUsers = this.sharedParameterGestionePresenzeService.Dip_Anagrafica_OnRoles([RoleCode.User]).map(x => x.idAspNetUsers);
+  //      this.az_SediRepartoUserList = repUser.filter(x => idAspNetUsers.includes(x.idAspNetUsers) && x.userInDepartment == true);
+  //      this.allUsersIdChange.emit(this.az_SediRepartoUserList.map(x => x.idAspNetUsers));
+
+  //      if (this.showUserSelect && this.az_SediRepartoUserList.length > 0) {
+
+  //        // Controlla se è stato fornito un utente iniziale da selezionare
+  //        if (this.initialSelectedUserId) {
+  //          const userExists = this.az_SediRepartoUserList.some(user =>
+  //            Array.isArray(this.initialSelectedUserId)
+  //              ? this.initialSelectedUserId.includes(user.idAspNetUsers)
+  //              : this.initialSelectedUserId === user.idAspNetUsers
+  //          );
+
+  //          if (userExists) {
+  //            this.selectedUserId = this.initialSelectedUserId;
+  //            // Resetta initialSelectedUserId per non forzare la selezione nelle successive chiamate
+  //            this.initialSelectedUserId = null;
+  //          }
+  //        }
+
+  //        // Se nessun utente è stato preselezionato, applica la logica di default
+  //        if (!this.selectedUserId) {
+  //          if (this.singleSelectUser)
+  //            this.selectedUserId = [this.az_SediRepartoUserList[0].idAspNetUsers];
+  //          else
+  //            this.selectedUserId = this.az_SediRepartoUserList.map(x => x.idAspNetUsers);
+  //        }
+
+  //        this.onUserChange();
+  //      }
+  //    },
+  //    error: err => {
+  //      console.error("Error loading users for reparti:", err);
+  //      this.az_SediRepartoUserList = [];
+  //      this.allUsersIdChange.emit(this.az_SediRepartoUserList.map(x => x.idAspNetUsers));
+  //    }
+  //  });
+  //}
 
 
   //private LoadAz_SediRepartoUser(idAz_SediRepartoList: number[]) {

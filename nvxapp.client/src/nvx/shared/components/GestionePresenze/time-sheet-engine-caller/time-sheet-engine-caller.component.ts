@@ -52,12 +52,14 @@ export class TimeSheetEngineCallerComponent extends BaseDialogConfirmCancelCompo
   }
 
   onPeriodChange(period: { year: number, month: number } | undefined): void { }
-  onCurrentUserChanged(userId: string[] | undefined): void { }
+  onCurrentUserChanged(userId: string[] | undefined): void {}
   onSedeChanged(sediId: number | undefined): void {
     
   }
   onRepartiChanged(repartoIds: number[] | undefined): void { }
-  onAllUsersInSelectionChanged(userIds: string[] | undefined): void { }
+  onAllUsersInSelectionChanged(userIds: string[] | undefined): void {
+    this.timeSheetEngineCallerData.currSelectedUserId = userIds;
+}
 
   segmentChanged(event: any) {
     console.log('Segment cambiato:', event.detail.value);
@@ -68,7 +70,11 @@ export class TimeSheetEngineCallerComponent extends BaseDialogConfirmCancelCompo
 
 
 export class TimeSheetEngineCallerData {
+  // imposta il valore iniziale degli user selezionati
   public initialSelectedUserId: string | string[] | null = null
+
+  // contiene la selezione degli user dopo la conferma
+  public currSelectedUserId: string | string[] | null = null
 
   constructor() {
     this.initialSelectedUserId = null;
