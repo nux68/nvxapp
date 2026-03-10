@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.HubAI;
 using Serilog;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 
 namespace nvxapp.server.service.ClientServer_Service.infrastructure.Notifications
@@ -45,8 +46,11 @@ namespace nvxapp.server.service.ClientServer_Service.infrastructure.Notification
     
     public class LongJobProgressUpdate
     {
+        [Required]
         public string JobId { get; set; } = string.Empty;
+        [Required]
         public string JobType { get; set; } = string.Empty;  // permette di capire il tipo job 
+        [Required]
         public object? Payload { get; set; }
 
         public int ProgressPercentage { get; set; }
