@@ -19,6 +19,8 @@ import { DatePipe } from '@angular/common';
 import { TimeSheetEngineCallerComponent, TimeSheetEngineCallerData } from '../../../shared/components/GestionePresenze/time-sheet-engine-caller/time-sheet-engine-caller.component';
 import { TimeSheetEngineService } from '../../../ClientServer-Service/GestionePresenze/TimeSheet_EngineService/time-sheet-engine.service';
 import { TimeSheet_CalculateInModel } from '../../../ClientServer-Service/GestionePresenze/TimeSheet_EngineService/Models/time-sheet-engine-model';
+import { LongJobNotifierService } from '../../../Utility/infrastructure/long-job-notifier.service';
+import { GestionePresenze_JobType } from '../../../Utility/GestionePresenze/GestionePresenze_JobType';
 
 
 interface DayData {
@@ -62,6 +64,7 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
               private modalCtrl: ModalController,
               private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
               private datePipe: DatePipe,
+              private longJobNotifier: LongJobNotifierService , /* RICVEVE LE NOTIFICHE  */
               public timeSheetEngineService: TimeSheetEngineService
   ) {
     this.title = 'Calendario HR';
@@ -70,6 +73,16 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
 
   ionViewWillEnter() {
 
+    //riceve le notifiche di aggiornamento dei job in corso
+    this.longJobNotifier.jobFinished$.subscribe(jobUpdate => {
+      console.log('Job finished:', jobUpdate);
+
+      if (jobUpdate.jobType === GestionePresenze_JobType.TimeSheet_Engine_Calculate) {
+        this.loadMonth();
+      }
+
+      
+    });
   
     this.fabMenuService.fabMenuItem = [
 

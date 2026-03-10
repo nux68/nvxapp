@@ -134,6 +134,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                                                             new LongJobProgressUpdate
                                                                             {
                                                                                 JobId = jobId.ToString(),
+                                                                                JobType = GestionePresenze_JobType.TimeSheet_Engine_Calculate,
+                                                                                Payload = null,
                                                                                 ProgressPercentage = 0,
                                                                                 Message = new Message { Text = "Job is starting...", MsgType = MessageType.Information }
                                                                             }
@@ -150,6 +152,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                                                                 new LongJobProgressUpdate
                                                                                 {
                                                                                     JobId = jobId.ToString(),
+                                                                                    JobType = GestionePresenze_JobType.TimeSheet_Engine_Calculate,
+                                                                                    Payload = null,
                                                                                     ProgressPercentage = progress,
                                                                                     Message = new Message { Text = $"Processing step {i} of 5...", MsgType = MessageType.Information }
                                                                                 }
@@ -161,6 +165,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                                                             new LongJobProgressUpdate
                                                                             {
                                                                                 JobId = jobId.ToString(),
+                                                                                JobType = GestionePresenze_JobType.TimeSheet_Engine_Calculate,
+                                                                                Payload = null,
                                                                                 ProgressPercentage = 100,
                                                                                 Message = new Message { Text = "Job completed successfully.", MsgType = MessageType.Information },
                                                                                 IsFinished = true
@@ -174,6 +180,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                                                             new LongJobProgressUpdate
                                                                             {
                                                                                 JobId = jobId.ToString(),
+                                                                                JobType = GestionePresenze_JobType.TimeSheet_Engine_Calculate,
+                                                                                Payload = null,
                                                                                 ProgressPercentage = 100,
                                                                                 Message = new Message { Text = $"Job failed: {ex.Message}", MsgType = MessageType.Exception },
                                                                                 IsFinished = true
