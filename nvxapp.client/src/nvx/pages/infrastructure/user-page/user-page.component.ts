@@ -7,6 +7,7 @@ import { MyMokeLongJobService } from '../../../ClientServer-Service/Infrastructu
 import { UserGetInModel } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-model';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { MyMokeLongJobInModel } from '../../../ClientServer-Service/Infrastructure/MyMokeLongJob/Models/my-moke-long-job-model';
+import { LongJobNotifierService } from '../../../Utility/infrastructure/long-job-notifier.service';
 
 
 
@@ -30,7 +31,8 @@ export class UserPageComponent implements OnInit {
   constructor(private signalrService: SignalrService,
     public userNavigationService: UserNavigationService,
     private userInterfaceService: UserInterfaceService,
-    private myMokeLongJobService: MyMokeLongJobService
+    private myMokeLongJobService: MyMokeLongJobService,
+    private longJobNotifier: LongJobNotifierService /* RICVEVE LE NOTIFICHE  */
   )
 
   {
@@ -45,6 +47,12 @@ export class UserPageComponent implements OnInit {
     if (environment.signalR.useSignalR) {
       this.signalrService.send("SendMessage", { 'text': "ciao" });
     }
+
+    //riceve le notifiche di aggiornamento dei job in corso
+    this.longJobNotifier.jobFinished$.subscribe(jobUpdate => {
+      console.log('Job finished:', jobUpdate);
+    });
+
   }
 
 
