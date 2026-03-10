@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Message } from '../../ClientServer-Service/ModelsBase/message';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { Subject } from 'rxjs/internal/Subject';
 
 @Injectable({
   providedIn: 'root'
@@ -9,9 +10,12 @@ export class LongJobNotifierService {
 
   // Private BehaviorSubject to hold the state of active jobs.
   private readonly _activeJobs = new BehaviorSubject<LongJobProgressUpdate[]>([]);
-
-  // Public Observable that components can subscribe to for real-time updates.
+// Public Observable that components can subscribe to for real-time updates.
   public readonly activeJobs$: Observable<LongJobProgressUpdate[]> = this._activeJobs.asObservable();
+
+  // Subject per notificare il completamento di un job
+  private readonly _jobFinished = new Subject<LongJobProgressUpdate>();
+  public readonly jobFinished$: Observable<LongJobProgressUpdate> = this._jobFinished.asObservable();
 
   constructor() { }
 
@@ -38,6 +42,9 @@ export class LongJobNotifierService {
 
     // If the job is finished, automatically remove it after a few seconds.
     if (jobUpdate.isFinished) {
+      // Emetti l'evento con l'aggiornamento finale, che include il payload
+      this._jobFinished.next(jobUpdate);
+
       setTimeout(() => this.removeJob(jobUpdate.jobId), 5000); // 5-second delay
     }
   }
@@ -57,7 +64,11 @@ export class LongJobNotifierService {
 // Corrisponde alla classe C# LongJobProgressUpdate
 export class LongJobProgressUpdate {
   public jobId: string = "";
+  public jobType: string = "";
+  public payload?: any;
+
   public progressPercentage: number = 0;
   public message: Message | null = null;
   public isFinished: boolean = false;
 }
+

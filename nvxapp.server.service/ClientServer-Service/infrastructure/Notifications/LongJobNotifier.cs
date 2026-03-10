@@ -46,12 +46,20 @@ namespace nvxapp.server.service.ClientServer_Service.infrastructure.Notification
     public class LongJobProgressUpdate
     {
         public string JobId { get; set; } = string.Empty;
-        
+        public string JobType { get; set; } = string.Empty;  // permette di capire il tipo job 
+        public object? Payload { get; set; }
+
         public int ProgressPercentage { get; set; }
         
         public Message? Message { get; set; }
         
         public bool IsFinished { get; set; }
+    }
+
+
+    public enum LongJobType
+    {
+          MyMokeLongJob
     }
 }
 

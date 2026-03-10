@@ -69,6 +69,8 @@ namespace nvxapp.server.service.ClientServer_Service.infrastructure.MyMokeLongJo
                             Log.Information("Background task for job {JobId} is starting.", jobId);
                             await _longJobNotifier.LongJobProgressAsync(userId, 
                                                                         new LongJobProgressUpdate { JobId = jobId.ToString(), 
+                                                                                                    JobType = "MyMokeLongJob",
+                                                                                                    Payload = null,
                                                                                                     ProgressPercentage = 0, 
                                                                                                     Message = new Message { Text = "Job is starting...", MsgType = MessageType.Information } 
                                                                                                    }
@@ -83,6 +85,8 @@ namespace nvxapp.server.service.ClientServer_Service.infrastructure.MyMokeLongJo
 
                                 await _longJobNotifier.LongJobProgressAsync(userId, 
                                                                             new LongJobProgressUpdate { JobId = jobId.ToString(), 
+                                                                                                        JobType = "MyMokeLongJob",
+                                                                                                        Payload = null,
                                                                                                         ProgressPercentage = progress, 
                                                                                                         Message = new Message { Text = $"Processing step {i} of 5...", MsgType = MessageType.Information } 
                                                                                                       }
@@ -92,6 +96,8 @@ namespace nvxapp.server.service.ClientServer_Service.infrastructure.MyMokeLongJo
                             Log.Information("Background task for job {JobId} has finished successfully.", jobId);
                             await _longJobNotifier.LongJobProgressAsync(userId, 
                                                                         new LongJobProgressUpdate { JobId = jobId.ToString(), 
+                                                                                                    JobType = "MyMokeLongJob",
+                                                                                                    Payload = null,
                                                                                                     ProgressPercentage = 100, 
                                                                                                     Message = new Message { Text = "Job completed successfully.", MsgType = MessageType.Information },
                                                                                                     IsFinished = true 
@@ -103,6 +109,8 @@ namespace nvxapp.server.service.ClientServer_Service.infrastructure.MyMokeLongJo
                             Log.Error(ex, "Background task for job {JobId} failed.", jobId);
                             await _longJobNotifier.LongJobProgressAsync(userId, 
                                                                         new LongJobProgressUpdate { JobId = jobId.ToString(), 
+                                                                                                    JobType = "MyMokeLongJob",
+                                                                                                    Payload = null,
                                                                                                     ProgressPercentage = 100, 
                                                                                                     Message = new Message { Text = $"Job failed: {ex.Message}", MsgType = MessageType.Exception },
                                                                                                     IsFinished = true 
