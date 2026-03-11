@@ -78,6 +78,11 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
       console.log('Job finished:', jobUpdate);
 
       if (jobUpdate.jobType === GestionePresenze_JobType.TimeSheet_Engine_Calculate) {
+
+        if ( jobUpdate.payload.year == this.currYear &&
+             jobUpdate.payload.month == (this.currentMonth.month + 1) &&
+             jobUpdate.payload.selectedUserId.includes(this.currUserId) ) 
+
         this.loadMonth();
       }
 
@@ -225,19 +230,27 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
 
   public actionSheetButtonsDay = [
     {
-      text: 'Aggiusta Timbrature',
-      role: 'AggiustaTimbr',
+      text: 'Calcola ###',
+      role: 'Calcola_Day_From',
       data: {
-        action: 'AggiustaTimbr',
+        action: 'Calcola_Day_From',
       },
     },
-    //{
-    //  text: 'Rifiuta richiesta',
-    //  role: 'rifiuta',
-    //  data: {
-    //    action: 'rifiuta',
-    //  },
-    //},
+    {
+      text: 'Calcola ###',
+      role: 'Calcola_Day_To',
+      data: {
+        action: 'Calcola_Day_To',
+      },
+    },
+    {
+      text: 'Calcola tutto il mese',
+      role: 'Calcola_Day_All',
+      data: {
+        action: 'Calcola_Day_All',
+      },
+    },
+    
 
   ];
 
@@ -270,11 +283,25 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
       this.actionSheetSubHeader = null;
     } else if ('dayOfMonth' in obj) {
       //menu giorno
-      this.actionSheetButtons = this.actionSheetButtonsDay;
+      
       const currDay = obj as DayData;
       this.actionSheetOpenSelectObj = currDay;
       this.actionSheetHeader = "Giorno " + this.datePipe.transform(currDay.date, 'dd EEE');
 
+      //this.actionSheetButtons = this.actionSheetButtonsDay;
+
+      // Clona l'array per evitare di modificare l'originale
+      const dynamicButtons = JSON.parse(JSON.stringify(this.actionSheetButtonsDay));
+
+      // Formatta il giorno per il testo del pulsante
+      const dayText = this.datePipe.transform(currDay.date, 'dd EEE');
+
+      // Aggiorna dinamicamente il testo dei pulsanti
+      dynamicButtons.find((b: any) => b.role === 'Calcola_Day_From').text = `Calcola dal ${dayText}`;
+      dynamicButtons.find((b: any) => b.role === 'Calcola_Day_To').text = `Calcola fino al ${dayText}`;
+
+
+      this.actionSheetButtons = dynamicButtons;
       
 
       this.actionSheetSubHeader = null;
@@ -316,11 +343,26 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
         });
       }
 
-    } else if (event?.detail?.data?.action === 'AggiustaTimbr') {
+    } else if (event?.detail?.data?.action?.startsWith('Calcola_Day')) {
 
-      this.TimeSheetEngineCallerDialog_Open();
+      
+      const selectedDay = this.actionSheetOpenSelectObj as DayData;
+      let dal = "";
+      let al = "";
 
-      //this.loadMonth();
+      if (event?.detail?.data?.action === 'Calcola_Day_All') {
+        dal = this.datePipe.transform(new Date(this.currYear, this.currMonth, 1), 'yyyy-MM-dd');
+        al = this.datePipe.transform(new Date(this.currYear, this.currMonth + 1, 0), 'yyyy-MM-dd');
+      } else if (event?.detail?.data?.action === 'Calcola_Day_From') {
+        dal =this.datePipe.transform(selectedDay.date, 'yyyy-MM-dd');
+        al = this.datePipe.transform(new Date(this.currYear, this.currMonth + 1, 0), 'yyyy-MM-dd');
+      } else if (event?.detail?.data?.action === 'Calcola_Day_To') {
+        dal = this.datePipe.transform(new Date(this.currYear, this.currMonth, 1), 'yyyy-MM-dd');
+        al = this.datePipe.transform(selectedDay.date, 'yyyy-MM-dd');
+      }
+
+      this.TimeSheetEngineCallerDialog_Open(dal,al);
+      
     }
 
 
@@ -346,12 +388,19 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
 
 
 
-  async TimeSheetEngineCallerDialog_Open(/*par_ProfiloOrarioGG: Par_ProfiloOrarioGGModel*/) {
+  async TimeSheetEngineCallerDialog_Open(dal: string, al: string) {
 
 
     
     let timeSheetEngineCallerData: TimeSheetEngineCallerData = new TimeSheetEngineCallerData();
+
     timeSheetEngineCallerData.initialSelectedUserId = this.currUserId;
+    timeSheetEngineCallerData.dal = dal;
+    timeSheetEngineCallerData.al = al;
+    timeSheetEngineCallerData.approva_Richieste_Timbrature = true;
+    timeSheetEngineCallerData.approva_Richieste_Giustificativo = true;
+    timeSheetEngineCallerData.genera_Timbrature_Mancanti = true;
+
 
     const modal = await this.modalCtrl.create({
       component: TimeSheetEngineCallerComponent,
@@ -368,6 +417,19 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
       
 
       let request: GenericRequest<TimeSheet_CalculateInModel> = new GenericRequest<TimeSheet_CalculateInModel>(TimeSheet_CalculateInModel);
+      request.data = new TimeSheet_CalculateInModel();
+
+      request.data.timeSheet_Calculate.year = this.currYear;
+      request.data.timeSheet_Calculate.month = this.currMonth + 1;
+      request.data.timeSheet_Calculate.dal = data.dal;
+      request.data.timeSheet_Calculate.al = data.al;
+
+      request.data.timeSheet_Calculate.selectedUserId = Array.isArray(data.currSelectedUserId)
+        ? data.currSelectedUserId
+        : data.currSelectedUserId !== null
+          ? [data.currSelectedUserId]
+          : null;
+
 
       this.timeSheetEngineService.Calculate(request).subscribe();
       

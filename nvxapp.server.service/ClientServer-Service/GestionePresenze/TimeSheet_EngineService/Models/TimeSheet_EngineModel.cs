@@ -7,8 +7,17 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
     public class TimeSheet_CalculateModel
     {
 
-        public int Id { get; set; }
-        public int NumCoppia { get; set; } = 0;
+        public int Year { get; set; }
+        public int Month { get; set; } = 0;
+        public List<string> SelectedUserId { get; set; } = new List<string>();
+        public DateTime Dal { get; set; }
+        public DateTime Al { get; set; }
+        
+        public Boolean Approva_Richieste_Timbrature { get; set; }
+        public Boolean Approva_Richieste_Giustificativo { get; set; }
+        public Boolean Genera_Timbrature_Mancanti { get; set; }
+
+        
 
     }
 

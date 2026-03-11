@@ -42,7 +42,13 @@ export class TimeSheetEngineCallerComponent extends BaseDialogConfirmCancelCompo
 
   get EditForm(): FormGroup {
     return this.fb.group({
-      codice: [null, [ Validators.maxLength(10)]],
+      dal: [null, [Validators.required]],
+      al: [null, [Validators.required]],
+
+      approva_Richieste_Timbrature: [null, [Validators.required]],
+      approva_Richieste_Giustificativo: [null, [Validators.required]],
+      genera_Timbrature_Mancanti: [null, [Validators.required]],
+
       //idPar_ProfiloOrario: [this.dip_ProfiloOrario.idPar_ProfiloOrario, [Validators.required, Validators.min(1)]],
       //numGiornoPartenzaCiclo: [null, [Validators.required, Validators.min(1), Validators.max(this.getDayProf())]],
       //dal: [this.dip_ProfiloOrario.idPar_ProfiloOrario, [Validators.required]],
@@ -75,9 +81,16 @@ export class TimeSheetEngineCallerData {
 
   // contiene la selezione degli user dopo la conferma
   public currSelectedUserId: string | string[] | null = null
+  dal: string
+  al: string;
+  approva_Richieste_Timbrature: boolean
+  approva_Richieste_Giustificativo: boolean
+  genera_Timbrature_Mancanti: boolean
 
   constructor() {
     this.initialSelectedUserId = null;
+    this.dal = "";
+    this.al = "";
   }
 
 
