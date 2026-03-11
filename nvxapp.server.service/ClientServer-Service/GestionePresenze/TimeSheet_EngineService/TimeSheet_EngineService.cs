@@ -106,6 +106,17 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                 if (company_DATA != null && company_DATA.az_Anagrafica != null)
                 {
 
+
+                    var Dal = model.Data.TimeSheet_Calculate.Dal;
+                    var Al = model.Data.TimeSheet_Calculate.Al;
+                    var Approva_Richieste_Giustificativo = model.Data.TimeSheet_Calculate.Approva_Richieste_Giustificativo;
+                    var Approva_Richieste_Timbrature = model.Data.TimeSheet_Calculate.Approva_Richieste_Timbrature;
+                    var Genera_Timbrature_Mancanti = model.Data.TimeSheet_Calculate.Genera_Timbrature_Mancanti;
+                    var Year = model.Data.TimeSheet_Calculate.Year;
+                    var Month = model.Data.TimeSheet_Calculate.Month;
+                    
+
+
                     //////////////////////////////////
 
                     var outModel = new MyMokeLongJobOutModel();

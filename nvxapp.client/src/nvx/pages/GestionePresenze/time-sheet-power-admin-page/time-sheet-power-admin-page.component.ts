@@ -424,6 +424,10 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
       request.data.timeSheet_Calculate.dal = data.dal;
       request.data.timeSheet_Calculate.al = data.al;
 
+      request.data.timeSheet_Calculate.approva_Richieste_Giustificativo = data.approva_Richieste_Giustificativo;
+      request.data.timeSheet_Calculate.approva_Richieste_Timbrature = data.approva_Richieste_Timbrature;
+      request.data.timeSheet_Calculate.genera_Timbrature_Mancanti = data.genera_Timbrature_Mancanti;
+
       request.data.timeSheet_Calculate.selectedUserId = Array.isArray(data.currSelectedUserId)
         ? data.currSelectedUserId
         : data.currSelectedUserId !== null
