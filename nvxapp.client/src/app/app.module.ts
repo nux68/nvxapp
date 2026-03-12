@@ -38,7 +38,7 @@ registerLocaleData(localeIt); // Questa riga è essenziale!
             FormsModule
   ],
   providers: [
-              { provide: LOCALE_ID, useValue: 'it' },
+              { provide: LOCALE_ID, useValue: 'it-IT' },
               provideHttpClient(withInterceptorsFromDi()),
               { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
               { provide: HTTP_INTERCEPTORS, useClass: NvxHttpInterceptor, multi: true },
