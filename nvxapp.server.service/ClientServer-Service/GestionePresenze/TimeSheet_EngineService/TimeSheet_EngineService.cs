@@ -7,6 +7,8 @@ using nvxapp.server.Base;
 using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_ProfiloOrarioService;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_ProfiloOrarioService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_EngineService.Models;
 using nvxapp.server.service.ClientServer_Service.infrastructure.MyMokeLongJob.Models;
 using nvxapp.server.service.ClientServer_Service.infrastructure.Notifications;
@@ -72,6 +74,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
         //private readonly IPar_OrarioIntervalloHHRepository _par_OrarioIntervalloHHRepository;
         private readonly IGestionePresenzeUserUtility _gestionePresenzeUserUtility;
         private readonly ILongJobNotifier _longJobNotifier;
+        private readonly IDip_ProfiloOrarioService _dip_ProfiloOrarioService;
 
         public TimeSheet_EngineService(IMapper mapper,
                                       UserManager<ApplicationUser> userManager,
@@ -81,13 +84,17 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                       IConfiguration configuration,
 
                                       ILongJobNotifier longJobNotifier,
-                                      IGestionePresenzeUserUtility gestionePresenzeUserUtility
+                                      IGestionePresenzeUserUtility gestionePresenzeUserUtility,
+                                      IDip_ProfiloOrarioService dip_ProfiloOrarioService
+
+
                                       //IPar_OrarioRepository par_OrarioRepository,
                                       //IPar_OrarioIntervalloHHRepository par_OrarioIntervalloHHRepository
                                       ) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _gestionePresenzeUserUtility = gestionePresenzeUserUtility;
             _longJobNotifier = longJobNotifier;
+            _dip_ProfiloOrarioService = dip_ProfiloOrarioService;
             //_par_OrarioIntervalloHHRepository = par_OrarioIntervalloHHRepository;
             //_par_OrarioRepository = par_OrarioRepository;
         }
@@ -114,8 +121,21 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                     var Genera_Timbrature_Mancanti = model.Data.TimeSheet_Calculate.Genera_Timbrature_Mancanti;
                     var Year = model.Data.TimeSheet_Calculate.Year;
                     var Month = model.Data.TimeSheet_Calculate.Month;
-                    
+                    List<string> SelectedUserId = model.Data.TimeSheet_Calculate.SelectedUserId;
 
+
+                    var req_ProfHHDip = new GenericRequest<Dip_ProfiloOrario_Get_Profile_4Calculation_InModel>();
+                    req_ProfHHDip.Data.Dal = Dal;
+                    req_ProfHHDip.Data.Al = Al;
+                    req_ProfHHDip.Data.UsersId = SelectedUserId;
+
+                    var res_ProfHHDip = await _dip_ProfiloOrarioService.Dip_ProfiloOrario_Get_Profile_4Calculation(req_ProfHHDip, true);
+                    if(res_ProfHHDip.Success && res_ProfHHDip.Data != null)
+                    {
+                        
+                    }
+
+                    
 
                     //////////////////////////////////
 
