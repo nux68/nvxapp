@@ -231,6 +231,13 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
   public actionSheetButtonsDay = [
     {
       text: 'Calcola ###',
+      role: 'Calcola_Day_X',
+      data: {
+        action: 'Calcola_Day_X',
+      },
+    },
+    {
+      text: 'Calcola ###',
       role: 'Calcola_Day_From',
       data: {
         action: 'Calcola_Day_From',
@@ -294,11 +301,14 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
       const dynamicButtons = JSON.parse(JSON.stringify(this.actionSheetButtonsDay));
 
       // Formatta il giorno per il testo del pulsante
-      const dayText = this.datePipe.transform(currDay.date, 'dd EEE');
+      const dayText = this.datePipe.transform(currDay.date, 'dd');
+      const dayTextExt = this.datePipe.transform(currDay.date, 'dd EEE');
 
       // Aggiorna dinamicamente il testo dei pulsanti
-      dynamicButtons.find((b: any) => b.role === 'Calcola_Day_From').text = `Calcola dal ${dayText}`;
-      dynamicButtons.find((b: any) => b.role === 'Calcola_Day_To').text = `Calcola fino al ${dayText}`;
+      dynamicButtons.find((b: any) => b.role === 'Calcola_Day_X').text = `Calcola ${dayTextExt}`;
+      dynamicButtons.find((b: any) => b.role === 'Calcola_Day_From').text = `Calcola dal 01 al ${dayText}`;
+      const lastDayText = this.datePipe.transform(new Date(this.currYear, this.currMonth + 1, 0), 'dd');
+      dynamicButtons.find((b: any) => b.role === 'Calcola_Day_To').text = `Calcola dal ${dayText} al ${lastDayText}`;
 
 
       this.actionSheetButtons = dynamicButtons;
@@ -353,6 +363,9 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
       if (event?.detail?.data?.action === 'Calcola_Day_All') {
         dal = this.datePipe.transform(new Date(this.currYear, this.currMonth, 1), 'yyyy-MM-dd');
         al = this.datePipe.transform(new Date(this.currYear, this.currMonth + 1, 0), 'yyyy-MM-dd');
+      } else if (event?.detail?.data?.action === 'Calcola_Day_X') {
+        dal = this.datePipe.transform(selectedDay.date, 'yyyy-MM-dd');
+        al = this.datePipe.transform(selectedDay.date, 'yyyy-MM-dd');
       } else if (event?.detail?.data?.action === 'Calcola_Day_From') {
         dal =this.datePipe.transform(selectedDay.date, 'yyyy-MM-dd');
         al = this.datePipe.transform(new Date(this.currYear, this.currMonth + 1, 0), 'yyyy-MM-dd');
