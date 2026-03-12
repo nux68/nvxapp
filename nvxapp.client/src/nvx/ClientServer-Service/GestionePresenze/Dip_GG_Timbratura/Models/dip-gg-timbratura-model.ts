@@ -55,8 +55,13 @@ export class Dip_GG_Timbratura_Stamp_InModel {
 export class Dip_GG_Timbratura_Stamp_OutModel extends ModelResult {
 
   
-
 }
+
+
+
+
+
+
 
 
 

@@ -54,12 +54,13 @@
         <ng-template>
           <ion-datetime id="startDatetime"
                         [(ngModel)]="startDateBtn"
-                        presentation="date"
+                        presentation="date-time"
                         [firstDayOfWeek]="1"
                         [showDefaultButtons]="true"
                         doneText="Fatto"
                         cancelText="Annulla"
-                        locale="it-IT">
+                        locale="it-IT"
+                        (ionChange)="onStartDatetimeChange($event)">
           </ion-datetime>
         </ng-template>
       </ion-modal>

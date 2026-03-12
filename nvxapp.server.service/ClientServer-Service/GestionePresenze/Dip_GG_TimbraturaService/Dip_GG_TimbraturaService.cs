@@ -97,12 +97,13 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
             {
                 Dip_GG_Timbratura_Stamp_OutModel retVal = new Dip_GG_Timbratura_Stamp_OutModel();
 
-                DateTime parsedDate = DateTime.ParseExact(model.Data.DateStamp, "dd/MM/yyyy", System.Globalization.CultureInfo.InvariantCulture);
-
-                // Aggiungere l'orario corrente alla data
-                DateTime finalDate = parsedDate.Add(DateTime.Now.TimeOfDay);
-
-
+                // Il client manda ISO 8601 senza offset, es. "2026-03-12T10:28:00"
+                // DateTimeOffset.Parse lo interpreta come ora locale del server → corretto
+                DateTime finalDate = DateTimeOffset.Parse(
+                    model.Data.DateStamp,
+                    System.Globalization.CultureInfo.InvariantCulture,
+                    System.Globalization.DateTimeStyles.AssumeLocal
+                ).LocalDateTime;
 
                 User_DATA_COMB_DipAna_DipRapp user_DATA_COMB_DipAna_DipRapp = await _gestionePresenzeUserUtility.Get_DipAna_DipRapp(this.CurrentUserId, true);
 
@@ -110,22 +111,17 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
                 {
                     Dip_GG_Timbratura dip_GG_Timbratura = new Dip_GG_Timbratura()
                     {
-                        IdDip_RapportoLavoro = user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.Id,
-                        Timbratura = finalDate,
-                        TimbraturaOriginale = finalDate,
+                        IdDip_RapportoLavoro  = user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.Id,
+                        Timbratura            = finalDate,
+                        TimbraturaOriginale   = finalDate,
                         TimbraturaArrotondata = finalDate,
-                        GiornoCompetenza = finalDate,
-                        TimbraturaTipo = TipoTimbratura.SenzaVerso,
-                        RichiestaStato = StatoRichiesta.Diretta,
+                        GiornoCompetenza      = finalDate,
+                        TimbraturaTipo        = TipoTimbratura.SenzaVerso,
+                        RichiestaStato        = StatoRichiesta.Diretta,
                     };
                     await _dip_GG_TimbraturaRepository.UpsertAsync(dip_GG_Timbratura);
                 }
 
-                
-
-
-                //eliminare
-                // Nessun 'await' qui
                 await Task.Delay(DelayAsyncMethod);
 
                 return retVal;
@@ -138,4 +134,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
         public Task<GenericResult<Dip_GG_Timbratura_GetAll_OutModel>> GetAll(GenericRequest<Dip_GG_Timbratura_GetAll_InModel> model, Boolean isSubProcess);
         public Task<GenericResult<Dip_GG_Timbratura_Stamp_OutModel>> Stamp(GenericRequest<Dip_GG_Timbratura_Stamp_InModel> model, Boolean isSubProcess);
     }
+
+
 }

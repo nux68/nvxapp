@@ -14,7 +14,7 @@ import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructur
 })
 export class TimeClockUserPageComponent implements OnInit, OnDestroy {
   public title: string;
-  //////
+  ////
   public buttonbar: ButtonItem[] = [];
   public btnAnnulla: ButtonItem;
   public btnInvia: ButtonItem;
@@ -35,13 +35,11 @@ export class TimeClockUserPageComponent implements OnInit, OnDestroy {
   private timeInterval: any;
 
   constructor(private navCtrl: NavController,
-              private userInterfaceService: UserInterfaceService,
-              public userNavigationService: UserNavigationService,
-              private dipGGTimbraturaService: DipGGTimbraturaService) {
+    private userInterfaceService: UserInterfaceService,
+    public userNavigationService: UserNavigationService,
+    private dipGGTimbraturaService: DipGGTimbraturaService) {
 
     this.title = 'Terminale di timbratura';
-
-    
 
     this.btnInvia = userInterfaceService.Btn_Invia;
     this.btnInvia.event = this._handleButtonConfirmClick;
@@ -49,7 +47,6 @@ export class TimeClockUserPageComponent implements OnInit, OnDestroy {
     this.btnAnnulla = userInterfaceService.Btn_Annulla;
     this.btnAnnulla.event = this._handleButtonCancelClick;
     this.buttonbar.push(this.btnAnnulla);
-
   }
 
   ngOnInit() {
@@ -61,37 +58,52 @@ export class TimeClockUserPageComponent implements OnInit, OnDestroy {
   }
 
   ionViewWillEnter() {
-
     this.location = 'Via Vesuvio';
     this.currentDate = new Date();
     this.currentTime = this.formatTime(this.currentDate);
     this.formattedDate = this.formatDate(this.currentDate);
     this.lastAction = 'xxxxx';
 
-    // Imposta lo stato iniziale in base all'ultima azione (qui assumiamo che fosse un'uscita)
     this.isLastActionCheckIn = false;
     this.startDate = new Date().toLocaleDateString();
 
     this.startClock();
   }
 
-
   ionViewWillLeave() {
     this.stopClock();
   }
 
   startClock() {
-    this.timeInterval = setInterval(() => {
+    const tick = () => {
       this.currentDate = new Date();
       this.currentTime = this.formatTime(this.currentDate);
       this.formattedDate = this.formatDate(this.currentDate);
-    }, 1000);
+
+      // aggiorna sempre il picker all'ora corrente ad ogni cambio di minuto
+      this.startDateBtn = this.toIsoLocal(this.currentDate);
+
+      // calcola i millisecondi mancanti al prossimo minuto esatto
+      const msToNextMinute = (60 - this.currentDate.getSeconds()) * 1000
+                             - this.currentDate.getMilliseconds();
+
+      this.timeInterval = setTimeout(tick, msToNextMinute);
+    };
+
+    tick(); // esegui subito per inizializzare i valori
   }
 
   stopClock() {
     if (this.timeInterval) {
-      clearInterval(this.timeInterval);
+      clearTimeout(this.timeInterval);
     }
+  }
+
+  // Converte una Date in stringa ISO locale senza offset UTC, compatibile con ion-datetime
+  private toIsoLocal(date: Date): string {
+    const pad = (n: number) => n.toString().padStart(2, '0');
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}` +
+           `T${pad(date.getHours())}:${pad(date.getMinutes())}:00`;
   }
 
   formatTime(date: Date): string {
@@ -107,50 +119,33 @@ export class TimeClockUserPageComponent implements OnInit, OnDestroy {
     return `${day}/${month}/${year}`;
   }
 
-  // Nuovo metodo che alterna tra entrata e uscita
   clockInOut() {
     const now = new Date();
-    const timeStr = this.formatTime(now);
-    const dateStr = this.formatDate(now);
+    const stampDate: Date = this.startDateBtn ? new Date(this.startDateBtn) : now;
 
-    // Alterna tra entrata e uscita ad ogni click
-    //this.isLastActionCheckIn = !this.isLastActionCheckIn;
-
-    //// Aggiorna il messaggio dell'ultima azione in base allo stato attuale
-    //if (this.isLastActionCheckIn) {
-    //  this.lastAction = `entrata ${timeStr} (${this.startDate})`;
-    //  // Logica per inviare i dati di entrata al server
-    //} else {
-    //  this.lastAction = `uscita ${timeStr} (${this.startDate})`;
-    //  // Logica per inviare i dati di uscita al server
-    //}
-
-    if (this.startDateBtn) {
-      this.startDate = new Date(this.startDateBtn).toLocaleDateString()
-    }
-
-
-    this.lastAction = ` ${timeStr} (${this.startDate})`;
-    
+    this.lastAction = ` ${this.formatTime(stampDate)} (${this.formatDate(stampDate)})`;
 
     let request_stamp = new GenericRequest<Dip_GG_Timbratura_Stamp_InModel>(Dip_GG_Timbratura_Stamp_InModel);
-    request_stamp.data.dateStamp = this.startDate;
+    request_stamp.data.dateStamp = this.toIsoLocal(stampDate); // stringa ISO locale senza offset
     this.dipGGTimbraturaService.Stamp(request_stamp).subscribe(res => {
       this.navCtrl.navigateForward('/usertimesheet');
     });
+  }
 
+  onStartDatetimeChange(event: any) {
+    const value = event?.detail?.value;
+    if (value) {
+      const selected = new Date(value);
+      this.currentTime = this.formatTime(selected);
+      this.formattedDate = this.formatDate(selected);
+    }
   }
 
   private _handleButtonConfirmClick = (param: object) => {
-
     this.clockInOut();
-
   }
 
   private _handleButtonCancelClick = (param: object) => {
-
     this.navCtrl.navigateForward('/home');
-
   }
-
 }
