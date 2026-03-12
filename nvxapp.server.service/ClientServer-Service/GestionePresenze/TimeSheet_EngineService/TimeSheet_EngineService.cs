@@ -164,10 +164,61 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                     // ciclo su ogni utente selezionato
                     foreach (var userId_calc in model.Data.TimeSheet_Calculate.SelectedUserId)
                     {
-                        // ciclo su ogni giorno del periodo richiesto
-                        for (var giorno = model.Data.TimeSheet_Calculate.Dal; giorno <= model.Data.TimeSheet_Calculate.Al; giorno = giorno.AddDays(1))
-                        {
+                        // anagrafica dell'utente corrente
+                        var anagrafica_calc = AllData.Dip_ProfiloOrario_Calculate.Dip_Anagrafica
+                            .FirstOrDefault(a => a.IdAspNetUsers == userId_calc);
 
+                        if (anagrafica_calc == null) continue;
+
+                        // rapporti di lavoro dell'utente corrente
+                        var rapporti_calc = AllData.Dip_ProfiloOrario_Calculate.Dip_RapportoLavoro
+                            .Where(r => r.IdDip_Anagrafica == anagrafica_calc.Id)
+                            .ToList();
+
+                        foreach (var rapporto_calc in rapporti_calc)
+                        {
+                            // limita il ciclo al range effettivo del rapporto
+                            var giornoInizio_calc = model.Data.TimeSheet_Calculate.Dal > rapporto_calc.DataAss!.Value
+                                                    ? model.Data.TimeSheet_Calculate.Dal
+                                                    : rapporto_calc.DataAss!.Value;
+
+                            var giornoFine_calc = (rapporto_calc.DataLic == null || rapporto_calc.DataLic.Value > model.Data.TimeSheet_Calculate.Al)
+                                                    ? model.Data.TimeSheet_Calculate.Al
+                                                    : rapporto_calc.DataLic.Value;
+
+                            // ciclo su ogni giorno del periodo richiesto
+                            for (var giorno = giornoInizio_calc; giorno <= giornoFine_calc; giorno = giorno.AddDays(1))
+                            {
+                                // DaySlot del giorno corrente per questo rapporto
+                                var daySlot_calc = AllData.Dip_ProfiloOrario_Calculate.DaySlots
+                                    .FirstOrDefault(ds => ds.IdDip_RapportoLavoro == rapporto_calc.Id
+                                                       && ds.Data.Date == giorno.Date);
+
+                                // timbrature del giorno per questo rapporto
+                                var timbrature_calc = AllData.Dip_GG_Timbratura
+                                    .Where(t => t.IdDip_RapportoLavoro == rapporto_calc.Id
+                                             && t.GiornoCompetenza.Date == giorno.Date)
+                                    .OrderBy(t => t.TimbraturaOriginale)
+                                    .ToList();
+
+                                // causali del giorno per questo rapporto
+                                var causali_calc = AllData.Dip_GG_Causali
+                                    .Where(c => c.IdDip_RapportoLavoro == rapporto_calc.Id
+                                             && c.Data.Date == giorno.Date)
+                                    .ToList();
+
+                                // giustificativi del giorno per questo rapporto
+                                var giustificativi_calc = AllData.Dip_GG_Giustificativi
+                                    .Where(g => g.IdDip_RapportoLavoro == rapporto_calc.Id
+                                             && g.Data.Date == giorno.Date)
+                                    .ToList();
+
+                                // richieste che coprono il giorno corrente per questo rapporto
+                                var richieste_calc = AllData.Dip_GG_Richiesta
+                                    .Where(r => r.IdDip_RapportoLavoro == rapporto_calc.Id)
+                                    .ToList();
+
+                            }
                         }
                     }
 
