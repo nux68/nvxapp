@@ -70,8 +70,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
     public class TimeSheet_EngineService : ServiceBase, ITimeSheet_EngineService
     {
-        //private readonly IPar_OrarioRepository _par_OrarioRepository;
-        //private readonly IPar_OrarioIntervalloHHRepository _par_OrarioIntervalloHHRepository;
         private readonly IGestionePresenzeUserUtility _gestionePresenzeUserUtility;
         private readonly ILongJobNotifier _longJobNotifier;
         private readonly IDip_ProfiloOrarioService _dip_ProfiloOrarioService;
@@ -87,16 +85,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                       IGestionePresenzeUserUtility gestionePresenzeUserUtility,
                                       IDip_ProfiloOrarioService dip_ProfiloOrarioService
 
-
-                                      //IPar_OrarioRepository par_OrarioRepository,
-                                      //IPar_OrarioIntervalloHHRepository par_OrarioIntervalloHHRepository
                                       ) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _gestionePresenzeUserUtility = gestionePresenzeUserUtility;
             _longJobNotifier = longJobNotifier;
             _dip_ProfiloOrarioService = dip_ProfiloOrarioService;
-            //_par_OrarioIntervalloHHRepository = par_OrarioIntervalloHHRepository;
-            //_par_OrarioRepository = par_OrarioRepository;
         }
 
 

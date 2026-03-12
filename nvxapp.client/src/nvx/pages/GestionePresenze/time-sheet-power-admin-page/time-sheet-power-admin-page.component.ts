@@ -306,9 +306,9 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
 
       // Aggiorna dinamicamente il testo dei pulsanti
       dynamicButtons.find((b: any) => b.role === 'Calcola_Day_X').text = `Calcola ${dayTextExt}`;
-      dynamicButtons.find((b: any) => b.role === 'Calcola_Day_From').text = `Calcola dal 01 al ${dayText}`;
+      dynamicButtons.find((b: any) => b.role === 'Calcola_Day_To').text = `Calcola dal 01 al ${dayText}`;
       const lastDayText = this.datePipe.transform(new Date(this.currYear, this.currMonth + 1, 0), 'dd');
-      dynamicButtons.find((b: any) => b.role === 'Calcola_Day_To').text = `Calcola dal ${dayText} al ${lastDayText}`;
+      dynamicButtons.find((b: any) => b.role === 'Calcola_Day_From').text = `Calcola dal ${dayText} al ${lastDayText}`;
 
 
       this.actionSheetButtons = dynamicButtons;
