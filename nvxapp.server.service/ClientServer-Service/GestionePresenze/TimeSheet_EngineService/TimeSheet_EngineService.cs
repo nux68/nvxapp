@@ -5,7 +5,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using nvxapp.server.Base;
 using nvxapp.server.data.Entities.Public;
+using nvxapp.server.data.Entities.Tenant.GestionePresenze;
 using nvxapp.server.data.Repositories.Public;
+using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_CausaliService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_CausaliService.Models;
@@ -17,6 +19,15 @@ using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Timbrat
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_TimbraturaService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_ProfiloOrarioService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_ProfiloOrarioService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_RapportoLavoroService;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_RapportoLavoroService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_OrarioIntervalloHHService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_OrarioService;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_OrarioService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_ProfiloOrarioGGService;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_ProfiloOrarioGGService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_ProfiloOrarioService;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_ProfiloOrarioService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_EngineService.Models;
 using nvxapp.server.service.ClientServer_Service.infrastructure.MyMokeLongJob.Models;
 using nvxapp.server.service.ClientServer_Service.infrastructure.Notifications;
@@ -80,11 +91,21 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
     {
         private readonly IGestionePresenzeUserUtility _gestionePresenzeUserUtility;
         private readonly ILongJobNotifier _longJobNotifier;
-        private readonly IDip_ProfiloOrarioService _dip_ProfiloOrarioService;
+        
         private readonly IDip_GG_TimbraturaService _dip_GG_TimbraturaService;
         private readonly IDip_GG_CausaliService _dip_GG_CausaliService;
         private readonly IDip_GG_GiustificativiService _dip_GG_GiustificativiService;
         private readonly IDip_GG_RichiestaService _dip_GG_RichiestaService;
+
+        
+        private readonly IDip_RapportoLavoroRepository _dip_RapportoLavoroRepository;
+        private readonly IDip_ProfiloOrarioRepository _dip_ProfiloOrarioRepository;
+        private readonly IPar_ProfiloOrarioRepository _par_ProfiloOrarioRepository;
+        private readonly IPar_ProfiloOrarioGGRepository _par_ProfiloOrarioGGRepository;
+        private readonly IPar_OrarioService _par_OrarioService;
+        private readonly IPar_ProfiloOrarioService _par_ProfiloOrarioService;
+        private readonly IDip_RapportoLavoroService _dip_RapportoLavoroService;
+
 
         public TimeSheet_EngineService(IMapper mapper,
                                       UserManager<ApplicationUser> userManager,
@@ -93,9 +114,15 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                       IHttpContextAccessor httpContextAccessor,
                                       IConfiguration configuration,
 
+                                      IDip_ProfiloOrarioRepository dip_ProfiloOrarioRepository,
+                                      IPar_ProfiloOrarioRepository par_ProfiloOrarioRepository,
+                                      IPar_ProfiloOrarioGGRepository par_ProfiloOrarioGGRepository,
+                                      IDip_RapportoLavoroRepository dip_RapportoLavoroRepository,
+                                      IPar_OrarioService par_OrarioService,
+                                      IPar_ProfiloOrarioService par_ProfiloOrarioService,
+                                      IDip_RapportoLavoroService dip_RapportoLavoroService,
                                       ILongJobNotifier longJobNotifier,
                                       IGestionePresenzeUserUtility gestionePresenzeUserUtility,
-                                      IDip_ProfiloOrarioService dip_ProfiloOrarioService,
                                       IDip_GG_TimbraturaService dip_GG_TimbraturaService,
                                       IDip_GG_CausaliService dip_GG_CausaliService,
                                       IDip_GG_GiustificativiService dip_GG_GiustificativiService,
@@ -105,11 +132,18 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
         {
             _gestionePresenzeUserUtility = gestionePresenzeUserUtility;
             _longJobNotifier = longJobNotifier;
-            _dip_ProfiloOrarioService = dip_ProfiloOrarioService;
             _dip_GG_TimbraturaService = dip_GG_TimbraturaService;
             _dip_GG_CausaliService = dip_GG_CausaliService;
             _dip_GG_GiustificativiService = dip_GG_GiustificativiService;
             _dip_GG_RichiestaService = dip_GG_RichiestaService;
+            _dip_ProfiloOrarioRepository = dip_ProfiloOrarioRepository;
+            _dip_RapportoLavoroRepository = dip_RapportoLavoroRepository;
+            _gestionePresenzeUserUtility = gestionePresenzeUserUtility;
+            _par_ProfiloOrarioRepository = par_ProfiloOrarioRepository;
+            _par_ProfiloOrarioGGRepository = par_ProfiloOrarioGGRepository;
+            _par_OrarioService = par_OrarioService;
+            _par_ProfiloOrarioService = par_ProfiloOrarioService;
+            _dip_RapportoLavoroService = dip_RapportoLavoroService;
         }
 
 
@@ -125,7 +159,17 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                 Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg company_DATA = await _gestionePresenzeUserUtility.Get_AzAna_AzSedi_AzReparto_Az_Cfg(IdCompany, true);
                 if (company_DATA != null && company_DATA.az_Anagrafica != null)
                 {
-                    var AllData = await  GetAllData(model.Data.TimeSheet_Calculate.SelectedUserId,model.Data.TimeSheet_Calculate.Dal,model.Data.TimeSheet_Calculate.Al);
+                    var AllData = await PrepareAllData(model.Data.TimeSheet_Calculate.SelectedUserId, model.Data.TimeSheet_Calculate.Dal, model.Data.TimeSheet_Calculate.Al);
+
+                    // ciclo su ogni utente selezionato
+                    foreach (var userId_calc in model.Data.TimeSheet_Calculate.SelectedUserId)
+                    {
+                        // ciclo su ogni giorno del periodo richiesto
+                        for (var giorno = model.Data.TimeSheet_Calculate.Dal; giorno <= model.Data.TimeSheet_Calculate.Al; giorno = giorno.AddDays(1))
+                        {
+
+                        }
+                    }
 
                     //////////////////////////////////
 
@@ -221,29 +265,212 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                 return retVal;
             }, isSubProcess);
         }
-
-
-
-        public class AllData
+        public virtual async Task<GenericResult<TimeSheet_All_Data_Container>> GetAllData(GenericRequest<TimeSheet_Calculate_GetAllData_InModel> model, bool isSubProcess)
         {
-            public Dip_ProfiloOrario_Get_Profile_4Calculation_OutModel Dip_ProfiloOrario_Calculate { get; set; } = new Dip_ProfiloOrario_Get_Profile_4Calculation_OutModel();
-            public List<Dip_GG_TimbraturaModel>     Dip_GG_Timbratura     { get; set; } = new List<Dip_GG_TimbraturaModel>();
-            public List<Dip_GG_CausaliModel>         Dip_GG_Causali        { get; set; } = new List<Dip_GG_CausaliModel>();
-            public List<Dip_GG_GiustificativiModel>  Dip_GG_Giustificativi { get; set; } = new List<Dip_GG_GiustificativiModel>();
-            public List<Dip_GG_RichiestaModel>       Dip_GG_Richiesta      { get; set; } = new List<Dip_GG_RichiestaModel>();
-        }
+            return await ExecuteAction(model, async () =>
+            {
+                var retVal = new TimeSheet_All_Data_Container();
 
-        private async Task<AllData> GetAllData(List<string> UsersId, DateTime Dal, DateTime Al)
+                int IdCompany;
+                int.TryParse(this.CurrentCompany, out IdCompany);
+                Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg company_DATA = await _gestionePresenzeUserUtility.Get_AzAna_AzSedi_AzReparto_Az_Cfg(IdCompany, true);
+                if (company_DATA != null && company_DATA.az_Anagrafica != null)
+                {
+                    var Dal = model.Data.Dal;
+                    var Al = model.Data.Al;
+
+                    #region "rapporto lavoro "
+
+                    // ── 1. Dip_Anagrafica ────────────────────────────────────────────
+                    // ricava le anagrafiche tramite utility (non accesso diretto al repository)
+
+                    retVal.Dip_Anagrafica = await _gestionePresenzeUserUtility.GetAnagraficheByUsersId(model.Data.UsersId);
+
+                    var anagraficaIds = retVal.Dip_Anagrafica.Select(a => a.Id).ToList();
+
+                    // ── 2. Dip_RapportoLavoro ────────────────────────────────────────
+                    // usa il service dedicato che applica la stessa logica di sovrapposizione
+                    var rapporti_model = new List<Dip_RapportoLavoroModel>();
+                    if (anagraficaIds.Count > 0)
+                    {
+                        var req_Rapporti = new GenericRequest<Dip_RapportoLavoro_Get_4Users_InModel>();
+                        req_Rapporti.Data.UsersId = model.Data.UsersId;
+                        req_Rapporti.Data.Dal = Dal;
+                        req_Rapporti.Data.Al = Al;
+
+                        var res_Rapporti = await _dip_RapportoLavoroService.Dip_RapportoLavoro_Get_4Users(req_Rapporti, true);
+                        if (res_Rapporti.Success && res_Rapporti.Data != null)
+                            retVal.Dip_RapportoLavoro = res_Rapporti.Data.Dip_RapportoLavoro;
+                    }
+
+                    // mantiene le entity in-memory per la logica di composizione DaySlots
+                    var rapportoIds = retVal.Dip_RapportoLavoro.Select(r => r.Id).ToList();
+                    var rapporti = _dip_RapportoLavoroRepository
+                        .FindAll(r => rapportoIds.Contains(r.Id))
+                        .ToList();
+
+
+
+                    #endregion
+
+                    #region "Par_ProfiloOrario / Par_ProfiloOrarioGG "
+
+                    // Stesso criterio di sovrapposizione: la riga di profilo orario è
+                    // compatibile se il suo intervallo [profilo.Dal, profilo.Al] si
+                    // sovrappone anche parzialmente al periodo richiesto [Dal, Al].
+                    //
+                    // Condizione: profilo.Dal <= Al  &&  profilo.Al >= Dal
+
+
+                    var profili = _dip_ProfiloOrarioRepository.FindAll(p =>
+                                                                                rapportoIds.Contains(p.IdDip_RapportoLavoro) &&
+                                                                                p.Dal <= Al &&
+                                                                                p.Al >= Dal)
+                                                                            .ToList();
+
+                    // carica le testate dei profili orario referenziati
+                    // (serve TipoProfilo e NumGiorniCiclo per la risoluzione del giorno)
+
+                    var parProfiloIds = profili.Where(p => p.IdPar_ProfiloOrario.HasValue)
+                                               .Select(p => p.IdPar_ProfiloOrario!.Value)
+                                               .Distinct()
+                                               .ToList();
+
+                    retVal.Par_ProfiloOrario = new List<Par_ProfiloOrarioModel>();
+                    retVal.Par_ProfiloOrarioGG = new List<Par_ProfiloOrarioGGModel>();
+
+                    foreach (var idProfilo in parProfiloIds)
+                    {
+                        var req_ProfPar = new GenericRequest<Par_ProfiloOrario_GetInModel>();
+                        req_ProfPar.Data.Id = idProfilo;
+
+                        var res_ProfPar = await _par_ProfiloOrarioService.Par_ProfiloOrarioGet(req_ProfPar, true);
+                        if (res_ProfPar.Success && res_ProfPar.Data != null)
+                        {
+                            if (res_ProfPar.Data.Par_ProfiloOrario != null)
+                                retVal.Par_ProfiloOrario.Add(res_ProfPar.Data.Par_ProfiloOrario);
+
+                            retVal.Par_ProfiloOrarioGG.AddRange(res_ProfPar.Data.Par_ProfiloOrarioGG);
+                        }
+                    }
+
+                    #endregion
+
+                    #region "DaySlots"
+
+                    // per ogni dipendente × ogni giorno del periodo richiesto, risolve
+                    // quale profilo è attivo e tutte le sue righe orario ordinate per ZOrder
+
+                    foreach (var rapporto in rapporti)
+                    {
+                        var anagrafica = retVal.Dip_Anagrafica.First(a => a.Id == rapporto.IdDip_Anagrafica);
+
+                        // limite effettivo del rapporto intersecato con il periodo richiesto
+                        var giornoInizio = Dal > rapporto.DataAss!.Value ? Dal : rapporto.DataAss!.Value;
+                        var giornoFine = (rapporto.DataLic == null || rapporto.DataLic.Value > Al)
+                                            ? Al
+                                            : rapporto.DataLic.Value;
+
+                        for (var giorno = giornoInizio; giorno <= giornoFine; giorno = giorno.AddDays(1))
+                        {
+                            // trova il profilo Dip attivo esattamente quel giorno
+                            var profilo = profili
+                                .Where(p => p.IdDip_RapportoLavoro == rapporto.Id
+                                         && p.Dal <= giorno
+                                         && p.Al >= giorno
+                                         && p.IdPar_ProfiloOrario.HasValue)
+                                .FirstOrDefault();
+
+                            if (profilo == null) continue;
+
+                            var parProfilo = retVal.Par_ProfiloOrario.FirstOrDefault(pp => pp.Id == profilo.IdPar_ProfiloOrario!.Value);
+
+                            if (parProfilo == null) continue;
+
+                            // calcola il NumGiorno in base al TipoProfilo
+                            int numGiorno;
+                            if (parProfilo.TipoProfilo == TipoProfilo.Settimanale)
+                            {
+                                // Convenzione DB: 1=Lun, 2=Mar, 3=Mer, 4=Gio, 5=Ven, 6=Sab, 7=Dom
+                                // DayOfWeek C#:   1=Lun, 2=Mar, 3=Mer, 4=Gio, 5=Ven, 6=Sab, 0=Dom
+                                numGiorno = giorno.DayOfWeek == DayOfWeek.Sunday ? 7 : (int)giorno.DayOfWeek;
+                            }
+                            else // Ciclico
+                            {
+                                numGiorno = ((giorno - profilo.Dal).Days + profilo.NumGiornoPartenzaCiclo)
+                                            % parProfilo.NumGiorniCiclo;
+                            }
+
+                            // recupera TUTTE le righe del giorno ordinate per ZOrder
+                            var orariDelGiorno = retVal.Par_ProfiloOrarioGG.Where(gg => gg.IdPar_ProfiloOrario == profilo.IdPar_ProfiloOrario!.Value
+                                          && gg.NumGiorno == numGiorno)
+                                .OrderBy(gg => gg.ZOrder)
+                                .Select(gg => new Dip_ProfiloOrario_DaySlot_GG
+                                {
+                                    ZOrder = gg.ZOrder,
+                                    IdPar_Orario = gg.IdPar_Orario
+                                })
+                                .ToList();
+
+                            retVal.DaySlots.Add(new Dip_ProfiloOrario_DaySlot
+                            {
+                                IdAspNetUsers = anagrafica.IdAspNetUsers,
+                                IdDip_RapportoLavoro = rapporto.Id,
+                                Data = giorno,
+                                IdPar_ProfiloOrario = profilo.IdPar_ProfiloOrario!.Value,
+                                Orari = orariDelGiorno
+                            });
+                        }
+                    }
+
+                    #endregion
+
+                    #region "Orario Par_OrarioIntervalloHH"
+
+                    // lista univoca di tutti gli IdPar_Orario presenti nei DaySlots
+                    var parOrarioIds = retVal.DaySlots.SelectMany(ds => ds.Orari)
+                                                      .Select(gg => gg.IdPar_Orario)
+                                                      .Distinct()
+                                                      .ToList();
+
+                    retVal.ParOrario = new List<Par_OrarioModel>();
+                    retVal.Par_OrarioIntervalloHH = new List<Par_OrarioIntervalloHHModel>();
+
+                    foreach (var idOrario in parOrarioIds)
+                    {
+                        var req = new GenericRequest<Par_Orario_GetInModel>();
+                        req.Data.Id = idOrario;
+
+                        var res = await _par_OrarioService.Par_OrarioGet(req, true);
+                        if (res.Success && res.Data != null)
+                        {
+                            if (res.Data.Par_Orario != null)
+                                retVal.ParOrario.Add(res.Data.Par_Orario);
+
+                            retVal.Par_OrarioIntervalloHH.AddRange(res.Data.Par_OrarioIntervalloHH);
+                        }
+                    }
+
+                    #endregion 
+
+                }
+
+                await Task.Delay(DelayAsyncMethod);
+                return retVal;
+
+            }, isSubProcess);
+        }
+        private async Task<AllData> PrepareAllData(List<string> UsersId, DateTime Dal, DateTime Al)
         {
             AllData data = new AllData();
 
             // 1) Recupera profili orario per il calcolo
-            var req_ProfHHDip = new GenericRequest<Dip_ProfiloOrario_Get_Profile_4Calculation_InModel>();
+            var req_ProfHHDip = new GenericRequest<TimeSheet_Calculate_GetAllData_InModel>();
             req_ProfHHDip.Data.Dal = Dal;
             req_ProfHHDip.Data.Al = Al;
             req_ProfHHDip.Data.UsersId = UsersId;
 
-            var res_ProfHHDip = await _dip_ProfiloOrarioService.Dip_ProfiloOrario_Get_Profile_4Calculation(req_ProfHHDip, true);
+            var res_ProfHHDip = await this.GetAllData(req_ProfHHDip, true);
             if (res_ProfHHDip.Success && res_ProfHHDip.Data != null)
             {
                 data.Dip_ProfiloOrario_Calculate = res_ProfHHDip.Data;
@@ -300,10 +527,13 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
             return data;
         }
 
+        
+
     }
 
     public interface ITimeSheet_EngineService : IServiceBase
     {
         Task<GenericResult<TimeSheet_CalculateOutModel>> Calculate(GenericRequest<TimeSheet_CalculateInModel> model, bool isSubProcess);
+        Task<GenericResult<TimeSheet_All_Data_Container>> GetAllData(GenericRequest<TimeSheet_Calculate_GetAllData_InModel> model, bool isSubProcess);
     }
 }

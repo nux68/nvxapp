@@ -42,13 +42,7 @@ namespace nvxapp.server.Controllers
             return await _dip_ProfiloOrarioService.Dip_ProfiloOrarioPut(inModel, false);
         }
 
-        [Authorize]
-        [HttpPost]
-        [Route("Dip_ProfiloOrario_Get_Profile_4Calculation")]
-        public async Task<GenericResult<Dip_ProfiloOrario_Get_Profile_4Calculation_OutModel>> Dip_ProfiloOrario_Get_Profile_4Calculation(GenericRequest<Dip_ProfiloOrario_Get_Profile_4Calculation_InModel> inModel)
-        {
-            return await _dip_ProfiloOrarioService.Dip_ProfiloOrario_Get_Profile_4Calculation(inModel, false);
-        }
+        
 
         
 

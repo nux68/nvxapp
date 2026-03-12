@@ -42,7 +42,13 @@ namespace nvxapp.server.Controllers
             return await _dip_RapportoLavoroService.Dip_RapportoLavoroPut(inModel, false);
         }
 
-        
+        [Authorize]
+        [HttpPost]
+        [Route("Dip_RapportoLavoro_Get_4Users")]
+        public async Task<GenericResult<Dip_RapportoLavoro_Get_4Users_OutModel>> Dip_RapportoLavoro_Get_4Users(GenericRequest<Dip_RapportoLavoro_Get_4Users_InModel> inModel)
+        {
+            return await _dip_RapportoLavoroService.Dip_RapportoLavoro_Get_4Users(inModel, false);
+        }
 
     }
 

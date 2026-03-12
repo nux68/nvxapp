@@ -136,14 +136,43 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Rappor
             }, isSubProcess);
         }
 
+        public virtual async Task<GenericResult<Dip_RapportoLavoro_Get_4Users_OutModel>> Dip_RapportoLavoro_Get_4Users(GenericRequest<Dip_RapportoLavoro_Get_4Users_InModel> model, bool isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                var retVal = new Dip_RapportoLavoro_Get_4Users_OutModel();
+
+                // 1. Ricava le anagrafiche corrispondenti agli UsersId richiesti
+                var anagrafiche = await _gestionePresenzeUserUtility.GetAnagraficheByUsersId(model.Data.UsersId);
+                var anagraficaIds = anagrafiche.Select(a => a.Id).ToList();
+
+                if (anagraficaIds.Count > 0)
+                {
+                    // 2. Rapporti il cui periodo si sovrappone a [Dal, Al]
+                    //    Condizione: DataAss <= Al  &&  (DataLic == null || DataLic >= Dal)
+                    var rapporti = _dip_RapportoLavoroRepository
+                        .FindAll(r =>
+                            anagraficaIds.Contains(r.IdDip_Anagrafica) &&
+                            r.DataAss != null &&
+                            r.DataAss.Value <= model.Data.Al &&
+                            (r.DataLic == null || r.DataLic.Value >= model.Data.Dal))
+                        .ToList();
+
+                    retVal.Dip_RapportoLavoro = _mapper.Map<List<Dip_RapportoLavoroModel>>(rapporti);
+                }
+
+                await Task.Delay(DelayAsyncMethod);
+                return retVal;
+
+            }, isSubProcess);
+        }
+
     }
 
     public interface IDip_RapportoLavoroService : IServiceBase
     {
-        
         Task<GenericResult<Dip_RapportoLavoro_Get_OutModel>> Dip_RapportoLavoroGet(GenericRequest<Dip_RapportoLavoro_Get_InModel> model, bool isSubProcess);
         Task<GenericResult<Dip_RapportoLavoro_Put_OutModel>> Dip_RapportoLavoroPut(GenericRequest<Dip_RapportoLavoro_Put_InModel> model, bool isSubProcess);
-        
-    
+        Task<GenericResult<Dip_RapportoLavoro_Get_4Users_OutModel>> Dip_RapportoLavoro_Get_4Users(GenericRequest<Dip_RapportoLavoro_Get_4Users_InModel> model, bool isSubProcess);
     }
 }

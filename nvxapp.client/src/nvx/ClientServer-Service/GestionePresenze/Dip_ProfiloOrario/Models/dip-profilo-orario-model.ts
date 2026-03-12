@@ -37,31 +37,6 @@ export class Dip_ProfiloOrario_Put_OutModel extends ModelResult {
   dip_ProfiloOrario: Dip_ProfiloOrarioModel[] = [];
 }
 
-export class Dip_ProfiloOrario_Get_Profile_4Calculation_InModel {
-  usersId: string[] = [];
-  dal: string = "";
-  al: string = "";
-}
 
-// Una riga orario del giorno, corrispondente a una riga Par_ProfiloOrarioGG.
-// zOrder 1 = orario base (sempre presente), zOrder > 1 = override condizionale.
-export class Dip_ProfiloOrario_DaySlot_GG {
-  zOrder: number = 0;
-  idPar_Orario: number = 0;
-}
 
-// Un record per ogni combinazione dipendente × giorno con tutte le righe orario ordinate per zOrder
-export class Dip_ProfiloOrario_DaySlot {
-  idAspNetUsers: string = "";
-  idDip_RapportoLavoro: number = 0;
-  data: string = "";                // DateTime serializzato come stringa ISO
-  idPar_ProfiloOrario: number = 0;
-  orari: Dip_ProfiloOrario_DaySlot_GG[] = [];
-}
-
-export class Dip_ProfiloOrario_Get_Profile_4Calculation_OutModel extends ModelResult {
-  daySlots: Dip_ProfiloOrario_DaySlot[] = [];
-  parOrario: Par_OrarioModel[] = [];
-  par_OrarioIntervalloHH: Par_OrarioIntervalloHHModel[] = [];
-}
 

@@ -1,13 +1,17 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using nvxapp.server.data.Entities.Tenant;
 using nvxapp.server.data.Entities.Tenant.GestionePresenze;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_AnagraficaService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_RapportoLavoroService.Models;
 using nvxapp.server.service.Interfaces;
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
 {
     public class GestionePresenzeUserUtility : IServiceBase, IGestionePresenzeUserUtility
     {
+        protected readonly IMapper _mapper;
         private readonly IDip_AnagraficaRepository _dip_AnagraficaRepository;
         private readonly IDip_RapportoLavoroRepository _dip_RapportoLavoroRepository;
 
@@ -33,7 +37,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
 
 
 
-        public GestionePresenzeUserUtility(IDip_AnagraficaRepository dip_AnagraficaRepository,
+        public GestionePresenzeUserUtility(IMapper mapper,
+                                           IDip_AnagraficaRepository dip_AnagraficaRepository,
                                            IDip_RapportoLavoroRepository dip_RapportoLavoroRepository,
                                            IAz_AnagraficaRepository az_AnagraficaRepository,
                                            IAz_SediRepository az_SediRepository,
@@ -51,6 +56,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                                            IAz_SubCommessaSediRepartoRepository az_SubCommessaSediRepartoRepository
                                            )
         {
+            _mapper = mapper;
             _dip_AnagraficaRepository = dip_AnagraficaRepository;
             _dip_RapportoLavoroRepository = dip_RapportoLavoroRepository;
 
@@ -209,6 +215,17 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
         }
         //////
 
+        public async Task<List<Dip_AnagraficaModel>> GetAnagraficheByUsersId(List<string> usersId)
+        {
+            await Task.Delay(1);
+
+            var dipana = _dip_AnagraficaRepository.FindAll(a => usersId.Contains(a.IdAspNetUsers)).ToList();
+
+            var dipanaModel = _mapper.Map<List<Dip_AnagraficaModel>>(dipana);
+
+            return  dipanaModel;
+        }
+
         private async Task InitDataCompany(Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg company_DATA_COMB_AzAna_AzSedi_AzReparto)
         {
             if (company_DATA_COMB_AzAna_AzSedi_AzReparto != null && company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Anagrafica != null)
@@ -327,5 +344,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
     {
         Task<User_DATA_COMB_DipAna_DipRapp> Get_DipAna_DipRapp(string IdAspNetUsers, bool InitIfNotExsist);
         Task<Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg> Get_AzAna_AzSedi_AzReparto_Az_Cfg(int IdCompany, bool InitIfNotExsist);
+        Task<List<Dip_AnagraficaModel>> GetAnagraficheByUsersId(List<string> usersId);
     }
 }

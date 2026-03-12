@@ -11,6 +11,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Rappor
     {
         public int Id { get; set; }
         public int IdDip_Anagrafica { get; set; }
+        public DateTime? DataAss { get; set; }
+        public DateTime? DataLic { get; set; }
     }
 
     public class Dip_RapportoLavoro_Get_InModel
@@ -30,6 +32,17 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Rappor
     public class Dip_RapportoLavoro_Put_OutModel : ModelResult
     {
         public int Id { get; set; } // = IdDip_Anagrafica
+        public List<Dip_RapportoLavoroModel> Dip_RapportoLavoro { get; set; } = new List<Dip_RapportoLavoroModel>();
+    }
+
+    public class Dip_RapportoLavoro_Get_4Users_InModel
+    {
+        public List<string> UsersId { get; set; } = new List<string>();
+        public DateTime Dal { get; set; }
+        public DateTime Al { get; set; }
+    }
+    public class Dip_RapportoLavoro_Get_4Users_OutModel : ModelResult
+    {
         public List<Dip_RapportoLavoroModel> Dip_RapportoLavoro { get; set; } = new List<Dip_RapportoLavoroModel>();
     }
 
