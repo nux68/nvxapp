@@ -7,6 +7,8 @@ using nvxapp.server.Base;
 using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_TimbraturaService;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_TimbraturaService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_ProfiloOrarioService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_ProfiloOrarioService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_EngineService.Models;
@@ -73,6 +75,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
         private readonly IGestionePresenzeUserUtility _gestionePresenzeUserUtility;
         private readonly ILongJobNotifier _longJobNotifier;
         private readonly IDip_ProfiloOrarioService _dip_ProfiloOrarioService;
+        private readonly IDip_GG_TimbraturaService _dip_GG_TimbraturaService;
 
         public TimeSheet_EngineService(IMapper mapper,
                                       UserManager<ApplicationUser> userManager,
@@ -83,13 +86,15 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
                                       ILongJobNotifier longJobNotifier,
                                       IGestionePresenzeUserUtility gestionePresenzeUserUtility,
-                                      IDip_ProfiloOrarioService dip_ProfiloOrarioService
+                                      IDip_ProfiloOrarioService dip_ProfiloOrarioService,
+                                      IDip_GG_TimbraturaService dip_GG_TimbraturaService
 
                                       ) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _gestionePresenzeUserUtility = gestionePresenzeUserUtility;
             _longJobNotifier = longJobNotifier;
             _dip_ProfiloOrarioService = dip_ProfiloOrarioService;
+            _dip_GG_TimbraturaService = dip_GG_TimbraturaService;
         }
 
 
@@ -105,30 +110,16 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                 Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg company_DATA = await _gestionePresenzeUserUtility.Get_AzAna_AzSedi_AzReparto_Az_Cfg(IdCompany, true);
                 if (company_DATA != null && company_DATA.az_Anagrafica != null)
                 {
+                    //var Dal = model.Data.TimeSheet_Calculate.Dal;
+                    //var Al = model.Data.TimeSheet_Calculate.Al;
+                    //var Approva_Richieste_Giustificativo = model.Data.TimeSheet_Calculate.Approva_Richieste_Giustificativo;
+                    //var Approva_Richieste_Timbrature = model.Data.TimeSheet_Calculate.Approva_Richieste_Timbrature;
+                    //var Genera_Timbrature_Mancanti = model.Data.TimeSheet_Calculate.Genera_Timbrature_Mancanti;
+                    //var Year = model.Data.TimeSheet_Calculate.Year;
+                    //var Month = model.Data.TimeSheet_Calculate.Month;
+                    //List<string> SelectedUserId = model.Data.TimeSheet_Calculate.SelectedUserId;
 
-
-                    var Dal = model.Data.TimeSheet_Calculate.Dal;
-                    var Al = model.Data.TimeSheet_Calculate.Al;
-                    var Approva_Richieste_Giustificativo = model.Data.TimeSheet_Calculate.Approva_Richieste_Giustificativo;
-                    var Approva_Richieste_Timbrature = model.Data.TimeSheet_Calculate.Approva_Richieste_Timbrature;
-                    var Genera_Timbrature_Mancanti = model.Data.TimeSheet_Calculate.Genera_Timbrature_Mancanti;
-                    var Year = model.Data.TimeSheet_Calculate.Year;
-                    var Month = model.Data.TimeSheet_Calculate.Month;
-                    List<string> SelectedUserId = model.Data.TimeSheet_Calculate.SelectedUserId;
-
-
-                    var req_ProfHHDip = new GenericRequest<Dip_ProfiloOrario_Get_Profile_4Calculation_InModel>();
-                    req_ProfHHDip.Data.Dal = Dal;
-                    req_ProfHHDip.Data.Al = Al;
-                    req_ProfHHDip.Data.UsersId = SelectedUserId;
-
-                    var res_ProfHHDip = await _dip_ProfiloOrarioService.Dip_ProfiloOrario_Get_Profile_4Calculation(req_ProfHHDip, true);
-                    if(res_ProfHHDip.Success && res_ProfHHDip.Data != null)
-                    {
-                        
-                    }
-
-                    
+                    var AllData = await  SimulateLongRunningProcess(model.Data.TimeSheet_Calculate.SelectedUserId,model.Data.TimeSheet_Calculate.Dal,model.Data.TimeSheet_Calculate.Al);
 
                     //////////////////////////////////
 
@@ -136,7 +127,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                     var jobId = Guid.NewGuid();
                     outModel.JobId = jobId.ToString();
 
-                    // Get the current user's ID to send targeted SignalR notifications
                     var userId = this.UserIdFirstConnection;
 
                     if (string.IsNullOrEmpty(userId))
@@ -148,7 +138,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                     {
                         Log.Information("Request to start long-running job {JobId} for user {UserId} received.", jobId, userId);
 
-                        // Fire and forget the background task
                         _ = Task.Run(async () =>
                         {
                             try
@@ -165,10 +154,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                                                             }
                                                                            );
 
-                                // Simulate a long process with 5 steps
                                 for (int i = 1; i <= 5; i++)
                                 {
-                                    await Task.Delay(1000); // 3-second delay for each step
+                                    await Task.Delay(1000);
                                     int progress = i * 20;
                                     Log.Information("Job {JobId}: Progress step {Step}/5 ({Progress}%)", jobId, i, progress);
 
@@ -214,19 +202,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                             }
                         });
 
-
                         outModel.Messages.Add(new Message($"Job started with ID: {outModel.JobId}", MessageType.Information));
-
-
-
                     }
 
-
-
                     //////////////////////////////////
-
-
-
                 }
 
                 //eliminare
@@ -237,12 +216,50 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
             }, isSubProcess);
         }
 
+
+
+        public class AllData
+        {
+            public Dip_ProfiloOrario_Get_Profile_4Calculation_OutModel Dip_ProfiloOrario_Calculate { get; set; } = new Dip_ProfiloOrario_Get_Profile_4Calculation_OutModel();
+            public List<Dip_GG_TimbraturaModel>  Dip_GG_Timbratura { get; set; } = new List<Dip_GG_TimbraturaModel>();
+        }
+
+        private async Task<AllData> SimulateLongRunningProcess(List<string> UsersId,DateTime Dal,DateTime Al)
+        {
+            AllData data = new AllData();
+
+            // 1) Recupera profili orario per il calcolo
+            var req_ProfHHDip = new GenericRequest<Dip_ProfiloOrario_Get_Profile_4Calculation_InModel>();
+            req_ProfHHDip.Data.Dal = Dal;
+            req_ProfHHDip.Data.Al = Al;
+            req_ProfHHDip.Data.UsersId = UsersId;
+
+            var res_ProfHHDip = await _dip_ProfiloOrarioService.Dip_ProfiloOrario_Get_Profile_4Calculation(req_ProfHHDip, true);
+            if (res_ProfHHDip.Success && res_ProfHHDip.Data != null)
+            {
+                data.Dip_ProfiloOrario_Calculate = res_ProfHHDip.Data;
+            }
+
+            // 2) Recupera timbrature per il calcolo
+            var req_Timbrature = new GenericRequest<Dip_GG_Timbratura_Get_4Calculation_InModel>();
+            req_Timbrature.Data.UsersId = UsersId;
+            req_Timbrature.Data.Dal = Dal;
+            req_Timbrature.Data.Al = Al;
+
+            var res_Timbrature = await _dip_GG_TimbraturaService.Dip_GG_Timbratura_Get_4Calculation(req_Timbrature, true);
+            if (res_Timbrature.Success && res_Timbrature.Data != null)
+            {
+                data.Dip_GG_Timbratura = res_Timbrature.Data.Dip_GG_Timbratura;
+            }
+
+
+            return data;
+        }
+
     }
 
     public interface ITimeSheet_EngineService : IServiceBase
     {
-
         Task<GenericResult<TimeSheet_CalculateOutModel>> Calculate(GenericRequest<TimeSheet_CalculateInModel> model, bool isSubProcess);
-
     }
 }

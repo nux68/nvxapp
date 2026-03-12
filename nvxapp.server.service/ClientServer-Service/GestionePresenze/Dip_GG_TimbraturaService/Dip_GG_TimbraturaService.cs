@@ -20,27 +20,20 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
     public class Dip_GG_TimbraturaService : ServiceBase, IDip_GG_TimbraturaService
     {
         private readonly IGestionePresenzeUserUtility _gestionePresenzeUserUtility;
-        //private readonly IDip_AnagraficaRepository _dip_AnagraficaRepository;
-        //private readonly IDip_RapportoLavoroRepository _dip_RapportoLavoroRepository;
         private readonly IDip_GG_TimbraturaRepository _dip_GG_TimbraturaRepository;
 
+        public Dip_GG_TimbraturaService(  IMapper mapper,
+                                          UserManager<ApplicationUser> userManager,
+                                          IAspNetUsersRepository aspNetUsersRepository,
+                                          IOptions<JwtParameter> jwtParameter,
+                                          IHttpContextAccessor httpContextAccessor,
+                                          IConfiguration configuration,
 
-        public Dip_GG_TimbraturaService(IMapper mapper,
-                                  UserManager<ApplicationUser> userManager,
-                                  IAspNetUsersRepository aspNetUsersRepository,
-                                  IOptions<JwtParameter> jwtParameter,
-                                  IHttpContextAccessor httpContextAccessor,
-                                  IConfiguration configuration,
-
-                                  IGestionePresenzeUserUtility gestionePresenzeUserUtility,
-                                  //IDip_AnagraficaRepository dip_AnagraficaRepository,
-                                  //IDip_RapportoLavoroRepository dip_RapportoLavoroRepository,
-                                  IDip_GG_TimbraturaRepository dip_GG_TimbraturaRepository
+                                          IGestionePresenzeUserUtility gestionePresenzeUserUtility,
+                                          IDip_GG_TimbraturaRepository dip_GG_TimbraturaRepository
                                   ) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _gestionePresenzeUserUtility = gestionePresenzeUserUtility;
-            //_dip_AnagraficaRepository = dip_AnagraficaRepository;
-            //_dip_RapportoLavoroRepository = dip_RapportoLavoroRepository;
             _dip_GG_TimbraturaRepository = dip_GG_TimbraturaRepository;
 
         }
@@ -90,7 +83,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
                 return retVal;
             }, isSubProcess);
         }
-
         public virtual async Task<GenericResult<Dip_GG_Timbratura_Stamp_OutModel>> Stamp(GenericRequest<Dip_GG_Timbratura_Stamp_InModel> model, Boolean isSubProcess)
         {
             return await ExecuteAction(model, async () =>
@@ -115,7 +107,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
                         Timbratura            = finalDate,
                         TimbraturaOriginale   = finalDate,
                         TimbraturaArrotondata = finalDate,
-                        GiornoCompetenza      = finalDate,
+                        GiornoCompetenza      = finalDate.Date,
                         TimbraturaTipo        = TipoTimbratura.SenzaVerso,
                         RichiestaStato        = StatoRichiesta.Diretta,
                     };
@@ -127,12 +119,54 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
                 return retVal;
             }, isSubProcess);
         }
+    
+        public virtual async Task<GenericResult<Dip_GG_Timbratura_Get_4Calculation_OutModel>> Dip_GG_Timbratura_Get_4Calculation(GenericRequest<Dip_GG_Timbratura_Get_4Calculation_InModel> model, Boolean isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                Dip_GG_Timbratura_Get_4Calculation_OutModel retVal = new Dip_GG_Timbratura_Get_4Calculation_OutModel();
+
+                // Recupera i IdDip_RapportoLavoro per tutti gli utenti richiesti
+                List<int> idRapportoLavoroList = new List<int>();
+
+                foreach (string userId in model.Data.UsersId)
+                {
+                    User_DATA_COMB_DipAna_DipRapp userData = await _gestionePresenzeUserUtility.Get_DipAna_DipRapp(userId, false);
+                    if (userData?.dip_RapportoLavoro != null)
+                    {
+                        idRapportoLavoroList.Add(userData.dip_RapportoLavoro.Id);
+                    }
+                }
+
+                if (idRapportoLavoroList.Count > 0)
+                {
+                    List<Dip_GG_Timbratura> timbrature = _dip_GG_TimbraturaRepository
+                        .FindAll(x => idRapportoLavoroList.Contains(x.IdDip_RapportoLavoro) &&
+                                      x.GiornoCompetenza >= model.Data.Dal &&
+                                      x.GiornoCompetenza <= model.Data.Al)
+                        .OrderBy(x => x.IdDip_RapportoLavoro)
+                        .ThenBy(x => x.TimbraturaOriginale)
+                        .ToList();
+
+                    retVal.Dip_GG_Timbratura = _mapper.Map<List<Dip_GG_TimbraturaModel>>(timbrature);
+                }
+
+                //eliminare
+                // Nessun 'await' qui
+                await Task.Delay(DelayAsyncMethod);
+
+                return retVal;
+            }, isSubProcess);
+        }    
+        
     }
 
     public interface IDip_GG_TimbraturaService : IServiceBase
     {
         public Task<GenericResult<Dip_GG_Timbratura_GetAll_OutModel>> GetAll(GenericRequest<Dip_GG_Timbratura_GetAll_InModel> model, Boolean isSubProcess);
         public Task<GenericResult<Dip_GG_Timbratura_Stamp_OutModel>> Stamp(GenericRequest<Dip_GG_Timbratura_Stamp_InModel> model, Boolean isSubProcess);
+
+        public Task<GenericResult<Dip_GG_Timbratura_Get_4Calculation_OutModel>> Dip_GG_Timbratura_Get_4Calculation(GenericRequest<Dip_GG_Timbratura_Get_4Calculation_InModel> model, Boolean isSubProcess);
     }
 
 

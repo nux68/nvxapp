@@ -6,26 +6,17 @@ import { StatoRichiesta } from "../../Dip_GG_Richiesta/Models/dip-gg-richiesta-m
 export class Dip_GG_TimbraturaModel {
 
   public id: number;
-  public idDip_RapportoLavoro!: number; // Utilizzo di "!" per proprietà richieste non nullable
+  public idDip_RapportoLavoro!: number;
 
-  // Date e timbrature
   public timbratura!: Date;
   public timbraturaOriginale!: Date;
-  public timbraturaArrotondata?: Date; // Nullable
-  public giornoCompetenza!: Date; // Giorno per cavallo notte montanti/smontanti
+  public timbraturaArrotondata?: Date;
+  public giornoCompetenza!: Date;
 
-  // Tipo di timbratura
   public timbraturaTipo!: TipoTimbratura;
 
-  /*
-    Per gli inserimenti diretti:
-      richiestaStato = Diretta
-      idDip_GG_Richiesta = null
-  */
   public richiestaStato!: StatoRichiesta;
-  public idDip_GG_Richiesta?: number; // Nullable
-
-
+  public idDip_GG_Richiesta?: number;
 
 }
 export enum TipoTimbratura {
@@ -43,9 +34,7 @@ export class Dip_GG_Timbratura_GetAll_InModel {
   public month: number;
 }
 export class Dip_GG_Timbratura_GetAll_OutModel extends ModelResult {
-
   public dip_GG_Timbratura: Dip_GG_TimbraturaModel[];
-
 }
 
 
@@ -53,8 +42,16 @@ export class Dip_GG_Timbratura_Stamp_InModel {
   public dateStamp!: string;
 }
 export class Dip_GG_Timbratura_Stamp_OutModel extends ModelResult {
+}
 
-  
+
+export class Dip_GG_Timbratura_Get_4Calculation_InModel {
+  public usersId: string[] = [];
+  public dal!: string; // ISO 8601 locale, es. "2026-03-01T00:00:00"
+  public al!: string;  // ISO 8601 locale, es. "2026-03-31T23:59:59"
+}
+export class Dip_GG_Timbratura_Get_4Calculation_OutModel extends ModelResult {
+  public dip_GG_Timbratura: Dip_GG_TimbraturaModel[] = [];
 }
 
 

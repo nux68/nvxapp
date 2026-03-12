@@ -23,8 +23,6 @@ namespace nvxapp.server.Controllers
             _Dip_GG_TimbraturaService = Dip_GG_TimbraturaService;
         }
 
-        
-
         [Authorize]
         [HttpPost]
         [Route("GetAll")]
@@ -45,10 +43,16 @@ namespace nvxapp.server.Controllers
             return res;
         }
 
+        [Authorize]
+        [HttpPost]
+        [Route("Dip_GG_Timbratura_Get_4Calculation")]
+        public async Task<GenericResult<Dip_GG_Timbratura_Get_4Calculation_OutModel>> Dip_GG_Timbratura_Get_4Calculation(GenericRequest<Dip_GG_Timbratura_Get_4Calculation_InModel> inModel)
+        {
+            var res = await _Dip_GG_TimbraturaService.Dip_GG_Timbratura_Get_4Calculation(inModel, false);
 
+            return res;
+        }
 
     }
-
-
 
 }

@@ -57,4 +57,15 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
         
     }
 
+    public class Dip_GG_Timbratura_Get_4Calculation_InModel
+    {
+        public List<string> UsersId { get; set; } = new List<string>();
+        public DateTime Dal { get; set; }
+        public DateTime Al { get; set; }
+    }
+
+    public class Dip_GG_Timbratura_Get_4Calculation_OutModel: ModelResult
+    {
+        public List<Dip_GG_TimbraturaModel>  Dip_GG_Timbratura { get; set; }  = new List<Dip_GG_TimbraturaModel>();
+    }
 }
