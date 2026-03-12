@@ -44,7 +44,17 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Giu
         }
     }
 
-   
+    public class Dip_GG_Giustificativi_Get_4Calculation_InModel
+    {
+        public List<string> UsersId { get; set; } = new List<string>();
+        public DateTime Dal { get; set; }
+        public DateTime Al { get; set; }
+    }
+
+    public class Dip_GG_Giustificativi_Get_4Calculation_OutModel : ModelResult
+    {
+        public List<Dip_GG_GiustificativiModel> Dip_GG_Giustificativi { get; set; } = new List<Dip_GG_GiustificativiModel>();
+    }
 
 
 }

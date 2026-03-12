@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
@@ -62,6 +63,16 @@ namespace nvxapp.server.Controllers
         public async Task<GenericResult<Dip_GG_Richiesta_SetState_OutModel>> SetState(GenericRequest<Dip_GG_Richiesta_SetState_InModel> inModel)
         {
             var res = await _dip_GG_RichiestaService.SetState(inModel, false);
+
+            return res;
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("Dip_GG_Richiesta_Get_4Calculation")]
+        public async Task<GenericResult<Dip_GG_Richiesta_Get_4Calculation_OutModel>> Dip_GG_Richiesta_Get_4Calculation(GenericRequest<Dip_GG_Richiesta_Get_4Calculation_InModel> inModel)
+        {
+            var res = await _dip_GG_RichiestaService.Dip_GG_Richiesta_Get_4Calculation(inModel, false);
 
             return res;
         }

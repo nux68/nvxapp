@@ -1,5 +1,8 @@
-﻿using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_OrarioIntervalloHHService.Models;
+﻿using nvxapp.server.data.Entities.Tenant.GestionePresenze;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_OrarioIntervalloHHService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_OrarioService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_ProfiloOrarioGGService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_ProfiloOrarioService.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using System;
 using System.Collections.Generic;
@@ -70,9 +73,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Profil
 
     public class Dip_ProfiloOrario_Get_Profile_4Calculation_OutModel : ModelResult
     {
-        public List<Dip_ProfiloOrario_DaySlot> DaySlots { get; set; } = new List<Dip_ProfiloOrario_DaySlot>();
-        public List<Par_OrarioModel> ParOrario            = new List<Par_OrarioModel>();
-        public List<Par_OrarioIntervalloHHModel> Par_OrarioIntervalloHH = new List<Par_OrarioIntervalloHHModel>();
+        public List<Dip_ProfiloOrario_DaySlot>     DaySlots              { get; set; } = new List<Dip_ProfiloOrario_DaySlot>();
+        public List<Par_ProfiloOrarioModel>        Par_ProfiloOrario     { get; set; } = new List<Par_ProfiloOrarioModel>();
+        public List<Par_ProfiloOrarioGGModel>      Par_ProfiloOrarioGG   { get; set; } = new List<Par_ProfiloOrarioGGModel>();
+        public List<Par_OrarioModel>               ParOrario             = new List<Par_OrarioModel>();
+        public List<Par_OrarioIntervalloHHModel>   Par_OrarioIntervalloHH = new List<Par_OrarioIntervalloHHModel>();
     }
 
 }

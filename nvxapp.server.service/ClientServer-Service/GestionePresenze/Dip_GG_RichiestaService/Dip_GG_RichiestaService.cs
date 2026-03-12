@@ -761,9 +761,46 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
             }
 
 
-            richiesta = richiesta.OrderByDescending(x => x.Data).ToList();
+        richiesta = richiesta.OrderByDescending(x => x.Data).ToList();
 
             return richiesta;
+        }
+
+        public virtual async Task<GenericResult<Dip_GG_Richiesta_Get_4Calculation_OutModel>> Dip_GG_Richiesta_Get_4Calculation(GenericRequest<Dip_GG_Richiesta_Get_4Calculation_InModel> model, Boolean isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                Dip_GG_Richiesta_Get_4Calculation_OutModel retVal = new Dip_GG_Richiesta_Get_4Calculation_OutModel();
+
+                List<int> idRapportoLavoroList = new List<int>();
+
+                foreach (string userId in model.Data.UsersId)
+                {
+                    User_DATA_COMB_DipAna_DipRapp userData = await _gestionePresenzeUserUtility.Get_DipAna_DipRapp(userId, false);
+                    if (userData?.dip_RapportoLavoro != null)
+                    {
+                        idRapportoLavoroList.Add(userData.dip_RapportoLavoro.Id);
+                    }
+                }
+
+                if (idRapportoLavoroList.Count > 0)
+                {
+                    var richieste = _dip_GG_RichiestaRepository
+                        .FindAll(x => idRapportoLavoroList.Contains(x.IdDip_RapportoLavoro) &&
+                                      x.Data >= model.Data.Dal &&
+                                      x.Data <= model.Data.Al)
+                        .OrderBy(x => x.IdDip_RapportoLavoro)
+                        .ThenBy(x => x.Data)
+                        .ToList();
+
+                    retVal.Dip_GG_Richiesta = _mapper.Map<List<Dip_GG_RichiestaModel>>(richieste);
+                }
+
+                //eliminare
+                await Task.Delay(DelayAsyncMethod);
+
+                return retVal;
+            }, isSubProcess);
         }
 
 
@@ -775,6 +812,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
         public Task<GenericResult<Dip_GG_Richiesta_GetAll4Admin_OutModel>> GetAll4Admin(GenericRequest<Dip_GG_Richiesta_GetAll4Admin_InModel> model, Boolean isSubProcess);
         public Task<GenericResult<Dip_GG_Richiesta_Send_OutModel>> Send(GenericRequest<Dip_GG_Richiesta_Send_InModel> model, Boolean isSubProcess);
         public Task<GenericResult<Dip_GG_Richiesta_SetState_OutModel>> SetState(GenericRequest<Dip_GG_Richiesta_SetState_InModel> model, Boolean isSubProcess);
-
+        public Task<GenericResult<Dip_GG_Richiesta_Get_4Calculation_OutModel>> Dip_GG_Richiesta_Get_4Calculation(GenericRequest<Dip_GG_Richiesta_Get_4Calculation_InModel> model, Boolean isSubProcess);
     }
 }

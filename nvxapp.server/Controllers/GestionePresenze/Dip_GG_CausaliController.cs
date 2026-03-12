@@ -36,7 +36,15 @@ namespace nvxapp.server.Controllers
             return res;
         }
 
-        
+        [Authorize]
+        [HttpPost]
+        [Route("Dip_GG_Causali_Get_4Calculation")]
+        public async Task<GenericResult<Dip_GG_Causali_Get_4Calculation_OutModel>> Dip_GG_Causali_Get_4Calculation(GenericRequest<Dip_GG_Causali_Get_4Calculation_InModel> inModel)
+        {
+            var res = await _dip_GG_CausaliService.Dip_GG_Causali_Get_4Calculation(inModel, false);
+
+            return res;
+        }
 
     }
 

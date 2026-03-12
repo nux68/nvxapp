@@ -5,7 +5,12 @@ import { environment } from '../../../../environments/environment';
 import { GenericRequest } from '../../ModelsBase/generic-request';
 import { GenericResult } from '../../ModelsBase/generic-result';
 import { map, Observable } from 'rxjs';
-import { Dip_GG_Giustificativi_GetAll_InModel, Dip_GG_Giustificativi_GetAll_OutModel } from './Models/dip-gg-giustificativi-model';
+import {
+  Dip_GG_Giustificativi_GetAll_InModel,
+  Dip_GG_Giustificativi_GetAll_OutModel,
+  Dip_GG_Giustificativi_Get_4Calculation_InModel,
+  Dip_GG_Giustificativi_Get_4Calculation_OutModel
+} from './Models/dip-gg-giustificativi-model';
 
 @Injectable({
   providedIn: 'root'
@@ -22,8 +27,18 @@ export class DipGGGiustificativiService {
       .pipe(
         map(r => {
           return r;
-        }
-        )
+        })
+      );
+
+  }
+
+  Dip_GG_Giustificativi_Get_4Calculation(model: GenericRequest<Dip_GG_Giustificativi_Get_4Calculation_InModel>): Observable<GenericResult<Dip_GG_Giustificativi_Get_4Calculation_OutModel>> {
+
+    return this.http.post<GenericResult<Dip_GG_Giustificativi_Get_4Calculation_OutModel>>(environment.remoteData.apiUri + 'Dip_GG_Giustificativi/Dip_GG_Giustificativi_Get_4Calculation', model)
+      .pipe(
+        map(r => {
+          return r;
+        })
       );
 
   }

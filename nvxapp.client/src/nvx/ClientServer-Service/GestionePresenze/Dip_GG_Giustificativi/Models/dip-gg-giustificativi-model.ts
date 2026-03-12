@@ -37,3 +37,13 @@ export enum JustificationInputType {
   AllDay,
   IntegrateDay
 }
+
+
+export class Dip_GG_Giustificativi_Get_4Calculation_InModel {
+  public usersId: string[] = [];
+  public dal!: string;
+  public al!: string;
+}
+export class Dip_GG_Giustificativi_Get_4Calculation_OutModel extends ModelResult {
+  public dip_GG_Giustificativi: Dip_GG_GiustificativiModel[] = [];
+}

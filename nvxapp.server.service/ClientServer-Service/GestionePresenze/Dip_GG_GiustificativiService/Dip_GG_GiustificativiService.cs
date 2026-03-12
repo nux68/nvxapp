@@ -73,10 +73,48 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Giu
             }, isSubProcess);
         }
 
+        public virtual async Task<GenericResult<Dip_GG_Giustificativi_Get_4Calculation_OutModel>> Dip_GG_Giustificativi_Get_4Calculation(GenericRequest<Dip_GG_Giustificativi_Get_4Calculation_InModel> model, Boolean isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                Dip_GG_Giustificativi_Get_4Calculation_OutModel retVal = new Dip_GG_Giustificativi_Get_4Calculation_OutModel();
+
+                List<int> idRapportoLavoroList = new List<int>();
+
+                foreach (string userId in model.Data.UsersId)
+                {
+                    User_DATA_COMB_DipAna_DipRapp userData = await _gestionePresenzeUserUtility.Get_DipAna_DipRapp(userId, false);
+                    if (userData?.dip_RapportoLavoro != null)
+                    {
+                        idRapportoLavoroList.Add(userData.dip_RapportoLavoro.Id);
+                    }
+                }
+
+                if (idRapportoLavoroList.Count > 0)
+                {
+                    var giustificativi = _Dip_GG_GiustificativiRepository
+                        .FindAll(x => idRapportoLavoroList.Contains(x.IdDip_RapportoLavoro) &&
+                                      x.Data >= model.Data.Dal &&
+                                      x.Data <= model.Data.Al)
+                        .OrderBy(x => x.IdDip_RapportoLavoro)
+                        .ThenBy(x => x.Data)
+                        .ToList();
+
+                    retVal.Dip_GG_Giustificativi = _mapper.Map<List<Dip_GG_GiustificativiModel>>(giustificativi);
+                }
+
+                //eliminare
+                await Task.Delay(DelayAsyncMethod);
+
+                return retVal;
+            }, isSubProcess);
+        }
+
     }
 
     public interface IDip_GG_GiustificativiService : IServiceBase
     {
         public Task<GenericResult<Dip_GG_Giustificativi_GetAll_OutModel>> GetAll(GenericRequest<Dip_GG_Giustificativi_GetAll_InModel> model, Boolean isSubProcess);
+        public Task<GenericResult<Dip_GG_Giustificativi_Get_4Calculation_OutModel>> Dip_GG_Giustificativi_Get_4Calculation(GenericRequest<Dip_GG_Giustificativi_Get_4Calculation_InModel> model, Boolean isSubProcess);
     }
 }

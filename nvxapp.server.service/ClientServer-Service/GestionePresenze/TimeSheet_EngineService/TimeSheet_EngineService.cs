@@ -7,6 +7,12 @@ using nvxapp.server.Base;
 using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_CausaliService;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_CausaliService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_GiustificativiService;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_GiustificativiService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_RichiestaService;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_RichiestaService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_TimbraturaService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_TimbraturaService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_ProfiloOrarioService;
@@ -76,6 +82,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
         private readonly ILongJobNotifier _longJobNotifier;
         private readonly IDip_ProfiloOrarioService _dip_ProfiloOrarioService;
         private readonly IDip_GG_TimbraturaService _dip_GG_TimbraturaService;
+        private readonly IDip_GG_CausaliService _dip_GG_CausaliService;
+        private readonly IDip_GG_GiustificativiService _dip_GG_GiustificativiService;
+        private readonly IDip_GG_RichiestaService _dip_GG_RichiestaService;
 
         public TimeSheet_EngineService(IMapper mapper,
                                       UserManager<ApplicationUser> userManager,
@@ -87,7 +96,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                       ILongJobNotifier longJobNotifier,
                                       IGestionePresenzeUserUtility gestionePresenzeUserUtility,
                                       IDip_ProfiloOrarioService dip_ProfiloOrarioService,
-                                      IDip_GG_TimbraturaService dip_GG_TimbraturaService
+                                      IDip_GG_TimbraturaService dip_GG_TimbraturaService,
+                                      IDip_GG_CausaliService dip_GG_CausaliService,
+                                      IDip_GG_GiustificativiService dip_GG_GiustificativiService,
+                                      IDip_GG_RichiestaService dip_GG_RichiestaService
 
                                       ) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
@@ -95,6 +107,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
             _longJobNotifier = longJobNotifier;
             _dip_ProfiloOrarioService = dip_ProfiloOrarioService;
             _dip_GG_TimbraturaService = dip_GG_TimbraturaService;
+            _dip_GG_CausaliService = dip_GG_CausaliService;
+            _dip_GG_GiustificativiService = dip_GG_GiustificativiService;
+            _dip_GG_RichiestaService = dip_GG_RichiestaService;
         }
 
 
@@ -110,16 +125,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                 Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg company_DATA = await _gestionePresenzeUserUtility.Get_AzAna_AzSedi_AzReparto_Az_Cfg(IdCompany, true);
                 if (company_DATA != null && company_DATA.az_Anagrafica != null)
                 {
-                    //var Dal = model.Data.TimeSheet_Calculate.Dal;
-                    //var Al = model.Data.TimeSheet_Calculate.Al;
-                    //var Approva_Richieste_Giustificativo = model.Data.TimeSheet_Calculate.Approva_Richieste_Giustificativo;
-                    //var Approva_Richieste_Timbrature = model.Data.TimeSheet_Calculate.Approva_Richieste_Timbrature;
-                    //var Genera_Timbrature_Mancanti = model.Data.TimeSheet_Calculate.Genera_Timbrature_Mancanti;
-                    //var Year = model.Data.TimeSheet_Calculate.Year;
-                    //var Month = model.Data.TimeSheet_Calculate.Month;
-                    //List<string> SelectedUserId = model.Data.TimeSheet_Calculate.SelectedUserId;
-
-                    var AllData = await  SimulateLongRunningProcess(model.Data.TimeSheet_Calculate.SelectedUserId,model.Data.TimeSheet_Calculate.Dal,model.Data.TimeSheet_Calculate.Al);
+                    var AllData = await  GetAllData(model.Data.TimeSheet_Calculate.SelectedUserId,model.Data.TimeSheet_Calculate.Dal,model.Data.TimeSheet_Calculate.Al);
 
                     //////////////////////////////////
 
@@ -221,10 +227,13 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
         public class AllData
         {
             public Dip_ProfiloOrario_Get_Profile_4Calculation_OutModel Dip_ProfiloOrario_Calculate { get; set; } = new Dip_ProfiloOrario_Get_Profile_4Calculation_OutModel();
-            public List<Dip_GG_TimbraturaModel>  Dip_GG_Timbratura { get; set; } = new List<Dip_GG_TimbraturaModel>();
+            public List<Dip_GG_TimbraturaModel>     Dip_GG_Timbratura     { get; set; } = new List<Dip_GG_TimbraturaModel>();
+            public List<Dip_GG_CausaliModel>         Dip_GG_Causali        { get; set; } = new List<Dip_GG_CausaliModel>();
+            public List<Dip_GG_GiustificativiModel>  Dip_GG_Giustificativi { get; set; } = new List<Dip_GG_GiustificativiModel>();
+            public List<Dip_GG_RichiestaModel>       Dip_GG_Richiesta      { get; set; } = new List<Dip_GG_RichiestaModel>();
         }
 
-        private async Task<AllData> SimulateLongRunningProcess(List<string> UsersId,DateTime Dal,DateTime Al)
+        private async Task<AllData> GetAllData(List<string> UsersId, DateTime Dal, DateTime Al)
         {
             AllData data = new AllData();
 
@@ -252,6 +261,41 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                 data.Dip_GG_Timbratura = res_Timbrature.Data.Dip_GG_Timbratura;
             }
 
+            // 3) Recupera causali per il calcolo
+            var req_Causali = new GenericRequest<Dip_GG_Causali_Get_4Calculation_InModel>();
+            req_Causali.Data.UsersId = UsersId;
+            req_Causali.Data.Dal = Dal;
+            req_Causali.Data.Al = Al;
+
+            var res_Causali = await _dip_GG_CausaliService.Dip_GG_Causali_Get_4Calculation(req_Causali, true);
+            if (res_Causali.Success && res_Causali.Data != null)
+            {
+                data.Dip_GG_Causali = res_Causali.Data.Dip_GG_Causali;
+            }
+
+            // 4) Recupera giustificativi per il calcolo
+            var req_Giustificativi = new GenericRequest<Dip_GG_Giustificativi_Get_4Calculation_InModel>();
+            req_Giustificativi.Data.UsersId = UsersId;
+            req_Giustificativi.Data.Dal = Dal;
+            req_Giustificativi.Data.Al = Al;
+
+            var res_Giustificativi = await _dip_GG_GiustificativiService.Dip_GG_Giustificativi_Get_4Calculation(req_Giustificativi, true);
+            if (res_Giustificativi.Success && res_Giustificativi.Data != null)
+            {
+                data.Dip_GG_Giustificativi = res_Giustificativi.Data.Dip_GG_Giustificativi;
+            }
+
+            // 5) Recupera richieste per il calcolo
+            var req_Richieste = new GenericRequest<Dip_GG_Richiesta_Get_4Calculation_InModel>();
+            req_Richieste.Data.UsersId = UsersId;
+            req_Richieste.Data.Dal = Dal;
+            req_Richieste.Data.Al = Al;
+
+            var res_Richieste = await _dip_GG_RichiestaService.Dip_GG_Richiesta_Get_4Calculation(req_Richieste, true);
+            if (res_Richieste.Success && res_Richieste.Data != null)
+            {
+                data.Dip_GG_Richiesta = res_Richieste.Data.Dip_GG_Richiesta;
+            }
 
             return data;
         }

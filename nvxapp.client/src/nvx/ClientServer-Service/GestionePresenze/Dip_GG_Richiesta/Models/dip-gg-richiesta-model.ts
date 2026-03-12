@@ -128,3 +128,13 @@ export class Dip_GG_Richiesta_SetState_OutModel extends ModelResult {
   }
 
 }
+
+
+export class Dip_GG_Richiesta_Get_4Calculation_InModel {
+  public usersId: string[] = [];
+  public dal!: string;
+  public al!: string;
+}
+export class Dip_GG_Richiesta_Get_4Calculation_OutModel extends ModelResult {
+  public dip_GG_Richiesta: Dip_GG_RichiestaModel[] = [];
+}

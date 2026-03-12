@@ -5,7 +5,18 @@ import { environment } from '../../../../environments/environment';
 import { GenericRequest } from '../../ModelsBase/generic-request';
 import { GenericResult } from '../../ModelsBase/generic-result';
 import { map, Observable } from 'rxjs';
-import { Dip_GG_Richiesta_GetAll4Admin_InModel, Dip_GG_Richiesta_GetAll4Admin_OutModel, Dip_GG_Richiesta_GetAll4User_InModel,  Dip_GG_Richiesta_GetAll4User_OutModel,  Dip_GG_Richiesta_Send_InModel, Dip_GG_Richiesta_Send_OutModel, Dip_GG_Richiesta_SetState_InModel, Dip_GG_Richiesta_SetState_OutModel } from './Models/dip-gg-richiesta-model';
+import {
+  Dip_GG_Richiesta_GetAll4Admin_InModel,
+  Dip_GG_Richiesta_GetAll4Admin_OutModel,
+  Dip_GG_Richiesta_GetAll4User_InModel,
+  Dip_GG_Richiesta_GetAll4User_OutModel,
+  Dip_GG_Richiesta_Send_InModel,
+  Dip_GG_Richiesta_Send_OutModel,
+  Dip_GG_Richiesta_SetState_InModel,
+  Dip_GG_Richiesta_SetState_OutModel,
+  Dip_GG_Richiesta_Get_4Calculation_InModel,
+  Dip_GG_Richiesta_Get_4Calculation_OutModel
+} from './Models/dip-gg-richiesta-model';
 
 @Injectable({
   providedIn: 'root'
@@ -58,8 +69,18 @@ export class DipGGRichiestaService {
       .pipe(
         map(r => {
           return r;
-        }
-        )
+        })
+      );
+
+  }
+
+  Dip_GG_Richiesta_Get_4Calculation(model: GenericRequest<Dip_GG_Richiesta_Get_4Calculation_InModel>): Observable<GenericResult<Dip_GG_Richiesta_Get_4Calculation_OutModel>> {
+
+    return this.http.post<GenericResult<Dip_GG_Richiesta_Get_4Calculation_OutModel>>(environment.remoteData.apiUri + 'Dip_GG_Richiesta/Dip_GG_Richiesta_Get_4Calculation', model)
+      .pipe(
+        map(r => {
+          return r;
+        })
       );
 
   }
