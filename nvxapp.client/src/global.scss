@@ -79,6 +79,12 @@ ion-menu-content {
   overflow: hidden; // Evita bordi tagliati
 }
 
+.nvx-modal {
+  --border-radius: 16px; // Arrotonda gli angoli
+  --box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); // Ombra elegante
+  overflow: hidden; // Evita bordi tagliati
+}
+
 
 .nvx-ion-row-4table {
   border-bottom: 1px solid var(--ion-toolbar-background);
@@ -90,20 +96,41 @@ ion-menu-content {
 }
 
 
+// righe alternate
+.nvx-row-even {
+  --background: transparent;
+  background: transparent;
+}
+
+.nvx-row-odd {
+  --background: rgba(var(--ion-color-light-rgb), 0.5);
+  background: rgba(var(--ion-color-light-rgb), 0.5);
+}
+
+// hover riga
+.nvx-row-hover {
+  transition: background-color 0.2s ease;
+  cursor: default;
+
+  &:hover {
+    --background: rgba(var(--ion-color-primary-rgb), 0.22);
+    background: rgba(var(--ion-color-primary-rgb), 0.22);
+  }
+}
 
 
 /*@media (max-width: 576px) {*/ /* Soglia per sm */
-  /*.nvx-modal {
+/*.nvx-modal {
     display: none;
   }
 }*/
 
 
-  /*per i bottoni slide*/
+/*per i bottoni slide*/
 /*ion-item-option {
   border-radius: 15px;*/ /* Arrotonda i bordi */
-  /*overflow: hidden;*/ /* Per evitare contenuti fuori dai bordi */
-  /*margin: 8px 0;*/ /* Spazio sopra e sotto */
+/*overflow: hidden;*/ /* Per evitare contenuti fuori dai bordi */
+/*margin: 8px 0;*/ /* Spazio sopra e sotto */
 /*}
 
 .center-buttons {
