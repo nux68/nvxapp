@@ -75,11 +75,73 @@ using Serilog;
       Notifico
 
 
+ALTRI DATI:
+  ORE GIORNALIERE 
+     TEORICHE (quelle che i dipendente in assenza di anomalie dovrebbe fare)
+        le ore gornaliere si calcolano trovando l'orario attivo per quel giorno e condiderando le coppie di timbrature previste da quell'orario (es. 8:00-12:00 e 14:00-18:00) si sommano le ore teoriche (in questo caso 8 ore)
+     REALI (quelle che il dipendente ha effettivamente fatto)
+        le ore reali si calcolano considerando le timbrature effettive e arrotondate del giorno (es. 8:05-12:00 e 14:00-17:50) si sommano le ore reali (in questo caso 7 ore e 45 minuti)
  
+  se le ore TEORICHE non coincidono con quelle REALI, si deve capire se ci sono le condizioni per considerare la differenza come STRAORDINARIO o LAVORO SUPPLEMENTARE o ASSENZA
 
  
  
  */
+
+
+
+/* Spiegazione struttura dati per il calcolo:
+
+Parametri:
+    Par_Orario: definisce un orario con le sue caratteristiche
+    Par_OrarioIntervalloHH figlio di Par_Orario: definisce l'orario una coppia di entrata /uscita (es. 8:00-12:00) sono presenti i campo Limite_DX e Limite_SX che indicano entro quali solo le tolleranze per ritenere la timbbatura valide
+    per ogni oracio ci possono essere più intervalli (es. 8:00-12:00 e 14:00-18:00) e il loro numero e definito dal campo NumeroCoppita di Par_Orario
+    sono presenti a che dei campi per definire il tipo di arrotondamento della timbratura
+
+    Par_ProfiloOrario: definisce un profilo orario che può essere di tipo settimanale o ciclico, contiene la durata del ciclo (es. 7 giorni) e il giorno di partenza del ciclo (es. se il ciclo è di 7 giorni e il giorno di partenza è il lunedi, allora il giorno 1 del ciclo è sempre il lunedi, il giorno 2 è sempre il martedi ecc.)
+        sono definite delle proprieta per calcolare gli straordinari e il lavoro supplementare
+        NumGiorniCiclo definisce la durata del ciclo (es. 7 giorni)
+    Par_ProfiloOrarioGG definisce per ogni giorno del profilo orario, quali orari devono essere applicati (collegamento a Par_Orario tramite IdPar_Orario) e l'ordine di applicazione (campo ZOrder)
+        per un girno possono essere definiti più orari e la chiave verra agganciata su ZOrder
+ 
+ 
+
+Per un utente puo esistere: 
+   1 record di Dip_Anagrafica che contiene i dati anagrafici e i dati che non cambiano mai
+   N record di Dip_RapportoLavoro che contengono i dati del rapporto di lavoro è hanno un inizio ed eventualmente una fine
+     quando si effettuano i calcoli, si deve tenere conto del rappoorto di lavoro attivo in quel giorno
+   N record di Dip_ProfiloOrario che sono figli di Dip_RapportoLavoro, per un record di Dip_RapportoLavoro ci possono essere piu profili orari, che indicano quali orari verranno applicati in quel determinato perido
+
+Dati delle presenze      
+
+    Dip_GG_Richieste fanno capo a Dip_RapportoLavoro e sono del tipo   Timbratura,Giustificativo,NotaSpesa,ApprovazioneStraordinario
+    hanno un perido di pertinenza DataDa DataA 
+    nel campo Dati ce una stringa che rappresenta un oggetto diverso a seconda del tipo di richiesta, che verra serializzato opportunamente
+    RichiestaStato che puo essere 
+            Diretta,Immessa,Cancellata,Rifiutata,ApprovazioneInCorso,ParzialmenteApprovata,Approvata,
+    RichiestaStato che puo essere 
+            Diretta,Immessa,Cancellata,Rifiutata,ApprovazioneInCorso,ParzialmenteApprovata,Approvata,
+
+    Dip_GG_Richieste viene create e utilizzata quando una timbratuto o giustificavo o strao ecc,ecc non posso essere considereti previa approvazione
+
+    Dip_GG_Timbrature fanno capo a Dip_RapportoLavoro e ce ne possono essere più di una al giorno, contengono la data e l'ora della timbratura, il tipo (entrata/uscita) e lo stato (approvato/da approvare/rifiutato)
+        GiornoCompetenza è il giono al quale verra agganciata la timbratura e potrebbe non corrispondere con la timbratura stessa
+            (es. per timbrature fatte dopo la mezzanotte, il giorno competenza potrebbe essre quello precedente a quello della timbratura)
+            quando una timbratura viene eseguita in quel istamte il valore viene messo in Timbratura e TimbraturaOriginale
+            se l'utente HR vuole prodere a uma modifica della timbratura, la timbratura modificata viene salvata in Timbratura e la timbratura originale viene mantenuta in TimbraturaOriginale
+            quando la giornate viene ritenuta valita (cioè se sono soddisfatte tutte le coppie di timbrature per quel giorno) o su forzatura il valore di Timbratura viene arrotondato in base alle regole di arrotondamento definite in Par_Orario e salvato in TimbraturaArrotondata
+        RichiestaStato viene abbinato allo stato dell' eventuale richiesta timbratura che deve essere approvata
+   
+    Dip_GG_Giustificativi fanno capo a Dip_RapportoLavoro e ce ne possono essere più di una al giorno contengono della alterazioni all orario della giornata
+        RichiestaStato anche per loro come le timbrature viene abbinato allo stato dell' eventuale richiesta giustificativo che deve essere approvata 
+ 
+
+    IdDip_GG_Richiesta
+
+    
+
+ */
+
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_EngineService
 {
@@ -160,75 +222,85 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                     {
                         try
                         {
-                            Log.Information("Starting TimeSheet calculation for users {UserIds} from {Dal} to {Al}. jobID = {JobId}", model.Data.TimeSheet_Calculate.SelectedUserId, model.Data.TimeSheet_Calculate.Dal, model.Data.TimeSheet_Calculate.Al,jobId);
-                            
+                            Log.Information("Starting TimeSheet calculation for users {UserIds} from {Dal} to {Al}. jobID = {JobId}", model.Data.TimeSheet_Calculate.SelectedUserId, model.Data.TimeSheet_Calculate.Dal, model.Data.TimeSheet_Calculate.Al, jobId);
+
                             await _longJobNotifier.LongJobProgressAsync(userId,
                                                                         new LongJobProgressUpdate
-                                                                                {
-                                                                                    JobId = jobId.ToString(),
-                                                                                    JobType = GestionePresenze_JobType.TimeSheet_Engine_Calculate,
-                                                                                    Payload = model.Data.TimeSheet_Calculate,
-                                                                                    ProgressPercentage = 0,
-                                                                                    Message = new Message { Text = "Calcolo presenze avviato...", MsgType = MessageType.Information }
-                                                                                }
+                                                                        {
+                                                                            JobId = jobId.ToString(),
+                                                                            JobType = GestionePresenze_JobType.TimeSheet_Engine_Calculate,
+                                                                            Payload = model.Data.TimeSheet_Calculate,
+                                                                            ProgressPercentage = 0,
+                                                                            Message = new Message { Text = "Calcolo presenze avviato...", MsgType = MessageType.Information }
+                                                                        }
                                                                         );
 
+                            var req_OrariSchema_4User = new GenericRequest<Timesheet_AllData_InModel>();
+                            req_OrariSchema_4User.Data.Dal = model.Data.TimeSheet_Calculate.Dal;
+                            req_OrariSchema_4User.Data.Al = model.Data.TimeSheet_Calculate.Al;
+                            req_OrariSchema_4User.Data.UsersId = model.Data.TimeSheet_Calculate.SelectedUserId;
 
+                            var AllData = await Get_Timesheet_AllData(req_OrariSchema_4User, true);
 
-                            var AllData = await PrepareAllData(model.Data.TimeSheet_Calculate.SelectedUserId, model.Data.TimeSheet_Calculate.Dal, model.Data.TimeSheet_Calculate.Al);
-                            await Task.Delay(1000);
-
-                            // ciclo su ogni utente selezionato
-                            int idxUser = 0;
-                            foreach (var userId_calc in model.Data.TimeSheet_Calculate.SelectedUserId)
+                            if (AllData.Success && AllData.Data != null)
                             {
-                                var progress = (int)((idxUser / (double)model.Data.TimeSheet_Calculate.SelectedUserId.Count) * 100);
-                                await _longJobNotifier.LongJobProgressAsync(userId,
-                                                                                new LongJobProgressUpdate
+                                await Task.Delay(1000);
+
+
+                                // ciclo su ogni utente selezionato
+                                int idxUser = 0;
+                                foreach (var userId_calc in model.Data.TimeSheet_Calculate.SelectedUserId)
+                                {
+                                    var progress = (int)((idxUser / (double)model.Data.TimeSheet_Calculate.SelectedUserId.Count) * 100);
+                                    await _longJobNotifier.LongJobProgressAsync(userId,
+                                                                                    new LongJobProgressUpdate
                                                                                     {
                                                                                         JobId = jobId.ToString(),
                                                                                         JobType = GestionePresenze_JobType.TimeSheet_Engine_Calculate,
                                                                                         Payload = model.Data.TimeSheet_Calculate,
                                                                                         ProgressPercentage = progress,
-                                                                                        Message = new Message { Text = $"Calcolo presenze step {idxUser+1} of {model.Data.TimeSheet_Calculate.SelectedUserId.Count}", MsgType = MessageType.Information }
+                                                                                        Message = new Message { Text = $"Calcolo presenze step {idxUser + 1} of {model.Data.TimeSheet_Calculate.SelectedUserId.Count}", MsgType = MessageType.Information }
                                                                                     }
-                                                                                );
+                                                                                    );
 
 
-                                // anagrafica dell'utente corrente
-                                var anagrafica_calc = AllData.Dip_ProfiloOrario_Calculate.Dip_Anagrafica
-                                    .FirstOrDefault(a => a.IdAspNetUsers == userId_calc);
+                                    // anagrafica dell'utente corrente
+                                    var anagrafica_calc = AllData.Data.OrariSchema_4User_OutModel.Dip_Anagrafica
+                                        .FirstOrDefault(a => a.IdAspNetUsers == userId_calc);
 
-                                if (anagrafica_calc == null) continue;
+                                    if (anagrafica_calc == null) continue;
 
-                                // rapporti di lavoro dell'utente corrente
-                                var rapporti_calc = AllData.Dip_ProfiloOrario_Calculate.Dip_RapportoLavoro
-                                    .Where(r => r.IdDip_Anagrafica == anagrafica_calc.Id)
-                                    .ToList();
+                                    // rapporti di lavoro dell'utente corrente
+                                    var rapporti_calc = AllData.Data.OrariSchema_4User_OutModel.Dip_RapportoLavoro
+                                        .Where(r => r.IdDip_Anagrafica == anagrafica_calc.Id)
+                                        .ToList();
 
-                                foreach (var rapporto_calc in rapporti_calc)
-                                {
-                                    // limita il ciclo al range effettivo del rapporto
-                                    var giornoInizio_calc = model.Data.TimeSheet_Calculate.Dal > rapporto_calc.DataAss!.Value
-                                                            ? model.Data.TimeSheet_Calculate.Dal
-                                                            : rapporto_calc.DataAss!.Value;
-
-                                    var giornoFine_calc = (rapporto_calc.DataLic == null || rapporto_calc.DataLic.Value > model.Data.TimeSheet_Calculate.Al)
-                                                            ? model.Data.TimeSheet_Calculate.Al
-                                                            : rapporto_calc.DataLic.Value;
-
-                                    // ciclo su ogni giorno del periodo richiesto
-                                    for (var giorno = giornoInizio_calc; giorno <= giornoFine_calc; giorno = giorno.AddDays(1))
+                                    foreach (var rapporto_calc in rapporti_calc)
                                     {
-                                        CalcolaGiorno(rapporto_calc, giorno, AllData);
-                                    }
-                                }
-                                
-                                idxUser++;
-                                await Task.Delay(1000);
-                            }
+                                        // limita il ciclo al range effettivo del rapporto
+                                        var giornoInizio_calc = model.Data.TimeSheet_Calculate.Dal > rapporto_calc.DataAss!.Value
+                                                                ? model.Data.TimeSheet_Calculate.Dal
+                                                                : rapporto_calc.DataAss!.Value;
 
-                            Log.Information("Background task for job {JobId} has finished successfully.", jobId);
+                                        var giornoFine_calc = (rapporto_calc.DataLic == null || rapporto_calc.DataLic.Value > model.Data.TimeSheet_Calculate.Al)
+                                                                ? model.Data.TimeSheet_Calculate.Al
+                                                                : rapporto_calc.DataLic.Value;
+
+                                        // ciclo su ogni giorno del periodo richiesto
+                                        for (var giorno = giornoInizio_calc; giorno <= giornoFine_calc; giorno = giorno.AddDays(1))
+                                        {
+                                            CalcolaGiorno(rapporto_calc, giorno, AllData.Data);
+                                        }
+                                    }
+
+                                    idxUser++;
+                                    await Task.Delay(1000);
+                                }
+
+
+
+
+                                Log.Information("Background task for job {JobId} has finished successfully.", jobId);
                                 await _longJobNotifier.LongJobProgressAsync(userId,
                                                                             new LongJobProgressUpdate
                                                                             {
@@ -240,6 +312,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                                                                 IsFinished = true
                                                                             }
                                                                            );
+
+
+                            }
 
                         }
                         catch (Exception ex)
@@ -262,92 +337,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
 
 
-
-                    //////////////////////////////////
-                    /*
-                    var outModel = new MyMokeLongJobOutModel();
-                    var jobId = Guid.NewGuid();
-                    outModel.JobId = jobId.ToString();
-
-                    var userId = this.UserIdFirstConnection;
-
-                    if (string.IsNullOrEmpty(userId))
-                    {
-                        Log.Information("Could not find user ID. Unable to send SignalR notifications for job {JobId}.", jobId);
-                        outModel.Messages.Add(new Message("User not identified; cannot start job.", MessageType.Error));
-                    }
-                    else
-                    {
-                        Log.Information("Request to start long-running job {JobId} for user {UserId} received.", jobId, userId);
-
-                        _ = Task.Run(async () =>
-                        {
-                            try
-                            {
-                                Log.Information("Background task for job {JobId} is starting.", jobId);
-                                await _longJobNotifier.LongJobProgressAsync(userId,
-                                                                            new LongJobProgressUpdate
-                                                                            {
-                                                                                JobId = jobId.ToString(),
-                                                                                JobType = GestionePresenze_JobType.TimeSheet_Engine_Calculate,
-                                                                                Payload = model.Data.TimeSheet_Calculate,
-                                                                                ProgressPercentage = 0,
-                                                                                Message = new Message { Text = "Job is starting...", MsgType = MessageType.Information }
-                                                                            }
-                                                                           );
-
-                                for (int i = 1; i <= 5; i++)
-                                {
-                                    await Task.Delay(1000);
-                                    int progress = i * 20;
-                                    Log.Information("Job {JobId}: Progress step {Step}/5 ({Progress}%)", jobId, i, progress);
-
-                                    await _longJobNotifier.LongJobProgressAsync(userId,
-                                                                                new LongJobProgressUpdate
-                                                                                {
-                                                                                    JobId = jobId.ToString(),
-                                                                                    JobType = GestionePresenze_JobType.TimeSheet_Engine_Calculate,
-                                                                                    Payload = model.Data.TimeSheet_Calculate,
-                                                                                    ProgressPercentage = progress,
-                                                                                    Message = new Message { Text = $"Processing step {i} of 5...", MsgType = MessageType.Information }
-                                                                                }
-                                                                                );
-                                }
-
-                                Log.Information("Background task for job {JobId} has finished successfully.", jobId);
-                                await _longJobNotifier.LongJobProgressAsync(userId,
-                                                                            new LongJobProgressUpdate
-                                                                            {
-                                                                                JobId = jobId.ToString(),
-                                                                                JobType = GestionePresenze_JobType.TimeSheet_Engine_Calculate,
-                                                                                Payload = model.Data.TimeSheet_Calculate,
-                                                                                ProgressPercentage = 100,
-                                                                                Message = new Message { Text = "Job completed successfully.", MsgType = MessageType.Information },
-                                                                                IsFinished = true
-                                                                            }
-                                                                           );
-                            }
-                            catch (Exception ex)
-                            {
-                                Log.Error(ex, "Background task for job {JobId} failed.", jobId);
-                                await _longJobNotifier.LongJobProgressAsync(userId,
-                                                                            new LongJobProgressUpdate
-                                                                            {
-                                                                                JobId = jobId.ToString(),
-                                                                                JobType = GestionePresenze_JobType.TimeSheet_Engine_Calculate,
-                                                                                Payload = model.Data.TimeSheet_Calculate,
-                                                                                ProgressPercentage = 100,
-                                                                                Message = new Message { Text = $"Job failed: {ex.Message}", MsgType = MessageType.Exception },
-                                                                                IsFinished = true
-                                                                            }
-                                                                            );
-                            }
-                        });
-
-                        outModel.Messages.Add(new Message($"Job started with ID: {outModel.JobId}", MessageType.Information));
-                    }
-                    */
-                    //////////////////////////////////
                 }
 
                 //eliminare
@@ -357,11 +346,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                 return retVal;
             }, isSubProcess);
         }
-        public virtual async Task<GenericResult<TimeSheet_All_Data_Container>> GetAllData(GenericRequest<TimeSheet_Calculate_GetAllData_InModel> model, bool isSubProcess)
+        public virtual async Task<GenericResult<OrariSchema_4User_OutModel>> Get_OrariSchema_4User(GenericRequest<OrariSchema_4User_InModel> model, bool isSubProcess)
         {
             return await ExecuteAction(model, async () =>
             {
-                var retVal = new TimeSheet_All_Data_Container();
+                var retVal = new OrariSchema_4User_OutModel();
 
                 int IdCompany;
                 int.TryParse(this.CurrentCompany, out IdCompany);
@@ -552,100 +541,142 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
             }, isSubProcess);
         }
-        private async Task<AllData> PrepareAllData(List<string> UsersId, DateTime Dal, DateTime Al)
+        public virtual async Task<GenericResult<Dip_GG_AllData_OutModel>> Dip_GG_AllData_AllData(GenericRequest<Dip_GG_AllData_InModel> model, bool isSubProcess)
         {
-            AllData data = new AllData();
-
-            // 1) Recupera profili orario per il calcolo
-            var req_ProfHHDip = new GenericRequest<TimeSheet_Calculate_GetAllData_InModel>();
-            req_ProfHHDip.Data.Dal = Dal;
-            req_ProfHHDip.Data.Al = Al;
-            req_ProfHHDip.Data.UsersId = UsersId;
-
-            var res_ProfHHDip = await this.GetAllData(req_ProfHHDip, true);
-            if (res_ProfHHDip.Success && res_ProfHHDip.Data != null)
+            return await ExecuteAction(model, async () =>
             {
-                data.Dip_ProfiloOrario_Calculate = res_ProfHHDip.Data;
-            }
+                var retVal = new Dip_GG_AllData_OutModel();
 
-            // 2) Recupera timbrature per il calcolo
-            var req_Timbrature = new GenericRequest<Dip_GG_Timbratura_Get_4Calculation_InModel>();
-            req_Timbrature.Data.UsersId = UsersId;
-            req_Timbrature.Data.Dal = Dal;
-            req_Timbrature.Data.Al = Al;
+                int IdCompany;
+                int.TryParse(this.CurrentCompany, out IdCompany);
+                Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg company_DATA = await _gestionePresenzeUserUtility.Get_AzAna_AzSedi_AzReparto_Az_Cfg(IdCompany, true);
+                if (company_DATA != null && company_DATA.az_Anagrafica != null)
+                {
 
-            var res_Timbrature = await _dip_GG_TimbraturaService.Dip_GG_Timbratura_Get_4Calculation(req_Timbrature, true);
-            if (res_Timbrature.Success && res_Timbrature.Data != null)
-            {
-                data.Dip_GG_Timbratura = res_Timbrature.Data.Dip_GG_Timbratura;
-            }
+                    // 1) Recupera timbrature per il calcolo
+                    var req_Timbrature = new GenericRequest<Dip_GG_Timbratura_Get_4Calculation_InModel>();
+                    req_Timbrature.Data.UsersId = model.Data.UsersId;
+                    req_Timbrature.Data.Dal = model.Data.Dal;
+                    req_Timbrature.Data.Al = model.Data.Al;
 
-            // 3) Recupera causali per il calcolo
-            var req_Causali = new GenericRequest<Dip_GG_Causali_Get_4Calculation_InModel>();
-            req_Causali.Data.UsersId = UsersId;
-            req_Causali.Data.Dal = Dal;
-            req_Causali.Data.Al = Al;
+                    var res_Timbrature = await _dip_GG_TimbraturaService.Dip_GG_Timbratura_Get_4Calculation(req_Timbrature, true);
+                    if (res_Timbrature.Success && res_Timbrature.Data != null)
+                    {
+                        retVal.Dip_GG_Timbratura = res_Timbrature.Data.Dip_GG_Timbratura;
+                    }
 
-            var res_Causali = await _dip_GG_CausaliService.Dip_GG_Causali_Get_4Calculation(req_Causali, true);
-            if (res_Causali.Success && res_Causali.Data != null)
-            {
-                data.Dip_GG_Causali = res_Causali.Data.Dip_GG_Causali;
-            }
+                    // 2) Recupera causali per il calcolo
+                    var req_Causali = new GenericRequest<Dip_GG_Causali_Get_4Calculation_InModel>();
+                    req_Causali.Data.UsersId = model.Data.UsersId;
+                    req_Causali.Data.Dal = model.Data.Dal;
+                    req_Causali.Data.Al = model.Data.Al;
 
-            // 4) Recupera giustificativi per il calcolo
-            var req_Giustificativi = new GenericRequest<Dip_GG_Giustificativi_Get_4Calculation_InModel>();
-            req_Giustificativi.Data.UsersId = UsersId;
-            req_Giustificativi.Data.Dal = Dal;
-            req_Giustificativi.Data.Al = Al;
+                    var res_Causali = await _dip_GG_CausaliService.Dip_GG_Causali_Get_4Calculation(req_Causali, true);
+                    if (res_Causali.Success && res_Causali.Data != null)
+                    {
+                        retVal.Dip_GG_Causali = res_Causali.Data.Dip_GG_Causali;
+                    }
 
-            var res_Giustificativi = await _dip_GG_GiustificativiService.Dip_GG_Giustificativi_Get_4Calculation(req_Giustificativi, true);
-            if (res_Giustificativi.Success && res_Giustificativi.Data != null)
-            {
-                data.Dip_GG_Giustificativi = res_Giustificativi.Data.Dip_GG_Giustificativi;
-            }
+                    // 3) Recupera giustificativi per il calcolo
+                    var req_Giustificativi = new GenericRequest<Dip_GG_Giustificativi_Get_4Calculation_InModel>();
+                    req_Giustificativi.Data.UsersId = model.Data.UsersId;
+                    req_Giustificativi.Data.Dal = model.Data.Dal;
+                    req_Giustificativi.Data.Al = model.Data.Al;
 
-            // 5) Recupera richieste per il calcolo
-            var req_Richieste = new GenericRequest<Dip_GG_Richiesta_Get_4Calculation_InModel>();
-            req_Richieste.Data.UsersId = UsersId;
-            req_Richieste.Data.Dal = Dal;
-            req_Richieste.Data.Al = Al;
+                    var res_Giustificativi = await _dip_GG_GiustificativiService.Dip_GG_Giustificativi_Get_4Calculation(req_Giustificativi, true);
+                    if (res_Giustificativi.Success && res_Giustificativi.Data != null)
+                    {
+                        retVal.Dip_GG_Giustificativi = res_Giustificativi.Data.Dip_GG_Giustificativi;
+                    }
 
-            var res_Richieste = await _dip_GG_RichiestaService.Dip_GG_Richiesta_Get_4Calculation(req_Richieste, true);
-            if (res_Richieste.Success && res_Richieste.Data != null)
-            {
-                data.Dip_GG_Richiesta = res_Richieste.Data.Dip_GG_Richiesta;
-            }
+                    // 4) Recupera richieste per il calcolo
+                    var req_Richieste = new GenericRequest<Dip_GG_Richiesta_Get_4Calculation_InModel>();
+                    req_Richieste.Data.UsersId = model.Data.UsersId;
+                    req_Richieste.Data.Dal = model.Data.Dal;
+                    req_Richieste.Data.Al = model.Data.Al;
 
-            return data;
+                    var res_Richieste = await _dip_GG_RichiestaService.Dip_GG_Richiesta_Get_4Calculation(req_Richieste, true);
+                    if (res_Richieste.Success && res_Richieste.Data != null)
+                    {
+                        retVal.Dip_GG_Richiesta = res_Richieste.Data.Dip_GG_Richiesta;
+                    }
+                }
+
+                await Task.Delay(DelayAsyncMethod);
+                return retVal;
+
+            }, isSubProcess);
         }
-        private async void CalcolaGiorno(Dip_RapportoLavoroModel rapporto_calc, DateTime giorno, AllData AllData)
+        public virtual async Task<GenericResult<Timesheet_AllData_OutModel>> Get_Timesheet_AllData(GenericRequest<Timesheet_AllData_InModel> model, bool isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                var retVal = new Timesheet_AllData_OutModel();
+
+                int IdCompany;
+                int.TryParse(this.CurrentCompany, out IdCompany);
+                Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg company_DATA = await _gestionePresenzeUserUtility.Get_AzAna_AzSedi_AzReparto_Az_Cfg(IdCompany, true);
+                if (company_DATA != null && company_DATA.az_Anagrafica != null)
+                {
+
+                    var req_OrariSchema_4User = new GenericRequest<OrariSchema_4User_InModel>();
+                    req_OrariSchema_4User.Data.Dal = model.Data.Dal;
+                    req_OrariSchema_4User.Data.Al = model.Data.Al;
+                    req_OrariSchema_4User.Data.UsersId = model.Data.UsersId;
+
+                    var res_OrariSchema_4User = await this.Get_OrariSchema_4User(req_OrariSchema_4User, true);
+                    if (res_OrariSchema_4User.Success && res_OrariSchema_4User.Data != null)
+                    {
+                        retVal.OrariSchema_4User_OutModel = res_OrariSchema_4User.Data;
+                    }
+
+                    var req_Dip_GG_AllData = new GenericRequest<Dip_GG_AllData_InModel>();
+                    req_Dip_GG_AllData.Data.Dal = model.Data.Dal;
+                    req_Dip_GG_AllData.Data.Al = model.Data.Al;
+                    req_Dip_GG_AllData.Data.UsersId = model.Data.UsersId;
+
+                    var res_Dip_GG_AllData = await this.Dip_GG_AllData_AllData(req_Dip_GG_AllData, true);
+                    if (res_Dip_GG_AllData.Success && res_Dip_GG_AllData.Data != null)
+                    {
+                        retVal.Dip_GG_AllData_OutModel = res_Dip_GG_AllData.Data;
+                    }
+
+                }
+
+                await Task.Delay(DelayAsyncMethod);
+                return retVal;
+
+            }, isSubProcess);
+        }
+
+        private async void CalcolaGiorno(Dip_RapportoLavoroModel rapporto_calc, DateTime giorno, Timesheet_AllData_OutModel AllData)
         {
             // DaySlot del giorno corrente per questo rapporto
-            var daySlot_calc = AllData.Dip_ProfiloOrario_Calculate.DaySlots
+            var daySlot_calc = AllData.OrariSchema_4User_OutModel.DaySlots
                 .FirstOrDefault(ds => ds.IdDip_RapportoLavoro == rapporto_calc.Id
                                     && ds.Data.Date == giorno.Date);
 
             // timbrature del giorno per questo rapporto
-            var timbrature_calc = AllData.Dip_GG_Timbratura
+            var timbrature_calc = AllData.Dip_GG_AllData_OutModel.Dip_GG_Timbratura
                 .Where(t => t.IdDip_RapportoLavoro == rapporto_calc.Id
                             && t.GiornoCompetenza.Date == giorno.Date)
                 .OrderBy(t => t.TimbraturaOriginale)
                 .ToList();
 
             // causali del giorno per questo rapporto
-            var causali_calc = AllData.Dip_GG_Causali
+            var causali_calc = AllData.Dip_GG_AllData_OutModel.Dip_GG_Causali
                 .Where(c => c.IdDip_RapportoLavoro == rapporto_calc.Id
                             && c.Data.Date == giorno.Date)
                 .ToList();
 
             // giustificativi del giorno per questo rapporto
-            var giustificativi_calc = AllData.Dip_GG_Giustificativi
+            var giustificativi_calc = AllData.Dip_GG_AllData_OutModel.Dip_GG_Giustificativi
                 .Where(g => g.IdDip_RapportoLavoro == rapporto_calc.Id
                             && g.Data.Date == giorno.Date)
                 .ToList();
 
             // richieste che coprono il giorno corrente per questo rapporto
-            var richieste_calc = AllData.Dip_GG_Richiesta
+            var richieste_calc = AllData.Dip_GG_AllData_OutModel.Dip_GG_Richiesta
                 .Where(r => r.IdDip_RapportoLavoro == rapporto_calc.Id)
                 .ToList();
         }
@@ -656,6 +687,74 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
     public interface ITimeSheet_EngineService : IServiceBase
     {
         Task<GenericResult<TimeSheet_CalculateOutModel>> Calculate(GenericRequest<TimeSheet_CalculateInModel> model, bool isSubProcess);
-        Task<GenericResult<TimeSheet_All_Data_Container>> GetAllData(GenericRequest<TimeSheet_Calculate_GetAllData_InModel> model, bool isSubProcess);
+        Task<GenericResult<OrariSchema_4User_OutModel>> Get_OrariSchema_4User(GenericRequest<OrariSchema_4User_InModel> model, bool isSubProcess);
+        Task<GenericResult<Dip_GG_AllData_OutModel>> Dip_GG_AllData_AllData(GenericRequest<Dip_GG_AllData_InModel> model, bool isSubProcess);
+        Task<GenericResult<Timesheet_AllData_OutModel>> Get_Timesheet_AllData(GenericRequest<Timesheet_AllData_InModel> model, bool isSubProcess);
     }
+
+
+    public static class CalcoloGiornoEngine
+    {
+        /// <summary>
+        /// Calcola le ore teoriche previste per un dato rapporto di lavoro in un dato giorno.
+        /// Le ore teoriche sono la somma delle durate di tutte le coppie (Dalle?Alle)
+        /// dell'orario attivo per quel giorno, indipendentemente dalle timbrature reali.
+        /// </summary>
+        /// <param name="orariSchema">Contenitore con DaySlots, ParOrario e Par_OrarioIntervalloHH già caricati.</param>
+        /// <param name="IdDip_RapportoLavoro">Rapporto di lavoro di cui calcolare le ore teoriche.</param>
+        /// <param name="day">Giorno per il quale eseguire il calcolo.</param>
+        /// <returns>Ore teoriche come <see cref="TimeSpan"/>. Restituisce <see cref="TimeSpan.Zero"/> se non è possibile determinare l'orario.</returns>
+        public static TimeSpan CalcolaOreTeoriche(OrariSchema_4User_OutModel orariSchema, int IdDip_RapportoLavoro, DateTime day)
+        {
+            // 1. Individua il DaySlot per questo rapporto e questo giorno
+            var daySlot = orariSchema.DaySlots
+                .FirstOrDefault(ds => ds.IdDip_RapportoLavoro == IdDip_RapportoLavoro
+                                   && ds.Data.Date == day.Date);
+
+            if (daySlot == null || daySlot.Orari.Count == 0)
+                return TimeSpan.Zero;
+
+            // 2. Prende solo la riga orario con ZOrder più basso (orario base, ZOrder=1).
+            //    Gli override (ZOrder > 1) sono applicati a livello di giustificativo, non qui.
+            var orarioBase = daySlot.Orari
+                .OrderBy(o => o.ZOrder)
+                .First();
+
+            // 3. Recupera il Par_Orario corrispondente
+            var parOrario = orariSchema.ParOrario
+                .FirstOrDefault(o => o.Id == orarioBase.IdPar_Orario);
+
+            if (parOrario == null)
+                return TimeSpan.Zero;
+
+            // 4. Recupera tutte le coppie (Par_OrarioIntervalloHH) per questo orario,
+            //    ordinate per NumCoppia (es. coppia 1 = 08:00-12:00, coppia 2 = 14:00-18:00)
+            var coppie = orariSchema.Par_OrarioIntervalloHH
+                .Where(hh => hh.IdPar_Orario == parOrario.Id)
+                .OrderBy(hh => hh.NumCoppia)
+                .ToList();
+
+            if (coppie.Count == 0)
+                return TimeSpan.Zero;
+
+            // 5. Somma la durata di ogni coppia valida (Dalle e Alle devono essere entrambe valorizzate)
+            var oreTeoriche = TimeSpan.Zero;
+
+            foreach (var coppia in coppie)
+            {
+                if (coppia.Dalle.HasValue && coppia.Alle.HasValue)
+                {
+                    // Alle e Dalle sono TimeOnly: la differenza è sempre positiva se Alle > Dalle
+                    var durataCoppia = coppia.Alle.Value.ToTimeSpan() - coppia.Dalle.Value.ToTimeSpan();
+
+                    if (durataCoppia > TimeSpan.Zero)
+                        oreTeoriche += durataCoppia;
+                }
+            }
+
+            return oreTeoriche;
+        }
+    }
+
+
 }
