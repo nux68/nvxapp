@@ -96,6 +96,27 @@ ion-modal {
 }
 
 
+// righe alternate
+.nvx-row-even {
+  --background: transparent;
+  background: transparent;
+}
+
+.nvx-row-odd {
+  --background: rgba(var(--ion-color-light-rgb), 0.5);
+  background: rgba(var(--ion-color-light-rgb), 0.5);
+}
+
+// hover riga
+.nvx-row-hover {
+  transition: background-color 0.2s ease;
+  cursor: default;
+
+  &:hover {
+    --background: rgba(var(--ion-color-primary-rgb), 0.22);
+    background: rgba(var(--ion-color-primary-rgb), 0.22);
+  }
+}
 
 
 /*@media (max-width: 576px) {*/ /* Soglia per sm */
