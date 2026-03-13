@@ -12,7 +12,11 @@
 
 
   <ion-grid *ngIf="par_AttivitaList != null">
-    <ion-row *ngFor="let item of getAll() | genericFilter: 'descrizione' : searchText" class="nvx-ion-row-4table">
+    <ion-row *ngFor="let item of getAll() | genericFilter: 'descrizione' : searchText; let indexRow4Color = index"
+             [class.nvx-row-odd]="indexRow4Color % 2 !== 0"
+             [class.nvx-row-even]="indexRow4Color % 2 === 0"
+             class="nvx-ion-row-4table nvx-row-hover">
+
       <ion-item-sliding class="ion-hide-sm-up">
         <ion-item>
           <ion-icon name="list-outline"></ion-icon>

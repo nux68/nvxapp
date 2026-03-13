@@ -25,7 +25,10 @@
 
       <ion-grid *ngIf="dip_GG_RichiestaList!=null">
 
-        <ion-row *ngFor="let item of getAll() | genericFilter: 'descrizione' : searchText" class="nvx-ion-row-4table">
+        <ion-row *ngFor="let item of getAll() | genericFilter: 'descrizione' : searchText; let indexRow4Color = index"
+                 [class.nvx-row-odd]="indexRow4Color % 2 !== 0"
+                 [class.nvx-row-even]="indexRow4Color % 2 === 0"
+                 class="nvx-ion-row-4table nvx-row-hover">
 
           <ion-item-sliding class="ion-hide-sm-up">
             <ion-item>
@@ -101,11 +104,13 @@
 
           <ion-col class="ion-hide-sm-down">
 
-        <!--<ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
-          {{ item.richiestaStato | statoRichiestaLongText }}
-        </ion-label>-->
+            <!--<ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
+      {{ item.richiestaStato | statoRichiestaLongText }}
+    </ion-label>-->
 
             <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
+
+
 
               {{ timeSheetService.get_StatoRichiesta_Approval_text(item) }}
             </ion-label>
