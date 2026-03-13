@@ -36,7 +36,10 @@
               <ion-col size="5" class="header-cell">Giustificativi</ion-col>
             </ion-row>
 
-            <ion-row *ngFor="let day of currentDays" [ngClass]="{'weekend': isWeekend(day.date)}" class="day-row nvx-ion-row-4table">
+            <ion-row *ngFor="let day of currentDays; let indexRow4Color = index" [ngClass]="{'weekend': isWeekend(day.date)}"
+                       [class.nvx-row-odd]="indexRow4Color % 2 !== 0"
+                       [class.nvx-row-even]="indexRow4Color % 2 === 0"
+                     class="day-row nvx-ion-row-4table nvx-row-hover">
 
               <ion-col size="2" class="day-cell">
 

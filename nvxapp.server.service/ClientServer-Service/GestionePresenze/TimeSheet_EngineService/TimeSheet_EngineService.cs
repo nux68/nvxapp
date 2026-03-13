@@ -91,21 +91,15 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
     {
         private readonly IGestionePresenzeUserUtility _gestionePresenzeUserUtility;
         private readonly ILongJobNotifier _longJobNotifier;
-        
         private readonly IDip_GG_TimbraturaService _dip_GG_TimbraturaService;
         private readonly IDip_GG_CausaliService _dip_GG_CausaliService;
         private readonly IDip_GG_GiustificativiService _dip_GG_GiustificativiService;
         private readonly IDip_GG_RichiestaService _dip_GG_RichiestaService;
-
-        
         private readonly IDip_RapportoLavoroRepository _dip_RapportoLavoroRepository;
         private readonly IDip_ProfiloOrarioRepository _dip_ProfiloOrarioRepository;
-        private readonly IPar_ProfiloOrarioRepository _par_ProfiloOrarioRepository;
-        private readonly IPar_ProfiloOrarioGGRepository _par_ProfiloOrarioGGRepository;
         private readonly IPar_OrarioService _par_OrarioService;
         private readonly IPar_ProfiloOrarioService _par_ProfiloOrarioService;
         private readonly IDip_RapportoLavoroService _dip_RapportoLavoroService;
-
 
         public TimeSheet_EngineService(IMapper mapper,
                                       UserManager<ApplicationUser> userManager,
@@ -115,8 +109,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                       IConfiguration configuration,
 
                                       IDip_ProfiloOrarioRepository dip_ProfiloOrarioRepository,
-                                      IPar_ProfiloOrarioRepository par_ProfiloOrarioRepository,
-                                      IPar_ProfiloOrarioGGRepository par_ProfiloOrarioGGRepository,
                                       IDip_RapportoLavoroRepository dip_RapportoLavoroRepository,
                                       IPar_OrarioService par_OrarioService,
                                       IPar_ProfiloOrarioService par_ProfiloOrarioService,
@@ -139,8 +131,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
             _dip_ProfiloOrarioRepository = dip_ProfiloOrarioRepository;
             _dip_RapportoLavoroRepository = dip_RapportoLavoroRepository;
             _gestionePresenzeUserUtility = gestionePresenzeUserUtility;
-            _par_ProfiloOrarioRepository = par_ProfiloOrarioRepository;
-            _par_ProfiloOrarioGGRepository = par_ProfiloOrarioGGRepository;
             _par_OrarioService = par_OrarioService;
             _par_ProfiloOrarioService = par_ProfiloOrarioService;
             _dip_RapportoLavoroService = dip_RapportoLavoroService;
@@ -189,35 +179,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                             // ciclo su ogni giorno del periodo richiesto
                             for (var giorno = giornoInizio_calc; giorno <= giornoFine_calc; giorno = giorno.AddDays(1))
                             {
-                                // DaySlot del giorno corrente per questo rapporto
-                                var daySlot_calc = AllData.Dip_ProfiloOrario_Calculate.DaySlots
-                                    .FirstOrDefault(ds => ds.IdDip_RapportoLavoro == rapporto_calc.Id
-                                                       && ds.Data.Date == giorno.Date);
-
-                                // timbrature del giorno per questo rapporto
-                                var timbrature_calc = AllData.Dip_GG_Timbratura
-                                    .Where(t => t.IdDip_RapportoLavoro == rapporto_calc.Id
-                                             && t.GiornoCompetenza.Date == giorno.Date)
-                                    .OrderBy(t => t.TimbraturaOriginale)
-                                    .ToList();
-
-                                // causali del giorno per questo rapporto
-                                var causali_calc = AllData.Dip_GG_Causali
-                                    .Where(c => c.IdDip_RapportoLavoro == rapporto_calc.Id
-                                             && c.Data.Date == giorno.Date)
-                                    .ToList();
-
-                                // giustificativi del giorno per questo rapporto
-                                var giustificativi_calc = AllData.Dip_GG_Giustificativi
-                                    .Where(g => g.IdDip_RapportoLavoro == rapporto_calc.Id
-                                             && g.Data.Date == giorno.Date)
-                                    .ToList();
-
-                                // richieste che coprono il giorno corrente per questo rapporto
-                                var richieste_calc = AllData.Dip_GG_Richiesta
-                                    .Where(r => r.IdDip_RapportoLavoro == rapporto_calc.Id)
-                                    .ToList();
-
+                               CalcolaGiorno(rapporto_calc, giorno, AllData);
                             }
                         }
                     }
@@ -577,7 +539,37 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
             return data;
         }
+        private async void CalcolaGiorno(Dip_RapportoLavoroModel rapporto_calc ,DateTime giorno, AllData AllData)
+        {
+             // DaySlot del giorno corrente per questo rapporto
+            var daySlot_calc = AllData.Dip_ProfiloOrario_Calculate.DaySlots
+                .FirstOrDefault(ds => ds.IdDip_RapportoLavoro == rapporto_calc.Id
+                                    && ds.Data.Date == giorno.Date);
 
+            // timbrature del giorno per questo rapporto
+            var timbrature_calc = AllData.Dip_GG_Timbratura
+                .Where(t => t.IdDip_RapportoLavoro == rapporto_calc.Id
+                            && t.GiornoCompetenza.Date == giorno.Date)
+                .OrderBy(t => t.TimbraturaOriginale)
+                .ToList();
+
+            // causali del giorno per questo rapporto
+            var causali_calc = AllData.Dip_GG_Causali
+                .Where(c => c.IdDip_RapportoLavoro == rapporto_calc.Id
+                            && c.Data.Date == giorno.Date)
+                .ToList();
+
+            // giustificativi del giorno per questo rapporto
+            var giustificativi_calc = AllData.Dip_GG_Giustificativi
+                .Where(g => g.IdDip_RapportoLavoro == rapporto_calc.Id
+                            && g.Data.Date == giorno.Date)
+                .ToList();
+
+            // richieste che coprono il giorno corrente per questo rapporto
+            var richieste_calc = AllData.Dip_GG_Richiesta
+                .Where(r => r.IdDip_RapportoLavoro == rapporto_calc.Id)
+                .ToList();
+        }
         
 
     }
