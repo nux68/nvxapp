@@ -14,6 +14,8 @@ import { SharedParameterGestionePresenzeService } from '../../shared/shared-para
 import { DateTimeUtilService } from '../infrastructure/date-time-util.service';
 import { TipoRichiestaToShortTextPipe } from '../../shared/pipe/GestionePresenze/tipo-richiesta-to-short-text.pipe';
 import { StatoRichiestaLongTextPipe } from '../../shared/pipe/GestionePresenze/stato-richiesta-long-text.pipe';
+import { Timesheet_AllData_InModel } from '../../ClientServer-Service/GestionePresenze/TimeSheet_EngineService/Models/time-sheet-engine-model';
+import { TimeSheetEngineService } from '../../ClientServer-Service/GestionePresenze/TimeSheet_EngineService/time-sheet-engine.service';
 
 
 
@@ -28,6 +30,7 @@ export class TimeSheetService {
               private dipGGGiustificativiService: DipGGGiustificativiService,
               private dipGGTimbraturaService: DipGGTimbraturaService,
               private dipGGRichiestaService: DipGGRichiestaService,
+              public timeSheetEngineService: TimeSheetEngineService,
               public dateTimeUtilService: DateTimeUtilService) {
   }
 
@@ -59,62 +62,108 @@ export class TimeSheetService {
       return of(remoteData);
     }
 
-
-    let request_Just = new GenericRequest<Dip_GG_Giustificativi_GetAll_InModel>(Dip_GG_Giustificativi_GetAll_InModel);
-    request_Just.data.year = year;
-    request_Just.data.month = month + 1;
-    request_Just.data.idAspNetUsers = idAspNetUsers;
-
-    let request_clock = new GenericRequest<Dip_GG_Timbratura_GetAll_InModel>(Dip_GG_Timbratura_GetAll_InModel);
-    request_clock.data.year = year;
-    request_clock.data.month = month + 1;
-    request_clock.data.idAspNetUsers = idAspNetUsers;
-
-    let request_rich = new GenericRequest<Dip_GG_Richiesta_GetAll4User_InModel>(Dip_GG_Richiesta_GetAll4User_InModel);
-    request_rich.data.year = year;
-    request_rich.data.month = month + 1;
-    request_rich.data.idAspNetUsers = idAspNetUsers;
-    
-
-    // 2. Define the Observables for the API calls (DO NOT subscribe yet)
-    const justificationsObservable$ = this.dipGGGiustificativiService.GetAll(request_Just);
-    const clockingsObservable$ = this.dipGGTimbraturaService.GetAll(request_clock);
-    const requestObservable$ = this.dipGGRichiestaService.GetAll4User(request_clock);
+    let request: GenericRequest<Timesheet_AllData_InModel> = new GenericRequest<Timesheet_AllData_InModel>(Timesheet_AllData_InModel);
+    request.data = new Timesheet_AllData_InModel();
+    request.data.dal = new Date(Date.UTC(year, month, 1)).toISOString();
+    request.data.al = new Date(Date.UTC(year, month + 1, 0)).toISOString();
+    if (idAspNetUsers != null) {
+      request.data.usersId = [idAspNetUsers];
+    }
 
     
 
-    // 3. Use forkJoin to execute both Observables in parallel
-    // It will emit an object with the results once BOTH calls complete
-    return forkJoin({
-      // Assign keys to easily access the results later
-      justResult: justificationsObservable$,
-      clockResult: clockingsObservable$,
-      requestResult: requestObservable$
-    }).pipe(
-      // 4. Use the 'map' operator to transform the combined results
-      map(results => {
 
-        const giustificativiArray = results.justResult?.data?.dip_GG_Giustificativi || [];
-        const timbratureArray = results.clockResult?.data?.dip_GG_Timbratura || [];
-        const richiesteArray = results.requestResult?.data?.dip_GG_Richiesta || [];
-
-        // Crea l'oggetto finale TimeSheetRemoteData
+    return this.timeSheetEngineService.Get_Timesheet_AllData(request).pipe(
+      map(x => {
         const remoteData: TimeSheetRemoteData = {
-          dip_GG_Giustificativi: giustificativiArray,
-          dip_GG_Timbratura: timbratureArray,
-          dip_GG_Richiesta: richiesteArray
+          dip_GG_Giustificativi: x.data?.dip_GG_AllData_OutModel?.dip_GG_Giustificativi ?? [],
+          dip_GG_Timbratura: x.data?.dip_GG_AllData_OutModel?.dip_GG_Timbratura ?? [],
+          dip_GG_Richiesta: x.data?.dip_GG_AllData_OutModel?.dip_GG_Richiesta ?? []
         };
-
-        console.log('Both calls finished. Combined data:', remoteData);
-        return remoteData; // Return the structured data
-      }),
-      // 5. Optional: Add error handling for the forkJoin
-      catchError(error => {
-        console.error("Error fetching month data (one or both calls failed):", error);
-        return throwError(() => new Error('Failed to load data for month ' + month + '/' + year));
+        console.log('getMonthDataFromServer - combined data:', remoteData);
+        return remoteData;
       })
     );
-    // The method now correctly returns an Observable<MonthData>
+
+    //////this.timeSheetEngineService.Get_Timesheet_AllData(request).subscribe(x => {
+
+      
+
+    //////  const giustificativiArray = x.data.dip_GG_AllData_OutModel.dip_GG_Giustificativi || [];
+    //////  const timbratureArray = x.data.dip_GG_AllData_OutModel.dip_GG_Timbratura || [];
+    //////  const richiesteArray = x.data.dip_GG_AllData_OutModel.dip_GG_Richiesta || [];
+
+    //////  // Crea l'oggetto finale TimeSheetRemoteData
+    //////  const remoteData: TimeSheetRemoteData = {
+    //////    dip_GG_Giustificativi: giustificativiArray,
+    //////    dip_GG_Timbratura: timbratureArray,
+    //////    dip_GG_Richiesta: richiesteArray
+    //////  };
+
+    //////  console.log('Both calls finished. Combined data:', remoteData);
+    //////  return remoteData; // Return the structured data
+
+    //////});
+
+
+
+    //////let request_Just = new GenericRequest<Dip_GG_Giustificativi_GetAll_InModel>(Dip_GG_Giustificativi_GetAll_InModel);
+    //////request_Just.data.year = year;
+    //////request_Just.data.month = month + 1;
+    //////request_Just.data.idAspNetUsers = idAspNetUsers;
+
+    //////let request_clock = new GenericRequest<Dip_GG_Timbratura_GetAll_InModel>(Dip_GG_Timbratura_GetAll_InModel);
+    //////request_clock.data.year = year;
+    //////request_clock.data.month = month + 1;
+    //////request_clock.data.idAspNetUsers = idAspNetUsers;
+
+    //////let request_rich = new GenericRequest<Dip_GG_Richiesta_GetAll4User_InModel>(Dip_GG_Richiesta_GetAll4User_InModel);
+    //////request_rich.data.year = year;
+    //////request_rich.data.month = month + 1;
+    //////request_rich.data.idAspNetUsers = idAspNetUsers;
+    
+
+    //////// 2. Define the Observables for the API calls (DO NOT subscribe yet)
+    //////const justificationsObservable$ = this.dipGGGiustificativiService.GetAll(request_Just);
+    //////const clockingsObservable$ = this.dipGGTimbraturaService.GetAll(request_clock);
+    //////const requestObservable$ = this.dipGGRichiestaService.GetAll4User(request_clock);
+
+    
+
+    //////// 3. Use forkJoin to execute both Observables in parallel
+    //////// It will emit an object with the results once BOTH calls complete
+    //////return forkJoin({
+    //////  // Assign keys to easily access the results later
+    //////  justResult: justificationsObservable$,
+    //////  clockResult: clockingsObservable$,
+    //////  requestResult: requestObservable$
+    //////}).pipe(
+    //////  // 4. Use the 'map' operator to transform the combined results
+    //////  map(results => {
+
+    //////    const giustificativiArray = results.justResult?.data?.dip_GG_Giustificativi || [];
+    //////    const timbratureArray = results.clockResult?.data?.dip_GG_Timbratura || [];
+    //////    const richiesteArray = results.requestResult?.data?.dip_GG_Richiesta || [];
+
+    //////    // Crea l'oggetto finale TimeSheetRemoteData
+    //////    const remoteData: TimeSheetRemoteData = {
+    //////      dip_GG_Giustificativi: giustificativiArray,
+    //////      dip_GG_Timbratura: timbratureArray,
+    //////      dip_GG_Richiesta: richiesteArray
+    //////    };
+
+    //////    console.log('Both calls finished. Combined data:', remoteData);
+    //////    return remoteData; // Return the structured data
+    //////  }),
+    //////  // 5. Optional: Add error handling for the forkJoin
+    //////  catchError(error => {
+    //////    console.error("Error fetching month data (one or both calls failed):", error);
+    //////    return throwError(() => new Error('Failed to load data for month ' + month + '/' + year));
+    //////  })
+    //////);
+    //////// The method now correctly returns an Observable<MonthData>
+
+
   }
     
   private transformRemoteDataToMonthData(remoteData: TimeSheetRemoteData, year: number, month: number): MonthData {

@@ -18,7 +18,7 @@ import { Subscription } from 'rxjs';
 import { DatePipe } from '@angular/common';
 import { TimeSheetEngineCallerComponent, TimeSheetEngineCallerData } from '../../../shared/components/GestionePresenze/time-sheet-engine-caller/time-sheet-engine-caller.component';
 import { TimeSheetEngineService } from '../../../ClientServer-Service/GestionePresenze/TimeSheet_EngineService/time-sheet-engine.service';
-import { TimeSheet_CalculateInModel } from '../../../ClientServer-Service/GestionePresenze/TimeSheet_EngineService/Models/time-sheet-engine-model';
+import { Timesheet_AllData_InModel, TimeSheet_CalculateInModel } from '../../../ClientServer-Service/GestionePresenze/TimeSheet_EngineService/Models/time-sheet-engine-model';
 import { LongJobNotifierService } from '../../../Utility/infrastructure/long-job-notifier.service';
 import { GestionePresenze_JobType } from '../../../Utility/GestionePresenze/GestionePresenze_JobType';
 
@@ -66,6 +66,7 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
               private datePipe: DatePipe,
               private longJobNotifier: LongJobNotifierService , /* RICVEVE LE NOTIFICHE  */
               public timeSheetEngineService: TimeSheetEngineService
+              
   ) {
     this.title = 'Calendario HR';
     this.currentMonth = { year: 0, month: 0, days: {}, dip_GG_Richiesta: [] };
@@ -142,6 +143,21 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
       this.currentMonth = monthData;
       this.buildDaysList();
     });
+
+    //////////////////////////
+    //let request: GenericRequest<Timesheet_AllData_InModel> = new GenericRequest<Timesheet_AllData_InModel>(Timesheet_AllData_InModel);
+    //request.data = new Timesheet_AllData_InModel();
+    //request.data.dal = new Date(Date.UTC(this.currYear, this.currMonth , 1)).toISOString();
+    //request.data.al = new Date(Date.UTC(this.currYear, this.currMonth+1, 0)).toISOString();
+    //request.data.usersId = [this.currUserId];
+    //this.timeSheetEngineService.Get_Timesheet_AllData(request).subscribe(x => {
+    //  var c = x;
+    //});
+    //////////////////////////
+
+
+
+
   }
 
   buildDaysList() {

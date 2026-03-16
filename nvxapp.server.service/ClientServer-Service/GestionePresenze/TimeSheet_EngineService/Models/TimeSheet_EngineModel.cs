@@ -103,7 +103,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
     public class Timesheet_AllData_InModel
     {
-        public List<string> UsersId { get; set; } = new List<string>();
+        public List<string>? UsersId { get; set; } 
         public DateTime Dal { get; set; }
         public DateTime Al { get; set; }
     }

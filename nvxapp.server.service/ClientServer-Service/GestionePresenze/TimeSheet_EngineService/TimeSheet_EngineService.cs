@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using nvxapp.server.Base;
 using nvxapp.server.data.Entities.Public;
+using nvxapp.server.data.Entities.Tenant;
 using nvxapp.server.data.Entities.Tenant.GestionePresenze;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
@@ -563,6 +564,22 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                     if (res_Timbrature.Success && res_Timbrature.Data != null)
                     {
                         retVal.Dip_GG_Timbratura = res_Timbrature.Data.Dip_GG_Timbratura;
+
+                        var groupedByDay = retVal.Dip_GG_Timbratura.GroupBy(x => x.GiornoCompetenza.Date).ToList();
+                        foreach (var group in groupedByDay)
+                        {
+                            for (int i = 0; i < group.Count(); i++)
+                            {
+                                var timbraturaItem = group.ElementAt(i);
+
+                                // Applica la logica solo se il TipoTimbratura è diverso da Attivita
+                                if (timbraturaItem.TimbraturaTipo != TipoTimbratura.Attivita)
+                                {
+                                    timbraturaItem.TimbraturaTipo = (i % 2 == 0) ? TipoTimbratura.Entrata : TipoTimbratura.Uscita;
+                                }
+                            }
+                        }
+
                     }
 
                     // 2) Recupera causali per il calcolo
@@ -618,11 +635,18 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                 Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg company_DATA = await _gestionePresenzeUserUtility.Get_AzAna_AzSedi_AzReparto_Az_Cfg(IdCompany, true);
                 if (company_DATA != null && company_DATA.az_Anagrafica != null)
                 {
+                    List<string> usersId = new List<string>();
+                    if (model.Data.UsersId == null)
+                        usersId.Add(this.CurrentUserId);
+                    else
+                        usersId = model.Data.UsersId;
+
+
 
                     var req_OrariSchema_4User = new GenericRequest<OrariSchema_4User_InModel>();
                     req_OrariSchema_4User.Data.Dal = model.Data.Dal;
                     req_OrariSchema_4User.Data.Al = model.Data.Al;
-                    req_OrariSchema_4User.Data.UsersId = model.Data.UsersId;
+                    req_OrariSchema_4User.Data.UsersId = usersId;
 
                     var res_OrariSchema_4User = await this.Get_OrariSchema_4User(req_OrariSchema_4User, true);
                     if (res_OrariSchema_4User.Success && res_OrariSchema_4User.Data != null)
@@ -633,7 +657,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                     var req_Dip_GG_AllData = new GenericRequest<Dip_GG_AllData_InModel>();
                     req_Dip_GG_AllData.Data.Dal = model.Data.Dal;
                     req_Dip_GG_AllData.Data.Al = model.Data.Al;
-                    req_Dip_GG_AllData.Data.UsersId = model.Data.UsersId;
+                    req_Dip_GG_AllData.Data.UsersId = usersId;
 
                     var res_Dip_GG_AllData = await this.Dip_GG_AllData_AllData(req_Dip_GG_AllData, true);
                     if (res_Dip_GG_AllData.Success && res_Dip_GG_AllData.Data != null)
