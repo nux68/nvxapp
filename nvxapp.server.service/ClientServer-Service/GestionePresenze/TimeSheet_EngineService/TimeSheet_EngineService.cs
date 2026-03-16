@@ -290,7 +290,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                         // ciclo su ogni giorno del periodo richiesto
                                         for (var giorno = giornoInizio_calc; giorno <= giornoFine_calc; giorno = giorno.AddDays(1))
                                         {
-                                            CalcolaGiorno(rapporto_calc, giorno, AllData.Data);
+                                            CalcolaGiorno(model.Data.TimeSheet_Calculate, rapporto_calc, giorno, AllData.Data);
                                         }
                                     }
 
@@ -673,7 +673,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
             }, isSubProcess);
         }
 
-        private async void CalcolaGiorno(Dip_RapportoLavoroModel rapporto_calc, DateTime giorno, Timesheet_AllData_OutModel AllData)
+        private async void CalcolaGiorno(TimeSheet_CalculateModel timeSheet_CalculateModel ,Dip_RapportoLavoroModel rapporto_calc, DateTime giorno, Timesheet_AllData_OutModel AllData)
         {
             // DaySlot del giorno corrente per questo rapporto
             var daySlot_calc = AllData.OrariSchema_4User_OutModel.DaySlots
@@ -703,6 +703,23 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
             var richieste_calc = AllData.Dip_GG_AllData_OutModel.Dip_GG_Richiesta
                 .Where(r => r.IdDip_RapportoLavoro == rapporto_calc.Id)
                 .ToList();
+
+
+            if(timeSheet_CalculateModel.Approva_Richieste_Giustificativo)
+            {
+
+            }
+
+            if(timeSheet_CalculateModel.Approva_Richieste_Timbrature)
+            {
+
+            }
+
+            if(timeSheet_CalculateModel.Genera_Timbrature_Mancanti)
+            {
+
+            }
+
         }
 
 

@@ -38,11 +38,12 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Profil
                                           IOptions<JwtParameter> jwtParameter,
                                           IHttpContextAccessor httpContextAccessor,
                                           IConfiguration configuration,
+                                          IDip_ProfiloOrarioRepository dip_ProfiloOrarioRepository,
                                           IGestionePresenzeUserUtility gestionePresenzeUserUtility) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             
             _gestionePresenzeUserUtility = gestionePresenzeUserUtility;
-            
+            _dip_ProfiloOrarioRepository = dip_ProfiloOrarioRepository;
         }
 
         public virtual async Task<GenericResult<Dip_ProfiloOrario_Get_OutModel>> Dip_ProfiloOrarioGet(GenericRequest<Dip_ProfiloOrario_Get_InModel> model, bool isSubProcess)
