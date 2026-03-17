@@ -3,7 +3,7 @@ import { StatoRichiesta } from "../../Dip_GG_Richiesta/Models/dip-gg-richiesta-m
 
 
 
-export class Dip_GG_TimbraturaModel {
+export class Dip_GG_ResultModel {
 
   public id: number;
   public idDip_RapportoLavoro!: number;
@@ -28,7 +28,7 @@ export class Dip_GG_Result_GetAll_InModel {
   public month: number;
 }
 export class Dip_GG_Result_GetAll_OutModel extends ModelResult {
-  public dip_GG_Timbratura: Dip_GG_TimbraturaModel[];
+  public dip_GG_Result: Dip_GG_ResultModel[];
 }
 
 
@@ -41,7 +41,7 @@ export class Dip_GG_Result_Get_4Calculation_InModel {
   public al!: string;  // ISO 8601 locale, es. "2026-03-31T23:59:59"
 }
 export class Dip_GG_Result_Get_4Calculation_OutModel extends ModelResult {
-  public dip_GG_Timbratura: Dip_GG_TimbraturaModel[] = [];
+  public dip_GG_Result: Dip_GG_ResultModel[] = [];
 }
 
 

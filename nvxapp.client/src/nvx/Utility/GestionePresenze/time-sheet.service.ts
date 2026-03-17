@@ -16,6 +16,7 @@ import { TipoRichiestaToShortTextPipe } from '../../shared/pipe/GestionePresenze
 import { StatoRichiestaLongTextPipe } from '../../shared/pipe/GestionePresenze/stato-richiesta-long-text.pipe';
 import { Timesheet_AllData_InModel } from '../../ClientServer-Service/GestionePresenze/TimeSheet_EngineService/Models/time-sheet-engine-model';
 import { TimeSheetEngineService } from '../../ClientServer-Service/GestionePresenze/TimeSheet_EngineService/time-sheet-engine.service';
+import { Dip_GG_ResultModel } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Result/Models/dip-gg-result-model';
 
 
 
@@ -56,7 +57,8 @@ export class TimeSheetService {
       const remoteData: TimeSheetRemoteData = {
         dip_GG_Giustificativi: [],
         dip_GG_Timbratura: [],
-        dip_GG_Richiesta: []
+        dip_GG_Richiesta: [],
+        dip_GG_Result:[]
       };
 
       return of(remoteData);
@@ -78,7 +80,8 @@ export class TimeSheetService {
         const remoteData: TimeSheetRemoteData = {
           dip_GG_Giustificativi: x.data?.dip_GG_AllData_OutModel?.dip_GG_Giustificativi ?? [],
           dip_GG_Timbratura: x.data?.dip_GG_AllData_OutModel?.dip_GG_Timbratura ?? [],
-          dip_GG_Richiesta: x.data?.dip_GG_AllData_OutModel?.dip_GG_Richiesta ?? []
+          dip_GG_Richiesta: x.data?.dip_GG_AllData_OutModel?.dip_GG_Richiesta ?? [],
+          dip_GG_Result: x.data?.dip_GG_AllData_OutModel?.dip_GG_Result ?? []
         };
         console.log('getMonthDataFromServer - combined data:', remoteData);
         return remoteData;
@@ -210,10 +213,26 @@ export class TimeSheetService {
       }
     });
 
+
+    // Raggruppa i giustificativi per giorno
+    const resultByDay = new Map<number, Dip_GG_ResultModel[]>();
+    remoteData.dip_GG_Result.forEach(result => {
+      
+      const day = parseInt(result.data.toString().substring(0, 2));
+
+      if (!resultByDay.has(day)) {
+        resultByDay.set(day, []);
+      }
+      resultByDay.get(day)?.push(result);
+
+    });
+
+
     // Unisci i dati per creare i record giornalieri
     const allDays = new Set<number>([
       ...Array.from(timbratureByDay.keys()),
-      ...Array.from(giustificativiByDay.keys())
+      ...Array.from(giustificativiByDay.keys()),
+      ...Array.from(resultByDay.keys())
     ]);
 
     allDays.forEach(day => {
@@ -222,12 +241,19 @@ export class TimeSheetService {
         //timestamps: [], // Campo che verrà rimosso
         //justifications: [], // Campo che verrà rimosso
         dip_GG_Timbratura: timbratureByDay.get(day) || [],
-        dip_GG_Giustificativi: giustificativiByDay.get(day) || []
+        dip_GG_Giustificativi: giustificativiByDay.get(day) || [],
+        dip_GG_Result: this.get_dip_GG_Result(remoteData, day) 
       };
     });
 
     return monthData;
   }
+
+  private get_dip_GG_Result(remoteData: TimeSheetRemoteData, day:number): Dip_GG_ResultModel {
+    var retVal = remoteData.dip_GG_Result.filter(t => parseInt(t.data.toString().substring(0, 2))  === day)
+    return retVal.length > 0 ? retVal[0] : null;
+  }
+
 
   private sortTimestampsByTime(timestamps: Dip_GG_TimbraturaModel[] | undefined): Dip_GG_TimbraturaModel[] {
     if (!timestamps) return [];

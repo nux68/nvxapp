@@ -31,17 +31,19 @@
 
           <ion-grid class="ion-no-padding">
             <ion-row class="header-row">
-              <ion-col size="2" class="header-cell">Giorno</ion-col>
-              <ion-col size="5" class="header-cell">Timbrature</ion-col>
-              <ion-col size="5" class="header-cell">Giustificativi</ion-col>
+              <ion-col size="1" class="header-cell">Giorno</ion-col>
+              <ion-col size="3" class="header-cell">Timbrature</ion-col>
+              <ion-col size="3" class="header-cell">Giustificativi</ion-col>
+              <ion-col size="1" class="header-cell">HH Teo</ion-col>
+              <ion-col size="1" class="header-cell">HH Ord</ion-col>
             </ion-row>
 
             <ion-row *ngFor="let day of currentDays; let indexRow4Color = index" [ngClass]="{'weekend': isWeekend(day.date)}"
-                       [class.nvx-row-odd]="indexRow4Color % 2 !== 0"
-                       [class.nvx-row-even]="indexRow4Color % 2 === 0"
+                     [class.nvx-row-odd]="indexRow4Color % 2 !== 0"
+                     [class.nvx-row-even]="indexRow4Color % 2 === 0"
                      class="day-row nvx-ion-row-4table nvx-row-hover">
 
-              <ion-col size="2" class="day-cell">
+              <ion-col size="1" class="day-cell">
 
                 <ion-button fill="clear" size="small" [ngStyle]="{
                                                       '--color': get_label_day_color(day.date),
@@ -84,7 +86,8 @@
                   <span class="no-data">-</span>
                 </ng-template>
               </ion-col>
-              <ion-col size="2">
+
+              <ion-col size="3">
                 <ng-container *ngIf="day.dip_GG_Giustificativi?.length > 0; else noJust">
 
 
@@ -111,6 +114,15 @@
                   <span class="no-data">-</span>
                 </ng-template>
               </ion-col>
+
+
+              <ion-col size="1">
+                {{ day.dip_GG_Result.hH_Teo | slice:0:5 }}
+              </ion-col>
+              <ion-col size="1">
+                {{ day.dip_GG_Result.hH_Lav | slice:0:5 }}
+              </ion-col>
+
             </ion-row>
           </ion-grid>
         </div>

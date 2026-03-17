@@ -9,6 +9,7 @@ import { Par_OrarioIntervalloHHModel } from '../../Par_OrarioIntervalloHH/Models
 import { Par_OrarioModel } from '../../Par_Orario/Models/par-orario-model';
 import { Par_ProfiloOrarioGGModel } from '../../Par_ProfiloOrarioGG/Models/par-profilo-orario-gg-model';
 import { Par_ProfiloOrarioModel } from '../../Par_ProfiloOrario/Models/par-profilo-orario-model';
+import { Dip_GG_ResultModel } from "../../Dip_GG_Result/Models/dip-gg-result-model";
 
 // ─── Calculate ────────────────────────────────────────────────────────────────
 
@@ -80,6 +81,7 @@ export class Dip_GG_AllData_OutModel extends ModelResult {
   dip_GG_Causali: Dip_GG_CausaliModel[] = [];
   dip_GG_Giustificativi: Dip_GG_GiustificativiModel[] = [];
   dip_GG_Richiesta: Dip_GG_RichiestaModel[] = [];
+  dip_GG_Result: Dip_GG_ResultModel[] = [];
 }
 
 // ─── Get_Timesheet_AllData ────────────────────────────────────────────────────

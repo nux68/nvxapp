@@ -21,6 +21,7 @@ import { TimeSheetEngineService } from '../../../ClientServer-Service/GestionePr
 import { Timesheet_AllData_InModel, TimeSheet_CalculateInModel } from '../../../ClientServer-Service/GestionePresenze/TimeSheet_EngineService/Models/time-sheet-engine-model';
 import { LongJobNotifierService } from '../../../Utility/infrastructure/long-job-notifier.service';
 import { GestionePresenze_JobType } from '../../../Utility/GestionePresenze/GestionePresenze_JobType';
+import { Dip_GG_ResultModel } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Result/Models/dip-gg-result-model';
 
 
 interface DayData {
@@ -28,6 +29,7 @@ interface DayData {
   dayOfMonth: number;
   dip_GG_Timbratura: Dip_GG_TimbraturaModel[];
   dip_GG_Giustificativi: Dip_GG_GiustificativiModel[];
+  dip_GG_Result: Dip_GG_ResultModel;
 }
 
 @Component({
@@ -177,7 +179,8 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
         date: date,
         dayOfMonth: i,
         dip_GG_Timbratura: dayData?.dip_GG_Timbratura || [],
-        dip_GG_Giustificativi: dayData?.dip_GG_Giustificativi || []
+        dip_GG_Giustificativi: dayData?.dip_GG_Giustificativi || [],
+        dip_GG_Result: dayData?.dip_GG_Result 
       });
     }
   }
