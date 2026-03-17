@@ -85,7 +85,13 @@ namespace nvxapp.server.data.Infrastructure
                 .HasForeignKey(key_esterna => key_esterna.IdPar_ProfiloOrario)
                 .OnDelete(DeleteBehavior.Cascade);
 
-
+            
+            /*Dip_GG_Result*/
+            modelBuilder.Entity<Dip_GG_Result>()
+                .HasOne(t_padre => t_padre.Dip_RapportoLavoroNavigation)
+                .WithMany(t_figlio => t_figlio.Dip_GG_Result)
+                .HasForeignKey(key_esterna => key_esterna.IdDip_RapportoLavoro)
+                .OnDelete(DeleteBehavior.Cascade);
 
 
 
@@ -133,7 +139,6 @@ namespace nvxapp.server.data.Infrastructure
                 .HasForeignKey(key_esterna => key_esterna.IdPar_Giustificativi)
                 .OnDelete(DeleteBehavior.Cascade);
 
-
             /* Dip_GG_NotaSpesa */
             modelBuilder.Entity<Dip_GG_NotaSpesa>()
                 .HasOne(t_padre => t_padre.Dip_GG_RichiestaNavigation)
@@ -148,6 +153,8 @@ namespace nvxapp.server.data.Infrastructure
               .WithMany(t_figlio => t_figlio.Dip_GG_Timbratura)
               .HasForeignKey(key_esterna => key_esterna.IdDip_GG_Richiesta)
               .OnDelete(DeleteBehavior.Cascade);
+
+  
 
 
 

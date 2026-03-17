@@ -26,6 +26,7 @@ namespace nvxapp.server.data.Entities.Tenant
         public ICollection<Dip_GG_NotaSpesa>? Dip_GG_NotaSpesa { get; set; }
         public ICollection<Dip_GG_Giustificativi>? Dip_GG_Giustificativi { get; set; }
         public ICollection<Dip_GG_Causali>? Dip_GG_Causali { get; set; }
+        public ICollection<Dip_GG_Result>? Dip_GG_Result { get; set; }
     }
 
 }

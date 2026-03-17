@@ -72,7 +72,7 @@ using Serilog;
        else
           calcola assenza
    
-    else
+    else 
       Notifico
 
 
@@ -673,31 +673,22 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
             }, isSubProcess);
         }
 
-        private async void CalcolaGiorno(TimeSheet_CalculateModel timeSheet_CalculateModel ,Dip_RapportoLavoroModel rapporto_calc, DateTime giorno, Timesheet_AllData_OutModel AllData)
+        private async void CalcolaGiorno(TimeSheet_CalculateModel timeSheet_CalculateModel, Dip_RapportoLavoroModel rapporto_calc, DateTime giorno, Timesheet_AllData_OutModel AllData)
         {
             // DaySlot del giorno corrente per questo rapporto
             var daySlot_calc = AllData.OrariSchema_4User_OutModel.DaySlots
                 .FirstOrDefault(ds => ds.IdDip_RapportoLavoro == rapporto_calc.Id
                                     && ds.Data.Date == giorno.Date);
 
-            // timbrature del giorno per questo rapporto
-            var timbrature_calc = AllData.Dip_GG_AllData_OutModel.Dip_GG_Timbratura
-                .Where(t => t.IdDip_RapportoLavoro == rapporto_calc.Id
-                            && t.GiornoCompetenza.Date == giorno.Date)
-                .OrderBy(t => t.TimbraturaOriginale)
-                .ToList();
 
-            // causali del giorno per questo rapporto
-            var causali_calc = AllData.Dip_GG_AllData_OutModel.Dip_GG_Causali
-                .Where(c => c.IdDip_RapportoLavoro == rapporto_calc.Id
-                            && c.Data.Date == giorno.Date)
-                .ToList();
 
-            // giustificativi del giorno per questo rapporto
-            var giustificativi_calc = AllData.Dip_GG_AllData_OutModel.Dip_GG_Giustificativi
-                .Where(g => g.IdDip_RapportoLavoro == rapporto_calc.Id
-                            && g.Data.Date == giorno.Date)
-                .ToList();
+            //// causali del giorno per questo rapporto
+            //var causali_calc = AllData.Dip_GG_AllData_OutModel.Dip_GG_Causali
+            //    .Where(c => c.IdDip_RapportoLavoro == rapporto_calc.Id
+            //                && c.Data.Date == giorno.Date)
+            //    .ToList();
+
+
 
             // richieste che coprono il giorno corrente per questo rapporto
             var richieste_calc = AllData.Dip_GG_AllData_OutModel.Dip_GG_Richiesta
@@ -705,21 +696,33 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                 .ToList();
 
 
-            if(timeSheet_CalculateModel.Approva_Richieste_Giustificativo)
+            if (timeSheet_CalculateModel.Approva_Richieste_Giustificativo)
+            {
+                // giustificativi del giorno per questo rapporto
+                var giustificativi_calc = AllData.Dip_GG_AllData_OutModel.Dip_GG_Giustificativi
+                    .Where(g => g.IdDip_RapportoLavoro == rapporto_calc.Id
+                                && g.Data.Date == giorno.Date)
+                    .ToList();
+            }
+
+            if (timeSheet_CalculateModel.Approva_Richieste_Timbrature)
+            {
+                // timbrature del giorno per questo rapporto
+                var timbrature_calc = AllData.Dip_GG_AllData_OutModel.Dip_GG_Timbratura
+                    .Where(t => t.IdDip_RapportoLavoro == rapporto_calc.Id
+                                && t.GiornoCompetenza.Date == giorno.Date)
+                    .OrderBy(t => t.TimbraturaOriginale)
+                    .ToList();
+            }
+
+            if (timeSheet_CalculateModel.Genera_Timbrature_Mancanti)
             {
 
             }
 
-            if(timeSheet_CalculateModel.Approva_Richieste_Timbrature)
-            {
 
-            }
-
-            if(timeSheet_CalculateModel.Genera_Timbrature_Mancanti)
-            {
-
-            }
-
+            // Nessun 'await' qui
+            await Task.Delay(DelayAsyncMethod);
         }
 
 
@@ -732,6 +735,15 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
         Task<GenericResult<Dip_GG_AllData_OutModel>> Dip_GG_AllData_AllData(GenericRequest<Dip_GG_AllData_InModel> model, bool isSubProcess);
         Task<GenericResult<Timesheet_AllData_OutModel>> Get_Timesheet_AllData(GenericRequest<Timesheet_AllData_InModel> model, bool isSubProcess);
     }
+
+
+
+    /*
+     Non avento un entity , al momento viene posizionato qui, magari verra salvato
+     */
+
+
+
 
 
     public static class CalcoloGiornoEngine
