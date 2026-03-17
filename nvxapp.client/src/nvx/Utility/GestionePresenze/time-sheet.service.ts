@@ -217,8 +217,10 @@ export class TimeSheetService {
     // Raggruppa i giustificativi per giorno
     const resultByDay = new Map<number, Dip_GG_ResultModel[]>();
     remoteData.dip_GG_Result.forEach(result => {
+
       
-      const day = parseInt(result.data.toString().substring(0, 2));
+      const day = parseInt(result.data.substring(8, 10));
+      
 
       if (!resultByDay.has(day)) {
         resultByDay.set(day, []);
@@ -248,7 +250,7 @@ export class TimeSheetService {
   }
 
   private get_dip_GG_Result(remoteData: TimeSheetRemoteData, day:number): Dip_GG_ResultModel {
-    var retVal = remoteData.dip_GG_Result.filter(t => parseInt(t.data.toString().substring(0, 2))  === day)
+    var retVal = remoteData.dip_GG_Result.filter(t => parseInt(t.data.substring(8, 10))  === day)
     return retVal.length > 0 ? retVal[0] : null;
   }
 

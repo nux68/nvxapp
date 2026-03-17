@@ -107,7 +107,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Res
                             List<DateTime> DayToAdd = new List<DateTime>();
                             for (var giorno = model.Data.Dal; giorno <= model.Data.Al; giorno = giorno.AddDays(1))
                             {
-                                var currDay = retVal.Dip_GG_Result.Where(x => DateTime.Parse(x.Data) == giorno).FirstOrDefault();
+                                var currDay = retVal.Dip_GG_Result.Where(x => x.Data.Date == giorno).FirstOrDefault();
                                 if (currDay == null)
                                     DayToAdd.Add(giorno);
                             }

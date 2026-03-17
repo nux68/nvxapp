@@ -7,7 +7,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Res
     {
         public required int Id { get; set; }
         public required int IdDip_RapportoLavoro { get; set; }
-        public string Data { get; set; } = string.Empty;
+        public DateTime Data { get; set; } 
         public TimeOnly HH_Teo { get; set; }
         public TimeOnly HH_Lav { get; set; }
         public GG_ResultStato Stato { get; set; }
