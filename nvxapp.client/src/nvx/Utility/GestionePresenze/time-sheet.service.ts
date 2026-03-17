@@ -238,8 +238,6 @@ export class TimeSheetService {
     allDays.forEach(day => {
       monthData.days[day] = {
         date: new Date(year, month, day),
-        //timestamps: [], // Campo che verrà rimosso
-        //justifications: [], // Campo che verrà rimosso
         dip_GG_Timbratura: timbratureByDay.get(day) || [],
         dip_GG_Giustificativi: giustificativiByDay.get(day) || [],
         dip_GG_Result: this.get_dip_GG_Result(remoteData, day) 

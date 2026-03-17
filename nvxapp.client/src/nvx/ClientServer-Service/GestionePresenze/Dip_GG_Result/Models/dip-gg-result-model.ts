@@ -7,7 +7,7 @@ export class Dip_GG_ResultModel {
 
   public id: number;
   public idDip_RapportoLavoro!: number;
-  public data!: Date;
+  public data!: string;
   public hH_Teo: string | null;
   public hH_Lav: string | null;
   public stato: GG_ResultStato;
