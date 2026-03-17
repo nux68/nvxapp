@@ -10,25 +10,19 @@ using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_ResultService.Models;
-using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_TimbraturaService.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.ServerModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_ResultService
 {
-    
+
     public class Dip_GG_ResultService : ServiceBase, IDip_GG_ResultService
     {
         private readonly IGestionePresenzeUserUtility _gestionePresenzeUserUtility;
         private readonly IDip_GG_ResultRepository _dip_GG_ResultRepository;
 
-        public Dip_GG_ResultService(  IMapper mapper,
+        public Dip_GG_ResultService(IMapper mapper,
                                           UserManager<ApplicationUser> userManager,
                                           IAspNetUsersRepository aspNetUsersRepository,
                                           IOptions<JwtParameter> jwtParameter,
@@ -62,7 +56,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Res
                                                                                               x.IdDip_RapportoLavoro == user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.Id)
                                                                                      //.OrderBy(x => x.TimbraturaOriginale)
                                                                                      .ToList();
-                    
+
 
                     retVal.Dip_GG_Result = _mapper.Map<List<Dip_GG_ResultModel>>(timbratura);
 
@@ -100,10 +94,38 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Res
                                       x.Data >= model.Data.Dal &&
                                       x.Data <= model.Data.Al)
                         .OrderBy(x => x.IdDip_RapportoLavoro)
-                        //.ThenBy(x => x.TimbraturaOriginale)
                         .ToList();
 
                     retVal.Dip_GG_Result = _mapper.Map<List<Dip_GG_ResultModel>>(timbrature);
+
+                    #region "controllo init"
+                    TimeSpan diff = model.Data.Al - model.Data.Dal;
+                    foreach (var item in idRapportoLavoroList)
+                    {
+                        if (retVal.Dip_GG_Result.Select(x => x.IdDip_RapportoLavoro == item).Count() != diff.Days+1)
+                        {
+                            List<DateTime> DayToAdd = new List<DateTime>();
+                            for (var giorno = model.Data.Dal; giorno <= model.Data.Al; giorno = giorno.AddDays(1))
+                            {
+                                var currDay = retVal.Dip_GG_Result.Where(x => DateTime.Parse(x.Data) == giorno).FirstOrDefault();
+                                if (currDay == null)
+                                    DayToAdd.Add(giorno);
+                            }
+
+                            var req_Init = new GenericRequest<Dip_GG_Result_Init_InModel>();
+                            req_Init.Data.IdDip_RapportoLavoro = item;
+                            req_Init.Data.Date = DayToAdd;
+                            var res_Init = await Dip_GG_Result_Init(req_Init, true);
+                            if (res_Init.Success && res_Init.Data != null)
+                            {
+                                retVal.Dip_GG_Result.AddRange( _mapper.Map<List<Dip_GG_ResultModel>>(res_Init.Data.Dip_GG_Result)  );
+                            }
+
+                        }
+
+                    }
+                    #endregion
+
                 }
 
                 //eliminare
@@ -112,14 +134,52 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Res
 
                 return retVal;
             }, isSubProcess);
-        }    
-        
+        }
+
+        public virtual async Task<GenericResult<Dip_GG_Result_Init_OutModel>> Dip_GG_Result_Init(GenericRequest<Dip_GG_Result_Init_InModel> model, Boolean isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                Dip_GG_Result_Init_OutModel retVal = new Dip_GG_Result_Init_OutModel();
+                retVal.Dip_GG_Result = new List<Dip_GG_Result>();
+
+                foreach (var item in model.Data.Date)
+                {
+                    var gg_res = _dip_GG_ResultRepository.FindAll(x => x.Data == item &&
+                                                                       x.IdDip_RapportoLavoro == model.Data.IdDip_RapportoLavoro)
+                                                         .FirstOrDefault();
+                    if (gg_res == null)
+                    {
+                        gg_res = new Dip_GG_Result
+                        {
+                            IdDip_RapportoLavoro = model.Data.IdDip_RapportoLavoro,
+                            Data = item,
+                            HH_Teo = TimeOnly.FromTimeSpan(TimeSpan.Zero),
+                            HH_Lav = TimeOnly.FromTimeSpan(TimeSpan.Zero),
+                            Stato = GG_ResultStato.Init
+                        };
+                        var newDay = await _dip_GG_ResultRepository.UpdateAsync(gg_res);
+                        retVal.Dip_GG_Result.Add(newDay);
+                    }
+                }
+
+
+                //eliminare
+                // Nessun 'await' qui
+                await Task.Delay(DelayAsyncMethod);
+
+                return retVal;
+            }, isSubProcess);
+        }
+
     }
 
     public interface IDip_GG_ResultService : IServiceBase
     {
         public Task<GenericResult<Dip_GG_Result_GetAll_OutModel>> GetAll(GenericRequest<Dip_GG_Result_GetAll_InModel> model, Boolean isSubProcess);
         public Task<GenericResult<Dip_GG_Result_Get_4Calculation_OutModel>> Dip_GG_Result_Get_4Calculation(GenericRequest<Dip_GG_Result_Get_4Calculation_InModel> model, Boolean isSubProcess);
+        public Task<GenericResult<Dip_GG_Result_Init_OutModel>> Dip_GG_Result_Init(GenericRequest<Dip_GG_Result_Init_InModel> model, Boolean isSubProcess);
+
     }
 
 

@@ -38,6 +38,18 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Res
     {
         public List<Dip_GG_ResultModel> Dip_GG_Result { get; set; } = new List<Dip_GG_ResultModel>();
     }
+
+
+    public class Dip_GG_Result_Init_InModel
+    {
+        public required int IdDip_RapportoLavoro { get; set; }
+        public List<DateTime> Date { get; set; } = new List<DateTime>();
+    }
+    public class Dip_GG_Result_Init_OutModel : ModelResult
+    {
+        public List<Dip_GG_Result> Dip_GG_Result { get; set; } = new List<Dip_GG_Result>();
+    }
+
 }
 
       

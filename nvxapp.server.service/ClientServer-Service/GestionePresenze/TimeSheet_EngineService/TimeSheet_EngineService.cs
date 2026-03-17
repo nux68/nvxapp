@@ -14,6 +14,8 @@ using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Causali
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_CausaliService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_GiustificativiService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_GiustificativiService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_ResultService;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_ResultService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_RichiestaService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_RichiestaService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_TimbraturaService;
@@ -155,6 +157,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
         private readonly IDip_GG_CausaliService _dip_GG_CausaliService;
         private readonly IDip_GG_GiustificativiService _dip_GG_GiustificativiService;
         private readonly IDip_GG_RichiestaService _dip_GG_RichiestaService;
+        private readonly IDip_GG_ResultService _dip_GG_ResultService;
+
+
+
         private readonly IDip_RapportoLavoroRepository _dip_RapportoLavoroRepository;
         private readonly IDip_ProfiloOrarioRepository _dip_ProfiloOrarioRepository;
         private readonly IPar_OrarioService _par_OrarioService;
@@ -178,6 +184,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                       IDip_GG_TimbraturaService dip_GG_TimbraturaService,
                                       IDip_GG_CausaliService dip_GG_CausaliService,
                                       IDip_GG_GiustificativiService dip_GG_GiustificativiService,
+                                      IDip_GG_ResultService dip_GG_ResultService,
                                       IDip_GG_RichiestaService dip_GG_RichiestaService
 
                                       ) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
@@ -192,6 +199,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
             _dip_RapportoLavoroRepository = dip_RapportoLavoroRepository;
             _gestionePresenzeUserUtility = gestionePresenzeUserUtility;
             _par_OrarioService = par_OrarioService;
+            _dip_GG_ResultService = dip_GG_ResultService;
             _par_ProfiloOrarioService = par_ProfiloOrarioService;
             _dip_RapportoLavoroService = dip_RapportoLavoroService;
         }
@@ -617,6 +625,19 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                     {
                         retVal.Dip_GG_Richiesta = res_Richieste.Data.Dip_GG_Richiesta;
                     }
+
+                    // 5) Recupera result per il calcolo
+                    var req_Result = new GenericRequest<Dip_GG_Result_Get_4Calculation_InModel>();
+                    req_Result.Data.UsersId = model.Data.UsersId;
+                    req_Result.Data.Dal = model.Data.Dal;
+                    req_Result.Data.Al = model.Data.Al;
+
+                    var res_Result = await _dip_GG_ResultService.Dip_GG_Result_Get_4Calculation(req_Result, true);
+                    if (res_Result.Success && res_Result.Data != null)
+                    {
+                        retVal.Dip_GG_Result = res_Result.Data.Dip_GG_Result;
+                    }
+
                 }
 
                 await Task.Delay(DelayAsyncMethod);
@@ -724,6 +745,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
             // Nessun 'await' qui
             await Task.Delay(DelayAsyncMethod);
         }
+
+
 
 
     }
