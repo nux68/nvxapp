@@ -1,3 +1,4 @@
+import { Dip_GG_CausaliModel } from "../../ClientServer-Service/GestionePresenze/Dip_GG_Causali/Models/dip-gg-causali-model";
 import { Dip_GG_GiustificativiModel } from "../../ClientServer-Service/GestionePresenze/Dip_GG_Giustificativi/Models/dip-gg-giustificativi-model";
 import { Dip_GG_ResultModel } from "../../ClientServer-Service/GestionePresenze/Dip_GG_Result/Models/dip-gg-result-model";
 import { Dip_GG_RichiestaModel } from "../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/Models/dip-gg-richiesta-model";
@@ -11,6 +12,7 @@ export interface DayRecord {
   dip_GG_Timbratura: Dip_GG_TimbraturaModel[];
   dip_GG_Giustificativi: Dip_GG_GiustificativiModel[];
   dip_GG_Result: Dip_GG_ResultModel;
+  dip_GG_Causali: Dip_GG_CausaliModel[];
 }
 
 
@@ -28,6 +30,7 @@ export interface TimeSheetRemoteData {
   dip_GG_Giustificativi: Dip_GG_GiustificativiModel[];
   dip_GG_Richiesta: Dip_GG_RichiestaModel[];
   dip_GG_Result: Dip_GG_ResultModel[];
+  dip_GG_Causali: Dip_GG_CausaliModel[];
 }
 
 

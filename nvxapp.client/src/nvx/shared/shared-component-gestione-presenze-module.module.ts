@@ -33,6 +33,8 @@ import { ParOrarioToLongTextPipe } from './pipe/GestionePresenze/par-orario-to-l
 import { EditParProfiloOrarioDettaglioOrarioDialogComponent } from './components/GestionePresenze/edit-par-profilo-orario-dettaglio-orario-dialog/edit-par-profilo-orario-dettaglio-orario-dialog.component';
 import { EditParOrarioDettaglioOrarioIntervalloHHDialogComponent } from './components/GestionePresenze/edit-par-orario-dettaglio-orario-intervallo-hhdialog/edit-par-orario-dettaglio-orario-intervallo-hhdialog.component';
 import { TimeSheetEngineCallerComponent } from './components/GestionePresenze/time-sheet-engine-caller/time-sheet-engine-caller.component';
+import { ParCausaliToLongTextPipe } from './pipe/GestionePresenze/par-causali-to-long-text.pipe';
+import { ParCausaliToShortTextPipe } from './pipe/GestionePresenze/par-causali-to-short-text.pipe';
 
 @NgModule({
   declarations: [
@@ -49,7 +51,7 @@ import { TimeSheetEngineCallerComponent } from './components/GestionePresenze/ti
     IonicModule,
     FormsModule,
     ReactiveFormsModule,
-    TipoTimbraturaToLongTextPipe, TipoTimbraturaToShortTextPipe, ParGiustificativiToLongTextPipe, ParGiustificativiToShortTextPipe,
+    TipoTimbraturaToLongTextPipe, TipoTimbraturaToShortTextPipe, ParGiustificativiToLongTextPipe, ParGiustificativiToShortTextPipe, ParCausaliToShortTextPipe, ParCausaliToLongTextPipe,
     TipoRichiestaToShortTextPipe, TipoRichiestaToLongTextPipe, StatoRichiestaLongTextPipe, StatoRichiestaShortTextPipe,
     IdDipRapportoLavoroToNomePipe, IdDipRapportoLavoroToCognomePipe,
     IdAspNetUsersToCognomePipe, IdAspNetUsersToNomePipe,
@@ -58,7 +60,7 @@ import { TimeSheetEngineCallerComponent } from './components/GestionePresenze/ti
     ParOrarioToCodicePipe, ParOrarioToLongTextPipe
   ],
   exports: [
-    TipoTimbraturaToLongTextPipe, TipoTimbraturaToShortTextPipe, ParGiustificativiToLongTextPipe, ParGiustificativiToShortTextPipe,
+    TipoTimbraturaToLongTextPipe, TipoTimbraturaToShortTextPipe, ParGiustificativiToLongTextPipe, ParGiustificativiToShortTextPipe, ParCausaliToShortTextPipe, ParCausaliToLongTextPipe,
     TipoRichiestaToShortTextPipe, TipoRichiestaToLongTextPipe, StatoRichiestaLongTextPipe, StatoRichiestaShortTextPipe,
     IdDipRapportoLavoroToNomePipe, IdDipRapportoLavoroToCognomePipe,
     IdAspNetUsersToCognomePipe, IdAspNetUsersToNomePipe,

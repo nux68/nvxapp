@@ -17,6 +17,7 @@ import { StatoRichiestaLongTextPipe } from '../../shared/pipe/GestionePresenze/s
 import { Timesheet_AllData_InModel } from '../../ClientServer-Service/GestionePresenze/TimeSheet_EngineService/Models/time-sheet-engine-model';
 import { TimeSheetEngineService } from '../../ClientServer-Service/GestionePresenze/TimeSheet_EngineService/time-sheet-engine.service';
 import { Dip_GG_ResultModel } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Result/Models/dip-gg-result-model';
+import { Dip_GG_CausaliModel } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Causali/Models/dip-gg-causali-model';
 
 
 
@@ -58,7 +59,8 @@ export class TimeSheetService {
         dip_GG_Giustificativi: [],
         dip_GG_Timbratura: [],
         dip_GG_Richiesta: [],
-        dip_GG_Result:[]
+        dip_GG_Result: [],
+        dip_GG_Causali:[]
       };
 
       return of(remoteData);
@@ -81,7 +83,8 @@ export class TimeSheetService {
           dip_GG_Giustificativi: x.data?.dip_GG_AllData_OutModel?.dip_GG_Giustificativi ?? [],
           dip_GG_Timbratura: x.data?.dip_GG_AllData_OutModel?.dip_GG_Timbratura ?? [],
           dip_GG_Richiesta: x.data?.dip_GG_AllData_OutModel?.dip_GG_Richiesta ?? [],
-          dip_GG_Result: x.data?.dip_GG_AllData_OutModel?.dip_GG_Result ?? []
+          dip_GG_Result: x.data?.dip_GG_AllData_OutModel?.dip_GG_Result ?? [],
+          dip_GG_Causali: x.data?.dip_GG_AllData_OutModel?.dip_GG_Causali ?? []
         };
         console.log('getMonthDataFromServer - combined data:', remoteData);
         return remoteData;
@@ -214,7 +217,25 @@ export class TimeSheetService {
     });
 
 
-    // Raggruppa i giustificativi per giorno
+    // Raggruppa le causali per giorno
+    const causaliByDay = new Map<number, Dip_GG_CausaliModel[]>();
+    remoteData.dip_GG_Causali.forEach(causale => {
+      const day = new Date(causale.data).getDate();
+
+      // Verifica se la causale appartiene al mese corretto
+      const cauMonth = new Date(causale.data).getMonth();
+      const cauYear = new Date(causale.data).getFullYear();
+
+      if (cauMonth === month && cauYear === year) {
+        if (!causaliByDay.has(day)) {
+          causaliByDay.set(day, []);
+        }
+        causaliByDay.get(day)?.push(causale);
+      }
+    });
+
+
+    // Assegna il Result al giorno
     const resultByDay = new Map<number, Dip_GG_ResultModel[]>();
     remoteData.dip_GG_Result.forEach(result => {
 
@@ -234,7 +255,8 @@ export class TimeSheetService {
     const allDays = new Set<number>([
       ...Array.from(timbratureByDay.keys()),
       ...Array.from(giustificativiByDay.keys()),
-      ...Array.from(resultByDay.keys())
+      ...Array.from(resultByDay.keys()),
+      ...Array.from(causaliByDay.keys())
     ]);
 
     allDays.forEach(day => {
@@ -242,7 +264,8 @@ export class TimeSheetService {
         date: new Date(year, month, day),
         dip_GG_Timbratura: timbratureByDay.get(day) || [],
         dip_GG_Giustificativi: giustificativiByDay.get(day) || [],
-        dip_GG_Result: this.get_dip_GG_Result(remoteData, day) 
+        dip_GG_Result: this.get_dip_GG_Result(remoteData, day),
+        dip_GG_Causali: causaliByDay.get(day) || [],
       };
     });
 
@@ -377,6 +400,43 @@ export class TimeSheetService {
 
     return '#ffffff';
   }
+
+
+
+  get_Dip_GG_Causali_backColor(ggCau: Dip_GG_CausaliModel): string {
+    //const just = this.sharedParameterGestionePresenzeService.Par_Causali.find(x => x.id == ggCau.idPar_Causali);
+    //if (just)
+    //  return just.backgroundColor;
+    //else
+    //  return null;
+
+    const root = document.documentElement;
+
+    let value = '';
+
+    value = getComputedStyle(root).getPropertyValue('--ion-color-medium').trim();
+    return value || '#92949c';
+
+  }
+
+  get_Dip_GG_Causali_txtColor(ggCau: Dip_GG_CausaliModel): string {
+    //const just = this.sharedParameterGestionePresenzeService.Par_Causali.find(x => x.id == ggCau.idPar_Causali);
+    //if (just)
+    //  return just.textColor;
+    //else
+    //  return null;
+
+    const root = document.documentElement;
+
+    let value = '';
+    
+    value = getComputedStyle(root).getPropertyValue('--ion-color-medium-contrast').trim();
+    return value || '#ffffff';
+
+  }
+
+
+
 
 
   get_StatoRichiesta_Approval_text(dip_GG_Richiesta: Dip_GG_RichiestaModel): string {

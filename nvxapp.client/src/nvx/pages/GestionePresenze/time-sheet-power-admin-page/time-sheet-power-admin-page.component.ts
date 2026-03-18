@@ -22,6 +22,8 @@ import { Timesheet_AllData_InModel, TimeSheet_CalculateInModel } from '../../../
 import { LongJobNotifierService } from '../../../Utility/infrastructure/long-job-notifier.service';
 import { GestionePresenze_JobType } from '../../../Utility/GestionePresenze/GestionePresenze_JobType';
 import { Dip_GG_ResultModel } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Result/Models/dip-gg-result-model';
+import { Dip_GG_CausaliModel } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Causali/Models/dip-gg-causali-model';
+import { ParCausaliToShortTextPipe } from '../../../shared/pipe/GestionePresenze/par-causali-to-short-text.pipe';
 
 
 interface DayData {
@@ -30,6 +32,7 @@ interface DayData {
   dip_GG_Timbratura: Dip_GG_TimbraturaModel[];
   dip_GG_Giustificativi: Dip_GG_GiustificativiModel[];
   dip_GG_Result: Dip_GG_ResultModel;
+  dip_GG_Causali: Dip_GG_CausaliModel[];
 }
 
 @Component({
@@ -180,7 +183,8 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
         dayOfMonth: i,
         dip_GG_Timbratura: dayData?.dip_GG_Timbratura || [],
         dip_GG_Giustificativi: dayData?.dip_GG_Giustificativi || [],
-        dip_GG_Result: dayData?.dip_GG_Result 
+        dip_GG_Result: dayData?.dip_GG_Result,
+        dip_GG_Causali: dayData?.dip_GG_Causali || [],
       });
     }
   }
@@ -302,6 +306,7 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
       this.actionSheetButtons = this.actionSheetButtonsRequest;
 
       const tipoTimbraturaToLongTextPipe = new TipoTimbraturaToLongTextPipe();
+
 
       const timbratura = obj as Dip_GG_TimbraturaModel;
       this.actionSheetOpenSelectObj = timbratura;

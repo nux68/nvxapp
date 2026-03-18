@@ -125,7 +125,40 @@
               </ion-col>
 
               <ion-col size="3">
-                {{ day.dip_GG_Result.hH_Lav | slice:0:5 }}
+                <!--{{ day.dip_GG_Result.hH_Lav | slice:0:5 }}-->
+
+                <ng-container *ngIf="day.dip_GG_Causali?.length > 0; else noCau">
+
+
+                  <ion-button [disabled]="false"
+                              size="small" shape="round"
+                              *ngFor="let caus of day.dip_GG_Causali"
+                              [ngStyle]="{
+                        '--background': timeSheetService.get_Dip_GG_Causali_backColor(caus),
+                        '--color': timeSheetService.get_Dip_GG_Causali_txtColor(caus),
+                        '--padding-top': '0px',
+                        '--padding-bottom': '0px',
+                        'font-size': '0.6em',
+                        'margin-bottom':'1px',
+                        'margin-top':'0px'
+                      }"
+                   (click)="actionSheetOpen(caus)">
+                    
+                    {{ caus.idPar_Causali | parCausaliToShortText}} {{ caus.valore | slice:0:5 }}
+
+                    <!--
+  <ion-icon slot="end" [name]="timeSheetService.get_StatoRichiesta_icon(get_Dip_GG_Richiesta(caus.idDip_GG_Richiesta))"></ion-icon>
+  -->
+
+                  </ion-button>
+
+                </ng-container>
+                <ng-template #noCau>
+                  <span class="no-data">-</span>
+                </ng-template>
+
+
+
               </ion-col>
 
             </ion-row>
