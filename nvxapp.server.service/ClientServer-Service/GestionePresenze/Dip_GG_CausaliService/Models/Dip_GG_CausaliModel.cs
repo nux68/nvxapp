@@ -13,20 +13,19 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Cau
         public int IdDip_RapportoLavoro { get; set; }
         public DateTime Data { get; set; }
         public int IdPar_Causali { get; set; }
+        public TimeOnly Valore { get; set; }
     }
 
-    public class Dip_GG_CausaliInModel
+    public class Dip_GG_Causali_GetAll_InModel
     {
 
     }
 
-    public class Dip_GG_CausaliOutModel : ModelResult 
+    public class Dip_GG_Causali_GetAll_OutModel : ModelResult 
     {
-        public Dip_GG_CausaliOutModel() 
-        {
-        
-        }
+        public List<Dip_GG_CausaliModel> Dip_GG_Causali { get; set; } = new List<Dip_GG_CausaliModel>();
     }
+
 
     public class Dip_GG_Causali_Get_4Calculation_InModel
     {

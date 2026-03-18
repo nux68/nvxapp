@@ -33,9 +33,10 @@
             <ion-row class="header-row">
               <ion-col size="1" class="header-cell">Giorno</ion-col>
               <ion-col size="3" class="header-cell">Timbrature</ion-col>
-              <ion-col size="3" class="header-cell">Giustificativi</ion-col>
+              <ion-col size="2" class="header-cell">Giustificativi</ion-col>
               <ion-col size="1" class="header-cell">HH Teo</ion-col>
               <ion-col size="1" class="header-cell">HH Ord</ion-col>
+              <ion-col size="3" class="header-cell">Causali</ion-col>
             </ion-row>
 
             <ion-row *ngFor="let day of currentDays; let indexRow4Color = index" [ngClass]="{'weekend': isWeekend(day.date)}"
@@ -87,7 +88,7 @@
                 </ng-template>
               </ion-col>
 
-              <ion-col size="3">
+              <ion-col size="2">
                 <ng-container *ngIf="day.dip_GG_Giustificativi?.length > 0; else noJust">
 
 
@@ -120,6 +121,10 @@
                 {{ day.dip_GG_Result.hH_Teo | slice:0:5 }}
               </ion-col>
               <ion-col size="1">
+                {{ day.dip_GG_Result.hH_Lav | slice:0:5 }}
+              </ion-col>
+
+              <ion-col size="3">
                 {{ day.dip_GG_Result.hH_Lav | slice:0:5 }}
               </ion-col>
 

@@ -35,11 +35,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Cau
             _Dip_GG_CausaliRepository = Dip_GG_CausaliRepository;
         }
 
-        public virtual async Task<GenericResult<Dip_GG_CausaliOutModel>> GetAll(GenericRequest<Dip_GG_CausaliInModel> model, Boolean isSubProcess)
+        public virtual async Task<GenericResult<Dip_GG_Causali_GetAll_OutModel>> GetAll(GenericRequest<Dip_GG_Causali_GetAll_InModel> model, Boolean isSubProcess)
         {
             return await ExecuteAction(model, async () =>
             {
-                Dip_GG_CausaliOutModel retVal = new Dip_GG_CausaliOutModel();
+                Dip_GG_Causali_GetAll_OutModel retVal = new Dip_GG_Causali_GetAll_OutModel();
 
                 //eliminare
                 // Nessun 'await' qui
@@ -90,7 +90,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Cau
 
     public interface IDip_GG_CausaliService : IServiceBase
     {
-        public Task<GenericResult<Dip_GG_CausaliOutModel>> GetAll( GenericRequest<Dip_GG_CausaliInModel> model, Boolean isSubProcess);
+        public Task<GenericResult<Dip_GG_Causali_GetAll_OutModel>> GetAll( GenericRequest<Dip_GG_Causali_GetAll_InModel> model, Boolean isSubProcess);
         public Task<GenericResult<Dip_GG_Causali_Get_4Calculation_OutModel>> Dip_GG_Causali_Get_4Calculation(GenericRequest<Dip_GG_Causali_Get_4Calculation_InModel> model, Boolean isSubProcess);
     }
 }

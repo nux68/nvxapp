@@ -12,7 +12,7 @@ namespace nvxapp.server.data.Entities.Tenant
         public virtual Dip_RapportoLavoro? Dip_RapportoLavoroNavigation { get; set; }
 
         public DateTime Data { get; set; }
-
+        public TimeOnly Valore { get; set; }
 
         public int IdPar_Causali { get; set; }
         [ForeignKey("IdPar_Causali")]
