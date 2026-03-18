@@ -33,7 +33,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Causal
     {
         public Par_CausaliModel Par_Causale { get; set; } = new Par_CausaliModel();
     }
-    public class Par_CausaliPutInModel : ModelResult
+    public class Par_CausaliPutInModel 
     {
         public Par_CausaliModel Par_Causale { get; set; } = new Par_CausaliModel();
     }

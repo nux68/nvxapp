@@ -1,17 +1,19 @@
-﻿using nvxapp.server.service.ClientServer_Service.ModelsBase;
-using nvxapp.server.Base;
-using nvxapp.server.service.Interfaces;
-using Microsoft.AspNetCore.Identity;
-using AutoMapper;
-using Microsoft.Extensions.Options;
-using nvxapp.server.service.ServerModels;
-using nvxapp.server.data.Entities.Public;
-using nvxapp.server.data.Repositories.Public;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
+using nvxapp.server.Base;
+using nvxapp.server.data.Entities.Public;
+using nvxapp.server.data.Entities.Tenant;
+using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_CausaliService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_CausaliService.Models;
+using nvxapp.server.service.ClientServer_Service.ModelsBase;
+using nvxapp.server.service.Interfaces;
+using nvxapp.server.service.ServerModels;
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_CausaliService
 {
@@ -48,7 +50,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Cau
                 return retVal;
             }, isSubProcess);
         }
-
         public virtual async Task<GenericResult<Dip_GG_Causali_Get_4Calculation_OutModel>> Dip_GG_Causali_Get_4Calculation(GenericRequest<Dip_GG_Causali_Get_4Calculation_InModel> model, Boolean isSubProcess)
         {
             return await ExecuteAction(model, async () =>
@@ -85,12 +86,75 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Cau
                 return retVal;
             }, isSubProcess);
         }
+        public virtual async Task<GenericResult<Dip_GG_Causali_DeleteOutModel>> Dip_GG_CausaliDelete(GenericRequest<Dip_GG_Causali_DeleteInModel> model, bool isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                Dip_GG_Causali_DeleteOutModel retVal = new Dip_GG_Causali_DeleteOutModel();
 
+                var entity = await _Dip_GG_CausaliRepository.FindByIdAsync(model.Data.Id);
+                if (entity != null)
+                {
+                    await _Dip_GG_CausaliRepository.DeleteAsync(entity);
+                }
+                
+                //eliminare
+                // Nessun 'await' qui
+                await Task.Delay(DelayAsyncMethod);
+
+                return retVal;
+            }, isSubProcess);
+        }
+        public virtual async Task<GenericResult<Dip_GG_CausaliPutOutModel>> Dip_GG_CausaliPut(GenericRequest<Dip_GG_CausaliPutInModel> model, bool isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                Dip_GG_CausaliPutOutModel retVal = new Dip_GG_CausaliPutOutModel();
+
+                
+                retVal.Dip_GG_Causali = model.Data.Dip_GG_Causali;
+
+                int idCompany;
+                int.TryParse(this.CurrentCompany, out idCompany);
+
+                Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg company_DATA_COMB_AzAna_AzSedi_AzReparto = await _gestionePresenzeUserUtility.Get_AzAna_AzSedi_AzReparto_Az_Cfg(idCompany, true);
+
+                if (company_DATA_COMB_AzAna_AzSedi_AzReparto != null && company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Anagrafica != null)
+                {
+                    Dip_GG_Causali? par_Causale = await _Dip_GG_CausaliRepository.FindByIdAsync(model.Data.Dip_GG_Causali.Id);
+                    if (par_Causale == null)
+                    {
+                        //par_Causale = _mapper.Map<Dip_GG_Causali>(model.Data.Dip_GG_Causali);
+                        //par_Causale.IdAz_Anagrafica = company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Anagrafica.Id;
+                    }
+                    else
+                    {
+                        //update 
+                        par_Causale = _mapper.Map<Dip_GG_Causali>(model.Data.Dip_GG_Causali);
+                    }
+
+                    //aggiurna il valore ritornato al client
+                    par_Causale = await _Dip_GG_CausaliRepository.UpsertAsync(par_Causale);
+                    retVal.Dip_GG_Causali = _mapper.Map<Dip_GG_CausaliModel>(par_Causale);
+                }
+                
+                //eliminare
+                // Nessun 'await' qui
+                await Task.Delay(DelayAsyncMethod);
+
+                return retVal;
+            }, isSubProcess);
+        }    
+        
     }
 
     public interface IDip_GG_CausaliService : IServiceBase
     {
         public Task<GenericResult<Dip_GG_Causali_GetAll_OutModel>> GetAll( GenericRequest<Dip_GG_Causali_GetAll_InModel> model, Boolean isSubProcess);
         public Task<GenericResult<Dip_GG_Causali_Get_4Calculation_OutModel>> Dip_GG_Causali_Get_4Calculation(GenericRequest<Dip_GG_Causali_Get_4Calculation_InModel> model, Boolean isSubProcess);
+        public Task<GenericResult<Dip_GG_Causali_DeleteOutModel>> Dip_GG_CausaliDelete(GenericRequest<Dip_GG_Causali_DeleteInModel> model, bool isSubProcess);
+        public Task<GenericResult<Dip_GG_CausaliPutOutModel>> Dip_GG_CausaliPut(GenericRequest<Dip_GG_CausaliPutInModel> model, bool isSubProcess);
     }
+
+ 
 }

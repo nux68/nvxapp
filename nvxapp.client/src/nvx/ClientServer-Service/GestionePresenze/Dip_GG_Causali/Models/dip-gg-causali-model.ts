@@ -15,7 +15,6 @@ export class Dip_GG_CausaliModel {
 export class Dip_GG_Causali_GetAll_InModel {
   
 }
-
 export class Dip_GG_Causali_GetAll_OutModel extends ModelResult {
 
   public dip_GG_Causali: Dip_GG_CausaliModel[];
@@ -33,3 +32,16 @@ export class Dip_GG_Causali_Get_4Calculation_OutModel extends ModelResult {
 }
 
 
+export class Dip_GG_Causali_DeleteInModel {
+  public id: number;
+}
+export class Dip_GG_Causali_DeleteOutModel extends ModelResult {
+  
+}
+
+export class Dip_GG_CausaliPutInModel {
+  public dip_GG_Causali: Dip_GG_CausaliModel;
+}
+export class Dip_GG_CausaliPutOutModel extends ModelResult {
+  public dip_GG_Causali: Dip_GG_CausaliModel;
+}

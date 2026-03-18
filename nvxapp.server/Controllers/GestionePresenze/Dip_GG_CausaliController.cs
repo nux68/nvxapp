@@ -46,6 +46,26 @@ namespace nvxapp.server.Controllers
             return res;
         }
 
+        [Authorize]
+        [HttpPost]
+        [Route("Dip_GG_Causali_Delete")]
+        public async Task<GenericResult<Dip_GG_Causali_DeleteOutModel>> Dip_GG_Causali_Delete(GenericRequest<Dip_GG_Causali_DeleteInModel> inModel)
+        {
+            var res = await _dip_GG_CausaliService.Dip_GG_CausaliDelete(inModel, false);
+
+            return res;
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("Dip_GG_CausaliPut")]
+        public async Task<GenericResult<Dip_GG_CausaliPutOutModel>> Dip_GG_CausaliPut(GenericRequest<Dip_GG_CausaliPutInModel> inModel)
+        {
+            var res = await _dip_GG_CausaliService.Dip_GG_CausaliPut(inModel, false);
+
+            return res;
+        }
+
     }
 
 

@@ -9,10 +9,9 @@ import { SharedParameterGestionePresenzeService } from '../../shared-parameter-g
 export class ParCausaliToLongTextPipe implements PipeTransform {
   constructor(private sharedParameterService: SharedParameterGestionePresenzeService) { }
 
-  transform(value: unknown, ...args: unknown[]): string | number | null {
-    // Validate input type (basic check)
-    if (typeof value !== 'number' || isNaN(value)) {
-      return value as (number | null); // Return original value or null if not a valid number
+  transform(value: number | null | undefined): string | number {
+    if (value === null || value === undefined) {
+      return '';
     }
 
     const causaliId = value as number;

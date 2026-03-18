@@ -14,7 +14,7 @@ import { DateTimeUtilService } from '../../../Utility/infrastructure/date-time-u
 import { ModalController, NavController } from '@ionic/angular';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
-import { Subscription } from 'rxjs';
+import { catchError, map, Subscription } from 'rxjs';
 import { DatePipe } from '@angular/common';
 import { TimeSheetEngineCallerComponent, TimeSheetEngineCallerData } from '../../../shared/components/GestionePresenze/time-sheet-engine-caller/time-sheet-engine-caller.component';
 import { TimeSheetEngineService } from '../../../ClientServer-Service/GestionePresenze/TimeSheet_EngineService/time-sheet-engine.service';
@@ -22,8 +22,13 @@ import { Timesheet_AllData_InModel, TimeSheet_CalculateInModel } from '../../../
 import { LongJobNotifierService } from '../../../Utility/infrastructure/long-job-notifier.service';
 import { GestionePresenze_JobType } from '../../../Utility/GestionePresenze/GestionePresenze_JobType';
 import { Dip_GG_ResultModel } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Result/Models/dip-gg-result-model';
-import { Dip_GG_CausaliModel } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Causali/Models/dip-gg-causali-model';
+import { Dip_GG_Causali_DeleteInModel, Dip_GG_CausaliModel, Dip_GG_CausaliPutInModel } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Causali/Models/dip-gg-causali-model';
 import { ParCausaliToShortTextPipe } from '../../../shared/pipe/GestionePresenze/par-causali-to-short-text.pipe';
+import { Par_Causali_DeleteInModel } from '../../../ClientServer-Service/GestionePresenze/Par_Causali/Models/par-causali-model';
+import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
+import { DipGGCausaliService } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Causali/dip-gg-causali.service';
+import { Par_OrarioIntervalloHHModel } from '../../../ClientServer-Service/GestionePresenze/Par_OrarioIntervalloHH/Models/par-orario-intervallo-hh-model';
+import { EditDipGGCausaliDialogComponent } from '../../../shared/components/GestionePresenze/edit-dip-gg-causali-dialog/edit-dip-gg-causali-dialog.component';
 
 
 interface DayData {
@@ -43,6 +48,8 @@ interface DayData {
   standalone: false
 }) 
 export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
+
+
 
   public currYear: number;
   public currMonth: number;
@@ -67,8 +74,9 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
               public dateTimeUtilService: DateTimeUtilService,
               public userNavigationService: UserNavigationService,
               private modalCtrl: ModalController,
+              private dipGGCausaliService: DipGGCausaliService,
               private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
-              private datePipe: DatePipe,
+              private datePipe: DatePipe,private collectionDialogService: CollectionDialogService,
               private longJobNotifier: LongJobNotifierService , /* RICVEVE LE NOTIFICHE  */
               public timeSheetEngineService: TimeSheetEngineService
               
@@ -222,6 +230,15 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
   }
   //////
 
+
+//   enum Color {
+//  Red = "RED",
+//  Green = "GREEN",
+//  Blue = "BLUE"
+//}
+
+  
+
   isActionSheetOpen = false;
 
   public actionSheetButtons = [{
@@ -248,6 +265,25 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
         action: 'rifiuta',
       },
     },
+
+  ];
+
+  public actionSheetButtonsCausali = [
+    {
+      text: 'Modifica causale',
+      role: 'modificacausale',
+      data: {
+        action: 'modificacausale',
+      },
+    },
+    {
+      text: 'Cancella causale',
+      role: 'cancellacausale',
+      data: {
+        action: 'cancellacausale',
+      },
+    },
+    
 
   ];
 
@@ -285,12 +321,12 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
   ];
 
 
-  private actionSheetOpenSelectObj: Dip_GG_GiustificativiModel | Dip_GG_TimbraturaModel | DayData;
+  private actionSheetOpenSelectObj: Dip_GG_GiustificativiModel | Dip_GG_TimbraturaModel | DayData | Dip_GG_CausaliModel;
   public actionSheetHeader = '';
   public actionSheetSubHeader = '';
 
   actionSheetOpen(obj: any) {
-    if ('idPar_Giustificativi' in obj) {
+    if ('idPar_Giustificativi' in obj) { //JUST
 
       this.actionSheetButtons = this.actionSheetButtonsRequest;
 
@@ -301,17 +337,30 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
       this.actionSheetHeader = `Giustificativo : ${parGiustificativiToLongTextPipe.transform(giustificativo.idPar_Giustificativi)} ${this.dateTimeUtilService.DateTo_ggmmyyyy(giustificativo.data)}`;
       this.actionSheetSubHeader = null;
 
-    } else if ('timbraturaTipo' in obj) {
+    } else if ('timbraturaTipo' in obj) { //TIMBRATURA
 
       this.actionSheetButtons = this.actionSheetButtonsRequest;
 
       const tipoTimbraturaToLongTextPipe = new TipoTimbraturaToLongTextPipe();
 
-
       const timbratura = obj as Dip_GG_TimbraturaModel;
       this.actionSheetOpenSelectObj = timbratura;
       this.actionSheetHeader = `Timbratura : ${tipoTimbraturaToLongTextPipe.transform(timbratura.timbraturaTipo)} ${this.dateTimeUtilService.DateTo_ggmmyyyy_hhmm(timbratura.timbratura)}`;
       this.actionSheetSubHeader = null;
+
+    } else if ('idPar_Causali' in obj) {  //CAUSALI
+
+      this.actionSheetButtons = this.actionSheetButtonsCausali;
+
+      const parCausaliToShortTextPipe = new ParCausaliToShortTextPipe(this.sharedParameterGestionePresenzeService);
+
+
+      const causale = obj as Dip_GG_CausaliModel;
+      this.actionSheetOpenSelectObj = causale;
+      this.actionSheetHeader = `Causale : ${parCausaliToShortTextPipe.transform(causale.idPar_Causali)}     ${this.dateTimeUtilService.DateTo_ggmmyyyy(new Date(causale.data))}  ${causale.valore.slice(0, 5) }`;
+      
+      this.actionSheetSubHeader = null;
+
     } else if ('dayOfMonth' in obj) {
       //menu giorno
       
@@ -400,6 +449,13 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
 
       this.TimeSheetEngineCallerDialog_Open(dal,al);
       
+    } else if (event?.detail?.data?.action === 'cancellacausale' || event?.detail?.data?.action === 'modificacausale') {
+
+      if (event?.detail?.data?.action === 'cancellacausale')
+        this.handleButtonCancellaCausaleClick(this.actionSheetOpenSelectObj);
+      if (event?.detail?.data?.action === 'modificacausale')
+        this.handleButtonModificaCausaleClick(this.actionSheetOpenSelectObj);
+
     }
 
 
@@ -478,5 +534,58 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
     }
   }
 
+
+  handleButtonModificaCausaleClick = async (item: any) => {
+
+    const modal = await this.modalCtrl.create({
+      component: EditDipGGCausaliDialogComponent,
+      componentProps: {
+        dip_GG_Causali: item
+      },
+    });
+
+    await modal.present();
+
+    const { data, role } = await modal.onWillDismiss<Dip_GG_CausaliModel | null>();
+
+    if (role === 'confirm' && data) {
+
+      const request: GenericRequest<Dip_GG_CausaliPutInModel> = new GenericRequest<Dip_GG_CausaliPutInModel>(Dip_GG_CausaliPutInModel);
+      request.data.dip_GG_Causali = data;
+      this.dipGGCausaliService.Dip_GG_Causali_Put(request).subscribe(res => {
+        this.loadMonth();
+      });
+
+    }
+
+  }
+
+  handleButtonCancellaCausaleClick = async (item: any) => {
+
+    const result = await this.collectionDialogService.ConfirmCancelDialog('Confermi la cancellazione della causale');
+    if (result) {
+
+      const request: GenericRequest<Dip_GG_Causali_DeleteInModel> = new GenericRequest<Dip_GG_Causali_DeleteInModel>(Dip_GG_Causali_DeleteInModel);
+      request.data.id = item.id;
+      this.dipGGCausaliService.Dip_GG_Causali_Delete(request).subscribe(res => {
+        this.loadMonth();
+      });
+
+    }
+
+  }
+
+
+}
+
+enum actionSheet_Action {
+  approva = "approva",
+  rifiuta = "rifiuta",
+  modificacausale = "modificacausale",
+  cancellacausale = "cancellacausale",
+  Calcola_Day_X = "Calcola_Day_X",
+  Calcola_Day_From = "Calcola_Day_From",
+  Calcola_Day_To = "Calcola_Day_To",
+  Calcola_Day_All = "Calcola_Day_All",
 
 }

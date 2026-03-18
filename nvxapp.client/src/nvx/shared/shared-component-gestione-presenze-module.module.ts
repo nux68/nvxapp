@@ -35,6 +35,7 @@ import { EditParOrarioDettaglioOrarioIntervalloHHDialogComponent } from './compo
 import { TimeSheetEngineCallerComponent } from './components/GestionePresenze/time-sheet-engine-caller/time-sheet-engine-caller.component';
 import { ParCausaliToLongTextPipe } from './pipe/GestionePresenze/par-causali-to-long-text.pipe';
 import { ParCausaliToShortTextPipe } from './pipe/GestionePresenze/par-causali-to-short-text.pipe';
+import { EditDipGGCausaliDialogComponent } from './components/GestionePresenze/edit-dip-gg-causali-dialog/edit-dip-gg-causali-dialog.component';
 
 @NgModule({
   declarations: [
@@ -44,6 +45,7 @@ import { ParCausaliToShortTextPipe } from './pipe/GestionePresenze/par-causali-t
     SeletionParAttivitaDialogComponent,
     EditDipProfiloOrarioDialogComponent, EditParProfiloOrarioDettaglioOrarioDialogComponent,
     EditParOrarioDettaglioOrarioIntervalloHHDialogComponent, TimeSheetEngineCallerComponent,
+    EditDipGGCausaliDialogComponent,
   ],
   imports: [
     SharedComponentInfrastructureModule,
@@ -68,6 +70,7 @@ import { ParCausaliToShortTextPipe } from './pipe/GestionePresenze/par-causali-t
     SediRepartoUserNavigationComponent, SediRepartoUserSelectionComponent , SeletionSediRepartoDialogComponent, SeletionSediRepartoUserDialogComponent, SeletionParAttivitaDialogComponent, AzSediRepartoToLongTextPipe,
     EditDipProfiloOrarioDialogComponent, ParProfiloOrarioToLongTextPipePipe, EditParProfiloOrarioDettaglioOrarioDialogComponent,
     EditParOrarioDettaglioOrarioIntervalloHHDialogComponent, TimeSheetEngineCallerComponent,
+    EditDipGGCausaliDialogComponent,
     ParOrarioToCodicePipe, ParOrarioToLongTextPipe
   ]
 })

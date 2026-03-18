@@ -5,7 +5,7 @@ import { environment } from '../../../../environments/environment';
 import { GenericRequest } from '../../ModelsBase/generic-request';
 import { GenericResult } from '../../ModelsBase/generic-result';
 import { map, Observable } from 'rxjs';
-import { Dip_GG_Causali_Get_4Calculation_InModel, Dip_GG_Causali_Get_4Calculation_OutModel, Dip_GG_Causali_GetAll_InModel, Dip_GG_Causali_GetAll_OutModel } from './Models/dip-gg-causali-model';
+import { Dip_GG_Causali_DeleteInModel, Dip_GG_Causali_DeleteOutModel, Dip_GG_Causali_Get_4Calculation_InModel, Dip_GG_Causali_Get_4Calculation_OutModel, Dip_GG_Causali_GetAll_InModel, Dip_GG_Causali_GetAll_OutModel, Dip_GG_CausaliPutInModel, Dip_GG_CausaliPutOutModel } from './Models/dip-gg-causali-model';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +13,7 @@ import { Dip_GG_Causali_Get_4Calculation_InModel, Dip_GG_Causali_Get_4Calculatio
 export class DipGGCausaliService {
 
   constructor(private http: HttpClient,
-    private authService: AuthService
+              private authService: AuthService
   ) { }
 
   GetAll(model: GenericRequest<Dip_GG_Causali_GetAll_InModel>): Observable<GenericResult<Dip_GG_Causali_GetAll_OutModel>> {
@@ -37,6 +37,26 @@ export class DipGGCausaliService {
         })
       );
 
+  }
+
+  Dip_GG_Causali_Delete(model: GenericRequest<Dip_GG_Causali_DeleteInModel>): Observable<GenericResult<Dip_GG_Causali_DeleteOutModel>> {
+
+    return this.http.post<GenericResult<Dip_GG_Causali_DeleteOutModel>>(environment.remoteData.apiUri + 'Dip_GG_Causali/Dip_GG_Causali_Delete', model)
+      .pipe(
+        map(r => {
+          return r;
+        })
+      );
+  }
+
+  Dip_GG_Causali_Put(model: GenericRequest<Dip_GG_CausaliPutInModel>): Observable<GenericResult<Dip_GG_CausaliPutOutModel>> {
+
+    return this.http.post<GenericResult<Dip_GG_CausaliPutOutModel>>(environment.remoteData.apiUri + 'Dip_GG_Causali/Dip_GG_CausaliPut', model)
+      .pipe(
+        map(r => {
+          return r;
+        })
+      );
   }
 
 }
