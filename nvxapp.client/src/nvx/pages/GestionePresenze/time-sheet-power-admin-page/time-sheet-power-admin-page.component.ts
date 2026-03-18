@@ -253,16 +253,16 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
   public actionSheetButtonsRequest = [
     {
       text: 'Approva richiesta',
-      role: 'approva',
+      role: actionSheet_Action.approva,
       data: {
-        action: 'approva',
+        action: actionSheet_Action.approva,
       },
     },
     {
       text: 'Rifiuta richiesta',
-      role: 'rifiuta',
+      role: actionSheet_Action.rifiuta,
       data: {
-        action: 'rifiuta',
+        action: actionSheet_Action.rifiuta,
       },
     },
 
@@ -271,16 +271,16 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
   public actionSheetButtonsCausali = [
     {
       text: 'Modifica causale',
-      role: 'modificacausale',
+      role: actionSheet_Action.modificacausale,
       data: {
-        action: 'modificacausale',
+        action: actionSheet_Action.modificacausale,
       },
     },
     {
       text: 'Cancella causale',
-      role: 'cancellacausale',
+      role: actionSheet_Action.cancellacausale,
       data: {
-        action: 'cancellacausale',
+        action: actionSheet_Action.cancellacausale,
       },
     },
     
@@ -290,30 +290,30 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
   public actionSheetButtonsDay = [
     {
       text: 'Calcola ###',
-      role: 'Calcola_Day_X',
+      role: actionSheet_Action.Calcola_Day_X,
       data: {
-        action: 'Calcola_Day_X',
+        action: actionSheet_Action.Calcola_Day_X,
       },
     },
     {
       text: 'Calcola ###',
-      role: 'Calcola_Day_From',
+      role: actionSheet_Action.Calcola_Day_From,
       data: {
-        action: 'Calcola_Day_From',
+        action: actionSheet_Action.Calcola_Day_From,
       },
     },
     {
       text: 'Calcola ###',
-      role: 'Calcola_Day_To',
+      role: actionSheet_Action.Calcola_Day_To,
       data: {
-        action: 'Calcola_Day_To',
+        action: actionSheet_Action.Calcola_Day_To,
       },
     },
     {
       text: 'Calcola tutto il mese',
-      role: 'Calcola_Day_All',
+      role: actionSheet_Action.Calcola_Day_All,
       data: {
-        action: 'Calcola_Day_All',
+        action: actionSheet_Action.Calcola_Day_All,
       },
     },
     
@@ -378,10 +378,10 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
       const dayTextExt = this.datePipe.transform(currDay.date, 'dd EEE');
 
       // Aggiorna dinamicamente il testo dei pulsanti
-      dynamicButtons.find((b: any) => b.role === 'Calcola_Day_X').text = `Calcola ${dayTextExt}`;
-      dynamicButtons.find((b: any) => b.role === 'Calcola_Day_To').text = `Calcola dal 01 al ${dayText}`;
+      dynamicButtons.find((b: any) => b.role === actionSheet_Action.Calcola_Day_X).text = `Calcola ${dayTextExt}`;
+      dynamicButtons.find((b: any) => b.role === actionSheet_Action.Calcola_Day_To).text = `Calcola dal 01 al ${dayText}`;
       const lastDayText = this.datePipe.transform(new Date(this.currYear, this.currMonth + 1, 0), 'dd');
-      dynamicButtons.find((b: any) => b.role === 'Calcola_Day_From').text = `Calcola dal ${dayText} al ${lastDayText}`;
+      dynamicButtons.find((b: any) => b.role === actionSheet_Action.Calcola_Day_From).text = `Calcola dal ${dayText} al ${lastDayText}`;
 
 
       this.actionSheetButtons = dynamicButtons;
@@ -396,7 +396,7 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
   actionSheetExecute(event: any) {
     this.isActionSheetOpen = false;
 
-    if (event?.detail?.data?.action === 'approva' || event?.detail?.data?.action === 'rifiuta') {
+    if (event?.detail?.data?.action === actionSheet_Action.approva || event?.detail?.data?.action === actionSheet_Action.rifiuta) {
       let IdDip_GG_Richiesta: number[] = [];
       if ('idPar_Giustificativi' in this.actionSheetOpenSelectObj) {
         const giustificativo = this.actionSheetOpenSelectObj as Dip_GG_GiustificativiModel;
@@ -412,9 +412,9 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
 
         request.data.fromHR = true;
 
-        if (event?.detail?.data?.action === 'approva') {
+        if (event?.detail?.data?.action === actionSheet_Action.approva) {
           request.data.richiestaStato = StatoRichiesta.Approvata;
-        } else if (event?.detail?.data?.action === 'rifiuta') {
+        } else if (event?.detail?.data?.action === actionSheet_Action.rifiuta) {
           request.data.richiestaStato = StatoRichiesta.Rifiutata;
         }
 
@@ -426,34 +426,34 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
         });
       }
 
-    } else if (event?.detail?.data?.action?.startsWith('Calcola_Day')) {
+    } else if (event?.detail?.data?.action?.startsWith(actionSheet_Action.Calcola_Day_PREFIX)) {
 
       
       const selectedDay = this.actionSheetOpenSelectObj as DayData;
       let dal = "";
       let al = "";
 
-      if (event?.detail?.data?.action === 'Calcola_Day_All') {
+      if (event?.detail?.data?.action === actionSheet_Action.Calcola_Day_All) {
         dal = this.datePipe.transform(new Date(this.currYear, this.currMonth, 1), 'yyyy-MM-dd');
         al = this.datePipe.transform(new Date(this.currYear, this.currMonth + 1, 0), 'yyyy-MM-dd');
-      } else if (event?.detail?.data?.action === 'Calcola_Day_X') {
+      } else if (event?.detail?.data?.action === actionSheet_Action.Calcola_Day_X) {
         dal = this.datePipe.transform(selectedDay.date, 'yyyy-MM-dd');
         al = this.datePipe.transform(selectedDay.date, 'yyyy-MM-dd');
-      } else if (event?.detail?.data?.action === 'Calcola_Day_From') {
+      } else if (event?.detail?.data?.action === actionSheet_Action.Calcola_Day_From) {
         dal =this.datePipe.transform(selectedDay.date, 'yyyy-MM-dd');
         al = this.datePipe.transform(new Date(this.currYear, this.currMonth + 1, 0), 'yyyy-MM-dd');
-      } else if (event?.detail?.data?.action === 'Calcola_Day_To') {
+      } else if (event?.detail?.data?.action === actionSheet_Action.Calcola_Day_To) {
         dal = this.datePipe.transform(new Date(this.currYear, this.currMonth, 1), 'yyyy-MM-dd');
         al = this.datePipe.transform(selectedDay.date, 'yyyy-MM-dd');
       }
 
       this.TimeSheetEngineCallerDialog_Open(dal,al);
       
-    } else if (event?.detail?.data?.action === 'cancellacausale' || event?.detail?.data?.action === 'modificacausale') {
+    } else if (event?.detail?.data?.action === actionSheet_Action.cancellacausale || event?.detail?.data?.action === actionSheet_Action.modificacausale) {
 
-      if (event?.detail?.data?.action === 'cancellacausale')
+      if (event?.detail?.data?.action === actionSheet_Action.cancellacausale)
         this.handleButtonCancellaCausaleClick(this.actionSheetOpenSelectObj);
-      if (event?.detail?.data?.action === 'modificacausale')
+      if (event?.detail?.data?.action === actionSheet_Action.modificacausale)
         this.handleButtonModificaCausaleClick(this.actionSheetOpenSelectObj);
 
     }
@@ -583,6 +583,7 @@ enum actionSheet_Action {
   rifiuta = "rifiuta",
   modificacausale = "modificacausale",
   cancellacausale = "cancellacausale",
+  Calcola_Day_PREFIX = "Calcola_Day",  // definisce il gruppo
   Calcola_Day_X = "Calcola_Day_X",
   Calcola_Day_From = "Calcola_Day_From",
   Calcola_Day_To = "Calcola_Day_To",
