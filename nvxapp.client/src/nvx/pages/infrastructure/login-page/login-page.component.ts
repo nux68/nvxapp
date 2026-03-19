@@ -40,12 +40,21 @@ export class LoginPageComponent  implements OnInit {
     this.buttonbar[0].event = this._handleButtonConfirmClick;
     this.buttonbar[1].event = this._handleButtonCancelClick;
 
+    //this.loginForm = this.fb.group({
+    //  //email: ['', [Validators.required, Validators.email]],
+    //  email: ['', [Validators.required, Validators.minLength(3)]],
+    //  password: ['', [Validators.required, Validators.minLength(3)]]
+    //});
+
+    //this.loginForm = this.fb.group({
+    //  email: [environment.production ? '' : 'max_poweradmin', [Validators.required, Validators.minLength(3)]],
+    //  password: [environment.production ? '' : 'max', [Validators.required, Validators.minLength(3)]]
+    //});
+
     this.loginForm = this.fb.group({
-      //email: ['', [Validators.required, Validators.email]],
-      email: ['', [Validators.required, Validators.minLength(3)]],
-      password: ['', [Validators.required, Validators.minLength(3)]]
+      email: [ 'max_poweradmin', [Validators.required, Validators.minLength(3)]],
+      password: [ 'max', [Validators.required, Validators.minLength(3)]]
     });
-    
 
   }
 
