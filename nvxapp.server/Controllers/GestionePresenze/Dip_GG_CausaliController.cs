@@ -66,6 +66,16 @@ namespace nvxapp.server.Controllers
             return res;
         }
 
+
+        [Authorize]
+        [HttpPost]
+        [Route("Dip_GG_CausaliGet")]
+        public async Task<GenericResult<Dip_GG_CausaliGetOutModel>> Dip_GG_CausaliGet(GenericRequest<Dip_GG_CausaliGetInModel> inModel)
+        {
+            var res = await _dip_GG_CausaliService.Dip_GG_CausaliGet(inModel, false);
+
+            return res;
+        }
     }
 
 

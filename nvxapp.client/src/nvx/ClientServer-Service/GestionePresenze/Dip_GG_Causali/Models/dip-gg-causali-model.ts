@@ -45,3 +45,13 @@ export class Dip_GG_CausaliPutInModel {
 export class Dip_GG_CausaliPutOutModel extends ModelResult {
   public dip_GG_Causali: Dip_GG_CausaliModel;
 }
+
+export class Dip_GG_CausaliGetInModel {
+  public id: number;
+
+  public data?: string;
+  public idAspNetUsers?: string;
+}
+export class Dip_GG_CausaliGetOutModel extends ModelResult {
+  public dip_GG_Causali: Dip_GG_CausaliModel;
+}

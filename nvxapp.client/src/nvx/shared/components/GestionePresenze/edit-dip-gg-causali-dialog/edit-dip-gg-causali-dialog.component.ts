@@ -7,6 +7,7 @@ import { SharedParameterGestionePresenzeService } from '../../../shared-paramete
 import { Observable, of } from 'rxjs';
 import { StringHelperService } from '../../../../Utility/infrastructure/string-helper.service';
 import { Dip_GG_CausaliModel } from '../../../../ClientServer-Service/GestionePresenze/Dip_GG_Causali/Models/dip-gg-causali-model';
+import { Par_CausaliModel } from '../../../../ClientServer-Service/GestionePresenze/Par_Causali/Models/par-causali-model';
 
 @Component({
   selector: 'app-edit-dip-gg-causali-dialog',
@@ -19,10 +20,12 @@ export class EditDipGGCausaliDialogComponent extends BaseDialogConfirmCancelComp
   @Input() dip_GG_Causali: Dip_GG_CausaliModel;
 
 
+  public _par_CausaliList: Par_CausaliModel[] = [];
+
   public dateTime: string;
   public formattedDate: string;
   public formattedTime: string;
-  
+  public originalId: number;
 
   constructor(
     protected override userInterfaceService: UserInterfaceService,
@@ -36,12 +39,15 @@ export class EditDipGGCausaliDialogComponent extends BaseDialogConfirmCancelComp
 
   override ionViewWillEnter() {
     super.ionViewWillEnter();
+    this.originalId = this.dip_GG_Causali.id;
+    this._par_CausaliList = this.sharedParameterGestionePresenzeService.Par_Causali;
   }
 
   get Title(): string { return "Causale"; }
 
   get EditForm(): FormGroup {
     return this.fb.group({
+      idPar_Causali: [null, [Validators.required]],
       valore: [null, [Validators.required]],
     });
   }

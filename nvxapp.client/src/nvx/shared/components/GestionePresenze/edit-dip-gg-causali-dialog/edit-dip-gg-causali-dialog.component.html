@@ -11,33 +11,50 @@
 
     <ion-card>
       <ion-card-header *ngIf="_editModel!=null">
-        <ion-card-title>{{ _editModel.idPar_Causali | parCausaliToShortText}} - {{ _editModel.idPar_Causali | parCausaliToLongText}}</ion-card-title>
+        <ion-card-title *ngIf="originalId>0">{{ _editModel.idPar_Causali | parCausaliToShortText}} - {{ _editModel.idPar_Causali | parCausaliToLongText}}</ion-card-title>
       </ion-card-header>
       <ion-card-content>
 
         <ion-grid>
+
+          <ion-row class="ion-align-items-center" *ngIf="originalId==0">
+
+            <ion-item>
+              <ion-label position="floating">Causale</ion-label>
+              <ion-select formControlName="idPar_Causali" placeholder="Seleziona la causale">
+                <ion-select-option *ngFor="let causale of _par_CausaliList" [value]="causale.id">
+                  {{ causale.descrizione }}
+                </ion-select-option>
+              </ion-select>
+            </ion-item>
+            <ion-note color="danger" *ngIf="_editForm.get('_editForm.idPar_Causali')?.hasError('required') && _editForm.get('_editForm.idPar_Causali')?.touched">
+              La causale obbligatorio.
+            </ion-note>
+
+          </ion-row>
+
           <ion-row class="ion-align-items-center">
-        
+
 
             <!-- Valore -->
-            <ion-col>
-              <ion-item>
-                <ion-label position="floating">Valore</ion-label>
-                <ion-datetime-button class="datetime-button-with-label" datetime="valore-modal"></ion-datetime-button>
-                <ion-modal [keepContentsMounted]="true">
-                  <ng-template>
-                    <ion-datetime id="valore-modal"
-                                  formControlName="valore"
-                                  presentation="time"
-                                  [showDefaultButtons]="true"
-                                  doneText="OK"
-                                  cancelText="Annulla">
-                    </ion-datetime>
-                  </ng-template>
-                </ion-modal>
-              </ion-item>
-            </ion-col>
-        
+
+            <ion-item>
+              <ion-label position="floating">Valore</ion-label>
+              <ion-datetime-button class="datetime-button-with-label" datetime="valore-modal"></ion-datetime-button>
+              <ion-modal [keepContentsMounted]="true">
+                <ng-template>
+                  <ion-datetime id="valore-modal"
+                                formControlName="valore"
+                                presentation="time"
+                                [showDefaultButtons]="true"
+                                doneText="OK"
+                                cancelText="Annulla">
+                  </ion-datetime>
+                </ng-template>
+              </ion-modal>
+            </ion-item>
+
+
 
           </ion-row>
 

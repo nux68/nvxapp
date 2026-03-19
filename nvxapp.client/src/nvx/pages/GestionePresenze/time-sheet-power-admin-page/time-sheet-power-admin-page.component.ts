@@ -22,7 +22,7 @@ import { Timesheet_AllData_InModel, TimeSheet_CalculateInModel } from '../../../
 import { LongJobNotifierService } from '../../../Utility/infrastructure/long-job-notifier.service';
 import { GestionePresenze_JobType } from '../../../Utility/GestionePresenze/GestionePresenze_JobType';
 import { Dip_GG_ResultModel } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Result/Models/dip-gg-result-model';
-import { Dip_GG_Causali_DeleteInModel, Dip_GG_CausaliModel, Dip_GG_CausaliPutInModel } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Causali/Models/dip-gg-causali-model';
+import { Dip_GG_Causali_DeleteInModel, Dip_GG_CausaliGetInModel, Dip_GG_CausaliModel, Dip_GG_CausaliPutInModel } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Causali/Models/dip-gg-causali-model';
 import { ParCausaliToShortTextPipe } from '../../../shared/pipe/GestionePresenze/par-causali-to-short-text.pipe';
 import { Par_Causali_DeleteInModel } from '../../../ClientServer-Service/GestionePresenze/Par_Causali/Models/par-causali-model';
 import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
@@ -253,34 +253,34 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
   public actionSheetButtonsRequest = [
     {
       text: 'Approva richiesta',
-      role: actionSheet_Action.approva,
+      role: actionSheet_Action.richieste_PREFIX + "_" + actionSheet_Action.approva,
       data: {
-        action: actionSheet_Action.approva,
+        action: actionSheet_Action.richieste_PREFIX + "_" + actionSheet_Action.approva,
       },
     },
     {
       text: 'Rifiuta richiesta',
-      role: actionSheet_Action.rifiuta,
+      role: actionSheet_Action.richieste_PREFIX + "_" + actionSheet_Action.rifiuta,
       data: {
-        action: actionSheet_Action.rifiuta,
+        action: actionSheet_Action.richieste_PREFIX + "_" + actionSheet_Action.rifiuta,
       },
     },
 
   ];
-
+  
   public actionSheetButtonsCausali = [
     {
       text: 'Modifica causale',
-      role: actionSheet_Action.modificacausale,
+      role: actionSheet_Action.Causali_PREFIX + "_" + actionSheet_Action.modificacausale,
       data: {
-        action: actionSheet_Action.modificacausale,
+        action: actionSheet_Action.Causali_PREFIX + "_" + actionSheet_Action.modificacausale,
       },
     },
     {
       text: 'Cancella causale',
-      role: actionSheet_Action.cancellacausale,
+      role: actionSheet_Action.Causali_PREFIX + "_" + actionSheet_Action.cancellacausale,
       data: {
-        action: actionSheet_Action.cancellacausale,
+        action: actionSheet_Action.Causali_PREFIX + "_" + actionSheet_Action.cancellacausale,
       },
     },
     
@@ -288,32 +288,41 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
   ];
 
   public actionSheetButtonsDay = [
+    
+    {
+      text: 'Aggiungiv causale al giono ###',
+      role: actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Day_Add_Causale,
+      data: {
+        action: actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Day_Add_Causale,
+      },
+    },
+
     {
       text: 'Calcola ###',
-      role: actionSheet_Action.Calcola_Day_X,
+      role: actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Calcola_Day_X,
       data: {
-        action: actionSheet_Action.Calcola_Day_X,
+        action: actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Calcola_Day_X,
       },
     },
     {
       text: 'Calcola ###',
-      role: actionSheet_Action.Calcola_Day_From,
+      role: actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Calcola_Day_From,
       data: {
-        action: actionSheet_Action.Calcola_Day_From,
+        action: actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Calcola_Day_From,
       },
     },
     {
       text: 'Calcola ###',
-      role: actionSheet_Action.Calcola_Day_To,
+      role: actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Calcola_Day_To,
       data: {
-        action: actionSheet_Action.Calcola_Day_To,
+        action: actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Calcola_Day_To,
       },
     },
     {
       text: 'Calcola tutto il mese',
-      role: actionSheet_Action.Calcola_Day_All,
+      role: actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Calcola_Day_All,
       data: {
-        action: actionSheet_Action.Calcola_Day_All,
+        action: actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Calcola_Day_All,
       },
     },
     
@@ -337,7 +346,8 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
       this.actionSheetHeader = `Giustificativo : ${parGiustificativiToLongTextPipe.transform(giustificativo.idPar_Giustificativi)} ${this.dateTimeUtilService.DateTo_ggmmyyyy(giustificativo.data)}`;
       this.actionSheetSubHeader = null;
 
-    } else if ('timbraturaTipo' in obj) { //TIMBRATURA
+    }
+    else if ('timbraturaTipo' in obj) { //TIMBRATURA
 
       this.actionSheetButtons = this.actionSheetButtonsRequest;
 
@@ -348,7 +358,8 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
       this.actionSheetHeader = `Timbratura : ${tipoTimbraturaToLongTextPipe.transform(timbratura.timbraturaTipo)} ${this.dateTimeUtilService.DateTo_ggmmyyyy_hhmm(timbratura.timbratura)}`;
       this.actionSheetSubHeader = null;
 
-    } else if ('idPar_Causali' in obj) {  //CAUSALI
+    }
+    else if ('idPar_Causali' in obj) {  //CAUSALI
 
       this.actionSheetButtons = this.actionSheetButtonsCausali;
 
@@ -361,7 +372,8 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
       
       this.actionSheetSubHeader = null;
 
-    } else if ('dayOfMonth' in obj) {
+    }
+    else if ('dayOfMonth' in obj) {
       //menu giorno
       
       const currDay = obj as DayData;
@@ -378,11 +390,12 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
       const dayTextExt = this.datePipe.transform(currDay.date, 'dd EEE');
 
       // Aggiorna dinamicamente il testo dei pulsanti
-      dynamicButtons.find((b: any) => b.role === actionSheet_Action.Calcola_Day_X).text = `Calcola ${dayTextExt}`;
-      dynamicButtons.find((b: any) => b.role === actionSheet_Action.Calcola_Day_To).text = `Calcola dal 01 al ${dayText}`;
+      dynamicButtons.find((b: any) => b.role === actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Calcola_Day_X).text = `Calcola ${dayTextExt}`;
+      dynamicButtons.find((b: any) => b.role === actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Calcola_Day_To).text = `Calcola dal 01 al ${dayText}`;
       const lastDayText = this.datePipe.transform(new Date(this.currYear, this.currMonth + 1, 0), 'dd');
-      dynamicButtons.find((b: any) => b.role === actionSheet_Action.Calcola_Day_From).text = `Calcola dal ${dayText} al ${lastDayText}`;
-
+      dynamicButtons.find((b: any) => b.role === actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Calcola_Day_From).text = `Calcola dal ${dayText} al ${lastDayText}`;
+      dynamicButtons.find((b: any) => b.role === actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Day_Add_Causale).text = `Aggiungi causale al giorno ${dayTextExt}`;
+     
 
       this.actionSheetButtons = dynamicButtons;
       
@@ -396,9 +409,11 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
   actionSheetExecute(event: any) {
     this.isActionSheetOpen = false;
 
-    if (event?.detail?.data?.action === actionSheet_Action.approva || event?.detail?.data?.action === actionSheet_Action.rifiuta) {
+    if (event?.detail?.data?.action?.startsWith(actionSheet_Action.richieste_PREFIX))
+    {
       let IdDip_GG_Richiesta: number[] = [];
-      if ('idPar_Giustificativi' in this.actionSheetOpenSelectObj) {
+      if ('idPar_Giustificativi' in this.actionSheetOpenSelectObj)
+      {
         const giustificativo = this.actionSheetOpenSelectObj as Dip_GG_GiustificativiModel;
         IdDip_GG_Richiesta.push(giustificativo.idDip_GG_Richiesta);
 
@@ -407,7 +422,8 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
         IdDip_GG_Richiesta.push(timbratura.idDip_GG_Richiesta);
       }
 
-      if (IdDip_GG_Richiesta.length > 0) {
+      if (IdDip_GG_Richiesta.length > 0)
+      {
         let request: GenericRequest<Dip_GG_Richiesta_SetState_InModel> = new GenericRequest<Dip_GG_Richiesta_SetState_InModel>(Dip_GG_Richiesta_SetState_InModel);
 
         request.data.fromHR = true;
@@ -426,34 +442,69 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
         });
       }
 
-    } else if (event?.detail?.data?.action?.startsWith(actionSheet_Action.Calcola_Day_PREFIX)) {
+    }
+    else if (event?.detail?.data?.action?.startsWith(actionSheet_Action.Calcola_Day_PREFIX))
+    {
 
-      
       const selectedDay = this.actionSheetOpenSelectObj as DayData;
-      let dal = "";
-      let al = "";
 
-      if (event?.detail?.data?.action === actionSheet_Action.Calcola_Day_All) {
-        dal = this.datePipe.transform(new Date(this.currYear, this.currMonth, 1), 'yyyy-MM-dd');
-        al = this.datePipe.transform(new Date(this.currYear, this.currMonth + 1, 0), 'yyyy-MM-dd');
-      } else if (event?.detail?.data?.action === actionSheet_Action.Calcola_Day_X) {
-        dal = this.datePipe.transform(selectedDay.date, 'yyyy-MM-dd');
-        al = this.datePipe.transform(selectedDay.date, 'yyyy-MM-dd');
-      } else if (event?.detail?.data?.action === actionSheet_Action.Calcola_Day_From) {
-        dal =this.datePipe.transform(selectedDay.date, 'yyyy-MM-dd');
-        al = this.datePipe.transform(new Date(this.currYear, this.currMonth + 1, 0), 'yyyy-MM-dd');
-      } else if (event?.detail?.data?.action === actionSheet_Action.Calcola_Day_To) {
-        dal = this.datePipe.transform(new Date(this.currYear, this.currMonth, 1), 'yyyy-MM-dd');
-        al = this.datePipe.transform(selectedDay.date, 'yyyy-MM-dd');
+      if (event?.detail?.data?.action === actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Calcola_Day_All ||
+          event?.detail?.data?.action === actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Calcola_Day_X ||
+          event?.detail?.data?.action === actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Calcola_Day_From ||
+          event?.detail?.data?.action === actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Calcola_Day_To)
+      {
+        let dal = "";
+        let al = "";
+
+        if (event?.detail?.data?.action === actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Calcola_Day_All)
+        {
+          dal = this.datePipe.transform(new Date(this.currYear, this.currMonth, 1), 'yyyy-MM-dd');
+          al = this.datePipe.transform(new Date(this.currYear, this.currMonth + 1, 0), 'yyyy-MM-dd');
+        } else if (event?.detail?.data?.action === actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Calcola_Day_X) {
+          dal = this.datePipe.transform(selectedDay.date, 'yyyy-MM-dd');
+          al = this.datePipe.transform(selectedDay.date, 'yyyy-MM-dd');
+        } else if (event?.detail?.data?.action === actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Calcola_Day_From) {
+          dal = this.datePipe.transform(selectedDay.date, 'yyyy-MM-dd');
+          al = this.datePipe.transform(new Date(this.currYear, this.currMonth + 1, 0), 'yyyy-MM-dd');
+        } else if (event?.detail?.data?.action === actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Calcola_Day_To) {
+          dal = this.datePipe.transform(new Date(this.currYear, this.currMonth, 1), 'yyyy-MM-dd');
+          al = this.datePipe.transform(selectedDay.date, 'yyyy-MM-dd');
+        }
+
+        this.TimeSheetEngineCallerDialog_Open(dal, al);
+      }
+      
+      if (event?.detail?.data?.action === actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Day_Add_Causale )
+      {
+        //let dip_GG_CausaliModel: Dip_GG_CausaliModel = new Dip_GG_CausaliModel();
+        //dip_GG_CausaliModel.valore = "01:00:00";
+        //dip_GG_CausaliModel.id = 0;
+
+        const request: GenericRequest<Dip_GG_CausaliGetInModel> = new GenericRequest<Dip_GG_CausaliGetInModel>(Dip_GG_CausaliGetInModel);
+        request.data.id = 0;
+        request.data.idAspNetUsers = this.currUserId;
+        request.data.data = this.datePipe.transform(
+          selectedDay.date,
+          "yyyy-MM-dd'T'HH:mm:ss"
+        );
+
+        this.dipGGCausaliService.Dip_GG_Causali_Get(request).subscribe(res => {
+          this.handleButtonModificaCausaleClick(res.data.dip_GG_Causali);
+        });
+
+
       }
 
-      this.TimeSheetEngineCallerDialog_Open(dal,al);
-      
-    } else if (event?.detail?.data?.action === actionSheet_Action.cancellacausale || event?.detail?.data?.action === actionSheet_Action.modificacausale) {
 
-      if (event?.detail?.data?.action === actionSheet_Action.cancellacausale)
+     
+      
+    }
+    else if (event?.detail?.data?.action?.startsWith(actionSheet_Action.Causali_PREFIX))
+    {
+
+      if (event?.detail?.data?.action === actionSheet_Action.Causali_PREFIX + "_" + actionSheet_Action.cancellacausale)
         this.handleButtonCancellaCausaleClick(this.actionSheetOpenSelectObj);
-      if (event?.detail?.data?.action === actionSheet_Action.modificacausale)
+      if (event?.detail?.data?.action === actionSheet_Action.Causali_PREFIX + "_" + actionSheet_Action.modificacausale)
         this.handleButtonModificaCausaleClick(this.actionSheetOpenSelectObj);
 
     }
@@ -579,14 +630,21 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
 }
 
 enum actionSheet_Action {
+
+  richieste_PREFIX = "richieste",
   approva = "approva",
   rifiuta = "rifiuta",
+
+
+  Causali_PREFIX = "causali",
   modificacausale = "modificacausale",
   cancellacausale = "cancellacausale",
+
   Calcola_Day_PREFIX = "Calcola_Day",  // definisce il gruppo
   Calcola_Day_X = "Calcola_Day_X",
   Calcola_Day_From = "Calcola_Day_From",
   Calcola_Day_To = "Calcola_Day_To",
   Calcola_Day_All = "Calcola_Day_All",
+  Day_Add_Causale = "Day_Add_Causale",
 
 }
