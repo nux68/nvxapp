@@ -283,6 +283,15 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
         action: actionSheet_Action.Causali_PREFIX + "_" + actionSheet_Action.cancellacausale,
       },
     },
+    {
+      text: 'Aggiungi causale',
+      role: actionSheet_Action.Causali_PREFIX + "_" + actionSheet_Action.aggiungicausale,
+      data: {
+        action: actionSheet_Action.Causali_PREFIX + "_" + actionSheet_Action.aggiungicausale,
+      },
+    },
+
+    
     
 
   ];
@@ -290,7 +299,7 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
   public actionSheetButtonsDay = [
     
     {
-      text: 'Aggiungiv causale al giono ###',
+      text: 'Aggiungi causale al giono ###',
       role: actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Day_Add_Causale,
       data: {
         action: actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Day_Add_Causale,
@@ -365,13 +374,18 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
 
       const parCausaliToShortTextPipe = new ParCausaliToShortTextPipe(this.sharedParameterGestionePresenzeService);
 
-
       const causale = obj as Dip_GG_CausaliModel;
       this.actionSheetOpenSelectObj = causale;
-      this.actionSheetHeader = `Causale : ${parCausaliToShortTextPipe.transform(causale.idPar_Causali)}     ${this.dateTimeUtilService.DateTo_ggmmyyyy(new Date(causale.data))}  ${causale.valore.slice(0, 5) }`;
-      
+      this.actionSheetHeader = `Giorno : ${this.dateTimeUtilService.DateTo_ggmmyyyy(new Date(causale.data))}`;
       this.actionSheetSubHeader = null;
 
+      const dynamicButtons = JSON.parse(JSON.stringify(this.actionSheetButtonsCausali));
+      dynamicButtons.find((b: any) => b.role === actionSheet_Action.Causali_PREFIX + "_" + actionSheet_Action.cancellacausale).text = `Cancella causale  :${parCausaliToShortTextPipe.transform(causale.idPar_Causali)}   ${this.dateTimeUtilService.DateTo_ggmmyyyy(new Date(causale.data))}  ${causale.valore.slice(0, 5)}`;
+      dynamicButtons.find((b: any) => b.role === actionSheet_Action.Causali_PREFIX + "_" + actionSheet_Action.modificacausale).text = `Modifica causale  :${parCausaliToShortTextPipe.transform(causale.idPar_Causali)}   ${this.dateTimeUtilService.DateTo_ggmmyyyy(new Date(causale.data))}  ${causale.valore.slice(0, 5)}`;
+
+      
+
+      this.actionSheetButtons = dynamicButtons;
     }
     else if ('dayOfMonth' in obj) {
       //menu giorno
@@ -434,8 +448,6 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
           request.data.richiestaStato = StatoRichiesta.Rifiutata;
         }
 
-
-
         request.data.idDip_GG_Richiesta = IdDip_GG_Richiesta;
         this.dipGGRichiestaService.SetState(request).subscribe(res => {
           this.loadMonth();
@@ -476,10 +488,6 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
       
       if (event?.detail?.data?.action === actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Day_Add_Causale )
       {
-        //let dip_GG_CausaliModel: Dip_GG_CausaliModel = new Dip_GG_CausaliModel();
-        //dip_GG_CausaliModel.valore = "01:00:00";
-        //dip_GG_CausaliModel.id = 0;
-
         const request: GenericRequest<Dip_GG_CausaliGetInModel> = new GenericRequest<Dip_GG_CausaliGetInModel>(Dip_GG_CausaliGetInModel);
         request.data.id = 0;
         request.data.idAspNetUsers = this.currUserId;
@@ -506,6 +514,28 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
         this.handleButtonCancellaCausaleClick(this.actionSheetOpenSelectObj);
       if (event?.detail?.data?.action === actionSheet_Action.Causali_PREFIX + "_" + actionSheet_Action.modificacausale)
         this.handleButtonModificaCausaleClick(this.actionSheetOpenSelectObj);
+      if (event?.detail?.data?.action === actionSheet_Action.Causali_PREFIX + "_" + actionSheet_Action.aggiungicausale) {
+
+
+
+        const causale = this.actionSheetOpenSelectObj as Dip_GG_CausaliModel;
+
+
+        const request: GenericRequest<Dip_GG_CausaliGetInModel> = new GenericRequest<Dip_GG_CausaliGetInModel>(Dip_GG_CausaliGetInModel);
+        request.data.id = 0;
+        request.data.idAspNetUsers = this.currUserId;
+        request.data.data = this.datePipe.transform(
+          causale.data,
+          "yyyy-MM-dd'T'HH:mm:ss"
+        );
+
+        this.dipGGCausaliService.Dip_GG_Causali_Get(request).subscribe(res => {
+          this.handleButtonModificaCausaleClick(res.data.dip_GG_Causali);
+        });
+
+        
+      }
+        
 
     }
 
@@ -639,6 +669,7 @@ enum actionSheet_Action {
   Causali_PREFIX = "causali",
   modificacausale = "modificacausale",
   cancellacausale = "cancellacausale",
+  aggiungicausale = "aggiungicausale",
 
   Calcola_Day_PREFIX = "Calcola_Day",  // definisce il gruppo
   Calcola_Day_X = "Calcola_Day_X",
