@@ -696,6 +696,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
         private async void CalcolaGiorno(TimeSheet_CalculateModel timeSheet_CalculateModel, Dip_RapportoLavoroModel rapporto_calc, DateTime giorno, Timesheet_AllData_OutModel AllData)
         {
+
+            var c = CalcoloGiornoEngine.CalcolaOreTeoriche( AllData.OrariSchema_4User_OutModel, rapporto_calc.Id, giorno );
+
+
+
             // DaySlot del giorno corrente per questo rapporto
             var daySlot_calc = AllData.OrariSchema_4User_OutModel.DaySlots
                 .FirstOrDefault(ds => ds.IdDip_RapportoLavoro == rapporto_calc.Id
@@ -761,12 +766,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
 
 
-    /*
-     Non avento un entity , al momento viene posizionato qui, magari verra salvato
-     */
-
-
-
+ 
 
 
     public static class CalcoloGiornoEngine
