@@ -253,9 +253,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
                             if (AllData.Success && AllData.Data != null)
                             {
-                                await Task.Delay(1000);
-
-
                                 // ciclo su ogni utente selezionato
                                 int idxUser = 0;
                                 foreach (var userId_calc in model.Data.TimeSheet_Calculate.SelectedUserId)
@@ -298,7 +295,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                         // ciclo su ogni giorno del periodo richiesto
                                         for (var giorno = giornoInizio_calc; giorno <= giornoFine_calc; giorno = giorno.AddDays(1))
                                         {
-                                            CalcolaGiorno(model.Data.TimeSheet_Calculate, rapporto_calc, giorno, AllData.Data);
+                                            await CalcolaGiorno(model.Data.TimeSheet_Calculate, rapporto_calc, giorno, AllData.Data);
                                         }
                                     }
 
@@ -307,7 +304,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                 }
 
 
-
+                                await this.SaveData(AllData.Data);
 
                                 Log.Information("Background task for job {JobId} has finished successfully.", jobId);
                                 await _longJobNotifier.LongJobProgressAsync(userId,
@@ -694,11 +691,16 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
             }, isSubProcess);
         }
 
-        private async void CalcolaGiorno(TimeSheet_CalculateModel timeSheet_CalculateModel, Dip_RapportoLavoroModel rapporto_calc, DateTime giorno, Timesheet_AllData_OutModel AllData)
+        private async Task CalcolaGiorno(TimeSheet_CalculateModel timeSheet_CalculateModel, Dip_RapportoLavoroModel rapporto_calc, DateTime giorno, Timesheet_AllData_OutModel AllData)
         {
 
-            var c = CalcoloGiornoEngine.CalcolaOreTeoriche( AllData.OrariSchema_4User_OutModel, rapporto_calc.Id, giorno );
+            
 
+            var dip_GG_Result = AllData.Dip_GG_AllData_OutModel.Dip_GG_Result.Where( x=> x.Data == giorno).FirstOrDefault();
+            if(dip_GG_Result!=null)
+            {
+                dip_GG_Result.HH_Teo = TimeOnly.FromTimeSpan(CalcoloGiornoEngine.CalcolaOreTeoriche( AllData.OrariSchema_4User_OutModel, rapporto_calc.Id, giorno ));
+            }
 
 
             // DaySlot del giorno corrente per questo rapporto
@@ -751,7 +753,22 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
             await Task.Delay(DelayAsyncMethod);
         }
 
+        private async Task SaveData(Timesheet_AllData_OutModel AllData)
+        {
 
+            foreach (var item in AllData.Dip_GG_AllData_OutModel.Dip_GG_Result)
+            {
+                if (item.IsHashChanged(item.Hash))
+                {
+                    var req_1 = new GenericRequest<Dip_GG_ResultPutInModel>();
+                    req_1.Data.Dip_GG_Result = item;
+                    await _dip_GG_ResultService.Dip_GG_ResultPut(req_1, true);
+                }
+            }
+
+            // Nessun 'await' qui
+            await Task.Delay(DelayAsyncMethod);
+        }
 
 
     }
