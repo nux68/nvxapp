@@ -3,12 +3,14 @@ using nvxapp.server.service.ClientServer_Service.ModelsBase;
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_ResultService.Models
 {
-    public class Dip_GG_ResultModel
+    public class Dip_GG_ResultModel:HashModel
     {
         public required int Id { get; set; }
         public required int IdDip_RapportoLavoro { get; set; }
         public DateTime Data { get; set; } 
+        [HashField]
         public TimeOnly HH_Teo { get; set; }
+        [HashField]
         public TimeOnly HH_Lav { get; set; }
         public GG_ResultStato Stato { get; set; }
     }

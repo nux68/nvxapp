@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using nvxapp.server.data.Entities.Tenant;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_ResultService.Models;
-using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_TimbraturaService.Models;
 
 
 namespace nvxapp.server.service.Mappers.Tenant.GestionePresenze
@@ -13,7 +12,10 @@ namespace nvxapp.server.service.Mappers.Tenant.GestionePresenze
         {
             CreateMap<Dip_GG_Result, Dip_GG_ResultModel>()
                 //.ForMember(dest => dest.Data, opt => opt.MapFrom(src => src.Data.ToString("dd/MM/yyyy")))
-                ;
+                .AfterMap((src, dest) =>
+                    {
+                        dest.Hash = dest.CalcolaHashOnAttribute();
+                    });
         }
 
     }
