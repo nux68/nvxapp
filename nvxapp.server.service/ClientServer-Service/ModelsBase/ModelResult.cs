@@ -1,10 +1,12 @@
-﻿using static System.Runtime.InteropServices.JavaScript.JSType;
+﻿using System.Linq.Expressions;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace nvxapp.server.service.ClientServer_Service.ModelsBase
 {
-   
 
-    public class ModelResult : iModelResult,iGenericResult4Server
+
+    public class ModelResult : iModelResult, iGenericResult4Server
     {
         //iModelResult
         public List<Message> Messages { get; set; }
@@ -20,7 +22,7 @@ namespace nvxapp.server.service.ClientServer_Service.ModelsBase
         //iGenericResult4Server
         public List<Message> GetMessages()
         {
-                return Messages;
+            return Messages;
         }
         public void AddMessage(string message, MessageType type)
         {
@@ -47,5 +49,32 @@ namespace nvxapp.server.service.ClientServer_Service.ModelsBase
         List<Message> Messages { get; set; }
     }
 
+
+
+    public class HashModel
+    {
+        public string Hash { get; set; }
+
+        public string CalcolaHash<T>(T instance, params Expression<Func<T, object>>[] campi)
+        {
+            var values = new List<string>();
+
+            foreach (var campo in campi)
+            {
+                var compiled = campo.Compile();
+                var value = compiled(instance);
+
+                values.Add(value?.ToString() ?? "null");
+            }
+
+            var raw = string.Join("|", values);
+
+            using var sha = SHA256.Create();
+            var bytes = Encoding.UTF8.GetBytes(raw);
+            var hashBytes = sha.ComputeHash(bytes);
+
+            return Convert.ToHexString(hashBytes);
+        }
+    }
 
 }
