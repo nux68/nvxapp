@@ -8,7 +8,11 @@ namespace nvxapp.server.service.Mappers.Tenant.GestionePresenze
     {
         public Dip_GG_Causali_To_Dip_GG_CausaliModel_Mapper()
         {
-            CreateMap<Dip_GG_Causali, Dip_GG_CausaliModel>();
+            CreateMap<Dip_GG_Causali, Dip_GG_CausaliModel>()
+                .AfterMap((src, dest) =>
+                    {
+                        dest.Hash = dest.CalcolaHashOnAttribute();
+                    });
         }
     }
 

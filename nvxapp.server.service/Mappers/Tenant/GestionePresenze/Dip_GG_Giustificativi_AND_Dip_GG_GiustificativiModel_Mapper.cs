@@ -11,7 +11,11 @@ namespace nvxapp.server.service.Mappers.Tenant.GestionePresenze
 
         public Dip_GG_Giustificativi_To_Dip_GG_GiustificativiModel_Mapper()
         {
-            CreateMap<Dip_GG_Giustificativi, Dip_GG_GiustificativiModel>();
+            CreateMap<Dip_GG_Giustificativi, Dip_GG_GiustificativiModel>()
+                .AfterMap((src, dest) =>
+                    {
+                        dest.Hash = dest.CalcolaHashOnAttribute();
+                    });
         }
 
     }

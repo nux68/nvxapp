@@ -13,25 +13,33 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
 
    
 
-    public class Dip_GG_RichiestaModel
+    public class Dip_GG_RichiestaModel:HashModel
     {
         public required int Id { get; set; }
         public required int IdDip_RapportoLavoro { get; set; }
         
+        [HashField]
         public string Data { get; set; } = string.Empty;
+        [HashField]
         public string DataA { get; set; } = string.Empty;
 
+        [HashField]
         public TipoRichiesta RichiestaTipo { get; set; }
         // Campo per oggetto JSON
+        [HashField]
         public required string Dati { get; set; } = string.Empty;
 
+        [HashField]
         public StatoRichiesta RichiestaStato { get; set; }
+        [HashField]
         public List<Dip_GG_Richiesta_Stato_Cronology>? RichiestaApprovazioneData { get; set; } = new List<Dip_GG_Richiesta_Stato_Cronology>();
-
+        [HashField]
         public StatoRichiesta? RevocaStato { get; set; }
+        [HashField]
         public List<Dip_GG_Richiesta_Stato_Cronology>? RevocaApprovazioneData { get; set; } = new List<Dip_GG_Richiesta_Stato_Cronology>();
-
+        
         // Campo per oggetto JSON
+        [HashField]
         public string? CronologiaApprovazione { get; set; }
 
     }

@@ -8,12 +8,17 @@ using System.Threading.Tasks;
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_CausaliService.Models
 {
-    public class Dip_GG_CausaliModel
+    public class Dip_GG_CausaliModel:HashModel
     {
+        [HashField]
         public int Id { get; set; }
+        [HashField]
         public int IdDip_RapportoLavoro { get; set; }
+        [HashField]
         public DateTime Data { get; set; }
+        [HashField]
         public int IdPar_Causali { get; set; }
+        [HashField]
         public TimeOnly Valore { get; set; }
     }
 

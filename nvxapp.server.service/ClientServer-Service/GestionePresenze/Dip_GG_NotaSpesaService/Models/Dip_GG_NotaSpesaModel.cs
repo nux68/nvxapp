@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_NotaSpesaService.Models
 {
-    public class Dip_GG_NotaSpesaModel
+    public class Dip_GG_NotaSpesaModel:HashModel
     {
     }
 

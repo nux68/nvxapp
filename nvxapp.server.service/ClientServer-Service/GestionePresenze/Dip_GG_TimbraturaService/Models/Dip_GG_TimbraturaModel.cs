@@ -9,17 +9,23 @@ using System.Threading.Tasks;
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_TimbraturaService.Models
 {
-    public class Dip_GG_TimbraturaModel
+    public class Dip_GG_TimbraturaModel:HashModel
     {
+        [HashField]
         public int Id { get; set; }
 
+        [HashField]
         public int IdDip_RapportoLavoro { get; set; }
 
-
+        [HashField]
         public DateTime Timbratura { get; set; }
+        [HashField]
         public DateTime TimbraturaOriginale { get; set; }
+        [HashField]
         public DateTime? TimbraturaArrotondata { get; set; }
+        [HashField]
         public DateTime GiornoCompetenza { get; set; } // girno al quale viene agganciata la timbratura (servirà per cavallo notte montanti /smontanti)
+        [HashField]
         public TipoTimbratura TimbraturaTipo { get; set; }
 
         /* 
@@ -27,7 +33,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
                 StatoRichiasta = Diretta e
                 IdDip_GG_Richiesta = null
          */
+        [HashField]
         public StatoRichiesta RichiestaStato { get; set; }
+        [HashField]
         public int? idDip_GG_Richiesta { get; set; }
 
 

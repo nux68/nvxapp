@@ -43,7 +43,12 @@ namespace nvxapp.server.service.Mappers.Tenant.GestionePresenze
                     .ForMember(dest => dest.RevocaApprovazioneData, opt => 
                         opt.MapFrom(src => !string.IsNullOrEmpty(src.RevocaApprovazioneData)
                                             ? JsonSerializer.Deserialize<List<Dip_GG_Richiesta_Stato_Cronology>>(src.RevocaApprovazioneData, jsonOptions)
-                                            : new List<Dip_GG_Richiesta_Stato_Cronology>()));
+                                            : new List<Dip_GG_Richiesta_Stato_Cronology>()))
+                    
+                    .AfterMap((src, dest) =>
+                    {
+                        dest.Hash = dest.CalcolaHashOnAttribute();
+                    });
 
                 
             }

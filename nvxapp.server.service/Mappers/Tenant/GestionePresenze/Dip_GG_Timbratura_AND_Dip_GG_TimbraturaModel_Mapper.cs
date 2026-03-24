@@ -10,7 +10,11 @@ namespace nvxapp.server.service.Mappers.Tenant.GestionePresenze
 
         public Dip_GG_Timbratura_To_Dip_GG_TimbraturaModel_Mapper()
         {
-            CreateMap<Dip_GG_Timbratura, Dip_GG_TimbraturaModel>();
+            CreateMap<Dip_GG_Timbratura, Dip_GG_TimbraturaModel>()
+                .AfterMap((src, dest) =>
+                    {
+                        dest.Hash = dest.CalcolaHashOnAttribute();
+                    });
         }
 
     }

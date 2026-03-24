@@ -10,17 +10,27 @@ using System.Threading.Tasks;
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_GiustificativiService.Models
 {
-    public class Dip_GG_GiustificativiModel
+    public class Dip_GG_GiustificativiModel:HashModel
     {
+        [HashField]
         public int Id { get; set; }
+        [HashField]
         public int IdDip_RapportoLavoro { get; set; }
+        [HashField]
         public DateTime Data { get; set; }
+        [HashField]
         public int IdJustificationType { get; set; }
+        [HashField]
         public JustificationInputType InputType { get; set; }
+        [HashField]
         public TimeSpan? Hours { get; set; }  // se InputType=manual
+        [HashField]
         public TimeSpan? From { get; set; }   // se InputType=manual  (dalle)
+        [HashField]
         public required int IdPar_Giustificativi { get; set; }
+        [HashField]
         public StatoRichiesta RichiestaStato { get; set; }
+        [HashField]
         public int? IdDip_GG_Richiesta { get; set; }
 
 
