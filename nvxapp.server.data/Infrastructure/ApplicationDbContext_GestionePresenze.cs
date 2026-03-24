@@ -322,6 +322,17 @@ namespace nvxapp.server.data.Infrastructure
                 .HasForeignKey(key_esterna => key_esterna.IdAz_Anagrafica)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            modelBuilder.Entity<Par_Giustificativi>()
+                .HasOne(p => p.Causale_Navigation)
+                .WithMany() 
+                .HasForeignKey(p => p.IdCausale)
+                .OnDelete(DeleteBehavior.Restrict); 
+
+            
+            
+
+
+
             /* Par_Arrotondamenti */
             modelBuilder.Entity<Par_Arrotondamenti>()
                 .HasOne(t_padre => t_padre.Az_AnagraficaNavigation)

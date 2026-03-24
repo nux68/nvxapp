@@ -11,6 +11,7 @@ export class Par_GiustificativiModel {
   public backgroundColor!: string;
   public textColor!: string;
   public tipoInput!: JustTipoInput;
+  public idCausale?: number; 
 
 }
 

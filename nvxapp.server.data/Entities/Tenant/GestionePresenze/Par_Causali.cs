@@ -1,4 +1,5 @@
 ﻿using nvxapp.server.data.Entities.Public;
+using nvxapp.server.data.Entities.Tenant.GestionePresenze;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -21,7 +22,7 @@ namespace nvxapp.server.data.Entities.Tenant
         public string? Codice { get; set; }
 
         public ICollection<Dip_GG_Causali>? Dip_GG_Causali { get; set; }
-
+        public ICollection<Par_Giustificativi>? Par_Giustificativi { get; set; }
     }
 
 
