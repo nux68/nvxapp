@@ -1,4 +1,5 @@
 ﻿using nvxapp.server.data.Entities.Public;
+using nvxapp.server.data.Extensions;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -28,12 +29,13 @@ namespace nvxapp.server.data.Entities.Tenant
 
         public JustTipoInput TipoInput { get; set; }
 
-
         
         public int? IdCausale { get; set; }
         [ForeignKey("IdCausale")]
         public virtual Par_Causali? Causale_Navigation { get; set; }
 
+
+        public SignWithNeutral Segno { get; set; }
 
         public ICollection<Dip_GG_Giustificativi>? Dip_GG_Giustificativi { get; set; }
 

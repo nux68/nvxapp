@@ -51,6 +51,32 @@
         </ion-item>
 
 
+        <ion-item>
+          <ion-label position="floating">Segno</ion-label>
+          <ion-select formControlName="segno" interface="popover">
+            <ion-select-option [value]="signWithNeutral.Down">+</ion-select-option>
+            <ion-select-option [value]="signWithNeutral.Neutral">Non agisce</ion-select-option>
+            <ion-select-option [value]="signWithNeutral.Up">-</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <ion-note color="danger" *ngIf="_editForm.get('segno')?.hasError('required') && _editForm.get('segno')?.touched">
+          Il tipo segno è obbligatorio.
+        </ion-note>
+
+        <ion-item>
+          <ion-label position="floating">Causale </ion-label>
+          <ion-select formControlName="idCausale" placeholder="Seleziona la causale">
+            <ion-select-option *ngFor="let causali of par_CausaliModelList" [value]="causali.id">
+              {{ causali.descrizione }}
+            </ion-select-option>
+          </ion-select>
+        </ion-item>
+        <ion-note color="danger" *ngIf="_editForm.get('idCausale')?.hasError('required') && _editForm.get('idCausale')?.touched">
+          La causale è obbligatoria.
+        </ion-note>
+        
+
+
       </form>
 
       <br />

@@ -9,10 +9,12 @@ import { map, catchError } from 'rxjs';
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { StringHelperService } from '../../../Utility/infrastructure/string-helper.service';
 import { ParameterService } from '../../../ClientServer-Service/Infrastructure/Parameter/parameter.service';
-import { Par_GiustificativiGetInModel, Par_GiustificativiInModel, Par_GiustificativiModel, Par_GiustificativiPutInModel } from '../../../ClientServer-Service/GestionePresenze/Par_Giustificativi/Models/par-giustificativi-model';
+import { Par_GiustificativiGetInModel, Par_GiustificativiInModel, Par_GiustificativiModel, Par_GiustificativiPutInModel, SignWithNeutral } from '../../../ClientServer-Service/GestionePresenze/Par_Giustificativi/Models/par-giustificativi-model';
 import { ParGiustificativiService } from '../../../ClientServer-Service/GestionePresenze/Par_Giustificativi/par-giustificativi.service';
 import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
+import { Title } from '@angular/platform-browser';
+import { Par_CausaliModel } from '../../../ClientServer-Service/GestionePresenze/Par_Causali/Models/par-causali-model';
 
 @Component({
   selector: 'app-justification-edit-page',
@@ -22,7 +24,8 @@ import { RefresherService } from '../../../Utility/GestionePresenze/refresher.se
 }) 
 export class JustificationEditPageComponent extends BasePageConfirmCancelComponent<Par_GiustificativiModel> {
 
-  
+  public signWithNeutral = SignWithNeutral;
+  public par_CausaliModelList: Par_CausaliModel[] = [];
 
   constructor(protected override navCtrl: NavController,
     protected override userInterfaceService: UserInterfaceService,
@@ -31,10 +34,9 @@ export class JustificationEditPageComponent extends BasePageConfirmCancelCompone
     private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
     private stringHelperService: StringHelperService,
     private parGiustificativiService: ParGiustificativiService,
-    private refresherService: RefresherService) {
-
+    private refresherService: RefresherService)
+  {
     super(navCtrl, userInterfaceService, fb);
-
   }
 
 
@@ -46,6 +48,9 @@ export class JustificationEditPageComponent extends BasePageConfirmCancelCompone
       codice: [null, [Validators.required, Validators.maxLength(5)]],
       backgroundColor: [null, []],
       textColor: [null, []],
+      segno: [null, [Validators.required]],
+      idCausale: [null, []],
+      
 
       //roleId: [null, [Validators.required]],
 
@@ -54,7 +59,7 @@ export class JustificationEditPageComponent extends BasePageConfirmCancelCompone
 
   LoadData = (): Observable<Par_GiustificativiModel | null> => {
     const state = history.state;
-
+    this.par_CausaliModelList = this.sharedParameterGestionePresenzeService.Par_Causali;
 
     if (state && state.id) {
       let request: GenericRequest<Par_GiustificativiGetInModel> = new GenericRequest<Par_GiustificativiGetInModel>(Par_GiustificativiGetInModel);

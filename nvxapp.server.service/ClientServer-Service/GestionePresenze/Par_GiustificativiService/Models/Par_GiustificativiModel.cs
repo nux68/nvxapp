@@ -1,4 +1,5 @@
 ﻿using nvxapp.server.data.Entities.Tenant;
+using nvxapp.server.data.Extensions;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using System;
@@ -20,6 +21,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Giusti
         public string? TextColor { get; set; }
         public JustTipoInput TipoInput { get; set; }
         public int? IdCausale { get; set; }
+        public SignWithNeutral Segno { get; set; }
     }
 
 

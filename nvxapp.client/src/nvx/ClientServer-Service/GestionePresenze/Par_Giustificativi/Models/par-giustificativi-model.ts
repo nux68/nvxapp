@@ -12,8 +12,16 @@ export class Par_GiustificativiModel {
   public textColor!: string;
   public tipoInput!: JustTipoInput;
   public idCausale?: number; 
+  public segno!: SignWithNeutral;
 
 }
+
+export enum SignWithNeutral {
+  Down = -1,
+  Neutral = 0,
+  Up = 1
+}
+
 
 
 export enum JustTipoInput {
