@@ -45,7 +45,7 @@ export class LongJobNotifierService {
       // Emetti l'evento con l'aggiornamento finale, che include il payload
       this._jobFinished.next(jobUpdate);
 
-      setTimeout(() => this.removeJob(jobUpdate.jobId), 5000); // 5-second delay
+      setTimeout(() => this.removeJob(jobUpdate.jobId), 2000); // 5-second delay
     }
   }
 
