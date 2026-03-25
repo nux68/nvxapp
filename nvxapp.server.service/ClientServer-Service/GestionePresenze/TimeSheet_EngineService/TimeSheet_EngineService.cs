@@ -131,7 +131,7 @@ Dati delle presenze
         GiornoCompetenza è il giono al quale verra agganciata la timbratura e potrebbe non corrispondere con la timbratura stessa
             (es. per timbrature fatte dopo la mezzanotte, il giorno competenza potrebbe essre quello precedente a quello della timbratura)
             quando una timbratura viene eseguita in quel istamte il valore viene messo in Timbratura e TimbraturaOriginale
-            se l'utente HR vuole prodere a uma modifica della timbratura, la timbratura modificata viene salvata in Timbratura e la timbratura originale viene mantenuta in TimbraturaOriginale
+            se l'utente HR vuole procedere a una modifica della timbratura, la timbratura modificata viene salvata in Timbratura e la timbratura originale viene mantenuta in TimbraturaOriginale
             quando la giornate viene ritenuta valita (cioè se sono soddisfatte tutte le coppie di timbrature per quel giorno) o su forzatura il valore di Timbratura viene arrotondato in base alle regole di arrotondamento definite in Par_Orario e salvato in TimbraturaArrotondata
         RichiestaStato viene abbinato allo stato dell' eventuale richiesta timbratura che deve essere approvata
    
@@ -300,7 +300,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                     }
 
                                     idxUser++;
-                                    await Task.Delay(1000);
+                                    //await Task.Delay(1000);
                                 }
 
 
@@ -694,12 +694,12 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
         private async Task CalcolaGiorno(TimeSheet_CalculateModel timeSheet_CalculateModel, Dip_RapportoLavoroModel rapporto_calc, DateTime giorno, Timesheet_AllData_OutModel AllData)
         {
 
-            
 
-            var dip_GG_Result = AllData.Dip_GG_AllData_OutModel.Dip_GG_Result.Where( x=> x.Data == giorno).FirstOrDefault();
-            if(dip_GG_Result!=null)
+
+            var dip_GG_Result = AllData.Dip_GG_AllData_OutModel.Dip_GG_Result.Where(x => x.Data == giorno).FirstOrDefault();
+            if (dip_GG_Result != null)
             {
-                dip_GG_Result.HH_Teo = TimeOnly.FromTimeSpan(CalcoloGiornoEngine.CalcolaOreTeoriche( AllData.OrariSchema_4User_OutModel, rapporto_calc.Id, giorno ));
+                dip_GG_Result.HH_Teo = TimeOnly.FromTimeSpan(this.CalcolaOreTeoriche(AllData.OrariSchema_4User_OutModel, rapporto_calc.Id, giorno));
             }
 
 
@@ -718,29 +718,20 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
 
 
-            // richieste che coprono il giorno corrente per questo rapporto
-            var richieste_calc = AllData.Dip_GG_AllData_OutModel.Dip_GG_Richiesta
-                .Where(r => r.IdDip_RapportoLavoro == rapporto_calc.Id)
-                .ToList();
+            //// richieste che coprono il giorno corrente per questo rapporto
+            //var richieste_calc = AllData.Dip_GG_AllData_OutModel.Dip_GG_Richiesta
+            //    .Where(r => r.IdDip_RapportoLavoro == rapporto_calc.Id)
+            //    .ToList();
 
 
             if (timeSheet_CalculateModel.Approva_Richieste_Giustificativo)
             {
-                // giustificativi del giorno per questo rapporto
-                var giustificativi_calc = AllData.Dip_GG_AllData_OutModel.Dip_GG_Giustificativi
-                    .Where(g => g.IdDip_RapportoLavoro == rapporto_calc.Id
-                                && g.Data.Date == giorno.Date)
-                    .ToList();
+                await this.ApprovaRichiesta(TipoRichiesta.Giustificativo, AllData.Dip_GG_AllData_OutModel, rapporto_calc.Id, giorno);
             }
 
             if (timeSheet_CalculateModel.Approva_Richieste_Timbrature)
             {
-                // timbrature del giorno per questo rapporto
-                var timbrature_calc = AllData.Dip_GG_AllData_OutModel.Dip_GG_Timbratura
-                    .Where(t => t.IdDip_RapportoLavoro == rapporto_calc.Id
-                                && t.GiornoCompetenza.Date == giorno.Date)
-                    .OrderBy(t => t.TimbraturaOriginale)
-                    .ToList();
+                await this.ApprovaRichiesta(TipoRichiesta.Timbratura, AllData.Dip_GG_AllData_OutModel, rapporto_calc.Id, giorno);
             }
 
             if (timeSheet_CalculateModel.Genera_Timbrature_Mancanti)
@@ -771,33 +762,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
         }
 
 
-    }
-
-    public interface ITimeSheet_EngineService : IServiceBase
-    {
-        Task<GenericResult<TimeSheet_CalculateOutModel>> Calculate(GenericRequest<TimeSheet_CalculateInModel> model, bool isSubProcess);
-        Task<GenericResult<OrariSchema_4User_OutModel>> Get_OrariSchema_4User(GenericRequest<OrariSchema_4User_InModel> model, bool isSubProcess);
-        Task<GenericResult<Dip_GG_AllData_OutModel>> Dip_GG_AllData_AllData(GenericRequest<Dip_GG_AllData_InModel> model, bool isSubProcess);
-        Task<GenericResult<Timesheet_AllData_OutModel>> Get_Timesheet_AllData(GenericRequest<Timesheet_AllData_InModel> model, bool isSubProcess);
-    }
-
-
-
- 
-
-
-    public static class CalcoloGiornoEngine
-    {
-        /// <summary>
-        /// Calcola le ore teoriche previste per un dato rapporto di lavoro in un dato giorno.
-        /// Le ore teoriche sono la somma delle durate di tutte le coppie (Dalle?Alle)
-        /// dell'orario attivo per quel giorno, indipendentemente dalle timbrature reali.
-        /// </summary>
-        /// <param name="orariSchema">Contenitore con DaySlots, ParOrario e Par_OrarioIntervalloHH già caricati.</param>
-        /// <param name="IdDip_RapportoLavoro">Rapporto di lavoro di cui calcolare le ore teoriche.</param>
-        /// <param name="day">Giorno per il quale eseguire il calcolo.</param>
-        /// <returns>Ore teoriche come <see cref="TimeSpan"/>. Restituisce <see cref="TimeSpan.Zero"/> se non è possibile determinare l'orario.</returns>
-        public static TimeSpan CalcolaOreTeoriche(OrariSchema_4User_OutModel orariSchema, int IdDip_RapportoLavoro, DateTime day)
+        public TimeSpan CalcolaOreTeoriche(OrariSchema_4User_OutModel orariSchema, int IdDip_RapportoLavoro, DateTime day)
         {
             // 1. Individua il DaySlot per questo rapporto e questo giorno
             var daySlot = orariSchema.DaySlots
@@ -847,7 +812,171 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
             return oreTeoriche;
         }
+
+
+        public async Task ApprovaRichiesta(TipoRichiesta tipoRichiesta, Dip_GG_AllData_OutModel dip_GG_AllData, int IdDip_RapportoLavoro, DateTime day)
+        {
+
+
+            var req_1 = new GenericRequest<Dip_GG_Richiesta_SetState_InModel>();
+
+            req_1.Data.RichiestaStato = StatoRichiesta.Approvata;
+            req_1.Data.IdDip_GG_Richiesta = dip_GG_AllData.Dip_GG_Richiesta.Where(x => (x.RichiestaStato == StatoRichiesta.Immessa || x.RevocaStato == StatoRichiesta.Immessa) &&
+                                                                                    x.IdDip_RapportoLavoro == IdDip_RapportoLavoro &&
+                                                                                    x.Data == x.DataA &&
+                                                                                    DateTime.Parse(x.Data) == day)
+                                                                           .Select(x => x.Id)
+                                                                           .ToList();
+
+            //req_1.Data.Dip_GG_Result = item;
+            await _dip_GG_RichiestaService.SetState(req_1, true);
+
+            // Nessun 'await' qui
+            await Task.Delay(1);
+
+
+
+
+            //TipoRichiesta
+            //RichiestaStato
+            //RevocaStato
+
+            /*
+                 public enum StatoRichiesta
+                    {
+                        Diretta,
+
+                        Immessa,
+                        Cancellata,
+                        Rifiutata,
+                        ApprovazioneInCorso,
+                        ParzialmenteApprovata,
+        
+                        Approvata,
+                    }
+             */
+
+        }
+
+
+
+
     }
+
+    public interface ITimeSheet_EngineService : IServiceBase
+    {
+        Task<GenericResult<TimeSheet_CalculateOutModel>> Calculate(GenericRequest<TimeSheet_CalculateInModel> model, bool isSubProcess);
+        Task<GenericResult<OrariSchema_4User_OutModel>> Get_OrariSchema_4User(GenericRequest<OrariSchema_4User_InModel> model, bool isSubProcess);
+        Task<GenericResult<Dip_GG_AllData_OutModel>> Dip_GG_AllData_AllData(GenericRequest<Dip_GG_AllData_InModel> model, bool isSubProcess);
+        Task<GenericResult<Timesheet_AllData_OutModel>> Get_Timesheet_AllData(GenericRequest<Timesheet_AllData_InModel> model, bool isSubProcess);
+    }
+
+
+
+
+
+
+    //public static class CalcoloGiornoEngine
+    //{
+    //    /// <summary>
+    //    /// Calcola le ore teoriche previste per un dato rapporto di lavoro in un dato giorno.
+    //    /// Le ore teoriche sono la somma delle durate di tutte le coppie (Dalle?Alle)
+    //    /// dell'orario attivo per quel giorno, indipendentemente dalle timbrature reali.
+    //    /// </summary>
+    //    /// <param name="orariSchema">Contenitore con DaySlots, ParOrario e Par_OrarioIntervalloHH già caricati.</param>
+    //    /// <param name="IdDip_RapportoLavoro">Rapporto di lavoro di cui calcolare le ore teoriche.</param>
+    //    /// <param name="day">Giorno per il quale eseguire il calcolo.</param>
+    //    /// <returns>Ore teoriche come <see cref="TimeSpan"/>. Restituisce <see cref="TimeSpan.Zero"/> se non è possibile determinare l'orario.</returns>
+    //    public static TimeSpan CalcolaOreTeoriche(OrariSchema_4User_OutModel orariSchema, int IdDip_RapportoLavoro, DateTime day)
+    //    {
+    //        // 1. Individua il DaySlot per questo rapporto e questo giorno
+    //        var daySlot = orariSchema.DaySlots
+    //            .FirstOrDefault(ds => ds.IdDip_RapportoLavoro == IdDip_RapportoLavoro
+    //                               && ds.Data.Date == day.Date);
+
+    //        if (daySlot == null || daySlot.Orari.Count == 0)
+    //            return TimeSpan.Zero;
+
+    //        // 2. Prende solo la riga orario con ZOrder più basso (orario base, ZOrder=1).
+    //        //    Gli override (ZOrder > 1) sono applicati a livello di giustificativo, non qui.
+    //        var orarioBase = daySlot.Orari
+    //            .OrderBy(o => o.ZOrder)
+    //            .First();
+
+    //        // 3. Recupera il Par_Orario corrispondente
+    //        var parOrario = orariSchema.ParOrario
+    //            .FirstOrDefault(o => o.Id == orarioBase.IdPar_Orario);
+
+    //        if (parOrario == null)
+    //            return TimeSpan.Zero;
+
+    //        // 4. Recupera tutte le coppie (Par_OrarioIntervalloHH) per questo orario,
+    //        //    ordinate per NumCoppia (es. coppia 1 = 08:00-12:00, coppia 2 = 14:00-18:00)
+    //        var coppie = orariSchema.Par_OrarioIntervalloHH
+    //            .Where(hh => hh.IdPar_Orario == parOrario.Id)
+    //            .OrderBy(hh => hh.NumCoppia)
+    //            .ToList();
+
+    //        if (coppie.Count == 0)
+    //            return TimeSpan.Zero;
+
+    //        // 5. Somma la durata di ogni coppia valida (Dalle e Alle devono essere entrambe valorizzate)
+    //        var oreTeoriche = TimeSpan.Zero;
+
+    //        foreach (var coppia in coppie)
+    //        {
+    //            if (coppia.Dalle.HasValue && coppia.Alle.HasValue)
+    //            {
+    //                // Alle e Dalle sono TimeOnly: la differenza è sempre positiva se Alle > Dalle
+    //                var durataCoppia = coppia.Alle.Value.ToTimeSpan() - coppia.Dalle.Value.ToTimeSpan();
+
+    //                if (durataCoppia > TimeSpan.Zero)
+    //                    oreTeoriche += durataCoppia;
+    //            }
+    //        }
+
+    //        return oreTeoriche;
+    //    }
+
+
+    //    public static async Task ApprovaRichiesta(TipoRichiesta tipoRichiesta, Dip_GG_AllData_OutModel dip_GG_AllData, int IdDip_RapportoLavoro, DateTime day)
+    //    {
+
+
+    //        dip_GG_AllData.Dip_GG_Richiesta.Where(x => x.RichiestaStato == StatoRichiesta.Immessa && 
+    //                                              x.IdDip_RapportoLavoro == IdDip_RapportoLavoro && 
+    //                                              day == day).ToList();
+
+
+    //        var req_1 = new GenericRequest<Dip_GG_ResultPutInModel>();
+    //                req_1.Data.Dip_GG_Result = item;
+    //                await _dip_GG_ResultService.Dip_GG_ResultPut(req_1, true);
+
+    //        // Nessun 'await' qui
+    //        await Task.Delay(1);
+
+    //        //TipoRichiesta
+    //        //RichiestaStato
+    //        //RevocaStato
+
+    //        /*
+    //             public enum StatoRichiesta
+    //                {
+    //                    Diretta,
+
+    //                    Immessa,
+    //                    Cancellata,
+    //                    Rifiutata,
+    //                    ApprovazioneInCorso,
+    //                    ParzialmenteApprovata,
+
+    //                    Approvata,
+    //                }
+    //         */
+
+    //    }
+
+    //}
 
 
 }
