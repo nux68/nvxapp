@@ -9,6 +9,7 @@ using nvxapp.server.data.Entities.Tenant;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_ResultService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_TimbraturaService.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Interfaces;
@@ -65,10 +66,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
                             var timbraturaItem = group.ElementAt(i);
 
                             // Applica la logica solo se il TipoTimbratura è diverso da Attivita
-                            if (timbraturaItem.TimbraturaTipo != TipoTimbratura.Attivita)
-                            {
-                                timbraturaItem.TimbraturaTipo = (i % 2 == 0) ? TipoTimbratura.Entrata : TipoTimbratura.Uscita;
-                            }
+                            //if (timbraturaItem.TimbraturaTipo != TipoTimbratura.Attivita)
+                            //{
+                            //    timbraturaItem.TimbraturaTipo = (i % 2 == 0) ? TipoTimbratura.Entrata : TipoTimbratura.Uscita;
+                            //}
                         }
                     }
 
@@ -78,6 +79,39 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
 
                 //eliminare
                 // Nessun 'await' qui
+                await Task.Delay(DelayAsyncMethod);
+
+                return retVal;
+            }, isSubProcess);
+        }
+        public virtual async Task<GenericResult<Dip_GG_TimbraturaPutOutModel>> Dip_GG_TimbraturaPut(GenericRequest<Dip_GG_TimbraturaPutInModel> model, bool isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                Dip_GG_TimbraturaPutOutModel retVal = new Dip_GG_TimbraturaPutOutModel();
+                retVal.Dip_GG_Timbratura = model.Data.Dip_GG_Timbratura;
+
+                int idCompany;
+                int.TryParse(this.CurrentCompany, out idCompany);
+
+
+                
+                Dip_GG_Timbratura? dip_GG_Timbratura = await _dip_GG_TimbraturaRepository.FindByIdAsync(model.Data.Dip_GG_Timbratura.Id);
+                if (dip_GG_Timbratura == null)
+                {
+                    dip_GG_Timbratura = _mapper.Map<Dip_GG_Timbratura>(model.Data.Dip_GG_Timbratura);
+                    dip_GG_Timbratura.IdDip_RapportoLavoro = model.Data.IdDip_RapportoLavoro;
+                }
+                else
+                {
+                    dip_GG_Timbratura = _mapper.Map<Dip_GG_Timbratura>(model.Data.Dip_GG_Timbratura);
+                }
+
+                dip_GG_Timbratura = await _dip_GG_TimbraturaRepository.UpsertAsync(dip_GG_Timbratura);
+                retVal.Dip_GG_Timbratura = _mapper.Map<Dip_GG_TimbraturaModel>(dip_GG_Timbratura);
+
+                
+
                 await Task.Delay(DelayAsyncMethod);
 
                 return retVal;
@@ -119,7 +153,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
                 return retVal;
             }, isSubProcess);
         }
-    
         public virtual async Task<GenericResult<Dip_GG_Timbratura_Get_4Calculation_OutModel>> Dip_GG_Timbratura_Get_4Calculation(GenericRequest<Dip_GG_Timbratura_Get_4Calculation_InModel> model, Boolean isSubProcess)
         {
             return await ExecuteAction(model, async () =>
@@ -165,7 +198,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
     {
         public Task<GenericResult<Dip_GG_Timbratura_GetAll_OutModel>> GetAll(GenericRequest<Dip_GG_Timbratura_GetAll_InModel> model, Boolean isSubProcess);
         public Task<GenericResult<Dip_GG_Timbratura_Stamp_OutModel>> Stamp(GenericRequest<Dip_GG_Timbratura_Stamp_InModel> model, Boolean isSubProcess);
-
+        public Task<GenericResult<Dip_GG_TimbraturaPutOutModel>> Dip_GG_TimbraturaPut(GenericRequest<Dip_GG_TimbraturaPutInModel> model, bool isSubProcess);
         public Task<GenericResult<Dip_GG_Timbratura_Get_4Calculation_OutModel>> Dip_GG_Timbratura_Get_4Calculation(GenericRequest<Dip_GG_Timbratura_Get_4Calculation_InModel> model, Boolean isSubProcess);
     }
 

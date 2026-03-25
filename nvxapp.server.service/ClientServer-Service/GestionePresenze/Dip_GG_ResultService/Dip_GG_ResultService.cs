@@ -184,31 +184,24 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Res
                 int.TryParse(this.CurrentCompany, out idCompany);
 
 
-                //string userId = string.IsNullOrEmpty(model.Data.IdAspNetUsers) ? this.CurrentUserId : model.Data.IdAspNetUsers;
+                
+                Dip_GG_Result? dip_GG_Result = await _dip_GG_ResultRepository.FindByIdAsync(model.Data.Dip_GG_Result.Id);
+                if (dip_GG_Result == null)
+                {
+                    dip_GG_Result = _mapper.Map<Dip_GG_Result>(model.Data.Dip_GG_Result);
+                    dip_GG_Result.IdDip_RapportoLavoro = model.Data.IdDip_RapportoLavoro;
+                }
+                else
+                {
+                    //update 
+                    dip_GG_Result = _mapper.Map<Dip_GG_Result>(model.Data.Dip_GG_Result);
+                    
+                }
 
-                //User_DATA_COMB_DipAna_DipRapp user_DATA_COMB_DipAna_DipRapp = await _gestionePresenzeUserUtility.Get_DipAna_DipRapp(userId, true);
+                dip_GG_Result = await _dip_GG_ResultRepository.UpsertAsync(dip_GG_Result);
+                retVal.Dip_GG_Result = _mapper.Map<Dip_GG_ResultModel>(dip_GG_Result);
 
-                //if (user_DATA_COMB_DipAna_DipRapp != null && user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro != null)
-                //{
-                    Dip_GG_Result? dip_GG_Result = await _dip_GG_ResultRepository.FindByIdAsync(model.Data.Dip_GG_Result.Id);
-                    if (dip_GG_Result == null)
-                    {
-                        //dip_GG_Result = _mapper.Map<Dip_GG_Result>(model.Data.Dip_GG_Result);
-                        ////par_Causale.IdDip_RapportoLavoro = user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.Id;
-                    }
-                    else
-                    {
-                        //update 
-                        var _dip_GG_Result = _mapper.Map<Dip_GG_Result>(model.Data.Dip_GG_Result);
-                        //aggiurna il valore ritornato al client
-                        _dip_GG_Result = await _dip_GG_ResultRepository.UpsertAsync(_dip_GG_Result);
-                    }
-
-                    ////aggiurna il valore ritornato al client
-                    //dip_GG_Result = await _dip_GG_ResultRepository.UpsertAsync(dip_GG_Result);
-                    retVal.Dip_GG_Result = _mapper.Map<Dip_GG_ResultModel>(dip_GG_Result);
-
-                //}
+                
 
                 await Task.Delay(DelayAsyncMethod);
 

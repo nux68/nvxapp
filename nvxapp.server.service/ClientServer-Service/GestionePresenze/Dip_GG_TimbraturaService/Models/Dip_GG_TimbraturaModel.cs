@@ -1,4 +1,5 @@
 ﻿using nvxapp.server.data.Entities.Tenant;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_ResultService.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using System;
 using System.Collections.Generic;
@@ -54,6 +55,18 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
         public List<Dip_GG_TimbraturaModel>  Dip_GG_Timbratura { get; set; }  = new List<Dip_GG_TimbraturaModel>();
         
     }
+
+
+    public class Dip_GG_TimbraturaPutInModel 
+    {
+        public required int IdDip_RapportoLavoro { get; set; }
+        public Dip_GG_TimbraturaModel Dip_GG_Timbratura { get; set; }   = new Dip_GG_TimbraturaModel(){  Id=0, IdDip_RapportoLavoro=0};
+    }
+    public class Dip_GG_TimbraturaPutOutModel : ModelResult
+    {
+        public Dip_GG_TimbraturaModel Dip_GG_Timbratura { get; set; } = new Dip_GG_TimbraturaModel(){  Id=0, IdDip_RapportoLavoro=0};
+    }
+
 
 
     public class Dip_GG_Timbratura_Stamp_InModel
