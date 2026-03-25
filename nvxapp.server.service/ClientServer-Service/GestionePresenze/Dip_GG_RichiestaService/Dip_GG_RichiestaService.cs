@@ -576,7 +576,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                                 TimbraturaArrotondata = parsedDateTime,
                                 GiornoCompetenza = new DateTime(parsedDateTime.Year, parsedDateTime.Month, parsedDateTime.Day),
                                 TimbraturaTipo = TipoTimbratura.SenzaVerso,
-                                RichiestaStato = StatoRichiesta.Immessa,
+                                RichiestaStato = dip_GG_Richiesta.RichiestaStato,
                             };
                             await _dip_GG_TimbraturaRepository.UpsertAsync(dip_GG_Timbratura);
                         }
