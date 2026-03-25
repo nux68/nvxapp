@@ -315,16 +315,16 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
     },
     {
       text: 'Calcola ###',
-      role: actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Calcola_Day_From,
+      role: actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Calcola_Day_To,
       data: {
-        action: actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Calcola_Day_From,
+        action: actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Calcola_Day_To,
       },
     },
     {
       text: 'Calcola ###',
-      role: actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Calcola_Day_To,
+      role: actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Calcola_Day_From,
       data: {
-        action: actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Calcola_Day_To,
+        action: actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Calcola_Day_From,
       },
     },
     {

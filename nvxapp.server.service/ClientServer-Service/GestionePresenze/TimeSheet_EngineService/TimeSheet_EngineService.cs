@@ -160,14 +160,13 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
         private readonly IDip_GG_ResultService _dip_GG_ResultService;
 
 
-
         private readonly IDip_RapportoLavoroRepository _dip_RapportoLavoroRepository;
         private readonly IDip_ProfiloOrarioRepository _dip_ProfiloOrarioRepository;
         private readonly IPar_OrarioService _par_OrarioService;
         private readonly IPar_ProfiloOrarioService _par_ProfiloOrarioService;
         private readonly IDip_RapportoLavoroService _dip_RapportoLavoroService;
 
-        private readonly IDip_GG_TimbraturaRepository _dip_GG_TimbraturaRepository;
+        //private readonly IDip_GG_TimbraturaRepository _dip_GG_TimbraturaRepository;
 
 
         public TimeSheet_EngineService(IMapper mapper,
@@ -207,7 +206,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
             _par_ProfiloOrarioService = par_ProfiloOrarioService;
             _dip_RapportoLavoroService = dip_RapportoLavoroService;
 
-            _dip_GG_TimbraturaRepository = dip_GG_TimbraturaRepository;
+            //_dip_GG_TimbraturaRepository = dip_GG_TimbraturaRepository;
         }
 
 
@@ -265,7 +264,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                 {
                                     var progress = (int)((idxUser / (double)model.Data.TimeSheet_Calculate.SelectedUserId.Count) * 100);
                                     await _longJobNotifier.LongJobProgressAsync(userId,
-                                                                                    new LongJobProgressUpdate
+                                                                                new LongJobProgressUpdate
                                                                                     {
                                                                                         JobId = jobId.ToString(),
                                                                                         JobType = GestionePresenze_JobType.TimeSheet_Engine_Calculate,
@@ -273,7 +272,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                                                                         ProgressPercentage = progress,
                                                                                         Message = new Message { Text = $"Calcolo presenze step {idxUser + 1} of {model.Data.TimeSheet_Calculate.SelectedUserId.Count}", MsgType = MessageType.Information }
                                                                                     }
-                                                                                    );
+                                                                                );
 
 
                                     // anagrafica dell'utente corrente
@@ -295,8 +294,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                                                 : rapporto_calc.DataAss!.Value;
 
                                         var giornoFine_calc = (rapporto_calc.DataLic == null || rapporto_calc.DataLic.Value > model.Data.TimeSheet_Calculate.Al)
-                                                                ? model.Data.TimeSheet_Calculate.Al
-                                                                : rapporto_calc.DataLic.Value;
+                                                               ? model.Data.TimeSheet_Calculate.Al
+                                                               : rapporto_calc.DataLic.Value;
 
                                         // ciclo su ogni giorno del periodo richiesto
                                         for (var giorno = giornoInizio_calc; giorno <= giornoFine_calc; giorno = giorno.AddDays(1))
@@ -353,7 +352,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
                 //eliminare
                 // Nessun 'await' qui
-                await Task.Delay(DelayAsyncMethod);
+                //await Task.Delay(DelayAsyncMethod);
+                await Task.Delay(0);
 
                 return retVal;
             }, isSubProcess);
@@ -548,7 +548,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
                 }
 
-                await Task.Delay(DelayAsyncMethod);
+                //await Task.Delay(DelayAsyncMethod);
+                await Task.Delay(0);
                 return retVal;
 
             }, isSubProcess);
@@ -643,7 +644,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
                 }
 
-                await Task.Delay(DelayAsyncMethod);
+                //await Task.Delay(DelayAsyncMethod);
+                await Task.Delay(0);
                 return retVal;
 
             }, isSubProcess);
@@ -691,7 +693,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
                 }
 
-                await Task.Delay(DelayAsyncMethod);
+                //await Task.Delay(DelayAsyncMethod);
+                await Task.Delay(0);
                 return retVal;
 
             }, isSubProcess);
@@ -708,7 +711,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
             var dip_GG_Result = AllData.Dip_GG_AllData_OutModel.Dip_GG_Result.Where(x => x.Data == giorno).FirstOrDefault();
             if (dip_GG_Result != null)
             {
-                dip_GG_Result.HH_Teo = TimeOnly.FromTimeSpan(await this.CalcolaOreTeoriche(AllData.OrariSchema_4User_OutModel, rapporto_calc.Id, giorno));
+                dip_GG_Result.HH_Teo = TimeOnly.FromTimeSpan(this.CalcolaOreTeoriche(AllData.OrariSchema_4User_OutModel, rapporto_calc.Id, giorno));
             }
 
 
@@ -745,15 +748,12 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
             if (timeSheet_CalculateModel.Genera_Timbrature_Mancanti)
             {
-                await GeneraTimbratureMancanti(AllData.OrariSchema_4User_OutModel, AllData, rapporto_calc.Id, giorno);
+                GeneraTimbratureMancanti(AllData.OrariSchema_4User_OutModel, AllData, rapporto_calc.Id, giorno);
             }
 
-            await AssegnaVersoTimbrature(AllData.OrariSchema_4User_OutModel, AllData, rapporto_calc.Id, giorno);
+            AssegnaVersoTimbrature(AllData.OrariSchema_4User_OutModel, AllData, rapporto_calc.Id, giorno);
 
-
-
-            // Nessun 'await' qui
-            await Task.Delay(DelayAsyncMethod);
+            return;
         }
         private async Task SaveData(Timesheet_AllData_OutModel AllData)
         {
@@ -780,11 +780,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                 }
             }
 
-
-            // Nessun 'await' qui
-            await Task.Delay(DelayAsyncMethod);
+            return;
         }
-        private async Task<TimeSpan> CalcolaOreTeoriche(OrariSchema_4User_OutModel orariSchema, int IdDip_RapportoLavoro, DateTime day)
+
+        private TimeSpan CalcolaOreTeoriche(OrariSchema_4User_OutModel orariSchema, int IdDip_RapportoLavoro, DateTime day)
         {
             // 1. Individua il DaySlot per questo rapporto e questo giorno
             var daySlot = orariSchema.DaySlots
@@ -832,8 +831,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                 }
             }
 
-            await Task.Delay(DelayAsyncMethod);
-
             return oreTeoriche;
         }
         private async Task ApprovaRichiesta(TipoRichiesta tipoRichiesta, Dip_GG_AllData_OutModel dip_GG_AllData, int IdDip_RapportoLavoro, DateTime day)
@@ -843,6 +840,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
             var req_1 = new GenericRequest<Dip_GG_Richiesta_SetState_InModel>();
 
             req_1.Data.RichiestaStato = StatoRichiesta.Approvata;
+            req_1.Data.FromHR = true;
             req_1.Data.IdDip_GG_Richiesta = dip_GG_AllData.Dip_GG_Richiesta.Where(x => (x.RichiestaStato == StatoRichiesta.Immessa || x.RevocaStato == StatoRichiesta.Immessa) &&
                                                                                     x.IdDip_RapportoLavoro == IdDip_RapportoLavoro &&
                                                                                     x.Data == x.DataA &&
@@ -850,7 +848,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                                                            .Select(x => x.Id)
                                                                            .ToList();
 
-            //req_1.Data.Dip_GG_Result = item;
+            if (req_1.Data.IdDip_GG_Richiesta.Count == 0)
+                return;
+
             await _dip_GG_RichiestaService.SetState(req_1, true);
 
         }
@@ -863,10 +863,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
         /// Le timbrature generate vengono aggiunte in-memory ad <paramref name="allData"/>
         /// e persistite direttamente sul repository.
         /// </summary>
-        private async Task GeneraTimbratureMancanti(OrariSchema_4User_OutModel orariSchema,
-                                                    Timesheet_AllData_OutModel allData,
-                                                    int IdDip_RapportoLavoro,
-                                                    DateTime day)
+        private void GeneraTimbratureMancanti(OrariSchema_4User_OutModel orariSchema,
+                                              Timesheet_AllData_OutModel allData,
+                                              int IdDip_RapportoLavoro,
+                                              DateTime day)
         {
             // Genera solo per giorni precedenti a oggi
             if (day.Date >= DateTime.Today)
@@ -922,13 +922,13 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                 var alleLimit_DX = (coppia.Alle_Limite_DX ?? coppia.Alle).Value;
 
                 // ── Entrata ──────────────────────────────────────────────────────
-                bool entrataPresente = timbratureEsistenti.Any(t => /*t.TimbraturaTipo == TipoTimbratura.Entrata &&*/
+                bool entrataPresente = timbratureEsistenti.Any(t => t.TimbraturaTipo != TipoTimbratura.Attivita &&
                                                                     TimeOnly.FromDateTime(t.Timbratura) >= dalleLimit_SX &&
                                                                     TimeOnly.FromDateTime(t.Timbratura) <= dalleLimit_DX);
 
                 if (!entrataPresente)
                 {
-                    var timbraturaUscita = new Dip_GG_Timbratura(){IdDip_RapportoLavoro = IdDip_RapportoLavoro};
+                    var timbraturaUscita = new Dip_GG_Timbratura() { IdDip_RapportoLavoro = IdDip_RapportoLavoro };
                     var timbraturaUscita_VM = _mapper.Map<Dip_GG_TimbraturaModel>(timbraturaUscita);
 
                     timbraturaUscita_VM.Timbratura = day.Date + coppia.Dalle.Value.ToTimeSpan();
@@ -941,13 +941,13 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                 }
 
                 // ── Uscita ───────────────────────────────────────────────────────
-                bool uscitaPresente = timbratureEsistenti.Any(t => /*t.TimbraturaTipo == TipoTimbratura.Uscita &&*/
+                bool uscitaPresente = timbratureEsistenti.Any(t => t.TimbraturaTipo != TipoTimbratura.Attivita &&
                                                                    TimeOnly.FromDateTime(t.Timbratura) >= alleLimit_SX &&
                                                                    TimeOnly.FromDateTime(t.Timbratura) <= alleLimit_DX);
 
                 if (!uscitaPresente)
                 {
-                    var timbraturaUscita = new Dip_GG_Timbratura(){IdDip_RapportoLavoro = IdDip_RapportoLavoro};
+                    var timbraturaUscita = new Dip_GG_Timbratura() { IdDip_RapportoLavoro = IdDip_RapportoLavoro };
                     var timbraturaUscita_VM = _mapper.Map<Dip_GG_TimbraturaModel>(timbraturaUscita);
 
                     timbraturaUscita_VM.Timbratura = day.Date + coppia.Alle.Value.ToTimeSpan();
@@ -962,7 +962,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
             }
 
-            await Task.Delay(DelayAsyncMethod);
+            //await Task.Delay(DelayAsyncMethod);
+            //await Task.Delay(0);
 
         }
 
@@ -975,10 +976,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
         /// quelle nella finestra Alle diventano Uscita.
         /// Le modifiche vengono persiste sul repository.
         /// </summary>
-        private async Task AssegnaVersoTimbrature(OrariSchema_4User_OutModel orariSchema,
-                                                  Timesheet_AllData_OutModel allData,
-                                                  int IdDip_RapportoLavoro,
-                                                  DateTime day)
+        private void AssegnaVersoTimbrature(OrariSchema_4User_OutModel orariSchema,
+                                            Timesheet_AllData_OutModel allData,
+                                            int IdDip_RapportoLavoro,
+                                            DateTime day)
         {
             // 1. Trova il DaySlot del giorno per questo rapporto
             var daySlot = orariSchema.DaySlots
@@ -1049,14 +1050,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                     if (nuovoVerso.HasValue && nuovoVerso.Value != timbratura.TimbraturaTipo)
                     {
                         timbratura.TimbraturaTipo = nuovoVerso.Value;
-
-                        // persiste il nuovo verso sul repository
-                        var entity = await _dip_GG_TimbraturaRepository.FindByIdAsync(timbratura.Id);
-                        if (entity != null)
-                        {
-                            entity.TimbraturaTipo = nuovoVerso.Value;
-                            await _dip_GG_TimbraturaRepository.UpdateAsync(entity);
-                        }
                     }
                 }
             }
