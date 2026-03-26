@@ -16,11 +16,22 @@
     {
         public static TimeSpan RoundTimeSpan(TimeSpan time, TimeRoundOptions options)
         {
-            int interval = (int)options.Interval; 
-            int totalMinutes = (int)time.TotalMinutes; 
-            int lower = (totalMinutes / interval) * interval; 
-            int upper = lower + interval; 
-            return options.Direction switch { RoundDirection.Down => TimeSpan.FromMinutes(lower), RoundDirection.Up => TimeSpan.FromMinutes(upper), _ => time };
+            int interval    = (int)options.Interval;
+            int totalMinutes = (int)time.TotalMinutes;
+            int lower       = (totalMinutes / interval) * interval;
+
+            // se il valore è già un multiplo esatto dell'intervallo → nessun arrotondamento
+            if (totalMinutes == lower)
+                return TimeSpan.FromMinutes(totalMinutes);
+
+            int upper = lower + interval;
+
+            return options.Direction switch
+            {
+                RoundDirection.Down => TimeSpan.FromMinutes(lower),
+                RoundDirection.Up   => TimeSpan.FromMinutes(upper),
+                _                   => time
+            };
         }
 
         public static DateTime RoundDateTime(DateTime dt, TimeRoundOptions options)
@@ -28,7 +39,6 @@
             TimeSpan rounded = RoundTimeSpan(dt.TimeOfDay, options);
             return dt.Date + rounded;
         }
-
     }
 
 
