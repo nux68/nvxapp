@@ -436,15 +436,20 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
         IdDip_GG_Richiesta.push(timbratura.idDip_GG_Richiesta);
       }
 
+      
+ 
+
+
       if (IdDip_GG_Richiesta.length > 0)
       {
         let request: GenericRequest<Dip_GG_Richiesta_SetState_InModel> = new GenericRequest<Dip_GG_Richiesta_SetState_InModel>(Dip_GG_Richiesta_SetState_InModel);
 
         request.data.fromHR = true;
 
-        if (event?.detail?.data?.action === actionSheet_Action.approva) {
+
+        if (event?.detail?.data?.action.includes(actionSheet_Action.approva)) {
           request.data.richiestaStato = StatoRichiesta.Approvata;
-        } else if (event?.detail?.data?.action === actionSheet_Action.rifiuta) {
+        } else if (event?.detail?.data?.action.includes(actionSheet_Action.rifiuta)) {
           request.data.richiestaStato = StatoRichiesta.Rifiutata;
         }
 

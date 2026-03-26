@@ -79,21 +79,40 @@
 
                       <ng-container *ngIf="day.dip_GG_Timbratura?.length > 0; else noTimb">
 
-                        <ion-button [disabled]="!ShowActionSheet(record.idDip_GG_Richiesta)" size="small" shape="round"
-                                    *ngFor="let record of day.dip_GG_Timbratura"
-                                    [ngStyle]="{
-                                             '--background': timeSheetService.get_Dip_GG_Timbratura_backColor(record),
-                                             '--color': timeSheetService.get_Dip_GG_Timbratura_txtColor(record),
-                                             '--padding-top': '0px',
-                                             '--padding-bottom': '0px',
-                                             'font-size': '0.6em',
-                                             'margin-bottom':'1px',
-                                             'margin-top':'0px'
-                                           }"
-                                    (click)="actionSheetOpen(record)">
+
+                        <!--
+                        <ion-button [disabled]="!ShowActionSheet(record.idDip_GG_Richiesta)"
+                                  size="small"
+                                  fill="clear"
+                                  *ngFor="let record of day.dip_GG_Timbratura"
+                                  [ngStyle]="{
+                                           '--background': timeSheetService.get_Dip_GG_Timbratura_backColor(record),
+                                           '--color': timeSheetService.get_Dip_GG_Timbratura_txtColor(record),
+                                           '--padding-top': '0px',
+                                           '--padding-bottom': '0px',
+                                           'font-size': '0.8em',
+                                           'margin-bottom':'0px',
+                                           'margin-top':'0px'
+                                         }"
+                                  (click)="actionSheetOpen(record)">
+                        {{ record.timbraturaTipo | tipoTimbraturaToShortText }}{{ record.timbratura | date:'HH:mm' }}
+                        <ion-icon slot="end" [name]="timeSheetService.get_StatoRichiesta_icon(get_Dip_GG_Richiesta(record.idDip_GG_Richiesta))"></ion-icon>
+                      </ion-button>-->
+
+                        <ion-chip *ngFor="let record of day.dip_GG_Timbratura"
+                                  [ngStyle]="{
+                                               'background': timeSheetService.get_Dip_GG_Timbratura_backColor(record),
+                                               'color': timeSheetService.get_Dip_GG_Timbratura_txtColor(record),
+                                               'font-size': '0.8em',
+                                               'margin-bottom': '0px',
+                                               'margin-top': '0px',
+                                               'cursor': ShowActionSheet(record.idDip_GG_Richiesta) ? 'pointer' : 'default',
+                                               'opacity': ShowActionSheet(record.idDip_GG_Richiesta) ? '1' : '0.5'
+                                             }"
+                                  (click)="ShowActionSheet(record.idDip_GG_Richiesta) ? actionSheetOpen(record) : null">
                           {{ record.timbraturaTipo | tipoTimbraturaToShortText }}{{ record.timbratura | date:'HH:mm' }}
-                          <ion-icon slot="end" [name]="timeSheetService.get_StatoRichiesta_icon(get_Dip_GG_Richiesta(record.idDip_GG_Richiesta))"></ion-icon>
-                        </ion-button>
+                          <ion-icon [name]="timeSheetService.get_StatoRichiesta_icon(get_Dip_GG_Richiesta(record.idDip_GG_Richiesta))"></ion-icon>
+                        </ion-chip>
 
 
                       </ng-container>

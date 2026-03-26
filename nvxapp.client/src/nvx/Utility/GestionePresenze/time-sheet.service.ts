@@ -359,21 +359,79 @@ export class TimeSheetService {
       return null;
   }
 
+  //get_Dip_GG_Timbratura_backColor(record: Dip_GG_TimbraturaModel): string {
+  //  // Ottieni il valore della variabile CSS dal root
+  //  const root = document.documentElement;
+
+  //  let value = '';
+
+  //  switch (record.timbraturaTipo) {
+  //    case TipoTimbratura.Entrata:
+  //      value = getComputedStyle(root).getPropertyValue('--ion-color-primary').trim();
+  //      return value || '#3880ff';
+  //      break;
+  //    case TipoTimbratura.Uscita:
+  //      value = getComputedStyle(root).getPropertyValue('--ion-color-medium').trim();
+  //      return value || '#92949c';
+  //      break;
+  //  }
+
+
+  //  return '#3880ff';
+  //}
+
+  //get_Dip_GG_Timbratura_txtColor(record: Dip_GG_TimbraturaModel): string {
+  //  // Ottieni il valore della variabile CSS dal root
+  //  const root = document.documentElement;
+
+  //  let value = '';
+
+  //  switch (record.timbraturaTipo) {
+  //    case TipoTimbratura.Entrata:
+  //      value = getComputedStyle(root).getPropertyValue('--ion-color-primary-contrast').trim();
+  //      return value || '#ffffff';
+  //      break;
+  //    case TipoTimbratura.Uscita:
+  //      value = getComputedStyle(root).getPropertyValue('--ion-color-medium-contrast').trim();
+  //      return value || '#ffffff';
+  //      break;
+  //  }
+
+
+  //  return '#ffffff';
+  //}
+
   get_Dip_GG_Timbratura_backColor(record: Dip_GG_TimbraturaModel): string {
-    // Ottieni il valore della variabile CSS dal root
     const root = document.documentElement;
+
+    
+
 
     let value = '';
 
-    switch (record.timbraturaTipo) {
-      case TipoTimbratura.Entrata:
-        value = getComputedStyle(root).getPropertyValue('--ion-color-primary').trim();
-        return value || '#3880ff';
+    switch (record.richiestaStato) {
+
+      case StatoRichiesta.Diretta:
+      case StatoRichiesta.Approvata:
+
+        switch (record.timbraturaTipo) {
+          case TipoTimbratura.SenzaVerso:  // ancora da riconoscere
+          case TipoTimbratura.Entrata:
+          case TipoTimbratura.Uscita:
+          case TipoTimbratura.Attivita:
+            return null;
+        }
+
         break;
-      case TipoTimbratura.Uscita:
-        value = getComputedStyle(root).getPropertyValue('--ion-color-medium').trim();
-        return value || '#92949c';
+
+      case StatoRichiesta.Immessa:
+          value = getComputedStyle(root).getPropertyValue('--ion-color-secondary').trim();
+          return value || '#ffffff';
+
+      default:
+        return null;
         break;
+
     }
 
 
@@ -381,27 +439,53 @@ export class TimeSheetService {
   }
 
   get_Dip_GG_Timbratura_txtColor(record: Dip_GG_TimbraturaModel): string {
-    // Ottieni il valore della variabile CSS dal root
     const root = document.documentElement;
 
+    
     let value = '';
 
-    switch (record.timbraturaTipo) {
-      case TipoTimbratura.Entrata:
-        value = getComputedStyle(root).getPropertyValue('--ion-color-primary-contrast').trim();
+    switch (record.richiestaStato) {
+      case  StatoRichiesta.Diretta:
+      case StatoRichiesta.Approvata:
+
+        switch (record.timbraturaTipo)
+        {
+          case TipoTimbratura.SenzaVerso:  // ancora da riconoscere
+            value = getComputedStyle(root).getPropertyValue('--ion-color-secondary').trim();  //(giallo)
+            return value || '#ffffff';
+            break;
+
+          case TipoTimbratura.Entrata:
+              value = getComputedStyle(root).getPropertyValue('--ion-color-primary').trim(); // (blue)
+              return value || '#ffffff';
+
+          case TipoTimbratura.Uscita:
+              value = getComputedStyle(root).getPropertyValue('--ion-color-medium').trim(); // (grigio)
+            return value || '#ffffff';
+
+          case TipoTimbratura.Attivita:
+            value = getComputedStyle(root).getPropertyValue('--ion-color-secondary').trim(); //(giallo) da gestire
+            return value || '#ffffff';
+            break;
+        }
+
+        break;
+
+      case StatoRichiesta.Immessa:
+        
+        value = getComputedStyle(root).getPropertyValue('--ion-color-secondary-contrast').trim(); // grigio scuro - su fondo giallo
         return value || '#ffffff';
         break;
-      case TipoTimbratura.Uscita:
-        value = getComputedStyle(root).getPropertyValue('--ion-color-medium-contrast').trim();
-        return value || '#ffffff';
+
+      default:
+        return getComputedStyle(root).getPropertyValue('--ion-text-color').trim() || '#000000';
         break;
-    }
+
+      }
 
 
     return '#ffffff';
   }
-
-
 
   get_Dip_GG_Causali_backColor(ggCau: Dip_GG_CausaliModel): string {
     //const just = this.sharedParameterGestionePresenzeService.Par_Causali.find(x => x.id == ggCau.idPar_Causali);
