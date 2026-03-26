@@ -7,6 +7,7 @@ using nvxapp.server.Base;
 using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Entities.Tenant;
 using nvxapp.server.data.Entities.Tenant.GestionePresenze;
+using nvxapp.server.data.Extensions;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
@@ -976,6 +977,95 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
         /// quelle nella finestra Alle diventano Uscita.
         /// Le modifiche vengono persiste sul repository.
         /// </summary>
+        //private void AssegnaVersoTimbrature(OrariSchema_4User_OutModel orariSchema,
+        //                                    Timesheet_AllData_OutModel allData,
+        //                                    int IdDip_RapportoLavoro,
+        //                                    DateTime day)
+        //{
+        //    // 1. Trova il DaySlot del giorno per questo rapporto
+        //    var daySlot = orariSchema.DaySlots
+        //        .FirstOrDefault(ds => ds.IdDip_RapportoLavoro == IdDip_RapportoLavoro
+        //                           && ds.Data.Date == day.Date);
+
+        //    if (daySlot == null || daySlot.Orari.Count == 0)
+        //        return;
+
+        //    // 2. Orario base (ZOrder minimo)
+        //    var orarioBase = daySlot.Orari
+        //        .OrderBy(o => o.ZOrder)
+        //        .First();
+
+        //    var parOrario = orariSchema.ParOrario
+        //        .FirstOrDefault(o => o.Id == orarioBase.IdPar_Orario);
+
+        //    if (parOrario == null)
+        //        return;
+
+        //    // 3. Coppie ordinate per NumCoppia
+        //    var coppie = orariSchema.Par_OrarioIntervalloHH
+        //        .Where(hh => hh.IdPar_Orario == parOrario.Id)
+        //        .OrderBy(hh => hh.NumCoppia)
+        //        .ToList();
+
+        //    if (coppie.Count == 0)
+        //        return;
+
+        //    // 4. Timbrature del giorno per questo rapporto
+        //    var timbratureDelGiorno = allData.Dip_GG_AllData_OutModel.Dip_GG_Timbratura
+        //        .Where(t => t.IdDip_RapportoLavoro == IdDip_RapportoLavoro
+        //                 && t.GiornoCompetenza.Date == day.Date)
+        //        .ToList();
+
+        //    if (timbratureDelGiorno.Count == 0)
+        //        return;
+
+        //    // 5. Per ogni coppia abbina le timbrature alla finestra Dalle (Entrata) o Alle (Uscita)
+        //    foreach (var coppia in coppie)
+        //    {
+        //        if (!coppia.Dalle.HasValue || !coppia.Alle.HasValue)
+        //            continue;
+
+        //        if (coppia.Alle.Value == coppia.Dalle.Value)
+        //            continue;
+
+        //        var dalleLimit_SX = (coppia.Dalle_Limite_SX ?? coppia.Dalle).Value;
+        //        var dalleLimit_DX = (coppia.Dalle_Limite_DX ?? coppia.Dalle).Value;
+        //        var alleLimit_SX = (coppia.Alle_Limite_SX ?? coppia.Alle).Value;
+        //        var alleLimit_DX = (coppia.Alle_Limite_DX ?? coppia.Alle).Value;
+
+        //        foreach (var timbratura in timbratureDelGiorno)
+        //        {
+        //            // salta timbrature con verso già assegnato correttamente
+        //            if (timbratura.TimbraturaTipo == TipoTimbratura.Entrata ||
+        //                timbratura.TimbraturaTipo == TipoTimbratura.Uscita)
+        //                continue;
+
+        //            var oraTimbr = TimeOnly.FromDateTime(timbratura.Timbratura);
+        //            TipoTimbratura? nuovoVerso = null;
+
+        //            if (oraTimbr >= dalleLimit_SX && oraTimbr <= dalleLimit_DX)
+        //                nuovoVerso = TipoTimbratura.Entrata;
+        //            else if (oraTimbr >= alleLimit_SX && oraTimbr <= alleLimit_DX)
+        //                nuovoVerso = TipoTimbratura.Uscita;
+
+        //            if (nuovoVerso.HasValue && nuovoVerso.Value != timbratura.TimbraturaTipo)
+        //            {
+        //                timbratura.TimbraturaTipo = nuovoVerso.Value;
+        //            }
+
+                    
+        //        }
+        //    }
+        //}
+
+        /// <summary>
+        /// Assegna il verso (Entrata/Uscita) alle timbrature del giorno per un dato rapporto,
+        /// basandosi sulla finestra di tolleranza di ogni coppia definita in <see cref="OrariSchema_4User_OutModel"/>.
+        /// Le timbrature che cadono nella finestra Dalle diventano Entrata,
+        /// quelle nella finestra Alle diventano Uscita.
+        /// Calcola e assegna anche <see cref="Dip_GG_TimbraturaModel.TimbraturaArrotondata"/>
+        /// usando le regole di arrotondamento definite in <see cref="Par_OrarioIntervalloHHModel"/>.
+        /// </summary>
         private void AssegnaVersoTimbrature(OrariSchema_4User_OutModel orariSchema,
                                             Timesheet_AllData_OutModel allData,
                                             int IdDip_RapportoLavoro,
@@ -1018,7 +1108,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
             if (timbratureDelGiorno.Count == 0)
                 return;
 
-            // 5. Per ogni coppia abbina le timbrature alla finestra Dalle (Entrata) o Alle (Uscita)
+            // 5. Per ogni coppia abbina le timbrature e calcola l'arrotondamento
             foreach (var coppia in coppie)
             {
                 if (!coppia.Dalle.HasValue || !coppia.Alle.HasValue)
@@ -1029,8 +1119,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
                 var dalleLimit_SX = (coppia.Dalle_Limite_SX ?? coppia.Dalle).Value;
                 var dalleLimit_DX = (coppia.Dalle_Limite_DX ?? coppia.Dalle).Value;
-                var alleLimit_SX = (coppia.Alle_Limite_SX ?? coppia.Alle).Value;
-                var alleLimit_DX = (coppia.Alle_Limite_DX ?? coppia.Alle).Value;
+                var alleLimit_SX  = (coppia.Alle_Limite_SX  ?? coppia.Alle).Value;
+                var alleLimit_DX  = (coppia.Alle_Limite_DX  ?? coppia.Alle).Value;
 
                 foreach (var timbratura in timbratureDelGiorno)
                 {
@@ -1041,15 +1131,25 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
                     var oraTimbr = TimeOnly.FromDateTime(timbratura.Timbratura);
                     TipoTimbratura? nuovoVerso = null;
+                    TimeRoundOptions? roundOptions = null;
 
                     if (oraTimbr >= dalleLimit_SX && oraTimbr <= dalleLimit_DX)
-                        nuovoVerso = TipoTimbratura.Entrata;
+                    {
+                        nuovoVerso   = TipoTimbratura.Entrata;
+                        roundOptions = new TimeRoundOptions(coppia.Dalle_Arrotondamento, coppia.Dalle_Arrotondamento_Verso);
+                    }
                     else if (oraTimbr >= alleLimit_SX && oraTimbr <= alleLimit_DX)
-                        nuovoVerso = TipoTimbratura.Uscita;
+                    {
+                        nuovoVerso   = TipoTimbratura.Uscita;
+                        roundOptions = new TimeRoundOptions(coppia.Alle_Arrotondamento, coppia.Alle_Arrotondamento_Verso);
+                    }
 
-                    if (nuovoVerso.HasValue && nuovoVerso.Value != timbratura.TimbraturaTipo)
+                    if (nuovoVerso.HasValue)
                     {
                         timbratura.TimbraturaTipo = nuovoVerso.Value;
+
+                        // calcola e assegna TimbraturaArrotondata usando le regole della coppia
+                        timbratura.TimbraturaArrotondata = Roundings.RoundDateTime(timbratura.Timbratura, roundOptions!.Value);
                     }
                 }
             }
