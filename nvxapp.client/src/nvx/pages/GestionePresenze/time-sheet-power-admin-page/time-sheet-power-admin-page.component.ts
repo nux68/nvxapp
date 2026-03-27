@@ -579,6 +579,7 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
     timeSheetEngineCallerData.approva_Richieste_Timbrature = true;
     timeSheetEngineCallerData.approva_Richieste_Giustificativo = true;
     timeSheetEngineCallerData.genera_Timbrature_Mancanti = true;
+    timeSheetEngineCallerData.genera_Giustificativo_Assenza = true;
 
 
     const modal = await this.modalCtrl.create({

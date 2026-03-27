@@ -22,6 +22,7 @@ export class TimeSheet_CalculateModel {
   approva_Richieste_Timbrature: boolean;
   approva_Richieste_Giustificativo: boolean;
   genera_Timbrature_Mancanti: boolean;
+  genera_Giustificativo_Assenza: boolean;
 }
 
 export class TimeSheet_CalculateInModel {

@@ -48,11 +48,9 @@ export class TimeSheetEngineCallerComponent extends BaseDialogConfirmCancelCompo
       approva_Richieste_Timbrature: [null, [Validators.required]],
       approva_Richieste_Giustificativo: [null, [Validators.required]],
       genera_Timbrature_Mancanti: [null, [Validators.required]],
+      genera_Giustificativo_Assenza: [null, [Validators.required]],
 
-      //idPar_ProfiloOrario: [this.dip_ProfiloOrario.idPar_ProfiloOrario, [Validators.required, Validators.min(1)]],
-      //numGiornoPartenzaCiclo: [null, [Validators.required, Validators.min(1), Validators.max(this.getDayProf())]],
-      //dal: [this.dip_ProfiloOrario.idPar_ProfiloOrario, [Validators.required]],
-      //al: [this.dip_ProfiloOrario.idPar_ProfiloOrario, [Validators.required]],
+      
     });
 
   }
@@ -86,6 +84,7 @@ export class TimeSheetEngineCallerData {
   approva_Richieste_Timbrature: boolean
   approva_Richieste_Giustificativo: boolean
   genera_Timbrature_Mancanti: boolean
+  genera_Giustificativo_Assenza: boolean
 
   constructor() {
     this.initialSelectedUserId = null;

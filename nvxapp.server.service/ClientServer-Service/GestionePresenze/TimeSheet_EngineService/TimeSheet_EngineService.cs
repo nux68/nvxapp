@@ -753,6 +753,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                 dip_GG_Result.HH_Lav = TimeOnly.FromTimeSpan(this.CalcolaOreLavorate(AllData, rapporto_calc.Id, giorno));
             }
 
+            if (timeSheet_CalculateModel.Genera_Giustificativo_Assenza && dip_GG_Result != null)
+            {
+                GeneraGiustificativoAssenza(AllData, rapporto_calc.Id, giorno, dip_GG_Result);
+            }
 
             return;
         }
@@ -924,82 +928,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
             return oreLavorate;
         }
 
-        //private TimeSpan CalcolaOreLavorate(Timesheet_AllData_OutModel allData, int IdDip_RapportoLavoro, DateTime day)
-        //{
-        //    var orariSchema = allData.OrariSchema_4User_OutModel;
 
-        //    var daySlot = orariSchema.DaySlots
-        //        .FirstOrDefault(ds => ds.IdDip_RapportoLavoro == IdDip_RapportoLavoro
-        //                           && ds.Data.Date == day.Date);
-
-        //    if (daySlot == null || daySlot.Orari.Count == 0)
-        //        return TimeSpan.Zero;
-
-        //    var orarioBase = daySlot.Orari.OrderBy(o => o.ZOrder).First();
-
-        //    var parOrario = orariSchema.ParOrario
-        //        .FirstOrDefault(o => o.Id == orarioBase.IdPar_Orario);
-
-        //    if (parOrario == null)
-        //        return TimeSpan.Zero;
-
-        //    var coppie = orariSchema.Par_OrarioIntervalloHH
-        //        .Where(hh => hh.IdPar_Orario == parOrario.Id)
-        //        .OrderBy(hh => hh.NumCoppia)
-        //        .ToList();
-
-        //    if (coppie.Count == 0)
-        //        return TimeSpan.Zero;
-
-        //    var timbratureDelGiorno = allData.Dip_GG_AllData_OutModel.Dip_GG_Timbratura
-        //        .Where(t => t.IdDip_RapportoLavoro == IdDip_RapportoLavoro
-        //                 && t.GiornoCompetenza.Date == day.Date
-        //                 && t.TimbraturaArrotondata.HasValue)
-        //        .ToList();
-
-        //    if (timbratureDelGiorno.Count == 0)
-        //        return TimeSpan.Zero;
-
-        //    var oreLavorate = TimeSpan.Zero;
-
-        //    foreach (var coppia in coppie)
-        //    {
-        //        if (!coppia.Dalle.HasValue || !coppia.Alle.HasValue)
-        //            continue;
-        //        if (coppia.Alle.Value == coppia.Dalle.Value)
-        //            continue;
-
-        //        var dalleLimit_SX = (coppia.Dalle_Limite_SX ?? coppia.Dalle).Value;
-        //        var dalleLimit_DX = (coppia.Dalle_Limite_DX ?? coppia.Dalle).Value;
-        //        var alleLimit_SX = (coppia.Alle_Limite_SX ?? coppia.Alle).Value;
-        //        var alleLimit_DX = (coppia.Alle_Limite_DX ?? coppia.Alle).Value;
-
-        //        var entrata = timbratureDelGiorno
-        //            .Where(t => t.TimbraturaTipo == TipoTimbratura.Entrata)
-        //            .FirstOrDefault(t =>
-        //            {
-        //                var ora = TimeOnly.FromDateTime(t.TimbraturaArrotondata!.Value);
-        //                return ora >= dalleLimit_SX && ora <= dalleLimit_DX;
-        //            });
-
-        //        var uscita = timbratureDelGiorno
-        //            .Where(t => t.TimbraturaTipo == TipoTimbratura.Uscita)
-        //            .FirstOrDefault(t =>
-        //            {
-        //                var ora = TimeOnly.FromDateTime(t.TimbraturaArrotondata!.Value);
-        //                return ora >= alleLimit_SX && ora <= alleLimit_DX;
-        //            });
-
-        //        if (entrata != null && uscita != null)
-        //        {
-        //            var durata = uscita.TimbraturaArrotondata!.Value - entrata.TimbraturaArrotondata!.Value;
-        //            if (durata > TimeSpan.Zero)
-        //                oreLavorate += durata;
-        //        }
-        //    }
-
-        //    return oreLavorate;
-        //}
         private void AssegnaVersoTimbrature(Timesheet_AllData_OutModel allData, int IdDip_RapportoLavoro, DateTime day)
         {
             var orariSchema = allData.OrariSchema_4User_OutModel;
@@ -1220,8 +1149,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                 {
                     var entity = new Dip_GG_Timbratura { IdDip_RapportoLavoro = IdDip_RapportoLavoro };
                     var vm = _mapper.Map<Dip_GG_TimbraturaModel>(entity);
-                    vm.Timbratura = day.Date + coppia.HH.Value.ToTimeSpan();
-                    vm.TimbraturaOriginale = day.Date + coppia.HH.Value.ToTimeSpan();
+                    vm.Timbratura = day.Date + (coppia.HH != null ? coppia.HH.Value : new TimeOnly()).ToTimeSpan();
+                    vm.TimbraturaOriginale = day.Date + (coppia.HH != null ? coppia.HH.Value : new TimeOnly()).ToTimeSpan();
                     vm.GiornoCompetenza = day.Date;
                     vm.TimbraturaTipo = TipoTimbratura.SenzaVerso;
                     vm.RichiestaStato = StatoRichiesta.Diretta;
@@ -1237,6 +1166,67 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
             public TimeOnly HH_Limite_SX { get; set; }
             public TimeOnly HH_Limite_DX { get; set; }
             public Boolean Check { get; set; }
+        }
+
+        private void GeneraGiustificativoAssenza(Timesheet_AllData_OutModel allData, int IdDip_RapportoLavoro, DateTime day, Dip_GG_ResultModel dip_GG_Result)
+        {
+            if (dip_GG_Result.HH_Teo.Ticks > 0 && (dip_GG_Result.HH_Teo > dip_GG_Result.HH_Lav))
+            {
+
+                var orariSchema = allData.OrariSchema_4User_OutModel;
+
+                if (orariSchema == null)
+                    return;
+
+                var daySlot = orariSchema.DaySlots.FirstOrDefault(ds => ds.IdDip_RapportoLavoro == IdDip_RapportoLavoro &&
+                                                                        ds.Data.Date == day.Date);
+
+                if (daySlot == null)
+                    return;
+
+                Par_ProfiloOrarioModel? par_ProfiloOrario = orariSchema.Par_ProfiloOrario.Where(x => x.Id == daySlot.IdPar_ProfiloOrario).FirstOrDefault();
+
+                if (par_ProfiloOrario == null)
+                    return;
+
+                if (par_ProfiloOrario.IdGiustificativo_Assenza_Ingiust > 0)
+                {
+                    var dip_GG_Giustificativi = allData.Dip_GG_AllData_OutModel.Dip_GG_Giustificativi.FindAll(x => x.IdPar_Giustificativi == par_ProfiloOrario.IdGiustificativo_Assenza_Ingiust &&
+                                                                                                              x.Data == day).FirstOrDefault();
+
+                    if (dip_GG_Giustificativi == null)
+                    {
+                        var entity = new Dip_GG_Giustificativi { IdDip_RapportoLavoro = IdDip_RapportoLavoro , 
+                                                                 IdPar_Giustificativi = par_ProfiloOrario.IdGiustificativo_Assenza_Ingiust 
+                                                                 };
+                        var vm = _mapper.Map<Dip_GG_GiustificativiModel>(entity);
+                        //vm.Timbratura = day.Date + (coppia.HH != null ? coppia.HH.Value : new TimeOnly()).ToTimeSpan();
+                        //vm.TimbraturaOriginale = day.Date + (coppia.HH != null ? coppia.HH.Value : new TimeOnly()).ToTimeSpan();
+                        vm.Data = day.Date;
+                        vm.InputType =  JustificationInputType.Manual;
+                        vm.RichiestaStato = StatoRichiesta.Diretta;
+                        vm.Hours = dip_GG_Result.HH_Teo - dip_GG_Result.HH_Lav;
+                        allData.Dip_GG_AllData_OutModel.Dip_GG_Giustificativi.Add(vm);
+                    }
+                    else
+                    {
+
+                    }
+
+                }
+
+                //allData.OrariSchema_4User_OutModel.
+
+
+
+
+
+
+
+
+
+            }
+
         }
 
 

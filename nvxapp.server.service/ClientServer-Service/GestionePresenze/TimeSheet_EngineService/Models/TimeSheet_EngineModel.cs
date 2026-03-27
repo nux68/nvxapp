@@ -25,6 +25,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
         public Boolean Approva_Richieste_Timbrature { get; set; }
         public Boolean Approva_Richieste_Giustificativo { get; set; }
         public Boolean Genera_Timbrature_Mancanti { get; set; }
+        public Boolean Genera_Giustificativo_Assenza { get; set; }
 
 
 
