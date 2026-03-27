@@ -164,7 +164,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Cau
                 {
                     Dip_GG_Causali? dip_GG_Causali = await _Dip_GG_CausaliRepository.FindByIdAsync(model.Data.Id);
                     int IdPar_Causali =0;
-                    var cau = _par_CausaliRepository.GetAll().FirstOrDefault();
+                    var cau = _par_CausaliRepository.FindAll(x => x.Id >0).FirstOrDefault();
                     if(cau!=null)
                         IdPar_Causali = cau.Id;
 

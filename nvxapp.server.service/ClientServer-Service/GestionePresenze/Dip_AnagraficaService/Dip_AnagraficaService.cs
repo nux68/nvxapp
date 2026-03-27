@@ -90,7 +90,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
                             await _gestionePresenzeUserUtility.Get_DipAna_DipRapp(item, true);
                     }
 
-                    var aspNetRoles = _aspNetRolesRepository.GetAll().ToList();
+                    var aspNetRoles = _aspNetRolesRepository.FindAll( x=>x.Id != null   ).ToList();
 
 
                     List<Dip_Anagrafica> dip_Anagrafica = _dip_AnagraficaRepository.FindAll(x => idAspNetUsers.Contains(x.IdAspNetUsers)).ToList();
@@ -146,10 +146,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
 
                         
 
-                        var aspNetRoles = _aspNetRolesRepository.GetAll().ToList();
+                        var aspNetRoles = _aspNetRolesRepository.FindAll( x=>x.Id != null ).ToList();
                         var usrRoles = new List<string>(await _userManager.GetRolesAsync(applicationUser));
 
-                        var dip_Anagrafica = _dip_AnagraficaRepository.GetAll().Where( x=> x.IdAspNetUsers == model.Data.Id).FirstOrDefault();
+                        var dip_Anagrafica = _dip_AnagraficaRepository.FindAll( x=> x.IdAspNetUsers == model.Data.Id).FirstOrDefault();
                         if( dip_Anagrafica != null )
                         {
                             retVal.Dip_Anagrafica = _mapper.Map<Dip_Anagrafica4EditModel>(dip_Anagrafica);
@@ -157,7 +157,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
                             retVal.Dip_Anagrafica.UserName = applicationUser.UserName != null ? applicationUser.UserName : "";
                             retVal.Dip_Anagrafica.Mail = applicationUser.Email != null ? applicationUser.Email : "";
 
-                            var usrC =  _userCompanyRepository.GetAll().Where(x => x.IdAspNetUsers == model.Data.Id && x.IdCompany == IdCompany).FirstOrDefault();
+                            var usrC =  _userCompanyRepository.FindAll(x => x.IdAspNetUsers == model.Data.Id && x.IdCompany == IdCompany).FirstOrDefault();
 
                             if ( usrC != null )
                             {
@@ -244,9 +244,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
                             if( applicationUser != null )
                             {
 
-                                var aspNetRoles = _aspNetRolesRepository.GetAll().ToList();
+                                var aspNetRoles = _aspNetRolesRepository.FindAll(x => x.Id != null).ToList();
                                 var usrRoles = new List<string>(await _userManager.GetRolesAsync(applicationUser));
-                                var entity = _dip_AnagraficaRepository.GetAll().Where(x => x.IdAspNetUsers == applicationUser.Id).FirstOrDefault();
+                                var entity = _dip_AnagraficaRepository.FindAll(x => x.IdAspNetUsers == applicationUser.Id).FirstOrDefault();
 
                                 if(entity == null)
                                 {

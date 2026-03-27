@@ -57,7 +57,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Profil
                 Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg company_DATA = await _gestionePresenzeUserUtility.Get_AzAna_AzSedi_AzReparto_Az_Cfg(IdCompany, true);
                 if (company_DATA != null && company_DATA.az_Anagrafica != null)
                 {
-                    var entity = _dip_ProfiloOrarioRepository.GetAll().Where(x => x.IdDip_RapportoLavoro == model.Data.Id).ToList();
+                    var entity = _dip_ProfiloOrarioRepository.FindAll(x => x.IdDip_RapportoLavoro == model.Data.Id).ToList();
                     retVal.Dip_ProfiloOrario = _mapper.Map<List<Dip_ProfiloOrarioModel>>(entity);
                 }
                 await Task.Delay(DelayAsyncMethod);

@@ -273,9 +273,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
                 var res1 = await _az_SediRepartoUserService.GetAll(req1, true);
                 if (res1.Success && res1.Data != null)
                 {
-                    ApplicationRole? userRole = _aspNetRolesRepository.GetAll().Where(x => x.Code == RoleCode.User).FirstOrDefault();
-                    ApplicationRole? companyAdminRole = _aspNetRolesRepository.GetAll().Where(x => x.Code == RoleCode.CompanyAdmin).FirstOrDefault();
-                    ApplicationRole? companyPowerAdminRole = _aspNetRolesRepository.GetAll().Where(x => x.Code == RoleCode.CompanyPowerAdmin).FirstOrDefault();
+                    ApplicationRole? userRole = _aspNetRolesRepository.FindAll(x => x.Code == RoleCode.User).FirstOrDefault();
+                    ApplicationRole? companyAdminRole = _aspNetRolesRepository.FindAll(x => x.Code == RoleCode.CompanyAdmin).FirstOrDefault();
+                    ApplicationRole? companyPowerAdminRole = _aspNetRolesRepository.FindAll(x => x.Code == RoleCode.CompanyPowerAdmin).FirstOrDefault();
 
                     foreach (var item in res1.Data.Az_RepartoUser)
                     {

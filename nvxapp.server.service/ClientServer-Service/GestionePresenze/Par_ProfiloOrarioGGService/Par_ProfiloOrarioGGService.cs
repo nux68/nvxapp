@@ -61,10 +61,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Profil
                     if (par_ProfiloOrario != null)
                         NumGiorniCiclo = par_ProfiloOrario.NumGiorniCiclo;
 
-                    var par_ProfiloOrarioGG = _par_ProfiloOrarioGGRepository.GetAll().Where(x => x.IdPar_ProfiloOrario == model.Data.Id).ToList();
+                    var par_ProfiloOrarioGG = _par_ProfiloOrarioGGRepository.FindAll(x => x.IdPar_ProfiloOrario == model.Data.Id).ToList();
                     retVal.Par_ProfiloOrarioGG = _mapper.Map<List<Par_ProfiloOrarioGGModel>>(par_ProfiloOrarioGG);
 
-                    var par_Orario = _par_OrarioRepository.GetAll().FirstOrDefault();
+                    var par_Orario = _par_OrarioRepository.FindAll( x=> x.Id>0).FirstOrDefault();
 
                     int tmp_counter = 0;
                     for (var i = 1; i <= NumGiorniCiclo; i++)
@@ -194,7 +194,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Profil
                         }
                         else
                         {
-                            var firstOrario = _par_OrarioRepository.GetAll().FirstOrDefault();
+                            var firstOrario = _par_OrarioRepository.FindAll(x => x.Id > 0).FirstOrDefault();
                             if (firstOrario != null)
                             {
                                 defaultIdParOrario = firstOrario.Id;
