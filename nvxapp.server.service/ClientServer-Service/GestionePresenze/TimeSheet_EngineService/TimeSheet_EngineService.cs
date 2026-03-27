@@ -785,6 +785,17 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                 }
             }
 
+            foreach (var item in AllData.Dip_GG_AllData_OutModel.Dip_GG_Giustificativi)
+            {
+                if (item.IsHashChanged(item.Hash))
+                {
+                    var req_1 = new GenericRequest<Dip_GG_GiustificativiPutInModel>();
+                    req_1.Data.Dip_GG_Giustificativi = item;
+                    req_1.Data.IdDip_RapportoLavoro = item.IdDip_RapportoLavoro;
+                    await _dip_GG_GiustificativiService.Dip_GG_GiustificativiPut(req_1, true);
+                }
+            }
+
             return;
         }
         private async Task ApprovaRichiesta(TipoRichiesta tipoRichiesta, Dip_GG_AllData_OutModel dip_GG_AllData, int IdDip_RapportoLavoro, DateTime day)

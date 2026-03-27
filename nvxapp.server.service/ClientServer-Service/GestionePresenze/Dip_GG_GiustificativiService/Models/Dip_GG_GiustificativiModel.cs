@@ -1,4 +1,5 @@
 ﻿using nvxapp.server.data.Entities.Tenant;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_TimbraturaService.Models;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using System;
@@ -66,5 +67,16 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Giu
         public List<Dip_GG_GiustificativiModel> Dip_GG_Giustificativi { get; set; } = new List<Dip_GG_GiustificativiModel>();
     }
 
+
+
+     public class Dip_GG_GiustificativiPutInModel 
+    {
+        public required int IdDip_RapportoLavoro { get; set; }
+        public Dip_GG_GiustificativiModel Dip_GG_Giustificativi { get; set; }  = new Dip_GG_GiustificativiModel() { Id = 0, IdDip_RapportoLavoro = 0,IdPar_Giustificativi =0};
+    }
+    public class Dip_GG_GiustificativiPutOutModel : ModelResult
+    {
+        public Dip_GG_GiustificativiModel Dip_GG_Giustificativi { get; set; } = new Dip_GG_GiustificativiModel() { Id = 0, IdDip_RapportoLavoro = 0 , IdPar_Giustificativi=0};
+    }
 
 }
