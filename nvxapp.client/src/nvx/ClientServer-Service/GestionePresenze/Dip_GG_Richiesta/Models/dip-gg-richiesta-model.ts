@@ -1,4 +1,6 @@
 import { ModelResult } from "../../../ModelsBase/model-result";
+import { Dip_GG_GiustificativiModel } from "../../Dip_GG_Giustificativi/Models/dip-gg-giustificativi-model";
+import { Dip_GG_TimbraturaModel } from "../../Dip_GG_Timbratura/Models/dip-gg-timbratura-model";
 
 /************************************************************/
 /******************** MODEL DATA ****************************/
@@ -121,7 +123,11 @@ export class Dip_GG_Richiesta_SetState_InModel {
 }
 export class Dip_GG_Richiesta_SetState_OutModel extends ModelResult {
 
-  //public dip_GG_Richiesta: Dip_GG_RichiestaModel;
+  public dip_GG_Richiesta: Dip_GG_RichiestaModel[] = [];
+  public dip_GG_Timbratura: Dip_GG_TimbraturaModel[] = [];
+  public dip_GG_Giustificativi: Dip_GG_GiustificativiModel[] = [];
+
+
   constructor() {
     super();
     //this.dip_GG_Richiesta = new Dip_GG_RichiestaModel();

@@ -156,8 +156,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Profil
         private Par_ProfiloOrario Init_Par_ProfiloOrario(int IdAz_Anagrafica)
         {
             var par_Orario = _par_OrarioRepository.FindAll(x => x.IdAz_Anagrafica == IdAz_Anagrafica).FirstOrDefault();
-            var par_causali = _par_CausaliRepository.FindAll(x => x.Id == IdAz_Anagrafica).FirstOrDefault();
-            var par_just = _par_GiustificativiRepository.FindAll(x => x.Id == IdAz_Anagrafica).FirstOrDefault();
+            var par_causali = _par_CausaliRepository.FindAll(x => x.IdAz_Anagrafica == IdAz_Anagrafica).FirstOrDefault();
+            var par_just = _par_GiustificativiRepository.FindAll(x => x.IdAz_Anagrafica == IdAz_Anagrafica).FirstOrDefault();
             
 
             Par_ProfiloOrario retVal = new Par_ProfiloOrario()
