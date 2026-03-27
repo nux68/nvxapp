@@ -36,7 +36,6 @@ using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.ServerModels;
 using Serilog;
-using System.Linq;
 /*
 
  premesa:
@@ -792,7 +791,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
             req_1.Data.RichiestaStato = StatoRichiesta.Approvata;
             req_1.Data.FromHR = true;
-            req_1.Data.IdDip_GG_Richiesta = dip_GG_AllData.Dip_GG_Richiesta.Where(x =>  x.RichiestaTipo == tipoRichiesta &&
+            req_1.Data.IdDip_GG_Richiesta = dip_GG_AllData.Dip_GG_Richiesta.Where(x => x.RichiestaTipo == tipoRichiesta &&
                                                                                     (x.RichiestaStato == StatoRichiesta.Immessa || x.RevocaStato == StatoRichiesta.Immessa) &&
                                                                                     x.IdDip_RapportoLavoro == IdDip_RapportoLavoro &&
                                                                                     x.Data == x.DataA &&
@@ -804,15 +803,15 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                 return;
 
             var res_1 = await _dip_GG_RichiestaService.SetState(req_1, true);
-            //if(res_1.Success && res_1.Data!=null)
-            //    merge(dip_GG_AllData,res_1.Data);
+            if (res_1.Success && res_1.Data != null)
+                Merge_RichiestaService_Result(dip_GG_AllData, res_1.Data);
 
         }
-        
-        
-        private void merge(Dip_GG_AllData_OutModel dip_GG_AllData,Dip_GG_Richiesta_SetState_OutModel outModel)
+
+        /* aggiorna i valori che il servizio ha aggiornato in autonomia */
+        private void Merge_RichiestaService_Result(Dip_GG_AllData_OutModel dip_GG_AllData, Dip_GG_Richiesta_SetState_OutModel outModel)
         {
-               foreach (var item in outModel.Dip_GG_Richiesta)
+            foreach (var item in outModel.Dip_GG_Richiesta)
             {
                 var idx = dip_GG_AllData.Dip_GG_Richiesta.FindIndex(x => x.Id == item.Id);
                 if (idx == -1)
@@ -839,10 +838,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                     dip_GG_AllData.Dip_GG_Giustificativi[idx] = item;
             }
 
-            
+
         }
-        
-        
+
+
         private TimeSpan CalcolaOreTeoriche(Timesheet_AllData_OutModel allData, int IdDip_RapportoLavoro, DateTime day)
         {
             var orariSchema = allData.OrariSchema_4User_OutModel;
@@ -883,7 +882,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
             return oreTeoriche;
         }
-                /// <summary>
+        /// <summary>
         /// Calcola le ore lavorate (HH_Lav) sommando le differenze tra le timbrature
         /// Entrata e Uscita arrotondate, abbinate in sequenza per posizione (0=E, 1=U, 2=E, 3=U ...).
         /// Non usa le finestre di tolleranza dell'orario — stessa logica di AssegnaVersoTimbrature.
@@ -910,11 +909,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
             for (int i = 0; i + 1 < timbrature.Count; i += 2)
             {
                 var entrata = timbrature[i];
-                var uscita  = timbrature[i + 1];
+                var uscita = timbrature[i + 1];
 
                 // sicurezza: la sequenza deve essere E poi U
                 if (entrata.TimbraturaTipo != TipoTimbratura.Entrata ||
-                    uscita.TimbraturaTipo  != TipoTimbratura.Uscita)
+                    uscita.TimbraturaTipo != TipoTimbratura.Uscita)
                     continue;
 
                 var durata = uscita.TimbraturaArrotondata!.Value - entrata.TimbraturaArrotondata!.Value;
@@ -924,7 +923,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
             return oreLavorate;
         }
-        
+
         //private TimeSpan CalcolaOreLavorate(Timesheet_AllData_OutModel allData, int IdDip_RapportoLavoro, DateTime day)
         //{
         //    var orariSchema = allData.OrariSchema_4User_OutModel;
@@ -1014,7 +1013,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                 return;
 
             var orarioBase = daySlot.Orari.OrderBy(o => o.ZOrder).First();
-            var parOrario  = orariSchema.ParOrario.FirstOrDefault(o => o.Id == orarioBase.IdPar_Orario);
+            var parOrario = orariSchema.ParOrario.FirstOrDefault(o => o.Id == orarioBase.IdPar_Orario);
             if (parOrario == null)
                 return;
 
@@ -1044,7 +1043,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
             for (int i = 0; i < timbratureSenzaVerso.Count; i++)
             {
                 var timbratura = timbratureSenzaVerso[i];
-                int idxCoppia  = i / 2;
+                int idxCoppia = i / 2;
                 bool isEntrata = (i % 2 == 0);
 
                 // se abbiamo più timbrature delle coppie previste, usa l'ultima coppia disponibile
@@ -1057,7 +1056,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
                 var roundOptions = isEntrata
                     ? new TimeRoundOptions(coppia.Dalle_Arrotondamento, coppia.Dalle_Arrotondamento_Verso)
-                    : new TimeRoundOptions(coppia.Alle_Arrotondamento,  coppia.Alle_Arrotondamento_Verso);
+                    : new TimeRoundOptions(coppia.Alle_Arrotondamento, coppia.Alle_Arrotondamento_Verso);
 
                 timbratura.TimbraturaArrotondata = Roundings.RoundDateTime(timbratura.Timbratura, roundOptions);
             }
@@ -1139,7 +1138,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
         //        }
         //    }
         //}
-        
+
         private void GeneraTimbratureMancanti(Timesheet_AllData_OutModel allData, int IdDip_RapportoLavoro, DateTime day)
         {
             var orariSchema = allData.OrariSchema_4User_OutModel;
