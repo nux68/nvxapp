@@ -13,7 +13,7 @@ namespace nvxapp.server.service.ClientServer_Service.ModelsBase
     {
         public string Hash { get; set; } = string.Empty;
         [HashField]
-        public Boolean  ToBeDeleted { get; set; } ;
+        public Boolean  ToBeDeleted { get; set; } = false;
 
         public string CalcolaHash<T>(T instance, params Expression<Func<T, object>>[] campi)
         {
