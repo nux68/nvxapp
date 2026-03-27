@@ -268,27 +268,45 @@ namespace nvxapp.server.data.Infrastructure
             }
         }
 
-        public DbSet<T> GetAll()
-        {
+        //public DbSet<T> GetAll()
+        //{
             
 
+        //    try
+        //    {
+        //        Schema_Set();
+        //        return DbContext.Set<T>();
+        //    }
+        //    finally
+        //    {
+        //        Schema_resume();
+        //    }
+        //}
+
+        public List<T> GetAll()
+        {
             try
             {
                 Schema_Set();
-                return DbContext.Set<T>();
+                return DbContext.Set<T>().AsNoTracking().ToList();
             }
             finally
             {
                 Schema_resume();
             }
+
+
+
         }
+
+
 
         public async Task<List<T>> FindAll()
         {
             try
             {
                 Schema_Set();
-                return await DbContext.Set<T>().ToListAsync();
+                return await DbContext.Set<T>().AsNoTracking().ToListAsync();
             }
             finally
             {
@@ -304,7 +322,7 @@ namespace nvxapp.server.data.Infrastructure
             try
             {
                 Schema_Set();
-                return DbContext.Set<T>().Where(where);
+                return DbContext.Set<T>().AsNoTracking().Where(where);
             }
             finally
             {
@@ -319,7 +337,8 @@ namespace nvxapp.server.data.Infrastructure
             try
             {
                 Schema_Set();
-                return DbContext.Set<T>().Find(id);
+                //return DbContext.Set<T>().Find(id);
+                return DbContext.Set<T>().AsNoTracking().SingleOrDefault(e => EF.Property<int>(e, "Id") == id);
             }
             finally
             {
@@ -333,7 +352,9 @@ namespace nvxapp.server.data.Infrastructure
             try
             {
                 Schema_Set();
-                return await DbContext.Set<T>().FindAsync(id);
+                //return await DbContext.Set<T>().FindAsync(id);
+                return await DbContext.Set<T>().AsNoTracking().SingleOrDefaultAsync(e => EF.Property<int>(e, "Id") == id);
+
             }
             finally
             {
