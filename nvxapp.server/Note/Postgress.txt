@@ -1,0 +1,6 @@
+﻿
+x riallineare il contatore della sequenza al massimo valore presente nella tabella, in modo da evitare errori di chiave primaria duplicata quando si inseriscono nuovi record.
+SELECT setval(
+    'public."Dip_GG_Timbrature_Id_seq"',
+    (SELECT MAX("Id") FROM "Dip_GG_Timbrature") + 1,
+    false

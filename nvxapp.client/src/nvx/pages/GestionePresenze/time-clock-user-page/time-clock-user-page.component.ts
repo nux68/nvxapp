@@ -14,11 +14,9 @@ import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructur
 })
 export class TimeClockUserPageComponent implements OnInit, OnDestroy {
   public title: string;
-  ////
   public buttonbar: ButtonItem[] = [];
   public btnAnnulla: ButtonItem;
   public btnInvia: ButtonItem;
-  //////
 
   public location: string;
   public currentDate: Date;
@@ -29,10 +27,11 @@ export class TimeClockUserPageComponent implements OnInit, OnDestroy {
   public startDate: string;
   public startDateBtn: string | undefined = undefined;
 
-  // Traccia lo stato dell'ultima timbratura (entrata o uscita)
   private isLastActionCheckIn: boolean = false;
-
   private timeInterval: any;
+
+  // true quando l'utente ha modificato manualmente il picker → il timer NON sovrascrive
+  private userHasEdited: boolean = false;
 
   constructor(private navCtrl: NavController,
     private userInterfaceService: UserInterfaceService,
@@ -65,6 +64,7 @@ export class TimeClockUserPageComponent implements OnInit, OnDestroy {
     this.lastAction = 'xxxxx';
 
     this.isLastActionCheckIn = false;
+    this.userHasEdited = false;  // reset ad ogni apertura della pagina
     this.startDate = new Date().toLocaleDateString();
 
     this.startClock();
@@ -77,20 +77,22 @@ export class TimeClockUserPageComponent implements OnInit, OnDestroy {
   startClock() {
     const tick = () => {
       this.currentDate = new Date();
-      this.currentTime = this.formatTime(this.currentDate);
-      this.formattedDate = this.formatDate(this.currentDate);
 
-      // aggiorna sempre il picker all'ora corrente ad ogni cambio di minuto
-      this.startDateBtn = this.toIsoLocal(this.currentDate);
+      // aggiorna currentTime, formattedDate e startDateBtn
+      // SOLO se l'utente non ha modificato manualmente il picker
+      if (!this.userHasEdited) {
+        this.currentTime = this.formatTime(this.currentDate);
+        this.formattedDate = this.formatDate(this.currentDate);
+        this.startDateBtn = this.toIsoLocal(this.currentDate);
+      }
 
-      // calcola i millisecondi mancanti al prossimo minuto esatto
       const msToNextMinute = (60 - this.currentDate.getSeconds()) * 1000
                              - this.currentDate.getMilliseconds();
 
       this.timeInterval = setTimeout(tick, msToNextMinute);
     };
 
-    tick(); // esegui subito per inizializzare i valori
+    tick();
   }
 
   stopClock() {
@@ -99,7 +101,6 @@ export class TimeClockUserPageComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Converte una Date in stringa ISO locale senza offset UTC, compatibile con ion-datetime
   private toIsoLocal(date: Date): string {
     const pad = (n: number) => n.toString().padStart(2, '0');
     return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}` +
@@ -126,7 +127,7 @@ export class TimeClockUserPageComponent implements OnInit, OnDestroy {
     this.lastAction = ` ${this.formatTime(stampDate)} (${this.formatDate(stampDate)})`;
 
     let request_stamp = new GenericRequest<Dip_GG_Timbratura_Stamp_InModel>(Dip_GG_Timbratura_Stamp_InModel);
-    request_stamp.data.dateStamp = this.toIsoLocal(stampDate); // stringa ISO locale senza offset
+    request_stamp.data.dateStamp = this.toIsoLocal(stampDate);
     this.dipGGTimbraturaService.Stamp(request_stamp).subscribe(res => {
       this.navCtrl.navigateForward('/usertimesheet');
     });
@@ -136,8 +137,12 @@ export class TimeClockUserPageComponent implements OnInit, OnDestroy {
     const value = event?.detail?.value;
     if (value) {
       const selected = new Date(value);
+      this.startDateBtn = this.toIsoLocal(selected);
       this.currentTime = this.formatTime(selected);
       this.formattedDate = this.formatDate(selected);
+
+      // l'utente ha modificato manualmente → sospendi l'aggiornamento automatico del picker
+      this.userHasEdited = true;
     }
   }
 

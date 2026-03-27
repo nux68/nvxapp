@@ -1,23 +1,19 @@
 ﻿using nvxapp.server.data.Entities.Tenant;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_GiustificativiService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_TimbraturaService.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_RichiestaService.Models
 {
-    
 
-   
 
-    public class Dip_GG_RichiestaModel:HashModel
+
+
+    public class Dip_GG_RichiestaModel : HashModel
     {
         public required int Id { get; set; }
         public required int IdDip_RapportoLavoro { get; set; }
-        
+
         [HashField]
         public string Data { get; set; } = string.Empty;
         [HashField]
@@ -37,7 +33,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
         public StatoRichiesta? RevocaStato { get; set; }
         [HashField]
         public List<Dip_GG_Richiesta_Stato_Cronology>? RevocaApprovazioneData { get; set; } = new List<Dip_GG_Richiesta_Stato_Cronology>();
-        
+
         // Campo per oggetto JSON
         [HashField]
         public string? CronologiaApprovazione { get; set; }
@@ -66,7 +62,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
         public int Year { get; set; } = 0;
         public int Month { get; set; } = 0;
     }
-    public class Dip_GG_Richiesta_GetAll4User_OutModel : ModelResult 
+    public class Dip_GG_Richiesta_GetAll4User_OutModel : ModelResult
     {
         public List<Dip_GG_RichiestaModel> Dip_GG_Richiesta { get; set; } = new List<Dip_GG_RichiestaModel>();
     }
@@ -88,7 +84,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
     public class Dip_GG_Richiesta_Send_InModel
     {
         public string? IdAspNetUsers { get; set; }
-        public Dip_GG_RichiestaModel? Dip_GG_Richiesta { get; set; } 
+        public Dip_GG_RichiestaModel? Dip_GG_Richiesta { get; set; }
         public Boolean FromHR { get; set; }
     }
     public class Dip_GG_Richiesta_Send_OutModel : ModelResult
@@ -107,7 +103,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
     }
     public class Dip_GG_Richiesta_SetState_OutModel : ModelResult
     {
-        
+        // dati modificati
+        public List<Dip_GG_RichiestaModel> Dip_GG_Richiesta { get; set; } = new List<Dip_GG_RichiestaModel>();
+        public List<Dip_GG_TimbraturaModel> Dip_GG_Timbratura { get; set; } = new List<Dip_GG_TimbraturaModel>();
+        public List<Dip_GG_GiustificativiModel> Dip_GG_Giustificativi { get; set; } = new List<Dip_GG_GiustificativiModel>();
+
     }
 
     public class Dip_GG_Richiesta_Get_4Calculation_InModel

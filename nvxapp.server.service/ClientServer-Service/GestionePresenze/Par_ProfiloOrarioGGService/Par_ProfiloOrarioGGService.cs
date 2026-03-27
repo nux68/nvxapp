@@ -194,7 +194,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Profil
                         }
                         else
                         {
-                            var firstOrario = await _par_OrarioRepository.GetAll().FirstOrDefaultAsync();
+                            var firstOrario = _par_OrarioRepository.GetAll().FirstOrDefault();
                             if (firstOrario != null)
                             {
                                 defaultIdParOrario = firstOrario.Id;
