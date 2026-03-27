@@ -393,24 +393,55 @@ namespace nvxapp.server.data.Infrastructure
 
         public async Task<T> UpdateAsync(T entity)
         {
-
             try
             {
                 Schema_Set();
 
                 var now = DateTime.Now;
 
-                // update the "ChangeDate" property if exists
                 var changeDatePropUp = entity.GetType().GetProperty("ModifiedDate");
                 if (changeDatePropUp != null) changeDatePropUp.SetValue(entity, now);
 
                 var changeUsrPropUp = entity.GetType().GetProperty("ChangeUser");
                 if (changeUsrPropUp != null) changeUsrPropUp.SetValue(entity, CurrentUserId);
 
+                // se esiste già un'istanza tracciata con lo stesso Id, aggiorna i suoi valori
+                // evitando il conflitto di tracking causato da AsNoTracking sulle letture
+                var existingEntry = DbContext.ChangeTracker.Entries<T>()
+                    .FirstOrDefault(e => e.Entity == entity);
 
+                if (existingEntry != null)
+                {
+                    // entità già tracciata → aggiorna i valori direttamente
+                    existingEntry.CurrentValues.SetValues(entity);
+                }
+                else
+                {
+                    // cerca per Id una eventuale entità già tracciata con la stessa chiave
+                    var keyValues = DbContext.Model.FindEntityType(typeof(T))!
+                        .FindPrimaryKey()!
+                        .Properties
+                        .Select(p => p.PropertyInfo!.GetValue(entity))
+                        .ToArray();
 
+                    var trackedEntry = DbContext.ChangeTracker.Entries<T>()
+                        .FirstOrDefault(e => DbContext.Model.FindEntityType(typeof(T))!
+                            .FindPrimaryKey()!
+                            .Properties
+                            .Select(p => p.PropertyInfo!.GetValue(e.Entity))
+                            .SequenceEqual(keyValues!));
 
-                DbContext.Set<T>().Update(entity);
+                    if (trackedEntry != null)
+                    {
+                        // stessa chiave già tracciata → aggiorna i valori senza riattaccare
+                        trackedEntry.CurrentValues.SetValues(entity);
+                    }
+                    else
+                    {
+                        // nessuna entità tracciata con questa chiave → update normale
+                        DbContext.Set<T>().Update(entity);
+                    }
+                }
 
                 await DbContext.SaveChangesAsync();
             }
@@ -427,8 +458,6 @@ namespace nvxapp.server.data.Infrastructure
             {
                 Schema_resume();
             }
-
-
 
             return entity;
         }
