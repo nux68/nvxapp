@@ -38,7 +38,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Parameter
             {
                 RolesListOutModel retVal = new RolesListOutModel();
 
-                retVal.Roles = _aspNetRolesRepository.GetAll().ToList();
+                retVal.Roles = _aspNetRolesRepository.FindAll(x => true).ToList();
 
 
                 //eliminare

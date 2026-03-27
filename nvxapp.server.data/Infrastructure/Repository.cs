@@ -283,21 +283,21 @@ namespace nvxapp.server.data.Infrastructure
         //    }
         //}
 
-        public List<T> GetAll()
-        {
-            try
-            {
-                Schema_Set();
-                return DbContext.Set<T>().AsNoTracking().ToList();
-            }
-            finally
-            {
-                Schema_resume();
-            }
+        //public List<T> GetAll()
+        //{
+        //    try
+        //    {
+        //        Schema_Set();
+        //        return DbContext.Set<T>().AsNoTracking().ToList();
+        //    }
+        //    finally
+        //    {
+        //        Schema_resume();
+        //    }
 
 
 
-        }
+        //}
 
 
 
