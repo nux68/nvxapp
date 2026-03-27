@@ -20,7 +20,8 @@ namespace nvxapp.server.data.Interfaces
         Task<T> UpdateAsync(T entity);
         Task DeleteAsync(T entity);
         Task DeleteRangeAsync(IEnumerable<T> entities);
-        DbSet<T> GetAll();
+        //DbSet<T> GetAll();
+        //List<T> GetAll();
 
         Task SaveChange();
 

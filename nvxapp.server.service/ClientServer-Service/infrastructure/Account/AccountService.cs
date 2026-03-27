@@ -188,7 +188,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                         var roles = await _userManager.GetRolesAsync(applicationUser);
                         if (roles != null && roles.Any())
                         {
-                            var aspNetRoles = _aspNetRolesRepository.GetAll().Where(x => x.Name != null && roles.Contains(x.Name)).ToList();
+                            var aspNetRoles = _aspNetRolesRepository.FindAll(x => x.Name != null && roles.Contains(x.Name)).ToList();
 
                             retVal.Roles = _mapper.Map<List<AspNetRolesModel>>(aspNetRoles);
                         }
@@ -293,7 +293,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                             retVal.UserData.UserName = applicationUser.UserName;
 
 
-                            var aspNetRoles = _aspNetRolesRepository.GetAll().Where(x => x.Name != null && roles.Contains(x.Name)).ToList();
+                            var aspNetRoles = _aspNetRolesRepository.FindAll(x => x.Name != null && roles.Contains(x.Name)).ToList();
 
                             retVal.UserData.Roles = _mapper.Map<List<AspNetRolesModel>>(aspNetRoles);
                         }
@@ -315,7 +315,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                 DealerListOutModel retVal = new DealerListOutModel();
 
 
-                ApplicationRole? applicationRole = _aspNetRolesRepository.GetAll().Where(x => x.Code == RoleCode.DealerPowerAdmin).FirstOrDefault();
+                ApplicationRole? applicationRole = _aspNetRolesRepository.FindAll(x => x.Code == RoleCode.DealerPowerAdmin).FirstOrDefault();
                 if (applicationRole != null)
                 {
                     if (applicationRole.Name != null)
@@ -324,7 +324,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                         if (usrRole != null)
                         {
                             var usrId = usrRole.Select(x => x.Id).ToList();
-                            var userDealer = _userDealerRepository.GetAll().Where(x => usrId.Contains(x.IdAspNetUsers) && x.MainUser == true).ToList();
+                            var userDealer = _userDealerRepository.FindAll(x => usrId.Contains(x.IdAspNetUsers) && x.MainUser == true).ToList();
 
                             foreach (var item in userDealer)
                             {
@@ -487,7 +487,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                 FinancialAdvisorListOutModel retVal = new FinancialAdvisorListOutModel();
 
 
-                ApplicationRole? applicationRole = _aspNetRolesRepository.GetAll().Where(x => x.Code == RoleCode.FinancialAdvisorPowerAdmin).FirstOrDefault();
+                ApplicationRole? applicationRole = _aspNetRolesRepository.FindAll(x => x.Code == RoleCode.FinancialAdvisorPowerAdmin).FirstOrDefault();
                 if (applicationRole != null)
                 {
                     if (applicationRole.Name != null)
@@ -498,12 +498,11 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                             int IdDealer;
                             int.TryParse(this.CurrentDealer, out IdDealer);
 
-                            var financialAdvisorIdList = _financialAdvisorRepository.GetAll().Where(x => x.IdDealer == IdDealer).Select(x => x.Id).ToList();
+                            var financialAdvisorIdList = _financialAdvisorRepository.FindAll(x => x.IdDealer == IdDealer).Select(x => x.Id).ToList();
 
 
                             var usrId = usrRole.Select(x => x.Id).ToList();
-                            var userFinancialAdvisor = _userFinancialAdvisorRepository.GetAll()
-                                                                                      .Where(x => usrId.Contains(x.IdAspNetUsers) && x.MainUser == true && financialAdvisorIdList.Contains(x.IdFinancialAdvisor))
+                            var userFinancialAdvisor = _userFinancialAdvisorRepository.FindAll(x => usrId.Contains(x.IdAspNetUsers) && x.MainUser == true && financialAdvisorIdList.Contains(x.IdFinancialAdvisor))
                                                                                       .ToList();
 
                             foreach (var item in userFinancialAdvisor)
@@ -660,7 +659,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                 CompanyListOutModel retVal = new CompanyListOutModel();
 
 
-                ApplicationRole? applicationRole = _aspNetRolesRepository.GetAll().Where(x => x.Code == RoleCode.CompanyPowerAdmin).FirstOrDefault();
+                ApplicationRole? applicationRole = _aspNetRolesRepository.FindAll(x => x.Code == RoleCode.CompanyPowerAdmin).FirstOrDefault();
                 if (applicationRole != null)
                 {
                     if (applicationRole.Name != null)
@@ -671,11 +670,11 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                             int IdFinancialAdvisor;
                             int.TryParse(this.CurrentFinancialAdvisor, out IdFinancialAdvisor);
 
-                            var companyIdList = _companyRepository.GetAll().Where(x => x.IdFinancialAdvisor == IdFinancialAdvisor).Select(x => x.Id).ToList();
+                            var companyIdList = _companyRepository.FindAll(x => x.IdFinancialAdvisor == IdFinancialAdvisor).Select(x => x.Id).ToList();
 
 
                             var usrId = usrRole.Select(x => x.Id).ToList();
-                            var userCompany = _userCompanyRepository.GetAll().Where(x => usrId.Contains(x.IdAspNetUsers) && x.MainUser == true && companyIdList.Contains(x.IdCompany)).ToList();
+                            var userCompany = _userCompanyRepository.FindAll(x => usrId.Contains(x.IdAspNetUsers) && x.MainUser == true && companyIdList.Contains(x.IdCompany)).ToList();
 
                             foreach (var item in userCompany)
                             {
@@ -833,14 +832,14 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                 int IdCompany;
                 int.TryParse(this.CurrentCompany, out IdCompany);
 
-                List<UserCompany> userCompany_List = _userCompanyRepository.GetAll().Where(x => x.IdCompany == IdCompany).ToList();
+                List<UserCompany> userCompany_List = _userCompanyRepository.FindAll(x => x.IdCompany == IdCompany).ToList();
                 List<string> IdAspNetUsers_List = userCompany_List.Select(x => x.IdAspNetUsers).ToList();
 
                 List<ApplicationUser> ApplicationUser_List = _aspNetUsersRepository.FindAll(x => IdAspNetUsers_List.Contains(x.Id)).ToList();
 
                 List<IdentityUserRole<string>> IdentityUserRole_list = _aspNetUserRolesRepository.FindAll(x => IdAspNetUsers_List.Contains(x.UserId)).ToList();
 
-                List<ApplicationRole> ApplicationRoleList = _aspNetRolesRepository.GetAll().ToList();
+                List<ApplicationRole> ApplicationRoleList = _aspNetRolesRepository.FindAll(x => true).ToList();
 
                 foreach (var item in userCompany_List)
                 {
@@ -1021,9 +1020,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                 UserListOutModel retVal = new UserListOutModel();
 
 
-                List<string> applicationRole = _aspNetRolesRepository.GetAll()
-                                                                     .Where(x => x.Code == RoleCode.Admin ||
-                                                                                 x.Code == RoleCode.PowerAdmin)
+                List<string> applicationRole = _aspNetRolesRepository.FindAll(x => x.Code == RoleCode.Admin ||
+                                                                                   x.Code == RoleCode.PowerAdmin)
                                                                      .Select(x => x.Id).ToList();
 
                 List<IdentityUserRole<string>> IdentityUserRole_list = _aspNetUserRolesRepository.FindAll(x => applicationRole.Contains(x.RoleId)).ToList();
@@ -1105,9 +1103,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                 }
                 else
                 {
-                    var roleName = _aspNetRolesRepository.GetAll()
-                                                                .Where(x => x.Id == model.Data.UserEdit.RoleId)
-                                                                .Select(x => x.Name).FirstOrDefault();
+                    var roleName = _aspNetRolesRepository.FindAll(x => x.Id == model.Data.UserEdit.RoleId)
+                                                         .Select(x => x.Name).FirstOrDefault();
                     if (roleName == null)
                         roleName = "User";
 
@@ -1153,7 +1150,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                 int IdDealer;
                 int.TryParse(this.CurrentDealer, out IdDealer);
 
-                List<UserDealer> userDealer_List = _userDealerRepository.GetAll().Where(x => x.IdDealer == IdDealer).ToList();
+                List<UserDealer> userDealer_List = _userDealerRepository.FindAll(x => x.IdDealer == IdDealer).ToList();
                 List<string> IdAspNetUsers_List = userDealer_List.Select(x => x.IdAspNetUsers).ToList();
 
                 List<ApplicationUser> ApplicationUser_List = _aspNetUsersRepository.FindAll(x => IdAspNetUsers_List.Contains(x.Id)).ToList();
@@ -1263,8 +1260,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                     var result = await _userManager.CreateAsync(user, password);
                     if (result.Succeeded)
                     {
-                        var roleName = _aspNetRolesRepository.GetAll()
-                                                       .Where(x => x.Id == model.Data.UserDealerEdit.RoleId)
+                        var roleName = _aspNetRolesRepository.FindAll(x => x.Id == model.Data.UserDealerEdit.RoleId)
                                                        .Select(x => x.Name).FirstOrDefault();
 
                         if (string.IsNullOrEmpty(roleName))
@@ -1304,7 +1300,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                 int IdFinancialAdvisor;
                 int.TryParse(this.CurrentFinancialAdvisor, out IdFinancialAdvisor);
 
-                List<UserFinancialAdvisor> userFinancialAdvisor_List = _userFinancialAdvisorRepository.GetAll().Where(x => x.IdFinancialAdvisor == IdFinancialAdvisor).ToList();
+                List<UserFinancialAdvisor> userFinancialAdvisor_List = _userFinancialAdvisorRepository.FindAll(x => x.IdFinancialAdvisor == IdFinancialAdvisor).ToList();
                 List<string> IdAspNetUsers_List = userFinancialAdvisor_List.Select(x => x.IdAspNetUsers).ToList();
 
                 List<ApplicationUser> ApplicationUser_List = _aspNetUsersRepository.FindAll(x => IdAspNetUsers_List.Contains(x.Id)).ToList();
@@ -1414,8 +1410,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                     var result = await _userManager.CreateAsync(user, password);
                     if (result.Succeeded)
                     {
-                        var roleName = _aspNetRolesRepository.GetAll()
-                                                       .Where(x => x.Id == model.Data.UserFinancialAdvisorEdit.RoleId)
+                        var roleName = _aspNetRolesRepository.FindAll(x => x.Id == model.Data.UserFinancialAdvisorEdit.RoleId)
                                                        .Select(x => x.Name).FirstOrDefault();
                         if (string.IsNullOrEmpty(roleName))
                             roleName = "FinancialAdvisorAdmin";
