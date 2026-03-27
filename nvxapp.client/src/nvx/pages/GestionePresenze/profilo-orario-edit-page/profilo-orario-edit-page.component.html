@@ -154,6 +154,28 @@
                 </ion-note>
               </ion-col>
             </ion-row>
+
+
+
+            <ion-row>
+
+              <!-- Combo per selezione dal just assenza ingiust-->
+              <ion-col size="12" size-md="6">
+                <ion-item>
+                  <ion-label position="floating">Giustificativo assenza ingiustificata</ion-label>
+                  <ion-select formControlName="idGiustificativo_Assenza_Ingiust" placeholder="Seleziona il giustificativo">
+                    <ion-select-option *ngFor="let just of par_GiustificativiModelList" [value]="just.id">
+                      {{ just.descrizione }}
+                    </ion-select-option>
+                  </ion-select>
+                </ion-item>
+                <ion-note color="danger" *ngIf="_editForm.get('idGiustificativo_Assenza_Ingiust')?.hasError('required') && _editForm.get('idGiustificativo_Assenza_Ingiust')?.touched">
+                  Il giustificativo è obbligatorio.
+                </ion-note>
+              </ion-col>
+            </ion-row>
+
+
           </ion-grid>
 
         </div>

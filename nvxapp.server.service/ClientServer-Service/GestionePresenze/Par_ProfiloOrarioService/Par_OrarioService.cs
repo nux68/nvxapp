@@ -27,6 +27,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Profil
         private readonly IPar_OrarioIntervalloHHService _par_OrarioIntervalloHHService;
         private readonly IPar_OrarioRepository _par_OrarioRepository;
         private readonly IPar_CausaliRepository _par_CausaliRepository;
+        private readonly IPar_GiustificativiRepository _par_GiustificativiRepository;
 
 
 
@@ -41,6 +42,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Profil
                                   IPar_OrarioIntervalloHHService par_OrarioIntervalloHHService,
                                   IPar_OrarioRepository par_OrarioRepository,
                                   IPar_CausaliRepository par_CausaliRepository,
+                                  IPar_GiustificativiRepository par_GiustificativiRepository,
 
                                   IPar_ProfiloOrarioRepository par_ProfiloOrarioRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
@@ -50,6 +52,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Profil
             _par_OrarioIntervalloHHService = par_OrarioIntervalloHHService;
             _par_OrarioRepository = par_OrarioRepository;
             _par_CausaliRepository = par_CausaliRepository;
+            _par_GiustificativiRepository = par_GiustificativiRepository;
         }
 
         public virtual async Task<GenericResult<Par_ProfiloOrario_GetAllOutModel>> GetAll(GenericRequest<Par_ProfiloOrario_GetAllInModel> model, Boolean isSubProcess)
@@ -152,8 +155,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Profil
 
         private Par_ProfiloOrario Init_Par_ProfiloOrario(int IdAz_Anagrafica)
         {
-            var par_Orario = _par_OrarioRepository.FindAll(x => x.Id > 0).FirstOrDefault();
-            var par_causali = _par_CausaliRepository.FindAll(x => x.Id > 0).FirstOrDefault();
+            var par_Orario = _par_OrarioRepository.FindAll(x => x.IdAz_Anagrafica == IdAz_Anagrafica).FirstOrDefault();
+            var par_causali = _par_CausaliRepository.FindAll(x => x.Id == IdAz_Anagrafica).FirstOrDefault();
+            var par_just = _par_GiustificativiRepository.FindAll(x => x.Id == IdAz_Anagrafica).FirstOrDefault();
             
 
             Par_ProfiloOrario retVal = new Par_ProfiloOrario()
@@ -168,7 +172,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Profil
                 SupplTipoConteggio = StraoTipoConteggio.Giornaliero,
                 IdPar_Orario_Festivo = par_Orario != null ? par_Orario.Id : 0,     //MIGLIORARE,
                 IdCausale_Lavoro_Strao = par_causali != null ? par_causali.Id : 0, //MIGLIORARE
-                IdCausale_Lavoro_Suppl = par_causali != null ? par_causali.Id : 0  //MIGLIORARE
+                IdCausale_Lavoro_Suppl = par_causali != null ? par_causali.Id : 0,  //MIGLIORARE
+                IdGiustificativo_Assenza_Ingiust = par_just != null ? par_just.Id : 0,  //MIGLIORARE
             };
             return retVal;
         }

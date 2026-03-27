@@ -27,6 +27,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Profil
 
         public int IdCausale_Lavoro_Strao { get; set; }
         public int IdCausale_Lavoro_Suppl { get; set; }
+        public int IdGiustificativo_Assenza_Ingiust { get; set; }
 
     }
 

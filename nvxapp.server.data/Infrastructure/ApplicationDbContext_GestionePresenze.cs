@@ -372,7 +372,11 @@ namespace nvxapp.server.data.Infrastructure
                 .HasForeignKey(p => p.IdCausale_Lavoro_Suppl)
                 .OnDelete(DeleteBehavior.Restrict); 
 
-
+            modelBuilder.Entity<Par_ProfiloOrario>()
+                .HasOne(p => p.Giustificativo_Assenza_IngiustNavigation)
+                .WithMany() 
+                .HasForeignKey(p => p.IdGiustificativo_Assenza_Ingiust)
+                .OnDelete(DeleteBehavior.Restrict); 
 
 
             /* Par_ProfiloOrarioGG */

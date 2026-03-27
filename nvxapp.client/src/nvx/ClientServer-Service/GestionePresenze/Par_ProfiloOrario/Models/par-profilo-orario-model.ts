@@ -15,7 +15,8 @@ export class Par_ProfiloOrarioModel {
   straoTipoConteggio: StraoTipoConteggio;
   supplTipoConteggio: StraoTipoConteggio;
   idCausale_Lavoro_Strao: number;
-  idCausale_Lavoro_Suppl: number; 
+  idCausale_Lavoro_Suppl: number;
+  idGiustificativo_Assenza_Ingiust: number; 
 
   constructor() {
     this.id = 0;
@@ -30,6 +31,7 @@ export class Par_ProfiloOrarioModel {
     this.idCausale_Lavoro_Strao = 0;
     this.idCausale_Lavoro_Suppl = 0;
     this.supplTipoConteggio = StraoTipoConteggio.Giornaliero;
+    this.idGiustificativo_Assenza_Ingiust = 0;
   }
 
 }

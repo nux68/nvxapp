@@ -221,31 +221,31 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Orario
             switch (numCoppia)
             {
                 case 1:
-                    _par_OrarioIntervalloHH.Dalle_Limite_SX = new TimeOnly(8,50,0);  
+                    _par_OrarioIntervalloHH.Dalle_Limite_SX = new TimeOnly(8,45,0);  
                     _par_OrarioIntervalloHH.Dalle = new TimeOnly(9,0,0);
-                    _par_OrarioIntervalloHH.Dalle_Limite_DX = new TimeOnly(9,10,0);
-                    _par_OrarioIntervalloHH.Dalle_Arrotondamento = data.Extensions.TimeRoundInterval.Min5;
+                    _par_OrarioIntervalloHH.Dalle_Limite_DX = new TimeOnly(9,15,0);
+                    _par_OrarioIntervalloHH.Dalle_Arrotondamento = data.Extensions.TimeRoundInterval.Min15;
                     _par_OrarioIntervalloHH.Dalle_Arrotondamento_Verso = data.Extensions.RoundDirection.Up;
 
-                    _par_OrarioIntervalloHH.Alle_Limite_SX =  new TimeOnly(13,0,0);
+                    _par_OrarioIntervalloHH.Alle_Limite_SX =  new TimeOnly(12,45,0);
                     _par_OrarioIntervalloHH.Alle = new TimeOnly(13,0,0);
-                    _par_OrarioIntervalloHH.Alle_Limite_DX = new TimeOnly(13,10,0);
-                    _par_OrarioIntervalloHH.Alle_Arrotondamento = data.Extensions.TimeRoundInterval.Min5;
+                    _par_OrarioIntervalloHH.Alle_Limite_DX = new TimeOnly(13,15,0);
+                    _par_OrarioIntervalloHH.Alle_Arrotondamento = data.Extensions.TimeRoundInterval.Min15;
                     _par_OrarioIntervalloHH.Alle_Arrotondamento_Verso = data.Extensions.RoundDirection.Up;
 
                     break;
 
                 case 2:
-                    _par_OrarioIntervalloHH.Dalle_Limite_SX = new TimeOnly(13,50,0);
+                    _par_OrarioIntervalloHH.Dalle_Limite_SX = new TimeOnly(13,45,0);
                     _par_OrarioIntervalloHH.Dalle = new TimeOnly(14,0,0);
-                    _par_OrarioIntervalloHH.Dalle_Limite_DX = new TimeOnly(14,0,0);
-                    _par_OrarioIntervalloHH.Dalle_Arrotondamento = data.Extensions.TimeRoundInterval.Min5;
+                    _par_OrarioIntervalloHH.Dalle_Limite_DX = new TimeOnly(14,150,0);
+                    _par_OrarioIntervalloHH.Dalle_Arrotondamento = data.Extensions.TimeRoundInterval.Min15;
                     _par_OrarioIntervalloHH.Dalle_Arrotondamento_Verso = data.Extensions.RoundDirection.Up;
 
-                    _par_OrarioIntervalloHH.Alle_Limite_SX = new TimeOnly(18,0,0);
+                    _par_OrarioIntervalloHH.Alle_Limite_SX = new TimeOnly(17,45,0);
                     _par_OrarioIntervalloHH.Alle = new TimeOnly(18,0,0);
-                    _par_OrarioIntervalloHH.Alle_Limite_DX = new TimeOnly(18,10,0);
-                    _par_OrarioIntervalloHH.Alle_Arrotondamento = data.Extensions.TimeRoundInterval.Min5;
+                    _par_OrarioIntervalloHH.Alle_Limite_DX = new TimeOnly(18,15,0);
+                    _par_OrarioIntervalloHH.Alle_Arrotondamento = data.Extensions.TimeRoundInterval.Min15;
                     _par_OrarioIntervalloHH.Alle_Arrotondamento_Verso = data.Extensions.RoundDirection.Up;
                     break;
 

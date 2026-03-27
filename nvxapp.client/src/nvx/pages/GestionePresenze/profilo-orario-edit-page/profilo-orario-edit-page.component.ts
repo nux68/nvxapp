@@ -18,6 +18,7 @@ import { SharedParameterGestionePresenzeService } from '../../../shared/shared-p
 import { state } from '@angular/animations';
 import { ParProfiloOrarioGGService } from '../../../ClientServer-Service/GestionePresenze/Par_ProfiloOrarioGG/par-profilo-orario-gg.service';
 import { Par_CausaliModel } from '../../../ClientServer-Service/GestionePresenze/Par_Causali/Models/par-causali-model';
+import { Par_GiustificativiModel } from '../../../ClientServer-Service/GestionePresenze/Par_Giustificativi/Models/par-giustificativi-model';
 
 @Component({
   selector: 'app-profilo-orario-edit-page',
@@ -30,6 +31,7 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
   public currSection: string = "sez1";
   public par_OrarioModelList: Par_OrarioModel[] = [];
   public par_CausaliModelList: Par_CausaliModel[] = [];
+  public par_GiustificativiModelList: Par_GiustificativiModel[] = [];
   public par_ProfiloOrarioGG: Par_ProfiloOrarioGGModel[];
   public par_OrarioIntervalloHH: Par_OrarioIntervalloHHModel[];
   public btnEdit: ButtonItem;
@@ -77,6 +79,8 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
 
       idCausale_Lavoro_Strao: [0, [Validators.required]],
       idCausale_Lavoro_Suppl: [0, [Validators.required]],
+      idGiustificativo_Assenza_Ingiust: [0, [Validators.required]],
+
       
       
     });
@@ -87,7 +91,9 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
 
     this.par_OrarioModelList = this.sharedParameterGestionePresenzeService.Par_Orario;
     this.par_CausaliModelList = this.sharedParameterGestionePresenzeService.Par_Causali;
+    this.par_GiustificativiModelList = this.sharedParameterGestionePresenzeService.Par_Giustificativi;
     
+
     this.par_OrarioIntervalloHH = this.sharedParameterGestionePresenzeService.Par_OrarioIntervalloHH;
 
     if (state) {

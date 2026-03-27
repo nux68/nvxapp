@@ -48,6 +48,12 @@ namespace nvxapp.server.data.Entities.Tenant.GestionePresenze
         [ForeignKey("IdCausale_Lavoro_Suppl")]
         public virtual Par_Causali? Causale_Lavoro_SupplNavigation { get; set; }
 
+        
+        [Required]
+        public required int IdGiustificativo_Assenza_Ingiust { get; set; }
+        [ForeignKey("IdGiustificativo_Assenza_Ingiust")]
+        public virtual Par_Giustificativi? Giustificativo_Assenza_IngiustNavigation { get; set; }
+
 
 
 
