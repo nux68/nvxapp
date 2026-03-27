@@ -12,6 +12,8 @@ namespace nvxapp.server.service.ClientServer_Service.ModelsBase
     public class HashModel
     {
         public string Hash { get; set; } = string.Empty;
+        [HashField]
+        public Boolean  ToBeDeleted { get; set; } ;
 
         public string CalcolaHash<T>(T instance, params Expression<Func<T, object>>[] campi)
         {
