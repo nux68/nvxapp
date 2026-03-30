@@ -38,6 +38,7 @@ using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.ServerModels;
 using Serilog;
 using System.Text.Json;
+
 /*
 
  premesa:
@@ -761,7 +762,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
             if (timeSheet_CalculateModel.Genera_Giustificativo_Assenza && dip_GG_Result != null)
             {
-                await GeneraGiustificativoAssenza(Dip_Anagrafica,AllData, rapporto_calc.Id, giorno, dip_GG_Result);
+                await GeneraGiustificativoAssenza(Dip_Anagrafica, AllData, rapporto_calc.Id, giorno, dip_GG_Result);
             }
 
             return;
@@ -784,10 +785,18 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
             {
                 if (item.IsHashChanged(item.Hash))
                 {
-                    var req_1 = new GenericRequest<Dip_GG_TimbraturaPutInModel>();
-                    req_1.Data.Dip_GG_Timbratura = item;
-                    req_1.Data.IdDip_RapportoLavoro = item.IdDip_RapportoLavoro;
-                    await _dip_GG_TimbraturaService.Dip_GG_TimbraturaPut(req_1, true);
+                    if (!item.ToBeDeleted)
+                    {
+                        var req_1 = new GenericRequest<Dip_GG_TimbraturaPutInModel>();
+                        req_1.Data.Dip_GG_Timbratura = item;
+                        req_1.Data.IdDip_RapportoLavoro = item.IdDip_RapportoLavoro;
+                        await _dip_GG_TimbraturaService.Dip_GG_TimbraturaPut(req_1, true);
+                    }
+                    else
+                    {
+                        //to do
+                    }
+
                 }
             }
 
@@ -795,10 +804,39 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
             {
                 if (item.IsHashChanged(item.Hash))
                 {
-                    var req_1 = new GenericRequest<Dip_GG_GiustificativiPutInModel>();
-                    req_1.Data.Dip_GG_Giustificativi = item;
-                    req_1.Data.IdDip_RapportoLavoro = item.IdDip_RapportoLavoro;
-                    await _dip_GG_GiustificativiService.Dip_GG_GiustificativiPut(req_1, true);
+                    if (!item.ToBeDeleted)
+                    {
+                        var req_1 = new GenericRequest<Dip_GG_GiustificativiPutInModel>();
+                        req_1.Data.Dip_GG_Giustificativi = item;
+                        req_1.Data.IdDip_RapportoLavoro = item.IdDip_RapportoLavoro;
+                        await _dip_GG_GiustificativiService.Dip_GG_GiustificativiPut(req_1, true);
+                    }
+                    else
+                    {
+                        var req_1 = new GenericRequest<Dip_GG_Giustificativi_DeleteInModel>();
+                        req_1.Data.Id = item.Id;
+                        await _dip_GG_GiustificativiService.Dip_GG_GiustificativiDelete(req_1, true);
+                    }
+                }
+            }
+
+
+            foreach (var item in AllData.Dip_GG_AllData_OutModel.Dip_GG_Richiesta)
+            {
+                if (item.IsHashChanged(item.Hash))
+                {
+                    if (!item.ToBeDeleted)  // egstisco solo quelle da cancellare
+                    {
+                        var req_1 = new GenericRequest<Dip_GG_RichiestaPutInModel>();
+                        req_1.Data.Dip_GG_Richiesta = item;
+                        await _dip_GG_RichiestaService.Dip_GG_RichiestaPut(req_1, true);
+                    }
+                    else
+                    {
+                        var req_1 = new GenericRequest<Dip_GG_Richiesta_DeleteInModel>();
+                        req_1.Data.Id = item.Id;
+                        await _dip_GG_RichiestaService.Dip_GG_RichiestaDelete(req_1, true);
+                    }
                 }
             }
 
@@ -830,10 +868,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
         }
 
         /* aggiorna i valori che il servizio ha aggiornato in autonomia */
-        private void Merge_RichiestaService_Result(Dip_GG_AllData_OutModel dip_GG_AllData, 
-                                                   List<Dip_GG_RichiestaModel> Dip_GG_Richiesta ,
-                                                   List<Dip_GG_TimbraturaModel> Dip_GG_Timbratura ,
-                                                   List<Dip_GG_GiustificativiModel> Dip_GG_Giustificativi 
+        private void Merge_RichiestaService_Result(Dip_GG_AllData_OutModel dip_GG_AllData,
+                                                   List<Dip_GG_RichiestaModel> Dip_GG_Richiesta,
+                                                   List<Dip_GG_TimbraturaModel> Dip_GG_Timbratura,
+                                                   List<Dip_GG_GiustificativiModel> Dip_GG_Giustificativi
                                                    )
         {
             foreach (var item in Dip_GG_Richiesta)
@@ -1107,67 +1145,119 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
             public Boolean Check { get; set; }
         }
 
-        private async Task GeneraGiustificativoAssenza(Dip_AnagraficaModel Dip_Anagrafica,Timesheet_AllData_OutModel allData, int IdDip_RapportoLavoro, DateTime day, Dip_GG_ResultModel dip_GG_Result)
+
+
+
+        private async Task GeneraGiustificativoAssenza(Dip_AnagraficaModel Dip_Anagrafica, Timesheet_AllData_OutModel allData, int IdDip_RapportoLavoro, DateTime day, Dip_GG_ResultModel dip_GG_Result)
         {
-            if (dip_GG_Result.HH_Teo.Ticks > 0 && (dip_GG_Result.HH_Teo > dip_GG_Result.HH_Lav))
+
+            var orariSchema = allData.OrariSchema_4User_OutModel;
+
+            if (orariSchema == null)
+                return;
+
+            var daySlot = orariSchema.DaySlots.FirstOrDefault(ds => ds.IdDip_RapportoLavoro == IdDip_RapportoLavoro &&
+                                                                    ds.Data.Date == day.Date);
+
+            if (daySlot == null)
+                return;
+
+            Par_ProfiloOrarioModel? par_ProfiloOrario = orariSchema.Par_ProfiloOrario.Where(x => x.Id == daySlot.IdPar_ProfiloOrario).FirstOrDefault();
+
+            if (par_ProfiloOrario == null)
+                return;
+
+            if (par_ProfiloOrario.IdGiustificativo_Assenza_Ingiust > 0)
             {
+                var dip_GG_Giustificativi = allData.Dip_GG_AllData_OutModel.Dip_GG_Giustificativi.FindAll(x => x.IdPar_Giustificativi == par_ProfiloOrario.IdGiustificativo_Assenza_Ingiust &&
+                                                                                                               x.Data == day).FirstOrDefault();
 
-                var orariSchema = allData.OrariSchema_4User_OutModel;
-
-                if (orariSchema == null)
-                    return;
-
-                var daySlot = orariSchema.DaySlots.FirstOrDefault(ds => ds.IdDip_RapportoLavoro == IdDip_RapportoLavoro &&
-                                                                        ds.Data.Date == day.Date);
-
-                if (daySlot == null)
-                    return;
-
-                Par_ProfiloOrarioModel? par_ProfiloOrario = orariSchema.Par_ProfiloOrario.Where(x => x.Id == daySlot.IdPar_ProfiloOrario).FirstOrDefault();
-
-                if (par_ProfiloOrario == null)
-                    return;
-
-                if (par_ProfiloOrario.IdGiustificativo_Assenza_Ingiust > 0)
+                if (dip_GG_Result.HH_Teo.Ticks > 0)
                 {
-                    var dip_GG_Giustificativi = allData.Dip_GG_AllData_OutModel.Dip_GG_Giustificativi.FindAll(x => x.IdPar_Giustificativi == par_ProfiloOrario.IdGiustificativo_Assenza_Ingiust &&
-                                                                                                              x.Data == day).FirstOrDefault();
+                    bool justIsRequired = false;
+                    TimeSpan diff = new TimeSpan();
+
+                    if (dip_GG_Result.HH_Teo > dip_GG_Result.HH_Lav)
+                    {
+                        justIsRequired = true;
+                        diff = dip_GG_Result.HH_Teo - dip_GG_Result.HH_Lav;
+                    }
+
 
                     if (dip_GG_Giustificativi == null)
                     {
-                        Dip_GG_Richiesta_Body_Giustificativo dip_GG_Richiesta_Body_Giustificativo = new Dip_GG_Richiesta_Body_Giustificativo()
+                        if (justIsRequired)
                         {
-                            IdPar_Giustificativi = par_ProfiloOrario.IdGiustificativo_Assenza_Ingiust,
-                            AllDay = false,
-                            hhmm = (dip_GG_Result.HH_Teo - dip_GG_Result.HH_Lav).ToString(@"hh\:mm"),
-                        };
+                            // necessario ed assente, lo aggiungo con il service delle richieste
+                            Dip_GG_Richiesta_Body_Giustificativo dip_GG_Richiesta_Body_Giustificativo = new Dip_GG_Richiesta_Body_Giustificativo()
+                            {
+                                IdPar_Giustificativi = par_ProfiloOrario.IdGiustificativo_Assenza_Ingiust,
+                                AllDay = false,
+                                hhmm = diff.ToString(@"hh\:mm"),
+                            };
 
-                        var req_1 = new GenericRequest<Dip_GG_Richiesta_Send_InModel>();
+                            var req_1 = new GenericRequest<Dip_GG_Richiesta_Send_InModel>();
 
-                        req_1.Data.IdAspNetUsers = Dip_Anagrafica.IdAspNetUsers;
-                        req_1.Data.FromHR = true;
-                        req_1.Data.Dip_GG_Richiesta = new Dip_GG_RichiestaModel()
-                        {
-                            Id = 0,
-                            IdDip_RapportoLavoro = IdDip_RapportoLavoro,
-                            Dati = JsonSerializer.Serialize(dip_GG_Richiesta_Body_Giustificativo)
-                        };
-                        req_1.Data.Dip_GG_Richiesta.RichiestaStato = StatoRichiesta.Approvata;
-                        req_1.Data.Dip_GG_Richiesta.RichiestaTipo = TipoRichiesta.Giustificativo;
-                        req_1.Data.Dip_GG_Richiesta.Data = day.ToString("dd/MM/yyyy");
-                        req_1.Data.Dip_GG_Richiesta.DataA = day.ToString("dd/MM/yyyy");
+                            req_1.Data.IdAspNetUsers = Dip_Anagrafica.IdAspNetUsers;
+                            req_1.Data.FromHR = true;
+                            req_1.Data.Dip_GG_Richiesta = new Dip_GG_RichiestaModel()
+                            {
+                                Id = 0,
+                                IdDip_RapportoLavoro = IdDip_RapportoLavoro,
+                                Dati = JsonSerializer.Serialize(dip_GG_Richiesta_Body_Giustificativo)
+                            };
+                            req_1.Data.Dip_GG_Richiesta.RichiestaStato = StatoRichiesta.Approvata;
+                            req_1.Data.Dip_GG_Richiesta.RichiestaTipo = TipoRichiesta.Giustificativo;
+                            req_1.Data.Dip_GG_Richiesta.Data = day.ToString("dd/MM/yyyy");
+                            req_1.Data.Dip_GG_Richiesta.DataA = day.ToString("dd/MM/yyyy");
 
-                        var res_1 = await _dip_GG_RichiestaService.Send(req_1, true);
-                        if (res_1.Success && res_1.Data != null)
-                        {
+                            var res_1 = await _dip_GG_RichiestaService.Send(req_1, true);
+                            if (res_1.Success && res_1.Data != null)
+                            {
                                 Merge_RichiestaService_Result(allData.Dip_GG_AllData_OutModel, res_1.Data.Dip_GG_Richiesta, res_1.Data.Dip_GG_Timbratura, res_1.Data.Dip_GG_Giustificativi);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Dip_GG_RichiestaModel? dip_GG_RichiestaModel = null;
+                        if (dip_GG_Giustificativi.IdDip_GG_Richiesta != null)
+                            dip_GG_RichiestaModel = allData.Dip_GG_AllData_OutModel.Dip_GG_Richiesta.Where(x => x.Id == dip_GG_Giustificativi.IdDip_GG_Richiesta).FirstOrDefault();
+
+                        if (justIsRequired)
+                        {
+                            if (dip_GG_Giustificativi.Hours != diff)
+                            {
+                                //aggiorno il giust 
+                                dip_GG_Giustificativi.Hours = diff;
+
+                                if (dip_GG_RichiestaModel != null)
+                                {
+                                    // aggiorno la richiesta
+                                    var body = JsonSerializer.Deserialize<Dip_GG_Richiesta_Body_Giustificativo>(dip_GG_RichiestaModel.Dati);
+                                    if (body != null)
+                                    {
+                                        body.hhmm = diff.ToString(@"hh\:mm");
+                                        dip_GG_RichiestaModel.Dati = JsonSerializer.Serialize(body);
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            // non server piu, cancello
+                            dip_GG_Giustificativi.ToBeDeleted = true;
+                            if (dip_GG_RichiestaModel != null)
+                                dip_GG_RichiestaModel.ToBeDeleted = true;
                         }
                     }
                 }
             }
 
-        }
 
+
+
+        }
 
     }
 

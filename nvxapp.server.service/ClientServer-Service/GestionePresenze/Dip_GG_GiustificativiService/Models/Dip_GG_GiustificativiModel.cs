@@ -1,17 +1,9 @@
 ﻿using nvxapp.server.data.Entities.Tenant;
-using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_TimbraturaService.Models;
-using nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography.Xml;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_GiustificativiService.Models
 {
-    public class Dip_GG_GiustificativiModel:HashModel
+    public class Dip_GG_GiustificativiModel : HashModel
     {
         [HashField]
         public int Id { get; set; }
@@ -39,21 +31,24 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Giu
 
     public class Dip_GG_Giustificativi_GetAll_InModel
     {
-        public string? IdAspNetUsers { get; set; } 
+        public string? IdAspNetUsers { get; set; }
         public int Year { get; set; } = 0;
         public int Month { get; set; } = 0;
     }
 
-    public class Dip_GG_Giustificativi_GetAll_OutModel : ModelResult 
+    public class Dip_GG_Giustificativi_GetAll_OutModel : ModelResult
     {
         public List<Dip_GG_GiustificativiModel> Dip_GG_Giustificativi { get; set; } = new List<Dip_GG_GiustificativiModel>();
 
-        
-        public Dip_GG_Giustificativi_GetAll_OutModel() 
+
+        public Dip_GG_Giustificativi_GetAll_OutModel()
         {
-        
+
         }
     }
+
+
+
 
     public class Dip_GG_Giustificativi_Get_4Calculation_InModel
     {
@@ -69,14 +64,22 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Giu
 
 
 
-     public class Dip_GG_GiustificativiPutInModel 
+    public class Dip_GG_GiustificativiPutInModel
     {
         public required int IdDip_RapportoLavoro { get; set; }
-        public Dip_GG_GiustificativiModel Dip_GG_Giustificativi { get; set; }  = new Dip_GG_GiustificativiModel() { Id = 0, IdDip_RapportoLavoro = 0,IdPar_Giustificativi =0};
+        public Dip_GG_GiustificativiModel Dip_GG_Giustificativi { get; set; } = new Dip_GG_GiustificativiModel() { Id = 0, IdDip_RapportoLavoro = 0, IdPar_Giustificativi = 0 };
     }
     public class Dip_GG_GiustificativiPutOutModel : ModelResult
     {
-        public Dip_GG_GiustificativiModel Dip_GG_Giustificativi { get; set; } = new Dip_GG_GiustificativiModel() { Id = 0, IdDip_RapportoLavoro = 0 , IdPar_Giustificativi=0};
+        public Dip_GG_GiustificativiModel Dip_GG_Giustificativi { get; set; } = new Dip_GG_GiustificativiModel() { Id = 0, IdDip_RapportoLavoro = 0, IdPar_Giustificativi = 0 };
     }
+
+    
+    public class Dip_GG_Giustificativi_DeleteInModel
+    {
+        public int Id { get; set; }
+    }
+    public class Dip_GG_Giustificativi_DeleteOutModel : ModelResult { }
+
 
 }

@@ -131,4 +131,22 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
         public List<Dip_GG_RichiestaModel> Dip_GG_Richiesta { get; set; } = new List<Dip_GG_RichiestaModel>();
     }
 
+
+    public class Dip_GG_Richiesta_DeleteInModel
+    {
+        public int Id { get; set; }
+    }
+    public class Dip_GG_Richiesta_DeleteOutModel : ModelResult { }
+
+
+    public class Dip_GG_RichiestaPutInModel
+    {
+        //public required int IdDip_RapportoLavoro { get; set; }
+        public Dip_GG_RichiestaModel Dip_GG_Richiesta { get; set; } = new Dip_GG_RichiestaModel() { Id = 0, IdDip_RapportoLavoro=0, Dati=string.Empty };
+    }
+    public class Dip_GG_RichiestaPutOutModel : ModelResult
+    {
+        public Dip_GG_RichiestaModel Dip_GG_Richiesta { get; set; } = new Dip_GG_RichiestaModel() { Id = 0, IdDip_RapportoLavoro=0, Dati=string.Empty };
+    }
+
 }

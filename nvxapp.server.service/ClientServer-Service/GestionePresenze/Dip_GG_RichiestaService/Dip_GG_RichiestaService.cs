@@ -239,14 +239,14 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
 
                             dip_GG_Richiesta = await _dip_GG_RichiestaRepository.UpsertAsync(dip_GG_Richiesta);
 
-                            retVal.Dip_GG_Richiesta.Add( _mapper.Map<Dip_GG_RichiestaModel>(dip_GG_Richiesta));
+                            retVal.Dip_GG_Richiesta.Add(_mapper.Map<Dip_GG_RichiestaModel>(dip_GG_Richiesta));
 
                             switch (dip_GG_Richiesta.RichiestaTipo)
                             {
                                 case TipoRichiesta.Timbratura:
                                     var timbr = await Add_Dip_GG_Timbratura(dip_GG_Richiesta, user_DATA_COMB_DipAna_DipRapp);
                                     if (timbr != null)
-                                        retVal.Dip_GG_Timbratura.Add( _mapper.Map<Dip_GG_TimbraturaModel>(timbr));
+                                        retVal.Dip_GG_Timbratura.Add(_mapper.Map<Dip_GG_TimbraturaModel>(timbr));
 
                                     break;
 
@@ -324,8 +324,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                                         curr_richiesta.RevocaApprovazioneData = JsonConvert.SerializeObject(listaAppr, Formatting.Indented);
                                         curr_richiesta.RevocaStato = model.Data.RichiestaStato;
                                         var curr_richiesta_updated = await _dip_GG_RichiestaRepository.UpdateAsync(curr_richiesta);
-                                        
-                                        UpdateRetVal_SetStatus(retVal,_mapper.Map<Dip_GG_RichiestaModel>(curr_richiesta_updated),null,null);
+
+                                        UpdateRetVal_SetStatus(retVal, _mapper.Map<Dip_GG_RichiestaModel>(curr_richiesta_updated), null, null);
                                         continue;
                                     }
                                 case StatoRichiesta.Cancellata:
@@ -338,7 +338,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                                         {
                                             curr_richiesta.RichiestaStato = model.Data.RichiestaStato;
                                             var curr_richiesta_updated = await _dip_GG_RichiestaRepository.UpdateAsync(curr_richiesta);
-                                            UpdateRetVal_SetStatus(retVal,_mapper.Map<Dip_GG_RichiestaModel>(curr_richiesta_updated),null,null);
+                                            UpdateRetVal_SetStatus(retVal, _mapper.Map<Dip_GG_RichiestaModel>(curr_richiesta_updated), null, null);
 
                                             //posso cancellare i dettagli
                                             await Dip_GG_Richiesta_Canc_Dettaglio(curr_richiesta);
@@ -350,7 +350,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                                         curr_richiesta.RevocaStato = null;
                                         curr_richiesta.RevocaApprovazioneData = JsonConvert.SerializeObject(new List<Dip_GG_Richiesta_Stato_Cronology>(), Formatting.Indented); ;
                                         var curr_richiesta_updated = await _dip_GG_RichiestaRepository.UpdateAsync(curr_richiesta);
-                                        UpdateRetVal_SetStatus(retVal,_mapper.Map<Dip_GG_RichiestaModel>(curr_richiesta_updated),null,null);
+                                        UpdateRetVal_SetStatus(retVal, _mapper.Map<Dip_GG_RichiestaModel>(curr_richiesta_updated), null, null);
                                     }
 
 
@@ -406,7 +406,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                                             curr_richiesta.RevocaApprovazioneData = JsonConvert.SerializeObject(listaAppr, Formatting.Indented);
 
                                         var curr_richiesta_updated = await _dip_GG_RichiestaRepository.UpdateAsync(curr_richiesta);
-                                        UpdateRetVal_SetStatus(retVal,_mapper.Map<Dip_GG_RichiestaModel>(curr_richiesta_updated),null,null);
+                                        UpdateRetVal_SetStatus(retVal, _mapper.Map<Dip_GG_RichiestaModel>(curr_richiesta_updated), null, null);
 
                                         if (idxStato == 0 && RichiestaStato_Orig != curr_richiesta.RichiestaStato) // Aggiorno i dettagli solo se lo stato è cambiato  e solo per le richieste approvazioni
                                         {
@@ -418,7 +418,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                                                     {
                                                         idemDett.RichiestaStato = curr_richiesta.RichiestaStato;
                                                         var curr_timbr_updated = await _dip_GG_TimbraturaRepository.UpsertAsync(idemDett);
-                                                        UpdateRetVal_SetStatus(retVal,null,_mapper.Map<Dip_GG_TimbraturaModel>(curr_timbr_updated),null);
+                                                        UpdateRetVal_SetStatus(retVal, null, _mapper.Map<Dip_GG_TimbraturaModel>(curr_timbr_updated), null);
                                                     }
 
 
@@ -430,7 +430,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                                                     {
                                                         idemDett.RichiestaStato = curr_richiesta.RichiestaStato;
                                                         var curr_giust_updated = await _dip_GG_GiustificativiRepository.UpsertAsync(idemDett);
-                                                        UpdateRetVal_SetStatus(retVal,null,null,_mapper.Map<Dip_GG_GiustificativiModel>(curr_giust_updated));
+                                                        UpdateRetVal_SetStatus(retVal, null, null, _mapper.Map<Dip_GG_GiustificativiModel>(curr_giust_updated));
                                                     }
 
                                                     break;
@@ -453,17 +453,17 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                                             switch (resAz_Cfg.Data.Az_Cfg.ApprovazioneTipo)
                                             {
                                                 case TipoApprovazione.SigleAdmin:
-                                                        await Dip_GG_Richiesta_Canc_Dettaglio(curr_richiesta);
+                                                    await Dip_GG_Richiesta_Canc_Dettaglio(curr_richiesta);
                                                     break;
                                                 case TipoApprovazione.AllAdmin:
                                                 case TipoApprovazione.AllAdminHierarchy:
-                                                       //approvazione revoca, cancello i dettagli
-                                                        if (listaAppr.Where(x => x.RichiestaStato != StatoRichiesta.Approvata).Count() == 0)
-                                                            await Dip_GG_Richiesta_Canc_Dettaglio(curr_richiesta);
+                                                    //approvazione revoca, cancello i dettagli
+                                                    if (listaAppr.Where(x => x.RichiestaStato != StatoRichiesta.Approvata).Count() == 0)
+                                                        await Dip_GG_Richiesta_Canc_Dettaglio(curr_richiesta);
                                                     break;
                                             }
 
-                                         
+
                                         }
 
                                     }
@@ -516,7 +516,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                                             curr_richiesta.RevocaApprovazioneData = JsonConvert.SerializeObject(listaAppr, Formatting.Indented);
 
                                         var curr_richiesta_updated = await _dip_GG_RichiestaRepository.UpdateAsync(curr_richiesta);
-                                        UpdateRetVal_SetStatus(retVal,_mapper.Map<Dip_GG_RichiestaModel>(curr_richiesta_updated),null,null);
+                                        UpdateRetVal_SetStatus(retVal, _mapper.Map<Dip_GG_RichiestaModel>(curr_richiesta_updated), null, null);
 
 
                                         if (idxStato == 0 && RichiestaStato_Orig != curr_richiesta.RichiestaStato) // Aggiorno i dettagli solo se lo stato è cambiato  e solo per le richieste approvazioni
@@ -542,18 +542,18 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
             }, isSubProcess);
         }
 
-        private void UpdateRetVal_SetStatus(Dip_GG_Richiesta_SetState_OutModel outModel , 
-                                            Dip_GG_RichiestaModel? dip_GG_Richiesta=null,
-                                            Dip_GG_TimbraturaModel? dip_GG_Timbratura=null,
-                                            Dip_GG_GiustificativiModel? dip_GG_Giustificativi=null)
+        private void UpdateRetVal_SetStatus(Dip_GG_Richiesta_SetState_OutModel outModel,
+                                            Dip_GG_RichiestaModel? dip_GG_Richiesta = null,
+                                            Dip_GG_TimbraturaModel? dip_GG_Timbratura = null,
+                                            Dip_GG_GiustificativiModel? dip_GG_Giustificativi = null)
         {
-            if(dip_GG_Richiesta!=null)
+            if (dip_GG_Richiesta != null)
             {
                 var item = outModel.Dip_GG_Richiesta.FirstOrDefault(x => x.Id == dip_GG_Richiesta.Id);
                 if (item != null)
                     item.RichiestaStato = dip_GG_Richiesta.RichiestaStato;
                 else
-                    outModel.Dip_GG_Richiesta.Add(dip_GG_Richiesta);    
+                    outModel.Dip_GG_Richiesta.Add(dip_GG_Richiesta);
             }
 
             if (dip_GG_Timbratura != null)
@@ -646,7 +646,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
         private async Task<Dip_GG_Giustificativi?> Add_Dip_GG_Giustificativi(Dip_GG_Richiesta dip_GG_Richiesta,
                                                      User_DATA_COMB_DipAna_DipRapp user_DATA_COMB_DipAna_DipRapp)
         {
-            
+
             Dip_GG_Giustificativi? dip_GG_Giustificativi = null;
             if (user_DATA_COMB_DipAna_DipRapp != null && user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro != null)
             {
@@ -824,7 +824,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
             }
 
 
-        richiesta = richiesta.OrderByDescending(x => x.Data).ToList();
+            richiesta = richiesta.OrderByDescending(x => x.Data).ToList();
 
             return richiesta;
         }
@@ -866,6 +866,52 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
             }, isSubProcess);
         }
 
+        public virtual async Task<GenericResult<Dip_GG_Richiesta_DeleteOutModel>> Dip_GG_RichiestaDelete(GenericRequest<Dip_GG_Richiesta_DeleteInModel> model, bool isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                var entity = await _dip_GG_RichiestaRepository.FindByIdAsync(model.Data.Id);
+                if (entity != null)
+                {
+                    await _dip_GG_RichiestaRepository.DeleteAsync(entity);
+                }
+                return new Dip_GG_Richiesta_DeleteOutModel();
+            }, isSubProcess);
+        }
+
+        public virtual async Task<GenericResult<Dip_GG_RichiestaPutOutModel>> Dip_GG_RichiestaPut(GenericRequest<Dip_GG_RichiestaPutInModel> model, bool isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                Dip_GG_RichiestaPutOutModel retVal = new Dip_GG_RichiestaPutOutModel();
+                retVal.Dip_GG_Richiesta = model.Data.Dip_GG_Richiesta;
+
+                int idCompany;
+                int.TryParse(this.CurrentCompany, out idCompany);
+
+
+
+                Dip_GG_Richiesta? dip_GG_Richiesta = await _dip_GG_RichiestaRepository.FindByIdAsync(model.Data.Dip_GG_Richiesta.Id);
+                if (dip_GG_Richiesta == null)
+                {
+                    dip_GG_Richiesta = _mapper.Map<Dip_GG_Richiesta>(model.Data.Dip_GG_Richiesta);
+                    //dip_GG_Richiesta.IdDip_RapportoLavoro = model.Data.IdDip_RapportoLavoro;
+                }
+                else
+                {
+                    dip_GG_Richiesta = _mapper.Map<Dip_GG_Richiesta>(model.Data.Dip_GG_Richiesta);
+                }
+
+                dip_GG_Richiesta = await _dip_GG_RichiestaRepository.UpsertAsync(dip_GG_Richiesta);
+                retVal.Dip_GG_Richiesta = _mapper.Map<Dip_GG_RichiestaModel>(dip_GG_Richiesta);
+
+
+
+                await Task.Delay(DelayAsyncMethod);
+
+                return retVal;
+            }, isSubProcess);
+        }
 
     }
 
@@ -876,5 +922,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
         public Task<GenericResult<Dip_GG_Richiesta_Send_OutModel>> Send(GenericRequest<Dip_GG_Richiesta_Send_InModel> model, Boolean isSubProcess);
         public Task<GenericResult<Dip_GG_Richiesta_SetState_OutModel>> SetState(GenericRequest<Dip_GG_Richiesta_SetState_InModel> model, Boolean isSubProcess);
         public Task<GenericResult<Dip_GG_Richiesta_Get_4Calculation_OutModel>> Dip_GG_Richiesta_Get_4Calculation(GenericRequest<Dip_GG_Richiesta_Get_4Calculation_InModel> model, Boolean isSubProcess);
+        public Task<GenericResult<Dip_GG_Richiesta_DeleteOutModel>> Dip_GG_RichiestaDelete(GenericRequest<Dip_GG_Richiesta_DeleteInModel> model, bool isSubProcess);
+        public Task<GenericResult<Dip_GG_RichiestaPutOutModel>> Dip_GG_RichiestaPut(GenericRequest<Dip_GG_RichiestaPutInModel> model, bool isSubProcess);
+
     }
 }
