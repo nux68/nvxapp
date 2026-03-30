@@ -760,16 +760,25 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                 dip_GG_Result.HH_Lav = TimeOnly.FromTimeSpan(this.CalcolaOreLavorate(AllData, rapporto_calc.Id, giorno));
             }
 
-            if (timeSheet_CalculateModel.Genera_Giustificativo_Assenza && dip_GG_Result != null)
+            if (dip_GG_Result != null)
             {
-                await GeneraGiustificativoAssenza(Dip_Anagrafica, AllData, rapporto_calc.Id, giorno, dip_GG_Result);
+                if (timeSheet_CalculateModel.Genera_Giustificativo_Assenza )
+                {
+                    await GeneraGiustificativoAssenza(Dip_Anagrafica, AllData, rapporto_calc.Id, giorno, dip_GG_Result);
+                }
+
+                await GeneraCausali(Dip_Anagrafica, AllData, rapporto_calc.Id, giorno, dip_GG_Result);
             }
+
+
+
+
 
             return;
         }
         private async Task SaveData(Timesheet_AllData_OutModel AllData)
         {
-
+            #region "Result"
             foreach (var item in AllData.Dip_GG_AllData_OutModel.Dip_GG_Result)
             {
                 if (item.IsHashChanged(item.Hash))
@@ -780,7 +789,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                     await _dip_GG_ResultService.Dip_GG_ResultPut(req_1, true);
                 }
             }
+            #region
 
+            #region "Timbrature"
             foreach (var item in AllData.Dip_GG_AllData_OutModel.Dip_GG_Timbratura)
             {
                 if (item.IsHashChanged(item.Hash))
@@ -796,10 +807,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                     {
                         //to do
                     }
-
                 }
             }
+            #region
 
+            #region "Giustificativi"
             foreach (var item in AllData.Dip_GG_AllData_OutModel.Dip_GG_Giustificativi)
             {
                 if (item.IsHashChanged(item.Hash))
@@ -819,8 +831,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                     }
                 }
             }
+            #endregion
 
-
+            #region "Richieste"
             foreach (var item in AllData.Dip_GG_AllData_OutModel.Dip_GG_Richiesta)
             {
                 if (item.IsHashChanged(item.Hash))
@@ -839,6 +852,30 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                     }
                 }
             }
+            #region
+
+
+            #region "Causali"
+            foreach (var item in AllData.Dip_GG_AllData_OutModel.Dip_GG_Causali)
+            {
+                if (item.IsHashChanged(item.Hash))
+                {
+                    if (!item.ToBeDeleted)
+                    {
+                        var req_1 = new GenericRequest<Dip_GG_CausaliPutInModel>();
+                        req_1.Data.Dip_GG_Causali = item;
+                        await _dip_GG_CausaliService.Dip_GG_CausaliPut(req_1, true);
+                    }
+                    else
+                    {
+                        var req_1 = new GenericRequest<Dip_GG_Causali_DeleteInModel>();
+                        req_1.Data.Id = item.Id;
+                        await _dip_GG_CausaliService.Dip_GG_CausaliDelete(req_1, true);
+                    }
+                }
+            }
+            #endregion
+
 
             return;
         }
@@ -1136,18 +1173,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
             }
 
         }
-
-        private class CoppiaTMP
-        {
-            public TimeOnly? HH { get; set; }
-            public TimeOnly HH_Limite_SX { get; set; }
-            public TimeOnly HH_Limite_DX { get; set; }
-            public Boolean Check { get; set; }
-        }
-
-
-
-
         private async Task GeneraGiustificativoAssenza(Dip_AnagraficaModel Dip_Anagrafica, Timesheet_AllData_OutModel allData, int IdDip_RapportoLavoro, DateTime day, Dip_GG_ResultModel dip_GG_Result)
         {
 
@@ -1255,10 +1280,20 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
             }
 
 
-
-
         }
 
+        private async Task GeneraCausali(Dip_AnagraficaModel Dip_Anagrafica, Timesheet_AllData_OutModel allData, int IdDip_RapportoLavoro, DateTime day, Dip_GG_ResultModel dip_GG_Result)
+        {
+            return;
+        }
+
+        private class CoppiaTMP
+        {
+            public TimeOnly? HH { get; set; }
+            public TimeOnly HH_Limite_SX { get; set; }
+            public TimeOnly HH_Limite_DX { get; set; }
+            public Boolean Check { get; set; }
+        }
     }
 
     public interface ITimeSheet_EngineService : IServiceBase
