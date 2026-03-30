@@ -11,6 +11,7 @@ using nvxapp.server.data.Extensions;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_AnagraficaService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_CausaliService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_CausaliService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_GiustificativiService;
@@ -36,6 +37,7 @@ using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.ServerModels;
 using Serilog;
+using System.Text.Json;
 /*
 
  premesa:
@@ -263,6 +265,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                 int idxUser = 0;
                                 foreach (var userId_calc in model.Data.TimeSheet_Calculate.SelectedUserId)
                                 {
+
+
+
+
                                     var progress = (int)((idxUser / (double)model.Data.TimeSheet_Calculate.SelectedUserId.Count) * 100);
                                     await _longJobNotifier.LongJobProgressAsync(userId,
                                                                                 new LongJobProgressUpdate
@@ -301,7 +307,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                         // ciclo su ogni giorno del periodo richiesto
                                         for (var giorno = giornoInizio_calc; giorno <= giornoFine_calc; giorno = giorno.AddDays(1))
                                         {
-                                            await CalcolaGiorno(model.Data.TimeSheet_Calculate, rapporto_calc, giorno, AllData.Data);
+                                            await CalcolaGiorno(anagrafica_calc, model.Data.TimeSheet_Calculate, rapporto_calc, giorno, AllData.Data);
                                         }
                                     }
 
@@ -704,7 +710,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
 
 
-        private async Task CalcolaGiorno(TimeSheet_CalculateModel timeSheet_CalculateModel, Dip_RapportoLavoroModel rapporto_calc, DateTime giorno, Timesheet_AllData_OutModel AllData)
+        private async Task CalcolaGiorno(Dip_AnagraficaModel Dip_Anagrafica, TimeSheet_CalculateModel timeSheet_CalculateModel, Dip_RapportoLavoroModel rapporto_calc, DateTime giorno, Timesheet_AllData_OutModel AllData)
         {
 
 
@@ -755,7 +761,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
             if (timeSheet_CalculateModel.Genera_Giustificativo_Assenza && dip_GG_Result != null)
             {
-                GeneraGiustificativoAssenza(AllData, rapporto_calc.Id, giorno, dip_GG_Result);
+                await GeneraGiustificativoAssenza(Dip_Anagrafica,AllData, rapporto_calc.Id, giorno, dip_GG_Result);
             }
 
             return;
@@ -819,14 +825,18 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
             var res_1 = await _dip_GG_RichiestaService.SetState(req_1, true);
             if (res_1.Success && res_1.Data != null)
-                Merge_RichiestaService_Result(dip_GG_AllData, res_1.Data);
+                Merge_RichiestaService_Result(dip_GG_AllData, res_1.Data.Dip_GG_Richiesta, res_1.Data.Dip_GG_Timbratura, res_1.Data.Dip_GG_Giustificativi);
 
         }
 
         /* aggiorna i valori che il servizio ha aggiornato in autonomia */
-        private void Merge_RichiestaService_Result(Dip_GG_AllData_OutModel dip_GG_AllData, Dip_GG_Richiesta_SetState_OutModel outModel)
+        private void Merge_RichiestaService_Result(Dip_GG_AllData_OutModel dip_GG_AllData, 
+                                                   List<Dip_GG_RichiestaModel> Dip_GG_Richiesta ,
+                                                   List<Dip_GG_TimbraturaModel> Dip_GG_Timbratura ,
+                                                   List<Dip_GG_GiustificativiModel> Dip_GG_Giustificativi 
+                                                   )
         {
-            foreach (var item in outModel.Dip_GG_Richiesta)
+            foreach (var item in Dip_GG_Richiesta)
             {
                 var idx = dip_GG_AllData.Dip_GG_Richiesta.FindIndex(x => x.Id == item.Id);
                 if (idx == -1)
@@ -835,7 +845,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                     dip_GG_AllData.Dip_GG_Richiesta[idx] = item; // ← esiste: sostituisce per indice
             }
 
-            foreach (var item in outModel.Dip_GG_Timbratura)
+            foreach (var item in Dip_GG_Timbratura)
             {
                 var idx = dip_GG_AllData.Dip_GG_Timbratura.FindIndex(x => x.Id == item.Id);
                 if (idx == -1)
@@ -844,7 +854,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                     dip_GG_AllData.Dip_GG_Timbratura[idx] = item;
             }
 
-            foreach (var item in outModel.Dip_GG_Giustificativi)
+            foreach (var item in Dip_GG_Giustificativi)
             {
                 var idx = dip_GG_AllData.Dip_GG_Giustificativi.FindIndex(x => x.Id == item.Id);
                 if (idx == -1)
@@ -852,8 +862,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                 else
                     dip_GG_AllData.Dip_GG_Giustificativi[idx] = item;
             }
-
-
         }
 
 
@@ -938,8 +946,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
             return oreLavorate;
         }
-
-
         private void AssegnaVersoTimbrature(Timesheet_AllData_OutModel allData, int IdDip_RapportoLavoro, DateTime day)
         {
             var orariSchema = allData.OrariSchema_4User_OutModel;
@@ -1001,84 +1007,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                 timbratura.TimbraturaArrotondata = Roundings.RoundDateTime(timbratura.Timbratura, roundOptions);
             }
         }
-
-        //private void AssegnaVersoTimbrature(Timesheet_AllData_OutModel allData, int IdDip_RapportoLavoro, DateTime day)
-        //{
-        //    var orariSchema = allData.OrariSchema_4User_OutModel;
-
-        //    var daySlot = orariSchema.DaySlots
-        //        .FirstOrDefault(ds => ds.IdDip_RapportoLavoro == IdDip_RapportoLavoro
-        //                           && ds.Data.Date == day.Date);
-
-        //    if (daySlot == null || daySlot.Orari.Count == 0)
-        //        return;
-
-        //    var orarioBase = daySlot.Orari.OrderBy(o => o.ZOrder).First();
-
-        //    var parOrario = orariSchema.ParOrario
-        //        .FirstOrDefault(o => o.Id == orarioBase.IdPar_Orario);
-
-        //    if (parOrario == null)
-        //        return;
-
-        //    var coppie = orariSchema.Par_OrarioIntervalloHH
-        //        .Where(hh => hh.IdPar_Orario == parOrario.Id)
-        //        .OrderBy(hh => hh.NumCoppia)
-        //        .ToList();
-
-        //    if (coppie.Count == 0)
-        //        return;
-
-        //    var timbratureDelGiorno = allData.Dip_GG_AllData_OutModel.Dip_GG_Timbratura
-        //        .Where(t => t.IdDip_RapportoLavoro == IdDip_RapportoLavoro
-        //                 && t.GiornoCompetenza.Date == day.Date)
-        //        .ToList();
-
-        //    if (timbratureDelGiorno.Count == 0)
-        //        return;
-
-        //    foreach (var coppia in coppie)
-        //    {
-        //        if (!coppia.Dalle.HasValue || !coppia.Alle.HasValue)
-        //            continue;
-        //        if (coppia.Alle.Value == coppia.Dalle.Value)
-        //            continue;
-
-        //        var dalleLimit_SX = (coppia.Dalle_Limite_SX ?? coppia.Dalle).Value;
-        //        var dalleLimit_DX = (coppia.Dalle_Limite_DX ?? coppia.Dalle).Value;
-        //        var alleLimit_SX = (coppia.Alle_Limite_SX ?? coppia.Alle).Value;
-        //        var alleLimit_DX = (coppia.Alle_Limite_DX ?? coppia.Alle).Value;
-
-        //        foreach (var timbratura in timbratureDelGiorno)
-        //        {
-        //            if (timbratura.TimbraturaTipo == TipoTimbratura.Entrata ||
-        //                timbratura.TimbraturaTipo == TipoTimbratura.Uscita)
-        //                continue;
-
-        //            var oraTimbr = TimeOnly.FromDateTime(timbratura.Timbratura);
-        //            TipoTimbratura? nuovoVerso = null;
-        //            TimeRoundOptions? roundOptions = null;
-
-        //            if (oraTimbr >= dalleLimit_SX && oraTimbr <= dalleLimit_DX)
-        //            {
-        //                nuovoVerso = TipoTimbratura.Entrata;
-        //                roundOptions = new TimeRoundOptions(coppia.Dalle_Arrotondamento, coppia.Dalle_Arrotondamento_Verso);
-        //            }
-        //            else if (oraTimbr >= alleLimit_SX && oraTimbr <= alleLimit_DX)
-        //            {
-        //                nuovoVerso = TipoTimbratura.Uscita;
-        //                roundOptions = new TimeRoundOptions(coppia.Alle_Arrotondamento, coppia.Alle_Arrotondamento_Verso);
-        //            }
-
-        //            if (nuovoVerso.HasValue)
-        //            {
-        //                timbratura.TimbraturaTipo = nuovoVerso.Value;
-        //                timbratura.TimbraturaArrotondata = Roundings.RoundDateTime(timbratura.Timbratura, roundOptions!.Value);
-        //            }
-        //        }
-        //    }
-        //}
-
         private void GeneraTimbratureMancanti(Timesheet_AllData_OutModel allData, int IdDip_RapportoLavoro, DateTime day)
         {
             var orariSchema = allData.OrariSchema_4User_OutModel;
@@ -1179,7 +1107,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
             public Boolean Check { get; set; }
         }
 
-        private void GeneraGiustificativoAssenza(Timesheet_AllData_OutModel allData, int IdDip_RapportoLavoro, DateTime day, Dip_GG_ResultModel dip_GG_Result)
+        private async Task GeneraGiustificativoAssenza(Dip_AnagraficaModel Dip_Anagrafica,Timesheet_AllData_OutModel allData, int IdDip_RapportoLavoro, DateTime day, Dip_GG_ResultModel dip_GG_Result)
         {
             if (dip_GG_Result.HH_Teo.Ticks > 0 && (dip_GG_Result.HH_Teo > dip_GG_Result.HH_Lav))
             {
@@ -1207,35 +1135,35 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
                     if (dip_GG_Giustificativi == null)
                     {
-                        var entity = new Dip_GG_Giustificativi { IdDip_RapportoLavoro = IdDip_RapportoLavoro , 
-                                                                 IdPar_Giustificativi = par_ProfiloOrario.IdGiustificativo_Assenza_Ingiust 
-                                                                 };
-                        var vm = _mapper.Map<Dip_GG_GiustificativiModel>(entity);
-                        //vm.Timbratura = day.Date + (coppia.HH != null ? coppia.HH.Value : new TimeOnly()).ToTimeSpan();
-                        //vm.TimbraturaOriginale = day.Date + (coppia.HH != null ? coppia.HH.Value : new TimeOnly()).ToTimeSpan();
-                        vm.Data = day.Date;
-                        vm.InputType =  JustificationInputType.Manual;
-                        vm.RichiestaStato = StatoRichiesta.Diretta;
-                        vm.Hours = dip_GG_Result.HH_Teo - dip_GG_Result.HH_Lav;
-                        allData.Dip_GG_AllData_OutModel.Dip_GG_Giustificativi.Add(vm);
-                    }
-                    else
-                    {
+                        Dip_GG_Richiesta_Body_Giustificativo dip_GG_Richiesta_Body_Giustificativo = new Dip_GG_Richiesta_Body_Giustificativo()
+                        {
+                            IdPar_Giustificativi = par_ProfiloOrario.IdGiustificativo_Assenza_Ingiust,
+                            AllDay = false,
+                            hhmm = (dip_GG_Result.HH_Teo - dip_GG_Result.HH_Lav).ToString(@"hh\:mm"),
+                        };
 
-                    }
+                        var req_1 = new GenericRequest<Dip_GG_Richiesta_Send_InModel>();
 
+                        req_1.Data.IdAspNetUsers = Dip_Anagrafica.IdAspNetUsers;
+                        req_1.Data.FromHR = true;
+                        req_1.Data.Dip_GG_Richiesta = new Dip_GG_RichiestaModel()
+                        {
+                            Id = 0,
+                            IdDip_RapportoLavoro = IdDip_RapportoLavoro,
+                            Dati = JsonSerializer.Serialize(dip_GG_Richiesta_Body_Giustificativo)
+                        };
+                        req_1.Data.Dip_GG_Richiesta.RichiestaStato = StatoRichiesta.Approvata;
+                        req_1.Data.Dip_GG_Richiesta.RichiestaTipo = TipoRichiesta.Giustificativo;
+                        req_1.Data.Dip_GG_Richiesta.Data = day.ToString("dd/MM/yyyy");
+                        req_1.Data.Dip_GG_Richiesta.DataA = day.ToString("dd/MM/yyyy");
+
+                        var res_1 = await _dip_GG_RichiestaService.Send(req_1, true);
+                        if (res_1.Success && res_1.Data != null)
+                        {
+                                Merge_RichiestaService_Result(allData.Dip_GG_AllData_OutModel, res_1.Data.Dip_GG_Richiesta, res_1.Data.Dip_GG_Timbratura, res_1.Data.Dip_GG_Giustificativi);
+                        }
+                    }
                 }
-
-                //allData.OrariSchema_4User_OutModel.
-
-
-
-
-
-
-
-
-
             }
 
         }

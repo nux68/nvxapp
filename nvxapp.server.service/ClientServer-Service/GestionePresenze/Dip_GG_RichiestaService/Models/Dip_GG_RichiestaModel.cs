@@ -89,7 +89,16 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
     }
     public class Dip_GG_Richiesta_Send_OutModel : ModelResult
     {
-        public Dip_GG_RichiestaModel? Dip_GG_Richiesta { get; set; }
+        public Dip_GG_Richiesta_Send_OutModel()
+        {
+            Dip_GG_Richiesta = new List<Dip_GG_RichiestaModel>();
+            Dip_GG_Timbratura = new List<Dip_GG_TimbraturaModel>();
+            Dip_GG_Giustificativi = new List<Dip_GG_GiustificativiModel>();
+        }
+
+        public List<Dip_GG_RichiestaModel> Dip_GG_Richiesta { get; set; } = new List<Dip_GG_RichiestaModel>();
+        public List<Dip_GG_TimbraturaModel> Dip_GG_Timbratura { get; set; } = new List<Dip_GG_TimbraturaModel>();
+        public List<Dip_GG_GiustificativiModel> Dip_GG_Giustificativi { get; set; } = new List<Dip_GG_GiustificativiModel>();
     }
 
 

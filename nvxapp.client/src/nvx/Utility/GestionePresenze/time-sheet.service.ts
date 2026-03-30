@@ -345,18 +345,59 @@ export class TimeSheetService {
 
   get_Dip_GG_Giustificativi_backColor(ggJust: Dip_GG_GiustificativiModel): string {
     const just = this.sharedParameterGestionePresenzeService.Par_Giustificativi.find(x => x.id == ggJust.idPar_Giustificativi);
-    if (just)
-      return just.backgroundColor;
-    else
-      return null;
+    //if (just)
+    //  return just.backgroundColor;
+    //else
+    //  return null;
+
+    switch (ggJust.richiestaStato) {
+
+      case StatoRichiesta.Diretta:
+      case StatoRichiesta.Approvata:
+        return null;
+        break;
+
+      case StatoRichiesta.Immessa:
+      if (just)
+        return just.backgroundColor;
+      else
+        return null;
+
+      default:
+        return null;
+        break;
+    }
+
+
   }
 
   get_Dip_GG_Giustificativi_txtColor(ggJust: Dip_GG_GiustificativiModel): string {
     const just = this.sharedParameterGestionePresenzeService.Par_Giustificativi.find(x => x.id == ggJust.idPar_Giustificativi);
-    if (just)
-      return just.textColor;
-    else
-      return null;
+    //if (just)
+    //  return just.textColor;
+    //else
+    //  return null;
+
+    switch (ggJust.richiestaStato) {
+
+      case StatoRichiesta.Diretta:
+      case StatoRichiesta.Approvata:
+        if (just)
+          return just.backgroundColor;
+        else
+          return null;
+
+      case StatoRichiesta.Immessa:
+        if (just)
+          return just.textColor;
+        else
+          return null;
+
+      default:
+        return null;
+        break;
+    }
+
   }
 
   //get_Dip_GG_Timbratura_backColor(record: Dip_GG_TimbraturaModel): string {

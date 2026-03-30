@@ -239,14 +239,21 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
 
                             dip_GG_Richiesta = await _dip_GG_RichiestaRepository.UpsertAsync(dip_GG_Richiesta);
 
+                            retVal.Dip_GG_Richiesta.Add( _mapper.Map<Dip_GG_RichiestaModel>(dip_GG_Richiesta));
+
                             switch (dip_GG_Richiesta.RichiestaTipo)
                             {
                                 case TipoRichiesta.Timbratura:
-                                    await Add_Dip_GG_Timbratura(dip_GG_Richiesta, user_DATA_COMB_DipAna_DipRapp);
+                                    var timbr = await Add_Dip_GG_Timbratura(dip_GG_Richiesta, user_DATA_COMB_DipAna_DipRapp);
+                                    if (timbr != null)
+                                        retVal.Dip_GG_Timbratura.Add( _mapper.Map<Dip_GG_TimbraturaModel>(timbr));
+
                                     break;
 
                                 case TipoRichiesta.Giustificativo:
-                                    await Add_Dip_GG_Giustificativi(dip_GG_Richiesta, user_DATA_COMB_DipAna_DipRapp);
+                                    var giust = await Add_Dip_GG_Giustificativi(dip_GG_Richiesta, user_DATA_COMB_DipAna_DipRapp);
+                                    if (giust != null)
+                                        retVal.Dip_GG_Giustificativi.Add(_mapper.Map<Dip_GG_GiustificativiModel>(giust));
 
                                     break;
                                 case TipoRichiesta.NotaSpesa:
@@ -595,9 +602,12 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
         }
 
 
-        private async Task Add_Dip_GG_Timbratura(Dip_GG_Richiesta dip_GG_Richiesta,
-                                                 User_DATA_COMB_DipAna_DipRapp user_DATA_COMB_DipAna_DipRapp)
+        private async Task<Dip_GG_Timbratura?> Add_Dip_GG_Timbratura(Dip_GG_Richiesta dip_GG_Richiesta,
+                                                                     User_DATA_COMB_DipAna_DipRapp user_DATA_COMB_DipAna_DipRapp)
         {
+
+            Dip_GG_Timbratura? dip_GG_Timbratura = null;
+
             if (user_DATA_COMB_DipAna_DipRapp != null && user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro != null)
             {
 
@@ -613,7 +623,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                             // Fai il parsing della stringa completa
                             DateTime parsedDateTime = DateTime.ParseExact(fullDateTime, "dd/MM/yyyy HH:mm", System.Globalization.CultureInfo.InvariantCulture);
 
-                            var dip_GG_Timbratura = new Dip_GG_Timbratura()
+                            dip_GG_Timbratura = new Dip_GG_Timbratura()
                             {
                                 IdDip_RapportoLavoro = user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.Id,
                                 IdDip_GG_Richiesta = dip_GG_Richiesta.Id,
@@ -624,15 +634,20 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                                 TimbraturaTipo = TipoTimbratura.SenzaVerso,
                                 RichiestaStato = dip_GG_Richiesta.RichiestaStato,
                             };
-                            await _dip_GG_TimbraturaRepository.UpsertAsync(dip_GG_Timbratura);
+                            dip_GG_Timbratura = await _dip_GG_TimbraturaRepository.UpsertAsync(dip_GG_Timbratura);
                         }
                     }
                 }
             }
+
+            return dip_GG_Timbratura;
+
         }
-        private async Task Add_Dip_GG_Giustificativi(Dip_GG_Richiesta dip_GG_Richiesta,
+        private async Task<Dip_GG_Giustificativi?> Add_Dip_GG_Giustificativi(Dip_GG_Richiesta dip_GG_Richiesta,
                                                      User_DATA_COMB_DipAna_DipRapp user_DATA_COMB_DipAna_DipRapp)
         {
+            
+            Dip_GG_Giustificativi? dip_GG_Giustificativi = null;
             if (user_DATA_COMB_DipAna_DipRapp != null && user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro != null)
             {
                 if (user_DATA_COMB_DipAna_DipRapp != null && user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro != null)
@@ -650,7 +665,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                                 {
                                     // string fullDateTime = $"{dip_GG_Richiesta.Data.ToString("dd/MM/yyyy")} {richiesta.hhmm}";
 
-                                    var dip_GG_Giustificativi = new Dip_GG_Giustificativi()
+                                    dip_GG_Giustificativi = new Dip_GG_Giustificativi()
                                     {
                                         Data = date,
                                         IdDip_RapportoLavoro = user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.Id,
@@ -669,6 +684,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
 
 
             }
+
+            return dip_GG_Giustificativi;
         }
         private async Task<List<Dip_GG_Richiesta>> Get_Dip_GG_Richiesta(List<int> idDipRappList, int Year, int Month)
         {

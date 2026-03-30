@@ -103,6 +103,10 @@ export class Dip_GG_Richiesta_Send_InModel {
 }
 export class Dip_GG_Richiesta_Send_OutModel extends ModelResult {
 
+  public dip_GG_Richiesta: Dip_GG_RichiestaModel[];
+  public dip_GG_Timbratura: Dip_GG_TimbraturaModel[];
+  public dip_GG_Giustificativi: Dip_GG_GiustificativiModel[];
+
   
   constructor() {
     super();
