@@ -225,7 +225,29 @@
       </ion-card-content>
     </ion-card>
 
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Varie</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
 
+        <ion-row class="ion-align-items-center">
+          <ion-col size="12" size-md="6">
+            <ion-item>
+              <ion-label position="floating">Causale HH Lav</ion-label>
+              <ion-select formControlName="idCausale_HH_Lav" placeholder="Seleziona la causale">
+                <ion-select-option *ngFor="let causali of par_CausaliModelList" [value]="causali.id">
+                  {{ causali.descrizione }}
+                </ion-select-option>
+              </ion-select>
+            </ion-item>
+            <ion-note color="danger" *ngIf="_editForm.get('idCausale_HH_Lav')?.hasError('required') && _editForm.get('idCausale_HH_Lav')?.touched">
+              La causale è obbligatoria.
+            </ion-note>
+          </ion-col>
+          </ion-row>
+      </ion-card-content>
+    </ion-card>
 
 
   </form>

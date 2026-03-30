@@ -246,7 +246,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Orario
                 case 2:
                     _par_OrarioIntervalloHH.Dalle_Limite_SX = new TimeOnly(13,45,0);
                     _par_OrarioIntervalloHH.Dalle = new TimeOnly(14,0,0);
-                    _par_OrarioIntervalloHH.Dalle_Limite_DX = new TimeOnly(14,150,0);
+                    _par_OrarioIntervalloHH.Dalle_Limite_DX = new TimeOnly(14,15,0);
                     _par_OrarioIntervalloHH.Dalle_Arrotondamento = data.Extensions.TimeRoundInterval.Min15;
                     _par_OrarioIntervalloHH.Dalle_Arrotondamento_Verso = data.Extensions.RoundDirection.Up;
 
