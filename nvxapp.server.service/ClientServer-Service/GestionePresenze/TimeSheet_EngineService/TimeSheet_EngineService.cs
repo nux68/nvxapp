@@ -789,7 +789,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                     await _dip_GG_ResultService.Dip_GG_ResultPut(req_1, true);
                 }
             }
-            #region
+            #endregion
 
             #region "Timbrature"
             foreach (var item in AllData.Dip_GG_AllData_OutModel.Dip_GG_Timbratura)
@@ -809,7 +809,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                     }
                 }
             }
-            #region
+            #endregion
 
             #region "Giustificativi"
             foreach (var item in AllData.Dip_GG_AllData_OutModel.Dip_GG_Giustificativi)
@@ -852,8 +852,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                     }
                 }
             }
-            #region
-
+            #endregion
 
             #region "Causali"
             foreach (var item in AllData.Dip_GG_AllData_OutModel.Dip_GG_Causali)
@@ -875,7 +874,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                 }
             }
             #endregion
-
 
             return;
         }

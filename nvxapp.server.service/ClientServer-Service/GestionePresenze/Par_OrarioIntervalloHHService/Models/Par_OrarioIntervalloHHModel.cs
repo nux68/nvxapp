@@ -21,6 +21,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Orario
         public RoundDirection Alle_Arrotondamento_Verso { get; set; }
 
         public int NumCoppia { get; set; } = 0;
+        public int IdCausale_HH_Lav { get; set; } = 0;
 
     }
 

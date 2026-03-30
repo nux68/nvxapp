@@ -18,7 +18,8 @@ export class Par_OrarioIntervalloHHModel {
   public alle_Arrotondamento: TimeRoundInterval;
   public alle_Arrotondamento_Verso: RoundDirection;
 
-  numCoppia: number;
+  public numCoppia: number;
+  public idCausale_HH_Lav: number;
 }
 
 

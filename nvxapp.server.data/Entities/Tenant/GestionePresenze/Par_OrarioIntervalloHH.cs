@@ -33,6 +33,11 @@ namespace nvxapp.server.data.Entities.Tenant.GestionePresenze
         public int NumCoppia { get; set; }  = 1; // relazione con Par_Orario->NumeroCoppie
         
         
+        
+        [Required]
+        public required int IdCausale_HH_Lav { get; set; }
+        [ForeignKey("IdCausale_HH_Lav")]
+        public virtual Par_Causali? Causale_HH_LavNavigation { get; set; }
 
     }
 
