@@ -172,7 +172,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
         private readonly IPar_ProfiloOrarioService _par_ProfiloOrarioService;
         private readonly IDip_RapportoLavoroService _dip_RapportoLavoroService;
         private readonly IPar_GiustificativiService _par_GiustificativiService;
-        
+
 
         //private readonly IDip_GG_TimbraturaRepository _dip_GG_TimbraturaRepository;
 
@@ -563,12 +563,12 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                     #region "Par_Giustificativi"
 
                     var req_Just = new GenericRequest<Par_GiustificativiInModel>();
-                    var res_Just = await  _par_GiustificativiService.GetAll(req_Just,true);
-                    if(res_Just.Success && res_Just.Data != null)
+                    var res_Just = await _par_GiustificativiService.GetAll(req_Just, true);
+                    if (res_Just.Success && res_Just.Data != null)
                     {
                         retVal.Par_Giustificativi = res_Just.Data.Par_Giustificativi;
                     }
-                    
+
 
                     #endregion
 
@@ -785,7 +785,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                     await GeneraGiustificativoAssenza(Dip_Anagrafica, AllData, rapporto_calc.Id, giorno, dip_GG_Result);
                 }
 
-                /*await*/ GeneraCausali(Dip_Anagrafica, AllData, rapporto_calc.Id, giorno, dip_GG_Result);
+                /*await*/
+                GeneraCausali(Dip_Anagrafica, AllData, rapporto_calc.Id, giorno, dip_GG_Result);
             }
 
 
@@ -1298,7 +1299,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
         }
 
-        private /*async Task*/  void GeneraCausali(Dip_AnagraficaModel Dip_Anagrafica, Timesheet_AllData_OutModel allData, int IdDip_RapportoLavoro, DateTime day, Dip_GG_ResultModel dip_GG_Result)
+        private void GeneraCausali(Dip_AnagraficaModel Dip_Anagrafica, Timesheet_AllData_OutModel allData, int IdDip_RapportoLavoro, DateTime day, Dip_GG_ResultModel dip_GG_Result)
         {
             // dizionario temporaneo IdCausale ? TimeSpan accumulato
             var causaliAccumulate = new Dictionary<int, TimeSpan>();
@@ -1308,10 +1309,12 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
             var giustificativiDelGiorno = allData.Dip_GG_AllData_OutModel.Dip_GG_Giustificativi
                 .Where(g => g.IdDip_RapportoLavoro == IdDip_RapportoLavoro
                          && g.Data.Date == day.Date
-                         && (g.RichiestaStato == StatoRichiesta.Diretta || g.RichiestaStato == StatoRichiesta.Approvata))
+                         && (g.RichiestaStato == StatoRichiesta.Diretta || g.RichiestaStato == StatoRichiesta.Approvata)
+                         && g.ToBeDeleted== false
+                         )
                 .ToList();
 
-            
+
 
             foreach (var giustificativo in giustificativiDelGiorno)
             {
@@ -1360,6 +1363,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                     causaliAccumulate[idCausale] = valoreOre;
             }
 
+            
+
             // -- B) Causali da Ore Lavorate per Intervallo ------------------------
 
             var daySlot = allData.OrariSchema_4User_OutModel.DaySlots
@@ -1382,65 +1387,53 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                         .OrderBy(hh => hh.NumCoppia)
                         .ToList();
 
-                    // timbrature del giorno ordinate cronologicamente
-                    var timbratureDelGiorno = allData.Dip_GG_AllData_OutModel.Dip_GG_Timbratura
+                    // stessa logica di CalcolaOreLavorate: prendi le timbrature arrotondate
+                    // Entrata/Uscita ordinate e abbinale in coppie sequenziali
+                    var timbrature = allData.Dip_GG_AllData_OutModel.Dip_GG_Timbratura
                         .Where(t => t.IdDip_RapportoLavoro == IdDip_RapportoLavoro
-                                 && t.GiornoCompetenza.Date == day.Date)
-                        .OrderBy(t => t.Timbratura)
+                                 && t.GiornoCompetenza.Date == day.Date
+                                 && t.TimbraturaArrotondata.HasValue
+                                 && (t.TimbraturaTipo == TipoTimbratura.Entrata
+                                  || t.TimbraturaTipo == TipoTimbratura.Uscita))
+                        .OrderBy(t => t.TimbraturaArrotondata)
                         .ToList();
 
-                    foreach (var coppia in coppie)
+                    // scorre le coppie in sequenza: pos pari = Entrata, pos dispari = Uscita
+                    for (int i = 0; i + 1 < timbrature.Count; i += 2)
                     {
-                        if (!coppia.Dalle.HasValue || !coppia.Alle.HasValue)
+                        var entrata = timbrature[i];
+                        var uscita = timbrature[i + 1];
+
+                        if (entrata.TimbraturaTipo != TipoTimbratura.Entrata ||
+                            uscita.TimbraturaTipo != TipoTimbratura.Uscita)
                             continue;
 
-                        if (coppia.Alle.Value == coppia.Dalle.Value)
-                            continue;
+                        // la coppia del profilo per questa posizione (i/2)
+                        int idxCoppia = i / 2;
+                        if (idxCoppia >= coppie.Count)
+                            idxCoppia = coppie.Count - 1;
+
+                        var coppia = coppie[idxCoppia];
 
                         if (coppia.IdCausale_HH_Lav == 0)
                             continue;
 
-                        // trova entrata e uscita nella finestra di questa coppia
-                        var dalleLimit_SX = (coppia.Dalle_Limite_SX ?? coppia.Dalle).Value;
-                        var dalleLimit_DX = (coppia.Dalle_Limite_DX ?? coppia.Dalle).Value;
-                        var alleLimit_SX  = (coppia.Alle_Limite_SX  ?? coppia.Alle).Value;
-                        var alleLimit_DX  = (coppia.Alle_Limite_DX  ?? coppia.Alle).Value;
+                        var oreLavorate = uscita.TimbraturaArrotondata!.Value - entrata.TimbraturaArrotondata!.Value;
 
-                        var entrata = timbratureDelGiorno
-                            .FirstOrDefault(t => t.TimbraturaTipo == TipoTimbratura.Entrata &&
-                                                 TimeOnly.FromDateTime(t.Timbratura) >= dalleLimit_SX &&
-                                                 TimeOnly.FromDateTime(t.Timbratura) <= dalleLimit_DX);
-
-                        var uscita = timbratureDelGiorno
-                            .FirstOrDefault(t => t.TimbraturaTipo == TipoTimbratura.Uscita &&
-                                                 TimeOnly.FromDateTime(t.Timbratura) >= alleLimit_SX &&
-                                                 TimeOnly.FromDateTime(t.Timbratura) <= alleLimit_DX);
-
-                        if (entrata != null && uscita != null)
+                        if (oreLavorate > TimeSpan.Zero)
                         {
-                            // usa TimbraturaArrotondata se disponibile, altrimenti Timbratura
-                            var oraEntrata = entrata.TimbraturaArrotondata ?? entrata.Timbratura;
-                            var oraUscita  = uscita.TimbraturaArrotondata  ?? uscita.Timbratura;
+                            int idCausale = coppia.IdCausale_HH_Lav;
 
-                            var oreLavorate = oraUscita - oraEntrata;
-
-                            if (oreLavorate > TimeSpan.Zero)
-                            {
-                                int idCausale = coppia.IdCausale_HH_Lav;
-
-                                if (causaliAccumulate.ContainsKey(idCausale))
-                                    causaliAccumulate[idCausale] += oreLavorate;
-                                else
-                                    causaliAccumulate[idCausale] = oreLavorate;
-                            }
+                            if (causaliAccumulate.ContainsKey(idCausale))
+                                causaliAccumulate[idCausale] += oreLavorate;
+                            else
+                                causaliAccumulate[idCausale] = oreLavorate;
                         }
                     }
                 }
             }
-
             // -- Scrittura causali in allData -------------------------------------
 
-                        // ── Scrittura causali in allData ─────────────────────────────────────
 
             // recupera le causali pre-esistenti per questo giorno/rapporto
             var causaliEsistenti = allData.Dip_GG_AllData_OutModel.Dip_GG_Causali

@@ -671,7 +671,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                                         IdDip_RapportoLavoro = user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.Id,
                                         IdDip_GG_Richiesta = dip_GG_Richiesta.Id,
                                         IdPar_Giustificativi = richiesta.IdPar_Giustificativi,
-                                        RichiestaStato = StatoRichiesta.Immessa,
+                                        RichiestaStato = dip_GG_Richiesta.RichiestaStato,
                                         InputType = richiesta.AllDay ? JustificationInputType.AllDay : JustificationInputType.Manual,
                                         Hours = TimeSpan.Parse(richiesta.hhmm)
                                     };
