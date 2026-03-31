@@ -24,6 +24,8 @@ using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Timbrat
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_TimbraturaService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_RapportoLavoroService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_RapportoLavoroService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_GiustificativiService;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_GiustificativiService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_OrarioIntervalloHHService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_OrarioService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_OrarioService.Models;
@@ -169,6 +171,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
         private readonly IPar_OrarioService _par_OrarioService;
         private readonly IPar_ProfiloOrarioService _par_ProfiloOrarioService;
         private readonly IDip_RapportoLavoroService _dip_RapportoLavoroService;
+        private readonly IPar_GiustificativiService _par_GiustificativiService;
+        
 
         //private readonly IDip_GG_TimbraturaRepository _dip_GG_TimbraturaRepository;
 
@@ -192,6 +196,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                       IDip_GG_CausaliService dip_GG_CausaliService,
                                       IDip_GG_GiustificativiService dip_GG_GiustificativiService,
                                       IDip_GG_ResultService dip_GG_ResultService,
+                                      IPar_GiustificativiService par_GiustificativiService,
                                       IDip_GG_RichiestaService dip_GG_RichiestaService
 
                                       ) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
@@ -209,6 +214,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
             _dip_GG_ResultService = dip_GG_ResultService;
             _par_ProfiloOrarioService = par_ProfiloOrarioService;
             _dip_RapportoLavoroService = dip_RapportoLavoroService;
+            _par_GiustificativiService = par_GiustificativiService;
 
             //_dip_GG_TimbraturaRepository = dip_GG_TimbraturaRepository;
         }
@@ -552,7 +558,19 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                         }
                     }
 
-                    #endregion 
+                    #endregion
+
+                    #region "Par_Giustificativi"
+
+                    var req_Just = new GenericRequest<Par_GiustificativiInModel>();
+                    var res_Just = await  _par_GiustificativiService.GetAll(req_Just,true);
+                    if(res_Just.Success && res_Just.Data != null)
+                    {
+                        retVal.Par_Giustificativi = res_Just.Data.Par_Giustificativi;
+                    }
+                    
+
+                    #endregion
 
                 }
 
@@ -762,12 +780,12 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
             if (dip_GG_Result != null)
             {
-                if (timeSheet_CalculateModel.Genera_Giustificativo_Assenza )
+                if (timeSheet_CalculateModel.Genera_Giustificativo_Assenza)
                 {
                     await GeneraGiustificativoAssenza(Dip_Anagrafica, AllData, rapporto_calc.Id, giorno, dip_GG_Result);
                 }
 
-                await GeneraCausali(Dip_Anagrafica, AllData, rapporto_calc.Id, giorno, dip_GG_Result);
+                /*await*/ GeneraCausali(Dip_Anagrafica, AllData, rapporto_calc.Id, giorno, dip_GG_Result);
             }
 
 
@@ -1280,9 +1298,191 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
         }
 
-        private async Task GeneraCausali(Dip_AnagraficaModel Dip_Anagrafica, Timesheet_AllData_OutModel allData, int IdDip_RapportoLavoro, DateTime day, Dip_GG_ResultModel dip_GG_Result)
+        private /*async Task*/  void GeneraCausali(Dip_AnagraficaModel Dip_Anagrafica, Timesheet_AllData_OutModel allData, int IdDip_RapportoLavoro, DateTime day, Dip_GG_ResultModel dip_GG_Result)
         {
-            return;
+            // dizionario temporaneo IdCausale ? TimeSpan accumulato
+            var causaliAccumulate = new Dictionary<int, TimeSpan>();
+
+            // -- A) Causali da Giustificativi -------------------------------------
+
+            var giustificativiDelGiorno = allData.Dip_GG_AllData_OutModel.Dip_GG_Giustificativi
+                .Where(g => g.IdDip_RapportoLavoro == IdDip_RapportoLavoro
+                         && g.Data.Date == day.Date
+                         && (g.RichiestaStato == StatoRichiesta.Diretta || g.RichiestaStato == StatoRichiesta.Approvata))
+                .ToList();
+
+            
+
+            foreach (var giustificativo in giustificativiDelGiorno)
+            {
+                // cerca il parametro giustificativo per ottenere IdCausale
+                var parGiust = allData.OrariSchema_4User_OutModel.Par_Giustificativi
+                    .FirstOrDefault(pg => pg.Id == giustificativo.IdPar_Giustificativi);
+
+                if (parGiust == null || !parGiust.IdCausale.HasValue || parGiust.IdCausale.Value == 0)
+                    continue;
+
+                int idCausale = parGiust.IdCausale.Value;
+
+                // determina il valore ore del giustificativo
+                TimeSpan valoreOre = TimeSpan.Zero;
+
+                switch (giustificativo.InputType)
+                {
+                    case JustificationInputType.Manual:
+                        // ore inserite manualmente
+                        valoreOre = giustificativo.Hours ?? TimeSpan.Zero;
+                        break;
+
+                    case JustificationInputType.AllDay:
+                        // intera giornata: prende le ore teoriche del giorno
+                        valoreOre = this.CalcolaOreTeoriche(allData, IdDip_RapportoLavoro, day);
+                        break;
+
+                    case JustificationInputType.IntegrateDay:
+                        // integra la giornata: differenza tra ore teoriche e ore reali
+                        var oreTeoInt = this.CalcolaOreTeoriche(allData, IdDip_RapportoLavoro, day);
+                        var oreRealiInt = this.CalcolaOreLavorate(allData, IdDip_RapportoLavoro, day);
+                        valoreOre = oreTeoInt - oreRealiInt;
+                        if (valoreOre < TimeSpan.Zero)
+                            valoreOre = TimeSpan.Zero;
+                        break;
+                }
+
+                // applica il segno del giustificativo
+                if (parGiust.Segno == SignWithNeutral.Down)
+                    valoreOre = valoreOre.Negate();
+
+                // accumula
+                if (causaliAccumulate.ContainsKey(idCausale))
+                    causaliAccumulate[idCausale] += valoreOre;
+                else
+                    causaliAccumulate[idCausale] = valoreOre;
+            }
+
+            // -- B) Causali da Ore Lavorate per Intervallo ------------------------
+
+            var daySlot = allData.OrariSchema_4User_OutModel.DaySlots
+                .FirstOrDefault(ds => ds.IdDip_RapportoLavoro == IdDip_RapportoLavoro
+                                   && ds.Data.Date == day.Date);
+
+            if (daySlot != null && daySlot.Orari.Count > 0)
+            {
+                var orarioBase = daySlot.Orari
+                    .OrderBy(o => o.ZOrder)
+                    .First();
+
+                var parOrario = allData.OrariSchema_4User_OutModel.ParOrario
+                    .FirstOrDefault(o => o.Id == orarioBase.IdPar_Orario);
+
+                if (parOrario != null)
+                {
+                    var coppie = allData.OrariSchema_4User_OutModel.Par_OrarioIntervalloHH
+                        .Where(hh => hh.IdPar_Orario == parOrario.Id)
+                        .OrderBy(hh => hh.NumCoppia)
+                        .ToList();
+
+                    // timbrature del giorno ordinate cronologicamente
+                    var timbratureDelGiorno = allData.Dip_GG_AllData_OutModel.Dip_GG_Timbratura
+                        .Where(t => t.IdDip_RapportoLavoro == IdDip_RapportoLavoro
+                                 && t.GiornoCompetenza.Date == day.Date)
+                        .OrderBy(t => t.Timbratura)
+                        .ToList();
+
+                    foreach (var coppia in coppie)
+                    {
+                        if (!coppia.Dalle.HasValue || !coppia.Alle.HasValue)
+                            continue;
+
+                        if (coppia.Alle.Value == coppia.Dalle.Value)
+                            continue;
+
+                        if (coppia.IdCausale_HH_Lav == 0)
+                            continue;
+
+                        // trova entrata e uscita nella finestra di questa coppia
+                        var dalleLimit_SX = (coppia.Dalle_Limite_SX ?? coppia.Dalle).Value;
+                        var dalleLimit_DX = (coppia.Dalle_Limite_DX ?? coppia.Dalle).Value;
+                        var alleLimit_SX  = (coppia.Alle_Limite_SX  ?? coppia.Alle).Value;
+                        var alleLimit_DX  = (coppia.Alle_Limite_DX  ?? coppia.Alle).Value;
+
+                        var entrata = timbratureDelGiorno
+                            .FirstOrDefault(t => t.TimbraturaTipo == TipoTimbratura.Entrata &&
+                                                 TimeOnly.FromDateTime(t.Timbratura) >= dalleLimit_SX &&
+                                                 TimeOnly.FromDateTime(t.Timbratura) <= dalleLimit_DX);
+
+                        var uscita = timbratureDelGiorno
+                            .FirstOrDefault(t => t.TimbraturaTipo == TipoTimbratura.Uscita &&
+                                                 TimeOnly.FromDateTime(t.Timbratura) >= alleLimit_SX &&
+                                                 TimeOnly.FromDateTime(t.Timbratura) <= alleLimit_DX);
+
+                        if (entrata != null && uscita != null)
+                        {
+                            // usa TimbraturaArrotondata se disponibile, altrimenti Timbratura
+                            var oraEntrata = entrata.TimbraturaArrotondata ?? entrata.Timbratura;
+                            var oraUscita  = uscita.TimbraturaArrotondata  ?? uscita.Timbratura;
+
+                            var oreLavorate = oraUscita - oraEntrata;
+
+                            if (oreLavorate > TimeSpan.Zero)
+                            {
+                                int idCausale = coppia.IdCausale_HH_Lav;
+
+                                if (causaliAccumulate.ContainsKey(idCausale))
+                                    causaliAccumulate[idCausale] += oreLavorate;
+                                else
+                                    causaliAccumulate[idCausale] = oreLavorate;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // -- Scrittura causali in allData -------------------------------------
+
+                        // ── Scrittura causali in allData ─────────────────────────────────────
+
+            // recupera le causali pre-esistenti per questo giorno/rapporto
+            var causaliEsistenti = allData.Dip_GG_AllData_OutModel.Dip_GG_Causali
+                .Where(c => c.IdDip_RapportoLavoro == IdDip_RapportoLavoro
+                         && c.Data.Date == day.Date)
+                .ToList();
+
+            // 1) marca tutte le pre-esistenti come ToBeDeleted
+            foreach (var esistente in causaliEsistenti)
+            {
+                esistente.ToBeDeleted = true;
+            }
+
+            // 2) per ogni causale calcolata, cerca se esiste già → aggiorna, altrimenti aggiungi
+            foreach (var kvp in causaliAccumulate)
+            {
+                var durataAssoluta = kvp.Value.Duration(); // valore assoluto per TimeOnly
+                var nuovoValore = TimeOnly.FromTimeSpan(durataAssoluta);
+
+                var causaleEsistente = causaliEsistenti
+                    .FirstOrDefault(c => c.IdPar_Causali == kvp.Key);
+
+                if (causaleEsistente != null)
+                {
+                    // esiste già: aggiorna il valore e rimuovi il flag ToBeDeleted
+                    causaleEsistente.Valore = nuovoValore;
+                    causaleEsistente.ToBeDeleted = false;
+                }
+                else
+                {
+                    // non esiste: crea nuovo record
+                    allData.Dip_GG_AllData_OutModel.Dip_GG_Causali.Add(new Dip_GG_CausaliModel
+                    {
+                        Id = 0,
+                        IdDip_RapportoLavoro = IdDip_RapportoLavoro,
+                        Data = day.Date,
+                        IdPar_Causali = kvp.Key,
+                        Valore = nuovoValore,
+                        ToBeDeleted = false
+                    });
+                }
+            }
         }
 
         private class CoppiaTMP

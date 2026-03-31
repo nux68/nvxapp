@@ -5,6 +5,7 @@ using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_ResultS
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_RichiestaService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_TimbraturaService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_RapportoLavoroService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_GiustificativiService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_OrarioIntervalloHHService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_OrarioService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_ProfiloOrarioGGService.Models;
@@ -84,6 +85,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
         public List<Par_ProfiloOrarioGGModel> Par_ProfiloOrarioGG { get; set; } = new List<Par_ProfiloOrarioGGModel>();
         public List<Par_OrarioModel> ParOrario { get; set; } = new List<Par_OrarioModel>();
         public List<Par_OrarioIntervalloHHModel> Par_OrarioIntervalloHH { get; set; } = new List<Par_OrarioIntervalloHHModel>();
+        public List<Par_GiustificativiModel> Par_Giustificativi { get; set; } = new List<Par_GiustificativiModel>();
     }
 
 

@@ -178,7 +178,8 @@
                 <ng-container *ngIf="day.dip_GG_Causali?.length > 0; else noCau">
 
 
-                  <ion-button [disabled]="false"
+                  <!--
+                    <ion-button [disabled]="false"
                               size="small" shape="round"
                               *ngFor="let caus of day.dip_GG_Causali"
                               [ngStyle]="{
@@ -190,15 +191,34 @@
                         'margin-bottom':'1px',
                         'margin-top':'0px'
                       }"
-                   (click)="actionSheetOpen(caus)">
-                    
+                              (click)="actionSheetOpen(caus)">
+
                     {{ caus.idPar_Causali | parCausaliToShortText}} {{ caus.valore | slice:0:5 }}
 
-                    <!--
-  <ion-icon slot="end" [name]="timeSheetService.get_StatoRichiesta_icon(get_Dip_GG_Richiesta(caus.idDip_GG_Richiesta))"></ion-icon>
-  -->
-
                   </ion-button>
+                    -->
+
+
+                  <ion-chip *ngFor="let caus of day.dip_GG_Causali"
+                            [ngStyle]="{
+                                         'background': timeSheetService.get_Dip_GG_Causali_backColor(caus),
+                                         'color': timeSheetService.get_Dip_GG_Causali_txtColor(caus),
+                                         'font-size': '0.8em',
+                                         'margin-bottom': '0px',
+                                         'margin-top': '0px',
+                                         'cursor': (true)
+                                                    ? 'pointer' : 'default',
+                                         'opacity': (true)
+                                                     ? '1' : '0.5'
+                                       }"
+                            (click)="(true)
+                                      ? actionSheetOpen(caus) : null">
+                    {{ caus.idPar_Causali | parCausaliToShortText}} {{ caus.valore | slice:0:5 }}
+
+                  </ion-chip>
+
+
+
 
                 </ng-container>
                 <ng-template #noCau>
