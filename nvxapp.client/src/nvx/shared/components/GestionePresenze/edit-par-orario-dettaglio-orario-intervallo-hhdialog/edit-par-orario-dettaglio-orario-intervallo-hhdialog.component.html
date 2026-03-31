@@ -9,221 +9,8 @@
 
   <form [formGroup]="_editForm">
 
-    <ion-card>
-      <ion-card-header>
-        <ion-card-title>Orario di Entrata</ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-
-        <ion-grid>
-          <ion-row class="ion-align-items-center">
-            <!-- Dalle Limite SX -->
-            <ion-col>
-              <ion-item>
-                <ion-label position="floating">Limite SX</ion-label>
-                <ion-datetime-button class="datetime-button-with-label" datetime="dalle-limite-sx-modal"></ion-datetime-button>
-                <ion-modal [keepContentsMounted]="true">
-                  <ng-template>
-                    <ion-datetime id="dalle-limite-sx-modal"
-                                  formControlName="dalle_Limite_SX"
-                                  presentation="time"
-                                  [showDefaultButtons]="true"
-                                  doneText="OK"
-                                  cancelText="Annulla">
-                    </ion-datetime>
-                  </ng-template>
-                </ion-modal>
-              </ion-item>
-            </ion-col>
-
-            <!-- Dalle -->
-            <ion-col>
-              <ion-item>
-                <ion-label position="floating">Dalle</ion-label>
-                <ion-datetime-button class="datetime-button-with-label" datetime="dalle-modal"></ion-datetime-button>
-                <ion-modal [keepContentsMounted]="true">
-                  <ng-template>
-                    <ion-datetime id="dalle-modal"
-                                  formControlName="dalle"
-                                  presentation="time"
-                                  [showDefaultButtons]="true"
-                                  doneText="OK"
-                                  cancelText="Annulla" (ionChange)="updateDateTimeDalle($event)">
-                    </ion-datetime>
-                  </ng-template>
-                </ion-modal>
-              </ion-item>
-            </ion-col>
-
-            <!-- Dalle Limite DX -->
-            <ion-col>
-              <ion-item>
-                <ion-label position="floating">Limite DX</ion-label>
-                <ion-datetime-button class="datetime-button-with-label" datetime="dalle-limite-dx-modal"></ion-datetime-button>
-                <ion-modal [keepContentsMounted]="true">
-                  <ng-template>
-                    <ion-datetime id="dalle-limite-dx-modal"
-                                  formControlName="dalle_Limite_DX"
-                                  presentation="time"
-                                  [showDefaultButtons]="true"
-                                  doneText="OK"
-                                  cancelText="Annulla">
-                    </ion-datetime>
-                  </ng-template>
-                </ion-modal>
-              </ion-item>
-            </ion-col>
-
-          </ion-row>
-
-          <ion-row class="ion-align-items-center">
-            <ion-col>
-              <ion-item>
-                <ion-label position="floating">Tipo arrotondamento</ion-label>
-                <ion-select formControlName="dalle_Arrotondamento" interface="popover">
-                  <ion-select-option [value]="timeRoundIntervalEnum.Min1">1 Min</ion-select-option>
-                  <ion-select-option [value]="timeRoundIntervalEnum.Min5">5 Min</ion-select-option>
-                  <ion-select-option [value]="timeRoundIntervalEnum.Min15">15 Min</ion-select-option>
-                  <ion-select-option [value]="timeRoundIntervalEnum.Min30">30 Min</ion-select-option>
-                  <ion-select-option [value]="timeRoundIntervalEnum.Min60">60 Min</ion-select-option>
-                </ion-select>
-              </ion-item>
-              <ion-note color="danger" *ngIf="_editForm.get('dalle_Arrotondamento')?.hasError('required') && _editForm.get('dalle_Arrotondamento')?.touched">
-                Il tipo arrotondamento è obbligatorio.
-              </ion-note>
-            </ion-col>
-
-            <ion-col>
-              <ion-item>
-                <ion-label position="floating">Segno arrotondamento</ion-label>
-                <ion-select formControlName="dalle_Arrotondamento_Verso" interface="popover">
-                  <ion-select-option [value]="roundDirectionEnum.Up">+</ion-select-option>
-                  <ion-select-option [value]="roundDirectionEnum.Down">-</ion-select-option>
-                </ion-select>
-              </ion-item>
-              <ion-note color="danger" *ngIf="_editForm.get('dalle_Arrotondamento_Verso')?.hasError('required') && _editForm.get('dalle_Arrotondamento_Verso')?.touched">
-                Il segno arrotondamento è obbligatorio.
-              </ion-note>
-            </ion-col>
-
-          </ion-row>
 
 
-        </ion-grid>
-
-
-      </ion-card-content>
-    </ion-card>
-
-
-
-    <ion-card>
-      <ion-card-header>
-        <ion-card-title>Orario di Uscita</ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-
-        <ion-grid>
-          <ion-row class="ion-align-items-center">
-            <!-- Alle Limite SX -->
-            <ion-col>
-              <ion-item>
-                <ion-label position="floating">Limite SX</ion-label>
-                <ion-datetime-button class="datetime-button-with-label" datetime="alle-limite-sx-modal"></ion-datetime-button>
-                <ion-modal [keepContentsMounted]="true">
-                  <ng-template>
-                    <ion-datetime id="alle-limite-sx-modal"
-                                  formControlName="alle_Limite_SX"
-                                  presentation="time"
-                                  [showDefaultButtons]="true"
-                                  doneText="OK"
-                                  cancelText="Annulla">
-                    </ion-datetime>
-                  </ng-template>
-                </ion-modal>
-              </ion-item>
-            </ion-col>
-
-            <!-- alle -->
-            <ion-col>
-              <ion-item>
-                <ion-label position="floating">Alle</ion-label>
-                <ion-datetime-button class="datetime-button-with-label" datetime="alle-modal"></ion-datetime-button>
-                <ion-modal [keepContentsMounted]="true">
-                  <ng-template>
-                    <ion-datetime id="alle-modal"
-                                  formControlName="alle"
-                                  presentation="time"
-                                  [showDefaultButtons]="true"
-                                  doneText="OK"
-                                  cancelText="Annulla" (ionChange)="updateDateTimeAlle($event)">
-                    </ion-datetime>
-                  </ng-template>
-                </ion-modal>
-              </ion-item>
-            </ion-col>
-
-            <!-- alle Limite DX -->
-            <ion-col>
-              <ion-item>
-                <ion-label position="floating">Limite DX</ion-label>
-                <ion-datetime-button class="datetime-button-with-label" datetime="alle-limite-dx-modal"></ion-datetime-button>
-                <ion-modal [keepContentsMounted]="true">
-                  <ng-template>
-                    <ion-datetime id="alle-limite-dx-modal"
-                                  formControlName="alle_Limite_DX"
-                                  presentation="time"
-                                  [showDefaultButtons]="true"
-                                  doneText="OK"
-                                  cancelText="Annulla">
-                    </ion-datetime>
-                  </ng-template>
-                </ion-modal>
-              </ion-item>
-            </ion-col>
-
-          </ion-row>
-
-
-          <ion-row class="ion-align-items-center">
-            <ion-col>
-              <ion-item>
-                <ion-label position="floating">Tipo arrotondamento</ion-label>
-                <ion-select formControlName="alle_Arrotondamento" interface="popover">
-                  <ion-select-option [value]="timeRoundIntervalEnum.Min1">1 Min</ion-select-option>
-                  <ion-select-option [value]="timeRoundIntervalEnum.Min5">5 Min</ion-select-option>
-                  <ion-select-option [value]="timeRoundIntervalEnum.Min15">15 Min</ion-select-option>
-                  <ion-select-option [value]="timeRoundIntervalEnum.Min30">30 Min</ion-select-option>
-                  <ion-select-option [value]="timeRoundIntervalEnum.Min60">60 Min</ion-select-option>
-                </ion-select>
-              </ion-item>
-              <ion-note color="danger" *ngIf="_editForm.get('alle_Arrotondamento')?.hasError('required') && _editForm.get('alle_Arrotondamento')?.touched">
-                Il tipo arrotondamento è obbligatorio.
-              </ion-note>
-            </ion-col>
-
-            <ion-col>
-              <ion-item>
-                <ion-label position="floating">Segno arrotondamento</ion-label>
-                <ion-select formControlName="alle_Arrotondamento_Verso" interface="popover">
-                  <ion-select-option [value]="roundDirectionEnum.Up">+</ion-select-option>
-                  <ion-select-option [value]="roundDirectionEnum.Down">-</ion-select-option>
-                </ion-select>
-              </ion-item>
-              <ion-note color="danger" *ngIf="_editForm.get('alle_Arrotondamento_Verso')?.hasError('required') && _editForm.get('alle_Arrotondamento_Verso')?.touched">
-                Il segno arrotondamento è obbligatorio.
-              </ion-note>
-            </ion-col>
-
-          </ion-row>
-
-
-
-        </ion-grid>
-
-
-      </ion-card-content>
-    </ion-card>
 
     <ion-card>
       <ion-card-header>
@@ -245,7 +32,223 @@
               La causale è obbligatoria.
             </ion-note>
           </ion-col>
-          </ion-row>
+        </ion-row>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card>
+      <ion-card-content>
+
+
+
+        <ion-segment (ionChange)="segmentChanged($event)" [value]="currSection">
+          <ion-segment-button value="sez1" content-id="sez1">
+            <ion-label>Orario di Entrata</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="sez2" content-id="sez2">
+            <ion-label>Orario di Uscita</ion-label>
+          </ion-segment-button>
+        </ion-segment>
+
+        <div [hidden]="currSection!='sez1'">
+
+          <ion-grid>
+
+            <ion-row class="ion-align-items-center">
+              <!-- Dalle Limite SX -->
+              <ion-col>
+                <ion-item>
+                  <ion-label position="floating">Limite SX</ion-label>
+                  <ion-datetime-button class="datetime-button-with-label" datetime="dalle-limite-sx-modal"></ion-datetime-button>
+                  <ion-modal [keepContentsMounted]="true">
+                    <ng-template>
+                      <ion-datetime id="dalle-limite-sx-modal"
+                                    formControlName="dalle_Limite_SX"
+                                    presentation="time"
+                                    [showDefaultButtons]="true"
+                                    doneText="OK"
+                                    cancelText="Annulla">
+                      </ion-datetime>
+                    </ng-template>
+                  </ion-modal>
+                </ion-item>
+              </ion-col>
+
+              <!-- Dalle -->
+              <ion-col>
+                <ion-item>
+                  <ion-label position="floating">Dalle</ion-label>
+                  <ion-datetime-button class="datetime-button-with-label" datetime="dalle-modal"></ion-datetime-button>
+                  <ion-modal [keepContentsMounted]="true">
+                    <ng-template>
+                      <ion-datetime id="dalle-modal"
+                                    formControlName="dalle"
+                                    presentation="time"
+                                    [showDefaultButtons]="true"
+                                    doneText="OK"
+                                    cancelText="Annulla" (ionChange)="updateDateTimeDalle($event)">
+                      </ion-datetime>
+                    </ng-template>
+                  </ion-modal>
+                </ion-item>
+              </ion-col>
+
+              <!-- Dalle Limite DX -->
+              <ion-col>
+                <ion-item>
+                  <ion-label position="floating">Limite DX</ion-label>
+                  <ion-datetime-button class="datetime-button-with-label" datetime="dalle-limite-dx-modal"></ion-datetime-button>
+                  <ion-modal [keepContentsMounted]="true">
+                    <ng-template>
+                      <ion-datetime id="dalle-limite-dx-modal"
+                                    formControlName="dalle_Limite_DX"
+                                    presentation="time"
+                                    [showDefaultButtons]="true"
+                                    doneText="OK"
+                                    cancelText="Annulla">
+                      </ion-datetime>
+                    </ng-template>
+                  </ion-modal>
+                </ion-item>
+              </ion-col>
+
+            </ion-row>
+
+            <ion-row class="ion-align-items-center">
+              <ion-col>
+                <ion-item>
+                  <ion-label position="floating">Tipo arrotondamento</ion-label>
+                  <ion-select formControlName="dalle_Arrotondamento" interface="popover">
+                    <ion-select-option [value]="timeRoundIntervalEnum.Min1">1 Min</ion-select-option>
+                    <ion-select-option [value]="timeRoundIntervalEnum.Min5">5 Min</ion-select-option>
+                    <ion-select-option [value]="timeRoundIntervalEnum.Min15">15 Min</ion-select-option>
+                    <ion-select-option [value]="timeRoundIntervalEnum.Min30">30 Min</ion-select-option>
+                    <ion-select-option [value]="timeRoundIntervalEnum.Min60">60 Min</ion-select-option>
+                  </ion-select>
+                </ion-item>
+                <ion-note color="danger" *ngIf="_editForm.get('dalle_Arrotondamento')?.hasError('required') && _editForm.get('dalle_Arrotondamento')?.touched">
+                  Il tipo arrotondamento è obbligatorio.
+                </ion-note>
+              </ion-col>
+
+              <ion-col>
+                <ion-item>
+                  <ion-label position="floating">Segno arrotondamento</ion-label>
+                  <ion-select formControlName="dalle_Arrotondamento_Verso" interface="popover">
+                    <ion-select-option [value]="roundDirectionEnum.Up">+</ion-select-option>
+                    <ion-select-option [value]="roundDirectionEnum.Down">-</ion-select-option>
+                  </ion-select>
+                </ion-item>
+                <ion-note color="danger" *ngIf="_editForm.get('dalle_Arrotondamento_Verso')?.hasError('required') && _editForm.get('dalle_Arrotondamento_Verso')?.touched">
+                  Il segno arrotondamento è obbligatorio.
+                </ion-note>
+              </ion-col>
+
+            </ion-row>
+
+          </ion-grid>
+
+        </div>
+        <div [hidden]="currSection!='sez2'">
+
+          <ion-grid>
+
+            <ion-row class="ion-align-items-center">
+              <!-- Alle Limite SX -->
+              <ion-col>
+                <ion-item>
+                  <ion-label position="floating">Limite SX</ion-label>
+                  <ion-datetime-button class="datetime-button-with-label" datetime="alle-limite-sx-modal"></ion-datetime-button>
+                  <ion-modal [keepContentsMounted]="true">
+                    <ng-template>
+                      <ion-datetime id="alle-limite-sx-modal"
+                                    formControlName="alle_Limite_SX"
+                                    presentation="time"
+                                    [showDefaultButtons]="true"
+                                    doneText="OK"
+                                    cancelText="Annulla">
+                      </ion-datetime>
+                    </ng-template>
+                  </ion-modal>
+                </ion-item>
+              </ion-col>
+
+              <!-- alle -->
+              <ion-col>
+                <ion-item>
+                  <ion-label position="floating">Alle</ion-label>
+                  <ion-datetime-button class="datetime-button-with-label" datetime="alle-modal"></ion-datetime-button>
+                  <ion-modal [keepContentsMounted]="true">
+                    <ng-template>
+                      <ion-datetime id="alle-modal"
+                                    formControlName="alle"
+                                    presentation="time"
+                                    [showDefaultButtons]="true"
+                                    doneText="OK"
+                                    cancelText="Annulla" (ionChange)="updateDateTimeAlle($event)">
+                      </ion-datetime>
+                    </ng-template>
+                  </ion-modal>
+                </ion-item>
+              </ion-col>
+
+              <!-- alle Limite DX -->
+              <ion-col>
+                <ion-item>
+                  <ion-label position="floating">Limite DX</ion-label>
+                  <ion-datetime-button class="datetime-button-with-label" datetime="alle-limite-dx-modal"></ion-datetime-button>
+                  <ion-modal [keepContentsMounted]="true">
+                    <ng-template>
+                      <ion-datetime id="alle-limite-dx-modal"
+                                    formControlName="alle_Limite_DX"
+                                    presentation="time"
+                                    [showDefaultButtons]="true"
+                                    doneText="OK"
+                                    cancelText="Annulla">
+                      </ion-datetime>
+                    </ng-template>
+                  </ion-modal>
+                </ion-item>
+              </ion-col>
+
+            </ion-row>
+
+            <ion-row class="ion-align-items-center">
+              <ion-col>
+                <ion-item>
+                  <ion-label position="floating">Tipo arrotondamento</ion-label>
+                  <ion-select formControlName="alle_Arrotondamento" interface="popover">
+                    <ion-select-option [value]="timeRoundIntervalEnum.Min1">1 Min</ion-select-option>
+                    <ion-select-option [value]="timeRoundIntervalEnum.Min5">5 Min</ion-select-option>
+                    <ion-select-option [value]="timeRoundIntervalEnum.Min15">15 Min</ion-select-option>
+                    <ion-select-option [value]="timeRoundIntervalEnum.Min30">30 Min</ion-select-option>
+                    <ion-select-option [value]="timeRoundIntervalEnum.Min60">60 Min</ion-select-option>
+                  </ion-select>
+                </ion-item>
+                <ion-note color="danger" *ngIf="_editForm.get('alle_Arrotondamento')?.hasError('required') && _editForm.get('alle_Arrotondamento')?.touched">
+                  Il tipo arrotondamento è obbligatorio.
+                </ion-note>
+              </ion-col>
+
+              <ion-col>
+                <ion-item>
+                  <ion-label position="floating">Segno arrotondamento</ion-label>
+                  <ion-select formControlName="alle_Arrotondamento_Verso" interface="popover">
+                    <ion-select-option [value]="roundDirectionEnum.Up">+</ion-select-option>
+                    <ion-select-option [value]="roundDirectionEnum.Down">-</ion-select-option>
+                  </ion-select>
+                </ion-item>
+                <ion-note color="danger" *ngIf="_editForm.get('alle_Arrotondamento_Verso')?.hasError('required') && _editForm.get('alle_Arrotondamento_Verso')?.touched">
+                  Il segno arrotondamento è obbligatorio.
+                </ion-note>
+              </ion-col>
+
+            </ion-row>
+
+          </ion-grid>
+
+        </div>
+
       </ion-card-content>
     </ion-card>
 

@@ -29,6 +29,7 @@ export class EditParOrarioDettaglioOrarioIntervalloHHDialogComponent extends Bas
   public timeRoundIntervalEnum =  TimeRoundInterval;
   public roundDirectionEnum = RoundDirection;
   public par_CausaliModelList: Par_CausaliModel[] = [];
+  public currSection: string = "sez1";
 
   constructor(
     protected override userInterfaceService: UserInterfaceService,
@@ -124,6 +125,9 @@ export class EditParOrarioDettaglioOrarioIntervalloHHDialogComponent extends Bas
     });
   }
 
-
+  segmentChanged(event: any) {
+    console.log('Segment cambiato:', event.detail.value);
+    this.currSection = event.detail.value;
+  }
 
 }
