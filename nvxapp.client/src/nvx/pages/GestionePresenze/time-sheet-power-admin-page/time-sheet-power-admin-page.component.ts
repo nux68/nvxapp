@@ -144,6 +144,13 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
     
   }
 
+  trackByDay(index: number, day: DayData): number {
+    return day.dayOfMonth;
+  }
+
+ 
+
+
   loadMonth() {
     if (!this.currUserId) {
       // Se non c'è un utente selezionato, resettiamo i dati
@@ -174,26 +181,32 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
   }
 
   buildDaysList() {
-    this.currentDays = [];
-
-    // Ottiene il numero di giorni nel mese
     const daysInMonth = new Date(this.currYear, this.currMonth + 1, 0).getDate();
 
-    // Crea un array di oggetti giorno per tutti i giorni del mese
-    for (let i = 1; i <= daysInMonth; i++) {
-      const date = new Date(this.currYear, this.currMonth, i);
-
-      // Controlla se ci sono dati per questo giorno
-      const dayData = this.currentMonth.days[i];
-
-      this.currentDays.push({
-        date: date,
-        dayOfMonth: i,
-        dip_GG_Timbratura: dayData?.dip_GG_Timbratura || [],
-        dip_GG_Giustificativi: dayData?.dip_GG_Giustificativi || [],
-        dip_GG_Result: dayData?.dip_GG_Result,
-        dip_GG_Causali: dayData?.dip_GG_Causali || [],
-      });
+    // Se il numero di giorni è cambiato (mese diverso), ricrea l'array
+    if (this.currentDays.length !== daysInMonth) {
+      this.currentDays = [];
+      for (let i = 1; i <= daysInMonth; i++) {
+        const date = new Date(this.currYear, this.currMonth, i);
+        const dayData = this.currentMonth.days[i];
+        this.currentDays.push({
+          date: date,
+          dayOfMonth: i,
+          dip_GG_Timbratura: dayData?.dip_GG_Timbratura || [],
+          dip_GG_Giustificativi: dayData?.dip_GG_Giustificativi || [],
+          dip_GG_Result: dayData?.dip_GG_Result,
+          dip_GG_Causali: dayData?.dip_GG_Causali || [],
+        });
+      }
+    } else {
+      // Stesso mese: aggiorna i dati in-place senza toccare i riferimenti dell'array
+      for (let i = 0; i < daysInMonth; i++) {
+        const dayData = this.currentMonth.days[i + 1];
+        this.currentDays[i].dip_GG_Timbratura = dayData?.dip_GG_Timbratura || [];
+        this.currentDays[i].dip_GG_Giustificativi = dayData?.dip_GG_Giustificativi || [];
+        this.currentDays[i].dip_GG_Result = dayData?.dip_GG_Result;
+        this.currentDays[i].dip_GG_Causali = dayData?.dip_GG_Causali || [];
+      }
     }
   }
 
