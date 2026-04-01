@@ -114,7 +114,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
                                 RoleCode = aspNetRoles.Where(x=> x.Name!= null && usrRoles.Contains(x.Name)).Select(x=> x.Code).ToList()
                                 
                             });
-                        }
+
+                            retVal.Dip_Anagrafica = retVal.Dip_Anagrafica.OrderBy(x => x.Cognome ?? string.Empty)
+                                                                         .ThenBy(x => x.Nome ?? string.Empty)
+                                                                         .ToList();
+                                                                    }
 
                     }
                 }
