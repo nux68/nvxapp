@@ -21,7 +21,7 @@ namespace nvxapp.server.data.Entities.Tenant.GestionePresenze
         public TimeOnly? Dalle_Limite_DX { get; set; }
         public TimeRoundInterval Dalle_Arrotondamento { get; set; }
         public RoundDirection Dalle_Arrotondamento_Verso { get; set; }
-        
+        public Boolean Dalle_Use_4_Match { get; set; }
         
         public TimeOnly? Alle { get; set; }
         public TimeOnly? Alle_Limite_SX { get; set; }
@@ -29,6 +29,7 @@ namespace nvxapp.server.data.Entities.Tenant.GestionePresenze
         public TimeRoundInterval Alle_Arrotondamento { get; set; }
         public RoundDirection Alle_Arrotondamento_Verso { get; set; }
 
+        public Boolean Alle_Use_4_Match { get; set; }
 
         public int NumCoppia { get; set; }  = 1; // relazione con Par_Orario->NumeroCoppie
         

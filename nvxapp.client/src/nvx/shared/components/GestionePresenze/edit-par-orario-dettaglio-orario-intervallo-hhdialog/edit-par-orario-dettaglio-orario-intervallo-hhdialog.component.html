@@ -43,16 +43,20 @@
 
         <ion-segment (ionChange)="segmentChanged($event)" [value]="currSection">
           <ion-segment-button value="sez1" content-id="sez1">
-            <ion-label>Orario di Entrata</ion-label>
+            <ion-label>Orario Inizio</ion-label>
           </ion-segment-button>
           <ion-segment-button value="sez2" content-id="sez2">
-            <ion-label>Orario di Uscita</ion-label>
+            <ion-label>Orario Fine</ion-label>
           </ion-segment-button>
         </ion-segment>
 
         <div [hidden]="currSection!='sez1'">
 
           <ion-grid>
+
+
+
+
 
             <ion-row class="ion-align-items-center">
               <!-- Dalle Limite SX -->
@@ -146,12 +150,21 @@
 
             </ion-row>
 
+            <ion-row class="ion-align-items-center">
+              <ion-col>
+                <ion-item>
+                  <ion-toggle formControlName="dalle_Use_4_Match">Usa x Match</ion-toggle>
+                </ion-item>
+              </ion-col>
+            </ion-row>
+
           </ion-grid>
 
         </div>
         <div [hidden]="currSection!='sez2'">
 
           <ion-grid>
+
 
             <ion-row class="ion-align-items-center">
               <!-- Alle Limite SX -->
@@ -244,6 +257,15 @@
               </ion-col>
 
             </ion-row>
+
+            <ion-row class="ion-align-items-center">
+              <ion-col>
+                <ion-item>
+                  <ion-toggle formControlName="alle_Use_4_Match">Usa x Match</ion-toggle>
+                </ion-item>
+              </ion-col>
+            </ion-row>
+
 
           </ion-grid>
 

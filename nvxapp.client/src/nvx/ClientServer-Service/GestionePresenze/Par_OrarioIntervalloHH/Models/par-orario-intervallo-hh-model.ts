@@ -11,12 +11,14 @@ export class Par_OrarioIntervalloHHModel {
   public dalle_Limite_DX: string | null;
   public dalle_Arrotondamento: TimeRoundInterval;
   public dalle_Arrotondamento_Verso: RoundDirection;
+  public dalle_Use_4_Match: number;
 
   public alle: string | null;
   public alle_Limite_SX: string | null;
   public alle_Limite_DX: string | null;
   public alle_Arrotondamento: TimeRoundInterval;
   public alle_Arrotondamento_Verso: RoundDirection;
+  public alle_Use_4_Match: number;
 
   public numCoppia: number;
   public idCausale_HH_Lav: number;

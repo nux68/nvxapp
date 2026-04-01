@@ -54,12 +54,14 @@ export class EditParOrarioDettaglioOrarioIntervalloHHDialogComponent extends Bas
       dalle_Limite_SX: [null, [Validators.required]],
       dalle_Arrotondamento: [null, [Validators.required]],
       dalle_Arrotondamento_Verso: [null, [Validators.required]],
+      dalle_Use_4_Match: [null, [Validators.required]],
 
       alle: [null, [Validators.required]],
       alle_Limite_DX: [null, [Validators.required]],
       alle_Limite_SX: [null, [Validators.required]],
       alle_Arrotondamento: [null, [Validators.required]],
       alle_Arrotondamento_Verso: [null, [Validators.required]],
+      alle_Use_4_Match: [null, [Validators.required]],
 
       idCausale_HH_Lav: [null, [Validators.required]],
 

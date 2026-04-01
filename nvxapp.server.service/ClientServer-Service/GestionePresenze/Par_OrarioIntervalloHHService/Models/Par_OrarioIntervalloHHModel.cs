@@ -13,12 +13,14 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Orario
         public TimeOnly? Dalle_Limite_DX { get; set; }
         public TimeRoundInterval Dalle_Arrotondamento { get; set; }
         public RoundDirection Dalle_Arrotondamento_Verso { get; set; }
+        public Boolean Dalle_Use_4_Match { get; set; }
 
         public TimeOnly? Alle { get; set; }
         public TimeOnly? Alle_Limite_SX { get; set; }
         public TimeOnly? Alle_Limite_DX { get; set; }
         public TimeRoundInterval Alle_Arrotondamento { get; set; }
         public RoundDirection Alle_Arrotondamento_Verso { get; set; }
+        public Boolean Alle_Use_4_Match { get; set; }
 
         public int NumCoppia { get; set; } = 0;
         public int IdCausale_HH_Lav { get; set; } = 0;
