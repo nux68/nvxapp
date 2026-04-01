@@ -1,17 +1,16 @@
-﻿using nvxapp.server.service.ClientServer_Service.ModelsBase;
-using nvxapp.server.Base;
-using nvxapp.server.service.Interfaces;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using AutoMapper;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using nvxapp.server.service.ServerModels;
+using nvxapp.server.Base;
 using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Repositories.Public;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
-
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRepartoUserService.Models;
+using nvxapp.server.service.ClientServer_Service.ModelsBase;
+using nvxapp.server.service.Interfaces;
+using nvxapp.server.service.ServerModels;
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRepartoUserService
 {
@@ -19,9 +18,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
     public class Az_SediRepartoUserService : ServiceBase, IAz_SediRepartoUserService
     {
         private readonly IAz_SediRepartoUserRepository _az_RepartoUserRepository;
-        private readonly IDip_AnagraficaRepository     _dip_AnagraficaRepository;
+        private readonly IDip_AnagraficaRepository _dip_AnagraficaRepository;
 
-   
+
 
         public Az_SediRepartoUserService(IMapper mapper,
                                   UserManager<ApplicationUser> userManager,
@@ -31,7 +30,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
                                   IConfiguration configuration,
                                   IDip_AnagraficaRepository dip_AnagraficaRepository,
 
-                                  IAz_SediRepartoUserRepository az_RepartoUserRepository) : base(mapper , userManager  , aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
+                                  IAz_SediRepartoUserRepository az_RepartoUserRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _az_RepartoUserRepository = az_RepartoUserRepository;
             _dip_AnagraficaRepository = dip_AnagraficaRepository;
@@ -43,7 +42,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
             {
                 Az_SediRepartoUser_GetAll_OutModel retVal = new Az_SediRepartoUser_GetAll_OutModel();
 
-                var RepUser =  _az_RepartoUserRepository.FindAll(x=> x.IdAz_SediReparto == model.Data.IdAz_SediReparto).ToList();
+                var RepUser = _az_RepartoUserRepository.FindAll(x => x.IdAz_SediReparto == model.Data.IdAz_SediReparto).ToList();
                 retVal.Az_RepartoUser = _mapper.Map<List<Az_SediRepartoUserModel>>(RepUser);
                 //eliminare
                 // Nessun 'await' qui
@@ -59,13 +58,13 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
             {
                 Az_SediRepartoUser_GetAll_OutModel retVal = new Az_SediRepartoUser_GetAll_OutModel();
 
-                var RepUser = _az_RepartoUserRepository.FindAll(x => model.Data.IdAz_SediReparto.Contains( x.IdAz_SediReparto ) ).ToList();
+                var RepUser = _az_RepartoUserRepository.FindAll(x => model.Data.IdAz_SediReparto.Contains(x.IdAz_SediReparto)).ToList();
 
 
-                
 
-                   retVal.Az_RepartoUser = OrdinaPerCognomeNome(
-                    _mapper.Map<List<Az_SediRepartoUserModel>>(RepUser));
+
+                retVal.Az_RepartoUser = OrdinaPerCognomeNome(
+                 _mapper.Map<List<Az_SediRepartoUserModel>>(RepUser));
                 //eliminare
                 // Nessun 'await' qui
                 await Task.Delay(DelayAsyncMethod);
@@ -75,7 +74,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
         }
 
 
-             private List<Az_SediRepartoUserModel> OrdinaPerCognomeNome(List<Az_SediRepartoUserModel> lista)
+        private List<Az_SediRepartoUserModel> OrdinaPerCognomeNome(List<Az_SediRepartoUserModel> lista)
         {
             if (lista.Count == 0)
                 return lista;
@@ -106,7 +105,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
 
     public interface IAz_SediRepartoUserService : IServiceBase
     {
-        public Task<GenericResult<Az_SediRepartoUser_GetAll_OutModel>> GetAll( GenericRequest<Az_SediRepartoUser_GetAll_InModel> model, Boolean isSubProcess);
+        public Task<GenericResult<Az_SediRepartoUser_GetAll_OutModel>> GetAll(GenericRequest<Az_SediRepartoUser_GetAll_InModel> model, Boolean isSubProcess);
         public Task<GenericResult<Az_SediRepartoUser_GetAll_OutModel>> GetAllPeriod(GenericRequest<Az_SediRepartoUser_GetAll_Period_InModel> model, Boolean isSubProcess);
     }
 }
