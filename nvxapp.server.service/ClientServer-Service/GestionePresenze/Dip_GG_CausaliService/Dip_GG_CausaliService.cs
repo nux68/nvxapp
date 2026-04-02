@@ -149,7 +149,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Cau
             }, isSubProcess);
         }    
         
-         public virtual async Task<GenericResult<Dip_GG_CausaliGetOutModel>> Dip_GG_CausaliGet(GenericRequest<Dip_GG_CausaliGetInModel> model, bool isSubProcess)
+        public virtual async Task<GenericResult<Dip_GG_CausaliGetOutModel>> Dip_GG_CausaliGet(GenericRequest<Dip_GG_CausaliGetInModel> model, bool isSubProcess)
         {
             return await ExecuteAction(model, async () =>
             {

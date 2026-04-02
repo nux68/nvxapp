@@ -65,23 +65,23 @@
 
 
                   <!--<ion-button [disabled]="(!timeSheetService.Dip_GG_Richiesta_Admin_Can_Approve( get_Dip_GG_Richiesta(record.idDip_GG_Richiesta) ) &&
-                                               !timeSheetService.Dip_GG_Richiesta_Admin_Can_Reject(get_Dip_GG_Richiesta(record.idDip_GG_Richiesta)) )"
-                                                    size="small"
-                                                    fill="clear"
-                                                    *ngFor="let record of day.dip_GG_Timbratura"
-                                                    [ngStyle]="{
-                                                             '--background':timeSheetService.get_Dip_GG_Timbratura_backColor(record),
-                                                             '--color': timeSheetService.get_Dip_GG_Timbratura_txtColor(record),
-                                                             '--padding-top': '0px',
-                                                             '--padding-bottom': '0px',
-                                                             'font-size': '0.8em',
-                                                             'margin-bottom':'0px',
-                                                             'margin-top':'0px'
-                                                           }"
-                                                    (click)="actionSheetOpen(record)">
-                                          {{ record.timbraturaTipo | tipoTimbraturaToShortText }} {{ record.timbratura | date:'HH:mm' }}
-                                          <ion-icon slot="end" [name]="timeSheetService.get_StatoRichiesta_icon(get_Dip_GG_Richiesta(record.idDip_GG_Richiesta))"></ion-icon>
-                                        </ion-button>-->
+                               !timeSheetService.Dip_GG_Richiesta_Admin_Can_Reject(get_Dip_GG_Richiesta(record.idDip_GG_Richiesta)) )"
+                                    size="small"
+                                    fill="clear"
+                                    *ngFor="let record of day.dip_GG_Timbratura"
+                                    [ngStyle]="{
+                                             '--background':timeSheetService.get_Dip_GG_Timbratura_backColor(record),
+                                             '--color': timeSheetService.get_Dip_GG_Timbratura_txtColor(record),
+                                             '--padding-top': '0px',
+                                             '--padding-bottom': '0px',
+                                             'font-size': '0.8em',
+                                             'margin-bottom':'0px',
+                                             'margin-top':'0px'
+                                           }"
+                                    (click)="actionSheetOpen(record)">
+                          {{ record.timbraturaTipo | tipoTimbraturaToShortText }} {{ record.timbratura | date:'HH:mm' }}
+                          <ion-icon slot="end" [name]="timeSheetService.get_StatoRichiesta_icon(get_Dip_GG_Richiesta(record.idDip_GG_Richiesta))"></ion-icon>
+                        </ion-button>-->
 
                   <ion-chip *ngFor="let record of day.dip_GG_Timbratura"
                             [ngStyle]="{
@@ -90,16 +90,10 @@
                                          'font-size': '0.8em',
                                          'margin-bottom': '0px',
                                          'margin-top': '0px',
-                                         'cursor': (timeSheetService.Dip_GG_Richiesta_Admin_Can_Approve(get_Dip_GG_Richiesta(record.idDip_GG_Richiesta)) ||
-                                                    timeSheetService.Dip_GG_Richiesta_Admin_Can_Reject(get_Dip_GG_Richiesta(record.idDip_GG_Richiesta)))
-                                                    ? 'pointer' : 'default',
-                                         'opacity': (timeSheetService.Dip_GG_Richiesta_Admin_Can_Approve(get_Dip_GG_Richiesta(record.idDip_GG_Richiesta)) ||
-                                                     timeSheetService.Dip_GG_Richiesta_Admin_Can_Reject(get_Dip_GG_Richiesta(record.idDip_GG_Richiesta)))
-                                                     ? '1' : '0.5'
+                                         'cursor':  CanOpenMenuActionTimbratura(record)  ? 'pointer' : 'default',
+                                         'opacity': CanOpenMenuActionTimbratura(record)  ? '1' : '0.5'
                                        }"
-                            (click)="(timeSheetService.Dip_GG_Richiesta_Admin_Can_Approve(get_Dip_GG_Richiesta(record.idDip_GG_Richiesta)) ||
-                                 timeSheetService.Dip_GG_Richiesta_Admin_Can_Reject(get_Dip_GG_Richiesta(record.idDip_GG_Richiesta)))
-                                 ? actionSheetOpen(record) : null">
+                            (click)="CanOpenMenuActionTimbratura(record) ? actionSheetOpen(record) : null">
                     {{ record.timbraturaTipo | tipoTimbraturaToShortText }} {{ record.timbratura | date:'HH:mm' }}
                     <ion-icon [name]="timeSheetService.get_StatoRichiesta_icon(get_Dip_GG_Richiesta(record.idDip_GG_Richiesta))"></ion-icon>
                   </ion-chip>
@@ -143,16 +137,10 @@
                                          'font-size': '0.8em',
                                          'margin-bottom': '0px',
                                          'margin-top': '0px',
-                                         'cursor': (timeSheetService.Dip_GG_Richiesta_Admin_Can_Approve( get_Dip_GG_Richiesta(just.idDip_GG_Richiesta)) ||
-                                                    timeSheetService.Dip_GG_Richiesta_Admin_Can_Reject(get_Dip_GG_Richiesta(just.idDip_GG_Richiesta)))
-                                                    ? 'pointer' : 'default',
-                                         'opacity': (timeSheetService.Dip_GG_Richiesta_Admin_Can_Approve( get_Dip_GG_Richiesta(just.idDip_GG_Richiesta)) ||
-                                                     timeSheetService.Dip_GG_Richiesta_Admin_Can_Reject(get_Dip_GG_Richiesta(just.idDip_GG_Richiesta)))
-                                                     ? '1' : '0.5'
+                                         'cursor': CanOpenMenuActionGiustificativi(just)  ? 'pointer' : 'default',
+                                         'opacity': CanOpenMenuActionGiustificativi(just) ? '1' : '0.5'
                                        }"
-                            (click)="(timeSheetService.Dip_GG_Richiesta_Admin_Can_Approve( get_Dip_GG_Richiesta(just.idDip_GG_Richiesta)) ||
-                                      timeSheetService.Dip_GG_Richiesta_Admin_Can_Reject(get_Dip_GG_Richiesta(just.idDip_GG_Richiesta)))
-                                      ? actionSheetOpen(just) : null">
+                            (click) = "CanOpenMenuActionGiustificativi(just) ? actionSheetOpen(just) : null">
                     {{ just.idPar_Giustificativi | parGiustificativiToLongText }} {{ just.hours.substring(0, 5)  }}
                     <ion-icon  [name]="timeSheetService.get_StatoRichiesta_icon(get_Dip_GG_Richiesta(just.idDip_GG_Richiesta))"></ion-icon>
                   </ion-chip>
@@ -211,8 +199,7 @@
                                          'opacity': (true)
                                                      ? '1' : '0.5'
                                        }"
-                            (click)="(true)
-                                      ? actionSheetOpen(caus) : null">
+                            (click)="(true) ? actionSheetOpen(caus) : null">
                     {{ caus.idPar_Causali | parCausaliToShortText}} {{ caus.valore | slice:0:5 }}
 
                   </ion-chip>

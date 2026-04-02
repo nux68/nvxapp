@@ -3,7 +3,7 @@ import { UserNavigationService } from '../../../Utility/infrastructure/user-navi
 import { TimeSheetService } from '../../../Utility/GestionePresenze/time-sheet.service';
 import { MonthData } from '../../../Utility/GestionePresenze/time-sheet-common-data';
 import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
-import { Dip_GG_TimbraturaModel, TipoTimbratura } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Timbratura/Models/dip-gg-timbratura-model';
+import { Dip_GG_Timbratura_DeleteInModel, Dip_GG_TimbraturaGetInModel, Dip_GG_TimbraturaModel, Dip_GG_TimbraturaPutInModel, TipoTimbratura } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Timbratura/Models/dip-gg-timbratura-model';
 import { Dip_GG_GiustificativiModel } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Giustificativi/Models/dip-gg-giustificativi-model';
 import { Dip_GG_Richiesta_SetState_InModel, Dip_GG_RichiestaModel, StatoRichiesta } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/Models/dip-gg-richiesta-model';
 import { DipGGRichiestaService } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/dip-gg-richiesta.service';
@@ -29,6 +29,8 @@ import { CollectionDialogService } from '../../../shared/components/infrastructu
 import { DipGGCausaliService } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Causali/dip-gg-causali.service';
 import { Par_OrarioIntervalloHHModel } from '../../../ClientServer-Service/GestionePresenze/Par_OrarioIntervalloHH/Models/par-orario-intervallo-hh-model';
 import { EditDipGGCausaliDialogComponent } from '../../../shared/components/GestionePresenze/edit-dip-gg-causali-dialog/edit-dip-gg-causali-dialog.component';
+import { DipGGTimbraturaService } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Timbratura/dip-gg-timbratura.service';
+import { EditDipGGTimbraturaDialogComponent } from '../../../shared/components/GestionePresenze/edit-dip-gg-timbratura-dialog/edit-dip-gg-timbratura-dialog.component';
 
 
 interface DayData {
@@ -75,6 +77,7 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
               public userNavigationService: UserNavigationService,
               private modalCtrl: ModalController,
               private dipGGCausaliService: DipGGCausaliService,
+              private dipGGTimbraturaService: DipGGTimbraturaService,
               private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
               private datePipe: DatePipe,private collectionDialogService: CollectionDialogService,
               private longJobNotifier: LongJobNotifierService , /* RICVEVE LE NOTIFICHE  */
@@ -304,13 +307,46 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
       },
     },
 
-    
-    
+  ];
+
+
+  public actionSheetButtonsTimbrature = [
+    {
+      text: 'Modifica timbratura',
+      role: actionSheet_Action.Timbrature_PREFIX + "_" + actionSheet_Action.modificatimbratura,
+      data: {
+        action: actionSheet_Action.Timbrature_PREFIX + "_" + actionSheet_Action.modificatimbratura,
+      },
+    },
+    {
+      text: 'Cancella timbratura',
+      role: actionSheet_Action.Timbrature_PREFIX + "_" + actionSheet_Action.cancellatimbratura,
+      data: {
+        action: actionSheet_Action.Timbrature_PREFIX + "_" + actionSheet_Action.cancellatimbratura,
+      },
+    },
+    {
+      text: 'Aggiungi timbratura',
+      role: actionSheet_Action.Timbrature_PREFIX + "_" + actionSheet_Action.aggiungitimbratura,
+      data: {
+        action: actionSheet_Action.Timbrature_PREFIX + "_" + actionSheet_Action.aggiungitimbratura,
+      },
+    },
 
   ];
 
+
   public actionSheetButtonsDay = [
-    
+
+
+    {
+      text: 'Aggiungi timbratura al giono ###',
+      role: actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Day_Add_Timbratura,
+      data: {
+        action: actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Day_Add_Timbratura,
+      },
+    },
+
     {
       text: 'Aggiungi causale al giono ###',
       role: actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Day_Add_Causale,
@@ -371,14 +407,26 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
     }
     else if ('timbraturaTipo' in obj) { //TIMBRATURA
 
-      this.actionSheetButtons = this.actionSheetButtonsRequest;
-
-      const tipoTimbraturaToLongTextPipe = new TipoTimbraturaToLongTextPipe();
 
       const timbratura = obj as Dip_GG_TimbraturaModel;
+
+      if (timbratura.idDip_GG_Richiesta == null) {
+        // timbrature
+        this.actionSheetButtons = this.actionSheetButtonsTimbrature;
+      }
+      else {
+        // approvazione richieste
+        this.actionSheetButtons = this.actionSheetButtonsRequest;
+      }
+
+      
+
+      const tipoTimbraturaToLongTextPipe = new TipoTimbraturaToLongTextPipe();
+      
       this.actionSheetOpenSelectObj = timbratura;
       this.actionSheetHeader = `Timbratura : ${tipoTimbraturaToLongTextPipe.transform(timbratura.timbraturaTipo)} ${this.dateTimeUtilService.DateTo_ggmmyyyy_hhmm(timbratura.timbratura)}`;
       this.actionSheetSubHeader = null;
+
 
     }
     else if ('idPar_Causali' in obj) {  //CAUSALI
@@ -422,7 +470,10 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
       const lastDayText = this.datePipe.transform(new Date(this.currYear, this.currMonth + 1, 0), 'dd');
       dynamicButtons.find((b: any) => b.role === actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Calcola_Day_From).text = `Calcola dal ${dayText} al ${lastDayText}`;
       dynamicButtons.find((b: any) => b.role === actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Day_Add_Causale).text = `Aggiungi causale al giorno ${dayTextExt}`;
+      dynamicButtons.find((b: any) => b.role === actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Day_Add_Timbratura).text = `Aggiungi timbratura al giorno ${dayTextExt}`;
      
+      
+
 
       this.actionSheetButtons = dynamicButtons;
       
@@ -436,6 +487,7 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
   actionSheetExecute(event: any) {
     this.isActionSheetOpen = false;
 
+    /*RICHIESTE*/
     if (event?.detail?.data?.action?.startsWith(actionSheet_Action.richieste_PREFIX))
     {
       let IdDip_GG_Richiesta: number[] = [];
@@ -473,11 +525,13 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
       }
 
     }
+    /*MENU DAY*/
     else if (event?.detail?.data?.action?.startsWith(actionSheet_Action.Calcola_Day_PREFIX))
     {
 
       const selectedDay = this.actionSheetOpenSelectObj as DayData;
 
+      /* CALCOLI*  */
       if (event?.detail?.data?.action === actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Calcola_Day_All ||
           event?.detail?.data?.action === actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Calcola_Day_X ||
           event?.detail?.data?.action === actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Calcola_Day_From ||
@@ -503,7 +557,8 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
 
         this.TimeSheetEngineCallerDialog_Open(dal, al);
       }
-      
+
+      /*AGGIUNGI CAUSALI*/
       if (event?.detail?.data?.action === actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Day_Add_Causale )
       {
         const request: GenericRequest<Dip_GG_CausaliGetInModel> = new GenericRequest<Dip_GG_CausaliGetInModel>(Dip_GG_CausaliGetInModel);
@@ -521,10 +576,23 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
 
       }
 
+      /*AGGIUNGI TIMBRATURE*/
+      if (event?.detail?.data?.action === actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Day_Add_Timbratura)
+      {
+        const request: GenericRequest<Dip_GG_TimbraturaGetInModel> = new GenericRequest<Dip_GG_TimbraturaGetInModel>(Dip_GG_TimbraturaGetInModel);
+        request.data.id = 0;
+        request.data.idAspNetUsers = this.currUserId;
+        request.data.data = this.datePipe.transform(selectedDay.date,"yyyy-MM-dd'T'HH:mm:ss");
+        
+        this.dipGGTimbraturaService.Dip_GG_Timbratura_Get(request).subscribe(res => {
+          this.handleButtonModificaTimbraturaClick(res.data.dip_GG_Timbratura);
+        });
 
-     
+      }
+
       
     }
+    /*MENU CAUSALI*/
     else if (event?.detail?.data?.action?.startsWith(actionSheet_Action.Causali_PREFIX))
     {
 
@@ -554,6 +622,33 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
         
       }
         
+
+    }
+    /*MENU TIMBRATURA*/
+    else if (event?.detail?.data?.action?.startsWith(actionSheet_Action.Timbrature_PREFIX)) {
+
+      if (event?.detail?.data?.action === actionSheet_Action.Timbrature_PREFIX + "_" + actionSheet_Action.cancellatimbratura)
+        this.handleButtonCancellaTimbraturaClick(this.actionSheetOpenSelectObj);
+      if (event?.detail?.data?.action === actionSheet_Action.Timbrature_PREFIX + "_" + actionSheet_Action.modificatimbratura)
+        this.handleButtonModificaTimbraturaClick(this.actionSheetOpenSelectObj);
+      if (event?.detail?.data?.action === actionSheet_Action.Timbrature_PREFIX + "_" + actionSheet_Action.aggiungitimbratura) {
+
+        const timbratura = this.actionSheetOpenSelectObj as Dip_GG_CausaliModel;
+
+        const request: GenericRequest<Dip_GG_CausaliGetInModel> = new GenericRequest<Dip_GG_CausaliGetInModel>(Dip_GG_CausaliGetInModel);
+        request.data.id = 0;
+        request.data.idAspNetUsers = this.currUserId;
+        request.data.data = this.datePipe.transform( timbratura.data,
+                                                     "yyyy-MM-dd'T'HH:mm:ss"
+                                                   );
+
+        this.dipGGTimbraturaService.Dip_GG_Timbratura_Get(request).subscribe(res => {
+          this.handleButtonModificaTimbraturaClick(res.data.dip_GG_Timbratura);
+        });
+
+
+      }
+
 
     }
 
@@ -677,6 +772,73 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
   }
 
 
+
+  handleButtonModificaTimbraturaClick = async (item: any) => {
+
+    const modal = await this.modalCtrl.create({
+      component: EditDipGGTimbraturaDialogComponent,
+      componentProps: {
+        dip_GG_Timbratura: item
+      },
+    });
+
+    await modal.present();
+
+    const { data, role } = await modal.onWillDismiss<Dip_GG_TimbraturaModel | null>();
+
+    if (role === 'confirm' && data) {
+
+      const request: GenericRequest<Dip_GG_TimbraturaPutInModel> = new GenericRequest<Dip_GG_TimbraturaPutInModel>(Dip_GG_TimbraturaPutInModel);
+      request.data.dip_GG_Timbratura = data;
+      this.dipGGTimbraturaService.Dip_GG_Timbratura_Put(request).subscribe(res => {
+        this.loadMonth();
+      });
+
+    }
+
+  }
+
+  handleButtonCancellaTimbraturaClick = async (item: any) => {
+
+    const result = await this.collectionDialogService.ConfirmCancelDialog('Confermi la cancellazione della timbratura');
+    if (result) {
+
+      const request: GenericRequest<Dip_GG_Timbratura_DeleteInModel> = new GenericRequest<Dip_GG_Timbratura_DeleteInModel>(Dip_GG_Timbratura_DeleteInModel);
+      request.data.id = item.id;
+      this.dipGGTimbraturaService.Dip_GG_Timbratura_Delete(request).subscribe(res => {
+        this.loadMonth();
+      });
+
+    }
+
+  }
+
+
+
+
+
+  CanOpenMenuActionTimbratura(record: Dip_GG_TimbraturaModel): boolean {
+
+    let retval = this.timeSheetService.Dip_GG_Richiesta_Admin_Can_Approve(this.get_Dip_GG_Richiesta(record.idDip_GG_Richiesta)) ||
+                 this.timeSheetService.Dip_GG_Richiesta_Admin_Can_Reject(this.get_Dip_GG_Richiesta(record.idDip_GG_Richiesta)) ||
+                 record.idDip_GG_Richiesta == null;
+
+    return retval;
+    
+
+  }
+
+  CanOpenMenuActionGiustificativi(just: Dip_GG_GiustificativiModel): boolean {
+
+    let retval = this.timeSheetService.Dip_GG_Richiesta_Admin_Can_Approve(this.get_Dip_GG_Richiesta(just.idDip_GG_Richiesta)) ||
+                 this.timeSheetService.Dip_GG_Richiesta_Admin_Can_Reject(this.get_Dip_GG_Richiesta(just.idDip_GG_Richiesta));
+
+    return retval;
+
+
+  }
+
+
 }
 
 enum actionSheet_Action {
@@ -691,11 +853,18 @@ enum actionSheet_Action {
   cancellacausale = "cancellacausale",
   aggiungicausale = "aggiungicausale",
 
+
+  Timbrature_PREFIX = "timbrature",
+  modificatimbratura = "modificatimbratura",
+  cancellatimbratura = "cancellatimbratura",
+  aggiungitimbratura = "aggiungitimbratura",
+
   Calcola_Day_PREFIX = "Calcola_Day",  // definisce il gruppo
   Calcola_Day_X = "Calcola_Day_X",
   Calcola_Day_From = "Calcola_Day_From",
   Calcola_Day_To = "Calcola_Day_To",
   Calcola_Day_All = "Calcola_Day_All",
   Day_Add_Causale = "Day_Add_Causale",
+  Day_Add_Timbratura = "Day_Add_Timbratura",
 
 }

@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-
-using nvxapp.server.service.ClientServer_Service.ModelsBase;
-using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_TimbraturaService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_CausaliService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_TimbraturaService;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_TimbraturaService.Models;
+using nvxapp.server.service.ClientServer_Service.ModelsBase;
 
 
 
@@ -53,6 +53,35 @@ namespace nvxapp.server.Controllers
             return res;
         }
 
+        [Authorize]
+        [HttpPost]
+        [Route("Dip_GG_TimbraturaPut")]
+        public async Task<GenericResult<Dip_GG_TimbraturaPutOutModel>> Dip_GG_TimbraturaPut(GenericRequest<Dip_GG_TimbraturaPutInModel> inModel)
+        {
+            var res = await _Dip_GG_TimbraturaService.Dip_GG_TimbraturaPut(inModel, false);
+
+            return res;
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("Dip_GG_TimbraturaGet")]
+        public async Task<GenericResult<Dip_GG_TimbraturaGetOutModel>> Dip_GG_TimbraturaGet(GenericRequest<Dip_GG_TimbraturaGetInModel> inModel)
+        {
+            var res = await _Dip_GG_TimbraturaService.Dip_GG_TimbraturaGet(inModel, false);
+
+            return res;
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("Dip_GG_Timbratura_Delete")]
+        public async Task<GenericResult<Dip_GG_Timbratura_DeleteOutModel>> Dip_GG_Timbratura_Delete(GenericRequest<Dip_GG_Timbratura_DeleteInModel> inModel)
+        {
+            var res = await _Dip_GG_TimbraturaService.Dip_GG_TimbraturaDelete(inModel, false);
+
+            return res;
+        }
     }
 
 }
