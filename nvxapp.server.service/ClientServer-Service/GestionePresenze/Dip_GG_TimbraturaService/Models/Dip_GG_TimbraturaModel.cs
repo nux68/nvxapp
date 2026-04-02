@@ -50,17 +50,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
     }
 
 
-    public class Dip_GG_TimbraturaPutInModel
-    {
-        public required int IdDip_RapportoLavoro { get; set; }
-        public Dip_GG_TimbraturaModel Dip_GG_Timbratura { get; set; } = new Dip_GG_TimbraturaModel() { Id = 0, IdDip_RapportoLavoro = 0 };
-    }
-    public class Dip_GG_TimbraturaPutOutModel : ModelResult
-    {
-        public Dip_GG_TimbraturaModel Dip_GG_Timbratura { get; set; } = new Dip_GG_TimbraturaModel() { Id = 0, IdDip_RapportoLavoro = 0 };
-    }
-
-
 
     public class Dip_GG_Timbratura_Stamp_InModel
     {
@@ -88,12 +77,21 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
         public int Id { get; set; }
 
         /* per inizializzare il record nuovo */
-        public string? IdAspNetUsers { get; set; }
+        public required int IdDip_RapportoLavoro { get; set; }
         public DateTime? Data { get; set; }
     }
     public class Dip_GG_TimbraturaGetOutModel : ModelResult
     {
         public Dip_GG_TimbraturaModel Dip_GG_Timbratura { get; set; } = new Dip_GG_TimbraturaModel();
+    }
+    
+    public class Dip_GG_TimbraturaPutInModel
+    {
+        public Dip_GG_TimbraturaModel Dip_GG_Timbratura { get; set; } = new Dip_GG_TimbraturaModel() { Id = 0, IdDip_RapportoLavoro = 0 };
+    }
+    public class Dip_GG_TimbraturaPutOutModel : ModelResult
+    {
+        public Dip_GG_TimbraturaModel Dip_GG_Timbratura { get; set; } = new Dip_GG_TimbraturaModel() { Id = 0, IdDip_RapportoLavoro = 0 };
     }
 
     public class Dip_GG_Timbratura_DeleteInModel

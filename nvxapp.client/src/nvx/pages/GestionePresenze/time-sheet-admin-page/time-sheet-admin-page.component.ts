@@ -59,7 +59,7 @@ export class TimeSheetAdminPageComponent implements OnInit, OnDestroy {
     this.title = 'Calendario';
     this.weeks = [];
     // Inizializza con una struttura valida ma vuota
-    this.currentMonth = { year: 0, month: 0, days: {}, dip_GG_Richiesta:[] };
+    this.currentMonth = { year: 0, month: 0, days: {}, dip_GG_Richiesta:[] ,daySlot:[]};
 
   }
 

@@ -49,8 +49,11 @@ export class EditDipGGTimbraturaDialogComponent extends BaseDialogConfirmCancelC
 
   get EditForm(): FormGroup {
     return this.fb.group({
-      idPar_Causali: [null, [Validators.required]],
-      valore: [null, [Validators.required]],
+      
+      timbratura: [null, [Validators.required]],
+      timbraturaOriginale: [null, [Validators.required]],
+      timbraturaArrotondata: [null, [Validators.required]],
+      giornoCompetenza: [null, [Validators.required]],
     });
   }
 

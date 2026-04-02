@@ -79,13 +79,14 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
               private dipGGCausaliService: DipGGCausaliService,
               private dipGGTimbraturaService: DipGGTimbraturaService,
               private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
-              private datePipe: DatePipe,private collectionDialogService: CollectionDialogService,
+              private datePipe: DatePipe,
+              private collectionDialogService: CollectionDialogService,
               private longJobNotifier: LongJobNotifierService , /* RICVEVE LE NOTIFICHE  */
               public timeSheetEngineService: TimeSheetEngineService
               
   ) {
     this.title = 'Calendario HR';
-    this.currentMonth = { year: 0, month: 0, days: {}, dip_GG_Richiesta: [] };
+    this.currentMonth = { year: 0, month: 0, days: {}, dip_GG_Richiesta: [] ,daySlot:[]};
   }
 
   ionViewWillEnter() {
@@ -563,11 +564,9 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
       {
         const request: GenericRequest<Dip_GG_CausaliGetInModel> = new GenericRequest<Dip_GG_CausaliGetInModel>(Dip_GG_CausaliGetInModel);
         request.data.id = 0;
-        request.data.idAspNetUsers = this.currUserId;
-        request.data.data = this.datePipe.transform(
-          selectedDay.date,
-          "yyyy-MM-dd'T'HH:mm:ss"
-        );
+        
+        request.data.data = this.datePipe.transform(selectedDay.date, "yyyy-MM-dd'T'HH:mm:ss");
+        request.data.idDip_RapportoLavoro = this.timeSheetService.get_IdDip_RapportoLavoro(this.currentMonth, this.currUserId, new Date(request.data.data));
 
         this.dipGGCausaliService.Dip_GG_Causali_Get(request).subscribe(res => {
           this.handleButtonModificaCausaleClick(res.data.dip_GG_Causali);
@@ -581,8 +580,9 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
       {
         const request: GenericRequest<Dip_GG_TimbraturaGetInModel> = new GenericRequest<Dip_GG_TimbraturaGetInModel>(Dip_GG_TimbraturaGetInModel);
         request.data.id = 0;
-        request.data.idAspNetUsers = this.currUserId;
-        request.data.data = this.datePipe.transform(selectedDay.date,"yyyy-MM-dd'T'HH:mm:ss");
+        
+        request.data.data = this.datePipe.transform(selectedDay.date, "yyyy-MM-dd'T'HH:mm:ss");
+        request.data.idDip_RapportoLavoro = this.timeSheetService.get_IdDip_RapportoLavoro(this.currentMonth,this.currUserId, new Date(request.data.data));
         
         this.dipGGTimbraturaService.Dip_GG_Timbratura_Get(request).subscribe(res => {
           this.handleButtonModificaTimbraturaClick(res.data.dip_GG_Timbratura);
@@ -602,18 +602,13 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
         this.handleButtonModificaCausaleClick(this.actionSheetOpenSelectObj);
       if (event?.detail?.data?.action === actionSheet_Action.Causali_PREFIX + "_" + actionSheet_Action.aggiungicausale) {
 
-
-
         const causale = this.actionSheetOpenSelectObj as Dip_GG_CausaliModel;
-
 
         const request: GenericRequest<Dip_GG_CausaliGetInModel> = new GenericRequest<Dip_GG_CausaliGetInModel>(Dip_GG_CausaliGetInModel);
         request.data.id = 0;
-        request.data.idAspNetUsers = this.currUserId;
-        request.data.data = this.datePipe.transform(
-          causale.data,
-          "yyyy-MM-dd'T'HH:mm:ss"
-        );
+        
+        request.data.data = this.datePipe.transform(causale.data,"yyyy-MM-dd'T'HH:mm:ss");
+        request.data.idDip_RapportoLavoro = this.timeSheetService.get_IdDip_RapportoLavoro(this.currentMonth,this.currUserId, new Date(request.data.data));
 
         this.dipGGCausaliService.Dip_GG_Causali_Get(request).subscribe(res => {
           this.handleButtonModificaCausaleClick(res.data.dip_GG_Causali);
@@ -637,15 +632,13 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
 
         const request: GenericRequest<Dip_GG_CausaliGetInModel> = new GenericRequest<Dip_GG_CausaliGetInModel>(Dip_GG_CausaliGetInModel);
         request.data.id = 0;
-        request.data.idAspNetUsers = this.currUserId;
-        request.data.data = this.datePipe.transform( timbratura.data,
-                                                     "yyyy-MM-dd'T'HH:mm:ss"
-                                                   );
+        
+        request.data.data = this.datePipe.transform( timbratura.data,"yyyy-MM-dd'T'HH:mm:ss");
+        request.data.idDip_RapportoLavoro = this.timeSheetService.get_IdDip_RapportoLavoro(this.currentMonth,this.currUserId, new Date(request.data.data));
 
         this.dipGGTimbraturaService.Dip_GG_Timbratura_Get(request).subscribe(res => {
           this.handleButtonModificaTimbraturaClick(res.data.dip_GG_Timbratura);
         });
-
 
       }
 
@@ -838,6 +831,7 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
 
   }
 
+  
 
 }
 

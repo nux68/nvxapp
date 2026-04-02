@@ -32,7 +32,8 @@ export class TimeSheetService {
               private dipGGGiustificativiService: DipGGGiustificativiService,
               private dipGGTimbraturaService: DipGGTimbraturaService,
               private dipGGRichiestaService: DipGGRichiestaService,
-              public timeSheetEngineService: TimeSheetEngineService,
+    public timeSheetEngineService: TimeSheetEngineService,
+    
               public dateTimeUtilService: DateTimeUtilService) {
   }
 
@@ -47,6 +48,7 @@ export class TimeSheetService {
             month: month,
             days: {},
             dip_GG_Richiesta: [],
+            daySlot: []
           });
       })
     );
@@ -60,7 +62,8 @@ export class TimeSheetService {
         dip_GG_Timbratura: [],
         dip_GG_Richiesta: [],
         dip_GG_Result: [],
-        dip_GG_Causali:[]
+        dip_GG_Causali: [],
+        daySlot:[]
       };
 
       return of(remoteData);
@@ -84,7 +87,8 @@ export class TimeSheetService {
           dip_GG_Timbratura: x.data?.dip_GG_AllData_OutModel?.dip_GG_Timbratura ?? [],
           dip_GG_Richiesta: x.data?.dip_GG_AllData_OutModel?.dip_GG_Richiesta ?? [],
           dip_GG_Result: x.data?.dip_GG_AllData_OutModel?.dip_GG_Result ?? [],
-          dip_GG_Causali: x.data?.dip_GG_AllData_OutModel?.dip_GG_Causali ?? []
+          dip_GG_Causali: x.data?.dip_GG_AllData_OutModel?.dip_GG_Causali ?? [],
+          daySlot: x.data?.orariSchema_4User_OutModel?.daySlots ?? []
         };
         console.log('getMonthDataFromServer - combined data:', remoteData);
         return remoteData;
@@ -177,10 +181,13 @@ export class TimeSheetService {
       year: year,
       month: month,
       days: {},
-      dip_GG_Richiesta:[] 
+      dip_GG_Richiesta: [],
+      daySlot: []
     };
 
     monthData.dip_GG_Richiesta = remoteData.dip_GG_Richiesta;
+    monthData.daySlot = remoteData.daySlot;
+    
 
     // Raggruppa le timbrature per giorno
     const timbratureByDay = new Map<number, Dip_GG_TimbraturaModel[]>();
@@ -266,6 +273,7 @@ export class TimeSheetService {
         dip_GG_Giustificativi: giustificativiByDay.get(day) || [],
         dip_GG_Result: this.get_dip_GG_Result(remoteData, day),
         dip_GG_Causali: causaliByDay.get(day) || [],
+        idDip_RapportoLavoro:0
       };
     });
 
@@ -285,6 +293,14 @@ export class TimeSheetService {
 
   }
 
+  get_IdDip_RapportoLavoro(currentMonth: MonthData,idAspNetUsers: string, data: Date): number {
+    const dataStr = this.dateTimeUtilService.DateTo_ggmmyyyy(data) // "yyyy-MM-dd"
+
+    const slot = currentMonth.daySlot?.find(s => s.idAspNetUsers === idAspNetUsers &&
+                                                 this.dateTimeUtilService.DateTo_ggmmyyyy(new Date(s.data))  === dataStr );
+
+    return slot?.idDip_RapportoLavoro ?? 0;
+  }
 
   get_StatoRichiesta_icon(dip_GG_Richiesta: Dip_GG_RichiestaModel): string {
 

@@ -601,7 +601,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                     var res_Timbrature = await _dip_GG_TimbraturaService.Dip_GG_Timbratura_Get_4Calculation(req_Timbrature, true);
                     if (res_Timbrature.Success && res_Timbrature.Data != null)
                     {
-                        retVal.Dip_GG_Timbratura = res_Timbrature.Data.Dip_GG_Timbratura;
+                        retVal.Dip_GG_Timbratura = res_Timbrature.Data.Dip_GG_Timbratura.OrderBy(x=> x.Timbratura).ToList();
 
                         var groupedByDay = retVal.Dip_GG_Timbratura.GroupBy(x => x.GiornoCompetenza.Date).ToList();
                         foreach (var group in groupedByDay)
@@ -796,7 +796,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                     {
                         var req_1 = new GenericRequest<Dip_GG_TimbraturaPutInModel>();
                         req_1.Data.Dip_GG_Timbratura = item;
-                        req_1.Data.IdDip_RapportoLavoro = item.IdDip_RapportoLavoro;
+                        //req_1.Data.IdDip_RapportoLavoro = item.IdDip_RapportoLavoro;
                         await _dip_GG_TimbraturaService.Dip_GG_TimbraturaPut(req_1, true);
                     }
                     else

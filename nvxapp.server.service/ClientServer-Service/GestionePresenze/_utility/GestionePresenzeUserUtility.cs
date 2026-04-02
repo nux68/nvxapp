@@ -121,6 +121,27 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
             return user_DATA_COMB_DipAna_DipRapp;
         }
 
+        public async Task<User_DATA_COMB_DipAna_DipRapp> Get_DipRapp_DipAna(int IdDipRapp)
+        {
+            User_DATA_COMB_DipAna_DipRapp user_DATA_COMB_DipAna_DipRapp = new User_DATA_COMB_DipAna_DipRapp();
+
+           
+
+            user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro = await _dip_RapportoLavoroRepository.FindAll(x => x.Id == IdDipRapp).FirstOrDefaultAsync();
+            if (user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro == null)
+            {
+                    throw new Exception("Rapporto lavoro non trovato");
+            }
+
+            user_DATA_COMB_DipAna_DipRapp.dip_Anagrafica = await _dip_AnagraficaRepository.FindAll(x => x.Id == user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.IdDip_Anagrafica).FirstOrDefaultAsync();
+            if (user_DATA_COMB_DipAna_DipRapp.dip_Anagrafica == null)
+            {
+                    throw new Exception("Anagrafica non trovata");
+            }
+
+
+            return user_DATA_COMB_DipAna_DipRapp;
+        }
 
         public async Task<Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg> Get_AzAna_AzSedi_AzReparto_Az_Cfg(int IdCompany, bool InitIfNotExsist)
         {
@@ -343,6 +364,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
     public interface IGestionePresenzeUserUtility
     {
         Task<User_DATA_COMB_DipAna_DipRapp> Get_DipAna_DipRapp(string IdAspNetUsers, bool InitIfNotExsist);
+        Task<User_DATA_COMB_DipAna_DipRapp> Get_DipRapp_DipAna(int IdDipRapp);
         Task<Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg> Get_AzAna_AzSedi_AzReparto_Az_Cfg(int IdCompany, bool InitIfNotExsist);
         Task<List<Dip_AnagraficaModel>> GetAnagraficheByUsersId(List<string> usersId);
     }

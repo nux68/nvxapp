@@ -50,7 +50,7 @@ export class Dip_GG_CausaliGetInModel {
   public id: number;
 
   public data?: string;
-  public idAspNetUsers?: string;
+  public idDip_RapportoLavoro!: number;
 }
 export class Dip_GG_CausaliGetOutModel extends ModelResult {
   public dip_GG_Causali: Dip_GG_CausaliModel;

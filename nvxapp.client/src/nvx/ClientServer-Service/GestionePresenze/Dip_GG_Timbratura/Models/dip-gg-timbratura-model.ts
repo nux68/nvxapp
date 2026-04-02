@@ -55,6 +55,16 @@ export class Dip_GG_Timbratura_Get_4Calculation_OutModel extends ModelResult {
 }
 
 
+export class Dip_GG_TimbraturaGetInModel {
+  public id: number;
+
+  public data?: string;
+  public idDip_RapportoLavoro!: number;
+}
+export class Dip_GG_TimbraturaGetOutModel extends ModelResult {
+  public dip_GG_Timbratura: Dip_GG_TimbraturaModel;
+}
+
 
 export class Dip_GG_TimbraturaPutInModel {
   public dip_GG_Timbratura: Dip_GG_TimbraturaModel;
@@ -63,15 +73,7 @@ export class Dip_GG_TimbraturaPutOutModel extends ModelResult {
   public dip_GG_Timbratura: Dip_GG_TimbraturaModel;
 }
 
-export class Dip_GG_TimbraturaGetInModel {
-  public id: number;
 
-  public data?: string;
-  public idAspNetUsers?: string;
-}
-export class Dip_GG_TimbraturaGetOutModel extends ModelResult {
-  public dip_GG_Timbratura: Dip_GG_TimbraturaModel;
-}
 
 export class Dip_GG_Timbratura_DeleteInModel {
   public id: number;

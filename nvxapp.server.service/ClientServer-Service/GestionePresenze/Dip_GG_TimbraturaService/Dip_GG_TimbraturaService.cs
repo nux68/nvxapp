@@ -83,39 +83,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
                 return retVal;
             }, isSubProcess);
         }
-        public virtual async Task<GenericResult<Dip_GG_TimbraturaPutOutModel>> Dip_GG_TimbraturaPut(GenericRequest<Dip_GG_TimbraturaPutInModel> model, bool isSubProcess)
-        {
-            return await ExecuteAction(model, async () =>
-            {
-                Dip_GG_TimbraturaPutOutModel retVal = new Dip_GG_TimbraturaPutOutModel();
-                retVal.Dip_GG_Timbratura = model.Data.Dip_GG_Timbratura;
-
-                int idCompany;
-                int.TryParse(this.CurrentCompany, out idCompany);
-
-
-
-                Dip_GG_Timbratura? dip_GG_Timbratura = await _dip_GG_TimbraturaRepository.FindByIdAsync(model.Data.Dip_GG_Timbratura.Id);
-                if (dip_GG_Timbratura == null)
-                {
-                    dip_GG_Timbratura = _mapper.Map<Dip_GG_Timbratura>(model.Data.Dip_GG_Timbratura);
-                    dip_GG_Timbratura.IdDip_RapportoLavoro = model.Data.IdDip_RapportoLavoro;
-                }
-                else
-                {
-                    dip_GG_Timbratura = _mapper.Map<Dip_GG_Timbratura>(model.Data.Dip_GG_Timbratura);
-                }
-
-                dip_GG_Timbratura = await _dip_GG_TimbraturaRepository.UpsertAsync(dip_GG_Timbratura);
-                retVal.Dip_GG_Timbratura = _mapper.Map<Dip_GG_TimbraturaModel>(dip_GG_Timbratura);
-
-
-
-                await Task.Delay(DelayAsyncMethod);
-
-                return retVal;
-            }, isSubProcess);
-        }
+        
         public virtual async Task<GenericResult<Dip_GG_Timbratura_Stamp_OutModel>> Stamp(GenericRequest<Dip_GG_Timbratura_Stamp_InModel> model, Boolean isSubProcess)
         {
             return await ExecuteAction(model, async () =>
@@ -196,10 +164,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
             {
                 Dip_GG_TimbraturaGetOutModel retVal = new Dip_GG_TimbraturaGetOutModel();
 
-
-                string userId = string.IsNullOrEmpty(model.Data.IdAspNetUsers) ? this.CurrentUserId : model.Data.IdAspNetUsers;
-
-                User_DATA_COMB_DipAna_DipRapp user_DATA_COMB_DipAna_DipRapp = await _gestionePresenzeUserUtility.Get_DipAna_DipRapp(userId, true);
+                User_DATA_COMB_DipAna_DipRapp user_DATA_COMB_DipAna_DipRapp = await _gestionePresenzeUserUtility.Get_DipRapp_DipAna(model.Data.IdDip_RapportoLavoro);
 
                 if (user_DATA_COMB_DipAna_DipRapp != null && user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro != null)
                 {
@@ -210,14 +175,47 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
                         {
                             Id = 0,
                             IdDip_RapportoLavoro = user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.Id,
-                            //Data = model.Data.Data != null ? model.Data.Data.Value : DateTime.Now,
-                            //Valore = new TimeOnly(1, 0,0),
-                            //IdPar_Causali = IdPar_Causali
+                            Timbratura  = model.Data.Data != null ? model.Data.Data.Value : DateTime.Now,
+                            TimbraturaOriginale = model.Data.Data != null ? model.Data.Data.Value : DateTime.Now,
+                            TimbraturaArrotondata= model.Data.Data != null ? model.Data.Data.Value : DateTime.Now,
+                            TimbraturaTipo = TipoTimbratura.SenzaVerso,
+                            GiornoCompetenza = model.Data.Data != null ? model.Data.Data.Value : DateTime.Now
+                            
                         };
 
 
                     retVal.Dip_GG_Timbratura = _mapper.Map<Dip_GG_TimbraturaModel>(dip_GG_Timbratura);
                 }
+
+                return retVal;
+            }, isSubProcess);
+        }
+        public virtual async Task<GenericResult<Dip_GG_TimbraturaPutOutModel>> Dip_GG_TimbraturaPut(GenericRequest<Dip_GG_TimbraturaPutInModel> model, bool isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                Dip_GG_TimbraturaPutOutModel retVal = new Dip_GG_TimbraturaPutOutModel();
+                retVal.Dip_GG_Timbratura = model.Data.Dip_GG_Timbratura;
+
+                int idCompany;
+                int.TryParse(this.CurrentCompany, out idCompany);
+
+                Dip_GG_Timbratura? dip_GG_Timbratura = await _dip_GG_TimbraturaRepository.FindByIdAsync(model.Data.Dip_GG_Timbratura.Id);
+                if (dip_GG_Timbratura == null)
+                {
+                    dip_GG_Timbratura = _mapper.Map<Dip_GG_Timbratura>(model.Data.Dip_GG_Timbratura);
+                }
+                else
+                {
+                    dip_GG_Timbratura = _mapper.Map<Dip_GG_Timbratura>(model.Data.Dip_GG_Timbratura);
+                }
+
+                dip_GG_Timbratura = await _dip_GG_TimbraturaRepository.UpsertAsync(dip_GG_Timbratura);
+                retVal.Dip_GG_Timbratura = _mapper.Map<Dip_GG_TimbraturaModel>(dip_GG_Timbratura);
+
+
+
+                await Task.Delay(DelayAsyncMethod);
 
                 return retVal;
             }, isSubProcess);
