@@ -87,6 +87,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
     
     public class Dip_GG_TimbraturaPutInModel
     {
+        public int IdDip_RapportoLavoro { get; set; }
         public Dip_GG_TimbraturaModel Dip_GG_Timbratura { get; set; } = new Dip_GG_TimbraturaModel() { Id = 0, IdDip_RapportoLavoro = 0 };
     }
     public class Dip_GG_TimbraturaPutOutModel : ModelResult

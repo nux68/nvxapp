@@ -141,7 +141,7 @@
                                          'opacity': CanOpenMenuActionGiustificativi(just) ? '1' : '0.5'
                                        }"
                             (click) = "CanOpenMenuActionGiustificativi(just) ? actionSheetOpen(just) : null">
-                    {{ just.idPar_Giustificativi | parGiustificativiToLongText }} {{ just.hours.substring(0, 5)  }}
+                    {{ just.idPar_Giustificativi | parGiustificativiToShortText }} {{ just.hours.substring(0, 5)  }}
                     <ion-icon  [name]="timeSheetService.get_StatoRichiesta_icon(get_Dip_GG_Richiesta(just.idDip_GG_Richiesta))"></ion-icon>
                   </ion-chip>
 

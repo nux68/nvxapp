@@ -24,7 +24,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Orario
         private readonly IPar_OrarioRepository _par_OrarioRepository;
         private readonly IPar_OrarioIntervalloHHRepository _par_OrarioIntervalloHHRepository;
         private readonly IGestionePresenzeUserUtility _gestionePresenzeUserUtility;
-        private readonly IPar_CausaliRepository _par_CausaliRepository;
+        private readonly IPar_GiustificativiRepository _par_CausaliRepository;
 
         public Par_OrarioIntervalloHHService(IMapper mapper,
                                   UserManager<ApplicationUser> userManager,
@@ -33,7 +33,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Orario
                                   IHttpContextAccessor httpContextAccessor,
                                   IConfiguration configuration,
 
-                                  IPar_CausaliRepository par_CausaliRepository,
+                                  IPar_GiustificativiRepository par_CausaliRepository,
                                   IGestionePresenzeUserUtility gestionePresenzeUserUtility,
                                   IPar_OrarioRepository par_OrarioRepository,
                                   IPar_OrarioIntervalloHHRepository par_OrarioIntervalloHHRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)

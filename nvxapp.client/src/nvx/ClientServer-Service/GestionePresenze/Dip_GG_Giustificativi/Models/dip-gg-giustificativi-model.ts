@@ -47,3 +47,28 @@ export class Dip_GG_Giustificativi_Get_4Calculation_InModel {
 export class Dip_GG_Giustificativi_Get_4Calculation_OutModel extends ModelResult {
   public dip_GG_Giustificativi: Dip_GG_GiustificativiModel[] = [];
 }
+
+
+export class Dip_GG_Giustificativi_DeleteInModel {
+  public id: number;
+}
+export class Dip_GG_Giustificativi_DeleteOutModel extends ModelResult {
+
+}
+
+export class Dip_GG_GiustificativiPutInModel {
+  public dip_GG_Giustificativi: Dip_GG_GiustificativiModel;
+}
+export class Dip_GG_GiustificativiPutOutModel extends ModelResult {
+  public dip_GG_Giustificativi: Dip_GG_GiustificativiModel;
+}
+
+export class Dip_GG_GiustificativiGetInModel {
+  public id: number;
+
+  public data?: string;
+  public idDip_RapportoLavoro!: number;
+}
+export class Dip_GG_GiustificativiGetOutModel extends ModelResult {
+  public dip_GG_Giustificativi: Dip_GG_GiustificativiModel;
+}

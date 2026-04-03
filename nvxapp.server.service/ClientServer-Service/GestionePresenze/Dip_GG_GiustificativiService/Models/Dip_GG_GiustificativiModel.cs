@@ -1,4 +1,5 @@
 ﻿using nvxapp.server.data.Entities.Tenant;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_CausaliService.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_GiustificativiService.Models
@@ -63,10 +64,25 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Giu
     }
 
 
+    public class Dip_GG_GiustificativiGetInModel 
+    {
+        public int Id { get; set; }
+
+        /* per inizializzare il record nuovo */
+        public required int IdDip_RapportoLavoro { get; set; }
+
+
+        public DateTime? Data { get; set; }
+    }
+    public class Dip_GG_GiustificativiGetOutModel : ModelResult
+    {
+        public Dip_GG_GiustificativiModel Dip_GG_Giustificativi { get; set; } = new Dip_GG_GiustificativiModel(){ IdPar_Giustificativi = 0 };
+    }
+
 
     public class Dip_GG_GiustificativiPutInModel
     {
-        public required int IdDip_RapportoLavoro { get; set; }
+        public int IdDip_RapportoLavoro { get; set; }
         public Dip_GG_GiustificativiModel Dip_GG_Giustificativi { get; set; } = new Dip_GG_GiustificativiModel() { Id = 0, IdDip_RapportoLavoro = 0, IdPar_Giustificativi = 0 };
     }
     public class Dip_GG_GiustificativiPutOutModel : ModelResult

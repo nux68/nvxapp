@@ -127,8 +127,12 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Cau
                     Dip_GG_Causali? par_Causale = await _Dip_GG_CausaliRepository.FindByIdAsync(model.Data.Dip_GG_Causali.Id);
                     if (par_Causale == null)
                     {
-                        par_Causale = new Dip_GG_Causali(){ IdDip_RapportoLavoro = model.Data.Dip_GG_Causali.IdDip_RapportoLavoro };
+                        par_Causale = new Dip_GG_Causali() { IdDip_RapportoLavoro=0 };
                         par_Causale = _mapper.Map<Dip_GG_Causali>(model.Data.Dip_GG_Causali);
+
+                        if (model.Data.IdDip_RapportoLavoro > 0)
+                            par_Causale.IdDip_RapportoLavoro = model.Data.IdDip_RapportoLavoro;
+
                     }
                     else
                     {
@@ -148,20 +152,26 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Cau
                 return retVal;
             }, isSubProcess);
         }    
-        
         public virtual async Task<GenericResult<Dip_GG_CausaliGetOutModel>> Dip_GG_CausaliGet(GenericRequest<Dip_GG_CausaliGetInModel> model, bool isSubProcess)
         {
             return await ExecuteAction(model, async () =>
             {
                 Dip_GG_CausaliGetOutModel retVal = new Dip_GG_CausaliGetOutModel();
                 
+                int IdCompany, IdAnagrafica = 0;
+                int.TryParse(this.CurrentCompany, out IdCompany);
+
+                Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg company_DATA = await _gestionePresenzeUserUtility.Get_AzAna_AzSedi_AzReparto_Az_Cfg(IdCompany, true);
+                if (company_DATA != null && company_DATA.az_Anagrafica != null)
+                    IdAnagrafica=company_DATA.az_Anagrafica.Id;
+
                 User_DATA_COMB_DipAna_DipRapp user_DATA_COMB_DipAna_DipRapp = await _gestionePresenzeUserUtility.Get_DipRapp_DipAna(model.Data.IdDip_RapportoLavoro);
 
                 if (user_DATA_COMB_DipAna_DipRapp != null && user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro != null)
                 {
                     Dip_GG_Causali? dip_GG_Causali = await _Dip_GG_CausaliRepository.FindByIdAsync(model.Data.Id);
                     int IdPar_Causali =0;
-                    var cau = _par_CausaliRepository.FindAll(x => x.Id >0).FirstOrDefault();
+                    var cau = _par_CausaliRepository.FindAll(x => x.IdAz_Anagrafica == IdAnagrafica).FirstOrDefault();
                     if(cau!=null)
                         IdPar_Causali = cau.Id;
 
@@ -182,7 +192,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Cau
                 return retVal;
             }, isSubProcess);
         }
-    }
+    
+        }
 
     public interface IDip_GG_CausaliService : IServiceBase
     {

@@ -1,0 +1,76 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>{{Title}}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+
+
+  <form [formGroup]="_editForm">
+
+    <ion-card>
+      <ion-card-header *ngIf="_editModel!=null">
+        <ion-card-title *ngIf="originalId>0">{{ _editModel.idPar_Giustificativi | parGiustificativiToShortText}} - {{ _editModel.idPar_Giustificativi | parGiustificativiToLongText}}</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+
+        <ion-grid>
+
+          <ion-row class="ion-align-items-center" *ngIf="originalId==0">
+
+            <ion-item>
+              <ion-label position="floating">Giustificatico</ion-label>
+              <ion-select formControlName="idPar_Giustificativi" placeholder="Seleziona il giustificativo">
+                <ion-select-option *ngFor="let just of _par_GiustificativiList" [value]="just.id">
+                  {{ just.descrizione }}
+                </ion-select-option>
+              </ion-select>
+            </ion-item>
+            <ion-note color="danger" *ngIf="_editForm.get('_editForm.idPar_Giustificativi')?.hasError('required') && _editForm.get('_editForm.idPar_Giustificativi')?.touched">
+              Il giustificativo obbligatorio.
+            </ion-note>
+
+          </ion-row>
+
+          <ion-row class="ion-align-items-center">
+
+
+            <!-- Valore -->
+
+            <ion-item>
+              <ion-label position="floating">Valore</ion-label>
+              <ion-datetime-button class="datetime-button-with-label" datetime="hours-modal"></ion-datetime-button>
+              <ion-modal [keepContentsMounted]="true">
+                <ng-template>
+                  <ion-datetime id="hours-modal"
+                                formControlName="hours"
+                                presentation="time"
+                                [showDefaultButtons]="true"
+                                doneText="OK"
+                                cancelText="Annulla">
+                  </ion-datetime>
+                </ng-template>
+              </ion-modal>
+            </ion-item>
+
+
+
+          </ion-row>
+
+        </ion-grid>
+
+
+      </ion-card-content>
+    </ion-card>
+
+
+
+
+  </form>
+
+
+</ion-content>
+
+<app-page-buttonbar [buttonbar]="buttonbar"></app-page-buttonbar>
+

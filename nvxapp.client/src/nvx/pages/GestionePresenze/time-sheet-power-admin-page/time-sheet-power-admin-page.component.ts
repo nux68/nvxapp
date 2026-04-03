@@ -4,7 +4,7 @@ import { TimeSheetService } from '../../../Utility/GestionePresenze/time-sheet.s
 import { MonthData } from '../../../Utility/GestionePresenze/time-sheet-common-data';
 import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
 import { Dip_GG_Timbratura_DeleteInModel, Dip_GG_TimbraturaGetInModel, Dip_GG_TimbraturaModel, Dip_GG_TimbraturaPutInModel, TipoTimbratura } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Timbratura/Models/dip-gg-timbratura-model';
-import { Dip_GG_GiustificativiModel } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Giustificativi/Models/dip-gg-giustificativi-model';
+import { Dip_GG_Giustificativi_DeleteInModel, Dip_GG_GiustificativiGetInModel, Dip_GG_GiustificativiModel, Dip_GG_GiustificativiPutInModel } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Giustificativi/Models/dip-gg-giustificativi-model';
 import { Dip_GG_Richiesta_SetState_InModel, Dip_GG_RichiestaModel, StatoRichiesta } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/Models/dip-gg-richiesta-model';
 import { DipGGRichiestaService } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/dip-gg-richiesta.service';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
@@ -31,6 +31,8 @@ import { Par_OrarioIntervalloHHModel } from '../../../ClientServer-Service/Gesti
 import { EditDipGGCausaliDialogComponent } from '../../../shared/components/GestionePresenze/edit-dip-gg-causali-dialog/edit-dip-gg-causali-dialog.component';
 import { DipGGTimbraturaService } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Timbratura/dip-gg-timbratura.service';
 import { EditDipGGTimbraturaDialogComponent } from '../../../shared/components/GestionePresenze/edit-dip-gg-timbratura-dialog/edit-dip-gg-timbratura-dialog.component';
+import { DipGGGiustificativiService } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Giustificativi/dip-gg-giustificativi.service';
+import { EditDipGGGiustificativiDialogComponent } from '../../../shared/components/GestionePresenze/edit-dip-gg-giustificativi-dialog/edit-dip-gg-giustificativi-dialog.component';
 
 
 interface DayData {
@@ -78,6 +80,7 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
               private modalCtrl: ModalController,
               private dipGGCausaliService: DipGGCausaliService,
               private dipGGTimbraturaService: DipGGTimbraturaService,
+              private dipGGGiustificativiService: DipGGGiustificativiService,
               private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
               private datePipe: DatePipe,
               private collectionDialogService: CollectionDialogService,
@@ -310,7 +313,6 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
 
   ];
 
-
   public actionSheetButtonsTimbrature = [
     {
       text: 'Modifica timbratura',
@@ -337,8 +339,43 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
   ];
 
 
+  public actionSheetButtonsGiustificativi = [
+    {
+      text: 'Modifica giustificativo',
+      role: actionSheet_Action.Giustificativi_PREFIX + "_" + actionSheet_Action.modificagiustificativi,
+      data: {
+        action: actionSheet_Action.Giustificativi_PREFIX + "_" + actionSheet_Action.modificagiustificativi,
+      },
+    },
+    {
+      text: 'Cancella giustificativo',
+      role: actionSheet_Action.Giustificativi_PREFIX + "_" + actionSheet_Action.cancellagiustificativi,
+      data: {
+        action: actionSheet_Action.Giustificativi_PREFIX + "_" + actionSheet_Action.cancellagiustificativi,
+      },
+    },
+    {
+      text: 'Aggiungi giustificativo',
+      role: actionSheet_Action.Giustificativi_PREFIX + "_" + actionSheet_Action.aggiungigiustificativi,
+      data: {
+        action: actionSheet_Action.Giustificativi_PREFIX + "_" + actionSheet_Action.aggiungigiustificativi,
+      },
+    },
+
+  ];
+
+
+
   public actionSheetButtonsDay = [
 
+
+    {
+      text: 'Aggiungi giustificativo al giono ###',
+      role: actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Day_Add_Giustificativo,
+      data: {
+        action: actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Day_Add_Giustificativo,
+      },
+    },
 
     {
       text: 'Aggiungi timbratura al giono ###',
@@ -396,11 +433,23 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
   actionSheetOpen(obj: any) {
     if ('idPar_Giustificativi' in obj) { //JUST
 
-      this.actionSheetButtons = this.actionSheetButtonsRequest;
+      const giustificativo = obj as Dip_GG_GiustificativiModel;
+
+      if (giustificativo.idDip_GG_Richiesta == null) 
+      {
+        //just
+        this.actionSheetButtons = this.actionSheetButtonsGiustificativi;
+      }
+      else
+      {
+        // approvazione richieste
+        this.actionSheetButtons = this.actionSheetButtonsRequest;
+      }
+      
 
       const parGiustificativiToLongTextPipe = new ParGiustificativiToLongTextPipe(this.sharedParameterGestionePresenzeService);
 
-      const giustificativo = obj as Dip_GG_GiustificativiModel;
+      
       this.actionSheetOpenSelectObj = giustificativo;
       this.actionSheetHeader = `Giustificativo : ${parGiustificativiToLongTextPipe.transform(giustificativo.idPar_Giustificativi)} ${this.dateTimeUtilService.DateTo_ggmmyyyy(giustificativo.data)}`;
       this.actionSheetSubHeader = null;
@@ -472,6 +521,7 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
       dynamicButtons.find((b: any) => b.role === actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Calcola_Day_From).text = `Calcola dal ${dayText} al ${lastDayText}`;
       dynamicButtons.find((b: any) => b.role === actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Day_Add_Causale).text = `Aggiungi causale al giorno ${dayTextExt}`;
       dynamicButtons.find((b: any) => b.role === actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Day_Add_Timbratura).text = `Aggiungi timbratura al giorno ${dayTextExt}`;
+      dynamicButtons.find((b: any) => b.role === actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Day_Add_Giustificativo).text = `Aggiungi giustificativo al giorno ${dayTextExt}`;
      
       
 
@@ -590,6 +640,22 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
 
       }
 
+      /*AGGIUNGI GIUSTIFICATIVO*/
+      if (event?.detail?.data?.action === actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Day_Add_Giustificativo) {
+        const request: GenericRequest<Dip_GG_GiustificativiGetInModel> = new GenericRequest<Dip_GG_GiustificativiGetInModel>(Dip_GG_GiustificativiGetInModel);
+        request.data.id = 0;
+
+        request.data.data = this.datePipe.transform(selectedDay.date, "yyyy-MM-dd'T'HH:mm:ss");
+        request.data.idDip_RapportoLavoro = this.timeSheetService.get_IdDip_RapportoLavoro(this.currentMonth, this.currUserId, new Date(request.data.data));
+
+        this.dipGGGiustificativiService.Dip_GG_Giustificativi_Get(request).subscribe(res => {
+          this.handleButtonModificaGiustificativoClick(res.data.dip_GG_Giustificativi);
+        });
+
+      }
+
+      
+
       
     }
     /*MENU CAUSALI*/
@@ -638,6 +704,31 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
 
         this.dipGGTimbraturaService.Dip_GG_Timbratura_Get(request).subscribe(res => {
           this.handleButtonModificaTimbraturaClick(res.data.dip_GG_Timbratura);
+        });
+
+      }
+      
+
+    }
+    /*MENU GIUSTIFICATIVO*/
+    else if (event?.detail?.data?.action?.startsWith(actionSheet_Action.Giustificativi_PREFIX)) {
+
+      if (event?.detail?.data?.action === actionSheet_Action.Giustificativi_PREFIX + "_" + actionSheet_Action.cancellagiustificativi)
+        this.handleButtonCancellaGiustificativoClick(this.actionSheetOpenSelectObj);
+      if (event?.detail?.data?.action === actionSheet_Action.Giustificativi_PREFIX + "_" + actionSheet_Action.modificagiustificativi)
+        this.handleButtonModificaGiustificativoClick(this.actionSheetOpenSelectObj);
+      if (event?.detail?.data?.action === actionSheet_Action.Giustificativi_PREFIX + "_" + actionSheet_Action.aggiungigiustificativi) {
+
+        const timbratura = this.actionSheetOpenSelectObj as Dip_GG_GiustificativiModel;
+
+        const request: GenericRequest<Dip_GG_GiustificativiGetInModel> = new GenericRequest<Dip_GG_GiustificativiGetInModel>(Dip_GG_GiustificativiGetInModel);
+        request.data.id = 0;
+
+        request.data.data = this.datePipe.transform(timbratura.data, "yyyy-MM-dd'T'HH:mm:ss");
+        request.data.idDip_RapportoLavoro = this.timeSheetService.get_IdDip_RapportoLavoro(this.currentMonth, this.currUserId, new Date(request.data.data));
+
+        this.dipGGGiustificativiService.Dip_GG_Giustificativi_Get(request).subscribe(res => {
+          this.handleButtonModificaGiustificativoClick(res.data.dip_GG_Giustificativi);
         });
 
       }
@@ -808,6 +899,46 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
 
 
 
+  handleButtonModificaGiustificativoClick = async (item: any) => {
+
+    const modal = await this.modalCtrl.create({
+      component: EditDipGGGiustificativiDialogComponent,
+      componentProps: {
+        dip_GG_Giustificativi: item
+      },
+    });
+
+    await modal.present();
+
+    const { data, role } = await modal.onWillDismiss<Dip_GG_GiustificativiModel | null>();
+
+    if (role === 'confirm' && data) {
+
+      const request: GenericRequest<Dip_GG_GiustificativiPutInModel> = new GenericRequest<Dip_GG_GiustificativiPutInModel>(Dip_GG_GiustificativiPutInModel);
+      request.data.dip_GG_Giustificativi = data;
+      this.dipGGGiustificativiService.Dip_GG_Giustificativi_Put(request).subscribe(res => {
+        this.loadMonth();
+      });
+
+    }
+
+  }
+
+  handleButtonCancellaGiustificativoClick = async (item: any) => {
+
+    const result = await this.collectionDialogService.ConfirmCancelDialog('Confermi la cancellazione del gistificativo');
+    if (result) {
+
+      const request: GenericRequest<Dip_GG_Giustificativi_DeleteInModel> = new GenericRequest<Dip_GG_Giustificativi_DeleteInModel>(Dip_GG_Giustificativi_DeleteInModel);
+      request.data.id = item.id;
+      this.dipGGGiustificativiService.Dip_GG_Giustificativi_Delete(request).subscribe(res => {
+        this.loadMonth();
+      });
+
+    }
+
+  }
+
 
 
   CanOpenMenuActionTimbratura(record: Dip_GG_TimbraturaModel): boolean {
@@ -824,7 +955,8 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
   CanOpenMenuActionGiustificativi(just: Dip_GG_GiustificativiModel): boolean {
 
     let retval = this.timeSheetService.Dip_GG_Richiesta_Admin_Can_Approve(this.get_Dip_GG_Richiesta(just.idDip_GG_Richiesta)) ||
-                 this.timeSheetService.Dip_GG_Richiesta_Admin_Can_Reject(this.get_Dip_GG_Richiesta(just.idDip_GG_Richiesta));
+                 this.timeSheetService.Dip_GG_Richiesta_Admin_Can_Reject(this.get_Dip_GG_Richiesta(just.idDip_GG_Richiesta)) ||
+                 just.idDip_GG_Richiesta == null;;
 
     return retval;
 
@@ -853,6 +985,11 @@ enum actionSheet_Action {
   cancellatimbratura = "cancellatimbratura",
   aggiungitimbratura = "aggiungitimbratura",
 
+  Giustificativi_PREFIX = "giustificativi",
+  modificagiustificativi = "modificagiustificativi",
+  cancellagiustificativi = "cancellagiustificativi",
+  aggiungigiustificativi = "aggiungigiustificativi",
+
   Calcola_Day_PREFIX = "Calcola_Day",  // definisce il gruppo
   Calcola_Day_X = "Calcola_Day_X",
   Calcola_Day_From = "Calcola_Day_From",
@@ -860,5 +997,6 @@ enum actionSheet_Action {
   Calcola_Day_All = "Calcola_Day_All",
   Day_Add_Causale = "Day_Add_Causale",
   Day_Add_Timbratura = "Day_Add_Timbratura",
+  Day_Add_Giustificativo = "Day_Add_Giustificativo",
 
 }

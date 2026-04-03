@@ -64,6 +64,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Cau
 
     public class Dip_GG_CausaliPutInModel 
     {
+        public int IdDip_RapportoLavoro { get; set; }
         public Dip_GG_CausaliModel Dip_GG_Causali { get; set; } = new Dip_GG_CausaliModel();
     }
     public class Dip_GG_CausaliPutOutModel : ModelResult

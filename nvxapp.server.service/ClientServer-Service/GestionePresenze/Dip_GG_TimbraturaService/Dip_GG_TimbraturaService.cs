@@ -204,6 +204,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
                 if (dip_GG_Timbratura == null)
                 {
                     dip_GG_Timbratura = _mapper.Map<Dip_GG_Timbratura>(model.Data.Dip_GG_Timbratura);
+                    if (model.Data.IdDip_RapportoLavoro > 0)
+                        dip_GG_Timbratura.IdDip_RapportoLavoro = model.Data.IdDip_RapportoLavoro;
                 }
                 else
                 {
