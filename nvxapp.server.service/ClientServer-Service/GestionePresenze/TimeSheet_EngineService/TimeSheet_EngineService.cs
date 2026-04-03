@@ -1030,7 +1030,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
             var timbratureSenzaVerso = allData.Dip_GG_AllData_OutModel.Dip_GG_Timbratura
                 .Where(t => t.IdDip_RapportoLavoro == IdDip_RapportoLavoro
                          && t.GiornoCompetenza.Date == day.Date
-                         && t.TimbraturaTipo == TipoTimbratura.SenzaVerso)
+                         && t.TimbraturaTipo != TipoTimbratura.Attivita)
                 .OrderBy(t => t.Timbratura)
                 .ToList();
 
