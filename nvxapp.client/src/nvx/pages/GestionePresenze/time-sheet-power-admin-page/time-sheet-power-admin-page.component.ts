@@ -93,7 +93,7 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
   }
 
   ionViewWillEnter() {
-
+    
     //riceve le notifiche di aggiornamento dei job in corso
     this.longJobNotifier.jobFinished$.subscribe(jobUpdate => {
       console.log('Job finished:', jobUpdate);
@@ -694,12 +694,13 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
         this.handleButtonModificaTimbraturaClick(this.actionSheetOpenSelectObj);
       if (event?.detail?.data?.action === actionSheet_Action.Timbrature_PREFIX + "_" + actionSheet_Action.aggiungitimbratura) {
 
-        const timbratura = this.actionSheetOpenSelectObj as Dip_GG_CausaliModel;
+        const timbratura = this.actionSheetOpenSelectObj as Dip_GG_TimbraturaModel;
+        
 
         const request: GenericRequest<Dip_GG_CausaliGetInModel> = new GenericRequest<Dip_GG_CausaliGetInModel>(Dip_GG_CausaliGetInModel);
         request.data.id = 0;
         
-        request.data.data = this.datePipe.transform( timbratura.data,"yyyy-MM-dd'T'HH:mm:ss");
+        request.data.data = this.datePipe.transform( timbratura.giornoCompetenza,"yyyy-MM-dd'T'HH:mm:ss");
         request.data.idDip_RapportoLavoro = this.timeSheetService.get_IdDip_RapportoLavoro(this.currentMonth,this.currUserId, new Date(request.data.data));
 
         this.dipGGTimbraturaService.Dip_GG_Timbratura_Get(request).subscribe(res => {

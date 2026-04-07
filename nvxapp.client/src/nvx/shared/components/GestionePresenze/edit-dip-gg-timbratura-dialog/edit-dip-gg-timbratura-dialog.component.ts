@@ -7,7 +7,7 @@ import { SharedParameterGestionePresenzeService } from '../../../shared-paramete
 import { Observable, of } from 'rxjs';
 import { StringHelperService } from '../../../../Utility/infrastructure/string-helper.service';
 import { Par_CausaliModel } from '../../../../ClientServer-Service/GestionePresenze/Par_Causali/Models/par-causali-model';
-import { Dip_GG_TimbraturaModel } from '../../../../ClientServer-Service/GestionePresenze/Dip_GG_Timbratura/Models/dip-gg-timbratura-model';
+import { Dip_GG_TimbraturaModel, TipoTimbratura } from '../../../../ClientServer-Service/GestionePresenze/Dip_GG_Timbratura/Models/dip-gg-timbratura-model';
 
 
 
@@ -21,9 +21,9 @@ export class EditDipGGTimbraturaDialogComponent extends BaseDialogConfirmCancelC
 
   @Input() dip_GG_Timbratura: Dip_GG_TimbraturaModel;
 
-
+  TipoTimbratura =  TipoTimbratura;
   public _par_CausaliList: Par_CausaliModel[] = [];
-
+  
   public dateTime: string;
   public formattedDate: string;
   public formattedTime: string;
@@ -58,7 +58,7 @@ export class EditDipGGTimbraturaDialogComponent extends BaseDialogConfirmCancelC
   }
 
   LoadData = (): Observable<Dip_GG_TimbraturaModel | null> => {
-
+    
     return of(this.dip_GG_Timbratura);
   };
 
