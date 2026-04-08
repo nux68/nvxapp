@@ -14,10 +14,26 @@ export class Dip_GG_ResultModel {
 
 }
 export enum GG_ResultStato {
-  Init,
-  Err,
-  OK,
-  Locked
+  Init = 1 << 0,
+  OK = 1 << 1,
+  Locked = 1 << 2,
+  Warning = 1 << 3,
+  Err = 1 << 4,
+
+  Err_1 = 1 << 5,
+  Err_2 = 1 << 6,
+  Err_3 = 1 << 7,
+
+  Warning_1 = 1 << 8,
+  Warning_2 = 1 << 9,
+  Warning_3 = 1 << 10,
+
+  STATE_MASK =
+  (1 << 0) |
+  (1 << 1) |
+  (1 << 2) |
+  (1 << 3) |
+  (1 << 4)
 }
 
 

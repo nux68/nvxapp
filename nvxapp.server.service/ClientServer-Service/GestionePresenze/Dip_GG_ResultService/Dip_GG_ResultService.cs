@@ -123,6 +123,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Res
 
                         }
 
+                        var prevDay = retVal.Dip_GG_Result.Where(x => x.Data < DateTime.Now.AddDays(-1) &&
+                                                                     (x.Stato & GG_ResultStato.STATE_MASK) == GG_ResultStato.Init).ToList();
+                        
+                        prevDay.ForEach(x => x.Stato |= GG_ResultStato.Warning);
+
                     }
                     #endregion
 
@@ -156,7 +161,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Res
                             Data = item,
                             HH_Teo = TimeOnly.FromTimeSpan(TimeSpan.Zero),
                             HH_Lav = TimeOnly.FromTimeSpan(TimeSpan.Zero),
-                            Stato = GG_ResultStato.Init
+                            Stato =  GG_ResultStato.Init
                         };
                         var newDay = await _dip_GG_ResultRepository.UpdateAsync(gg_res);
                         retVal.Dip_GG_Result.Add(newDay);

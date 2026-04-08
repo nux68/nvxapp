@@ -55,6 +55,17 @@
                                                       'margin-top':'0px'
                                                     }"
                             (click)="actionSheetOpen(day)">
+
+                  <ion-icon [name]="timeSheetService.get_StatoDay_icon(day.dip_GG_Result)"
+                            [ngStyle]="{
+                                        'color': timeSheetService.get_StatoDay_color(day.dip_GG_Result),
+                                        'border-radius': '50%',
+                                        'width': '15px',
+                                        'height': '15px',
+                                        'margin-right': '4px'
+                                      }">
+                  </ion-icon>
+
                   {{ day.date | date:'dd' }} {{ day.date | date:'EEE' }}
                 </ion-button>
 

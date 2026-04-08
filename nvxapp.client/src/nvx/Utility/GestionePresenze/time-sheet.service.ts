@@ -16,7 +16,7 @@ import { TipoRichiestaToShortTextPipe } from '../../shared/pipe/GestionePresenze
 import { StatoRichiestaLongTextPipe } from '../../shared/pipe/GestionePresenze/stato-richiesta-long-text.pipe';
 import { Timesheet_AllData_InModel } from '../../ClientServer-Service/GestionePresenze/TimeSheet_EngineService/Models/time-sheet-engine-model';
 import { TimeSheetEngineService } from '../../ClientServer-Service/GestionePresenze/TimeSheet_EngineService/time-sheet-engine.service';
-import { Dip_GG_ResultModel } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Result/Models/dip-gg-result-model';
+import { Dip_GG_ResultModel, GG_ResultStato } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Result/Models/dip-gg-result-model';
 import { Dip_GG_CausaliModel } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Causali/Models/dip-gg-causali-model';
 
 
@@ -415,6 +415,90 @@ export class TimeSheetService {
     }
 
   }
+
+
+  get_StatoDay_icon(dip_GG_ResultModel: Dip_GG_ResultModel): string {
+
+    const stato = Number(dip_GG_ResultModel.stato);
+
+    let main: GG_ResultStato;
+
+    if (stato & GG_ResultStato.Err) {
+      main = GG_ResultStato.Err;
+    } else if (stato & GG_ResultStato.Warning) {
+      main = GG_ResultStato.Warning;
+    } else if (stato & GG_ResultStato.Locked) {
+      main = GG_ResultStato.Locked;
+    } else if (stato & GG_ResultStato.OK) {
+      main = GG_ResultStato.OK;
+    } else {
+      main = GG_ResultStato.Init;
+    }
+
+    switch (main) {
+      case GG_ResultStato.Init:
+        return null;
+
+      case GG_ResultStato.OK:
+        return 'checkmark-done-outline';
+
+      case GG_ResultStato.Locked:
+        return 'lock-closed-outline';
+
+      case GG_ResultStato.Warning:
+        return 'alert-outline';
+
+      case GG_ResultStato.Err:
+        return 'close-outline';
+
+      default:
+        return null;
+    }
+  }
+
+  get_StatoDay_color(dip_GG_ResultModel: Dip_GG_ResultModel): string {
+    
+
+    const stato = Number(dip_GG_ResultModel.stato);
+
+    let main: GG_ResultStato;
+
+    if (stato & GG_ResultStato.Err) {
+      main = GG_ResultStato.Err;
+    } else if (stato & GG_ResultStato.Warning) {
+      main = GG_ResultStato.Warning;
+    } else if (stato & GG_ResultStato.Locked) {
+      main = GG_ResultStato.Locked;
+    } else if (stato & GG_ResultStato.OK) {
+      main = GG_ResultStato.OK;
+    } else {
+      main = GG_ResultStato.Init;
+    }
+
+    switch (main) {
+      case GG_ResultStato.Init:
+        return "var(--ion-color-medium)" //grigio
+        
+
+      case GG_ResultStato.OK:
+        return "var(--ion-color-success)"
+
+      case GG_ResultStato.Locked:
+        return "var(--ion-color-medium)" // grigio
+
+      case GG_ResultStato.Warning:
+        return "var(--ion-color-warning)"
+
+      case GG_ResultStato.Err:
+        return "var(--ion-color-danger)"
+
+      default:
+        return "var(--ion-color-medium)" // grigio
+    }
+
+
+  }
+
 
   //get_Dip_GG_Timbratura_backColor(record: Dip_GG_TimbraturaModel): string {
   //  // Ottieni il valore della variabile CSS dal root
