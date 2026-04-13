@@ -39,6 +39,7 @@ Installers.InstallCors(builder, useSignalR);
 
 
 Installers.InstallConfiguration(builder);
+Installers4AttendanceTracking.InstallServices(builder);
 Installers.InstallServices(builder);
 Installers.InstallEntityContex(builder);
 Installers.InstallRepositories(builder);
