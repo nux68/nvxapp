@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using nvxapp.server.Base;
 using nvxapp.server.data.Entities.Public;
@@ -1631,6 +1632,38 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
 
 
+    public interface ITimeSheet_EngineService_OnlyCalculate  
+    {
+        Task<GenericResult<TimeSheet_CalculateOutModel>> Calculate(GenericRequest<TimeSheet_CalculateInModel> model, bool isSubProcess);
+    }
+
+
+    public class TimeSheet_EngineService_OnlyCalculate : ServiceBase, ITimeSheet_EngineService_OnlyCalculate
+    {
+        private readonly IServiceProvider _serviceProvider;
+
+        public TimeSheet_EngineService_OnlyCalculate(
+            IMapper mapper,
+            UserManager<ApplicationUser> userManager,
+            IAspNetUsersRepository aspNetUsersRepository,
+            IOptions<JwtParameter> jwtParameter,
+            IConfiguration configuration,
+            IHttpContextAccessor httpContextAccessor,
+            IServiceProvider serviceProvider)
+            : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
+        {
+            _serviceProvider = serviceProvider;
+        }
+
+        public async Task<GenericResult<TimeSheet_CalculateOutModel>> Calculate(
+            GenericRequest<TimeSheet_CalculateInModel> model, bool isSubProcess)
+        {
+            // risolve ITimeSheet_EngineService a runtime — il ciclo è già spezzato
+            // perché questa classe NON dipende da IDip_GG_TimbraturaService
+            var engine = _serviceProvider.GetRequiredService<ITimeSheet_EngineService>();
+            return await engine.Calculate(model, isSubProcess);
+        }
+    }
 
 
 

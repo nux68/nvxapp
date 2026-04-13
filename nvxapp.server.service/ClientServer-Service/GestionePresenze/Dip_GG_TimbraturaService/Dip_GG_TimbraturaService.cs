@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using nvxapp.server.Base;
 using nvxapp.server.data.Entities.Public;
@@ -9,8 +10,9 @@ using nvxapp.server.data.Entities.Tenant;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
-using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_CausaliService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_TimbraturaService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_EngineService;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_EngineService.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.ServerModels;
@@ -23,12 +25,21 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
         private readonly IGestionePresenzeUserUtility _gestionePresenzeUserUtility;
         private readonly IDip_GG_TimbraturaRepository _dip_GG_TimbraturaRepository;
 
+        //private readonly ITimeSheet_EngineService_OnlyCalculate _timeSheet_EngineService;
+
+         // ← NON iniettato nel costruttore: risolto a runtime per rompere il ciclo
+        private readonly IServiceScopeFactory _serviceScopeFactory;
+
+        // proprietà lazy: risolve ITimeSheet_EngineService_OnlyCalculate solo quando serve
+        private ITimeSheet_EngineService_OnlyCalculate _timeSheet_EngineService;
+
         public Dip_GG_TimbraturaService(IMapper mapper,
                                           UserManager<ApplicationUser> userManager,
                                           IAspNetUsersRepository aspNetUsersRepository,
                                           IOptions<JwtParameter> jwtParameter,
                                           IHttpContextAccessor httpContextAccessor,
                                           IConfiguration configuration,
+                                          ITimeSheet_EngineService_OnlyCalculate timeSheet_EngineService,
 
                                           IGestionePresenzeUserUtility gestionePresenzeUserUtility,
                                           IDip_GG_TimbraturaRepository dip_GG_TimbraturaRepository
@@ -36,6 +47,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
         {
             _gestionePresenzeUserUtility = gestionePresenzeUserUtility;
             _dip_GG_TimbraturaRepository = dip_GG_TimbraturaRepository;
+
+            _timeSheet_EngineService = timeSheet_EngineService;
+            
         }
 
         public virtual async Task<GenericResult<Dip_GG_Timbratura_GetAll_OutModel>> GetAll(GenericRequest<Dip_GG_Timbratura_GetAll_InModel> model, Boolean isSubProcess)
@@ -83,7 +97,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
                 return retVal;
             }, isSubProcess);
         }
-        
+
         public virtual async Task<GenericResult<Dip_GG_Timbratura_Stamp_OutModel>> Stamp(GenericRequest<Dip_GG_Timbratura_Stamp_InModel> model, Boolean isSubProcess)
         {
             return await ExecuteAction(model, async () =>
@@ -112,7 +126,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
                         TimbraturaTipo = TipoTimbratura.SenzaVerso,
                         RichiestaStato = StatoRichiesta.Diretta,
                     };
-                    await _dip_GG_TimbraturaRepository.UpsertAsync(dip_GG_Timbratura);
+                    dip_GG_Timbratura = await _dip_GG_TimbraturaRepository.UpsertAsync(dip_GG_Timbratura);
+
+                    await CalculateGiorno(dip_GG_Timbratura.IdDip_RapportoLavoro, dip_GG_Timbratura.GiornoCompetenza);
+
                 }
 
                 await Task.Delay(DelayAsyncMethod);
@@ -175,12 +192,12 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
                         {
                             Id = 0,
                             IdDip_RapportoLavoro = user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.Id,
-                            Timbratura  = model.Data.Data != null ? model.Data.Data.Value : DateTime.Now,
+                            Timbratura = model.Data.Data != null ? model.Data.Data.Value : DateTime.Now,
                             TimbraturaOriginale = model.Data.Data != null ? model.Data.Data.Value : DateTime.Now,
-                            TimbraturaArrotondata= model.Data.Data != null ? model.Data.Data.Value : DateTime.Now,
+                            TimbraturaArrotondata = model.Data.Data != null ? model.Data.Data.Value : DateTime.Now,
                             TimbraturaTipo = TipoTimbratura.SenzaVerso,
                             GiornoCompetenza = model.Data.Data != null ? model.Data.Data.Value : DateTime.Now
-                            
+
                         };
 
 
@@ -217,6 +234,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
                 retVal.Dip_GG_Timbratura = _mapper.Map<Dip_GG_TimbraturaModel>(dip_GG_Timbratura);
 
 
+                await CalculateGiorno(dip_GG_Timbratura.IdDip_RapportoLavoro, dip_GG_Timbratura.GiornoCompetenza);
+
+
 
                 await Task.Delay(DelayAsyncMethod);
 
@@ -232,9 +252,18 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
                 var entity = await _dip_GG_TimbraturaRepository.FindByIdAsync(model.Data.Id);
                 if (entity != null)
                 {
+
+                    var IdDip_RapportoLavoro = entity.IdDip_RapportoLavoro;
+                    var GiornoCompetenza = entity.GiornoCompetenza;
                     await _dip_GG_TimbraturaRepository.DeleteAsync(entity);
+
+                    await CalculateGiorno(IdDip_RapportoLavoro, GiornoCompetenza);
                 }
+
                 
+
+                
+
                 //eliminare
                 // Nessun 'await' qui
                 await Task.Delay(DelayAsyncMethod);
@@ -242,6 +271,31 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
                 return retVal;
             }, isSubProcess);
         }
+    
+    
+        private  async Task CalculateGiorno(int IdDip_RapportoLavoro , DateTime GiornoCompetenza)
+        {
+            User_DATA_COMB_DipAna_DipRapp user_DATA_COMB_DipAna_DipRapp = await _gestionePresenzeUserUtility.Get_DipRapp_DipAna(IdDip_RapportoLavoro);
+
+                if (user_DATA_COMB_DipAna_DipRapp != null && user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro != null && user_DATA_COMB_DipAna_DipRapp.dip_Anagrafica!= null)
+                {
+                    var TimeSheet_Calculate = new GenericRequest<TimeSheet_CalculateInModel>();
+                    TimeSheet_Calculate.Data = new TimeSheet_CalculateInModel()
+                    {
+                        TimeSheet_Calculate = new TimeSheet_CalculateModel()
+                        {
+                            SelectedUserId = new List<string>() { user_DATA_COMB_DipAna_DipRapp.dip_Anagrafica.IdAspNetUsers }, 
+                            Dal = GiornoCompetenza,
+                            Al = GiornoCompetenza,
+                            Month = GiornoCompetenza.Month,
+                            Year = GiornoCompetenza.Year,
+                        }
+                    };
+
+                    await _timeSheet_EngineService.Calculate(TimeSheet_Calculate, true);
+                }
+        }
+        
     }
 
     public interface IDip_GG_TimbraturaService : IServiceBase
