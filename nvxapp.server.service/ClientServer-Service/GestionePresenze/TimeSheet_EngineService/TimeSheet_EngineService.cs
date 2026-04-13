@@ -601,7 +601,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                     var res_Timbrature = await _dip_GG_TimbraturaService.Dip_GG_Timbratura_Get_4Calculation(req_Timbrature, true);
                     if (res_Timbrature.Success && res_Timbrature.Data != null)
                     {
-                        retVal.Dip_GG_Timbratura = res_Timbrature.Data.Dip_GG_Timbratura.OrderBy(x=> x.Timbratura).ToList();
+                        retVal.Dip_GG_Timbratura = res_Timbrature.Data.Dip_GG_Timbratura.OrderBy(x => x.Timbratura).ToList();
 
                         var groupedByDay = retVal.Dip_GG_Timbratura.GroupBy(x => x.GiornoCompetenza.Date).ToList();
                         foreach (var group in groupedByDay)
@@ -746,7 +746,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                 GeneraTimbratureMancanti(AllData, rapporto_calc.Id, giorno);
             }
 
-            AssegnaVersoTimbrature(AllData, rapporto_calc.Id, giorno);
+            GG_ResultStato Calcolo1Result = GG_ResultStato.OK;
+            GG_ResultStato Calcolo2Result = GG_ResultStato.OK;
+
+            GG_ResultStato VersoTimbratureResult = AssegnaVersoTimbrature(AllData, rapporto_calc.Id, giorno);
 
             var dip_GG_Result = AllData.Dip_GG_AllData_OutModel.Dip_GG_Result.Where(x => x.Data == giorno).FirstOrDefault();
             if (dip_GG_Result != null)
@@ -764,6 +767,16 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
                 /*await*/
                 GeneraCausali(Dip_Anagrafica, AllData, rapporto_calc.Id, giorno, dip_GG_Result);
+
+
+
+                dip_GG_Result.Stato = Dip_GG_Result_Helper.Combine(Calcolo1Result,
+                                                                    Calcolo2Result,
+                                                                    VersoTimbratureResult);
+
+
+
+
             }
 
 
@@ -1001,8 +1014,12 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
             return oreLavorate;
         }
-        private void AssegnaVersoTimbrature(Timesheet_AllData_OutModel allData, int IdDip_RapportoLavoro, DateTime day)
+        private GG_ResultStato AssegnaVersoTimbrature(Timesheet_AllData_OutModel allData, int IdDip_RapportoLavoro, DateTime day)
         {
+
+            GG_ResultStato retVal = GG_ResultStato.OK;
+            Dip_GG_Result_Helper.SetState(ref retVal, GG_ResultStato.OK);
+
             var orariSchema = allData.OrariSchema_4User_OutModel;
 
             // recupera le coppie solo per le TimeRoundOptions di arrotondamento
@@ -1011,12 +1028,12 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                    && ds.Data.Date == day.Date);
 
             if (daySlot == null || daySlot.Orari.Count == 0)
-                return;
+                return retVal;
 
             var orarioBase = daySlot.Orari.OrderBy(o => o.ZOrder).First();
             var parOrario = orariSchema.ParOrario.FirstOrDefault(o => o.Id == orarioBase.IdPar_Orario);
             if (parOrario == null)
-                return;
+                return retVal;
 
             var coppie = orariSchema.Par_OrarioIntervalloHH
                 .Where(hh => hh.IdPar_Orario == parOrario.Id)
@@ -1024,43 +1041,112 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                 .ToList();
 
             if (coppie.Count == 0)
-                return;
+                return retVal;
 
             // solo SenzaVerso, ordinate per orario crescente — Attivita escluse
-            var timbratureSenzaVerso = allData.Dip_GG_AllData_OutModel.Dip_GG_Timbratura
-                .Where(t => t.IdDip_RapportoLavoro == IdDip_RapportoLavoro
-                         && t.GiornoCompetenza.Date == day.Date
-                         && t.TimbraturaTipo != TipoTimbratura.Attivita)
-                .OrderBy(t => t.Timbratura)
-                .ToList();
+            var timbratureSenzaVerso = allData.Dip_GG_AllData_OutModel.Dip_GG_Timbratura.Where(t => t.IdDip_RapportoLavoro == IdDip_RapportoLavoro &&
+                                                                                                    t.GiornoCompetenza.Date == day.Date &&
+                                                                                                    t.TimbraturaTipo != TipoTimbratura.Attivita)
+                                                                                        .OrderBy(t => t.Timbratura)
+                                                                                        .ToList();
 
-            if (timbratureSenzaVerso.Count == 0)
-                return;
+            //if (timbratureSenzaVerso.Count == 0)
+            //    return retVal;
 
-            // assegna in sequenza alternata E U E U ...
-            // la posizione i determina:
-            //   pari    → Entrata, usa arrotondamento Dalle della coppia i/2
-            //   dispari → Uscita,  usa arrotondamento Alle  della coppia i/2
-            for (int i = 0; i < timbratureSenzaVerso.Count; i++)
+
+            List<CoppiaTMP> coppieTMP = new List<CoppiaTMP>();
+            foreach (var coppia in coppie)
             {
-                var timbratura = timbratureSenzaVerso[i];
-                int idxCoppia = i / 2;
-                bool isEntrata = (i % 2 == 0);
+                if (!coppia.Dalle.HasValue || !coppia.Alle.HasValue)
+                    continue;
+                if (coppia.Alle.Value == coppia.Dalle.Value)
+                    continue;
 
-                // se abbiamo più timbrature delle coppie previste, usa l'ultima coppia disponibile
-                if (idxCoppia >= coppie.Count)
-                    idxCoppia = coppie.Count - 1;
+                if (coppia.Dalle_Use_4_Match)
+                {
+                    var dalleLimit_SX = (coppia.Dalle_Limite_SX ?? coppia.Dalle).Value;
+                    var dalleLimit_DX = (coppia.Dalle_Limite_DX ?? coppia.Dalle).Value;
+                    coppieTMP.Add(new CoppiaTMP { HH = coppia.Dalle, HH_Limite_SX = dalleLimit_SX, HH_Limite_DX = dalleLimit_DX, Arrotondamento = coppia.Dalle_Arrotondamento, Arrotondamento_Verso = coppia.Dalle_Arrotondamento_Verso });
+                }
 
-                var coppia = coppie[idxCoppia];
+                if (coppia.Alle_Use_4_Match)
+                {
+                    var alleLimit_SX = (coppia.Alle_Limite_SX ?? coppia.Alle).Value;
+                    var alleLimit_DX = (coppia.Alle_Limite_DX ?? coppia.Alle).Value;
+                    coppieTMP.Add(new CoppiaTMP { HH = coppia.Alle, HH_Limite_SX = alleLimit_SX, HH_Limite_DX = alleLimit_DX, Arrotondamento = coppia.Alle_Arrotondamento, Arrotondamento_Verso = coppia.Alle_Arrotondamento_Verso });
+                }
+            }
+
+            if (timbratureSenzaVerso.Count < coppieTMP.Count)
+            {
+                Dip_GG_Result_Helper.AddDetail(ref retVal, GG_ResultStato.Err_1);
+                return retVal;
+            }
+
+
+
+            foreach (var timbratura in timbratureSenzaVerso)
+            {
+                var oraTimbr = TimeOnly.FromDateTime(timbratura.Timbratura);
+                var coppiaMatch = coppieTMP.FirstOrDefault(c => !c.Check &&
+                                                                oraTimbr >= c.HH_Limite_SX &&
+                                                                oraTimbr <= c.HH_Limite_DX);
+
+                if (coppiaMatch == null)
+                {
+                    // SE NO MATCH: coppiaTMP non checkata con HH più vicino
+                    coppiaMatch = coppieTMP
+                        .Where(c => !c.Check && c.HH.HasValue)
+                        .OrderBy(c => Math.Abs((c.HH!.Value.ToTimeSpan() - oraTimbr.ToTimeSpan()).Ticks))
+                        .FirstOrDefault();
+                }
+
+                if (coppiaMatch == null)
+                    continue;
+
+                coppiaMatch.Check = true;
+
+                // assegna il verso in sequenza alternata E U E U ...
+                // la posizione nella lista coppieTMP determina pari=Entrata, dispari=Uscita
+                int idx = coppieTMP.IndexOf(coppiaMatch);
+                bool isEntrata = (idx % 2 == 0);
 
                 timbratura.TimbraturaTipo = isEntrata ? TipoTimbratura.Entrata : TipoTimbratura.Uscita;
 
-                var roundOptions = isEntrata
-                    ? new TimeRoundOptions(coppia.Dalle_Arrotondamento, coppia.Dalle_Arrotondamento_Verso)
-                    : new TimeRoundOptions(coppia.Alle_Arrotondamento, coppia.Alle_Arrotondamento_Verso);
-
+                var roundOptions = new TimeRoundOptions(coppiaMatch.Arrotondamento, coppiaMatch.Arrotondamento_Verso);
                 timbratura.TimbraturaArrotondata = Roundings.RoundDateTime(timbratura.Timbratura, roundOptions);
             }
+
+
+
+            //// assegna in sequenza alternata E U E U ..
+            //// la posizione i determina:
+            ////   pari    → Entrata, usa arrotondamento Dalle della coppia i/2
+            ////   dispari → Uscita,  usa arrotondamento Alle  della coppia i/2
+            //for (int i = 0; i < timbratureSenzaVerso.Count; i++)
+            //{
+            //    var timbratura = timbratureSenzaVerso[i];
+            //    int idxCoppia = i / 2;
+            //    bool isEntrata = (i % 2 == 0);
+
+
+            //    // se abbiamo più timbrature delle coppie previste, usa l'ultima coppia disponibile
+            //    if (idxCoppia >= coppie.Count)
+            //        idxCoppia = coppie.Count - 1;
+
+            //    var coppia = coppie[idxCoppia];
+
+            //    timbratura.TimbraturaTipo = isEntrata ? TipoTimbratura.Entrata : TipoTimbratura.Uscita;
+
+            //    var roundOptions = isEntrata
+            //        ? new TimeRoundOptions(coppia.Dalle_Arrotondamento, coppia.Dalle_Arrotondamento_Verso)
+            //        : new TimeRoundOptions(coppia.Alle_Arrotondamento, coppia.Alle_Arrotondamento_Verso);
+
+            //    timbratura.TimbraturaArrotondata = Roundings.RoundDateTime(timbratura.Timbratura, roundOptions);
+            //}
+
+            return retVal;
+
         }
         private void GeneraTimbratureMancanti(Timesheet_AllData_OutModel allData, int IdDip_RapportoLavoro, DateTime day)
         {
@@ -1069,7 +1155,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
             if (day.Date >= DateTime.Today)
                 return;
 
-            var daySlot = orariSchema.DaySlots.FirstOrDefault(ds => ds.IdDip_RapportoLavoro == IdDip_RapportoLavoro && 
+            var daySlot = orariSchema.DaySlots.FirstOrDefault(ds => ds.IdDip_RapportoLavoro == IdDip_RapportoLavoro &&
                                                                     ds.Data.Date == day.Date);
 
             if (daySlot == null || daySlot.Orari.Count == 0)
@@ -1090,7 +1176,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
             if (coppie.Count == 0)
                 return;
 
-            var timbratureEsistenti = allData.Dip_GG_AllData_OutModel.Dip_GG_Timbratura.Where(t => t.IdDip_RapportoLavoro == IdDip_RapportoLavoro && 
+            var timbratureEsistenti = allData.Dip_GG_AllData_OutModel.Dip_GG_Timbratura.Where(t => t.IdDip_RapportoLavoro == IdDip_RapportoLavoro &&
                                                                                                    t.GiornoCompetenza.Date == day.Date)
                                                                                        .ToList();
 
@@ -1102,20 +1188,20 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                 if (coppia.Alle.Value == coppia.Dalle.Value)
                     continue;
 
-                if(coppia.Dalle_Use_4_Match)
+                if (coppia.Dalle_Use_4_Match)
                 {
                     var dalleLimit_SX = (coppia.Dalle_Limite_SX ?? coppia.Dalle).Value;
                     var dalleLimit_DX = (coppia.Dalle_Limite_DX ?? coppia.Dalle).Value;
-                    coppieTMP.Add(new CoppiaTMP { HH = coppia.Dalle, HH_Limite_SX = dalleLimit_SX, HH_Limite_DX = dalleLimit_DX });
+                    coppieTMP.Add(new CoppiaTMP { HH = coppia.Dalle, HH_Limite_SX = dalleLimit_SX, HH_Limite_DX = dalleLimit_DX, Arrotondamento = coppia.Dalle_Arrotondamento, Arrotondamento_Verso = coppia.Dalle_Arrotondamento_Verso });
                 }
-                
-                if(coppia.Alle_Use_4_Match)
+
+                if (coppia.Alle_Use_4_Match)
                 {
                     var alleLimit_SX = (coppia.Alle_Limite_SX ?? coppia.Alle).Value;
                     var alleLimit_DX = (coppia.Alle_Limite_DX ?? coppia.Alle).Value;
-                    coppieTMP.Add(new CoppiaTMP { HH = coppia.Alle, HH_Limite_SX = alleLimit_SX, HH_Limite_DX = alleLimit_DX });
+                    coppieTMP.Add(new CoppiaTMP { HH = coppia.Alle, HH_Limite_SX = alleLimit_SX, HH_Limite_DX = alleLimit_DX, Arrotondamento = coppia.Alle_Arrotondamento, Arrotondamento_Verso = coppia.Alle_Arrotondamento_Verso });
                 }
-                
+
 
             }
 
@@ -1333,7 +1419,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
             // -- B) Causali da Ore Lavorate per Intervallo ------------------------
 
-                        // -- B) Causali da Ore Lavorate per Intervallo ------------------------
+            // -- B) Causali da Ore Lavorate per Intervallo ------------------------
 
             var daySlot = allData.OrariSchema_4User_OutModel.DaySlots
                 .FirstOrDefault(ds => ds.IdDip_RapportoLavoro == IdDip_RapportoLavoro
@@ -1359,10 +1445,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                     for (int i = 0; i + 1 < timbrature.Count; i += 2)
                     {
                         var entrata = timbrature[i];
-                        var uscita  = timbrature[i + 1];
+                        var uscita = timbrature[i + 1];
 
                         if (entrata.TimbraturaTipo != TipoTimbratura.Entrata ||
-                            uscita.TimbraturaTipo  != TipoTimbratura.Uscita)
+                            uscita.TimbraturaTipo != TipoTimbratura.Uscita)
                             continue;
 
                         if (!entrata.TimbraturaArrotondata.HasValue || !uscita.TimbraturaArrotondata.HasValue)
@@ -1370,7 +1456,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
                         // intervallo reale della timbratura (in minuti dal giorno)
                         var tStart = entrata.TimbraturaArrotondata.Value.TimeOfDay;
-                        var tEnd   = uscita.TimbraturaArrotondata.Value.TimeOfDay;
+                        var tEnd = uscita.TimbraturaArrotondata.Value.TimeOfDay;
 
                         if (tEnd <= tStart)
                             continue;
@@ -1388,11 +1474,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                 continue;
 
                             var cStart = coppia.Dalle.Value.ToTimeSpan();
-                            var cEnd   = coppia.Alle.Value.ToTimeSpan();
+                            var cEnd = coppia.Alle.Value.ToTimeSpan();
 
                             // sovrapposizione tra [tStart, tEnd] e [cStart, cEnd]
                             var overlapStart = tStart > cStart ? tStart : cStart;
-                            var overlapEnd   = tEnd   < cEnd   ? tEnd   : cEnd;
+                            var overlapEnd = tEnd < cEnd ? tEnd : cEnd;
 
                             if (overlapEnd <= overlapStart)
                                 continue; // nessuna sovrapposizione
@@ -1428,7 +1514,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
             //        var coppie = allData.OrariSchema_4User_OutModel.Par_OrarioIntervalloHH.Where(hh => hh.IdPar_Orario == parOrario.Id)
             //                                                                              .OrderBy(hh => hh.NumCoppia)
             //                                                                              .ToList();
-                    
+
             //        // Entrata/Uscita ordinate e abbinale in coppie sequenziali
             //        var timbrature = Get_Timbrature_Giorno(allData, IdDip_RapportoLavoro, day);
 
@@ -1529,6 +1615,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
             public TimeOnly HH_Limite_SX { get; set; }
             public TimeOnly HH_Limite_DX { get; set; }
             public Boolean Check { get; set; }
+            public TimeRoundInterval Arrotondamento { get; set; }
+            public RoundDirection Arrotondamento_Verso { get; set; }
         }
     }
 

@@ -13,6 +13,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Res
         public TimeOnly HH_Teo { get; set; }
         [HashField]
         public TimeOnly HH_Lav { get; set; }
+        [HashField]
         public GG_ResultStato Stato { get; set; }
     }
 

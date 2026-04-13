@@ -20,7 +20,7 @@ export enum GG_ResultStato {
   Warning = 1 << 3,
   Err = 1 << 4,
 
-  Err_1 = 1 << 5,
+  Err_TimbratureMancanti = 1 << 5,
   Err_2 = 1 << 6,
   Err_3 = 1 << 7,
 
