@@ -157,6 +157,7 @@ namespace nvxapp.server.Utility
 
 
             builder.Services.AddScoped<ILongJobNotifier, LongJobNotifier>();
+            builder.Services.AddScoped<IJobNotifier, JobNotifier>();
 
 
 

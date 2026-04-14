@@ -7,6 +7,7 @@ import { environment } from '../environments/environment';
 import { MainMenuItem, MainMenuService, MenuType } from '../nvx/Utility/infrastructure/main-menu.service';
 import { MainMenuInfrastructureService } from '../nvx/Utility/infrastructure/main-menu-infrastructure.service';
 import { LongJobNotifierService } from '../nvx/Utility/infrastructure/long-job-notifier.service';
+import { JobNotifierService } from '../nvx/Utility/infrastructure/job-notifier.service';
 
 
 @Component({
@@ -61,7 +62,8 @@ export class AppComponent implements OnInit, DoCheck {
               public signalrService: SignalrService,
               private mainMenuService: MainMenuService,
               private mainMenuInfrastructureService: MainMenuInfrastructureService,
-              private longJobNotifierService: LongJobNotifierService
+              private longJobNotifierService: LongJobNotifierService,
+              private jobNotifierService: JobNotifierService
               )
   {
 
@@ -101,7 +103,12 @@ export class AppComponent implements OnInit, DoCheck {
 
           });
 
+          this.signalrService.on('JobNotifierAsync').subscribe((data) => {
+            console.log('?? JobNotifierAsync Executed:', data);
 
+            this.jobNotifierService.jobNotifier(data);
+
+          });
 
         }
 
