@@ -160,6 +160,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
     {
         private readonly IGestionePresenzeUserUtility _gestionePresenzeUserUtility;
         private readonly ILongJobNotifier _longJobNotifier;
+        private readonly IJobNotifier _jobNotifier;
         private readonly IDip_GG_TimbraturaService _dip_GG_TimbraturaService;
         private readonly IDip_GG_CausaliService _dip_GG_CausaliService;
         private readonly IDip_GG_GiustificativiService _dip_GG_GiustificativiService;
@@ -192,6 +193,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                       IPar_ProfiloOrarioService par_ProfiloOrarioService,
                                       IDip_RapportoLavoroService dip_RapportoLavoroService,
                                       ILongJobNotifier longJobNotifier,
+                                      IJobNotifier jobNotifier,
                                       IGestionePresenzeUserUtility gestionePresenzeUserUtility,
                                       IDip_GG_TimbraturaService dip_GG_TimbraturaService,
                                       IDip_GG_CausaliService dip_GG_CausaliService,
@@ -204,6 +206,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
         {
             _gestionePresenzeUserUtility = gestionePresenzeUserUtility;
             _longJobNotifier = longJobNotifier;
+            _jobNotifier = jobNotifier;
             _dip_GG_TimbraturaService = dip_GG_TimbraturaService;
             _dip_GG_CausaliService = dip_GG_CausaliService;
             _dip_GG_GiustificativiService = dip_GG_GiustificativiService;
@@ -288,6 +291,13 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                                                                     Message = new Message { Text = $"Calcolo presenze step {idxUser + 1} of {model.Data.TimeSheet_Calculate.SelectedUserId.Count}", MsgType = MessageType.Information }
                                                                                 }
                                                                                 );
+
+                                    await _jobNotifier.JobNotifierAsync(userId, new JobNotifierData()
+                                                                        {
+                                                                            JobType = GestionePresenze_JobType.TimeSheet_Engine_Calculate,
+                                                                            Payload = model.Data.TimeSheet_Calculate,
+                                                                            Message = new Message { Text = $"Calcolo presenze terminato user Id =  {userId_calc}", MsgType = MessageType.Information }
+                                                                        });
 
 
                                     // anagrafica dell'utente corrente

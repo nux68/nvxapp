@@ -33,6 +33,7 @@ import { DipGGTimbraturaService } from '../../../ClientServer-Service/GestionePr
 import { EditDipGGTimbraturaDialogComponent } from '../../../shared/components/GestionePresenze/edit-dip-gg-timbratura-dialog/edit-dip-gg-timbratura-dialog.component';
 import { DipGGGiustificativiService } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Giustificativi/dip-gg-giustificativi.service';
 import { EditDipGGGiustificativiDialogComponent } from '../../../shared/components/GestionePresenze/edit-dip-gg-giustificativi-dialog/edit-dip-gg-giustificativi-dialog.component';
+import { JobNotifierService } from '../../../Utility/infrastructure/job-notifier.service';
 
 
 interface DayData {
@@ -84,7 +85,8 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
               private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
               private datePipe: DatePipe,
               private collectionDialogService: CollectionDialogService,
-              private longJobNotifier: LongJobNotifierService , /* RICVEVE LE NOTIFICHE  */
+              private longJobNotifier: LongJobNotifierService, /* RICVEVE LE NOTIFICHE  CALCOLO LONG*/
+              private jobNotifierService: JobNotifierService, /* RICVEVE LE NOTIFICHE  */
               public timeSheetEngineService: TimeSheetEngineService
               
   ) {
@@ -109,6 +111,27 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
 
       
     });
+
+    this.jobNotifierService.jobFinished$.subscribe(jobUpdate => {
+      console.log('Job finished:', jobUpdate);
+
+      if (jobUpdate.jobType === GestionePresenze_JobType.TimeSheet_Engine_Calculate) {
+
+        if (jobUpdate.payload.year == this.currYear &&
+          jobUpdate.payload.month == (this.currentMonth.month + 1) &&
+          jobUpdate.payload.selectedUserId.includes(this.currUserId))
+
+          this.loadMonth();
+      }
+
+
+    });
+
+    
+
+
+
+
   
     this.fabMenuService.fabMenuItem = [
 
