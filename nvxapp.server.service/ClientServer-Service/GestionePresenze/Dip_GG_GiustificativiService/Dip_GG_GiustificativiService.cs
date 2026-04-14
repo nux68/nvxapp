@@ -9,8 +9,9 @@ using nvxapp.server.data.Entities.Tenant;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
-using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_CausaliService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_GiustificativiService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_EngineService;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_EngineService.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.ServerModels;
@@ -23,6 +24,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Giu
         private readonly IGestionePresenzeUserUtility _gestionePresenzeUserUtility;
         private readonly IDip_GG_GiustificativiRepository _Dip_GG_GiustificativiRepository;
         private readonly IPar_GiustificativiRepository _par_GiustificativiRepository;
+        private ITimeSheet_EngineService_OnlyCalculate _timeSheet_EngineService;
 
         public Dip_GG_GiustificativiService(IMapper mapper,
                                   UserManager<ApplicationUser> userManager,
@@ -31,6 +33,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Giu
                                   IHttpContextAccessor httpContextAccessor,
                                   IConfiguration configuration,
                                   IPar_GiustificativiRepository par_GiustificativiRepository,
+                                  ITimeSheet_EngineService_OnlyCalculate timeSheet_EngineService,
 
                                   IGestionePresenzeUserUtility gestionePresenzeUserUtility,
                                   IDip_GG_GiustificativiRepository Dip_GG_GiustificativiRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
@@ -38,6 +41,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Giu
             _gestionePresenzeUserUtility = gestionePresenzeUserUtility;
             _Dip_GG_GiustificativiRepository = Dip_GG_GiustificativiRepository;
             _par_GiustificativiRepository = par_GiustificativiRepository;
+            _timeSheet_EngineService = timeSheet_EngineService;
         }
 
         public virtual async Task<GenericResult<Dip_GG_Giustificativi_GetAll_OutModel>> GetAll(GenericRequest<Dip_GG_Giustificativi_GetAll_InModel> model, Boolean isSubProcess)
@@ -140,7 +144,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Giu
                 dip_GG_Giustificativi = await _Dip_GG_GiustificativiRepository.UpsertAsync(dip_GG_Giustificativi);
                 retVal.Dip_GG_Giustificativi = _mapper.Map<Dip_GG_GiustificativiModel>(dip_GG_Giustificativi);
 
-
+                if(!model.Data.ExcludeRicalc)
+                    await CalculateGiorno(dip_GG_Giustificativi.IdDip_RapportoLavoro, dip_GG_Giustificativi.Data);
 
                 await Task.Delay(DelayAsyncMethod);
 
@@ -154,8 +159,18 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Giu
                 var entity = await _Dip_GG_GiustificativiRepository.FindByIdAsync(model.Data.Id);
                 if (entity != null)
                 {
+                    var IdDip_RapportoLavoro = entity.IdDip_RapportoLavoro;
+                    var GiornoCompetenza = entity.Data;
+
                     await _Dip_GG_GiustificativiRepository.DeleteAsync(entity);
+
+                    if(!model.Data.ExcludeRicalc)
+                        await CalculateGiorno(IdDip_RapportoLavoro, GiornoCompetenza);
+
                 }
+
+                
+
                 return new Dip_GG_Giustificativi_DeleteOutModel();
             }, isSubProcess);
         }
@@ -165,24 +180,24 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Giu
             return await ExecuteAction(model, async () =>
             {
                 Dip_GG_GiustificativiGetOutModel retVal = new Dip_GG_GiustificativiGetOutModel();
-                
-                
 
-                int IdCompany, IdAnagrafica=0;
+
+
+                int IdCompany, IdAnagrafica = 0;
                 int.TryParse(this.CurrentCompany, out IdCompany);
 
                 Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg company_DATA = await _gestionePresenzeUserUtility.Get_AzAna_AzSedi_AzReparto_Az_Cfg(IdCompany, true);
                 if (company_DATA != null && company_DATA.az_Anagrafica != null)
-                    IdAnagrafica=company_DATA.az_Anagrafica.Id;
+                    IdAnagrafica = company_DATA.az_Anagrafica.Id;
 
                 User_DATA_COMB_DipAna_DipRapp user_DATA_COMB_DipAna_DipRapp = await _gestionePresenzeUserUtility.Get_DipRapp_DipAna(model.Data.IdDip_RapportoLavoro);
 
                 if (user_DATA_COMB_DipAna_DipRapp != null && user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro != null)
                 {
                     Dip_GG_Giustificativi? dip_GG_Giustificativi = await _Dip_GG_GiustificativiRepository.FindByIdAsync(model.Data.Id);
-                    int IdPar_Giustificativi =0;
+                    int IdPar_Giustificativi = 0;
                     var cau = _par_GiustificativiRepository.FindAll(x => x.IdAz_Anagrafica == IdAnagrafica).FirstOrDefault();
-                    if(cau!=null)
+                    if (cau != null)
                         IdPar_Giustificativi = cau.Id;
 
                     if (dip_GG_Giustificativi == null)
@@ -192,7 +207,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Giu
                             IdDip_RapportoLavoro = user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.Id,
                             Data = model.Data.Data != null ? model.Data.Data.Value : DateTime.Now,
                             IdPar_Giustificativi = IdPar_Giustificativi,
-                            Hours = new TimeSpan(1,0,0)
+                            Hours = new TimeSpan(1, 0, 0)
                         };
 
 
@@ -202,7 +217,30 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Giu
                 return retVal;
             }, isSubProcess);
         }
-    
+
+
+        private async Task CalculateGiorno(int IdDip_RapportoLavoro, DateTime GiornoCompetenza)
+        {
+            User_DATA_COMB_DipAna_DipRapp user_DATA_COMB_DipAna_DipRapp = await _gestionePresenzeUserUtility.Get_DipRapp_DipAna(IdDip_RapportoLavoro);
+
+            if (user_DATA_COMB_DipAna_DipRapp != null && user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro != null && user_DATA_COMB_DipAna_DipRapp.dip_Anagrafica != null)
+            {
+                var TimeSheet_Calculate = new GenericRequest<TimeSheet_CalculateInModel>();
+                TimeSheet_Calculate.Data = new TimeSheet_CalculateInModel()
+                {
+                    TimeSheet_Calculate = new TimeSheet_CalculateModel()
+                    {
+                        SelectedUserId = new List<string>() { user_DATA_COMB_DipAna_DipRapp.dip_Anagrafica.IdAspNetUsers },
+                        Dal = GiornoCompetenza,
+                        Al = GiornoCompetenza,
+                        Month = GiornoCompetenza.Month,
+                        Year = GiornoCompetenza.Year,
+                    }
+                };
+
+                await _timeSheet_EngineService.Calculate(TimeSheet_Calculate, true);
+            }
+        }
 
     }
 

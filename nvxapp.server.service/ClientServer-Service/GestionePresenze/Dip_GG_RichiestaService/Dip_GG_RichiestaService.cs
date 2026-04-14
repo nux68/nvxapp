@@ -17,6 +17,8 @@ using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediReparto
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_GiustificativiService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_RichiestaService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_TimbraturaService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_EngineService;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_EngineService.Models;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Account;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
@@ -66,6 +68,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
         private readonly IDip_AnagraficaRepository _dip_AnagraficaRepository;
         private readonly IDip_RapportoLavoroRepository _dip_RapportoLavoroRepository;
         private readonly IAz_SediRepartoUserRepository _az_SediRepartoUserRepository;
+        private readonly ITimeSheet_EngineService_OnlyCalculate _timeSheet_EngineService;
 
         public Dip_GG_RichiestaService(IMapper mapper,
                                   UserManager<ApplicationUser> userManager,
@@ -84,6 +87,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                                   IDip_GG_RichiestaRepository dip_GG_RichiestaRepository,
                                   IDip_GG_TimbraturaRepository dip_GG_TimbraturaRepository,
                                   IDip_GG_NotaSpesaRepository dip_GG_NotaSpesaRepository,
+                                  ITimeSheet_EngineService_OnlyCalculate timeSheet_EngineService,
                                   IDip_GG_GiustificativiRepository dip_GG_GiustificativiRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _accountService = accountService;
@@ -97,6 +101,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
             _dip_AnagraficaRepository = dip_AnagraficaRepository;
             _dip_RapportoLavoroRepository = dip_RapportoLavoroRepository;
             _az_SediRepartoUserRepository = az_SediRepartoUserRepository;
+            _timeSheet_EngineService = timeSheet_EngineService;
 
         }
 
@@ -259,6 +264,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                                 case TipoRichiesta.NotaSpesa:
                                     break;
                             }
+
+                            if(!model.Data.ExcludeRicalc)
+                                await CalculateGiorno(dip_GG_Richiesta.IdDip_RapportoLavoro, dip_GG_Richiesta.Data);
+
                         }
                         else
                         {
@@ -529,7 +538,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                                     break;
                             }
                         }
-
+                        if(!model.Data.ExcludeRicalc)
+                                await CalculateGiorno(curr_richiesta.IdDip_RapportoLavoro, curr_richiesta.Data);
                     }
                 }
 
@@ -873,7 +883,13 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                 var entity = await _dip_GG_RichiestaRepository.FindByIdAsync(model.Data.Id);
                 if (entity != null)
                 {
+                    var IdDip_RapportoLavoro = entity.IdDip_RapportoLavoro;
+                    var GiornoCompetenza = entity.Data;
+
                     await _dip_GG_RichiestaRepository.DeleteAsync(entity);
+
+                    if(!model.Data.ExcludeRicalc)
+                        await CalculateGiorno(IdDip_RapportoLavoro, GiornoCompetenza);
                 }
                 return new Dip_GG_Richiesta_DeleteOutModel();
             }, isSubProcess);
@@ -905,6 +921,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                 dip_GG_Richiesta = await _dip_GG_RichiestaRepository.UpsertAsync(dip_GG_Richiesta);
                 retVal.Dip_GG_Richiesta = _mapper.Map<Dip_GG_RichiestaModel>(dip_GG_Richiesta);
 
+                if(!model.Data.ExcludeRicalc)
+                    await CalculateGiorno(dip_GG_Richiesta.IdDip_RapportoLavoro, dip_GG_Richiesta.Data);
 
 
                 await Task.Delay(DelayAsyncMethod);
@@ -913,6 +931,31 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
             }, isSubProcess);
         }
 
+
+        private async Task CalculateGiorno(int IdDip_RapportoLavoro, DateTime GiornoCompetenza)
+        {
+            User_DATA_COMB_DipAna_DipRapp user_DATA_COMB_DipAna_DipRapp = await _gestionePresenzeUserUtility.Get_DipRapp_DipAna(IdDip_RapportoLavoro);
+
+            if (user_DATA_COMB_DipAna_DipRapp != null && user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro != null && user_DATA_COMB_DipAna_DipRapp.dip_Anagrafica != null)
+            {
+                var TimeSheet_Calculate = new GenericRequest<TimeSheet_CalculateInModel>();
+                TimeSheet_Calculate.Data = new TimeSheet_CalculateInModel()
+                {
+                    TimeSheet_Calculate = new TimeSheet_CalculateModel()
+                    {
+                        SelectedUserId = new List<string>() { user_DATA_COMB_DipAna_DipRapp.dip_Anagrafica.IdAspNetUsers },
+                        Dal = GiornoCompetenza,
+                        Al = GiornoCompetenza,
+                        Month = GiornoCompetenza.Month,
+                        Year = GiornoCompetenza.Year,
+                    }
+                };
+
+                await _timeSheet_EngineService.Calculate(TimeSheet_Calculate, true);
+
+                
+            }
+        }
     }
 
     public interface IDip_GG_RichiestaService : IServiceBase

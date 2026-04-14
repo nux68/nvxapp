@@ -10,6 +10,8 @@ using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_ResultService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_EngineService;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_EngineService.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.ServerModels;
@@ -21,6 +23,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Res
     {
         private readonly IGestionePresenzeUserUtility _gestionePresenzeUserUtility;
         private readonly IDip_GG_ResultRepository _dip_GG_ResultRepository;
+        private ITimeSheet_EngineService_OnlyCalculate _timeSheet_EngineService;
 
         public Dip_GG_ResultService(IMapper mapper,
                                           UserManager<ApplicationUser> userManager,
@@ -28,6 +31,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Res
                                           IOptions<JwtParameter> jwtParameter,
                                           IHttpContextAccessor httpContextAccessor,
                                           IConfiguration configuration,
+                                          ITimeSheet_EngineService_OnlyCalculate timeSheet_EngineService,
 
                                           IGestionePresenzeUserUtility gestionePresenzeUserUtility,
                                           IDip_GG_ResultRepository dip_GG_ResultRepository
@@ -35,6 +39,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Res
         {
             _gestionePresenzeUserUtility = gestionePresenzeUserUtility;
             _dip_GG_ResultRepository = dip_GG_ResultRepository;
+            _timeSheet_EngineService = timeSheet_EngineService;
 
         }
 
@@ -165,8 +170,13 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Res
                         };
                         var newDay = await _dip_GG_ResultRepository.UpdateAsync(gg_res);
                         retVal.Dip_GG_Result.Add(newDay);
+
+                        if(!model.Data.ExcludeRicalc)
+                            await CalculateGiorno(newDay.IdDip_RapportoLavoro, newDay.Data);
                     }
                 }
+
+                
 
 
                 //eliminare
@@ -176,8 +186,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Res
                 return retVal;
             }, isSubProcess);
         }
-
-
         public virtual async Task<GenericResult<Dip_GG_ResultPutOutModel>> Dip_GG_ResultPut(GenericRequest<Dip_GG_ResultPutInModel> model, bool isSubProcess)
         {
             return await ExecuteAction(model, async () =>
@@ -206,12 +214,37 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Res
                 dip_GG_Result = await _dip_GG_ResultRepository.UpsertAsync(dip_GG_Result);
                 retVal.Dip_GG_Result = _mapper.Map<Dip_GG_ResultModel>(dip_GG_Result);
 
-                
+                if(!model.Data.ExcludeRicalc)
+                        await CalculateGiorno(dip_GG_Result.IdDip_RapportoLavoro, dip_GG_Result.Data);
 
                 await Task.Delay(DelayAsyncMethod);
 
                 return retVal;
             }, isSubProcess);
+        }
+
+
+        private  async Task CalculateGiorno(int IdDip_RapportoLavoro , DateTime GiornoCompetenza)
+        {
+            User_DATA_COMB_DipAna_DipRapp user_DATA_COMB_DipAna_DipRapp = await _gestionePresenzeUserUtility.Get_DipRapp_DipAna(IdDip_RapportoLavoro);
+
+                if (user_DATA_COMB_DipAna_DipRapp != null && user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro != null && user_DATA_COMB_DipAna_DipRapp.dip_Anagrafica!= null)
+                {
+                    var TimeSheet_Calculate = new GenericRequest<TimeSheet_CalculateInModel>();
+                    TimeSheet_Calculate.Data = new TimeSheet_CalculateInModel()
+                    {
+                        TimeSheet_Calculate = new TimeSheet_CalculateModel()
+                        {
+                            SelectedUserId = new List<string>() { user_DATA_COMB_DipAna_DipRapp.dip_Anagrafica.IdAspNetUsers }, 
+                            Dal = GiornoCompetenza,
+                            Al = GiornoCompetenza,
+                            Month = GiornoCompetenza.Month,
+                            Year = GiornoCompetenza.Year,
+                        }
+                    };
+
+                    await _timeSheet_EngineService.Calculate(TimeSheet_Calculate, true);
+                }
         }
 
     }

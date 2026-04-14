@@ -33,6 +33,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Res
 
     public class Dip_GG_ResultPutInModel 
     {
+        public Boolean ExcludeRicalc { get; set; }
         public required int IdDip_RapportoLavoro { get; set; }
         public Dip_GG_ResultModel Dip_GG_Result { get; set; }   = new Dip_GG_ResultModel(){  Id=0, IdDip_RapportoLavoro=0};
     }
@@ -57,6 +58,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Res
 
     public class Dip_GG_Result_Init_InModel
     {
+        public Boolean ExcludeRicalc { get; set; }
         public required int IdDip_RapportoLavoro { get; set; }
         public List<DateTime> Date { get; set; } = new List<DateTime>();
     }

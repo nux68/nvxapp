@@ -64,6 +64,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Cau
 
     public class Dip_GG_CausaliPutInModel 
     {
+        public Boolean ExcludeRicalc { get; set; }
         public int IdDip_RapportoLavoro { get; set; }
         public Dip_GG_CausaliModel Dip_GG_Causali { get; set; } = new Dip_GG_CausaliModel();
     }
@@ -74,6 +75,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Cau
 
     public class Dip_GG_Causali_DeleteInModel
     {
+        public Boolean ExcludeRicalc { get; set; }
         public int Id { get; set; }
     }
     public class Dip_GG_Causali_DeleteOutModel : ModelResult { }

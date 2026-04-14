@@ -94,6 +94,7 @@ export class Dip_GG_Richiesta_GetAll4Admin_OutModel extends ModelResult {
 
 
 export class Dip_GG_Richiesta_Send_InModel {
+  public excludeRicalc: boolean;
   public idAspNetUsers?: string
   public dip_GG_Richiesta: Dip_GG_RichiestaModel;
   public fromHR: boolean;
@@ -117,6 +118,7 @@ export class Dip_GG_Richiesta_Send_OutModel extends ModelResult {
 
 export class Dip_GG_Richiesta_SetState_InModel {
 
+  public excludeRicalc: boolean;
   public richiestaStato!: StatoRichiesta;
   public idDip_GG_Richiesta: number[] = [];
   public fromHR: boolean;

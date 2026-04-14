@@ -795,6 +795,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                 {
                     var req_1 = new GenericRequest<Dip_GG_ResultPutInModel>();
                     req_1.Data.Dip_GG_Result = item;
+                    req_1.Data.ExcludeRicalc = true;
                     req_1.Data.IdDip_RapportoLavoro = item.IdDip_RapportoLavoro;
                     await _dip_GG_ResultService.Dip_GG_ResultPut(req_1, true);
                 }
@@ -831,12 +832,14 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                         var req_1 = new GenericRequest<Dip_GG_GiustificativiPutInModel>();
                         req_1.Data.Dip_GG_Giustificativi = item;
                         req_1.Data.IdDip_RapportoLavoro = item.IdDip_RapportoLavoro;
+                        req_1.Data.ExcludeRicalc = true;
                         await _dip_GG_GiustificativiService.Dip_GG_GiustificativiPut(req_1, true);
                     }
                     else
                     {
                         var req_1 = new GenericRequest<Dip_GG_Giustificativi_DeleteInModel>();
                         req_1.Data.Id = item.Id;
+                        req_1.Data.ExcludeRicalc = true;
                         await _dip_GG_GiustificativiService.Dip_GG_GiustificativiDelete(req_1, true);
                     }
                 }
@@ -852,12 +855,14 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                     {
                         var req_1 = new GenericRequest<Dip_GG_RichiestaPutInModel>();
                         req_1.Data.Dip_GG_Richiesta = item;
+                        req_1.Data.ExcludeRicalc = true;
                         await _dip_GG_RichiestaService.Dip_GG_RichiestaPut(req_1, true);
                     }
                     else
                     {
                         var req_1 = new GenericRequest<Dip_GG_Richiesta_DeleteInModel>();
                         req_1.Data.Id = item.Id;
+                        req_1.Data.ExcludeRicalc = true;
                         await _dip_GG_RichiestaService.Dip_GG_RichiestaDelete(req_1, true);
                     }
                 }
@@ -873,12 +878,14 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                     {
                         var req_1 = new GenericRequest<Dip_GG_CausaliPutInModel>();
                         req_1.Data.Dip_GG_Causali = item;
+                        req_1.Data.ExcludeRicalc = true;
                         await _dip_GG_CausaliService.Dip_GG_CausaliPut(req_1, true);
                     }
                     else
                     {
                         var req_1 = new GenericRequest<Dip_GG_Causali_DeleteInModel>();
                         req_1.Data.Id = item.Id;
+                        req_1.Data.ExcludeRicalc = true;
                         await _dip_GG_CausaliService.Dip_GG_CausaliDelete(req_1, true);
                     }
                 }

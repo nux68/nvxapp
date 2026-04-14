@@ -83,6 +83,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
 
     public class Dip_GG_Richiesta_Send_InModel
     {
+        public Boolean ExcludeRicalc { get; set; }
         public string? IdAspNetUsers { get; set; }
         public Dip_GG_RichiestaModel? Dip_GG_Richiesta { get; set; }
         public Boolean FromHR { get; set; }
@@ -104,6 +105,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
 
     public class Dip_GG_Richiesta_SetState_InModel
     {
+        public Boolean ExcludeRicalc { get; set; }
         public List<int> IdDip_GG_Richiesta { get; set; } = new List<int>();
 
         public StatoRichiesta RichiestaStato { get; set; }
@@ -134,6 +136,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
 
     public class Dip_GG_Richiesta_DeleteInModel
     {
+        public Boolean ExcludeRicalc { get; set; }
         public int Id { get; set; }
     }
     public class Dip_GG_Richiesta_DeleteOutModel : ModelResult { }
@@ -141,6 +144,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
 
     public class Dip_GG_RichiestaPutInModel
     {
+        public Boolean ExcludeRicalc { get; set; }
         //public required int IdDip_RapportoLavoro { get; set; }
         public Dip_GG_RichiestaModel Dip_GG_Richiesta { get; set; } = new Dip_GG_RichiestaModel() { Id = 0, IdDip_RapportoLavoro=0, Dati=string.Empty };
     }

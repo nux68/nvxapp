@@ -82,6 +82,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Giu
 
     public class Dip_GG_GiustificativiPutInModel
     {
+        public Boolean ExcludeRicalc { get; set; }
         public int IdDip_RapportoLavoro { get; set; }
         public Dip_GG_GiustificativiModel Dip_GG_Giustificativi { get; set; } = new Dip_GG_GiustificativiModel() { Id = 0, IdDip_RapportoLavoro = 0, IdPar_Giustificativi = 0 };
     }
@@ -93,6 +94,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Giu
     
     public class Dip_GG_Giustificativi_DeleteInModel
     {
+        public Boolean ExcludeRicalc { get; set; }
         public int Id { get; set; }
     }
     public class Dip_GG_Giustificativi_DeleteOutModel : ModelResult { }

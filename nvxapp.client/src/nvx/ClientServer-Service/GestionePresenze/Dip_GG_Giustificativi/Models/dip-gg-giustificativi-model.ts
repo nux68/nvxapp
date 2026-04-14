@@ -50,6 +50,7 @@ export class Dip_GG_Giustificativi_Get_4Calculation_OutModel extends ModelResult
 
 
 export class Dip_GG_Giustificativi_DeleteInModel {
+  public excludeRicalc: boolean;
   public id: number;
 }
 export class Dip_GG_Giustificativi_DeleteOutModel extends ModelResult {
@@ -57,6 +58,7 @@ export class Dip_GG_Giustificativi_DeleteOutModel extends ModelResult {
 }
 
 export class Dip_GG_GiustificativiPutInModel {
+  public excludeRicalc: boolean;
   public dip_GG_Giustificativi: Dip_GG_GiustificativiModel;
 }
 export class Dip_GG_GiustificativiPutOutModel extends ModelResult {
