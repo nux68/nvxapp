@@ -44,37 +44,126 @@ export class DipGGResultService {
 
 export class Dip_GG_Result_Helper {
 
-  public stato: GG_ResultStato = GG_ResultStato.Init;
+  private static readonly ALL_ERROR_DETAILS =
+    GG_ResultStato.Err_1 | GG_ResultStato.Err_2 | GG_ResultStato.Err_3 |
+    GG_ResultStato.Err_4 | GG_ResultStato.Err_5 | GG_ResultStato.Err_6 |
+    GG_ResultStato.Err_7 | GG_ResultStato.Err_8 | GG_ResultStato.Err_9 |
+    GG_ResultStato.Err_10 | GG_ResultStato.Err_11 | GG_ResultStato.Err_12 |
+    GG_ResultStato.Err_13 | GG_ResultStato.Err_14 | GG_ResultStato.Err_15 |
+    GG_ResultStato.Err_16 | GG_ResultStato.Err_17 | GG_ResultStato.Err_18 |
+    GG_ResultStato.Err_19 | GG_ResultStato.Err_20;
 
-  // Imposta lo stato principale (mutuamente esclusivo)
-  public setState(state: GG_ResultStato): void {
-    this.stato &= ~GG_ResultStato.STATE_MASK; // pulisce gli stati
-    this.stato |= state;                      // imposta il nuovo
+  private static readonly ALL_WARNING_DETAILS =
+    GG_ResultStato.Warning_1 | GG_ResultStato.Warning_2;
+  // Warning_3 → Warning_20 vanno aggiunti se usi BigInt
+
+
+  // ────────────────────────────────────────────────────────────────
+  // SetState
+  // ────────────────────────────────────────────────────────────────
+  static SetState(stato: GG_ResultStato, state: GG_ResultStato): GG_ResultStato {
+    stato &= ~GG_ResultStato.STATE_MASK;
+    stato |= state;
+    return stato;
   }
 
-  // Aggiunge un dettaglio (warning/errore)
-  public addDetail(detail: GG_ResultStato): void {
-    this.stato |= detail;
+  // ────────────────────────────────────────────────────────────────
+  // AddDetail
+  // ────────────────────────────────────────────────────────────────
+  static AddDetail(stato: GG_ResultStato, detail: GG_ResultStato): GG_ResultStato {
+    stato |= detail;
+
+    if (this.IsErrorDetail(detail)) {
+      stato |= GG_ResultStato.Err;
+      stato &= ~GG_ResultStato.OK;
+      stato &= ~GG_ResultStato.Init;
+    }
+
+    if (this.IsWarningDetail(detail)) {
+      stato |= GG_ResultStato.Warning;
+      stato &= ~GG_ResultStato.OK;
+      stato &= ~GG_ResultStato.Init;
+    }
+
+    return stato;
   }
 
-  // Rimuove un dettaglio
-  public removeDetail(detail: GG_ResultStato): void {
-    this.stato &= ~detail;
+  // ────────────────────────────────────────────────────────────────
+  // RemoveDetail
+  // ────────────────────────────────────────────────────────────────
+  static RemoveDetail(stato: GG_ResultStato, detail: GG_ResultStato): GG_ResultStato {
+    stato &= ~detail;
+
+    if (this.IsErrorDetail(detail)) {
+      if (!this.HasAnyErrorDetail(stato))
+        stato &= ~GG_ResultStato.Err;
+    }
+
+    if (this.IsWarningDetail(detail)) {
+      if (!this.HasAnyWarningDetail(stato))
+        stato &= ~GG_ResultStato.Warning;
+    }
+
+    if (!this.HasAnyErrorDetail(stato) && !this.HasAnyWarningDetail(stato)) {
+      stato &= ~GG_ResultStato.STATE_MASK;
+      stato |= GG_ResultStato.OK;
+    }
+
+    return stato;
   }
 
-  // Controlla un dettaglio
-  public hasDetail(detail: GG_ResultStato): boolean {
-    return (this.stato & detail) !== 0;
+  // ────────────────────────────────────────────────────────────────
+  static HasDetail(stato: GG_ResultStato, detail: GG_ResultStato): boolean {
+    return (stato & detail) !== 0;
   }
 
-  // Legge lo stato principale
-  public getState(): GG_ResultStato {
-    return this.stato & GG_ResultStato.STATE_MASK;
+  static GetState(stato: GG_ResultStato): GG_ResultStato {
+    return stato & GG_ResultStato.STATE_MASK;
   }
 
-  // Cast a integer
-  public toInt(): number {
-    return this.stato;
+  static Combine(...sources: GG_ResultStato[]): GG_ResultStato {
+    let result = 0;
+
+    for (const s of sources)
+      result |= s & (this.ALL_ERROR_DETAILS | this.ALL_WARNING_DETAILS);
+
+    if (this.HasAnyErrorDetail(result)) {
+      result |= GG_ResultStato.Err;
+      result &= ~GG_ResultStato.OK;
+      result &= ~GG_ResultStato.Init;
+    }
+    else if (this.HasAnyWarningDetail(result)) {
+      result |= GG_ResultStato.Warning;
+      result &= ~GG_ResultStato.OK;
+      result &= ~GG_ResultStato.Init;
+    }
+    else {
+      result |= GG_ResultStato.OK;
+    }
+
+    return result;
+  }
+
+  static ToLong(stato: GG_ResultStato): number {
+    return stato;
+  }
+
+  // ── helper privati ──────────────────────────────────────────────
+
+  private static IsErrorDetail(value: GG_ResultStato): boolean {
+    return (value & this.ALL_ERROR_DETAILS) !== 0;
+  }
+
+  private static IsWarningDetail(value: GG_ResultStato): boolean {
+    return (value & this.ALL_WARNING_DETAILS) !== 0;
+  }
+
+  private static HasAnyErrorDetail(stato: GG_ResultStato): boolean {
+    return (stato & this.ALL_ERROR_DETAILS) !== 0;
+  }
+
+  private static HasAnyWarningDetail(stato: GG_ResultStato): boolean {
+    return (stato & this.ALL_WARNING_DETAILS) !== 0;
   }
 }
 
