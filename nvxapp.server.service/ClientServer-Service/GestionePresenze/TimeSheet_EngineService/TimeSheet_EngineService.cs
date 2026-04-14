@@ -810,7 +810,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                     {
                         var req_1 = new GenericRequest<Dip_GG_TimbraturaPutInModel>();
                         req_1.Data.Dip_GG_Timbratura = item;
-                        //req_1.Data.IdDip_RapportoLavoro = item.IdDip_RapportoLavoro;
+                        req_1.Data.ExcludeRicalc = true;
                         await _dip_GG_TimbraturaService.Dip_GG_TimbraturaPut(req_1, true);
                     }
                     else

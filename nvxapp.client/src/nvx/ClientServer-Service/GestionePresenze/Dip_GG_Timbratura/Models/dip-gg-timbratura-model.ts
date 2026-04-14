@@ -40,6 +40,7 @@ export class Dip_GG_Timbratura_GetAll_OutModel extends ModelResult {
 
 export class Dip_GG_Timbratura_Stamp_InModel {
   public dateStamp!: string;
+  public excludeRicalc: boolean;
 }
 export class Dip_GG_Timbratura_Stamp_OutModel extends ModelResult {
 }
@@ -67,6 +68,7 @@ export class Dip_GG_TimbraturaGetOutModel extends ModelResult {
 
 
 export class Dip_GG_TimbraturaPutInModel {
+  public excludeRicalc: boolean;
   public dip_GG_Timbratura: Dip_GG_TimbraturaModel;
 }
 export class Dip_GG_TimbraturaPutOutModel extends ModelResult {
@@ -76,6 +78,7 @@ export class Dip_GG_TimbraturaPutOutModel extends ModelResult {
 
 
 export class Dip_GG_Timbratura_DeleteInModel {
+  public excludeRicalc: boolean;
   public id: number;
 }
 export class Dip_GG_Timbratura_DeleteOutModel extends ModelResult {

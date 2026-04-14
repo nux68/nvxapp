@@ -25,12 +25,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
         private readonly IGestionePresenzeUserUtility _gestionePresenzeUserUtility;
         private readonly IDip_GG_TimbraturaRepository _dip_GG_TimbraturaRepository;
 
-        //private readonly ITimeSheet_EngineService_OnlyCalculate _timeSheet_EngineService;
 
-         // ← NON iniettato nel costruttore: risolto a runtime per rompere il ciclo
-        private readonly IServiceScopeFactory _serviceScopeFactory;
-
-        // proprietà lazy: risolve ITimeSheet_EngineService_OnlyCalculate solo quando serve
         private ITimeSheet_EngineService_OnlyCalculate _timeSheet_EngineService;
 
         public Dip_GG_TimbraturaService(IMapper mapper,
@@ -128,7 +123,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
                     };
                     dip_GG_Timbratura = await _dip_GG_TimbraturaRepository.UpsertAsync(dip_GG_Timbratura);
 
-                    await CalculateGiorno(dip_GG_Timbratura.IdDip_RapportoLavoro, dip_GG_Timbratura.GiornoCompetenza);
+                    if(!model.Data.ExcludeRicalc)
+                        await CalculateGiorno(dip_GG_Timbratura.IdDip_RapportoLavoro, dip_GG_Timbratura.GiornoCompetenza);
 
                 }
 
@@ -233,8 +229,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
                 dip_GG_Timbratura = await _dip_GG_TimbraturaRepository.UpsertAsync(dip_GG_Timbratura);
                 retVal.Dip_GG_Timbratura = _mapper.Map<Dip_GG_TimbraturaModel>(dip_GG_Timbratura);
 
-
-                await CalculateGiorno(dip_GG_Timbratura.IdDip_RapportoLavoro, dip_GG_Timbratura.GiornoCompetenza);
+                if(!model.Data.ExcludeRicalc)
+                    await CalculateGiorno(dip_GG_Timbratura.IdDip_RapportoLavoro, dip_GG_Timbratura.GiornoCompetenza);
 
 
 
@@ -257,7 +253,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
                     var GiornoCompetenza = entity.GiornoCompetenza;
                     await _dip_GG_TimbraturaRepository.DeleteAsync(entity);
 
-                    await CalculateGiorno(IdDip_RapportoLavoro, GiornoCompetenza);
+                    if(!model.Data.ExcludeRicalc)
+                        await CalculateGiorno(IdDip_RapportoLavoro, GiornoCompetenza);
                 }
 
                 

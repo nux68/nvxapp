@@ -53,6 +53,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
 
     public class Dip_GG_Timbratura_Stamp_InModel
     {
+        public Boolean ExcludeRicalc { get; set; }
         public string DateStamp { get; set; } = string.Empty;
     }
     public class Dip_GG_Timbratura_Stamp_OutModel : ModelResult
@@ -87,6 +88,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
     
     public class Dip_GG_TimbraturaPutInModel
     {
+
+        public Boolean ExcludeRicalc { get; set; }
+
         public int IdDip_RapportoLavoro { get; set; }
         public Dip_GG_TimbraturaModel Dip_GG_Timbratura { get; set; } = new Dip_GG_TimbraturaModel() { Id = 0, IdDip_RapportoLavoro = 0 };
     }
@@ -97,6 +101,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
 
     public class Dip_GG_Timbratura_DeleteInModel
     {
+        public Boolean ExcludeRicalc { get; set; }
         public int Id { get; set; }
     }
     public class Dip_GG_Timbratura_DeleteOutModel : ModelResult { }
