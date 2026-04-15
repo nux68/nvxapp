@@ -1,0 +1,74 @@
+<app-page-toolbar [title]="Title"
+                  [showFilter]="false"
+                  [showBreadcrumbs]="true">
+</app-page-toolbar>
+
+<ion-content [fullscreen]="true">
+
+  <ion-card>
+    <ion-card-content>
+
+
+
+      <app-sedi-reparto-user-selection [showPeriodSelect]="true"
+                                       [showSediSelect]="false"
+                                       [showRepartoSelect]="true"
+                                       [showUserSelect]="true"
+                                       [singleSelectUser]="false"
+                                       (periodChange)="onPeriodChange($event)"
+                                       (sediIdChange)="onSedeChanged($event)"
+                                       (repartoIdChange)="onRepartiChanged($event)"
+                                       (allUsersIdChange)="onAllUsersInSelectionChanged($event)"
+                                       (currUserIdChange)="onCurrentUserChanged($event)">
+      </app-sedi-reparto-user-selection>
+
+
+      <form [formGroup]="_editForm">
+
+
+        <ion-row>
+          <ion-col>
+            <ion-item>
+              <ion-label position="floating">Dal</ion-label>
+              <ion-datetime-button class="datetime-button-with-label" datetime="dalle-limite-sx-modal"></ion-datetime-button>
+              <ion-modal [keepContentsMounted]="true">
+                <ng-template>
+                  <ion-datetime id="dalle-limite-sx-modal"
+                                formControlName="dal"
+                                presentation="date"
+                                [firstDayOfWeek]="1"
+                                [showDefaultButtons]="true"
+                                doneText="OK"
+                                cancelText="Annulla">
+                  </ion-datetime>
+                </ng-template>
+              </ion-modal>
+            </ion-item>
+          </ion-col>
+          <ion-col>
+            <ion-item>
+              <ion-label position="floating">Al</ion-label>
+              <ion-datetime-button class="datetime-button-with-label" datetime="alle-limite-sx-modal"></ion-datetime-button>
+              <ion-modal [keepContentsMounted]="true">
+                <ng-template>
+                  <ion-datetime id="alle-limite-sx-modal"
+                                formControlName="al"
+                                presentation="date"
+                                [firstDayOfWeek]="1"
+                                [showDefaultButtons]="true"
+                                doneText="OK"
+                                cancelText="Annulla">
+                  </ion-datetime>
+                </ng-template>
+              </ion-modal>
+            </ion-item>
+          </ion-col>
+        </ion-row>
+
+      </form>
+
+
+    </ion-card-content>
+  </ion-card>
+
+</ion-content>

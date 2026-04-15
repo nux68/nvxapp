@@ -17,7 +17,10 @@ export class MainMenuAttendanceTrackingService implements iMainMenuService {
     return [
       { menuType: MenuType.MenuItem,   zorder: 2100, group: 0, title: 'Richieste'           , roles: ['CompanyPowerAdmin', 'CompanyAdmin'], component: "JustificationListPageComponent", url: '/requestlistadmin', icon: 'ellipse' },
       { menuType: MenuType.MenuItem,   zorder: 2200, group: 0, title: 'Calendario HR'       , roles: ['CompanyPowerAdmin']                , component: "TimeSheetPowerAdminPageComponent", url: '/poweradmintimesheet', icon: 'ellipse' },
-      { menuType: MenuType.MenuItem,   zorder: 2300, group: 0, title: 'Calendario'          , roles: ['CompanyAdmin']                     , component: "TimeSheetAdminPageComponent", url: '/admintimesheet', icon: 'ellipse' },
+
+      { menuType: MenuType.MenuItem, zorder: 2400, group: 0, title: 'Export causali         ', roles: ['CompanyPowerAdmin'], component: "ExportCausaliPageComponent", url: '/exportcausali', icon: 'ellipse' },
+
+      { menuType: MenuType.MenuItem, zorder: 2300, group: 0, title: 'Calendario', roles: ['CompanyAdmin'], component: "TimeSheetAdminPageComponent", url: '/admintimesheet', icon: 'ellipse' },
       { menuType: MenuType.MenuItem,   zorder: 3000, group: 0, title: 'Utenti '             , roles: ['CompanyAdmin']                     , component: "UserDepartmentListPageComponent", url: '/userdepartmentlist', icon: 'people' },
 
       { menuType: MenuType.MenuHeader, zorder: 201000, group: 1, title: 'Parametri'         , roles: ['CompanyPowerAdmin'], component: '', url: '', icon: '' },

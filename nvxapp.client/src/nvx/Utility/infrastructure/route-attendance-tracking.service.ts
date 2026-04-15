@@ -22,6 +22,8 @@ export class RouteAttendanceTrackingService {
       { path: 'requestlistuser', loadChildren: () => import('../../pages/GestionePresenze/request-list-user-page/request-list-user-page.module').then(m => m.RequestListUserPageModule), canActivate: [RoleGuard4User] },
 
       //power admin
+      { path: 'exportcausali', loadChildren: () => import('../../pages/GestionePresenze/export-causali-page/export-causali-page.module').then(m => m.TimeSheetPowerAdminPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
+
       { path: 'poweradmintimesheet', loadChildren: () => import('../../pages/GestionePresenze/time-sheet-power-admin-page/time-sheet-power-admin-page.module').then(m => m.TimeSheetPowerAdminPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
       { path: 'justificationlist', loadChildren: () => import('../../pages/GestionePresenze/justification-list-page/justification-list-page.module').then(m => m.JustificationListPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
       { path: 'justificationedit', loadChildren: () => import('../../pages/GestionePresenze/justification-edit-page/justification-edit-page.module').then(m => m.JustificationEditPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
