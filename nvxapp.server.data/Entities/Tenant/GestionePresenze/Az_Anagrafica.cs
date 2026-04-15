@@ -30,6 +30,9 @@ namespace nvxapp.server.data.Entities.Tenant
         public ICollection<Par_Attivita>? Par_Attivita { get; set; }
         public ICollection<Az_Commessa>? Az_Commessa { get; set; }
         public ICollection<Az_Cliente>? Az_Cliente { get; set; }
+        public ICollection<Par_ExportCau>? Par_ExportCau { get; set; }
+
+        
 
     }
 

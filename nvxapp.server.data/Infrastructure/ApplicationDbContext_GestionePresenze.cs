@@ -49,6 +49,10 @@ namespace nvxapp.server.data.Infrastructure
         public virtual DbSet<My_Template1> My_template1 { get; set; }
         public virtual DbSet<Az_SubCommessaSediReparto> Az_SubCommessaSediReparto { get; set; }
 
+        public virtual DbSet<Par_ExportCau> Par_ExportCau { get; set; }
+        public virtual DbSet<Par_ExportCau_Causali> Par_ExportCau_Causali { get; set; }
+        
+        
 
         private void Define_Table_DbContext_GestionePresenze(ModelBuilder modelBuilder)
         {
@@ -107,6 +111,9 @@ namespace nvxapp.server.data.Infrastructure
                 .WithMany(t_figlio => t_figlio.Dip_GG_Causali)
                 .HasForeignKey(key_esterna => key_esterna.IdPar_Causali)
                 .OnDelete(DeleteBehavior.Cascade);
+
+
+      
 
 
 
@@ -329,7 +336,27 @@ namespace nvxapp.server.data.Infrastructure
                 .OnDelete(DeleteBehavior.Restrict); 
 
             
-            
+            /* Par_ExportCau */
+            modelBuilder.Entity<Par_ExportCau>()
+                .HasOne(t_padre => t_padre.Az_AnagraficaNavigation)
+                .WithMany(t_figlio => t_figlio.Par_ExportCau)
+                .HasForeignKey(key_esterna => key_esterna.IdAz_Anagrafica)
+                .OnDelete(DeleteBehavior.Cascade);
+
+
+            /* Par_ExportCau_Causali */
+            modelBuilder.Entity<Par_ExportCau_Causali>()
+                .HasOne(t_padre => t_padre.Par_ExportCauNavigation)
+                .WithMany(t_figlio => t_figlio.Par_ExportCau_Causali)
+                .HasForeignKey(key_esterna => key_esterna.IPar_ExportCau)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Par_ExportCau_Causali>()
+                .HasOne(t_padre => t_padre.CausaleNavigation)
+                .WithMany(t_figlio => t_figlio.Par_ExportCau_Causali)
+                .HasForeignKey(key_esterna => key_esterna.IdCausale)
+                .OnDelete(DeleteBehavior.Cascade);
+
 
 
 
