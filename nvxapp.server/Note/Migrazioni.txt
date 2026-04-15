@@ -46,6 +46,7 @@ dotnet ef database update GestionePresenze_Orari_Step_13 --project nvxapp.server
 dotnet ef database update GestionePresenze_Orari_Step_14 --project nvxapp.server.data --startup-project nvxapp.server
 dotnet ef database update GestionePresenze_Orari_Step_15 --project nvxapp.server.data --startup-project nvxapp.server
 dotnet ef database update GestionePresenze_Export_Step_1 --project nvxapp.server.data --startup-project nvxapp.server
+dotnet ef database update GestionePresenze_Export_Step_2 --project nvxapp.server.data --startup-project nvxapp.server
 
 cancella
 dotnet ef migrations remove --project nvxapp.server.data --startup-project nvxapp.server

@@ -12,7 +12,7 @@ namespace nvxapp.server.data.Entities.Tenant.GestionePresenze
     {
 
         [Required]
-        public required int IPar_ExportCau { get; set; }
+        public required int IdPar_ExportCau { get; set; }
         [ForeignKey("IdPar_ExportCau")]
         public virtual Par_ExportCau? Par_ExportCauNavigation { get; set; }
 

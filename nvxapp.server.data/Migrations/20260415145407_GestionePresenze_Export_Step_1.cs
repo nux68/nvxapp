@@ -55,12 +55,11 @@ namespace nvxapp.server.data.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    IPar_ExportCau = table.Column<int>(type: "integer", nullable: false),
+                    IdPar_ExportCau = table.Column<int>(type: "integer", nullable: false),
                     IdCausale = table.Column<int>(type: "integer", nullable: false),
                     Codice = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: false),
                     TipoElaborazione = table.Column<int>(type: "integer", nullable: false),
                     TipoUnita = table.Column<int>(type: "integer", nullable: false),
-                    IdPar_ExportCau = table.Column<int>(type: "integer", nullable: true),
                     ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
@@ -76,8 +75,8 @@ namespace nvxapp.server.data.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Par_ExportCau_Causali_Par_ExportCau_IPar_ExportCau",
-                        column: x => x.IPar_ExportCau,
+                        name: "FK_Par_ExportCau_Causali_Par_ExportCau_IdPar_ExportCau",
+                        column: x => x.IdPar_ExportCau,
                         principalSchema: "public",
                         principalTable: "Par_ExportCau",
                         principalColumn: "Id",
@@ -97,10 +96,10 @@ namespace nvxapp.server.data.Migrations
                 column: "IdCausale");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Par_ExportCau_Causali_IPar_ExportCau",
+                name: "IX_Par_ExportCau_Causali_IdPar_ExportCau",
                 schema: "public",
                 table: "Par_ExportCau_Causali",
-                column: "IPar_ExportCau");
+                column: "IdPar_ExportCau");
         }
 
         /// <inheritdoc />

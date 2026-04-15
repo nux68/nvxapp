@@ -12,7 +12,7 @@ using nvxapp.server.data.Infrastructure;
 namespace nvxapp.server.data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260415141310_GestionePresenze_Export_Step_1")]
+    [Migration("20260415145407_GestionePresenze_Export_Step_1")]
     partial class GestionePresenze_Export_Step_1
     {
         /// <inheritdoc />
@@ -1495,13 +1495,10 @@ namespace nvxapp.server.data.Migrations
                     b.Property<DateTime?>("CreationDate")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int>("IPar_ExportCau")
-                        .HasColumnType("integer");
-
                     b.Property<int>("IdCausale")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("IdPar_ExportCau")
+                    b.Property<int>("IdPar_ExportCau")
                         .HasColumnType("integer");
 
                     b.Property<DateTime?>("ModifiedDate")
@@ -1515,9 +1512,9 @@ namespace nvxapp.server.data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("IPar_ExportCau");
-
                     b.HasIndex("IdCausale");
+
+                    b.HasIndex("IdPar_ExportCau");
 
                     b.ToTable("Par_ExportCau_Causali", "public");
                 });
@@ -2554,15 +2551,15 @@ namespace nvxapp.server.data.Migrations
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.GestionePresenze.Par_ExportCau_Causali", b =>
                 {
-                    b.HasOne("nvxapp.server.data.Entities.Tenant.GestionePresenze.Par_ExportCau", "Par_ExportCauNavigation")
-                        .WithMany("Par_ExportCau_Causali")
-                        .HasForeignKey("IPar_ExportCau")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("nvxapp.server.data.Entities.Tenant.Par_Causali", "CausaleNavigation")
                         .WithMany("Par_ExportCau_Causali")
                         .HasForeignKey("IdCausale")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.GestionePresenze.Par_ExportCau", "Par_ExportCauNavigation")
+                        .WithMany("Par_ExportCau_Causali")
+                        .HasForeignKey("IdPar_ExportCau")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
