@@ -6,7 +6,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Res
     {
         // maschera di tutti i dettagli errore (Err_1 → Err_20)
         private const GG_ResultStato ALL_ERROR_DETAILS =
-            GG_ResultStato.Err_1 | GG_ResultStato.Err_2 | GG_ResultStato.Err_3 |
+            GG_ResultStato.Err_TimbratureMancanti | GG_ResultStato.Err_2 | GG_ResultStato.Err_3 |
             GG_ResultStato.Err_4 | GG_ResultStato.Err_5 | GG_ResultStato.Err_6 |
             GG_ResultStato.Err_7 | GG_ResultStato.Err_8 | GG_ResultStato.Err_9 |
             GG_ResultStato.Err_10 | GG_ResultStato.Err_11 | GG_ResultStato.Err_12 |

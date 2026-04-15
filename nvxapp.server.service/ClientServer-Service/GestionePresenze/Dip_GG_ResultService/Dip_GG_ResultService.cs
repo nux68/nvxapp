@@ -120,6 +120,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Res
                             var req_Init = new GenericRequest<Dip_GG_Result_Init_InModel>();
                             req_Init.Data.IdDip_RapportoLavoro = item;
                             req_Init.Data.Date = DayToAdd;
+                            req_Init.Data.ExcludeRicalc = true;
                             var res_Init = await Dip_GG_Result_Init(req_Init, true);
                             if (res_Init.Success && res_Init.Data != null)
                             {

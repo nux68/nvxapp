@@ -45,7 +45,7 @@ export class DipGGResultService {
 export class Dip_GG_Result_Helper {
 
   private static readonly ALL_ERROR_DETAILS =
-    GG_ResultStato.Err_1 | GG_ResultStato.Err_2 | GG_ResultStato.Err_3 |
+    GG_ResultStato.Err_TimbratureMancanti | GG_ResultStato.Err_2 | GG_ResultStato.Err_3 |
     GG_ResultStato.Err_4 | GG_ResultStato.Err_5 | GG_ResultStato.Err_6 |
     GG_ResultStato.Err_7 | GG_ResultStato.Err_8 | GG_ResultStato.Err_9 |
     GG_ResultStato.Err_10 | GG_ResultStato.Err_11 | GG_ResultStato.Err_12 |

@@ -293,11 +293,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                                                                 );
 
                                     await _jobNotifier.JobNotifierAsync(userId, new JobNotifierData()
-                                                                        {
-                                                                            JobType = GestionePresenze_JobType.TimeSheet_Engine_Calculate,
-                                                                            Payload = model.Data.TimeSheet_Calculate,
-                                                                            Message = new Message { Text = $"Calcolo presenze terminato user Id =  {userId_calc}", MsgType = MessageType.Information }
-                                                                        });
+                                    {
+                                        JobType = GestionePresenze_JobType.TimeSheet_Engine_Calculate,
+                                        Payload = model.Data.TimeSheet_Calculate,
+                                        Message = new Message { Text = $"Calcolo presenze terminato user Id =  {userId_calc}", MsgType = MessageType.Information }
+                                    });
 
 
                                     // anagrafica dell'utente corrente
@@ -771,14 +771,14 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
             if (dip_GG_Result != null)
             {
+                /* genera il giustificativo di assenza che farà quadrare la giornata (non è detto che questa funzione sia attiva) */
                 if (timeSheet_CalculateModel.Genera_Giustificativo_Assenza)
                 {
                     await GeneraGiustificativoAssenza(Dip_Anagrafica, AllData, rapporto_calc.Id, giorno, dip_GG_Result);
                 }
 
                 /*await*/
-                GeneraCausali(Dip_Anagrafica, AllData, rapporto_calc.Id, giorno, dip_GG_Result);
-
+                Calcolo2Result = GeneraCausali(Dip_Anagrafica, AllData, rapporto_calc.Id, giorno, dip_GG_Result);
 
 
                 dip_GG_Result.Stato = Dip_GG_Result_Helper.Combine(Calcolo1Result,
@@ -1097,7 +1097,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
             if (timbratureSenzaVerso.Count < coppieTMP.Count)
             {
-                Dip_GG_Result_Helper.AddDetail(ref retVal, GG_ResultStato.Err_1);
+                Dip_GG_Result_Helper.AddDetail(ref retVal, GG_ResultStato.Err_TimbratureMancanti);
                 return retVal;
             }
 
@@ -1369,8 +1369,15 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
 
         }
-        private void GeneraCausali(Dip_AnagraficaModel Dip_Anagrafica, Timesheet_AllData_OutModel allData, int IdDip_RapportoLavoro, DateTime day, Dip_GG_ResultModel dip_GG_Result)
+        private GG_ResultStato GeneraCausali(Dip_AnagraficaModel Dip_Anagrafica, Timesheet_AllData_OutModel allData, int IdDip_RapportoLavoro, DateTime day, Dip_GG_ResultModel dip_GG_Result)
         {
+
+            GG_ResultStato retVal = GG_ResultStato.OK;
+
+            TimeSpan oreLavorate = new TimeSpan();    // ore che hanno riscontro sulle timbrature
+            TimeSpan oreLavorabili = this.CalcolaOreTeoriche(allData, IdDip_RapportoLavoro, day);  // alle ore teoriche si sommano i just con segno + e si sottraggono quelli con -
+
+
             // dizionario temporaneo IdCausale ? TimeSpan accumulato
             var causaliAccumulate = new Dictionary<int, TimeSpan>();
 
@@ -1400,42 +1407,50 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                 // determina il valore ore del giustificativo
                 TimeSpan valoreOre = TimeSpan.Zero;
 
-                switch (giustificativo.InputType)
-                {
-                    case JustificationInputType.Manual:
-                        // ore inserite manualmente
-                        valoreOre = giustificativo.Hours ?? TimeSpan.Zero;
-                        break;
+                //switch (giustificativo.InputType)
+                //{
+                //    case JustificationInputType.Manual:
+                //        // ore inserite manualmente
+                valoreOre = giustificativo.Hours ?? TimeSpan.Zero;
+                //        break;
 
-                    case JustificationInputType.AllDay:
-                        // intera giornata: prende le ore teoriche del giorno
-                        valoreOre = this.CalcolaOreTeoriche(allData, IdDip_RapportoLavoro, day);
-                        break;
+                //    case JustificationInputType.AllDay:
+                //        // intera giornata: prende le ore teoriche del giorno
+                //        valoreOre = this.CalcolaOreTeoriche(allData, IdDip_RapportoLavoro, day);
+                //        break;
 
-                    case JustificationInputType.IntegrateDay:
-                        // integra la giornata: differenza tra ore teoriche e ore reali
-                        var oreTeoInt = this.CalcolaOreTeoriche(allData, IdDip_RapportoLavoro, day);
-                        var oreRealiInt = this.CalcolaOreLavorate(allData, IdDip_RapportoLavoro, day);
-                        valoreOre = oreTeoInt - oreRealiInt;
-                        if (valoreOre < TimeSpan.Zero)
-                            valoreOre = TimeSpan.Zero;
-                        break;
-                }
+                //    case JustificationInputType.IntegrateDay:
+                //        // integra la giornata: differenza tra ore teoriche e ore reali
+                //        var oreTeoInt = this.CalcolaOreTeoriche(allData, IdDip_RapportoLavoro, day);
+                //        var oreRealiInt = this.CalcolaOreLavorate(allData, IdDip_RapportoLavoro, day);
+                //        valoreOre = oreTeoInt - oreRealiInt;
+                //        if (valoreOre < TimeSpan.Zero)
+                //            valoreOre = TimeSpan.Zero;
+                //        break;
+                //}
 
-                // applica il segno del giustificativo
-                if (parGiust.Segno == SignWithNeutral.Down)
-                    valoreOre = valoreOre.Negate();
+                //// applica il segno del giustificativo
+                //if (parGiust.Segno == SignWithNeutral.Down)
+                //    valoreOre = valoreOre.Negate();
 
                 // accumula
                 if (causaliAccumulate.ContainsKey(idCausale))
                     causaliAccumulate[idCausale] += valoreOre;
                 else
                     causaliAccumulate[idCausale] = valoreOre;
+
+
+
+                if (parGiust.Segno == SignWithNeutral.Up)
+                    oreLavorabili = oreLavorabili.Add(valoreOre);
+                else if (parGiust.Segno == SignWithNeutral.Down)
+                    oreLavorabili = oreLavorabili.Subtract(valoreOre);
+
             }
 
 
 
-            // -- B) Causali da Ore Lavorate per Intervallo ------------------------
+
 
             // -- B) Causali da Ore Lavorate per Intervallo ------------------------
 
@@ -1460,26 +1475,87 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                     var timbrature = Get_Timbrature_Giorno(allData, IdDip_RapportoLavoro, day);
 
                     // scorre le coppie timbratura E/U in sequenza
+                    //for (int i = 0; i + 1 < timbrature.Count; i += 2)
+                    //{
+                    //    var entrata = timbrature[i];
+                    //    var uscita = timbrature[i + 1];
+
+                    //    if (entrata.TimbraturaTipo != TipoTimbratura.Entrata ||
+                    //        uscita.TimbraturaTipo != TipoTimbratura.Uscita)
+                    //        continue;
+
+                    //    if (!entrata.TimbraturaArrotondata.HasValue || !uscita.TimbraturaArrotondata.HasValue)
+                    //        continue;
+
+                    //    // intervallo reale della timbratura (in minuti dal giorno)
+                    //    var tStart = entrata.TimbraturaArrotondata.Value.TimeOfDay;
+                    //    var tEnd = uscita.TimbraturaArrotondata.Value.TimeOfDay;
+
+                    //    if (tEnd <= tStart)
+                    //        continue;
+
+                    //    // per ogni coppia del profilo, calcola la sovrapposizione con l'intervallo reale
+                    //    foreach (var coppia in coppie)
+                    //    {
+                    //        if (coppia.IdCausale_HH_Lav == 0)
+                    //            continue;
+
+                    //        if (!coppia.Dalle.HasValue || !coppia.Alle.HasValue)
+                    //            continue;
+
+                    //        if (coppia.Alle.Value == coppia.Dalle.Value)
+                    //            continue;
+
+                    //        var cStart = coppia.Dalle.Value.ToTimeSpan();
+                    //        var cEnd = coppia.Alle.Value.ToTimeSpan();
+
+                    //        // sovrapposizione tra [tStart, tEnd] e [cStart, cEnd]
+                    //        var overlapStart = tStart > cStart ? tStart : cStart;
+                    //        var overlapEnd = tEnd < cEnd ? tEnd : cEnd;
+
+                    //        if (overlapEnd <= overlapStart)
+                    //            continue; // nessuna sovrapposizione
+
+                    //        var oreLavorate_TMP = overlapEnd - overlapStart;
+
+                    //        if (oreLavorate_TMP > TimeSpan.Zero)
+                    //        {
+                    //            int idCausale = coppia.IdCausale_HH_Lav;
+
+                    //            if (causaliAccumulate.ContainsKey(idCausale))
+                    //                causaliAccumulate[idCausale] += oreLavorate_TMP;
+                    //            else
+                    //                causaliAccumulate[idCausale] = oreLavorate_TMP;
+
+                    //            //contatore ora lavorate
+                    //            oreLavorate = oreLavorate.Add(oreLavorate_TMP);
+                    //        }
+                    //    }
+                    //}
+                
+                                        // scorre le coppie timbratura E/U in sequenza
                     for (int i = 0; i + 1 < timbrature.Count; i += 2)
                     {
                         var entrata = timbrature[i];
-                        var uscita = timbrature[i + 1];
+                        var uscita  = timbrature[i + 1];
 
                         if (entrata.TimbraturaTipo != TipoTimbratura.Entrata ||
-                            uscita.TimbraturaTipo != TipoTimbratura.Uscita)
+                            uscita.TimbraturaTipo  != TipoTimbratura.Uscita)
                             continue;
 
                         if (!entrata.TimbraturaArrotondata.HasValue || !uscita.TimbraturaArrotondata.HasValue)
                             continue;
 
-                        // intervallo reale della timbratura (in minuti dal giorno)
                         var tStart = entrata.TimbraturaArrotondata.Value.TimeOfDay;
-                        var tEnd = uscita.TimbraturaArrotondata.Value.TimeOfDay;
+                        var tEnd   = uscita.TimbraturaArrotondata.Value.TimeOfDay;
 
                         if (tEnd <= tStart)
                             continue;
 
-                        // per ogni coppia del profilo, calcola la sovrapposizione con l'intervallo reale
+                        // ore lavorate reali della coppia E/U: uscita - entrata, sommata UNA volta sola
+                        oreLavorate = oreLavorate.Add(tEnd - tStart);
+
+                        // per ogni coppia del profilo, calcola la sovrapposizione per le causali
                         foreach (var coppia in coppie)
                         {
                             if (coppia.IdCausale_HH_Lav == 0)
@@ -1492,85 +1568,32 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                 continue;
 
                             var cStart = coppia.Dalle.Value.ToTimeSpan();
-                            var cEnd = coppia.Alle.Value.ToTimeSpan();
+                            var cEnd   = coppia.Alle.Value.ToTimeSpan();
 
-                            // sovrapposizione tra [tStart, tEnd] e [cStart, cEnd]
+                            // sovrapposizione tra [tStart, tEnd] e [cStart, cEnd] → solo per le causali
                             var overlapStart = tStart > cStart ? tStart : cStart;
-                            var overlapEnd = tEnd < cEnd ? tEnd : cEnd;
+                            var overlapEnd   = tEnd   < cEnd   ? tEnd   : cEnd;
 
                             if (overlapEnd <= overlapStart)
-                                continue; // nessuna sovrapposizione
+                                continue;
 
-                            var oreLavorate = overlapEnd - overlapStart;
+                            var oreCausale = overlapEnd - overlapStart;
 
-                            if (oreLavorate > TimeSpan.Zero)
+                            if (oreCausale > TimeSpan.Zero)
                             {
                                 int idCausale = coppia.IdCausale_HH_Lav;
 
                                 if (causaliAccumulate.ContainsKey(idCausale))
-                                    causaliAccumulate[idCausale] += oreLavorate;
+                                    causaliAccumulate[idCausale] += oreCausale;
                                 else
-                                    causaliAccumulate[idCausale] = oreLavorate;
+                                    causaliAccumulate[idCausale] = oreCausale;
                             }
                         }
                     }
+                    
                 }
             }
 
-
-            //var daySlot = allData.OrariSchema_4User_OutModel.DaySlots.FirstOrDefault(ds => ds.IdDip_RapportoLavoro == IdDip_RapportoLavoro && 
-            //                                                                               ds.Data.Date == day.Date);
-
-            //if (daySlot != null && daySlot.Orari.Count > 0)
-            //{
-            //    var orarioBase = daySlot.Orari.OrderBy(o => o.ZOrder).First();
-
-            //    var parOrario = allData.OrariSchema_4User_OutModel.ParOrario.FirstOrDefault(o => o.Id == orarioBase.IdPar_Orario);
-
-            //    if (parOrario != null)
-            //    {
-            //        var coppie = allData.OrariSchema_4User_OutModel.Par_OrarioIntervalloHH.Where(hh => hh.IdPar_Orario == parOrario.Id)
-            //                                                                              .OrderBy(hh => hh.NumCoppia)
-            //                                                                              .ToList();
-
-            //        // Entrata/Uscita ordinate e abbinale in coppie sequenziali
-            //        var timbrature = Get_Timbrature_Giorno(allData, IdDip_RapportoLavoro, day);
-
-            //        // scorre le coppie in sequenza: pos pari = Entrata, pos dispari = Uscita
-            //        for (int i = 0; i + 1 < timbrature.Count; i += 2)
-            //        {
-            //            var entrata = timbrature[i];
-            //            var uscita = timbrature[i + 1];
-
-            //            if (entrata.TimbraturaTipo != TipoTimbratura.Entrata ||
-            //                uscita.TimbraturaTipo != TipoTimbratura.Uscita)
-            //                continue;
-
-            //            // la coppia del profilo per questa posizione (i/2)
-            //            int idxCoppia = i / 2;
-            //            if (idxCoppia >= coppie.Count)
-            //                idxCoppia = coppie.Count - 1;
-
-            //            var coppia = coppie[idxCoppia];
-
-            //            if (coppia.IdCausale_HH_Lav == 0)
-            //                continue;
-
-            //            var oreLavorate = uscita.TimbraturaArrotondata!.Value - entrata.TimbraturaArrotondata!.Value;
-
-            //            if (oreLavorate > TimeSpan.Zero)
-            //            {
-            //                int idCausale = coppia.IdCausale_HH_Lav;
-
-            //                if (causaliAccumulate.ContainsKey(idCausale))
-            //                    causaliAccumulate[idCausale] += oreLavorate;
-            //                else
-            //                    causaliAccumulate[idCausale] = oreLavorate;
-            //            }
-            //        }
-            //    }
-            //}
-            // -- Scrittura causali in allData -------------------------------------
 
 
             // recupera le causali pre-esistenti per questo giorno/rapporto
@@ -1614,11 +1637,28 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                     });
                 }
             }
+
+
+            if (oreLavorabili != oreLavorate)
+            {
+                if (oreLavorate < oreLavorabili)
+                {
+                    Dip_GG_Result_Helper.AddDetail(ref retVal, GG_ResultStato.Err_2);
+                }
+                else
+                {
+                    Dip_GG_Result_Helper.AddDetail(ref retVal, GG_ResultStato.Err_3);
+                }
+            }
+
+
+            return retVal;
         }
         private List<Dip_GG_TimbraturaModel> Get_Timbrature_Giorno(Timesheet_AllData_OutModel allData, int IdDip_RapportoLavoro, DateTime day)
         {
             var timbrature = allData.Dip_GG_AllData_OutModel.Dip_GG_Timbratura.Where(t => t.IdDip_RapportoLavoro == IdDip_RapportoLavoro &&
                                                                                           t.GiornoCompetenza.Date == day.Date &&
+                                                                                          (t.RichiestaStato == StatoRichiesta.Diretta || t.RichiestaStato == StatoRichiesta.Approvata) &&
                                                                                           t.TimbraturaArrotondata.HasValue && (t.TimbraturaTipo == TipoTimbratura.Entrata || t.TimbraturaTipo == TipoTimbratura.Uscita))
                                                                               .OrderBy(t => t.TimbraturaArrotondata)
                                                                               .ToList();
@@ -1649,7 +1689,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
 
 
-    public interface ITimeSheet_EngineService_OnlyCalculate  
+    public interface ITimeSheet_EngineService_OnlyCalculate
     {
         Task<GenericResult<TimeSheet_CalculateOutModel>> Calculate(GenericRequest<TimeSheet_CalculateInModel> model, bool isSubProcess);
     }

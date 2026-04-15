@@ -27,7 +27,7 @@ namespace nvxapp.server.data.Entities.Tenant
     Err     = 1 << 4,   // 16
 
     // Error details (5 → 24)
-    Err_1  = 1 << 5,
+    Err_TimbratureMancanti  = 1 << 5,
     Err_2  = 1 << 6,
     Err_3  = 1 << 7,
     Err_4  = 1 << 8,

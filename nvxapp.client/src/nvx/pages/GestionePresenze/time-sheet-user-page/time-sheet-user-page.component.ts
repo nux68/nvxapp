@@ -18,6 +18,8 @@ import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab
 import { NavController } from '@ionic/angular';
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
 import { Subscription } from 'rxjs';
+import { JobNotifierService } from '../../../Utility/infrastructure/job-notifier.service';
+import { GestionePresenze_JobType } from '../../../Utility/GestionePresenze/GestionePresenze_JobType';
 
 
 @Component({
@@ -58,6 +60,7 @@ export class TimeSheetUserPageComponent implements OnInit, OnDestroy {
               public fabMenuService: FabMenuService,
               public dateTimeUtilService: DateTimeUtilService,
               private dipGGRichiestaService: DipGGRichiestaService,
+              private jobNotifierService: JobNotifierService, /* RICVEVE LE NOTIFICHE  */
               private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService
   ) {
     this.title = 'Calendario';
@@ -69,7 +72,22 @@ export class TimeSheetUserPageComponent implements OnInit, OnDestroy {
 
   ionViewWillEnter() {
 
-  
+
+    //this.jobNotifierService.jobFinished$.subscribe(jobUpdate => {
+    //  console.log('Job finished:', jobUpdate);
+
+    //  if (jobUpdate.jobType === GestionePresenze_JobType.TimeSheet_Engine_Calculate) {
+
+    //    if (jobUpdate.payload.year == this.currYear &&
+    //      jobUpdate.payload.month == (this.currentMonth.month + 1) &&
+    //      jobUpdate.payload.selectedUserId.includes(this.currUserId))
+
+    //      this.loadMonth();
+    //  }
+
+
+    //});
+
 
     this.fabMenuService.fabMenuItem = [
 
