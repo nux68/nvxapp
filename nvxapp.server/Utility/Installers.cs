@@ -172,13 +172,17 @@ namespace nvxapp.server.Utility
 
             return builder.Services;
         }
-        public static IServiceCollection InstallMappers(this WebApplicationBuilder builder)
-        {
+     public static IServiceCollection InstallMappers(this WebApplicationBuilder builder)
+  {
 
-            builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+      builder.Services.AddAutoMapper(cfg =>
+      {
+          foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+              cfg.AddMaps(assembly);
+      });
 
-            return builder.Services;
-        }
+      return builder.Services;
+  }
         public static IServiceCollection InstallLog(this WebApplicationBuilder builder)
         {
 
