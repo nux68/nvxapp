@@ -9,7 +9,7 @@ import { SharedParameterGestionePresenzeService } from '../../../shared-paramete
 import { Observable, of } from 'rxjs';
 import { Az_ClienteModel } from '../../../../ClientServer-Service/GestionePresenze/Az_Cliente/Models/az-cliente-model';
 import { Par_OrarioModel } from '../../../../ClientServer-Service/GestionePresenze/Par_Orario/Models/par-orario-model';
-import { Par_ExportCau_CausaliModel } from '../../../../ClientServer-Service/GestionePresenze/Par_ExportCau_Causali/Models/par-export-cau-causali-model';
+import { Par_Export_TipoElaborazione, Par_Export_TipoUnita, Par_ExportCau_CausaliModel } from '../../../../ClientServer-Service/GestionePresenze/Par_ExportCau_Causali/Models/par-export-cau-causali-model';
 import { Par_CausaliModel } from '../../../../ClientServer-Service/GestionePresenze/Par_Causali/Models/par-causali-model';
 
 
@@ -23,6 +23,8 @@ export class EditParExportCauCausaliComponentComponent extends BaseDialogConfirm
 
   @Input() par_ExportCau_Causali: Par_ExportCau_CausaliModel;
 
+  public par_Export_TipoElaborazione= Par_Export_TipoElaborazione;
+  public par_Export_TipoUnita= Par_Export_TipoUnita;
 
   public _par_CausaliList: Par_CausaliModel[] = [];
 
@@ -38,9 +40,6 @@ export class EditParExportCauCausaliComponentComponent extends BaseDialogConfirm
 
 
 
-  //override ionViewWillEnter() {
-  //  super.ionViewWillEnter();
-  //}
 
   get Title(): string { return "Causale export"; }
 
@@ -48,6 +47,8 @@ export class EditParExportCauCausaliComponentComponent extends BaseDialogConfirm
     return this.fb.group({
       codice: [null, [Validators.required]],
       idCausale: [null, [Validators.required]],
+      tipoElaborazione: [null, [Validators.required]],
+      tipoUnita: [null, [Validators.required]],
     });
   }
 

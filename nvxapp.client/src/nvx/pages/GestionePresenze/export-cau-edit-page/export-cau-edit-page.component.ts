@@ -8,7 +8,7 @@ import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructur
 import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
 import { ParExportCauService } from '../../../ClientServer-Service/GestionePresenze/Par_ExportCau/par-export-cau.service';
 import { Par_ExportCau_Causali_Get_InModel, Par_ExportCau_CausaliModel } from '../../../ClientServer-Service/GestionePresenze/Par_ExportCau_Causali/Models/par-export-cau-causali-model';
-import { Par_ExportCau_Get_InModel, Par_ExportCau_Put_InModel, Par_ExportCauModel } from '../../../ClientServer-Service/GestionePresenze/Par_ExportCau/Models/par-export-cau-model';
+import { Par_Export_TipoFile, Par_ExportCau_Get_InModel, Par_ExportCau_Put_InModel, Par_ExportCauModel } from '../../../ClientServer-Service/GestionePresenze/Par_ExportCau/Models/par-export-cau-model';
 import { FabMenuService, FabMenuItem } from '../../../Utility/infrastructure/fab-menu.service';
 import { EditParExportCauCausaliComponentComponent } from '../../../shared/components/GestionePresenze/edit-par-export-cau-causali-component/edit-par-export-cau-causali-component.component';
 import { ParExportCauCausaliService } from '../../../ClientServer-Service/GestionePresenze/Par_ExportCau_Causali/par-export-cau-causali.service';
@@ -31,7 +31,7 @@ export class ExportCauEditPageComponent extends BasePageConfirmCancelComponent<P
   public btnEdit: ButtonItem;
   public btnDelete: ButtonItem;
   public TMP_counter: number = 0;
-
+  public par_Export_TipoFile = Par_Export_TipoFile;
 
   constructor(
     protected override navCtrl: NavController,
@@ -88,6 +88,7 @@ export class ExportCauEditPageComponent extends BasePageConfirmCancelComponent<P
     return this.fb.group({
       codice: [null, [Validators.required, Validators.maxLength(10)]],
       descrizione: [null, [Validators.required, Validators.maxLength(50)]],
+      tipoFile: [null, [Validators.required]],
     });
   }
 

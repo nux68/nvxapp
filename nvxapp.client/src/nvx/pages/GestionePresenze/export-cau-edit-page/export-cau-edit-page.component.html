@@ -48,6 +48,16 @@
             codice non può superare i 5 caratteri.
           </ion-note>
 
+          <ion-item>
+            <ion-label position="floating">Tipo file</ion-label>
+            <ion-select formControlName="tipoFile" interface="popover">
+              <ion-select-option [value]="par_Export_TipoFile.CSV">CSV</ion-select-option>
+              <ion-select-option [value]="par_Export_TipoFile.TXT">TXT</ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-note color="danger" *ngIf="_editForm.get('tipoFile')?.hasError('required') && _editForm.get('tipoFile')?.touched">
+            Il tipo file è obbligatorio.
+          </ion-note>
 
         </div>
 
