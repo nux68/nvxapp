@@ -22,21 +22,31 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Export
         public List<Par_ExportCau_CausaliModel> Par_ExportCau_Causali { get; set; } = new();
     }
 
+
     public class Par_ExportCau_Causali_Get_InModel
     {
         public int Id { get; set; }
     }
-    public class Par_ExportCau_Causali_Get_OutModel : ModelResult
+    public class Par_ExportCau_Causali_Get_OutModel : ModelResult { 
+        public Par_ExportCau_CausaliModel Par_ExportCau_Causali { get; set; } = new();
+    }
+
+
+    public class Par_ExportCau_Causali_GetAll_4Edit_InModel
+    {
+        public int Id { get; set; }
+    }
+    public class Par_ExportCau_Causali_GetAll_4Edit_OutModel : ModelResult
     {
         public List<Par_ExportCau_CausaliModel> Par_ExportCau_Causali { get; set; } = new();
     }
 
-    public class Par_ExportCau_Causali_Put_InModel
+    public class Par_ExportCau_Causali_PutAll_4Edit_InModel
     {
         public int IdPar_ExportCau { get; set; }
         public List<Par_ExportCau_CausaliModel> Par_ExportCau_Causali { get; set; } = new();
     }
-    public class Par_ExportCau_Causali_Put_OutModel : ModelResult
+    public class Par_ExportCau_Causali_PutAll_4Edit_OutModel : ModelResult
     {
         public List<Par_ExportCau_CausaliModel> Par_ExportCau_Causali { get; set; } = new();
     }

@@ -1,19 +1,18 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms';
 import { NavController, ModalController } from '@ionic/angular';
-import { Observable, map, catchError } from 'rxjs';
-import { Par_OrarioModel, Par_Orario_GetInModel, Par_Orario_PutInModel } from '../../../ClientServer-Service/GestionePresenze/Par_Orario/Models/par-orario-model';
-import { ParOrarioService } from '../../../ClientServer-Service/GestionePresenze/Par_Orario/par-orario.service';
-import { Par_OrarioIntervalloHHModel, Par_OrarioIntervalloHH_Arrange_Coppie_InModel } from '../../../ClientServer-Service/GestionePresenze/Par_OrarioIntervalloHH/Models/par-orario-intervallo-hh-model';
-import { ParOrarioIntervalloHHService } from '../../../ClientServer-Service/GestionePresenze/Par_OrarioIntervalloHH/par-orario-intervallo-hh.service';
+import { Observable, map, catchError, of } from 'rxjs';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
-import { EditParOrarioDettaglioOrarioIntervalloHHDialogComponent } from '../../../shared/components/GestionePresenze/edit-par-orario-dettaglio-orario-intervallo-hhdialog/edit-par-orario-dettaglio-orario-intervallo-hhdialog.component';
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
 import { ParExportCauService } from '../../../ClientServer-Service/GestionePresenze/Par_ExportCau/par-export-cau.service';
-import { Par_ExportCau_CausaliModel } from '../../../ClientServer-Service/GestionePresenze/Par_ExportCau_Causali/Models/par-export-cau-causali-model';
+import { Par_ExportCau_Causali_Get_InModel, Par_ExportCau_CausaliModel } from '../../../ClientServer-Service/GestionePresenze/Par_ExportCau_Causali/Models/par-export-cau-causali-model';
 import { Par_ExportCau_Get_InModel, Par_ExportCau_Put_InModel, Par_ExportCauModel } from '../../../ClientServer-Service/GestionePresenze/Par_ExportCau/Models/par-export-cau-model';
+import { FabMenuService, FabMenuItem } from '../../../Utility/infrastructure/fab-menu.service';
+import { EditParExportCauCausaliComponentComponent } from '../../../shared/components/GestionePresenze/edit-par-export-cau-causali-component/edit-par-export-cau-causali-component.component';
+import { ParExportCauCausaliService } from '../../../ClientServer-Service/GestionePresenze/Par_ExportCau_Causali/par-export-cau-causali.service';
+import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
 
 @Component({
   selector: 'app-export-cau-edit-page',
@@ -23,10 +22,16 @@ import { Par_ExportCau_Get_InModel, Par_ExportCau_Put_InModel, Par_ExportCauMode
 })
 export class ExportCauEditPageComponent extends BasePageConfirmCancelComponent<Par_ExportCauModel> implements OnInit {
 
+  public readonly SEGMENT_sez1 = 'sez1';
+  public readonly SEGMENT_sez2 = 'sez2';
+
+  public searchText: string = '';
   public par_ExportCau_Causali: Par_ExportCau_CausaliModel[];
-  public currSection: string = "sez1";
+  public currSection: string = this.SEGMENT_sez1;
   public btnEdit: ButtonItem;
+  public btnDelete: ButtonItem;
   public TMP_counter: number = 0;
+
 
   constructor(
     protected override navCtrl: NavController,
@@ -34,15 +39,48 @@ export class ExportCauEditPageComponent extends BasePageConfirmCancelComponent<P
     protected override fb: FormBuilder,
     private refresherService: RefresherService,
     private parExportCauService: ParExportCauService,
-    private parOrarioIntervalloHHService: ParOrarioIntervalloHHService,
+    private parExportCauCausaliService: ParExportCauCausaliService,
     private modalCtrl: ModalController,
+    private collectionDialogService: CollectionDialogService,
+    public fabMenuService: FabMenuService,
   ) {
     super(navCtrl, userInterfaceService, fb);
 
     this.btnEdit = this.userInterfaceService.Btn_Modifica;
     this.btnEdit.event = this.handleButtonEditClick;
+    this.currSection = this.SEGMENT_sez1;
+    this.btnEdit = this.userInterfaceService.Btn_Modifica;
+    this.btnEdit.event = this.handleButtonEditClick;
 
+    this.btnDelete = userInterfaceService.Btn_Cancella;
+    this.btnDelete.event = this.handleButtonDeleteClick;
   }
+
+  override ionViewWillEnter() {
+    super.ionViewWillEnter();
+    this.setfabMenuService();
+  }
+
+  setfabMenuService() {
+    this.fabMenuService.fabMenuItem = [];
+
+    if (this.currSection == this.SEGMENT_sez1) {
+      // non faccio nulla
+    }
+    else if (this.currSection == this.SEGMENT_sez2) {
+        this.fabMenuService.fabMenuItem = [
+          new FabMenuItem('xxx', 'add-circle-outline', () => {
+
+            this.Load_Par_ExportCau_Causali(0).subscribe(res => {
+              this.EdiProfiloOrarioDettDialog_Open(res);
+            })
+          }),
+      ];
+
+    }
+  }
+
+
 
   get Title(): string {return "Modelli export";}
 
@@ -80,8 +118,6 @@ export class ExportCauEditPageComponent extends BasePageConfirmCancelComponent<P
   };
 
   SaveData = (editModel: Par_ExportCauModel): Observable<boolean> => {
-    
-
 
     let request: GenericRequest<Par_ExportCau_Put_InModel> = new GenericRequest<Par_ExportCau_Put_InModel>(Par_ExportCau_Put_InModel);
     request.data.par_ExportCau = editModel;
@@ -102,6 +138,7 @@ export class ExportCauEditPageComponent extends BasePageConfirmCancelComponent<P
   segmentChanged(event: any) {
     console.log('Segment cambiato:', event.detail.value);
     this.currSection = event.detail.value;
+    this.setfabMenuService();
   }
 
   public get_par_ExportCau_Causali(): Par_ExportCau_CausaliModel[] {
@@ -117,65 +154,90 @@ export class ExportCauEditPageComponent extends BasePageConfirmCancelComponent<P
     return retVal;
   }
 
-  handleButtonEditClick = (par_OrarioIntervalloHHModel: Par_OrarioIntervalloHHModel) => {
-    this.EdiProfiloOrarioDettDialog_Open(par_OrarioIntervalloHHModel);
-  }
+  handleButtonEditClick = (item: Par_ExportCau_CausaliModel) => {
 
-  //public onRangeChange(event: any): void {
-
-  //  const newValue = event.detail.value;
-  //  this.coppieArrange(newValue);
-
-  //}
-
-  //public coppieArrange(newValue: number): void {
-
-  //  let request = new GenericRequest<Par_OrarioIntervalloHH_Arrange_Coppie_InModel>(Par_OrarioIntervalloHH_Arrange_Coppie_InModel);
-  //  request.data.id = this._editModel.id;
-  //  request.data.numCoppie = newValue;
-  //  request.data.par_OrarioIntervalloHH = this.par_OrarioIntervalloHH;
-
-
-
-  //  this.parOrarioIntervalloHHService.Par_OrarioIntervalloHH_Arrange_NumCoppie(request).pipe(
-  //    map((res) => {
-  //      this.par_OrarioIntervalloHH = res.data.par_OrarioIntervalloHH;
-  //    }),
-  //    catchError((error) => {
-  //      console.error('Errore durante il caricamento dei dati:', error);
-  //      return [null];
-  //    })
-  //  ).subscribe();
-
-  //}
-
-  async EdiProfiloOrarioDettDialog_Open(par_OrarioIntervalloHH: Par_OrarioIntervalloHHModel) {
-
-
-    //const modal = await this.modalCtrl.create({
-    //  component: EditParOrarioDettaglioOrarioIntervalloHHDialogComponent,
-    //  componentProps: {
-    //    par_OrarioIntervalloHH: par_OrarioIntervalloHH
-    //  },
-    //});
-
-    //await modal.present();
-
-    //const { data, role } = await modal.onWillDismiss<Par_OrarioIntervalloHHModel | null>();
-
-    //if (role === 'confirm' && data) {
-
-    //  const index = this.par_OrarioIntervalloHH.findIndex(p => p.id === data.id);
-
-    //  if (index > -1) {
-    //    this.par_OrarioIntervalloHH[index] = data;
-    //  } else {
-    //    this.par_OrarioIntervalloHH.push(data);
-    //  }
-
-    //}
+    this.Load_Par_ExportCau_Causali(item.id).subscribe(res => {
+      this.EdiProfiloOrarioDettDialog_Open(res);
+    })
 
   }
+
+  handleButtonDeleteClick = async (item: Par_ExportCau_CausaliModel) => {
+
+    const result = await this.collectionDialogService.ConfirmCancelDialog('Confermi la cancellazione della causale in export');
+    if (result) {
+
+      var idx = this.par_ExportCau_Causali.findIndex(p => p.id === item.id);
+      if (idx > -1) {
+        this.par_ExportCau_Causali.splice(idx, 1);
+      }
+    }
+
+  }
+
+  /* Legge i dati locali o inizilizza con il server */
+  Load_Par_ExportCau_Causali = (id: number): Observable<Par_ExportCau_CausaliModel | null> => {
+    const state = history.state;
+
+    if (id==0) {  // se nuovo, faccio inizializazre dal server
+
+      let request: GenericRequest<Par_ExportCau_Causali_Get_InModel> = new GenericRequest<Par_ExportCau_Causali_Get_InModel>(Par_ExportCau_Causali_Get_InModel);
+      request.data.id = id;
+
+      return this.parExportCauCausaliService.Par_ExportCau_Causali_Get(request).pipe(
+        map((res) => {
+          
+          return res.data.par_ExportCau_Causali;
+        }
+        ),
+        catchError((error) => {
+          console.error('Errore durante il caricamento dei dati:', error);
+          return [null];
+        })
+      );
+    }
+    else {
+      var idx = this.par_ExportCau_Causali.findIndex(p => p.id === id);
+      if (idx > -1) {
+        return of(this.par_ExportCau_Causali[idx]);
+      }
+      else {
+        return of(null);
+      }
+    }
+
+  };
+
+
+
+  async EdiProfiloOrarioDettDialog_Open(par_ExportCau_Causali: Par_ExportCau_CausaliModel) {
+
+      const modal = await this.modalCtrl.create({
+        component: EditParExportCauCausaliComponentComponent,
+        componentProps: {
+          par_ExportCau_Causali: par_ExportCau_Causali
+        },
+      });
+
+      await modal.present();
+
+      const { data, role } = await modal.onWillDismiss<Par_ExportCau_CausaliModel | null>();
+
+      if (role === 'confirm' && data) {
+
+        const index = this.par_ExportCau_Causali.findIndex(p => p.id === data.id);
+
+        if (index > -1) {
+          this.par_ExportCau_Causali[index] = data;
+        } else {
+          this.par_ExportCau_Causali.push(data);
+        }
+
+      }
+
+  }
+
+
 
 
 }

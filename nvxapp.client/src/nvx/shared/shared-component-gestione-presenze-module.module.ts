@@ -39,6 +39,7 @@ import { EditDipGGCausaliDialogComponent } from './components/GestionePresenze/e
 import { EditDipGGTimbraturaDialogComponent } from './components/GestionePresenze/edit-dip-gg-timbratura-dialog/edit-dip-gg-timbratura-dialog.component';
 import { EditDipGGGiustificativiDialogComponent } from './components/GestionePresenze/edit-dip-gg-giustificativi-dialog/edit-dip-gg-giustificativi-dialog.component';
 import { ParExportTipoFileToShortTextPipe } from './pipe/GestionePresenze/par-export-tipo-file-to-short-text.pipe';
+import { EditParExportCauCausaliComponentComponent } from './components/GestionePresenze/edit-par-export-cau-causali-component/edit-par-export-cau-causali-component.component';
 
 @NgModule({
   declarations: [
@@ -49,7 +50,7 @@ import { ParExportTipoFileToShortTextPipe } from './pipe/GestionePresenze/par-ex
     EditDipProfiloOrarioDialogComponent, EditParProfiloOrarioDettaglioOrarioDialogComponent,
     EditParOrarioDettaglioOrarioIntervalloHHDialogComponent, TimeSheetEngineCallerComponent,
     EditDipGGCausaliDialogComponent, EditDipGGTimbraturaDialogComponent,
-    EditDipGGGiustificativiDialogComponent,
+    EditDipGGGiustificativiDialogComponent, EditParExportCauCausaliComponentComponent,
   ],
   imports: [
     SharedComponentInfrastructureModule,
@@ -73,7 +74,7 @@ import { ParExportTipoFileToShortTextPipe } from './pipe/GestionePresenze/par-ex
     ParAttivitaToLongTextPipe, ParCompetenzaToLongTextPipe, AzCommessaToLongTextPipe, AzClienteToLongTextPipe,
     SediRepartoUserNavigationComponent, SediRepartoUserSelectionComponent , SeletionSediRepartoDialogComponent, SeletionSediRepartoUserDialogComponent, SeletionParAttivitaDialogComponent, AzSediRepartoToLongTextPipe,
     EditDipProfiloOrarioDialogComponent, ParProfiloOrarioToLongTextPipePipe, EditParProfiloOrarioDettaglioOrarioDialogComponent,
-    EditParOrarioDettaglioOrarioIntervalloHHDialogComponent, TimeSheetEngineCallerComponent,
+    EditParOrarioDettaglioOrarioIntervalloHHDialogComponent, TimeSheetEngineCallerComponent, EditParExportCauCausaliComponentComponent,
     EditDipGGCausaliDialogComponent, EditDipGGTimbraturaDialogComponent,
     EditDipGGGiustificativiDialogComponent,
     ParOrarioToCodicePipe, ParOrarioToLongTextPipe, ParExportTipoFileToShortTextPipe

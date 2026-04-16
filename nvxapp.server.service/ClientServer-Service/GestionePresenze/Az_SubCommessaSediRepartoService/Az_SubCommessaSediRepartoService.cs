@@ -48,9 +48,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
             return await ExecuteAction(model, async () =>
             {
                 Az_SubCommessaSediReparto_Get4SubCommessa_OutModel retVal = new Az_SubCommessaSediReparto_Get4SubCommessa_OutModel();
-                var entities = _az_SubCommessaSediRepartoRepository.FindAll(x => x.IdAz_SubCommessa == model.Data.IdAz_SubCommessa).ToList();
-                retVal.Az_SubCommessaSediReparto = _mapper.Map<List<Az_SubCommessaSediReparto4EditModel>>(entities);
-                
+                var entities = await _az_SubCommessaSediRepartoRepository.FindAll();
+                retVal.Az_SubCommessaSediReparto = _mapper.Map<List<Az_SubCommessaSediReparto4EditModel>>(
+                    entities.Where(x => x.IdAz_SubCommessa == model.Data.IdAz_SubCommessa).ToList());
+
                 foreach (var item in retVal.Az_SubCommessaSediReparto)
                     item.Checked = true;
 

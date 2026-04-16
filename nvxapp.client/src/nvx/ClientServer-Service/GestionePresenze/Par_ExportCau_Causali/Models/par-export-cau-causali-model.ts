@@ -20,17 +20,26 @@ export enum Par_Export_TipoUnita {
   Importo = 2
 }
 
-export class Par_ExportCau_Causali_Get_InModel {
+export class Par_ExportCau_Causali_GetAll_4Edit_InModel {
   id: number = 0; // id del Par_ExportCau padre
 }
-export class Par_ExportCau_Causali_Get_OutModel extends ModelResult {
+export class Par_ExportCau_Causali_GetAll_4Edit_OutModel extends ModelResult {
   par_ExportCau_Causali: Par_ExportCau_CausaliModel[] = [];
 }
 
-export class Par_ExportCau_Causali_Put_InModel {
+export class Par_ExportCau_Causali_PutAll_4Edit_InModel {
   idPar_ExportCau: number = 0;
   par_ExportCau_Causali: Par_ExportCau_CausaliModel[] = [];
 }
-export class Par_ExportCau_Causali_Put_OutModel extends ModelResult {
+export class Par_ExportCau_Causali_PutAll_4Edit_OutModel extends ModelResult {
   par_ExportCau_Causali: Par_ExportCau_CausaliModel[] = [];
+}
+
+
+export class Par_ExportCau_Causali_Get_InModel {
+  id: number = 0;
+}
+
+export class Par_ExportCau_Causali_Get_OutModel {
+  par_ExportCau_Causali: Par_ExportCau_CausaliModel;
 }

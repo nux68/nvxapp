@@ -20,6 +20,7 @@ namespace nvxapp.server.Controllers.GestionePresenze
             _par_ExportCau_CausaliService = par_ExportCau_CausaliService;
         }
 
+
         [Authorize]
         [HttpPost]
         [Route("Par_ExportCau_Causali_Get")]
@@ -28,12 +29,21 @@ namespace nvxapp.server.Controllers.GestionePresenze
             return await _par_ExportCau_CausaliService.Par_ExportCau_Causali_Get(inModel, false);
         }
 
+
         [Authorize]
         [HttpPost]
-        [Route("Par_ExportCau_Causali_Put")]
-        public async Task<GenericResult<Par_ExportCau_Causali_Put_OutModel>> Par_ExportCau_Causali_Put(GenericRequest<Par_ExportCau_Causali_Put_InModel> inModel)
+        [Route("Par_ExportCau_Causali_GetAll_4Edit")]
+        public async Task<GenericResult<Par_ExportCau_Causali_GetAll_4Edit_OutModel>> Par_ExportCau_Causali_GetAll_4Edit(GenericRequest<Par_ExportCau_Causali_GetAll_4Edit_InModel> inModel)
         {
-            return await _par_ExportCau_CausaliService.Par_ExportCau_Causali_Put(inModel, false);
+            return await _par_ExportCau_CausaliService.Par_ExportCau_Causali_GetAll_4Edit(inModel, false);
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("Par_ExportCau_Causali_PutAll_4Edit")]
+        public async Task<GenericResult<Par_ExportCau_Causali_PutAll_4Edit_OutModel>> Par_ExportCau_Causali_PutAll_4Edit(GenericRequest<Par_ExportCau_Causali_PutAll_4Edit_InModel> inModel)
+        {
+            return await _par_ExportCau_CausaliService.Par_ExportCau_Causali_PutAll_4Edit(inModel, false);
         }
     }
 }

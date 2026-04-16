@@ -5,6 +5,7 @@ import { RouterModule } from '@angular/router';
 import { SharedComponentInfrastructureModule } from '../../../shared/shared-component-infrastructure.module';
 import { NgModule } from '@angular/core';
 import { ExportCauEditPageComponent } from './export-cau-edit-page.component';
+import { SharedComponentGestionePresenzeModuleModule } from '../../../shared/shared-component-gestione-presenze-module.module';
 
 
 
@@ -21,6 +22,7 @@ import { ExportCauEditPageComponent } from './export-cau-edit-page.component';
       }
     ]),
     SharedComponentInfrastructureModule,
+    SharedComponentGestionePresenzeModuleModule
   ],
 
   declarations: [ExportCauEditPageComponent],

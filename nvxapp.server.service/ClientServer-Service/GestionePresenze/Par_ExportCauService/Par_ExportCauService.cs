@@ -74,9 +74,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Export
                     }
                     retVal.Par_ExportCau = _mapper.Map<Par_ExportCauModel>(entity);
 
-                    var req_1 = new GenericRequest<Par_ExportCau_Causali_Get_InModel>();
-                    req_1.Data = new Par_ExportCau_Causali_Get_InModel() { Id = model.Data.Id };
-                    var res_1 = await _par_ExportCau_CausaliService.Par_ExportCau_Causali_Get(req_1, true);
+                    var req_1 = new GenericRequest<Par_ExportCau_Causali_GetAll_4Edit_InModel>();
+                    req_1.Data = new Par_ExportCau_Causali_GetAll_4Edit_InModel() { Id = model.Data.Id };
+                    var res_1 = await _par_ExportCau_CausaliService.Par_ExportCau_Causali_GetAll_4Edit(req_1, true);
                     if (res_1.Success && res_1.Data != null)
                         retVal.Par_ExportCau_Causali = res_1.Data.Par_ExportCau_Causali;
                 }
@@ -100,13 +100,13 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Export
                 var updatedEntity = await _par_ExportCauRepository.UpsertAsync(entity);
                 retVal.Par_ExportCau = _mapper.Map<Par_ExportCauModel>(updatedEntity);
 
-                var req_1 = new GenericRequest<Par_ExportCau_Causali_Put_InModel>();
-                req_1.Data = new Par_ExportCau_Causali_Put_InModel()
+                var req_1 = new GenericRequest<Par_ExportCau_Causali_PutAll_4Edit_InModel>();
+                req_1.Data = new Par_ExportCau_Causali_PutAll_4Edit_InModel()
                 {
                     IdPar_ExportCau     = retVal.Par_ExportCau.Id,
                     Par_ExportCau_Causali = model.Data.Par_ExportCau_Causali
                 };
-                var res_1 = await _par_ExportCau_CausaliService.Par_ExportCau_Causali_Put(req_1, true);
+                var res_1 = await _par_ExportCau_CausaliService.Par_ExportCau_Causali_PutAll_4Edit(req_1, true);
                 if (res_1.Success && res_1.Data != null)
                     retVal.Par_ExportCau_Causali = res_1.Data.Par_ExportCau_Causali;
 

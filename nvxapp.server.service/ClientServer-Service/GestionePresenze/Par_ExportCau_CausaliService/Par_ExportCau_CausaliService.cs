@@ -18,6 +18,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Export
 {
     public class Par_ExportCau_CausaliService : ServiceBase, IPar_ExportCau_CausaliService
     {
+        private readonly IPar_CausaliRepository            _par_CausaliRepository;
         private readonly IPar_ExportCauRepository          _par_ExportCauRepository;
         private readonly IPar_ExportCau_CausaliRepository  _par_ExportCau_CausaliRepository;
         private readonly IGestionePresenzeUserUtility      _gestionePresenzeUserUtility;
@@ -30,19 +31,54 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Export
                                             IConfiguration configuration,
                                             IGestionePresenzeUserUtility gestionePresenzeUserUtility,
                                             IPar_ExportCauRepository par_ExportCauRepository,
+                                            IPar_CausaliRepository            par_CausaliRepository,
                                             IPar_ExportCau_CausaliRepository par_ExportCau_CausaliRepository)
             : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _gestionePresenzeUserUtility     = gestionePresenzeUserUtility;
             _par_ExportCauRepository         = par_ExportCauRepository;
             _par_ExportCau_CausaliRepository = par_ExportCau_CausaliRepository;
+            _par_CausaliRepository           = par_CausaliRepository;
         }
 
-        public virtual async Task<GenericResult<Par_ExportCau_Causali_Get_OutModel>> Par_ExportCau_Causali_Get(GenericRequest<Par_ExportCau_Causali_Get_InModel> model, bool isSubProcess)
+
+        public virtual async Task<GenericResult<Par_ExportCau_Causali_Get_OutModel>>  Par_ExportCau_Causali_Get(GenericRequest<Par_ExportCau_Causali_Get_InModel>  model, bool isSubProcess)
         {
             return await ExecuteAction(model, async () =>
             {
                 var retVal = new Par_ExportCau_Causali_Get_OutModel();
+
+                int.TryParse(this.CurrentCompany, out int idCompany);
+                var companyData = await _gestionePresenzeUserUtility.Get_AzAna_AzSedi_AzReparto_Az_Cfg(idCompany, true);
+                if (companyData?.az_Anagrafica != null)
+                {
+                    var items = _par_ExportCau_CausaliRepository.FindAll(x => x.Id == model.Data.Id).FirstOrDefault();
+                    if(items==null)
+                    {
+                        var cau = _par_CausaliRepository.FindAll(x=> x.Id>0).FirstOrDefault();
+
+                        items = new Par_ExportCau_Causali()
+                        {
+                            IdPar_ExportCau = 0,
+                            Codice ="XX",
+                            IdCausale=cau!=null?cau.Id:0,
+                            TipoElaborazione= Par_Export_TipoElaborazione.Gionaliera,
+                            TipoUnita= Par_Export_TipoUnita.Ore
+                        };
+                    }
+
+                    retVal.Par_ExportCau_Causali = _mapper.Map<Par_ExportCau_CausaliModel>(items);
+                }
+
+                await Task.Delay(DelayAsyncMethod);
+                return retVal;
+            }, isSubProcess);
+        }
+        public virtual async Task<GenericResult<Par_ExportCau_Causali_GetAll_4Edit_OutModel>> Par_ExportCau_Causali_GetAll_4Edit(GenericRequest<Par_ExportCau_Causali_GetAll_4Edit_InModel> model, bool isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                var retVal = new Par_ExportCau_Causali_GetAll_4Edit_OutModel();
 
                 int.TryParse(this.CurrentCompany, out int idCompany);
                 var companyData = await _gestionePresenzeUserUtility.Get_AzAna_AzSedi_AzReparto_Az_Cfg(idCompany, true);
@@ -59,12 +95,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Export
                 return retVal;
             }, isSubProcess);
         }
-
-        public virtual async Task<GenericResult<Par_ExportCau_Causali_Put_OutModel>> Par_ExportCau_Causali_Put(GenericRequest<Par_ExportCau_Causali_Put_InModel> model, bool isSubProcess)
+        public virtual async Task<GenericResult<Par_ExportCau_Causali_PutAll_4Edit_OutModel>> Par_ExportCau_Causali_PutAll_4Edit(GenericRequest<Par_ExportCau_Causali_PutAll_4Edit_InModel> model, bool isSubProcess)
         {
             return await ExecuteAction(model, async () =>
             {
-                var retVal = new Par_ExportCau_Causali_Put_OutModel();
+                var retVal = new Par_ExportCau_Causali_PutAll_4Edit_OutModel();
 
                 int.TryParse(this.CurrentCompany, out int idCompany);
                 var companyData = await _gestionePresenzeUserUtility.Get_AzAna_AzSedi_AzReparto_Az_Cfg(idCompany, true);
@@ -99,9 +134,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Export
                         }
 
                         // rilegge i dati aggiornati
-                        var req_1 = new GenericRequest<Par_ExportCau_Causali_Get_InModel>();
-                        req_1.Data = new Par_ExportCau_Causali_Get_InModel() { Id = model.Data.IdPar_ExportCau };
-                        var res_1 = await Par_ExportCau_Causali_Get(req_1, true);
+                        var req_1 = new GenericRequest<Par_ExportCau_Causali_GetAll_4Edit_InModel>();
+                        req_1.Data = new Par_ExportCau_Causali_GetAll_4Edit_InModel() { Id = model.Data.IdPar_ExportCau };
+                        var res_1 = await Par_ExportCau_Causali_GetAll_4Edit(req_1, true);
                         if (res_1.Success && res_1.Data != null)
                             retVal.Par_ExportCau_Causali = res_1.Data.Par_ExportCau_Causali;
                     }
@@ -116,6 +151,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Export
     public interface IPar_ExportCau_CausaliService : IServiceBase
     {
         Task<GenericResult<Par_ExportCau_Causali_Get_OutModel>>  Par_ExportCau_Causali_Get(GenericRequest<Par_ExportCau_Causali_Get_InModel>  model, bool isSubProcess);
-        Task<GenericResult<Par_ExportCau_Causali_Put_OutModel>>  Par_ExportCau_Causali_Put(GenericRequest<Par_ExportCau_Causali_Put_InModel>  model, bool isSubProcess);
+        Task<GenericResult<Par_ExportCau_Causali_GetAll_4Edit_OutModel>>  Par_ExportCau_Causali_GetAll_4Edit(GenericRequest<Par_ExportCau_Causali_GetAll_4Edit_InModel>  model, bool isSubProcess);
+        Task<GenericResult<Par_ExportCau_Causali_PutAll_4Edit_OutModel>>  Par_ExportCau_Causali_PutAll_4Edit(GenericRequest<Par_ExportCau_Causali_PutAll_4Edit_InModel>  model, bool isSubProcess);
     }
 }
