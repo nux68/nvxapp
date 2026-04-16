@@ -29,6 +29,7 @@ export class MainMenuAttendanceTrackingService implements iMainMenuService {
       { menuType: MenuType.MenuItem,   zorder: 204000, group: 1, title: 'Configurazione'    , roles: ['CompanyPowerAdmin'], component: "CompanyCfgPageComponent", url: '/companycfgedit', icon: 'ellipse' },
       { menuType: MenuType.MenuItem,   zorder: 205000, group: 1, title: 'Orari'             , roles: ['CompanyPowerAdmin'], component: "OrariListPageComponent", url: '/orarilist', icon: 'ellipse' },
       { menuType: MenuType.MenuItem,   zorder: 206000, group: 1, title: 'Profili Orari'     , roles: ['CompanyPowerAdmin'], component: "ProfiloOrarioListPageComponent", url: '/profiliorarilist', icon: 'ellipse' },
+      { menuType: MenuType.MenuItem,   zorder: 207000, group: 1, title: 'Modelli Export'    , roles: ['CompanyPowerAdmin'], component: "ExportCauListPageComponent", url: '/exportcaulist', icon: 'ellipse' },
       
 
       { menuType: MenuType.MenuHeader, zorder: 205000, group: 2, title: 'Gestione Commesse' , roles: ['CompanyPowerAdmin'], component: '', url: '', icon: '' },

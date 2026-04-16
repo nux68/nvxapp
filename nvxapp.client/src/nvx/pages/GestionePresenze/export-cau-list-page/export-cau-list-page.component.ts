@@ -1,40 +1,39 @@
 import { Component, OnInit } from '@angular/core';
 import { NavController } from '@ionic/angular';
-import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
-import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
-import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
-
-import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
-import { Par_Orario_DeleteInModel, Par_Orario_GetAllInModel, Par_OrarioModel } from '../../../ClientServer-Service/GestionePresenze/Par_Orario/Models/par-orario-model';
 import { ParOrarioService } from '../../../ClientServer-Service/GestionePresenze/Par_Orario/par-orario.service';
-import { map, catchError } from 'rxjs';
-import { Az_SediRepartoDeleteInModel } from '../../../ClientServer-Service/GestionePresenze/Az_SediReparto/Models/az-sedi-reparto-model';
 import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
+import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
+import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
+import { map, catchError } from 'rxjs';
+import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
+import { ParExportCauService } from '../../../ClientServer-Service/GestionePresenze/Par_ExportCau/par-export-cau.service';
+import { Par_ExportCau_Delete_InModel, Par_ExportCau_GetAll_InModel, Par_ExportCauModel } from '../../../ClientServer-Service/GestionePresenze/Par_ExportCau/Models/par-export-cau-model';
 
 @Component({
-  selector: 'app-orari-list',
-  templateUrl: './orari-list.component.html',
-  styleUrls: ['./orari-list.component.scss'],
+  selector: 'app-export-cau-list-page',
+  templateUrl: './export-cau-list-page.component.html',
+  styleUrls: ['./export-cau-list-page.component.scss'],
   standalone: false
 })
-export class OrariListPageComponent implements OnInit {
+export class ExportCauListPageComponent  implements OnInit {
+
 
   public title: string;
   public searchText: string = '';
-  public par_OrarioList: Par_OrarioModel[] = [];
+  public par_ExportCauList: Par_ExportCauModel[] = [];
   public btnEdit: ButtonItem;
   public btnDelete: ButtonItem;
 
   constructor(
     private navCtrl: NavController,
     public fabMenuService: FabMenuService,
-    private parOrarioService: ParOrarioService,
+    private parExportCauService: ParExportCauService,
     private collectionDialogService: CollectionDialogService,
     private refresherService: RefresherService,
     private userInterfaceService: UserInterfaceService
   ) {
-    this.title = 'Orari';
+    this.title = 'Modelli export';
     this.btnEdit = this.userInterfaceService.Btn_Modifica;
     this.btnEdit.event = this.handleButtonEditClick;
 
@@ -46,23 +45,23 @@ export class OrariListPageComponent implements OnInit {
 
 
   private loadData() {
-    let request = new GenericRequest<Par_Orario_GetAllInModel>(Par_Orario_GetAllInModel);
-    this.parOrarioService.GetAll(request).subscribe(res => {
-      this.par_OrarioList = res.data.par_Orario;
+    let request = new GenericRequest<Par_ExportCau_GetAll_InModel>(Par_ExportCau_GetAll_InModel);
+    this.parExportCauService.GetAll(request).subscribe(res => {
+      this.par_ExportCauList = res.data.par_ExportCau;
     });
   }
 
   ionViewWillEnter() {
-    
+
     this.loadData();
 
     this.fabMenuService.fabMenuItem = [
 
-        new FabMenuItem('Elemento 1', 'add-circle-outline', () => {
-          this.navCtrl.navigateForward('/orariedit', {
-            state: { id: 0 }
-          });
-        }),
+      new FabMenuItem('Elemento 1', 'add-circle-outline', () => {
+        this.navCtrl.navigateForward('/exportcauedit', {
+          state: { id: 0 }
+        });
+      }),
 
     ];
 
@@ -73,20 +72,20 @@ export class OrariListPageComponent implements OnInit {
     this.fabMenuService.fabMenuItem = [];
   }
 
-  handleButtonEditClick = (item: Par_OrarioModel) => {
-    this.navCtrl.navigateForward('/orariedit', {
+  handleButtonEditClick = (item: Par_ExportCauModel) => {
+    this.navCtrl.navigateForward('/exportcauedit', {
       state: { id: item.id }
     });
   }
 
   handleButtonDeleteClick = async (item: any) => {
 
-    const result = await this.collectionDialogService.ConfirmCancelDialog('Confermi la cancellazione dell orario');
+    const result = await this.collectionDialogService.ConfirmCancelDialog('Confermi la cancellazione della tabella');
     if (result) {
 
-      const request: GenericRequest<Par_Orario_DeleteInModel> = new GenericRequest<Par_Orario_DeleteInModel>(Par_Orario_DeleteInModel);
+      const request: GenericRequest<Par_ExportCau_Delete_InModel> = new GenericRequest<Par_ExportCau_Delete_InModel>(Par_ExportCau_Delete_InModel);
       request.data.id = item.id;
-      this.parOrarioService.Par_OrarioDelete(request).pipe(
+      this.parExportCauService.Par_ExportCauDelete(request).pipe(
         map(() => {
           this.refresherService.SharedParameterGestionePresenze_triggerRefresh();
           this.loadData();
@@ -112,11 +111,11 @@ export class OrariListPageComponent implements OnInit {
   }
 
   getAll() {
-    if (!this.par_OrarioList) return [];
-    return this.par_OrarioList.sort((a, b) =>
+    if (!this.par_ExportCauList) return [];
+    return this.par_ExportCauList.sort((a, b) =>
       a.descrizione.localeCompare(b.descrizione)
     );
   }
 
-}
 
+}

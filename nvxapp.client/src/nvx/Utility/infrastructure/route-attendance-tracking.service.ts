@@ -50,6 +50,10 @@ export class RouteAttendanceTrackingService {
       { path: 'profiliorarilist', loadChildren: () => import('../../pages/GestionePresenze/profilo-orario-list-page/profilo-orario-list-page.module').then(m => m.ProfiloOrarioListPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
       { path: 'profiliorariedit', loadChildren: () => import('../../pages/GestionePresenze/profilo-orario-edit-page/profilo-orario-edit-page.module').then(m => m.ProfiloOrarioEditPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
 
+      { path: 'exportcaulist', loadChildren: () => import('../../pages/GestionePresenze/export-cau-list-page/export-cau-list-page.module').then(m => m.ExportCauListPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
+      { path: 'exportcauedit', loadChildren: () => import('../../pages/GestionePresenze/export-cau-edit-page/export-cau-edit-page.module').then(m => m.ExportCauEditPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
+
+
       { path: 'seletionsedirepartopage', loadChildren: () => import('../../pages/GestionePresenze/_selection/seletion-sedi-reparto-page/seletion-sedi-reparto-page.module').then(m => m.SeletionSediRepartoPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
 
 

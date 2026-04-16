@@ -29,6 +29,8 @@ import { ParOrarioIntervalloHHService } from '../ClientServer-Service/GestionePr
 import { Par_OrarioIntervalloHHInModel, Par_OrarioIntervalloHHModel } from '../ClientServer-Service/GestionePresenze/Par_OrarioIntervalloHH/Models/par-orario-intervallo-hh-model';
 import { Par_CausaliInModel, Par_CausaliModel } from '../ClientServer-Service/GestionePresenze/Par_Causali/Models/par-causali-model';
 import { ParCausaliService } from '../ClientServer-Service/GestionePresenze/Par_Causali/par-causali.service';
+import { Par_ExportCau_GetAll_InModel, Par_ExportCauModel } from '../ClientServer-Service/GestionePresenze/Par_ExportCau/Models/par-export-cau-model';
+import { ParExportCauService } from '../ClientServer-Service/GestionePresenze/Par_ExportCau/par-export-cau.service';
 
 @Injectable({
   providedIn: 'root'
@@ -52,6 +54,7 @@ export class SharedParameterGestionePresenzeService {
     private parProfiloOrarioService: ParProfiloOrarioService,
     private parOrarioService: ParOrarioService,
     private parCausaliService: ParCausaliService,
+    private parExportCauService: ParExportCauService,
     private parOrarioIntervalloHHService: ParOrarioIntervalloHHService,
     
   ) { }
@@ -285,6 +288,24 @@ export class SharedParameterGestionePresenzeService {
           return of(null);
         })),
 
+
+      this.parExportCauService.GetAll(new GenericRequest<Par_ExportCau_GetAll_InModel>(Par_ExportCau_GetAll_InModel)).pipe(
+        tap((result) => {
+          this.Par_ExportCau = result.data.par_ExportCau
+          updateProgress(calls)
+        }),
+        retry({
+          count: 20,
+          delay: (error, retryCount) => {
+            console.error(`Errore rilevato, ritento dopo ${retryCount} secondi:`, error);
+            return timer(500);
+          }
+        }),
+        catchError((error) => {
+          console.error(`Errore durante il caricamento del export causali:`, error);
+          return of(null);
+        })),
+
     );
     return calls;
   }
@@ -482,5 +503,18 @@ export class SharedParameterGestionePresenzeService {
     return this._par_CausaliSubject.asObservable();
   }
 
+
+  private _par_ExportCau: Par_ExportCauModel[] | null = [];
+  public get Par_ExportCau(): Par_ExportCauModel[] | null {
+    return this._par_ExportCau;
+  }
+  public set Par_ExportCau(value: Par_ExportCauModel[] | null) {
+    this._par_ExportCau = value;
+    this._par_ExportCauSubject.next(value);
+  }
+  private _par_ExportCauSubject = new BehaviorSubject<Par_ExportCauModel[]>([]);
+  public get Par_ExportCau$(): Observable<Par_ExportCauModel[] | []> {
+    return this._par_ExportCauSubject.asObservable();
+  }
 
 }

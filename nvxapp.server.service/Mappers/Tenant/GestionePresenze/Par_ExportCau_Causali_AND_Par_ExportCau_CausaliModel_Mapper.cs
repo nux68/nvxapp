@@ -1,6 +1,6 @@
 using AutoMapper;
 using nvxapp.server.data.Entities.Tenant.GestionePresenze;
-using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_ExportCauService.Par_ExportCau_CausaliService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_ExportCau_CausaliService.Models;
 
 namespace nvxapp.server.service.Mappers.Tenant.GestionePresenze
 {

@@ -38,6 +38,7 @@ import { ParCausaliToShortTextPipe } from './pipe/GestionePresenze/par-causali-t
 import { EditDipGGCausaliDialogComponent } from './components/GestionePresenze/edit-dip-gg-causali-dialog/edit-dip-gg-causali-dialog.component';
 import { EditDipGGTimbraturaDialogComponent } from './components/GestionePresenze/edit-dip-gg-timbratura-dialog/edit-dip-gg-timbratura-dialog.component';
 import { EditDipGGGiustificativiDialogComponent } from './components/GestionePresenze/edit-dip-gg-giustificativi-dialog/edit-dip-gg-giustificativi-dialog.component';
+import { ParExportTipoFileToShortTextPipe } from './pipe/GestionePresenze/par-export-tipo-file-to-short-text.pipe';
 
 @NgModule({
   declarations: [
@@ -62,7 +63,7 @@ import { EditDipGGGiustificativiDialogComponent } from './components/GestionePre
     IdAspNetUsersToCognomePipe, IdAspNetUsersToNomePipe,
     ParAttivitaToLongTextPipe, ParCompetenzaToLongTextPipe, AzCommessaToLongTextPipe, AzClienteToLongTextPipe,
     AzSediRepartoToLongTextPipe, AzSediRepartoToShortTextPipe, ParProfiloOrarioToLongTextPipePipe,
-    ParOrarioToCodicePipe, ParOrarioToLongTextPipe
+    ParOrarioToCodicePipe, ParOrarioToLongTextPipe, ParExportTipoFileToShortTextPipe
   ],
   exports: [
     TipoTimbraturaToLongTextPipe, TipoTimbraturaToShortTextPipe, ParGiustificativiToLongTextPipe, ParGiustificativiToShortTextPipe, ParCausaliToShortTextPipe, ParCausaliToLongTextPipe,
@@ -75,7 +76,7 @@ import { EditDipGGGiustificativiDialogComponent } from './components/GestionePre
     EditParOrarioDettaglioOrarioIntervalloHHDialogComponent, TimeSheetEngineCallerComponent,
     EditDipGGCausaliDialogComponent, EditDipGGTimbraturaDialogComponent,
     EditDipGGGiustificativiDialogComponent,
-    ParOrarioToCodicePipe, ParOrarioToLongTextPipe
+    ParOrarioToCodicePipe, ParOrarioToLongTextPipe, ParExportTipoFileToShortTextPipe
   ]
 })
 export class SharedComponentGestionePresenzeModuleModule { }
