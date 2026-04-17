@@ -1,0 +1,141 @@
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
+using nvxapp.server.Base;
+using nvxapp.server.data.Entities.Public;
+using nvxapp.server.data.Repositories.Public;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_EngineService;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_EngineService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_ExportService.Models;
+using nvxapp.server.service.ClientServer_Service.infrastructure.Notifications;
+using nvxapp.server.service.ClientServer_Service.ModelsBase;
+using nvxapp.server.service.Interfaces;
+using nvxapp.server.service.ServerModels;
+
+namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_ExportService
+{
+
+
+
+    public class TimeSheet_ExportService : ServiceBase, ITimeSheet_ExportService
+    {
+        private readonly IGestionePresenzeUserUtility _gestionePresenzeUserUtility;
+        private readonly ILongJobNotifier _longJobNotifier;
+        private readonly IJobNotifier _jobNotifier;
+
+        private readonly ITimeSheet_EngineService _timeSheet_EngineService;
+
+
+        //private readonly IDip_GG_TimbraturaService _dip_GG_TimbraturaService;
+        //private readonly IDip_GG_CausaliService _dip_GG_CausaliService;
+        //private readonly IDip_GG_GiustificativiService _dip_GG_GiustificativiService;
+        //private readonly IDip_GG_RichiestaService _dip_GG_RichiestaService;
+        //private readonly IDip_GG_ResultService _dip_GG_ResultService;
+
+
+        //private readonly IDip_RapportoLavoroRepository _dip_RapportoLavoroRepository;
+        //private readonly IDip_ProfiloOrarioRepository _dip_ProfiloOrarioRepository;
+        //private readonly IPar_OrarioService _par_OrarioService;
+        //private readonly IPar_ProfiloOrarioService _par_ProfiloOrarioService;
+        //private readonly IDip_RapportoLavoroService _dip_RapportoLavoroService;
+        //private readonly IPar_GiustificativiService _par_GiustificativiService;
+
+
+
+        public TimeSheet_ExportService(IMapper mapper,
+                                      UserManager<ApplicationUser> userManager,
+                                      IAspNetUsersRepository aspNetUsersRepository,
+                                      IOptions<JwtParameter> jwtParameter,
+                                      IHttpContextAccessor httpContextAccessor,
+                                      IConfiguration configuration,
+
+                                      IGestionePresenzeUserUtility gestionePresenzeUserUtility,
+                                      ILongJobNotifier longJobNotifier,
+                                      IJobNotifier jobNotifier,
+                                      ITimeSheet_EngineService timeSheet_EngineService
+
+                                      //IDip_GG_TimbraturaRepository dip_GG_TimbraturaRepository,
+                                      //IDip_ProfiloOrarioRepository dip_ProfiloOrarioRepository,
+                                      //IDip_RapportoLavoroRepository dip_RapportoLavoroRepository,
+                                      //IPar_OrarioService par_OrarioService,
+                                      //IPar_ProfiloOrarioService par_ProfiloOrarioService,
+                                      //IDip_RapportoLavoroService dip_RapportoLavoroService,
+
+                                      //IDip_GG_TimbraturaService dip_GG_TimbraturaService,
+                                      //IDip_GG_CausaliService dip_GG_CausaliService,
+                                      //IDip_GG_GiustificativiService dip_GG_GiustificativiService,
+                                      //IDip_GG_ResultService dip_GG_ResultService,
+                                      //IPar_GiustificativiService par_GiustificativiService,
+                                      //IDip_GG_RichiestaService dip_GG_RichiestaService
+
+                                      ) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
+        {
+            _longJobNotifier = longJobNotifier;
+            _jobNotifier = jobNotifier;
+            _gestionePresenzeUserUtility = gestionePresenzeUserUtility;
+            _timeSheet_EngineService = timeSheet_EngineService;
+
+            //_dip_GG_TimbraturaService = dip_GG_TimbraturaService;
+            //_dip_GG_CausaliService = dip_GG_CausaliService;
+            //_dip_GG_GiustificativiService = dip_GG_GiustificativiService;
+            //_dip_GG_RichiestaService = dip_GG_RichiestaService;
+            //_dip_ProfiloOrarioRepository = dip_ProfiloOrarioRepository;
+            //_dip_RapportoLavoroRepository = dip_RapportoLavoroRepository;
+            //_gestionePresenzeUserUtility = gestionePresenzeUserUtility;
+            //_par_OrarioService = par_OrarioService;
+            //_dip_GG_ResultService = dip_GG_ResultService;
+            //_par_ProfiloOrarioService = par_ProfiloOrarioService;
+            //_dip_RapportoLavoroService = dip_RapportoLavoroService;
+            //_par_GiustificativiService = par_GiustificativiService;
+
+        }
+
+
+        public virtual async Task<GenericResult<TimeSheet_ExportOutModel>> Export(GenericRequest<TimeSheet_ExportInModel> model, bool isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                TimeSheet_ExportOutModel retVal = new TimeSheet_ExportOutModel();
+
+                int IdCompany;
+                int.TryParse(this.CurrentCompany, out IdCompany);
+
+                Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg company_DATA = await _gestionePresenzeUserUtility.Get_AzAna_AzSedi_AzReparto_Az_Cfg(IdCompany, true);
+                if (company_DATA != null && company_DATA.az_Anagrafica != null)
+                {
+
+                    var req_OrariSchema_4User = new GenericRequest<Timesheet_AllData_InModel>();
+                    req_OrariSchema_4User.Data.Dal = model.Data.TimeSheet_Export.Dal;
+                    req_OrariSchema_4User.Data.Al = model.Data.TimeSheet_Export.Al;
+                    req_OrariSchema_4User.Data.UsersId = model.Data.TimeSheet_Export.SelectedUserId;
+
+                    var AllData_Res = await _timeSheet_EngineService.Get_Timesheet_AllData(req_OrariSchema_4User, true);
+                    if (AllData_Res.Success && AllData_Res.Data != null)
+                    {
+
+                    }
+                }
+
+                //eliminare
+                // Nessun 'await' qui
+                //await Task.Delay(DelayAsyncMethod);
+                await Task.Delay(0);
+
+                return retVal;
+            }, isSubProcess);
+        }
+
+
+
+    }
+
+
+
+    public interface ITimeSheet_ExportService : IServiceBase
+    {
+        Task<GenericResult<TimeSheet_ExportOutModel>> Export(GenericRequest<TimeSheet_ExportInModel> model, bool isSubProcess);
+    }
+}

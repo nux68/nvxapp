@@ -65,6 +65,35 @@
           </ion-col>
         </ion-row>
 
+
+
+        <ion-row class="ion-align-items-center">
+          <ion-col size="12" size-md="6">
+            <ion-item>
+              <ion-label position="floating">Tipo export</ion-label>
+              <ion-select formControlName="idPar_ExportCau" placeholder="Seleziona il modello">
+                <ion-select-option *ngFor="let par_Export of par_ExportCauList" [value]="par_Export.id">
+                  {{ par_Export.descrizione }}
+                </ion-select-option>
+              </ion-select>
+            </ion-item>
+            <ion-note color="danger" *ngIf="_editForm.get('idPar_ExportCau')?.hasError('required') && _editForm.get('idPar_ExportCau')?.touched">
+              Il modello è obbligatorio
+            </ion-note>
+          </ion-col>
+        </ion-row>
+
+        <ion-row class="ion-align-items-center">
+          <ion-col>
+            <br />
+            <ion-button size="small" fill="outline" shape="round" (click)="btnTask.event(null)" color="{{btnTask.color}}" [disabled]="btnTask.disabled">
+              <ion-icon name="{{btnTask.image}}"></ion-icon>
+              &nbsp;{{btnTask.text}}
+            </ion-button>
+          </ion-col>
+        </ion-row>
+
+
       </form>
 
 
