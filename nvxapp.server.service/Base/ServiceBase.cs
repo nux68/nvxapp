@@ -271,119 +271,67 @@ namespace nvxapp.server.Base
         {
             get
             {
-                if (tokenProperty != null)
-                {
-                    return tokenProperty.UserIdFirstConnection;
-                }
-                else
-                {
-                    if (_httpContextAccessor.HttpContext != null)
-                    {
-                        var userIdFirstConnection = _httpContextAccessor.HttpContext?.User?.FindFirst("useridfirstconnection")?.Value;
-                        return userIdFirstConnection ?? "";
-                    }
-                    return "";
-                }
+                if (EffectiveToken != null)
+                    return EffectiveToken.UserIdFirstConnection;
+                return _httpContextAccessor.HttpContext?.User?.FindFirst("useridfirstconnection")?.Value ?? "";
             }
         }
+
         protected string CurrentUserId
         {
             get
             {
-                if (tokenProperty != null)
-                {
-                    return tokenProperty.UserId;
-                }
-                else
-                {
-                    if (_httpContextAccessor.HttpContext != null)
-                    {
-                        var currentUserId = _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                        return currentUserId ?? "";
-                    }
-                    return "";
-                }
-
-
+                if (EffectiveToken != null)
+                    return EffectiveToken.UserId;
+                return _httpContextAccessor.HttpContext?.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "";
             }
         }
+
         protected string CurrentTenat
         {
-
             get
             {
-                if (tokenProperty != null)
-                {
-                    return tokenProperty.Tenant;
-                }
-                else
-                {
-                    if (_httpContextAccessor.HttpContext != null)
-                    {
-                        var tenant = _httpContextAccessor.HttpContext?.User?.FindFirst("tenant")?.Value;
-                        return tenant ?? "";
-                    }
-                    return "";
-                }
+                if (EffectiveToken != null)
+                    return EffectiveToken.Tenant;
+                return _httpContextAccessor.HttpContext?.User?.FindFirst("tenant")?.Value ?? "";
             }
         }
+
         protected string CurrentDealer
         {
             get
             {
-                if (tokenProperty != null)
-                {
-                    return tokenProperty.Dealer;
-                }
-                else
-                {
-                    if (_httpContextAccessor.HttpContext != null)
-                    {
-                        var tenant = _httpContextAccessor.HttpContext?.User?.FindFirst("dealer")?.Value;
-                        return tenant ?? "";
-                    }
-                    return "";
-                }
+                if (EffectiveToken != null)
+                    return EffectiveToken.Dealer;
+                return _httpContextAccessor.HttpContext?.User?.FindFirst("dealer")?.Value ?? "";
             }
         }
+
         protected string CurrentFinancialAdvisor
         {
             get
             {
-                if (tokenProperty != null)
-                {
-                    return tokenProperty.FinancialAdvisor;
-                }
-                else
-                {
-                    if (_httpContextAccessor.HttpContext != null)
-                    {
-                        var tenant = _httpContextAccessor.HttpContext?.User?.FindFirst("financialadvisor")?.Value;
-                        return tenant ?? "";
-                    }
-                    return "";
-                }
+                if (EffectiveToken != null)
+                    return EffectiveToken.FinancialAdvisor;
+                return _httpContextAccessor.HttpContext?.User?.FindFirst("financialadvisor")?.Value ?? "";
             }
         }
+
         protected string CurrentCompany
         {
             get
             {
-                if (tokenProperty != null)
-                {
-                    return tokenProperty.Company;
-                }
-                else
-                {
-                    if (_httpContextAccessor.HttpContext != null)
-                    {
-                        var tenant = _httpContextAccessor.HttpContext?.User?.FindFirst("company")?.Value;
-                        return tenant ?? "";
-                    }
-                    return "";
-                }
+                if (EffectiveToken != null)
+                    return EffectiveToken.Company;
+                return _httpContextAccessor.HttpContext?.User?.FindFirst("company")?.Value ?? "";
             }
         }
+
+        // AsyncLocal: fluisce automaticamente in tutti i Task.Run/await dello stesso contesto asincrono.
+        // Permette di propagare il token a TUTTI i servizi annidati senza impostarlo su ognuno.
+        private static readonly AsyncLocal<TokenProperty?> _asyncLocalToken = new AsyncLocal<TokenProperty?>();
+        public static void SetBackgroundToken(TokenProperty? token) => _asyncLocalToken.Value = token;
+        private TokenProperty? EffectiveToken => tokenProperty ?? _asyncLocalToken.Value;
 
     }
 
