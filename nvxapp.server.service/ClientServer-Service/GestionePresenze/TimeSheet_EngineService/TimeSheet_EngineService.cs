@@ -5,7 +5,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using nvxapp.server.Base;
-using nvxapp.server.service.Helpers;
 using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Entities.Tenant;
 using nvxapp.server.data.Entities.Tenant.GestionePresenze;
@@ -175,7 +174,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
         private readonly IPar_ProfiloOrarioService _par_ProfiloOrarioService;
         private readonly IDip_RapportoLavoroService _dip_RapportoLavoroService;
         private readonly IPar_GiustificativiService _par_GiustificativiService;
-        private readonly IServiceScopeFactory _serviceScopeFactory;
 
 
         //private readonly IDip_GG_TimbraturaRepository _dip_GG_TimbraturaRepository;
@@ -202,8 +200,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                       IDip_GG_GiustificativiService dip_GG_GiustificativiService,
                                       IDip_GG_ResultService dip_GG_ResultService,
                                       IPar_GiustificativiService par_GiustificativiService,
-                                      IDip_GG_RichiestaService dip_GG_RichiestaService,
-                                      IServiceScopeFactory serviceScopeFactory
+                                      IDip_GG_RichiestaService dip_GG_RichiestaService
 
                                       ) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
@@ -222,7 +219,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
             _par_ProfiloOrarioService = par_ProfiloOrarioService;
             _dip_RapportoLavoroService = dip_RapportoLavoroService;
             _par_GiustificativiService = par_GiustificativiService;
-            _serviceScopeFactory = serviceScopeFactory;
 
             //_dip_GG_TimbraturaRepository = dip_GG_TimbraturaRepository;
         }
@@ -251,25 +247,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                     }
                     else
                     {
-                        var capturedTokenProperty = new TokenProperty
+                        RunInBackground(async scope =>
                         {
-                            UserId = this.CurrentUserId,
-                            UserIdFirstConnection = this.UserIdFirstConnection,
-                            Tenant = this.CurrentTenat,
-                            Dealer = this.CurrentDealer,
-                            FinancialAdvisor = this.CurrentFinancialAdvisor,
-                            Company = this.CurrentCompany,
-                        };
-
-                        _ = Task.Run(async () =>
-                        {
-                             // Imposta il token nel contesto asincrono: fluisce automaticamente
-                            // a TUTTI i servizi chiamati dentro questo Task.Run, a qualsiasi profondità
-                            ServiceBase.SetBackgroundToken(capturedTokenProperty);
-
-                            using var scope = _serviceScopeFactory.CreateScope();
                             var scopedEngine = (TimeSheet_EngineService)scope.ServiceProvider.GetRequiredService<ITimeSheet_EngineService>();
-                            scopedEngine.tokenProperty = capturedTokenProperty;
                             var scopedNotifier = scope.ServiceProvider.GetRequiredService<ILongJobNotifier>();
 
                             try
@@ -285,7 +265,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                                                                 ProgressPercentage = 0,
                                                                                 Message = new Message { Text = "Calcolo presenze avviato...", MsgType = MessageType.Information }
                                                                             }
-                                                                            );
+                                                                         );
 
                                 var req_OrariSchema_4User = new GenericRequest<Timesheet_AllData_InModel>();
                                 req_OrariSchema_4User.Data.Dal = model.Data.TimeSheet_Calculate.Dal;
@@ -300,10 +280,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                     int idxUser = 0;
                                     foreach (var userId_calc in model.Data.TimeSheet_Calculate.SelectedUserId)
                                     {
-
-                                        //await Task.Delay(3000); // 3-second delay for each step
-
-
                                         var progress = (int)((idxUser / (double)model.Data.TimeSheet_Calculate.SelectedUserId.Count) * 100);
                                         await scopedNotifier.LongJobProgressAsync(userId,
                                                                                     new LongJobProgressUpdate
@@ -315,13 +291,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                                                                         Message = new Message { Text = $"Calcolo presenze step {idxUser + 1} of {model.Data.TimeSheet_Calculate.SelectedUserId.Count}", MsgType = MessageType.Information }
                                                                                     }
                                                                                     );
-                                        //notifica singola, per il refresh di che fosse posizionato sul cartellino
-                                        //await _jobNotifier.JobNotifierAsync(userId, new JobNotifierData()
-                                        //{
-                                        //    JobType = GestionePresenze_JobType.TimeSheet_Engine_Calculate,
-                                        //    Payload = model.Data.TimeSheet_Calculate,
-                                        //    Message = new Message { Text = $"Calcolo presenze terminato user Id =  {userId_calc}", MsgType = MessageType.Information }
-                                        //});
+
 
 
                                         // anagrafica dell'utente corrente
@@ -352,6 +322,15 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                                 await scopedEngine.CalcolaGiorno(anagrafica_calc, model.Data.TimeSheet_Calculate, rapporto_calc, giorno, AllData.Data);
                                             }
                                         }
+
+                                        //notifica singola, per il refresh di che fosse posizionato sul cartellino
+                                        //await _jobNotifier.JobNotifierAsync(userId, new JobNotifierData()
+                                        //{
+                                        //    JobType = GestionePresenze_JobType.TimeSheet_Engine_Calculate,
+                                        //    Payload = model.Data.TimeSheet_Calculate,
+                                        //    Message = new Message { Text = $"Calcolo presenze terminato user Id =  {userId_calc}", MsgType = MessageType.Information }
+                                        //});
+
 
                                         idxUser++;
                                         //await Task.Delay(1000);
@@ -392,7 +371,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                                                             }
                                                                             );
                             }
-                        
+
                         });
                     }
 

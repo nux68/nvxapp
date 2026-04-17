@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using nvxapp.server.Base;
 using nvxapp.server.data.Entities.Public;
@@ -10,10 +11,12 @@ using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_EngineService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_EngineService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_ExportService.Models;
+using nvxapp.server.service.ClientServer_Service.infrastructure.MyMokeLongJob.Models;
 using nvxapp.server.service.ClientServer_Service.infrastructure.Notifications;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.ServerModels;
+using Serilog;
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_ExportService
 {
@@ -23,10 +26,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
     public class TimeSheet_ExportService : ServiceBase, ITimeSheet_ExportService
     {
         private readonly IGestionePresenzeUserUtility _gestionePresenzeUserUtility;
-        private readonly ILongJobNotifier _longJobNotifier;
-        private readonly IJobNotifier _jobNotifier;
+        private ILongJobNotifier? _longJobNotifier;
+        private ITimeSheet_EngineService? _timeSheet_EngineService;
 
-        private readonly ITimeSheet_EngineService _timeSheet_EngineService;
+        //private readonly IJobNotifier _jobNotifier;
 
 
         //private readonly IDip_GG_TimbraturaService _dip_GG_TimbraturaService;
@@ -52,11 +55,12 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                       IHttpContextAccessor httpContextAccessor,
                                       IConfiguration configuration,
 
-                                      IGestionePresenzeUserUtility gestionePresenzeUserUtility,
-                                      ILongJobNotifier longJobNotifier,
-                                      IJobNotifier jobNotifier,
-                                      ITimeSheet_EngineService timeSheet_EngineService
+                                      IGestionePresenzeUserUtility gestionePresenzeUserUtility
 
+
+                                      //ILongJobNotifier longJobNotifier,
+                                      //IJobNotifier jobNotifier,
+                                      //ITimeSheet_EngineService timeSheet_EngineService
                                       //IDip_GG_TimbraturaRepository dip_GG_TimbraturaRepository,
                                       //IDip_ProfiloOrarioRepository dip_ProfiloOrarioRepository,
                                       //IDip_RapportoLavoroRepository dip_RapportoLavoroRepository,
@@ -73,10 +77,12 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
                                       ) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
-            _longJobNotifier = longJobNotifier;
-            _jobNotifier = jobNotifier;
+            
             _gestionePresenzeUserUtility = gestionePresenzeUserUtility;
-            _timeSheet_EngineService = timeSheet_EngineService;
+
+            //_longJobNotifier = longJobNotifier;
+            //_jobNotifier = jobNotifier;
+            //_timeSheet_EngineService = timeSheet_EngineService;
 
             //_dip_GG_TimbraturaService = dip_GG_TimbraturaService;
             //_dip_GG_CausaliService = dip_GG_CausaliService;
@@ -107,16 +113,47 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                 if (company_DATA != null && company_DATA.az_Anagrafica != null)
                 {
 
-                    var req_OrariSchema_4User = new GenericRequest<Timesheet_AllData_InModel>();
-                    req_OrariSchema_4User.Data.Dal = model.Data.TimeSheet_Export.Dal;
-                    req_OrariSchema_4User.Data.Al = model.Data.TimeSheet_Export.Al;
-                    req_OrariSchema_4User.Data.UsersId = model.Data.TimeSheet_Export.SelectedUserId;
+                    var outModel = new MyMokeLongJobOutModel();
+                    var jobId = Guid.NewGuid();
+                    outModel.JobId = jobId.ToString();
 
-                    var AllData_Res = await _timeSheet_EngineService.Get_Timesheet_AllData(req_OrariSchema_4User, true);
-                    if (AllData_Res.Success && AllData_Res.Data != null)
+                    var userId = this.UserIdFirstConnection;
+                    if (string.IsNullOrEmpty(userId))
                     {
-
+                        Log.Information("Could not find user ID. Unable to send SignalR notifications for job {JobId}.", jobId);
+                        outModel.Messages.Add(new Message("User not identified; cannot start job.", MessageType.Error));
                     }
+                    else
+                    {
+                        RunInBackground(async scope =>
+                        {
+                            _longJobNotifier = scope.ServiceProvider.GetRequiredService<ILongJobNotifier>();
+                            _timeSheet_EngineService = scope.ServiceProvider.GetRequiredService<ITimeSheet_EngineService>();
+
+                            try
+                            {
+                                var req_OrariSchema_4User = new GenericRequest<Timesheet_AllData_InModel>();
+                                req_OrariSchema_4User.Data.Dal = model.Data.TimeSheet_Export.Dal;
+                                req_OrariSchema_4User.Data.Al = model.Data.TimeSheet_Export.Al;
+                                req_OrariSchema_4User.Data.UsersId = model.Data.TimeSheet_Export.SelectedUserId;
+
+                                var AllData_Res = await _timeSheet_EngineService.Get_Timesheet_AllData(req_OrariSchema_4User, true);
+
+                                if (AllData_Res.Success && AllData_Res.Data != null)
+                                {
+
+                                }
+                            }
+                            catch //(Exception ex)
+                            {
+
+                            }
+
+                        });
+                    }
+
+
+
                 }
 
                 //eliminare
