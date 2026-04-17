@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using nvxapp.server.data.Entities.Public;
@@ -332,6 +333,43 @@ namespace nvxapp.server.Base
         private static readonly AsyncLocal<TokenProperty?> _asyncLocalToken = new AsyncLocal<TokenProperty?>();
         public static void SetBackgroundToken(TokenProperty? token) => _asyncLocalToken.Value = token;
         private TokenProperty? EffectiveToken => tokenProperty ?? _asyncLocalToken.Value;
+
+        // IServiceScopeFactory statico (singleton): inizializzato una volta in Program.cs.
+        // Sicuro come campo statico perché IServiceScopeFactory vive per tutta la durata dell'app.
+        private static IServiceScopeFactory? _staticScopeFactory;
+        public static void InitScopeFactory(IServiceScopeFactory factory) => _staticScopeFactory = factory;
+
+        /// <summary>
+        /// Avvia un task in background con un nuovo scope DI e il contesto utente corrente propagato
+        /// automaticamente a TUTTI i servizi chiamati, a qualsiasi profondità.
+        /// Usare sempre questo metodo al posto di _ = Task.Run(...).
+        /// </summary>
+        protected void RunInBackground(Func<IServiceScope, Task> work)
+        {
+            var capturedToken = new TokenProperty
+            {
+                UserId                = CurrentUserId,
+                UserIdFirstConnection = UserIdFirstConnection,
+                Tenant                = CurrentTenat,
+                Dealer                = CurrentDealer,
+                FinancialAdvisor      = CurrentFinancialAdvisor,
+                Company               = CurrentCompany,
+            };
+
+            _ = Task.Run(async () =>
+            {
+                SetBackgroundToken(capturedToken);
+                using var scope = _staticScopeFactory!.CreateScope();
+                try
+                {
+                    await work(scope);
+                }
+                catch (Exception ex)
+                {
+                    Log.Error(ex, "RunInBackground unhandled exception.");
+                }
+            });
+        }
 
     }
 

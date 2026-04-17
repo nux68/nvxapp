@@ -77,6 +77,8 @@ if (useHttps == false)
 
 var app = builder.Build();
 
+// Inizializza la IServiceScopeFactory statica in ServiceBase per RunInBackground
+nvxapp.server.Base.ServiceBase.InitScopeFactory(app.Services.GetRequiredService<IServiceScopeFactory>());
 
 
 using (var scope = app.Services.CreateScope())
