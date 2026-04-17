@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using nvxapp.server.Base;
+using nvxapp.server.service.Helpers;
 using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Entities.Tenant;
 using nvxapp.server.data.Entities.Tenant.GestionePresenze;
@@ -174,6 +175,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
         private readonly IPar_ProfiloOrarioService _par_ProfiloOrarioService;
         private readonly IDip_RapportoLavoroService _dip_RapportoLavoroService;
         private readonly IPar_GiustificativiService _par_GiustificativiService;
+        private readonly IServiceScopeFactory _serviceScopeFactory;
 
 
         //private readonly IDip_GG_TimbraturaRepository _dip_GG_TimbraturaRepository;
@@ -200,7 +202,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                       IDip_GG_GiustificativiService dip_GG_GiustificativiService,
                                       IDip_GG_ResultService dip_GG_ResultService,
                                       IPar_GiustificativiService par_GiustificativiService,
-                                      IDip_GG_RichiestaService dip_GG_RichiestaService
+                                      IDip_GG_RichiestaService dip_GG_RichiestaService,
+                                      IServiceScopeFactory serviceScopeFactory
 
                                       ) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
@@ -219,10 +222,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
             _par_ProfiloOrarioService = par_ProfiloOrarioService;
             _dip_RapportoLavoroService = dip_RapportoLavoroService;
             _par_GiustificativiService = par_GiustificativiService;
+            _serviceScopeFactory = serviceScopeFactory;
 
             //_dip_GG_TimbraturaRepository = dip_GG_TimbraturaRepository;
         }
-
 
         public virtual async Task<GenericResult<TimeSheet_CalculateOutModel>> Calculate(GenericRequest<TimeSheet_CalculateInModel> model, bool isSubProcess)
         {
@@ -248,129 +251,150 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                     }
                     else
                     {
-                        try
+                        var capturedTokenProperty = new TokenProperty
                         {
-                            Log.Information("Starting TimeSheet calculation for users {UserIds} from {Dal} to {Al}. jobID = {JobId}", model.Data.TimeSheet_Calculate.SelectedUserId, model.Data.TimeSheet_Calculate.Dal, model.Data.TimeSheet_Calculate.Al, jobId);
+                            UserId = this.CurrentUserId,
+                            UserIdFirstConnection = this.UserIdFirstConnection,
+                            Tenant = this.CurrentTenat,
+                            Dealer = this.CurrentDealer,
+                            FinancialAdvisor = this.CurrentFinancialAdvisor,
+                            Company = this.CurrentCompany,
+                        };
 
-                            await _longJobNotifier.LongJobProgressAsync(userId,
-                                                                        new LongJobProgressUpdate
-                                                                        {
-                                                                            JobId = jobId.ToString(),
-                                                                            JobType = GestionePresenze_JobType.TimeSheet_Engine_Calculate,
-                                                                            Payload = model.Data.TimeSheet_Calculate,
-                                                                            ProgressPercentage = 0,
-                                                                            Message = new Message { Text = "Calcolo presenze avviato...", MsgType = MessageType.Information }
-                                                                        }
-                                                                        );
+                        _ = Task.Run(async () =>
+                        {
+                             // Imposta il token nel contesto asincrono: fluisce automaticamente
+                            // a TUTTI i servizi chiamati dentro questo Task.Run, a qualsiasi profondità
+                            ServiceBase.SetBackgroundToken(capturedTokenProperty);
 
-                            var req_OrariSchema_4User = new GenericRequest<Timesheet_AllData_InModel>();
-                            req_OrariSchema_4User.Data.Dal = model.Data.TimeSheet_Calculate.Dal;
-                            req_OrariSchema_4User.Data.Al = model.Data.TimeSheet_Calculate.Al;
-                            req_OrariSchema_4User.Data.UsersId = model.Data.TimeSheet_Calculate.SelectedUserId;
+                            using var scope = _serviceScopeFactory.CreateScope();
+                            var scopedEngine = (TimeSheet_EngineService)scope.ServiceProvider.GetRequiredService<ITimeSheet_EngineService>();
+                            scopedEngine.tokenProperty = capturedTokenProperty;
+                            var scopedNotifier = scope.ServiceProvider.GetRequiredService<ILongJobNotifier>();
 
-                            var AllData = await Get_Timesheet_AllData(req_OrariSchema_4User, true);
-
-                            if (AllData.Success && AllData.Data != null)
+                            try
                             {
-                                // ciclo su ogni utente selezionato
-                                int idxUser = 0;
-                                foreach (var userId_calc in model.Data.TimeSheet_Calculate.SelectedUserId)
+                                Log.Information("Starting TimeSheet calculation for users {UserIds} from {Dal} to {Al}. jobID = {JobId}", model.Data.TimeSheet_Calculate.SelectedUserId, model.Data.TimeSheet_Calculate.Dal, model.Data.TimeSheet_Calculate.Al, jobId);
+
+                                await scopedNotifier.LongJobProgressAsync(userId,
+                                                                            new LongJobProgressUpdate
+                                                                            {
+                                                                                JobId = jobId.ToString(),
+                                                                                JobType = GestionePresenze_JobType.TimeSheet_Engine_Calculate,
+                                                                                Payload = model.Data.TimeSheet_Calculate,
+                                                                                ProgressPercentage = 0,
+                                                                                Message = new Message { Text = "Calcolo presenze avviato...", MsgType = MessageType.Information }
+                                                                            }
+                                                                            );
+
+                                var req_OrariSchema_4User = new GenericRequest<Timesheet_AllData_InModel>();
+                                req_OrariSchema_4User.Data.Dal = model.Data.TimeSheet_Calculate.Dal;
+                                req_OrariSchema_4User.Data.Al = model.Data.TimeSheet_Calculate.Al;
+                                req_OrariSchema_4User.Data.UsersId = model.Data.TimeSheet_Calculate.SelectedUserId;
+
+                                var AllData = await scopedEngine.Get_Timesheet_AllData(req_OrariSchema_4User, true);
+
+                                if (AllData.Success && AllData.Data != null)
                                 {
+                                    // ciclo su ogni utente selezionato
+                                    int idxUser = 0;
+                                    foreach (var userId_calc in model.Data.TimeSheet_Calculate.SelectedUserId)
+                                    {
+
+                                        //await Task.Delay(3000); // 3-second delay for each step
 
 
+                                        var progress = (int)((idxUser / (double)model.Data.TimeSheet_Calculate.SelectedUserId.Count) * 100);
+                                        await scopedNotifier.LongJobProgressAsync(userId,
+                                                                                    new LongJobProgressUpdate
+                                                                                    {
+                                                                                        JobId = jobId.ToString(),
+                                                                                        JobType = GestionePresenze_JobType.TimeSheet_Engine_Calculate,
+                                                                                        Payload = model.Data.TimeSheet_Calculate,
+                                                                                        ProgressPercentage = progress,
+                                                                                        Message = new Message { Text = $"Calcolo presenze step {idxUser + 1} of {model.Data.TimeSheet_Calculate.SelectedUserId.Count}", MsgType = MessageType.Information }
+                                                                                    }
+                                                                                    );
+                                        //notifica singola, per il refresh di che fosse posizionato sul cartellino
+                                        //await _jobNotifier.JobNotifierAsync(userId, new JobNotifierData()
+                                        //{
+                                        //    JobType = GestionePresenze_JobType.TimeSheet_Engine_Calculate,
+                                        //    Payload = model.Data.TimeSheet_Calculate,
+                                        //    Message = new Message { Text = $"Calcolo presenze terminato user Id =  {userId_calc}", MsgType = MessageType.Information }
+                                        //});
 
 
-                                    var progress = (int)((idxUser / (double)model.Data.TimeSheet_Calculate.SelectedUserId.Count) * 100);
-                                    await _longJobNotifier.LongJobProgressAsync(userId,
+                                        // anagrafica dell'utente corrente
+                                        var anagrafica_calc = AllData.Data.OrariSchema_4User_OutModel.Dip_Anagrafica
+                                            .FirstOrDefault(a => a.IdAspNetUsers == userId_calc);
+
+                                        if (anagrafica_calc == null) continue;
+
+                                        // rapporti di lavoro dell'utente corrente
+                                        var rapporti_calc = AllData.Data.OrariSchema_4User_OutModel.Dip_RapportoLavoro
+                                            .Where(r => r.IdDip_Anagrafica == anagrafica_calc.Id)
+                                            .ToList();
+
+                                        foreach (var rapporto_calc in rapporti_calc)
+                                        {
+                                            // limita il ciclo al range effettivo del rapporto
+                                            var giornoInizio_calc = model.Data.TimeSheet_Calculate.Dal > rapporto_calc.DataAss!.Value
+                                                                    ? model.Data.TimeSheet_Calculate.Dal
+                                                                    : rapporto_calc.DataAss!.Value;
+
+                                            var giornoFine_calc = (rapporto_calc.DataLic == null || rapporto_calc.DataLic.Value > model.Data.TimeSheet_Calculate.Al)
+                                                                   ? model.Data.TimeSheet_Calculate.Al
+                                                                   : rapporto_calc.DataLic.Value;
+
+                                            // ciclo su ogni giorno del periodo richiesto
+                                            for (var giorno = giornoInizio_calc; giorno <= giornoFine_calc; giorno = giorno.AddDays(1))
+                                            {
+                                                await scopedEngine.CalcolaGiorno(anagrafica_calc, model.Data.TimeSheet_Calculate, rapporto_calc, giorno, AllData.Data);
+                                            }
+                                        }
+
+                                        idxUser++;
+                                        //await Task.Delay(1000);
+                                    }
+
+
+                                    await scopedEngine.SaveData(AllData.Data);
+
+                                    Log.Information("Background task for job {JobId} has finished successfully.", jobId);
+                                    await scopedNotifier.LongJobProgressAsync(userId,
                                                                                 new LongJobProgressUpdate
                                                                                 {
                                                                                     JobId = jobId.ToString(),
                                                                                     JobType = GestionePresenze_JobType.TimeSheet_Engine_Calculate,
                                                                                     Payload = model.Data.TimeSheet_Calculate,
-                                                                                    ProgressPercentage = progress,
-                                                                                    Message = new Message { Text = $"Calcolo presenze step {idxUser + 1} of {model.Data.TimeSheet_Calculate.SelectedUserId.Count}", MsgType = MessageType.Information }
+                                                                                    ProgressPercentage = 100,
+                                                                                    Message = new Message { Text = "Calcolo presenze completato", MsgType = MessageType.Information },
+                                                                                    IsFinished = true
                                                                                 }
-                                                                                );
-
-                                    await _jobNotifier.JobNotifierAsync(userId, new JobNotifierData()
-                                    {
-                                        JobType = GestionePresenze_JobType.TimeSheet_Engine_Calculate,
-                                        Payload = model.Data.TimeSheet_Calculate,
-                                        Message = new Message { Text = $"Calcolo presenze terminato user Id =  {userId_calc}", MsgType = MessageType.Information }
-                                    });
+                                                                               );
 
 
-                                    // anagrafica dell'utente corrente
-                                    var anagrafica_calc = AllData.Data.OrariSchema_4User_OutModel.Dip_Anagrafica
-                                        .FirstOrDefault(a => a.IdAspNetUsers == userId_calc);
-
-                                    if (anagrafica_calc == null) continue;
-
-                                    // rapporti di lavoro dell'utente corrente
-                                    var rapporti_calc = AllData.Data.OrariSchema_4User_OutModel.Dip_RapportoLavoro
-                                        .Where(r => r.IdDip_Anagrafica == anagrafica_calc.Id)
-                                        .ToList();
-
-                                    foreach (var rapporto_calc in rapporti_calc)
-                                    {
-                                        // limita il ciclo al range effettivo del rapporto
-                                        var giornoInizio_calc = model.Data.TimeSheet_Calculate.Dal > rapporto_calc.DataAss!.Value
-                                                                ? model.Data.TimeSheet_Calculate.Dal
-                                                                : rapporto_calc.DataAss!.Value;
-
-                                        var giornoFine_calc = (rapporto_calc.DataLic == null || rapporto_calc.DataLic.Value > model.Data.TimeSheet_Calculate.Al)
-                                                               ? model.Data.TimeSheet_Calculate.Al
-                                                               : rapporto_calc.DataLic.Value;
-
-                                        // ciclo su ogni giorno del periodo richiesto
-                                        for (var giorno = giornoInizio_calc; giorno <= giornoFine_calc; giorno = giorno.AddDays(1))
-                                        {
-                                            await CalcolaGiorno(anagrafica_calc, model.Data.TimeSheet_Calculate, rapporto_calc, giorno, AllData.Data);
-                                        }
-                                    }
-
-                                    idxUser++;
-                                    //await Task.Delay(1000);
                                 }
 
-
-                                await this.SaveData(AllData.Data);
-
-                                Log.Information("Background task for job {JobId} has finished successfully.", jobId);
-                                await _longJobNotifier.LongJobProgressAsync(userId,
+                            }
+                            catch (Exception ex)
+                            {
+                                Log.Error(ex, "Background task for job {JobId} failed.", jobId);
+                                await scopedNotifier.LongJobProgressAsync(userId,
                                                                             new LongJobProgressUpdate
                                                                             {
                                                                                 JobId = jobId.ToString(),
                                                                                 JobType = GestionePresenze_JobType.TimeSheet_Engine_Calculate,
                                                                                 Payload = model.Data.TimeSheet_Calculate,
                                                                                 ProgressPercentage = 100,
-                                                                                Message = new Message { Text = "Calcolo presenze completato", MsgType = MessageType.Information },
+                                                                                Message = new Message { Text = $"Calcolo presenze fallito: {ex.Message}", MsgType = MessageType.Exception },
                                                                                 IsFinished = true
                                                                             }
-                                                                           );
-
-
+                                                                            );
                             }
-
-                        }
-                        catch (Exception ex)
-                        {
-                            Log.Error(ex, "Background task for job {JobId} failed.", jobId);
-                            await _longJobNotifier.LongJobProgressAsync(userId,
-                                                                        new LongJobProgressUpdate
-                                                                        {
-                                                                            JobId = jobId.ToString(),
-                                                                            JobType = GestionePresenze_JobType.TimeSheet_Engine_Calculate,
-                                                                            Payload = model.Data.TimeSheet_Calculate,
-                                                                            ProgressPercentage = 100,
-                                                                            Message = new Message { Text = $"Calcolo presenze fallito: {ex.Message}", MsgType = MessageType.Exception },
-                                                                            IsFinished = true
-                                                                        }
-                                                                        );
-                        }
+                        
+                        });
                     }
-
-
 
 
                 }
@@ -383,6 +407,165 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                 return retVal;
             }, isSubProcess);
         }
+        //public virtual async Task<GenericResult<TimeSheet_CalculateOutModel>> Calculate(GenericRequest<TimeSheet_CalculateInModel> model, bool isSubProcess)
+        //{
+        //    return await ExecuteAction(model, async () =>
+        //    {
+        //        TimeSheet_CalculateOutModel retVal = new TimeSheet_CalculateOutModel();
+
+        //        int IdCompany;
+        //        int.TryParse(this.CurrentCompany, out IdCompany);
+
+        //        Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg company_DATA = await _gestionePresenzeUserUtility.Get_AzAna_AzSedi_AzReparto_Az_Cfg(IdCompany, true);
+        //        if (company_DATA != null && company_DATA.az_Anagrafica != null)
+        //        {
+        //            var outModel = new MyMokeLongJobOutModel();
+        //            var jobId = Guid.NewGuid();
+        //            outModel.JobId = jobId.ToString();
+
+        //            var userId = this.UserIdFirstConnection;
+        //            if (string.IsNullOrEmpty(userId))
+        //            {
+        //                Log.Information("Could not find user ID. Unable to send SignalR notifications for job {JobId}.", jobId);
+        //                outModel.Messages.Add(new Message("User not identified; cannot start job.", MessageType.Error));
+        //            }
+        //            else
+        //            {
+        //                try
+        //                {
+        //                    Log.Information("Starting TimeSheet calculation for users {UserIds} from {Dal} to {Al}. jobID = {JobId}", model.Data.TimeSheet_Calculate.SelectedUserId, model.Data.TimeSheet_Calculate.Dal, model.Data.TimeSheet_Calculate.Al, jobId);
+
+        //                    await _longJobNotifier.LongJobProgressAsync(userId,
+        //                                                                new LongJobProgressUpdate
+        //                                                                {
+        //                                                                    JobId = jobId.ToString(),
+        //                                                                    JobType = GestionePresenze_JobType.TimeSheet_Engine_Calculate,
+        //                                                                    Payload = model.Data.TimeSheet_Calculate,
+        //                                                                    ProgressPercentage = 0,
+        //                                                                    Message = new Message { Text = "Calcolo presenze avviato...", MsgType = MessageType.Information }
+        //                                                                }
+        //                                                                );
+
+        //                    var req_OrariSchema_4User = new GenericRequest<Timesheet_AllData_InModel>();
+        //                    req_OrariSchema_4User.Data.Dal = model.Data.TimeSheet_Calculate.Dal;
+        //                    req_OrariSchema_4User.Data.Al = model.Data.TimeSheet_Calculate.Al;
+        //                    req_OrariSchema_4User.Data.UsersId = model.Data.TimeSheet_Calculate.SelectedUserId;
+
+        //                    var AllData = await Get_Timesheet_AllData(req_OrariSchema_4User, true);
+
+        //                    if (AllData.Success && AllData.Data != null)
+        //                    {
+        //                        // ciclo su ogni utente selezionato
+        //                        int idxUser = 0;
+        //                        foreach (var userId_calc in model.Data.TimeSheet_Calculate.SelectedUserId)
+        //                        {
+
+        //                            await Task.Delay(3000); // 3-second delay for each step
+
+
+        //                            var progress = (int)((idxUser / (double)model.Data.TimeSheet_Calculate.SelectedUserId.Count) * 100);
+        //                            await _longJobNotifier.LongJobProgressAsync(userId,
+        //                                                                        new LongJobProgressUpdate
+        //                                                                        {
+        //                                                                            JobId = jobId.ToString(),
+        //                                                                            JobType = GestionePresenze_JobType.TimeSheet_Engine_Calculate,
+        //                                                                            Payload = model.Data.TimeSheet_Calculate,
+        //                                                                            ProgressPercentage = progress,
+        //                                                                            Message = new Message { Text = $"Calcolo presenze step {idxUser + 1} of {model.Data.TimeSheet_Calculate.SelectedUserId.Count}", MsgType = MessageType.Information }
+        //                                                                        }
+        //                                                                        );
+        //                            //notifica singola, per il refresh di che fosse posizionato sul cartellino
+        //                            //await _jobNotifier.JobNotifierAsync(userId, new JobNotifierData()
+        //                            //{
+        //                            //    JobType = GestionePresenze_JobType.TimeSheet_Engine_Calculate,
+        //                            //    Payload = model.Data.TimeSheet_Calculate,
+        //                            //    Message = new Message { Text = $"Calcolo presenze terminato user Id =  {userId_calc}", MsgType = MessageType.Information }
+        //                            //});
+
+
+        //                            // anagrafica dell'utente corrente
+        //                            var anagrafica_calc = AllData.Data.OrariSchema_4User_OutModel.Dip_Anagrafica
+        //                                .FirstOrDefault(a => a.IdAspNetUsers == userId_calc);
+
+        //                            if (anagrafica_calc == null) continue;
+
+        //                            // rapporti di lavoro dell'utente corrente
+        //                            var rapporti_calc = AllData.Data.OrariSchema_4User_OutModel.Dip_RapportoLavoro
+        //                                .Where(r => r.IdDip_Anagrafica == anagrafica_calc.Id)
+        //                                .ToList();
+
+        //                            foreach (var rapporto_calc in rapporti_calc)
+        //                            {
+        //                                // limita il ciclo al range effettivo del rapporto
+        //                                var giornoInizio_calc = model.Data.TimeSheet_Calculate.Dal > rapporto_calc.DataAss!.Value
+        //                                                        ? model.Data.TimeSheet_Calculate.Dal
+        //                                                        : rapporto_calc.DataAss!.Value;
+
+        //                                var giornoFine_calc = (rapporto_calc.DataLic == null || rapporto_calc.DataLic.Value > model.Data.TimeSheet_Calculate.Al)
+        //                                                       ? model.Data.TimeSheet_Calculate.Al
+        //                                                       : rapporto_calc.DataLic.Value;
+
+        //                                // ciclo su ogni giorno del periodo richiesto
+        //                                for (var giorno = giornoInizio_calc; giorno <= giornoFine_calc; giorno = giorno.AddDays(1))
+        //                                {
+        //                                    await CalcolaGiorno(anagrafica_calc, model.Data.TimeSheet_Calculate, rapporto_calc, giorno, AllData.Data);
+        //                                }
+        //                            }
+
+        //                            idxUser++;
+        //                            //await Task.Delay(1000);
+        //                        }
+
+
+        //                        await this.SaveData(AllData.Data);
+
+        //                        Log.Information("Background task for job {JobId} has finished successfully.", jobId);
+        //                        await _longJobNotifier.LongJobProgressAsync(userId,
+        //                                                                    new LongJobProgressUpdate
+        //                                                                    {
+        //                                                                        JobId = jobId.ToString(),
+        //                                                                        JobType = GestionePresenze_JobType.TimeSheet_Engine_Calculate,
+        //                                                                        Payload = model.Data.TimeSheet_Calculate,
+        //                                                                        ProgressPercentage = 100,
+        //                                                                        Message = new Message { Text = "Calcolo presenze completato", MsgType = MessageType.Information },
+        //                                                                        IsFinished = true
+        //                                                                    }
+        //                                                                   );
+
+
+        //                    }
+
+        //                }
+        //                catch (Exception ex)
+        //                {
+        //                    Log.Error(ex, "Background task for job {JobId} failed.", jobId);
+        //                    await _longJobNotifier.LongJobProgressAsync(userId,
+        //                                                                new LongJobProgressUpdate
+        //                                                                {
+        //                                                                    JobId = jobId.ToString(),
+        //                                                                    JobType = GestionePresenze_JobType.TimeSheet_Engine_Calculate,
+        //                                                                    Payload = model.Data.TimeSheet_Calculate,
+        //                                                                    ProgressPercentage = 100,
+        //                                                                    Message = new Message { Text = $"Calcolo presenze fallito: {ex.Message}", MsgType = MessageType.Exception },
+        //                                                                    IsFinished = true
+        //                                                                }
+        //                                                                );
+        //                }
+        //            }
+
+
+
+
+        //        }
+
+        //        //eliminare
+        //        // Nessun 'await' qui
+        //        //await Task.Delay(DelayAsyncMethod);
+        //        await Task.Delay(0);
+
+        //        return retVal;
+        //    }, isSubProcess);
+        //}
         public virtual async Task<GenericResult<OrariSchema_4User_OutModel>> Get_OrariSchema_4User(GenericRequest<OrariSchema_4User_InModel> model, bool isSubProcess)
         {
             return await ExecuteAction(model, async () =>
@@ -1264,6 +1447,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
         private async Task GeneraGiustificativoAssenza(Dip_AnagraficaModel Dip_Anagrafica, Timesheet_AllData_OutModel allData, int IdDip_RapportoLavoro, DateTime day, Dip_GG_ResultModel dip_GG_Result)
         {
 
+            if (day.Date >= DateTime.Today)
+                return;
+
             var orariSchema = allData.OrariSchema_4User_OutModel;
 
             if (orariSchema == null)
@@ -1323,6 +1509,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                             req_1.Data.Dip_GG_Richiesta.RichiestaTipo = TipoRichiesta.Giustificativo;
                             req_1.Data.Dip_GG_Richiesta.Data = day.ToString("dd/MM/yyyy");
                             req_1.Data.Dip_GG_Richiesta.DataA = day.ToString("dd/MM/yyyy");
+                            req_1.Data.ExcludeRicalc = true;
 
                             var res_1 = await _dip_GG_RichiestaService.Send(req_1, true);
                             if (res_1.Success && res_1.Data != null)
@@ -1532,22 +1719,22 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                     //        }
                     //    }
                     //}
-                
-                                        // scorre le coppie timbratura E/U in sequenza
+
+                    // scorre le coppie timbratura E/U in sequenza
                     for (int i = 0; i + 1 < timbrature.Count; i += 2)
                     {
                         var entrata = timbrature[i];
-                        var uscita  = timbrature[i + 1];
+                        var uscita = timbrature[i + 1];
 
                         if (entrata.TimbraturaTipo != TipoTimbratura.Entrata ||
-                            uscita.TimbraturaTipo  != TipoTimbratura.Uscita)
+                            uscita.TimbraturaTipo != TipoTimbratura.Uscita)
                             continue;
 
                         if (!entrata.TimbraturaArrotondata.HasValue || !uscita.TimbraturaArrotondata.HasValue)
                             continue;
 
                         var tStart = entrata.TimbraturaArrotondata.Value.TimeOfDay;
-                        var tEnd   = uscita.TimbraturaArrotondata.Value.TimeOfDay;
+                        var tEnd = uscita.TimbraturaArrotondata.Value.TimeOfDay;
 
                         if (tEnd <= tStart)
                             continue;
@@ -1568,11 +1755,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                 continue;
 
                             var cStart = coppia.Dalle.Value.ToTimeSpan();
-                            var cEnd   = coppia.Alle.Value.ToTimeSpan();
+                            var cEnd = coppia.Alle.Value.ToTimeSpan();
 
                             // sovrapposizione tra [tStart, tEnd] e [cStart, cEnd] → solo per le causali
                             var overlapStart = tStart > cStart ? tStart : cStart;
-                            var overlapEnd   = tEnd   < cEnd   ? tEnd   : cEnd;
+                            var overlapEnd = tEnd < cEnd ? tEnd : cEnd;
 
                             if (overlapEnd <= overlapStart)
                                 continue;
@@ -1590,7 +1777,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                             }
                         }
                     }
-                    
+
                 }
             }
 
