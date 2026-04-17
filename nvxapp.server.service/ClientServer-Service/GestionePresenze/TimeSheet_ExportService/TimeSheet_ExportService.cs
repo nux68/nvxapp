@@ -132,6 +132,18 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
                             try
                             {
+
+                                await _longJobNotifier.LongJobProgressAsync(userId,
+                                                                            new LongJobProgressUpdate
+                                                                            {
+                                                                                JobId = jobId.ToString(),
+                                                                                JobType = GestionePresenze_JobType.TimeSheet_Engine_Export,
+                                                                                Payload = model.Data.TimeSheet_Export,
+                                                                                ProgressPercentage = 0,
+                                                                                Message = new Message { Text = "Export presenze avviato...", MsgType = MessageType.Information }
+                                                                            }
+                                                                         );
+
                                 var req_OrariSchema_4User = new GenericRequest<Timesheet_AllData_InModel>();
                                 req_OrariSchema_4User.Data.Dal = model.Data.TimeSheet_Export.Dal;
                                 req_OrariSchema_4User.Data.Al = model.Data.TimeSheet_Export.Al;
@@ -143,10 +155,36 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                 {
 
                                 }
-                            }
-                            catch //(Exception ex)
-                            {
 
+                                Log.Information("Background task for job {JobId} has finished successfully.", jobId);
+                                await _longJobNotifier.LongJobProgressAsync(userId,
+                                                                            new LongJobProgressUpdate
+                                                                                {
+                                                                                    JobId = jobId.ToString(),
+                                                                                    JobType = GestionePresenze_JobType.TimeSheet_Engine_Export,
+                                                                                    Payload = model.Data.TimeSheet_Export,
+                                                                                    ProgressPercentage = 100,
+                                                                                    Message = new Message { Text = "Export presenze completato", MsgType = MessageType.Information },
+                                                                                    IsFinished = true
+                                                                                }
+                                                                            );
+
+
+                            }
+                            catch (Exception ex)
+                            {
+                                  Log.Error(ex, "Background task for job {JobId} failed.", jobId);
+                                  await _longJobNotifier.LongJobProgressAsync(userId,
+                                                                            new LongJobProgressUpdate
+                                                                            {
+                                                                                JobId = jobId.ToString(),
+                                                                                JobType = GestionePresenze_JobType.TimeSheet_Engine_Export,
+                                                                                Payload = model.Data.TimeSheet_Export,
+                                                                                ProgressPercentage = 100,
+                                                                                Message = new Message { Text = $"Export presenze fallito: {ex.Message}", MsgType = MessageType.Exception },
+                                                                                IsFinished = true
+                                                                            }
+                                                                            );
                             }
 
                         });
