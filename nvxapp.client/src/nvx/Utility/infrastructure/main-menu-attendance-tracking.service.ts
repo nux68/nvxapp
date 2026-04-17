@@ -24,21 +24,21 @@ export class MainMenuAttendanceTrackingService implements iMainMenuService {
       { menuType: MenuType.MenuItem,   zorder: 3000, group: 0, title: 'Utenti '             , roles: ['CompanyAdmin']                     , component: "UserDepartmentListPageComponent", url: '/userdepartmentlist', icon: 'people' },
 
       { menuType: MenuType.MenuHeader, zorder: 201000, group: 1, title: 'Parametri'         , roles: ['CompanyPowerAdmin'], component: '', url: '', icon: '' },
-      { menuType: MenuType.MenuItem,   zorder: 202000, group: 1, title: 'Giustificativi'    , roles: ['CompanyPowerAdmin'], component: "JustificationListPageComponent", url: '/justificationlist', icon: 'ellipse' },
-      { menuType: MenuType.MenuItem,   zorder: 203000, group: 1, title: 'Causali'           , roles: ['CompanyPowerAdmin'], component: "CausaliListPageComponent", url: '/causalilist', icon: 'ellipse' },
-      { menuType: MenuType.MenuItem,   zorder: 204000, group: 1, title: 'Configurazione'    , roles: ['CompanyPowerAdmin'], component: "CompanyCfgPageComponent", url: '/companycfgedit', icon: 'ellipse' },
-      { menuType: MenuType.MenuItem,   zorder: 205000, group: 1, title: 'Orari'             , roles: ['CompanyPowerAdmin'], component: "OrariListPageComponent", url: '/orarilist', icon: 'ellipse' },
-      { menuType: MenuType.MenuItem,   zorder: 206000, group: 1, title: 'Profili Orari'     , roles: ['CompanyPowerAdmin'], component: "ProfiloOrarioListPageComponent", url: '/profiliorarilist', icon: 'ellipse' },
-      { menuType: MenuType.MenuItem,   zorder: 207000, group: 1, title: 'Modelli Export'    , roles: ['CompanyPowerAdmin'], component: "ExportCauListPageComponent", url: '/exportcaulist', icon: 'ellipse' },
+      { menuType: MenuType.MenuItem,   zorder: 202000, group: 1, title: 'Giustificativi'    , roles: ['CompanyPowerAdmin'], component: "JustificationListPageComponent", url: '/justificationlist', icon: 'reader' },
+      { menuType: MenuType.MenuItem,   zorder: 203000, group: 1, title: 'Causali'           , roles: ['CompanyPowerAdmin'], component: "CausaliListPageComponent", url: '/causalilist', icon: 'receipt' },
+      { menuType: MenuType.MenuItem,   zorder: 204000, group: 1, title: 'Configurazione'    , roles: ['CompanyPowerAdmin'], component: "CompanyCfgPageComponent", url: '/companycfgedit', icon: 'construct' },
+      { menuType: MenuType.MenuItem,   zorder: 205000, group: 1, title: 'Orari'             , roles: ['CompanyPowerAdmin'], component: "OrariListPageComponent", url: '/orarilist', icon: 'time' },
+      { menuType: MenuType.MenuItem,   zorder: 206000, group: 1, title: 'Profili Orari'     , roles: ['CompanyPowerAdmin'], component: "ProfiloOrarioListPageComponent", url: '/profiliorarilist', icon: 'timer' },
+      { menuType: MenuType.MenuItem,   zorder: 207000, group: 1, title: 'Modelli Export'    , roles: ['CompanyPowerAdmin'], component: "ExportCauListPageComponent", url: '/exportcaulist', icon: 'hammer' },
       
 
       { menuType: MenuType.MenuHeader, zorder: 205000, group: 2, title: 'Gestione Commesse' , roles: ['CompanyPowerAdmin'], component: '', url: '', icon: '' },
-      { menuType: MenuType.MenuItem,   zorder: 205100, group: 2, title: 'Commesse'          , roles: ['CompanyPowerAdmin'], component: "CommessaListPageComponent", url: '/commessalist', icon: 'ellipse' },
-      { menuType: MenuType.MenuItem,   zorder: 205200, group: 2, title: 'Clienti'           , roles: ['CompanyPowerAdmin'], component: "CustomerListPageComponent", url: '/customerlist', icon: 'people' },
-      { menuType: MenuType.MenuItem,   zorder: 205300, group: 2, title: 'Reparti'           , roles: ['CompanyPowerAdmin'], component: "DepartmentListPageComponent", url: '/departmentlist', icon: 'ellipse' },
-      { menuType: MenuType.MenuItem,   zorder: 205400, group: 2, title: 'Sedi'              , roles: ['CompanyPowerAdmin'], component: "AzSediListPageComponent", url: '/azsedilist', icon: 'business' },
-      { menuType: MenuType.MenuItem,   zorder: 205500, group: 2, title: 'Attività'          , roles: ['CompanyPowerAdmin'], component: "ActivityListPageComponent", url: '/activitylist', icon: 'ellipse' },
-      { menuType: MenuType.MenuItem,   zorder: 205600, group: 2, title: 'Competenze'        , roles: ['CompanyPowerAdmin'], component: "CompetenceListPageComponent", url: '/competencelist', icon: 'ellipse' },
+      { menuType: MenuType.MenuItem  , zorder: 205100, group: 2, title: 'Commesse'          , roles: ['CompanyPowerAdmin'], component: "CommessaListPageComponent", url: '/commessalist', icon: 'layers' },
+      { menuType: MenuType.MenuItem  , zorder: 205200, group: 2, title: 'Clienti'           , roles: ['CompanyPowerAdmin'], component: "CustomerListPageComponent", url: '/customerlist', icon: 'people' },
+      { menuType: MenuType.MenuItem  , zorder: 205300, group: 2, title: 'Reparti'           , roles: ['CompanyPowerAdmin'], component: "DepartmentListPageComponent", url: '/departmentlist', icon: 'grid' },
+      { menuType: MenuType.MenuItem  , zorder: 205400, group: 2, title: 'Sedi'              , roles: ['CompanyPowerAdmin'], component: "AzSediListPageComponent", url: '/azsedilist', icon: 'business' },
+      { menuType: MenuType.MenuItem  , zorder: 205500, group: 2, title: 'Attività'          , roles: ['CompanyPowerAdmin'], component: "ActivityListPageComponent", url: '/activitylist', icon: 'file-tray-full' },
+      { menuType: MenuType.MenuItem  , zorder: 205600, group: 2, title: 'Competenze'        , roles: ['CompanyPowerAdmin'], component: "CompetenceListPageComponent", url: '/competencelist', icon: 'file-tray-stacked' },
 
       //{ menuType: MenuType.MenuItem, zorder: 205500, title: 'MyTemplate1', roles: ['CompanyPowerAdmin'], component: "MyTemplate1ListPageComponent", url: '/mytemplate1list', icon: 'ellipse' },
       
