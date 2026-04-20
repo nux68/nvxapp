@@ -308,7 +308,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                 }
 
                 processedUsers++;
-                int progress = (int)((double)processedUsers / totalUsers * 80) + 10;
+                var progress = (int)((processedUsers / (double)dipAnagrafiche.Count) * 100);
+
                 await _longJobNotifier!.LongJobProgressAsync(userId,
                     new LongJobProgressUpdate
                     {
