@@ -31,10 +31,10 @@ namespace nvxapp.server.Controllers.GestionePresenze
 
         [Authorize]
         [HttpGet]
-        [Route("Download/{jobId}/{fileName}")]
-        public IActionResult Download(string jobId, string fileName)
+        [Route("Download/{fileName}")]
+        public IActionResult Download(string fileName)
         {
-            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "exports", jobId, fileName);
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "exports", fileName);
             if (!System.IO.File.Exists(filePath))
                 return NotFound(new { message = "File non trovato." });
 

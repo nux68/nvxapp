@@ -149,6 +149,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                                                                 JobId = jobId.ToString(),
                                                                                 JobType = GestionePresenze_JobType.TimeSheet_Engine_Export,
                                                                                 Payload = model.Data.TimeSheet_Export,
+                                                                                Category = LongJobCategory.FileGeneration,
                                                                                 ProgressPercentage = 0,
                                                                                 Message = new Message { Text = "Export presenze avviato...", MsgType = MessageType.Information }
                                                                             }
@@ -180,7 +181,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                                 allData, exportCausali,
                                                 userId, jobId.ToString(), model.Data.TimeSheet_Export);
 
-                                            var exportsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "exports", jobId.ToString());
+                                            var exportsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "exports");
                                             Directory.CreateDirectory(exportsFolder);
 
                                             string fileName;
@@ -189,7 +190,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                             else
                                                 fileName = await WriteTxtFile(rows, exportCau.Codice ?? "export", jobId.ToString(), exportsFolder);
 
-                                            retVal.DownloadUrl = $"/exports/{jobId}/{fileName}";
+                                            retVal.DownloadUrl = $"TimeSheet_Export/Download/{fileName}";
 
                                             Log.Information("Export file created for job {JobId}: {FileName}", jobId, fileName);
                                         }
@@ -203,8 +204,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                                                                     JobId = jobId.ToString(),
                                                                                     JobType = GestionePresenze_JobType.TimeSheet_Engine_Export,
                                                                                     Payload = new { model.Data.TimeSheet_Export, DownloadUrl = retVal.DownloadUrl },
+                                                                                    Category = LongJobCategory.FileGeneration,
                                                                                     ProgressPercentage = 100,
-                                                                                    Message = new Message { Text = "Export presenze completato", MsgType = MessageType.Information },
+                                                                                    Message = new Message { Text = "Export completato, clicca per scaricare", MsgType = MessageType.Information },
                                                                                     IsFinished = true
                                                                                 }
                                                                             );
@@ -221,6 +223,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                                                                 JobType = GestionePresenze_JobType.TimeSheet_Engine_Export,
                                                                                 Payload = model.Data.TimeSheet_Export,
                                                                                 ProgressPercentage = 100,
+                                                                                Category = LongJobCategory.FileGeneration,
                                                                                 Message = new Message { Text = $"Export presenze fallito: {ex.Message}", MsgType = MessageType.Exception },
                                                                                 IsFinished = true
                                                                             }
@@ -316,6 +319,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                         JobId = jobId,
                         JobType = GestionePresenze_JobType.TimeSheet_Engine_Export,
                         Payload = exportPayload,
+                        Category = LongJobCategory.FileGeneration,
                         ProgressPercentage = progress,
                         Message = new Message { Text = $"Elaborazione {processedUsers}/{totalUsers}...", MsgType = MessageType.Information }
                     });
