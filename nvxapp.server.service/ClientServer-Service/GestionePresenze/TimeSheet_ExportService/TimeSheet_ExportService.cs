@@ -6,10 +6,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using nvxapp.server.Base;
 using nvxapp.server.data.Entities.Public;
+using nvxapp.server.data.Entities.Tenant.GestionePresenze;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_ExportCauService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_ExportCauService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_ExportCau_CausaliService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_EngineService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_EngineService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_ExportService.Models;
@@ -19,6 +21,8 @@ using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.ServerModels;
 using Serilog;
+using System.Globalization;
+using System.Text;
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_ExportService
 {
@@ -162,10 +166,33 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                     var req_Par_ExportCau = new GenericRequest<Par_ExportCau_Get_InModel>();
                                     req_Par_ExportCau.Data.Id = model.Data.TimeSheet_Export.IdPar_ExportCau;
                                     
-                                   var res_Par_ExportCau = await _par_ExportCauService.Par_ExportCauGet(req_Par_ExportCau,true);
+                                    var res_Par_ExportCau = await _par_ExportCauService.Par_ExportCauGet(req_Par_ExportCau, true);
                                     if (res_Par_ExportCau.Success && res_Par_ExportCau.Data != null)
                                     {
-                                        var c=0;
+                                        var exportCau = res_Par_ExportCau.Data.Par_ExportCau;
+                                        var exportCausali = res_Par_ExportCau.Data.Par_ExportCau_Causali;
+
+                                        if (exportCau != null && exportCausali != null && exportCausali.Count > 0)
+                                        {
+                                            var allData = AllData_Res.Data;
+
+                                            var rows = await PrepareExportRows(
+                                                allData, exportCausali,
+                                                userId, jobId.ToString(), model.Data.TimeSheet_Export);
+
+                                            var exportsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "exports", jobId.ToString());
+                                            Directory.CreateDirectory(exportsFolder);
+
+                                            string fileName;
+                                            if (exportCau.TipoFile == Par_Export_TipoFile.CSV)
+                                                fileName = await WriteCsvFile(rows, exportCau.Codice ?? "export", jobId.ToString(), exportsFolder);
+                                            else
+                                                fileName = await WriteTxtFile(rows, exportCau.Codice ?? "export", jobId.ToString(), exportsFolder);
+
+                                            retVal.DownloadUrl = $"/exports/{jobId}/{fileName}";
+
+                                            Log.Information("Export file created for job {JobId}: {FileName}", jobId, fileName);
+                                        }
                                     }
                                 }
 
@@ -175,7 +202,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                                                                 {
                                                                                     JobId = jobId.ToString(),
                                                                                     JobType = GestionePresenze_JobType.TimeSheet_Engine_Export,
-                                                                                    Payload = model.Data.TimeSheet_Export,
+                                                                                    Payload = new { model.Data.TimeSheet_Export, DownloadUrl = retVal.DownloadUrl },
                                                                                     ProgressPercentage = 100,
                                                                                     Message = new Message { Text = "Export presenze completato", MsgType = MessageType.Information },
                                                                                     IsFinished = true
@@ -218,6 +245,146 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
 
 
+        #region Preparazione dati
+
+        private async Task<List<ExportRow>> PrepareExportRows(
+            Timesheet_AllData_OutModel allData,
+            List<Par_ExportCau_CausaliModel> exportCausali,
+            string userId, string jobId, TimeSheet_ExportModel exportPayload)
+        {
+            var rows = new List<ExportRow>();
+
+            var dipAnagrafiche = allData.OrariSchema_4User_OutModel.Dip_Anagrafica;
+            var rapportiLavoro = allData.OrariSchema_4User_OutModel.Dip_RapportoLavoro;
+            var causaliGG = allData.Dip_GG_AllData_OutModel.Dip_GG_Causali;
+
+            int totalUsers = dipAnagrafiche.Count;
+            int processedUsers = 0;
+
+            foreach (var dip in dipAnagrafiche)
+            {
+                var rapportiIds = rapportiLavoro
+                    .Where(r => r.IdDip_Anagrafica == dip.Id)
+                    .Select(r => r.Id)
+                    .ToHashSet();
+
+                foreach (var exportCausale in exportCausali)
+                {
+                    var causaliUtente = causaliGG
+                        .Where(c => rapportiIds.Contains(c.IdDip_RapportoLavoro) && c.IdPar_Causali == exportCausale.IdCausale)
+                        .ToList();
+
+                    if (exportCausale.TipoElaborazione == Par_Export_TipoElaborazione.Gionaliera)
+                    {
+                        foreach (var causale in causaliUtente)
+                        {
+                            rows.Add(new ExportRow
+                            {
+                                Cognome = dip.Cognome ?? "",
+                                Nome = dip.Nome ?? "",
+                                Data = causale.Data.ToString("yyyy-MM-dd"),
+                                CodiceCausale = exportCausale.Codice ?? "",
+                                Valore = ConvertValore(causale.Valore, exportCausale.TipoUnita)
+                            });
+                        }
+                    }
+                    else // Mensile
+                    {
+                        var grouped = causaliUtente
+                            .GroupBy(c => new { c.Data.Year, c.Data.Month });
+
+                        foreach (var grp in grouped)
+                        {
+                            rows.Add(new ExportRow
+                            {
+                                Cognome = dip.Cognome ?? "",
+                                Nome = dip.Nome ?? "",
+                                Data = new DateTime(grp.Key.Year, grp.Key.Month, 1).ToString("yyyy-MM"),
+                                CodiceCausale = exportCausale.Codice ?? "",
+                                Valore = grp.Sum(c => ConvertValore(c.Valore, exportCausale.TipoUnita))
+                            });
+                        }
+                    }
+                }
+
+                processedUsers++;
+                int progress = (int)((double)processedUsers / totalUsers * 80) + 10;
+                await _longJobNotifier!.LongJobProgressAsync(userId,
+                    new LongJobProgressUpdate
+                    {
+                        JobId = jobId,
+                        JobType = GestionePresenze_JobType.TimeSheet_Engine_Export,
+                        Payload = exportPayload,
+                        ProgressPercentage = progress,
+                        Message = new Message { Text = $"Elaborazione {processedUsers}/{totalUsers}...", MsgType = MessageType.Information }
+                    });
+            }
+
+            return rows;
+        }
+
+        private static decimal ConvertValore(TimeOnly valore, Par_Export_TipoUnita tipoUnita)
+        {
+            return tipoUnita switch
+            {
+                Par_Export_TipoUnita.Ore => (decimal)valore.Hour + (decimal)valore.Minute / 60m,
+                Par_Export_TipoUnita.Giorni => (valore.Hour > 0 || valore.Minute > 0) ? 1m : 0m,
+                Par_Export_TipoUnita.Importo => (decimal)valore.Hour + (decimal)valore.Minute / 60m,
+                _ => (decimal)valore.Hour + (decimal)valore.Minute / 60m
+            };
+        }
+
+        #endregion
+
+        #region Generazione file
+
+        private static async Task<string> WriteCsvFile(List<ExportRow> rows, string codice, string jobId, string folder)
+        {
+            const string separator = ";";
+            var sb = new StringBuilder();
+
+            sb.AppendLine(string.Join(separator, "Cognome", "Nome", "Data", "CodiceCausale", "Valore"));
+
+            foreach (var row in rows)
+            {
+                sb.AppendLine(string.Join(separator,
+                    row.Cognome,
+                    row.Nome,
+                    row.Data,
+                    row.CodiceCausale,
+                    row.Valore.ToString(CultureInfo.InvariantCulture)));
+            }
+
+            var fileName = $"{codice}_{jobId}.csv";
+            var filePath = Path.Combine(folder, fileName);
+            await File.WriteAllTextAsync(filePath, sb.ToString(), Encoding.UTF8);
+            return fileName;
+        }
+
+        private static async Task<string> WriteTxtFile(List<ExportRow> rows, string codice, string jobId, string folder)
+        {
+            const string separator = "\t";
+            var sb = new StringBuilder();
+
+            sb.AppendLine(string.Join(separator, "Cognome", "Nome", "Data", "CodiceCausale", "Valore"));
+
+            foreach (var row in rows)
+            {
+                sb.AppendLine(string.Join(separator,
+                    row.Cognome,
+                    row.Nome,
+                    row.Data,
+                    row.CodiceCausale,
+                    row.Valore.ToString(CultureInfo.InvariantCulture)));
+            }
+
+            var fileName = $"{codice}_{jobId}.txt";
+            var filePath = Path.Combine(folder, fileName);
+            await File.WriteAllTextAsync(filePath, sb.ToString(), Encoding.UTF8);
+            return fileName;
+        }
+
+        #endregion
     }
 
 

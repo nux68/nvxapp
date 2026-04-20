@@ -28,6 +28,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
     public class TimeSheet_ExportOutModel : ModelResult
     {
         public TimeSheet_ExportModel TimeSheet_Export { get; set; } = new TimeSheet_ExportModel();
+        public string? DownloadUrl { get; set; }
 
         public TimeSheet_ExportOutModel()
         {
@@ -35,7 +36,14 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
         }
     }
 
-
+    public class ExportRow
+    {
+        public string Cognome { get; set; } = string.Empty;
+        public string Nome { get; set; } = string.Empty;
+        public string Data { get; set; } = string.Empty;
+        public string CodiceCausale { get; set; } = string.Empty;
+        public decimal Valore { get; set; }
+    }
 
 
 }

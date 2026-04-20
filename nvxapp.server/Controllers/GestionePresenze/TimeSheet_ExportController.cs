@@ -28,5 +28,21 @@ namespace nvxapp.server.Controllers.GestionePresenze
             var res = await _timeSheet_ExportService.Export(inModel, false);
             return res;
         }
+
+        [Authorize]
+        [HttpGet]
+        [Route("Download/{jobId}/{fileName}")]
+        public IActionResult Download(string jobId, string fileName)
+        {
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "exports", jobId, fileName);
+            if (!System.IO.File.Exists(filePath))
+                return NotFound(new { message = "File non trovato." });
+
+            var contentType = fileName.EndsWith(".csv", StringComparison.OrdinalIgnoreCase)
+                ? "text/csv"
+                : "text/plain";
+
+            return PhysicalFile(filePath, contentType, fileName);
+        }
     }
 }
