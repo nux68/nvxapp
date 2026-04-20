@@ -9,15 +9,16 @@ using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Entities.Tenant.GestionePresenze;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_ExportCau_CausaliService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_ExportCauService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_ExportCauService.Models;
-using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_ExportCau_CausaliService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_EngineService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_EngineService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_ExportService.Models;
 using nvxapp.server.service.ClientServer_Service.infrastructure.MyMokeLongJob.Models;
 using nvxapp.server.service.ClientServer_Service.infrastructure.Notifications;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
+using nvxapp.server.service.Helpers;
 using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.ServerModels;
 using Serilog;
@@ -181,7 +182,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                                 allData, exportCausali,
                                                 userId, jobId.ToString(), model.Data.TimeSheet_Export);
 
-                                            var exportsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "exports");
+                                            var exportsFolder = NVXSystem.ExportFolder;
                                             Directory.CreateDirectory(exportsFolder);
 
                                             string fileName;
@@ -190,7 +191,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                             else
                                                 fileName = await WriteTxtFile(rows, exportCau.Codice ?? "export", jobId.ToString(), exportsFolder);
 
-                                            retVal.DownloadUrl = $"TimeSheet_Export/Download/{fileName}";
+                                            retVal.DownloadUrl = $"{NVXSystem.DownloadURL}{fileName}";
+
+                                            
 
                                             Log.Information("Export file created for job {JobId}: {FileName}", jobId, fileName);
                                         }
