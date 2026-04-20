@@ -7,7 +7,7 @@
     <ion-title>{{ title }}</ion-title>
   </ion-toolbar>
 
-  <ion-toolbar *ngIf="showFilter || (showBreadcrumbs && userNavigationService.userCronology.length>1) || ((activeJobs$ | async)?.length ?? 0) > 0">
+  <ion-toolbar *ngIf="showFilter || (showBreadcrumbs && userNavigationService.userCronology.length>1) || (showActiveJobs && ((activeJobs$ | async)?.length ?? 0) > 0)">
 
 
 
@@ -16,26 +16,39 @@
     </app-breadcrumbs-impersonate>
 
     <!-- Active Jobs List -->
-    <div class="active-jobs-container" *ngIf="(activeJobs$ | async) as jobs">
+    <div class="active-jobs-container" *ngIf="showActiveJobs && (activeJobs$ | async) as jobs">
       <ion-grid *ngIf="jobs.length > 0" class="ion-no-padding">
         <ion-row>
           <!-- Loop su ogni colonna -->
           <ion-col *ngFor="let job of jobs" size="12" size-md="3">
-            <ion-item lines="none" class="job-item">
-              <!-- Calculation or in-progress: hourglass -->
-              <ion-icon *ngIf="job.category === LongJobCategory.Calculation || !job.isFinished"
-                        name="hourglass-outline" slot="start" class="ion-margin-end"></ion-icon>
-              <!-- FileGeneration finished: dismiss button -->
-              <ion-button *ngIf="job.category === LongJobCategory.FileGeneration && job.isFinished"
-                          fill="clear" slot="start" (click)="dismissJob(job.jobId)"
-                          color="danger">
-                <ion-icon name="close-circle-outline"></ion-icon>
-              </ion-button>
+
+            <!-- In progress: hourglass + progress bar -->
+            <ion-item *ngIf="!job.isFinished" lines="none" class="job-item">
+              <ion-icon name="hourglass-outline" slot="start" class="ion-margin-end"></ion-icon>
               <ion-label>
                 <p class="job-message">{{ job.message?.text }}</p>
-                <ion-progress-bar *ngIf="!job.isFinished" [value]="job.progressPercentage / 100"></ion-progress-bar>
+                <ion-progress-bar [value]="job.progressPercentage / 100"></ion-progress-bar>
               </ion-label>
             </ion-item>
+
+            <!-- FileGeneration finished: dismiss + download button -->
+            <ion-item *ngIf="job.category === LongJobCategory.FileGeneration && job.isFinished" lines="none" class="job-item">
+              <ion-button size="small" fill="clear" (click)="dismissJob(job.jobId)" color="danger" slot="start">
+                <ion-icon name="close-circle-outline"></ion-icon>
+              </ion-button>
+              <ion-button size="small" fill="outline" shape="round" (click)="onJobLabelClick(job)" color="success">
+                &nbsp;{{ job.message?.text }}
+              </ion-button>
+            </ion-item>
+
+            <!-- Calculation finished: auto-removed, but show briefly -->
+            <ion-item *ngIf="job.category === LongJobCategory.Calculation && job.isFinished" lines="none" class="job-item">
+              <ion-icon name="checkmark-circle-outline" slot="start" class="ion-margin-end" color="success"></ion-icon>
+              <ion-label>
+                <p class="job-message">{{ job.message?.text }}</p>
+              </ion-label>
+            </ion-item>
+
           </ion-col>
         </ion-row>
       </ion-grid>

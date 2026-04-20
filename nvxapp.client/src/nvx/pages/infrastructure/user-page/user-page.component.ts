@@ -27,6 +27,7 @@ export class UserPageComponent implements OnInit {
 
 
   public btnTask: ButtonItem;
+  public btnExport: ButtonItem;
 
   constructor(private signalrService: SignalrService,
     public userNavigationService: UserNavigationService,
@@ -40,6 +41,9 @@ export class UserPageComponent implements OnInit {
 
     this.btnTask = userInterfaceService.Btn_Esegui;
     this.btnTask.event = this.handleButtontaskClick;
+
+    this.btnExport = userInterfaceService.Btn_Esegui;
+    this.btnExport.event = this.handleButtontExportClick;
 
   }
 
@@ -64,6 +68,19 @@ export class UserPageComponent implements OnInit {
     let request: GenericRequest<MyMokeLongJobInModel> = new GenericRequest<MyMokeLongJobInModel>(MyMokeLongJobInModel);
 
     this.myMokeLongJobService.StartJob(request).subscribe(x=>{
+
+      let c = 0;
+
+    });
+
+  }
+
+
+  handleButtontExportClick = async (item: any) => {
+
+    let request: GenericRequest<MyMokeLongJobInModel> = new GenericRequest<MyMokeLongJobInModel>(MyMokeLongJobInModel);
+
+    this.myMokeLongJobService.ExportJob(request).subscribe(x => {
 
       let c = 0;
 

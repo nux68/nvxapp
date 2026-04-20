@@ -33,5 +33,15 @@ namespace nvxapp.server.Controllers.Infrastructure
 
             return result;
         }
+
+        [HttpPost]
+        [Route("ExportJob")]
+        public async Task<GenericResult<MyMokeLongJobOutModel>> ExportJob(GenericRequest<MyMokeLongJobInModel> request)
+        {
+
+            var result = await _myMokeLongJobService.ExportJob(request, isSubProcess: false);
+
+            return result;
+        }
     }
 }

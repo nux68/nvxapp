@@ -80,6 +80,7 @@ export class LongJobProgressUpdate {
   public progressPercentage: number = 0;
   public message: Message | null = null;
   public isFinished: boolean = false;
+  public downloadUrl: string | null = null;
 }
 
 

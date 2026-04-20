@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Account;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
+using nvxapp.server.service.Helpers;
 
 
 namespace nvxapp.server.Controllers.Infrastructure
@@ -279,6 +280,22 @@ namespace nvxapp.server.Controllers.Infrastructure
             var res = await _accountService.UserFinancialAdvisorPut(inModel, false);
 
             return res;
+        }
+
+        [Authorize]
+        [HttpGet]
+        [Route("Download/{fileName}")]
+        public IActionResult Download(string fileName)
+        {
+            var filePath = Path.Combine(NVXSystem.ExportFolder, fileName);
+            if (!System.IO.File.Exists(filePath))
+                return NotFound(new { message = "File non trovato." });
+
+            var contentType = fileName.EndsWith(".csv", StringComparison.OrdinalIgnoreCase)
+                ? "text/csv"
+                : "text/plain";
+
+            return PhysicalFile(filePath, contentType, fileName);
         }
     }
 

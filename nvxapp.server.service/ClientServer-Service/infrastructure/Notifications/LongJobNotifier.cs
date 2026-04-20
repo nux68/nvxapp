@@ -60,6 +60,8 @@ namespace nvxapp.server.service.ClientServer_Service.infrastructure.Notification
         public Message? Message { get; set; }
         
         public bool IsFinished { get; set; }
+
+        public string? DownloadUrl { get; set; }
     }
 
 
