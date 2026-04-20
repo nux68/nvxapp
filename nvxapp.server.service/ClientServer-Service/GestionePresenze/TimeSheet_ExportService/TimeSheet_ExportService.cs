@@ -161,6 +161,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                 req_OrariSchema_4User.Data.Al = model.Data.TimeSheet_Export.Al;
                                 req_OrariSchema_4User.Data.UsersId = model.Data.TimeSheet_Export.SelectedUserId;
 
+                                string? downloadUrl = null;
                                 var AllData_Res = await _timeSheet_EngineService.Get_Timesheet_AllData(req_OrariSchema_4User, true);
 
                                 if (AllData_Res.Success && AllData_Res.Data != null)
@@ -191,7 +192,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                             else
                                                 fileName = await WriteTxtFile(rows, exportCau.Codice ?? "export", jobId.ToString(), exportsFolder);
 
-                                            retVal.DownloadUrl = $"{NVXSystem.DownloadURL}{fileName}";
+                                            downloadUrl = $"{NVXSystem.DownloadURL}{fileName}";
 
                                             
 
@@ -207,8 +208,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                                                                 {
                                                                                     JobId = jobId.ToString(),
                                                                                     JobType = GestionePresenze_JobType.TimeSheet_Engine_Export,
-                                                                                    Payload = new { model.Data.TimeSheet_Export, DownloadUrl = retVal.DownloadUrl },
+                                                                                    Payload = model.Data.TimeSheet_Export,
                                                                                     Category = LongJobCategory.FileGeneration,
+                                                                                    DownloadUrl = downloadUrl,
                                                                                     ProgressPercentage = 100,
                                                                                     Message = new Message { Text = "Export completato, clicca per scaricare", MsgType = MessageType.Information },
                                                                                     IsFinished = true

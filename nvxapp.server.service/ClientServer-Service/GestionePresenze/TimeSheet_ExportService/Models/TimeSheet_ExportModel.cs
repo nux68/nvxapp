@@ -28,7 +28,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
     public class TimeSheet_ExportOutModel : ModelResult
     {
         public TimeSheet_ExportModel TimeSheet_Export { get; set; } = new TimeSheet_ExportModel();
-        public string? DownloadUrl { get; set; }
 
         public TimeSheet_ExportOutModel()
         {
