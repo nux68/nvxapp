@@ -29,4 +29,16 @@ export class MyMokeLongJobService {
 
   }
 
+  ExportJob(model: GenericRequest<MyMokeLongJobInModel>): Observable<GenericResult<MyMokeLongJobOutModel>> {
+
+    return this.http.post<GenericResult<MyMokeLongJobOutModel>>(environment.remoteData.apiUri + 'MyMokeLongJob/ExportJob', model)
+      .pipe(
+        map(r => {
+          return r;
+        }
+        )
+      );
+
+  }
+
 }
