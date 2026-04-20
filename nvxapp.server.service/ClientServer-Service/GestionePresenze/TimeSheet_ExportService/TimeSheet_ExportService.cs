@@ -8,6 +8,8 @@ using nvxapp.server.Base;
 using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_ExportCauService;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_ExportCauService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_EngineService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_EngineService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_ExportService.Models;
@@ -28,6 +30,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
         private readonly IGestionePresenzeUserUtility _gestionePresenzeUserUtility;
         private ILongJobNotifier? _longJobNotifier;
         private ITimeSheet_EngineService? _timeSheet_EngineService;
+        private IPar_ExportCauService? _par_ExportCauService;
 
         //private readonly IJobNotifier _jobNotifier;
 
@@ -129,6 +132,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                         {
                             _longJobNotifier = scope.ServiceProvider.GetRequiredService<ILongJobNotifier>();
                             _timeSheet_EngineService = scope.ServiceProvider.GetRequiredService<ITimeSheet_EngineService>();
+                            _par_ExportCauService = scope.ServiceProvider.GetRequiredService<IPar_ExportCauService>();
+
+                             
 
                             try
                             {
@@ -153,7 +159,14 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
                                 if (AllData_Res.Success && AllData_Res.Data != null)
                                 {
-
+                                    var req_Par_ExportCau = new GenericRequest<Par_ExportCau_Get_InModel>();
+                                    req_Par_ExportCau.Data.Id = model.Data.TimeSheet_Export.IdPar_ExportCau;
+                                    
+                                   var res_Par_ExportCau = await _par_ExportCauService.Par_ExportCauGet(req_Par_ExportCau,true);
+                                    if (res_Par_ExportCau.Success && res_Par_ExportCau.Data != null)
+                                    {
+                                        var c=0;
+                                    }
                                 }
 
                                 Log.Information("Background task for job {JobId} has finished successfully.", jobId);
