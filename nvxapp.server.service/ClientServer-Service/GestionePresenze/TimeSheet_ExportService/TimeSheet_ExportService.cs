@@ -183,7 +183,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                                 userId, jobId.ToString(), model.Data.TimeSheet_Export);
 
                                             var exportsFolder = NVXSystem.ExportFolder;
-                                            Directory.CreateDirectory(exportsFolder);
+                                            
 
                                             string fileName;
                                             if (exportCau.TipoFile == Par_Export_TipoFile.CSV)
