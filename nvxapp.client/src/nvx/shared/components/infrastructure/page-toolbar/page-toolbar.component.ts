@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { UserNavigationService } from '../../../../Utility/infrastructure/user-navigation.service';
-import { LongJobNotifierService, LongJobProgressUpdate } from '../../../../Utility/infrastructure/long-job-notifier.service';
+import { LongJobNotifierService, LongJobProgressUpdate, LongJobCategory } from '../../../../Utility/infrastructure/long-job-notifier.service';
 import { Observable } from 'rxjs';
 
 @Component({
@@ -21,6 +21,7 @@ export class PageToolbarComponent  implements OnInit {
   public queryText: string;
 
   public activeJobs$: Observable<LongJobProgressUpdate[]>;
+  public LongJobCategory = LongJobCategory;
 
   constructor(public userNavigationService: UserNavigationService,
               public longJobNotifierService: LongJobNotifierService)
@@ -33,10 +34,12 @@ export class PageToolbarComponent  implements OnInit {
   }
 
   filter(ev: any) {
-
     let val = ev.target.value;
     this._emFilter.emit(val);
+  }
 
+  dismissJob(jobId: string): void {
+    this.longJobNotifierService.dismissJob(jobId);
   }
 
 }

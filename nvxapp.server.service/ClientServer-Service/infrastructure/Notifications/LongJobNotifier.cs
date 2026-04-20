@@ -52,6 +52,8 @@ namespace nvxapp.server.service.ClientServer_Service.infrastructure.Notification
         public string JobType { get; set; } = string.Empty;  // permette di capire il tipo job 
         [Required]
         public object? Payload { get; set; }
+        [Required]
+        public LongJobCategory Category { get; set; }
 
         public int ProgressPercentage { get; set; }
         
@@ -61,9 +63,11 @@ namespace nvxapp.server.service.ClientServer_Service.infrastructure.Notification
     }
 
 
-    public enum LongJobType
+    public enum LongJobCategory
     {
-          MyMokeLongJob
+          Calculation,
+          FileGeneration
+
     }
 }
 

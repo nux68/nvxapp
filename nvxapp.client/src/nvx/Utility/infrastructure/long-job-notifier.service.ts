@@ -40,12 +40,14 @@ export class LongJobNotifierService {
     // Push the updated list back into the BehaviorSubject to notify subscribers.
     this._activeJobs.next([...currentJobs]);
 
-    // If the job is finished, automatically remove it after a few seconds.
+    // If the job is finished, emit the finished event.
     if (jobUpdate.isFinished) {
-      // Emetti l'evento con l'aggiornamento finale, che include il payload
       this._jobFinished.next(jobUpdate);
 
-      setTimeout(() => this.removeJob(jobUpdate.jobId), 2000); // 5-second delay
+      // Auto-remove only for Calculation jobs; FileGeneration jobs stay until manually dismissed.
+      if (jobUpdate.category === LongJobCategory.Calculation) {
+        setTimeout(() => this.removeJob(jobUpdate.jobId), 2000);
+      }
     }
   }
 
@@ -58,6 +60,13 @@ export class LongJobNotifierService {
     const updatedJobs = currentJobs.filter(j => j.jobId !== jobId);
     this._activeJobs.next(updatedJobs);
   }
+
+  /**
+   * Manually dismiss a job notification (used for FileGeneration jobs).
+   */
+  public dismissJob(jobId: string): void {
+    this.removeJob(jobId);
+  }
 }
 
 
@@ -66,9 +75,16 @@ export class LongJobProgressUpdate {
   public jobId: string = "";
   public jobType: string = "";
   public payload?: any;
+  public category: LongJobCategory = LongJobCategory.Calculation;
 
   public progressPercentage: number = 0;
   public message: Message | null = null;
   public isFinished: boolean = false;
 }
 
+
+export enum LongJobCategory {
+  Calculation,
+  FileGeneration
+
+}
