@@ -197,6 +197,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                     }
                                 }
 
+                                await Task.Delay(10000);
                                 Log.Information("Background task for job {JobId} has finished successfully.", jobId);
                                 await _longJobNotifier.LongJobProgressAsync(userId,
                                                                             new LongJobProgressUpdate
