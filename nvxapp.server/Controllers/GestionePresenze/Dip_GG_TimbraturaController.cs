@@ -82,6 +82,16 @@ namespace nvxapp.server.Controllers
 
             return res;
         }
+
+        [Authorize]
+        [HttpPost]
+        [Route("PrepareStamp")]
+        public async Task<GenericResult<Dip_GG_Timbratura_StampPrepare_OutModel>> PrepareStamp(GenericRequest<Dip_GG_Timbratura_StampPrepare_InModel> inModel)
+        {
+            var res = await _Dip_GG_TimbraturaService.PrepareStamp(inModel, false);
+
+            return res;
+        }
     }
 
 }

@@ -11,6 +11,9 @@ using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_TimbraturaService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_RapportoLavoroService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_AttivitaService;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_AttivitaService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_EngineService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_EngineService.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
@@ -25,7 +28,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
         private readonly IGestionePresenzeUserUtility _gestionePresenzeUserUtility;
         private readonly IDip_GG_TimbraturaRepository _dip_GG_TimbraturaRepository;
 
-
+        private IPar_AttivitaService _par_AttivitaService;
         private ITimeSheet_EngineService_OnlyCalculate _timeSheet_EngineService;
 
         public Dip_GG_TimbraturaService(IMapper mapper,
@@ -35,6 +38,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
                                           IHttpContextAccessor httpContextAccessor,
                                           IConfiguration configuration,
                                           ITimeSheet_EngineService_OnlyCalculate timeSheet_EngineService,
+                                          IPar_AttivitaService par_AttivitaService, 
 
                                           IGestionePresenzeUserUtility gestionePresenzeUserUtility,
                                           IDip_GG_TimbraturaRepository dip_GG_TimbraturaRepository
@@ -44,7 +48,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
             _dip_GG_TimbraturaRepository = dip_GG_TimbraturaRepository;
 
             _timeSheet_EngineService = timeSheet_EngineService;
-            
+            _par_AttivitaService = par_AttivitaService;
+
         }
 
         public virtual async Task<GenericResult<Dip_GG_Timbratura_GetAll_OutModel>> GetAll(GenericRequest<Dip_GG_Timbratura_GetAll_InModel> model, Boolean isSubProcess)
@@ -92,6 +97,39 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
                 return retVal;
             }, isSubProcess);
         }
+
+        public virtual async Task<GenericResult<Dip_GG_Timbratura_StampPrepare_OutModel>> PrepareStamp(GenericRequest<Dip_GG_Timbratura_StampPrepare_InModel> model, Boolean isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                Dip_GG_Timbratura_StampPrepare_OutModel retVal = new Dip_GG_Timbratura_StampPrepare_OutModel();
+
+                retVal.CurrentDate = DateTime.Now;
+                if(!string.IsNullOrEmpty(model.Data.IdAspNetUsers))
+                    retVal.IdAspNetUsers = model.Data.IdAspNetUsers;
+                else
+                    retVal.IdAspNetUsers = this.CurrentUserId;
+
+
+                var req_1 = new GenericRequest<Par_Attivita_Get_4User_InModel>();
+                req_1.Data = new Par_Attivita_Get_4User_InModel()
+                {
+                    Giorno = retVal.CurrentDate,
+                    UserId = retVal.IdAspNetUsers
+                };
+
+                var res_1 = await _par_AttivitaService.Par_AttivitaGet_4User(req_1, true);
+                if(res_1.Success && res_1.Data != null)
+                {
+                  retVal.Par_Attivita = res_1.Data.Par_Attivita;
+                }
+
+                await Task.Delay(DelayAsyncMethod);
+
+                return retVal;
+            }, isSubProcess);
+        }
+
 
         public virtual async Task<GenericResult<Dip_GG_Timbratura_Stamp_OutModel>> Stamp(GenericRequest<Dip_GG_Timbratura_Stamp_InModel> model, Boolean isSubProcess)
         {
@@ -303,6 +341,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
         public Task<GenericResult<Dip_GG_TimbraturaGetOutModel>> Dip_GG_TimbraturaGet(GenericRequest<Dip_GG_TimbraturaGetInModel> model, bool isSubProcess);
         public Task<GenericResult<Dip_GG_Timbratura_Get_4Calculation_OutModel>> Dip_GG_Timbratura_Get_4Calculation(GenericRequest<Dip_GG_Timbratura_Get_4Calculation_InModel> model, Boolean isSubProcess);
         public Task<GenericResult<Dip_GG_Timbratura_DeleteOutModel>> Dip_GG_TimbraturaDelete(GenericRequest<Dip_GG_Timbratura_DeleteInModel> model, bool isSubProcess);
+
+
+        public Task<GenericResult<Dip_GG_Timbratura_StampPrepare_OutModel>> PrepareStamp(GenericRequest<Dip_GG_Timbratura_StampPrepare_InModel> model, Boolean isSubProcess);
+
     }
 
 

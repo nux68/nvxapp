@@ -1,5 +1,6 @@
 import { ModelResult } from "../../../ModelsBase/model-result";
 import { StatoRichiesta } from "../../Dip_GG_Richiesta/Models/dip-gg-richiesta-model";
+import { Par_AttivitaModel } from "../../Par_Attivita/Models/par-attivita-model";
 
 
 
@@ -83,6 +84,16 @@ export class Dip_GG_Timbratura_DeleteInModel {
 }
 export class Dip_GG_Timbratura_DeleteOutModel extends ModelResult {
 
+}
+
+export class Dip_GG_Timbratura_StampPrepare_InModel {
+  public idAspNetUsers?: string;
+}
+export class Dip_GG_Timbratura_StampPrepare_OutModel extends ModelResult {
+  public idAspNetUsers: string = '';
+  public currentDate!: Date;
+  public idPar_Attivita: number | null = null;
+  public par_Attivita: Par_AttivitaModel[] = [];
 }
 
 

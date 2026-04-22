@@ -1,10 +1,14 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
 import { DipGGTimbraturaService } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Timbratura/dip-gg-timbratura.service';
-import { Dip_GG_Timbratura_Stamp_InModel } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Timbratura/Models/dip-gg-timbratura-model';
+import { Dip_GG_Timbratura_Stamp_InModel, Dip_GG_Timbratura_StampPrepare_InModel, Dip_GG_Timbratura_StampPrepare_OutModel } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Timbratura/Models/dip-gg-timbratura-model';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { NavController } from '@ionic/angular';
-import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
+import { UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
+import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { catchError, map, Observable, of } from 'rxjs';
+import { Par_AttivitaModel } from '../../../ClientServer-Service/GestionePresenze/Par_Attivita/Models/par-attivita-model';
 
 @Component({
   selector: 'app-time-clock-user-page',
@@ -12,92 +16,114 @@ import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructur
   styleUrls: ['./time-clock-user-page.component.scss'],
   standalone: false
 })
-export class TimeClockUserPageComponent implements OnInit, OnDestroy {
-  public title: string;
-  public buttonbar: ButtonItem[] = [];
-  public btnAnnulla: ButtonItem;
-  public btnInvia: ButtonItem;
+export class TimeClockUserPageComponent extends BasePageConfirmCancelComponent<Dip_GG_Timbratura_StampPrepare_OutModel> {
 
-  public location: string;
-  public currentDate: Date;
-  public currentTime: string;
-  public formattedDate: string;
-  public lastAction: string;
-
-  public startDate: string;
+  public currentTime: string = '';
+  public formattedDate: string = '';
+  public lastAction: string = '';
   public startDateBtn: string | undefined = undefined;
 
-  private isLastActionCheckIn: boolean = false;
   private timeInterval: any;
-
   // true quando l'utente ha modificato manualmente il picker → il timer NON sovrascrive
   private userHasEdited: boolean = false;
+  public par_AttivitaList: Par_AttivitaModel[] = []
 
-  constructor(private navCtrl: NavController,
-    private userInterfaceService: UserInterfaceService,
-    public userNavigationService: UserNavigationService,
-    private dipGGTimbraturaService: DipGGTimbraturaService) {
 
-    this.title = 'Terminale di timbratura';
-
-    this.btnInvia = userInterfaceService.Btn_Invia;
-    this.btnInvia.event = this._handleButtonConfirmClick;
-    this.buttonbar.push(this.btnInvia);
-    this.btnAnnulla = userInterfaceService.Btn_Annulla;
-    this.btnAnnulla.event = this._handleButtonCancelClick;
-    this.buttonbar.push(this.btnAnnulla);
+  constructor(
+    protected override navCtrl: NavController,
+    protected override userInterfaceService: UserInterfaceService,
+    protected override fb: FormBuilder,
+    private dipGGTimbraturaService: DipGGTimbraturaService
+  ) {
+    super(navCtrl, userInterfaceService, fb);
   }
 
-  ngOnInit() {
+  get Title(): string { return 'Terminale di timbratura'; }
+
+  get EditForm(): FormGroup {
+    return this.fb.group({
+      currentDate: [null, [Validators.required]],
+      idPar_Attivita: [null, [Validators.required]],
+    });
+  }
+
+  LoadData = (): Observable<Dip_GG_Timbratura_StampPrepare_OutModel | null> => {
+    const request = new GenericRequest<Dip_GG_Timbratura_StampPrepare_InModel>(Dip_GG_Timbratura_StampPrepare_InModel);
+    return this.dipGGTimbraturaService.PrepareStamp(request).pipe(
+      map(res => {
+
+        this.par_AttivitaList = res.data.par_Attivita;
+
+        return res.data;
+      }),
+      catchError(error => {
+        console.error('Errore durante PrepareStamp:', error);
+        return of(null);
+      })
+    );
+  };
+
+  SaveData = (editModel: Dip_GG_Timbratura_StampPrepare_OutModel): Observable<boolean> => {
+    const stampDate = this.startDateBtn ? new Date(this.startDateBtn) : new Date();
+
+    const request = new GenericRequest<Dip_GG_Timbratura_Stamp_InModel>(Dip_GG_Timbratura_Stamp_InModel);
+    request.data.dateStamp = this.toIsoLocal(stampDate);
+    request.data.excludeRicalc = false;
+
+    return this.dipGGTimbraturaService.Stamp(request).pipe(
+      map(() => {
+        this.lastAction = `${this.formatTime(stampDate)} (${this.formatDate(stampDate)})`;
+        return true;
+      }),
+      catchError(error => {
+        console.error('Errore durante Stamp:', error);
+        return of(false);
+      })
+    );
+  };
+
+  override ionViewWillEnter() {
+    this.userHasEdited = false;
     this.startClock();
-  }
-
-  ngOnDestroy() {
-    this.stopClock();
-  }
-
-  ionViewWillEnter() {
-    this.location = 'Via Vesuvio';
-    this.currentDate = new Date();
-    this.currentTime = this.formatTime(this.currentDate);
-    this.formattedDate = this.formatDate(this.currentDate);
-    this.lastAction = 'xxxxx';
-
-    this.isLastActionCheckIn = false;
-    this.userHasEdited = false;  // reset ad ogni apertura della pagina
-    this.startDate = new Date().toLocaleDateString();
-
-    this.startClock();
+    super.ionViewWillEnter();
   }
 
   ionViewWillLeave() {
     this.stopClock();
   }
 
-  startClock() {
+  private startClock() {
     const tick = () => {
-      this.currentDate = new Date();
+      const now = new Date();
 
-      // aggiorna currentTime, formattedDate e startDateBtn
-      // SOLO se l'utente non ha modificato manualmente il picker
       if (!this.userHasEdited) {
-        this.currentTime = this.formatTime(this.currentDate);
-        this.formattedDate = this.formatDate(this.currentDate);
-        this.startDateBtn = this.toIsoLocal(this.currentDate);
+        this.currentTime = this.formatTime(now);
+        this.formattedDate = this.formatDate(now);
+        this.startDateBtn = this.toIsoLocal(now);
+        this._editForm?.patchValue({ currentDate: this.startDateBtn });
       }
 
-      const msToNextMinute = (60 - this.currentDate.getSeconds()) * 1000
-                             - this.currentDate.getMilliseconds();
-
+      const msToNextMinute = (60 - now.getSeconds()) * 1000 - now.getMilliseconds();
       this.timeInterval = setTimeout(tick, msToNextMinute);
     };
 
     tick();
   }
 
-  stopClock() {
+  private stopClock() {
     if (this.timeInterval) {
       clearTimeout(this.timeInterval);
+    }
+  }
+
+  onStartDatetimeChange(event: any) {
+    const value = event?.detail?.value;
+    if (value) {
+      const selected = new Date(value);
+      this.startDateBtn = this.toIsoLocal(selected);
+      this.currentTime = this.formatTime(selected);
+      this.formattedDate = this.formatDate(selected);
+      this.userHasEdited = true;
     }
   }
 
@@ -108,49 +134,10 @@ export class TimeClockUserPageComponent implements OnInit, OnDestroy {
   }
 
   formatTime(date: Date): string {
-    const hours = date.getHours().toString().padStart(2, '0');
-    const minutes = date.getMinutes().toString().padStart(2, '0');
-    return `${hours}:${minutes}`;
+    return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
   }
 
   formatDate(date: Date): string {
-    const day = date.getDate().toString().padStart(2, '0');
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
-  }
-
-  clockInOut() {
-    const now = new Date();
-    const stampDate: Date = this.startDateBtn ? new Date(this.startDateBtn) : now;
-
-    this.lastAction = ` ${this.formatTime(stampDate)} (${this.formatDate(stampDate)})`;
-
-    let request_stamp = new GenericRequest<Dip_GG_Timbratura_Stamp_InModel>(Dip_GG_Timbratura_Stamp_InModel);
-    request_stamp.data.dateStamp = this.toIsoLocal(stampDate);
-    this.dipGGTimbraturaService.Stamp(request_stamp).subscribe(res => {
-      this.navCtrl.navigateForward('/usertimesheet');
-    });
-  }
-
-  onStartDatetimeChange(event: any) {
-    const value = event?.detail?.value;
-    if (value) {
-      const selected = new Date(value);
-      this.startDateBtn = this.toIsoLocal(selected);
-      this.currentTime = this.formatTime(selected);
-      this.formattedDate = this.formatDate(selected);
-
-      // l'utente ha modificato manualmente → sospendi l'aggiornamento automatico del picker
-      this.userHasEdited = true;
-    }
-  }
-
-  private _handleButtonConfirmClick = (param: object) => {
-    this.clockInOut();
-  }
-
-  private _handleButtonCancelClick = (param: object) => {
-    this.navCtrl.navigateForward('/home');
+    return `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()}`;
   }
 }

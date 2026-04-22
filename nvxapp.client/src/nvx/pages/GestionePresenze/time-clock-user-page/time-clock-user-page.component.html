@@ -1,4 +1,4 @@
-<app-page-toolbar [title]="title"
+<app-page-toolbar [title]="Title"
                   [showFilter]="false"
                   [showBreadcrumbs]="true">
 </app-page-toolbar>
@@ -8,62 +8,54 @@
   <ion-card>
     <ion-card-content>
 
-
-
       <br />
       <br />
       <br />
       <br />
 
-      <!--<div class="location-badge">
-    <ion-icon name="location"></ion-icon>
-    <span>{{ location }}</span>
-  </div>-->
+      <form [formGroup]="_editForm">
 
-      <div class="form-section">
-        <div class="form-input date-input-container">
-          <ion-datetime-button datetime="startDatetime"></ion-datetime-button>
+        <div class="clock-container">
+
+          <ion-datetime-button class="datetime-button-with-label" datetime="currentDate-modal"></ion-datetime-button>
+          <ion-modal [keepContentsMounted]="true">
+            <ng-template>
+              <ion-datetime id="currentDate-modal"
+                            formControlName="currentDate"
+                            presentation="date-time"
+                            [showDefaultButtons]="true"
+                            doneText="OK"
+                            cancelText="Annulla"
+                            (ionChange)="onStartDatetimeChange($event)">
+              </ion-datetime>
+            </ng-template>
+          </ion-modal>
+
+          <div class="clock-container">
+            <div class="time">{{ currentTime }}</div>
+          </div>
+
+          <ion-item class="nvx-item-4-title">
+            <ion-label>Ultima timbratura: {{ lastAction }}</ion-label>
+          </ion-item>
+
+
+          <ion-item>
+            <ion-label position="floating">Attivita </ion-label>
+            <ion-select formControlName="idPar_Attivita" placeholder="Seleziona l attivita">
+              <ion-select-option *ngFor="let att of par_AttivitaList" [value]="att.id">
+                {{ att.descrizione }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-note color="danger" *ngIf="_editForm.get('idPar_Attivita')?.hasError('required') && _editForm.get('idPar_Attivita')?.touched">
+            L attività è obbligatoria.
+          </ion-note>
+
+
         </div>
-      </div>
 
-      <div class="clock-container">
-        <!--<div class="date">{{ formattedDate }}</div>-->
-        <div class="time">{{ currentTime }}</div>
-      </div>
-
-      <!--<ion-card class="ion-text-center ion-padding" style="background: var(--ion-toolbar-background); color: var(--ion-toolbar-color);">
-        <ion-card-content>
-          <ion-label class="ion-text-uppercase">
-            Ultima timbratura: {{ lastAction }}
-          </ion-label>
-        </ion-card-content>
-      </ion-card>-->
-
-      <ion-item class="nvx-item-4-title">
-        <ion-label>Ultima timbratura: {{ lastAction }}</ion-label>
-      </ion-item>
-
-      <!--<div class="button-container">
-    <button class="clock-button clock-in-out" (click)="clockInOut()">
-      <ion-icon name="time-outline"></ion-icon>
-      <span>TIMBRA</span>
-    </button>
-  </div>-->
-      <!-- Modals remain the same -->
-      <ion-modal [keepContentsMounted]="true">
-        <ng-template>
-          <ion-datetime id="startDatetime"
-                        [(ngModel)]="startDateBtn"
-                        presentation="date-time"
-                        [firstDayOfWeek]="1"
-                        [showDefaultButtons]="true"
-                        doneText="Fatto"
-                        cancelText="Annulla"
-                        locale="it-IT"
-                        (ionChange)="onStartDatetimeChange($event)">
-          </ion-datetime>
-        </ng-template>
-      </ion-modal>
+      </form>
 
     </ion-card-content>
   </ion-card>

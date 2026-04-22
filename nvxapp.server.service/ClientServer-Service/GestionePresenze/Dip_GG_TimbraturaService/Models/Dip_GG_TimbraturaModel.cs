@@ -1,4 +1,5 @@
 ﻿using nvxapp.server.data.Entities.Tenant;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_AttivitaService.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_TimbraturaService.Models
@@ -48,6 +49,21 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
         public List<Dip_GG_TimbraturaModel> Dip_GG_Timbratura { get; set; } = new List<Dip_GG_TimbraturaModel>();
 
     }
+
+
+    public class Dip_GG_Timbratura_StampPrepare_InModel
+    {
+        public string? IdAspNetUsers { get; set; } 
+    }
+    public class Dip_GG_Timbratura_StampPrepare_OutModel: ModelResult
+    {
+        public string IdAspNetUsers { get; set; } = string.Empty;
+        public DateTime CurrentDate { get; set; }
+        public int  IdPar_Attivita { get; set; }
+        
+        public List<Par_AttivitaModel> Par_Attivita { get; set; } = new List<Par_AttivitaModel>();
+    }
+
 
 
 

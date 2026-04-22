@@ -16,7 +16,9 @@ import {
   Dip_GG_TimbraturaPutInModel,
   Dip_GG_TimbraturaPutOutModel,
   Dip_GG_Timbratura_DeleteInModel,
-  Dip_GG_Timbratura_DeleteOutModel
+  Dip_GG_Timbratura_DeleteOutModel,
+  Dip_GG_Timbratura_StampPrepare_InModel,
+  Dip_GG_Timbratura_StampPrepare_OutModel
 } from './Models/dip-gg-timbratura-model';
 import { AuthService } from '../../../Utility/infrastructure/auth.service';
 
@@ -38,6 +40,16 @@ export class DipGGTimbraturaService {
         })
       );
 
+  }
+
+  PrepareStamp(model: GenericRequest<Dip_GG_Timbratura_StampPrepare_InModel>): Observable<GenericResult<Dip_GG_Timbratura_StampPrepare_OutModel>> {
+
+    return this.http.post<GenericResult<Dip_GG_Timbratura_StampPrepare_OutModel>>(environment.remoteData.apiUri + 'Dip_GG_Timbratura/PrepareStamp', model)
+      .pipe(
+        map(r => {
+          return r;
+        })
+      );
   }
 
   Stamp(model: GenericRequest<Dip_GG_Timbratura_Stamp_InModel>): Observable<GenericResult<Dip_GG_Timbratura_Stamp_OutModel>> {
@@ -91,5 +103,7 @@ export class DipGGTimbraturaService {
         })
       );
   }
+
+
 
 }
