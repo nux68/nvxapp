@@ -9,17 +9,12 @@ using nvxapp.server.data.Entities.Tenant;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
-using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediAttivitaService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_AttivitaCompetenzaService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_AttivitaCompetenzaService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_AttivitaService.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.ServerModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_AttivitaService
 {
@@ -30,7 +25,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Attivi
         private readonly IPar_CompetenzaRepository _par_CompetenzaRepository;
         private readonly IPar_AttivitaCompetenzaRepository _par_AttivitaCompetenzaRepository;
         private readonly IPar_AttivitaCompetenzaService _par_AttivitaCompetenzaService;
-        
+
 
         public Par_AttivitaService(IMapper mapper,
                                   UserManager<ApplicationUser> userManager,
@@ -84,7 +79,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Attivi
                 }
                 else
                 {
-                    retVal.Par_Attivita = new Par_AttivitaModel(){ BackgroundColor  = "#ff0000",TextColor="#ff0000" };
+                    retVal.Par_Attivita = new Par_AttivitaModel() { BackgroundColor = "#ff0000", TextColor = "#ff0000" };
                 }
 
 
@@ -135,9 +130,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Attivi
                     retVal.Par_Attivita = _mapper.Map<Par_AttivitaModel>(az_Attivita);
 
 
-                    if(retVal.Par_Attivita.Default)
+                    if (retVal.Par_Attivita.Default)
                     {
-                        if(model.Data.Par_Competenza.Where(x=>x.Checked==true).ToList().Count==0)
+                        if (model.Data.Par_Competenza.Where(x => x.Checked == true).ToList().Count == 0)
                         {
                             //TODO GESTIRE COMUNICAZIONE SERVER CON ERRORI != EXCEPTION
                             retVal.Messages.Add(new Message("L'attivita di default deve avere almeno una competenza", MessageType.Exception));
@@ -149,16 +144,16 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Attivi
                     GenericRequest<Par_AttivitaCompetenza_Selected_PutInModel> par_AttivitaCompetenza_Selected_PutInModel = new GenericRequest<Par_AttivitaCompetenza_Selected_PutInModel>();
                     par_AttivitaCompetenza_Selected_PutInModel.Data.IdPar_Attivita = retVal.Par_Attivita.Id;
 
-                    foreach (var item in model.Data.Par_Competenza.Where(x=>x.Checked).ToList())
+                    foreach (var item in model.Data.Par_Competenza.Where(x => x.Checked).ToList())
                     {
                         par_AttivitaCompetenza_Selected_PutInModel.Data.Par_AttivitaCompetenza.Add(new Par_AttivitaCompetenzaModel()
                         {
-                             IdPar_Competenza= item.Id,
-                             IdPar_Attivita = retVal.Par_Attivita.Id
+                            IdPar_Competenza = item.Id,
+                            IdPar_Attivita = retVal.Par_Attivita.Id
                         });
                     }
                     var res2 = await _par_AttivitaCompetenzaService.PutSelected_On_Az_Par_Attivita(par_AttivitaCompetenza_Selected_PutInModel, true);
-                    if (res2.Success && res2.Data != null){}
+                    if (res2.Success && res2.Data != null) { }
 
 
                 }
@@ -186,6 +181,34 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Attivi
                 return retVal;
             }, isSubProcess);
         }
+
+        public virtual async Task<GenericResult<Par_Attivita_Get_4User_OutModel>> Par_AttivitaGet_4User(GenericRequest<Par_Attivita_Get_4User_InModel> model, bool isSubProcess)
+        {
+            /*
+             MIGLIORARE IN FUNZIONE DELL REPARTO / COMMESSA
+             
+             */
+
+
+            return await ExecuteAction(model, async () =>
+            {
+                Par_Attivita_Get_4User_OutModel retVal = new Par_Attivita_Get_4User_OutModel();
+
+                int IdCompany;
+                int.TryParse(this.CurrentCompany, out IdCompany);
+
+                var company_DATA = await _gestionePresenzeUserUtility.Get_AzAna_AzSedi_AzReparto_Az_Cfg(IdCompany, true);
+                if (company_DATA != null && company_DATA.az_Anagrafica != null)
+                {
+                    var par_Attivita = _par_AttivitaRepository.FindAll(x => x.IdAz_Anagrafica == company_DATA.az_Anagrafica.Id).ToList();
+                    retVal.Par_Attivita = _mapper.Map<List<Par_AttivitaModel>>(par_Attivita);
+                }
+
+                await Task.Delay(DelayAsyncMethod);
+                return retVal;
+            }, isSubProcess);
+        }
+
     }
 
     public interface IPar_AttivitaService : IServiceBase
@@ -194,5 +217,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Attivi
         Task<GenericResult<Par_AttivitaGetOutModel>> Par_AttivitaGet(GenericRequest<Par_AttivitaGetInModel> model, bool isSubProcess);
         Task<GenericResult<Par_AttivitaPutOutModel>> Par_AttivitaPut(GenericRequest<Par_AttivitaPutInModel> model, bool isSubProcess);
         Task<GenericResult<Par_AttivitaDeleteOutModel>> Par_AttivitaDelete(GenericRequest<Par_AttivitaDeleteInModel> model, bool isSubProcess);
+        Task<GenericResult<Par_Attivita_Get_4User_OutModel>> Par_AttivitaGet_4User(GenericRequest<Par_Attivita_Get_4User_InModel> model, bool isSubProcess);
     }
 }

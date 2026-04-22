@@ -56,3 +56,12 @@ export class Par_AttivitaDeleteOutModel extends ModelResult
 {
   public par_Attivita: Par_AttivitaModel = new Par_AttivitaModel();
 }
+
+export class Par_Attivita_Get_4User_InModel {
+  public giorno: Date = new Date();
+  public userId: string = '';
+}
+
+export class Par_Attivita_Get_4User_OutModel extends ModelResult {
+  public par_Attivita: Par_AttivitaModel[] = [];
+}

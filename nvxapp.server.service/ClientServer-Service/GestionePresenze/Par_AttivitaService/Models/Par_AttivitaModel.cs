@@ -47,4 +47,16 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Attivi
     {
         public Par_AttivitaModel Par_Attivita { get; set; } = new Par_AttivitaModel();
     }
+
+    public class Par_Attivita_Get_4User_InModel {
+    
+        public DateTime Giorno { get; set; }
+        public string UserId { get; set; } = string.Empty;
+    }
+    public class Par_Attivita_Get_4User_OutModel : ModelResult
+    {
+        public List<Par_AttivitaModel> Par_Attivita { get; set; } = new List<Par_AttivitaModel>();
+        public Par_Attivita_Get_4User_OutModel() { }
+    }
+
 }

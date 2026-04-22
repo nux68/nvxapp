@@ -55,5 +55,14 @@ namespace nvxapp.server.Controllers
             var res = await _par_AttivitaService.Par_AttivitaDelete(inModel, false);
             return res;
         }
+
+        [Authorize]
+        [HttpPost]
+        [Route("Par_AttivitaGet_4User")]
+        public async Task<GenericResult<Par_Attivita_Get_4User_OutModel>> Par_AttivitaGet_4User(GenericRequest<Par_Attivita_Get_4User_InModel> inModel)
+        {
+            var res = await _par_AttivitaService.Par_AttivitaGet_4User(inModel, false);
+            return res;
+        }
     }
 }
