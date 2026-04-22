@@ -1234,7 +1234,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
             //    return retVal;
 
 
-            List<CoppiaTMP> coppieTMP = new List<CoppiaTMP>();
+            List<Timbratura_From_Coppia> timbratura_From_Coppia = new List<Timbratura_From_Coppia>();
             foreach (var coppia in coppie)
             {
                 if (!coppia.Dalle.HasValue || !coppia.Alle.HasValue)
@@ -1246,18 +1246,18 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                 {
                     var dalleLimit_SX = (coppia.Dalle_Limite_SX ?? coppia.Dalle).Value;
                     var dalleLimit_DX = (coppia.Dalle_Limite_DX ?? coppia.Dalle).Value;
-                    coppieTMP.Add(new CoppiaTMP { HH = coppia.Dalle, HH_Limite_SX = dalleLimit_SX, HH_Limite_DX = dalleLimit_DX, Arrotondamento = coppia.Dalle_Arrotondamento, Arrotondamento_Verso = coppia.Dalle_Arrotondamento_Verso });
+                    timbratura_From_Coppia.Add(new Timbratura_From_Coppia { HH = coppia.Dalle, HH_Limite_SX = dalleLimit_SX, HH_Limite_DX = dalleLimit_DX, Arrotondamento = coppia.Dalle_Arrotondamento, Arrotondamento_Verso = coppia.Dalle_Arrotondamento_Verso });
                 }
 
                 if (coppia.Alle_Use_4_Match)
                 {
                     var alleLimit_SX = (coppia.Alle_Limite_SX ?? coppia.Alle).Value;
                     var alleLimit_DX = (coppia.Alle_Limite_DX ?? coppia.Alle).Value;
-                    coppieTMP.Add(new CoppiaTMP { HH = coppia.Alle, HH_Limite_SX = alleLimit_SX, HH_Limite_DX = alleLimit_DX, Arrotondamento = coppia.Alle_Arrotondamento, Arrotondamento_Verso = coppia.Alle_Arrotondamento_Verso });
+                    timbratura_From_Coppia.Add(new Timbratura_From_Coppia { HH = coppia.Alle, HH_Limite_SX = alleLimit_SX, HH_Limite_DX = alleLimit_DX, Arrotondamento = coppia.Alle_Arrotondamento, Arrotondamento_Verso = coppia.Alle_Arrotondamento_Verso });
                 }
             }
 
-            if (timbratureSenzaVerso.Count < coppieTMP.Count)
+            if (timbratureSenzaVerso.Count < timbratura_From_Coppia.Count)
             {
                 Dip_GG_Result_Helper.AddDetail(ref retVal, GG_ResultStato.Err_TimbratureMancanti);
                 return retVal;
@@ -1265,21 +1265,28 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
 
 
-            foreach (var timbratura in timbratureSenzaVerso)
+
+
+
+            //azzera il tipo delle tibrature x riconteggiare
+            timbratureSenzaVerso = timbratureSenzaVerso.Select(x =>
+                                                            {
+                                                                x.TimbraturaTipo = TipoTimbratura.SenzaVerso;
+                                                                return x;
+                                                            })
+                                                       .ToList();
+
+            Func<Dip_GG_TimbraturaModel, bool> filtro = x => true; // filtro di default
+
+            //primo passaggio , si cercano i mach
+            List<Dip_GG_TimbraturaModel> timbratura_SEL = timbratureSenzaVerso.Where(filtro).ToList();
+            foreach (var timbratura in timbratura_SEL)
             {
                 var oraTimbr = TimeOnly.FromDateTime(timbratura.Timbratura);
-                var coppiaMatch = coppieTMP.FirstOrDefault(c => !c.Check &&
-                                                                oraTimbr >= c.HH_Limite_SX &&
-                                                                oraTimbr <= c.HH_Limite_DX);
 
-                if (coppiaMatch == null)
-                {
-                    // SE NO MATCH: coppiaTMP non checkata con HH più vicino
-                    coppiaMatch = coppieTMP
-                        .Where(c => !c.Check && c.HH.HasValue)
-                        .OrderBy(c => Math.Abs((c.HH!.Value.ToTimeSpan() - oraTimbr.ToTimeSpan()).Ticks))
-                        .FirstOrDefault();
-                }
+                var coppiaMatch = timbratura_From_Coppia.FirstOrDefault(c => !c.Check &&
+                                                            oraTimbr >= c.HH_Limite_SX &&
+                                                            oraTimbr <= c.HH_Limite_DX);
 
                 if (coppiaMatch == null)
                     continue;
@@ -1288,42 +1295,111 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
                 // assegna il verso in sequenza alternata E U E U ...
                 // la posizione nella lista coppieTMP determina pari=Entrata, dispari=Uscita
-                int idx = coppieTMP.IndexOf(coppiaMatch);
+                int idx = timbratura_From_Coppia.IndexOf(coppiaMatch);
                 bool isEntrata = (idx % 2 == 0);
 
                 timbratura.TimbraturaTipo = isEntrata ? TipoTimbratura.Entrata : TipoTimbratura.Uscita;
 
                 var roundOptions = new TimeRoundOptions(coppiaMatch.Arrotondamento, coppiaMatch.Arrotondamento_Verso);
                 timbratura.TimbraturaArrotondata = Roundings.RoundDateTime(timbratura.Timbratura, roundOptions);
+
             }
 
+            //secondo passagio (solo se tutet le coppie non sono formate)
+            if (timbratura_From_Coppia.Count != timbratureSenzaVerso.Where(x => x.TimbraturaTipo == TipoTimbratura.Entrata ||
+                                                                                x.TimbraturaTipo == TipoTimbratura.Uscita).ToList().Count)
+            {
+                filtro = x => x.TimbraturaTipo == TipoTimbratura.SenzaVerso;
+                timbratura_SEL = timbratureSenzaVerso.Where(filtro).ToList();
+
+                var timbratura_From_Coppia_NO_mach = timbratura_From_Coppia.Where(x => x.Check == false).ToList();
+                foreach(var item in timbratura_From_Coppia_NO_mach)
+                {
+                    //TROVA LA TIMBRATRA CHE PIU SI AVVICINA ALLA COPPIA
+                    var timbratura_SEL_match = item.HH.HasValue
+                        ? timbratura_SEL
+                            .OrderBy(t => Math.Abs(
+                                (item.HH!.Value.ToTimeSpan() - TimeOnly.FromDateTime(t.Timbratura).ToTimeSpan()).Ticks))
+                            .FirstOrDefault()
+                        : timbratura_SEL.FirstOrDefault();
+
+                    if (timbratura_SEL_match == null)
+                        continue;
+
+                    // rimuove dalla lista disponibili per evitare doppi assegnamenti
+                    timbratura_SEL.Remove(timbratura_SEL_match);
+                    item.Check = true;
+
+                    // il verso dipende dalla posizione nella lista originale: pari=Entrata, dispari=Uscita
+                    int idx = timbratura_From_Coppia.IndexOf(item);
+                    bool isEntrata = (idx % 2 == 0);
+
+                    timbratura_SEL_match.TimbraturaTipo = isEntrata ? TipoTimbratura.Entrata : TipoTimbratura.Uscita;
+
+                    var roundOptions = new TimeRoundOptions(item.Arrotondamento, item.Arrotondamento_Verso);
+                    timbratura_SEL_match.TimbraturaArrotondata = Roundings.RoundDateTime(timbratura_SEL_match.Timbratura, roundOptions);
+
+                }
+
+            }
+
+            
 
 
-            //// assegna in sequenza alternata E U E U ..
-            //// la posizione i determina:
-            ////   pari    → Entrata, usa arrotondamento Dalle della coppia i/2
-            ////   dispari → Uscita,  usa arrotondamento Alle  della coppia i/2
-            //for (int i = 0; i < timbratureSenzaVerso.Count; i++)
+
+            //for (var idxRiconosc = 0; idxRiconosc <= 1; idxRiconosc++)
             //{
-            //    var timbratura = timbratureSenzaVerso[i];
-            //    int idxCoppia = i / 2;
-            //    bool isEntrata = (i % 2 == 0);
+
+            //    if(coppieTMP.Count == timbratureSenzaVerso.Where( x=> x.TimbraturaTipo == TipoTimbratura.Entrata || 
+            //                                                          x.TimbraturaTipo == TipoTimbratura.Uscita ).ToList().Count )
+            //        continue;
 
 
-            //    // se abbiamo più timbrature delle coppie previste, usa l'ultima coppia disponibile
-            //    if (idxCoppia >= coppie.Count)
-            //        idxCoppia = coppie.Count - 1;
+            //    /* se idxRiconosc = 0 stiamo cercado di assegnare le tobrature che fanno mach
+            //       se idxRiconosc = 1 andiamo a sistemare le coppie non formate */
+            //    Func<Dip_GG_TimbraturaModel, bool> filtro = x => true; // filtro di default
+            //    if(idxRiconosc==0)
+            //        filtro = x => true;
+            //    else
+            //        filtro = x => x.TimbraturaTipo == TipoTimbratura.SenzaVerso;
 
-            //    var coppia = coppie[idxCoppia];
+            //    var timbratura_SEL = timbratureSenzaVerso.Where(filtro).ToList();
+            //    foreach (var timbratura in timbratura_SEL)
+            //    {
+            //        var oraTimbr = TimeOnly.FromDateTime(timbratura.Timbratura);
+            //        var coppiaMatch = coppieTMP.FirstOrDefault(c => !c.Check &&
+            //                                                        oraTimbr >= c.HH_Limite_SX &&
+            //                                                        oraTimbr <= c.HH_Limite_DX);
 
-            //    timbratura.TimbraturaTipo = isEntrata ? TipoTimbratura.Entrata : TipoTimbratura.Uscita;
+            //        //if (coppiaMatch == null)
+            //        if (coppiaMatch == null && idxRiconosc == 1)  // cerco la piu vicina solo al secondo passagio
+            //        {
+            //            // SE NO MATCH: coppiaTMP non checkata con HH più vicino
+            //            coppiaMatch = coppieTMP
+            //                .Where(c => !c.Check && c.HH.HasValue)
+            //                .OrderBy(c => Math.Abs((c.HH!.Value.ToTimeSpan() - oraTimbr.ToTimeSpan()).Ticks))
+            //                .FirstOrDefault();
+            //        }
 
-            //    var roundOptions = isEntrata
-            //        ? new TimeRoundOptions(coppia.Dalle_Arrotondamento, coppia.Dalle_Arrotondamento_Verso)
-            //        : new TimeRoundOptions(coppia.Alle_Arrotondamento, coppia.Alle_Arrotondamento_Verso);
+            //        if (coppiaMatch == null)
+            //            continue;
 
-            //    timbratura.TimbraturaArrotondata = Roundings.RoundDateTime(timbratura.Timbratura, roundOptions);
+            //        coppiaMatch.Check = true;
+
+            //        // assegna il verso in sequenza alternata E U E U ...
+            //        // la posizione nella lista coppieTMP determina pari=Entrata, dispari=Uscita
+            //        int idx = coppieTMP.IndexOf(coppiaMatch);
+            //        bool isEntrata = (idx % 2 == 0);
+
+            //        timbratura.TimbraturaTipo = isEntrata ? TipoTimbratura.Entrata : TipoTimbratura.Uscita;
+
+            //        var roundOptions = new TimeRoundOptions(coppiaMatch.Arrotondamento, coppiaMatch.Arrotondamento_Verso);
+            //        timbratura.TimbraturaArrotondata = Roundings.RoundDateTime(timbratura.Timbratura, roundOptions);
+            //    }
+
             //}
+
+
 
             return retVal;
 
@@ -1360,7 +1436,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                                                                                    t.GiornoCompetenza.Date == day.Date)
                                                                                        .ToList();
 
-            List<CoppiaTMP> coppieTMP = new List<CoppiaTMP>();
+            List<Timbratura_From_Coppia> coppieTMP = new List<Timbratura_From_Coppia>();
             foreach (var coppia in coppie)
             {
                 if (!coppia.Dalle.HasValue || !coppia.Alle.HasValue)
@@ -1372,14 +1448,14 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                 {
                     var dalleLimit_SX = (coppia.Dalle_Limite_SX ?? coppia.Dalle).Value;
                     var dalleLimit_DX = (coppia.Dalle_Limite_DX ?? coppia.Dalle).Value;
-                    coppieTMP.Add(new CoppiaTMP { HH = coppia.Dalle, HH_Limite_SX = dalleLimit_SX, HH_Limite_DX = dalleLimit_DX, Arrotondamento = coppia.Dalle_Arrotondamento, Arrotondamento_Verso = coppia.Dalle_Arrotondamento_Verso });
+                    coppieTMP.Add(new Timbratura_From_Coppia { HH = coppia.Dalle, HH_Limite_SX = dalleLimit_SX, HH_Limite_DX = dalleLimit_DX, Arrotondamento = coppia.Dalle_Arrotondamento, Arrotondamento_Verso = coppia.Dalle_Arrotondamento_Verso });
                 }
 
                 if (coppia.Alle_Use_4_Match)
                 {
                     var alleLimit_SX = (coppia.Alle_Limite_SX ?? coppia.Alle).Value;
                     var alleLimit_DX = (coppia.Alle_Limite_DX ?? coppia.Alle).Value;
-                    coppieTMP.Add(new CoppiaTMP { HH = coppia.Alle, HH_Limite_SX = alleLimit_SX, HH_Limite_DX = alleLimit_DX, Arrotondamento = coppia.Alle_Arrotondamento, Arrotondamento_Verso = coppia.Alle_Arrotondamento_Verso });
+                    coppieTMP.Add(new Timbratura_From_Coppia { HH = coppia.Alle, HH_Limite_SX = alleLimit_SX, HH_Limite_DX = alleLimit_DX, Arrotondamento = coppia.Alle_Arrotondamento, Arrotondamento_Verso = coppia.Alle_Arrotondamento_Verso });
                 }
 
 
@@ -1833,7 +1909,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
         }
 
 
-        private class CoppiaTMP
+        private class Timbratura_From_Coppia
         {
             public TimeOnly? HH { get; set; }
             public TimeOnly HH_Limite_SX { get; set; }

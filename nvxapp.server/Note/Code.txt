@@ -16,6 +16,29 @@ pagedRows = puList.Where(u => u.Creator == user.UserId || u.UserId == user.UserI
                   .OrderByField(sortField)
                   .Skip(ctx.perPage * (ctx.currentPage - 1))
                   .Take(ctx.perPage).ToList();
+//////
+
+Func<Dip_GG_TimbraturaModel, bool> filtro = x => true; // filtro di default
+if (false)
+    filtro = x => x.TimbraturaTipo == TipoTimbratura.Attivita;
+
+if (false)
+    filtro = x => x.TimbraturaTipo != TipoTimbratura.Attivita;
+
+foreach (var timbratura in timbratureSenzaVerso.Where(filtro).ToList())
+{
+.
+/////
+
+///SELET x impostare valore
+timbratureSenzaVerso = timbratureSenzaVerso.Select(x =>
+                        {
+                            x.TimbraturaTipo = TipoTimbratura.SenzaVerso;
+                            return x;
+                        })
+                    .ToList();
+//////
+
 
 
 CAST 
