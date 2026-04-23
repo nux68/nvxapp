@@ -10,29 +10,17 @@
     <ion-card-content>
 
 
-
       <br />
 
-      <!--<div class="form-section">
-        <div class="form-label">Tipo richiesta</div>
-        <div class="form-input">
-          <ion-select [(ngModel)]="requestType" interface="action-sheet" placeholder="Seleziona">
-            <ion-select-option value="ENTRATA">ENTRATA</ion-select-option>
-            <ion-select-option value="USCITA">USCITA</ion-select-option>
-          </ion-select>
-        </div>
-      </div>-->
+      <form [formGroup]="_editForm">
 
-      <div class="form-section">
-        <div class="form-label">Data e ora</div>
-        <div class="form-input">
-          <!-- ion-datetime-button styling is usually handled by Ionic -->
-          <ion-datetime-button datetime="datetime-modal"></ion-datetime-button>
+        <div class="clock-container">
+
+          <ion-datetime-button class="datetime-button-with-label" datetime="currentDate-modal"></ion-datetime-button>
           <ion-modal [keepContentsMounted]="true">
             <ng-template>
-              <!-- ion-datetime styling within the modal is handled by Ionic -->
-              <ion-datetime id="datetime-modal"
-                            [(ngModel)]="dateTime"
+              <ion-datetime id="currentDate-modal"
+                            formControlName="currentDate"
                             presentation="date-time"
                             [showDefaultButtons]="true"
                             doneText="OK"
@@ -41,34 +29,34 @@
               </ion-datetime>
             </ng-template>
           </ion-modal>
+
+          <ion-item>
+            <ion-label position="floating">Attivita </ion-label>
+            <ion-select formControlName="idPar_Attivita" placeholder="Seleziona l attivita">
+              <ion-select-option *ngFor="let att of par_AttivitaList" [value]="att.id">
+                {{ att.descrizione }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-note color="danger" *ngIf="_editForm.get('idPar_Attivita')?.hasError('required') && _editForm.get('idPar_Attivita')?.touched">
+            L attività è obbligatoria.
+          </ion-note>
+
+
         </div>
-      </div>
 
-      <!--<div class="form-section">
-        <div class="form-label">Responsabili</div>
-        <div class="form-input supervisors">
+      </form>
 
-          <div class="chips-container">
-            <div class="chip" *ngFor="let supervisor of supervisors; let i = index">
-              <span>{{ supervisor }}</span>
-              <ion-icon name="trash" (click)="removeSupervisor(i)"></ion-icon>
-            </div>
-          </div>
-          <button class="add-button" (click)="addSupervisor()">
-            <ion-icon name="add"></ion-icon>
-          </button>
-        </div>
-      </div>-->
 
-      <div class="form-section">
-        <div class="form-label">Note</div>
-        <div class="form-input">
-          <!-- ion-textarea should inherit styling or use Ionic variables -->
-          <ion-textarea [(ngModel)]="notes" placeholder="Inserisci note..." rows="4"></ion-textarea> <!-- Added rows for better default size -->
-        </div>
-      </div>
 
-    </ion-card-content>
+        <!--<div class="form-section">
+          <div class="form-label">Note</div>
+          <div class="form-input">
+            <ion-textarea [(ngModel)]="notes" placeholder="Inserisci note..." rows="4"></ion-textarea>--> <!-- Added rows for better default size -->
+          <!--</div>
+        </div>-->
+
+</ion-card-content>
   </ion-card>
 </ion-content>
 
