@@ -176,7 +176,7 @@ export class UserInterfaceService {
     return new ButtonItem(
       'Esegui',
       'flash-outline',
-      'warning',
+      'secondary',
       false,
       () => { console.log('Btn_Esegui cliccato'); }
     );
