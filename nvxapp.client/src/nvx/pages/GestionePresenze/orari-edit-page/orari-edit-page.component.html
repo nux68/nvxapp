@@ -19,8 +19,11 @@
           <ion-segment-button value="sez1" content-id="sez1">
             <ion-label>Generale</ion-label>
           </ion-segment-button>
-          <ion-segment-button value="sez2" content-id="sez2">
+          <ion-segment-button value="sez2" content-id="sez2" *ngIf="isSez2Visible">
             <ion-label>Intervalli orari</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="sez3" content-id="sez3" *ngIf="isSez3Visible">
+            <ion-label>Monte Ore</ion-label>
           </ion-segment-button>
         </ion-segment>
 
@@ -54,24 +57,29 @@
             codice non può superare i 5 caratteri.
           </ion-note>
 
-
           <ion-item>
-            <ion-label position="floating">Numero Coppie</ion-label>
-            <ion-select formControlName="numeroCoppie" interface="popover" (ionChange)="onRangeChange($event)">
-              <ion-select-option [value]="1">1</ion-select-option>
-              <ion-select-option [value]="2">2</ion-select-option>
-              <ion-select-option [value]="3">3</ion-select-option>
-              <ion-select-option [value]="4">4</ion-select-option>
+            <ion-label position="floating">Tipo timbrature</ion-label>
+            <ion-select formControlName="timbratureTipo" interface="popover">
+              <ion-select-option [value]="orarioTimbratureTipoEnum.IntervalloOrario">Intervallo Orario</ion-select-option>
+              <ion-select-option [value]="orarioTimbratureTipoEnum.MonteOre">Monte Ore</ion-select-option>
+              <ion-select-option [value]="orarioTimbratureTipoEnum.MonteOreValore">Monte Ore Valore</ion-select-option>
             </ion-select>
           </ion-item>
-          <ion-note color="danger" *ngIf="_editForm.get('numeroCoppie')?.hasError('required') && _editForm.get('numeroCoppie')?.touched">
-            Il numero di coppie è obbligatorio.
+          <ion-note color="danger" *ngIf="_editForm.get('timbratureTipo')?.hasError('required') && _editForm.get('timbratureTipo')?.touched">
+            Il tipo timbrature è obbligatorio.
           </ion-note>
+
+
+
+
+      
+
+
 
 
         </div>
 
-        <div [hidden]="currSection!='sez2'">
+        <div [hidden]="currSection!='sez2' || !isSez2Visible">
           <br />
           <ion-item class="nvx-item-4-title">
             <ion-label>Intervalli orari </ion-label>
@@ -82,9 +90,24 @@
             <ion-card>
               <ion-card-content>
 
+                <ion-item>
+                  <ion-label position="floating">Numero Coppie</ion-label>
+                  <ion-select formControlName="numeroCoppie" interface="popover" (ionChange)="onRangeChange($event)">
+                    <ion-select-option [value]="1">1</ion-select-option>
+                    <ion-select-option [value]="2">2</ion-select-option>
+                    <ion-select-option [value]="3">3</ion-select-option>
+                    <ion-select-option [value]="4">4</ion-select-option>
+                  </ion-select>
+                </ion-item>
+                <ion-note color="danger" *ngIf="_editForm.get('numeroCoppie')?.hasError('required') && _editForm.get('numeroCoppie')?.touched">
+                  Il numero di coppie è obbligatorio.
+                </ion-note>
+
+                <br />
+
                 <ion-grid>
 
-                 
+
 
                   <!--desktop-->
                   <ion-row class="ion-hide-sm-down">
@@ -213,7 +236,38 @@
 
         </div>
 
-      </form>
+
+        <div [hidden]="currSection!='sez3' || !isSez3Visible">
+
+          <br />
+          <ion-item class="nvx-item-4-title">
+            <ion-label>Monte ore </ion-label>
+          </ion-item>
+
+          <div *ngIf="_editModel ">
+
+            <ion-card>
+              <ion-card-content>
+
+                <ion-item>
+                  <ion-label position="floating">Causale monte ore</ion-label>
+                  <ion-select formControlName="idCausale_HH_Lav_MonteOre" placeholder="Nessuna" interface="popover">
+                    <ion-select-option [value]="null">Nessuna</ion-select-option>
+                    <ion-select-option *ngFor="let causale of par_CausaliModelList" [value]="causale.id">
+                      {{ causale.descrizione }}
+                    </ion-select-option>
+                  </ion-select>
+                </ion-item>
+
+              </ion-card-content>
+            </ion-card>
+
+          </div>
+
+       </div>
+
+
+</form>
 
       <br />
 

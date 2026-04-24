@@ -7,7 +7,14 @@ export class Par_OrarioModel {
   codice: string;
   descrizione: string;
   numeroCoppie: number;
-  
+  idCausale_HH_Lav_MonteOre: number | null;
+  timbratureTipo: OrarioTimbratureTipo;
+}
+
+export enum OrarioTimbratureTipo {
+  IntervalloOrario,
+  MonteOre,
+  MonteOreValore
 }
 
 export class Par_Orario_GetAllInModel { }

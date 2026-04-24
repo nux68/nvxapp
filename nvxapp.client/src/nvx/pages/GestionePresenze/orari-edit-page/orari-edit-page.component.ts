@@ -6,12 +6,14 @@ import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn,
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { Observable } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
-import { Par_Orario_GetInModel, Par_Orario_PutInModel, Par_OrarioModel } from '../../../ClientServer-Service/GestionePresenze/Par_Orario/Models/par-orario-model';
+import { Par_Orario_GetInModel, Par_Orario_PutInModel, Par_OrarioModel, OrarioTimbratureTipo } from '../../../ClientServer-Service/GestionePresenze/Par_Orario/Models/par-orario-model';
 import { ParOrarioService } from '../../../ClientServer-Service/GestionePresenze/Par_Orario/par-orario.service';
 import { Par_OrarioIntervalloHH_Arrange_Coppie_InModel, Par_OrarioIntervalloHHModel } from '../../../ClientServer-Service/GestionePresenze/Par_OrarioIntervalloHH/Models/par-orario-intervallo-hh-model';
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
 import { EditParOrarioDettaglioOrarioIntervalloHHDialogComponent } from '../../../shared/components/GestionePresenze/edit-par-orario-dettaglio-orario-intervallo-hhdialog/edit-par-orario-dettaglio-orario-intervallo-hhdialog.component';
 import { ParOrarioIntervalloHHService } from '../../../ClientServer-Service/GestionePresenze/Par_OrarioIntervalloHH/par-orario-intervallo-hh.service';
+import { Par_CausaliModel } from '../../../ClientServer-Service/GestionePresenze/Par_Causali/Models/par-causali-model';
+import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
 
 
 
@@ -27,6 +29,8 @@ export class OrariEditPageComponent extends BasePageConfirmCancelComponent<Par_O
   public currSection: string = "sez1";
   public btnEdit: ButtonItem;
   public TMP_counter: number = 0;
+  public par_CausaliModelList: Par_CausaliModel[] = [];
+  public orarioTimbratureTipoEnum = OrarioTimbratureTipo;
 
   constructor(
     protected override navCtrl: NavController,
@@ -36,6 +40,7 @@ export class OrariEditPageComponent extends BasePageConfirmCancelComponent<Par_O
     private parOrarioService: ParOrarioService,
     private parOrarioIntervalloHHService: ParOrarioIntervalloHHService,
     private modalCtrl: ModalController,
+    private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
   ) {
     super(navCtrl, userInterfaceService, fb);
 
@@ -53,11 +58,15 @@ export class OrariEditPageComponent extends BasePageConfirmCancelComponent<Par_O
       codice: [null, [Validators.required, Validators.maxLength(10)]],
       descrizione: [null, [Validators.required, Validators.maxLength(50)]],
       numeroCoppie: [null, [Validators.required, Validators.min(1)]],
+      idCausale_HH_Lav_MonteOre: [null],
+      timbratureTipo: [null, [Validators.required]],
     });
   }
 
   LoadData = (): Observable<Par_OrarioModel | null> => {
     const state = history.state;
+
+    this.par_CausaliModelList = this.sharedParameterGestionePresenzeService.Par_Causali;
 
     if (state) {
 
@@ -106,6 +115,15 @@ export class OrariEditPageComponent extends BasePageConfirmCancelComponent<Par_O
   segmentChanged(event: any) {
     console.log('Segment cambiato:', event.detail.value);
     this.currSection = event.detail.value;
+  }
+
+  get isSez2Visible(): boolean {
+    return this._editForm?.get('timbratureTipo')?.value === OrarioTimbratureTipo.IntervalloOrario;
+  }
+
+  get isSez3Visible(): boolean {
+    const v = this._editForm?.get('timbratureTipo')?.value;
+    return v === OrarioTimbratureTipo.MonteOre || v === OrarioTimbratureTipo.MonteOreValore;
   }
 
   public get_Par_OrarioIntervalloHH(): Par_OrarioIntervalloHHModel[] {

@@ -27,6 +27,14 @@ namespace nvxapp.server.data.Entities.Tenant.GestionePresenze
 
         
 
+         
+        public int? IdCausale_HH_Lav_MonteOre { get; set; }
+        [ForeignKey("IdCausale_HH_Lav_MonteOre")]
+        public virtual Par_Causali? Causale_HH_Lav_MonteOreNavigation { get; set; }
+
+        public OrarioTimbratureTipo TimbratureTipo { get; set; }  = 0;
+
+
         public ICollection<Par_OrarioIntervalloHH>? Par_OrarioIntervalloHH { get; set; }
 
         public ICollection<Par_ProfiloOrarioGG>? Par_ProfiloOrarioGG { get; set; }
@@ -35,7 +43,12 @@ namespace nvxapp.server.data.Entities.Tenant.GestionePresenze
     }
 
 
-
+    public enum OrarioTimbratureTipo
+    {
+        IntervalloOrario,
+        MonteOre,
+        MonteOreValore
+    }
 
 
 }

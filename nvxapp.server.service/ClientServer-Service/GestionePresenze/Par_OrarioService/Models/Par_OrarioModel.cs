@@ -1,4 +1,5 @@
-﻿using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubCommessaService.Models;
+﻿using nvxapp.server.data.Entities.Tenant.GestionePresenze;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubCommessaService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_OrarioIntervalloHHService.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using System;
@@ -17,8 +18,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Orario
         public string Codice { get; set; } = string.Empty;
         public string Descrizione { get; set; } = string.Empty;
         public int NumeroCoppie { get; set; }
-        
-        
+        public int? IdCausale_HH_Lav_MonteOre { get; set; }
+        public OrarioTimbratureTipo TimbratureTipo { get; set; } = 0;
     }
 
     public class Par_Orario_GetAllInModel { }
