@@ -13,7 +13,7 @@ import { Par_ProfiloOrarioGG_Arrange_NumDay_InModel, Par_ProfiloOrarioGGModel } 
 import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
 import { EditParProfiloOrarioDettaglioOrarioDialogComponent } from '../../../shared/components/GestionePresenze/edit-par-profilo-orario-dettaglio-orario-dialog/edit-par-profilo-orario-dettaglio-orario-dialog.component';
 import { Par_OrarioIntervalloHHModel } from '../../../ClientServer-Service/GestionePresenze/Par_OrarioIntervalloHH/Models/par-orario-intervallo-hh-model';
-import { Par_OrarioModel } from '../../../ClientServer-Service/GestionePresenze/Par_Orario/Models/par-orario-model';
+import { OrarioTimbratureTipo, Par_OrarioModel } from '../../../ClientServer-Service/GestionePresenze/Par_Orario/Models/par-orario-model';
 import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
 import { state } from '@angular/animations';
 import { ParProfiloOrarioGGService } from '../../../ClientServer-Service/GestionePresenze/Par_ProfiloOrarioGG/par-profilo-orario-gg.service';
@@ -39,7 +39,8 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
   public btnAdd: ButtonItem;
   public TMP_counter: number = 0;
   public tipoProfiloEnum = TipoProfilo;
-  public straoTipoConteggioEnum = StraoTipoConteggio; 
+  public straoTipoConteggioEnum = StraoTipoConteggio;
+  public orarioTimbratureTipoEnum = OrarioTimbratureTipo;
   
   
 
@@ -208,6 +209,10 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
 
     return  this.par_OrarioIntervalloHH.filter(x => x.idPar_Orario == idPar_Orario).sort(x => x.numCoppia);
 
+  }
+
+  public get_par_Orario(idPar_Orario: number): Par_OrarioModel | undefined {
+    return this.par_OrarioModelList.find(o => o.id === idPar_Orario);
   }
 
   /**

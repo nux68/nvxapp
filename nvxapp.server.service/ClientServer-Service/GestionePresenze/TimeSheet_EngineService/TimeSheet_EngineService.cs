@@ -1170,7 +1170,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
             }
             else if (parOrario.TimbratureTipo == OrarioTimbratureTipo.MonteOre || parOrario.TimbratureTipo == OrarioTimbratureTipo.MonteOreValore)
             {
-
+                oreTeoriche = parOrario.Hh_Teo_MonteOre.ToTimeSpan();
             }
 
 

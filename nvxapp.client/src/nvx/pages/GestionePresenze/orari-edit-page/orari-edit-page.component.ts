@@ -60,6 +60,8 @@ export class OrariEditPageComponent extends BasePageConfirmCancelComponent<Par_O
       numeroCoppie: [null, [Validators.required, Validators.min(1)]],
       idCausale_HH_Lav_MonteOre: [null],
       timbratureTipo: [null, [Validators.required]],
+      hh_Teo_MonteOre: [null],
+      
     });
   }
 

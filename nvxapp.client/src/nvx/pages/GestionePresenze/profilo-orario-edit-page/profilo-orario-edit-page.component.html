@@ -240,10 +240,14 @@
                       </ion-label>
                     </ion-col>
                     <ion-col size="2" class="ion-hide-sm-down">
-                      <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
+                      <ion-label *ngIf="get_par_Orario(giornoDett.idPar_Orario)?.timbratureTipo === orarioTimbratureTipoEnum.IntervalloOrario">
                         <p *ngFor="let parHH of get_par_OrarioIntervalloHH( giornoDett.idPar_Orario ); let idxParHH = index ">
                           {{ parHH.dalle }} - {{ parHH.alle }}
                         </p>
+                      </ion-label>
+                      <ion-label *ngIf="get_par_Orario(giornoDett.idPar_Orario)?.timbratureTipo === orarioTimbratureTipoEnum.MonteOre ||
+                                        get_par_Orario(giornoDett.idPar_Orario)?.timbratureTipo === orarioTimbratureTipoEnum.MonteOreValore">
+                        <p>{{ get_par_Orario(giornoDett.idPar_Orario)?.hh_Teo_MonteOre }} - HH Teo.</p>
                       </ion-label>
                     </ion-col>
                     <ion-col size="2" class="ion-hide-sm-down">

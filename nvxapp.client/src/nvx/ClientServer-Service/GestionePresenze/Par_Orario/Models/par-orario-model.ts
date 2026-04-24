@@ -9,6 +9,7 @@ export class Par_OrarioModel {
   numeroCoppie: number;
   idCausale_HH_Lav_MonteOre: number | null;
   timbratureTipo: OrarioTimbratureTipo;
+  hh_Teo_MonteOre: string | null;
 }
 
 export enum OrarioTimbratureTipo {

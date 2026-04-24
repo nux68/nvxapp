@@ -34,6 +34,8 @@ namespace nvxapp.server.data.Entities.Tenant.GestionePresenze
 
         public OrarioTimbratureTipo TimbratureTipo { get; set; }  = 0;
 
+        public TimeOnly Hh_Teo_MonteOre { get; set; } = new TimeOnly(0, 0);
+
 
         public ICollection<Par_OrarioIntervalloHH>? Par_OrarioIntervalloHH { get; set; }
 
