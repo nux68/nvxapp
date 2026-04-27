@@ -21,7 +21,8 @@ namespace nvxapp.server.data.Entities.Tenant
 
         public ICollection<Dip_GG_Timbratura>? Dip_GG_Timbratura { get; set; }
 
-        public ICollection<Par_ProfiloOrarioGG>? Par_ProfiloOrarioGG { get; set; }
+        public ICollection<Par_Orario>? Par_Orario { get; set; }
+        public ICollection<Par_OrarioIntervalloHH>? Par_OrarioIntervalloHH { get; set; }
 
     }
 }

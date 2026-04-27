@@ -15,7 +15,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Profil
         public int NumGiorno { get; set; }
         public int ZOrder { get; set; }
         public int IdPar_Orario { get; set; }
-        public int IdAz_SubCommessaAttivita { get; set; }
+        //public int IdAz_SubCommessaAttivita { get; set; }
     }
 
 

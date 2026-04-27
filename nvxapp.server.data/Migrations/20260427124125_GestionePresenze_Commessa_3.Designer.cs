@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using nvxapp.server.data.Infrastructure;
@@ -11,9 +12,11 @@ using nvxapp.server.data.Infrastructure;
 namespace nvxapp.server.data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260427124125_GestionePresenze_Commessa_3")]
+    partial class GestionePresenze_Commessa_3
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1552,9 +1555,6 @@ namespace nvxapp.server.data.Migrations
                     b.Property<int>("IdAz_Anagrafica")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("IdAz_SubCommessaAttivita_MonteOre")
-                        .HasColumnType("integer");
-
                     b.Property<int?>("IdCausale_HH_Lav_MonteOre")
                         .HasColumnType("integer");
 
@@ -1570,8 +1570,6 @@ namespace nvxapp.server.data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("IdAz_Anagrafica");
-
-                    b.HasIndex("IdAz_SubCommessaAttivita_MonteOre");
 
                     b.HasIndex("IdCausale_HH_Lav_MonteOre");
 
@@ -1629,9 +1627,6 @@ namespace nvxapp.server.data.Migrations
                     b.Property<bool>("Dalle_Use_4_Match")
                         .HasColumnType("boolean");
 
-                    b.Property<int>("IdAz_SubCommessaAttivita")
-                        .HasColumnType("integer");
-
                     b.Property<int>("IdCausale_HH_Lav")
                         .HasColumnType("integer");
 
@@ -1645,8 +1640,6 @@ namespace nvxapp.server.data.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("IdAz_SubCommessaAttivita");
 
                     b.HasIndex("IdCausale_HH_Lav");
 
@@ -2607,30 +2600,17 @@ namespace nvxapp.server.data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("nvxapp.server.data.Entities.Tenant.Az_SubCommessaAttivita", "Az_SubCommessaAttivita_MonteOreNavigation")
-                        .WithMany("Par_Orario")
-                        .HasForeignKey("IdAz_SubCommessaAttivita_MonteOre")
-                        .OnDelete(DeleteBehavior.Cascade);
-
                     b.HasOne("nvxapp.server.data.Entities.Tenant.Par_Causali", "Causale_HH_Lav_MonteOreNavigation")
                         .WithMany()
                         .HasForeignKey("IdCausale_HH_Lav_MonteOre");
 
                     b.Navigation("Az_AnagraficaNavigation");
 
-                    b.Navigation("Az_SubCommessaAttivita_MonteOreNavigation");
-
                     b.Navigation("Causale_HH_Lav_MonteOreNavigation");
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.GestionePresenze.Par_OrarioIntervalloHH", b =>
                 {
-                    b.HasOne("nvxapp.server.data.Entities.Tenant.Az_SubCommessaAttivita", "Az_SubCommessaAttivitaNavigation")
-                        .WithMany("Par_OrarioIntervalloHH")
-                        .HasForeignKey("IdAz_SubCommessaAttivita")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("nvxapp.server.data.Entities.Tenant.Par_Causali", "Causale_HH_LavNavigation")
                         .WithMany()
                         .HasForeignKey("IdCausale_HH_Lav")
@@ -2642,8 +2622,6 @@ namespace nvxapp.server.data.Migrations
                         .HasForeignKey("IdPar_Orario")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Az_SubCommessaAttivitaNavigation");
 
                     b.Navigation("Causale_HH_LavNavigation");
 
@@ -2880,10 +2858,6 @@ namespace nvxapp.server.data.Migrations
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Az_SubCommessaAttivita", b =>
                 {
                     b.Navigation("Dip_GG_Timbratura");
-
-                    b.Navigation("Par_Orario");
-
-                    b.Navigation("Par_OrarioIntervalloHH");
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Dip_Anagrafica", b =>

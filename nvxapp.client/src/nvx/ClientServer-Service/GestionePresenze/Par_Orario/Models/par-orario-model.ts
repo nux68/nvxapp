@@ -10,6 +10,8 @@ export class Par_OrarioModel {
   idCausale_HH_Lav_MonteOre: number | null;
   timbratureTipo: OrarioTimbratureTipo;
   hh_Teo_MonteOre: string | null;
+
+  idAz_SubCommessaAttivita_MonteOre: number | null;
 }
 
 export enum OrarioTimbratureTipo {

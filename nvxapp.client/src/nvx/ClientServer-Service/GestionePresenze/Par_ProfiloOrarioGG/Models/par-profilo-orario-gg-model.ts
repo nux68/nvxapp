@@ -6,7 +6,7 @@ export class Par_ProfiloOrarioGGModel {
   numGiorno: number;
   zOrder: number;
   idPar_Orario: number;
-  idAz_SubCommessaAttivita: number;
+  //idAz_SubCommessaAttivita: number;
 }
 
 // Modelli per la gestione dell'edit

@@ -22,6 +22,7 @@ export class Par_OrarioIntervalloHHModel {
 
   public numCoppia: number;
   public idCausale_HH_Lav: number;
+  public idAz_SubCommessaAttivita: number;
 }
 
 
