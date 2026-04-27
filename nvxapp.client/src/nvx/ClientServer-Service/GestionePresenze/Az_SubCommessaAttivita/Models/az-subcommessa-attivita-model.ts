@@ -34,3 +34,25 @@ export class Az_SubCommessaAttivita_Put4SubCommessa_InModel {
 export class Az_SubCommessaAttivita_Put4SubCommessa_OutModel extends ModelResult {
   az_SubCommessaAttivita: Az_SubCommessaAttivita4EditModel[] = [];
 }
+
+export class Az_SubCommessaAttivita_4FullListModel {
+  commessa_Id: number = 0;
+  commessa_IdAz_Cliente: number = 0;
+  commessa_Decrizione: string = '';
+  commessa_Default: boolean = false;
+
+  subCommessa_Id: number = 0;
+  subCommessa_Decrizione: string = '';
+  subCommessa_Default: boolean = false;
+
+  subCommessaAttivita_Id: number = 0;
+  subCommessaAttivita_Decrizione: string = '';
+  subCommessaAttivita_Default: boolean = false;
+  subCommessaAttivita_IdPar_Attivita: number = 0;
+}
+
+export class Az_SubCommessaAttivita_GetAll_4FullList_InModel {}
+
+export class Az_SubCommessaAttivita_GetAll_4FullList_OutModel extends ModelResult {
+  az_SubCommessaAttivita: Az_SubCommessaAttivita_4FullListModel[] = [];
+}

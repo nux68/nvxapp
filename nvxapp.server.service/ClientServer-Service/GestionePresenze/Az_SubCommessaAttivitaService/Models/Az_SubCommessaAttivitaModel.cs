@@ -44,4 +44,32 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
     {
         public List<Az_SubCommessaAttivita4EditModel> Az_SubCommessaAttivita { get; set; } = new List<Az_SubCommessaAttivita4EditModel>();
     }
+
+
+
+    public class Az_SubCommessaAttivita_4FullListModel
+    {
+        public int Commessa_Id { get; set; }
+        public int Commessa_IdAz_Cliente { get; set; }
+        public string Commessa_Decrizione { get; set; } = string.Empty;
+        public Boolean Commessa_Default { get; set; }
+
+        public int SubCommessa_Id { get; set; }
+        public string SubCommessa_Decrizione { get; set; } = string.Empty;
+        public Boolean SubCommessa_Default { get; set; }
+
+        public int SubCommessaAttivita_Id { get; set; }
+        public string SubCommessaAttivita_Decrizione { get; set; } = string.Empty;
+        public Boolean SubCommessaAttivita_Default { get; set; }
+        public int SubCommessaAttivita_IdPar_Attivita { get; set; }
+    }
+
+    public class Az_SubCommessaAttivita_GetAll_4FullList_InModel { }
+
+    public class Az_SubCommessaAttivita_GetAll_4FullList_OutModel : ModelResult
+    {
+        public List<Az_SubCommessaAttivita_4FullListModel> Az_SubCommessaAttivita { get; set; } = new List<Az_SubCommessaAttivita_4FullListModel>();
+    }
+
+
 }

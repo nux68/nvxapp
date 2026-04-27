@@ -28,5 +28,32 @@ namespace nvxapp.server.Controllers
             var res = await _az_SubCommessaAttivitaService.GetAll(inModel, false);
             return res;
         }
+
+        [Authorize]
+        [HttpPost]
+        [Route("GetAll_4FullList")]
+        public async Task<GenericResult<Az_SubCommessaAttivita_GetAll_4FullList_OutModel>> GetAll_4FullList(GenericRequest<Az_SubCommessaAttivita_GetAll_4FullList_InModel> inModel)
+        {
+            var res = await _az_SubCommessaAttivitaService.GetAll_4FullList(inModel, false);
+            return res;
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("Get4SubCommessa")]
+        public async Task<GenericResult<Az_SubCommessaAttivita_Get4SubCommessa_OutModel>> Get4SubCommessa(GenericRequest<Az_SubCommessaAttivita_Get4SubCommessa_InModel> inModel)
+        {
+            var res = await _az_SubCommessaAttivitaService.Get4SubCommessa(inModel, false);
+            return res;
+        }
+
+        [Authorize]
+        [HttpPost]
+        [Route("Put4SubCommessa")]
+        public async Task<GenericResult<Az_SubCommessaAttivita_Put4SubCommessa_OutModel>> Put4SubCommessa(GenericRequest<Az_SubCommessaAttivita_Put4SubCommessa_InModel> inModel)
+        {
+            var res = await _az_SubCommessaAttivitaService.Put4SubCommessa(inModel, false);
+            return res;
+        }
     }
 }

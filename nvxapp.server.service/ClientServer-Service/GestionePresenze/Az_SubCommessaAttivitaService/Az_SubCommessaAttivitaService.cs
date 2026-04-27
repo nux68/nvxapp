@@ -8,6 +8,7 @@ using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Entities.Tenant; // <-- corretto per Az_SubCommessaAttivita
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_CommessaService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubCommessaAttivitaService.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
@@ -22,6 +23,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
     public class Az_SubCommessaAttivitaService : ServiceBase, IAz_SubCommessaAttivitaService
     {
         private readonly IAz_SubCommessaAttivitaRepository _az_SubCommessaAttivitaRepository;
+        private readonly IAz_CommessaRepository _az_CommessaRepository;
+        private readonly IAz_SubCommessaRepository _az_SubCommessaRepository;
+        private readonly IPar_AttivitaRepository _par_AttivitaRepository;
         private readonly IGestionePresenzeUserUtility _gestionePresenzeUserUtility;
 
         public Az_SubCommessaAttivitaService(IMapper mapper,
@@ -31,9 +35,15 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
                                   IHttpContextAccessor httpContextAccessor,
                                   IConfiguration configuration,
                                   IGestionePresenzeUserUtility gestionePresenzeUserUtility,
-                                  IAz_SubCommessaAttivitaRepository az_SubCommessaAttivitaRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
+                                  IAz_SubCommessaAttivitaRepository az_SubCommessaAttivitaRepository,
+                                  IAz_CommessaRepository az_CommessaRepository,
+                                  IAz_SubCommessaRepository az_SubCommessaRepository,
+                                  IPar_AttivitaRepository par_AttivitaRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _az_SubCommessaAttivitaRepository = az_SubCommessaAttivitaRepository;
+            _az_CommessaRepository = az_CommessaRepository;
+            _az_SubCommessaRepository = az_SubCommessaRepository;
+            _par_AttivitaRepository = par_AttivitaRepository;
             _gestionePresenzeUserUtility = gestionePresenzeUserUtility;
         }
 
@@ -128,6 +138,53 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
                 return retVal;
             }, isSubProcess);
         }
+    
+        public virtual async Task<GenericResult<Az_SubCommessaAttivita_GetAll_4FullList_OutModel>> GetAll_4FullList(GenericRequest<Az_SubCommessaAttivita_GetAll_4FullList_InModel> model, bool isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                Az_SubCommessaAttivita_GetAll_4FullList_OutModel retVal = new Az_SubCommessaAttivita_GetAll_4FullList_OutModel();
+
+                int IdCompany;
+                int.TryParse(this.CurrentCompany, out IdCompany);
+
+                Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg company_DATA = await _gestionePresenzeUserUtility.Get_AzAna_AzSedi_AzReparto_Az_Cfg(IdCompany, true);
+                if (company_DATA != null && company_DATA.az_Anagrafica != null)
+                {
+                    var commesse        = await _az_CommessaRepository.FindAll();
+                    var subCommesse     = await _az_SubCommessaRepository.FindAll();
+                    var attivitaLinks   = await _az_SubCommessaAttivitaRepository.FindAll();
+                    var parAttivita     = await _par_AttivitaRepository.FindAll();
+
+                    retVal.Az_SubCommessaAttivita = (
+                        from link in attivitaLinks
+                        join sub  in subCommesse  on link.IdAz_SubCommessa equals sub.Id
+                        join com  in commesse     on sub.IdAz_Commessa     equals com.Id
+                        join att  in parAttivita  on link.IdPar_Attivita   equals att.Id
+                        select new Az_SubCommessaAttivita_4FullListModel
+                        {
+                            Commessa_Id              = com.Id,
+                            Commessa_IdAz_Cliente    = com.IdAz_Cliente,
+                            Commessa_Decrizione      = com.Descrizione,
+                            Commessa_Default         = com.Default,
+
+                            SubCommessa_Id           = sub.Id,
+                            SubCommessa_Decrizione   = sub.Descrizione ?? string.Empty,
+                            SubCommessa_Default      = sub.Default,
+
+                            SubCommessaAttivita_Id              = link.Id,
+                            SubCommessaAttivita_Decrizione      = att.Descrizione,
+                            SubCommessaAttivita_Default         = link.Default,
+                            SubCommessaAttivita_IdPar_Attivita  = link.IdPar_Attivita
+                        }
+                    ).ToList();
+                }
+
+                await Task.Delay(DelayAsyncMethod);
+                return retVal;
+            }, isSubProcess);
+        }
+        
     }
 
     public interface IAz_SubCommessaAttivitaService : IServiceBase
@@ -135,5 +192,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
         Task<GenericResult<Az_SubCommessaAttivita_GetAll_OutModel>> GetAll(GenericRequest<Az_SubCommessaAttivita_GetAll_InModel> model, bool isSubProcess);
         Task<GenericResult<Az_SubCommessaAttivita_Get4SubCommessa_OutModel>> Get4SubCommessa(GenericRequest<Az_SubCommessaAttivita_Get4SubCommessa_InModel> model, bool isSubProcess);
         Task<GenericResult<Az_SubCommessaAttivita_Put4SubCommessa_OutModel>> Put4SubCommessa(GenericRequest<Az_SubCommessaAttivita_Put4SubCommessa_InModel> model, bool isSubProcess);
+        Task<GenericResult<Az_SubCommessaAttivita_GetAll_4FullList_OutModel>> GetAll_4FullList(GenericRequest<Az_SubCommessaAttivita_GetAll_4FullList_InModel> model, bool isSubProcess);
     }
 }
