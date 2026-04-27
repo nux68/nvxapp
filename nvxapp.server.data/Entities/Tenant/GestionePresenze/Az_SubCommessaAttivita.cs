@@ -1,4 +1,5 @@
 using nvxapp.server.data.Entities.Public;
+using nvxapp.server.data.Entities.Tenant.GestionePresenze;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -19,6 +20,8 @@ namespace nvxapp.server.data.Entities.Tenant
 
 
         public ICollection<Dip_GG_Timbratura>? Dip_GG_Timbratura { get; set; }
+
+        public ICollection<Par_ProfiloOrarioGG>? Par_ProfiloOrarioGG { get; set; }
 
     }
 }
