@@ -28,6 +28,13 @@ namespace nvxapp.server.data.Entities.Tenant
         public int? IdDip_GG_Richiesta { get; set; }
         [ForeignKey("IdDip_GG_Richiesta")]
         public virtual Dip_GG_Richiesta? Dip_RichiestaNavigation { get; set; }
+
+
+        
+        public int IdAz_SubCommessaAttivita { get; set; }
+        [ForeignKey("IdAz_SubCommessaAttivita")]
+        public virtual Az_SubCommessaAttivita? Az_SubCommessaAttivitaNavigation { get; set; }
+
     }
 
 

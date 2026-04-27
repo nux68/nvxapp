@@ -160,8 +160,13 @@ namespace nvxapp.server.data.Infrastructure
               .WithMany(t_figlio => t_figlio.Dip_GG_Timbratura)
               .HasForeignKey(key_esterna => key_esterna.IdDip_GG_Richiesta)
               .OnDelete(DeleteBehavior.Cascade);
-
-  
+            
+            modelBuilder.Entity<Dip_GG_Timbratura>()
+              .HasOne(t_padre => t_padre.Az_SubCommessaAttivitaNavigation)
+              .WithMany(t_figlio => t_figlio.Dip_GG_Timbratura)
+              .HasForeignKey(key_esterna => key_esterna.IdAz_SubCommessaAttivita)
+              .OnDelete(DeleteBehavior.Cascade);
+            
 
 
 

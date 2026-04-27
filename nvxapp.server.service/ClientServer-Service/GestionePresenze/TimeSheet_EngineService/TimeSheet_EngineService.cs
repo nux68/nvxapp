@@ -1479,7 +1479,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
                     foreach (var coppia in coppieTMP.Where(c => !c.Check && c.HH != null))
                     {
-                        var entity = new Dip_GG_Timbratura { IdDip_RapportoLavoro = IdDip_RapportoLavoro };
+                        var entity = new Dip_GG_Timbratura { IdDip_RapportoLavoro = IdDip_RapportoLavoro,
+                                                             IdAz_SubCommessaAttivita=0 //nvx 27/04/2026
+                                                           };
                         var vm = _mapper.Map<Dip_GG_TimbraturaModel>(entity);
                         vm.Timbratura = day.Date + (coppia.HH != null ? coppia.HH.Value : new TimeOnly()).ToTimeSpan();
                         vm.TimbraturaOriginale = day.Date + (coppia.HH != null ? coppia.HH.Value : new TimeOnly()).ToTimeSpan();

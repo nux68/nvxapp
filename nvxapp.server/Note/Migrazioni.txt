@@ -24,6 +24,8 @@ dotnet ef migrations add GestionePresenze_Export_Step_1  -v --context nvxapp.ser
 dotnet ef migrations add GestionePresenze_Orari_Step_16  -v --context nvxapp.server.data.Infrastructure.ApplicationDbContext --project nvxapp.server.data --startup-project nvxapp.server\nvxapp.server.csproj
 dotnet ef migrations add GestionePresenze_Orari_Step_17  -v --context nvxapp.server.data.Infrastructure.ApplicationDbContext --project nvxapp.server.data --startup-project nvxapp.server\nvxapp.server.csproj
 
+dotnet ef migrations add GestionePresenze_Commessa_1  -v --context nvxapp.server.data.Infrastructure.ApplicationDbContext --project nvxapp.server.data --startup-project nvxapp.server\nvxapp.server.csproj
+
 
 aggiorna db
 dotnet ef database update --project nvxapp.server.data --startup-project nvxapp.server

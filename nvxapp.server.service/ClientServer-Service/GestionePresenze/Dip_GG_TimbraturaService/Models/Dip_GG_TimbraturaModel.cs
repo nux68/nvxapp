@@ -32,8 +32,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
         public StatoRichiesta RichiestaStato { get; set; }
         [HashField]
         public int? idDip_GG_Richiesta { get; set; }
-
-
+        [HashField]
+        public int IdAz_SubCommessaAttivita { get; set; }
     }
 
 

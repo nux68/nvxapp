@@ -18,6 +18,7 @@ export class Dip_GG_TimbraturaModel {
 
   public richiestaStato!: StatoRichiesta;
   public idDip_GG_Richiesta?: number;
+  public idAz_SubCommessaAttivita: number;
 
 }
 export enum TipoTimbratura {

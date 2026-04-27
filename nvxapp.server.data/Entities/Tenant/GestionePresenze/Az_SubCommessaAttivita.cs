@@ -16,5 +16,9 @@ namespace nvxapp.server.data.Entities.Tenant
         [ForeignKey("IdPar_Attivita")]
         public virtual Par_Attivita? Par_AttivitaNavigation { get; set; }
         public Boolean Default { get; set; }
+
+
+        public ICollection<Dip_GG_Timbratura>? Dip_GG_Timbratura { get; set; }
+
     }
 }
