@@ -259,6 +259,18 @@
                   </ion-select>
                 </ion-item>
 
+                <!--<ion-item>
+                  <ion-label position="floating">Commessa Attivita</ion-label>
+                  <ion-select formControlName="idAz_SubCommessaAttivita_MonteOre" placeholder="Seleziona l attivita">
+                    <ion-select-option *ngFor="let attivita of az_SubCommessaAttivita_4FullList" [value]="attivita.subCommessaAttivita_Id">
+                      {{ attivita.cliente_Descrizione }} {{ attivita.commessa_Decrizione }} {{ attivita.subCommessa_Decrizione }} {{ attivita.subCommessaAttivita_Par_Attivita_Descrizione }}
+                    </ion-select-option>
+                  </ion-select>
+                </ion-item>
+                <ion-note color="danger" *ngIf="_editForm.get('idAz_SubCommessaAttivita_MonteOre')?.hasError('required') && _editForm.get('idAz_SubCommessaAttivita_MonteOre')?.touched">
+                  L attivita è obbligatoria.
+                </ion-note>-->
+
 
                 <ion-item>
                   <ion-label position="floating">Ore Teoriche</ion-label>
@@ -270,11 +282,14 @@
                                     presentation="time"
                                     [showDefaultButtons]="true"
                                     doneText="OK"
-                                    cancelText="Annulla" >
+                                    cancelText="Annulla">
                       </ion-datetime>
                     </ng-template>
                   </ion-modal>
                 </ion-item>
+
+
+
 
 
               </ion-card-content>

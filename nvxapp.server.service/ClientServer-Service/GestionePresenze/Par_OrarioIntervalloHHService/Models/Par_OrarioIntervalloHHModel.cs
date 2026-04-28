@@ -8,7 +8,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Orario
 
         public int Id { get; set; }
         public int IdPar_Orario { get; set; }
-        public int IdAz_SubCommessaAttivita { get; set; }
+        //public int IdAz_SubCommessaAttivita { get; set; }
         public TimeOnly? Dalle { get; set; }
         public TimeOnly? Dalle_Limite_SX { get; set; }
         public TimeOnly? Dalle_Limite_DX { get; set; }

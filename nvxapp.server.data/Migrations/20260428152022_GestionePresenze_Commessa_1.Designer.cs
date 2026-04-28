@@ -12,7 +12,7 @@ using nvxapp.server.data.Infrastructure;
 namespace nvxapp.server.data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260427104641_GestionePresenze_Commessa_1")]
+    [Migration("20260428152022_GestionePresenze_Commessa_1")]
     partial class GestionePresenze_Commessa_1
     {
         /// <inheritdoc />
@@ -1303,6 +1303,9 @@ namespace nvxapp.server.data.Migrations
                     b.Property<DateTime?>("DataLic")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<int>("IdAz_SubCommessaAttivita")
+                        .HasColumnType("integer");
+
                     b.Property<int>("IdDip_Anagrafica")
                         .HasColumnType("integer")
                         .HasColumnName("IdDip_Anagrafica");
@@ -1311,6 +1314,8 @@ namespace nvxapp.server.data.Migrations
                         .HasColumnType("timestamp without time zone");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("IdAz_SubCommessaAttivita");
 
                     b.HasIndex("IdDip_Anagrafica");
 
@@ -1532,6 +1537,9 @@ namespace nvxapp.server.data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("Az_SubCommessaAttivitaId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("ChangeUser")
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
@@ -1569,6 +1577,8 @@ namespace nvxapp.server.data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Az_SubCommessaAttivitaId");
+
                     b.HasIndex("IdAz_Anagrafica");
 
                     b.HasIndex("IdCausale_HH_Lav_MonteOre");
@@ -1601,6 +1611,9 @@ namespace nvxapp.server.data.Migrations
 
                     b.Property<bool>("Alle_Use_4_Match")
                         .HasColumnType("boolean");
+
+                    b.Property<int?>("Az_SubCommessaAttivitaId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("ChangeUser")
                         .HasMaxLength(256)
@@ -1640,6 +1653,8 @@ namespace nvxapp.server.data.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Az_SubCommessaAttivitaId");
 
                     b.HasIndex("IdCausale_HH_Lav");
 
@@ -2504,11 +2519,19 @@ namespace nvxapp.server.data.Migrations
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Dip_RapportoLavoro", b =>
                 {
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Az_SubCommessaAttivita", "Az_SubCommessaAttivitaNavigation")
+                        .WithMany("Dip_RapportoLavoro")
+                        .HasForeignKey("IdAz_SubCommessaAttivita")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
                     b.HasOne("nvxapp.server.data.Entities.Tenant.Dip_Anagrafica", "Dip_AnagraficaNavigation")
                         .WithMany("Dip_RapportoLavoro")
                         .HasForeignKey("IdDip_Anagrafica")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Az_SubCommessaAttivitaNavigation");
 
                     b.Navigation("Dip_AnagraficaNavigation");
                 });
@@ -2594,6 +2617,10 @@ namespace nvxapp.server.data.Migrations
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.GestionePresenze.Par_Orario", b =>
                 {
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Az_SubCommessaAttivita", null)
+                        .WithMany("Par_Orario")
+                        .HasForeignKey("Az_SubCommessaAttivitaId");
+
                     b.HasOne("nvxapp.server.data.Entities.Tenant.Az_Anagrafica", "Az_AnagraficaNavigation")
                         .WithMany("Par_Orario")
                         .HasForeignKey("IdAz_Anagrafica")
@@ -2611,6 +2638,10 @@ namespace nvxapp.server.data.Migrations
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.GestionePresenze.Par_OrarioIntervalloHH", b =>
                 {
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Az_SubCommessaAttivita", null)
+                        .WithMany("Par_OrarioIntervalloHH")
+                        .HasForeignKey("Az_SubCommessaAttivitaId");
+
                     b.HasOne("nvxapp.server.data.Entities.Tenant.Par_Causali", "Causale_HH_LavNavigation")
                         .WithMany()
                         .HasForeignKey("IdCausale_HH_Lav")
@@ -2858,6 +2889,12 @@ namespace nvxapp.server.data.Migrations
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Az_SubCommessaAttivita", b =>
                 {
                     b.Navigation("Dip_GG_Timbratura");
+
+                    b.Navigation("Dip_RapportoLavoro");
+
+                    b.Navigation("Par_Orario");
+
+                    b.Navigation("Par_OrarioIntervalloHH");
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Dip_Anagrafica", b =>

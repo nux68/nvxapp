@@ -14,6 +14,7 @@ import { EditParOrarioDettaglioOrarioIntervalloHHDialogComponent } from '../../.
 import { ParOrarioIntervalloHHService } from '../../../ClientServer-Service/GestionePresenze/Par_OrarioIntervalloHH/par-orario-intervallo-hh.service';
 import { Par_CausaliModel } from '../../../ClientServer-Service/GestionePresenze/Par_Causali/Models/par-causali-model';
 import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
+import { Az_SubCommessaAttivita_4FullListModel } from '../../../ClientServer-Service/GestionePresenze/Az_SubCommessaAttivita/Models/az-subcommessa-attivita-model';
 
 
 
@@ -30,6 +31,7 @@ export class OrariEditPageComponent extends BasePageConfirmCancelComponent<Par_O
   public btnEdit: ButtonItem;
   public TMP_counter: number = 0;
   public par_CausaliModelList: Par_CausaliModel[] = [];
+  public az_SubCommessaAttivita_4FullList: Az_SubCommessaAttivita_4FullListModel[] = [];
   public orarioTimbratureTipoEnum = OrarioTimbratureTipo;
 
   constructor(
@@ -61,6 +63,7 @@ export class OrariEditPageComponent extends BasePageConfirmCancelComponent<Par_O
       idCausale_HH_Lav_MonteOre: [null],
       timbratureTipo: [null, [Validators.required]],
       hh_Teo_MonteOre: [null],
+      //idAz_SubCommessaAttivita_MonteOre: [null],
       
     });
   }
@@ -69,6 +72,7 @@ export class OrariEditPageComponent extends BasePageConfirmCancelComponent<Par_O
     const state = history.state;
 
     this.par_CausaliModelList = this.sharedParameterGestionePresenzeService.Par_Causali;
+    this.az_SubCommessaAttivita_4FullList = this.sharedParameterGestionePresenzeService.Az_SubCommessaAttivita_4Full;
 
     if (state) {
 

@@ -9,6 +9,7 @@ import { Observable, of } from 'rxjs';
 import { Par_OrarioIntervalloHHModel, RoundDirection, TimeRoundInterval } from '../../../../ClientServer-Service/GestionePresenze/Par_OrarioIntervalloHH/Models/par-orario-intervallo-hh-model';
 import { StringHelperService } from '../../../../Utility/infrastructure/string-helper.service';
 import { Par_CausaliModel } from '../../../../ClientServer-Service/GestionePresenze/Par_Causali/Models/par-causali-model';
+import { Az_SubCommessaAttivita_4FullListModel } from '../../../../ClientServer-Service/GestionePresenze/Az_SubCommessaAttivita/Models/az-subcommessa-attivita-model';
 
 @Component({
   selector: 'app-edit-par-orario-dettaglio-orario-intervallo-hhdialog',
@@ -29,7 +30,8 @@ export class EditParOrarioDettaglioOrarioIntervalloHHDialogComponent extends Bas
   public timeRoundIntervalEnum =  TimeRoundInterval;
   public roundDirectionEnum = RoundDirection;
   public par_CausaliModelList: Par_CausaliModel[] = [];
-  public currSection: string = "sez1";
+  public az_SubCommessaAttivita_4FullList: Az_SubCommessaAttivita_4FullListModel[] = [];
+  public currSection: string = "sez0";
 
   constructor(
     protected override userInterfaceService: UserInterfaceService,
@@ -64,6 +66,8 @@ export class EditParOrarioDettaglioOrarioIntervalloHHDialogComponent extends Bas
       alle_Use_4_Match: [null, [Validators.required]],
 
       idCausale_HH_Lav: [null, [Validators.required]],
+      //idAz_SubCommessaAttivita: [null, [Validators.required]],
+      
 
     });
   }
@@ -75,6 +79,8 @@ export class EditParOrarioDettaglioOrarioIntervalloHHDialogComponent extends Bas
     this.formattedDate = this.stringHelperService.Date_To_S_ddmmyyyy(now)
     this.formattedTime = this.stringHelperService.Date_To_S_hhmm(now);
     this.par_CausaliModelList = this.sharedParameterGestionePresenzeService.Par_Causali;
+    this.az_SubCommessaAttivita_4FullList = this.sharedParameterGestionePresenzeService.Az_SubCommessaAttivita_4Full;
+    
 
     return of(this.par_OrarioIntervalloHH);
   };

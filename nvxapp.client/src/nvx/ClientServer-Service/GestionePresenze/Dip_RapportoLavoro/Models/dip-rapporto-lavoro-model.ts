@@ -3,7 +3,7 @@ import { ModelResult } from "../../../ModelsBase/model-result";
 export class Dip_RapportoLavoroModel {
   public id!: number;
   public idDip_Anagrafica!: number;
-  
+  public idAz_SubCommessaAttivita!: number;
 
 }
 

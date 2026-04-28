@@ -37,4 +37,9 @@ export class AzSubCommessaAttivitaService {
     return this.http.post<GenericResult<Az_SubCommessaAttivita_Put4SubCommessa_OutModel>>(environment.remoteData.apiUri + 'Az_SubCommessaAttivita/Put4SubCommessa', model)
       .pipe(map(r => r));
   }
+
+  //Get_Az_SubCommessaAttivita_Default(model: GenericRequest<Get_Az_SubCommessaAttivita_Default_InModel>): Observable<GenericResult<Get_Az_SubCommessaAttivita_Default_OutModel>> {
+  //  return this.http.post<GenericResult<Get_Az_SubCommessaAttivita_Default_OutModel>>(environment.remoteData.apiUri + 'Az_SubCommessaAttivita/Get_Az_SubCommessaAttivita_Default', model)
+  //    .pipe(map(r => r));
+  //}
 }

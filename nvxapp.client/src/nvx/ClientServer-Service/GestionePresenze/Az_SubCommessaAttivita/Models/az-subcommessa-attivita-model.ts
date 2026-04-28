@@ -41,6 +41,9 @@ export class Az_SubCommessaAttivita_4FullListModel {
   commessa_Decrizione: string = '';
   commessa_Default: boolean = false;
 
+  cliente_Descrizione: string = '';
+  cliente_Default: boolean = false;
+
   subCommessa_Id: number = 0;
   subCommessa_Decrizione: string = '';
   subCommessa_Default: boolean = false;
@@ -49,6 +52,7 @@ export class Az_SubCommessaAttivita_4FullListModel {
   subCommessaAttivita_Decrizione: string = '';
   subCommessaAttivita_Default: boolean = false;
   subCommessaAttivita_IdPar_Attivita: number = 0;
+  subCommessaAttivita_Par_Attivita_Descrizione: string = '';
 }
 
 export class Az_SubCommessaAttivita_GetAll_4FullList_InModel {}
@@ -56,3 +60,9 @@ export class Az_SubCommessaAttivita_GetAll_4FullList_InModel {}
 export class Az_SubCommessaAttivita_GetAll_4FullList_OutModel extends ModelResult {
   az_SubCommessaAttivita: Az_SubCommessaAttivita_4FullListModel[] = [];
 }
+
+//export class Get_Az_SubCommessaAttivita_Default_InModel {}
+
+//export class Get_Az_SubCommessaAttivita_Default_OutModel extends ModelResult {
+//  az_SubCommessaAttivita: Az_SubCommessaAttivitaModel | null = null;
+//}

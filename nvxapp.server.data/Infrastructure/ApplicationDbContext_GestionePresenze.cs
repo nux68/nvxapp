@@ -76,6 +76,14 @@ namespace nvxapp.server.data.Infrastructure
                 .HasForeignKey(key_esterna => key_esterna.IdDip_Anagrafica)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            modelBuilder.Entity<Dip_RapportoLavoro>()
+              .HasOne(t_padre => t_padre.Az_SubCommessaAttivitaNavigation)
+              .WithMany(t_figlio => t_figlio.Dip_RapportoLavoro)
+              .HasForeignKey(key_esterna => key_esterna.IdAz_SubCommessaAttivita)
+              .OnDelete(DeleteBehavior.NoAction);
+
+
+
             /* Dip_ProfiloOrario */
             modelBuilder.Entity<Dip_ProfiloOrario>()
                 .HasOne(t_padre => t_padre.Dip_RapportoLavoroNavigation)
@@ -379,11 +387,11 @@ namespace nvxapp.server.data.Infrastructure
                 .HasForeignKey(key_esterna => key_esterna.IdAz_Anagrafica)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<Par_Orario>()
-              .HasOne(t_padre => t_padre.Az_SubCommessaAttivita_MonteOreNavigation)
-              .WithMany(t_figlio => t_figlio.Par_Orario)
-              .HasForeignKey(key_esterna => key_esterna.IdAz_SubCommessaAttivita_MonteOre)
-              .OnDelete(DeleteBehavior.Cascade);
+            //modelBuilder.Entity<Par_Orario>()
+            //  .HasOne(t_padre => t_padre.Az_SubCommessaAttivita_MonteOreNavigation)
+            //  .WithMany(t_figlio => t_figlio.Par_Orario)
+            //  .HasForeignKey(key_esterna => key_esterna.IdAz_SubCommessaAttivita_MonteOre)
+            //  .OnDelete(DeleteBehavior.Cascade);
 
 
 
@@ -453,11 +461,11 @@ namespace nvxapp.server.data.Infrastructure
                 .HasForeignKey(key_esterna => key_esterna.IdPar_Orario)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<Par_OrarioIntervalloHH>()
-              .HasOne(t_padre => t_padre.Az_SubCommessaAttivitaNavigation)
-              .WithMany(t_figlio => t_figlio.Par_OrarioIntervalloHH)
-              .HasForeignKey(key_esterna => key_esterna.IdAz_SubCommessaAttivita)
-              .OnDelete(DeleteBehavior.Cascade);
+            //modelBuilder.Entity<Par_OrarioIntervalloHH>()
+            //  .HasOne(t_padre => t_padre.Az_SubCommessaAttivitaNavigation)
+            //  .WithMany(t_figlio => t_figlio.Par_OrarioIntervalloHH)
+            //  .HasForeignKey(key_esterna => key_esterna.IdAz_SubCommessaAttivita)
+            //  .OnDelete(DeleteBehavior.Cascade);
 
 
 

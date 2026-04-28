@@ -20,6 +20,12 @@ namespace nvxapp.server.data.Entities.Tenant
         public DateTime? DataAss { get; set; } // assunzione
         public DateTime? DataLic { get; set; } // lic
 
+        [Required]
+        public required int IdAz_SubCommessaAttivita { get; set; }
+        [ForeignKey("IdAz_SubCommessaAttivita")]
+        public virtual Az_SubCommessaAttivita? Az_SubCommessaAttivitaNavigation { get; set; }
+
+
         public ICollection<Dip_ProfiloOrario>? Dip_ProfiloOrario { get; set; }
         public ICollection<Dip_GG_Richiesta>? Dip_GG_Richiesta { get; set; }
         public ICollection<Dip_GG_Timbratura>? Dip_GG_Timbratura { get; set; }

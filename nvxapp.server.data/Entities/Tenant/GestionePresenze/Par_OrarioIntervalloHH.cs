@@ -16,10 +16,10 @@ namespace nvxapp.server.data.Entities.Tenant.GestionePresenze
         [ForeignKey("IdPar_Orario")]
         public virtual Par_Orario? Par_OrarioNavigation { get; set; }
 
-        [Required]
-        public required int IdAz_SubCommessaAttivita { get; set; }
-        [ForeignKey("IdAz_SubCommessaAttivita")]
-        public virtual Az_SubCommessaAttivita? Az_SubCommessaAttivitaNavigation { get; set; }
+        //[Required]
+        //public required int IdAz_SubCommessaAttivita { get; set; }
+        //[ForeignKey("IdAz_SubCommessaAttivita")]
+        //public virtual Az_SubCommessaAttivita? Az_SubCommessaAttivitaNavigation { get; set; }
 
 
         public TimeOnly? Dalle { get; set; }

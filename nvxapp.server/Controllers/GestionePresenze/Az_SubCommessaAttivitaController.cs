@@ -55,5 +55,14 @@ namespace nvxapp.server.Controllers
             var res = await _az_SubCommessaAttivitaService.Put4SubCommessa(inModel, false);
             return res;
         }
+
+        //[Authorize]
+        //[HttpPost]
+        //[Route("Get_Az_SubCommessaAttivita_Default")]
+        //public async Task<GenericResult<Get_Az_SubCommessaAttivita_Default_OutModel>> Get_Az_SubCommessaAttivita_Default(GenericRequest<Get_Az_SubCommessaAttivita_Default_InModel> inModel)
+        //{
+        //    var res = await _az_SubCommessaAttivitaService.Get_Az_SubCommessaAttivita_Default(inModel, false);
+        //    return res;
+        //}
     }
 }

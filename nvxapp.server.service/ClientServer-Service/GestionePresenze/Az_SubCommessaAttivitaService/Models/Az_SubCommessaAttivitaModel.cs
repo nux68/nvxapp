@@ -54,6 +54,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
         public string Commessa_Decrizione { get; set; } = string.Empty;
         public Boolean Commessa_Default { get; set; }
 
+        public string Cliente_Descrizione { get; set; } = string.Empty;
+        public Boolean Cliente_Default { get; set; }
+
         public int SubCommessa_Id { get; set; }
         public string SubCommessa_Decrizione { get; set; } = string.Empty;
         public Boolean SubCommessa_Default { get; set; }
@@ -62,6 +65,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
         public string SubCommessaAttivita_Decrizione { get; set; } = string.Empty;
         public Boolean SubCommessaAttivita_Default { get; set; }
         public int SubCommessaAttivita_IdPar_Attivita { get; set; }
+
+        public string SubCommessaAttivita_Par_Attivita_Descrizione { get; set; } = string.Empty;
+
     }
 
     public class Az_SubCommessaAttivita_GetAll_4FullList_InModel { }
@@ -71,5 +77,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
         public List<Az_SubCommessaAttivita_4FullListModel> Az_SubCommessaAttivita { get; set; } = new List<Az_SubCommessaAttivita_4FullListModel>();
     }
 
+
+ 
 
 }

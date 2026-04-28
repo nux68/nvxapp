@@ -13,6 +13,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Rappor
         public int IdDip_Anagrafica { get; set; }
         public DateTime? DataAss { get; set; }
         public DateTime? DataLic { get; set; }
+        public int IdAz_SubCommessaAttivita { get; set; }
     }
 
     public class Dip_RapportoLavoro_Get_InModel

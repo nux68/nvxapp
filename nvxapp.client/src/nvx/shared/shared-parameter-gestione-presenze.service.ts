@@ -31,6 +31,8 @@ import { Par_CausaliInModel, Par_CausaliModel } from '../ClientServer-Service/Ge
 import { ParCausaliService } from '../ClientServer-Service/GestionePresenze/Par_Causali/par-causali.service';
 import { Par_ExportCau_GetAll_InModel, Par_ExportCauModel } from '../ClientServer-Service/GestionePresenze/Par_ExportCau/Models/par-export-cau-model';
 import { ParExportCauService } from '../ClientServer-Service/GestionePresenze/Par_ExportCau/par-export-cau.service';
+import { Az_SubCommessaAttivita_4FullListModel, Az_SubCommessaAttivita_GetAll_4FullList_InModel } from '../ClientServer-Service/GestionePresenze/Az_SubCommessaAttivita/Models/az-subcommessa-attivita-model';
+import { AzSubCommessaAttivitaService } from '../ClientServer-Service/GestionePresenze/Az_SubCommessaAttivita/az-subcommessa-attivita.service';
 
 @Injectable({
   providedIn: 'root'
@@ -56,6 +58,7 @@ export class SharedParameterGestionePresenzeService {
     private parCausaliService: ParCausaliService,
     private parExportCauService: ParExportCauService,
     private parOrarioIntervalloHHService: ParOrarioIntervalloHHService,
+    private azSubCommessaAttivitaService: AzSubCommessaAttivitaService,
     
   ) { }
 
@@ -306,6 +309,26 @@ export class SharedParameterGestionePresenzeService {
           return of(null);
         })),
 
+        
+      this.azSubCommessaAttivitaService.GetAll_4FullList(new GenericRequest<Az_SubCommessaAttivita_GetAll_4FullList_InModel>(Az_SubCommessaAttivita_GetAll_4FullList_InModel)).pipe(
+        tap((result) => {
+          this.Az_SubCommessaAttivita_4Full = result.data.az_SubCommessaAttivita
+          updateProgress(calls)
+        }),
+        retry({
+          count: 20,
+          delay: (error, retryCount) => {
+            console.error(`Errore rilevato, ritento dopo ${retryCount} secondi:`, error);
+            return timer(500);
+          }
+        }),
+        catchError((error) => {
+          console.error(`Errore durante il caricamento di Az_SubCommessaAttivita_4Full:`, error);
+          return of(null);
+        })),
+
+        
+
     );
     return calls;
   }
@@ -516,5 +539,21 @@ export class SharedParameterGestionePresenzeService {
   public get Par_ExportCau$(): Observable<Par_ExportCauModel[] | []> {
     return this._par_ExportCauSubject.asObservable();
   }
+
+  
+  
+  private _az_SubCommessaAttivita_4Full: Az_SubCommessaAttivita_4FullListModel[] | null = [];
+  public get Az_SubCommessaAttivita_4Full(): Az_SubCommessaAttivita_4FullListModel[] | null {
+    return this._az_SubCommessaAttivita_4Full;
+  }
+  public set Az_SubCommessaAttivita_4Full(value: Az_SubCommessaAttivita_4FullListModel[] | null) {
+    this._az_SubCommessaAttivita_4Full = value;
+    this._az_SubCommessaAttivita_4FullSubject.next(value);
+  }
+  private _az_SubCommessaAttivita_4FullSubject = new BehaviorSubject<Az_SubCommessaAttivita_4FullListModel[]>([]);
+  public get Az_SubCommessaAttivita_4Full$(): Observable<Az_SubCommessaAttivita_4FullListModel[] | []> {
+    return this._az_SubCommessaAttivita_4FullSubject.asObservable();
+  }
+  
 
 }

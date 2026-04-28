@@ -21,7 +21,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Orario
         public int? IdCausale_HH_Lav_MonteOre { get; set; }
         public OrarioTimbratureTipo TimbratureTipo { get; set; } = 0;
         public TimeOnly Hh_Teo_MonteOre { get; set; } = new TimeOnly(0, 0);
-        public int? IdAz_SubCommessaAttivita_MonteOre { get; set; }
+        //public int? IdAz_SubCommessaAttivita_MonteOre { get; set; }
     }
 
     public class Par_Orario_GetAllInModel { }

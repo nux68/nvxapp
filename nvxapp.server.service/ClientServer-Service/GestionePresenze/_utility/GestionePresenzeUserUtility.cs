@@ -2,9 +2,11 @@
 using Microsoft.EntityFrameworkCore;
 using nvxapp.server.data.Entities.Tenant;
 using nvxapp.server.data.Entities.Tenant.GestionePresenze;
+using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubCommessaAttivitaService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_AnagraficaService.Models;
-using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_RapportoLavoroService.Models;
+using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Interfaces;
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
@@ -33,7 +35,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
         private readonly IAz_SediRepartoAttivitaRepository _az_SediRepartoAttivitaRepository;
 
         private readonly IAz_SubCommessaSediRepartoRepository _az_SubCommessaSediRepartoRepository;
-
+        private readonly IUserCompanyRepository _userCompanyRepository;
 
 
 
@@ -53,7 +55,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                                            IAz_SubCommessaAttivitaRepository az_SubCommessaAttivitaRepository,
                                            IAz_SediAttivitaRepository az_SediAttivitaRepository,
                                            IAz_SediRepartoAttivitaRepository az_SediRepartoAttivitaRepository,
-                                           IAz_SubCommessaSediRepartoRepository az_SubCommessaSediRepartoRepository
+                                           IAz_SubCommessaSediRepartoRepository az_SubCommessaSediRepartoRepository,
+                                           IUserCompanyRepository userCompanyRepository
                                            )
         {
             _mapper = mapper;
@@ -75,6 +78,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
             _az_SediAttivitaRepository = az_SediAttivitaRepository;
             _az_SediRepartoAttivitaRepository = az_SediRepartoAttivitaRepository;
             _az_SubCommessaSediRepartoRepository = az_SubCommessaSediRepartoRepository;
+            _userCompanyRepository = userCompanyRepository;
+
         }
 
         public async Task<User_DATA_COMB_DipAna_DipRapp> Get_DipAna_DipRapp(string IdAspNetUsers, bool InitIfNotExsist)
@@ -103,12 +108,25 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
             {
                 if (InitIfNotExsist)
                 {
-                    user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro = new Dip_RapportoLavoro
+
+                    var usrC = _userCompanyRepository.FindAll(x => x.IdAspNetUsers == IdAspNetUsers).FirstOrDefault();
+                    if (usrC != null)
                     {
-                        IdDip_Anagrafica = user_DATA_COMB_DipAna_DipRapp.dip_Anagrafica.Id,
-                        DataAss = new DateTime(2025, 1, 1)
-                    };
-                    await _dip_RapportoLavoroRepository.UpsertAsync(user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro);
+                        var res_1 = await Get_Az_SubCommessaAttivita_Default(usrC.IdCompany);
+                        
+                        user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro = new Dip_RapportoLavoro
+                        {
+                            IdDip_Anagrafica = user_DATA_COMB_DipAna_DipRapp.dip_Anagrafica.Id,
+                            DataAss = new DateTime(2025, 1, 1),
+                            IdAz_SubCommessaAttivita = res_1.Az_SubCommessaAttivita.Id
+                        };
+                        await _dip_RapportoLavoroRepository.UpsertAsync(user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro);
+                        //}
+                    }
+
+
+
+
                 }
                 else
                 {
@@ -125,18 +143,18 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
         {
             User_DATA_COMB_DipAna_DipRapp user_DATA_COMB_DipAna_DipRapp = new User_DATA_COMB_DipAna_DipRapp();
 
-           
+
 
             user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro = await _dip_RapportoLavoroRepository.FindAll(x => x.Id == IdDipRapp).FirstOrDefaultAsync();
             if (user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro == null)
             {
-                    throw new Exception("Rapporto lavoro non trovato");
+                throw new Exception("Rapporto lavoro non trovato");
             }
 
             user_DATA_COMB_DipAna_DipRapp.dip_Anagrafica = await _dip_AnagraficaRepository.FindAll(x => x.Id == user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.IdDip_Anagrafica).FirstOrDefaultAsync();
             if (user_DATA_COMB_DipAna_DipRapp.dip_Anagrafica == null)
             {
-                    throw new Exception("Anagrafica non trovata");
+                throw new Exception("Anagrafica non trovata");
             }
 
 
@@ -234,6 +252,194 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
 
             return company_DATA_COMB_AzAna_AzSedi_AzReparto;
         }
+
+
+        public async Task<Get_Az_SubCommessaAttivita_Default_OutModel> Get_Az_SubCommessaAttivita_Default(int IdCompany)
+        {
+            Get_Az_SubCommessaAttivita_Default_OutModel retVal = new Get_Az_SubCommessaAttivita_Default_OutModel();
+
+
+            Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg company_DATA = await this.Get_AzAna_AzSedi_AzReparto_Az_Cfg(IdCompany, true);
+            if (company_DATA != null && company_DATA.az_Anagrafica != null)
+            {
+                int idAz = company_DATA.az_Anagrafica.Id;
+
+                // ?? 1. Cliente default ???????????????????????????????????????????
+                var cliente = (await _az_ClienteRepository.FindAll())
+                    .FirstOrDefault(c => c.IdAz_Anagrafica == idAz && c.Default);
+
+                if (cliente == null)
+                {
+                    cliente = await _az_ClienteRepository.UpsertAsync(new Az_Cliente
+                    {
+                        IdAz_Anagrafica = idAz,
+                        Descrizione = "Default",
+                        Default = true
+                    });
+                }
+
+                // ?? 2. Commessa default ??????????????????????????????????????????
+                var commessa = (await _az_CommessaRepository.FindAll())
+                    .FirstOrDefault(c => c.IdAz_Anagrafica == idAz && c.IdAz_Cliente == cliente.Id && c.Default);
+
+                if (commessa == null)
+                {
+                    commessa = await _az_CommessaRepository.UpsertAsync(new Az_Commessa
+                    {
+                        IdAz_Anagrafica = idAz,
+                        IdAz_Cliente = cliente.Id,
+                        Descrizione = "Default",
+                        Default = true
+                    });
+                }
+
+                // ?? 3. SubCommessa default ???????????????????????????????????????
+                var subCommessa = (await _az_SubCommessaRepository.FindAll())
+                    .FirstOrDefault(s => s.IdAz_Commessa == commessa.Id && s.Default);
+
+                if (subCommessa == null)
+                {
+                    subCommessa = await _az_SubCommessaRepository.UpsertAsync(new Az_SubCommessa
+                    {
+                        IdAz_Commessa = commessa.Id,
+                        Descrizione = "Default",
+                        Default = true,
+                        Data = DateTime.Today,
+                        DataA = DateTime.Today.AddYears(10)
+                    });
+                }
+
+                // ?? 4. Par_Attivita default ??????????????????????????????????????
+                var attivita = (await _par_AttivitaRepository.FindAll())
+                    .FirstOrDefault(a => a.IdAz_Anagrafica == idAz && a.Default);
+
+                if (attivita == null)
+                {
+                    attivita = await _par_AttivitaRepository.UpsertAsync(new Par_Attivita
+                    {
+                        IdAz_Anagrafica = idAz,
+                        Descrizione = "Default",
+                        Default = true
+                    });
+                }
+
+                // ?? 5. Az_SubCommessaAttivita default ????????????????????????????
+                var subCommessaAttivita = (await _az_SubCommessaAttivitaRepository.FindAll())
+                    .FirstOrDefault(a => a.IdAz_SubCommessa == subCommessa.Id && a.IdPar_Attivita == attivita.Id && a.Default);
+
+                if (subCommessaAttivita == null)
+                {
+                    subCommessaAttivita = await _az_SubCommessaAttivitaRepository.UpsertAsync(new Az_SubCommessaAttivita
+                    {
+                        IdAz_SubCommessa = subCommessa.Id,
+                        IdPar_Attivita = attivita.Id,
+                        Default = true
+                    });
+                }
+
+                retVal.Az_SubCommessaAttivita = _mapper.Map<Az_SubCommessaAttivitaModel>(subCommessaAttivita);
+            }
+
+
+            return retVal;
+        }
+
+
+        // public virtual async Task<GenericResult<Get_Az_SubCommessaAttivita_Default_OutModel>> Get_Az_SubCommessaAttivita_Default(GenericRequest<Get_Az_SubCommessaAttivita_Default_InModel> model, bool isSubProcess)
+        //{
+        //    return await ExecuteAction(model, async () =>
+        //    {
+        //        Get_Az_SubCommessaAttivita_Default_OutModel retVal = new Get_Az_SubCommessaAttivita_Default_OutModel();
+
+        //        int IdCompany;
+        //        int.TryParse(this.CurrentCompany, out IdCompany);
+
+        //        Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg company_DATA = await _gestionePresenzeUserUtility.Get_AzAna_AzSedi_AzReparto_Az_Cfg(IdCompany, true);
+        //        if (company_DATA != null && company_DATA.az_Anagrafica != null)
+        //        {
+        //            int idAz = company_DATA.az_Anagrafica.Id;
+
+        //            // ?? 1. Cliente default ???????????????????????????????????????????
+        //            var cliente = (await _az_ClienteRepository.FindAll())
+        //                .FirstOrDefault(c => c.IdAz_Anagrafica == idAz && c.Default);
+
+        //            if (cliente == null)
+        //            {
+        //                cliente = await _az_ClienteRepository.UpsertAsync(new Az_Cliente
+        //                {
+        //                    IdAz_Anagrafica = idAz,
+        //                    Descrizione     = "Default",
+        //                    Default         = true
+        //                });
+        //            }
+
+        //            // ?? 2. Commessa default ??????????????????????????????????????????
+        //            var commessa = (await _az_CommessaRepository.FindAll())
+        //                .FirstOrDefault(c => c.IdAz_Anagrafica == idAz && c.IdAz_Cliente == cliente.Id && c.Default);
+
+        //            if (commessa == null)
+        //            {
+        //                commessa = await _az_CommessaRepository.UpsertAsync(new Az_Commessa
+        //                {
+        //                    IdAz_Anagrafica = idAz,
+        //                    IdAz_Cliente    = cliente.Id,
+        //                    Descrizione     = "Default",
+        //                    Default         = true
+        //                });
+        //            }
+
+        //            // ?? 3. SubCommessa default ???????????????????????????????????????
+        //            var subCommessa = (await _az_SubCommessaRepository.FindAll())
+        //                .FirstOrDefault(s => s.IdAz_Commessa == commessa.Id && s.Default);
+
+        //            if (subCommessa == null)
+        //            {
+        //                subCommessa = await _az_SubCommessaRepository.UpsertAsync(new Az_SubCommessa
+        //                {
+        //                    IdAz_Commessa = commessa.Id,
+        //                    Descrizione   = "Default",
+        //                    Default       = true,
+        //                    Data          = DateTime.Today,
+        //                    DataA         = DateTime.Today.AddYears(10)
+        //                });
+        //            }
+
+        //            // ?? 4. Par_Attivita default ??????????????????????????????????????
+        //            var attivita = (await _par_AttivitaRepository.FindAll())
+        //                .FirstOrDefault(a => a.IdAz_Anagrafica == idAz && a.Default);
+
+        //            if (attivita == null)
+        //            {
+        //                attivita = await _par_AttivitaRepository.UpsertAsync(new Par_Attivita
+        //                {
+        //                    IdAz_Anagrafica = idAz,
+        //                    Descrizione     = "Default",
+        //                    Default         = true
+        //                });
+        //            }
+
+        //            // ?? 5. Az_SubCommessaAttivita default ????????????????????????????
+        //            var subCommessaAttivita = (await _az_SubCommessaAttivitaRepository.FindAll())
+        //                .FirstOrDefault(a => a.IdAz_SubCommessa == subCommessa.Id && a.IdPar_Attivita == attivita.Id && a.Default);
+
+        //            if (subCommessaAttivita == null)
+        //            {
+        //                subCommessaAttivita = await _az_SubCommessaAttivitaRepository.UpsertAsync(new Az_SubCommessaAttivita
+        //                {
+        //                    IdAz_SubCommessa = subCommessa.Id,
+        //                    IdPar_Attivita   = attivita.Id,
+        //                    Default          = true
+        //                });
+        //            }
+
+        //            retVal.Az_SubCommessaAttivita = _mapper.Map<Az_SubCommessaAttivitaModel>(subCommessaAttivita);
+        //        }
+
+        //        await Task.Delay(DelayAsyncMethod);
+        //        return retVal;
+        //    }, isSubProcess);
+        //}
+
         //////
 
         public async Task<List<Dip_AnagraficaModel>> GetAnagraficheByUsersId(List<string> usersId)
@@ -244,7 +450,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
 
             var dipanaModel = _mapper.Map<List<Dip_AnagraficaModel>>(dipana);
 
-            return  dipanaModel;
+            return dipanaModel;
         }
 
         private async Task InitDataCompany(Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg company_DATA_COMB_AzAna_AzSedi_AzReparto)
@@ -281,7 +487,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                         Default = true,
                         Descrizione = "Default",
                     });
-                    
+
 
                     var az_Commessa = await _az_CommessaRepository.UpsertAsync(new Az_Commessa()
                     {
@@ -303,8 +509,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                         {
                             var az_SediRepartoAttivita = await _az_SediRepartoAttivitaRepository.UpsertAsync(new Az_SediRepartoAttivita()
                             {
-                                 IdPar_Attivita = az_SediAttivita.IdPar_Attivita,
-                                 IdAz_SediReparto = company_DATA_COMB_AzAna_AzSedi_AzReparto.az_SediReparto.Id
+                                IdPar_Attivita = az_SediAttivita.IdPar_Attivita,
+                                IdAz_SediReparto = company_DATA_COMB_AzAna_AzSedi_AzReparto.az_SediReparto.Id
                             });
 
 
@@ -313,8 +519,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                                 IdAz_Commessa = az_Commessa.Id,
                                 Default = true,
                                 Descrizione = "Default",
-                                Data= DateTime.Today,
-                                DataA= new DateTime(DateTime.Today.Year,12,31)
+                                Data = DateTime.Today,
+                                DataA = new DateTime(DateTime.Today.Year, 12, 31)
                             });
 
                             if (az_SubCommessa != null)
@@ -367,5 +573,13 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
         Task<User_DATA_COMB_DipAna_DipRapp> Get_DipRapp_DipAna(int IdDipRapp);
         Task<Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg> Get_AzAna_AzSedi_AzReparto_Az_Cfg(int IdCompany, bool InitIfNotExsist);
         Task<List<Dip_AnagraficaModel>> GetAnagraficheByUsersId(List<string> usersId);
+        Task<Get_Az_SubCommessaAttivita_Default_OutModel> Get_Az_SubCommessaAttivita_Default(int IdCompany);
+    }
+
+
+
+    public class Get_Az_SubCommessaAttivita_Default_OutModel 
+    {
+        public Az_SubCommessaAttivitaModel Az_SubCommessaAttivita { get; set; } = new Az_SubCommessaAttivitaModel();
     }
 }

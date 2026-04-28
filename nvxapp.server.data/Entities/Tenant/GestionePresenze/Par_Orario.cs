@@ -33,9 +33,9 @@ namespace nvxapp.server.data.Entities.Tenant.GestionePresenze
         public virtual Par_Causali? Causale_HH_Lav_MonteOreNavigation { get; set; }
 
 
-        public int? IdAz_SubCommessaAttivita_MonteOre { get; set; }
-        [ForeignKey("IdAz_SubCommessaAttivita_MonteOre")]
-        public virtual Az_SubCommessaAttivita? Az_SubCommessaAttivita_MonteOreNavigation { get; set; }
+        //public int? IdAz_SubCommessaAttivita_MonteOre { get; set; }
+        //[ForeignKey("IdAz_SubCommessaAttivita_MonteOre")]
+        //public virtual Az_SubCommessaAttivita? Az_SubCommessaAttivita_MonteOreNavigation { get; set; }
 
 
 

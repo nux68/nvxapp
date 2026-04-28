@@ -19,10 +19,11 @@ namespace nvxapp.server.data.Entities.Tenant
         public Boolean Default { get; set; }
 
 
-        public ICollection<Dip_GG_Timbratura>? Dip_GG_Timbratura { get; set; }
 
+        public ICollection<Dip_GG_Timbratura>? Dip_GG_Timbratura { get; set; }
         public ICollection<Par_Orario>? Par_Orario { get; set; }
         public ICollection<Par_OrarioIntervalloHH>? Par_OrarioIntervalloHH { get; set; }
+        public ICollection<Dip_RapportoLavoro>? Dip_RapportoLavoro { get; set; }
 
     }
 }
