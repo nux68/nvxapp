@@ -9,6 +9,8 @@ import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-ca
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { catchError, map, Observable, of } from 'rxjs';
 import { Par_AttivitaModel } from '../../../ClientServer-Service/GestionePresenze/Par_Attivita/Models/par-attivita-model';
+import { Az_SubCommessaAttivita_4FullListModel } from '../../../ClientServer-Service/GestionePresenze/Az_SubCommessaAttivita/Models/az-subcommessa-attivita-model';
+import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
 
 @Component({
   selector: 'app-time-clock-user-page',
@@ -27,12 +29,13 @@ export class TimeClockUserPageComponent extends BasePageConfirmCancelComponent<D
   // true quando l'utente ha modificato manualmente il picker → il timer NON sovrascrive
   private userHasEdited: boolean = false;
   public par_AttivitaList: Par_AttivitaModel[] = []
-
+  public az_SubCommessaAttivita_4FullList: Az_SubCommessaAttivita_4FullListModel[] = [];
 
   constructor(
     protected override navCtrl: NavController,
     protected override userInterfaceService: UserInterfaceService,
     protected override fb: FormBuilder,
+    private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
     private dipGGTimbraturaService: DipGGTimbraturaService
   ) {
     super(navCtrl, userInterfaceService, fb);
@@ -43,11 +46,14 @@ export class TimeClockUserPageComponent extends BasePageConfirmCancelComponent<D
   get EditForm(): FormGroup {
     return this.fb.group({
       currentDate: [null, [Validators.required]],
-      idPar_Attivita: [null, [Validators.required]],
+      idPar_Attivita: [null, [Validators.required, Validators.min(1)]],
     });
   }
 
   LoadData = (): Observable<Dip_GG_Timbratura_StampPrepare_OutModel | null> => {
+
+    this.az_SubCommessaAttivita_4FullList = this.sharedParameterGestionePresenzeService.Az_SubCommessaAttivita_4Full;
+
     const request = new GenericRequest<Dip_GG_Timbratura_StampPrepare_InModel>(Dip_GG_Timbratura_StampPrepare_InModel);
     return this.dipGGTimbraturaService.PrepareStamp(request).pipe(
       map(res => {
@@ -69,6 +75,7 @@ export class TimeClockUserPageComponent extends BasePageConfirmCancelComponent<D
     const request = new GenericRequest<Dip_GG_Timbratura_Stamp_InModel>(Dip_GG_Timbratura_Stamp_InModel);
     request.data.dateStamp = this.toIsoLocal(stampDate);
     request.data.excludeRicalc = false;
+    request.data.idAz_SubCommessaAttivita = this._editForm.get('idPar_Attivita')?.value;
 
     return this.dipGGTimbraturaService.Stamp(request).pipe(
       map(() => {

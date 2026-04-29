@@ -8,6 +8,7 @@ import { Observable, of } from 'rxjs';
 import { StringHelperService } from '../../../../Utility/infrastructure/string-helper.service';
 import { Par_CausaliModel } from '../../../../ClientServer-Service/GestionePresenze/Par_Causali/Models/par-causali-model';
 import { Dip_GG_TimbraturaModel, TipoTimbratura } from '../../../../ClientServer-Service/GestionePresenze/Dip_GG_Timbratura/Models/dip-gg-timbratura-model';
+import { Az_SubCommessaAttivita_4FullListModel } from '../../../../ClientServer-Service/GestionePresenze/Az_SubCommessaAttivita/Models/az-subcommessa-attivita-model';
 
 
 
@@ -22,8 +23,9 @@ export class EditDipGGTimbraturaDialogComponent extends BaseDialogConfirmCancelC
   @Input() dip_GG_Timbratura: Dip_GG_TimbraturaModel;
 
   TipoTimbratura =  TipoTimbratura;
-  public _par_CausaliList: Par_CausaliModel[] = [];
-  
+  //public _par_CausaliList: Par_CausaliModel[] = [];
+  public az_SubCommessaAttivita_4FullList: Az_SubCommessaAttivita_4FullListModel[] = [];
+
   public dateTime: string;
   public formattedDate: string;
   public formattedTime: string;
@@ -42,7 +44,8 @@ export class EditDipGGTimbraturaDialogComponent extends BaseDialogConfirmCancelC
   override ionViewWillEnter() {
     super.ionViewWillEnter();
     this.originalId = this.dip_GG_Timbratura.id;
-    this._par_CausaliList = this.sharedParameterGestionePresenzeService.Par_Causali;
+    //this._par_CausaliList = this.sharedParameterGestionePresenzeService.Par_Causali;
+    this.az_SubCommessaAttivita_4FullList = this.sharedParameterGestionePresenzeService.Az_SubCommessaAttivita_4Full;
   }
 
   get Title(): string { return "Timbratura"; }
@@ -54,6 +57,7 @@ export class EditDipGGTimbraturaDialogComponent extends BaseDialogConfirmCancelC
       timbraturaOriginale: [null, [Validators.required]],
       timbraturaArrotondata: [null, [Validators.required]],
       giornoCompetenza: [null, [Validators.required]],
+      idAz_SubCommessaAttivita: [null, [Validators.required, Validators.min(1)]],
     });
   }
 

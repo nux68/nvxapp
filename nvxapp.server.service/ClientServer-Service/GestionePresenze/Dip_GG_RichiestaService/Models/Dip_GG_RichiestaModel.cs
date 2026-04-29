@@ -43,6 +43,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
     public class Dip_GG_Richiesta_Body_Timbratura
     {
         public required string hhmm { get; set; } = string.Empty;
+        public required int IdAz_SubCommessaAttivita { get; set; }
     }
     public class Dip_GG_Richiesta_Body_Giustificativo
     {

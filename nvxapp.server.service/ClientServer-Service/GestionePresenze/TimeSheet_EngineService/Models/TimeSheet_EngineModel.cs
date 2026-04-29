@@ -65,6 +65,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
         public int IdDip_RapportoLavoro { get; set; }
         public DateTime Data { get; set; }
         public int IdPar_ProfiloOrario { get; set; }
+        public  int IdAz_SubCommessaAttivita { get; set; }
+
         // righe orario del giorno ordinate per ZOrder (1=base, 2+=override)
         public List<Dip_ProfiloOrario_DaySlot_GG> Orari { get; set; } = new List<Dip_ProfiloOrario_DaySlot_GG>();
     }

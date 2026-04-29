@@ -698,7 +698,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                 IdDip_RapportoLavoro = rapporto.Id,
                                 Data = giorno,
                                 IdPar_ProfiloOrario = profilo.IdPar_ProfiloOrario!.Value,
-                                Orari = orariDelGiorno
+                                Orari = orariDelGiorno,
+                                IdAz_SubCommessaAttivita = rapporto.IdAz_SubCommessaAttivita
                             });
                         }
                     }
@@ -916,7 +917,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
             if (timeSheet_CalculateModel.Genera_Timbrature_Mancanti)
             {
-                GeneraTimbratureMancanti(AllData, rapporto_calc.Id, giorno);
+                GeneraTimbratureMancanti(AllData, rapporto_calc.Id,rapporto_calc.IdAz_SubCommessaAttivita, giorno);
             }
 
             GG_ResultStato Calcolo1Result = GG_ResultStato.OK;
@@ -1394,7 +1395,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
             return retVal;
 
         }
-        private void GeneraTimbratureMancanti(Timesheet_AllData_OutModel allData, int IdDip_RapportoLavoro, DateTime day)
+        private void GeneraTimbratureMancanti(Timesheet_AllData_OutModel allData, int IdDip_RapportoLavoro,int IdAz_SubCommessaAttivita, DateTime day)
         {
             var orariSchema = allData.OrariSchema_4User_OutModel;
 
@@ -1480,7 +1481,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                     foreach (var coppia in coppieTMP.Where(c => !c.Check && c.HH != null))
                     {
                         var entity = new Dip_GG_Timbratura { IdDip_RapportoLavoro = IdDip_RapportoLavoro,
-                                                             IdAz_SubCommessaAttivita=0 //nvx 27/04/2026
+                                                             IdAz_SubCommessaAttivita=IdAz_SubCommessaAttivita //nvx 27/04/2026
                                                            };
                         var vm = _mapper.Map<Dip_GG_TimbraturaModel>(entity);
                         vm.Timbratura = day.Date + (coppia.HH != null ? coppia.HH.Value : new TimeOnly()).ToTimeSpan();
@@ -1498,7 +1499,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
             {
                 if (timbratureEsistenti.Count == 0)
                 {
-                    var entity = new Dip_GG_Timbratura { IdDip_RapportoLavoro = IdDip_RapportoLavoro };
+                    var entity = new Dip_GG_Timbratura { IdDip_RapportoLavoro = IdDip_RapportoLavoro, IdAz_SubCommessaAttivita=IdAz_SubCommessaAttivita };
                     var vm = _mapper.Map<Dip_GG_TimbraturaModel>(entity);
                     vm.Timbratura = day.Date + (parOrario.Hh_Teo_MonteOre).ToTimeSpan();
                     vm.TimbraturaOriginale = day.Date + (parOrario.Hh_Teo_MonteOre).ToTimeSpan();

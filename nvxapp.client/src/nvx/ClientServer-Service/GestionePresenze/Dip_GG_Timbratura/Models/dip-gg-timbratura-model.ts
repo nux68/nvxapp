@@ -43,6 +43,7 @@ export class Dip_GG_Timbratura_GetAll_OutModel extends ModelResult {
 export class Dip_GG_Timbratura_Stamp_InModel {
   public dateStamp!: string;
   public excludeRicalc: boolean;
+  public idAz_SubCommessaAttivita: number;
 }
 export class Dip_GG_Timbratura_Stamp_OutModel extends ModelResult {
 }

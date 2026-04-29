@@ -632,50 +632,62 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
         this.TimeSheetEngineCallerDialog_Open(dal, al);
       }
 
-      /*AGGIUNGI CAUSALI*/
-      if (event?.detail?.data?.action === actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Day_Add_Causale )
-      {
-        const request: GenericRequest<Dip_GG_CausaliGetInModel> = new GenericRequest<Dip_GG_CausaliGetInModel>(Dip_GG_CausaliGetInModel);
-        request.data.id = 0;
-        
-        request.data.data = this.datePipe.transform(selectedDay.date, "yyyy-MM-dd'T'HH:mm:ss");
-        request.data.idDip_RapportoLavoro = this.timeSheetService.get_IdDip_RapportoLavoro(this.currentMonth, this.currUserId, new Date(request.data.data));
 
-        this.dipGGCausaliService.Dip_GG_Causali_Get(request).subscribe(res => {
-          this.handleButtonModificaCausaleClick(res.data.dip_GG_Causali);
-        });
+      var idDip_RapportoLavoro = this.timeSheetService.get_IdDip_RapportoLavoro(this.currentMonth, this.currUserId, selectedDay.date);
+      if (idDip_RapportoLavoro == 0) {
+        this.collectionDialogService.ConfirmCancelDialog(`Nessu rapporto di lavoro attivo per il ${this.datePipe.transform(selectedDay.date, "dd-MM-yyyy")}`);
+      }
+      else {
+
+        /*AGGIUNGI CAUSALI*/
+        if (event?.detail?.data?.action === actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Day_Add_Causale) {
+          const request: GenericRequest<Dip_GG_CausaliGetInModel> = new GenericRequest<Dip_GG_CausaliGetInModel>(Dip_GG_CausaliGetInModel);
+          request.data.id = 0;
+
+          request.data.data = this.datePipe.transform(selectedDay.date, "yyyy-MM-dd'T'HH:mm:ss");
+          request.data.idDip_RapportoLavoro = idDip_RapportoLavoro;
+
+          this.dipGGCausaliService.Dip_GG_Causali_Get(request).subscribe(res => {
+            this.handleButtonModificaCausaleClick(res.data.dip_GG_Causali);
+          });
+
+
+        }
+
+        /*AGGIUNGI TIMBRATURE*/
+        if (event?.detail?.data?.action === actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Day_Add_Timbratura) {
+          const request: GenericRequest<Dip_GG_TimbraturaGetInModel> = new GenericRequest<Dip_GG_TimbraturaGetInModel>(Dip_GG_TimbraturaGetInModel);
+          request.data.id = 0;
+
+          request.data.data = this.datePipe.transform(selectedDay.date, "yyyy-MM-dd'T'HH:mm:ss");
+          request.data.idDip_RapportoLavoro = idDip_RapportoLavoro;
+          
+          this.dipGGTimbraturaService.Dip_GG_Timbratura_Get(request).subscribe(res => {
+            this.handleButtonModificaTimbraturaClick(res.data.dip_GG_Timbratura);
+          });
+
+        }
+
+        /*AGGIUNGI GIUSTIFICATIVO*/
+        if (event?.detail?.data?.action === actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Day_Add_Giustificativo) {
+          const request: GenericRequest<Dip_GG_GiustificativiGetInModel> = new GenericRequest<Dip_GG_GiustificativiGetInModel>(Dip_GG_GiustificativiGetInModel);
+          request.data.id = 0;
+
+          request.data.data = this.datePipe.transform(selectedDay.date, "yyyy-MM-dd'T'HH:mm:ss");
+          request.data.idDip_RapportoLavoro = idDip_RapportoLavoro;
+          
+          this.dipGGGiustificativiService.Dip_GG_Giustificativi_Get(request).subscribe(res => {
+            this.handleButtonModificaGiustificativoClick(res.data.dip_GG_Giustificativi);
+          });
+
+        }
 
 
       }
 
-      /*AGGIUNGI TIMBRATURE*/
-      if (event?.detail?.data?.action === actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Day_Add_Timbratura)
-      {
-        const request: GenericRequest<Dip_GG_TimbraturaGetInModel> = new GenericRequest<Dip_GG_TimbraturaGetInModel>(Dip_GG_TimbraturaGetInModel);
-        request.data.id = 0;
-        
-        request.data.data = this.datePipe.transform(selectedDay.date, "yyyy-MM-dd'T'HH:mm:ss");
-        request.data.idDip_RapportoLavoro = this.timeSheetService.get_IdDip_RapportoLavoro(this.currentMonth,this.currUserId, new Date(request.data.data));
-        
-        this.dipGGTimbraturaService.Dip_GG_Timbratura_Get(request).subscribe(res => {
-          this.handleButtonModificaTimbraturaClick(res.data.dip_GG_Timbratura);
-        });
 
-      }
 
-      /*AGGIUNGI GIUSTIFICATIVO*/
-      if (event?.detail?.data?.action === actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Day_Add_Giustificativo) {
-        const request: GenericRequest<Dip_GG_GiustificativiGetInModel> = new GenericRequest<Dip_GG_GiustificativiGetInModel>(Dip_GG_GiustificativiGetInModel);
-        request.data.id = 0;
-
-        request.data.data = this.datePipe.transform(selectedDay.date, "yyyy-MM-dd'T'HH:mm:ss");
-        request.data.idDip_RapportoLavoro = this.timeSheetService.get_IdDip_RapportoLavoro(this.currentMonth, this.currUserId, new Date(request.data.data));
-
-        this.dipGGGiustificativiService.Dip_GG_Giustificativi_Get(request).subscribe(res => {
-          this.handleButtonModificaGiustificativoClick(res.data.dip_GG_Giustificativi);
-        });
-
-      }
+      
 
       
 
@@ -699,9 +711,15 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
         request.data.data = this.datePipe.transform(causale.data,"yyyy-MM-dd'T'HH:mm:ss");
         request.data.idDip_RapportoLavoro = this.timeSheetService.get_IdDip_RapportoLavoro(this.currentMonth,this.currUserId, new Date(request.data.data));
 
-        this.dipGGCausaliService.Dip_GG_Causali_Get(request).subscribe(res => {
-          this.handleButtonModificaCausaleClick(res.data.dip_GG_Causali);
-        });
+        if (request.data.idDip_RapportoLavoro == 0) {
+          this.collectionDialogService.ConfirmCancelDialog(`Nessu rapporto di lavoro attivo per il ${request.data.data}`);
+        }
+        else {
+          this.dipGGCausaliService.Dip_GG_Causali_Get(request).subscribe(res => {
+            this.handleButtonModificaCausaleClick(res.data.dip_GG_Causali);
+          });
+        }
+        
 
         
       }

@@ -33,6 +33,7 @@ export class Dip_GG_Richiesta_Stato_Cronology {
 }
 export class Dip_GG_Richiesta_Body_Timbratura {
   hhmm!: string;
+  idAz_SubCommessaAttivita!: number;
 }
 export class Dip_GG_Richiesta_Body_Giustificativo {
   hhmm!: string;

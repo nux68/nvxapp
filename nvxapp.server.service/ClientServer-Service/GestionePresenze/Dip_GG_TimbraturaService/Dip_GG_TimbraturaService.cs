@@ -158,7 +158,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
                         GiornoCompetenza = finalDate.Date,
                         TimbraturaTipo = TipoTimbratura.SenzaVerso,
                         RichiestaStato = StatoRichiesta.Diretta,
-                        IdAz_SubCommessaAttivita = 0 //nvx 27/04/2026
+                        IdAz_SubCommessaAttivita = model.Data.IdAz_SubCommessaAttivita //nvx 27/04/2026
                     };
                     dip_GG_Timbratura = await _dip_GG_TimbraturaRepository.UpsertAsync(dip_GG_Timbratura);
 

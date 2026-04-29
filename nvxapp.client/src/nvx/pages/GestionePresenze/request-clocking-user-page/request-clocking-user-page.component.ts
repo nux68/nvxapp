@@ -13,6 +13,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DipGGTimbraturaService } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Timbratura/dip-gg-timbratura.service';
 import { catchError, map, Observable, of } from 'rxjs';
 import { Par_AttivitaModel } from '../../../ClientServer-Service/GestionePresenze/Par_Attivita/Models/par-attivita-model';
+import { Az_SubCommessaAttivita_4FullListModel } from '../../../ClientServer-Service/GestionePresenze/Az_SubCommessaAttivita/Models/az-subcommessa-attivita-model';
+import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
 
 @Component({
   selector: 'app-request-clocking-user-page',
@@ -31,6 +33,7 @@ export class RequestClockingUserPageComponent extends BasePageConfirmCancelCompo
   
   public notes: string;
   public par_AttivitaList: Par_AttivitaModel[] = []
+  public az_SubCommessaAttivita_4FullList: Az_SubCommessaAttivita_4FullListModel[] = [];
 
   constructor(
     protected override navCtrl: NavController,
@@ -39,6 +42,7 @@ export class RequestClockingUserPageComponent extends BasePageConfirmCancelCompo
     private dipGGTimbraturaService: DipGGTimbraturaService,
     private stringHelperService: StringHelperService,
     private dipGGRichiestaService: DipGGRichiestaService,
+    private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
     private refresherService: RefresherService
   ) {
     super(navCtrl, userInterfaceService, fb);
@@ -49,7 +53,7 @@ export class RequestClockingUserPageComponent extends BasePageConfirmCancelCompo
   get EditForm(): FormGroup {
     return this.fb.group({
       currentDate: [null, [Validators.required]],
-      idPar_Attivita: [null, [Validators.required]],
+      idPar_Attivita: [null, [Validators.required, Validators.min(1)]],
     });
   }
 
@@ -68,6 +72,9 @@ export class RequestClockingUserPageComponent extends BasePageConfirmCancelCompo
   }
 
   LoadData = (): Observable<Dip_GG_Timbratura_StampPrepare_OutModel | null> => {
+
+    this.az_SubCommessaAttivita_4FullList = this.sharedParameterGestionePresenzeService.Az_SubCommessaAttivita_4Full;
+
     const request = new GenericRequest<Dip_GG_Timbratura_StampPrepare_InModel>(Dip_GG_Timbratura_StampPrepare_InModel);
     return this.dipGGTimbraturaService.PrepareStamp(request).pipe(
       map(res => {
@@ -98,6 +105,8 @@ export class RequestClockingUserPageComponent extends BasePageConfirmCancelCompo
 
     let dip_GG_Richiesta_Body_Timbratura: Dip_GG_Richiesta_Body_Timbratura = new Dip_GG_Richiesta_Body_Timbratura();
     dip_GG_Richiesta_Body_Timbratura.hhmm = this.formattedTime;
+    dip_GG_Richiesta_Body_Timbratura.idAz_SubCommessaAttivita = this._editForm.get('idPar_Attivita')?.value;
+    
 
     request_rich.data.dip_GG_Richiesta.id = 0;
     request_rich.data.dip_GG_Richiesta.idDip_RapportoLavoro = 0;

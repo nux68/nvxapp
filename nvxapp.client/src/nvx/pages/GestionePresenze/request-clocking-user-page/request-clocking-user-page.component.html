@@ -30,16 +30,28 @@
             </ng-template>
           </ion-modal>
 
+          <!--<ion-item>
+    <ion-label position="floating">Attivita </ion-label>
+    <ion-select formControlName="idPar_Attivita" placeholder="Seleziona l attivita">
+      <ion-select-option *ngFor="let att of par_AttivitaList" [value]="att.id">
+        {{ att.descrizione }}
+      </ion-select-option>
+    </ion-select>
+  </ion-item>
+  <ion-note color="danger" *ngIf="_editForm.get('idPar_Attivita')?.hasError('required') && _editForm.get('idPar_Attivita')?.touched">
+    L attività è obbligatoria.
+  </ion-note>-->
+
           <ion-item>
-            <ion-label position="floating">Attivita </ion-label>
+            <ion-label position="floating">Commessa Attivita</ion-label>
             <ion-select formControlName="idPar_Attivita" placeholder="Seleziona l attivita">
-              <ion-select-option *ngFor="let att of par_AttivitaList" [value]="att.id">
-                {{ att.descrizione }}
+              <ion-select-option *ngFor="let attivita of az_SubCommessaAttivita_4FullList" [value]="attivita.subCommessaAttivita_Id">
+                {{ attivita.cliente_Descrizione }} {{ attivita.commessa_Decrizione }} {{ attivita.subCommessa_Decrizione }} {{ attivita.subCommessaAttivita_Par_Attivita_Descrizione }}
               </ion-select-option>
             </ion-select>
           </ion-item>
           <ion-note color="danger" *ngIf="_editForm.get('idPar_Attivita')?.hasError('required') && _editForm.get('idPar_Attivita')?.touched">
-            L attività è obbligatoria.
+            L attivita è obbligatoria.
           </ion-note>
 
 

@@ -48,6 +48,7 @@ export class Dip_ProfiloOrario_DaySlot {
   idDip_RapportoLavoro: number;
   data: string;               // ISO date string
   idPar_ProfiloOrario: number;
+  idAz_SubCommessaAttivita: number;
   orari: Dip_ProfiloOrario_DaySlot_GG[] = [];
 }
 

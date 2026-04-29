@@ -71,6 +71,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
     {
         public Boolean ExcludeRicalc { get; set; }
         public string DateStamp { get; set; } = string.Empty;
+        public int IdAz_SubCommessaAttivita { get; set; }
     }
     public class Dip_GG_Timbratura_Stamp_OutModel : ModelResult
     {
