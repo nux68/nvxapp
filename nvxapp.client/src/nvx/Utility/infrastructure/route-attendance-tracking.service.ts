@@ -24,6 +24,8 @@ export class RouteAttendanceTrackingService {
       //power admin
       { path: 'exportcausali', loadChildren: () => import('../../pages/GestionePresenze/export-causali-page/export-causali-page.module').then(m => m.TimeSheetPowerAdminPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
       { path: 'activitystatistics', loadChildren: () => import('../../pages/GestionePresenze/activity-statistics-page/activity-statistics-page.module').then(m => m.ActivityStatisticsPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
+      { path: 'presentstaff', loadChildren: () => import('../../pages/GestionePresenze/present-staff-page/present-staff-page.module').then(m => m.PresentStaffPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
+      { path: 'vacationplan', loadChildren: () => import('../../pages/GestionePresenze/vacation-plan-page/vacation-plan-page.module').then(m => m.VacationPlanPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
 
       { path: 'poweradmintimesheet', loadChildren: () => import('../../pages/GestionePresenze/time-sheet-power-admin-page/time-sheet-power-admin-page.module').then(m => m.TimeSheetPowerAdminPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
       { path: 'justificationlist', loadChildren: () => import('../../pages/GestionePresenze/justification-list-page/justification-list-page.module').then(m => m.JustificationListPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
