@@ -20,59 +20,44 @@
                                        (currUserIdChange)="onCurrentUserChanged($event)">
       </app-sedi-reparto-user-selection>
 
-      <form [formGroup]="_editForm">
+      <form [formGroup]="_editForm"></form>
 
-        <!--<ion-row>
-          <ion-col>
-            <ion-item>
-              <ion-label position="floating">Dal</ion-label>
-              <ion-datetime-button class="datetime-button-with-label" datetime="staff-dal-modal"></ion-datetime-button>
-              <ion-modal [keepContentsMounted]="true">
-                <ng-template>
-                  <ion-datetime id="staff-dal-modal"
-                                formControlName="dal"
-                                presentation="date"
-                                [firstDayOfWeek]="1"
-                                [showDefaultButtons]="true"
-                                doneText="OK"
-                                cancelText="Annulla">
-                  </ion-datetime>
-                </ng-template>
-              </ion-modal>
-            </ion-item>
+      <ion-grid *ngIf="daySlots!=null">
+
+        <ion-row *ngFor="let item of getAll() let indexRow4Color = index"
+                 [class.nvx-row-odd]="indexRow4Color % 2 !== 0"
+                 [class.nvx-row-even]="indexRow4Color % 2 === 0"
+                 class="nvx-ion-row-4table nvx-row-hover">
+
+          <ion-col size="1">
+
+            <ion-icon [name]="get_StatoDay_icon(item)"
+                      [ngStyle]="{
+                         'color': get_StatoDay_color(item),
+                         'border-radius': '50%',
+                         'width': '15px',
+                         'height': '15px',
+                         'margin-right': '4px'
+                       }">
+            </ion-icon>
+
+            <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
+              {{ item.idAspNetUsers | idAspNetUsersToCognome }}
+            </ion-label>
           </ion-col>
-          <ion-col>
-            <ion-item>
-              <ion-label position="floating">Al</ion-label>
-              <ion-datetime-button class="datetime-button-with-label" datetime="staff-al-modal"></ion-datetime-button>
-              <ion-modal [keepContentsMounted]="true">
-                <ng-template>
-                  <ion-datetime id="staff-al-modal"
-                                formControlName="al"
-                                presentation="date"
-                                [firstDayOfWeek]="1"
-                                [showDefaultButtons]="true"
-                                doneText="OK"
-                                cancelText="Annulla">
-                  </ion-datetime>
-                </ng-template>
-              </ion-modal>
-            </ion-item>
+
+          <ion-col size="1">
+            <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
+                {{ item.idAspNetUsers | idAspNetUsersToNome }}
+            </ion-label>
           </ion-col>
-        </ion-row>-->
 
-        <!--<ion-row class="ion-align-items-center">
-          <ion-col>
-            <br />
-            <ion-button size="small" fill="outline" shape="round" (click)="btnTask.event(null)" color="{{btnTask.color}}" [disabled]="btnTask.disabled">
-              <ion-icon name="{{btnTask.image}}"></ion-icon>
-              &nbsp;{{btnTask.text}}
-            </ion-button>
-          </ion-col>
-        </ion-row>-->
 
-      </form>
 
+        </ion-row>
+
+
+      </ion-grid>
     </ion-card-content>
   </ion-card>
 

@@ -5,6 +5,9 @@ import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructur
 import { Observable, of } from 'rxjs';
 import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
 import { NavController } from '@ionic/angular';
+import { PresentStaffService } from '../../../ClientServer-Service/GestionePresenze/PresentStaffService/present-staff.service';
+import { PresentStaff_DaySlot, PresentStaff_GetInModel } from '../../../ClientServer-Service/GestionePresenze/PresentStaffService/Models/present-staff-model';
+import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 
 @Component({
   selector: 'app-present-staff-page',
@@ -15,27 +18,23 @@ import { NavController } from '@ionic/angular';
 })
 export class PresentStaffPageComponent extends BasePageConfirmCancelComponent<PresentStaffFormData> implements OnInit {
 
-  public btnTask: ButtonItem;
+  
   public currUserId: string[] | undefined;
   public year: number;
   public month: number;
+  public daySlots: PresentStaff_DaySlot[] = [];
 
   constructor(protected override navCtrl: NavController,
               protected override userInterfaceService: UserInterfaceService,
+              private presentStaffService: PresentStaffService, 
               protected override fb: FormBuilder)
   {
     super(navCtrl, userInterfaceService, fb);
 
-    this.btnTask = userInterfaceService.Btn_Esegui;
-    this.btnTask.event = this.handleButtontaskClick;
+    
   }
 
-  override ngOnInit() {
-    super.ngOnInit();
-    this._editForm.statusChanges.subscribe(() => {
-      this.btnTask.disabled = !this._editForm.valid;
-    });
-  }
+  
 
   get Title(): string { return 'Personale presente'; }
 
@@ -73,18 +72,60 @@ export class PresentStaffPageComponent extends BasePageConfirmCancelComponent<Pr
       dal: toIso(firstDay),
       al:  toIso(lastDay)
     });
-  }
 
+    this.handleButtontaskClick({});
+
+  }
   onCurrentUserChanged(userId: string[] | undefined): void {}
   onSedeChanged(sediId: number | undefined): void {}
-  onRepartiChanged(repartoIds: number[] | undefined): void {}
+  onRepartiChanged(repartoIds: number[] | undefined): void {
+    this.handleButtontaskClick({});
+  }
   onAllUsersInSelectionChanged(userIds: string[] | undefined): void {
     this.currUserId = userIds;
+    this.handleButtontaskClick({});
   }
 
   handleButtontaskClick = async (_item: any) => {
-    // TODO: chiamare il servizio personale presente
+    
+
+    let request: GenericRequest<PresentStaff_GetInModel> = new GenericRequest<PresentStaff_GetInModel>(PresentStaff_GetInModel);
+
+
+    request.data.presentStaff.year = this.year;
+    request.data.presentStaff.month = this.month;
+    request.data.presentStaff.selectedUserId = this.currUserId ? this.currUserId : [];
+
+    this.presentStaffService.PresentStaffGet(request).subscribe(x => {
+
+      this.daySlots = x.data.daySlots;
+
+    });
+
+
   };
+
+  getAll() {
+    return this.daySlots;
+  }
+
+  get_StatoDay_icon(presentStaff: PresentStaff_DaySlot): string {
+
+    if (presentStaff.isPresent)
+      return 'checkmark-done-outline';
+    else
+      return 'close-outline';
+
+  }
+
+  get_StatoDay_color(presentStaff: PresentStaff_DaySlot): string {
+
+    if (presentStaff.isPresent)
+      return "var(--ion-color-success)"
+    else
+      return "var(--ion-color-danger)"
+
+  }
 
 }
 

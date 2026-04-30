@@ -5,6 +5,11 @@ import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructur
 import { Observable, of } from 'rxjs';
 import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
 import { NavController } from '@ionic/angular';
+import { VacationPlan_DaySlot, VacationPlan_GetInModel } from '../../../ClientServer-Service/GestionePresenze/VacationPlanService/Models/vacation-plan-model';
+import { PresentStaff_GetInModel } from '../../../ClientServer-Service/GestionePresenze/PresentStaffService/Models/present-staff-model';
+import { PresentStaffService } from '../../../ClientServer-Service/GestionePresenze/PresentStaffService/present-staff.service';
+import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
+import { VacationPlanService } from '../../../ClientServer-Service/GestionePresenze/VacationPlanService/vacation-plan.service';
 
 @Component({
   selector: 'app-vacation-plan-page',
@@ -15,27 +20,23 @@ import { NavController } from '@ionic/angular';
 })
 export class VacationPlanPageComponent extends BasePageConfirmCancelComponent<VacationPlanFormData> implements OnInit {
 
-  public btnTask: ButtonItem;
+  
   public currUserId: string[] | undefined;
   public year: number;
   public month: number;
+  public daySlots: VacationPlan_DaySlot[] = [];
 
   constructor(protected override navCtrl: NavController,
               protected override userInterfaceService: UserInterfaceService,
-              protected override fb: FormBuilder)
+              protected override fb: FormBuilder,
+              private vacationPlanService: VacationPlanService
+  )
   {
     super(navCtrl, userInterfaceService, fb);
 
-    this.btnTask = userInterfaceService.Btn_Esegui;
-    this.btnTask.event = this.handleButtontaskClick;
+    
   }
 
-  override ngOnInit() {
-    super.ngOnInit();
-    this._editForm.statusChanges.subscribe(() => {
-      this.btnTask.disabled = !this._editForm.valid;
-    });
-  }
 
   get Title(): string { return 'Piano ferie'; }
 
@@ -73,18 +74,57 @@ export class VacationPlanPageComponent extends BasePageConfirmCancelComponent<Va
       dal: toIso(firstDay),
       al:  toIso(lastDay)
     });
+
+    this.handleButtontaskClick({});
+
   }
 
   onCurrentUserChanged(userId: string[] | undefined): void {}
   onSedeChanged(sediId: number | undefined): void {}
-  onRepartiChanged(repartoIds: number[] | undefined): void {}
+  onRepartiChanged(repartoIds: number[] | undefined): void {
+    this.handleButtontaskClick({});
+  }
   onAllUsersInSelectionChanged(userIds: string[] | undefined): void {
     this.currUserId = userIds;
+    this.handleButtontaskClick({});
   }
 
   handleButtontaskClick = async (_item: any) => {
-    // TODO: chiamare il servizio piano ferie
+    let request: GenericRequest<VacationPlan_GetInModel> = new GenericRequest<VacationPlan_GetInModel>(VacationPlan_GetInModel);
+
+
+    request.data.vacationPlan.year = this.year;
+    request.data.vacationPlan.month = this.month;
+    request.data.vacationPlan.selectedUserId = this.currUserId ? this.currUserId : [];
+
+    this.vacationPlanService.VacationPlanGet(request).subscribe(x => {
+
+      this.daySlots = x.data.daySlots;
+
+    });
   };
+
+  getAll() {
+    return this.daySlots;
+  }
+
+  get_StatoDay_icon(vacationPlan: VacationPlan_DaySlot): string {
+
+    if (vacationPlan.isPresent)
+      return 'checkmark-done-outline';
+    else
+      return 'close-outline';
+
+  }
+
+  get_StatoDay_color(vacationPlan: VacationPlan_DaySlot): string {
+
+    if (vacationPlan.isPresent)
+      return "var(--ion-color-success)"
+    else
+      return "var(--ion-color-danger)"
+
+  }
 
 }
 
