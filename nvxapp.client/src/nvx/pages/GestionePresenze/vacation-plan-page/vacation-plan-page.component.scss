@@ -4,11 +4,24 @@
   font-size: 0.95em;
 }
 
-/* ── Griglia piano ferie (ion-grid) ─────────────────── */
+/* ── Griglia piano ferie ─────────────────────────────── */
 
-.vg-grid {
-  padding: 0;
+/* contenitore esterno: scroll orizzontale unico */
+.vg-wrapper {
   font-size: 0.82em;
+  overflow: hidden;
+}
+
+.vg-scroll {
+  overflow-x: auto;
+  overflow-y: visible;
+}
+
+/* ogni riga è un flex-row */
+.vg-row {
+  display: flex;
+  align-items: stretch;
+  border-bottom: 1px solid var(--ion-color-light-shade, #ddd);
 }
 
 /* riga intestazione */
@@ -16,15 +29,24 @@
   font-weight: 600;
   border-bottom: 2px solid var(--ion-color-primary, #3880ff);
   background: var(--ion-color-light, #f4f5f8);
+  position: sticky;
+  top: 0;
+  z-index: 3;
 }
 
-/* colonna nome: larghezza fissa, testo allineato a sx */
+/* colonna nome: sticky a sinistra */
 .vg-name-col {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  background: inherit;
   display: flex;
   align-items: center;
   padding: 4px 8px;
-  border-right: 1px solid var(--ion-color-light-shade, #ddd);
-  min-width: 0;
+  min-width: 130px;
+  width: 130px;
+  flex-shrink: 0;
+  border-right: 2px solid var(--ion-color-primary, #3880ff);
 
   ion-label {
     white-space: nowrap;
@@ -36,18 +58,7 @@
 .vg-header-cell {
   font-weight: 700;
   color: var(--ion-color-dark, #222);
-}
-
-/* colonna giorni: scroll orizzontale allineato */
-.vg-days-col {
-  padding: 0;
-  overflow: hidden;
-}
-
-.vg-days-scroll {
-  display: flex;
-  overflow-x: auto;
-  align-items: stretch;
+  background: var(--ion-color-light, #f4f5f8);
 }
 
 /* singolo giorno — intestazione */
@@ -56,8 +67,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-width: 36px;
-  width: 36px;
+  min-width: 40px;
+  width: 40px;
   padding: 2px 1px;
   border-right: 1px solid var(--ion-color-light-shade, #ddd);
   flex-shrink: 0;
@@ -79,8 +90,8 @@
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  min-width: 36px;
-  width: 36px;
+  min-width: 40px;
+  width: 40px;
   min-height: 28px;
   border-right: 1px solid var(--ion-color-light-shade, #ddd);
   flex-shrink: 0;
@@ -94,6 +105,12 @@
   align-items: center;
   gap: 2px;
   width: 100%;
+
+  ion-chip {
+    width: 100%;
+    min-width: 0;
+    justify-content: center;
+  }
 }
 
 /* weekend */
@@ -122,6 +139,5 @@
 
 /* righe dati */
 .vg-data-row {
-  border-bottom: 1px solid var(--ion-color-light-shade, #ddd);
   align-items: stretch;
 }

@@ -23,85 +23,71 @@
       <form [formGroup]="_editForm"></form>
 
       <!-- GRIGLIA PIANO FERIE -->
-      <ion-grid *ngIf="daySlots?.length > 0 && getDaysInMonth().length > 0" class="vg-grid">
+      <div *ngIf="daySlots?.length > 0 && getDaysInMonth().length > 0" class="vg-wrapper">
+        <div class="vg-scroll">
 
-        <!-- INTESTAZIONE -->
-        <ion-row class="vg-header-row">
-
-          <ion-col size="2" class="vg-name-col vg-header-cell">
-            Dipendente
-          </ion-col>
-
-          <ion-col size="10" class="vg-days-col">
-            <div class="vg-days-scroll">
-              <div *ngFor="let day of getDaysInMonth()"
-                   class="vg-day-header"
-                   [class.vg-weekend]="isWeekend(day)">
-                <span class="vg-day-num">{{ day }}</span>
-                <span class="vg-day-label">{{ getDayLabel(day) }}</span>
-              </div>
+          <!-- INTESTAZIONE -->
+          <div class="vg-row vg-header-row">
+            <div class="vg-name-col vg-sticky vg-header-cell">Dipendente</div>
+            <div *ngFor="let day of getDaysInMonth()"
+                 class="vg-day-header"
+                 [class.vg-weekend]="isWeekend(day)">
+              <span class="vg-day-num">{{ day }}</span>
+              <span class="vg-day-label">{{ getDayLabel(day) }}</span>
             </div>
-          </ion-col>
+          </div>
 
-        </ion-row>
+          <!-- RIGHE DIPENDENTI -->
+          <div *ngFor="let slot of getAll(); let i = index"
+               class="vg-row vg-data-row"
+               [class.nvx-row-odd]="i % 2 !== 0"
+               [class.nvx-row-even]="i % 2 === 0">
 
-        <!-- RIGHE DIPENDENTI -->
-        <ion-row *ngFor="let slot of getAll(); let i = index"
-                 [class.nvx-row-odd]="i % 2 !== 0"
-                 [class.nvx-row-even]="i % 2 === 0"
-                 class="nvx-ion-row-4table nvx-row-hover vg-data-row">
+            <div class="vg-name-col vg-sticky" [class.nvx-row-odd]="i % 2 !== 0" [class.nvx-row-even]="i % 2 === 0">
+              <ion-label>
+                <strong>{{ slot.idAspNetUsers | idAspNetUsersToCognome }}</strong>
+                {{ slot.idAspNetUsers | idAspNetUsersToNome }}
+              </ion-label>
+            </div>
 
-          <!-- COGNOME + NOME -->
-          <ion-col size="2" class="vg-name-col">
-            <ion-label>
-              <strong>{{ slot.idAspNetUsers | idAspNetUsersToCognome }}</strong>
-              {{ slot.idAspNetUsers | idAspNetUsersToNome }}
-            </ion-label>
-          </ion-col>
-
-          <!-- GIORNI DEL MESE -->
-          <ion-col size="10" class="vg-days-col">
-            <div class="vg-days-scroll">
-
-              <div *ngFor="let day of getDaysInMonth()"
-                   class="vg-day-cell"
-                   [class.vg-weekend]="isWeekend(day)">
-
-                <ng-container *ngIf="getGiustificativiForDay(slot, day) as giust">
-
-                  <ng-container *ngIf="giust.length > 0; else emptyDay">
-                    <div class="vg-chips-stack">
-                      <ion-chip *ngFor="let g of giust"
-                                [ngStyle]="{
-                                  'background': timeSheetService.get_Dip_GG_Giustificativi_backColor(g),
-                                  'color':      timeSheetService.get_Dip_GG_Giustificativi_txtColor(g),
-                                  'font-size':  '0.75em',
-                                  'margin':     '1px 0px',
-                                  'height':     '18px',
-                                  'cursor':     'default'
-                                }"
-                                [title]="g.idPar_Giustificativi | parGiustificativiToLongText">
-                        {{ g.idPar_Giustificativi | parGiustificativiToShortText }}
-                      </ion-chip>
-                    </div>
-                  </ng-container>
-
-                  <ng-template #emptyDay>
-                    <span class="vg-empty">-</span>
-                  </ng-template>
-
+            <div *ngFor="let day of getDaysInMonth()"
+                 class="vg-day-cell"
+                 [class.vg-weekend]="isWeekend(day)">
+              <ng-container *ngIf="getGiustificativiForDay(slot, day) as giust">
+                <ng-container *ngIf="giust.length > 0; else emptyDay">
+                  <div class="vg-chips-stack">
+                    <ion-chip *ngFor="let g of giust"
+                              [ngStyle]="{
+                                'background': timeSheetService.get_Dip_GG_Giustificativi_backColor(g),
+                                'color':      timeSheetService.get_Dip_GG_Giustificativi_txtColor(g),
+                                'font-size':  '0.75em',
+                                'margin':     '1px 0px',
+                                'height':     '18px',
+                                'cursor': CanOpenMenuActionGiustificativi(slot,g) ? 'pointer' : 'default',
+                                'opacity': CanOpenMenuActionGiustificativi(slot,g) ? '1' : '0.5'
+                              }"
+                              (click)="CanOpenMenuActionGiustificativi(slot,g) ? actionSheetOpen(g) : null"
+                              [title]="g.idPar_Giustificativi | parGiustificativiToLongText">
+                      {{ g.idPar_Giustificativi | parGiustificativiToShortText }}  {{ g.hours.substring(0, 5) }}
+                    </ion-chip>
+                  </div>
                 </ng-container>
-
-              </div>
-
+                <ng-template #emptyDay>
+                  <span class="vg-empty">-</span>
+                </ng-template>
+              </ng-container>
             </div>
-          </ion-col>
 
-        </ion-row>
+          </div>
 
-      </ion-grid>
-      
+        </div>
+      </div>
 
+      <ion-action-sheet [isOpen]="isActionSheetOpen"
+                        [header]="actionSheetHeader"
+                        [subHeader]="actionSheetSubHeader"
+                        [buttons]="actionSheetButtons"
+                        (didDismiss)="actionSheetExecute($event)"></ion-action-sheet>
 
     </ion-card-content>
   </ion-card>

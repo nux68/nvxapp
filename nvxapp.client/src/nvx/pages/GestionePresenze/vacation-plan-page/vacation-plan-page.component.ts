@@ -12,6 +12,10 @@ import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic
 import { VacationPlanService } from '../../../ClientServer-Service/GestionePresenze/VacationPlanService/vacation-plan.service';
 import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
 import { TimeSheetService } from '../../../Utility/GestionePresenze/time-sheet.service';
+import { Dip_GG_Richiesta_SetState_InModel, Dip_GG_RichiestaModel, StatoRichiesta } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/Models/dip-gg-richiesta-model';
+import { ParGiustificativiToLongTextPipe } from '../../../shared/pipe/GestionePresenze/par-giustificativi-to-long-text.pipe';
+import { DateTimeUtilService } from '../../../Utility/infrastructure/date-time-util.service';
+import { DipGGRichiestaService } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/dip-gg-richiesta.service';
 
 @Component({
   selector: 'app-vacation-plan-page',
@@ -35,6 +39,9 @@ export class VacationPlanPageComponent extends BasePageConfirmCancelComponent<Va
               protected override fb: FormBuilder,
               private sharedParams: SharedParameterGestionePresenzeService,
               private vacationPlanService: VacationPlanService,
+              private dipGGRichiestaService: DipGGRichiestaService,
+              public dateTimeUtilService: DateTimeUtilService,
+              private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
               public timeSheetService: TimeSheetService
   )
   {
@@ -109,9 +116,7 @@ export class VacationPlanPageComponent extends BasePageConfirmCancelComponent<Va
     request.data.vacationPlan.selectedUserId = this.currUserId ? this.currUserId : [];
 
     this.vacationPlanService.VacationPlanGet(request).subscribe(x => {
-
       this.daySlots = x.data.daySlots;
-
     });
   };
 
@@ -176,7 +181,111 @@ export class VacationPlanPageComponent extends BasePageConfirmCancelComponent<Va
 
   }
 
+
+  isActionSheetOpen = false;
+
+  private actionSheetOpenSelectObj: Dip_GG_GiustificativiModel ;
+  public actionSheetHeader = '';
+  public actionSheetSubHeader = '';
+
+  public actionSheetButtons = [{
+    text: '',
+    role: '',
+    data: {
+      action: '',
+    },
+  }
+  ];
+
+  public actionSheetButtonsRequest = [
+    {
+      text: 'Approva richiesta',
+      role: vacationPlan_Action.richieste_PREFIX + "_" + vacationPlan_Action.approva,
+      data: {
+        action: vacationPlan_Action.richieste_PREFIX + "_" + vacationPlan_Action.approva,
+      },
+    },
+    {
+      text: 'Rifiuta richiesta',
+      role: vacationPlan_Action.richieste_PREFIX + "_" + vacationPlan_Action.rifiuta,
+      data: {
+        action: vacationPlan_Action.richieste_PREFIX + "_" + vacationPlan_Action.rifiuta,
+      },
+    },
+
+  ];
+
+  get_Dip_GG_Richiesta(vacationPlan_DaySlot: VacationPlan_DaySlot,idDip_GG_Richiesta?: number ): Dip_GG_RichiestaModel | null {
+
+    const req = vacationPlan_DaySlot.dip_GG_Richieste.find(x => x.id === idDip_GG_Richiesta);
+    return req;
+
+  }
+
+  CanOpenMenuActionGiustificativi(vacationPlan_DaySlot: VacationPlan_DaySlot,just: Dip_GG_GiustificativiModel): boolean {
+
+    let retval = this.timeSheetService.Dip_GG_Richiesta_Admin_Can_Approve(this.get_Dip_GG_Richiesta(vacationPlan_DaySlot,just.idDip_GG_Richiesta)) ||
+      this.timeSheetService.Dip_GG_Richiesta_Admin_Can_Reject(this.get_Dip_GG_Richiesta(vacationPlan_DaySlot,just.idDip_GG_Richiesta)) ||
+      just.idDip_GG_Richiesta == null;;
+
+    return retval;
+
+
+  }
+
+  actionSheetOpen(obj: any) {
+    if ('idPar_Giustificativi' in obj) { //JUST
+      const giustificativo = obj as Dip_GG_GiustificativiModel;
+
+      this.actionSheetButtons = this.actionSheetButtonsRequest;
+
+      const parGiustificativiToLongTextPipe = new ParGiustificativiToLongTextPipe(this.sharedParameterGestionePresenzeService);
+
+
+      this.actionSheetOpenSelectObj = giustificativo;
+      this.actionSheetHeader = `Giustificativo : ${parGiustificativiToLongTextPipe.transform(giustificativo.idPar_Giustificativi)} ${this.dateTimeUtilService.DateTo_ggmmyyyy(giustificativo.data)}`;
+      this.actionSheetSubHeader = null;
+    }
+    this.isActionSheetOpen = true;
+  }
+
+  actionSheetExecute(event: any) {
+    this.isActionSheetOpen = false;
+    if (event?.detail?.data?.action?.startsWith(vacationPlan_Action.richieste_PREFIX)) {
+      let IdDip_GG_Richiesta: number[] = [];
+
+      const giustificativo = this.actionSheetOpenSelectObj as Dip_GG_GiustificativiModel;
+      IdDip_GG_Richiesta.push(giustificativo.idDip_GG_Richiesta);
+
+      if (IdDip_GG_Richiesta.length > 0) {
+        let request: GenericRequest<Dip_GG_Richiesta_SetState_InModel> = new GenericRequest<Dip_GG_Richiesta_SetState_InModel>(Dip_GG_Richiesta_SetState_InModel);
+
+        request.data.fromHR = true;
+
+
+        if (event?.detail?.data?.action.includes(vacationPlan_Action.approva)) {
+          request.data.richiestaStato = StatoRichiesta.Approvata;
+        } else if (event?.detail?.data?.action.includes(vacationPlan_Action.rifiuta)) {
+          request.data.richiestaStato = StatoRichiesta.Rifiutata;
+        }
+
+        request.data.idDip_GG_Richiesta = IdDip_GG_Richiesta;
+        this.dipGGRichiestaService.SetState(request).subscribe(res => {
+          this._selectionChanged$.next();
+        });
+      }
+    }
+  }
+
 }
+
+enum vacationPlan_Action {
+
+  richieste_PREFIX = "richieste",
+  approva = "approva",
+  rifiuta = "rifiuta",
+}
+
 
 export class VacationPlanFormData {
   public dal: string;
