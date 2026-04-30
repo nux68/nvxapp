@@ -8,6 +8,7 @@ import { NavController } from '@ionic/angular';
 import { PresentStaffService } from '../../../ClientServer-Service/GestionePresenze/PresentStaffService/present-staff.service';
 import { PresentStaff_DaySlot, PresentStaff_GetInModel } from '../../../ClientServer-Service/GestionePresenze/PresentStaffService/Models/present-staff-model';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
+import { TimeSheetService } from '../../../Utility/GestionePresenze/time-sheet.service';
 
 @Component({
   selector: 'app-present-staff-page',
@@ -26,7 +27,8 @@ export class PresentStaffPageComponent extends BasePageConfirmCancelComponent<Pr
 
   constructor(protected override navCtrl: NavController,
               protected override userInterfaceService: UserInterfaceService,
-              private presentStaffService: PresentStaffService, 
+              private presentStaffService: PresentStaffService,
+              public timeSheetService: TimeSheetService,
               protected override fb: FormBuilder)
   {
     super(navCtrl, userInterfaceService, fb);
@@ -57,23 +59,23 @@ export class PresentStaffPageComponent extends BasePageConfirmCancelComponent<Pr
   }
 
   onPeriodChange(period: { year: number, month: number } | undefined): void {
-    if (!period) return;
+    //if (!period) return;
 
-    this.year  = period.year;
-    this.month = period.month;
+    //this.year  = period.year;
+    //this.month = period.month;
 
-    const firstDay = new Date(period.year, period.month - 1, 1);
-    const lastDay  = new Date(period.year, period.month, 0);
+    //const firstDay = new Date(period.year, period.month - 1, 1);
+    //const lastDay  = new Date(period.year, period.month, 0);
 
-    const toIso = (d: Date) =>
-      `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    //const toIso = (d: Date) =>
+    //  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 
-    this._editForm.patchValue({
-      dal: toIso(firstDay),
-      al:  toIso(lastDay)
-    });
+    //this._editForm.patchValue({
+    //  dal: toIso(firstDay),
+    //  al:  toIso(lastDay)
+    //});
 
-    this.handleButtontaskClick({});
+    //this.handleButtontaskClick({});
 
   }
   onCurrentUserChanged(userId: string[] | undefined): void {}

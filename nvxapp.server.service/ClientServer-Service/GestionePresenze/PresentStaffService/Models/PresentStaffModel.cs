@@ -1,3 +1,4 @@
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_TimbraturaService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_EngineService.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 
@@ -21,6 +22,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.PresentSta
     {
         public string IdAspNetUsers { get; set; } = string.Empty;
         public bool IsPresent { get; set;}
+        public Dip_GG_TimbraturaModel? Dip_GG_Timbratura { get; set; }
+
     }
 
 
