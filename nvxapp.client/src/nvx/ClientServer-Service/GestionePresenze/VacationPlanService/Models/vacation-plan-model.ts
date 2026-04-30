@@ -1,4 +1,6 @@
 import { ModelResult } from "../../../ModelsBase/model-result";
+import { Dip_GG_GiustificativiModel } from "../../Dip_GG_Giustificativi/Models/dip-gg-giustificativi-model";
+import { Dip_GG_RichiestaModel } from "../../Dip_GG_Richiesta/Models/dip-gg-richiesta-model";
 
 export class VacationPlanModel {
   public year: number             = 0;
@@ -8,7 +10,8 @@ export class VacationPlanModel {
 
 export class VacationPlan_DaySlot {
   public idAspNetUsers: string = '';
-  public isPresent: boolean    = false;
+  public dip_GG_Richieste: Dip_GG_RichiestaModel[] = [];
+  public dip_GG_Giustificativi: Dip_GG_GiustificativiModel[] = [];
 }
 
 export class VacationPlan_GetInModel {

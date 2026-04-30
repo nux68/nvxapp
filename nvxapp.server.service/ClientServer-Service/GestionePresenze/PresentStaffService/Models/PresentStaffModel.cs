@@ -6,8 +6,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.PresentSta
 {
     public class PresentStaffModel
     {
-        public int Year { get; set; }
-        public int Month { get; set; }
+        //public int Year { get; set; }
+        //public int Month { get; set; }
         public List<string> SelectedUserId { get; set; } = new List<string>();
     }
 

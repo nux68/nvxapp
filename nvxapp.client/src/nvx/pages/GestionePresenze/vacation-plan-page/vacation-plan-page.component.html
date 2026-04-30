@@ -22,42 +22,85 @@
 
       <form [formGroup]="_editForm"></form>
 
-      <ion-grid *ngIf="daySlots!=null">
+      <!-- GRIGLIA PIANO FERIE -->
+      <ion-grid *ngIf="daySlots?.length > 0 && getDaysInMonth().length > 0" class="vg-grid">
 
-        <ion-row *ngFor="let item of getAll() let indexRow4Color = index"
-                 [class.nvx-row-odd]="indexRow4Color % 2 !== 0"
-                 [class.nvx-row-even]="indexRow4Color % 2 === 0"
-                 class="nvx-ion-row-4table nvx-row-hover">
+        <!-- INTESTAZIONE -->
+        <ion-row class="vg-header-row">
 
-          <ion-col size="1">
-
-            <ion-icon [name]="get_StatoDay_icon(item)"
-                      [ngStyle]="{
-                         'color': get_StatoDay_color(item),
-                         'border-radius': '50%',
-                         'width': '15px',
-                         'height': '15px',
-                         'margin-right': '4px'
-                       }">
-            </ion-icon>
-
-            <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
-              {{ item.idAspNetUsers | idAspNetUsersToCognome }}
-            </ion-label>
+          <ion-col size="2" class="vg-name-col vg-header-cell">
+            Dipendente
           </ion-col>
 
-          <ion-col size="1">
-            <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
-              {{ item.idAspNetUsers | idAspNetUsersToNome }}
-            </ion-label>
+          <ion-col size="10" class="vg-days-col">
+            <div class="vg-days-scroll">
+              <div *ngFor="let day of getDaysInMonth()"
+                   class="vg-day-header"
+                   [class.vg-weekend]="isWeekend(day)">
+                <span class="vg-day-num">{{ day }}</span>
+                <span class="vg-day-label">{{ getDayLabel(day) }}</span>
+              </div>
+            </div>
           </ion-col>
-
-
 
         </ion-row>
 
+        <!-- RIGHE DIPENDENTI -->
+        <ion-row *ngFor="let slot of getAll(); let i = index"
+                 [class.nvx-row-odd]="i % 2 !== 0"
+                 [class.nvx-row-even]="i % 2 === 0"
+                 class="nvx-ion-row-4table nvx-row-hover vg-data-row">
+
+          <!-- COGNOME + NOME -->
+          <ion-col size="2" class="vg-name-col">
+            <ion-label>
+              <strong>{{ slot.idAspNetUsers | idAspNetUsersToCognome }}</strong>
+              {{ slot.idAspNetUsers | idAspNetUsersToNome }}
+            </ion-label>
+          </ion-col>
+
+          <!-- GIORNI DEL MESE -->
+          <ion-col size="10" class="vg-days-col">
+            <div class="vg-days-scroll">
+
+              <div *ngFor="let day of getDaysInMonth()"
+                   class="vg-day-cell"
+                   [class.vg-weekend]="isWeekend(day)">
+
+                <ng-container *ngIf="getGiustificativiForDay(slot, day) as giust">
+
+                  <ng-container *ngIf="giust.length > 0; else emptyDay">
+                    <div class="vg-chips-stack">
+                      <ion-chip *ngFor="let g of giust"
+                                [ngStyle]="{
+                                  'background': timeSheetService.get_Dip_GG_Giustificativi_backColor(g),
+                                  'color':      timeSheetService.get_Dip_GG_Giustificativi_txtColor(g),
+                                  'font-size':  '0.75em',
+                                  'margin':     '1px 0px',
+                                  'height':     '18px',
+                                  'cursor':     'default'
+                                }"
+                                [title]="g.idPar_Giustificativi | parGiustificativiToLongText">
+                        {{ g.idPar_Giustificativi | parGiustificativiToShortText }}
+                      </ion-chip>
+                    </div>
+                  </ng-container>
+
+                  <ng-template #emptyDay>
+                    <span class="vg-empty">-</span>
+                  </ng-template>
+
+                </ng-container>
+
+              </div>
+
+            </div>
+          </ion-col>
+
+        </ion-row>
 
       </ion-grid>
+      
 
 
     </ion-card-content>

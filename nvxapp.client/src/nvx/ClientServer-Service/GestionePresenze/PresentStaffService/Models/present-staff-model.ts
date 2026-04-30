@@ -2,8 +2,8 @@ import { ModelResult } from "../../../ModelsBase/model-result";
 import { Dip_GG_TimbraturaModel } from "../../Dip_GG_Timbratura/Models/dip-gg-timbratura-model";
 
 export class PresentStaffModel {
-  public year: number             = 0;
-  public month: number            = 0;
+  //public year: number             = 0;
+  //public month: number            = 0;
   public selectedUserId: string[] = [];
 }
 

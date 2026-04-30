@@ -104,8 +104,8 @@ export class PresentStaffPageComponent extends BasePageConfirmCancelComponent<Pr
     let request: GenericRequest<PresentStaff_GetInModel> = new GenericRequest<PresentStaff_GetInModel>(PresentStaff_GetInModel);
 
 
-    request.data.presentStaff.year = this.year;
-    request.data.presentStaff.month = this.month;
+    //request.data.presentStaff.year = this.year;
+    //request.data.presentStaff.month = this.month;
     request.data.presentStaff.selectedUserId = this.currUserId ? this.currUserId : [];
 
     this.presentStaffService.PresentStaffGet(request).subscribe(x => {

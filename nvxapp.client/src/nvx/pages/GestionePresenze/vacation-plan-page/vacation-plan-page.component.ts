@@ -7,11 +7,11 @@ import { debounceTime, takeUntil } from 'rxjs/operators';
 import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
 import { NavController } from '@ionic/angular';
 import { VacationPlan_DaySlot, VacationPlan_GetInModel } from '../../../ClientServer-Service/GestionePresenze/VacationPlanService/Models/vacation-plan-model';
-import { PresentStaff_GetInModel } from '../../../ClientServer-Service/GestionePresenze/PresentStaffService/Models/present-staff-model';
-import { PresentStaffService } from '../../../ClientServer-Service/GestionePresenze/PresentStaffService/present-staff.service';
+import { Dip_GG_GiustificativiModel } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Giustificativi/Models/dip-gg-giustificativi-model';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { VacationPlanService } from '../../../ClientServer-Service/GestionePresenze/VacationPlanService/vacation-plan.service';
 import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
+import { TimeSheetService } from '../../../Utility/GestionePresenze/time-sheet.service';
 
 @Component({
   selector: 'app-vacation-plan-page',
@@ -34,7 +34,8 @@ export class VacationPlanPageComponent extends BasePageConfirmCancelComponent<Va
               protected override userInterfaceService: UserInterfaceService,
               protected override fb: FormBuilder,
               private sharedParams: SharedParameterGestionePresenzeService,
-              private vacationPlanService: VacationPlanService
+              private vacationPlanService: VacationPlanService,
+              public timeSheetService: TimeSheetService
   )
   {
     super(navCtrl, userInterfaceService, fb);
@@ -127,20 +128,50 @@ export class VacationPlanPageComponent extends BasePageConfirmCancelComponent<Va
     });
   }
 
+  /** Restituisce i numeri dei giorni del mese corrente (1..28/29/30/31) */
+  getDaysInMonth(): number[] {
+    if (!this.year || !this.month) return [];
+    const count = new Date(this.year, this.month, 0).getDate();
+    return Array.from({ length: count }, (_, i) => i + 1);
+  }
+
+  /** Restituisce i giustificativi del dipendente per il giorno dato (vuoto se assente) */
+  getGiustificativiForDay(slot: VacationPlan_DaySlot, day: number): Dip_GG_GiustificativiModel[] {
+    if (!slot.dip_GG_Giustificativi?.length) return [];
+    return slot.dip_GG_Giustificativi.filter(g => {
+      const d = new Date(g.data);
+      return d.getFullYear() === this.year &&
+             d.getMonth() + 1  === this.month &&
+             d.getDate()        === day;
+    });
+  }
+
+  /** Restituisce il nome abbreviato del giorno della settimana (Lun, Mar, ...) */
+  getDayLabel(day: number): string {
+    const date = new Date(this.year, this.month - 1, day);
+    return date.toLocaleDateString('it-IT', { weekday: 'short' });
+  }
+
+  /** true se il giorno è sabato o domenica */
+  isWeekend(day: number): boolean {
+    const dow = new Date(this.year, this.month - 1, day).getDay();
+    return dow === 0 || dow === 6;
+  }
+
   get_StatoDay_icon(vacationPlan: VacationPlan_DaySlot): string {
 
-    if (vacationPlan.isPresent)
-      return 'checkmark-done-outline';
-    else
+    //if (vacationPlan.isPresent)
+    //  return 'checkmark-done-outline';
+    //else
       return 'close-outline';
 
   }
 
   get_StatoDay_color(vacationPlan: VacationPlan_DaySlot): string {
 
-    if (vacationPlan.isPresent)
-      return "var(--ion-color-success)"
-    else
+    //if (vacationPlan.isPresent)
+    //  return "var(--ion-color-success)"
+    //else
       return "var(--ion-color-danger)"
 
   }
