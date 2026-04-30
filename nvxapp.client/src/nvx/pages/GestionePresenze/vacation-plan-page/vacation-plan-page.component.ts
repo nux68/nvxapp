@@ -1,8 +1,9 @@
 import { DatePipe } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
-import { Observable, of } from 'rxjs';
+import { UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
+import { Observable, of, Subject } from 'rxjs';
+import { debounceTime, takeUntil } from 'rxjs/operators';
 import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
 import { NavController } from '@ionic/angular';
 import { VacationPlan_DaySlot, VacationPlan_GetInModel } from '../../../ClientServer-Service/GestionePresenze/VacationPlanService/Models/vacation-plan-model';
@@ -10,6 +11,7 @@ import { PresentStaff_GetInModel } from '../../../ClientServer-Service/GestioneP
 import { PresentStaffService } from '../../../ClientServer-Service/GestionePresenze/PresentStaffService/present-staff.service';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { VacationPlanService } from '../../../ClientServer-Service/GestionePresenze/VacationPlanService/vacation-plan.service';
+import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
 
 @Component({
   selector: 'app-vacation-plan-page',
@@ -18,25 +20,38 @@ import { VacationPlanService } from '../../../ClientServer-Service/GestionePrese
   providers: [DatePipe],
   standalone: false
 })
-export class VacationPlanPageComponent extends BasePageConfirmCancelComponent<VacationPlanFormData> implements OnInit {
+export class VacationPlanPageComponent extends BasePageConfirmCancelComponent<VacationPlanFormData> implements OnInit, OnDestroy {
 
-  
   public currUserId: string[] | undefined;
   public year: number;
   public month: number;
   public daySlots: VacationPlan_DaySlot[] = [];
 
+  private _selectionChanged$ = new Subject<void>();
+  private _destroy$          = new Subject<void>();
+
   constructor(protected override navCtrl: NavController,
               protected override userInterfaceService: UserInterfaceService,
               protected override fb: FormBuilder,
+              private sharedParams: SharedParameterGestionePresenzeService,
               private vacationPlanService: VacationPlanService
   )
   {
     super(navCtrl, userInterfaceService, fb);
-
-    
   }
 
+  override ngOnInit() {
+    super.ngOnInit();
+
+    this._selectionChanged$
+      .pipe(debounceTime(300), takeUntil(this._destroy$))
+      .subscribe(() => this.handleButtontaskClick(null));
+  }
+
+  ngOnDestroy(): void {
+    this._destroy$.next();
+    this._destroy$.complete();
+  }
 
   get Title(): string { return 'Piano ferie'; }
 
@@ -64,29 +79,24 @@ export class VacationPlanPageComponent extends BasePageConfirmCancelComponent<Va
     this.year  = period.year;
     this.month = period.month;
 
-    const firstDay = new Date(period.year, period.month - 1, 1);
-    const lastDay  = new Date(period.year, period.month, 0);
-
-    const toIso = (d: Date) =>
-      `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-
-    this._editForm.patchValue({
-      dal: toIso(firstDay),
-      al:  toIso(lastDay)
-    });
-
-    this.handleButtontaskClick({});
-
+    this._selectionChanged$.next();
   }
 
-  onCurrentUserChanged(userId: string[] | undefined): void {}
-  onSedeChanged(sediId: number | undefined): void {}
+  onCurrentUserChanged(userId: string[] | undefined): void {
+    this._selectionChanged$.next();
+  }
+
+  onSedeChanged(sediId: number | undefined): void {
+    this._selectionChanged$.next();
+  }
+
   onRepartiChanged(repartoIds: number[] | undefined): void {
-    this.handleButtontaskClick({});
+    this._selectionChanged$.next();
   }
+
   onAllUsersInSelectionChanged(userIds: string[] | undefined): void {
     this.currUserId = userIds;
-    this.handleButtontaskClick({});
+    this._selectionChanged$.next();
   }
 
   handleButtontaskClick = async (_item: any) => {
@@ -104,8 +114,17 @@ export class VacationPlanPageComponent extends BasePageConfirmCancelComponent<Va
     });
   };
 
-  getAll() {
-    return this.daySlots;
+  getAll(): VacationPlan_DaySlot[] {
+    return [...this.daySlots].sort((a, b) => {
+      const resolve = (id: string) => {
+        const dip = this.sharedParams.Dip_Anagrafica?.find(d => d.idAspNetUsers === id);
+        return { cognome: dip?.cognome ?? dip?.userName ?? '', nome: dip?.nome ?? '' };
+      };
+      const ra = resolve(a.idAspNetUsers);
+      const rb = resolve(b.idAspNetUsers);
+      const cmp = ra.cognome.localeCompare(rb.cognome, 'it', { sensitivity: 'base' });
+      return cmp !== 0 ? cmp : ra.nome.localeCompare(rb.nome, 'it', { sensitivity: 'base' });
+    });
   }
 
   get_StatoDay_icon(vacationPlan: VacationPlan_DaySlot): string {

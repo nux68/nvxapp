@@ -1,8 +1,9 @@
 import { DatePipe } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
-import { Observable, of } from 'rxjs';
+import { UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
+import { Observable, of, Subject } from 'rxjs';
+import { debounceTime, takeUntil } from 'rxjs/operators';
 import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
 import { NavController } from '@ionic/angular';
 
@@ -13,28 +14,33 @@ import { NavController } from '@ionic/angular';
   providers: [DatePipe],
   standalone: false
 })
-export class ActivityStatisticsPageComponent extends BasePageConfirmCancelComponent<ActivityStatisticsFormData> implements OnInit {
+export class ActivityStatisticsPageComponent extends BasePageConfirmCancelComponent<ActivityStatisticsFormData> implements OnInit, OnDestroy {
 
-  public btnTask: ButtonItem;
   public currUserId: string[] | undefined;
   public year: number;
   public month: number;
+
+  private _selectionChanged$ = new Subject<void>();
+  private _destroy$          = new Subject<void>();
 
   constructor(protected override navCtrl: NavController,
               protected override userInterfaceService: UserInterfaceService,
               protected override fb: FormBuilder)
   {
     super(navCtrl, userInterfaceService, fb);
-
-    this.btnTask = userInterfaceService.Btn_Esegui;
-    this.btnTask.event = this.handleButtontaskClick;
   }
 
   override ngOnInit() {
     super.ngOnInit();
-    this._editForm.statusChanges.subscribe(() => {
-      this.btnTask.disabled = !this._editForm.valid;
-    });
+
+    this._selectionChanged$
+      .pipe(debounceTime(300), takeUntil(this._destroy$))
+      .subscribe(() => this.handleButtontaskClick(null));
+  }
+
+  ngOnDestroy(): void {
+    this._destroy$.next();
+    this._destroy$.complete();
   }
 
   get Title(): string { return 'Statistiche attività'; }
@@ -63,23 +69,24 @@ export class ActivityStatisticsPageComponent extends BasePageConfirmCancelCompon
     this.year  = period.year;
     this.month = period.month;
 
-    const firstDay = new Date(period.year, period.month - 1, 1);
-    const lastDay  = new Date(period.year, period.month, 0);
-
-    const toIso = (d: Date) =>
-      `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-
-    this._editForm.patchValue({
-      dal: toIso(firstDay),
-      al:  toIso(lastDay)
-    });
+    this._selectionChanged$.next();
   }
 
-  onCurrentUserChanged(userId: string[] | undefined): void {}
-  onSedeChanged(sediId: number | undefined): void {}
-  onRepartiChanged(repartoIds: number[] | undefined): void {}
+  onCurrentUserChanged(userId: string[] | undefined): void {
+    this._selectionChanged$.next();
+  }
+
+  onSedeChanged(sediId: number | undefined): void {
+    this._selectionChanged$.next();
+  }
+
+  onRepartiChanged(repartoIds: number[] | undefined): void {
+    this._selectionChanged$.next();
+  }
+
   onAllUsersInSelectionChanged(userIds: string[] | undefined): void {
     this.currUserId = userIds;
+    this._selectionChanged$.next();
   }
 
   handleButtontaskClick = async (_item: any) => {
