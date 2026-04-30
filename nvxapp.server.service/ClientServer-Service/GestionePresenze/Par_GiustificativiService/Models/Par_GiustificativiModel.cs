@@ -22,6 +22,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Giusti
         public JustTipoInput TipoInput { get; set; }
         public int? IdCausale { get; set; }
         public SignWithNeutral Segno { get; set; }
+        public bool VisualizzaInPianoFerie { get; set; }
     }
 
 

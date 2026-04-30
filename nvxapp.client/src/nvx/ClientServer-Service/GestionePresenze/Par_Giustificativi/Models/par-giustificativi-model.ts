@@ -13,6 +13,7 @@ export class Par_GiustificativiModel {
   public tipoInput!: JustTipoInput;
   public idCausale?: number; 
   public segno!: SignWithNeutral;
+  public visualizzaInPianoFerie!: boolean;
 
 }
 

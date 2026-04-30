@@ -11,6 +11,8 @@ using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Giustif
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_GiustificativiService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_RichiestaService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_RichiestaService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_GiustificativiService;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_GiustificativiService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.VacationPlanService.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Interfaces;
@@ -23,7 +25,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.VacationPl
         private readonly IGestionePresenzeUserUtility _gestionePresenzeUserUtility;
         private readonly IDip_GG_GiustificativiService _dip_GG_GiustificativiService;
         private readonly IDip_GG_RichiestaService _dip_GG_RichiestaService;
+        
+        private readonly IPar_GiustificativiService _par_GiustificativiService;
 
+        
         public VacationPlanService(IMapper mapper,
                                    UserManager<ApplicationUser> userManager,
                                    IAspNetUsersRepository aspNetUsersRepository,
@@ -31,6 +36,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.VacationPl
                                    IHttpContextAccessor httpContextAccessor,
                                    IConfiguration configuration,
 
+                                   IPar_GiustificativiService par_GiustificativiService,
                                    IGestionePresenzeUserUtility gestionePresenzeUserUtility,
                                    IDip_GG_GiustificativiService dip_GG_GiustificativiService,
                                    IDip_GG_RichiestaService dip_GG_RichiestaService
@@ -40,6 +46,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.VacationPl
             _dip_GG_GiustificativiService = dip_GG_GiustificativiService;
             _dip_GG_RichiestaService = dip_GG_RichiestaService;
             _gestionePresenzeUserUtility = gestionePresenzeUserUtility;
+            _par_GiustificativiService = par_GiustificativiService;
         }
 
         public virtual async Task<GenericResult<VacationPlan_GetOutModel>> VacationPlanGet(GenericRequest<VacationPlan_GetInModel> model, bool isSubProcess)
@@ -66,7 +73,15 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.VacationPl
                 req_Richiesta.Data.Al = al;
                 var res_Richiesta = await _dip_GG_RichiestaService.Dip_GG_Richiesta_Get_4Calculation(req_Richiesta, true);
 
+                var req_Par_Giustificativi = new GenericRequest<Par_GiustificativiInModel>();
+                var res_Par_Giustificativi = await _par_GiustificativiService.GetAll(req_Par_Giustificativi, true);
 
+                var idsPianoFerie = res_Par_Giustificativi.Success && res_Par_Giustificativi.Data != null
+                    ? res_Par_Giustificativi.Data.Par_Giustificativi
+                          .Where(g => g.VisualizzaInPianoFerie)
+                          .Select(g => g.Id)
+                          .ToHashSet()
+                    : new HashSet<int>();
 
                 if (res_Giustificativi.Success && res_Giustificativi.Data != null && res_Richiesta.Success && res_Richiesta.Data != null)
                 {
@@ -76,9 +91,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.VacationPl
                         if (userData?.dip_RapportoLavoro != null)
                         {
                             VacationPlan_DaySlot daySlot = new VacationPlan_DaySlot();
-                            
-                             daySlot.Dip_GG_Giustificativi = res_Giustificativi.Data.Dip_GG_Giustificativi
-                                                                               .Where(t => t.IdDip_RapportoLavoro == userData.dip_RapportoLavoro.Id)
+
+                            daySlot.Dip_GG_Giustificativi = res_Giustificativi.Data.Dip_GG_Giustificativi
+                                                                               .Where(t => t.IdDip_RapportoLavoro == userData.dip_RapportoLavoro.Id
+                                                                                        && idsPianoFerie.Contains(t.IdPar_Giustificativi))
                                                                                .OrderBy(t => t.Data)
                                                                                .ToList();
 

@@ -37,6 +37,8 @@ namespace nvxapp.server.data.Entities.Tenant
 
         public SignWithNeutral Segno { get; set; }
 
+        public Boolean VisualizzaInPianoFerie { get; set; }
+
         public ICollection<Dip_GG_Giustificativi>? Dip_GG_Giustificativi { get; set; }
 
     }

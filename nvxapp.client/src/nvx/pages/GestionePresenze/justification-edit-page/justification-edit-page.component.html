@@ -74,7 +74,11 @@
         <ion-note color="danger" *ngIf="_editForm.get('idCausale')?.hasError('required') && _editForm.get('idCausale')?.touched">
           La causale è obbligatoria.
         </ion-note>
-        
+
+        <ion-item>
+          <ion-label>Visualizza nel piano ferie</ion-label>
+          <ion-toggle formControlName="visualizzaInPianoFerie" slot="end"></ion-toggle>
+        </ion-item>
 
 
       </form>

@@ -50,7 +50,8 @@ export class JustificationEditPageComponent extends BasePageConfirmCancelCompone
       textColor: [null, []],
       segno: [null, [Validators.required]],
       idCausale: [null, []],
-      
+      visualizzaInPianoFerie: [false, []],
+
 
       //roleId: [null, [Validators.required]],
 
