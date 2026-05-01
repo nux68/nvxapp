@@ -11,6 +11,7 @@ using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.ActivityStatisticsService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubCommessaAttivitaService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubCommessaAttivitaService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_TimbraturaService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_EngineService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_EngineService.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
@@ -77,34 +78,52 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ActivitySt
                 // 3. Dizionari di supporto
                 var anagraficaByUserId = dipAnagrafica.ToDictionary(a => a.IdAspNetUsers);
 
+                // GG_Result: protegge da chiavi duplicate con GroupBy+First
                 var risultatiDict = risultatiGG
-                    .ToDictionary(r => (r.IdDip_RapportoLavoro, r.Data.Date));
+                    .GroupBy(r => (r.IdDip_RapportoLavoro, r.Data.Date))
+                    .ToDictionary(g => g.Key, g => g.First());
 
                 var parOrarioById = parOrari.ToDictionary(o => o.Id);
 
+                // DaySlot per lookup rapido (IdDip_RapportoLavoro, Date) ? DaySlot
+                var daySlotByKey = daySlots
+                    .GroupBy(ds => (ds.IdDip_RapportoLavoro, ds.Data.Date))
+                    .ToDictionary(g => g.Key, g => g.First());
+
+                // Rapporto lavoro ? anagrafica
+                var dipRapporto  = allData.OrariSchema_4User_OutModel.Dip_RapportoLavoro;
+                var rapportoById = dipRapporto.ToDictionary(r => r.Id);
+
+                // Timbrature raggruppate per (IdDip_RapportoLavoro, GiornoCompetenza).
+                // Sort per TimeOfDay evita errori quando TimbraturaArrotondata ha anno=0001.
                 var timbraturePerGiorno = timbratureAll
                     .GroupBy(t => (t.IdDip_RapportoLavoro, t.GiornoCompetenza.Date))
                     .ToDictionary(
                         g => g.Key,
-                        g => g.OrderBy(t => t.TimbraturaArrotondata ?? t.Timbratura).ToList());
+                        g => g.OrderBy(t => GetSortableTime(t)).ToList());
 
                 // Accumulatore: (userId, idAttivita) ? minuti totali
                 var accumulator = new Dictionary<(string userId, int idAttivita), int>();
 
-                // 4. Ciclo sui DaySlot
-                foreach (var slot in daySlots)
+                // 4. Loop principale sui GRUPPI DI TIMBRATURE (non sui DaySlots).
+                //    Garantisce che ogni (dipendente, giorno) sia elaborato esattamente
+                //    una volta, solo per i giorni con dati effettivi.
+                foreach (var kvp in timbraturePerGiorno)
                 {
-                    var dayKey = (slot.IdDip_RapportoLavoro, slot.Data.Date);
-                    var userId = slot.IdAspNetUsers;
+                    var (idRapportoLavoro, date) = kvp.Key;
+                    var timbrature               = kvp.Value;
 
-                    if (!anagraficaByUserId.TryGetValue(userId, out var anagrafica))
-                        continue;
+                    // Risolvi userId e nome dal rapporto lavoro
+                    if (!rapportoById.TryGetValue(idRapportoLavoro, out var rapporto)) continue;
+                    var anagrKey = dipAnagrafica.FirstOrDefault(a => a.Id == rapporto.IdDip_Anagrafica);
+                    if (anagrKey == null) continue;
+                    var userId  = anagrKey.IdAspNetUsers;
+                    var nomeDip = $"{anagrKey.Cognome} {anagrKey.Nome}".Trim();
 
-                    var nomeDip = $"{anagrafica.Cognome} {anagrafica.Nome}".Trim();
+                    var dayKey = (idRapportoLavoro, date);
 
                     // Filtro stato giornata: solo giornate elaborate correttamente
-                    if (!risultatiDict.TryGetValue(dayKey, out var ggResult))
-                        continue;
+                    if (!risultatiDict.TryGetValue(dayKey, out var ggResult)) continue;
 
                     var hasErr  = (ggResult.Stato & GG_ResultStato.Err)  != 0;
                     var hasInit = (ggResult.Stato & GG_ResultStato.STATE_MASK) == GG_ResultStato.Init;
@@ -114,41 +133,50 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ActivitySt
                         {
                             UserId         = userId,
                             NomeDipendente = nomeDip,
-                            Data           = slot.Data,
+                            Data           = date,
                             Stato          = ggResult.Stato
                         });
                         continue;
                     }
 
-                    // Recupero Par_Orario per questa giornata (ZOrder 1 = base)
+                    // Recupero TimbratureTipo dal DaySlot corrispondente
+                    if (!daySlotByKey.TryGetValue(dayKey, out var slot)) continue;
                     var orarioEntry = slot.Orari.OrderBy(o => o.ZOrder).FirstOrDefault();
                     if (orarioEntry == null) continue;
-                    if (!parOrarioById.TryGetValue(orarioEntry.IdPar_Orario, out var parOrario))
-                        continue;
-
-                    if (!timbraturePerGiorno.TryGetValue(dayKey, out var timbrature) || timbrature.Count == 0)
-                        continue;
+                    if (!parOrarioById.TryGetValue(orarioEntry.IdPar_Orario, out var parOrario)) continue;
 
                     if (parOrario.TimbratureTipo == OrarioTimbratureTipo.IntervalloOrario)
                     {
-                        // Segmenti consecutivi: ogni record non-Uscita apre un segmento verso il record successivo.
-                        // Il cambio attività si rileva da IdAz_SubCommessaAttivita diverso tra record consecutivi.
-                        for (int i = 0; i < timbrature.Count - 1; i++)
+                        // State machine esplicita: traccia il record che ha aperto il segmento corrente.
+                        // Il reset a null sull'Uscita impedisce segmenti che attraversano il gap tra blocchi.
+                        Dip_GG_TimbraturaModel? prevAttivo = null;
+
+                        foreach (var t in timbrature)
                         {
-                            var curr = timbrature[i];
-                            var next = timbrature[i + 1];
-
-                            // Un'Uscita non può aprire un segmento
-                            if (curr.TimbraturaTipo == TipoTimbratura.Uscita)
-                                continue;
-
-                            var t1     = curr.TimbraturaArrotondata ?? curr.Timbratura;
-                            var t2     = next.TimbraturaArrotondata ?? next.Timbratura;
-                            var minuti = (int)(t2 - t1).TotalMinutes;
-                            if (minuti <= 0) continue;
-
-                            AggiungiMinuti(accumulator, userId, curr.IdAz_SubCommessaAttivita,
-                                           minuti, filters, attivitaLookup);
+                            if (t.TimbraturaTipo == TipoTimbratura.Uscita)
+                            {
+                                // Chiude il blocco: crea il segmento finale tra prevAttivo e questa Uscita
+                                if (prevAttivo != null)
+                                {
+                                    var minuti = CalcolaMinuti(prevAttivo, t);
+                                    if (minuti > 0)
+                                        AggiungiMinuti(accumulator, userId, prevAttivo.IdAz_SubCommessaAttivita,
+                                                       minuti, filters, attivitaLookup);
+                                }
+                                prevAttivo = null; // blocco chiuso: il prossimo record inizierà un nuovo blocco
+                            }
+                            else
+                            {
+                                // Entrata o SenzaVerso (cambio attività): chiude il segmento precedente se aperto
+                                if (prevAttivo != null)
+                                {
+                                    var minuti = CalcolaMinuti(prevAttivo, t);
+                                    if (minuti > 0)
+                                        AggiungiMinuti(accumulator, userId, prevAttivo.IdAz_SubCommessaAttivita,
+                                                       minuti, filters, attivitaLookup);
+                                }
+                                prevAttivo = t; // questo record apre il prossimo segmento
+                            }
                         }
                     }
                     else // MonteOre / MonteOreValore: il valore è nella parte oraria di Timbratura
@@ -167,7 +195,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ActivitySt
                 // 5. Costruzione righe per dipendente dall'accumulatore
                 foreach (var ((userId, idAttivita), minuti) in accumulator)
                 {
-                    if (!anagraficaByUserId.TryGetValue(userId, out var ana)) continue;
+                    var ana = dipAnagrafica.FirstOrDefault(a => a.IdAspNetUsers == userId);
+                    if (ana == null) continue;
                     attivitaLookup.TryGetValue(idAttivita, out var attInfo);
 
                     retVal.RighePerDipendente.Add(new ActivityStatistics_RowModel
@@ -210,6 +239,25 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ActivitySt
                 await Task.Delay(0);
                 return retVal;
             }, isSubProcess);
+        }
+
+        /// <summary>
+        /// Restituisce il TimeOfDay da usare per l'ordinamento, indipendente dall'anno.
+        /// TimbraturaArrotondata può avere anno=0001 se impostata come solo orario:
+        /// confrontare direttamente con Timbratura (anno=2025) darebbe ordine errato.
+        /// </summary>
+        private static TimeSpan GetSortableTime(Dip_GG_TimbraturaModel t)
+            => (t.TimbraturaArrotondata ?? t.Timbratura).TimeOfDay;
+
+        /// <summary>
+        /// Calcola la durata in minuti tra due timbrature usando TimbraturaArrotondata
+        /// e operando solo sul TimeOfDay per evitare errori da anno=0001.
+        /// </summary>
+        private static int CalcolaMinuti(Dip_GG_TimbraturaModel da, Dip_GG_TimbraturaModel a)
+        {
+            var t1 = (da.TimbraturaArrotondata ?? da.Timbratura).TimeOfDay;
+            var t2 = (a.TimbraturaArrotondata  ?? a.Timbratura).TimeOfDay;
+            return (int)(t2 - t1).TotalMinutes;
         }
 
         /// <summary>
