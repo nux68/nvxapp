@@ -5,9 +5,9 @@
 
 <ion-content [fullscreen]="true">
 
+  <!-- Filtri -->
   <ion-card>
     <ion-card-content>
-
       <app-sedi-reparto-user-selection [showPeriodSelect]="true"
                                        [showSediSelect]="false"
                                        [showRepartoSelect]="true"
@@ -19,61 +19,195 @@
                                        (allUsersIdChange)="onAllUsersInSelectionChanged($event)"
                                        (currUserIdChange)="onCurrentUserChanged($event)">
       </app-sedi-reparto-user-selection>
-
-      <form [formGroup]="_editForm">
-
-        <!--<ion-row>
-          <ion-col>
-            <ion-item>
-              <ion-label position="floating">Dal</ion-label>
-              <ion-datetime-button class="datetime-button-with-label" datetime="stat-dal-modal"></ion-datetime-button>
-              <ion-modal [keepContentsMounted]="true">
-                <ng-template>
-                  <ion-datetime id="stat-dal-modal"
-                                formControlName="dal"
-                                presentation="date"
-                                [firstDayOfWeek]="1"
-                                [showDefaultButtons]="true"
-                                doneText="OK"
-                                cancelText="Annulla">
-                  </ion-datetime>
-                </ng-template>
-              </ion-modal>
-            </ion-item>
-          </ion-col>
-          <ion-col>
-            <ion-item>
-              <ion-label position="floating">Al</ion-label>
-              <ion-datetime-button class="datetime-button-with-label" datetime="stat-al-modal"></ion-datetime-button>
-              <ion-modal [keepContentsMounted]="true">
-                <ng-template>
-                  <ion-datetime id="stat-al-modal"
-                                formControlName="al"
-                                presentation="date"
-                                [firstDayOfWeek]="1"
-                                [showDefaultButtons]="true"
-                                doneText="OK"
-                                cancelText="Annulla">
-                  </ion-datetime>
-                </ng-template>
-              </ion-modal>
-            </ion-item>
-          </ion-col>
-        </ion-row>-->
-
-        <!--<ion-row class="ion-align-items-center">
-          <ion-col>
-            <br />
-            <ion-button size="small" fill="outline" shape="round" (click)="btnTask.event(null)" color="{{btnTask.color}}" [disabled]="btnTask.disabled">
-              <ion-icon name="{{btnTask.image}}"></ion-icon>
-              &nbsp;{{btnTask.text}}
-            </ion-button>
-          </ion-col>
-        </ion-row>-->
-
-      </form>
-
+      <form [formGroup]="_editForm"></form>
     </ion-card-content>
   </ion-card>
+
+  <!-- Risultati -->
+  <ng-container *ngIf="hasResults">
+
+    <!-- Segment tabs -->
+    <ion-segment [(ngModel)]="selectedSegment" class="nvx-segment">
+      <ion-segment-button value="dipendente">
+        <ion-label>Per dipendente</ion-label>
+        <ion-badge *ngIf="righePerDipendente.length > 0" color="primary">{{ righePerDipendente.length }}</ion-badge>
+      </ion-segment-button>
+      <ion-segment-button value="attivita">
+        <ion-label>Totali attività</ion-label>
+        <ion-badge *ngIf="totaliPerAttivita.length > 0" color="secondary">{{ totaliPerAttivita.length }}</ion-badge>
+      </ion-segment-button>
+      <ion-segment-button value="escluse">
+        <ion-label>Giornate escluse</ion-label>
+        <ion-badge *ngIf="giornateEscluse.length > 0" color="warning">{{ giornateEscluse.length }}</ion-badge>
+      </ion-segment-button>
+    </ion-segment>
+
+    <!-- ===== TAB: PER DIPENDENTE ===== -->
+    <ion-card *ngIf="selectedSegment === 'dipendente'">
+      <ion-card-content>
+
+        <ion-grid *ngIf="righePerDipendente_Raggruppate.length > 0; else noDati">
+
+          <!-- Header -->
+          <ion-row class="nvx-header-row">
+            <ion-col size="3"><ion-label>Attività</ion-label></ion-col>
+            <ion-col size="3"><ion-label>Commessa / Sub-commessa</ion-label></ion-col>
+            <ion-col size="3"><ion-label>Cliente</ion-label></ion-col>
+            <ion-col size="3" class="ion-text-end"><ion-label>Ore</ion-label></ion-col>
+          </ion-row>
+
+          <!-- Gruppo per dipendente -->
+          <ng-container *ngFor="let gruppo of righePerDipendente_Raggruppate">
+
+            <!-- Intestazione gruppo -->
+            <ion-row class="nvx-group-row">
+              <ion-col>
+                <ion-icon name="person-circle-outline" class="nvx-group-icon"></ion-icon>
+                <strong>{{ gruppo.nomeDipendente }}</strong>
+              </ion-col>
+              <ion-col class="ion-text-end">
+                <ion-chip color="primary" class="nvx-chip-ore">
+                  <ion-icon name="time-outline"></ion-icon>
+                  {{ minutiToHHmm(gruppo.totaleMinuti) }}
+                </ion-chip>
+              </ion-col>
+            </ion-row>
+
+            <!-- Righe attività del dipendente -->
+            <ion-row *ngFor="let riga of gruppo.righe; let i = index"
+                     [class.nvx-row-odd]="i % 2 !== 0"
+                     [class.nvx-row-even]="i % 2 === 0"
+                     class="nvx-ion-row-4table nvx-row-hover">
+              <ion-col size="3">
+                <ion-label>{{ riga.nomeAttivita }}</ion-label>
+              </ion-col>
+              <ion-col size="3">
+                <ion-label>{{ riga.nomeCommessa }}</ion-label>
+                <br />
+                <ion-note>{{ riga.nomeSubCommessa }}</ion-note>
+              </ion-col>
+              <ion-col size="3">
+                <ion-label>{{ riga.nomeCliente }}</ion-label>
+              </ion-col>
+              <ion-col size="3" class="ion-text-end">
+                <ion-label>{{ minutiToHHmm(riga.totaleMinuti) }}</ion-label>
+              </ion-col>
+            </ion-row>
+
+          </ng-container>
+
+        </ion-grid>
+
+      </ion-card-content>
+    </ion-card>
+
+    <!-- ===== TAB: TOTALI PER ATTIVITÀ ===== -->
+    <ion-card *ngIf="selectedSegment === 'attivita'">
+      <ion-card-content>
+
+        <ion-grid *ngIf="totaliPerAttivita.length > 0; else noDati">
+
+          <!-- Header -->
+          <ion-row class="nvx-header-row">
+            <ion-col size="3"><ion-label>Attività</ion-label></ion-col>
+            <ion-col size="3"><ion-label>Commessa / Sub-commessa</ion-label></ion-col>
+            <ion-col size="3"><ion-label>Cliente</ion-label></ion-col>
+            <ion-col size="3" class="ion-text-end"><ion-label>Ore totali</ion-label></ion-col>
+          </ion-row>
+
+          <!-- Righe -->
+          <ion-row *ngFor="let t of totaliPerAttivita; let i = index"
+                   [class.nvx-row-odd]="i % 2 !== 0"
+                   [class.nvx-row-even]="i % 2 === 0"
+                   class="nvx-ion-row-4table nvx-row-hover">
+            <ion-col size="3">
+              <ion-label>{{ t.nomeAttivita }}</ion-label>
+            </ion-col>
+            <ion-col size="3">
+              <ion-label>{{ t.nomeCommessa }}</ion-label>
+              <br />
+              <ion-note>{{ t.nomeSubCommessa }}</ion-note>
+            </ion-col>
+            <ion-col size="3">
+              <ion-label>{{ t.nomeCliente }}</ion-label>
+            </ion-col>
+            <ion-col size="3" class="ion-text-end">
+              <ion-chip color="secondary" class="nvx-chip-ore">
+                <ion-icon name="time-outline"></ion-icon>
+                {{ minutiToHHmm(t.totaleMinuti) }}
+              </ion-chip>
+            </ion-col>
+          </ion-row>
+
+          <!-- Riga totale generale -->
+          <ion-row class="nvx-total-row">
+            <ion-col size="9"><strong>Totale complessivo</strong></ion-col>
+            <ion-col size="3" class="ion-text-end">
+              <ion-chip color="primary" class="nvx-chip-ore">
+                <ion-icon name="time-outline"></ion-icon>
+                {{ minutiToHHmm(totaleCompletivoMinuti) }}
+              </ion-chip>
+            </ion-col>
+          </ion-row>
+
+        </ion-grid>
+
+      </ion-card-content>
+    </ion-card>
+
+    <!-- ===== TAB: GIORNATE ESCLUSE ===== -->
+    <ion-card *ngIf="selectedSegment === 'escluse'">
+      <ion-card-content>
+
+        <ion-grid *ngIf="giornateEscluse.length > 0; else noEscluse">
+
+          <!-- Header -->
+          <ion-row class="nvx-header-row">
+            <ion-col size="4"><ion-label>Dipendente</ion-label></ion-col>
+            <ion-col size="4"><ion-label>Data</ion-label></ion-col>
+            <ion-col size="4"><ion-label>Stato</ion-label></ion-col>
+          </ion-row>
+
+          <!-- Righe -->
+          <ion-row *ngFor="let e of giornateEscluse; let i = index"
+                   [class.nvx-row-odd]="i % 2 !== 0"
+                   [class.nvx-row-even]="i % 2 === 0"
+                   class="nvx-ion-row-4table nvx-row-hover">
+            <ion-col size="4">
+              <ion-icon name="person-outline" style="margin-right: 4px;"></ion-icon>
+              <ion-label>{{ e.nomeDipendente }}</ion-label>
+            </ion-col>
+            <ion-col size="4">
+              <ion-label>{{ e.data | date:'dd/MM/yyyy' }}</ion-label>
+            </ion-col>
+            <ion-col size="4">
+              <ion-chip [color]="statoColor(e.stato)" class="nvx-chip-stato">
+                <ion-icon [name]="statoIcon(e.stato)"></ion-icon>
+                {{ statoLabel(e.stato) }}
+              </ion-chip>
+            </ion-col>
+          </ion-row>
+
+        </ion-grid>
+
+        <ng-template #noEscluse>
+          <ion-item lines="none">
+            <ion-icon name="checkmark-circle-outline" color="success" slot="start"></ion-icon>
+            <ion-label color="success">Nessuna giornata esclusa</ion-label>
+          </ion-item>
+        </ng-template>
+
+      </ion-card-content>
+    </ion-card>
+
+  </ng-container>
+
+  <!-- Template vuoto generico -->
+  <ng-template #noDati>
+    <ion-item lines="none">
+      <ion-icon name="information-circle-outline" color="medium" slot="start"></ion-icon>
+      <ion-label color="medium">Nessun dato disponibile</ion-label>
+    </ion-item>
+  </ng-template>
 
 </ion-content>

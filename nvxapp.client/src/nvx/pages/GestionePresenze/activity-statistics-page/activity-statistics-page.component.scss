@@ -1,3 +1,53 @@
-.datetime-button-with-label {
-  margin-top: 20px; /* Aggiunge spazio sopra il pulsante */
+.nvx-segment {
+  margin-bottom: 8px;
+}
+
+.nvx-header-row {
+  font-weight: 600;
+  font-size: 0.78em;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--ion-color-medium);
+  border-bottom: 2px solid var(--ion-color-light-shade);
+  padding-bottom: 4px;
+  margin-bottom: 2px;
+}
+
+.nvx-group-row {
+  background: var(--ion-color-light);
+  border-left: 3px solid var(--ion-color-primary);
+  padding: 4px 8px;
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+
+  .nvx-group-icon {
+    margin-right: 6px;
+    color: var(--ion-color-primary);
+    vertical-align: middle;
+  }
+}
+
+.nvx-total-row {
+  border-top: 2px solid var(--ion-color-light-shade);
+  margin-top: 4px;
+  padding-top: 4px;
+  font-weight: 700;
+}
+
+.nvx-chip-ore {
+  font-size: 0.85em;
+  height: 24px;
+  margin: 0;
+
+  ion-icon {
+    margin-right: 3px;
+    font-size: 0.9em;
+  }
+}
+
+.nvx-chip-stato {
+  font-size: 0.82em;
+  height: 24px;
+  margin: 0;
 }

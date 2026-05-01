@@ -42,8 +42,8 @@ namespace nvxapp.server.data.Entities.Tenant
     {
         Entrata ,
         Uscita ,
-        SenzaVerso ,
-        Attivita
+        SenzaVerso 
+        //Attivita
     }
 
 

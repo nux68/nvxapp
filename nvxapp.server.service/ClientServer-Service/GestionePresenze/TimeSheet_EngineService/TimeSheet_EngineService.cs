@@ -626,10 +626,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                 var timbraturaItem = group.ElementAt(i);
 
                                 // Applica la logica solo se il TipoTimbratura è diverso da Attivita
-                                if (timbraturaItem.TimbraturaTipo != TipoTimbratura.Attivita)
-                                {
-                                    //timbraturaItem.TimbraturaTipo = (i % 2 == 0) ? TipoTimbratura.Entrata : TipoTimbratura.Uscita;
-                                }
+                                //if (timbraturaItem.TimbraturaTipo != TipoTimbratura.Attivita)
+                                //{
+                                //    //timbraturaItem.TimbraturaTipo = (i % 2 == 0) ? TipoTimbratura.Entrata : TipoTimbratura.Uscita;
+                                //}
                             }
                         }
 
@@ -1110,8 +1110,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
                 // solo SenzaVerso, ordinate per orario crescente — Attivita escluse
                 var timbratureSenzaVerso = allData.Dip_GG_AllData_OutModel.Dip_GG_Timbratura.Where(t => t.IdDip_RapportoLavoro == IdDip_RapportoLavoro &&
-                                                                                                        t.GiornoCompetenza.Date == day.Date &&
-                                                                                                        t.TimbraturaTipo != TipoTimbratura.Attivita)
+                                                                                                        t.GiornoCompetenza.Date == day.Date 
+                                                                                                        /*&& t.TimbraturaTipo != TipoTimbratura.Attivita*/ )
                                                                                             .OrderBy(t => t.Timbratura)
                                                                                             .ToList();
 
@@ -1726,7 +1726,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                                                                          (TimbratureTipo == OrarioTimbratureTipo.IntervalloOrario ?
                                                                                              (t.TimbraturaTipo == TipoTimbratura.Entrata || t.TimbraturaTipo == TipoTimbratura.Uscita)
                                                                                              :
-                                                                                             (t.TimbraturaTipo == TipoTimbratura.SenzaVerso || t.TimbraturaTipo == TipoTimbratura.Attivita))
+                                                                                             (t.TimbraturaTipo == TipoTimbratura.SenzaVerso /*|| t.TimbraturaTipo == TipoTimbratura.Attivita*/))
                                                                                      )
                                                                               .OrderBy(t => t.TimbraturaArrotondata)
                                                                               .ToList();
