@@ -156,13 +156,13 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                                                             }
                                                                          );
 
-                                var req_OrariSchema_4User = new GenericRequest<Timesheet_AllData_InModel>();
-                                req_OrariSchema_4User.Data.Dal = model.Data.TimeSheet_Export.Dal;
-                                req_OrariSchema_4User.Data.Al = model.Data.TimeSheet_Export.Al;
-                                req_OrariSchema_4User.Data.UsersId = model.Data.TimeSheet_Export.SelectedUserId;
+                                var req_AllData_4User = new GenericRequest<Timesheet_AllData_InModel>();
+                                req_AllData_4User.Data.Dal = model.Data.TimeSheet_Export.Dal;
+                                req_AllData_4User.Data.Al = model.Data.TimeSheet_Export.Al;
+                                req_AllData_4User.Data.UsersId = model.Data.TimeSheet_Export.SelectedUserId;
 
                                 string? downloadUrl = null;
-                                var AllData_Res = await _timeSheet_EngineService.Get_Timesheet_AllData(req_OrariSchema_4User, true);
+                                var AllData_Res = await _timeSheet_EngineService.Get_Timesheet_AllData(req_AllData_4User, true);
 
                                 if (AllData_Res.Success && AllData_Res.Data != null)
                                 {

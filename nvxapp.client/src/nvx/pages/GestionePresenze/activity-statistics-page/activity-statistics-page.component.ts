@@ -6,6 +6,10 @@ import { Observable, of, Subject } from 'rxjs';
 import { debounceTime, takeUntil } from 'rxjs/operators';
 import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
 import { NavController } from '@ionic/angular';
+import { ActivityStatisticsService } from '../../../ClientServer-Service/GestionePresenze/ActivityStatisticsService/activity-statistics.service';
+import { PresentStaff_GetInModel } from '../../../ClientServer-Service/GestionePresenze/PresentStaffService/Models/present-staff-model';
+import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
+import { ActivityStatistics_GetInModel } from '../../../ClientServer-Service/GestionePresenze/ActivityStatisticsService/Models/activity-statistics-model';
 
 @Component({
   selector: 'app-activity-statistics-page',
@@ -25,6 +29,7 @@ export class ActivityStatisticsPageComponent extends BasePageConfirmCancelCompon
 
   constructor(protected override navCtrl: NavController,
               protected override userInterfaceService: UserInterfaceService,
+              private activityStatisticsService: ActivityStatisticsService,
               protected override fb: FormBuilder)
   {
     super(navCtrl, userInterfaceService, fb);
@@ -90,7 +95,18 @@ export class ActivityStatisticsPageComponent extends BasePageConfirmCancelCompon
   }
 
   handleButtontaskClick = async (_item: any) => {
-    // TODO: chiamare il servizio statistiche attività
+    let request: GenericRequest<ActivityStatistics_GetInModel> = new GenericRequest<ActivityStatistics_GetInModel>(ActivityStatistics_GetInModel);
+
+
+    request.data.activityStatistics.year = this.year;
+    request.data.activityStatistics.month = this.month;
+    request.data.activityStatistics.selectedUserId = this.currUserId ? this.currUserId : [];
+
+    this.activityStatisticsService.ActivityStatisticsGet(request).subscribe(x => {
+
+      //this.daySlots = x.data.daySlots;
+
+    });
   };
 
 }

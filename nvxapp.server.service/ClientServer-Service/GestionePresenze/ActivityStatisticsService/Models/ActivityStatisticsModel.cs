@@ -6,8 +6,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ActivitySt
     {
         public int Year { get; set; }
         public int Month { get; set; }
-        public DateTime Dal { get; set; }
-        public DateTime Al { get; set; }
+        //public DateTime Dal { get; set; }
+        //public DateTime Al { get; set; }
         public List<string> SelectedUserId { get; set; } = new List<string>();
     }
 
