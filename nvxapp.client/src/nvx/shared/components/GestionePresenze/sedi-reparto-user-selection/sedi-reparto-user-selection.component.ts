@@ -11,6 +11,7 @@ import { SharedParameterGestionePresenzeService } from '../../../shared-paramete
 import { RoleCode } from '../../../../ClientServer-Service/Infrastructure/Account/Models/user-roles-model';
 import { ModalController } from '@ionic/angular';
 import { DipSelectorModalComponent, DipSelectorResult } from '../dip-selector-modal/dip-selector-modal.component';
+import { HoverPopupData } from '../../infrastructure/hover-popup/hover-popup.component';
 
 
 @Component({
@@ -566,6 +567,26 @@ export class SediRepartoUserSelectionComponent implements OnInit {
     } else {
       return `${ids.length} dipendenti selezionati`;
     }
+  }
+
+  public get_SelectedUsersPopupData(): HoverPopupData {
+    const ids: string[] = this.selectedUserId
+      ? (Array.isArray(this.selectedUserId) ? this.selectedUserId : [this.selectedUserId])
+      : [];
+
+    const anagrafica = this.sharedParameterGestionePresenzeService.Dip_Anagrafica_OnRoles([RoleCode.User]);
+
+    const extraInfo: Record<string, string> = {};
+    ids.forEach((id, index) => {
+      const dip = anagrafica.find(a => a.idAspNetUsers === id);
+      extraInfo[`${index + 1}`] = dip ? `${dip.cognome} ${dip.nome}` : id;
+    });
+
+    return {
+      title: `${ids.length} dipendenti selezionati`,
+      content: '',
+      extraInfo
+    };
   }
 
   public async openDipSelectorModal(): Promise<void> {

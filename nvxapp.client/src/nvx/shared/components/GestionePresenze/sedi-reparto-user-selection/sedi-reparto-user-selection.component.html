@@ -76,7 +76,11 @@
                   [disabled]="(!selectedRepartoId || selectedRepartoId.length === 0) || az_SediRepartoUserList.length === 0"
                   (click)="openDipSelectorModal()">
           <ion-label position="stacked">{{ singleSelectUser ? 'Dipendente' : 'Dipendenti' }}</ion-label>
-          <ion-text class="nvx-user-label">{{ selectedUserLabel }}</ion-text>
+          <ion-text class="nvx-user-label"
+                    [appHoverPopup]="get_SelectedUsersPopupData()"
+                    [appHoverPopupEnabled]="!singleSelectUser && selectedUserId && selectedUserId.length > 0">
+            {{ selectedUserLabel }}
+          </ion-text>
           <ion-icon name="people-outline" slot="end"></ion-icon>
         </ion-item>
 
