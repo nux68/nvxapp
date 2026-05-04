@@ -15,6 +15,7 @@ import { SharedParameterGestionePresenzeService } from '../../shared/shared-para
 import { DateTimeUtilService } from '../infrastructure/date-time-util.service';
 import { TipoRichiestaToShortTextPipe } from '../../shared/pipe/GestionePresenze/tipo-richiesta-to-short-text.pipe';
 import { StatoRichiestaLongTextPipe } from '../../shared/pipe/GestionePresenze/stato-richiesta-long-text.pipe';
+import { TipoTimbraturaToLongTextPipe } from '../../shared/pipe/GestionePresenze/tipo-timbratura-to-long-text.pipe';
 import { Timesheet_AllData_InModel } from '../../ClientServer-Service/GestionePresenze/TimeSheet_EngineService/Models/time-sheet-engine-model';
 import { TimeSheetEngineService } from '../../ClientServer-Service/GestionePresenze/TimeSheet_EngineService/time-sheet-engine.service';
 import { Dip_GG_ResultModel, GG_ResultStato } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Result/Models/dip-gg-result-model';
@@ -721,6 +722,44 @@ export class TimeSheetService {
       return true;
     }
 
+  }
+
+  get_TimbraturaPopupData(record: Dip_GG_TimbraturaModel, richiesta: Dip_GG_RichiestaModel | null): HoverPopupData {
+    const tipoLabel = new TipoTimbraturaToLongTextPipe().transform(record.timbraturaTipo);
+
+    const timbratura       = record.timbratura       ? new Date(record.timbratura).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }) : '--';
+    const timbraturaOrig   = record.timbraturaOriginale ? new Date(record.timbraturaOriginale).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }) : null;
+    const timbraturaArrot  = record.timbraturaArrotondata ? new Date(record.timbraturaArrotondata).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }) : null;
+    const giornoComp       = record.giornoCompetenza ? new Date(record.giornoCompetenza).toLocaleDateString('it-IT', { weekday: 'long', day: '2-digit', month: 'long' }) : '--';
+
+    const extraInfo: Record<string, string> = {};
+
+    extraInfo['Timbratura'] = timbratura;
+
+    if (timbraturaOrig && timbraturaOrig !== timbratura)
+      extraInfo['Originale'] = timbraturaOrig;
+
+    if (timbraturaArrot &&
+        (record.timbraturaTipo === TipoTimbratura.Entrata || record.timbraturaTipo === TipoTimbratura.Uscita))
+      extraInfo['Arrotondata'] = timbraturaArrot;
+
+    extraInfo['Giorno competenza'] = giornoComp;
+
+    if (richiesta)
+      extraInfo['Stato richiesta'] = new StatoRichiestaLongTextPipe().transform(
+        richiesta.revocaStato != null ? richiesta.revocaStato : richiesta.richiestaStato
+      );
+
+    const attivita = this.sharedParameterGestionePresenzeService.Az_SubCommessaAttivita_4Full
+      ?.find(a => a.subCommessaAttivita_Id === record.idAz_SubCommessaAttivita);
+    if (attivita)
+      extraInfo['Attività'] = `${attivita.cliente_Descrizione} › ${attivita.commessa_Decrizione} › ${attivita.subCommessa_Decrizione} › ${attivita.subCommessaAttivita_Par_Attivita_Descrizione}`;
+
+    return {
+      title: tipoLabel,
+      content: giornoComp,
+      extraInfo
+    };
   }
 
   get_DayPopupStato(result: Dip_GG_ResultModel): HoverPopupData {
