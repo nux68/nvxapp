@@ -37,6 +37,10 @@
               }
             ],
             "styles": [ "src/global.scss", "src/theme/variables.scss" ],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
               "budgets": [
                 {
                   "type": "initial",
