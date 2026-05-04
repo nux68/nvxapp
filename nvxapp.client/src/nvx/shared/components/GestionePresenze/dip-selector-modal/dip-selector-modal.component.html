@@ -1,11 +1,6 @@
 <ion-header>
   <ion-toolbar color="primary">
     <ion-title>{{ mode === 'single' ? 'Seleziona dipendente' : 'Seleziona dipendenti' }}</ion-title>
-    <ion-buttons slot="end">
-      <ion-button (click)="cancel()">
-        <ion-icon name="close-outline" slot="icon-only"></ion-icon>
-      </ion-button>
-    </ion-buttons>
   </ion-toolbar>
 
   <ion-toolbar>
@@ -33,7 +28,7 @@
   <ion-list lines="full">
     <ion-item
       *ngFor="let user of filteredUsers"
-      [class.nvx-item-selected]="isSelected(user.idAspNetUsers)"
+      [class.nvx-item-selected]="mode === 'single' && isSelected(user.idAspNetUsers)"
       (click)="selectUser(user.idAspNetUsers)"
       button
       detail="false">
@@ -58,7 +53,7 @@
         *ngIf="mode === 'multi'"
         slot="end"
         [checked]="isSelected(user.idAspNetUsers)"
-        (click)="$event.stopPropagation()">
+        style="pointer-events: none">
       </ion-checkbox>
 
     </ion-item>
@@ -69,13 +64,4 @@
   </ion-list>
 </ion-content>
 
-<ion-footer *ngIf="mode === 'multi'">
-  <ion-toolbar>
-    <ion-buttons slot="end">
-      <ion-button fill="outline" (click)="cancel()">Annulla</ion-button>
-      <ion-button fill="solid" color="primary" [disabled]="confirmDisabled" (click)="confirm()">
-        Conferma ({{ selectedIds.size }})
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-footer>
+<app-page-buttonbar [buttonbar]="buttonbar"></app-page-buttonbar>

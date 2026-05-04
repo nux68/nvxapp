@@ -4,6 +4,7 @@ import { Az_SediRepartoUserModel } from '../../../../ClientServer-Service/Gestio
 import { SharedParameterGestionePresenzeService } from '../../../shared-parameter-gestione-presenze.service';
 import { Dip_AnagraficaModel } from '../../../../ClientServer-Service/GestionePresenze/Dip_Anagrafica/Models/dip-anagrafica-model';
 import { RoleCode } from '../../../../ClientServer-Service/Infrastructure/Account/Models/user-roles-model';
+import { ButtonItem, UserInterfaceService } from '../../../../Utility/infrastructure/user-interface.service';
 
 export type DipSelectorMode = 'single' | 'multi';
 
@@ -28,10 +29,12 @@ export class DipSelectorModalComponent implements OnInit {
   public selectedIds: Set<string> = new Set();
   public filteredUsers: DipDisplayItem[] = [];
   private allUsers: DipDisplayItem[] = [];
+  public buttonbar: ButtonItem[] = [];
 
   constructor(
     private modalCtrl: ModalController,
-    private sharedParameterService: SharedParameterGestionePresenzeService
+    private sharedParameterService: SharedParameterGestionePresenzeService,
+    private userInterfaceService: UserInterfaceService
   ) {}
 
   ngOnInit() {
@@ -51,6 +54,17 @@ export class DipSelectorModalComponent implements OnInit {
 
     this.selectedIds = new Set(this.preselected);
     this.applyFilter();
+
+    if (this.mode === 'multi') {
+      this.buttonbar = this.userInterfaceService.Btn_ConfermaAnnulla;
+      this.buttonbar[0].disabled = this.confirmDisabled;
+      this.buttonbar[0].event = () => this.confirm();
+      this.buttonbar[1].event = () => this.cancel();
+    } else {
+      const btnAnnulla = this.userInterfaceService.Btn_Annulla;
+      btnAnnulla.event = () => this.cancel();
+      this.buttonbar = [btnAnnulla];
+    }
   }
 
   public onSearchChange(): void {
@@ -81,6 +95,7 @@ export class DipSelectorModalComponent implements OnInit {
       } else {
         this.selectedIds.add(id);
       }
+      if (this.buttonbar[0]) this.buttonbar[0].disabled = this.confirmDisabled;
     }
   }
 
@@ -107,6 +122,7 @@ export class DipSelectorModalComponent implements OnInit {
 
   public clearAll(): void {
     this.selectedIds.clear();
+    if (this.buttonbar[0]) this.buttonbar[0].disabled = this.confirmDisabled;
   }
 }
 

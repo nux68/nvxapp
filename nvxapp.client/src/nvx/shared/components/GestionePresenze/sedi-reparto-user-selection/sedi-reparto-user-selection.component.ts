@@ -9,6 +9,8 @@ import { Az_SediRepartoUser_GetAll_Period_InModel, Az_SediRepartoUserModel } fro
 import { catchError, forkJoin, map, Observable, throwError } from 'rxjs';
 import { SharedParameterGestionePresenzeService } from '../../../shared-parameter-gestione-presenze.service';
 import { RoleCode } from '../../../../ClientServer-Service/Infrastructure/Account/Models/user-roles-model';
+import { ModalController } from '@ionic/angular';
+import { DipSelectorModalComponent, DipSelectorResult } from '../dip-selector-modal/dip-selector-modal.component';
 
 
 @Component({
@@ -69,7 +71,8 @@ export class SediRepartoUserSelectionComponent implements OnInit {
     private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
     private azSediService: AzSediService,
     private azSediRepartoService: AzSediRepartoService,
-    private azSediRepartoUserServiceService: AzSediRepartoUserServiceService
+    private azSediRepartoUserServiceService: AzSediRepartoUserServiceService,
+    private modalCtrl: ModalController
   ) { }
 
   ngOnInit() {
@@ -538,23 +541,54 @@ export class SediRepartoUserSelectionComponent implements OnInit {
 
   public columSize_4Reparto(): string {
     if (this.singleFieldOnRow)
-
       return 'col-sm-12';
     else
-
       return 'col-sm-5';
   }
 
   public columSize_4User(): string {
     if (this.singleFieldOnRow)
-
       return 'col-sm-12';
     else
-
       return 'col-sm-5';
   }
 
+  public get selectedUserLabel(): string {
+    if (!this.selectedUserId || (Array.isArray(this.selectedUserId) && this.selectedUserId.length === 0))
+      return this.singleSelectUser ? 'Seleziona dipendente' : 'Seleziona dipendenti';
 
+    const ids: string[] = Array.isArray(this.selectedUserId) ? this.selectedUserId : [this.selectedUserId];
+    const anagrafica = this.sharedParameterGestionePresenzeService.Dip_Anagrafica_OnRoles([RoleCode.User]);
 
+    if (this.singleSelectUser) {
+      const dip = anagrafica.find(a => a.idAspNetUsers === ids[0]);
+      return dip ? `${dip.cognome} ${dip.nome}` : ids[0];
+    } else {
+      return `${ids.length} dipendenti selezionati`;
+    }
+  }
+
+  public async openDipSelectorModal(): Promise<void> {
+    const preselected: string[] = this.selectedUserId
+      ? (Array.isArray(this.selectedUserId) ? this.selectedUserId : [this.selectedUserId])
+      : [];
+
+    const modal = await this.modalCtrl.create({
+      component: DipSelectorModalComponent,
+      componentProps: {
+        mode: this.singleSelectUser ? 'single' : 'multi',
+        userList: this.az_SediRepartoUserList,
+        preselected
+      }
+    });
+
+    await modal.present();
+
+    const { data, role } = await modal.onWillDismiss<DipSelectorResult>();
+    if (role === 'confirm' && data) {
+      this.selectedUserId = data.selected;
+      this.onUserChange();
+    }
+  }
 
 }
