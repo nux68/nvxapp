@@ -1,0 +1,9 @@
+<div class="nvx-hover-popup" [ngStyle]="style">
+  <div class="nvx-hover-popup__title" *ngIf="data.title">{{ data.title }}</div>
+  <div class="nvx-hover-popup__content">{{ data.content }}</div>
+  <div class="nvx-hover-popup__extra" *ngIf="data.extraInfo">
+    <div *ngFor="let item of data.extraInfo | keyvalue">
+      <strong>{{ item.key }}:</strong> {{ item.value }}
+    </div>
+  </div>
+</div>
