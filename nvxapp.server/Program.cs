@@ -182,7 +182,14 @@ app.UseAuthorization();
 
 // Middleware per i file statici
 app.UseDefaultFiles(); // Serve automaticamente il file "index.html"
-app.UseStaticFiles();
+
+// Aggiunge il MIME type per il manifest PWA
+var provider = new Microsoft.AspNetCore.StaticFiles.FileExtensionContentTypeProvider();
+provider.Mappings[".webmanifest"] = "application/manifest+json";
+app.UseStaticFiles(new StaticFileOptions
+{
+    ContentTypeProvider = provider
+});
 
 app.MapControllers();
 
