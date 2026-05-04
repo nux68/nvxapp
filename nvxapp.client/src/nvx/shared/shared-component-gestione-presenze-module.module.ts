@@ -40,6 +40,7 @@ import { EditDipGGTimbraturaDialogComponent } from './components/GestionePresenz
 import { EditDipGGGiustificativiDialogComponent } from './components/GestionePresenze/edit-dip-gg-giustificativi-dialog/edit-dip-gg-giustificativi-dialog.component';
 import { ParExportTipoFileToShortTextPipe } from './pipe/GestionePresenze/par-export-tipo-file-to-short-text.pipe';
 import { EditParExportCauCausaliComponentComponent } from './components/GestionePresenze/edit-par-export-cau-causali-component/edit-par-export-cau-causali-component.component';
+import { DipSelectorModalComponent } from './components/GestionePresenze/dip-selector-modal/dip-selector-modal.component';
 
 @NgModule({
   declarations: [
@@ -49,7 +50,7 @@ import { EditParExportCauCausaliComponentComponent } from './components/Gestione
     SeletionParAttivitaDialogComponent,
     EditDipProfiloOrarioDialogComponent, EditParProfiloOrarioDettaglioOrarioDialogComponent,
     EditParOrarioDettaglioOrarioIntervalloHHDialogComponent, TimeSheetEngineCallerComponent,
-    EditDipGGCausaliDialogComponent, EditDipGGTimbraturaDialogComponent,
+    EditDipGGCausaliDialogComponent, EditDipGGTimbraturaDialogComponent, DipSelectorModalComponent,
     EditDipGGGiustificativiDialogComponent, EditParExportCauCausaliComponentComponent,
   ],
   imports: [
@@ -75,7 +76,7 @@ import { EditParExportCauCausaliComponentComponent } from './components/Gestione
     SediRepartoUserNavigationComponent, SediRepartoUserSelectionComponent , SeletionSediRepartoDialogComponent, SeletionSediRepartoUserDialogComponent, SeletionParAttivitaDialogComponent, AzSediRepartoToLongTextPipe,
     EditDipProfiloOrarioDialogComponent, ParProfiloOrarioToLongTextPipePipe, EditParProfiloOrarioDettaglioOrarioDialogComponent,
     EditParOrarioDettaglioOrarioIntervalloHHDialogComponent, TimeSheetEngineCallerComponent, EditParExportCauCausaliComponentComponent,
-    EditDipGGCausaliDialogComponent, EditDipGGTimbraturaDialogComponent,
+    EditDipGGCausaliDialogComponent, EditDipGGTimbraturaDialogComponent, DipSelectorModalComponent,
     EditDipGGGiustificativiDialogComponent,
     ParOrarioToCodicePipe, ParOrarioToLongTextPipe, ParExportTipoFileToShortTextPipe
   ]

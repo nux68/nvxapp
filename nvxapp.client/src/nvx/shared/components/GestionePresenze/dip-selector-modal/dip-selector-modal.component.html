@@ -1,0 +1,81 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>{{ mode === 'single' ? 'Seleziona dipendente' : 'Seleziona dipendenti' }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cancel()">
+        <ion-icon name="close-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+
+  <ion-toolbar>
+    <ion-searchbar
+      [(ngModel)]="searchText"
+      (ionInput)="onSearchChange()"
+      placeholder="Cerca per cognome, nome..."
+      [debounce]="200"
+      animated>
+    </ion-searchbar>
+  </ion-toolbar>
+
+  <ion-toolbar *ngIf="mode === 'multi'">
+    <ion-buttons slot="start">
+      <ion-button fill="clear" size="small" (click)="selectAll()">Seleziona tutti</ion-button>
+      <ion-button fill="clear" size="small" (click)="clearAll()">Deseleziona tutti</ion-button>
+    </ion-buttons>
+    <ion-label slot="end" class="nvx-selected-count">
+      {{ selectedIds.size }} selezionati
+    </ion-label>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list lines="full">
+    <ion-item
+      *ngFor="let user of filteredUsers"
+      [class.nvx-item-selected]="isSelected(user.idAspNetUsers)"
+      (click)="selectUser(user.idAspNetUsers)"
+      button
+      detail="false">
+
+      <div slot="start" class="nvx-avatar">
+        {{ user.initials }}
+      </div>
+
+      <ion-label>
+        <h2>{{ user.cognome }} {{ user.nome }}</h2>
+        <p>{{ user.userName }}</p>
+      </ion-label>
+
+      <ion-icon
+        *ngIf="mode === 'single' && isSelected(user.idAspNetUsers)"
+        name="checkmark-outline"
+        slot="end"
+        color="primary">
+      </ion-icon>
+
+      <ion-checkbox
+        *ngIf="mode === 'multi'"
+        slot="end"
+        [checked]="isSelected(user.idAspNetUsers)"
+        (click)="$event.stopPropagation()">
+      </ion-checkbox>
+
+    </ion-item>
+
+    <ion-item *ngIf="filteredUsers.length === 0">
+      <ion-label class="ion-text-center" color="medium">Nessun dipendente trovato</ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>
+
+<ion-footer *ngIf="mode === 'multi'">
+  <ion-toolbar>
+    <ion-buttons slot="end">
+      <ion-button fill="outline" (click)="cancel()">Annulla</ion-button>
+      <ion-button fill="solid" color="primary" [disabled]="confirmDisabled" (click)="confirm()">
+        Conferma ({{ selectedIds.size }})
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>

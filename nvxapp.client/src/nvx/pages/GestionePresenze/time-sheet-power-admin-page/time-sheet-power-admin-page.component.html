@@ -105,28 +105,6 @@
               <ion-col size="2">
                 <ng-container *ngIf="day.dip_GG_Giustificativi?.length > 0; else noJust">
 
-
-                  <!--
-                  <ion-button [disabled]="(!timeSheetService.Dip_GG_Richiesta_Admin_Can_Approve( get_Dip_GG_Richiesta(just.idDip_GG_Richiesta) ) &&
-                                             !timeSheetService.Dip_GG_Richiesta_Admin_Can_Reject(get_Dip_GG_Richiesta(just.idDip_GG_Richiesta)) )"
-                              size="small"
-                              shape="round"
-                              *ngFor="let just of day.dip_GG_Giustificativi"
-                              [ngStyle]="{
-                                        '--background': timeSheetService.get_Dip_GG_Giustificativi_backColor(just),
-                                        '--color': timeSheetService.get_Dip_GG_Giustificativi_txtColor(just),
-                                        '--padding-top': '0px',
-                                        '--padding-bottom': '0px',
-                                        'font-size': '0.6em',
-                                        'margin-bottom':'1px',
-                                        'margin-top':'0px'
-                                      }"
-                              (click)="actionSheetOpen(just)">
-                    {{ just.idPar_Giustificativi | parGiustificativiToLongText }}
-                    <ion-icon slot="end" [name]="timeSheetService.get_StatoRichiesta_icon(get_Dip_GG_Richiesta(just.idDip_GG_Richiesta))"></ion-icon>
-                  </ion-button>
-                    -->
-
                   <ion-chip *ngFor="let just of day.dip_GG_Giustificativi"
                             [ngStyle]="{
                                          'background': timeSheetService.get_Dip_GG_Giustificativi_backColor(just),
@@ -162,28 +140,6 @@
 
                 <ng-container *ngIf="day.dip_GG_Causali?.length > 0; else noCau">
 
-
-                  <!--
-                    <ion-button [disabled]="false"
-                              size="small" shape="round"
-                              *ngFor="let caus of day.dip_GG_Causali"
-                              [ngStyle]="{
-                        '--background': timeSheetService.get_Dip_GG_Causali_backColor(caus),
-                        '--color': timeSheetService.get_Dip_GG_Causali_txtColor(caus),
-                        '--padding-top': '0px',
-                        '--padding-bottom': '0px',
-                        'font-size': '0.6em',
-                        'margin-bottom':'1px',
-                        'margin-top':'0px'
-                      }"
-                              (click)="actionSheetOpen(caus)">
-
-                    {{ caus.idPar_Causali | parCausaliToShortText}} {{ caus.valore | slice:0:5 }}
-
-                  </ion-button>
-                    -->
-
-
                   <ion-chip *ngFor="let caus of day.dip_GG_Causali"
                             [ngStyle]="{
                                          'background': timeSheetService.get_Dip_GG_Causali_backColor(caus),
@@ -200,8 +156,6 @@
                     {{ caus.idPar_Causali | parCausaliToShortText}} {{ caus.valore | slice:0:5 }}
 
                   </ion-chip>
-
-
 
 
                 </ng-container>

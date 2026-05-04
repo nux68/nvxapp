@@ -71,18 +71,13 @@
     <!-- User Select and Navigation -->
     <ion-col size-xs="12" [ngClass]="columSize_4User()" *ngIf="showUserSelect">
       <div class="user-select-container">
-        <ion-item class="user-select-item">
-          <ion-label position="stacked">Utente</ion-label>
-          <ion-select [(ngModel)]="selectedUserId"
-                      (ionChange)="onUserChange()"
-                      placeholder="Seleziona un utente"
-                      interface="modal"
-                      [disabled]="(!selectedRepartoId || selectedRepartoId.length === 0) || az_SediRepartoUserList.length === 0"
-                      [multiple]="!singleSelectUser">
-            <ion-select-option [value]="user.idAspNetUsers" *ngFor="let user of az_SediRepartoUserList">
-              {{ user.idAspNetUsers | idAspNetUsersToCognome }} {{ user.idAspNetUsers | idAspNetUsersToNome }}
-            </ion-select-option>
-          </ion-select>
+        <ion-item class="user-select-item"
+                  button
+                  [disabled]="(!selectedRepartoId || selectedRepartoId.length === 0) || az_SediRepartoUserList.length === 0"
+                  (click)="openDipSelectorModal()">
+          <ion-label position="stacked">{{ singleSelectUser ? 'Dipendente' : 'Dipendenti' }}</ion-label>
+          <ion-text class="nvx-user-label">{{ selectedUserLabel }}</ion-text>
+          <ion-icon name="people-outline" slot="end"></ion-icon>
         </ion-item>
 
         <div class="user-navigation-buttons" *ngIf="az_SediRepartoUserList.length > 1 && singleSelectUser">
