@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { catchError, Observable, of, throwError } from 'rxjs';
 import { map } from 'rxjs/operators'; // Import map operator if you plan real sorting/processing
 import { Dip_GG_Timbratura_GetAll_InModel, Dip_GG_TimbraturaModel, TipoTimbratura } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Timbratura/Models/dip-gg-timbratura-model';
+import { HoverPopupData } from '../../shared/components/infrastructure/hover-popup/hover-popup.component';
 import { Dip_GG_Richiesta_GetAll4User_InModel, Dip_GG_RichiestaModel, StatoRichiesta } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/Models/dip-gg-richiesta-model';
 import { Dip_GG_Giustificativi_GetAll_InModel, Dip_GG_GiustificativiModel } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Giustificativi/Models/dip-gg-giustificativi-model';
 import { DipGGGiustificativiService } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Giustificativi/dip-gg-giustificativi.service';
@@ -720,6 +721,120 @@ export class TimeSheetService {
       return true;
     }
 
+  }
+
+  get_DayPopupStato(result: Dip_GG_ResultModel): HoverPopupData {
+    if (!result) {
+      return { title: 'Stato giornata', content: 'Nessun dato disponibile' };
+    }
+
+    const stato = Number(result.stato);
+    const activeFlags: string[] = [];
+
+    // --- Stato principale ---
+    const statoLabels: Partial<Record<GG_ResultStato, string>> = {
+      [GG_ResultStato.Init]:    '⬜ Non ancora elaborata',
+      [GG_ResultStato.OK]:      '✅ Giornata corretta',
+      [GG_ResultStato.Locked]:  '🔒 Giornata bloccata',
+      [GG_ResultStato.Warning]: '⚠️ Presenza di avvertimenti',
+      [GG_ResultStato.Err]:     '❌ Presenza di errori',
+    };
+
+    // --- Dettagli errori ---
+    const errLabels: Partial<Record<GG_ResultStato, string>> = {
+      [GG_ResultStato.Err_TimbratureMancanti]: 'Timbrature mancanti rispetto all\'orario atteso',
+      [GG_ResultStato.Err_2]:  'Ore lavorate inferiori alle ore previste',
+      [GG_ResultStato.Err_3]:  'Ore lavorate superiori alle ore previste',
+      [GG_ResultStato.Err_4]:  'Errore 4',
+      [GG_ResultStato.Err_5]:  'Errore 5',
+      [GG_ResultStato.Err_6]:  'Errore 6',
+      [GG_ResultStato.Err_7]:  'Errore 7',
+      [GG_ResultStato.Err_8]:  'Errore 8',
+      [GG_ResultStato.Err_9]:  'Errore 9',
+      [GG_ResultStato.Err_10]: 'Errore 10',
+      [GG_ResultStato.Err_11]: 'Errore 11',
+      [GG_ResultStato.Err_12]: 'Errore 12',
+      [GG_ResultStato.Err_13]: 'Errore 13',
+      [GG_ResultStato.Err_14]: 'Errore 14',
+      [GG_ResultStato.Err_15]: 'Errore 15',
+      [GG_ResultStato.Err_16]: 'Errore 16',
+      [GG_ResultStato.Err_17]: 'Errore 17',
+      [GG_ResultStato.Err_18]: 'Errore 18',
+      [GG_ResultStato.Err_19]: 'Errore 19',
+      [GG_ResultStato.Err_20]: 'Errore 20',
+    };
+
+    // --- Dettagli warning ---
+    const warnLabels: Partial<Record<GG_ResultStato, string>> = {
+      [GG_ResultStato.Warning_1]:  'Avvertimento 1',
+      [GG_ResultStato.Warning_2]:  'Avvertimento 2',
+      [GG_ResultStato.Warning_3]:  'Avvertimento 3',
+      [GG_ResultStato.Warning_4]:  'Avvertimento 4',
+      [GG_ResultStato.Warning_5]:  'Avvertimento 5',
+      [GG_ResultStato.Warning_6]:  'Avvertimento 6',
+      [GG_ResultStato.Warning_7]:  'Avvertimento 7',
+      [GG_ResultStato.Warning_8]:  'Avvertimento 8',
+      [GG_ResultStato.Warning_9]:  'Avvertimento 9',
+      [GG_ResultStato.Warning_10]: 'Avvertimento 10',
+      [GG_ResultStato.Warning_11]: 'Avvertimento 11',
+      [GG_ResultStato.Warning_12]: 'Avvertimento 12',
+      [GG_ResultStato.Warning_13]: 'Avvertimento 13',
+      [GG_ResultStato.Warning_14]: 'Avvertimento 14',
+      [GG_ResultStato.Warning_15]: 'Avvertimento 15',
+      [GG_ResultStato.Warning_16]: 'Avvertimento 16',
+      [GG_ResultStato.Warning_17]: 'Avvertimento 17',
+      [GG_ResultStato.Warning_18]: 'Avvertimento 18',
+      [GG_ResultStato.Warning_19]: 'Avvertimento 19',
+      [GG_ResultStato.Warning_20]: 'Avvertimento 20',
+    };
+
+    // Stato principale (primo attivo tra Init/OK/Locked/Warning/Err)
+    const statoPrincipale = Object.entries(statoLabels).find(([flag]) => stato & Number(flag));
+    const titleText = statoPrincipale ? statoPrincipale[1] : 'Stato sconosciuto';
+
+    // Dettagli errori attivi
+    for (const [flag, label] of Object.entries(errLabels)) {
+      if (stato & Number(flag)) activeFlags.push(`• ${label}`);
+    }
+
+    // Dettagli warning attivi (bit > 31: usa confronto numerico)
+    for (const [flag, label] of Object.entries(warnLabels)) {
+      if (stato & Number(flag)) activeFlags.push(`• ${label}`);
+    }
+
+    const extraInfo: Record<string, string> = {};
+    if (result.hH_Teo != null) extraInfo['Ore teoriche'] = result.hH_Teo;
+    if (result.hH_Lav != null) extraInfo['Ore lavorate'] = result.hH_Lav;
+
+    return {
+      title: result.data
+        ? new Date(result.data).toLocaleDateString('it-IT', { weekday: 'long', day: '2-digit', month: 'long' })
+        : 'Stato giornata',
+      content: activeFlags.length > 0 ? activeFlags.join('\n') : titleText,
+      extraInfo
+    };
+  }
+
+  get_DayPopupData(
+    result: Dip_GG_ResultModel,
+    timbrature: Dip_GG_TimbraturaModel[],
+    giustificativi: Dip_GG_GiustificativiModel[],
+    causali: Dip_GG_CausaliModel[]
+  ): HoverPopupData {
+
+    const extraInfo: Record<string, string> = {};
+
+    if (result?.hH_Teo != null)  extraInfo['Ore teoriche']  = result.hH_Teo;
+    if (result?.hH_Lav != null)  extraInfo['Ore lavorate']  = result.hH_Lav;
+    if (timbrature?.length > 0)  extraInfo['Timbrature']    = `${timbrature.length}`;
+    if (giustificativi?.length > 0) extraInfo['Giustificativi'] = `${giustificativi.length}`;
+    if (causali?.length > 0)     extraInfo['Causali']       = `${causali.length}`;
+
+    return {
+      title: result?.data ? new Date(result.data).toLocaleDateString('it-IT', { weekday: 'long', day: '2-digit', month: 'long' }) : 'Dettaglio giorno',
+      content: this.get_StatoDay_icon(result) ? `Stato: ${this.get_StatoDay_color(result)}` : 'Nessun risultato calcolato',
+      extraInfo
+    };
   }
 
   public Dip_GG_Richiesta_Admin_Can_Reject(dip_GG_Richiesta: Dip_GG_RichiestaModel) {
