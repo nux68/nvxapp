@@ -1,4 +1,4 @@
-using AutoMapper;
+Ôªøusing AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
@@ -63,12 +63,18 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ActivitySt
 
                 var allData       = res_AllData.Data;
                 var timbratureAll = allData.Dip_GG_AllData_OutModel.Dip_GG_Timbratura;
+
+                foreach(var item in timbratureAll)
+                    if(item.TimbraturaArrotondata == new DateTime(item.Timbratura.Year,item.Timbratura.Month,item.Timbratura.Day ) )
+                        item.TimbraturaArrotondata = item.Timbratura;
+
+
                 var risultatiGG   = allData.Dip_GG_AllData_OutModel.Dip_GG_Result;
                 var daySlots      = allData.OrariSchema_4User_OutModel.DaySlots;
                 var parOrari      = allData.OrariSchema_4User_OutModel.ParOrario;
                 var dipAnagrafica = allData.OrariSchema_4User_OutModel.Dip_Anagrafica;
 
-                // 2. Anagrafica completa attivit‡ ? commessa, sub-commessa, cliente
+                // 2. Anagrafica completa attivit√† ? commessa, sub-commessa, cliente
                 var req4FullList = new GenericRequest<Az_SubCommessaAttivita_GetAll_4FullList_InModel>();
                 var res4FullList = await _az_SubCommessaAttivitaService.GetAll_4FullList(req4FullList, true);
                 var attivitaLookup = (res4FullList.Success && res4FullList.Data != null)
@@ -85,12 +91,12 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ActivitySt
 
                 var parOrarioById = parOrari.ToDictionary(o => o.Id);
 
-                // DaySlot per lookup rapido (IdDip_RapportoLavoro, Date) ? DaySlot
+                // DaySlot per lookup rapido (IdDip_RapportoLavoro, Date) ‚Üí DaySlot
                 var daySlotByKey = daySlots
                     .GroupBy(ds => (ds.IdDip_RapportoLavoro, ds.Data.Date))
                     .ToDictionary(g => g.Key, g => g.First());
 
-                // Rapporto lavoro ? anagrafica
+                // Rapporto lavoro ‚Üí anagrafica
                 var dipRapporto  = allData.OrariSchema_4User_OutModel.Dip_RapportoLavoro;
                 var rapportoById = dipRapporto.ToDictionary(r => r.Id);
 
@@ -102,7 +108,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ActivitySt
                         g => g.Key,
                         g => g.OrderBy(t => GetSortableTime(t)).ToList());
 
-                // Accumulatore: (userId, idAttivita) ? minuti totali
+                // Accumulatore: (userId, idAttivita) ‚Üí minuti totali
                 var accumulator = new Dictionary<(string userId, int idAttivita), int>();
 
                 // 4. Loop principale sui GRUPPI DI TIMBRATURE (non sui DaySlots).
@@ -163,11 +169,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ActivitySt
                                         AggiungiMinuti(accumulator, userId, prevAttivo.IdAz_SubCommessaAttivita,
                                                        minuti, filters, attivitaLookup);
                                 }
-                                prevAttivo = null; // blocco chiuso: il prossimo record inizier‡ un nuovo blocco
+                                prevAttivo = null; // blocco chiuso: il prossimo record inizier√† un nuovo blocco
                             }
                             else
                             {
-                                // Entrata o SenzaVerso (cambio attivit‡): chiude il segmento precedente se aperto
+                                // Entrata o SenzaVerso (cambio attivit√†): chiude il segmento precedente se aperto
                                 if (prevAttivo != null)
                                 {
                                     var minuti = CalcolaMinuti(prevAttivo, t);
@@ -179,7 +185,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ActivitySt
                             }
                         }
                     }
-                    else // MonteOre / MonteOreValore: il valore Ë nella parte oraria di Timbratura
+                    else // MonteOre / MonteOreValore: il valore √® nella parte oraria di Timbratura
                     {
                         foreach (var t in timbrature.Where(t => t.TimbraturaTipo == TipoTimbratura.SenzaVerso))
                         {
@@ -215,7 +221,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ActivitySt
                     });
                 }
 
-                // 6. Aggregazione totali per attivit‡ (tutti i dipendenti selezionati)
+                // 6. Aggregazione totali per attivit√† (tutti i dipendenti selezionati)
                 retVal.TotaliPerAttivita = retVal.RighePerDipendente
                     .GroupBy(r => r.IdAz_SubCommessaAttivita)
                     .Select(g => new ActivityStatistics_TotaleAttivitaModel
@@ -243,7 +249,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ActivitySt
 
         /// <summary>
         /// Restituisce il TimeOfDay da usare per l'ordinamento, indipendente dall'anno.
-        /// TimbraturaArrotondata puÚ avere anno=0001 se impostata come solo orario:
+        /// TimbraturaArrotondata pu√≤ avere anno=0001 se impostata come solo orario:
         /// confrontare direttamente con Timbratura (anno=2025) darebbe ordine errato.
         /// </summary>
         private static TimeSpan GetSortableTime(Dip_GG_TimbraturaModel t)
@@ -261,7 +267,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ActivitySt
         }
 
         /// <summary>
-        /// Aggiunge i minuti all'accumulatore applicando i filtri opzionali su attivit‡/commessa/cliente.
+        /// Aggiunge i minuti all'accumulatore applicando i filtri opzionali su attivit√†/commessa/cliente.
         /// </summary>
         private static void AggiungiMinuti(
             Dictionary<(string userId, int idAttivita), int> accumulator,
