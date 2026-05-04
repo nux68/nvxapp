@@ -11,7 +11,7 @@ import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic
 import { ParGiustificativiToLongTextPipe } from '../../../shared/pipe/GestionePresenze/par-giustificativi-to-long-text.pipe';
 import { TipoTimbraturaToLongTextPipe } from '../../../shared/pipe/GestionePresenze/tipo-timbratura-to-long-text.pipe';
 import { DateTimeUtilService } from '../../../Utility/infrastructure/date-time-util.service';
-import { ModalController, NavController } from '@ionic/angular';
+import { ModalController, NavController, Platform } from '@ionic/angular';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
 import { catchError, map, Subscription } from 'rxjs';
@@ -85,13 +85,17 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
               private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
               private datePipe: DatePipe,
               private collectionDialogService: CollectionDialogService,
-              private longJobNotifier: LongJobNotifierService, /* RICVEVE LE NOTIFICHE  CALCOLO LONG*/
-              private jobNotifierService: JobNotifierService, /* RICVEVE LE NOTIFICHE  */
-              public timeSheetEngineService: TimeSheetEngineService
-              
+              private longJobNotifier: LongJobNotifierService,
+              private jobNotifierService: JobNotifierService,
+              public timeSheetEngineService: TimeSheetEngineService,
+              private platform: Platform
   ) {
     this.title = 'Calendario HR';
     this.currentMonth = { year: 0, month: 0, days: {}, dip_GG_Richiesta: [] ,daySlot:[]};
+  }
+
+  public get isMobile(): boolean {
+    return this.platform.width() < 576;
   }
 
   ionViewWillEnter() {

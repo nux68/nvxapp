@@ -88,7 +88,7 @@
                                          'margin-bottom': '0px',
                                          'margin-top': '0px',
                                          'cursor':  CanOpenMenuActionTimbratura(record)  ? 'pointer' : 'default',
-                                         'opacity': CanOpenMenuActionTimbratura(record)  ? '1' : '0.5'
+                                         'opacity': CanOpenMenuActionTimbratura(record) ? '1' : '0.5'
                                        }"
                             (click)="CanOpenMenuActionTimbratura(record) ? actionSheetOpen(record) : null">
                     {{ record.timbraturaTipo | tipoTimbraturaToShortText }} {{ record.timbratura | date:'HH:mm' }}

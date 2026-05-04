@@ -15,11 +15,11 @@ import { TipoTimbraturaToLongTextPipe } from '../../../shared/pipe/GestionePrese
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { DipGGRichiestaService } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/dip-gg-richiesta.service';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
-import { NavController } from '@ionic/angular';
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
 import { Subscription } from 'rxjs';
 import { JobNotifierService } from '../../../Utility/infrastructure/job-notifier.service';
 import { GestionePresenze_JobType } from '../../../Utility/GestionePresenze/GestionePresenze_JobType';
+import { ModalController, NavController, Platform } from '@ionic/angular';
 
 
 @Component({
@@ -61,13 +61,18 @@ export class TimeSheetUserPageComponent implements OnInit, OnDestroy {
               public dateTimeUtilService: DateTimeUtilService,
               private dipGGRichiestaService: DipGGRichiestaService,
               private jobNotifierService: JobNotifierService, /* RICVEVE LE NOTIFICHE  */
-              private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService
+              private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
+              private platform: Platform
   ) {
     this.title = 'Calendario';
     this.weeks = [];
     // Inizializza con una struttura valida ma vuota
     this.currentMonth = { year: 0, month: 0, days: {}, dip_GG_Richiesta:[] , daySlot:[]};
     
+  }
+
+  public get isMobile(): boolean {
+    return this.platform.width() < 576;
   }
 
   ionViewWillEnter() {

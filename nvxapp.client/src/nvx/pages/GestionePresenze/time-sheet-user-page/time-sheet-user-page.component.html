@@ -47,25 +47,6 @@
 
                       <ng-container *ngIf="day.dip_GG_Giustificativi?.length > 0; else noJust">
 
-
-                        <!--
-                          <ion-button [disabled]="!ShowActionSheet(just.idDip_GG_Richiesta)" size="small" shape="round"
-                                    *ngFor="let just of day.dip_GG_Giustificativi"
-                                    [ngStyle]="{
-                                              '--background': timeSheetService.get_Dip_GG_Giustificativi_backColor(just),
-                                              '--color': timeSheetService.get_Dip_GG_Giustificativi_txtColor(just),
-                                              '--padding-top': '0px',
-                                              '--padding-bottom': '0px',
-                                              'font-size': '0.6em',
-                                              'margin-bottom':'1px',
-                                              'margin-top':'0px'
-                                            }"
-                                    (click)="actionSheetOpen(just)">
-                          {{ just.idPar_Giustificativi | parGiustificativiToLongText }}
-                          <ion-icon slot="end" [name]="timeSheetService.get_StatoRichiesta_icon(get_Dip_GG_Richiesta(just.idDip_GG_Richiesta))"></ion-icon>
-                        </ion-button>
-                          -->
-
                         <ion-chip *ngFor="let just of day.dip_GG_Giustificativi"
                                   [ngStyle]="{
                                              'background': timeSheetService.get_Dip_GG_Giustificativi_backColor(just),
@@ -73,8 +54,9 @@
                                              'font-size': '0.8em',
                                              'margin-bottom': '0px',
                                              'margin-top': '0px',
+                                             'padding': isMobile ? '5px' : null,
                                              'cursor': ShowActionSheet(just.idDip_GG_Richiesta) ? 'pointer' : 'default',
-                                             'opacity': ShowActionSheet(just.idDip_GG_Richiesta) ? '1' : '0.5'
+                                             'opacity': isMobile ? '1' :(ShowActionSheet(just.idDip_GG_Richiesta) ? '1' : '0.5')
                                            }"
                                   (click)="ShowActionSheet(just.idDip_GG_Richiesta) ? actionSheetOpen(just) : null">
                           {{ just.idPar_Giustificativi | parGiustificativiToLongText }} {{ just.hours.substring(0, 5)  }}
@@ -100,27 +82,6 @@
 
                       <ng-container *ngIf="day.dip_GG_Timbratura?.length > 0; else noTimb">
 
-
-                        <!--
-                        <ion-button [disabled]="!ShowActionSheet(record.idDip_GG_Richiesta)"
-                                    size="small"
-                                    fill="clear"
-                                    *ngFor="let record of day.dip_GG_Timbratura"
-                                    [ngStyle]="{
-                                             '--background': timeSheetService.get_Dip_GG_Timbratura_backColor(record),
-                                             '--color': timeSheetService.get_Dip_GG_Timbratura_txtColor(record),
-                                             '--padding-top': '0px',
-                                             '--padding-bottom': '0px',
-                                             'font-size': '0.8em',
-                                             'margin-bottom':'0px',
-                                             'margin-top':'0px'
-                                           }"
-                                    (click)="actionSheetOpen(record)">
-                          {{ record.timbraturaTipo | tipoTimbraturaToShortText }}{{ record.timbratura | date:'HH:mm' }}
-                          <ion-icon slot="end" [name]="timeSheetService.get_StatoRichiesta_icon(get_Dip_GG_Richiesta(record.idDip_GG_Richiesta))"></ion-icon>
-                        </ion-button>
-                          -->
-
                         <ion-chip *ngFor="let record of day.dip_GG_Timbratura"
                                   [ngStyle]="{
                                                'background': timeSheetService.get_Dip_GG_Timbratura_backColor(record),
@@ -128,8 +89,9 @@
                                                'font-size': '0.8em',
                                                'margin-bottom': '0px',
                                                'margin-top': '0px',
+                                               'padding': isMobile ? '3px' : null,
                                                'cursor': ShowActionSheet(record.idDip_GG_Richiesta) ? 'pointer' : 'default',
-                                               'opacity': ShowActionSheet(record.idDip_GG_Richiesta) ? '1' : '0.5'
+                                               'opacity': isMobile ? '1' :(ShowActionSheet(record.idDip_GG_Richiesta) ? '1' : '0.5')
                                              }"
                                   (click)="ShowActionSheet(record.idDip_GG_Richiesta) ? actionSheetOpen(record) : null">
                           {{ record.timbraturaTipo | tipoTimbraturaToShortText }}{{ record.timbratura | date:'HH:mm' }}
