@@ -1,4 +1,5 @@
-.nvx-hover-popup {
+
+  .nvx-hover-popup {
   position: fixed;
   background: #ffffff;
   border: 1px solid #d0d0d0;
@@ -6,8 +7,9 @@
   padding: 10px 14px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   z-index: 9999;
+  width: max-content;
   min-width: 180px;
-  max-width: 320px;
+  max-width: 420px;
   pointer-events: none;
   font-size: 13px;
 
@@ -18,26 +20,41 @@
     color: #222;
     border-bottom: 1px solid #eee;
     padding-bottom: 4px;
+    white-space: nowrap;
   }
 
   &__content {
     color: #333;
     line-height: 1.4;
+    white-space: pre-line;
   }
 
   &__extra {
     margin-top: 8px;
     font-size: 12px;
     color: #555;
+    border-collapse: collapse;
+    width: 100%;
 
-    div {
-      display: flex;
-      gap: 4px;
-      margin-bottom: 2px;
+    tr + tr td {
+      padding-top: 2px;
     }
+  }
 
-    strong {
-      color: #444;
+  &__extra-key {
+    font-weight: 600;
+    color: #444;
+    white-space: nowrap;
+    padding-right: 10px;
+    vertical-align: top;
+
+    &::after {
+      content: ":";
     }
+  }
+
+  &__extra-value {
+    color: #333;
+    word-break: break-word;
   }
 }
