@@ -8,6 +8,8 @@ import { FabMenuComponent } from './components/infrastructure/fab-menu/fab-menu.
 import { FormsModule } from '@angular/forms';
 import { PageButtonbarComponent } from './components/infrastructure/page-buttonbar/page-buttonbar.component';
 import { GenericDialogComponent } from './components/infrastructure/generic-dialog/generic-dialog.component';
+import { HoverPopupComponent } from './components/infrastructure/hover-popup/hover-popup.component';
+import { HoverPopupDirective } from './components/infrastructure/hover-popup/hover-popup.directive';
 
 
 @NgModule({
@@ -16,8 +18,9 @@ import { GenericDialogComponent } from './components/infrastructure/generic-dial
     FormsModule,
     IonicModule,
     GenericFilterPipe,
+    HoverPopupComponent, HoverPopupDirective
   ],
-  declarations: [BreadcrumbsImpersonateComponent, PageToolbarComponent, PageButtonbarComponent, GenericDialogComponent/*, FabMenuComponent*/],
-  exports: [BreadcrumbsImpersonateComponent, GenericFilterPipe, PageToolbarComponent, PageButtonbarComponent, /*, FabMenuComponent*/]
+  declarations: [BreadcrumbsImpersonateComponent, PageToolbarComponent, PageButtonbarComponent, GenericDialogComponent /*, FabMenuComponent*/],
+  exports: [BreadcrumbsImpersonateComponent, GenericFilterPipe, PageToolbarComponent, PageButtonbarComponent, HoverPopupComponent, HoverPopupDirective /*, FabMenuComponent*/]
 })
 export class SharedComponentInfrastructureModule { }
