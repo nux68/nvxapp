@@ -27,6 +27,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
     {
         private readonly IGestionePresenzeUserUtility _gestionePresenzeUserUtility;
         private readonly IDip_GG_TimbraturaRepository _dip_GG_TimbraturaRepository;
+        private readonly IDip_RapportoLavoroRepository _dip_RapportoLavoroRepository;
 
         private IPar_AttivitaService _par_AttivitaService;
         private ITimeSheet_EngineService_OnlyCalculate _timeSheet_EngineService;
@@ -40,12 +41,14 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
                                           ITimeSheet_EngineService_OnlyCalculate timeSheet_EngineService,
                                           IPar_AttivitaService par_AttivitaService, 
 
+                                          IDip_RapportoLavoroRepository dip_RapportoLavoroRepository,
                                           IGestionePresenzeUserUtility gestionePresenzeUserUtility,
                                           IDip_GG_TimbraturaRepository dip_GG_TimbraturaRepository
                                   ) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _gestionePresenzeUserUtility = gestionePresenzeUserUtility;
             _dip_GG_TimbraturaRepository = dip_GG_TimbraturaRepository;
+            _dip_RapportoLavoroRepository = dip_RapportoLavoroRepository;
 
             _timeSheet_EngineService = timeSheet_EngineService;
             _par_AttivitaService = par_AttivitaService;
@@ -111,6 +114,13 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
                     retVal.IdAspNetUsers = this.CurrentUserId;
 
 
+                User_DATA_COMB_DipAna_DipRapp userData = await _gestionePresenzeUserUtility.Get_DipAna_DipRapp(retVal.IdAspNetUsers, false);
+                if (userData?.dip_RapportoLavoro != null)
+                {
+                    retVal.IdPar_Attivita = userData.dip_RapportoLavoro.IdAz_SubCommessaAttivita;
+                }
+
+
                 var req_1 = new GenericRequest<Par_Attivita_Get_4User_InModel>();
                 req_1.Data = new Par_Attivita_Get_4User_InModel()
                 {
@@ -161,6 +171,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
                         IdAz_SubCommessaAttivita = model.Data.IdAz_SubCommessaAttivita //nvx 27/04/2026
                     };
                     dip_GG_Timbratura = await _dip_GG_TimbraturaRepository.UpsertAsync(dip_GG_Timbratura);
+                    
+                    //aggiono l'attivita del dip rapporto
+                    user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.IdAz_SubCommessaAttivita = model.Data.IdAz_SubCommessaAttivita;
+                    await _dip_RapportoLavoroRepository.UpsertAsync(user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro);
 
                     if(!model.Data.ExcludeRicalc)
                         await CalculateGiorno(dip_GG_Timbratura.IdDip_RapportoLavoro, dip_GG_Timbratura.GiornoCompetenza);
