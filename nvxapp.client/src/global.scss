@@ -74,19 +74,19 @@ ion-menu-content {
 }
 
 ion-modal {
-  --border-radius: 16px;
-  --box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); 
+  /*--border-radius: 16px;*/
+  --box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
   overflow: hidden;
 }
 
-.nvx-modal {
-  --border-radius: 16px; // Arrotonda gli angoli
-  --box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); // Ombra elegante
-  overflow: hidden; // Evita bordi tagliati
+@media (min-width: 576px) {
+  ion-modal {
+    --border-radius: 16px;
+  }
 }
 
 .nvx-modal {
-  --border-radius: 16px; // Arrotonda gli angoli
+  /*--border-radius: 16px; // Arrotonda gli angoli*/
   --box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); // Ombra elegante
   overflow: hidden; // Evita bordi tagliati
 }
