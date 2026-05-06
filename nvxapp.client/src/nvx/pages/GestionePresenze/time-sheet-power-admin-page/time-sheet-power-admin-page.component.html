@@ -30,25 +30,30 @@
         <div class="day-list-container" *ngIf="currentDays && currentDays.length > 0">
 
           <ion-grid class="ion-no-padding">
-            <ion-row class="header-row">
-              <ion-col size="1" class="header-cell">Giorno</ion-col>
-              <ion-col size="4" class="header-cell">Timbrature</ion-col>
-              <ion-col size="2" class="header-cell">Giustificativi</ion-col>
-              <ion-col size="1" class="header-cell">HH Teo</ion-col>
-              <ion-col size="1" class="header-cell">HH Ord</ion-col>
-              <ion-col size="3" class="header-cell">Causali</ion-col>
+
+            <ion-row class="header-row" *ngIf="!isMobile">
+              <!-- COL 1 -->
+              <ion-col size="2" size-sm="1" class="header-cell">Giorno</ion-col>
+              <!-- COL 2 -->
+              <ion-col size="10" size-sm="4" class="header-cell">Timbrature</ion-col>
+              <!-- COL 3 -->
+              <ion-col size="10" offset="2" size-sm="2" offset-sm="0" class="header-cell">Giustificativi</ion-col>
+              <!-- COL 4 -->
+              <ion-col size="3" offset="2" size-sm="1" offset-sm="0" class="header-cell">HH Teo</ion-col>
+              <!-- COL 5 -->
+              <ion-col size="7" size-sm="1" offset-sm="0" class="header-cell">HH Ord</ion-col>
+              <!-- COL 6 -->
+              <ion-col size="10" offset="2" size-sm="3" offset-sm="0" class="header-cell">Causali</ion-col>
             </ion-row>
 
             <ion-row *ngFor="let day of currentDays; let indexRow4Color = index" [ngClass]="{'weekend': isWeekend(day.date)}"
                      [class.nvx-row-odd]="indexRow4Color % 2 !== 0"
                      [class.nvx-row-even]="indexRow4Color % 2 === 0"
                      class="day-row nvx-ion-row-4table nvx-row-hover">
-
-              <ion-col size="1" class="day-cell">
-
-                
-                <ion-button [appHoverPopupEnabled]="timeSheetService.get_StatoDay_icon(day.dip_GG_Result)!=null"
-                            [appHoverPopup]="timeSheetService.get_DayPopupStato(day.dip_GG_Result)"
+              
+              <!-- COL 1 -->
+              <ion-col size="2" size-sm="1">
+                <ion-button [appHoverPopup]="timeSheetService.get_DayPopupStato(day.dip_GG_Result)"
                             fill="clear" size="small" [ngStyle]="{
                                                       '--color': get_label_day_color(day.date),
                                                       '--padding-top': '0px',
@@ -71,38 +76,41 @@
 
                   {{ day.date | date:'dd' }} {{ day.date | date:'EEE' }}
                 </ion-button>
-
-
               </ion-col>
-              <ion-col size="4">
+              
+              <!-- COL 2 -->
+              <ion-col size="10" size-sm="4">
                 <ng-container *ngIf="day.dip_GG_Timbratura?.length > 0; else noTimb">
-
 
                   <ion-chip *ngFor="let record of day.dip_GG_Timbratura"
                             [appHoverPopup]="timeSheetService.get_TimbraturaPopupData(record, get_Dip_GG_Richiesta(record.idDip_GG_Richiesta))"
-                            [appHoverPopupEnabled]="true"
+                            [appHoverPopupEnabled]="!isMobile"
                             [ngStyle]="{
                                          'background': timeSheetService.get_Dip_GG_Timbratura_backColor(record),
                                          'color': timeSheetService.get_Dip_GG_Timbratura_txtColor(record),
                                          'font-size': '0.8em',
                                          'margin-bottom': '0px',
                                          'margin-top': '0px',
+                                         'padding': isMobile ? '5px' : null,
                                          'cursor':  CanOpenMenuActionTimbratura(record)  ? 'pointer' : 'default',
                                          'opacity': CanOpenMenuActionTimbratura(record) ? '1' : '0.5'
                                        }"
                             (click)="CanOpenMenuActionTimbratura(record) ? actionSheetOpen(record) : null">
                     {{ record.timbraturaTipo | tipoTimbraturaToShortText }} {{ record.timbratura | date:'HH:mm' }}
-                    <ion-icon [name]="timeSheetService.get_StatoRichiesta_icon(get_Dip_GG_Richiesta(record.idDip_GG_Richiesta))"></ion-icon>
+                    <ion-icon *ngIf="!isMobile" [name]="timeSheetService.get_StatoRichiesta_icon(get_Dip_GG_Richiesta(record.idDip_GG_Richiesta))"></ion-icon>
                   </ion-chip>
 
 
                 </ng-container>
                 <ng-template #noTimb>
-                  <span class="no-data">-</span>
+                  <span class="no-data" *ngIf="!isMobile">-</span>
+                  <span class="no-data" *ngIf="isMobile">Nessuna timbratura</span>
                 </ng-template>
               </ion-col>
+              
+              <!-- COL 3 -->
+              <ion-col size="10" offset="2" size-sm="2" offset-sm="0">
 
-              <ion-col size="2">
                 <ng-container *ngIf="day.dip_GG_Giustificativi?.length > 0; else noJust">
 
                   <ion-chip *ngFor="let just of day.dip_GG_Giustificativi"
@@ -115,29 +123,31 @@
                                          'cursor': CanOpenMenuActionGiustificativi(just)  ? 'pointer' : 'default',
                                          'opacity': CanOpenMenuActionGiustificativi(just) ? '1' : '0.5'
                                        }"
-                            (click) = "CanOpenMenuActionGiustificativi(just) ? actionSheetOpen(just) : null">
+                            (click)="CanOpenMenuActionGiustificativi(just) ? actionSheetOpen(just) : null">
                     {{ just.idPar_Giustificativi | parGiustificativiToShortText }} {{ just.hours.substring(0, 5)  }}
-                    <ion-icon  [name]="timeSheetService.get_StatoRichiesta_icon(get_Dip_GG_Richiesta(just.idDip_GG_Richiesta))"></ion-icon>
+                    <ion-icon *ngIf="!isMobile" [name]="timeSheetService.get_StatoRichiesta_icon(get_Dip_GG_Richiesta(just.idDip_GG_Richiesta))"></ion-icon>
                   </ion-chip>
 
 
                 </ng-container>
                 <ng-template #noJust>
-                  <span class="no-data">-</span>
+                  <span class="no-data" *ngIf="!isMobile">-</span>
+                  <span class="no-data" *ngIf="isMobile">Nessun giustificativo</span>
                 </ng-template>
               </ion-col>
-
-
-              <ion-col size="1">
-                {{ day.dip_GG_Result.hH_Teo | slice:0:5 }}
+              
+              <!-- COL 4 -->
+              <ion-col size="3" offset="2" size-sm="1" offset-sm="0">
+                <span *ngIf="isMobile">HH Teo </span> {{ day.dip_GG_Result.hH_Teo | slice:0:5 }}
               </ion-col>
-              <ion-col size="1">
-                {{ day.dip_GG_Result.hH_Lav | slice:0:5 }}
+              
+              <!-- COL 5 -->
+              <ion-col size="7" size-sm="1" offset-sm="0">
+                <span *ngIf="isMobile">HH Ord </span>{{ day.dip_GG_Result.hH_Lav | slice:0:5 }}
               </ion-col>
-
-              <ion-col size="3">
-                <!--{{ day.dip_GG_Result.hH_Lav | slice:0:5 }}-->
-
+              
+              <!-- COL 6 -->
+              <ion-col size="10" offset="2" size-sm="3" offset-sm="0">
                 <ng-container *ngIf="day.dip_GG_Causali?.length > 0; else noCau">
 
                   <ion-chip *ngFor="let caus of day.dip_GG_Causali"
@@ -160,17 +170,15 @@
 
                 </ng-container>
                 <ng-template #noCau>
-                  <span class="no-data">-</span>
+                  <span class="no-data" *ngIf="!isMobile">-</span>
+                  <span class="no-data" *ngIf="isMobile">Nessuna causale</span>
                 </ng-template>
-
-
-
               </ion-col>
 
             </ion-row>
+
           </ion-grid>
         </div>
-
 
 
       </div>

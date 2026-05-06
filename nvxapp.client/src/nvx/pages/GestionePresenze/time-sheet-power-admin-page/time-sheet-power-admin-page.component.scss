@@ -25,6 +25,7 @@
   font-weight: bold;
 }
 
+
 .day-number {
   font-weight: bold;
   margin-right: 4px;
@@ -47,6 +48,18 @@
   font-style: italic;
   font-size: 0.95em;
 }
+
+
+.chip-row {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0px;
+  align-items: center;
+}
+
+
+
+
 
 
 
