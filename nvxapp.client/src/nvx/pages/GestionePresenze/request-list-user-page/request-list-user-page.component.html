@@ -18,36 +18,77 @@
                  [class.nvx-row-even]="indexRow4Color % 2 === 0"
                  class="nvx-ion-row-4table nvx-row-hover">
 
+          <!--<ion-item-sliding class="ion-hide-sm-up">
+
+    <ion-item>
+
+      <ion-item>
+        <ion-label>
+
+          <ion-text style="white-space:nowrap;">
+            {{getItemText1(item)}}
+          </ion-text>
+
+          <ion-note color="medium" style="white-space:nowrap;">
+            {{getItemText2(item)}}
+          </ion-note>
+
+        </ion-label>
+      </ion-item>
+
+    </ion-item>
+
+    <ion-item-options side="end">
+      <ion-item-option *ngIf="timeSheetService.Dip_GG_Richiesta_User_Can_Delete(item)" color="{{btnDelete.color}}" (click)="btnDelete.event(item)">
+        <ion-icon slot="start" name="{{btnDelete.image}}"></ion-icon>
+        {{btnDelete.text}}
+      </ion-item-option>
+    </ion-item-options>
+
+  </ion-item-sliding>-->
+
+
           <ion-item-sliding class="ion-hide-sm-up">
 
-            <ion-item>
+            <ion-item lines="none" style="--padding-start: 4px; --inner-padding-end: 4px;">
+              <ion-grid style="width:100%; padding: 4px 0;">
+                <ion-row class="ion-align-items-center">
 
-              <ion-item>
-                <ion-label>
+                  <!-- Data (+ dataA sotto se presente) -->
+                  <ion-col size="3">
+                    <ion-text>{{ item.data }}</ion-text>
+                    <ion-note *ngIf="getDataA(item)" color="medium" style="display:block;">{{ getDataA(item) }}</ion-note>
+                  </ion-col>
 
-                  <ion-text style="white-space:nowrap;">
-                    {{getItemText1(item)}}
-                  </ion-text>
+                  <!-- Tipo -->
+                  <ion-col size="3">
+                    <ion-text>{{ item.richiestaTipo | tipoRichiestaToShortText }}</ion-text>
+                  </ion-col>
 
-                  <ion-note color="medium" style="white-space:nowrap;">
-                    {{getItemText2(item)}}
-                  </ion-note>
+                  <!-- Dati -->
+                  <ion-col size="3">
+                    <ion-text>{{ getDati(item) }}</ion-text>
+                  </ion-col>
 
-                </ion-label>
-              </ion-item>
+                  <!-- Stato -->
+                  <ion-col size="3">
+                    <ion-text>{{ timeSheetService.get_StatoRichiesta_Approval_text(item) }}</ion-text>
+                  </ion-col>
 
+                </ion-row>
+              </ion-grid>
             </ion-item>
 
             <ion-item-options side="end">
-              <ion-item-option *ngIf="timeSheetService.Dip_GG_Richiesta_User_Can_Delete(item)" color="{{btnDelete.color}}" (click)="btnDelete.event(item)">
-                <ion-icon slot="start" name="{{btnDelete.image}}"></ion-icon>
-                {{btnDelete.text}}
+              <ion-item-option *ngIf="timeSheetService.Dip_GG_Richiesta_User_Can_Delete(item)"
+                               [color]="btnDelete.color"
+                               (click)="btnDelete.event(item)">
+                <ion-icon slot="start" [name]="btnDelete.image"></ion-icon>
+                {{ btnDelete.text }}
               </ion-item-option>
             </ion-item-options>
 
           </ion-item-sliding>
-
-
 
 
           <ion-col class="ion-hide-sm-down">

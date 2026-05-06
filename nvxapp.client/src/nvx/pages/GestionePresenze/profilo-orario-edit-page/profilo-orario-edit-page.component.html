@@ -200,28 +200,54 @@
                     <ion-item-sliding class="ion-hide-sm-up">
 
                       <ion-item>
-                        <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
-                          {{ giornoDett.idPar_Orario | parOrarioToLongText }}
-                        </ion-label>
+                        <ion-grid>
+                          <ion-row class="ion-align-items-center">
+
+                            <!-- Testo (parOrarioToLongText) -->
+                            <ion-col size="5">
+                              <div class="descrizione">
+                                {{ giornoDett.idPar_Orario | parOrarioToLongText }}
+                              </div>
+                            </ion-col>
+
+                            <ion-col size="7">
+                              <ion-label *ngIf="get_par_Orario(giornoDett.idPar_Orario)?.timbratureTipo === orarioTimbratureTipoEnum.IntervalloOrario">
+                                <p *ngFor="let parHH of get_par_OrarioIntervalloHH( giornoDett.idPar_Orario ); let idxParHH = index ">
+                                  {{ parHH.dalle }} - {{ parHH.alle }}
+                                </p>
+                              </ion-label>
+                            </ion-col>
+
+                          </ion-row>
+                        </ion-grid>
                       </ion-item>
 
                       <ion-item-options side="end">
-                        <ion-item-option color="{{btnDelete.color}}" (click)="btnDelete.event(idxDay+1)" *ngIf="last && idx > 0">
-                          <ion-icon slot="start" name="{{btnDelete.image}}"></ion-icon>
-                          {{btnDelete.text}}
+
+                        <ion-item-option *ngIf="last && idx > 0"
+                                         [color]="btnDelete.color"
+                                         (click)="btnDelete.event(idxDay+1)">
+                          <ion-icon slot="start" [name]="btnDelete.image"></ion-icon>
+                          {{ btnDelete.text }}
                         </ion-item-option>
-                        <ion-item-option color="{{btnAdd.color}}" (click)="btnAdd.event(idxDay+1)" *ngIf="idx == 0">
-                          <ion-icon slot="start" name="{{btnAdd.image}}"></ion-icon>
-                          {{btnAdd.text}}
+
+                        <ion-item-option *ngIf="idx == 0"
+                                         [color]="btnAdd.color"
+                                         (click)="btnAdd.event(idxDay+1)">
+                          <ion-icon slot="start" [name]="btnAdd.image"></ion-icon>
+                          {{ btnAdd.text }}
                         </ion-item-option>
-                        <ion-item-option color="{{btnEdit.color}}" (click)="btnEdit.event(giornoDett)">
-                          <ion-icon slot="start" name="{{btnEdit.image}}"></ion-icon>
+
+                        <ion-item-option [color]="btnEdit.color"
+                                         (click)="btnEdit.event(giornoDett)">
+                          <ion-icon slot="start" [name]="btnEdit.image"></ion-icon>
                           {{ btnEdit.text }}
                         </ion-item-option>
+
                       </ion-item-options>
 
-
                     </ion-item-sliding>
+
 
                     <!--desktop-->
                     <ion-col size="2" class="ion-hide-sm-down">

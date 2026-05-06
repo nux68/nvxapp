@@ -151,6 +151,7 @@
                     </ion-col>
 
                   </ion-row>
+
                   <ion-row class="nvx-ion-row-4table" *ngFor="let coppia of get_Par_OrarioIntervalloHH(); let idxDay = index">
 
 
@@ -158,24 +159,43 @@
                     <ion-item-sliding class="ion-hide-sm-up">
 
                       <ion-item>
-                        <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
-                          {{ coppia.dalle  | slice:0:5 }}  {{ coppia.alle  | slice:0:5 }}
-                        </ion-label>
+                        <ion-grid>
+                          <ion-row class="ion-align-items-center">
+
+                            <ion-col size="2">
+                              <div class="descrizione">
+                                {{ coppia.numCoppia }}
+                              </div>
+                            </ion-col>
+
+                            <!-- Testo (dalle - alle) -->
+                            <ion-col size="5">
+                              <div class="descrizione">
+                                {{ coppia.dalle | slice:0:5 }}
+                              </div>
+                            </ion-col>
+                            <ion-col size="5">
+                              <div class="descrizione">
+                                {{ coppia.alle | slice:0:5 }}
+                              </div>
+                            </ion-col>
+
+                          </ion-row>
+                        </ion-grid>
                       </ion-item>
-
-
 
                       <ion-item-options side="end">
 
-
-
-                        <ion-item-option color="{{btnEdit.color}}" (click)="btnEdit.event(coppia)">
-                          <ion-icon slot="start" name="{{btnEdit.image}}"></ion-icon>
+                        <ion-item-option [color]="btnEdit.color"
+                                         (click)="btnEdit.event(coppia)">
+                          <ion-icon slot="start" [name]="btnEdit.image"></ion-icon>
                           {{ btnEdit.text }}
                         </ion-item-option>
+
                       </ion-item-options>
 
                     </ion-item-sliding>
+
 
                     <!--desktop-->
                     <ion-col size="1" class="ion-hide-sm-down">

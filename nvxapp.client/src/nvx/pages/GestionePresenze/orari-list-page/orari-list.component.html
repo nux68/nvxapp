@@ -26,19 +26,19 @@
                 <ion-row class="ion-align-items-center">
 
                   <!-- Icona -->
-                  <ion-col size="2">
+                  <ion-col size="1">
                     <ion-icon [name]="isAdmin(item) ? 'server-outline' : 'server-outline'"
                               [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
                     </ion-icon>
                   </ion-col>
 
                   <!-- Codice -->
-                  <ion-col size="3">
+                  <ion-col size="2">
                     <div class="codice">{{ item.codice }}</div>
                   </ion-col>
 
                   <!-- Descrizione -->
-                  <ion-col size="7">
+                  <ion-col size="9">
                     <div class="descrizione">{{ item.descrizione }}</div>
                   </ion-col>
 
