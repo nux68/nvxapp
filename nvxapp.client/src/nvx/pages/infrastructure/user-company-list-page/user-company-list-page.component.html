@@ -18,29 +18,48 @@
                  class="nvx-ion-row-4table nvx-row-hover">
 
           <ion-item-sliding class="ion-hide-sm-up">
-            <ion-item>
-              <ion-icon [name]="isAdmin(item) ? 'person-add-outline' : 'person-outline'"></ion-icon>
-              <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
-                {{ item.descrizione }}
-              </ion-label>
+
+            <ion-item lines="none">
+              <ion-grid>
+                <ion-row class="ion-align-items-center">
+
+                  <!-- ICONA -->
+                  <ion-col size="2">
+                    <ion-icon [name]="isAdmin(item) ? 'person-add-outline' : 'person-outline'">
+                    </ion-icon>
+                  </ion-col>
+
+                  <!-- DESCRIZIONE -->
+                  <ion-col size="10">
+                    <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
+                      {{ item.descrizione }}
+                    </ion-label>
+                  </ion-col>
+
+                </ion-row>
+              </ion-grid>
             </ion-item>
 
-
+            <!-- OPTIONS -->
             <ion-item-options side="end">
 
-              <ion-item-option color="{{btnImpersona.color}}" (click)="btnImpersona.event(item)" *ngIf="isUser(item)">
+              <ion-item-option color="{{btnImpersona.color}}"
+                               (click)="btnImpersona.event(item)"
+                               *ngIf="isUser(item)">
                 <ion-icon slot="start" name="{{btnImpersona.image}}"></ion-icon>
                 Impersona
               </ion-item-option>
-              <ion-item-option color="{{btnEdit.color}}" (click)="btnEdit.event(item)">
+
+              <ion-item-option color="{{btnEdit.color}}"
+                               (click)="btnEdit.event(item)">
                 <ion-icon slot="start" name="{{btnEdit.image}}"></ion-icon>
                 Modifica
               </ion-item-option>
 
-
-
             </ion-item-options>
+
           </ion-item-sliding>
+
 
 
 

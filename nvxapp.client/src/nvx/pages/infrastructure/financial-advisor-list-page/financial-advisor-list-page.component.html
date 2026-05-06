@@ -20,29 +20,45 @@
                  class="nvx-ion-row-4table nvx-row-hover">
 
           <ion-item-sliding class="ion-hide-sm-up">
-            <ion-item>
-              <ion-icon [name]="isAdmin(item) ? 'server-outline' : 'server-outline'"></ion-icon>
-              <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
-                {{ item.descrizione }}
-              </ion-label>
-            </ion-item>
 
+            <ion-item>
+              <ion-grid>
+                <ion-row class="ion-align-items-center">
+
+                  <!-- Icona -->
+                  <ion-col size="2">
+                    <ion-icon [name]="isAdmin(item) ? 'server-outline' : 'server-outline'"
+                              [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
+                    </ion-icon>
+                  </ion-col>
+
+                  <!-- Descrizione -->
+                  <ion-col size="10">
+                    <div class="descrizione">{{ item.descrizione }}</div>
+                  </ion-col>
+
+                </ion-row>
+              </ion-grid>
+            </ion-item>
 
             <ion-item-options side="end">
 
-              <ion-item-option color="{{btnImpersona.color}}" (click)="btnImpersona.event(item)">
-                <ion-icon slot="start" name="{{btnImpersona.image}}"></ion-icon>
+              <ion-item-option [color]="btnImpersona.color"
+                               (click)="btnImpersona.event(item)">
+                <ion-icon slot="start" [name]="btnImpersona.image"></ion-icon>
                 Impersona
               </ion-item-option>
-              <ion-item-option color="{{btnEdit.color}}" (click)="btnEdit.event(item)">
-                <ion-icon slot="start" name="{{btnEdit.image}}"></ion-icon>
+
+              <ion-item-option [color]="btnEdit.color"
+                               (click)="btnEdit.event(item)">
+                <ion-icon slot="start" [name]="btnEdit.image"></ion-icon>
                 Modifica
               </ion-item-option>
 
-
-
             </ion-item-options>
+
           </ion-item-sliding>
+
 
 
           <ion-col size="8" class="ion-hide-sm-down">

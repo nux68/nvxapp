@@ -26,3 +26,8 @@ ion-menu-button {
 #container a {
   text-decoration: none;
 }
+.descrizione {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
