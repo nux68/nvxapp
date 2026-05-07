@@ -22,8 +22,56 @@
 
       <form [formGroup]="_editForm"></form>
 
-      <!-- GRIGLIA PIANO FERIE -->
-      <div *ngIf="daySlots?.length > 0 && getDaysInMonth().length > 0" class="vg-wrapper">
+      <!-- GRIGLIA PIANO FERIE — MOBILE (ion-hide-sm-up) -->
+      <div *ngIf="daySlots?.length > 0 && getDaysInMonth().length > 0" class="ion-hide-sm-up">
+        <div *ngFor="let slot of getAll(); let i = index" class="vg-mobile-dip-block">
+
+          <!-- Nome dipendente -->
+          <div class="vg-mobile-dip-header"
+               [class.nvx-row-odd]="i % 2 !== 0"
+               [class.nvx-row-even]="i % 2 === 0">
+            <strong>{{ slot.idAspNetUsers | idAspNetUsersToCognome }}</strong>&nbsp;{{ slot.idAspNetUsers | idAspNetUsersToNome }}
+          </div>
+
+          <!-- Righe giorno -->
+          <ng-container *ngFor="let day of getDaysInMonth()">
+            <div class="vg-mobile-day-row" [class.vg-mobile-weekend]="isWeekend(day)">
+              <!-- Colonna giorno -->
+              <div class="vg-mobile-day-col">
+                <span class="vg-mobile-day-num">{{ day }}</span>
+                <span class="vg-mobile-day-label">{{ getDayLabel(day) }}</span>
+              </div>
+              <!-- Colonna giustificativi -->
+              <div class="vg-mobile-just-col">
+                <ng-container *ngIf="getGiustificativiForDay(slot, day) as giust">
+                  <ng-container *ngIf="giust.length > 0; else mobileEmptyDay">
+                    <ion-chip *ngFor="let g of giust"
+                              [ngStyle]="{
+                                'background': timeSheetService.get_Dip_GG_Giustificativi_backColor(g),
+                                'color':      timeSheetService.get_Dip_GG_Giustificativi_txtColor(g),
+                                'margin':     '1px 2px',
+                                'height':     '20px',
+                                'cursor': CanOpenMenuActionGiustificativi(slot,g) ? 'pointer' : 'default',
+                                'opacity': CanOpenMenuActionGiustificativi(slot,g) ? '1' : '0.5'
+                              }"
+                              (click)="CanOpenMenuActionGiustificativi(slot,g) ? actionSheetOpen(g) : null"
+                              [title]="g.idPar_Giustificativi | parGiustificativiToLongText">
+                      {{ g.idPar_Giustificativi | parGiustificativiToShortText }}&nbsp;{{ g.hours.substring(0, 5) }}
+                    </ion-chip>
+                  </ng-container>
+                  <ng-template #mobileEmptyDay>
+                    <span class="vg-mobile-empty">-</span>
+                  </ng-template>
+                </ng-container>
+              </div>
+            </div>
+          </ng-container>
+
+        </div>
+      </div>
+
+      <!-- GRIGLIA PIANO FERIE — DESKTOP (ion-hide-sm-down) -->
+      <div *ngIf="daySlots?.length > 0 && getDaysInMonth().length > 0" class="vg-wrapper ion-hide-sm-down">
         <div class="vg-scroll">
 
           <!-- INTESTAZIONE -->

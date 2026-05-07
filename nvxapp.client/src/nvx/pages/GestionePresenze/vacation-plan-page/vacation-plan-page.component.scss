@@ -141,3 +141,71 @@
 .vg-data-row {
   align-items: stretch;
 }
+
+/* ── Vista Mobile ─────────────────────────────────────── */
+
+.vg-mobile-dip-block {
+  margin-bottom: 16px;
+  border: 1px solid var(--ion-color-light-shade, #ddd);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.vg-mobile-dip-header {
+  padding: 6px 10px;
+  font-weight: 600;
+  border-bottom: 2px solid var(--ion-color-primary, #3880ff);
+  background: var(--ion-color-light, #f4f5f8);
+}
+
+.vg-mobile-day-row {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid var(--ion-color-light-shade, #eee);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.vg-mobile-weekend {
+  background: var(--ion-color-light, #f4f5f8);
+  color: var(--ion-color-medium, #92949c);
+}
+
+.vg-mobile-day-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 46px;
+  width: 46px;
+  padding: 4px 2px;
+  border-right: 1px solid var(--ion-color-light-shade, #ddd);
+  flex-shrink: 0;
+}
+
+.vg-mobile-day-num {
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.vg-mobile-day-label {
+  font-size: 0.78em;
+  color: var(--ion-color-medium, #888);
+  text-transform: capitalize;
+}
+
+.vg-mobile-just-col {
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: 3px 6px;
+  gap: 2px;
+}
+
+.vg-mobile-empty {
+  color: #ccc;
+  font-size: 0.85em;
+}
