@@ -126,6 +126,16 @@ ion-modal {
 }
 
 
+
+ion-item-sliding.nvx-row-odd ion-item {
+  --background: rgba(var(--ion-color-light-rgb), 0.5);
+}
+
+ion-item-sliding.nvx-row-even ion-item {
+  --background: transparent;
+}
+
+
 /*@media (max-width: 576px) {*/ /* Soglia per sm */
 /*.nvx-modal {
     display: none;

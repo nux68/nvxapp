@@ -18,7 +18,9 @@
                  [class.nvx-row-even]="indexRow4Color % 2 === 0"
                  class="nvx-ion-row-4table nvx-row-hover">
 
-          <ion-item-sliding class="ion-hide-sm-up">
+          <ion-item-sliding class="ion-hide-sm-up"
+                            [class.nvx-row-odd]="indexRow4Color % 2 !== 0"
+                            [class.nvx-row-even]="indexRow4Color % 2 === 0">
 
             <ion-item>
               <ion-grid>
