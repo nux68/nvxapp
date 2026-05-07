@@ -2,7 +2,7 @@
   <ion-toolbar color="light">
     <ion-buttons class="center-buttons">
       
-      <ion-button shape="round" *ngFor="let item of buttonbar" (click)="item.event({})" color="{{item.color}}" [disabled]="item.disabled" fill="solid">
+      <ion-button size="default" shape="round" *ngFor="let item of buttonbar" (click)="item.event({})" color="{{item.color}}" [disabled]="item.disabled" fill="clear">
         <ion-icon name="{{item.image}}"></ion-icon>
         &nbsp;{{item.text}}&nbsp;&nbsp;
       </ion-button>

@@ -45,13 +45,15 @@
 
             <ion-item-options side="end">
 
-              <ion-item-option [color]="btnImpersona.color"
+              <!--<ion-item-option [color]="btnImpersona.color"-->
+                <ion-item-option class="item-option-text-only_primary"
                                (click)="btnImpersona.event(item)">
                 <ion-icon slot="start" [name]="btnImpersona.image"></ion-icon>
                 Impersona
               </ion-item-option>
 
-              <ion-item-option [color]="btnEdit.color"
+              <!--<ion-item-option [color]="btnEdit.color"-->
+                <ion-item-option class="item-option-text-only_modifica"
                                (click)="btnEdit.event(item)">
                 <ion-icon slot="start" [name]="btnEdit.image"></ion-icon>
                 Modifica

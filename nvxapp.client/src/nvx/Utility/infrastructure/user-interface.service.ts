@@ -1,12 +1,16 @@
 import { Injectable } from '@angular/core';
+import { Platform } from '@ionic/angular';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserInterfaceService {
 
-  constructor() { }
+  constructor(private platform: Platform) { }
 
+  public get isMobile(): boolean {
+    return this.platform.width() < 576;
+  }
 
   get Btn_Conferma(): ButtonItem {
     return new ButtonItem(
