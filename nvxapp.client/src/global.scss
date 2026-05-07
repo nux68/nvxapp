@@ -153,13 +153,59 @@ ion-item-sliding.nvx-row-even ion-item {
 
 /*per i bottoni slide*/
 /*ion-item-option {
-  border-radius: 15px;*/ /* Arrotonda i bordi */
-/*overflow: hidden;*/ /* Per evitare contenuti fuori dai bordi */
-/*margin: 8px 0;*/ /* Spazio sopra e sotto */
-/*}
+  border-radius: 15px;  //Arrotonda i bordi 
+overflow: hidden;  //Per evitare contenuti fuori dai bordi 
+margin: 8px 0;  //Spazio sopra e sotto 
+}
 
 .center-buttons {
   display: flex;
   justify-content: center;
-  gap: 10px;*/ /* Spazio tra i bottoni */
-/*}*/
+  gap: 10px;  //Spazio tra i bottoni 
+}*/
+
+
+ion-item-option.item-option-text-only_primary {
+  --background: transparent;  //niente colore dietro 
+  --color: var(--ion-color-primary);  //colore SOLO del testo e icona 
+  --padding-start: 12px;
+  --padding-end: 12px;
+  font-weight: 500;
+}
+ion-item-option.item-option-text-only_medium {
+  --background: transparent; //niente colore dietro
+  --color: var(--ion-color-medium); //colore SOLO del testo e icona
+  --padding-start: 12px;
+  --padding-end: 12px;
+  font-weight: 500;
+}
+ion-item-option.item-option-text-only_warning {
+  --background: transparent; //niente colore dietro
+  --color: var(--ion-color-warning); //colore SOLO del testo e icona
+  --padding-start: 12px;
+  --padding-end: 12px;
+  font-weight: 500;
+}
+ion-item-option.item-option-text-only_danger {
+  --background: transparent; //niente colore dietro
+  --color: var(--ion-color-danger); //colore SOLO del testo e icona
+  --padding-start: 12px;
+  --padding-end: 12px;
+  font-weight: 500;
+}
+
+ion-item-option.item-option-text-only_modifica {
+  --background: transparent; //niente colore dietro
+  --color: var(--ion-color-warning); //colore SOLO del testo e icona
+  --padding-start: 12px;
+  --padding-end: 12px;
+  font-weight: 500;
+}
+
+ion-item-option.item-option-text-only_cancella {
+  --background: transparent; //niente colore dietro
+  --color: var(--ion-color-danger); //colore SOLO del testo e icona
+  --padding-start: 12px;
+  --padding-end: 12px;
+  font-weight: 500;
+}
