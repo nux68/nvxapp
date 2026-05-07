@@ -9,7 +9,8 @@
       {{ btnDelete.text }}
     </ion-item-option>
 
-    <ion-item-option class="item-option-text-only_modifica"
+    <ion-item-option *ngIf="showEdit"
+                      class="item-option-text-only_modifica"
                      (click)="btnEdit.event(item)">
       <ion-icon slot="start" [name]="btnEdit.image"></ion-icon>
       {{ btnEdit.text }}
