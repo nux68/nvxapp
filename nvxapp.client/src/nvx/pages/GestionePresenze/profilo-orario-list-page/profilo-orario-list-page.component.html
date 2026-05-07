@@ -50,13 +50,13 @@
 
             <ion-item-options side="end">
               <ion-item-option *ngIf="!item.default"
-                               [color]="btnDelete.color"
+                               class="item-option-text-only_cancella"
                                (click)="btnDelete.event(item)">
                 <ion-icon slot="start" [name]="btnDelete.image"></ion-icon>
                 {{ btnDelete.text }}
               </ion-item-option>
 
-              <ion-item-option [color]="btnEdit.color"
+              <ion-item-option class="item-option-text-only_modifica"
                                (click)="btnEdit.event(item)">
                 <ion-icon slot="start" [name]="btnEdit.image"></ion-icon>
                 {{ btnEdit.text }}
