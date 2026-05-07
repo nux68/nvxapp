@@ -10,6 +10,7 @@ import { PageButtonbarComponent } from './components/infrastructure/page-buttonb
 import { GenericDialogComponent } from './components/infrastructure/generic-dialog/generic-dialog.component';
 import { HoverPopupComponent } from './components/infrastructure/hover-popup/hover-popup.component';
 import { HoverPopupDirective } from './components/infrastructure/hover-popup/hover-popup.directive';
+import { SlideButtonCancellaModificaComponent } from './components/infrastructure/slide-button-cancella-modifica/slide-button-cancella-modifica.component';
 
 
 @NgModule({
@@ -20,7 +21,7 @@ import { HoverPopupDirective } from './components/infrastructure/hover-popup/hov
     GenericFilterPipe,
     HoverPopupComponent, HoverPopupDirective
   ],
-  declarations: [BreadcrumbsImpersonateComponent, PageToolbarComponent, PageButtonbarComponent, GenericDialogComponent /*, FabMenuComponent*/],
-  exports: [BreadcrumbsImpersonateComponent, GenericFilterPipe, PageToolbarComponent, PageButtonbarComponent, HoverPopupComponent, HoverPopupDirective /*, FabMenuComponent*/]
+  declarations: [BreadcrumbsImpersonateComponent, PageToolbarComponent, SlideButtonCancellaModificaComponent,PageButtonbarComponent, GenericDialogComponent /*, FabMenuComponent*/],
+  exports: [BreadcrumbsImpersonateComponent, GenericFilterPipe, PageToolbarComponent, SlideButtonCancellaModificaComponent, PageButtonbarComponent, HoverPopupComponent, HoverPopupDirective /*, FabMenuComponent*/]
 })
 export class SharedComponentInfrastructureModule { }
