@@ -157,10 +157,12 @@
               </ion-item>
 
               <ion-grid >
-                <ion-row *ngFor="let item of getAll_Dip_ProfiloOrario() | genericFilter: 'descrizione' : searchText" class="nvx-ion-row-4table">
+                <ion-row *ngFor="let item of getAll_Dip_ProfiloOrario() | genericFilter: 'descrizione' : searchText;let indexRow4Color = index" class="nvx-ion-row-4table" >
 
 
-                  <ion-item-sliding class="ion-hide-sm-up">
+                  <ion-item-sliding class="ion-hide-sm-up"
+                                    [class.nvx-row-odd]="indexRow4Color % 2 !== 0"
+                                    [class.nvx-row-even]="indexRow4Color % 2 === 0">
                     <ion-item>
                       <ion-icon [name]="isAdmin(item) ? 'server-outline' : 'server-outline'"></ion-icon>
                       <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">

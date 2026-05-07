@@ -48,7 +48,9 @@
   </ion-item-sliding>-->
 
 
-          <ion-item-sliding class="ion-hide-sm-up">
+          <ion-item-sliding class="ion-hide-sm-up"
+                            [class.nvx-row-odd]="indexRow4Color % 2 !== 0"
+                            [class.nvx-row-even]="indexRow4Color % 2 === 0">
 
             <ion-item lines="none" style="--padding-start: 4px; --inner-padding-end: 4px;">
               <ion-grid style="width:100%; padding: 4px 0;">

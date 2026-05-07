@@ -156,7 +156,9 @@
 
 
                     <!--mobile-->
-                    <ion-item-sliding class="ion-hide-sm-up">
+                    <ion-item-sliding class="ion-hide-sm-up"
+                                      [class.nvx-row-odd]="idxDay % 2 !== 0"
+                                      [class.nvx-row-even]="idxDay % 2 === 0">
 
                       <ion-item>
                         <ion-grid>
