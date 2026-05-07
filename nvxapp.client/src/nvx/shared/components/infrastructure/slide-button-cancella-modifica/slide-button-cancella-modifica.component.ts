@@ -11,9 +11,10 @@ export class SlideButtonCancellaModificaComponent  implements OnInit {
   @Input() item: any;
 
   @Input() btnDelete: any;
-  @Input() btnEdit: any;
-
   @Input() showDelete: boolean = true;
+
+  @Input() btnEdit: any;
+  @Input() showEdit: boolean = true;
 
   constructor() { }
 
