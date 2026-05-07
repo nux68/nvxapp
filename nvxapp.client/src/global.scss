@@ -127,12 +127,20 @@ ion-modal {
 
 
 
-ion-item-sliding.nvx-row-odd ion-item {
+/*ion-item-sliding.nvx-row-odd ion-item {
   --background: rgba(var(--ion-color-light-rgb), 0.5);
 }
 
 ion-item-sliding.nvx-row-even ion-item {
   --background: transparent;
+}*/
+
+ion-item-sliding.nvx-row-odd ion-item {
+  --background: var(--ion-color-light, #f4f5f8);
+}
+
+ion-item-sliding.nvx-row-even ion-item {
+  --background: var(--ion-card-background, var(--ion-background-color, #ffffff));
 }
 
 
