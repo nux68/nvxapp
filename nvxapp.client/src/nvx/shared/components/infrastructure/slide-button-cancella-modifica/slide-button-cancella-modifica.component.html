@@ -1,0 +1,20 @@
+
+
+  <ion-item-options side="end">
+
+    <ion-item-option *ngIf="showDelete"
+                     class="item-option-text-only_cancella"
+                     (click)="btnDelete.event(item)">
+      <ion-icon slot="start" [name]="btnDelete.image"></ion-icon>
+      {{ btnDelete.text }}
+    </ion-item-option>
+
+    <ion-item-option class="item-option-text-only_modifica"
+                     (click)="btnEdit.event(item)">
+      <ion-icon slot="start" [name]="btnEdit.image"></ion-icon>
+      {{ btnEdit.text }}
+    </ion-item-option>
+
+  </ion-item-options>
+
+
