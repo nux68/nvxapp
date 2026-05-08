@@ -28,14 +28,14 @@
                 <ion-row class="ion-align-items-center">
 
                   <!-- Icona -->
-                  <ion-col size="2">
+                  <ion-col size="1">
                     <ion-icon [name]="isPowerAdmin(item) ? 'person-add-outline' : 'person-outline'"
                               [ngStyle]="{ color: isPowerAdmin(item) ? 'var(--ion-color-primary)' : '' }">
                     </ion-icon>
                   </ion-col>
 
                   <!-- Descrizione -->
-                  <ion-col size="10">
+                  <ion-col size="11">
                     <div class="descrizione">{{ item.descrizione }}</div>
                   </ion-col>
 
@@ -77,59 +77,6 @@
 
         </ion-row>
 
-
-        <!--<ion-row>
-          <ion-col *ngFor="let item of getPowerAdmin() | genericFilter: 'descrizione' : searchText" size-xs="6" size-sm="3" size-md="3" size-lg="3" size-xl="2">
-
-            <ion-card>
-              <img alt="Silhouette of mountains" src="assets/card-media-admin.png" />
-              <ion-card-header>
-                <ion-card-title>{{ item.descrizione }}</ion-card-title>
-                <ion-card-subtitle>bla bla bla</ion-card-subtitle>
-              </ion-card-header>
-
-              <ion-card-content>
-                bla bla bla
-              </ion-card-content>
-
-
-
-              <ion-button shape="round" (click)="btnEdit.event(item)" color="{{btnEdit.color}}" fill="solid" expand="block">
-                <ion-icon name="{{btnEdit.image}}"></ion-icon>
-                &nbsp;{{btnEdit.text}}
-              </ion-button>
-
-
-            </ion-card>
-
-          </ion-col>
-        </ion-row>
-
-        <ion-row>
-          <ion-col *ngFor="let item of getAdmin() | genericFilter: 'descrizione' : searchText" size-xs="6" size-sm="3" size-md="3" size-lg="3" size-xl="2">
-
-            <ion-card>
-              <img alt="Silhouette of mountains" src="assets/card-media.png" />
-              <ion-card-header>
-                <ion-card-title>{{ item.descrizione }}</ion-card-title>
-                <ion-card-subtitle>bla bla bla</ion-card-subtitle>
-              </ion-card-header>
-
-              <ion-card-content>
-                bla bla bla
-              </ion-card-content>
-
-
-              <ion-button shape="round" (click)="btnEdit.event(item)" color="{{btnEdit.color}}" fill="solid" expand="block">
-                <ion-icon name="{{btnEdit.image}}"></ion-icon>
-                &nbsp;{{btnEdit.text}}
-              </ion-button>
-
-
-            </ion-card>
-
-          </ion-col>
-        </ion-row>-->
 
       </ion-grid>
 

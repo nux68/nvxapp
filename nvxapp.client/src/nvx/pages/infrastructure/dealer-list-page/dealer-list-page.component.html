@@ -18,6 +18,7 @@
                  [class.nvx-row-even]="indexRow4Color % 2 === 0"
                  class="nvx-ion-row-4table nvx-row-hover">
 
+          <!--mobile-->
           <ion-item-sliding class="ion-hide-sm-up"
                             [class.nvx-row-odd]="indexRow4Color % 2 !== 0"
                             [class.nvx-row-even]="indexRow4Color % 2 === 0">
@@ -27,14 +28,14 @@
                 <ion-row class="ion-align-items-center">
 
                   <!-- Icona -->
-                  <ion-col size="2">
+                  <ion-col size="1">
                     <ion-icon [name]="isAdmin(item) ? 'server-outline' : 'server-outline'"
                               [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
                     </ion-icon>
                   </ion-col>
 
                   <!-- Descrizione -->
-                  <ion-col size="10">
+                  <ion-col size="11">
                     <div class="descrizione">{{ item.descrizione }}</div>
                   </ion-col>
 
@@ -44,15 +45,15 @@
 
             <ion-item-options side="end">
 
-                <!--<ion-item-option [color]="btnImpersona.color"-->
-                <ion-item-option class="item-option-text-only_primary"
+              <!--<ion-item-option [color]="btnImpersona.color"-->
+              <ion-item-option class="item-option-text-only_primary"
                                (click)="btnImpersona.event(item)">
                 <ion-icon slot="start" [name]="btnImpersona.image"></ion-icon>
                 Impersona
               </ion-item-option>
 
-                <!--<ion-item-option [color]="btnEdit.color"-->
-                <ion-item-option class="item-option-text-only_modifica"
+              <!--<ion-item-option [color]="btnEdit.color"-->
+              <ion-item-option class="item-option-text-only_modifica"
                                (click)="btnEdit.event(item)">
                 <ion-icon slot="start" [name]="btnEdit.image"></ion-icon>
                 Modifica
@@ -62,8 +63,7 @@
 
           </ion-item-sliding>
 
-
-
+          <!--desktop-->
           <ion-col size="8" class="ion-hide-sm-down">
             <ion-icon [name]="isAdmin(item) ? 'server-outline' : 'server-outline'"></ion-icon>
             <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">

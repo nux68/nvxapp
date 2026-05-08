@@ -26,13 +26,13 @@
                 <ion-row class="ion-align-items-center">
 
                   <!-- ICONA -->
-                  <ion-col size="2">
+                  <ion-col size="1">
                     <ion-icon [name]="isAdmin(item) ? 'person-add-outline' : 'person-outline'">
                     </ion-icon>
                   </ion-col>
 
                   <!-- DESCRIZIONE -->
-                  <ion-col size="10">
+                  <ion-col size="11">
                     <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
                       {{ item.descrizione }}
                     </ion-label>
