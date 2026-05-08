@@ -17,7 +17,7 @@ export class PageToolbarComponent  implements OnInit {
   @Input() showFilter: boolean;
   @Input() showBreadcrumbs: boolean;
   @Input() showActiveJobs: boolean = true;
-  @Input() headerColor: string;
+  @Input() headerColor: string = "primary";
 
   @Output('ev_Filter') _emFilter: EventEmitter<string> = new EventEmitter();
   @Input() title: string;
