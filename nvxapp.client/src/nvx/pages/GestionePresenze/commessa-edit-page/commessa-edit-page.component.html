@@ -168,12 +168,19 @@
                 </ion-label>
               </ion-item>
 
-              <ion-item-options side="end">
-                <ion-item-option *ngIf="!item.default" color="{{btnDeleteAttivita.color}}" (click)="btnDeleteAttivita.event(item)">
-                  <ion-icon slot="start" name="{{btnDeleteAttivita.image}}"></ion-icon>
-                  {{btnDeleteAttivita.text}}
-                </ion-item-option>
-              </ion-item-options>
+              <!--<ion-item-options side="end">
+    <ion-item-option *ngIf="!item.default" color="{{btnDeleteAttivita.color}}" (click)="btnDeleteAttivita.event(item)">
+      <ion-icon slot="start" name="{{btnDeleteAttivita.image}}"></ion-icon>
+      {{btnDeleteAttivita.text}}
+    </ion-item-option>
+  </ion-item-options>-->
+
+              <app-slide-button-cancella-modifica [item]="item"
+                                                  [btnDelete]="btnDeleteAttivita"
+                                                  [showDelete]="!item.default"
+                                                  [btnEdit]="false">
+              </app-slide-button-cancella-modifica>
+
 
             </ion-item-sliding>
 
@@ -217,12 +224,20 @@
                 </ion-label>
               </ion-item>
 
-              <ion-item-options side="end">
-                <ion-item-option *ngIf="!item.default" color="{{btnDeleteReparto.color}}" (click)="btnDeleteReparto.event(item)">
-                  <ion-icon slot="start" name="{{btnDeleteReparto.image}}"></ion-icon>
-                  {{btnDeleteReparto.text}}
-                </ion-item-option>
-              </ion-item-options>
+              <!--<ion-item-options side="end">
+    <ion-item-option *ngIf="!item.default" color="{{btnDeleteReparto.color}}" (click)="btnDeleteReparto.event(item)">
+      <ion-icon slot="start" name="{{btnDeleteReparto.image}}"></ion-icon>
+      {{btnDeleteReparto.text}}
+    </ion-item-option>
+  </ion-item-options>-->
+
+              <app-slide-button-cancella-modifica [item]="item"
+                                                  [btnDelete]="btnDeleteReparto"
+                                                  [showDelete]="!item.default"
+                                                  [btnEdit]="false">
+              </app-slide-button-cancella-modifica>
+
+
 
             </ion-item-sliding>
             <!--deskTop-->
@@ -262,12 +277,19 @@
                 </ion-label>
               </ion-item>
 
-              <ion-item-options side="end">
-                <ion-item-option *ngIf="!item.default" color="{{btnDeleteUser.color}}" (click)="btnDeleteUser.event(item)">
-                  <ion-icon slot="start" name="{{btnDeleteUser.image}}"></ion-icon>
-                  {{btnDeleteUser.text}}
-                </ion-item-option>
-              </ion-item-options>
+              <!--<ion-item-options side="end">
+    <ion-item-option *ngIf="!item.default" color="{{btnDeleteUser.color}}" (click)="btnDeleteUser.event(item)">
+      <ion-icon slot="start" name="{{btnDeleteUser.image}}"></ion-icon>
+      {{btnDeleteUser.text}}
+    </ion-item-option>
+  </ion-item-options>-->
+
+              <app-slide-button-cancella-modifica [item]="item"
+                                                  [btnDelete]="btnDeleteUser"
+                                                  [showDelete]="!item.default"
+                                                  [btnEdit]="false">
+              </app-slide-button-cancella-modifica>
+
 
             </ion-item-sliding>
             <!--deskTop-->

@@ -227,20 +227,20 @@
                       <ion-item-options side="end">
 
                         <ion-item-option *ngIf="last && idx > 0"
-                                         [color]="btnDelete.color"
+                                         class="item-option-text-only_cancella"
                                          (click)="btnDelete.event(idxDay+1)">
                           <ion-icon slot="start" [name]="btnDelete.image"></ion-icon>
                           {{ btnDelete.text }}
                         </ion-item-option>
 
                         <ion-item-option *ngIf="idx == 0"
-                                         [color]="btnAdd.color"
+                                         class="item-option-text-only_primary"
                                          (click)="btnAdd.event(idxDay+1)">
                           <ion-icon slot="start" [name]="btnAdd.image"></ion-icon>
                           {{ btnAdd.text }}
                         </ion-item-option>
 
-                        <ion-item-option [color]="btnEdit.color"
+                        <ion-item-option class="item-option-text-only_modifica"
                                          (click)="btnEdit.event(giornoDett)">
                           <ion-icon slot="start" [name]="btnEdit.image"></ion-icon>
                           {{ btnEdit.text }}

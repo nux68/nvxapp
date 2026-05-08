@@ -29,8 +29,10 @@
                  [class.nvx-row-odd]="indexRow4Color % 2 !== 0"
                  [class.nvx-row-even]="indexRow4Color % 2 === 0"
                  class="nvx-ion-row-4table nvx-row-hover">
-
-          <ion-item-sliding class="ion-hide-sm-up">
+          <!--mobile-->
+          <ion-item-sliding class="ion-hide-sm-up"
+                            [class.nvx-row-odd]="indexRow4Color % 2 !== 0"
+                            [class.nvx-row-even]="indexRow4Color % 2 === 0">
             <ion-item>
 
               <ion-item>
@@ -52,12 +54,16 @@
 
             <ion-item-options side="end">
 
-              <ion-item-option *ngIf="timeSheetService.Dip_GG_Richiesta_Admin_Can_Approve(item)" color="{{btnApprova.color}}" (click)="btnApprova.event(item)">
+              <ion-item-option *ngIf="timeSheetService.Dip_GG_Richiesta_Admin_Can_Approve(item)"
+                               class="item-option-text-only_primary"
+                               (click)="btnApprova.event(item)">
                 <ion-icon slot="start" name="{{btnApprova.image}}"></ion-icon>
                 {{btnApprova.text}}
               </ion-item-option>
 
-              <ion-item-option *ngIf="timeSheetService.Dip_GG_Richiesta_Admin_Can_Reject(item)" color="{{btnRifiuta.color}}" (click)="btnRifiuta.event(item)">
+              <ion-item-option *ngIf="timeSheetService.Dip_GG_Richiesta_Admin_Can_Reject(item)"
+                               class="item-option-text-only_cancella"
+                               (click)="btnRifiuta.event(item)">
                 <ion-icon slot="start" name="{{btnRifiuta.image}}"></ion-icon>
                 {{btnRifiuta.text}}
               </ion-item-option>
@@ -65,7 +71,7 @@
             </ion-item-options>
           </ion-item-sliding>
 
-
+          <!--desktop-->
           <ion-col class="ion-hide-sm-down">
             <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
               {{ item.idDip_RapportoLavoro  | idDipRapportoLavoroToCognome}}

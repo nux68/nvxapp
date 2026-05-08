@@ -53,22 +53,28 @@
               </ion-grid>
             </ion-item>
 
-            <ion-item-options side="end">
+            <!--<ion-item-options side="end">
 
-              <ion-item-option *ngIf="!item.default"
-                               class="item-option-text-only_cancella"
-                               (click)="btnDelete.event(item)">
-                <ion-icon slot="start" [name]="btnDelete.image"></ion-icon>
-                {{ btnDelete.text }}
-              </ion-item-option>
+    <ion-item-option *ngIf="!item.default"
+                     class="item-option-text-only_cancella"
+                     (click)="btnDelete.event(item)">
+      <ion-icon slot="start" [name]="btnDelete.image"></ion-icon>
+      {{ btnDelete.text }}
+    </ion-item-option>
 
-              <ion-item-option class="item-option-text-only_modifica"
-                               (click)="btnEdit.event(item)">
-                <ion-icon slot="start" [name]="btnEdit.image"></ion-icon>
-                {{ btnEdit.text }}
-              </ion-item-option>
+    <ion-item-option class="item-option-text-only_modifica"
+                     (click)="btnEdit.event(item)">
+      <ion-icon slot="start" [name]="btnEdit.image"></ion-icon>
+      {{ btnEdit.text }}
+    </ion-item-option>
 
-            </ion-item-options>
+  </ion-item-options>-->
+
+            <app-slide-button-cancella-modifica [item]="item"
+                                                [btnDelete]="btnDelete"
+                                                [showDelete]="!item.default"
+                                                [btnEdit]="btnEdit">
+            </app-slide-button-cancella-modifica>
 
           </ion-item-sliding>
 

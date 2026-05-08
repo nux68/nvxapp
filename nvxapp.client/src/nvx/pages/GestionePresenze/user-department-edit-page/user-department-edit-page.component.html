@@ -170,7 +170,7 @@
                       </ion-label>
                     </ion-item>
 
-                    <ion-item-options side="end">
+                    <!--<ion-item-options side="end">
                       <ion-item-option color="{{btnDelete_Dip_ProfiloOrario.color}}" (click)="btnDelete_Dip_ProfiloOrario.event(item)">
                         <ion-icon slot="start" name="{{btnDelete_Dip_ProfiloOrario.image}}"></ion-icon>
                         {{btnDelete_Dip_ProfiloOrario.text}}
@@ -179,8 +179,15 @@
                         <ion-icon slot="start" name="{{btnEdit_Dip_ProfiloOrario.image}}"></ion-icon>
                         {{ btnEdit_Dip_ProfiloOrario.text }}
                       </ion-item-option>
+                    </ion-item-options>-->
 
-                    </ion-item-options>
+                    <app-slide-button-cancella-modifica [item]="item"
+                                                        [btnDelete]="btnDelete_Dip_ProfiloOrario"
+                                                        [showDelete]="true"
+                                                        [btnEdit]="btnEdit_Dip_ProfiloOrario"
+                                                        [showEdit]="true">
+                    </app-slide-button-cancella-modifica>
+
                   </ion-item-sliding>
 
 

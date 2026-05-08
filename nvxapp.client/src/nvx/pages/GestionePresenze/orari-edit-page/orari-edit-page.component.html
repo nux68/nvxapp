@@ -186,7 +186,7 @@
                         </ion-grid>
                       </ion-item>
 
-                      <ion-item-options side="end">
+                      <!--<ion-item-options side="end">
 
                         <ion-item-option [color]="btnEdit.color"
                                          (click)="btnEdit.event(coppia)">
@@ -194,7 +194,14 @@
                           {{ btnEdit.text }}
                         </ion-item-option>
 
-                      </ion-item-options>
+                      </ion-item-options>-->
+
+                      <app-slide-button-cancella-modifica [item]="coppia"
+                                                          [showDelete]="false"
+                                                          [btnEdit]="btnEdit"
+                                                          [showEdit]="true">
+                      </app-slide-button-cancella-modifica>
+
 
                     </ion-item-sliding>
 
