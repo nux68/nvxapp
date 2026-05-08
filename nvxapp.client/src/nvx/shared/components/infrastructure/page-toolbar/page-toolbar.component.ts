@@ -4,6 +4,7 @@ import { LongJobNotifierService, LongJobProgressUpdate, LongJobCategory } from '
 import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment';
+import { Platform } from '@ionic/angular';
 
 @Component({
   selector: 'app-page-toolbar',
@@ -17,7 +18,7 @@ export class PageToolbarComponent  implements OnInit {
   @Input() showFilter: boolean;
   @Input() showBreadcrumbs: boolean;
   @Input() showActiveJobs: boolean = true;
-  @Input() headerColor: string = "primary";
+  @Input() headerColor: string =  this.isMobile? "primary":"";
 
   @Output('ev_Filter') _emFilter: EventEmitter<string> = new EventEmitter();
   @Input() title: string;
@@ -27,7 +28,8 @@ export class PageToolbarComponent  implements OnInit {
   public LongJobCategory = LongJobCategory;
 
   constructor(public userNavigationService: UserNavigationService,
-              public longJobNotifierService: LongJobNotifierService,
+    public longJobNotifierService: LongJobNotifierService,
+              private platform: Platform,
               private http: HttpClient)
   {
     this.activeJobs$ = this.longJobNotifierService.activeJobs$;
@@ -35,6 +37,10 @@ export class PageToolbarComponent  implements OnInit {
 
   ngOnInit() {
     
+  }
+
+  public get isMobile(): boolean {
+    return this.platform.width() < 576;
   }
 
   filter(ev: any) {
