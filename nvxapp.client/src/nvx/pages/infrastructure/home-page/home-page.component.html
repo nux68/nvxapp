@@ -7,21 +7,26 @@
 
   <!-- Contenitore per l'immagine splash -->
   <div *ngIf="showSplash" class="splash-container" [class.fade-out]="startFadeOut">
-    <h1>Progetto</h1>
-    <img src="assets/SiSignoreOrange.png" alt="Splash Image" />
+
+    <h1 [style.color]="'var(--ion-color-primary)'" [style.font-size]="isMobile ? '9vw' : '3.5rem'">Progetto</h1>
+    <!--<img src="assets/SiSignoreOrange.png" alt="Splash Image" />-->
+    <ion-icon name="calendar-outline" class="splash-icon"></ion-icon>
+    <h1 [style.color]="'var(--ion-color-primary)'" [style.font-size]="isMobile ? '11vw' : '6rem'">SiSignore</h1>
+
+    
+
   </div>
 
   <ion-card *ngIf="!showSplash">
     <ion-card-content>
 
-      <br />
+      <!--<br />
 
       <div id="container" >
         <strong class="capitalize">{{ title }}</strong>
         <p>{{title}}Component works...</p>
-
       </div>
-      <br />
+      <br />-->
 
     </ion-card-content>
   </ion-card>

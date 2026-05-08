@@ -49,6 +49,17 @@ ion-menu-button {
   opacity: 0;
 }
 
+.splash-icon {
+  font-size: 40vmin;
+  color: var(--ion-color-primary);
+}
+
+.splash-title {
+  font-size: clamp(1.8rem, 8vw, 4rem);
+  margin: 0 0 8px 0;
+  color: var(--ion-color-primary);
+}
+
 .splash-container img {
   max-width: 80%;
   max-height: 80%;

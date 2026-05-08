@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
+import { Platform } from '@ionic/angular';
 
 @Component({
   selector: 'app-home-page',
@@ -17,13 +18,18 @@ export class HomePageComponent  implements OnInit {
   // Variabile statica per tracciare la prima visita
   private static hasVisited = false;
 
-  constructor(public userNavigationService: UserNavigationService) {
+  constructor(public userNavigationService: UserNavigationService,
+              private platform: Platform,
+  ) {
     this.title = 'Home';
   }
 
   ionViewWillEnter() {
   }
   
+  public get isMobile(): boolean {
+    return this.platform.width() < 576;
+  }
 
   ngOnInit() {
     if (!HomePageComponent.hasVisited) {
