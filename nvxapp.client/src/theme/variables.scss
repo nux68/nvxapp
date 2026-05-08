@@ -15,19 +15,19 @@
 :root {
   --ion-color-primary: #23B1B2 /*#FF7300 arancione*/;
   --ion-color-secondary: #00A8FF /*#ffa500*/;
-  --ion-color-primary-rgb: 7,171,173  /*255,115,0*/;
+  --ion-color-primary-rgb: 7,171,173 /*255,115,0*/;
   --ion-color-primary-contrast: #000000;
   --ion-color-primary-contrast-rgb: 0,0,0;
   --ion-color-primary-shade: #e09400;
-  --ion-color-primary-tint: #ffae1a;
+  --ion-color-primary-tint: #23B1B2  /*#ffae1a*/;
 }
 
 .dark-theme {
   --ion-color-primary: #23B1B2 /*#FF7300 arancione*/;
   --ion-color-secondary: #00A8FF /*#ffa500*/;
-  --ion-color-primary-rgb: 7,171,173  /*255,115,0*/;
+  --ion-color-primary-rgb: 7,171,173 /*255,115,0*/;
   --ion-color-primary-contrast: #000000;
   --ion-color-primary-contrast-rgb: 0,0,0;
   --ion-color-primary-shade: #e09400;
-  --ion-color-primary-tint: #ffae1a;
+  --ion-color-primary-tint: #23B1B2 /*#ffae1a x arancione*/;
 }
