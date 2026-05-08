@@ -30,13 +30,13 @@
                 <ion-row class="ion-align-items-center">
 
                   <!-- Data (+ dataA sotto se presente) -->
-                  <ion-col size="3">
+                  <ion-col size="4">
                     <ion-text>{{ item.data }}</ion-text>
                     <ion-note *ngIf="getDataA(item)" color="medium" style="display:block;">{{ getDataA(item) }}</ion-note>
                   </ion-col>
 
                   <!-- Tipo -->
-                  <ion-col size="3">
+                  <ion-col size="2">
                     <ion-text>{{ item.richiestaTipo | tipoRichiestaToShortText }}</ion-text>
                   </ion-col>
 
@@ -54,14 +54,7 @@
               </ion-grid>
             </ion-item>
 
-            <!--<ion-item-options side="end">
-    <ion-item-option *ngIf="timeSheetService.Dip_GG_Richiesta_User_Can_Delete(item)"
-                     [color]="btnDelete.color"
-                     (click)="btnDelete.event(item)">
-      <ion-icon slot="start" [name]="btnDelete.image"></ion-icon>
-      {{ btnDelete.text }}
-    </ion-item-option>
-  </ion-item-options>-->
+  
 
             <app-slide-button-cancella-modifica [item]="item"
                                                 [btnDelete]="btnDelete"
