@@ -381,21 +381,27 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
 
   // ── Contatori ─────────────────────────────────────────────────────────────
 
-  /** Giustificativi configurati come contatore (qualsiasi tipo != NoContatore). */
-  getJustContatori(): Par_GiustificativiModel[] {
-    return this.sharedParameterGestionePresenzeService.Par_Giustificativi
+  /**
+   * Cache degli array usati nel template.
+   * Sono proprietà calcolate UNA SOLA VOLTA quando i dati cambiano, non ad ogni
+   * ciclo di change-detection. Usarli direttamente in *ngFor evita che Angular
+   * confronti riferimenti diversi ad ogni CD e ricostruisca il DOM
+   * (che causa il reset della posizione di scroll di IonContent).
+   */
+  public justContatori: Par_GiustificativiModel[] = [];
+  public contatoriRighe: ContatoreRiga[] = [];
+
+  /** Aggiorna la cache dei giustificativi-contatore (chiamato dopo il caricamento parametri). */
+  private refreshJustContatori(): void {
+    this.justContatori = this.sharedParameterGestionePresenzeService.Par_Giustificativi
       .filter(j => j.tipoContatore !== TipoContatore.NoContatore);
   }
 
-  /**
-   * Appiattisce contatoriMesi × giustificativi in righe per la griglia.
-   * La colonna Mese viene mostrata solo sulla prima riga del mese.
-   */
-  getContatoriRighe(): ContatoreRiga[] {
+  /** Aggiorna la cache delle righe griglia (chiamato dopo loadContatoriAnno). */
+  private refreshContatoriRighe(): void {
     const righe: ContatoreRiga[] = [];
-    const justs = this.getJustContatori();
     for (const meseItem of this.contatoriMesi) {
-      justs.forEach((just, idx) => {
+      this.justContatori.forEach((just, idx) => {
         const r = meseItem.risultati.find(x => x.idPar_Giustificativi === just.id) ?? null;
         righe.push({
           mese:      meseItem.mese,
@@ -406,14 +412,18 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
         });
       });
     }
-    return righe;
+    this.contatoriRighe = righe;
   }
+
+  /** @deprecated Usare la proprietà `justContatori` nel template. */
+  getJustContatori(): Par_GiustificativiModel[] { return this.justContatori; }
 
   /** Carica il dettaglio mensile dei contatori se la scheda attiva è CONTATORI. */
   loadContatoriIfNeeded(rappLavId: number): void {
     const currKey = this.currSection_segment_dip_rapp[rappLavId];
     if (!currKey?.includes(this.SEGMENT_DIPRAPP_CONTATORI)) return;
     if (rappLavId <= 0) return;
+    this.refreshJustContatori();
     this.refreshCurrentRiporti(rappLavId);
     this.refreshCurrentMaturazioni(rappLavId);
     this.loadContatoriAnno(rappLavId);
@@ -427,7 +437,10 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
     req.data.anno                 = this.annoSelezionato;
     this.contatoriService.CalcolaContatori_Anno(req).subscribe({
       next: res => {
-        if (res.success && res.data) this.contatoriMesi = res.data.mesi;
+        if (res.success && res.data) {
+          this.contatoriMesi = res.data.mesi;
+          this.refreshContatoriRighe(); // aggiorna la cache: evita ricalcolo in *ngFor
+        }
         this.contatoriLoading = false;
       },
       error: () => { this.contatoriLoading = false; }
@@ -443,7 +456,7 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
   refreshCurrentRiporti(rappLavId: number): void {
     if (!this._editModel) return;
     this.currentRiporti = {};
-    for (const just of this.getJustContatori()) {
+    for (const just of this.justContatori) {
       const existing = this._editModel.dip_Contatori_Riporto
         .find(x => x.idDip_RapportoLavoro === rappLavId
                 && x.idPar_Giustificativi  === just.id
@@ -489,7 +502,7 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
   refreshCurrentMaturazioni(rappLavId: number): void {
     if (!this._editModel) return;
     this.currentMaturazioni = {};
-    for (const just of this.getJustContatori()) {
+    for (const just of this.justContatori) {
       const existing = this._editModel.dip_Maturazione
         .find(x => x.idDip_RapportoLavoro === rappLavId
                 && x.idPar_Giustificativi  === just.id);

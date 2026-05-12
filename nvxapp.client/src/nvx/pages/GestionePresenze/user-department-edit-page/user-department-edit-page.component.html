@@ -270,7 +270,7 @@
                       <ion-label>Riporto anno precedente</ion-label>
                     </ion-item>
 
-                    <ng-container *ngFor="let just of getJustContatori()">
+                    <ng-container *ngFor="let just of justContatori">
                       <ion-item *ngIf="currentRiporti[just.id]">
                         <ion-label>{{ just.descrizione }}</ion-label>
                         <ion-input slot="end"
@@ -293,7 +293,7 @@
                       <ion-label>Maturazione mensile</ion-label>
                     </ion-item>
 
-                    <ng-container *ngFor="let just of getJustContatori()">
+                    <ng-container *ngFor="let just of justContatori">
                       <ion-item *ngIf="currentMaturazioni[just.id]">
                         <ion-label>{{ just.descrizione }}</ion-label>
                         <ion-input slot="end"
@@ -341,7 +341,7 @@
                   </ion-row>
 
                   <!-- Righe dati -->
-                  <ion-row *ngFor="let riga of getContatoriRighe()"
+                  <ion-row *ngFor="let riga of contatoriRighe"
                            class="nvx-ion-row-4table"
                            [class.nvx-row-odd]="riga.mese % 2 !== 0"
                            [class.nvx-row-even]="riga.mese % 2 === 0">
