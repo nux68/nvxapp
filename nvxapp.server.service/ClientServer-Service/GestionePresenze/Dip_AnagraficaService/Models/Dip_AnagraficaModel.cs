@@ -3,6 +3,7 @@ using nvxapp.server.service.ClientServer_Service.GestionePresenze.ContatoriServi
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_RichiestaService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_ProfiloOrarioService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_RapportoLavoroService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Rapporto_Giustificativi_MaturazioneService.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_AnagraficaService.Models
@@ -55,6 +56,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
 
         /// <summary>Riporti (mese 0) per i 5 anni: anno corrente e i 4 precedenti.</summary>
         public List<Contatori_Riporto_Model> Dip_Contatori_Riporto { get; set; } = new List<Contatori_Riporto_Model>();
+
+        /// <summary>Configurazione maturazione ore per ciascun giustificativo-contatore del rapporto di lavoro.</summary>
+        public List<Dip_Rapporto_Giustificativi_MaturazioneModel> Dip_Maturazione { get; set; } = new List<Dip_Rapporto_Giustificativi_MaturazioneModel>();
 
     }
     

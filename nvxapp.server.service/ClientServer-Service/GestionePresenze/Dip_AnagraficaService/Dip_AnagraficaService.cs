@@ -13,6 +13,8 @@ using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.ContatoriService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.ContatoriService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_AnagraficaService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Rapporto_Giustificativi_MaturazioneService;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Rapporto_Giustificativi_MaturazioneService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_ProfiloOrarioService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_ProfiloOrarioService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_RapportoLavoroService;
@@ -37,9 +39,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
         private readonly IAspNetRolesRepository _aspNetRolesRepository;
         private readonly IAspNetUserRolesRepository _aspNetUserRolesRepository;
 
-        private readonly IDip_RapportoLavoroService _dip_RapportoLavoroService;
-        private readonly IDip_ProfiloOrarioService  _dip_ProfiloOrarioService;
-        private readonly IContatoriService          _contatoriService;
+        private readonly IDip_RapportoLavoroService                              _dip_RapportoLavoroService;
+        private readonly IDip_ProfiloOrarioService                               _dip_ProfiloOrarioService;
+        private readonly IContatoriService                                       _contatoriService;
+        private readonly IDip_Rapporto_Giustificativi_MaturazioneService         _maturazioneService;
         
         
 
@@ -55,6 +58,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
                                   IDip_RapportoLavoroService dip_RapportoLavoroService,
                                   IDip_ProfiloOrarioService dip_ProfiloOrarioService,
                                   IContatoriService contatoriService,
+                                  IDip_Rapporto_Giustificativi_MaturazioneService maturazioneService,
                                   IUserCompanyRepository userCompanyRepository,
                                   IAspNetUserRolesRepository aspNetUserRolesRepository,
                                   IAspNetRolesRepository aspNetRolesRepository,
@@ -73,6 +77,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
             _dip_RapportoLavoroService = dip_RapportoLavoroService;
             _dip_ProfiloOrarioService  = dip_ProfiloOrarioService;
             _contatoriService          = contatoriService;
+            _maturazioneService        = maturazioneService;
         }
 
         public virtual async Task<GenericResult<Dip_Anagrafica_GetAll_OutModel>> GetAll(GenericRequest<Dip_Anagrafica_GetAll_InModel> model, Boolean isSubProcess)
@@ -216,6 +221,13 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
                                             if (resRip.Success && resRip.Data != null)
                                                 retVal.Dip_Anagrafica.Dip_Contatori_Riporto.AddRange(resRip.Data.Riporti);
                                         }
+
+                                        // ── Maturazione per rapporto ─────────────────────────────────
+                                        var reqMat = new GenericRequest<Dip_Rapporto_Giustificativi_Maturazione_GetAll_InModel>();
+                                        reqMat.Data.IdDip_RapportoLavoro = rappLav.Id;
+                                        var resMat = await _maturazioneService.GetAll(reqMat, true);
+                                        if (resMat.Success && resMat.Data != null)
+                                            retVal.Dip_Anagrafica.Dip_Maturazione.AddRange(resMat.Data.Maturazioni);
                                     }
                                 
 
@@ -332,6 +344,19 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
                                             var reqUpsert = new GenericRequest<Contatori_Riporto_Upsert_InModel>();
                                             reqUpsert.Data.Riporto = rip;
                                             await _contatoriService.Riporto_Upsert(reqUpsert, true);
+                                        }
+
+                                        // ── Salvataggio maturazione ──────────────────────────────────
+                                        var maturazioniInInput = model.Data.Dip_Anagrafica.Dip_Maturazione
+                                            .Where(m => m.IdDip_RapportoLavoro == itemRapp.Id)
+                                            .ToList();
+
+                                        foreach (var mat in maturazioniInInput)
+                                        {
+                                            mat.IdDip_RapportoLavoro = itemRapp.Id;
+                                            var reqMat = new GenericRequest<Dip_Rapporto_Giustificativi_Maturazione_Upsert_InModel>();
+                                            reqMat.Data.Maturazione = mat;
+                                            await _maturazioneService.Upsert(reqMat, true);
                                         }
                                     }
                                 } // end foreach itemRapp / end if res_1.Success

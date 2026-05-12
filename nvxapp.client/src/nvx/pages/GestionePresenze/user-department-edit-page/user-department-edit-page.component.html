@@ -260,26 +260,58 @@
 
               <br />
 
-              <!-- Riporti anno precedente (Mese 0) -->
-              <ion-item class="nvx-item-4-title">
-                <ion-label>Riporto anno precedente</ion-label>
-              </ion-item>
+              <!-- Riporti + Maturazione: due colonne affiancate -->
+              <ion-grid class="ion-no-padding">
+                <ion-row>
 
-              <ng-container *ngFor="let just of getJustContatori()">
-                <ion-item *ngIf="currentRiporti[just.id]">
-                  <ion-label>{{ just.descrizione }} ({{ just.tipoContatore | tipoContatoreToLongText }})</ion-label>
-                  <ion-input slot="end"
-                             type="text"
-                             inputmode="text"
-                             placeholder="HHH:MM"
-                             pattern="^\d+:[0-5]\d$"
-                             style="max-width:90px; text-align:right"
-                             [(ngModel)]="currentRiporti[just.id].saldoRiporto"
-                             (ionChange)="onRiportoChange(just.id)"
-                             [ngModelOptions]="{standalone: true}">
-                  </ion-input>
-                </ion-item>
-              </ng-container>
+                  <!-- Colonna destra: Riporto anno precedente (sensibile all'anno) -->
+                  <ion-col size="12" size-md="6">
+                    <ion-item class="nvx-item-4-title">
+                      <ion-label>Riporto anno precedente</ion-label>
+                    </ion-item>
+
+                    <ng-container *ngFor="let just of getJustContatori()">
+                      <ion-item *ngIf="currentRiporti[just.id]">
+                        <ion-label>{{ just.descrizione }}</ion-label>
+                        <ion-input slot="end"
+                                   type="text"
+                                   inputmode="text"
+                                   placeholder="HHH:MM"
+                                   pattern="^\d+:[0-5]\d$"
+                                   style="max-width:90px; text-align:right"
+                                   [(ngModel)]="currentRiporti[just.id].saldoRiporto"
+                                   (ionChange)="onRiportoChange(just.id)"
+                                   [ngModelOptions]="{standalone: true}">
+                        </ion-input>
+                      </ion-item>
+                    </ng-container>
+                  </ion-col>
+
+                  <!-- Colonna sinistra: Maturazione mensile (NON sensibile all'anno) -->
+                  <ion-col size="12" size-md="6">
+                    <ion-item class="nvx-item-4-title">
+                      <ion-label>Maturazione mensile</ion-label>
+                    </ion-item>
+
+                    <ng-container *ngFor="let just of getJustContatori()">
+                      <ion-item *ngIf="currentMaturazioni[just.id]">
+                        <ion-label>{{ just.descrizione }}</ion-label>
+                        <ion-input slot="end"
+                                   type="text"
+                                   inputmode="text"
+                                   placeholder="HHH:MM"
+                                   pattern="^\d+:[0-5]\d$"
+                                   style="max-width:90px; text-align:right"
+                                   [(ngModel)]="currentMaturazioni[just.id].oreMaturazione"
+                                   (ionChange)="onMaturazioneChange(just.id)"
+                                   [ngModelOptions]="{standalone: true}">
+                        </ion-input>
+                      </ion-item>
+                    </ng-container>
+                  </ion-col>
+
+                </ion-row>
+              </ion-grid>
 
               <br />
 

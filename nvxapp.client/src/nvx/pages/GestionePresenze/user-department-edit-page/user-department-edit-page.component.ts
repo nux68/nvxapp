@@ -26,6 +26,7 @@ import { SharedParameterGestionePresenzeService } from '../../../shared/shared-p
 import { ContatoriService } from '../../../ClientServer-Service/GestionePresenze/Contatori/contatori.service';
 import { Contatori_Anno_MeseResult, Contatori_Anno_InModel, Contatori_Riporto_Model } from '../../../ClientServer-Service/GestionePresenze/Contatori/Models/contatori-model';
 import { Par_GiustificativiModel, TipoContatore } from '../../../ClientServer-Service/GestionePresenze/Par_Giustificativi/Models/par-giustificativi-model';
+import { Dip_Rapporto_Giustificativi_MaturazioneModel } from '../../../ClientServer-Service/GestionePresenze/Dip_Rapporto_Giustificativi_Maturazione/Models/dip-rapporto-giustificativi-maturazione-model';
 
 @Component({
   selector: 'app-user-department-edit-page',
@@ -50,6 +51,8 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
   public contatoriLoading = false;
   /** Mappa idJust → Contatori_Riporto_Model: usata per il binding diretto con ngModel. */
   public currentRiporti: { [idJust: number]: Contatori_Riporto_Model } = {};
+  /** Mappa idJust → Dip_Rapporto_Giustificativi_MaturazioneModel: NON sensibile all'anno selezionato. */
+  public currentMaturazioni: { [idJust: number]: Dip_Rapporto_Giustificativi_MaturazioneModel } = {};
   public readonly nomiMesi = ['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno',
                                'Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
 
@@ -412,6 +415,7 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
     if (!currKey?.includes(this.SEGMENT_DIPRAPP_CONTATORI)) return;
     if (rappLavId <= 0) return;
     this.refreshCurrentRiporti(rappLavId);
+    this.refreshCurrentMaturazioni(rappLavId);
     this.loadContatoriAnno(rappLavId);
   }
 
@@ -475,6 +479,43 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
   onAnnoChange(rappLavId: number): void {
     this.refreshCurrentRiporti(rappLavId);
     this.loadContatoriAnno(rappLavId);
+    // la maturazione NON dipende dall'anno: non serve refreshCurrentMaturazioni
+  }
+
+  /**
+   * Popola currentMaturazioni per il rappLav dato.
+   * NON è sensibile all'anno: la maturazione è per rapporto+giustificativo, non per anno.
+   */
+  refreshCurrentMaturazioni(rappLavId: number): void {
+    if (!this._editModel) return;
+    this.currentMaturazioni = {};
+    for (const just of this.getJustContatori()) {
+      const existing = this._editModel.dip_Maturazione
+        .find(x => x.idDip_RapportoLavoro === rappLavId
+                && x.idPar_Giustificativi  === just.id);
+      if (existing) {
+        this.currentMaturazioni[just.id] = existing;
+      } else {
+        // Placeholder locale: non aggiunto all'array principale finché non modificato
+        const placeholder = new Dip_Rapporto_Giustificativi_MaturazioneModel();
+        placeholder.idDip_RapportoLavoro = rappLavId;
+        placeholder.idPar_Giustificativi  = just.id;
+        placeholder.oreMaturazione        = '00:00';
+        this.currentMaturazioni[just.id] = placeholder;
+      }
+    }
+  }
+
+  /** Chiamato dal template quando l'utente modifica un valore di maturazione. */
+  onMaturazioneChange(justId: number): void {
+    const m = this.currentMaturazioni[justId];
+    if (!m || !this._editModel) return;
+    const exists = this._editModel.dip_Maturazione
+      .find(x => x.idDip_RapportoLavoro === m.idDip_RapportoLavoro
+              && x.idPar_Giustificativi  === m.idPar_Giustificativi);
+    if (!exists) {
+      this._editModel.dip_Maturazione.push(m);
+    }
   }
 
 }
