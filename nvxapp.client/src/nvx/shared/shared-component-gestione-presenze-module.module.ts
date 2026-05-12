@@ -41,6 +41,7 @@ import { EditDipGGGiustificativiDialogComponent } from './components/GestionePre
 import { ParExportTipoFileToShortTextPipe } from './pipe/GestionePresenze/par-export-tipo-file-to-short-text.pipe';
 import { EditParExportCauCausaliComponentComponent } from './components/GestionePresenze/edit-par-export-cau-causali-component/edit-par-export-cau-causali-component.component';
 import { DipSelectorModalComponent } from './components/GestionePresenze/dip-selector-modal/dip-selector-modal.component';
+import { TipoContatoreToLongTextPipe } from './pipe/GestionePresenze/tipo-contatore-to-long-text.pipe';
 
 @NgModule({
   declarations: [
@@ -65,7 +66,8 @@ import { DipSelectorModalComponent } from './components/GestionePresenze/dip-sel
     IdAspNetUsersToCognomePipe, IdAspNetUsersToNomePipe,
     ParAttivitaToLongTextPipe, ParCompetenzaToLongTextPipe, AzCommessaToLongTextPipe, AzClienteToLongTextPipe,
     AzSediRepartoToLongTextPipe, AzSediRepartoToShortTextPipe, ParProfiloOrarioToLongTextPipePipe,
-    ParOrarioToCodicePipe, ParOrarioToLongTextPipe, ParExportTipoFileToShortTextPipe
+    ParOrarioToCodicePipe, ParOrarioToLongTextPipe, ParExportTipoFileToShortTextPipe,
+    TipoContatoreToLongTextPipe
   ],
   exports: [
     TipoTimbraturaToLongTextPipe, TipoTimbraturaToShortTextPipe, ParGiustificativiToLongTextPipe, ParGiustificativiToShortTextPipe, ParCausaliToShortTextPipe, ParCausaliToLongTextPipe,
@@ -78,7 +80,8 @@ import { DipSelectorModalComponent } from './components/GestionePresenze/dip-sel
     EditParOrarioDettaglioOrarioIntervalloHHDialogComponent, TimeSheetEngineCallerComponent, EditParExportCauCausaliComponentComponent,
     EditDipGGCausaliDialogComponent, EditDipGGTimbraturaDialogComponent, DipSelectorModalComponent,
     EditDipGGGiustificativiDialogComponent,
-    ParOrarioToCodicePipe, ParOrarioToLongTextPipe, ParExportTipoFileToShortTextPipe
+    ParOrarioToCodicePipe, ParOrarioToLongTextPipe, ParExportTipoFileToShortTextPipe,
+    TipoContatoreToLongTextPipe
   ]
 })
 export class SharedComponentGestionePresenzeModuleModule { }

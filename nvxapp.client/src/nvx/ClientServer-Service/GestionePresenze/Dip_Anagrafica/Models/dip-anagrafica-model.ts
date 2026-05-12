@@ -1,5 +1,6 @@
 import { RoleCode } from "../../../Infrastructure/Account/Models/user-roles-model";
 import { ModelResult } from "../../../ModelsBase/model-result";
+import { Contatori_Riporto_Model } from "../../Contatori/Models/contatori-model";
 import { Dip_ProfiloOrarioModel } from "../../Dip_ProfiloOrario/Models/dip-profilo-orario-model";
 import { Dip_RapportoLavoroModel } from "../../Dip_RapportoLavoro/Models/dip-rapporto-lavoro-model";
 
@@ -61,9 +62,11 @@ export class Dip_Anagrafica4EditModel extends Dip_AnagraficaModel {
     this.mail = '';
     this.pw = '';
     this.mainUser = false;
-
     this.dip_ProfiloOrario = [];
+    this.dip_Contatori_Riporto = [];
   }
+
+  public dip_Contatori_Riporto: Contatori_Riporto_Model[];
 
 }
 

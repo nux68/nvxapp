@@ -12,6 +12,8 @@ using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_CfgService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_CfgService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.ContatoriService;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.ContatoriService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRepartoService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRepartoService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_GiustificativiService.Models;
@@ -65,6 +67,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
         private readonly IDip_GG_GiustificativiRepository _dip_GG_GiustificativiRepository;
         private readonly IDip_GG_NotaSpesaRepository _dip_GG_NotaSpesaRepository;
 
+        private readonly IPar_GiustificativiRepository _par_GiustificativiRepository;
+        private readonly IContatoriService _contatoriService;
+
         private readonly IDip_AnagraficaRepository _dip_AnagraficaRepository;
         private readonly IDip_RapportoLavoroRepository _dip_RapportoLavoroRepository;
         private readonly IAz_SediRepartoUserRepository _az_SediRepartoUserRepository;
@@ -88,7 +93,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                                   IDip_GG_TimbraturaRepository dip_GG_TimbraturaRepository,
                                   IDip_GG_NotaSpesaRepository dip_GG_NotaSpesaRepository,
                                   ITimeSheet_EngineService_OnlyCalculate timeSheet_EngineService,
-                                  IDip_GG_GiustificativiRepository dip_GG_GiustificativiRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
+                                  IDip_GG_GiustificativiRepository dip_GG_GiustificativiRepository,
+                                  IPar_GiustificativiRepository par_GiustificativiRepository,
+                                  IContatoriService contatoriService) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _accountService = accountService;
             _az_CfgService = az_CfgService;
@@ -102,6 +109,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
             _dip_RapportoLavoroRepository = dip_RapportoLavoroRepository;
             _az_SediRepartoUserRepository = az_SediRepartoUserRepository;
             _timeSheet_EngineService = timeSheet_EngineService;
+            _par_GiustificativiRepository = par_GiustificativiRepository;
+            _contatoriService = contatoriService;
 
         }
 
@@ -241,6 +250,24 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
 
                             dip_GG_Richiesta.RichiestaApprovazioneData = JsonConvert.SerializeObject(RichiestaApprovazioneData, Formatting.Indented);
                             dip_GG_Richiesta.RevocaApprovazioneData = JsonConvert.SerializeObject(RevocaApprovazioneData, Formatting.Indented);
+
+                            // ── Validazione contatori ───────────────────────────────────────
+                            if (dip_GG_Richiesta.RichiestaTipo == TipoRichiesta.Giustificativo)
+                            {
+                                var validazione = await ValidaContatoriAsync(
+                                    dip_GG_Richiesta,
+                                    user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.Id);
+
+                                if (validazione.Bloccante)
+                                {
+                                    retVal.Messages.Add(new Message(validazione.Messaggio!, MessageType.Exception));
+                                    return retVal;
+                                }
+
+                                if (!string.IsNullOrEmpty(validazione.Messaggio))
+                                    retVal.Messages.Add(new Message(validazione.Messaggio, MessageType.Warning));
+                            }
+                            // ────────────────────────────────────────────────────────────────
 
                             dip_GG_Richiesta = await _dip_GG_RichiestaRepository.UpsertAsync(dip_GG_Richiesta);
 
@@ -933,6 +960,68 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
             }, isSubProcess);
         }
 
+
+        // ── Validazione contatori ─────────────────────────────────────────────
+
+        private record ValidazioneContatori(bool Bloccante, string? Messaggio);
+
+        private async Task<ValidazioneContatori> ValidaContatoriAsync(
+            Dip_GG_Richiesta richiesta,
+            int idDip_RapportoLavoro)
+        {
+            if (string.IsNullOrEmpty(richiesta.Dati))
+                return new ValidazioneContatori(false, null);
+
+            var body = JsonConvert.DeserializeObject<Dip_GG_Richiesta_Body_Giustificativo>(richiesta.Dati);
+            if (body == null)
+                return new ValidazioneContatori(false, null);
+
+            var parJust = _par_GiustificativiRepository
+                .FindAll(j => j.Id == body.IdPar_Giustificativi)
+                .FirstOrDefault();
+
+            if (parJust == null
+                || parJust.TipoContatore == TipoContatore.NoContatore
+                || parJust.TipoContatore == TipoContatore.Contatore)
+                return new ValidazioneContatori(false, null);
+
+            var reqContatori = new GenericRequest<Contatori_Calcolo_InModel>();
+            reqContatori.Data.IdDip_RapportoLavoro = idDip_RapportoLavoro;
+            reqContatori.Data.Anno                 = richiesta.Data.Year;
+            reqContatori.Data.Mese                 = richiesta.Data.Month;
+
+            var resContatori = await _contatoriService.CalcolaContatori(reqContatori, true);
+            if (!resContatori.Success || resContatori.Data == null)
+                return new ValidazioneContatori(false, null);
+
+            var risultato = resContatori.Data.Risultati
+                .FirstOrDefault(r => r.IdPar_Giustificativi == body.IdPar_Giustificativi);
+            if (risultato == null)
+                return new ValidazioneContatori(false, null);
+
+            TimeSpan orePerGiorno = body.AllDay ? TimeSpan.FromHours(8) : TimeSpan.Parse(body.hhmm);
+            int      numGiorni    = (int)(richiesta.DataA - richiesta.Data).TotalDays + 1;
+            TimeSpan oreRichieste = TimeSpan.FromTicks(orePerGiorno.Ticks * numGiorni);
+
+            TimeSpan saldoAdOggi = TimeSpan.Parse(risultato.PeriodoPrecedente.Saldo) + TimeSpan.Parse(risultato.PeriodoCorrente.Saldo);
+            TimeSpan saldoFuturo = saldoAdOggi + TimeSpan.Parse(risultato.PeriodoSuccessivo.Saldo);
+
+            string nomeJust = parJust.Descrizione ?? parJust.Codice ?? "Giustificativo";
+
+            if (parJust.TipoContatore == TipoContatore.ContatoreConBlocco && saldoFuturo < oreRichieste)
+                return new ValidazioneContatori(
+                    Bloccante: true,
+                    Messaggio: $"Saldo insufficiente per '{nomeJust}': disponibile {saldoFuturo:hh\\:mm}, richiesto {oreRichieste:hh\\:mm}.");
+
+            if (saldoAdOggi < oreRichieste)
+                return new ValidazioneContatori(
+                    Bloccante: false,
+                    Messaggio: $"Attenzione: il saldo attuale di '{nomeJust}' è {saldoAdOggi:hh\\:mm}, ma il saldo futuro ({saldoFuturo:hh\\:mm}) copre la richiesta.");
+
+            return new ValidazioneContatori(false, null);
+        }
+
+        // ─────────────────────────────────────────────────────────────────────
 
         private async Task CalculateGiorno(int IdDip_RapportoLavoro, DateTime GiornoCompetenza)
         {

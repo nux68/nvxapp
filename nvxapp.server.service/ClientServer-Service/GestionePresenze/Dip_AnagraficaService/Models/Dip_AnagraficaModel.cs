@@ -1,4 +1,5 @@
 ﻿using nvxapp.server.data.Entities.Public;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.ContatoriService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_RichiestaService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_ProfiloOrarioService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_RapportoLavoroService.Models;
@@ -50,7 +51,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
         public string? Mail { get; set; } = string.Empty;
         public string? Pw { get; set; } = string.Empty;
 
-        public List<Dip_ProfiloOrarioModel> Dip_ProfiloOrario  { get; set; } = new List<Dip_ProfiloOrarioModel>();
+        public List<Dip_ProfiloOrarioModel> Dip_ProfiloOrario { get; set; } = new List<Dip_ProfiloOrarioModel>();
+
+        /// <summary>Riporti (mese 0) per i 5 anni: anno corrente e i 4 precedenti.</summary>
+        public List<Contatori_Riporto_Model> Dip_Contatori_Riporto { get; set; } = new List<Contatori_Riporto_Model>();
 
     }
     

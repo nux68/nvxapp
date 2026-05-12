@@ -39,7 +39,10 @@ namespace nvxapp.server.data.Entities.Tenant
 
         public Boolean VisualizzaInPianoFerie { get; set; }
 
+        public TipoContatore TipoContatore { get; set; }
+
         public ICollection<Dip_GG_Giustificativi>? Dip_GG_Giustificativi { get; set; }
+        public ICollection<Dip_Rapporto_Giustificativi_Maturazione>? Dip_Rapporto_Giustificativi_Maturazione { get; set; }
 
     }
 
@@ -50,4 +53,11 @@ namespace nvxapp.server.data.Entities.Tenant
         Tutti
     }
 
+    public enum TipoContatore
+    {
+        NoContatore = 0,
+        Contatore = 1,
+        ContatoreConAvviso = 2,
+        ContatoreConBlocco = 3
+    }
 }

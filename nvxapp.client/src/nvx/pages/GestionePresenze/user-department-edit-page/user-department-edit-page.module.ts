@@ -6,9 +6,9 @@ import { UserDepartmentEditPageComponent } from './user-department-edit-page.com
 import { RouterModule } from '@angular/router';
 import { SharedComponentInfrastructureModule } from '../../../shared/shared-component-infrastructure.module';
 import { SharedComponentGestionePresenzeModuleModule } from '../../../shared/shared-component-gestione-presenze-module.module';
+import { JustContatorePipe } from '../../../shared/pipe/GestionePresenze/just-contatore.pipe';
 
 @NgModule({
-  
   imports: [
     CommonModule,
     FormsModule,
@@ -21,7 +21,8 @@ import { SharedComponentGestionePresenzeModuleModule } from '../../../shared/sha
       }
     ]),
     SharedComponentInfrastructureModule,
-    SharedComponentGestionePresenzeModuleModule
+    SharedComponentGestionePresenzeModuleModule,
+    JustContatorePipe,
   ],
   declarations: [UserDepartmentEditPageComponent],
 })

@@ -51,6 +51,9 @@ namespace nvxapp.server.data.Infrastructure
 
         public virtual DbSet<Par_ExportCau> Par_ExportCau { get; set; }
         public virtual DbSet<Par_ExportCau_Causali> Par_ExportCau_Causali { get; set; }
+
+        public virtual DbSet<Dip_Rapporto_Giustificativi_Maturazione> Dip_Rapporto_Giustificativi_Maturazione { get; set; }
+        public virtual DbSet<Dip_Contatori_Riporto> Dip_Contatori_Riporto { get; set; }
         
         
 
@@ -522,6 +525,40 @@ namespace nvxapp.server.data.Infrastructure
 
             modelBuilder.Entity<Az_SubCommessaUser>()
                 .HasIndex(t => new { t.IdAz_SubCommessa, t.IdAspNetUsers })
+                .IsUnique();
+
+            /* Dip_Rapporto_Giustificativi_Maturazione */
+            modelBuilder.Entity<Dip_Rapporto_Giustificativi_Maturazione>()
+                .HasOne(t => t.Dip_RapportoLavoroNavigation)
+                .WithMany(t => t.Dip_Rapporto_Giustificativi_Maturazione)
+                .HasForeignKey(t => t.IdDip_RapportoLavoro)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Dip_Rapporto_Giustificativi_Maturazione>()
+                .HasOne(t => t.Par_GiustificativiNavigation)
+                .WithMany(t => t.Dip_Rapporto_Giustificativi_Maturazione)
+                .HasForeignKey(t => t.IdPar_Giustificativi)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Dip_Rapporto_Giustificativi_Maturazione>()
+                .HasIndex(t => new { t.IdDip_RapportoLavoro, t.IdPar_Giustificativi })
+                .IsUnique();
+
+            /* Dip_Contatori_Riporto */
+            modelBuilder.Entity<Dip_Contatori_Riporto>()
+                .HasOne(t => t.Dip_RapportoLavoroNavigation)
+                .WithMany(t => t.Dip_Contatori_Riporto)
+                .HasForeignKey(t => t.IdDip_RapportoLavoro)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Dip_Contatori_Riporto>()
+                .HasOne(t => t.Par_GiustificativiNavigation)
+                .WithMany()
+                .HasForeignKey(t => t.IdPar_Giustificativi)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Dip_Contatori_Riporto>()
+                .HasIndex(t => new { t.IdDip_RapportoLavoro, t.IdPar_Giustificativi, t.Anno })
                 .IsUnique();
 
         }

@@ -3,17 +3,18 @@ import { ModelResult } from "../../../ModelsBase/model-result";
 
 export class Par_GiustificativiModel {
 
-  public id!: number; // not Nullable
-  public idAz_Anagrafica!: number; // not Nullable
+  public id!: number;
+  public idAz_Anagrafica!: number;
   public descrizione!: string;
   public codice!: string;
 
   public backgroundColor!: string;
   public textColor!: string;
   public tipoInput!: JustTipoInput;
-  public idCausale?: number; 
+  public idCausale?: number;
   public segno!: SignWithNeutral;
   public visualizzaInPianoFerie!: boolean;
+  public tipoContatore: TipoContatore = TipoContatore.NoContatore;
 
 }
 
@@ -23,12 +24,17 @@ export enum SignWithNeutral {
   Up = 1
 }
 
-
-
 export enum JustTipoInput {
   InteraGiornate,
   Intervallo,
   Tutti
+}
+
+export enum TipoContatore {
+  NoContatore        = 0,
+  Contatore          = 1,
+  ContatoreConAvviso = 2,
+  ContatoreConBlocco = 3
 }
 
 

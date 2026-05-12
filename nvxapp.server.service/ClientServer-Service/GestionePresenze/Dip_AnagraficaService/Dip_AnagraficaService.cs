@@ -10,6 +10,8 @@ using nvxapp.server.data.Extensions;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.ContatoriService;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.ContatoriService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_AnagraficaService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_ProfiloOrarioService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_ProfiloOrarioService.Models;
@@ -36,7 +38,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
         private readonly IAspNetUserRolesRepository _aspNetUserRolesRepository;
 
         private readonly IDip_RapportoLavoroService _dip_RapportoLavoroService;
-        private readonly IDip_ProfiloOrarioService _dip_ProfiloOrarioService;
+        private readonly IDip_ProfiloOrarioService  _dip_ProfiloOrarioService;
+        private readonly IContatoriService          _contatoriService;
         
         
 
@@ -51,6 +54,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
 
                                   IDip_RapportoLavoroService dip_RapportoLavoroService,
                                   IDip_ProfiloOrarioService dip_ProfiloOrarioService,
+                                  IContatoriService contatoriService,
                                   IUserCompanyRepository userCompanyRepository,
                                   IAspNetUserRolesRepository aspNetUserRolesRepository,
                                   IAspNetRolesRepository aspNetRolesRepository,
@@ -67,7 +71,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
             _aspNetUserRolesRepository = aspNetUserRolesRepository;
             _userCompanyRepository = userCompanyRepository;
             _dip_RapportoLavoroService = dip_RapportoLavoroService;
-            _dip_ProfiloOrarioService = dip_ProfiloOrarioService;
+            _dip_ProfiloOrarioService  = dip_ProfiloOrarioService;
+            _contatoriService          = contatoriService;
         }
 
         public virtual async Task<GenericResult<Dip_Anagrafica_GetAll_OutModel>> GetAll(GenericRequest<Dip_Anagrafica_GetAll_InModel> model, Boolean isSubProcess)
@@ -190,13 +195,28 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
                                 foreach(var item in retVal.Dip_Anagrafica.Dip_RapportoLavoro)
                                 {
                                     var req_3 = new GenericRequest<Dip_ProfiloOrario_Get_InModel>();
-                                    req_3.Data.Id = item.Id; 
-                                    var res_3 = await _dip_ProfiloOrarioService.Dip_ProfiloOrarioGet(req_3, true);
-                                    if(res_3.Success && res_3.Data != null)
-                                    {
-                                        retVal.Dip_Anagrafica.Dip_ProfiloOrario.AddRange( res_3.Data.Dip_ProfiloOrario);
+                                        req_3.Data.Id = item.Id; 
+                                        var res_3 = await _dip_ProfiloOrarioService.Dip_ProfiloOrarioGet(req_3, true);
+                                        if(res_3.Success && res_3.Data != null)
+                                        {
+                                            retVal.Dip_Anagrafica.Dip_ProfiloOrario.AddRange( res_3.Data.Dip_ProfiloOrario);
+                                        }
                                     }
-                                }
+
+                                    // ── Riporti (mese 0) per 5 anni ──────────────────────────────────
+                                    int annoCorrente = DateTime.Now.Year;
+                                    foreach (var rappLav in retVal.Dip_Anagrafica.Dip_RapportoLavoro)
+                                    {
+                                        var reqRip = new GenericRequest<Contatori_Riporto_GetAll_InModel>();
+                                        for (int a = annoCorrente - 4; a <= annoCorrente; a++)
+                                        {
+                                            reqRip.Data.IdDip_RapportoLavoro = rappLav.Id;
+                                            reqRip.Data.Anno                 = a;
+                                            var resRip = await _contatoriService.Riporto_GetAll(reqRip, true);
+                                            if (resRip.Success && resRip.Data != null)
+                                                retVal.Dip_Anagrafica.Dip_Contatori_Riporto.AddRange(resRip.Data.Riporti);
+                                        }
+                                    }
                                 
 
                             }
@@ -300,8 +320,21 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
                                         {
                                             retVal.Dip_Anagrafica.Dip_ProfiloOrario = res_3.Data.Dip_ProfiloOrario;
                                         }
+
+                                        // ── Salvataggio riporti (mese 0) ─────────────────────────────
+                                        var riportiInInput = model.Data.Dip_Anagrafica.Dip_Contatori_Riporto
+                                            .Where(r => r.IdDip_RapportoLavoro == itemRapp.Id)
+                                            .ToList();
+
+                                        foreach (var rip in riportiInInput)
+                                        {
+                                            rip.IdDip_RapportoLavoro = itemRapp.Id;
+                                            var reqUpsert = new GenericRequest<Contatori_Riporto_Upsert_InModel>();
+                                            reqUpsert.Data.Riporto = rip;
+                                            await _contatoriService.Riporto_Upsert(reqUpsert, true);
+                                        }
                                     }
-                                }
+                                } // end foreach itemRapp / end if res_1.Success
 
                             }
                         }

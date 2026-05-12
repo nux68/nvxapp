@@ -9,7 +9,7 @@ import { map, catchError } from 'rxjs';
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { StringHelperService } from '../../../Utility/infrastructure/string-helper.service';
 import { ParameterService } from '../../../ClientServer-Service/Infrastructure/Parameter/parameter.service';
-import { Par_GiustificativiGetInModel, Par_GiustificativiInModel, Par_GiustificativiModel, Par_GiustificativiPutInModel, SignWithNeutral } from '../../../ClientServer-Service/GestionePresenze/Par_Giustificativi/Models/par-giustificativi-model';
+import { Par_GiustificativiGetInModel, Par_GiustificativiInModel, Par_GiustificativiModel, Par_GiustificativiPutInModel, SignWithNeutral, TipoContatore } from '../../../ClientServer-Service/GestionePresenze/Par_Giustificativi/Models/par-giustificativi-model';
 import { ParGiustificativiService } from '../../../ClientServer-Service/GestionePresenze/Par_Giustificativi/par-giustificativi.service';
 import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
@@ -25,6 +25,7 @@ import { Par_CausaliModel } from '../../../ClientServer-Service/GestionePresenze
 export class JustificationEditPageComponent extends BasePageConfirmCancelComponent<Par_GiustificativiModel> {
 
   public signWithNeutral = SignWithNeutral;
+  public tipoContatore   = TipoContatore;
   public par_CausaliModelList: Par_CausaliModel[] = [];
 
   constructor(protected override navCtrl: NavController,
@@ -51,6 +52,7 @@ export class JustificationEditPageComponent extends BasePageConfirmCancelCompone
       segno: [null, [Validators.required]],
       idCausale: [null, []],
       visualizzaInPianoFerie: [false, []],
+      tipoContatore: [TipoContatore.NoContatore, [Validators.required]],
 
 
       //roleId: [null, [Validators.required]],

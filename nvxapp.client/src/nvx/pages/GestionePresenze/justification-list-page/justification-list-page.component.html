@@ -49,19 +49,19 @@
             </ion-item>
 
             <!--<ion-item-options side="end">
-    <ion-item-option *ngIf="!item.default"
-                     color="{{btnDelete.color}}"
-                     (click)="btnDelete.event(item)">
-      <ion-icon slot="start" name="{{btnDelete.image}}"></ion-icon>
-      {{ btnDelete.text }}
-    </ion-item-option>
+      <ion-item-option *ngIf="!item.default"
+                       color="{{btnDelete.color}}"
+                       (click)="btnDelete.event(item)">
+        <ion-icon slot="start" name="{{btnDelete.image}}"></ion-icon>
+        {{ btnDelete.text }}
+      </ion-item-option>
 
-    <ion-item-option color="{{btnEdit.color}}"
-                     (click)="btnEdit.event(item)">
-      <ion-icon slot="start" name="{{btnEdit.image}}"></ion-icon>
-      {{ btnEdit.text }}
-    </ion-item-option>
-  </ion-item-options>-->
+      <ion-item-option color="{{btnEdit.color}}"
+                       (click)="btnEdit.event(item)">
+        <ion-icon slot="start" name="{{btnEdit.image}}"></ion-icon>
+        {{ btnEdit.text }}
+      </ion-item-option>
+    </ion-item-options>-->
 
             <app-slide-button-cancella-modifica [item]="item"
                                                 [btnDelete]="btnDelete"
@@ -79,11 +79,20 @@
               {{ item.codice }}
             </ion-label>
           </ion-col>
-          <ion-col size="7" class="ion-hide-sm-down">
+          <ion-col size="3" class="ion-hide-sm-down">
             <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
               {{ item.descrizione }}
             </ion-label>
           </ion-col>
+
+          <ion-col size="4" class="ion-hide-sm-down">
+            <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
+              {{ item.tipoContatore | tipoContatoreToLongText }}
+            </ion-label>
+          </ion-col>
+
+          
+
           <ion-col size="2" class="ion-hide-sm-down">
             <ion-button *ngIf="!item.default" size="small" fill="outline" shape="round" (click)="btnDelete.event(item)" color="{{btnDelete.color}}">
               <ion-icon name="{{btnDelete.image}}"></ion-icon>

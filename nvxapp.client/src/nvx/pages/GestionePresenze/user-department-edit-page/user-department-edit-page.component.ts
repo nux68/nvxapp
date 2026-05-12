@@ -23,6 +23,9 @@ import { DbUtilService } from '../../../Utility/infrastructure/db-util.service';
 import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
 import { Dip_RapportoLavoroModel } from '../../../ClientServer-Service/GestionePresenze/Dip_RapportoLavoro/Models/dip-rapporto-lavoro-model';
 import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
+import { ContatoriService } from '../../../ClientServer-Service/GestionePresenze/Contatori/contatori.service';
+import { Contatori_Anno_MeseResult, Contatori_Anno_InModel, Contatori_Riporto_Model } from '../../../ClientServer-Service/GestionePresenze/Contatori/Models/contatori-model';
+import { Par_GiustificativiModel, TipoContatore } from '../../../ClientServer-Service/GestionePresenze/Par_Giustificativi/Models/par-giustificativi-model';
 
 @Component({
   selector: 'app-user-department-edit-page',
@@ -36,8 +39,19 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
   public readonly SEGMENT_MAIN_VARIE = 'MAIN_VAR_0';
   public readonly SEGMENT_MAIN_RAPP_LAV = 'MAIN_RAPP_LAV_';
 
-  public readonly SEGMENT_DIPRAPP_PROF_HH = 'DIPRAPP_DETT_PROF_HH';
-  public readonly SEGMENT_DIPRAPP_VARIE = 'DIPRAPP_DETT_VARIE';
+  public readonly SEGMENT_DIPRAPP_PROF_HH   = 'DIPRAPP_DETT_PROF_HH';
+  public readonly SEGMENT_DIPRAPP_VARIE     = 'DIPRAPP_DETT_VARIE';
+  public readonly SEGMENT_DIPRAPP_CONTATORI = 'DIPRAPP_DETT_CONTATORI';
+
+  // ── Contatori ─────────────────────────────────────────────────────────────
+  public annoSelezionato: number = new Date().getFullYear();
+  public anniDisponibili: number[] = Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i);
+  public contatoriMesi: Contatori_Anno_MeseResult[] = [];
+  public contatoriLoading = false;
+  /** Mappa idJust → Contatori_Riporto_Model: usata per il binding diretto con ngModel. */
+  public currentRiporti: { [idJust: number]: Contatori_Riporto_Model } = {};
+  public readonly nomiMesi = ['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno',
+                               'Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
 
 
   public btnEdit_Dip_ProfiloOrario: ButtonItem;
@@ -60,6 +74,7 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
     public fabMenuService: FabMenuService,
     private dipAnagraficaService: DipAnagraficaService,
     private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
+    private contatoriService: ContatoriService,
     private dbUtilService: DbUtilService,
     private collectionDialogService: CollectionDialogService,
     private cdr: ChangeDetectorRef) {
@@ -105,7 +120,9 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
 
       if (currKey.includes(this.SEGMENT_DIPRAPP_VARIE)) {
 
-      }else  if (currKey.includes(this.SEGMENT_DIPRAPP_PROF_HH)) {
+      } else if (currKey.includes(this.SEGMENT_DIPRAPP_CONTATORI)) {
+
+      } else if (currKey.includes(this.SEGMENT_DIPRAPP_PROF_HH)) {
 
         
 
@@ -130,13 +147,16 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
       this.currSection_segment_dip_rapp[rappLavId] = this.SEGMENT_MAIN_RAPP_LAV + rappLavId + '_' + this.SEGMENT_DIPRAPP_PROF_HH;
     }
 
+    // Carica contatori se la scheda attiva è CONTATORI
+    this.loadContatoriIfNeeded(rappLavId);
+
     this.setfabMenuService();
   }
 
   segment_dip_rapp_segmentChanged(event: any, rappLavId: number) {
     console.log(`Sotto-segment per Rapporto ID ${rappLavId} cambiato:`, event.detail.value);
     this.currSection_segment_dip_rapp[rappLavId] = event.detail.value;
-
+    this.loadContatoriIfNeeded(rappLavId);
     this.setfabMenuService();
   }
 
@@ -353,10 +373,109 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
   }
 
   isAdmin(item: any) {
-
     return false;
   }
 
+  // ── Contatori ─────────────────────────────────────────────────────────────
+
+  /** Giustificativi configurati come contatore (qualsiasi tipo != NoContatore). */
+  getJustContatori(): Par_GiustificativiModel[] {
+    return this.sharedParameterGestionePresenzeService.Par_Giustificativi
+      .filter(j => j.tipoContatore !== TipoContatore.NoContatore);
+  }
+
+  /**
+   * Appiattisce contatoriMesi × giustificativi in righe per la griglia.
+   * La colonna Mese viene mostrata solo sulla prima riga del mese.
+   */
+  getContatoriRighe(): ContatoreRiga[] {
+    const righe: ContatoreRiga[] = [];
+    const justs = this.getJustContatori();
+    for (const meseItem of this.contatoriMesi) {
+      justs.forEach((just, idx) => {
+        const r = meseItem.risultati.find(x => x.idPar_Giustificativi === just.id) ?? null;
+        righe.push({
+          mese:      meseItem.mese,
+          nomeMese:  this.nomiMesi[meseItem.mese - 1],
+          showMese:  idx === 0,
+          just,
+          risultato: r
+        });
+      });
+    }
+    return righe;
+  }
+
+  /** Carica il dettaglio mensile dei contatori se la scheda attiva è CONTATORI. */
+  loadContatoriIfNeeded(rappLavId: number): void {
+    const currKey = this.currSection_segment_dip_rapp[rappLavId];
+    if (!currKey?.includes(this.SEGMENT_DIPRAPP_CONTATORI)) return;
+    if (rappLavId <= 0) return;
+    this.refreshCurrentRiporti(rappLavId);
+    this.loadContatoriAnno(rappLavId);
+  }
+
+  loadContatoriAnno(rappLavId: number): void {
+    this.contatoriLoading = true;
+    this.contatoriMesi    = [];
+    const req = new GenericRequest<Contatori_Anno_InModel>(Contatori_Anno_InModel);
+    req.data.idDip_RapportoLavoro = rappLavId;
+    req.data.anno                 = this.annoSelezionato;
+    this.contatoriService.CalcolaContatori_Anno(req).subscribe({
+      next: res => {
+        if (res.success && res.data) this.contatoriMesi = res.data.mesi;
+        this.contatoriLoading = false;
+      },
+      error: () => { this.contatoriLoading = false; }
+    });
+  }
+
+  /**
+   * Ricalcola currentRiporti per il rappLav e annoSelezionato correnti.
+   * Se il riporto non esiste in dip_Contatori_Riporto NON lo crea subito:
+   * viene creato solo al momento della modifica (onRiportoChange).
+   * Questo evita la proliferazione di record con id=0 e salvataggi duplicati.
+   */
+  refreshCurrentRiporti(rappLavId: number): void {
+    if (!this._editModel) return;
+    this.currentRiporti = {};
+    for (const just of this.getJustContatori()) {
+      const existing = this._editModel.dip_Contatori_Riporto
+        .find(x => x.idDip_RapportoLavoro === rappLavId
+                && x.idPar_Giustificativi  === just.id
+                && x.anno                  === this.annoSelezionato);
+      if (existing) {
+        this.currentRiporti[just.id] = existing;
+      } else {
+        // Placeholder locale: non ancora nell'array principale
+        const placeholder = new Contatori_Riporto_Model();
+        placeholder.idDip_RapportoLavoro = rappLavId;
+        placeholder.idPar_Giustificativi  = just.id;
+        placeholder.anno                  = this.annoSelezionato;
+        placeholder.saldoRiporto          = '00:00:00';
+        this.currentRiporti[just.id] = placeholder;
+      }
+    }
+  }
+
+  /** Chiamato dal template quando l'utente modifica un valore di riporto. */
+  onRiportoChange(justId: number): void {
+    const r = this.currentRiporti[justId];
+    if (!r || !this._editModel) return;
+    // Aggiunge al modello principale solo se non già presente
+    const exists = this._editModel.dip_Contatori_Riporto
+      .find(x => x.idDip_RapportoLavoro === r.idDip_RapportoLavoro
+              && x.idPar_Giustificativi  === r.idPar_Giustificativi
+              && x.anno                  === r.anno);
+    if (!exists) {
+      this._editModel.dip_Contatori_Riporto.push(r);
+    }
+  }
+
+  onAnnoChange(rappLavId: number): void {
+    this.refreshCurrentRiporti(rappLavId);
+    this.loadContatoriAnno(rappLavId);
+  }
 
 }
 
@@ -365,3 +484,11 @@ const matchPasswords: ValidatorFn = (control: AbstractControl): ValidationErrors
   const confirmPassword = control.get('confirmPassword')?.value;
   return password === confirmPassword ? null : { notMatching: true };
 };
+
+interface ContatoreRiga {
+  mese:      number;
+  nomeMese:  string;
+  showMese:  boolean;
+  just:      Par_GiustificativiModel;
+  risultato: import('../../../ClientServer-Service/GestionePresenze/Contatori/Models/contatori-model').Contatori_Giustificativo_Result | null;
+}

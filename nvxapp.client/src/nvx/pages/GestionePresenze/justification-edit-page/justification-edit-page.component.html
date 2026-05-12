@@ -80,6 +80,19 @@
           <ion-toggle formControlName="visualizzaInPianoFerie" slot="end"></ion-toggle>
         </ion-item>
 
+        <ion-item>
+          <ion-label position="floating">Tipo contatore</ion-label>
+          <ion-select formControlName="tipoContatore" interface="popover">
+            <ion-select-option [value]="tipoContatore.NoContatore">Nessun contatore</ion-select-option>
+            <ion-select-option [value]="tipoContatore.Contatore">Contatore</ion-select-option>
+            <ion-select-option [value]="tipoContatore.ContatoreConAvviso">Contatore con avviso</ion-select-option>
+            <ion-select-option [value]="tipoContatore.ContatoreConBlocco">Contatore con blocco</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <ion-note color="danger" *ngIf="_editForm.get('tipoContatore')?.hasError('required') && _editForm.get('tipoContatore')?.touched">
+          Il tipo contatore è obbligatorio.
+        </ion-note>
+
 
       </form>
 
