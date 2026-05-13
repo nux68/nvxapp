@@ -14,6 +14,12 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ContatoriS
 
         /// <summary>Mese selezionato (1-12). Definisce i tre periodi.</summary>
         public int Mese { get; set; }
+
+        /// <summary>Override runtime riporti: se valorizzato sostituisce i valori DB.</summary>
+        public List<Contatori_Riporto_Model>?     RiportiOverride     { get; set; }
+
+        /// <summary>Override runtime maturazione mensile: se valorizzato sostituisce i valori DB.</summary>
+        public List<Contatori_Maturazione_Model>? MaturazioneOverride  { get; set; }
     }
 
     public class Contatori_Periodo
@@ -87,10 +93,27 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ContatoriS
 
     // ?? Vista annuale (tutti i mesi) ??????????????????????????????????????????
 
+    /// <summary>Maturazione mensile passata come override runtime (non ancora salvata sul DB).</summary>
+    public class Contatori_Maturazione_Model
+    {
+        public int    IdPar_Giustificativi { get; set; }
+        public string OreMaturazione       { get; set; } = "00:00";
+    }
+
     public class Contatori_Anno_InModel
     {
         public int IdDip_RapportoLavoro { get; set; }
         public int Anno                 { get; set; }
+
+        /// <summary>
+        /// Override runtime dei riporti (mese 0). Se valorizzato sostituisce i valori
+        /// letti dal DB. Usato per ricalcolare i contatori in tempo reale sul client
+        /// prima del salvataggio.
+        /// </summary>
+        public List<Contatori_Riporto_Model>?     RiportiOverride     { get; set; }
+
+        /// <summary>Override runtime della maturazione mensile.</summary>
+        public List<Contatori_Maturazione_Model>? MaturazioneOverride  { get; set; }
     }
 
     public class Contatori_Anno_MeseResult

@@ -87,16 +87,20 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ContatoriS
                 // ?? 2. Piani di maturazione per questo rapporto ???????????????????
                 var idJust = tuttiJust.Select(j => j.Id).ToHashSet();
 
-                var piani = _maturazioneRepository
+                var pianiDb = _maturazioneRepository
                     .FindAll(m => m.IdDip_RapportoLavoro == idRapporto && idJust.Contains(m.IdPar_Giustificativi))
                     .ToList();
 
                 // ?? 3. Riporto mese 0 per l'anno corrente ????????????????????????
-                var riporti = _riportoRepository
+                var riportiDb = _riportoRepository
                     .FindAll(r => r.IdDip_RapportoLavoro == idRapporto &&
                                   r.Anno                 == anno       &&
                                   idJust.Contains(r.IdPar_Giustificativi))
                     .ToList();
+
+                // ?? Override runtime: sostituisce DB con i valori non ancora salvati ????
+                var riportiOverride    = model.Data.RiportiOverride;
+                var maturazioneOverride = model.Data.MaturazioneOverride;
 
                 // ?? 4. Tutti i giustificativi dell'anno per il rapporto ???????????
                 var giustAnno = _giustificativiRepository
@@ -108,11 +112,33 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ContatoriS
                 // ?? 5. Calcolo per ciascun giustificativo ?????????????????????????
                 foreach (var just in tuttiJust)
                 {
-                    var piano   = piani.FirstOrDefault(p => p.IdPar_Giustificativi == just.Id);
-                    var riporto = riporti.FirstOrDefault(r => r.IdPar_Giustificativi == just.Id);
+                    // Maturazione: override ha precedenza sul DB
+                    TimeSpan oreMensili;
+                    if (maturazioneOverride != null)
+                    {
+                        var ovMat = maturazioneOverride.FirstOrDefault(m => m.IdPar_Giustificativi == just.Id);
+                        oreMensili = ovMat != null
+                            ? ParseTimeSpan(ovMat.OreMaturazione)
+                            : (pianiDb.FirstOrDefault(p => p.IdPar_Giustificativi == just.Id)?.OreMaturazione ?? TimeSpan.Zero);
+                    }
+                    else
+                    {
+                        oreMensili = pianiDb.FirstOrDefault(p => p.IdPar_Giustificativi == just.Id)?.OreMaturazione ?? TimeSpan.Zero;
+                    }
 
-                    TimeSpan oreMensili = piano?.OreMaturazione ?? TimeSpan.Zero;
-                    TimeSpan saldoRiporto = riporto?.SaldoRiporto ?? TimeSpan.Zero;
+                    // Riporto: override ha precedenza sul DB
+                    TimeSpan saldoRiporto;
+                    if (riportiOverride != null)
+                    {
+                        var ovRip = riportiOverride.FirstOrDefault(r => r.IdPar_Giustificativi == just.Id);
+                        saldoRiporto = ovRip != null
+                            ? ParseTimeSpan(ovRip.SaldoRiporto)
+                            : (riportiDb.FirstOrDefault(r => r.IdPar_Giustificativi == just.Id)?.SaldoRiporto ?? TimeSpan.Zero);
+                    }
+                    else
+                    {
+                        saldoRiporto = riportiDb.FirstOrDefault(r => r.IdPar_Giustificativi == just.Id)?.SaldoRiporto ?? TimeSpan.Zero;
+                    }
 
                     // Giustificativi goduti suddivisi per periodo
                     var giustJust = giustAnno.Where(g => g.IdPar_Giustificativi == just.Id).ToList();
@@ -202,14 +228,22 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ContatoriS
         }
 
         /// <summary>
-        /// Deserializza "HHH:MM", "HHH:MM:SS" o "d.hh:mm:ss" in TimeSpan.
+        /// Deserializza "HHH:MM" o "HHH:MM:SS" in TimeSpan.
+        /// NON usa TimeSpan.Parse che interpreta il primo segmento come giorni
+        /// e quindi fallisce per ore >= 24 (es. "30:00" verrebbe letto come 30 giorni).
         /// </summary>
         private static TimeSpan ParseTimeSpan(string? s)
         {
             if (string.IsNullOrWhiteSpace(s)) return TimeSpan.Zero;
             var parts = s.Trim().Split(':');
-            var normalized = parts.Length == 2 ? $"{parts[0]}:{parts[1]}:00" : s.Trim();
-            return TimeSpan.Parse(normalized);
+            if (parts.Length >= 2
+                && long.TryParse(parts[0].Trim(), out long totalHours)
+                && int.TryParse(parts[1].Trim(), out int minutes))
+            {
+                int seconds = parts.Length >= 3 && int.TryParse(parts[2].Trim(), out int sec) ? sec : 0;
+                return TimeSpan.FromSeconds(totalHours * 3600L + minutes * 60 + seconds);
+            }
+            return TimeSpan.Zero;
         }
 
         // ?? Riporto (Mese 0) ?????????????????????????????????????????????????
@@ -303,6 +337,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ContatoriS
                     reqMese.Data.IdDip_RapportoLavoro = model.Data.IdDip_RapportoLavoro;
                     reqMese.Data.Anno                 = model.Data.Anno;
                     reqMese.Data.Mese                 = mese;
+                    // propaga gli override runtime (possono essere null: nessun problema)
+                    reqMese.Data.RiportiOverride      = model.Data.RiportiOverride;
+                    reqMese.Data.MaturazioneOverride   = model.Data.MaturazioneOverride;
 
                     var resMese = await CalcolaContatori(reqMese, true);
 

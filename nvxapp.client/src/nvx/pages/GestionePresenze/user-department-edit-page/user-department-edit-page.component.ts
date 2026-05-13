@@ -24,9 +24,11 @@ import { CollectionDialogService } from '../../../shared/components/infrastructu
 import { Dip_RapportoLavoroModel } from '../../../ClientServer-Service/GestionePresenze/Dip_RapportoLavoro/Models/dip-rapporto-lavoro-model';
 import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
 import { ContatoriService } from '../../../ClientServer-Service/GestionePresenze/Contatori/contatori.service';
-import { Contatori_Anno_MeseResult, Contatori_Anno_InModel, Contatori_Riporto_Model } from '../../../ClientServer-Service/GestionePresenze/Contatori/Models/contatori-model';
+import { Contatori_Anno_MeseResult, Contatori_Anno_InModel, Contatori_Riporto_Model, Contatori_Maturazione_Model } from '../../../ClientServer-Service/GestionePresenze/Contatori/Models/contatori-model';
 import { Par_GiustificativiModel, TipoContatore } from '../../../ClientServer-Service/GestionePresenze/Par_Giustificativi/Models/par-giustificativi-model';
 import { Dip_Rapporto_Giustificativi_MaturazioneModel } from '../../../ClientServer-Service/GestionePresenze/Dip_Rapporto_Giustificativi_Maturazione/Models/dip-rapporto-giustificativi-maturazione-model';
+import { Subject } from 'rxjs';
+import { debounceTime, takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-user-department-edit-page',
@@ -53,6 +55,12 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
   public currentRiporti: { [idJust: number]: Contatori_Riporto_Model } = {};
   /** Mappa idJust → Dip_Rapporto_Giustificativi_MaturazioneModel: NON sensibile all'anno selezionato. */
   public currentMaturazioni: { [idJust: number]: Dip_Rapporto_Giustificativi_MaturazioneModel } = {};
+
+  /** Id del rapporto di lavoro attivo nella tab Contatori (usato per il debounce). */
+  private _currentContatoriRappLavId: number = 0;
+  /** Trigger debounced per ricalcolare i contatori dopo la modifica di un riporto. */
+  private _riportoChangedSubject = new Subject<void>();
+  private _destroy$ = new Subject<void>();
   public readonly nomiMesi = ['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno',
                                'Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
 
@@ -84,13 +92,25 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
 
     super(navCtrl, userInterfaceService, fb);
 
-
     this.btnEdit_Dip_ProfiloOrario = this.userInterfaceService.Btn_Modifica;
     this.btnEdit_Dip_ProfiloOrario.event = this.handleButton_Dip_ProfiloOrario_EditClick;
 
     this.btnDelete_Dip_ProfiloOrario = userInterfaceService.Btn_Cancella;
     this.btnDelete_Dip_ProfiloOrario.event = this.handleButton_Dip_ProfiloOrario_DeleteClick;
 
+    // Ricalcola i contatori 800ms dopo l'ultima modifica al riporto, passando i valori non ancora salvati
+    this._riportoChangedSubject.pipe(
+      debounceTime(800),
+      takeUntil(this._destroy$)
+    ).subscribe(() => {
+      if (this._currentContatoriRappLavId > 0)
+        this.loadContatoriAnno(this._currentContatoriRappLavId, true);
+    });
+  }
+
+  ngOnDestroy(): void {
+    this._destroy$.next();
+    this._destroy$.complete();
   }
 
 
@@ -423,23 +443,44 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
     const currKey = this.currSection_segment_dip_rapp[rappLavId];
     if (!currKey?.includes(this.SEGMENT_DIPRAPP_CONTATORI)) return;
     if (rappLavId <= 0) return;
+    this._currentContatoriRappLavId = rappLavId;
     this.refreshJustContatori();
     this.refreshCurrentRiporti(rappLavId);
     this.refreshCurrentMaturazioni(rappLavId);
     this.loadContatoriAnno(rappLavId);
   }
 
-  loadContatoriAnno(rappLavId: number): void {
+  /**
+   * Carica il calcolo annuale dei contatori.
+   * @param withOverride se true, passa i valori correnti (non salvati) di riporti
+   *   e maturazioni come override runtime, così il calcolo riflette i valori
+   *   che l'utente ha editato senza ancora salvare.
+   */
+  loadContatoriAnno(rappLavId: number, withOverride = false): void {
     this.contatoriLoading = true;
     this.contatoriMesi    = [];
     const req = new GenericRequest<Contatori_Anno_InModel>(Contatori_Anno_InModel);
     req.data.idDip_RapportoLavoro = rappLavId;
     req.data.anno                 = this.annoSelezionato;
+
+    if (withOverride) {
+      // Riporti correnti (inclusi placeholder non ancora salvati)
+      req.data.riportiOverride = Object.values(this.currentRiporti).map(r => ({
+        ...r,
+        anno: this.annoSelezionato
+      }));
+      // Maturazioni correnti
+      req.data.maturazioneOverride = Object.values(this.currentMaturazioni).map(m => ({
+        idPar_Giustificativi: m.idPar_Giustificativi,
+        oreMaturazione:       m.oreMaturazione
+      }));
+    }
+
     this.contatoriService.CalcolaContatori_Anno(req).subscribe({
       next: res => {
         if (res.success && res.data) {
           this.contatoriMesi = res.data.mesi;
-          this.refreshContatoriRighe(); // aggiorna la cache: evita ricalcolo in *ngFor
+          this.refreshContatoriRighe();
         }
         this.contatoriLoading = false;
       },
@@ -487,6 +528,8 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
     if (!exists) {
       this._editModel.dip_Contatori_Riporto.push(r);
     }
+    // Ricalcola i contatori con debounce (passa i valori non ancora salvati)
+    this._riportoChangedSubject.next();
   }
 
   onAnnoChange(rappLavId: number): void {
@@ -529,6 +572,8 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
     if (!exists) {
       this._editModel.dip_Maturazione.push(m);
     }
+    // Ricalcola i contatori con debounce (passa i valori non ancora salvati)
+    this._riportoChangedSubject.next();
   }
 
 }

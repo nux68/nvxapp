@@ -63,9 +63,25 @@ export class Contatori_Riporto_Delete_OutModel extends ModelResult {}
 
 // ── Vista annuale ─────────────────────────────────────────────────────────────
 
+/** Maturazione mensile passata come override runtime (valori non ancora salvati). */
+export class Contatori_Maturazione_Model {
+  public idPar_Giustificativi: number = 0;
+  public oreMaturazione:       string = '00:00';
+}
+
 export class Contatori_Anno_InModel {
   public idDip_RapportoLavoro: number = 0;
   public anno: number = 0;
+
+  /**
+   * Override runtime dei riporti (mese 0).
+   * Se valorizzato sostituisce i valori DB per i giustificativi corrispondenti.
+   * Usato per ricalcolare in tempo reale senza salvare.
+   */
+  public riportiOverride:     Contatori_Riporto_Model[]      | null = null;
+
+  /** Override runtime della maturazione mensile. */
+  public maturazioneOverride: Contatori_Maturazione_Model[]  | null = null;
 }
 
 export class Contatori_Anno_MeseResult {
