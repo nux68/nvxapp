@@ -1,3 +1,4 @@
+import { Contatori_Anno_MeseResult, Contatori_Giustificativo_Result } from "../../ClientServer-Service/GestionePresenze/Contatori/Models/contatori-model";
 import { Dip_GG_CausaliModel } from "../../ClientServer-Service/GestionePresenze/Dip_GG_Causali/Models/dip-gg-causali-model";
 import { Dip_GG_GiustificativiModel } from "../../ClientServer-Service/GestionePresenze/Dip_GG_Giustificativi/Models/dip-gg-giustificativi-model";
 import { Dip_GG_ResultModel } from "../../ClientServer-Service/GestionePresenze/Dip_GG_Result/Models/dip-gg-result-model";
@@ -25,6 +26,7 @@ export interface MonthData {
 
   dip_GG_Richiesta: Dip_GG_RichiestaModel[];
   daySlot: Dip_ProfiloOrario_DaySlot[];
+  contatori_Anno_Mese: Contatori_Anno_MeseResult[];
 }
 
 
@@ -35,6 +37,9 @@ export interface TimeSheetRemoteData {
   dip_GG_Result: Dip_GG_ResultModel[];
   dip_GG_Causali: Dip_GG_CausaliModel[];
   daySlot: Dip_ProfiloOrario_DaySlot[];
+
+  contatori_Anno_Mese: Contatori_Anno_MeseResult[];
+
 }
 
 

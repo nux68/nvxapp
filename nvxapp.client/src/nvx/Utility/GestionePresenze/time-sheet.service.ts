@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { catchError, Observable, of, throwError } from 'rxjs';
+import { catchError, Observable, of, switchMap, throwError } from 'rxjs';
 import { map } from 'rxjs/operators'; // Import map operator if you plan real sorting/processing
 import { Dip_GG_Timbratura_GetAll_InModel, Dip_GG_TimbraturaModel, TipoTimbratura } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Timbratura/Models/dip-gg-timbratura-model';
 import { HoverPopupData } from '../../shared/components/infrastructure/hover-popup/hover-popup.component';
@@ -20,6 +20,8 @@ import { Timesheet_AllData_InModel } from '../../ClientServer-Service/GestionePr
 import { TimeSheetEngineService } from '../../ClientServer-Service/GestionePresenze/TimeSheet_EngineService/time-sheet-engine.service';
 import { Dip_GG_ResultModel, GG_ResultStato } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Result/Models/dip-gg-result-model';
 import { Dip_GG_CausaliModel } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Causali/Models/dip-gg-causali-model';
+import { Contatori_Anno_InModel } from '../../ClientServer-Service/GestionePresenze/Contatori/Models/contatori-model';
+import { ContatoriService } from '../../ClientServer-Service/GestionePresenze/Contatori/contatori.service';
 
 
 
@@ -34,14 +36,14 @@ export class TimeSheetService {
               private dipGGGiustificativiService: DipGGGiustificativiService,
               private dipGGTimbraturaService: DipGGTimbraturaService,
               private dipGGRichiestaService: DipGGRichiestaService,
-    public timeSheetEngineService: TimeSheetEngineService,
-    
+              private contatoriService: ContatoriService,
+              public timeSheetEngineService: TimeSheetEngineService,
               public dateTimeUtilService: DateTimeUtilService) {
   }
 
 
-  getMonthData(year: number, month: number, idAspNetUsers: string|null): Observable<MonthData> {
-    return this.getMonthDataFromServer(year, month, idAspNetUsers).pipe(
+  getMonthData(year: number, month: number, idAspNetUsers: string|null,loadCounter:boolean): Observable<MonthData> {
+    return this.getMonthDataFromServer(year, month, idAspNetUsers, loadCounter).pipe(
       map(remoteData => this.transformRemoteDataToMonthData(remoteData, year, month)),
       catchError(error => {
         console.warn(`Error fetching data from server: ${error}. Falling back to mock data.`);
@@ -50,13 +52,14 @@ export class TimeSheetService {
             month: month,
             days: {},
             dip_GG_Richiesta: [],
-            daySlot: []
+            daySlot: [],
+            contatori_Anno_Mese:[] 
           });
       })
     );
   }
 
-  getMonthDataFromServer(year: number, month: number, idAspNetUsers: string | null): Observable<TimeSheetRemoteData> {
+  getMonthDataFromServer(year: number, month: number, idAspNetUsers: string | null, loadCounter: boolean): Observable<TimeSheetRemoteData> {
 
     if (year == undefined || month == undefined) {
       const remoteData: TimeSheetRemoteData = {
@@ -65,7 +68,8 @@ export class TimeSheetService {
         dip_GG_Richiesta: [],
         dip_GG_Result: [],
         dip_GG_Causali: [],
-        daySlot:[]
+        daySlot: [],
+        contatori_Anno_Mese:[],
       };
 
       return of(remoteData);
@@ -79,101 +83,52 @@ export class TimeSheetService {
       request.data.usersId = [idAspNetUsers];
     }
 
+
+
     
-
-
     return this.timeSheetEngineService.Get_Timesheet_AllData(request).pipe(
-      map(x => {
-        const remoteData: TimeSheetRemoteData = {
+      switchMap(x => {
+        // Prepariamo l'oggetto base
+        let remoteData: TimeSheetRemoteData = {
           dip_GG_Giustificativi: x.data?.dip_GG_AllData_OutModel?.dip_GG_Giustificativi ?? [],
           dip_GG_Timbratura: x.data?.dip_GG_AllData_OutModel?.dip_GG_Timbratura ?? [],
           dip_GG_Richiesta: x.data?.dip_GG_AllData_OutModel?.dip_GG_Richiesta ?? [],
           dip_GG_Result: x.data?.dip_GG_AllData_OutModel?.dip_GG_Result ?? [],
           dip_GG_Causali: x.data?.dip_GG_AllData_OutModel?.dip_GG_Causali ?? [],
-          daySlot: x.data?.orariSchema_4User_OutModel?.daySlots ?? []
+          daySlot: x.data?.orariSchema_4User_OutModel?.daySlots ?? [],
+          contatori_Anno_Mese: []
         };
-        console.log('getMonthDataFromServer - combined data:', remoteData);
-        return remoteData;
+
+        // Se non abbiamo l'ID utente, restituiamo subito i dati base avvolti in un Observable
+        if (idAspNetUsers == null) {
+          return of(remoteData);
+        }
+
+
+        if (loadCounter == false) {
+          return of(remoteData);
+        }
+        else {
+          // Altrimenti, prepariamo la seconda chiamata
+          const req = new GenericRequest<Contatori_Anno_InModel>(Contatori_Anno_InModel);
+          req.data.idDip_RapportoLavoro = remoteData.daySlot[0].idDip_RapportoLavoro; // Verifica se questo deve essere dinamico
+          req.data.anno = year;
+
+          // Usiamo map per unire i risultati dei contatori a remoteData
+          return this.contatoriService.CalcolaContatori_Anno(req).pipe(
+            map(resContatori => {
+              // Supponendo che i dati siano in resContatori.data
+              remoteData.contatori_Anno_Mese = resContatori.data.mesi ?? [];
+              return remoteData;
+            })
+          );
+        }
+
+       
+
+
       })
     );
-
-    //////this.timeSheetEngineService.Get_Timesheet_AllData(request).subscribe(x => {
-
-      
-
-    //////  const giustificativiArray = x.data.dip_GG_AllData_OutModel.dip_GG_Giustificativi || [];
-    //////  const timbratureArray = x.data.dip_GG_AllData_OutModel.dip_GG_Timbratura || [];
-    //////  const richiesteArray = x.data.dip_GG_AllData_OutModel.dip_GG_Richiesta || [];
-
-    //////  // Crea l'oggetto finale TimeSheetRemoteData
-    //////  const remoteData: TimeSheetRemoteData = {
-    //////    dip_GG_Giustificativi: giustificativiArray,
-    //////    dip_GG_Timbratura: timbratureArray,
-    //////    dip_GG_Richiesta: richiesteArray
-    //////  };
-
-    //////  console.log('Both calls finished. Combined data:', remoteData);
-    //////  return remoteData; // Return the structured data
-
-    //////});
-
-
-
-    //////let request_Just = new GenericRequest<Dip_GG_Giustificativi_GetAll_InModel>(Dip_GG_Giustificativi_GetAll_InModel);
-    //////request_Just.data.year = year;
-    //////request_Just.data.month = month + 1;
-    //////request_Just.data.idAspNetUsers = idAspNetUsers;
-
-    //////let request_clock = new GenericRequest<Dip_GG_Timbratura_GetAll_InModel>(Dip_GG_Timbratura_GetAll_InModel);
-    //////request_clock.data.year = year;
-    //////request_clock.data.month = month + 1;
-    //////request_clock.data.idAspNetUsers = idAspNetUsers;
-
-    //////let request_rich = new GenericRequest<Dip_GG_Richiesta_GetAll4User_InModel>(Dip_GG_Richiesta_GetAll4User_InModel);
-    //////request_rich.data.year = year;
-    //////request_rich.data.month = month + 1;
-    //////request_rich.data.idAspNetUsers = idAspNetUsers;
-    
-
-    //////// 2. Define the Observables for the API calls (DO NOT subscribe yet)
-    //////const justificationsObservable$ = this.dipGGGiustificativiService.GetAll(request_Just);
-    //////const clockingsObservable$ = this.dipGGTimbraturaService.GetAll(request_clock);
-    //////const requestObservable$ = this.dipGGRichiestaService.GetAll4User(request_clock);
-
-    
-
-    //////// 3. Use forkJoin to execute both Observables in parallel
-    //////// It will emit an object with the results once BOTH calls complete
-    //////return forkJoin({
-    //////  // Assign keys to easily access the results later
-    //////  justResult: justificationsObservable$,
-    //////  clockResult: clockingsObservable$,
-    //////  requestResult: requestObservable$
-    //////}).pipe(
-    //////  // 4. Use the 'map' operator to transform the combined results
-    //////  map(results => {
-
-    //////    const giustificativiArray = results.justResult?.data?.dip_GG_Giustificativi || [];
-    //////    const timbratureArray = results.clockResult?.data?.dip_GG_Timbratura || [];
-    //////    const richiesteArray = results.requestResult?.data?.dip_GG_Richiesta || [];
-
-    //////    // Crea l'oggetto finale TimeSheetRemoteData
-    //////    const remoteData: TimeSheetRemoteData = {
-    //////      dip_GG_Giustificativi: giustificativiArray,
-    //////      dip_GG_Timbratura: timbratureArray,
-    //////      dip_GG_Richiesta: richiesteArray
-    //////    };
-
-    //////    console.log('Both calls finished. Combined data:', remoteData);
-    //////    return remoteData; // Return the structured data
-    //////  }),
-    //////  // 5. Optional: Add error handling for the forkJoin
-    //////  catchError(error => {
-    //////    console.error("Error fetching month data (one or both calls failed):", error);
-    //////    return throwError(() => new Error('Failed to load data for month ' + month + '/' + year));
-    //////  })
-    //////);
-    //////// The method now correctly returns an Observable<MonthData>
 
 
   }
@@ -184,12 +139,13 @@ export class TimeSheetService {
       month: month,
       days: {},
       dip_GG_Richiesta: [],
-      daySlot: []
+      daySlot: [],
+      contatori_Anno_Mese: []
     };
 
     monthData.dip_GG_Richiesta = remoteData.dip_GG_Richiesta;
     monthData.daySlot = remoteData.daySlot;
-    
+    monthData.contatori_Anno_Mese = remoteData.contatori_Anno_Mese;
 
     // Raggruppa le timbrature per giorno
     const timbratureByDay = new Map<number, Dip_GG_TimbraturaModel[]>();

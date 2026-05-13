@@ -56,7 +56,7 @@ interface DayData {
 export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
 
 
-
+  public loadCounter: boolean;
   public currYear: number;
   public currMonth: number;
   public currUserId: string | undefined;
@@ -92,7 +92,7 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
               private platform: Platform
   ) {
     this.title = 'Calendario HR';
-    this.currentMonth = { year: 0, month: 0, days: {}, dip_GG_Richiesta: [] ,daySlot:[]};
+    this.currentMonth = { year: 0, month: 0, days: {}, dip_GG_Richiesta: [], daySlot: [], contatori_Anno_Mese:[] };
   }
 
   public get isMobile(): boolean {
@@ -194,7 +194,8 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
     }
 
     // Chiama il servizio per ottenere i dati del mese
-    this.timeSheetService.getMonthData(this.currYear, this.currMonth, this.currUserId).subscribe(monthData => {
+    this.timeSheetService.getMonthData(this.currYear, this.currMonth, this.currUserId, this.loadCounter).subscribe(monthData => {
+      this.loadCounter = false;
       this.currentMonth = monthData;
       this.buildDaysList();
     });
@@ -256,6 +257,10 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
  
   onPeriodChange(period: { year: number, month: number } | undefined): void {
     if (period) {
+
+      if (this.currYear != period.year)
+        this.loadCounter = true;
+
       this.currYear = period.year;
       this.currMonth = period.month - 1;
       this.loadMonth();
@@ -265,6 +270,10 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
   onCurrentUserChanged(userId: string[] | undefined): void {
     if (userId == undefined)
       return;
+
+    if (this.currUserId != userId[0])
+      this.loadCounter = true;
+
     this.currUserId = userId[0];
     this.loadMonth();
   }
