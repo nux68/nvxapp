@@ -44,6 +44,7 @@ export class TimeSheetService {
 
 
   getMonthData(year: number, month: number, idAspNetUsers: string|null,loadCounter:boolean): Observable<MonthData> {
+
     return this.getMonthDataFromServer(year, month, idAspNetUsers, loadCounter).pipe(
       map(remoteData => this.transformRemoteDataToMonthData(remoteData, year, month)),
       catchError(error => {
@@ -695,20 +696,23 @@ export class TimeSheetService {
 
       let idx = contatori_Anno_Mese.findIndex(x => x.mese == month);
 
-      let idxJust = contatori_Anno_Mese[idx].risultati.findIndex(x => x.idPar_Giustificativi == record.idPar_Giustificativi);
+      if (idx >= 0) {
+        let idxJust = contatori_Anno_Mese[idx].risultati.findIndex(x => x.idPar_Giustificativi == record.idPar_Giustificativi);
 
-      extraInfo['Mese prec. maturato'] = contatori_Anno_Mese[idx-1].risultati[idxJust].periodoPrecedente.maturato;
-      extraInfo['Mese prec. goduto'] = contatori_Anno_Mese[idx-1].risultati[idxJust].periodoPrecedente.goduto;
-      extraInfo['Mese prec. saldo'] = contatori_Anno_Mese[idx-1].risultati[idxJust].periodoPrecedente.saldo;
+        extraInfo['Mese prec. maturato'] = contatori_Anno_Mese[idx - 1].risultati[idxJust].periodoPrecedente.maturato;
+        extraInfo['Mese prec. goduto'] = contatori_Anno_Mese[idx - 1].risultati[idxJust].periodoPrecedente.goduto;
+        extraInfo['Mese prec. saldo'] = contatori_Anno_Mese[idx - 1].risultati[idxJust].periodoPrecedente.saldo;
 
 
-      extraInfo['Mese corr. maturato'] = contatori_Anno_Mese[idx].risultati[idxJust].periodoCorrente.maturato;
-      extraInfo['Mese corr. goduto'] = contatori_Anno_Mese[idx].risultati[idxJust].periodoCorrente.goduto;
-      extraInfo['Mese corr. saldo'] = contatori_Anno_Mese[idx].risultati[idxJust].periodoCorrente.saldo;
+        extraInfo['Mese corr. maturato'] = contatori_Anno_Mese[idx].risultati[idxJust].periodoCorrente.maturato;
+        extraInfo['Mese corr. goduto'] = contatori_Anno_Mese[idx].risultati[idxJust].periodoCorrente.goduto;
+        extraInfo['Mese corr. saldo'] = contatori_Anno_Mese[idx].risultati[idxJust].periodoCorrente.saldo;
 
-      extraInfo['Mesi succ. maturato'] = contatori_Anno_Mese[11].risultati[idxJust].periodoSuccessivo.maturato;
-      extraInfo['Mesi succ. goduto'] = contatori_Anno_Mese[11].risultati[idxJust].periodoSuccessivo.goduto;
-      extraInfo['Mesi succ. saldo'] = contatori_Anno_Mese[11].risultati[idxJust].periodoSuccessivo.saldo;
+        extraInfo['Mesi succ. maturato'] = contatori_Anno_Mese[11].risultati[idxJust].periodoSuccessivo.maturato;
+        extraInfo['Mesi succ. goduto'] = contatori_Anno_Mese[11].risultati[idxJust].periodoSuccessivo.goduto;
+        extraInfo['Mesi succ. saldo'] = contatori_Anno_Mese[11].risultati[idxJust].periodoSuccessivo.saldo;
+      }
+      
 
 
       return {

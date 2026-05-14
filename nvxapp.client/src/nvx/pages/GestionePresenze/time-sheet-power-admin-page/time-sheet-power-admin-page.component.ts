@@ -195,8 +195,21 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
 
     // Chiama il servizio per ottenere i dati del mese
     this.timeSheetService.getMonthData(this.currYear, this.currMonth, this.currUserId, this.loadCounter).subscribe(monthData => {
-      this.loadCounter = false;
-      this.currentMonth = monthData;
+
+      if (this.loadCounter) {
+        // Primo caricamento: prendo tutto
+        this.currentMonth = monthData;
+
+      } else {
+        // Caricamento successivo: NON sovrascrivo contatori_Anno_Mese
+        this.currentMonth = {
+          ...monthData,
+          contatori_Anno_Mese: this.currentMonth.contatori_Anno_Mese
+        };
+      }
+      
+      /*  DISABILIATTO xke manca strategia di refresh efficace */
+      //this.loadCounter = false;
       this.buildDaysList();
     });
 
