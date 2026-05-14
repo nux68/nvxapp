@@ -20,8 +20,9 @@ import { Timesheet_AllData_InModel } from '../../ClientServer-Service/GestionePr
 import { TimeSheetEngineService } from '../../ClientServer-Service/GestionePresenze/TimeSheet_EngineService/time-sheet-engine.service';
 import { Dip_GG_ResultModel, GG_ResultStato } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Result/Models/dip-gg-result-model';
 import { Dip_GG_CausaliModel } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Causali/Models/dip-gg-causali-model';
-import { Contatori_Anno_InModel } from '../../ClientServer-Service/GestionePresenze/Contatori/Models/contatori-model';
+import { Contatori_Anno_InModel, Contatori_Anno_MeseResult } from '../../ClientServer-Service/GestionePresenze/Contatori/Models/contatori-model';
 import { ContatoriService } from '../../ClientServer-Service/GestionePresenze/Contatori/contatori.service';
+import { TipoContatore } from '../../ClientServer-Service/GestionePresenze/Par_Giustificativi/Models/par-giustificativi-model';
 
 
 
@@ -679,6 +680,52 @@ export class TimeSheetService {
     }
 
   }
+
+
+  get_GiustificativoContatoriPopupData(record: Dip_GG_GiustificativiModel, month:number,contatori_Anno_Mese: Contatori_Anno_MeseResult[]): HoverPopupData| null {
+
+    const extraInfo: Record<string, string> = {};
+
+    const just = this.sharedParameterGestionePresenzeService.Par_Giustificativi.find(x => x.id == record.idPar_Giustificativi);
+    if (just != null && just.tipoContatore != TipoContatore.NoContatore) {
+
+      const tipoLabel = this.sharedParameterGestionePresenzeService.Par_Giustificativi.find(x => x.id == record.idPar_Giustificativi)?.descrizione ?? 'Giustificativo';
+      const content = "Contatori";  //record.data ? new Date(record.data).toLocaleDateString('it-IT', { weekday: 'long', day: '2-digit', month: 'long' }) : '--';
+
+
+      let idx = contatori_Anno_Mese.findIndex(x => x.mese == month);
+
+      let idxJust = contatori_Anno_Mese[idx].risultati.findIndex(x => x.idPar_Giustificativi == record.idPar_Giustificativi);
+
+      extraInfo['Mese prec. maturato'] = contatori_Anno_Mese[idx-1].risultati[idxJust].periodoPrecedente.maturato;
+      extraInfo['Mese prec. goduto'] = contatori_Anno_Mese[idx-1].risultati[idxJust].periodoPrecedente.goduto;
+      extraInfo['Mese prec. saldo'] = contatori_Anno_Mese[idx-1].risultati[idxJust].periodoPrecedente.saldo;
+
+
+      extraInfo['Mese corr. maturato'] = contatori_Anno_Mese[idx].risultati[idxJust].periodoCorrente.maturato;
+      extraInfo['Mese corr. goduto'] = contatori_Anno_Mese[idx].risultati[idxJust].periodoCorrente.goduto;
+      extraInfo['Mese corr. saldo'] = contatori_Anno_Mese[idx].risultati[idxJust].periodoCorrente.saldo;
+
+      extraInfo['Mesi succ. maturato'] = contatori_Anno_Mese[11].risultati[idxJust].periodoSuccessivo.maturato;
+      extraInfo['Mesi succ. goduto'] = contatori_Anno_Mese[11].risultati[idxJust].periodoSuccessivo.goduto;
+      extraInfo['Mesi succ. saldo'] = contatori_Anno_Mese[11].risultati[idxJust].periodoSuccessivo.saldo;
+
+
+      return {
+        title: tipoLabel,
+        content: content,
+        extraInfo
+      };
+
+    }
+
+
+    return null;
+    
+
+  }
+
+
 
   get_TimbraturaPopupData(record: Dip_GG_TimbraturaModel, richiesta: Dip_GG_RichiestaModel | null): HoverPopupData {
     const tipoLabel = new TipoTimbraturaToLongTextPipe().transform(record.timbraturaTipo);

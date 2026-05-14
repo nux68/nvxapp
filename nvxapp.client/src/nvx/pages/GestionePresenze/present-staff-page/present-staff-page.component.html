@@ -29,36 +29,38 @@
                  [class.nvx-row-even]="indexRow4Color % 2 === 0"
                  class="nvx-ion-row-4table nvx-row-hover">
 
-          <ion-col size="2" size-xs="4">
+          <ion-col size="1" size-xs="2">
 
-            <ion-icon [name]="get_StatoDay_icon(item)"
-                      [ngStyle]="{
-                         'color': get_StatoDay_color(item),
-                         'border-radius': '50%',
-                         'width': '15px',
-                         'height': '15px',
-                         'margin-right': '4px'
-                       }">
-            </ion-icon>
+            <ion-button shape="round" fill="outline" size="small">
+              <ion-icon slot="icon-only" [name]="get_StatoDay_icon(item)"
+                        [ngStyle]="{
+                       'color': get_StatoDay_color(item)
+                     }">
+              </ion-icon>
+            </ion-button>
 
-            <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
-              {{ item.idAspNetUsers | idAspNetUsersToCognome }}
-            </ion-label>
           </ion-col>
 
-          <ion-col size="1" size-xs="4">
-            <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
-              {{ item.idAspNetUsers | idAspNetUsersToNome }}
-            </ion-label>
-          </ion-col>
+            <ion-col size="2" size-xs="4">
+
+              <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
+                {{ item.idAspNetUsers | idAspNetUsersToCognome }}
+              </ion-label>
+            </ion-col>
+
+            <ion-col size="1" size-xs="4">
+              <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
+                {{ item.idAspNetUsers | idAspNetUsersToNome }}
+              </ion-label>
+            </ion-col>
 
 
-          <ion-col size="1" size-xs="4">
+            <ion-col size="1" size-xs="2">
 
 
 
-            <ion-chip *ngIf="item.dip_GG_Timbratura != null; else noTimb"
-                      [ngStyle]="{
+              <ion-chip *ngIf="item.dip_GG_Timbratura != null; else noTimb"
+                        [ngStyle]="{
                               'background': timeSheetService.get_Dip_GG_Timbratura_backColor(item.dip_GG_Timbratura),
                               'color': timeSheetService.get_Dip_GG_Timbratura_txtColor(item.dip_GG_Timbratura),
                               'font-size': '0.8em',
@@ -67,17 +69,17 @@
                               'cursor':  false  ? 'pointer' : 'default',
                               'opacity': false  ? '1' : '0.5'
                             }"
-                      (click)="false ? null : null">
-              {{ item.dip_GG_Timbratura.timbraturaTipo | tipoTimbraturaToShortText }} {{ item.dip_GG_Timbratura.timbratura | date:'HH:mm' }}
-              <!--<ion-icon [name]="timeSheetService.get_StatoRichiesta_icon(get_Dip_GG_Richiesta(item.dip_GG_Timbratura.idDip_GG_Richiesta))"></ion-icon>-->
-            </ion-chip>
+                        (click)="false ? null : null">
+                {{ item.dip_GG_Timbratura.timbraturaTipo | tipoTimbraturaToShortText }} {{ item.dip_GG_Timbratura.timbratura | date:'HH:mm' }}
+                <!--<ion-icon [name]="timeSheetService.get_StatoRichiesta_icon(get_Dip_GG_Richiesta(item.dip_GG_Timbratura.idDip_GG_Richiesta))"></ion-icon>-->
+              </ion-chip>
 
 
 
-            <ng-template #noTimb>
-              <span class="no-data">-</span>
-            </ng-template>
-          </ion-col>
+              <ng-template #noTimb>
+                <span class="no-data">-</span>
+              </ng-template>
+            </ion-col>
 
 
         </ion-row>

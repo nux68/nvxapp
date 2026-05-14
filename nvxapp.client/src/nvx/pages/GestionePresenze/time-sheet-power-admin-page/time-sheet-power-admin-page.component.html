@@ -114,6 +114,8 @@
                 <ng-container *ngIf="day.dip_GG_Giustificativi?.length > 0; else noJust">
 
                   <ion-chip *ngFor="let just of day.dip_GG_Giustificativi"
+                            [appHoverPopup]="timeSheetService.get_GiustificativoContatoriPopupData(just,currentMonth.month+1,currentMonth.contatori_Anno_Mese )"
+                            [appHoverPopupEnabled]="!isMobile && timeSheetService.get_GiustificativoContatoriPopupData(just,currentMonth.month+1,currentMonth.contatori_Anno_Mese )!=null"
                             [ngStyle]="{
                                          'background': timeSheetService.get_Dip_GG_Giustificativi_backColor(just),
                                          'color': timeSheetService.get_Dip_GG_Giustificativi_txtColor(just),

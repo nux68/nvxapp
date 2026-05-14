@@ -94,7 +94,7 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
     this.title = 'Calendario HR';
     this.currentMonth = { year: 0, month: 0, days: {}, dip_GG_Richiesta: [], daySlot: [], contatori_Anno_Mese:[] };
   }
-
+  
   public get isMobile(): boolean {
     return this.platform.width() < 576;
   }
