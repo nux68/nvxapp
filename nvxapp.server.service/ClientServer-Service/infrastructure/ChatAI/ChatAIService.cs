@@ -76,7 +76,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 if (isFirstTurn)
                 {
                     // PRIMO TURNO: chiedi a Ollama intent + tutti gli slot presenti nel messaggio
-                    var extracted = await CallOllamaExtractIntentAsync(userMessage);
+                    var extracted = await CallOllamaExtractIntentAsync(userMessage, session);
                     if (extracted == null || string.IsNullOrEmpty(extracted.Intent))
                         return BuildErrorResponse(session, "Non ho capito la richiesta. Puoi ripetere?");
 
@@ -94,7 +94,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                     if (nextMissing != null)
                     {
                         // Chiamata Ollama focalizzata: estrai SOLO il valore di questo slot
-                        var slotValue = await CallOllamaExtractSingleSlotAsync(userMessage, nextMissing, session.Intent);
+                        var slotValue = await CallOllamaExtractSingleSlotAsync(
+                            userMessage, nextMissing, session.Intent, session);
 
                         // Se Ollama non riesce, usa il testo grezzo come fallback
                         if ( string.IsNullOrEmpty(slotValue))
@@ -179,24 +180,30 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
 
         // ---------------------------------------------------------------------------
         // Chiamata Ollama — primo turno: estrae intent + tutti gli slot presenti
+        // Passa la ConversationHistory come array messages a /api/chat.
         // ---------------------------------------------------------------------------
 
-        private async Task<ExtractedIntent?> CallOllamaExtractIntentAsync(string userMessage)
+        private async Task<ExtractedIntent?> CallOllamaExtractIntentAsync(
+            string userMessage, ChatSession session)
         {
             try
             {
                 string ollamaUrl = _configuration["AI:Url"] ?? "http://localhost:11434/api/";
 
-                var requestBody = new OllamaRequest
+                var messages = BuildChatMessages(
+                    _intentCatalog.BuildSystemPrompt(),
+                    session.History,
+                    userMessage);
+
+                var requestBody = new OllamaChatRequest
                 {
-                    Model = _ollamaModel,
-                    Prompt = userMessage,
-                    Stream = false,
-                    Format = "json",
-                    System = _intentCatalog.BuildSystemPrompt()
+                    Model    = _ollamaModel,
+                    Messages = messages,
+                    Stream   = false,
+                    Format   = "json"
                 };
 
-                var raw = await PostToOllamaAsync(ollamaUrl, requestBody);
+                var raw = await PostToOllamaChatAsync(ollamaUrl, requestBody);
                 return SafeDeserializeExtractedIntent(raw);
             }
             catch
@@ -206,31 +213,36 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         }
 
         // ---------------------------------------------------------------------------
-        // Chiamata Ollama — turni successivi: estrae UN singolo slot dal testo
+        // Chiamata Ollama — turni successivi: estrae UN singolo slot dal testo.
+        // Passa la ConversationHistory per permettere al modello di disambiguare
+        // risposte contestuali (es. "quello di prima", "stessa data").
         // ---------------------------------------------------------------------------
 
         private async Task<string?> CallOllamaExtractSingleSlotAsync(
-            string userMessage, string slotName, string intentName)
+            string userMessage, string slotName, string intentName, ChatSession session)
         {
             try
             {
                 string ollamaUrl = _configuration["AI:Url"] ?? "http://localhost:11434/api/";
-                var systemPrompt = BuildSingleSlotSystemPrompt(slotName);
 
-                var requestBody = new OllamaRequest
+                var messages = BuildChatMessages(
+                    BuildSingleSlotSystemPrompt(slotName),
+                    session.History,
+                    userMessage);
+
+                var requestBody = new OllamaChatRequest
                 {
-                    Model = _ollamaModel,
-                    Prompt = userMessage,
-                    Stream = false,
-                    Format = "json",
-                    System = systemPrompt
+                    Model    = _ollamaModel,
+                    Messages = messages,
+                    Stream   = false,
+                    Format   = "json"
                 };
 
-                var raw = await PostToOllamaAsync(ollamaUrl, requestBody);
+                var raw = await PostToOllamaChatAsync(ollamaUrl, requestBody);
                 if (string.IsNullOrEmpty(raw)) return null;
 
                 var start = raw.IndexOf('{');
-                var end = raw.LastIndexOf('}');
+                var end   = raw.LastIndexOf('}');
                 if (start == -1 || end == -1) return null;
 
                 var cleanJson = raw.Substring(start, end - start + 1);
@@ -271,22 +283,51 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         }
 
         // ---------------------------------------------------------------------------
-        // HTTP helper
+        // HTTP helper — /api/chat (supporta messages array con history)
         // ---------------------------------------------------------------------------
 
-        private async Task<string> PostToOllamaAsync(string baseUrl, OllamaRequest requestBody)
+        // Costruisce la lista messages: [system] + [history] + [messaggio corrente].
+        // Il system prompt va sempre come primo messaggio con role="system".
+        // La history accumula i turni precedenti dando contesto al modello.
+        private static List<OllamaChatMessage> BuildChatMessages(
+            string systemPrompt,
+            List<ConversationTurn> history,
+            string currentUserMessage)
         {
-            var json = JsonSerializer.Serialize(requestBody);
+            var messages = new List<OllamaChatMessage>
+            {
+                new() { Role = "system", Content = systemPrompt }
+            };
+
+            foreach (var turn in history)
+                messages.Add(new OllamaChatMessage
+                {
+                    Role    = turn.Role,    // "user" | "assistant"
+                    Content = turn.Content
+                });
+
+            messages.Add(new OllamaChatMessage
+            {
+                Role    = "user",
+                Content = currentUserMessage
+            });
+
+            return messages;
+        }
+
+        private async Task<string> PostToOllamaChatAsync(string baseUrl, OllamaChatRequest requestBody)
+        {
+            var json    = JsonSerializer.Serialize(requestBody);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             var httpClient = _httpClientFactory.CreateClient();
 
-            var response = await httpClient.PostAsync($"{baseUrl}generate", content);
+            var response = await httpClient.PostAsync($"{baseUrl}chat", content);
             response.EnsureSuccessStatusCode();
 
-            var responseBody = await response.Content.ReadAsStringAsync();
-            var ollamaResponse = JsonSerializer.Deserialize<OllamaResponse>(responseBody);
+            var responseBody  = await response.Content.ReadAsStringAsync();
+            var ollamaResponse = JsonSerializer.Deserialize<OllamaChatResponse>(responseBody);
 
-            return ollamaResponse?.Response ?? string.Empty;
+            return ollamaResponse?.Message?.Content ?? string.Empty;
         }
 
         // ---------------------------------------------------------------------------

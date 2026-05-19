@@ -150,6 +150,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
     // Ollama — Request / Response
     // ---------------------------------------------------------------------------
 
+    // ---------------------------------------------------------------------------
+    // Ollama /api/generate — usato internamente, mantenuto per compatibilità
+    // ---------------------------------------------------------------------------
+
     public class OllamaRequest
     {
         [JsonPropertyName("model")]
@@ -172,6 +176,43 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
     {
         [JsonPropertyName("response")]
         public string Response { get; set; } = string.Empty;
+
+        [JsonPropertyName("done")]
+        public bool Done { get; set; }
+    }
+
+    // ---------------------------------------------------------------------------
+    // Ollama /api/chat — supporta array messages per la ConversationHistory
+    // ---------------------------------------------------------------------------
+
+    public class OllamaChatRequest
+    {
+        [JsonPropertyName("model")]
+        public string Model { get; set; } = string.Empty;
+
+        [JsonPropertyName("messages")]
+        public List<OllamaChatMessage> Messages { get; set; } = new();
+
+        [JsonPropertyName("stream")]
+        public bool Stream { get; set; } = false;
+
+        [JsonPropertyName("format")]
+        public string Format { get; set; } = "json";
+    }
+
+    public class OllamaChatMessage
+    {
+        [JsonPropertyName("role")]
+        public string Role { get; set; } = string.Empty;   // "system" | "user" | "assistant"
+
+        [JsonPropertyName("content")]
+        public string Content { get; set; } = string.Empty;
+    }
+
+    public class OllamaChatResponse
+    {
+        [JsonPropertyName("message")]
+        public OllamaChatMessage? Message { get; set; }
 
         [JsonPropertyName("done")]
         public bool Done { get; set; }
