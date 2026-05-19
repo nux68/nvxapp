@@ -102,6 +102,8 @@ namespace nvxapp.server.Utility
         public static IServiceCollection InstallServices(this WebApplicationBuilder builder)
         {
 
+            builder.Services.AddHttpClient();
+
             //builder.Services.RegisterAssemblyPublicNonGenericClasses(Assembly.GetAssembly(typeof(IServiceBase)))
             //    .AsPublicImplementedInterfaces(ServiceLifetime.Scoped);
 
