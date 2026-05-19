@@ -72,13 +72,18 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 if (session.State == SessionState.ReadyToExecute)
                     return await HandleConfirmation(session, userMessage);
 
-                // 3. Primo turno vs turni successivi — questo è il FIX del loop
+                // 3. Registra il messaggio utente nella history PRIMA delle chiamate Ollama.
+                // BuildChatMessages legge la history aggiornata — il messaggio corrente
+                // è già incluso e non va passato separatamente.
+                session.AddToHistory("user", userMessage);
+
+                // 4. Primo turno vs turni successivi
                 bool isFirstTurn = string.IsNullOrEmpty(session.Intent);
 
                 if (isFirstTurn)
                 {
                     // PRIMO TURNO: chiedi a Ollama intent + tutti gli slot presenti nel messaggio
-                    var extracted = await CallOllamaExtractIntentAsync(userMessage, session);
+                    var extracted = await CallOllamaExtractIntentAsync(session);
                     if (extracted == null || string.IsNullOrEmpty(extracted.Intent))
                         return BuildErrorResponse(session, "Non ho capito la richiesta. Puoi ripetere?");
 
@@ -87,38 +92,33 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 }
                 else
                 {
-                    // TURNI SUCCESSIVI: l'utente sta rispondendo a una domanda specifica.
-                    // NON richiamare Ollama per l'estrazione generica —
-                    // quella era la causa del reset degli slot già raccolti.
-                    // Ollama riceveva solo la risposta parziale ("mario rossi") e
-                    // restituiva tutti gli altri slot come null, sovrascrivendoli.
+                    // TURNI SUCCESSIVI: estrai SOLO il valore dello slot mancante atteso.
+                    // NON richiamare l'estrazione generica — sovrascrive slot già raccolti.
                     var nextMissing = GetMissingRequiredSlots(session).FirstOrDefault();
                     if (nextMissing != null)
                     {
-                        // Chiamata Ollama focalizzata: estrai SOLO il valore di questo slot
                         var slotValue = await CallOllamaExtractSingleSlotAsync(
-                            userMessage, nextMissing, session.Intent, session);
+                            nextMissing, session.Intent, session);
 
                         // Se Ollama non riesce, usa il testo grezzo come fallback
-                        if ( string.IsNullOrEmpty(slotValue))
-                             slotValue = userMessage.Trim();
+                        if (string.IsNullOrEmpty(slotValue))
+                            slotValue = userMessage.Trim();
 
                         session.Slots[nextMissing] = slotValue;
                     }
                 }
 
-                session.AddToHistory("user", userMessage);
-
-                // 4. Valida i valori degli slot presenti (formato, range, ecc.)
+                // 5. Valida i valori degli slot presenti (formato, range, ecc.)
                 var formatValidation = ValidateSlotFormats(session.Slots);
                 if (!formatValidation.IsValid)
                 {
                     session.ResetSlot(formatValidation.InvalidSlotName);
+                    session.AddToHistory("assistant", formatValidation.MessageToUser);
                     SaveSession(session);
                     return BuildQuestionResponse(session, formatValidation.MessageToUser, formatValidation.Suggestions);
                 }
 
-                // 5. Controlla se mancano slot obbligatori
+                // 6. Controlla se mancano slot obbligatori
                 var missingSlots = GetMissingRequiredSlots(session);
                 if (missingSlots.Any())
                 {
@@ -128,10 +128,11 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                     return BuildQuestionResponse(session, question);
                 }
 
-                // 6. Tutti gli slot presenti e validi → chiedi conferma
+                // 7. Tutti gli slot presenti e validi → chiedi conferma
                 session.State = SessionState.ReadyToExecute;
-                SaveSession(session);
                 var summary = BuildConfirmationSummary(session);
+                session.AddToHistory("assistant", summary);
+                SaveSession(session);
                 return BuildConfirmationResponse(session, summary);
 
             }, isSubProcess);
@@ -147,37 +148,41 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             bool confirmed = lower is "sì" or "si" or "confermo" or "ok" or "yes";
             bool cancelled = lower is "no" or "annulla" or "cancel";
 
+            session.AddToHistory("user", userMessage);
+
             if (confirmed)
             {
                 session.State = SessionState.Confirmed;
                 var result = await ExecuteCommandAsync(session);
+                session.AddToHistory("assistant", result.Message);
                 DeleteSession(session.SessionId);
 
                 return new ChatAIOutModel
                 {
-                    SessionId = session.SessionId,
-                    Responce = result.Message,
+                    SessionId    = session.SessionId,
+                    Responce     = result.Message,
                     ResponseType = result.Success ? "result" : "error"
                 };
             }
 
             if (cancelled)
             {
+                session.AddToHistory("assistant", "Operazione annullata.");
                 DeleteSession(session.SessionId);
                 return new ChatAIOutModel
                 {
-                    SessionId = session.SessionId,
-                    Responce = "Operazione annullata.",
+                    SessionId    = session.SessionId,
+                    Responce     = "Operazione annullata.",
                     ResponseType = "result"
                 };
             }
 
-            // Non è né sì né no
+            // Non è né sì né no — chiedi chiarimento
+            var clarification = "Rispondere con 'sì' per confermare o 'no' per annullare.";
             session.State = SessionState.Collecting;
+            session.AddToHistory("assistant", clarification);
             SaveSession(session);
-            return BuildQuestionResponse(session,
-                "Rispondere con 'sì' per confermare o 'no' per annullare.",
-                new List<string> { "Sì", "No" });
+            return BuildQuestionResponse(session, clarification, new List<string> { "Sì", "No" });
         }
 
         // ---------------------------------------------------------------------------
@@ -185,8 +190,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         // Passa la ConversationHistory come array messages a /api/chat.
         // ---------------------------------------------------------------------------
 
-        private async Task<ExtractedIntent?> CallOllamaExtractIntentAsync(
-            string userMessage, ChatSession session)
+        private async Task<ExtractedIntent?> CallOllamaExtractIntentAsync(ChatSession session)
         {
             try
             {
@@ -194,8 +198,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
 
                 var messages = BuildChatMessages(
                     _intentCatalog.BuildSystemPrompt(),
-                    session.History,
-                    userMessage);
+                    session.History);
 
                 var requestBody = new OllamaChatRequest
                 {
@@ -221,7 +224,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         // ---------------------------------------------------------------------------
 
         private async Task<string?> CallOllamaExtractSingleSlotAsync(
-            string userMessage, string slotName, string intentName, ChatSession session)
+            string slotName, string intentName, ChatSession session)
         {
             try
             {
@@ -229,8 +232,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
 
                 var messages = BuildChatMessages(
                     BuildSingleSlotSystemPrompt(slotName, intentName),
-                    session.History,
-                    userMessage);
+                    session.History);
 
                 var requestBody = new OllamaChatRequest
                 {
@@ -288,13 +290,12 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         // HTTP helper — /api/chat (supporta messages array con history)
         // ---------------------------------------------------------------------------
 
-        // Costruisce la lista messages: [system] + [history] + [messaggio corrente].
-        // Il system prompt va sempre come primo messaggio con role="system".
-        // La history accumula i turni precedenti dando contesto al modello.
+        // Costruisce la lista messages: [system] + [history completa].
+        // Il messaggio corrente dell'utente è già stato aggiunto alla history
+        // in SendMessage prima di questa chiamata — non va passato separatamente.
         private static List<OllamaChatMessage> BuildChatMessages(
             string systemPrompt,
-            List<ConversationTurn> history,
-            string currentUserMessage)
+            List<ConversationTurn> history)
         {
             var messages = new List<OllamaChatMessage>
             {
@@ -304,15 +305,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             foreach (var turn in history)
                 messages.Add(new OllamaChatMessage
                 {
-                    Role    = turn.Role,    // "user" | "assistant"
+                    Role    = turn.Role,
                     Content = turn.Content
                 });
-
-            messages.Add(new OllamaChatMessage
-            {
-                Role    = "user",
-                Content = currentUserMessage
-            });
 
             return messages;
         }
