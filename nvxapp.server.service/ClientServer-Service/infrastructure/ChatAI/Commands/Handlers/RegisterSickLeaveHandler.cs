@@ -5,8 +5,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Comma
     // Gestisce la registrazione di un periodo di malattia.
     // TODO: sostituire il placeholder con la chiamata API reale
     //       e il lookup del dipendente per nome ? EmployeeId.
-    public class RegisterSickLeaveHandler : IRegisterSickLeaveHandler
+    public class RegisterSickLeaveHandler : ICommandHandler
     {
+        public string IntentName => "RegisterSickLeave";
+
         public Task<CommandResult> ExecuteAsync(Dictionary<string, string> slots)
         {
             var employeeName      = slots.GetValueOrDefault("employeeName", "-");

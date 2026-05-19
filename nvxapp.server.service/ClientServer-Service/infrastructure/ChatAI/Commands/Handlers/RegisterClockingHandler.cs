@@ -5,8 +5,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Comma
     // Gestisce la registrazione di una timbratura entrata/uscita.
     // TODO: sostituire il placeholder con la chiamata API reale
     //       e il lookup del dipendente per nome ? EmployeeId.
-    public class RegisterClockingHandler : IRegisterClockingHandler
+    public class RegisterClockingHandler : ICommandHandler
     {
+        public string IntentName => "RegisterClocking";
+
         public Task<CommandResult> ExecuteAsync(Dictionary<string, string> slots)
         {
             var employeeName = slots.GetValueOrDefault("employeeName", "-");

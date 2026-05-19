@@ -5,8 +5,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Comma
     // Gestisce la registrazione di un periodo ferie.
     // TODO: sostituire il placeholder con la chiamata API reale,
     //       aggiungere il controllo sovrapposizioni e il lookup dipendente.
-    public class RegisterHolidayHandler : IRegisterHolidayHandler
+    public class RegisterHolidayHandler : ICommandHandler
     {
+        public string IntentName => "RegisterHoliday";
+
         public Task<CommandResult> ExecuteAsync(Dictionary<string, string> slots)
         {
             var employeeName = slots.GetValueOrDefault("employeeName", "-");
