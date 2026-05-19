@@ -14,10 +14,42 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Comma
             Description = "registra una malattia per un dipendente",
             Slots       = new()
             {
-                new() { Name = "employeeName",      Type = "string",     Required = true  },
-                new() { Name = "startDate",          Type = "yyyy-MM-dd", Required = true  },
-                new() { Name = "endDate",            Type = "yyyy-MM-dd", Required = false },
-                new() { Name = "certificateNumber",  Type = "string",     Required = false }
+                new()
+                {
+                    Name              = "employeeName",
+                    Type              = "string",
+                    Required          = true,
+                    PromptDescription = "nome e cognome di una persona",
+                    Question          = "Per quale dipendente?",
+                    Label             = "Dipendente"
+                },
+                new()
+                {
+                    Name              = "startDate",
+                    Type              = "yyyy-MM-dd",
+                    Required          = true,
+                    PromptDescription = $"data di inizio nel formato yyyy-MM-dd. Oggi \u00e8 {DateTime.Today:yyyy-MM-dd}.",
+                    Question          = "Da quale data?",
+                    Label             = "Dal"
+                },
+                new()
+                {
+                    Name              = "endDate",
+                    Type              = "yyyy-MM-dd",
+                    Required          = false,
+                    PromptDescription = $"data di fine nel formato yyyy-MM-dd. Oggi \u00e8 {DateTime.Today:yyyy-MM-dd}.",
+                    Question          = "Fino a quale data?",
+                    Label             = "Al"
+                },
+                new()
+                {
+                    Name              = "certificateNumber",
+                    Type              = "string",
+                    Required          = false,
+                    PromptDescription = "codice o numero del certificato medico",
+                    Question          = "Hai il numero del certificato medico? (premi invio per saltare)",
+                    Label             = "Certificato"
+                }
             }
         };
 

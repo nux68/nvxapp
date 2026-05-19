@@ -122,7 +122,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 var missingSlots = GetMissingRequiredSlots(session);
                 if (missingSlots.Any())
                 {
-                    var question = BuildMissingSlotQuestion(missingSlots.First());
+                    var question = BuildMissingSlotQuestion(missingSlots.First(), session.Intent);
                     session.AddToHistory("assistant", question);
                     SaveSession(session);
                     return BuildQuestionResponse(session, question);
@@ -228,7 +228,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 string ollamaUrl = _configuration["AI:Url"] ?? "http://localhost:11434/api/";
 
                 var messages = BuildChatMessages(
-                    BuildSingleSlotSystemPrompt(slotName),
+                    BuildSingleSlotSystemPrompt(slotName, intentName),
                     session.History,
                     userMessage);
 
@@ -261,28 +261,28 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             }
         }
 
-        private string BuildSingleSlotSystemPrompt(string slotName)
+        private string BuildSingleSlotSystemPrompt(string slotName, string intentName)
         {
-            var slotDesc = slotName switch
-            {
-                "employeeName" => "nome e cognome di una persona",
-                "time" => $"orario nel formato HH:mm. Se l'utente dice 'alle 9' restituisci '09:00'.",
-                "date" => $"data nel formato yyyy-MM-dd. Oggi è {DateTime.Today:yyyy-MM-dd}. Se dice 'oggi' restituisci '{DateTime.Today:yyyy-MM-dd}'.",
-                "startDate" => $"data di inizio nel formato yyyy-MM-dd. Oggi è {DateTime.Today:yyyy-MM-dd}.",
-                "endDate" => $"data di fine nel formato yyyy-MM-dd. Oggi è {DateTime.Today:yyyy-MM-dd}.",
-                "direction" => "valore IN oppure OUT. Se dice 'entrata' restituisci IN, se dice 'uscita' restituisci OUT.",
-                "certificateNumber" => "codice o numero del certificato medico",
-                _ => "valore testuale"
-            };
+            var slotDef  = FindSlotDefinition(intentName, slotName);
+            var slotDesc = !string.IsNullOrEmpty(slotDef?.PromptDescription)
+                ? slotDef.PromptDescription
+                : "valore testuale";
 
             return
-        "Estrai dal testo il valore di: " + slotDesc + "\n" +
-        "Rispondi SOLO con questo JSON, nessun testo aggiuntivo:\n" +
-        "{ \"value\": \"valore estratto\" }\n" +
-        "Se il valore non è presente nel testo rispondi:\n" +
-        "{ \"value\": null }";
-
+                "Estrai dal testo il valore di: " + slotDesc + "\n" +
+                "Rispondi SOLO con questo JSON, nessun testo aggiuntivo:\n" +
+                "{ \"value\": \"valore estratto\" }\n" +
+                "Se il valore non è presente nel testo rispondi:\n" +
+                "{ \"value\": null }";
         }
+
+        // Cerca la SlotDefinition per nome nell'intent corrente della sessione.
+        // Unico punto di accesso alla struttura dello slot — nessun switch sui nomi.
+        private SlotDefinition? FindSlotDefinition(string intentName, string slotName) =>
+            _intentCatalog.Intents
+                .FirstOrDefault(i => i.Name == intentName)
+                ?.Slots
+                .FirstOrDefault(s => s.Name == slotName);
 
         // ---------------------------------------------------------------------------
         // HTTP helper — /api/chat (supporta messages array con history)
@@ -436,17 +436,13 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 .ToList();
         }
 
-        private string BuildMissingSlotQuestion(string slotName) => slotName switch
+        private string BuildMissingSlotQuestion(string slotName, string intentName)
         {
-            "employeeName" => "Per quale dipendente?",
-            "time" => "A che orario? (es. 09:00)",
-            "date" => "Per quale data?",
-            "direction" => "Entrata o uscita?",
-            "startDate" => "Da quale data?",
-            "endDate" => "Fino a quale data?",
-            "certificateNumber" => "Hai il numero del certificato medico? (premi invio per saltare)",
-            _ => $"Puoi specificare '{slotName}'?"
-        };
+            var slotDef = FindSlotDefinition(intentName, slotName);
+            return !string.IsNullOrEmpty(slotDef?.Question)
+                ? slotDef.Question
+                : $"Puoi specificare '{slotName}'?";
+        }
 
         // ---------------------------------------------------------------------------
         // Esecuzione comando — delega al CommandRegistry
@@ -482,7 +478,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 {
                     var value = session.Slots.GetValueOrDefault(slotDef.Name,
                         !string.IsNullOrEmpty(slotDef.Default) ? slotDef.Default : "-");
-                    sb.AppendLine($"  {SlotLabel(slotDef.Name)}: {value}");
+                    var label = !string.IsNullOrEmpty(slotDef.Label) ? slotDef.Label : slotDef.Name;
+                    sb.AppendLine($"  {label}: {value}");
                 }
             }
 
@@ -490,18 +487,6 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             sb.AppendLine("Confermi? (sì / no)");
             return sb.ToString();
         }
-
-        private string SlotLabel(string slotName) => slotName switch
-        {
-            "employeeName" => "Dipendente",
-            "time" => "Orario",
-            "date" => "Data",
-            "direction" => "Tipo",
-            "startDate" => "Dal",
-            "endDate" => "Al",
-            "certificateNumber" => "Certificato",
-            _ => slotName
-        };
 
         // ---------------------------------------------------------------------------
         // Helper risposta

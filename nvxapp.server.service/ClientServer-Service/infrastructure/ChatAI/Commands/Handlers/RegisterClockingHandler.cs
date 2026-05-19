@@ -14,10 +14,44 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Comma
             Description = "registra una timbratura di entrata o uscita",
             Slots       = new()
             {
-                new() { Name = "employeeName", Type = "string",     Required = true                    },
-                new() { Name = "time",         Type = "HH:mm",      Required = true                    },
-                new() { Name = "date",         Type = "yyyy-MM-dd", Required = false, Default = "oggi" },
-                new() { Name = "direction",    Type = "IN/OUT",     Required = false, Default = "IN"   }
+                new()
+                {
+                    Name              = "employeeName",
+                    Type              = "string",
+                    Required          = true,
+                    PromptDescription = "nome e cognome di una persona",
+                    Question          = "Per quale dipendente?",
+                    Label             = "Dipendente"
+                },
+                new()
+                {
+                    Name              = "time",
+                    Type              = "HH:mm",
+                    Required          = true,
+                    PromptDescription = $"orario nel formato HH:mm. Se l'utente dice 'alle 9' restituisci '09:00'.",
+                    Question          = "A che orario? (es. 09:00)",
+                    Label             = "Orario"
+                },
+                new()
+                {
+                    Name              = "date",
+                    Type              = "yyyy-MM-dd",
+                    Required          = false,
+                    Default           = "oggi",
+                    PromptDescription = $"data nel formato yyyy-MM-dd. Oggi \u00e8 {DateTime.Today:yyyy-MM-dd}. Se dice 'oggi' restituisci '{DateTime.Today:yyyy-MM-dd}'.",
+                    Question          = "Per quale data?",
+                    Label             = "Data"
+                },
+                new()
+                {
+                    Name              = "direction",
+                    Type              = "IN/OUT",
+                    Required          = false,
+                    Default           = "IN",
+                    PromptDescription = "valore IN oppure OUT. Se dice 'entrata' restituisci IN, se dice 'uscita' restituisci OUT.",
+                    Question          = "Entrata o uscita?",
+                    Label             = "Tipo"
+                }
             }
         };
 

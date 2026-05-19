@@ -301,6 +301,18 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
         public string Type     { get; set; } = string.Empty;
         public bool   Required { get; set; }
         public string Default  { get; set; } = string.Empty;
+
+        // Descrizione usata da Ollama nel system prompt per estrarre il valore
+        // (es. "orario nel formato HH:mm. Se l'utente dice 'alle 9' restituisci '09:00'").
+        public string PromptDescription { get; set; } = string.Empty;
+
+        // Domanda da porre all'utente quando lo slot è mancante
+        // (es. "A che orario? (es. 09:00)").
+        public string Question { get; set; } = string.Empty;
+
+        // Etichetta leggibile per il riepilogo di conferma
+        // (es. "Orario").
+        public string Label    { get; set; } = string.Empty;
     }
 
 }
