@@ -14,6 +14,7 @@ using nvxapp.server.service.RabbitMQ;
 using nvxapp.server.service.RabbitMQ.Listener;
 using nvxapp.server.service.ServerModels;
 using RabbitMQ.Client;
+using System.Collections.Concurrent;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -28,8 +29,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         private readonly ICommandRegistry _commandRegistry;
         private readonly IIntentCatalog _intentCatalog;
 
-        // Sessioni in memoria — chiave: SessionId
-        private static readonly Dictionary<string, ChatSession> _sessions = new();
+        // Sessioni in memoria — ConcurrentDictionary garantisce thread safety
+        // su accessi concorrenti da richieste HTTP parallele.
+        private static readonly ConcurrentDictionary<string, ChatSession> _sessions = new();
 
         private readonly string _ollamaModel = "qwen2.5:3b";
 
@@ -544,7 +546,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 if ((DateTime.UtcNow - existing.LastActivity).TotalMinutes < 10)
                     return existing;
 
-                _sessions.Remove(sessionId);
+                _sessions.TryRemove(sessionId, out _);
             }
 
             var newSession = new ChatSession();
@@ -552,11 +554,13 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             return newSession;
         }
 
+        // Con ConcurrentDictionary la sessione è già aggiornata per riferimento —
+        // SaveSession resta per chiarezza semantica ma non fa una copia.
         private void SaveSession(ChatSession session) =>
             _sessions[session.SessionId] = session;
 
         private void DeleteSession(string sessionId) =>
-            _sessions.Remove(sessionId);
+            _sessions.TryRemove(sessionId, out _);
 
         // ---------------------------------------------------------------------------
         // RabbitMQ
