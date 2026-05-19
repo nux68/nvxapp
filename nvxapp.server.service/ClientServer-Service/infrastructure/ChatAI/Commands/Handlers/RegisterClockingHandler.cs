@@ -1,5 +1,6 @@
 using nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Models;
 
+
 namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Commands.Handlers
 {
     // Gestisce la registrazione di una timbratura entrata/uscita.
@@ -7,7 +8,18 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Comma
     //       e il lookup del dipendente per nome ? EmployeeId.
     public class RegisterClockingHandler : ICommandHandler
     {
-        public string IntentName => "RegisterClocking";
+        public IntentDefinition IntentDefinition => new()
+        {
+            Name        = "RegisterClocking",
+            Description = "registra una timbratura di entrata o uscita",
+            Slots       = new()
+            {
+                new() { Name = "employeeName", Type = "string",     Required = true                    },
+                new() { Name = "time",         Type = "HH:mm",      Required = true                    },
+                new() { Name = "date",         Type = "yyyy-MM-dd", Required = false, Default = "oggi" },
+                new() { Name = "direction",    Type = "IN/OUT",     Required = false, Default = "IN"   }
+            }
+        };
 
         public Task<CommandResult> ExecuteAsync(Dictionary<string, string> slots)
         {

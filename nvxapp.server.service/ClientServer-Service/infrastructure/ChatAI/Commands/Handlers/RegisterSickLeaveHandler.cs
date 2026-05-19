@@ -1,5 +1,6 @@
 using nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Models;
 
+
 namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Commands.Handlers
 {
     // Gestisce la registrazione di un periodo di malattia.
@@ -7,7 +8,18 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Comma
     //       e il lookup del dipendente per nome ? EmployeeId.
     public class RegisterSickLeaveHandler : ICommandHandler
     {
-        public string IntentName => "RegisterSickLeave";
+        public IntentDefinition IntentDefinition => new()
+        {
+            Name        = "RegisterSickLeave",
+            Description = "registra una malattia per un dipendente",
+            Slots       = new()
+            {
+                new() { Name = "employeeName",      Type = "string",     Required = true  },
+                new() { Name = "startDate",          Type = "yyyy-MM-dd", Required = true  },
+                new() { Name = "endDate",            Type = "yyyy-MM-dd", Required = false },
+                new() { Name = "certificateNumber",  Type = "string",     Required = false }
+            }
+        };
 
         public Task<CommandResult> ExecuteAsync(Dictionary<string, string> slots)
         {

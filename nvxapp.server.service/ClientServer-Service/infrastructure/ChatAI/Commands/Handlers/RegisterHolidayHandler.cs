@@ -1,5 +1,6 @@
 using nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Models;
 
+
 namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Commands.Handlers
 {
     // Gestisce la registrazione di un periodo ferie.
@@ -7,7 +8,17 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Comma
     //       aggiungere il controllo sovrapposizioni e il lookup dipendente.
     public class RegisterHolidayHandler : ICommandHandler
     {
-        public string IntentName => "RegisterHoliday";
+        public IntentDefinition IntentDefinition => new()
+        {
+            Name        = "RegisterHoliday",
+            Description = "mette in ferie un dipendente per un periodo",
+            Slots       = new()
+            {
+                new() { Name = "employeeName", Type = "string",     Required = true },
+                new() { Name = "startDate",    Type = "yyyy-MM-dd", Required = true },
+                new() { Name = "endDate",      Type = "yyyy-MM-dd", Required = true }
+            }
+        };
 
         public Task<CommandResult> ExecuteAsync(Dictionary<string, string> slots)
         {

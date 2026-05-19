@@ -1,6 +1,7 @@
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using System.Text;
 using System.Text.Json.Serialization;
+using nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Commands;
 
 namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Models
 {
@@ -177,12 +178,31 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
     }
 
     // ---------------------------------------------------------------------------
-    // Catalogo Intent
+    // Catalogo Intent — si auto-costruisce dagli ICommandHandler iniettati.
+    // Non contiene definizioni hard-coded: ogni handler porta la propria.
     // ---------------------------------------------------------------------------
 
-    public class IntentCatalog
+    public interface IIntentCatalog
     {
-        public List<IntentDefinition> Intents { get; set; } = new();
+        IReadOnlyList<IntentDefinition> Intents { get; }
+        string BuildSystemPrompt();
+    }
+
+    public class IntentCatalog : IIntentCatalog
+    {
+        private readonly IReadOnlyList<IntentDefinition> _intents;
+
+        // Riceve tutti gli ICommandHandler registrati nella DI.
+        // Estrae la IntentDefinition da ognuno e costruisce il catalogo.
+        public IntentCatalog(IEnumerable<ICommandHandler> handlers)
+        {
+            _intents = handlers
+                .Select(h => h.IntentDefinition)
+                .ToList()
+                .AsReadOnly();
+        }
+
+        public IReadOnlyList<IntentDefinition> Intents => _intents;
 
         public string BuildSystemPrompt()
         {
@@ -196,9 +216,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
             sb.AppendLine("Intent disponibili:");
             sb.AppendLine();
 
-            for (int i = 0; i < Intents.Count; i++)
+            for (int i = 0; i < _intents.Count; i++)
             {
-                var intent = Intents[i];
+                var intent = _intents[i];
                 sb.AppendLine($"{i + 1}. {intent.Name}");
                 sb.AppendLine($"   Descrizione: {intent.Description}");
                 sb.AppendLine($"   Slot:");

@@ -26,12 +26,11 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         private readonly iRabbitMqConnection _rabbitMqConnection;
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ICommandRegistry _commandRegistry;
+        private readonly IIntentCatalog _intentCatalog;
 
         // Sessioni in memoria — chiave: SessionId
         private static readonly Dictionary<string, ChatSession> _sessions = new();
 
-        // Catalogo costruito una volta sola all'avvio
-        private readonly IntentCatalog _intentCatalog;
         private readonly string _ollamaModel = "qwen2.5:3b";
 
         public ChatAIService(IMapper mapper,
@@ -42,13 +41,14 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                              IConfiguration configuration,
                              iRabbitMqConnection rabbitMqConnection,
                              IHttpClientFactory httpClientFactory,
-                             ICommandRegistry commandRegistry
+                             ICommandRegistry commandRegistry,
+                             IIntentCatalog intentCatalog
                              ) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _rabbitMqConnection = rabbitMqConnection;
             _httpClientFactory = httpClientFactory;
             _commandRegistry = commandRegistry;
-            _intentCatalog = BuildIntentCatalog();
+            _intentCatalog = intentCatalog;
         }
 
         // ---------------------------------------------------------------------------
@@ -516,52 +516,6 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
 
         private void DeleteSession(string sessionId) =>
             _sessions.Remove(sessionId);
-
-        // ---------------------------------------------------------------------------
-        // Catalogo Intent
-        // ---------------------------------------------------------------------------
-
-        private IntentCatalog BuildIntentCatalog() => new()
-        {
-            Intents = new List<IntentDefinition>
-            {
-                new()
-                {
-                    Name        = "RegisterClocking",
-                    Description = "registra una timbratura di entrata o uscita",
-                    Slots       = new()
-                    {
-                        new() { Name = "employeeName", Type = "string",     Required = true                    },
-                        new() { Name = "time",         Type = "HH:mm",      Required = true                    },
-                        new() { Name = "date",         Type = "yyyy-MM-dd", Required = false, Default = "oggi" },
-                        new() { Name = "direction",    Type = "IN/OUT",     Required = false, Default = "IN"   }
-                    }
-                },
-                new()
-                {
-                    Name        = "RegisterHoliday",
-                    Description = "mette in ferie un dipendente per un periodo",
-                    Slots       = new()
-                    {
-                        new() { Name = "employeeName", Type = "string",     Required = true },
-                        new() { Name = "startDate",    Type = "yyyy-MM-dd", Required = true },
-                        new() { Name = "endDate",      Type = "yyyy-MM-dd", Required = true }
-                    }
-                },
-                new()
-                {
-                    Name        = "RegisterSickLeave",
-                    Description = "registra una malattia per un dipendente",
-                    Slots       = new()
-                    {
-                        new() { Name = "employeeName",     Type = "string",     Required = true  },
-                        new() { Name = "startDate",        Type = "yyyy-MM-dd", Required = true  },
-                        new() { Name = "endDate",          Type = "yyyy-MM-dd", Required = false },
-                        new() { Name = "certificateNumber",Type = "string",     Required = false }
-                    }
-                }
-            }
-        };
 
         // ---------------------------------------------------------------------------
         // RabbitMQ

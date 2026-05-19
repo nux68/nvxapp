@@ -14,7 +14,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Comma
         public CommandRegistry(IEnumerable<ICommandHandler> handlers)
         {
             _handlers = handlers.ToDictionary(
-                h => h.IntentName,
+                h => h.IntentDefinition.Name,
                 h => h,
                 StringComparer.OrdinalIgnoreCase);
         }
