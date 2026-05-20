@@ -154,32 +154,32 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
     // Ollama /api/generate — usato internamente, mantenuto per compatibilità
     // ---------------------------------------------------------------------------
 
-    public class OllamaRequest
-    {
-        [JsonPropertyName("model")]
-        public string Model  { get; set; } = string.Empty;
+    //public class OllamaRequest
+    //{
+    //    [JsonPropertyName("model")]
+    //    public string Model  { get; set; } = string.Empty;
 
-        [JsonPropertyName("prompt")]
-        public string Prompt { get; set; } = string.Empty;
+    //    [JsonPropertyName("prompt")]
+    //    public string Prompt { get; set; } = string.Empty;
 
-        [JsonPropertyName("system")]
-        public string System { get; set; } = string.Empty;
+    //    [JsonPropertyName("system")]
+    //    public string System { get; set; } = string.Empty;
 
-        [JsonPropertyName("stream")]
-        public bool Stream   { get; set; } = false;
+    //    [JsonPropertyName("stream")]
+    //    public bool Stream   { get; set; } = false;
 
-        [JsonPropertyName("format")]
-        public string Format { get; set; } = "json";
-    }
+    //    [JsonPropertyName("format")]
+    //    public string Format { get; set; } = "json";
+    //}
 
-    public class OllamaResponse
-    {
-        [JsonPropertyName("response")]
-        public string Response { get; set; } = string.Empty;
+    //public class OllamaResponse
+    //{
+    //    [JsonPropertyName("response")]
+    //    public string Response { get; set; } = string.Empty;
 
-        [JsonPropertyName("done")]
-        public bool Done { get; set; }
-    }
+    //    [JsonPropertyName("done")]
+    //    public bool Done { get; set; }
+    //}
 
     // ---------------------------------------------------------------------------
     // Ollama /api/chat — supporta array messages per la ConversationHistory
@@ -268,12 +268,16 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
                 {
                     var obbligatorio = slot.Required ? "obbligatorio" : "opzionale";
                     var defaultVal   = !string.IsNullOrEmpty(slot.Default) ? $", default {slot.Default}" : "";
-                    sb.AppendLine($"   - {slot.Name} ({slot.Type}, {obbligatorio}{defaultVal})");
+                    var description  = !string.IsNullOrEmpty(slot.PromptDescription) ? $": {slot.PromptDescription}" : "";
+                    sb.AppendLine($"   - {slot.Name} ({slot.Type}, {obbligatorio}{defaultVal}){description}");
                 }
 
                 sb.AppendLine();
             }
 
+            sb.AppendLine("IMPORTANTE: se un valore non è esplicitamente presente nel testo dell'utente, imposta il campo su null.");
+            sb.AppendLine("Non inventare valori. Non dedurre nomi di persone dal contesto precedente.");
+            sb.AppendLine();
             sb.AppendLine("Rispondi sempre e solo con questo JSON:");
             sb.AppendLine("{");
             sb.AppendLine("  \"intent\": \"NomeIntent\",");
@@ -286,13 +290,6 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
 
             return sb.ToString();
         }
-    }
-
-    public class IntentDefinition
-    {
-        public string Name        { get; set; } = string.Empty;
-        public string Description { get; set; } = string.Empty;
-        public List<SlotDefinition> Slots { get; set; } = new();
     }
 
     public class SlotDefinition
@@ -313,6 +310,23 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
         // Etichetta leggibile per il riepilogo di conferma
         // (es. "Orario").
         public string Label    { get; set; } = string.Empty;
+
+        // Validazione del singolo valore dello slot.
+        // Ritorna null se il valore è valido, SlotValidationResult.Failed(...) altrimenti.
+        // Vive nel handler — ChatAIService non hardcoda nomi di slot.
+        public Func<string, SlotValidationResult?>? Validator { get; set; }
+    }
+
+    public class IntentDefinition
+    {
+        public string Name        { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public List<SlotDefinition> Slots { get; set; } = new();
+
+        // Validazione cross-slot (es. startDate <= endDate).
+        // Chiamata dopo che tutti gli slot singoli sono validi.
+        // Ritorna null se tutto è ok, SlotValidationResult.Failed(...) altrimenti.
+        public Func<Dictionary<string, string>, SlotValidationResult?>? CrossValidator { get; set; }
     }
 
 }

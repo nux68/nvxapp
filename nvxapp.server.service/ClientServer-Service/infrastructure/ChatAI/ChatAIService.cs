@@ -1,4 +1,4 @@
-using AutoMapper;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
@@ -33,7 +33,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         // su accessi concorrenti da richieste HTTP parallele.
         private static readonly ConcurrentDictionary<string, ChatSession> _sessions = new();
 
-        private readonly string _ollamaModel = "qwen2.5:3b";
+        private readonly string _ollamaUrl;
+        private readonly string _ollamaModel;
 
         public ChatAIService(IMapper mapper,
                              UserManager<ApplicationUser> userManager,
@@ -51,6 +52,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             _httpClientFactory = httpClientFactory;
             _commandRegistry = commandRegistry;
             _intentCatalog = intentCatalog;
+
+            _ollamaUrl = _configuration["AI:Url"] ?? "";
+            _ollamaModel = _configuration["AI:model"] ?? "" ;
+
         }
 
         // ---------------------------------------------------------------------------
@@ -109,7 +114,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 }
 
                 // 5. Valida i valori degli slot presenti (formato, range, ecc.)
-                var formatValidation = ValidateSlotFormats(session.Slots);
+                var formatValidation = ValidateSlotFormats(session);
                 if (!formatValidation.IsValid)
                 {
                     session.ResetSlot(formatValidation.InvalidSlotName);
@@ -194,7 +199,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         {
             try
             {
-                string ollamaUrl = _configuration["AI:Url"] ?? "http://localhost:11434/api/";
+
+                //string ollamaUrl = _configuration["AI:Url"] ?? "" ;
+                //string ollamaModel = _configuration["AI:model"] ?? "" ;
 
                 var messages = BuildChatMessages(
                     _intentCatalog.BuildSystemPrompt(),
@@ -208,7 +215,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                     Format   = "json"
                 };
 
-                var raw = await PostToOllamaChatAsync(ollamaUrl, requestBody);
+                var raw = await PostToOllamaChatAsync(_ollamaUrl, requestBody);
                 return SafeDeserializeExtractedIntent(raw);
             }
             catch
@@ -228,7 +235,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         {
             try
             {
-                string ollamaUrl = _configuration["AI:Url"] ?? "http://localhost:11434/api/";
+                //string ollamaUrl = _configuration["AI:Url"] ?? "";
+                //string ollamaModel = _configuration["AI:model"] ?? "" ;
 
                 var messages = BuildChatMessages(
                     BuildSingleSlotSystemPrompt(slotName, intentName),
@@ -242,7 +250,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                     Format   = "json"
                 };
 
-                var raw = await PostToOllamaChatAsync(ollamaUrl, requestBody);
+                var raw = await PostToOllamaChatAsync(_ollamaUrl, requestBody);
                 if (string.IsNullOrEmpty(raw)) return null;
 
                 var start = raw.IndexOf('{');
@@ -357,14 +365,25 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
 
         // Aggiunge alla sessione SOLO i valori realmente presenti.
         // Non tocca MAI gli slot già valorizzati in sessione.
+        // Se lo slot ha un Validator e il valore non supera la validazione, viene scartato:
+        // questo impedisce che hallucination del LLM (es. "timbratura" come nome dipendente)
+        // vengano accettate e saltino la raccolta del dato reale.
         private void SafeMergeSlots(ChatSession session, Dictionary<string, string> newSlots)
         {
             if (newSlots == null) return;
+
+            var intentDef = _intentCatalog.Intents
+                .FirstOrDefault(i => i.Name == session.Intent);
 
             foreach (var kv in newSlots)
             {
                 if (IsNullString(kv.Value)) continue; // ignora null/vuoti
                 if (session.Slots.ContainsKey(kv.Key)) continue; // non sovrascrivere esistenti
+
+                // Se lo slot ha un validator di formato, rigetta valori che non lo superano
+                var slotDef = intentDef?.Slots.FirstOrDefault(s => s.Name == kv.Key);
+                if (slotDef?.Validator != null && slotDef.Validator(kv.Value) != null)
+                    continue; // valore non valido — verrà chiesto all'utente
 
                 session.Slots[kv.Key] = kv.Value;
             }
@@ -377,38 +396,31 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             value.Equals("n/a", StringComparison.OrdinalIgnoreCase);
 
         // ---------------------------------------------------------------------------
-        // Validazione formato slot
+        // Validazione slot — delega ai Validator definiti nel handler.
+        // ChatAIService non conosce i nomi degli slot: itera sui metadati dell'intent.
         // ---------------------------------------------------------------------------
 
-        private SlotValidationResult ValidateSlotFormats(Dictionary<string, string> slots)
+        private SlotValidationResult ValidateSlotFormats(ChatSession session)
         {
-            if (slots.TryGetValue("time", out var time))
+            var intentDef = _intentCatalog.Intents
+                .FirstOrDefault(i => i.Name == session.Intent);
+
+            if (intentDef == null) return SlotValidationResult.Ok();
+
+            // Validazione singolo slot — Validator è definito nel handler
+            foreach (var slotDef in intentDef.Slots)
             {
-                if (!TimeOnly.TryParse(time, out _))
-                    return SlotValidationResult.Failed(
-                        SlotValidationError.InvalidFormat,
-                        $"'{time}' non è un orario valido. Usa il formato HH:mm (es. 09:00).",
-                        "time");
+                if (slotDef.Validator == null) continue;
+                if (!session.Slots.TryGetValue(slotDef.Name, out var value)) continue;
+                var result = slotDef.Validator(value);
+                if (result != null) return result;
             }
 
-            if (slots.TryGetValue("date", out var date))
+            // Validazione cross-slot — CrossValidator è definito nell'IntentDefinition
+            if (intentDef.CrossValidator != null)
             {
-                if (!DateOnly.TryParse(date, out _))
-                    return SlotValidationResult.Failed(
-                        SlotValidationError.InvalidFormat,
-                        $"'{date}' non è una data valida. Usa il formato gg/mm/aaaa.",
-                        "date");
-            }
-
-            if (slots.TryGetValue("startDate", out var startD) &&
-                slots.TryGetValue("endDate", out var endD))
-            {
-                if (DateOnly.TryParse(startD, out var s) &&
-                    DateOnly.TryParse(endD, out var e) && s > e)
-                    return SlotValidationResult.Failed(
-                        SlotValidationError.BusinessRuleViolation,
-                        "La data di inizio non può essere successiva alla data di fine.",
-                        "startDate");
+                var crossResult = intentDef.CrossValidator(session.Slots);
+                if (crossResult != null) return crossResult;
             }
 
             return SlotValidationResult.Ok();
@@ -542,32 +554,38 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         private void DeleteSession(string sessionId) =>
             _sessions.TryRemove(sessionId, out _);
 
+
+        #region "RabbitMq NON ELIMINARE"
+
         // ---------------------------------------------------------------------------
         // RabbitMQ
         // ---------------------------------------------------------------------------
 
-        private async Task PublishToRabbitMqAsync(string message)
-        {
-            if (_rabbitMqConnection == null) return;
+        //private async Task PublishToRabbitMqAsync(string message)
+        //{
+        //    if (_rabbitMqConnection == null) return;
 
-            await _rabbitMqConnection.Start();
+        //    await _rabbitMqConnection.Start();
 
-            if (_rabbitMqConnection._channel != null)
-            {
-                await _rabbitMqConnection._channel.QueueDeclareAsync(
-                    queue: RabbitMqParameter.QueueName_Demo,
-                    durable: false, exclusive: false, autoDelete: false);
+        //    if (_rabbitMqConnection._channel != null)
+        //    {
+        //        await _rabbitMqConnection._channel.QueueDeclareAsync(
+        //            queue: RabbitMqParameter.QueueName_Demo,
+        //            durable: false, exclusive: false, autoDelete: false);
 
-                var body = Encoding.UTF8.GetBytes(message);
+        //        var body = Encoding.UTF8.GetBytes(message);
 
-                await _rabbitMqConnection._channel.BasicPublishAsync(
-                    exchange: RabbitMqParameter.Default_Exchange,
-                    routingKey: RabbitMqParameter.RoutingKey_Demo,
-                    body: body);
+        //        await _rabbitMqConnection._channel.BasicPublishAsync(
+        //            exchange: RabbitMqParameter.Default_Exchange,
+        //            routingKey: RabbitMqParameter.RoutingKey_Demo,
+        //            body: body);
 
-                await _rabbitMqConnection.Stop(10);
-            }
-        }
+        //        await _rabbitMqConnection.Stop(10);
+        //    }
+        //}
+
+         #endregion
+
     }
 
     // ---------------------------------------------------------------------------
@@ -584,43 +602,43 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
     // FakeAI_Regex (invariato)
     // ---------------------------------------------------------------------------
 
-    public class FakeAI_Regex
-    {
-        private List<Regex> Clockign_ENT;
+    //public class FakeAI_Regex
+    //{
+    //    private List<Regex> Clockign_ENT;
 
-        public FakeAI_Regex()
-        {
-            Clockign_ENT = new List<Regex>();
-            Clockign_ENT.Add(new Regex(
-                @"([a-zA-Z\s]+)\s(entrata|entra|ent|uscita|esce|usc)(?:\salle)?\s(\d{1,2}(?:([:\.]\d{2})|(?:\se\s\d{1,2})))"));
-        }
+    //    public FakeAI_Regex()
+    //    {
+    //        Clockign_ENT = new List<Regex>();
+    //        Clockign_ENT.Add(new Regex(
+    //            @"([a-zA-Z\s]+)\s(entrata|entra|ent|uscita|esce|usc)(?:\salle)?\s(\d{1,2}(?:([:\.]\d{2})|(?:\se\s\d{1,2})))"));
+    //    }
 
-        public List<ClockignCommand> GetClockignCommand(string text)
-        {
-            var clockignCommands = new List<ClockignCommand>();
-            foreach (var item in Clockign_ENT)
-            {
-                if (item.IsMatch(text))
-                {
-                    var match = item.Match(text);
-                    clockignCommands.Add(new ClockignCommand
-                    {
-                        action = match.Groups[2].Value,
-                        dipendente = match.Groups[1].Value,
-                        orario = match.Groups[3].Value,
-                        type = "timbratura"
-                    });
-                }
-            }
-            return clockignCommands;
-        }
-    }
+    //    public List<ClockignCommand> GetClockignCommand(string text)
+    //    {
+    //        var clockignCommands = new List<ClockignCommand>();
+    //        foreach (var item in Clockign_ENT)
+    //        {
+    //            if (item.IsMatch(text))
+    //            {
+    //                var match = item.Match(text);
+    //                clockignCommands.Add(new ClockignCommand
+    //                {
+    //                    action = match.Groups[2].Value,
+    //                    dipendente = match.Groups[1].Value,
+    //                    orario = match.Groups[3].Value,
+    //                    type = "timbratura"
+    //                });
+    //            }
+    //        }
+    //        return clockignCommands;
+    //    }
+    //}
 
-    public class ClockignCommand
-    {
-        public string action { get; set; } = string.Empty;
-        public string type { get; set; } = string.Empty;
-        public string orario { get; set; } = string.Empty;
-        public string dipendente { get; set; } = string.Empty;
-    }
+    //public class ClockignCommand
+    //{
+    //    public string action { get; set; } = string.Empty;
+    //    public string type { get; set; } = string.Empty;
+    //    public string orario { get; set; } = string.Empty;
+    //    public string dipendente { get; set; } = string.Empty;
+    //}
 }

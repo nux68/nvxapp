@@ -1,6 +1,7 @@
 using nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Models;
 
 
+
 namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Commands.Handlers
 {
     // Gestisce la registrazione di una timbratura entrata/uscita.
@@ -30,7 +31,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Comma
                     Required          = true,
                     PromptDescription = $"orario nel formato HH:mm. Se l'utente dice 'alle 9' restituisci '09:00'.",
                     Question          = "A che orario? (es. 09:00)",
-                    Label             = "Orario"
+                    Label             = "Orario",
+                    Validator         = v => TimeOnly.TryParse(v, out _) ? null
+                        : SlotValidationResult.Failed(SlotValidationError.InvalidFormat,
+                            $"'{v}' non \u00e8 un orario valido. Usa il formato HH:mm (es. 09:00).", "time")
                 },
                 new()
                 {
@@ -40,7 +44,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Comma
                     Default           = "oggi",
                     PromptDescription = $"data nel formato yyyy-MM-dd. Oggi \u00e8 {DateTime.Today:yyyy-MM-dd}. Se dice 'oggi' restituisci '{DateTime.Today:yyyy-MM-dd}'.",
                     Question          = "Per quale data?",
-                    Label             = "Data"
+                    Label             = "Data",
+                    Validator         = v => DateOnly.TryParse(v, out _) ? null
+                        : SlotValidationResult.Failed(SlotValidationError.InvalidFormat,
+                            $"'{v}' non \u00e8 una data valida. Usa il formato gg/mm/aaaa.", "date")
                 },
                 new()
                 {

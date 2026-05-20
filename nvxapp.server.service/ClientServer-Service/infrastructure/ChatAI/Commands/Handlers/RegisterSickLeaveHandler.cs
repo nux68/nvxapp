@@ -1,6 +1,7 @@
 using nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Models;
 
 
+
 namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Commands.Handlers
 {
     // Gestisce la registrazione di un periodo di malattia.
@@ -30,7 +31,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Comma
                     Required          = true,
                     PromptDescription = $"data di inizio nel formato yyyy-MM-dd. Oggi \u00e8 {DateTime.Today:yyyy-MM-dd}.",
                     Question          = "Da quale data?",
-                    Label             = "Dal"
+                    Label             = "Dal",
+                    Validator         = v => DateOnly.TryParse(v, out _) ? null
+                        : SlotValidationResult.Failed(SlotValidationError.InvalidFormat,
+                            $"'{v}' non \u00e8 una data valida. Usa il formato gg/mm/aaaa.", "startDate")
                 },
                 new()
                 {
@@ -39,7 +43,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Comma
                     Required          = false,
                     PromptDescription = $"data di fine nel formato yyyy-MM-dd. Oggi \u00e8 {DateTime.Today:yyyy-MM-dd}.",
                     Question          = "Fino a quale data?",
-                    Label             = "Al"
+                    Label             = "Al",
+                    Validator         = v => DateOnly.TryParse(v, out _) ? null
+                        : SlotValidationResult.Failed(SlotValidationError.InvalidFormat,
+                            $"'{v}' non \u00e8 una data valida. Usa il formato gg/mm/aaaa.", "endDate")
                 },
                 new()
                 {
@@ -50,6 +57,17 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Comma
                     Question          = "Hai il numero del certificato medico? (premi invio per saltare)",
                     Label             = "Certificato"
                 }
+            },
+            CrossValidator = slots =>
+            {
+                if (slots.TryGetValue("startDate", out var s) &&
+                    slots.TryGetValue("endDate",   out var e) &&
+                    DateOnly.TryParse(s, out var start) &&
+                    DateOnly.TryParse(e, out var end) &&
+                    start > end)
+                    return SlotValidationResult.Failed(SlotValidationError.BusinessRuleViolation,
+                        "La data di inizio non pu\u00f2 essere successiva alla data di fine.", "startDate");
+                return null;
             }
         };
 
