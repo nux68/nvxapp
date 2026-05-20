@@ -74,35 +74,78 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 // 1. Carica o crea la sessione
                 var session = GetOrCreateSession(sessionId);
 
-                // 2. Gestione conferma esplicita ("sì" / "no")
+                // 2. Comando di reset — l'utente vuole interrompere e ricominciare.
+                // Riconosco il comando PRIMA di qualsiasi altro controllo, in modo che
+                // funzioni sia durante la raccolta slot sia durante la conferma.
+                if (IsResetCommand(userMessage))
+                {
+                    DeleteSession(session.SessionId);
+                    var resetSession = new ChatSession();
+                    _sessions[resetSession.SessionId] = resetSession;
+                    return new ChatAIOutModel
+                    {
+                        SessionId    = resetSession.SessionId,
+                        Responce     = "Operazione annullata. Puoi iniziare con un nuovo comando.",
+                        ResponseType = "result",
+                        Suggestions  = new List<string> { "Timbratura", "Ferie", "Malattia" }
+                    };
+                }
+
+                // 3. Gestione conferma esplicita ("sì" / "no")
                 if (session.State == SessionState.ReadyToExecute)
                     return await HandleConfirmation(session, userMessage);
 
-                // 3. Registra il messaggio utente nella history PRIMA delle chiamate Ollama.
+                // 4. Registra il messaggio utente nella history PRIMA delle chiamate Ollama.
                 // BuildChatMessages legge la history aggiornata — il messaggio corrente
                 // è già incluso e non va passato separatamente.
                 session.AddToHistory("user", userMessage);
 
-                // 4. Primo turno vs turni successivi
+                // 5. Primo turno vs turni successivi
                 bool isFirstTurn = string.IsNullOrEmpty(session.Intent);
 
                 if (isFirstTurn)
                 {
+                    // PRE-FILTRO: verifica che il testo contenga almeno una keyword
+                    // di almeno uno degli intent noti. Evita di chiamare Ollama per
+                    // testo palesemente non pertinente (es. "sooka", "vaffa", ecc.).
+                    bool anyKeywordMatch = _intentCatalog.Intents
+                        .Where(i => i.Keywords.Count > 0)
+                        .Any(i => i.Keywords.Any(k =>
+                            userMessage.Contains(k, StringComparison.OrdinalIgnoreCase)));
+
+                    bool allIntentsHaveKeywords = _intentCatalog.Intents.All(i => i.Keywords.Count > 0);
+
+                    if (allIntentsHaveKeywords && !anyKeywordMatch)
+                    {
+                        DeleteSession(session.SessionId);
+                        return BuildErrorResponse(session, "Non ho capito la richiesta. Puoi ripetere?");
+                    }
+
                     // PRIMO TURNO: chiedi a Ollama intent + tutti gli slot presenti nel messaggio
                     var extracted = await CallOllamaExtractIntentAsync(session);
                     if (extracted == null || string.IsNullOrEmpty(extracted.Intent))
+                    {
+                        // Sessione senza intent confermato — non ha senso mantenerla
+                        DeleteSession(session.SessionId);
                         return BuildErrorResponse(session, "Non ho capito la richiesta. Puoi ripetere?");
+                    }
 
                     // Rifiuta intent "unknown" o confidence troppo bassa
                     if (extracted.Intent.Equals("unknown", StringComparison.OrdinalIgnoreCase) || extracted.Confidence < 0.5)
+                    {
+                        DeleteSession(session.SessionId);
                         return BuildErrorResponse(session, "Non ho capito la richiesta. Puoi ripetere?");
+                    }
 
                     // Verifica che l'intent restituito da Ollama esista nel catalogo.
                     // Se non esiste il modello sta allucinando — lo blocchiamo qui.
                     var knownIntent = _intentCatalog.Intents
                         .FirstOrDefault(i => i.Name.Equals(extracted.Intent, StringComparison.OrdinalIgnoreCase));
                     if (knownIntent == null)
+                    {
+                        DeleteSession(session.SessionId);
                         return BuildErrorResponse(session, $"Non conosco il comando '{extracted.Intent}'. Puoi ripetere con un'operazione valida?");
+                    }
 
                     session.Intent = knownIntent.Name; // usa il nome canonico dal catalogo
                     SafeMergeSlots(session, extracted.Slots);
@@ -121,7 +164,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                         if (string.IsNullOrEmpty(slotValue))
                             slotValue = userMessage.Trim();
 
-                        session.Slots[nextMissing] = slotValue;
+                        // Passa per SafeMergeSlots per applicare Validator e controllo PromptDescription
+                        // anche nei turni successivi, non solo nel primo turno.
+                        SafeMergeSlots(session, new Dictionary<string, string> { [nextMissing] = slotValue });
                     }
                 }
 
@@ -200,6 +245,17 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             session.AddToHistory("assistant", clarification);
             SaveSession(session);
             return BuildQuestionResponse(session, clarification, new List<string> { "Sì", "No" });
+        }
+
+        // ---------------------------------------------------------------------------
+        // Reset — riconosce comandi di interruzione esplicita
+        // ---------------------------------------------------------------------------
+
+        private static bool IsResetCommand(string text)
+        {
+            var t = text.Trim().ToLower();
+            return t is "annulla" or "reset" or "ricomincia" or "riparti" or "nuovo" or "nuova operazione"
+                       or "stop" or "esci" or "basta" or "annulla tutto" or "restart";
         }
 
         // ---------------------------------------------------------------------------

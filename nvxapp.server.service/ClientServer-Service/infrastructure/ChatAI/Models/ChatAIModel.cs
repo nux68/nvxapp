@@ -329,6 +329,12 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
         // Chiamata dopo che tutti gli slot singoli sono validi.
         // Ritorna null se tutto è ok, SlotValidationResult.Failed(...) altrimenti.
         public Func<Dictionary<string, string>, SlotValidationResult?>? CrossValidator { get; set; }
+
+        // Parole chiave minime che devono essere presenti nel testo dell'utente
+        // per considerare l'intent plausibile PRIMA di chiamare Ollama.
+        // Almeno una keyword deve fare match (case-insensitive, substring).
+        // Se vuoto, il pre-filtro viene saltato per questo intent.
+        public List<string> Keywords { get; set; } = new();
     }
 
 }

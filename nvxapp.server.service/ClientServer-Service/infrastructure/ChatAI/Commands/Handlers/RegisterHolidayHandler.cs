@@ -13,6 +13,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Comma
         {
             Name        = "RegisterHoliday",
             Description = "mette in ferie un dipendente per un periodo",
+            Keywords    = new() { "ferie", "vacanza", "vacanze", "permesso", "assenza", "holiday" },
             Slots       = new()
             {
                 new()

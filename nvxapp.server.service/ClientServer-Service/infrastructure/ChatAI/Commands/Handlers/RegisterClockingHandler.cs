@@ -13,6 +13,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Comma
         {
             Name        = "RegisterClocking",
             Description = "registra una timbratura di entrata o uscita",
+            Keywords    = new() { "timbratura", "timbra", "entrata", "uscita", "orario", "clocking", "timbrare" },
             Slots       = new()
             {
                 new()

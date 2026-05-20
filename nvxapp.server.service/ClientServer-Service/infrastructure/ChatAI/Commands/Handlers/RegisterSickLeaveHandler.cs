@@ -13,6 +13,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Comma
         {
             Name        = "RegisterSickLeave",
             Description = "registra una malattia per un dipendente",
+            Keywords    = new() { "malattia", "malato", "sick", "certificato", "medico", "influenza", "congedo" },
             Slots       = new()
             {
                 new()
