@@ -22,7 +22,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Comma
                     Required          = true,
                     PromptDescription = "nome e cognome di una persona",
                     Question          = "Per quale dipendente?",
-                    Label             = "Dipendente"
+                    Label             = "Dipendente",
+                    Validator         = v => v.Trim().Length >= 2 && v.Any(char.IsLetter) ? null
+                        : SlotValidationResult.Failed(SlotValidationError.InvalidFormat,
+                            $"'{v}' non sembra un nome valido. Inserire nome e cognome del dipendente.", "employeeName")
                 },
                 new()
                 {

@@ -277,6 +277,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
 
             sb.AppendLine("IMPORTANTE: se un valore non è esplicitamente presente nel testo dell'utente, imposta il campo su null.");
             sb.AppendLine("Non inventare valori. Non dedurre nomi di persone dal contesto precedente.");
+            sb.AppendLine("Se il testo dell'utente non corrisponde a nessuno degli intent elencati, rispondi con intent=\"unknown\" e confidence=0.");
+            sb.AppendLine("Non scegliere mai l'intent più vicino se non sei sicuro: preferisci unknown.");
             sb.AppendLine();
             sb.AppendLine("Rispondi sempre e solo con questo JSON:");
             sb.AppendLine("{");

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using Serilog;
 using nvxapp.server.Base;
 using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Repositories.Public;
@@ -92,7 +93,18 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                     if (extracted == null || string.IsNullOrEmpty(extracted.Intent))
                         return BuildErrorResponse(session, "Non ho capito la richiesta. Puoi ripetere?");
 
-                    session.Intent = extracted.Intent;
+                    // Rifiuta intent "unknown" o confidence troppo bassa
+                    if (extracted.Intent.Equals("unknown", StringComparison.OrdinalIgnoreCase) || extracted.Confidence < 0.5)
+                        return BuildErrorResponse(session, "Non ho capito la richiesta. Puoi ripetere?");
+
+                    // Verifica che l'intent restituito da Ollama esista nel catalogo.
+                    // Se non esiste il modello sta allucinando — lo blocchiamo qui.
+                    var knownIntent = _intentCatalog.Intents
+                        .FirstOrDefault(i => i.Name.Equals(extracted.Intent, StringComparison.OrdinalIgnoreCase));
+                    if (knownIntent == null)
+                        return BuildErrorResponse(session, $"Non conosco il comando '{extracted.Intent}'. Puoi ripetere con un'operazione valida?");
+
+                    session.Intent = knownIntent.Name; // usa il nome canonico dal catalogo
                     SafeMergeSlots(session, extracted.Slots);
                 }
                 else
@@ -218,8 +230,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 var raw = await PostToOllamaChatAsync(_ollamaUrl, requestBody);
                 return SafeDeserializeExtractedIntent(raw);
             }
-            catch
+            catch (Exception ex)
             {
+                Log.Error(ex, "[ChatAI] CallOllamaExtractIntentAsync fallita. Session={SessionId} Intent={Intent}",
+                    session.SessionId, session.Intent);
                 return null;
             }
         }
@@ -265,8 +279,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
 
                 return null;
             }
-            catch
+            catch (Exception ex)
             {
+                Log.Error(ex, "[ChatAI] CallOllamaExtractSingleSlotAsync fallita. Session={SessionId} Slot={SlotName}",
+                    session.SessionId, slotName);
                 return null;
             }
         }
@@ -380,8 +396,16 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 if (IsNullString(kv.Value)) continue; // ignora null/vuoti
                 if (session.Slots.ContainsKey(kv.Key)) continue; // non sovrascrivere esistenti
 
-                // Se lo slot ha un validator di formato, rigetta valori che non lo superano
                 var slotDef = intentDef?.Slots.FirstOrDefault(s => s.Name == kv.Key);
+
+                // Scarta il valore se Ollama ha restituito la PromptDescription verbatim
+                // (hallucination classica: il modello copia la descrizione come valore)
+                if (slotDef != null &&
+                    !string.IsNullOrEmpty(slotDef.PromptDescription) &&
+                    kv.Value.Equals(slotDef.PromptDescription, StringComparison.OrdinalIgnoreCase))
+                    continue;
+
+                // Se lo slot ha un validator di formato, rigetta valori che non lo superano
                 if (slotDef?.Validator != null && slotDef.Validator(kv.Value) != null)
                     continue; // valore non valido — verrà chiesto all'utente
 
@@ -464,7 +488,17 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             }
             catch (InvalidOperationException ex)
             {
+                // Handler non trovato nel registry — errore di configurazione atteso
+                Log.Warning(ex, "[ChatAI] Handler non trovato. Session={SessionId} Intent={Intent}",
+                    session.SessionId, session.Intent);
                 return CommandResult.Fail(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                // Errore imprevisto nell'esecuzione del comando (DB, timeout, ecc.)
+                Log.Error(ex, "[ChatAI] ExecuteCommandAsync fallita. Session={SessionId} Intent={Intent} Slots={Slots}",
+                    session.SessionId, session.Intent, System.Text.Json.JsonSerializer.Serialize(session.Slots));
+                return CommandResult.Fail("Errore durante l'esecuzione del comando. Riprova.");
             }
         }
 
