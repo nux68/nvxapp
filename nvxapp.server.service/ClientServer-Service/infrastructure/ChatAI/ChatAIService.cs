@@ -16,8 +16,7 @@ using nvxapp.server.service.RabbitMQ;
 using nvxapp.server.service.RabbitMQ.Listener;
 using nvxapp.server.service.ServerModels;
 using RabbitMQ.Client;
-using System.Collections.Concurrent;
-using System.Net.Http.Headers;
+
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -31,10 +30,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         private readonly IWebApiService _webApiService;
         private readonly ICommandRegistry _commandRegistry;
         private readonly IIntentCatalog _intentCatalog;
-
-        // Sessioni in memoria — ConcurrentDictionary garantisce thread safety
-        // su accessi concorrenti da richieste HTTP parallele.
-        private static readonly ConcurrentDictionary<string, ChatSession> _sessions = new();
+        private readonly IChatSessionStore _sessionStore;
 
         private readonly string _ollamaUrl;
         private readonly string _ollamaModel;
@@ -48,13 +44,15 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                              iRabbitMqConnection rabbitMqConnection,
                              IWebApiService webApiService,
                              ICommandRegistry commandRegistry,
-                             IIntentCatalog intentCatalog
+                             IIntentCatalog intentCatalog,
+                             IChatSessionStore sessionStore
                              ) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _rabbitMqConnection = rabbitMqConnection;
             _webApiService = webApiService;
             _commandRegistry = commandRegistry;
             _intentCatalog = intentCatalog;
+            _sessionStore = sessionStore;
 
             _ollamaUrl = _configuration["AI:Url"] ?? "";
             _ollamaModel = _configuration["AI:model"] ?? "" ;
@@ -98,8 +96,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 // funzioni sia durante la raccolta slot sia durante la conferma.
                 if (IsResetCommand(userMessage))
                 {
-                    DeleteSession(session.SessionId);
-                    var resetSession = CreateSession();
+                    _sessionStore.Delete(session.SessionId);
+                    var resetSession = _sessionStore.Create();
                     return new ChatAIOutModel
                     {
                         SessionId    = resetSession.SessionId,
@@ -445,8 +443,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 return JsonSerializer.Deserialize<ExtractedIntent>(cleanJson,
                     new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
             }
-            catch
+            catch (Exception ex)
             {
+                Log.Warning(ex, "[ChatAI] SafeDeserializeExtractedIntent: JSON non deserializzabile. Raw={Raw}",
+                    raw?.Length > 500 ? raw[..500] + "…" : raw);
                 return null;
             }
         }
@@ -637,45 +637,26 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             };
 
         // ---------------------------------------------------------------------------
-        // Session store in memoria
+        // Session store
         // ---------------------------------------------------------------------------
 
         // Cerca una sessione esistente valida. Ritorna null se:
         // - sessionId è vuoto (primo messaggio del client)
         // - sessione non trovata (mai esistita)
         // - sessione scaduta (> 10 minuti di inattività) → rimossa
-        private ChatSession? TryGetSession(string sessionId)
-        {
-            if (string.IsNullOrEmpty(sessionId)) return null;
+        private ChatSession? TryGetSession(string sessionId) =>
+            _sessionStore.TryGet(sessionId);
 
-            if (_sessions.TryGetValue(sessionId, out var existing))
-            {
-                if ((DateTime.UtcNow - existing.LastActivity).TotalMinutes < 10)
-                    return existing;
+        private ChatSession CreateSession() =>
+            _sessionStore.Create();
 
-                // Sessione trovata ma scaduta — la rimuoviamo
-                _sessions.TryRemove(sessionId, out _);
-                Log.Information("[ChatAI] Sessione scaduta rimossa. SessionId={SessionId}", sessionId);
-                return null;
-            }
-
-            return null;
-        }
-
-        private ChatSession CreateSession()
-        {
-            var newSession = new ChatSession();
-            _sessions[newSession.SessionId] = newSession;
-            return newSession;
-        }
-
-        // Con ConcurrentDictionary la sessione è già aggiornata per riferimento —
-        // SaveSession resta per chiarezza semantica ma non fa una copia.
+        // Con store condiviso la sessione è già aggiornata per riferimento —
+        // SaveSession resta per chiarezza semantica nel flusso di SendMessage.
         private void SaveSession(ChatSession session) =>
-            _sessions[session.SessionId] = session;
+            _sessionStore.Save(session);
 
         private void DeleteSession(string sessionId) =>
-            _sessions.TryRemove(sessionId, out _);
+            _sessionStore.Delete(sessionId);
 
 
         #region "RabbitMq NON ELIMINARE"

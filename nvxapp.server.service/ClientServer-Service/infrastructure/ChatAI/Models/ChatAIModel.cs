@@ -278,14 +278,15 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
 
             sb.AppendLine("IMPORTANTE: se un valore non è esplicitamente presente nel testo dell'utente, imposta il campo su null.");
             sb.AppendLine("Non inventare valori. Non dedurre nomi di persone dal contesto precedente.");
+            sb.AppendLine("Non copiare mai descrizioni o etichette degli slot come valore: usa null se il valore reale non è nel testo.");
             sb.AppendLine("Se il testo dell'utente non corrisponde a nessuno degli intent elencati, rispondi con intent=\"unknown\" e confidence=0.");
             sb.AppendLine("Non scegliere mai l'intent più vicino se non sei sicuro: preferisci unknown.");
             sb.AppendLine();
-            sb.AppendLine("Rispondi sempre e solo con questo JSON:");
+            sb.AppendLine("Rispondi sempre e solo con questo JSON (usa null per i valori assenti, NON testo descrittivo):");
             sb.AppendLine("{");
             sb.AppendLine("  \"intent\": \"NomeIntent\",");
             sb.AppendLine("  \"slots\": {");
-            sb.AppendLine("    \"nomeSlot\": \"valore o null se non presente\"");
+            sb.AppendLine("    \"nomeSlot\": null");
             sb.AppendLine("  },");
             sb.AppendLine("  \"missingRequired\": [\"slot1\"],");
             sb.AppendLine("  \"confidence\": 0.95");
