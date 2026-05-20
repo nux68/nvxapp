@@ -10,12 +10,14 @@ using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Commands;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
+using nvxapp.server.service.Helpers;
 using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.RabbitMQ;
 using nvxapp.server.service.RabbitMQ.Listener;
 using nvxapp.server.service.ServerModels;
 using RabbitMQ.Client;
 using System.Collections.Concurrent;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -26,7 +28,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
     public class ChatAIService : ServiceBase, IChatAIService
     {
         private readonly iRabbitMqConnection _rabbitMqConnection;
-        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly IWebApiService _webApiService;
         private readonly ICommandRegistry _commandRegistry;
         private readonly IIntentCatalog _intentCatalog;
 
@@ -44,13 +46,13 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                              IHttpContextAccessor httpContextAccessor,
                              IConfiguration configuration,
                              iRabbitMqConnection rabbitMqConnection,
-                             IHttpClientFactory httpClientFactory,
+                             IWebApiService webApiService,
                              ICommandRegistry commandRegistry,
                              IIntentCatalog intentCatalog
                              ) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _rabbitMqConnection = rabbitMqConnection;
-            _httpClientFactory = httpClientFactory;
+            _webApiService = webApiService;
             _commandRegistry = commandRegistry;
             _intentCatalog = intentCatalog;
 
@@ -394,17 +396,19 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
 
         private async Task<string> PostToOllamaChatAsync(string baseUrl, OllamaChatRequest requestBody)
         {
-            var json    = JsonSerializer.Serialize(requestBody);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-            var httpClient = _httpClientFactory.CreateClient();
+            var result = await _webApiService.Post<OllamaChatRequest, OllamaChatResponse>(
+                serverUrl  : baseUrl,
+                authentication: null,
+                action     : "chat",
+                body       : requestBody,
+                bodyType   : WebApiBodyType.raw,
+                headers    : new Dictionary<string, string>());
 
-            var response = await httpClient.PostAsync($"{baseUrl}chat", content);
-            response.EnsureSuccessStatusCode();
+            if (result?.Data == null)
+                throw new InvalidOperationException(
+                    $"Ollama ha risposto con status {result?.StatusCode}: {result?.ReasonPhrase}");
 
-            var responseBody  = await response.Content.ReadAsStringAsync();
-            var ollamaResponse = JsonSerializer.Deserialize<OllamaChatResponse>(responseBody);
-
-            return ollamaResponse?.Message?.Content ?? string.Empty;
+            return result.Data.Message?.Content ?? string.Empty;
         }
 
         // ---------------------------------------------------------------------------

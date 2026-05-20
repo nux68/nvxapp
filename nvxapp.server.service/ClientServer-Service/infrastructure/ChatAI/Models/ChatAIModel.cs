@@ -1,4 +1,5 @@
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
+using Newtonsoft.Json;
 using System.Text;
 using System.Text.Json.Serialization;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Commands;
@@ -187,34 +188,34 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
 
     public class OllamaChatRequest
     {
-        [JsonPropertyName("model")]
+        [JsonPropertyName("model")][JsonProperty("model")]
         public string Model { get; set; } = string.Empty;
 
-        [JsonPropertyName("messages")]
+        [JsonPropertyName("messages")][JsonProperty("messages")]
         public List<OllamaChatMessage> Messages { get; set; } = new();
 
-        [JsonPropertyName("stream")]
+        [JsonPropertyName("stream")][JsonProperty("stream")]
         public bool Stream { get; set; } = false;
 
-        [JsonPropertyName("format")]
+        [JsonPropertyName("format")][JsonProperty("format")]
         public string Format { get; set; } = "json";
     }
 
     public class OllamaChatMessage
     {
-        [JsonPropertyName("role")]
-        public string Role { get; set; } = string.Empty;   // "system" | "user" | "assistant"
+        [JsonPropertyName("role")][JsonProperty("role")]
+        public string Role { get; set; } = string.Empty;
 
-        [JsonPropertyName("content")]
+        [JsonPropertyName("content")][JsonProperty("content")]
         public string Content { get; set; } = string.Empty;
     }
 
     public class OllamaChatResponse
     {
-        [JsonPropertyName("message")]
+        [JsonPropertyName("message")][JsonProperty("message")]
         public OllamaChatMessage? Message { get; set; }
 
-        [JsonPropertyName("done")]
+        [JsonPropertyName("done")][JsonProperty("done")]
         public bool Done { get; set; }
     }
 
@@ -334,6 +335,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
         // per considerare l'intent plausibile PRIMA di chiamare Ollama.
         // Almeno una keyword deve fare match (case-insensitive, substring).
         // Se vuoto, il pre-filtro viene saltato per questo intent.
+        // ATTENZIONE CON MODELLI EVOLUTI, SI POTRA ELIMINARE
         public List<string> Keywords { get; set; } = new();
     }
 
