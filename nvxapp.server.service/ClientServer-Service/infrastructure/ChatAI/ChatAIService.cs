@@ -73,8 +73,25 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 var userMessage = model.Data.Request;
                 var sessionId = model.Data.SessionId;
 
-                // 1. Carica o crea la sessione
-                var session = GetOrCreateSession(sessionId);
+                // 1. Cerca la sessione esistente
+                var session = TryGetSession(sessionId);
+
+                // Se il client aveva una sessione (sessionId non vuoto) ma è scaduta,
+                // lo informiamo esplicitamente invece di ripartire in silenzio.
+                if (session == null && !string.IsNullOrEmpty(sessionId))
+                {
+                    var freshSession = CreateSession();
+                    return new ChatAIOutModel
+                    {
+                        SessionId    = freshSession.SessionId,
+                        Responce     = "La sessione precedente è scaduta. Puoi iniziare con un nuovo comando.",
+                        ResponseType = "result",
+                        Suggestions  = new List<string> { "Timbratura", "Ferie", "Malattia" }
+                    };
+                }
+
+                // Prima richiesta senza sessionId — crea la sessione
+                session ??= CreateSession();
 
                 // 2. Comando di reset — l'utente vuole interrompere e ricominciare.
                 // Riconosco il comando PRIMA di qualsiasi altro controllo, in modo che
@@ -82,8 +99,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 if (IsResetCommand(userMessage))
                 {
                     DeleteSession(session.SessionId);
-                    var resetSession = new ChatSession();
-                    _sessions[resetSession.SessionId] = resetSession;
+                    var resetSession = CreateSession();
                     return new ChatAIOutModel
                     {
                         SessionId    = resetSession.SessionId,
@@ -624,17 +640,30 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         // Session store in memoria
         // ---------------------------------------------------------------------------
 
-        private ChatSession GetOrCreateSession(string sessionId)
+        // Cerca una sessione esistente valida. Ritorna null se:
+        // - sessionId è vuoto (primo messaggio del client)
+        // - sessione non trovata (mai esistita)
+        // - sessione scaduta (> 10 minuti di inattività) → rimossa
+        private ChatSession? TryGetSession(string sessionId)
         {
-            if (!string.IsNullOrEmpty(sessionId) &&
-                _sessions.TryGetValue(sessionId, out var existing))
+            if (string.IsNullOrEmpty(sessionId)) return null;
+
+            if (_sessions.TryGetValue(sessionId, out var existing))
             {
                 if ((DateTime.UtcNow - existing.LastActivity).TotalMinutes < 10)
                     return existing;
 
+                // Sessione trovata ma scaduta — la rimuoviamo
                 _sessions.TryRemove(sessionId, out _);
+                Log.Information("[ChatAI] Sessione scaduta rimossa. SessionId={SessionId}", sessionId);
+                return null;
             }
 
+            return null;
+        }
+
+        private ChatSession CreateSession()
+        {
             var newSession = new ChatSession();
             _sessions[newSession.SessionId] = newSession;
             return newSession;

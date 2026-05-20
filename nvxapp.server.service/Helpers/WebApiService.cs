@@ -206,7 +206,7 @@ namespace nvxapp.server.service.Helpers
         /// <param name="headers"></param>
         /// <param name="returnRawData">Restituisce i dati grezzi senza deserializzarli dal json</param>
         /// <returns></returns>
-        public async Task<WebApiResult<TOut>> Post<TIn, TOut>(string serverUrl, AuthenticationHeaderValue? authentication,
+        public async Task<WebApiResult<TOut>?> Post<TIn, TOut>(string serverUrl, AuthenticationHeaderValue? authentication,
                                                       string action,
                                                       TIn body,
                                                       WebApiBodyType bodyType,
@@ -217,7 +217,7 @@ namespace nvxapp.server.service.Helpers
         }
 
 
-        public async Task<WebApiResult<TOut>> Put<TIn, TOut>(string serverUrl, AuthenticationHeaderValue? authentication,
+        public async Task<WebApiResult<TOut>?> Put<TIn, TOut>(string serverUrl, AuthenticationHeaderValue? authentication,
                                                       string action,
                                                       TIn body,
                                                       WebApiBodyType bodyType,
@@ -232,11 +232,10 @@ namespace nvxapp.server.service.Helpers
         }
 
 
-        public async Task<WebApiResult<TOut>> Get<TOut>(string serverUrl, AuthenticationHeaderValue? authentication,
+        public async Task<WebApiResult<TOut>?> Get<TOut>(string serverUrl, AuthenticationHeaderValue? authentication,
                                                          string action,
                                                          IDictionary<string, string> headers)
         {
-
             return await Fetch<string, TOut>(serverUrl, authentication,
                                               action,
                                               "",
@@ -245,11 +244,10 @@ namespace nvxapp.server.service.Helpers
                                               WebApiRequestType.Get);
         }
 
-        public async Task<WebApiResult<TOut>> Delete<TOut>(string serverUrl, AuthenticationHeaderValue? authentication,
+        public async Task<WebApiResult<TOut>?> Delete<TOut>(string serverUrl, AuthenticationHeaderValue? authentication,
                                                  string action,
                                                  IDictionary<string, string> headers)
         {
-
             return await Fetch<string, TOut>(serverUrl, authentication,
                                               action,
                                               "",
@@ -260,7 +258,7 @@ namespace nvxapp.server.service.Helpers
 
 
 
-        private async Task<WebApiResult<TOut>> Fetch<TIn, TOut>(string serverUrl, AuthenticationHeaderValue? authentication,
+        private async Task<WebApiResult<TOut>?> Fetch<TIn, TOut>(string serverUrl, AuthenticationHeaderValue? authentication,
             string action, TIn body, WebApiBodyType bodyType, IDictionary<string, string> headers, WebApiRequestType type, bool returnRawData = false)
         {
 
@@ -409,24 +407,24 @@ namespace nvxapp.server.service.Helpers
     public interface IWebApiService : IServiceBase
     {
 
-        public Task<WebApiResult<TOut>> Post<TIn, TOut>(string serverUrl, AuthenticationHeaderValue? authentication,
+        public Task<WebApiResult<TOut>?> Post<TIn, TOut>(string serverUrl, AuthenticationHeaderValue? authentication,
                                                       string action,
                                                       TIn body,
                                                       WebApiBodyType bodyType,
                                                       IDictionary<string, string> headers,
                                                       bool returnRawData = false);
 
-        public Task<WebApiResult<TOut>> Put<TIn, TOut>(string serverUrl, AuthenticationHeaderValue? authentication,
+        public Task<WebApiResult<TOut>?> Put<TIn, TOut>(string serverUrl, AuthenticationHeaderValue? authentication,
                                                       string action,
                                                       TIn body,
                                                       WebApiBodyType bodyType,
                                                       IDictionary<string, string> headers);
 
-        public Task<WebApiResult<TOut>> Get<TOut>(string serverUrl, AuthenticationHeaderValue? authentication,
+        public Task<WebApiResult<TOut>?> Get<TOut>(string serverUrl, AuthenticationHeaderValue? authentication,
                                                  string action,
                                                  IDictionary<string, string> headers);
 
-        public Task<WebApiResult<TOut>> Delete<TOut>(string serverUrl, AuthenticationHeaderValue? authentication,
+        public Task<WebApiResult<TOut>?> Delete<TOut>(string serverUrl, AuthenticationHeaderValue? authentication,
                                          string action,
                                          IDictionary<string, string> headers);
     }
