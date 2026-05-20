@@ -11,7 +11,6 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
     {
         ChatSession? TryGet(string sessionId, int timeoutMinutes = 10);
         ChatSession Create();
-        void Save(ChatSession session);
         void Delete(string sessionId);
     }
 
@@ -44,9 +43,6 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             _sessions[session.SessionId] = session;
             return session;
         }
-
-        public void Save(ChatSession session) =>
-            _sessions[session.SessionId] = session;
 
         public void Delete(string sessionId) =>
             _sessions.TryRemove(sessionId, out _);

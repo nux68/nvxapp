@@ -276,19 +276,25 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
                 sb.AppendLine();
             }
 
-            sb.AppendLine("IMPORTANTE: se un valore non è esplicitamente presente nel testo dell'utente, imposta il campo su null.");
-            sb.AppendLine("Non inventare valori. Non dedurre nomi di persone dal contesto precedente.");
-            sb.AppendLine("Non copiare mai descrizioni o etichette degli slot come valore: usa null se il valore reale non è nel testo.");
+            sb.AppendLine("IMPORTANTE:");
+            sb.AppendLine("- Estrai TUTTI i valori esplicitamente presenti nel testo del messaggio corrente dell'utente.");
+            sb.AppendLine("- I nomi propri di persona (nome e cognome) devono essere estratti esattamente come appaiono nel testo.");
+            sb.AppendLine("- Se un valore non è presente nel testo corrente, imposta il campo su null.");
+            sb.AppendLine("- Non dedurre valori da turni precedenti della conversazione: usa solo il messaggio corrente.");
+            sb.AppendLine("- Non copiare mai il nome, il tipo o la descrizione di uno slot come valore: usa null.");
+            sb.AppendLine("- Non usare mai la chiave JSON dello slot come valore (es. non scrivere \"employeeName\" o \"nome_e_cognome\" come valore).");
+            sb.AppendLine("- Non inventare valori.");
             sb.AppendLine("Se il testo dell'utente non corrisponde a nessuno degli intent elencati, rispondi con intent=\"unknown\" e confidence=0.");
             sb.AppendLine("Non scegliere mai l'intent più vicino se non sei sicuro: preferisci unknown.");
             sb.AppendLine();
-            sb.AppendLine("Rispondi sempre e solo con questo JSON (usa null per i valori assenti, NON testo descrittivo):");
+            sb.AppendLine("Esempio di risposta corretta (alcuni slot presenti, altri assenti):");
             sb.AppendLine("{");
             sb.AppendLine("  \"intent\": \"NomeIntent\",");
             sb.AppendLine("  \"slots\": {");
-            sb.AppendLine("    \"nomeSlot\": null");
+            sb.AppendLine("    \"slotPresente\": \"valore\",");
+            sb.AppendLine("    \"slotAssente\": null");
             sb.AppendLine("  },");
-            sb.AppendLine("  \"missingRequired\": [\"slot1\"],");
+            sb.AppendLine("  \"missingRequired\": [\"slotAssente\"],");
             sb.AppendLine("  \"confidence\": 0.95");
             sb.AppendLine("}");
 

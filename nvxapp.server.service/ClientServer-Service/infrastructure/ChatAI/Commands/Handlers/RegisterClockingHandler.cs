@@ -9,7 +9,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Comma
     //       e il lookup del dipendente per nome ? EmployeeId.
     public class RegisterClockingHandler : ICommandHandler
     {
-        public IntentDefinition IntentDefinition => new()
+        private static readonly IntentDefinition _intentDefinition = new()
         {
             Name        = "RegisterClocking",
             Description = "registra una timbratura di entrata o uscita",
@@ -21,7 +21,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Comma
                     Name              = "employeeName",
                     Type              = "string",
                     Required          = true,
-                    PromptDescription = "nome e cognome di una persona",
+                    PromptDescription = "nome e cognome della persona fisica presente nel testo (es. 'Marco Rossi', 'mario lalli'). Estrai il nome esattamente come appare nel testo.",
                     Question          = "Per quale dipendente?",
                     Label             = "Dipendente",
                     Validator         = v => v.Trim().Length >= 2 && v.Any(char.IsLetter) ? null
@@ -65,6 +65,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Comma
                 }
             }
         };
+
+        public IntentDefinition IntentDefinition => _intentDefinition;
 
         public Task<CommandResult> ExecuteAsync(Dictionary<string, string> slots)
         {
