@@ -34,6 +34,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
 
         private readonly string _ollamaUrl;
         private readonly string _ollamaModel;
+        private readonly string _ollamaMethod;
+        
         private readonly int _maxHistoryTurns;
 
         public ChatAIService(IMapper mapper,
@@ -57,6 +59,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
 
             _ollamaUrl        = configuration["AI:Url"]   ?? throw new InvalidOperationException("AI:Url non configurato");
             _ollamaModel      = configuration["AI:model"] ?? throw new InvalidOperationException("AI:model non configurato");
+            _ollamaMethod     = configuration["AI:method"] ?? throw new InvalidOperationException("AI:method non configurato");
             _maxHistoryTurns  = int.TryParse(configuration["AI:MaxHistoryTurns"], out var n) && n > 0 ? n : 20;
 
         }
@@ -426,7 +429,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             var result = await _webApiService.Post<OllamaChatRequest, OllamaChatResponse>(
                 serverUrl  : baseUrl,
                 authentication: null,
-                action     : "chat",
+                action     : _ollamaMethod,
                 body       : requestBody,
                 bodyType   : WebApiBodyType.raw,
                 headers    : new Dictionary<string, string>());
