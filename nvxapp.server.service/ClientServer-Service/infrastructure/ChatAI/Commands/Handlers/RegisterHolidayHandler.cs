@@ -11,18 +11,19 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Comma
     {
         private static readonly IntentDefinition _intentDefinition = new()
         {
-            Name        = "RegisterHoliday",
+            Name = "RegisterHoliday",
             DisplayName = "Ferie",
             Description = "mette in ferie un dipendente per un periodo",
-            Keywords    = new() { "ferie", "vacanza", "vacanze", "permesso", "assenza", "holiday" },
-            Slots       = new()
+            Keywords = new() { "ferie", "vacanza", "vacanze", "permesso", "assenza", "holiday" },
+            Slots = new()
             {
                 new()
                 {
                     Name              = "employeeName",
                     Type              = "string",
                     Required          = true,
-                    PromptDescription = "nome e cognome della persona fisica presente nel testo (es. 'Marco Rossi', 'mario lalli'). Estrai il nome esattamente come appare nel testo.",
+                    //PromptDescription = "nome e cognome della persona fisica presente nel testo (es. 'Marco Rossi', 'mario lalli'). Estrai il nome esattamente come appare nel testo.",
+                    PromptDescription = "nome e cognome del dipendente — NON usare questa frase come valore. Devi estrarre SOLO un nome realmente scritto dall’utente.",
                     Question          = "Per quale dipendente?",
                     Label             = "Dipendente",
                     Validator         = v => v.Trim().Length >= 2 && v.Any(char.IsLetter) ? null
@@ -37,9 +38,22 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Comma
                     PromptDescription = $"data di inizio nel formato yyyy-MM-dd. Oggi \u00e8 {DateTime.Today:yyyy-MM-dd}.",
                     Question          = "Da quale data?",
                     Label             = "Dal",
-                    Validator         = v => DateOnly.TryParse(v, out _) ? null
-                        : SlotValidationResult.Failed(SlotValidationError.InvalidFormat,
-                            $"'{v}' non \u00e8 una data valida. Usa il formato gg/mm/aaaa.", "startDate")
+                    //Validator         = v => DateOnly.TryParse(v, out _) ? null
+                    //    : SlotValidationResult.Failed(SlotValidationError.InvalidFormat,
+                    //        $"'{v}' non \u00e8 una data valida. Usa il formato gg/mm/aaaa.", "startDate")
+
+                    Validator = v =>
+                    {
+                        if (DateOnly.TryParse(v, out _))
+                            return null;
+
+                        return SlotValidationResult.Failed(
+                            SlotValidationError.InvalidFormat,
+                            $"'{v}' non è una data valida. Usa il formato gg/mm/aaaa.",
+                            "startDate"
+                        );
+                    }
+
                 },
                 new()
                 {
@@ -57,7 +71,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Comma
             CrossValidator = slots =>
             {
                 if (slots.TryGetValue("startDate", out var s) &&
-                    slots.TryGetValue("endDate",   out var e) &&
+                    slots.TryGetValue("endDate", out var e) &&
                     DateOnly.TryParse(s, out var start) &&
                     DateOnly.TryParse(e, out var end) &&
                     start > end)
@@ -72,8 +86,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Comma
         public Task<CommandResult> ExecuteAsync(Dictionary<string, string> slots)
         {
             var employeeName = slots.GetValueOrDefault("employeeName", "-");
-            var startDate    = slots.GetValueOrDefault("startDate", "-");
-            var endDate      = slots.GetValueOrDefault("endDate", "-");
+            var startDate = slots.GetValueOrDefault("startDate", "-");
+            var endDate = slots.GetValueOrDefault("endDate", "-");
 
             int days = 0;
             if (DateOnly.TryParse(startDate, out var s) && DateOnly.TryParse(endDate, out var e))

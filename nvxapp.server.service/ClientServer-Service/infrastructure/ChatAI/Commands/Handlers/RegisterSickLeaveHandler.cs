@@ -22,7 +22,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Comma
                     Name              = "employeeName",
                     Type              = "string",
                     Required          = true,
-                    PromptDescription = "nome e cognome della persona fisica presente nel testo (es. 'Marco Rossi', 'mario lalli'). Estrai il nome esattamente come appare nel testo.",
+                    //PromptDescription = "nome e cognome della persona fisica presente nel testo (es. 'Marco Rossi', 'mario lalli'). Estrai il nome esattamente come appare nel testo.",
+                    PromptDescription = "nome e cognome del dipendente — NON usare questa frase come valore. Devi estrarre SOLO un nome realmente scritto dall’utente.",
                     Question          = "Per quale dipendente?",
                     Label             = "Dipendente",
                     Validator         = v => v.Trim().Length >= 2 && v.Any(char.IsLetter) ? null

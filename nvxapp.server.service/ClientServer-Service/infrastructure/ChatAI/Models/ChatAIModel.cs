@@ -1,8 +1,8 @@
-using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using Newtonsoft.Json;
+using nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Commands;
+using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using System.Text;
 using System.Text.Json.Serialization;
-using nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Commands;
 
 namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Models
 {
@@ -13,15 +13,15 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
 
     public class ChatAIInModel
     {
-        public string Request   { get; set; } = string.Empty;
+        public string Request { get; set; } = string.Empty;
         public string SessionId { get; set; } = string.Empty;  // identifica la sessione conversazionale
     }
 
     public class ChatAIOutModel : ModelResult
     {
-        public string Responce      { get; set; } = string.Empty;
-        public string SessionId     { get; set; } = string.Empty;  // restituito al client per i turni successivi
-        public string ResponseType  { get; set; } = string.Empty;  // "question" | "confirmation" | "result" | "error"
+        public string Responce { get; set; } = string.Empty;
+        public string SessionId { get; set; } = string.Empty;  // restituito al client per i turni successivi
+        public string ResponseType { get; set; } = string.Empty;  // "question" | "confirmation" | "result" | "error"
         public List<string> Suggestions { get; set; } = new();     // chip/bottoni opzionali da mostrare al client
 
         public ChatAIOutModel() { }
@@ -33,15 +33,15 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
 
     public class ChatSession
     {
-        public string SessionId     { get; set; } = Guid.NewGuid().ToString();
-        public string UserId        { get; set; } = string.Empty;
-        public DateTime CreatedAt   { get; set; } = DateTime.UtcNow;
-        public DateTime LastActivity{ get; set; } = DateTime.UtcNow;
-        public SessionState State   { get; set; } = SessionState.Collecting;
+        public string SessionId { get; set; } = Guid.NewGuid().ToString();
+        public string UserId { get; set; } = string.Empty;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime LastActivity { get; set; } = DateTime.UtcNow;
+        public SessionState State { get; set; } = SessionState.Collecting;
 
-        public string Intent        { get; set; } = string.Empty;
+        public string Intent { get; set; } = string.Empty;
         public Dictionary<string, string> Slots { get; set; } = new();
-        public List<ConversationTurn> History   { get; set; } = new();
+        public List<ConversationTurn> History { get; set; } = new();
 
         public void AddToHistory(string role, string content)
         {
@@ -65,7 +65,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
 
     public class ConversationTurn
     {
-        public string Role    { get; set; } = string.Empty;  // "user" | "assistant"
+        public string Role { get; set; } = string.Empty;  // "user" | "assistant"
         public string Content { get; set; } = string.Empty;
     }
 
@@ -104,21 +104,21 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
 
     public class SlotValidationResult
     {
-        public bool IsValid             { get; set; }
+        public bool IsValid { get; set; }
         public SlotValidationError ErrorType { get; set; }
-        public string MessageToUser     { get; set; } = string.Empty;
-        public string InvalidSlotName   { get; set; } = string.Empty;  // slot da resettare in sessione
+        public string MessageToUser { get; set; } = string.Empty;
+        public string InvalidSlotName { get; set; } = string.Empty;  // slot da resettare in sessione
         public List<string> Suggestions { get; set; } = new();         // per AmbiguousEntity
-        public static SlotValidationResult Ok() =>new() { IsValid = true };
+        public static SlotValidationResult Ok() => new() { IsValid = true };
 
         public static SlotValidationResult Failed(SlotValidationError type, string message, string slotName, List<string>? suggestions = null) =>
             new()
             {
-                IsValid         = false,
-                ErrorType       = type,
-                MessageToUser   = message,
+                IsValid = false,
+                ErrorType = type,
+                MessageToUser = message,
                 InvalidSlotName = slotName,
-                Suggestions     = suggestions ?? new()
+                Suggestions = suggestions ?? new()
             };
     }
 
@@ -136,11 +136,11 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
 
     public class CommandResult
     {
-        public bool Success         { get; set; }
-        public string Message       { get; set; } = string.Empty;
-        public object ?Data          { get; set; }
+        public bool Success { get; set; }
+        public string Message { get; set; } = string.Empty;
+        public object? Data { get; set; }
 
-        public static CommandResult Ok(string message, object ?data = null) =>
+        public static CommandResult Ok(string message, object? data = null) =>
             new() { Success = true, Message = message, Data = data };
 
         public static CommandResult Fail(string message) =>
@@ -188,34 +188,42 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
 
     public class OllamaChatRequest
     {
-        [JsonPropertyName("model")][JsonProperty("model")]
+        [JsonPropertyName("model")]
+        [JsonProperty("model")]
         public string Model { get; set; } = string.Empty;
 
-        [JsonPropertyName("messages")][JsonProperty("messages")]
+        [JsonPropertyName("messages")]
+        [JsonProperty("messages")]
         public List<OllamaChatMessage> Messages { get; set; } = new();
 
-        [JsonPropertyName("stream")][JsonProperty("stream")]
+        [JsonPropertyName("stream")]
+        [JsonProperty("stream")]
         public bool Stream { get; set; } = false;
 
-        [JsonPropertyName("format")][JsonProperty("format")]
+        [JsonPropertyName("format")]
+        [JsonProperty("format")]
         public string Format { get; set; } = "json";
     }
 
     public class OllamaChatMessage
     {
-        [JsonPropertyName("role")][JsonProperty("role")]
+        [JsonPropertyName("role")]
+        [JsonProperty("role")]
         public string Role { get; set; } = string.Empty;
 
-        [JsonPropertyName("content")][JsonProperty("content")]
+        [JsonPropertyName("content")]
+        [JsonProperty("content")]
         public string Content { get; set; } = string.Empty;
     }
 
     public class OllamaChatResponse
     {
-        [JsonPropertyName("message")][JsonProperty("message")]
+        [JsonPropertyName("message")]
+        [JsonProperty("message")]
         public OllamaChatMessage? Message { get; set; }
 
-        [JsonPropertyName("done")][JsonProperty("done")]
+        [JsonPropertyName("done")]
+        [JsonProperty("done")]
         public bool Done { get; set; }
     }
 
@@ -252,10 +260,33 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
 
             sb.AppendLine("Sei un assistente che estrae intent e slot da testo in italiano.");
             sb.AppendLine("Rispondi SOLO con un oggetto JSON valido, nessun testo aggiuntivo.");
-            sb.AppendLine();
-            sb.AppendLine($"Data di oggi: {DateTime.Today:yyyy-MM-dd}");
-            sb.AppendLine();
+
+            //sb.AppendLine();
+            ////sb.AppendLine($"Data di oggi: {DateTime.Today:yyyy-MM-dd}");
+            ////sb.AppendLine();
+            ////sb.AppendLine("IMPORTANTE:");
+            ////sb.AppendLine("Quando l’utente usa date relative come 'oggi', 'domani', 'ieri',");
+            ////sb.AppendLine("devi sempre convertirle in una data assoluta nel formato yyyy-MM-dd.");
+            ////sb.AppendLine($"Usa come riferimento la data indicata sopra. Oggi è {DateTime.Today:yyyy-MM-dd}");
+            ////sb.AppendLine("Non usare la data reale del sistema.");
+            //sb.AppendLine();
+
+            BuildSystemPromptUtil.BuildSystemPrompt_Append_4_Date(sb);
+
+            BuildSystemPromptUtil.BuildSystemPrompt_Append_Intent_Definition(sb,_intents);
+            
+
             sb.AppendLine("Intent disponibili:");
+            ///
+            sb.AppendLine("IMPORTANTE:");
+            sb.AppendLine("Il valore del campo \"intent\" deve essere SEMPRE uno dei seguenti::");
+            sb.AppendLine("- RegisterClocking:");
+            sb.AppendLine("- RegisterHoliday:");
+            sb.AppendLine("- RegisterSickLeave:");
+            sb.AppendLine("Non usare mai la descrizione come nome dell’intent.");
+            sb.AppendLine("Non inventare nuovi nomi.");
+            sb.AppendLine("Non tradurre i nomi degli intent.");
+            ///
             sb.AppendLine();
 
             for (int i = 0; i < _intents.Count; i++)
@@ -268,56 +299,113 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
                 foreach (var slot in intent.Slots)
                 {
                     var obbligatorio = slot.Required ? "obbligatorio" : "opzionale";
-                    var defaultVal   = !string.IsNullOrEmpty(slot.Default) ? $", default {slot.Default}" : "";
-                    var description  = !string.IsNullOrEmpty(slot.PromptDescription) ? $": {slot.PromptDescription}" : "";
+                    var defaultVal = !string.IsNullOrEmpty(slot.Default) ? $", default {slot.Default}" : "";
+                    var description = !string.IsNullOrEmpty(slot.PromptDescription) ? $": {slot.PromptDescription}" : "";
                     sb.AppendLine($"   - {slot.Name} ({slot.Type}, {obbligatorio}{defaultVal}){description}");
                 }
 
                 sb.AppendLine();
             }
 
-            sb.AppendLine("IMPORTANTE:");
-            sb.AppendLine("- Estrai SOLO i valori ESPLICITAMENTE scritti nel testo del messaggio corrente.");
-            sb.AppendLine("- I nomi propri di persona (nome e cognome) devono essere estratti esattamente come appaiono nel testo.");
-            sb.AppendLine("- Se un valore non è scritto letteralmente nel testo corrente, il campo DEVE essere null.");
-            sb.AppendLine("- VIETATO inventare, dedurre o ipotizzare valori non presenti nel testo.");
-            sb.AppendLine("- VIETATO usare valori di turni precedenti della conversazione.");
-            sb.AppendLine("- VIETATO copiare il nome, il tipo o la descrizione di uno slot come valore.");
-            sb.AppendLine("- VIETATO usare la chiave JSON dello slot come valore.");
-            sb.AppendLine("Se il testo non corrisponde a nessuno degli intent elencati, rispondi con intent=\"unknown\" e confidence=0.");
-            sb.AppendLine("Non scegliere mai l'intent più vicino se non sei sicuro: preferisci unknown.");
-            sb.AppendLine();
-            sb.AppendLine("--- ESEMPI ---");
-            sb.AppendLine();
-            sb.AppendLine("Testo: \"timbratura\"");
-            sb.AppendLine("Risposta corretta (nessuno slot nel testo → tutti null):");
+
+            sb.AppendLine("Rispondi sempre e solo con questo JSON,\n" +
+                          "senza modificare, riformulare o reinterpretare alcun testo degli intent\n" +
+                          "o delle loro descrizioni.\n" +
+                          "Mantieni esattamente i nomi e le descrizioni come definiti sopra:");
+
             sb.AppendLine("{");
-            sb.AppendLine("  \"intent\": \"RegisterClocking\",");
-            sb.AppendLine("  \"slots\": { \"employeeName\": null, \"time\": null, \"date\": null, \"direction\": null },");
-            sb.AppendLine("  \"missingRequired\": [\"employeeName\", \"time\"],");
+            sb.AppendLine("  \"intent\": \"NomeIntent\",");
+            sb.AppendLine("  \"slots\": {");
+            sb.AppendLine("    \"nomeSlot\": \"valore o null se non presente\"");
+            sb.AppendLine("  },");
+            sb.AppendLine("  \"missingRequired\": [\"slot1\"],");
             sb.AppendLine("  \"confidence\": 0.95");
             sb.AppendLine("}");
-            sb.AppendLine();
-            sb.AppendLine("Testo: \"timbratura mario rossi 09:00\"");
-            sb.AppendLine("Risposta corretta (nome e orario presenti → estratti, data e direzione assenti → null):");
-            sb.AppendLine("{");
-            sb.AppendLine("  \"intent\": \"RegisterClocking\",");
-            sb.AppendLine("  \"slots\": { \"employeeName\": \"mario rossi\", \"time\": \"09:00\", \"date\": null, \"direction\": null },");
-            sb.AppendLine("  \"missingRequired\": [],");
-            sb.AppendLine("  \"confidence\": 0.98");
-            sb.AppendLine("}");
-            sb.AppendLine("--- FINE ESEMPI ---");
+
+
+
+            //////////
+
+            //sb.AppendLine("IMPORTANTE:");
+            //sb.AppendLine("- Estrai SOLO i valori ESPLICITAMENTE scritti nel testo del messaggio corrente.");
+            //sb.AppendLine("- I nomi propri di persona (nome e cognome) devono essere estratti esattamente come appaiono nel testo.");
+            //sb.AppendLine("- Se un valore non è scritto letteralmente nel testo corrente, il campo DEVE essere null.");
+            //sb.AppendLine("- VIETATO inventare, dedurre o ipotizzare valori non presenti nel testo.");
+            //sb.AppendLine("- VIETATO usare valori di turni precedenti della conversazione.");
+            //sb.AppendLine("- VIETATO copiare il nome, il tipo o la descrizione di uno slot come valore.");
+            //sb.AppendLine("- VIETATO usare la chiave JSON dello slot come valore.");
+            //sb.AppendLine("Se il testo non corrisponde a nessuno degli intent elencati, rispondi con intent=\"unknown\" e confidence=0.");
+            //sb.AppendLine("Non scegliere mai l'intent più vicino se non sei sicuro: preferisci unknown.");
+            //sb.AppendLine();
+            //sb.AppendLine("--- ESEMPI ---");
+            //sb.AppendLine();
+            //sb.AppendLine("Testo: \"timbratura\"");
+            //sb.AppendLine("Risposta corretta (nessuno slot nel testo → tutti null):");
+            //sb.AppendLine("{");
+            //sb.AppendLine("  \"intent\": \"RegisterClocking\",");
+            //sb.AppendLine("  \"slots\": { \"employeeName\": null, \"time\": null, \"date\": null, \"direction\": null },");
+            //sb.AppendLine("  \"missingRequired\": [\"employeeName\", \"time\"],");
+            //sb.AppendLine("  \"confidence\": 0.95");
+            //sb.AppendLine("}");
+            //sb.AppendLine();
+            //sb.AppendLine("Testo: \"timbratura mario rossi 09:00\"");
+            //sb.AppendLine("Risposta corretta (nome e orario presenti → estratti, data e direzione assenti → null):");
+            //sb.AppendLine("{");
+            //sb.AppendLine("  \"intent\": \"RegisterClocking\",");
+            //sb.AppendLine("  \"slots\": { \"employeeName\": \"mario rossi\", \"time\": \"09:00\", \"date\": null, \"direction\": null },");
+            //sb.AppendLine("  \"missingRequired\": [],");
+            //sb.AppendLine("  \"confidence\": 0.98");
+            //sb.AppendLine("}");
+            //sb.AppendLine("--- FINE ESEMPI ---");
 
             return sb.ToString();
         }
+
+
+
     }
+
+    public static class BuildSystemPromptUtil
+    {
+
+        public static void BuildSystemPrompt_Append_4_Date(StringBuilder sb)
+        {
+            sb.AppendLine();
+            sb.AppendLine($"Data di oggi: {DateTime.Today:yyyy-MM-dd}");
+            sb.AppendLine();
+            sb.AppendLine("IMPORTANTE:");
+            sb.AppendLine("Quando l’utente usa date relative come 'oggi', 'domani', 'ieri',");
+            sb.AppendLine("devi sempre convertirle in una data assoluta nel formato yyyy-MM-dd.");
+            sb.AppendLine($"Usa come riferimento la data indicata sopra. Oggi è {DateTime.Today:yyyy-MM-dd}");
+            
+        }
+
+        public static void BuildSystemPrompt_Append_Intent_Definition(StringBuilder sb, IReadOnlyList<IntentDefinition> intents)
+        {
+            sb.AppendLine();
+            sb.AppendLine("IMPORTANTE:");
+            sb.AppendLine("Il valore del campo \"intent\" deve essere SEMPRE uno dei seguenti:");
+
+            foreach (var intent in intents)
+            {
+                sb.AppendLine($"- {intent.Name}");
+            }
+
+            sb.AppendLine("Non usare mai la descrizione come nome dell’intent.");
+            sb.AppendLine("Non inventare nuovi nomi.");
+            sb.AppendLine("Non tradurre i nomi degli intent.");
+        }
+
+    }
+
+
 
     public class SlotDefinition
     {
-        public string Name     { get; set; } = string.Empty;
-        public string Type     { get; set; } = string.Empty;
-        public bool   Required { get; set; }
-        public string Default  { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
+        public string Type { get; set; } = string.Empty;
+        public bool Required { get; set; }
+        public string Default { get; set; } = string.Empty;
 
         // Descrizione usata da Ollama nel system prompt per estrarre il valore
         // (es. "orario nel formato HH:mm. Se l'utente dice 'alle 9' restituisci '09:00'").
@@ -329,7 +417,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
 
         // Etichetta leggibile per il riepilogo di conferma
         // (es. "Orario").
-        public string Label    { get; set; } = string.Empty;
+        public string Label { get; set; } = string.Empty;
 
         // Validazione del singolo valore dello slot.
         // Ritorna null se il valore è valido, SlotValidationResult.Failed(...) altrimenti.
@@ -339,7 +427,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
 
     public class IntentDefinition
     {
-        public string Name        { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
         // Etichetta breve per chip/bottoni UI (es. "Timbratura")
         public string DisplayName { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;

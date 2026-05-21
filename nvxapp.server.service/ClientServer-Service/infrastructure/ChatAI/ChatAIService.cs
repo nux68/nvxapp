@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
-using Serilog;
 using nvxapp.server.Base;
 using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Repositories.Public;
@@ -13,13 +12,10 @@ using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Helpers;
 using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.RabbitMQ;
-using nvxapp.server.service.RabbitMQ.Listener;
 using nvxapp.server.service.ServerModels;
-using RabbitMQ.Client;
-
+using Serilog;
 using System.Text;
 using System.Text.Json;
-using System.Text.RegularExpressions;
 
 
 namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
@@ -35,7 +31,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         private readonly string _ollamaUrl;
         private readonly string _ollamaModel;
         private readonly string _ollamaMethod;
-        
+
         private readonly int _maxHistoryTurns;
 
         public ChatAIService(IMapper mapper,
@@ -57,10 +53,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             _intentCatalog = intentCatalog;
             _sessionStore = sessionStore;
 
-            _ollamaUrl        = configuration["AI:Url"]   ?? throw new InvalidOperationException("AI:Url non configurato");
-            _ollamaModel      = configuration["AI:model"] ?? throw new InvalidOperationException("AI:model non configurato");
-            _ollamaMethod     = configuration["AI:method"] ?? throw new InvalidOperationException("AI:method non configurato");
-            _maxHistoryTurns  = int.TryParse(configuration["AI:MaxHistoryTurns"], out var n) && n > 0 ? n : 20;
+            _ollamaUrl = configuration["AI:Url"] ?? throw new InvalidOperationException("AI:Url non configurato");
+            _ollamaModel = configuration["AI:model"] ?? throw new InvalidOperationException("AI:model non configurato");
+            _ollamaMethod = configuration["AI:method"] ?? throw new InvalidOperationException("AI:method non configurato");
+            _maxHistoryTurns = int.TryParse(configuration["AI:MaxHistoryTurns"], out var n) && n > 0 ? n : 20;
 
         }
 
@@ -86,10 +82,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                     var freshSession = CreateSession();
                     return new ChatAIOutModel
                     {
-                        SessionId    = freshSession.SessionId,
-                        Responce     = "La sessione precedente è scaduta. Puoi iniziare con un nuovo comando.",
+                        SessionId = freshSession.SessionId,
+                        Responce = "La sessione precedente è scaduta. Puoi iniziare con un nuovo comando.",
                         ResponseType = "result",
-                        Suggestions  = BuildIntentSuggestions()
+                        Suggestions = BuildIntentSuggestions()
                     };
                 }
 
@@ -105,10 +101,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                     var resetSession = _sessionStore.Create();
                     return new ChatAIOutModel
                     {
-                        SessionId    = resetSession.SessionId,
-                        Responce     = "Operazione annullata. Puoi iniziare con un nuovo comando.",
+                        SessionId = resetSession.SessionId,
+                        Responce = "Operazione annullata. Puoi iniziare con un nuovo comando.",
                         ResponseType = "result",
-                        Suggestions  = BuildIntentSuggestions()
+                        Suggestions = BuildIntentSuggestions()
                     };
                 }
 
@@ -239,10 +235,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
 
                 return new ChatAIOutModel
                 {
-                    SessionId    = doneSession.SessionId,
-                    Responce     = result.Message,
+                    SessionId = doneSession.SessionId,
+                    Responce = result.Message,
                     ResponseType = result.Success ? "result" : "error",
-                    Suggestions  = result.Success ? BuildIntentSuggestions() : new()
+                    Suggestions = result.Success ? BuildIntentSuggestions() : new()
                 };
             }
 
@@ -252,10 +248,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 var freshSession = _sessionStore.Create();
                 return new ChatAIOutModel
                 {
-                    SessionId    = freshSession.SessionId,
-                    Responce     = "Operazione annullata.",
+                    SessionId = freshSession.SessionId,
+                    Responce = "Operazione annullata.",
                     ResponseType = "result",
-                    Suggestions  = BuildIntentSuggestions()
+                    Suggestions = BuildIntentSuggestions()
                 };
             }
 
@@ -301,10 +297,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
 
                 var requestBody = new OllamaChatRequest
                 {
-                    Model    = _ollamaModel,
+                    Model = _ollamaModel,
                     Messages = messages,
-                    Stream   = false,
-                    Format   = "json"
+                    Stream = false,
+                    Format = "json"
                 };
 
                 var raw = await PostToOllamaChatAsync(_ollamaUrl, requestBody);
@@ -338,17 +334,17 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
 
                 var requestBody = new OllamaChatRequest
                 {
-                    Model    = _ollamaModel,
+                    Model = _ollamaModel,
                     Messages = messages,
-                    Stream   = false,
-                    Format   = "json"
+                    Stream = false,
+                    Format = "json"
                 };
 
                 var raw = await PostToOllamaChatAsync(_ollamaUrl, requestBody);
                 if (string.IsNullOrEmpty(raw)) return null;
 
                 var start = raw.IndexOf('{');
-                var end   = raw.LastIndexOf('}');
+                var end = raw.LastIndexOf('}');
                 if (start == -1 || end == -1) return null;
 
                 var cleanJson = raw.Substring(start, end - start + 1);
@@ -367,22 +363,56 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             }
         }
 
+        //private string BuildSingleSlotSystemPrompt(string slotName, string intentName)
+        //{
+        //    var slotDef  = FindSlotDefinition(intentName, slotName);
+        //    var slotDesc = !string.IsNullOrEmpty(slotDef?.PromptDescription)
+        //        ? slotDef.PromptDescription
+        //        : "valore testuale";
+
+        //    return
+        //        "Estrai dal testo il valore di: " + slotDesc + "\n" +
+        //        "Rispondi SOLO con questo JSON, nessun testo aggiuntivo.\n" +
+        //        "Se il valore è presente nel testo:\n" +
+        //        "{ \"value\": \"<valore estratto>\" }\n" +
+        //        "Se il valore NON è presente nel testo, rispondi ESATTAMENTE:\n" +
+        //        "{ \"value\": null }\n" +
+        //        "Non copiare mai la descrizione dello slot come valore. Non inventare valori.";
+        //}
+
         private string BuildSingleSlotSystemPrompt(string slotName, string intentName)
         {
-            var slotDef  = FindSlotDefinition(intentName, slotName);
+            var slotDef = FindSlotDefinition(intentName, slotName);
             var slotDesc = !string.IsNullOrEmpty(slotDef?.PromptDescription)
                 ? slotDef.PromptDescription
                 : "valore testuale";
 
-            return
-                "Estrai dal testo il valore di: " + slotDesc + "\n" +
-                "Rispondi SOLO con questo JSON, nessun testo aggiuntivo.\n" +
-                "Se il valore è presente nel testo:\n" +
-                "{ \"value\": \"<valore estratto>\" }\n" +
-                "Se il valore NON è presente nel testo, rispondi ESATTAMENTE:\n" +
-                "{ \"value\": null }\n" +
-                "Non copiare mai la descrizione dello slot come valore. Non inventare valori.";
+            var sb = new StringBuilder();
+
+            //sb.AppendLine();
+            //sb.AppendLine($"Data di oggi: {DateTime.Today:yyyy-MM-dd}");
+            //sb.AppendLine();
+            //sb.AppendLine("IMPORTANTE:");
+            //sb.AppendLine("Quando l’utente usa date relative come 'oggi', 'domani', 'ieri',");
+            //sb.AppendLine("devi sempre convertirle in una data assoluta nel formato yyyy-MM-dd.");
+            //sb.AppendLine("Usa come riferimento la data indicata sopra. Oggi è 2026-05-21.");
+
+            BuildSystemPromptUtil.BuildSystemPrompt_Append_4_Date(sb);
+
+
+            sb.AppendLine("Estrai dal testo il valore di: " + slotDesc);
+            sb.AppendLine("Rispondi SOLO con questo JSON, nessun testo aggiuntivo.");
+            sb.AppendLine("Se il valore è presente nel testo:");
+            sb.AppendLine("{ \"value\": \"<valore estratto>\" }");
+            sb.AppendLine("Se il valore NON è presente nel testo, rispondi ESATTAMENTE:");
+            sb.AppendLine("{ \"value\": null }");
+            sb.AppendLine("Non copiare mai la descrizione dello slot come valore. Non inventare valori.");
+
+            return sb.ToString();
         }
+
+
+
 
         // Cerca la SlotDefinition per nome nell'intent corrente della sessione.
         // Unico punto di accesso alla struttura dello slot — nessun switch sui nomi.
@@ -417,7 +447,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             foreach (var turn in trimmed)
                 messages.Add(new OllamaChatMessage
                 {
-                    Role    = turn.Role,
+                    Role = turn.Role,
                     Content = turn.Content
                 });
 
@@ -427,12 +457,12 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         private async Task<string> PostToOllamaChatAsync(string baseUrl, OllamaChatRequest requestBody)
         {
             var result = await _webApiService.Post<OllamaChatRequest, OllamaChatResponse>(
-                serverUrl  : baseUrl,
+                serverUrl: baseUrl,
                 authentication: null,
-                action     : _ollamaMethod,
-                body       : requestBody,
-                bodyType   : WebApiBodyType.raw,
-                headers    : new Dictionary<string, string>());
+                action: _ollamaMethod,
+                body: requestBody,
+                bodyType: WebApiBodyType.raw,
+                headers: new Dictionary<string, string>());
 
             if (result?.Data == null)
                 throw new InvalidOperationException(
@@ -525,8 +555,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                     // Normalizzazione valida: il validator approva il valore E il testo contiene
                     // almeno una cifra (prerequisito minimo per qualsiasi slot numerico/temporale).
                     bool isValidNormalization = slotDef.Validator != null &&
-                                               slotDef.Validator(kv.Value) == null &&
-                                               userMessage.Any(char.IsDigit);
+                                               slotDef.Validator(kv.Value) == null 
+                                               //&&  userMessage.Any(char.IsDigit)
+                                               ;
 
                     if (!valueInText && !isDefaultValue && !isValidNormalization)
                     {
@@ -670,7 +701,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         // ---------------------------------------------------------------------------
 
         private ChatAIOutModel BuildQuestionResponse(ChatSession session, string message,
-            List<string>?  suggestions = null) =>
+            List<string>? suggestions = null) =>
             new()
             {
                 SessionId = session.SessionId,
@@ -692,10 +723,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             List<string>? suggestions = null) =>
             new()
             {
-                SessionId    = session.SessionId,
-                Responce     = message,
+                SessionId = session.SessionId,
+                Responce = message,
                 ResponseType = "error",
-                Suggestions  = suggestions ?? new()
+                Suggestions = suggestions ?? new()
             };
 
         // Costruisce la lista di suggerimenti dagli intent disponibili nel catalogo.
@@ -752,7 +783,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         //    }
         //}
 
-         #endregion
+        #endregion
 
     }
 
