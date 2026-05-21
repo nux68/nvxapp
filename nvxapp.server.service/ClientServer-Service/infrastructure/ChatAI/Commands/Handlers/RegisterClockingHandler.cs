@@ -12,6 +12,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Comma
         private static readonly IntentDefinition _intentDefinition = new()
         {
             Name        = "RegisterClocking",
+            DisplayName = "Timbratura",
             Description = "registra una timbratura di entrata o uscita",
             Keywords    = new() { "timbratura", "timbra", "entrata", "uscita", "orario", "clocking", "timbrare" },
             Slots       = new()

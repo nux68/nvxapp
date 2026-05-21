@@ -277,26 +277,36 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
             }
 
             sb.AppendLine("IMPORTANTE:");
-            sb.AppendLine("- Estrai TUTTI i valori esplicitamente presenti nel testo del messaggio corrente dell'utente.");
+            sb.AppendLine("- Estrai SOLO i valori ESPLICITAMENTE scritti nel testo del messaggio corrente.");
             sb.AppendLine("- I nomi propri di persona (nome e cognome) devono essere estratti esattamente come appaiono nel testo.");
-            sb.AppendLine("- Se un valore non è presente nel testo corrente, imposta il campo su null.");
-            sb.AppendLine("- Non dedurre valori da turni precedenti della conversazione: usa solo il messaggio corrente.");
-            sb.AppendLine("- Non copiare mai il nome, il tipo o la descrizione di uno slot come valore: usa null.");
-            sb.AppendLine("- Non usare mai la chiave JSON dello slot come valore (es. non scrivere \"employeeName\" o \"nome_e_cognome\" come valore).");
-            sb.AppendLine("- Non inventare valori.");
-            sb.AppendLine("Se il testo dell'utente non corrisponde a nessuno degli intent elencati, rispondi con intent=\"unknown\" e confidence=0.");
+            sb.AppendLine("- Se un valore non è scritto letteralmente nel testo corrente, il campo DEVE essere null.");
+            sb.AppendLine("- VIETATO inventare, dedurre o ipotizzare valori non presenti nel testo.");
+            sb.AppendLine("- VIETATO usare valori di turni precedenti della conversazione.");
+            sb.AppendLine("- VIETATO copiare il nome, il tipo o la descrizione di uno slot come valore.");
+            sb.AppendLine("- VIETATO usare la chiave JSON dello slot come valore.");
+            sb.AppendLine("Se il testo non corrisponde a nessuno degli intent elencati, rispondi con intent=\"unknown\" e confidence=0.");
             sb.AppendLine("Non scegliere mai l'intent più vicino se non sei sicuro: preferisci unknown.");
             sb.AppendLine();
-            sb.AppendLine("Esempio di risposta corretta (alcuni slot presenti, altri assenti):");
+            sb.AppendLine("--- ESEMPI ---");
+            sb.AppendLine();
+            sb.AppendLine("Testo: \"timbratura\"");
+            sb.AppendLine("Risposta corretta (nessuno slot nel testo → tutti null):");
             sb.AppendLine("{");
-            sb.AppendLine("  \"intent\": \"NomeIntent\",");
-            sb.AppendLine("  \"slots\": {");
-            sb.AppendLine("    \"slotPresente\": \"valore\",");
-            sb.AppendLine("    \"slotAssente\": null");
-            sb.AppendLine("  },");
-            sb.AppendLine("  \"missingRequired\": [\"slotAssente\"],");
+            sb.AppendLine("  \"intent\": \"RegisterClocking\",");
+            sb.AppendLine("  \"slots\": { \"employeeName\": null, \"time\": null, \"date\": null, \"direction\": null },");
+            sb.AppendLine("  \"missingRequired\": [\"employeeName\", \"time\"],");
             sb.AppendLine("  \"confidence\": 0.95");
             sb.AppendLine("}");
+            sb.AppendLine();
+            sb.AppendLine("Testo: \"timbratura mario rossi 09:00\"");
+            sb.AppendLine("Risposta corretta (nome e orario presenti → estratti, data e direzione assenti → null):");
+            sb.AppendLine("{");
+            sb.AppendLine("  \"intent\": \"RegisterClocking\",");
+            sb.AppendLine("  \"slots\": { \"employeeName\": \"mario rossi\", \"time\": \"09:00\", \"date\": null, \"direction\": null },");
+            sb.AppendLine("  \"missingRequired\": [],");
+            sb.AppendLine("  \"confidence\": 0.98");
+            sb.AppendLine("}");
+            sb.AppendLine("--- FINE ESEMPI ---");
 
             return sb.ToString();
         }
@@ -330,6 +340,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
     public class IntentDefinition
     {
         public string Name        { get; set; } = string.Empty;
+        // Etichetta breve per chip/bottoni UI (es. "Timbratura")
+        public string DisplayName { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public List<SlotDefinition> Slots { get; set; } = new();
 

@@ -12,6 +12,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Comma
         private static readonly IntentDefinition _intentDefinition = new()
         {
             Name        = "RegisterHoliday",
+            DisplayName = "Ferie",
             Description = "mette in ferie un dipendente per un periodo",
             Keywords    = new() { "ferie", "vacanza", "vacanze", "permesso", "assenza", "holiday" },
             Slots       = new()

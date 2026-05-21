@@ -12,6 +12,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Comma
         private static readonly IntentDefinition _intentDefinition = new()
         {
             Name        = "RegisterSickLeave",
+            DisplayName = "Malattia",
             Description = "registra una malattia per un dipendente",
             Keywords    = new() { "malattia", "malato", "sick", "certificato", "medico", "influenza", "congedo" },
             Slots       = new()

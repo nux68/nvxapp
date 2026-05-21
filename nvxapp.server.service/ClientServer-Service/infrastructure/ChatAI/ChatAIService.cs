@@ -166,7 +166,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                     }
 
                     session.Intent = knownIntent.Name; // usa il nome canonico dal catalogo
-                    SafeMergeSlots(session, extracted.Slots);
+                    SafeMergeSlots(session, extracted.Slots, userMessage);
                 }
                 else
                 {
@@ -182,9 +182,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                         if (string.IsNullOrEmpty(slotValue))
                             slotValue = userMessage.Trim();
 
-                        // Passa per SafeMergeSlots per applicare Validator e controllo PromptDescription
+                        // Passa per SafeMergeSlots con userMessage per applicare tutti i guard
                         // anche nei turni successivi, non solo nel primo turno.
-                        SafeMergeSlots(session, new Dictionary<string, string> { [nextMissing] = slotValue });
+                        SafeMergeSlots(session, new Dictionary<string, string> { [nextMissing] = slotValue }, userMessage);
                     }
                 }
 
@@ -231,24 +231,25 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             {
                 session.State = SessionState.Confirmed;
                 var result = await ExecuteCommandAsync(session);
-                session.AddToHistory("assistant", result.Message);
                 DeleteSession(session.SessionId);
+                var doneSession = _sessionStore.Create();
 
                 return new ChatAIOutModel
                 {
-                    SessionId    = session.SessionId,
+                    SessionId    = doneSession.SessionId,
                     Responce     = result.Message,
-                    ResponseType = result.Success ? "result" : "error"
+                    ResponseType = result.Success ? "result" : "error",
+                    Suggestions  = result.Success ? BuildIntentSuggestions() : new()
                 };
             }
 
             if (cancelled)
             {
-                session.AddToHistory("assistant", "Operazione annullata.");
                 DeleteSession(session.SessionId);
+                var freshSession = _sessionStore.Create();
                 return new ChatAIOutModel
                 {
-                    SessionId    = session.SessionId,
+                    SessionId    = freshSession.SessionId,
                     Responce     = "Operazione annullata.",
                     ResponseType = "result",
                     Suggestions  = BuildIntentSuggestions()
@@ -469,10 +470,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
 
         // Aggiunge alla sessione SOLO i valori realmente presenti.
         // Non tocca MAI gli slot già valorizzati in sessione.
-        // Se lo slot ha un Validator e il valore non supera la validazione, viene scartato:
-        // questo impedisce che hallucination del LLM (es. "timbratura" come nome dipendente)
-        // vengano accettate e saltino la raccolta del dato reale.
-        private void SafeMergeSlots(ChatSession session, Dictionary<string, string> newSlots)
+        // userMessage (opzionale): se fornito, scarta i valori che non appaiono nel testo originale
+        // come sottostringa — blocca le hallucination di slot inventati quando il messaggio è breve.
+        private void SafeMergeSlots(ChatSession session, Dictionary<string, string> newSlots,
+            string? userMessage = null)
         {
             if (newSlots == null) return;
 
@@ -487,22 +488,54 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 var slotDef = intentDef?.Slots.FirstOrDefault(s => s.Name == kv.Key);
 
                 // Scarta il valore se Ollama ha restituito la PromptDescription verbatim
-                // (hallucination classica: il modello copia la descrizione come valore)
                 if (slotDef != null &&
                     !string.IsNullOrEmpty(slotDef.PromptDescription) &&
                     kv.Value.Equals(slotDef.PromptDescription, StringComparison.OrdinalIgnoreCase))
                     continue;
 
                 // Scarta il valore se Ollama ha restituito il Type dello slot verbatim
-                // (es. "string", "HH:mm", "yyyy-MM-dd", "IN/OUT")
                 if (slotDef != null &&
                     !string.IsNullOrEmpty(slotDef.Type) &&
                     kv.Value.Equals(slotDef.Type, StringComparison.OrdinalIgnoreCase))
                     continue;
 
+                // Scarta il valore se coincide con una keyword dell'intent corrente.
+                // Le keyword sono parole trigger (es. "timbratura"), non dati utente.
+                if (intentDef != null &&
+                    intentDef.Keywords.Any(k => k.Equals(kv.Value, StringComparison.OrdinalIgnoreCase)))
+                    continue;
+
+                // Scarta il valore se non è rintracciabile nel testo originale dell'utente.
+                // Blocca hallucination dove Ollama inventa nomi, date e orari non digitati.
+                // Eccezioni legittime — il valore non deve essere nel testo verbatim se:
+                //   1. È un valore di default dello slot opzionale (es. "IN" per direction)
+                //   2. Ha un validator che lo approva E il testo contiene materiale grezzo
+                //      pertinente (es. almeno una cifra per slot numerici come HH:mm o yyyy-MM-dd).
+                //      Questo permette normalizzazioni tipo "5" → "05:00" o "oggi" → "2025-05-20"
+                //      senza accettare orari/date inventati quando il testo è solo testo (es. "mimmo zuzzu").
+                if (userMessage != null && slotDef != null)
+                {
+                    bool valueInText = userMessage.Contains(kv.Value, StringComparison.OrdinalIgnoreCase);
+                    bool isDefaultValue = !string.IsNullOrEmpty(slotDef.Default) &&
+                                         kv.Value.Equals(slotDef.Default, StringComparison.OrdinalIgnoreCase);
+
+                    // Normalizzazione valida: il validator approva il valore E il testo contiene
+                    // almeno una cifra (prerequisito minimo per qualsiasi slot numerico/temporale).
+                    bool isValidNormalization = slotDef.Validator != null &&
+                                               slotDef.Validator(kv.Value) == null &&
+                                               userMessage.Any(char.IsDigit);
+
+                    if (!valueInText && !isDefaultValue && !isValidNormalization)
+                    {
+                        Log.Warning("[ChatAI] Slot scartato: valore non presente nel testo. Slot={Slot} Valore={Value} Testo={Text}",
+                            kv.Key, kv.Value, userMessage);
+                        continue;
+                    }
+                }
+
                 // Se lo slot ha un validator di formato, rigetta valori che non lo superano
                 if (slotDef?.Validator != null && slotDef.Validator(kv.Value) != null)
-                    continue; // valore non valido — verrà chiesto all'utente
+                    continue;
 
                 session.Slots[kv.Key] = kv.Value;
             }
@@ -666,7 +699,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         // Usa la Description dell'intent come testo del chip.
         private List<string> BuildIntentSuggestions() =>
             _intentCatalog.Intents
-                .Select(i => !string.IsNullOrEmpty(i.Description) ? i.Description : i.Name)
+                .Select(i => !string.IsNullOrEmpty(i.DisplayName) ? i.DisplayName : i.Name)
                 .ToList();
 
         // ---------------------------------------------------------------------------
