@@ -1,13 +1,11 @@
 using nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Models;
 
-
-
 namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Commands.Handlers
 {
     // Gestisce la registrazione di un periodo di malattia.
     // TODO: sostituire il placeholder con la chiamata API reale
-    //       e il lookup del dipendente per nome ? EmployeeId.
-    public class RegisterSickLeaveHandler : ICommandHandler
+    //       e il lookup del dipendente per nome -> EmployeeId.
+    public class RegisterSickLeaveHandler : BaseCommandDipeHandler
     {
         private static readonly IntentDefinition _intentDefinition = new()
         {
@@ -15,27 +13,14 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Comma
             DisplayName = "Malattia",
             Description = "registra una malattia per un dipendente",
             Keywords    = new() { "malattia", "malato", "sick", "certificato", "medico", "influenza", "congedo" },
-            Slots       = new()
-            {
-                new()
-                {
-                    Name              = "employeeName",
-                    Type              = "string",
-                    Required          = true,
-                    //PromptDescription = "nome e cognome della persona fisica presente nel testo (es. 'Marco Rossi', 'mario lalli'). Estrai il nome esattamente come appare nel testo.",
-                    PromptDescription = "nome e cognome del dipendente — NON usare questa frase come valore. Devi estrarre SOLO un nome realmente scritto dall’utente.",
-                    Question          = "Per quale dipendente?",
-                    Label             = "Dipendente",
-                    Validator         = v => v.Trim().Length >= 2 && v.Any(char.IsLetter) ? null
-                        : SlotValidationResult.Failed(SlotValidationError.InvalidFormat,
-                            $"'{v}' non sembra un nome valido. Inserire nome e cognome del dipendente.", "employeeName")
-                },
+            Slots       = BuildSlots(
+                EmployeeNameSlot,
                 new()
                 {
                     Name              = "startDate",
                     Type              = "yyyy-MM-dd",
                     Required          = true,
-                    PromptDescription = $"data di inizio nel formato yyyy-MM-dd. Oggi \u00e8 {DateTime.Today:yyyy-MM-dd}.",
+                    PromptDescription = "data di inizio nel formato yyyy-MM-dd. Se dice 'oggi' normalizza alla data odierna.",
                     Question          = "Da quale data?",
                     Label             = "Dal",
                     Validator         = v => DateOnly.TryParse(v, out _) ? null
@@ -47,7 +32,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Comma
                     Name              = "endDate",
                     Type              = "yyyy-MM-dd",
                     Required          = false,
-                    PromptDescription = $"data di fine nel formato yyyy-MM-dd. Oggi \u00e8 {DateTime.Today:yyyy-MM-dd}.",
+                    PromptDescription = "data di fine nel formato yyyy-MM-dd. Se dice 'oggi' normalizza alla data odierna.",
                     Question          = "Fino a quale data?",
                     Label             = "Al",
                     Validator         = v => DateOnly.TryParse(v, out _) ? null
@@ -63,7 +48,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Comma
                     Question          = "Hai il numero del certificato medico? (premi invio per saltare)",
                     Label             = "Certificato"
                 }
-            },
+            ),
             CrossValidator = slots =>
             {
                 if (slots.TryGetValue("startDate", out var s) &&
@@ -77,22 +62,17 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Comma
             }
         };
 
-        public IntentDefinition IntentDefinition => _intentDefinition;
+        public override IntentDefinition IntentDefinition => _intentDefinition;
 
-        public Task<CommandResult> ExecuteAsync(Dictionary<string, string> slots)
+        public override Task<CommandResult> ExecuteAsync(Dictionary<string, string> slots)
         {
             var employeeName      = slots.GetValueOrDefault("employeeName", "-");
             var startDate         = slots.GetValueOrDefault("startDate", "-");
             var endDate           = slots.GetValueOrDefault("endDate", string.Empty);
             var certificateNumber = slots.GetValueOrDefault("certificateNumber", string.Empty);
 
-            var endPart  = !string.IsNullOrEmpty(endDate)
-                ? $" al {endDate}"
-                : string.Empty;
-
-            var certPart = !string.IsNullOrEmpty(certificateNumber)
-                ? $" (certificato n. {certificateNumber})"
-                : string.Empty;
+            var endPart  = !string.IsNullOrEmpty(endDate)  ? $" al {endDate}"                    : string.Empty;
+            var certPart = !string.IsNullOrEmpty(certificateNumber) ? $" (certificato n. {certificateNumber})" : string.Empty;
 
             return Task.FromResult(CommandResult.Ok(
                 $"Malattia registrata: {employeeName} dal {startDate}{endPart}{certPart}."));
