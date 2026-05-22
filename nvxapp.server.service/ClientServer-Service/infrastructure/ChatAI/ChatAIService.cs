@@ -599,28 +599,28 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 //      senza accettare orari/date inventati quando il testo è solo testo (es. "mimmo zuzzu").
 
                 //gate 6
-                if (userMessage != null && slotDef != null)
-                {
-                    bool valueInText = userMessage.Contains(kv.Value, StringComparison.OrdinalIgnoreCase);
-                    bool isDefaultValue = !string.IsNullOrEmpty(slotDef.Default) &&
-                                         kv.Value.Equals(slotDef.Default, StringComparison.OrdinalIgnoreCase);
+                //if (userMessage != null && slotDef != null)
+                //{
+                //    bool valueInText = userMessage.Contains(kv.Value, StringComparison.OrdinalIgnoreCase);
+                //    bool isDefaultValue = !string.IsNullOrEmpty(slotDef.Default) &&
+                //                         kv.Value.Equals(slotDef.Default, StringComparison.OrdinalIgnoreCase);
 
-                    // Normalizzazione valida: il validator approva il valore E il testo contiene
-                    // almeno una cifra (prerequisito minimo per qualsiasi slot numerico/temporale).
-                    bool isValidNormalization = slotDef.Validator != null &&
-                                                slotDef.Validator(kv.Value) == null;
-                    bool isValidContent = slotDef.HasRelevantContent != null &&
-                                                slotDef.HasRelevantContent(userMessage);
+                //    // Normalizzazione valida: il validator approva il valore E il testo contiene
+                //    // almeno una cifra (prerequisito minimo per qualsiasi slot numerico/temporale).
+                //    bool isValidNormalization = slotDef.Validator != null &&
+                //                                slotDef.Validator(kv.Value) == null;
+                //    bool isValidContent = slotDef.HasRelevantContent != null &&
+                //                                slotDef.HasRelevantContent(userMessage);
 
 
 
-                    if (!valueInText && !isDefaultValue && (!isValidNormalization /*|| isValidContent*/ ))
-                    {
-                        Log.Warning("[ChatAI] Slot scartato: valore non presente nel testo. Slot={Slot} Valore={Value} Testo={Text}",
-                            kv.Key, kv.Value, userMessage);
-                        continue;
-                    }
-                }
+                //    if (!valueInText && !isDefaultValue && (!isValidNormalization /*|| isValidContent*/ ))
+                //    {
+                //        Log.Warning("[ChatAI] Slot scartato: valore non presente nel testo. Slot={Slot} Valore={Value} Testo={Text}",
+                //            kv.Key, kv.Value, userMessage);
+                //        continue;
+                //    }
+                //}
 
                 //Gate 7 
                 // Se lo slot ha un validator di formato, rigetta valori che non lo superano
