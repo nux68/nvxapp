@@ -36,9 +36,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         private readonly string _openrouterMethod;
         private readonly string _openrouterApiKey;
 
-
-
         private readonly int _maxHistoryTurns;
+        private readonly bool _useLocalLLM;
 
         public ChatAIService(IMapper mapper,
                              UserManager<ApplicationUser> userManager,
@@ -59,16 +58,20 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             _intentCatalog = intentCatalog;
             _sessionStore = sessionStore;
 
-            _ollamaUrl = configuration["AI:Url"] ?? throw new InvalidOperationException("AI:Url non configurato");
-            _ollamaModel = configuration["AI:model"] ?? throw new InvalidOperationException("AI:model non configurato");
-            _ollamaMethod = configuration["AI:method"] ?? throw new InvalidOperationException("AI:method non configurato");
-            
-            _openrouterUrl = configuration["AI_openrouter:Url"] ?? throw new InvalidOperationException("AI_openrouter:Url non configurato");
-            _openrouterModel = configuration["AI_openrouter:model"] ?? throw new InvalidOperationException("AI_openrouter:model non configurato");
-            _openrouterMethod = configuration["AI_openrouter:method"] ?? throw new InvalidOperationException("AI_openrouter:method non configurato");
-            _openrouterApiKey = configuration["AI_openrouter:OpenRouterKey"] ?? throw new InvalidOperationException("AI_openrouter:apiKey non configurato");
-
             _maxHistoryTurns = int.TryParse(configuration["AI:MaxHistoryTurns"], out var n) && n > 0 ? n : 20;
+
+            _useLocalLLM = bool.TryParse(configuration["AI:UseLocalLLM"], out var useLocal) && useLocal;
+
+            _ollamaUrl    = configuration["AI:AI_local:Url"] ?? throw new InvalidOperationException("AI_local:Url non configurato");
+            _ollamaModel  = configuration["AI:AI_local:model"] ?? throw new InvalidOperationException("AI_local:model non configurato");
+            _ollamaMethod = configuration["AI:AI_local:method"] ?? throw new InvalidOperationException("AI_local:method non configurato");
+            
+            _openrouterUrl    = configuration["AI:AI_openrouter:Url"] ?? throw new InvalidOperationException("AI_openrouter:Url non configurato");
+            _openrouterModel  = configuration["AI:AI_openrouter:model"] ?? throw new InvalidOperationException("AI_openrouter:model non configurato");
+            _openrouterMethod = configuration["AI:AI_openrouter:method"] ?? throw new InvalidOperationException("AI_openrouter:method non configurato");
+            _openrouterApiKey = configuration["AI:AI_openrouter:OpenRouterKey"] ?? throw new InvalidOperationException("AI_openrouter:apiKey non configurato");
+
+            
 
         }
 
@@ -315,8 +318,11 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                     Format = "json"
                 };
 
-                var raw = await PostToOllamaChatAsync(_ollamaUrl, requestBody);
-                //var raw = await PostToOpenRouterChatAsync(_ollamaUrl, requestBody);
+                string raw;
+                if(_useLocalLLM)
+                    raw = await PostToOllamaChatAsync(_ollamaUrl, requestBody);
+                else
+                   raw = await PostToOpenRouterChatAsync(_ollamaUrl, requestBody);
 
                 
 
@@ -341,8 +347,6 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         {
             try
             {
-                //string ollamaUrl = _configuration["AI:Url"] ?? "";
-                //string ollamaModel = _configuration["AI:model"] ?? "" ;
 
                 var messages = BuildChatMessages(
                     BuildSingleSlotSystemPrompt(slotName, intentName),
@@ -356,10 +360,16 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                     Format = "json"
                 };
 
-                var raw = await PostToOllamaChatAsync(_ollamaUrl, requestBody);
-                //var raw = await PostToOpenRouterChatAsync(_ollamaUrl, requestBody);
+                
+                
 
                 
+                string raw;
+                if(_useLocalLLM)
+                    raw = await PostToOllamaChatAsync(_ollamaUrl, requestBody);
+                else
+                   raw = await PostToOpenRouterChatAsync(_ollamaUrl, requestBody);
+
 
                 if (string.IsNullOrEmpty(raw)) return null;
 
