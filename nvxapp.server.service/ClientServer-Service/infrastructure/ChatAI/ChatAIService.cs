@@ -6,7 +6,6 @@ using Microsoft.Extensions.Options;
 using nvxapp.server.Base;
 using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Repositories.Public;
-using nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Commands;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Helpers;
@@ -16,7 +15,6 @@ using nvxapp.server.service.ServerModels;
 using Serilog;
 using System.Text;
 using System.Text.Json;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 
 namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
@@ -32,6 +30,13 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         private readonly string _ollamaUrl;
         private readonly string _ollamaModel;
         private readonly string _ollamaMethod;
+
+        private readonly string _openrouterUrl;
+        private readonly string _openrouterModel;
+        private readonly string _openrouterMethod;
+        private readonly string _openrouterApiKey;
+
+
 
         private readonly int _maxHistoryTurns;
 
@@ -57,6 +62,12 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             _ollamaUrl = configuration["AI:Url"] ?? throw new InvalidOperationException("AI:Url non configurato");
             _ollamaModel = configuration["AI:model"] ?? throw new InvalidOperationException("AI:model non configurato");
             _ollamaMethod = configuration["AI:method"] ?? throw new InvalidOperationException("AI:method non configurato");
+            
+            _openrouterUrl = configuration["AI_openrouter:Url"] ?? throw new InvalidOperationException("AI_openrouter:Url non configurato");
+            _openrouterModel = configuration["AI_openrouter:model"] ?? throw new InvalidOperationException("AI_openrouter:model non configurato");
+            _openrouterMethod = configuration["AI_openrouter:method"] ?? throw new InvalidOperationException("AI_openrouter:method non configurato");
+            _openrouterApiKey = configuration["AI_openrouter:OpenRouterKey"] ?? throw new InvalidOperationException("AI_openrouter:apiKey non configurato");
+
             _maxHistoryTurns = int.TryParse(configuration["AI:MaxHistoryTurns"], out var n) && n > 0 ? n : 20;
 
         }
@@ -305,6 +316,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 };
 
                 var raw = await PostToOllamaChatAsync(_ollamaUrl, requestBody);
+                //var raw = await PostToOpenRouterChatAsync(_ollamaUrl, requestBody);
+
+                
+
                 return SafeDeserializeExtractedIntent(raw);
             }
             catch (Exception ex)
@@ -342,6 +357,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 };
 
                 var raw = await PostToOllamaChatAsync(_ollamaUrl, requestBody);
+                //var raw = await PostToOpenRouterChatAsync(_ollamaUrl, requestBody);
+
+                
+
                 if (string.IsNullOrEmpty(raw)) return null;
 
                 var start = raw.IndexOf('{');
@@ -364,7 +383,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             }
         }
 
-        
+
 
         private string BuildSingleSlotSystemPrompt(string slotName, string intentName)
         {
@@ -375,7 +394,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
 
             var sb = new StringBuilder();
 
-          
+
             BuildSystemPromptUtil.BuildSystemPrompt_Append_Intestazione_Comune(sb);
 
 
@@ -454,6 +473,49 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
 
             return result.Data.Message?.Content ?? string.Empty;
         }
+
+        private async Task<string> PostToOpenRouterChatAsync(string baseUrl, OllamaChatRequest requestBody)
+        {
+            // OpenRouter richiede API key
+            //var apiKey = _configuration["AI:OpenRouterKey"];
+            //if (string.IsNullOrEmpty(apiKey))
+            //    throw new InvalidOperationException("AI:OpenRouterKey non configurato");
+
+            // Converte il tuo formato Ollama in formato OpenAI/OpenRouter
+            var openRouterBody = new
+            {
+                model = _openrouterModel, // es: "microsoft/phi-4"
+                messages = requestBody.Messages.Select(m => new
+                {
+                    role = m.Role,
+                    content = m.Content
+                }).ToList(),
+                stream = false
+            };
+
+            var headers = new Dictionary<string, string>
+            {
+                ["Authorization"] = $"Bearer {_openrouterApiKey}",
+                ["HTTP-Referer"] = "http://localhost",   // richiesto da OpenRouter
+                ["X-Title"] = "NvxApp-Dev"               // nome della tua app
+            };
+
+            var result = await _webApiService.Post<object, OpenRouterChatResponse>(
+                serverUrl: _openrouterUrl,
+                authentication: null,
+                action: _openrouterMethod,
+                body: openRouterBody,
+                bodyType: WebApiBodyType.raw,
+                headers: headers
+            );
+
+            if (result?.Data == null)
+                throw new InvalidOperationException(
+                    $"OpenRouter ha risposto con status {result?.StatusCode}: {result?.ReasonPhrase}");
+
+            return result.Data.Choices?.FirstOrDefault()?.Message?.Content ?? string.Empty;
+        }
+
 
         // ---------------------------------------------------------------------------
         // Deserializzazione sicura
@@ -535,7 +597,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 //      pertinente (es. almeno una cifra per slot numerici come HH:mm o yyyy-MM-dd).
                 //      Questo permette normalizzazioni tipo "5" → "05:00" o "oggi" → "2025-05-20"
                 //      senza accettare orari/date inventati quando il testo è solo testo (es. "mimmo zuzzu").
-                
+
                 //gate 6
                 if (userMessage != null && slotDef != null)
                 {
@@ -546,13 +608,13 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                     // Normalizzazione valida: il validator approva il valore E il testo contiene
                     // almeno una cifra (prerequisito minimo per qualsiasi slot numerico/temporale).
                     bool isValidNormalization = slotDef.Validator != null &&
-                                                slotDef.Validator(kv.Value) == null ;
-                    bool isValidContent       = slotDef.HasRelevantContent != null &&
+                                                slotDef.Validator(kv.Value) == null;
+                    bool isValidContent = slotDef.HasRelevantContent != null &&
                                                 slotDef.HasRelevantContent(userMessage);
 
 
 
-                    if (!valueInText && !isDefaultValue && (!isValidNormalization /*|| isValidContent*/ ) )
+                    if (!valueInText && !isDefaultValue && (!isValidNormalization /*|| isValidContent*/ ))
                     {
                         Log.Warning("[ChatAI] Slot scartato: valore non presente nel testo. Slot={Slot} Valore={Value} Testo={Text}",
                             kv.Key, kv.Value, userMessage);

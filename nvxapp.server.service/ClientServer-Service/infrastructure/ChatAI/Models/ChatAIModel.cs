@@ -1,5 +1,4 @@
 using Newtonsoft.Json;
-using nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Commands;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -263,10 +262,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
 
             BuildSystemPromptUtil.BuildSystemPrompt_Append_Intestazione_Comune(sb);
 
-            BuildSystemPromptUtil.BuildSystemPrompt_Append_Intent_Definition(sb,_intents);
+            BuildSystemPromptUtil.BuildSystemPrompt_Append_Intent_Definition(sb, _intents);
 
             sb.AppendLine("Intent disponibili:");
-            
+
             sb.AppendLine();
 
             for (int i = 0; i < _intents.Count; i++)
@@ -275,19 +274,19 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
                 sb.AppendLine($"{i + 1}. {intent.Name}");
                 sb.AppendLine($"   Descrizione: {intent.Description}");
 
-                if(intent.Keywords.Count>0)
+                if (intent.Keywords.Count > 0)
                 {
                     //sb.AppendLine();
                     sb.Append("   La richiesta può contenere le parole: ");
-                    foreach(var iKey in intent.Keywords)
+                    foreach (var iKey in intent.Keywords)
                     {
                         sb.Append($"{iKey},");
                     }
                     sb.AppendLine();
                     sb.AppendLine();
                 }
-                
-                
+
+
                 sb.AppendLine($"   Slot:");
 
                 foreach (var slot in intent.Slots)
@@ -336,7 +335,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
             sb.AppendLine("NON inventare valori. NON completare slot mancanti con valori plausibili o di esempio.");
             sb.AppendLine("Un valore mancante in \"missingRequired\" è la risposta corretta — non un errore.");
             sb.AppendLine("");
-            
+
 
 
             sb.AppendLine();
@@ -346,7 +345,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
             sb.AppendLine("Quando l’utente usa date relative come 'oggi', 'domani', 'ieri',");
             sb.AppendLine("devi sempre convertirle in una data assoluta nel formato yyyy-MM-dd.");
             sb.AppendLine($"Usa come riferimento la data indicata sopra. Oggi è {DateTime.Today:yyyy-MM-dd}");
-            
+
         }
 
         public static void BuildSystemPrompt_Append_Intent_Definition(StringBuilder sb, IReadOnlyList<IntentDefinition> intents)
@@ -418,6 +417,25 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
         // Se vuoto, il pre-filtro viene saltato per questo intent.
         // ATTENZIONE CON MODELLI EVOLUTI, SI POTRA ELIMINARE
         public List<string> Keywords { get; set; } = new();
+    }
+
+
+
+
+    public class OpenRouterChatResponse
+    {
+        public List<OpenRouterChoice> Choices { get; set; } = new List<OpenRouterChoice>();
+    }
+
+    public class OpenRouterChoice
+    {
+        public OpenRouterMessage Message { get; set; } = new OpenRouterMessage();
+    }
+
+    public class OpenRouterMessage
+    {
+        public string Role { get; set; } = string.Empty;
+        public string Content { get; set; } = string.Empty;
     }
 
 }
