@@ -1,6 +1,6 @@
 using nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Models;
 
-namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Commands
+namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
 {
     // Contratto base per tutti gli handler di comando.
     // Ogni handler è responsabile sia della propria esecuzione sia della

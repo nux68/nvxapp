@@ -16,6 +16,7 @@ using nvxapp.server.service.ServerModels;
 using Serilog;
 using System.Text;
 using System.Text.Json;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 
 namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
@@ -363,22 +364,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             }
         }
 
-        //private string BuildSingleSlotSystemPrompt(string slotName, string intentName)
-        //{
-        //    var slotDef  = FindSlotDefinition(intentName, slotName);
-        //    var slotDesc = !string.IsNullOrEmpty(slotDef?.PromptDescription)
-        //        ? slotDef.PromptDescription
-        //        : "valore testuale";
-
-        //    return
-        //        "Estrai dal testo il valore di: " + slotDesc + "\n" +
-        //        "Rispondi SOLO con questo JSON, nessun testo aggiuntivo.\n" +
-        //        "Se il valore è presente nel testo:\n" +
-        //        "{ \"value\": \"<valore estratto>\" }\n" +
-        //        "Se il valore NON è presente nel testo, rispondi ESATTAMENTE:\n" +
-        //        "{ \"value\": null }\n" +
-        //        "Non copiare mai la descrizione dello slot come valore. Non inventare valori.";
-        //}
+        
 
         private string BuildSingleSlotSystemPrompt(string slotName, string intentName)
         {
@@ -389,15 +375,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
 
             var sb = new StringBuilder();
 
-            //sb.AppendLine();
-            //sb.AppendLine($"Data di oggi: {DateTime.Today:yyyy-MM-dd}");
-            //sb.AppendLine();
-            //sb.AppendLine("IMPORTANTE:");
-            //sb.AppendLine("Quando l’utente usa date relative come 'oggi', 'domani', 'ieri',");
-            //sb.AppendLine("devi sempre convertirle in una data assoluta nel formato yyyy-MM-dd.");
-            //sb.AppendLine("Usa come riferimento la data indicata sopra. Oggi è 2026-05-21.");
-
-            BuildSystemPromptUtil.BuildSystemPrompt_Append_4_Date(sb);
+          
+            BuildSystemPromptUtil.BuildSystemPrompt_Append_Intestazione_Comune(sb);
 
 
             sb.AppendLine("Estrai dal testo il valore di: " + slotDesc);
@@ -407,6 +386,11 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             sb.AppendLine("Se il valore NON è presente nel testo, rispondi ESATTAMENTE:");
             sb.AppendLine("{ \"value\": null }");
             sb.AppendLine("Non copiare mai la descrizione dello slot come valore. Non inventare valori.");
+            sb.AppendLine();
+            sb.AppendLine("REGOLA ASSOLUTA: non inventare mai il valore. Non usare valori di esempio.");
+            sb.AppendLine("Non usare valori dedotti dal contesto della conversazione.");
+            sb.AppendLine("Se l'utente non ha scritto esplicitamente il valore richiesto, restituisci null.");
+
 
             return sb.ToString();
         }
@@ -515,23 +499,28 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
 
             foreach (var kv in newSlots)
             {
+                //gate 1
                 if (IsNullString(kv.Value)) continue; // ignora null/vuoti
+                //gate 2
                 if (session.Slots.ContainsKey(kv.Key)) continue; // non sovrascrivere esistenti
 
                 var slotDef = intentDef?.Slots.FirstOrDefault(s => s.Name == kv.Key);
 
+                //gate 3
                 // Scarta il valore se Ollama ha restituito la PromptDescription verbatim
                 if (slotDef != null &&
                     !string.IsNullOrEmpty(slotDef.PromptDescription) &&
                     kv.Value.Equals(slotDef.PromptDescription, StringComparison.OrdinalIgnoreCase))
                     continue;
 
+                //gate 4
                 // Scarta il valore se Ollama ha restituito il Type dello slot verbatim
                 if (slotDef != null &&
                     !string.IsNullOrEmpty(slotDef.Type) &&
                     kv.Value.Equals(slotDef.Type, StringComparison.OrdinalIgnoreCase))
                     continue;
 
+                //gate 5
                 // Scarta il valore se coincide con una keyword dell'intent corrente.
                 // Le keyword sono parole trigger (es. "timbratura"), non dati utente.
                 if (intentDef != null &&
@@ -546,6 +535,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 //      pertinente (es. almeno una cifra per slot numerici come HH:mm o yyyy-MM-dd).
                 //      Questo permette normalizzazioni tipo "5" → "05:00" o "oggi" → "2025-05-20"
                 //      senza accettare orari/date inventati quando il testo è solo testo (es. "mimmo zuzzu").
+                
+                //gate 6
                 if (userMessage != null && slotDef != null)
                 {
                     bool valueInText = userMessage.Contains(kv.Value, StringComparison.OrdinalIgnoreCase);
@@ -555,11 +546,13 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                     // Normalizzazione valida: il validator approva il valore E il testo contiene
                     // almeno una cifra (prerequisito minimo per qualsiasi slot numerico/temporale).
                     bool isValidNormalization = slotDef.Validator != null &&
-                                               slotDef.Validator(kv.Value) == null 
-                                               //&&  userMessage.Any(char.IsDigit)
-                                               ;
+                                                slotDef.Validator(kv.Value) == null ;
+                    bool isValidContent       = slotDef.HasRelevantContent != null &&
+                                                slotDef.HasRelevantContent(userMessage);
 
-                    if (!valueInText && !isDefaultValue && !isValidNormalization)
+
+
+                    if (!valueInText && !isDefaultValue && (!isValidNormalization /*|| isValidContent*/ ) )
                     {
                         Log.Warning("[ChatAI] Slot scartato: valore non presente nel testo. Slot={Slot} Valore={Value} Testo={Text}",
                             kv.Key, kv.Value, userMessage);
@@ -567,6 +560,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                     }
                 }
 
+                //Gate 7 
                 // Se lo slot ha un validator di formato, rigetta valori che non lo superano
                 if (slotDef?.Validator != null && slotDef.Validator(kv.Value) != null)
                     continue;

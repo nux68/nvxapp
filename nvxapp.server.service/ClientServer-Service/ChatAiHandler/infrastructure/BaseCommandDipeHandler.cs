@@ -1,6 +1,6 @@
 using nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Models;
 
-namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Commands
+namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Commands.Handlers
 {
     // Classe base per gli handler che operano su un dipendente.
     // Aggiunge lo slot employeeName condiviso da tutti gli handler derivati.
@@ -11,7 +11,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Comma
             Name              = "employeeName",
             Type              = "string",
             Required          = true,
-            PromptDescription = "nome e cognome del dipendente — NON usare questa frase come valore. Devi estrarre SOLO un nome realmente scritto dall'utente.",
+            //PromptDescription = "nome e cognome del dipendente — NON usare questa frase come valore. Devi estrarre SOLO un nome realmente scritto dall'utente.",
+            PromptDescription = @"(string, obbligatorio)",
+            
             Question          = "Per quale dipendente?",
             Label             = "Dipendente",
             Validator         = v => v.Trim().Length >= 2 && v.Any(char.IsLetter) ? null

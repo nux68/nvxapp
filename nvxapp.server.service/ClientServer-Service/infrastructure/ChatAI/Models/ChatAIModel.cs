@@ -261,32 +261,12 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
             sb.AppendLine("Sei un assistente che estrae intent e slot da testo in italiano.");
             sb.AppendLine("Rispondi SOLO con un oggetto JSON valido, nessun testo aggiuntivo.");
 
-            //sb.AppendLine();
-            ////sb.AppendLine($"Data di oggi: {DateTime.Today:yyyy-MM-dd}");
-            ////sb.AppendLine();
-            ////sb.AppendLine("IMPORTANTE:");
-            ////sb.AppendLine("Quando l’utente usa date relative come 'oggi', 'domani', 'ieri',");
-            ////sb.AppendLine("devi sempre convertirle in una data assoluta nel formato yyyy-MM-dd.");
-            ////sb.AppendLine($"Usa come riferimento la data indicata sopra. Oggi è {DateTime.Today:yyyy-MM-dd}");
-            ////sb.AppendLine("Non usare la data reale del sistema.");
-            //sb.AppendLine();
-
-            BuildSystemPromptUtil.BuildSystemPrompt_Append_4_Date(sb);
+            BuildSystemPromptUtil.BuildSystemPrompt_Append_Intestazione_Comune(sb);
 
             BuildSystemPromptUtil.BuildSystemPrompt_Append_Intent_Definition(sb,_intents);
-            
 
             sb.AppendLine("Intent disponibili:");
-            ///
-            sb.AppendLine("IMPORTANTE:");
-            sb.AppendLine("Il valore del campo \"intent\" deve essere SEMPRE uno dei seguenti::");
-            sb.AppendLine("- RegisterClocking:");
-            sb.AppendLine("- RegisterHoliday:");
-            sb.AppendLine("- RegisterSickLeave:");
-            sb.AppendLine("Non usare mai la descrizione come nome dell’intent.");
-            sb.AppendLine("Non inventare nuovi nomi.");
-            sb.AppendLine("Non tradurre i nomi degli intent.");
-            ///
+            
             sb.AppendLine();
 
             for (int i = 0; i < _intents.Count; i++)
@@ -294,6 +274,20 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
                 var intent = _intents[i];
                 sb.AppendLine($"{i + 1}. {intent.Name}");
                 sb.AppendLine($"   Descrizione: {intent.Description}");
+
+                if(intent.Keywords.Count>0)
+                {
+                    //sb.AppendLine();
+                    sb.Append("   La richiesta può contenere le parole: ");
+                    foreach(var iKey in intent.Keywords)
+                    {
+                        sb.Append($"{iKey},");
+                    }
+                    sb.AppendLine();
+                    sb.AppendLine();
+                }
+                
+                
                 sb.AppendLine($"   Slot:");
 
                 foreach (var slot in intent.Slots)
@@ -324,40 +318,6 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
 
 
 
-            //////////
-
-            //sb.AppendLine("IMPORTANTE:");
-            //sb.AppendLine("- Estrai SOLO i valori ESPLICITAMENTE scritti nel testo del messaggio corrente.");
-            //sb.AppendLine("- I nomi propri di persona (nome e cognome) devono essere estratti esattamente come appaiono nel testo.");
-            //sb.AppendLine("- Se un valore non è scritto letteralmente nel testo corrente, il campo DEVE essere null.");
-            //sb.AppendLine("- VIETATO inventare, dedurre o ipotizzare valori non presenti nel testo.");
-            //sb.AppendLine("- VIETATO usare valori di turni precedenti della conversazione.");
-            //sb.AppendLine("- VIETATO copiare il nome, il tipo o la descrizione di uno slot come valore.");
-            //sb.AppendLine("- VIETATO usare la chiave JSON dello slot come valore.");
-            //sb.AppendLine("Se il testo non corrisponde a nessuno degli intent elencati, rispondi con intent=\"unknown\" e confidence=0.");
-            //sb.AppendLine("Non scegliere mai l'intent più vicino se non sei sicuro: preferisci unknown.");
-            //sb.AppendLine();
-            //sb.AppendLine("--- ESEMPI ---");
-            //sb.AppendLine();
-            //sb.AppendLine("Testo: \"timbratura\"");
-            //sb.AppendLine("Risposta corretta (nessuno slot nel testo → tutti null):");
-            //sb.AppendLine("{");
-            //sb.AppendLine("  \"intent\": \"RegisterClocking\",");
-            //sb.AppendLine("  \"slots\": { \"employeeName\": null, \"time\": null, \"date\": null, \"direction\": null },");
-            //sb.AppendLine("  \"missingRequired\": [\"employeeName\", \"time\"],");
-            //sb.AppendLine("  \"confidence\": 0.95");
-            //sb.AppendLine("}");
-            //sb.AppendLine();
-            //sb.AppendLine("Testo: \"timbratura mario rossi 09:00\"");
-            //sb.AppendLine("Risposta corretta (nome e orario presenti → estratti, data e direzione assenti → null):");
-            //sb.AppendLine("{");
-            //sb.AppendLine("  \"intent\": \"RegisterClocking\",");
-            //sb.AppendLine("  \"slots\": { \"employeeName\": \"mario rossi\", \"time\": \"09:00\", \"date\": null, \"direction\": null },");
-            //sb.AppendLine("  \"missingRequired\": [],");
-            //sb.AppendLine("  \"confidence\": 0.98");
-            //sb.AppendLine("}");
-            //sb.AppendLine("--- FINE ESEMPI ---");
-
             return sb.ToString();
         }
 
@@ -368,8 +328,17 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
     public static class BuildSystemPromptUtil
     {
 
-        public static void BuildSystemPrompt_Append_4_Date(StringBuilder sb)
+        public static void BuildSystemPrompt_Append_Intestazione_Comune(StringBuilder sb)
         {
+            sb.AppendLine("REGOLA FONDAMENTALE:");
+            sb.AppendLine("Estrai SOLO i valori esplicitamente scritti dall'utente.");
+            sb.AppendLine("Se uno slot obbligatorio non è presente nel testo, inseriscilo in \"missingRequired\" e metti null come valore.");
+            sb.AppendLine("NON inventare valori. NON completare slot mancanti con valori plausibili o di esempio.");
+            sb.AppendLine("Un valore mancante in \"missingRequired\" è la risposta corretta — non un errore.");
+            sb.AppendLine("");
+            
+
+
             sb.AppendLine();
             sb.AppendLine($"Data di oggi: {DateTime.Today:yyyy-MM-dd}");
             sb.AppendLine();
@@ -423,6 +392,11 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
         // Ritorna null se il valore è valido, SlotValidationResult.Failed(...) altrimenti.
         // Vive nel handler — ChatAIService non hardcoda nomi di slot.
         public Func<string, SlotValidationResult?>? Validator { get; set; }
+
+        // Determina se il messaggio utente contiene contenuto rilevante per questo slot.
+        // Se null, l'handler usa il comportamento di default (true).
+        // Usare per filtrare slot temporali/numerici prima di interrogare il modello.
+        public Func<string, bool>? HasRelevantContent { get; set; }
     }
 
     public class IntentDefinition
