@@ -301,10 +301,11 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
             }
 
 
-            sb.AppendLine("Rispondi sempre e solo con questo JSON,\n" +
-                          "senza modificare, riformulare o reinterpretare alcun testo degli intent\n" +
-                          "o delle loro descrizioni.\n" +
-                          "Mantieni esattamente i nomi e le descrizioni come definiti sopra:");
+            sb.AppendLine("Rispondi sempre e solo con questo JSON,\n"
+                          //+ "senza modificare, riformulare o reinterpretare alcun testo degli intent\n" 
+                          //+ "o delle loro descrizioni.\n" 
+                          //+ "Mantieni esattamente i nomi e le descrizioni come definiti sopra:"
+                          );
 
             sb.AppendLine("{");
             sb.AppendLine("  \"intent\": \"NomeIntent\",");
@@ -329,12 +330,12 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
 
         public static void BuildSystemPrompt_Append_Intestazione_Comune(StringBuilder sb)
         {
-            sb.AppendLine("REGOLA FONDAMENTALE:");
-            sb.AppendLine("Estrai SOLO i valori esplicitamente scritti dall'utente.");
-            sb.AppendLine("Se uno slot obbligatorio non è presente nel testo, inseriscilo in \"missingRequired\" e metti null come valore.");
-            sb.AppendLine("NON inventare valori. NON completare slot mancanti con valori plausibili o di esempio.");
-            sb.AppendLine("Un valore mancante in \"missingRequired\" è la risposta corretta — non un errore.");
-            sb.AppendLine("");
+            //sb.AppendLine("REGOLA FONDAMENTALE:");
+            //sb.AppendLine("Estrai SOLO i valori esplicitamente scritti dall'utente.");
+            //sb.AppendLine("Se uno slot obbligatorio non è presente nel testo, inseriscilo in \"missingRequired\" e metti null come valore.");
+            //sb.AppendLine("NON inventare valori. NON completare slot mancanti con valori plausibili o di esempio.");
+            //sb.AppendLine("Un valore mancante in \"missingRequired\" è la risposta corretta — non un errore.");
+            //sb.AppendLine("");
 
 
 
@@ -437,5 +438,21 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
         public string Role { get; set; } = string.Empty;
         public string Content { get; set; } = string.Empty;
     }
+
+
+    //public class OpenRouterUsageResponse
+    //{
+    //    public decimal TotalUsd { get; set; }
+    //    public string PeriodStart { get; set; } = string.Empty;
+    //    public string PeriodEnd { get; set; } = string.Empty;
+    //    public int Requests { get; set; }
+    //    public Dictionary<string, OpenRouterModelUsage> Models { get; set; } = new Dictionary<string, OpenRouterModelUsage>();
+    //}
+
+    //public class OpenRouterModelUsage
+    //{
+    //    public decimal Usd { get; set; }
+    //    public int Requests { get; set; }
+    //}
 
 }

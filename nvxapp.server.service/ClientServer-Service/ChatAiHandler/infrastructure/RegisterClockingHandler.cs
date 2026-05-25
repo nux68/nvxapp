@@ -23,13 +23,15 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Comma
                     Name = "time",
                     Type = "HH:mm",
                     Required = true,
-                    //PromptDescription = @"Orario nel formato HH:mm.
-                    //                     Se l'utente dice 'alle 9' restituisci '09:00'.
-                    //                     Accetta anche varianti come '9', '9.00', '9:0' e normalizzale.
-                    //                     Se l'utente dice 'dieci' restituisci '10:00'.
-                    //                     Se l'utente dice 'dieci e mezza' restituisci '10:30'.",
+                    PromptDescription = @"Orario nel formato HH:mm.
+                                         Se l'utente dice 'alle 9' restituisci '09:00'.
+                                         Accetta anche varianti come '9', '9.00', '9:0' e normalizzale.
+                                         Se l'utente dice 'dieci' restituisci '10:00'.
+                                         Se l'utente dice 'dieci e mezza' restituisci '10:30'.
+                                         Non dedurre la risposta dagli esempi, al massimo puoi trasformare un
+                                         un numero espresso in forma letterale trasformandolo un cifra numerica come nell' esempio fornito",
                     //PromptDescription = @"Orario nel formato HH:mm, se presente nel testo  ",
-                    PromptDescription = @"(HH:mm, obbligatorio)",
+                    //PromptDescription = @"(HH:mm, obbligatorio)",
 
                     Question = "A che orario? (es. 09:00)",
                     Label = "Orario",
@@ -95,8 +97,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Comma
                     Type = "IN/OUT",
                     Required = false,
                     Default = "IN",
-                    //PromptDescription = "valore IN oppure OUT. Se dice 'entrata' restituisci IN, se dice 'uscita' restituisci OUT.",
-                    PromptDescription = "(IN/OUT, opzionale)",
+                    PromptDescription = "valore IN oppure OUT. Se dice 'entrata' restituisci IN, se dice 'uscita' restituisci OUT.",
+                    //PromptDescription = "(IN/OUT, opzionale)",
                     Question = "Entrata o uscita?",
                     Label = "Tipo",
                     //Validator = v =>

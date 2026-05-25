@@ -37,7 +37,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         private readonly string _openrouterApiKey;
 
         private readonly int _maxHistoryTurns;
-        private readonly bool _useLocalLLM;
+        private readonly string _useLLM;
 
         public ChatAIService(IMapper mapper,
                              UserManager<ApplicationUser> userManager,
@@ -60,18 +60,18 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
 
             _maxHistoryTurns = int.TryParse(configuration["AI:MaxHistoryTurns"], out var n) && n > 0 ? n : 20;
 
-            _useLocalLLM = bool.TryParse(configuration["AI:UseLocalLLM"], out var useLocal) && useLocal;
+            _useLLM = configuration["AI:UseLLM"] ?? throw new InvalidOperationException("UseLLM non configurato");
 
-            _ollamaUrl    = configuration["AI:AI_local:Url"] ?? throw new InvalidOperationException("AI_local:Url non configurato");
-            _ollamaModel  = configuration["AI:AI_local:model"] ?? throw new InvalidOperationException("AI_local:model non configurato");
+            _ollamaUrl = configuration["AI:AI_local:Url"] ?? throw new InvalidOperationException("AI_local:Url non configurato");
+            _ollamaModel = configuration["AI:AI_local:model"] ?? throw new InvalidOperationException("AI_local:model non configurato");
             _ollamaMethod = configuration["AI:AI_local:method"] ?? throw new InvalidOperationException("AI_local:method non configurato");
-            
-            _openrouterUrl    = configuration["AI:AI_openrouter:Url"] ?? throw new InvalidOperationException("AI_openrouter:Url non configurato");
-            _openrouterModel  = configuration["AI:AI_openrouter:model"] ?? throw new InvalidOperationException("AI_openrouter:model non configurato");
+
+            _openrouterUrl = configuration["AI:AI_openrouter:Url"] ?? throw new InvalidOperationException("AI_openrouter:Url non configurato");
+            _openrouterModel = configuration["AI:AI_openrouter:model"] ?? throw new InvalidOperationException("AI_openrouter:model non configurato");
             _openrouterMethod = configuration["AI:AI_openrouter:method"] ?? throw new InvalidOperationException("AI_openrouter:method non configurato");
             _openrouterApiKey = configuration["AI:AI_openrouter:OpenRouterKey"] ?? throw new InvalidOperationException("AI_openrouter:apiKey non configurato");
 
-            
+
 
         }
 
@@ -319,12 +319,14 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 };
 
                 string raw;
-                if(_useLocalLLM)
+                if (_useLLM == "AI_local")
                     raw = await PostToOllamaChatAsync(_ollamaUrl, requestBody);
+                else if (_useLLM == "AI_openrouter")
+                    raw = await PostToOpenRouterChatAsync(_ollamaUrl, requestBody);
                 else
-                   raw = await PostToOpenRouterChatAsync(_ollamaUrl, requestBody);
+                    throw new InvalidOperationException($"LLM non supportato: {_useLLM}");
 
-                
+
 
                 return SafeDeserializeExtractedIntent(raw);
             }
@@ -349,7 +351,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             {
 
                 var messages = BuildChatMessages(
-                    BuildSingleSlotSystemPrompt(slotName, intentName),
+                    //BuildSingleSlotSystemPrompt(slotName, intentName),
+                    /* MANDO IL PROMPT COMPLETO */
+                    _intentCatalog.BuildSystemPrompt(),
+
                     session.History);
 
                 var requestBody = new OllamaChatRequest
@@ -360,15 +365,17 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                     Format = "json"
                 };
 
-                
-                
 
-                
-                string raw;
-                if(_useLocalLLM)
+
+
+
+                string raw = string.Empty;
+                if (_useLLM == "AI_local")
                     raw = await PostToOllamaChatAsync(_ollamaUrl, requestBody);
+                else if (_useLLM == "AI_openrouter")            
+                    raw = await PostToOpenRouterChatAsync(_ollamaUrl, requestBody);
                 else
-                   raw = await PostToOpenRouterChatAsync(_ollamaUrl, requestBody);
+                    throw new InvalidOperationException($"LLM non supportato: {_useLLM}");
 
 
                 if (string.IsNullOrEmpty(raw)) return null;
@@ -486,12 +493,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
 
         private async Task<string> PostToOpenRouterChatAsync(string baseUrl, OllamaChatRequest requestBody)
         {
-            // OpenRouter richiede API key
-            //var apiKey = _configuration["AI:OpenRouterKey"];
-            //if (string.IsNullOrEmpty(apiKey))
-            //    throw new InvalidOperationException("AI:OpenRouterKey non configurato");
+            
 
-            // Converte il tuo formato Ollama in formato OpenAI/OpenRouter
+
+            // Converte formato Ollama in formato OpenAI/OpenRouter
             var openRouterBody = new
             {
                 model = _openrouterModel, // es: "microsoft/phi-4"
@@ -507,7 +512,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             {
                 ["Authorization"] = $"Bearer {_openrouterApiKey}",
                 ["HTTP-Referer"] = "http://localhost",   // richiesto da OpenRouter
-                ["X-Title"] = "NvxApp-Dev"               // nome della tua app
+                ["X-Title"] = "NvxApp-Dev"               // nome della app
             };
 
             var result = await _webApiService.Post<object, OpenRouterChatResponse>(
@@ -525,6 +530,11 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
 
             return result.Data.Choices?.FirstOrDefault()?.Message?.Content ?? string.Empty;
         }
+
+
+        
+
+
 
 
         // ---------------------------------------------------------------------------
@@ -609,33 +619,57 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 //      senza accettare orari/date inventati quando il testo è solo testo (es. "mimmo zuzzu").
 
                 //gate 6
-                //if (userMessage != null && slotDef != null)
-                //{
-                //    bool valueInText = userMessage.Contains(kv.Value, StringComparison.OrdinalIgnoreCase);
-                //    bool isDefaultValue = !string.IsNullOrEmpty(slotDef.Default) &&
-                //                         kv.Value.Equals(slotDef.Default, StringComparison.OrdinalIgnoreCase);
+                if (userMessage != null && slotDef != null)
+                {
+                    bool valueInText = userMessage.Contains(kv.Value, StringComparison.OrdinalIgnoreCase);
+                    bool isDefaultValue = !string.IsNullOrEmpty(slotDef.Default) &&
+                                         kv.Value.Equals(slotDef.Default, StringComparison.OrdinalIgnoreCase);
 
-                //    // Normalizzazione valida: il validator approva il valore E il testo contiene
-                //    // almeno una cifra (prerequisito minimo per qualsiasi slot numerico/temporale).
-                //    bool isValidNormalization = slotDef.Validator != null &&
-                //                                slotDef.Validator(kv.Value) == null;
-                //    bool isValidContent = slotDef.HasRelevantContent != null &&
-                //                                slotDef.HasRelevantContent(userMessage);
+                    // Normalizzazione valida: il validator approva il valore E il testo contiene
+                    // almeno una cifra (prerequisito minimo per qualsiasi slot numerico/temporale).
+                    //bool isValidNormalization = slotDef.Validator != null && slotDef.Validator(kv.Value) == null;
+
+                    bool validazioneOk = true;
+                    if (slotDef.Validator != null)
+                    {
+                        if (slotDef.Validator(kv.Value) != null)
+                            validazioneOk = false;
+                    }
+
+                    if (!validazioneOk)
+                    {
+                        if (slotDef.HasRelevantContent != null)
+                        {
+                            if (slotDef.HasRelevantContent(userMessage))
+                                validazioneOk = true;
+                        }
+                    }
+
+                    if (!validazioneOk)
+                    {
+                        Log.Warning("[ChatAI] Slot scartato: valore non presente nel testo. Slot={Slot} Valore={Value} Testo={Text}",
+                        kv.Key, kv.Value, userMessage);
+                        continue;
+                    }
+
+                    //bool isValidContent = slotDef.HasRelevantContent != null &&
+                    //                            slotDef.HasRelevantContent(userMessage);
 
 
 
-                //    if (!valueInText && !isDefaultValue && (!isValidNormalization /*|| isValidContent*/ ))
-                //    {
-                //        Log.Warning("[ChatAI] Slot scartato: valore non presente nel testo. Slot={Slot} Valore={Value} Testo={Text}",
-                //            kv.Key, kv.Value, userMessage);
-                //        continue;
-                //    }
-                //}
+                    //if (!valueInText && !isDefaultValue && (!isValidNormalization /*|| isValidContent*/ ))
+                    //{
+                    //    Log.Warning("[ChatAI] Slot scartato: valore non presente nel testo. Slot={Slot} Valore={Value} Testo={Text}",
+                    //        kv.Key, kv.Value, userMessage);
+                    //    continue;
+                    //}
 
-                //Gate 7 
-                // Se lo slot ha un validator di formato, rigetta valori che non lo superano
-                if (slotDef?.Validator != null && slotDef.Validator(kv.Value) != null)
-                    continue;
+                }
+
+                ////Gate 7 
+                //// Se lo slot ha un validator di formato, rigetta valori che non lo superano
+                //if (slotDef?.Validator != null && slotDef.Validator(kv.Value) != null)
+                //    continue;
 
                 session.Slots[kv.Key] = kv.Value;
             }
@@ -863,47 +897,5 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             GenericRequest<ChatAIInModel> model, bool isSubProcess);
     }
 
-    // ---------------------------------------------------------------------------
-    // FakeAI_Regex (invariato)
-    // ---------------------------------------------------------------------------
 
-    //public class FakeAI_Regex
-    //{
-    //    private List<Regex> Clockign_ENT;
-
-    //    public FakeAI_Regex()
-    //    {
-    //        Clockign_ENT = new List<Regex>();
-    //        Clockign_ENT.Add(new Regex(
-    //            @"([a-zA-Z\s]+)\s(entrata|entra|ent|uscita|esce|usc)(?:\salle)?\s(\d{1,2}(?:([:\.]\d{2})|(?:\se\s\d{1,2})))"));
-    //    }
-
-    //    public List<ClockignCommand> GetClockignCommand(string text)
-    //    {
-    //        var clockignCommands = new List<ClockignCommand>();
-    //        foreach (var item in Clockign_ENT)
-    //        {
-    //            if (item.IsMatch(text))
-    //            {
-    //                var match = item.Match(text);
-    //                clockignCommands.Add(new ClockignCommand
-    //                {
-    //                    action = match.Groups[2].Value,
-    //                    dipendente = match.Groups[1].Value,
-    //                    orario = match.Groups[3].Value,
-    //                    type = "timbratura"
-    //                });
-    //            }
-    //        }
-    //        return clockignCommands;
-    //    }
-    //}
-
-    //public class ClockignCommand
-    //{
-    //    public string action { get; set; } = string.Empty;
-    //    public string type { get; set; } = string.Empty;
-    //    public string orario { get; set; } = string.Empty;
-    //    public string dipendente { get; set; } = string.Empty;
-    //}
 }
