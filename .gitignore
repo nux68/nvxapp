@@ -20,3 +20,5 @@ nvxapp.client/obj/
 nvxapp.client/dist/
 nvxapp.client/www/
 .vs/
+nvxapp.server/groq.key
+nvxapp.server/openrouter.key
