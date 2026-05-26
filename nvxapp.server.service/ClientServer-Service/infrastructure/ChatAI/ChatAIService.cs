@@ -312,12 +312,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         {
             try
             {
-
-                
-
-                var messages = BuildChatMessages(
-                    _intentCatalog.BuildSystemPrompt(),
-                    session.History);
+                var messages = BuildChatMessages(_intentCatalog.BuildSystemPrompt(), session.History);
 
                 var requestBody = new OllamaChatRequest
                 {
@@ -337,7 +332,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 else
                     throw new InvalidOperationException($"LLM non supportato: {_useLLM}");
 
-
+                // Memorizza la risposta del modello nella history affinché
+                // i turni successivi possano contestualizzarla.
+                if (!string.IsNullOrEmpty(raw))
+                    session.AddToHistory("assistant", raw);
 
                 return SafeDeserializeExtractedIntent(raw);
             }
@@ -355,18 +353,12 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         // risposte contestuali (es. "quello di prima", "stessa data").
         // ---------------------------------------------------------------------------
 
-        private async Task<string?> Call_LLM_xtractSingleSlotAsync(
-            string slotName, string intentName, ChatSession session)
+        private async Task<string?> Call_LLM_xtractSingleSlotAsync(string slotName, string intentName, ChatSession session)
         {
             try
             {
 
-                var messages = BuildChatMessages(
-                    //BuildSingleSlotSystemPrompt(slotName, intentName),
-                    /* MANDO IL PROMPT COMPLETO */
-                    _intentCatalog.BuildSystemPrompt(),
-
-                    session.History);
+                var messages = BuildChatMessages(_intentCatalog.BuildSystemPrompt(), session.History);
 
                 var requestBody = new OllamaChatRequest
                 {
@@ -384,25 +376,27 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 if (_useLLM == "AI_local")
                     raw = await PostToOllamaChatAsync(_ollamaUrl, requestBody);
                 else if (_useLLM == "AI_openrouter")
-                    raw = await PostToOpenRouterChatAsync(_ollamaUrl, requestBody);                    
+                    raw = await PostToOpenRouterChatAsync(_ollamaUrl, requestBody);
                 else if (_useLLM == "AI_groq")
                     raw = await PostToGroqChatAsync(_groqUrl, requestBody);
 
                 else
                     throw new InvalidOperationException($"LLM non supportato: {_useLLM}");
 
+                // Memorizza la risposta del modello nella history affinché
+                // i turni successivi possano contestualizzarla.
+                if (!string.IsNullOrEmpty(raw))
+                    session.AddToHistory("assistant", raw);
 
                 if (string.IsNullOrEmpty(raw)) return null;
 
-                var start = raw.IndexOf('{');
-                var end = raw.LastIndexOf('}');
-                if (start == -1 || end == -1) return null;
-
-                var cleanJson = raw.Substring(start, end - start + 1);
-                using var doc = JsonDocument.Parse(cleanJson);
-
-                if (doc.RootElement.TryGetProperty("value", out var val))
-                    return val.GetString();
+                // Il LLM restituisce sempre un ExtractedIntent completo (stesso formato del primo turno).
+                // Deserializza e legge il valore dello slot richiesto.
+                var extracted = SafeDeserializeExtractedIntent(raw);
+                if (extracted?.Slots != null &&
+                    extracted.Slots.TryGetValue(slotName, out var slotValue) &&
+                    !IsNullString(slotValue))
+                    return slotValue;
 
                 return null;
             }
@@ -414,36 +408,6 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             }
         }
 
-
-
-        private string BuildSingleSlotSystemPrompt(string slotName, string intentName)
-        {
-            var slotDef = FindSlotDefinition(intentName, slotName);
-            var slotDesc = !string.IsNullOrEmpty(slotDef?.PromptDescription)
-                ? slotDef.PromptDescription
-                : "valore testuale";
-
-            var sb = new StringBuilder();
-
-
-            BuildSystemPromptUtil.BuildSystemPrompt_Append_Intestazione_Comune(sb);
-
-
-            sb.AppendLine("Estrai dal testo il valore di: " + slotDesc);
-            sb.AppendLine("Rispondi SOLO con questo JSON, nessun testo aggiuntivo.");
-            sb.AppendLine("Se il valore è presente nel testo:");
-            sb.AppendLine("{ \"value\": \"<valore estratto>\" }");
-            sb.AppendLine("Se il valore NON è presente nel testo, rispondi ESATTAMENTE:");
-            sb.AppendLine("{ \"value\": null }");
-            sb.AppendLine("Non copiare mai la descrizione dello slot come valore. Non inventare valori.");
-            sb.AppendLine();
-            sb.AppendLine("REGOLA ASSOLUTA: non inventare mai il valore. Non usare valori di esempio.");
-            sb.AppendLine("Non usare valori dedotti dal contesto della conversazione.");
-            sb.AppendLine("Se l'utente non ha scritto esplicitamente il valore richiesto, restituisci null.");
-
-
-            return sb.ToString();
-        }
 
 
 
