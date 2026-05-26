@@ -38,6 +38,10 @@ export class SpeechService {
   public get VoiceCommandActive(): boolean {
     return this.isVoiceCommandActive;
   }
+
+  public stop() {
+    this.VoiceCommandActive = false;
+  }
   
 
   constructor() {

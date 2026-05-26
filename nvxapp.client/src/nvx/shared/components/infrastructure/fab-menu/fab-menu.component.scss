@@ -16,10 +16,78 @@
 
 
 
-  @media (min-width: 577px) {
-    ion-modal {
-      --height: 90vh; /* Altezza del 90% della visuale verticale */
-      --width: 70%;
-    }
+@media (min-width: 577px) {
+  ion-modal {
+    --height: 90vh; /* Altezza del 90% della visuale verticale */
+    --width: 70%;
   }
+}
+
+
+// ---------------------------------------------------------------------------
+// Messaggi utente / assistente
+// ---------------------------------------------------------------------------
+
+/*.user-message {
+  text-align: right;
+  margin: 6px 0;
+  padding: 8px 12px;
+  background: var(--ion-color-primary-tint, #e8f0fe);
+  border-radius: 12px 12px 2px 12px;
+  display: inline-block;
+  float: right;
+  clear: both;
+  max-width: 80%;
+}
+
+.assistant-message {
+  text-align: left;
+  margin: 6px 0;
+  padding: 8px 12px;
+  background: var(--ion-color-light, #f4f4f4);
+  border-radius: 12px 12px 12px 2px;
+  display: inline-block;
+  float: left;
+  clear: both;
+  max-width: 80%;
+}*/
+
+// ---------------------------------------------------------------------------
+// Stili per responseType
+// ---------------------------------------------------------------------------
+
+.msg-question {
+  border-left: 3px solid var(--ion-color-warning, #ffc409);
+}
+
+.msg-confirmation {
+  border-left: 3px solid var(--ion-color-primary, #3880ff);
+  font-weight: 500;
+}
+
+.msg-result {
+  border-left: 3px solid var(--ion-color-success, #2dd36f);
+}
+
+.msg-error {
+  border-left: 3px solid var(--ion-color-danger, #eb445a);
+  color: var(--ion-color-danger, #eb445a);
+}
+
+// ---------------------------------------------------------------------------
+// Chip suggerimenti
+// ---------------------------------------------------------------------------
+
+.suggestions-container {
+  clear: both;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px 0 4px 0;
+
+  ion-chip {
+    cursor: pointer;
+    font-size: 0.9rem;
+  }
+}
 

@@ -3,6 +3,8 @@
   <div>
     <ion-modal #chatModal class="nvx-modal" [isOpen]="isModalOpen" (willDismiss)="onWillDismissChat($event)">
       <ng-template>
+
+        <!-- HEADER -->
         <ion-header>
           <ion-toolbar color="primary">
 
@@ -12,64 +14,92 @@
               </ion-button>
             </ion-buttons>
 
-            <ion-icon *ngIf="modalType=='text'" class="nvx-standard-icon" name="chatbubbles-outline" slot="start"></ion-icon>
-            <ion-icon *ngIf="modalType=='vocal'" class="nvx-standard-icon" name="mic-outline" slot="start"></ion-icon>
+            <ion-icon *ngIf="modalType=='text'"  class="nvx-standard-icon" name="chatbubbles-outline" slot="start"></ion-icon>
+            <ion-icon *ngIf="modalType=='vocal'" class="nvx-standard-icon" name="mic-outline"         slot="start"></ion-icon>
 
-
-            <ion-title>{{modalType}}</ion-title>
+            <ion-title>{{ modalType }}</ion-title>
 
           </ion-toolbar>
         </ion-header>
 
-        <!-- Contenitore dei messaggi con riferimento -->
+        <!-- CORPO MESSAGGI -->
         <ion-content class="ion-padding" #chatContent>
-          <div *ngFor="let message of messages" [ngClass]="{'user-message': message.sender === 'You', 'assistant-message': message.sender === 'Assistant'}">
+
+          <div *ngFor="let message of messages"
+               [ngClass]="{
+                 'user-message':        message.sender === 'You',
+                 'assistant-message':   message.sender === 'Assistant',
+                 'msg-question':        message.type === 'question',
+                 'msg-confirmation':    message.type === 'confirmation',
+                 'msg-result':          message.type === 'result',
+                 'msg-error':           message.type === 'error'
+               }">
             <strong>{{ message.sender }}:</strong> {{ message.text }}
           </div>
+
+          <!-- Chip di suggerimento (es. "Sì" / "No") -->
+          <div *ngIf="suggestions && suggestions.length > 0" class="suggestions-container">
+            <ion-chip *ngFor="let s of suggestions"
+                      (click)="sendSuggestion(s)"
+                      color="primary"
+                      outline="true">
+              {{ s }}
+            </ion-chip>
+          </div>
+
           <app-background-working [show]="isChatLoading"></app-background-working>
+
         </ion-content>
 
-
-        <!-- Input messaggio -->
+        <!-- FOOTER INPUT -->
         <ion-footer>
           <ion-toolbar>
 
+            <!-- Modalità testo -->
             <ion-item *ngIf="modalType=='text'">
               <ion-textarea [(ngModel)]="newMessage"
                             placeholder="Scrivi un messaggio..."
                             rows="1"
-                            auto-grow="true">
+                            auto-grow="true"
+                            (keydown.enter)="sendMessage()">
               </ion-textarea>
 
-              <ion-button shape="round" (click)="sendMessage()" size="default" color="medium">
+              <ion-button shape="round"
+                          (click)="sendMessage()"
+                          size="default"
+                          color="medium"
+                          [disabled]="isChatLoading">
                 <ion-icon slot="icon-only" name="send-outline"></ion-icon>
               </ion-button>
             </ion-item>
 
-
+            <!-- Modalità vocale -->
             <ion-item *ngIf="modalType=='vocal'">
-              <ion-label>{{ speechService.VoiceCommandActive ? 'Comandi vocali attivi' : 'Comandi vocali disattivati' }}</ion-label>
-              <ion-button shape="round" (click)="toggleVoiceCommand()" size="default" color="{{ speechService.VoiceCommandActive ? 'success' : 'medium' }}">
+              <ion-label>
+                {{ speechService.VoiceCommandActive ? 'Comandi vocali attivi' : 'Comandi vocali disattivati' }}
+              </ion-label>
+              <ion-button shape="round"
+                          (click)="toggleVoiceCommand()"
+                          size="default"
+                          color="{{ speechService.VoiceCommandActive ? 'success' : 'medium' }}">
                 <ion-icon [name]="speechService.VoiceCommandActive ? 'mic' : 'mic-off'" slot="icon-only"></ion-icon>
               </ion-button>
             </ion-item>
 
-
-
           </ion-toolbar>
         </ion-footer>
+        <!--  -->
       </ng-template>
     </ion-modal>
-
-
   </div>
 
-  
 
+  <!-- FAB -->
   <ion-fab #fab slot="fixed" vertical="bottom" horizontal="end">
     <ion-fab-button>
       <ion-icon name="grid-outline"></ion-icon>
     </ion-fab-button>
+
     <ion-fab-list side="top">
       <ion-fab-button (click)="openModal('text')">
         <ion-icon name="chatbubbles-outline"></ion-icon>
@@ -80,15 +110,11 @@
     </ion-fab-list>
 
     <ion-fab-list side="start">
-
       <ion-fab-button *ngFor="let item of fabMenuService.fabMenuItem" (click)="item.event()">
-        <ion-icon name="{{item.image}}"></ion-icon>
+        <ion-icon name="{{ item.image }}"></ion-icon>
       </ion-fab-button>
-
     </ion-fab-list>
 
-
-
-
   </ion-fab>
+
 </div>

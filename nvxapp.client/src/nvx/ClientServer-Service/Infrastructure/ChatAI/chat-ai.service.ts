@@ -13,19 +13,15 @@ import { ChatAIInModel, ChatAIOutModel } from './Models/chat-AI-model';
 export class ChatAIService {
 
   constructor(private http: HttpClient,
-    private authService: AuthService
-  ) { }
+              private authService: AuthService) { }
 
   SendMessage(model: GenericRequest<ChatAIInModel>): Observable<GenericResult<ChatAIOutModel>> {
-
-    return this.http.post<GenericResult<ChatAIOutModel>>(environment.remoteData.apiUri + 'ChatAI/SendMessage', model)
-      .pipe(
-        map(r => {
-          return r;
-        }
-        )
-      );
-
+    return this.http
+      .post<GenericResult<ChatAIOutModel>>(
+        environment.remoteData.apiUri + 'ChatAI/SendMessage',
+        model
+      )
+      .pipe(map(r => r));
   }
 
 }

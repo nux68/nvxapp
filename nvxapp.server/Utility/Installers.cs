@@ -102,6 +102,8 @@ namespace nvxapp.server.Utility
         public static IServiceCollection InstallServices(this WebApplicationBuilder builder)
         {
 
+            builder.Services.AddHttpClient();
+
             //builder.Services.RegisterAssemblyPublicNonGenericClasses(Assembly.GetAssembly(typeof(IServiceBase)))
             //    .AsPublicImplementedInterfaces(ServiceLifetime.Scoped);
 
@@ -112,6 +114,12 @@ namespace nvxapp.server.Utility
             builder.Services.RegisterAssemblyPublicNonGenericClasses(Assembly.GetAssembly(typeof(IServiceBase)))
                             .Where(type => !typeof(IRabbitMqListenerService).IsAssignableFrom(type)) // Escludi tutte le classi che implementano IRabbitMqListenerService
                             .AsPublicImplementedInterfaces(ServiceLifetime.Scoped);
+
+            // IChatSessionStore deve essere Singleton: mantiene le sessioni conversazionali
+            // per tutta la vita dell'applicazione, condiviso tra richieste HTTP concorrenti.
+            // Non può essere rilevato dall'assembly scanning Scoped — va registrato esplicitamente.
+            builder.Services.AddSingleton<nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.IChatSessionStore,
+                                          nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.InMemoryChatSessionStore>();
 
 
             return builder.Services;
