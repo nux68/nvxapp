@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using nvxapp.server.Base;
@@ -50,6 +51,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                              IOptions<JwtParameter> jwtParameter,
                              IHttpContextAccessor httpContextAccessor,
                              IConfiguration configuration,
+                             IHostEnvironment env,
                              iRabbitMqConnection rabbitMqConnection,
                              IWebApiService webApiService,
                              ICommandRegistry commandRegistry,
@@ -74,12 +76,12 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             _openrouterUrl = configuration["AI:AI_openrouter:Url"] ?? throw new InvalidOperationException("AI_openrouter:Url non configurato");
             _openrouterModel = configuration["AI:AI_openrouter:model"] ?? throw new InvalidOperationException("AI_openrouter:model non configurato");
             _openrouterMethod = configuration["AI:AI_openrouter:method"] ?? throw new InvalidOperationException("AI_openrouter:method non configurato");
-            _openrouterApiKey = configuration["AI:AI_openrouter:OpenRouterKey"] ?? throw new InvalidOperationException("AI_openrouter:apiKey non configurato");
+            _openrouterApiKey = ReadApiKeyFromFile(env.ContentRootPath, "openrouter.key");
 
             _groqUrl = configuration["AI:AI_groq:Url"] ?? throw new InvalidOperationException("AI_groq:Url non configurato");
             _groqModel = configuration["AI:AI_groq:model"] ?? throw new InvalidOperationException("AI_groq:model non configurato");
             _groqMethod = configuration["AI:AI_groq:method"] ?? throw new InvalidOperationException("AI_groq:method non configurato");
-            _groqApiKey = configuration["AI:AI_groq:OpenRouterKey"] ?? throw new InvalidOperationException("AI_groq:apiKey non configurato");
+            _groqApiKey = ReadApiKeyFromFile(env.ContentRootPath, "groq.key");
 
 
 
@@ -865,6 +867,29 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
 
         private void DeleteSession(string sessionId) =>
             _sessionStore.Delete(sessionId);
+
+        // ---------------------------------------------------------------------------
+        // Lettura API key da file esterno nella root del sito
+        // ---------------------------------------------------------------------------
+
+        // I file devono trovarsi nella cartella root del sito (ContentRootPath).
+        // Es.: <root>/openrouter.key  e  <root>/groq.key
+        // Il file deve contenere solo la chiave API, senza spazi o ritorni a capo.
+        private static string ReadApiKeyFromFile(string contentRootPath, string fileName)
+        {
+            var path = Path.Combine(contentRootPath, fileName);
+            if (!File.Exists(path))
+                throw new InvalidOperationException(
+                    $"File API key non trovato: {path}. " +
+                    $"Creare il file '{fileName}' nella root del sito con la chiave API.");
+
+            var key = File.ReadAllText(path).Trim();
+            if (string.IsNullOrEmpty(key))
+                throw new InvalidOperationException(
+                    $"Il file API key '{fileName}' è vuoto.");
+
+            return key;
+        }
 
 
         #region "RabbitMq NON ELIMINARE"
