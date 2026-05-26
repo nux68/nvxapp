@@ -253,7 +253,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
 
         public IReadOnlyList<IntentDefinition> Intents => _intents;
 
-        public string BuildSystemPrompt(string? intentName)
+        public string BuildSystemPrompt(string? currIntentName)
         {
             var sb = new StringBuilder();
 
@@ -262,7 +262,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
 
             BuildSystemPromptUtil.BuildSystemPrompt_Append_Intestazione_Comune(sb);
 
-            BuildSystemPromptUtil.BuildSystemPrompt_Append_Intent_Definition(sb, _intents);
+            BuildSystemPromptUtil.BuildSystemPrompt_Append_Intent_Definition(sb, _intents,currIntentName);
 
             #region "Intent"
 
@@ -270,9 +270,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
 
                 sb.AppendLine();
 
-                List<IntentDefinition> intentsToInclude = string.IsNullOrEmpty(intentName)
+                List<IntentDefinition> intentsToInclude = string.IsNullOrEmpty(currIntentName)
                     ? _intents.ToList()
-                    : _intents.Where(i => i.Name.Equals(intentName, StringComparison.OrdinalIgnoreCase)).ToList();
+                    : _intents.Where(i => i.Name.Equals(currIntentName, StringComparison.OrdinalIgnoreCase)).ToList();
 
                 for (int i = 0; i < intentsToInclude.Count; i++)
                 {
@@ -357,13 +357,19 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
 
         }
 
-        public static void BuildSystemPrompt_Append_Intent_Definition(StringBuilder sb, IReadOnlyList<IntentDefinition> intents)
+        public static void BuildSystemPrompt_Append_Intent_Definition(StringBuilder sb, IReadOnlyList<IntentDefinition> intents,string? intentName)
         {
             sb.AppendLine();
             sb.AppendLine("IMPORTANTE:");
             sb.AppendLine("Il valore del campo \"intent\" deve essere SEMPRE uno dei seguenti:");
 
-            foreach (var intent in intents)
+
+            IReadOnlyList<IntentDefinition> intentsToInclude = string.IsNullOrEmpty(intentName)
+                ? intents
+                : intents.Where(i => i.Name.Equals(intentName, StringComparison.OrdinalIgnoreCase)).ToList();
+            
+
+            foreach (var intent in intentsToInclude)
             {
                 sb.AppendLine($"- {intent.Name}");
             }
