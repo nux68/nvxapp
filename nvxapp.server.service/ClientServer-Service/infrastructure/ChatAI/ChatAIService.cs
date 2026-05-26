@@ -232,7 +232,23 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                     return BuildQuestionResponse(session, question);
                 }
 
-                // 7. Tutti gli slot presenti e validi → chiedi conferma
+                // 7. Se l'intent è Help: esegui subito senza conferma,
+                //    restituisci solo i chip degli intent disponibili senza testo descrittivo.
+                if (session.Intent.Equals("Help", StringComparison.OrdinalIgnoreCase))
+                {
+                    await ExecuteCommandAsync(session);
+                    DeleteSession(session.SessionId);
+                    var helpSession = _sessionStore.Create();
+                    return new ChatAIOutModel
+                    {
+                        SessionId    = helpSession.SessionId,
+                        Responce     = string.Empty,
+                        ResponseType = "result",
+                        Suggestions  = BuildIntentSuggestions()
+                    };
+                }
+
+                // 8. Tutti gli slot presenti e validi → chiedi conferma
                 session.State = SessionState.ReadyToExecute;
                 var summary = BuildConfirmationSummary(session);
                 session.AddToHistory("assistant", summary);
