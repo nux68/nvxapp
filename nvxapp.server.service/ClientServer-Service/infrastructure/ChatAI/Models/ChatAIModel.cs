@@ -330,12 +330,12 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
 
         public static void BuildSystemPrompt_Append_Intestazione_Comune(StringBuilder sb)
         {
-            //sb.AppendLine("REGOLA FONDAMENTALE:");
-            //sb.AppendLine("Estrai SOLO i valori esplicitamente scritti dall'utente.");
-            //sb.AppendLine("Se uno slot obbligatorio non è presente nel testo, inseriscilo in \"missingRequired\" e metti null come valore.");
-            //sb.AppendLine("NON inventare valori. NON completare slot mancanti con valori plausibili o di esempio.");
-            //sb.AppendLine("Un valore mancante in \"missingRequired\" è la risposta corretta — non un errore.");
-            //sb.AppendLine("");
+            sb.AppendLine("REGOLA FONDAMENTALE:");
+            sb.AppendLine("Estrai SOLO i valori esplicitamente scritti dall'utente, per i queli è possibile una inetrpretazione usando gli esempi specificati negli slot");
+            sb.AppendLine("Se uno slot obbligatorio non è presente nel testo, inseriscilo in \"missingRequired\" e metti null come valore.");
+            sb.AppendLine("NON inventare valori. NON completare slot mancanti con valori plausibili o di esempio.");
+            sb.AppendLine("Un valore mancante in \"missingRequired\" è la risposta corretta — non un errore.");
+            sb.AppendLine("");
 
 
 
@@ -421,7 +421,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
     }
 
 
-
+    #region "OpenRouter"
 
     public class OpenRouterChatResponse
     {
@@ -439,20 +439,27 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
         public string Content { get; set; } = string.Empty;
     }
 
+    #endregion
 
-    //public class OpenRouterUsageResponse
-    //{
-    //    public decimal TotalUsd { get; set; }
-    //    public string PeriodStart { get; set; } = string.Empty;
-    //    public string PeriodEnd { get; set; } = string.Empty;
-    //    public int Requests { get; set; }
-    //    public Dictionary<string, OpenRouterModelUsage> Models { get; set; } = new Dictionary<string, OpenRouterModelUsage>();
-    //}
 
-    //public class OpenRouterModelUsage
-    //{
-    //    public decimal Usd { get; set; }
-    //    public int Requests { get; set; }
-    //}
+    #region "GroQ"
+
+    public class GroqChatResponse
+    {
+        public List<GroqChoice> Choices { get; set; } = new List<GroqChoice>();
+    }
+
+    public class GroqChoice
+    {
+        public GroqMessage Message { get; set; } = new GroqMessage();
+    }
+
+    public class GroqMessage
+    {
+        public string Role { get; set; } = string.Empty;
+        public string Content { get; set; } = string.Empty;
+    }
+
+    #endregion
 
 }

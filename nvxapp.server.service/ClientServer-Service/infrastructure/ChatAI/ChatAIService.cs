@@ -36,6 +36,11 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         private readonly string _openrouterMethod;
         private readonly string _openrouterApiKey;
 
+        private readonly string _groqUrl;
+        private readonly string _groqModel;
+        private readonly string _groqMethod;
+        private readonly string _groqApiKey;
+
         private readonly int _maxHistoryTurns;
         private readonly string _useLLM;
 
@@ -70,6 +75,11 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             _openrouterModel = configuration["AI:AI_openrouter:model"] ?? throw new InvalidOperationException("AI_openrouter:model non configurato");
             _openrouterMethod = configuration["AI:AI_openrouter:method"] ?? throw new InvalidOperationException("AI_openrouter:method non configurato");
             _openrouterApiKey = configuration["AI:AI_openrouter:OpenRouterKey"] ?? throw new InvalidOperationException("AI_openrouter:apiKey non configurato");
+
+            _groqUrl = configuration["AI:AI_groq:Url"] ?? throw new InvalidOperationException("AI_groq:Url non configurato");
+            _groqModel = configuration["AI:AI_groq:model"] ?? throw new InvalidOperationException("AI_groq:model non configurato");
+            _groqMethod = configuration["AI:AI_groq:method"] ?? throw new InvalidOperationException("AI_groq:method non configurato");
+            _groqApiKey = configuration["AI:AI_groq:OpenRouterKey"] ?? throw new InvalidOperationException("AI_groq:apiKey non configurato");
 
 
 
@@ -154,7 +164,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                     }
 
                     // PRIMO TURNO: chiedi a Ollama intent + tutti gli slot presenti nel messaggio
-                    var extracted = await CallOllamaExtractIntentAsync(session);
+                    var extracted = await Call_LLM_ExtractIntentAsync(session);
                     if (extracted == null || string.IsNullOrEmpty(extracted.Intent))
                     {
                         // Sessione senza intent confermato — non ha senso mantenerla
@@ -189,7 +199,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                     var nextMissing = GetMissingRequiredSlots(session).FirstOrDefault();
                     if (nextMissing != null)
                     {
-                        var slotValue = await CallOllamaExtractSingleSlotAsync(
+                        var slotValue = await Call_LLM_xtractSingleSlotAsync(
                             nextMissing, session.Intent, session);
 
                         // Se Ollama non riesce, usa il testo grezzo come fallback
@@ -298,13 +308,12 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         // Passa la ConversationHistory come array messages a /api/chat.
         // ---------------------------------------------------------------------------
 
-        private async Task<ExtractedIntent?> CallOllamaExtractIntentAsync(ChatSession session)
+        private async Task<ExtractedIntent?> Call_LLM_ExtractIntentAsync(ChatSession session)
         {
             try
             {
 
-                //string ollamaUrl = _configuration["AI:Url"] ?? "" ;
-                //string ollamaModel = _configuration["AI:model"] ?? "" ;
+                
 
                 var messages = BuildChatMessages(
                     _intentCatalog.BuildSystemPrompt(),
@@ -323,6 +332,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                     raw = await PostToOllamaChatAsync(_ollamaUrl, requestBody);
                 else if (_useLLM == "AI_openrouter")
                     raw = await PostToOpenRouterChatAsync(_ollamaUrl, requestBody);
+                else if (_useLLM == "AI_groq")
+                    raw = await PostToGroqChatAsync(_groqUrl, requestBody);
                 else
                     throw new InvalidOperationException($"LLM non supportato: {_useLLM}");
 
@@ -344,7 +355,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         // risposte contestuali (es. "quello di prima", "stessa data").
         // ---------------------------------------------------------------------------
 
-        private async Task<string?> CallOllamaExtractSingleSlotAsync(
+        private async Task<string?> Call_LLM_xtractSingleSlotAsync(
             string slotName, string intentName, ChatSession session)
         {
             try
@@ -372,8 +383,11 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 string raw = string.Empty;
                 if (_useLLM == "AI_local")
                     raw = await PostToOllamaChatAsync(_ollamaUrl, requestBody);
-                else if (_useLLM == "AI_openrouter")            
-                    raw = await PostToOpenRouterChatAsync(_ollamaUrl, requestBody);
+                else if (_useLLM == "AI_openrouter")
+                    raw = await PostToOpenRouterChatAsync(_ollamaUrl, requestBody);                    
+                else if (_useLLM == "AI_groq")
+                    raw = await PostToGroqChatAsync(_groqUrl, requestBody);
+
                 else
                     throw new InvalidOperationException($"LLM non supportato: {_useLLM}");
 
@@ -493,7 +507,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
 
         private async Task<string> PostToOpenRouterChatAsync(string baseUrl, OllamaChatRequest requestBody)
         {
-            
+
 
 
             // Converte formato Ollama in formato OpenAI/OpenRouter
@@ -532,7 +546,42 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         }
 
 
-        
+        private async Task<string> PostToGroqChatAsync(string baseUrl, OllamaChatRequest requestBody)
+        {
+            // Converte formato Ollama in formato OpenAI/Groq
+            var groqBody = new
+            {
+                model = _groqModel, // es: "llama3-8b-8192" oppure "llama3-groq-70b"
+                messages = requestBody.Messages.Select(m => new
+                {
+                    role = m.Role,
+                    content = m.Content
+                }).ToList(),
+                stream = false
+            };
+
+            var headers = new Dictionary<string, string>
+            {
+                ["Authorization"] = $"Bearer {_groqApiKey}"
+                // Groq NON richiede HTTP-Referer o X-Title
+            };
+
+            var result = await _webApiService.Post<object, GroqChatResponse>(
+                serverUrl: _groqUrl,          // es: "https://api.groq.com"
+                authentication: null,
+                action: _groqMethod,          // es: "/openai/v1/chat/completions"
+                body: groqBody,
+                bodyType: WebApiBodyType.raw,
+                headers: headers
+            );
+
+            if (result?.Data == null)
+                throw new InvalidOperationException(
+                    $"Groq ha risposto con status {result?.StatusCode}: {result?.ReasonPhrase}");
+
+            return result.Data.Choices?.FirstOrDefault()?.Message?.Content ?? string.Empty;
+        }
+
 
 
 
