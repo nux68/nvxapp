@@ -99,6 +99,9 @@ export class FabMenuComponent implements OnInit {
     const text = message.trim();
     if (!text) return;
 
+    // Spegne il microfono automaticamente dopo il riconoscimento
+    this.speechService.stop();
+
     this.pushMessage('You', text);
     this.suggestions = [];
     this.scrollToBottom();
