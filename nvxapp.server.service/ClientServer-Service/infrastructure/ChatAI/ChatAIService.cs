@@ -201,7 +201,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                     var nextMissing = GetMissingRequiredSlots(session).FirstOrDefault();
                     if (nextMissing != null)
                     {
-                        var slotValue = await Call_LLM_xtractSingleSlotAsync(
+                        var slotValue = await Call_LLM_ExtractSingleSlotAsync(
                             nextMissing, session.Intent, session);
 
                         // Se Ollama non riesce, usa il testo grezzo come fallback
@@ -314,7 +314,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         {
             try
             {
-                var messages = BuildChatMessages(_intentCatalog.BuildSystemPrompt(), session.History);
+                var messages = BuildChatMessages(_intentCatalog.BuildSystemPrompt(null), session.History);
 
                 var requestBody = new OllamaChatRequest
                 {
@@ -355,12 +355,12 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         // risposte contestuali (es. "quello di prima", "stessa data").
         // ---------------------------------------------------------------------------
 
-        private async Task<string?> Call_LLM_xtractSingleSlotAsync(string slotName, string intentName, ChatSession session)
+        private async Task<string?> Call_LLM_ExtractSingleSlotAsync(string slotName, string intentName, ChatSession session)
         {
             try
             {
 
-                var messages = BuildChatMessages(_intentCatalog.BuildSystemPrompt(), session.History);
+                var messages = BuildChatMessages(_intentCatalog.BuildSystemPrompt(intentName), session.History);
 
                 var requestBody = new OllamaChatRequest
                 {

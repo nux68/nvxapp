@@ -234,7 +234,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
     public interface IIntentCatalog
     {
         IReadOnlyList<IntentDefinition> Intents { get; }
-        string BuildSystemPrompt();
+        string BuildSystemPrompt(string? intentName = null);
     }
 
     public class IntentCatalog : IIntentCatalog
@@ -253,7 +253,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
 
         public IReadOnlyList<IntentDefinition> Intents => _intents;
 
-        public string BuildSystemPrompt()
+        public string BuildSystemPrompt(string? intentName)
         {
             var sb = new StringBuilder();
 
@@ -264,41 +264,49 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
 
             BuildSystemPromptUtil.BuildSystemPrompt_Append_Intent_Definition(sb, _intents);
 
-            sb.AppendLine("Intent disponibili:");
+            #region "Intent"
 
-            sb.AppendLine();
-
-            for (int i = 0; i < _intents.Count; i++)
-            {
-                var intent = _intents[i];
-                sb.AppendLine($"{i + 1}. {intent.Name}");
-                sb.AppendLine($"   Descrizione: {intent.Description}");
-
-                if (intent.Keywords.Count > 0)
-                {
-                    //sb.AppendLine();
-                    sb.Append("   La richiesta può contenere le parole: ");
-                    foreach (var iKey in intent.Keywords)
-                    {
-                        sb.Append($"{iKey},");
-                    }
-                    sb.AppendLine();
-                    sb.AppendLine();
-                }
-
-
-                sb.AppendLine($"   Slot:");
-
-                foreach (var slot in intent.Slots)
-                {
-                    var obbligatorio = slot.Required ? "obbligatorio" : "opzionale";
-                    var defaultVal = !string.IsNullOrEmpty(slot.Default) ? $", default {slot.Default}" : "";
-                    var description = !string.IsNullOrEmpty(slot.PromptDescription) ? $": {slot.PromptDescription}" : "";
-                    sb.AppendLine($"   - {slot.Name} ({slot.Type}, {obbligatorio}{defaultVal}){description}");
-                }
+                sb.AppendLine("Intent disponibili:");
 
                 sb.AppendLine();
-            }
+
+                List<IntentDefinition> intentsToInclude = string.IsNullOrEmpty(intentName)
+                    ? _intents.ToList()
+                    : _intents.Where(i => i.Name.Equals(intentName, StringComparison.OrdinalIgnoreCase)).ToList();
+
+                for (int i = 0; i < intentsToInclude.Count; i++)
+                {
+                    var intent = intentsToInclude[i];
+                    sb.AppendLine($"{i + 1}. {intent.Name}");
+                    sb.AppendLine($"   Descrizione: {intent.Description}");
+
+                    if (intent.Keywords.Count > 0)
+                    {
+                        //sb.AppendLine();
+                        sb.Append("   La richiesta può contenere le parole: ");
+                        foreach (var iKey in intent.Keywords)
+                        {
+                            sb.Append($"{iKey},");
+                        }
+                        sb.AppendLine();
+                        sb.AppendLine();
+                    }
+
+
+                    sb.AppendLine($"   Slot:");
+
+                    foreach (var slot in intent.Slots)
+                    {
+                        var obbligatorio = slot.Required ? "obbligatorio" : "opzionale";
+                        var defaultVal = !string.IsNullOrEmpty(slot.Default) ? $", default {slot.Default}" : "";
+                        var description = !string.IsNullOrEmpty(slot.PromptDescription) ? $": {slot.PromptDescription}" : "";
+                        sb.AppendLine($"   - {slot.Name} ({slot.Type}, {obbligatorio}{defaultVal}){description}");
+                    }
+
+                    sb.AppendLine();
+                }
+
+            #endregion
 
 
             sb.AppendLine("Rispondi sempre e solo con questo JSON,\n"
