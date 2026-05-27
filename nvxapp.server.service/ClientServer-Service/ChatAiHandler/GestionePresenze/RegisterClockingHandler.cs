@@ -191,7 +191,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                         GiornoCompetenza          = competenzaDate.Date,
                         TimbraturaTipo            = tipoTimbratura,
                         RichiestaStato            = StatoRichiesta.Diretta,
-                        IdAz_SubCommessaAttivita  = 22
+                        IdAz_SubCommessaAttivita  = Dip_Anagrafica.Dip_RapportoLavoro[0].IdAz_SubCommessaAttivita
                     };
                     
 
