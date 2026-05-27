@@ -23,13 +23,13 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
             // Inizializzato nel costruttore così può usare _dip_AnagraficaService.
             EmployeeNameSlot = new SlotDefinition
             {
-                Name              = "employeeName",
-                Type              = "string",
-                Required          = true,
+                Name = "employeeName",
+                Type = "string",
+                Required = true,
                 PromptDescription = "(string, obbligatorio)",
-                Question          = "Per quale dipendente?",
-                Label             = "Dipendente",
-                Validator         = v =>
+                Question = "Per quale dipendente?",
+                Label = "Dipendente",
+                Validator = v =>
                 {
                     if (string.IsNullOrWhiteSpace(v) || !v.Any(char.IsLetter))
                         return SlotValidationResult.Failed(
@@ -123,5 +123,37 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                 }
             };
         }
+
+        protected Dip_AnagraficaModel? Get_Dip_Anagrafica(string employeeName)
+        {
+            if (string.IsNullOrWhiteSpace(employeeName))
+                return null;
+
+            var req = new GenericRequest<Dip_Anagrafica_GetAll_InModel>();
+            var res = _dip_AnagraficaService.GetAll(req, true).Result;
+
+            if (!res.Success || res.Data == null)
+                return null;
+
+            var token = employeeName.Trim().ToLowerInvariant();
+            var parts = token.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+            if (parts.Length < 2)
+                return null;
+
+            string cognome = parts[0];
+            string nome = parts[1];
+
+            var dip = res.Data.Dip_Anagrafica
+                .FirstOrDefault(x =>
+                    (x.Cognome?.ToLowerInvariant() ?? "") == cognome &&
+                    (x.Nome?.ToLowerInvariant() ?? "") == nome
+                );
+
+            return dip;
+        }
+
+
+
     }
 }
