@@ -102,7 +102,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                     Type = "IN/OUT",
                     Required = false,
                     Default = "IN",
-                    PromptDescription = "valore IN oppure OUT. Se dice 'entrata' restituisci IN, se dice 'uscita' restituisci OUT.",
+                    PromptDescription = "valore IN oppure OUT. Se dice 'entrata/entra/inizia/inizio' restituisci IN, se dice 'uscita/esce/fine/finisce' restituisci OUT.",
                     //PromptDescription = "(IN/OUT, opzionale)",
                     Question = "Entrata o uscita?",
                     Label = "Tipo",
@@ -110,10 +110,16 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                     //{
                     //        return null;
                     //},
-                    //HasRelevantContent = msg =>
-                    //{
-                    //    return true;
-                    //}
+                    HasRelevantContent = msg =>
+                    {
+                        if (msg.Any(char.IsDigit)) return true;
+                        var Words = new[]
+                        {
+                            "IN","OUT"
+                        };
+                        var retVal = Words.Any(w => msg.Contains(w, StringComparison.OrdinalIgnoreCase));
+                        return retVal;
+                    }
                 }
             )
             };
