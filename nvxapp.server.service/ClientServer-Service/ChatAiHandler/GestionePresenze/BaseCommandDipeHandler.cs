@@ -1,6 +1,8 @@
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_AnagraficaService;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_AnagraficaService.Models;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Commands;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Models;
+using nvxapp.server.service.ClientServer_Service.ModelsBase;
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Commands.Handlers
 {
@@ -11,50 +13,64 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
 
         protected readonly IDip_AnagraficaService _dip_AnagraficaService;
 
+        // Non più static: deve catturare _dip_AnagraficaService dalla specifica istanza.
+        protected readonly SlotDefinition EmployeeNameSlot;
+
         protected BaseCommandDipeHandler(IDip_AnagraficaService dip_AnagraficaService)
         {
             _dip_AnagraficaService = dip_AnagraficaService;
-        }
 
-        protected static readonly SlotDefinition EmployeeNameSlot = new()
-        {
-            Name = "employeeName",
-            Type = "string",
-            Required = true,
-            //PromptDescription = "nome e cognome del dipendente — NON usare questa frase come valore. Devi estrarre SOLO un nome realmente scritto dall'utente.",
-            PromptDescription = @"(string, obbligatorio)",
-
-            Question = "Per quale dipendente?",
-            Label = "Dipendente",
-            //Validator         = v => v.Trim().Length >= 2 && v.Any(char.IsLetter) ? null
-            //    : SlotValidationResult.Failed(SlotValidationError.InvalidFormat,
-            //        $"'{v}' non sembra un nome valido. Inserire nome e cognome del dipendente.", "employeeName")
-            Validator = delegate (string v)
+            // Inizializzato nel costruttore così può usare _dip_AnagraficaService.
+            EmployeeNameSlot = new SlotDefinition
             {
-                if (v == null)
+                Name              = "employeeName",
+                Type              = "string",
+                Required          = true,
+                PromptDescription = "(string, obbligatorio)",
+                Question          = "Per quale dipendente?",
+                Label             = "Dipendente",
+                Validator         = v =>
                 {
+                    if (v == null)
+                        return SlotValidationResult.Failed(
+                            SlotValidationError.InvalidFormat,
+                            "Il valore non può essere nullo.",
+                            "employeeName");
+
+                    if (v.Trim().Length >= 2 && v.Any(char.IsLetter))
+                    {
+                        var req = new GenericRequest<Dip_Anagrafica_GetAll_InModel>();
+                        var res   =  _dip_AnagraficaService.GetAll(req, true).Result;
+                        if(res.Success && res.Data!=null)
+                        {
+
+                            if(res.Data.Dip_Anagrafica.Count>0)
+                            {
+                                return null;
+                            }
+                            else
+                            {
+                                return SlotValidationResult.Failed(
+                                                                SlotValidationError.BusinessRuleViolation,
+                                                                "Nessu dipendente disponibile",
+                                                                "employeeName");
+                            }
+                        }
+                        else
+                        {
+                            return SlotValidationResult.Failed(
+                                                                SlotValidationError.BusinessRuleViolation,
+                                                                "Errore nella lettura dipendenti",
+                                                                "employeeName");
+                        }
+                    }
+
                     return SlotValidationResult.Failed(
                         SlotValidationError.InvalidFormat,
-                        "Il valore non può essere nullo.",
-                        "employeeName"
-                    );
+                        $"'{v}' non sembra un nome valido. Inserire nome e cognome del dipendente.",
+                        "employeeName");
                 }
-
-                if (v.Trim().Length >= 2 && v.Any(char.IsLetter))
-                {
-                    return null;
-                }
-                else
-                {
-                    return SlotValidationResult.Failed(
-                                                           SlotValidationError.InvalidFormat,
-                                                           "'" + v + "' non sembra un nome valido. Inserire nome e cognome del dipendente.",
-                                                           "employeeName"
-                                                       );
-                }
-
-
-            }
-        };
+            };
+        }
     }
 }
