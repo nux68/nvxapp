@@ -346,7 +346,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
         public static void BuildSystemPrompt_Append_Intestazione_Comune(StringBuilder sb)
         {
             sb.AppendLine("REGOLA FONDAMENTALE:");
-            sb.AppendLine("Estrai SOLO i valori esplicitamente scritti dall'utente, per i queli è possibile una inetrpretazione usando gli esempi specificati negli slot");
+            sb.AppendLine("Estrai SOLO i valori esplicitamente scritti dall'utente, per i queli è possibile una interpretazione usando gli esempi specificati negli slot");
             sb.AppendLine("Se uno slot obbligatorio non è presente nel testo, inseriscilo in \"missingRequired\" e metti null come valore.");
             sb.AppendLine("NON inventare valori. NON completare slot mancanti con valori plausibili o di esempio.");
             sb.AppendLine("Un valore mancante in \"missingRequired\" è la risposta corretta — non un errore.");
