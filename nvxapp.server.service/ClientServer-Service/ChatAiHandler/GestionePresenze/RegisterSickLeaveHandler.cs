@@ -9,12 +9,12 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Comma
     //       e il lookup del dipendente per nome -> EmployeeId.
     public class RegisterSickLeaveHandler : BaseCommandDipeHandler
     {
-        public RegisterSickLeaveHandler(IDip_AnagraficaService dip_AnagraficaService):base(dip_AnagraficaService)
-        {
-        }
+        private readonly IntentDefinition _intentDefinition;
 
-        private static readonly IntentDefinition _intentDefinition = new()
+        public RegisterSickLeaveHandler(IDip_AnagraficaService dip_AnagraficaService) : base(dip_AnagraficaService)
         {
+            _intentDefinition = new IntentDefinition
+            {
             Name        = "RegisterSickLeave",
             DisplayName = "Malattia",
             Description = "registra una malattia per un dipendente",
@@ -66,7 +66,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Comma
                         "La data di inizio non pu\u00f2 essere successiva alla data di fine.", "startDate");
                 return null;
             }
-        };
+            };
+        }
 
         public override IntentDefinition IntentDefinition => _intentDefinition;
 

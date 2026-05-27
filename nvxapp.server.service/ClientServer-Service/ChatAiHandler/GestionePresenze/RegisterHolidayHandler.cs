@@ -8,12 +8,12 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
     //       aggiungere il controllo sovrapposizioni e il lookup dipendente.
     public class RegisterHolidayHandler : BaseCommandDipeHandler
     {
-        public RegisterHolidayHandler(IDip_AnagraficaService dip_AnagraficaService):base(dip_AnagraficaService)
-        {
-        }
+        private readonly IntentDefinition _intentDefinition;
 
-        private static readonly IntentDefinition _intentDefinition = new()
+        public RegisterHolidayHandler(IDip_AnagraficaService dip_AnagraficaService) : base(dip_AnagraficaService)
         {
+            _intentDefinition = new IntentDefinition
+            {
             Name        = "RegisterHoliday",
             DisplayName = "Ferie",
             Description = "mette in ferie un dipendente per un periodo",
@@ -56,7 +56,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                         "La data di inizio non pu\u00f2 essere successiva alla data di fine.", "startDate");
                 return null;
             }
-        };
+            };
+        }
 
         public override IntentDefinition IntentDefinition => _intentDefinition;
 

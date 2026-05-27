@@ -8,12 +8,12 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
     //       e il lookup del dipendente per nome -> EmployeeId.
     public class RegisterClockingHandler : BaseCommandDipeHandler
     {
-        public RegisterClockingHandler(IDip_AnagraficaService dip_AnagraficaService):base(dip_AnagraficaService)
-        {
-        }
+        private readonly IntentDefinition _intentDefinition;
 
-        private static readonly IntentDefinition _intentDefinition = new()
+        public RegisterClockingHandler(IDip_AnagraficaService dip_AnagraficaService) : base(dip_AnagraficaService)
         {
+            _intentDefinition = new IntentDefinition
+            {
             Name = "RegisterClocking",
             DisplayName = "Timbratura",
             Description = @"registra una timbratura di entrata o uscita.",
@@ -116,7 +116,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                     //}
                 }
             )
-        };
+            };
+        }
 
         public override IntentDefinition IntentDefinition => _intentDefinition;
 
