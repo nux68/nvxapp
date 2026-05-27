@@ -143,8 +143,11 @@ export class FabMenuComponent implements OnInit {
           this.currentSessionId = null;
         }
 
-        // Mostra la risposta dell'assistente
-        this.pushMessage('Assistant', res.data?.responce ?? '', res.data?.responseType);
+        // Mostra la risposta dell'assistente solo se non è vuota
+        const responce = res.data?.responce ?? '';
+        if (responce.trim().length > 0) {
+          this.pushMessage('Assistant', responce, res.data?.responseType);
+        }
 
         // Mostra i chip di suggerimento se presenti
         this.suggestions = res.data?.suggestions ?? [];

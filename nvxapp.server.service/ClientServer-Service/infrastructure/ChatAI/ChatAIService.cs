@@ -135,6 +135,20 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                     };
                 }
 
+                // 2b. Comando di help — riconosciuto direttamente senza passare da Ollama.
+                if (IsHelpCommand(userMessage))
+                {
+                    _sessionStore.Delete(session.SessionId);
+                    var helpSession = _sessionStore.Create();
+                    return new ChatAIOutModel
+                    {
+                        SessionId    = helpSession.SessionId,
+                        Responce     = string.Empty,
+                        ResponseType = "result",
+                        Suggestions  = BuildIntentSuggestions()
+                    };
+                }
+
                 // 3. Gestione conferma esplicita ("sì" / "no")
                 if (session.State == SessionState.ReadyToExecute)
                     return await HandleConfirmation(session, userMessage);
@@ -319,6 +333,15 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         {
             var t = text.Trim().ToLower();
             return _resetKeywords.Any(k => t.Contains(k));
+        }
+
+        private static readonly string[] _helpKeywords =
+            ["aiuto", "help", "comandi", "menu", "cosa sai fare", "cosa puoi fare"];
+
+        private static bool IsHelpCommand(string text)
+        {
+            var t = text.Trim().ToLower();
+            return _helpKeywords.Any(k => t.Contains(k));
         }
 
         // ---------------------------------------------------------------------------
@@ -649,52 +672,23 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 //      Questo permette normalizzazioni tipo "5" → "05:00" o "oggi" → "2025-05-20"
                 //      senza accettare orari/date inventati quando il testo è solo testo (es. "mimmo zuzzu").
 
-                //gate 6
+                //gate 6 — Anti-hallucination: scarta valori non rintracciabili nel testo dell'utente.
+                // La validazione di FORMATO (con suggestions) è demandata a ValidateSlotFormats
+                // (step 5 del flusso principale) che restituisce messaggi + chip al client.
                 if (userMessage != null && slotDef != null)
                 {
                     bool valueInText = userMessage.Contains(kv.Value, StringComparison.OrdinalIgnoreCase);
                     bool isDefaultValue = !string.IsNullOrEmpty(slotDef.Default) &&
                                          kv.Value.Equals(slotDef.Default, StringComparison.OrdinalIgnoreCase);
+                    bool hasRelevantContent = slotDef.HasRelevantContent != null &&
+                                             slotDef.HasRelevantContent(userMessage);
 
-                    // Normalizzazione valida: il validator approva il valore E il testo contiene
-                    // almeno una cifra (prerequisito minimo per qualsiasi slot numerico/temporale).
-                    //bool isValidNormalization = slotDef.Validator != null && slotDef.Validator(kv.Value) == null;
-
-                    bool validazioneOk = true;
-                    if (slotDef.Validator != null)
+                    if (!valueInText && !isDefaultValue && !hasRelevantContent)
                     {
-                        if (slotDef.Validator(kv.Value) != null)
-                            validazioneOk = false;
-                    }
-
-                    if (!validazioneOk)
-                    {
-                        if (slotDef.HasRelevantContent != null)
-                        {
-                            if (slotDef.HasRelevantContent(userMessage))
-                                validazioneOk = true;
-                        }
-                    }
-
-                    if (!validazioneOk)
-                    {
-                        Log.Warning("[ChatAI] Slot scartato: valore non presente nel testo. Slot={Slot} Valore={Value} Testo={Text}",
-                        kv.Key, kv.Value, userMessage);
+                        Log.Warning("[ChatAI] Slot scartato (anti-hallucination): valore non presente nel testo. Slot={Slot} Valore={Value} Testo={Text}",
+                            kv.Key, kv.Value, userMessage);
                         continue;
                     }
-
-                    //bool isValidContent = slotDef.HasRelevantContent != null &&
-                    //                            slotDef.HasRelevantContent(userMessage);
-
-
-
-                    //if (!valueInText && !isDefaultValue && (!isValidNormalization /*|| isValidContent*/ ))
-                    //{
-                    //    Log.Warning("[ChatAI] Slot scartato: valore non presente nel testo. Slot={Slot} Valore={Value} Testo={Text}",
-                    //        kv.Key, kv.Value, userMessage);
-                    //    continue;
-                    //}
-
                 }
 
                 ////Gate 7 
