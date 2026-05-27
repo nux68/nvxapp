@@ -190,6 +190,7 @@ export class FabMenuComponent implements OnInit {
   openModal(type: string) {
     this.modalType   = type;
     this.isModalOpen = true;
+    this.scrollToBottom();
   }
 
   cancelChat() {
