@@ -1,7 +1,7 @@
 <div>
 
   <div>
-    <ion-modal #chatModal class="nvx-modal" [isOpen]="isModalOpen" (willDismiss)="onWillDismissChat($event)">
+    <ion-modal #chatModal class="nvx-modal" [isOpen]="isModalOpen" (willDismiss)="onWillDismissChat($event)" (didPresent)="scrollToBottom()">
       <ng-template>
 
         <!-- HEADER -->
