@@ -108,7 +108,14 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
         public string MessageToUser { get; set; } = string.Empty;
         public string InvalidSlotName { get; set; } = string.Empty;  // slot da resettare in sessione
         public List<string> Suggestions { get; set; } = new();         // per AmbiguousEntity
+        public string? NormalizedValue { get; set; }                   // valore canonico da salvare in sessione
+        public string? InfoMessage { get; set; }                       // messaggio informativo (non blocca il flusso)
+
         public static SlotValidationResult Ok() => new() { IsValid = true };
+
+        // Ok con normalizzazione: il validator ha trovato il valore canonico da salvare
+        public static SlotValidationResult Ok(string normalizedValue, string? infoMessage = null) =>
+            new() { IsValid = true, NormalizedValue = normalizedValue, InfoMessage = infoMessage };
 
         public static SlotValidationResult Failed(SlotValidationError type, string message, string slotName, List<string>? suggestions = null) =>
             new()

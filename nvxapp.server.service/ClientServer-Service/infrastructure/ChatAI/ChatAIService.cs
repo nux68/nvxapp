@@ -237,13 +237,18 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                     return BuildQuestionResponse(session, formatValidation.MessageToUser, formatValidation.Suggestions);
                 }
 
+                // Messaggio informativo dal validator (es. "Dipendente agganciato: Lalli Marco")
+                // Viene anteposto alla prossima domanda o al riepilogo, senza bloccare il flusso.
+                var infoMessage = formatValidation.InfoMessage;
+
                 // 6. Controlla se mancano slot obbligatori
                 var missingSlots = GetMissingRequiredSlots(session);
                 if (missingSlots.Any())
                 {
                     var question = BuildMissingSlotQuestion(missingSlots.First(), session.Intent);
-                    session.AddToHistory("assistant", question);
-                    return BuildQuestionResponse(session, question);
+                    var fullQuestion = infoMessage != null ? $"{infoMessage}\n{question}" : question;
+                    session.AddToHistory("assistant", fullQuestion);
+                    return BuildQuestionResponse(session, fullQuestion);
                 }
 
                 // 7. Se l'intent è Help: esegui subito senza conferma,
@@ -265,8 +270,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 // 8. Tutti gli slot presenti e validi → chiedi conferma
                 session.State = SessionState.ReadyToExecute;
                 var summary = BuildConfirmationSummary(session);
-                session.AddToHistory("assistant", summary);
-                return BuildConfirmationResponse(session, summary);
+                var fullSummary = infoMessage != null ? $"{infoMessage}\n{summary}" : summary;
+                session.AddToHistory("assistant", fullSummary);
+                return BuildConfirmationResponse(session, fullSummary);
 
             }, isSubProcess);
         }
@@ -723,13 +729,26 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
 
             if (intentDef == null) return SlotValidationResult.Ok();
 
+            string? pendingInfo = null;
+
             // Validazione singolo slot — Validator è definito nel handler
             foreach (var slotDef in intentDef.Slots)
             {
                 if (slotDef.Validator == null) continue;
                 if (!session.Slots.TryGetValue(slotDef.Name, out var value)) continue;
                 var result = slotDef.Validator(value);
-                if (result != null) return result;
+                if (result == null) continue;
+                if (result.IsValid)
+                {
+                    // Validator ha fornito un valore canonico: sovrascrive lo slot con il nome normalizzato
+                    if (result.NormalizedValue != null)
+                        session.Slots[slotDef.Name] = result.NormalizedValue;
+                    // Raccoglie eventuale messaggio informativo (non blocca)
+                    if (result.InfoMessage != null)
+                        pendingInfo = result.InfoMessage;
+                    continue;
+                }
+                return result;
             }
 
             // Validazione cross-slot — CrossValidator è definito nell'IntentDefinition
@@ -739,7 +758,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 if (crossResult != null) return crossResult;
             }
 
-            return SlotValidationResult.Ok();
+            return SlotValidationResult.Ok(session.Slots.GetValueOrDefault("employeeName", string.Empty), pendingInfo);
         }
 
         // ---------------------------------------------------------------------------
