@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
-import { IonContent, IonModal } from '@ionic/angular';
+import { IonContent, IonModal, ToastController } from '@ionic/angular';
 import { SpeechService } from '../../../../Utility/infrastructure/speech.service';
 import { ChatAIService } from '../../../../ClientServer-Service/Infrastructure/ChatAI/chat-ai.service';
 import { GenericRequest } from '../../../../ClientServer-Service/ModelsBase/generic-request';
@@ -51,7 +51,8 @@ export class FabMenuComponent implements OnInit {
     public  speechService: SpeechService,
     private chatAIService: ChatAIService,
     private cdRef:         ChangeDetectorRef,
-    public  fabMenuService: FabMenuService
+    public  fabMenuService: FabMenuService,
+    private toastCtrl:     ToastController
   ) {
     this.fabMenuService.fabMenuItem$.subscribe(() => {
       if (this.fab) this.fab.close();
@@ -99,8 +100,14 @@ export class FabMenuComponent implements OnInit {
     const text = message.trim();
     if (!text) return;
 
-    // Spegne il microfono automaticamente dopo il riconoscimento
-    this.speechService.stop();
+    // Mostra toast con il testo riconosciuto solo se la modal è chiusa
+    if (!this.isModalOpen) {
+      this.toastCtrl.create({
+        message: text,
+        duration: 1000,
+        position: 'middle'
+      }).then(t => t.present());
+    }
 
     this.pushMessage('You', text);
     this.suggestions = [];
@@ -152,6 +159,11 @@ export class FabMenuComponent implements OnInit {
         // Mostra i chip di suggerimento se presenti
         this.suggestions = res.data?.suggestions ?? [];
 
+        // In modalità vocale, auto-conferma senza chiedere all'utente
+        if (this.speechService.VoiceCommandActive && res.data?.responseType === 'confirmation') {
+          setTimeout(() => this.sendSuggestion('Sì'), 600);
+        }
+
         this.cdRef.detectChanges();
         this.scrollToBottom();
       },
@@ -202,6 +214,7 @@ export class FabMenuComponent implements OnInit {
     this.modalType        = null;
     this.currentSessionId = null;   // reset sessione alla chiusura del modale
     this.suggestions      = [];
+    // i comandi vocali rimangono attivi anche dopo la chiusura del modale
   }
 
   // -------------------------------------------------------------------------
@@ -210,6 +223,15 @@ export class FabMenuComponent implements OnInit {
 
   toggleVoiceCommand() {
     this.speechService.VoiceCommandActive = !this.speechService.VoiceCommandActive;
+  }
+
+  // Chiamato dal FAB mic: se voice attivo lo ferma, altrimenti apre la chat vocale (mic da avviare manualmente)
+  toggleVocalFromFab() {
+    if (this.speechService.VoiceCommandActive) {
+      this.speechService.stop();
+    } else {
+      this.openModal('vocal');
+    }
   }
 
 }
