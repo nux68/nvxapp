@@ -23,9 +23,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                 new()
                 {
                     Name              = "startDate",
-                    Type              = "yyyy-MM-dd",
+                    Type              = "dd/MM/yyyy",
                     Required          = true,
-                    PromptDescription = "data di inizio nel formato yyyy-MM-dd. Se dice 'oggi' normalizza alla data odierna.",
+                    PromptDescription = "data di inizio nel formato dd/MM/yyyy. Se dice 'oggi' normalizza alla data odierna.",
                     Question          = "Da quale data?",
                     Label             = "Dal",
                     Validator         = v => DateOnly.TryParse(v, out _) ? null
@@ -37,7 +37,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                     Name              = "endDate",
                     Type              = "yyyy-MM-dd",
                     Required          = true,
-                    PromptDescription = "data di fine nel formato yyyy-MM-dd. Se dice 'oggi' normalizza alla data odierna.",
+                    PromptDescription = "data di fine nel formato dd/MM/yyyy. Se dice 'oggi' normalizza alla data odierna.",
                     Question          = "Fino a quale data?",
                     Label             = "Al",
                     Validator         = v => DateOnly.TryParse(v, out _) ? null

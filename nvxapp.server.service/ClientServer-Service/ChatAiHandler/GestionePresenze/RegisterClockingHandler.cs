@@ -5,6 +5,8 @@ using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Timbrat
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_TimbraturaService.Models;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
+using System.Text;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Commands.Handlers
 {
@@ -22,13 +24,24 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
         {
             _dip_GG_TimbraturaService = dip_GG_TimbraturaService;
 
+            var sb_Date = new StringBuilder();
+            BuildSystemPromptUtil.BuildSystemPrompt_Append_Data_Oggi(sb_Date);
+            var DatePromptDescription = sb_Date.ToString();
+
+            var sb_Time = new StringBuilder();
+            BuildSystemPromptUtil.BuildSystemPrompt_Append_Orario(sb_Date);
+            var TimePromptDescription = sb_Time.ToString();
+
+
+
             _intentDefinition = new IntentDefinition
             {
                 Name = "RegisterClocking",
                 DisplayName = "Timbratura",
                 Description = @"registra una timbratura di entrata o uscita.",
                 Keywords = new() { "timbratura", "timbra","timbrare" ,
-                                       "entrata","entra", "uscita", "esce",
+                                       "entrata","entra", "entrato", 
+                                       "uscita", "esce", "uscito",
                                        "orario", "clocking"
                                     },
                 Slots = BuildSlots(
@@ -38,16 +51,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                     Name = "time",
                     Type = "HH:mm",
                     Required = true,
-                    PromptDescription = @"Orario nel formato HH:mm.
-                                         Se l'utente dice 'alle 9' restituisci '09:00'.
-                                         Accetta anche varianti come '9', '9.00', '9:0' e normalizzale.
-                                         Se l'utente dice 'dieci' restituisci '10:00'.
-                                         Se l'utente dice 'dieci e mezza' restituisci '10:30'.
-                                         Non dedurre la risposta dagli esempi, al massimo puoi trasformare un
-                                         un numero espresso in forma letterale trasformandolo un cifra numerica come nell' esempio fornito",
-                    //PromptDescription = @"Orario nel formato HH:mm, se presente nel testo  ",
-                    //PromptDescription = @"(HH:mm, obbligatorio)",
-
+                    PromptDescription =TimePromptDescription,
                     Question = "A che orario? (es. 09:00)",
                     Label = "Orario",
                     Validator = v =>
@@ -79,32 +83,40 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                 new()
                 {
                     Name = "date",
-                    Type = "yyyy-MM-dd",
+                    Type = "dd/MM/yyyy",
                     Required = false,
                     Default = "oggi",
-                    //PromptDescription = @"data nel formato yyyy-MM-dd. 
-                    //                      Se dice 'oggi' normalizza alla data odierna.",
+                    
+                    PromptDescription=DatePromptDescription,
 
-                    PromptDescription = @"(yyyy-MM-dd, opzionale)",
                     Question = "Per quale data?",
                     Label = "Data",
                     Validator = v =>
                     {
-                        // 1. Verifica se la stringa può essere interpretata come data valida
-                        if (DateOnly.TryParse(v, out _))
+                        // Prova formato ISO
+                        if (DateOnly.TryParseExact(v, "yyyy-MM-dd", out _))
                             return null;
 
-                        // 2. In caso di errore, restituisce un messaggio dettagliato
+                        // Prova formato italiano
+                        if (DateOnly.TryParseExact(v, "dd/MM/yyyy", out var d))
+                            return null;
+                        // 2. In caso di errore, restituisce un messaggio dettagliat
+
                         return SlotValidationResult.Failed(
                             SlotValidationError.InvalidFormat,
                             $"'{v}' non è una data valida. Usa il formato gg/mm/aaaa.",
                             "date"
                         );
                     },
-                    //HasRelevantContent = msg =>
-                    //{
-                    //    return true;
-                    //}
+                    HasRelevantContent = msg =>
+                    {
+                        var Words = new[]
+                        {
+                            "oggi","domani","ieri"
+                        };
+                        var retVal = Words.Any(w => msg.Contains(w, StringComparison.OrdinalIgnoreCase));
+                        return retVal;
+                    }
                 },
                 new()
                 {
@@ -113,7 +125,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                     Required = false,
                     Default = "IN",
                     PromptDescription = "valore IN oppure OUT. Se dice 'entrata/entra/inizia/inizio' restituisci IN, se dice 'uscita/esce/fine/finisce' restituisci OUT.",
-                    //PromptDescription = "(IN/OUT, opzionale)",
                     Question = "Entrata o uscita?",
                     Label = "Tipo",
                     //Validator = v =>
@@ -146,22 +157,12 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
             var direction = slots.GetValueOrDefault("direction", "IN");
             var directionLabel = direction.Equals("OUT", StringComparison.OrdinalIgnoreCase) ? "uscita" : "entrata";
 
-            //// Carica tutti i dipendenti
-            //var req = new GenericRequest<Dip_Anagrafica_GetAll_InModel>();
-            //var res = _dip_AnagraficaService.GetAll(req, true).Result;
-            //if (!res.Success || res.Data == null)
-            //{
-            //}
 
             if (!string.IsNullOrEmpty(employeeName))
             {
-                Dip_AnagraficaModel Dip_Anagrafica = Get_Dip_Anagrafica(employeeName);
+                Dip_AnagraficaModel? Dip_Anagrafica = Get_Dip_Anagrafica(employeeName);
                 if (Dip_Anagrafica != null)
                 {
-
-                    //Dip_GG_TimbraturaPutInModel item = new Dip_GG_TimbraturaPutInModel(){ 
-                    //                                                                        IdDip_RapportoLavoro = Dip_Anagrafica.Dip_RapportoLavoro[0].Id
-                    //                                                                    };
 
                     // Costruisce il DateTime di timbratura combinando date + time dagli slot.
                     // date può essere "oggi" (default) oppure "yyyy-MM-dd"; time è sempre "HH:mm".
