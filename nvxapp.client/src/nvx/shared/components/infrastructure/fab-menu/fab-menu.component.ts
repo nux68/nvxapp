@@ -100,15 +100,6 @@ export class FabMenuComponent implements OnInit {
     const text = message.trim();
     if (!text) return;
 
-    // Mostra toast con il testo riconosciuto solo se la modal è chiusa
-    if (!this.isModalOpen) {
-      this.toastCtrl.create({
-        message: text,
-        duration: 1000,
-        position: 'middle'
-      }).then(t => t.present());
-    }
-
     this.pushMessage('You', text);
     this.suggestions = [];
     this.scrollToBottom();
@@ -159,9 +150,28 @@ export class FabMenuComponent implements OnInit {
         // Mostra i chip di suggerimento se presenti
         this.suggestions = res.data?.suggestions ?? [];
 
-        // In modalità vocale, auto-conferma senza chiedere all'utente
-        if (this.speechService.VoiceCommandActive && res.data?.responseType === 'confirmation') {
-          setTimeout(() => this.sendSuggestion('Sì'), 600);
+        const responseType = res.data?.responseType ?? '';
+
+        if (this.speechService.VoiceCommandActive) {
+          if (!this.isModalOpen) {
+            if (responseType === 'result' || responseType === 'error') {
+              // Comando completato: mostra toast con la risposta dell'assistente
+              this.toastCtrl.create({
+                message:  responce,
+                duration: 3000,
+                position: 'bottom'
+              }).then(t => t.present());
+            } else if (responseType === 'confirmation') {
+              // Auto-conferma senza aprire la modal
+              setTimeout(() => this.sendSuggestion('Sì'), 600);
+            } else {
+              // question: la conversazione richiede input manuale → apri la modal
+              this.openModal('vocal');
+            }
+          } else if (responseType === 'confirmation') {
+            // Modal già aperta in modalità vocale: auto-conferma
+            setTimeout(() => this.sendSuggestion('Sì'), 600);
+          }
         }
 
         this.cdRef.detectChanges();
