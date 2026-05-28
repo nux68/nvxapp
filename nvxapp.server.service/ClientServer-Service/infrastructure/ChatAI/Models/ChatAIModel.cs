@@ -352,15 +352,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
             sb.AppendLine("Un valore mancante in \"missingRequired\" è la risposta corretta — non un errore.");
             sb.AppendLine("");
 
-
-
-            sb.AppendLine();
-            sb.AppendLine($"Data di oggi: {DateTime.Today:yyyy-MM-dd}");
-            sb.AppendLine();
-            sb.AppendLine("IMPORTANTE:");
-            sb.AppendLine("Quando l’utente usa date relative come 'oggi', 'domani', 'ieri',");
-            sb.AppendLine("devi sempre convertirle in una data assoluta nel formato yyyy-MM-dd.");
-            sb.AppendLine($"Usa come riferimento la data indicata sopra. Oggi è {DateTime.Today:yyyy-MM-dd}");
+            BuildSystemPrompt_Append_Data_Oggi(sb);
 
         }
 
@@ -384,6 +376,34 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
             sb.AppendLine("Non usare mai la descrizione come nome dell’intent.");
             sb.AppendLine("Non inventare nuovi nomi.");
             sb.AppendLine("Non tradurre i nomi degli intent.");
+        }
+
+        public static void BuildSystemPrompt_Append_Data_Oggi(StringBuilder sb)
+        {
+            sb.AppendLine();
+            sb.AppendLine(@"Data nel formato dd/MM/yyyy.
+                            Accetta anche date scritte come '18/05/2026', '18-05-2026', '18 maggio 2026'.
+                            Normalizza sempre in formato dd/MM/yyyy");
+
+            sb.AppendLine();
+            sb.AppendLine($"Data di oggi: {DateTime.Today:dd/MM/yyyy}");
+            sb.AppendLine();
+            sb.AppendLine("IMPORTANTE:");
+            sb.AppendLine("Quando l’utente usa date relative come 'oggi', 'domani', 'ieri',");
+            sb.AppendLine("devi sempre convertirle in una data assoluta nel formato dd/MM/yyyy.");
+            sb.AppendLine($"Usa come riferimento la data indicata sopra. Oggi è {DateTime.Today:dd/MM/yyyy}");
+        }
+
+        public static void BuildSystemPrompt_Append_Orario(StringBuilder sb)
+        {
+            sb.AppendLine();
+            sb.AppendLine(@"Orario nel formato HH:mm.
+                            Se l'utente dice 'alle 9' restituisci '09:00'.
+                            Accetta anche varianti come '9', '9.00', '9:0' e normalizzale.
+                            Se l'utente dice 'dieci' restituisci '10:00'.
+                            Se l'utente dice 'dieci e mezza' restituisci '10:30'.
+                            Non dedurre la risposta dagli esempi, al massimo puoi trasformare un
+                            un numero espresso in forma letterale trasformandolo un cifra numerica come nell' esempio fornito");
         }
 
     }
