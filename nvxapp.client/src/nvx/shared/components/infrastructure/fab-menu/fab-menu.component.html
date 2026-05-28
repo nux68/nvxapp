@@ -104,8 +104,9 @@
       <ion-fab-button (click)="openModal('text')">
         <ion-icon name="chatbubbles-outline"></ion-icon>
       </ion-fab-button>
-      <ion-fab-button (click)="openModal('vocal')">
-        <ion-icon name="mic-outline"></ion-icon>
+      <ion-fab-button (click)="toggleVocalFromFab()"
+                      [color]="speechService.VoiceCommandActive ? 'success' : ''">
+        <ion-icon [name]="speechService.VoiceCommandActive ? 'mic' : 'mic-outline'"></ion-icon>
       </ion-fab-button>
     </ion-fab-list>
 
