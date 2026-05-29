@@ -102,8 +102,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 // 1. Cerca la sessione esistente
                 var session = TryGetSession(sessionId);
 
-                // Se il client aveva una sessione (sessionId non vuoto) ma è scaduta,
-                // lo informiamo esplicitamente invece di ripartire in silenzio.
+                // Se il client aveva una sessione ma è scaduta, lo informiamo esplicitamente.
                 if (session == null && !string.IsNullOrEmpty(sessionId))
                 {
                     var freshSession = CreateSession();
@@ -119,9 +118,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 // Prima richiesta senza sessionId — crea la sessione
                 session ??= CreateSession();
 
-                // 2. Comando di reset — l'utente vuole interrompere e ricominciare.
-                // Riconosco il comando PRIMA di qualsiasi altro controllo, in modo che
-                // funzioni sia durante la raccolta slot sia durante la conferma.
+                // 2. Comando di reset
                 if (IsResetCommand(userMessage))
                 {
                     _sessionStore.Delete(session.SessionId);
@@ -135,7 +132,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                     };
                 }
 
-                // 2b. Comando di help — riconosciuto direttamente senza passare da Ollama.
+                // 2b. Comando di help
                 if (IsHelpCommand(userMessage))
                 {
                     _sessionStore.Delete(session.SessionId);
@@ -153,19 +150,15 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 if (session.State == SessionState.ReadyToExecute)
                     return await HandleConfirmation(session, userMessage);
 
-                // 4. Registra il messaggio utente nella history PRIMA delle chiamate Ollama.
-                // BuildChatMessages legge la history aggiornata — il messaggio corrente
-                // è già incluso e non va passato separatamente.
+                // 4. Registra il messaggio utente nella history
                 session.AddToHistory("user", userMessage);
 
-                // 5. Primo turno vs turni successivi
-                bool isFirstTurn = string.IsNullOrEmpty(session.Intent);
+                // 5. PRIMO TURNO — piano non ancora costruito
+                bool isFirstTurn = session.ActionQueue.Count == 0;
 
                 if (isFirstTurn)
                 {
-                    // PRE-FILTRO: verifica che il testo contenga almeno una keyword
-                    // di almeno uno degli intent noti. Evita di chiamare Ollama per
-                    // testo palesemente non pertinente (es. "sooka", "vaffa", ecc.).
+                    // PRE-FILTRO keyword
                     bool anyKeywordMatch = _intentCatalog.Intents
                         .Where(i => i.Keywords.Count > 0)
                         .Any(i => i.Keywords.Any(k =>
@@ -179,83 +172,103 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                         return BuildErrorResponse(session, "Non ho capito la richiesta. Puoi ripetere?", BuildIntentSuggestions());
                     }
 
-                    // PRIMO TURNO: chiedi a Ollama intent + tutti gli slot presenti nel messaggio
-                    var extracted = await Call_LLM_ExtractIntentAsync(session);
-                    if (extracted == null || string.IsNullOrEmpty(extracted.Intent))
-                    {
-                        // Sessione senza intent confermato — non ha senso mantenerla
-                        DeleteSession(session.SessionId);
-                        return BuildErrorResponse(session, "Non ho capito la richiesta. Puoi ripetere?", BuildIntentSuggestions());
-                    }
-
-                    // Rifiuta intent "unknown" o confidence troppo bassa
-                    if (extracted.Intent.Equals("unknown", StringComparison.OrdinalIgnoreCase) || extracted.Confidence < 0.5)
+                    // Chiedi al LLM il piano multi-azione
+                    var plan = await Call_LLM_ExtractPlanAsync(session);
+                    if (plan == null || plan.Actions.Count == 0)
                     {
                         DeleteSession(session.SessionId);
                         return BuildErrorResponse(session, "Non ho capito la richiesta. Puoi ripetere?", BuildIntentSuggestions());
                     }
 
-                    // Verifica che l'intent restituito da Ollama esista nel catalogo.
-                    // Se non esiste il modello sta allucinando — lo blocchiamo qui.
-                    var knownIntent = _intentCatalog.Intents
-                        .FirstOrDefault(i => i.Name.Equals(extracted.Intent, StringComparison.OrdinalIgnoreCase));
-                    if (knownIntent == null)
+                    // Valida e normalizza ogni azione del piano
+                    foreach (var extractedAction in plan.Actions)
                     {
-                        DeleteSession(session.SessionId);
-                        return BuildErrorResponse(session, $"Non conosco il comando '{extracted.Intent}'. Puoi ripetere con un'operazione valida?", BuildIntentSuggestions());
+                        if (extractedAction.Intent.Equals("unknown", StringComparison.OrdinalIgnoreCase)
+                            || extractedAction.Confidence < 0.5)
+                            continue;
+
+                        var knownIntent = _intentCatalog.Intents
+                            .FirstOrDefault(i => i.Name.Equals(extractedAction.Intent, StringComparison.OrdinalIgnoreCase));
+                        if (knownIntent == null) continue;
+
+                        var entry = new ActionEntry
+                        {
+                            Intent = knownIntent.Name,
+                            State  = ActionState.Collecting
+                        };
+                        session.ActionQueue.Add(entry);
+
+                        // Merge degli slot estratti per questa azione
+                        SafeMergeSlotsForAction(entry, extractedAction.Slots, userMessage);
                     }
 
-                    session.Intent = knownIntent.Name; // usa il nome canonico dal catalogo
-                    SafeMergeSlots(session, extracted.Slots, userMessage);
+                    if (session.ActionQueue.Count == 0)
+                    {
+                        DeleteSession(session.SessionId);
+                        return BuildErrorResponse(session, "Non ho capito la richiesta. Puoi ripetere?", BuildIntentSuggestions());
+                    }
+
+                    session.CurrentActionIndex = 0;
                 }
                 else
                 {
-                    // TURNI SUCCESSIVI: estrai SOLO il valore dello slot mancante atteso.
-                    // NON richiamare l'estrazione generica — sovrascrive slot già raccolti.
-                    var nextMissing = GetMissingRequiredSlots(session).FirstOrDefault();
-                    if (nextMissing != null)
+                    // TURNI SUCCESSIVI — estrai il valore dello slot mancante per l'azione corrente
+                    var currentAction = session.CurrentAction;
+                    if (currentAction != null)
                     {
-                        var slotValue = await Call_LLM_ExtractSingleSlotAsync(
-                            nextMissing, session.Intent, session);
+                        var nextMissing = GetMissingRequiredSlotsForAction(currentAction).FirstOrDefault();
+                        if (nextMissing != null)
+                        {
+                            var slotValue = await Call_LLM_ExtractSingleSlotAsync(
+                                nextMissing, currentAction.Intent, session);
 
-                        // Se Ollama non riesce, usa il testo grezzo come fallback
-                        if (string.IsNullOrEmpty(slotValue))
-                            slotValue = userMessage.Trim();
+                            if (string.IsNullOrEmpty(slotValue))
+                                slotValue = userMessage.Trim();
 
-                        // Passa per SafeMergeSlots con userMessage per applicare tutti i guard
-                        // anche nei turni successivi, non solo nel primo turno.
-                        SafeMergeSlots(session, new Dictionary<string, string> { [nextMissing] = slotValue }, userMessage);
+                            SafeMergeSlotsForAction(currentAction,
+                                new Dictionary<string, string> { [nextMissing] = slotValue }, userMessage);
+                        }
                     }
                 }
 
-                // 5. Valida i valori degli slot presenti (formato, range, ecc.)
-                var formatValidation = ValidateSlotFormats(session);
+                // 6. Raccolta slot per l'azione corrente
+                var current = session.CurrentAction;
+                if (current == null)
+                {
+                    DeleteSession(session.SessionId);
+                    return BuildErrorResponse(session, "Errore interno nel piano di esecuzione.", BuildIntentSuggestions());
+                }
+
+                // Valida i valori degli slot dell'azione corrente
+                var formatValidation = ValidateSlotFormatsForAction(current);
                 if (!formatValidation.IsValid)
                 {
-                    session.ResetSlot(formatValidation.InvalidSlotName);
+                    current.Slots.Remove(formatValidation.InvalidSlotName);
                     session.AddToHistory("assistant", formatValidation.MessageToUser);
                     return BuildQuestionResponse(session, formatValidation.MessageToUser, formatValidation.Suggestions);
                 }
 
-                // Messaggio informativo dal validator (es. "Dipendente agganciato: Lalli Marco")
-                // Viene anteposto alla prossima domanda o al riepilogo, senza bloccare il flusso.
-                var infoMessage = formatValidation.InfoMessage;
+                // Salva l'InfoMessage sull'azione corrente (es. "Dipendente agganciato: Rossi Mario")
+                if (formatValidation.InfoMessage != null)
+                    current.InfoMessage = formatValidation.InfoMessage;
 
-                // 6. Controlla se mancano slot obbligatori
-                var missingSlots = GetMissingRequiredSlots(session);
+                // Controlla se mancano slot obbligatori per l'azione corrente
+                var missingSlots = GetMissingRequiredSlotsForAction(current);
                 if (missingSlots.Any())
                 {
-                    var question = BuildMissingSlotQuestion(missingSlots.First(), session.Intent);
-                    var fullQuestion = infoMessage != null ? $"{infoMessage}\n{question}" : question;
-                    session.AddToHistory("assistant", fullQuestion);
-                    return BuildQuestionResponse(session, fullQuestion);
+                    var actionTitle = GetDisplayName(current.Intent);
+                    var question = BuildMissingSlotQuestion(missingSlots.First(), current.Intent, current, actionTitle);
+                    session.AddToHistory("assistant", question);
+                    return BuildQuestionResponse(session, question);
                 }
 
-                // 7. Se l'intent è Help: esegui subito senza conferma,
-                //    restituisci solo i chip degli intent disponibili senza testo descrittivo.
-                if (session.Intent.Equals("Help", StringComparison.OrdinalIgnoreCase))
+                // Azione corrente completamente raccolta — segna come Ready
+                current.State = ActionState.Ready;
+
+                // 7. Intent Help — esegui subito senza conferma
+                if (current.Intent.Equals("Help", StringComparison.OrdinalIgnoreCase))
                 {
-                    await ExecuteCommandAsync(session);
+                    await ExecuteCommandAsync(current);
                     DeleteSession(session.SessionId);
                     var helpSession = _sessionStore.Create();
                     return new ChatAIOutModel
@@ -267,18 +280,63 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                     };
                 }
 
-                // 8. Tutti gli slot presenti e validi → chiedi conferma
+                // 8. Avanza all'azione successiva se ci sono ancora slot da raccogliere
+                //    (azioni con slot ancora da raccogliere nel piano)
+                bool hasMoreCollecting = session.ActionQueue
+                    .Skip(session.CurrentActionIndex + 1)
+                    .Any(a => a.State == ActionState.Collecting &&
+                              GetMissingRequiredSlotsForAction(a).Any());
+
+                if (hasMoreCollecting)
+                {
+                    // Valida/normalizza la prossima azione prima di costruire il prompt
+                    var nextAction = session.ActionQueue.ElementAtOrDefault(session.CurrentActionIndex + 1);
+                    if (nextAction != null)
+                    {
+                        var nextValidation = ValidateSlotFormatsForAction(nextAction);
+                        if (nextValidation.InfoMessage != null)
+                            nextAction.InfoMessage = nextValidation.InfoMessage;
+                    }
+
+                    // Avanza all'azione successiva mostrando la domanda con titolo e slot già noti
+                    var nextQuestion = BuildNextActionQuestion(session);
+                    session.CurrentActionIndex++;
+                    session.AddToHistory("assistant", nextQuestion);
+                    return BuildQuestionResponse(session, nextQuestion);
+                }
+
+                // 9. Tutte le azioni pronte → valida le azioni non ancora validate,
+                //    salva l'InfoMessage su ogni ActionEntry e mostra il riepilogo piano completo.
+
+                // Valida le azioni successive (dalla corrente+1 in poi) che non sono ancora Ready.
+                foreach (var pendingAction in session.ActionQueue.Skip(session.CurrentActionIndex + 1)
+                             .Where(a => a.State == ActionState.Collecting))
+                {
+                    var pendingValidation = ValidateSlotFormatsForAction(pendingAction);
+                    if (!pendingValidation.IsValid)
+                    {
+                        pendingAction.Slots.Remove(pendingValidation.InvalidSlotName);
+                        session.AddToHistory("assistant", pendingValidation.MessageToUser);
+                        session.CurrentActionIndex = session.ActionQueue.IndexOf(pendingAction);
+                        return BuildQuestionResponse(session, pendingValidation.MessageToUser, pendingValidation.Suggestions);
+                    }
+
+                    if (pendingValidation.InfoMessage != null)
+                        pendingAction.InfoMessage = pendingValidation.InfoMessage;
+
+                    pendingAction.State = ActionState.Ready;
+                }
+
                 session.State = SessionState.ReadyToExecute;
-                var summary = BuildConfirmationSummary(session);
-                var fullSummary = infoMessage != null ? $"{infoMessage}\n{summary}" : summary;
-                session.AddToHistory("assistant", fullSummary);
-                return BuildConfirmationResponse(session, fullSummary);
+                var summary = BuildPlanConfirmationSummary(session);
+                session.AddToHistory("assistant", summary);
+                return BuildConfirmationResponse(session, summary);
 
             }, isSubProcess);
         }
 
         // ---------------------------------------------------------------------------
-        // Gestione conferma utente
+        // Gestione conferma utente — esegue l'intero piano
         // ---------------------------------------------------------------------------
 
         private async Task<ChatAIOutModel> HandleConfirmation(ChatSession session, string userMessage)
@@ -292,16 +350,30 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             if (confirmed)
             {
                 session.State = SessionState.Confirmed;
-                var result = await ExecuteCommandAsync(session);
+                var planResult = await ExecutePlanAsync(session);
                 DeleteSession(session.SessionId);
                 var doneSession = _sessionStore.Create();
 
+                bool anySuccess = planResult.Any(r => r.Success);
+                bool anyFail    = planResult.Any(r => !r.Success);
+                string responseType = anyFail ? (anySuccess ? "partial_error" : "error") : "result";
+
+                // Messaggio complessivo
+                var sb = new StringBuilder();
+                foreach (var r in planResult)
+                    sb.AppendLine(r.Message);
+
+                // Payload di navigazione — ultima azione navigate del piano
+                var navItem = planResult.LastOrDefault(r => r.Navigate != null);
+
                 return new ChatAIOutModel
                 {
-                    SessionId = doneSession.SessionId,
-                    Responce = result.Message,
-                    ResponseType = result.Success ? "result" : "error",
-                    Suggestions = result.Success ? BuildIntentSuggestions() : new()
+                    SessionId     = doneSession.SessionId,
+                    Responce      = sb.ToString().TrimEnd(),
+                    ResponseType  = responseType,
+                    Suggestions   = anyFail ? new() : BuildIntentSuggestions(),
+                    Navigate      = navItem?.Navigate,
+                    ActionResults = planResult
                 };
             }
 
@@ -351,22 +423,21 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         }
 
         // ---------------------------------------------------------------------------
-        // Chiamata Ollama — primo turno: estrae intent + tutti gli slot presenti
-        // Passa la ConversationHistory come array messages a /api/chat.
+        // Chiamata LLM — primo turno: estrae il piano multi-azione
         // ---------------------------------------------------------------------------
 
-        private async Task<ExtractedIntent?> Call_LLM_ExtractIntentAsync(ChatSession session)
+        private async Task<ExtractedPlan?> Call_LLM_ExtractPlanAsync(ChatSession session)
         {
             try
             {
-                var messages = BuildChatMessages(_intentCatalog.BuildSystemPrompt(null), session.History);
+                var messages = BuildChatMessages(_intentCatalog.BuildPlanSystemPrompt(), session.History);
 
                 var requestBody = new OllamaChatRequest
                 {
-                    Model = _ollamaModel,
+                    Model    = _ollamaModel,
                     Messages = messages,
-                    Stream = false,
-                    Format = "json"
+                    Stream   = false,
+                    Format   = "json"
                 };
 
                 string raw;
@@ -379,17 +450,15 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 else
                     throw new InvalidOperationException($"LLM non supportato: {_useLLM}");
 
-                // Memorizza la risposta del modello nella history affinché
-                // i turni successivi possano contestualizzarla.
                 if (!string.IsNullOrEmpty(raw))
                     session.AddToHistory("assistant", raw);
 
-                return SafeDeserializeExtractedIntent(raw);
+                return SafeDeserializeExtractedPlan(raw);
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "[ChatAI] CallOllamaExtractIntentAsync fallita. Session={SessionId} Intent={Intent}",
-                    session.SessionId, session.Intent);
+                Log.Error(ex, "[ChatAI] Call_LLM_ExtractPlanAsync fallita. Session={SessionId}",
+                    session.SessionId);
                 return null;
             }
         }
@@ -439,7 +508,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
 
                 // Il LLM restituisce sempre un ExtractedIntent completo (stesso formato del primo turno).
                 // Deserializza e legge il valore dello slot richiesto.
-                var extracted = SafeDeserializeExtractedIntent(raw);
+                var extracted = SafeDeserializeExtractedIntent(raw, slotName, intentName);
                 if (extracted?.Slots != null &&
                     extracted.Slots.TryGetValue(slotName, out var slotValue) &&
                     !IsNullString(slotValue))
@@ -601,7 +670,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         // Deserializzazione sicura
         // ---------------------------------------------------------------------------
 
-        private ExtractedIntent? SafeDeserializeExtractedIntent(string raw)
+        private ExtractedIntent? SafeDeserializeExtractedIntent(string raw,
+            string? expectedSlot = null, string? expectedIntent = null)
         {
             try
             {
@@ -612,8 +682,43 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 if (start == -1 || end == -1) return null;
 
                 var cleanJson = raw.Substring(start, end - start + 1);
-                return JsonSerializer.Deserialize<ExtractedIntent>(cleanJson,
+
+                // Prova prima il formato standard: { "intent": ..., "slots": {...} }
+                var direct = JsonSerializer.Deserialize<ExtractedIntent>(cleanJson,
                     new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+                if (direct != null && !string.IsNullOrEmpty(direct.Intent))
+                    return direct;
+
+                // Fallback: il LLM ha risposto con il formato piano { "actions": [...] }.
+                // Accade quando la history contiene risposte del primo turno in formato piano
+                // e il modello continua a rispondere nello stesso formato.
+                // Cerca l'azione che corrisponde all'intent atteso ed estrae i suoi slot.
+                if (expectedSlot != null)
+                {
+                    var plan = JsonSerializer.Deserialize<ExtractedPlan>(cleanJson,
+                        new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+                    if (plan?.Actions != null)
+                    {
+                        // Cerca l'azione con l'intent atteso, oppure la prima che ha lo slot
+                        var match = plan.Actions
+                            .Where(a => expectedIntent == null ||
+                                        a.Intent.Equals(expectedIntent, StringComparison.OrdinalIgnoreCase))
+                            .FirstOrDefault(a => a.Slots.ContainsKey(expectedSlot))
+                            ?? plan.Actions.FirstOrDefault(a => a.Slots.ContainsKey(expectedSlot));
+
+                        if (match != null)
+                            return new ExtractedIntent
+                            {
+                                Intent     = match.Intent,
+                                Slots      = match.Slots,
+                                Confidence = match.Confidence
+                            };
+                    }
+                }
+
+                return direct;
             }
             catch (Exception ex)
             {
@@ -623,87 +728,88 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             }
         }
 
+        private ExtractedPlan? SafeDeserializeExtractedPlan(string raw)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(raw)) return null;
+
+                var start = raw.IndexOf('{');
+                var end   = raw.LastIndexOf('}');
+                if (start == -1 || end == -1) return null;
+
+                var cleanJson = raw.Substring(start, end - start + 1);
+                return JsonSerializer.Deserialize<ExtractedPlan>(cleanJson,
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            }
+            catch (Exception ex)
+            {
+                Log.Warning(ex, "[ChatAI] SafeDeserializeExtractedPlan: JSON non deserializzabile. Raw={Raw}",
+                    raw?.Length > 500 ? raw[..500] + "…" : raw);
+                return null;
+            }
+        }
+
         // ---------------------------------------------------------------------------
-        // Merge sicuro degli slot — FIX del bug principale
+        // Merge sicuro degli slot — opera sull'ActionEntry (non sulla sessione)
         // ---------------------------------------------------------------------------
 
-        // Aggiunge alla sessione SOLO i valori realmente presenti.
-        // Non tocca MAI gli slot già valorizzati in sessione.
-        // userMessage (opzionale): se fornito, scarta i valori che non appaiono nel testo originale
-        // come sottostringa — blocca le hallucination di slot inventati quando il messaggio è breve.
-        private void SafeMergeSlots(ChatSession session, Dictionary<string, string> newSlots,
+        private void SafeMergeSlotsForAction(ActionEntry action, Dictionary<string, string> newSlots,
             string? userMessage = null)
         {
             if (newSlots == null) return;
 
             var intentDef = _intentCatalog.Intents
-                .FirstOrDefault(i => i.Name == session.Intent);
+                .FirstOrDefault(i => i.Name == action.Intent);
 
             foreach (var kv in newSlots)
             {
-                //gate 1
-                if (IsNullString(kv.Value)) continue; // ignora null/vuoti
-                //gate 2
-                if (session.Slots.ContainsKey(kv.Key)) continue; // non sovrascrivere esistenti
+                if (IsNullString(kv.Value)) continue;
+                if (action.Slots.ContainsKey(kv.Key)) continue;
 
                 var slotDef = intentDef?.Slots.FirstOrDefault(s => s.Name == kv.Key);
 
-                //gate 3
-                // Scarta il valore se Ollama ha restituito la PromptDescription verbatim
                 if (slotDef != null &&
                     !string.IsNullOrEmpty(slotDef.PromptDescription) &&
                     kv.Value.Equals(slotDef.PromptDescription, StringComparison.OrdinalIgnoreCase))
                     continue;
 
-                //gate 4
-                // Scarta il valore se Ollama ha restituito il Type dello slot verbatim
                 if (slotDef != null &&
                     !string.IsNullOrEmpty(slotDef.Type) &&
                     kv.Value.Equals(slotDef.Type, StringComparison.OrdinalIgnoreCase))
                     continue;
 
-                //gate 5
-                // Scarta il valore se coincide con una keyword dell'intent corrente.
-                // Le keyword sono parole trigger (es. "timbratura"), non dati utente.
                 if (intentDef != null &&
                     intentDef.Keywords.Any(k => k.Equals(kv.Value, StringComparison.OrdinalIgnoreCase)))
                     continue;
 
-                // Scarta il valore se non è rintracciabile nel testo originale dell'utente.
-                // Blocca hallucination dove Ollama inventa nomi, date e orari non digitati.
-                // Eccezioni legittime — il valore non deve essere nel testo verbatim se:
-                //   1. È un valore di default dello slot opzionale (es. "IN" per direction)
-                //   2. Ha un validator che lo approva E il testo contiene materiale grezzo
-                //      pertinente (es. almeno una cifra per slot numerici come HH:mm o yyyy-MM-dd).
-                //      Questo permette normalizzazioni tipo "5" → "05:00" o "oggi" → "2025-05-20"
-                //      senza accettare orari/date inventati quando il testo è solo testo (es. "mimmo zuzzu").
-
-                //gate 6 — Anti-hallucination: scarta valori non rintracciabili nel testo dell'utente.
-                // La validazione di FORMATO (con suggestions) è demandata a ValidateSlotFormats
-                // (step 5 del flusso principale) che restituisce messaggi + chip al client.
                 if (userMessage != null && slotDef != null)
                 {
-                    bool valueInText = userMessage.Contains(kv.Value, StringComparison.OrdinalIgnoreCase);
-                    bool isDefaultValue = !string.IsNullOrEmpty(slotDef.Default) &&
-                                         kv.Value.Equals(slotDef.Default, StringComparison.OrdinalIgnoreCase);
+                    bool valueInText      = userMessage.Contains(kv.Value, StringComparison.OrdinalIgnoreCase);
+                    bool isDefaultValue   = !string.IsNullOrEmpty(slotDef.Default) &&
+                                           kv.Value.Equals(slotDef.Default, StringComparison.OrdinalIgnoreCase);
                     bool hasRelevantContent = slotDef.HasRelevantContent != null &&
                                              slotDef.HasRelevantContent(userMessage);
 
                     if (!valueInText && !isDefaultValue && !hasRelevantContent)
                     {
-                        Log.Warning("[ChatAI] Slot scartato (anti-hallucination): valore non presente nel testo. Slot={Slot} Valore={Value} Testo={Text}",
+                        Log.Warning("[ChatAI] Slot scartato (anti-hallucination). Slot={Slot} Valore={Value} Testo={Text}",
                             kv.Key, kv.Value, userMessage);
                         continue;
                     }
                 }
 
-                ////Gate 7 
-                //// Se lo slot ha un validator di formato, rigetta valori che non lo superano
-                //if (slotDef?.Validator != null && slotDef.Validator(kv.Value) != null)
-                //    continue;
-
-                session.Slots[kv.Key] = kv.Value;
+                action.Slots[kv.Key] = kv.Value;
             }
+        }
+
+        // Mantenuto per compatibilità con Call_LLM_ExtractSingleSlotAsync che riceve ChatSession
+        private void SafeMergeSlots(ChatSession session, Dictionary<string, string> newSlots,
+            string? userMessage = null)
+        {
+            var current = session.CurrentAction;
+            if (current == null) return;
+            SafeMergeSlotsForAction(current, newSlots, userMessage);
         }
 
         private bool IsNullString(string value) =>
@@ -718,32 +824,28 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             (value.Contains('_') && !value.Contains(' '));
 
         // ---------------------------------------------------------------------------
-        // Validazione slot — delega ai Validator definiti nel handler.
-        // ChatAIService non conosce i nomi degli slot: itera sui metadati dell'intent.
+        // Validazione slot — opera sull'ActionEntry
         // ---------------------------------------------------------------------------
 
-        private SlotValidationResult ValidateSlotFormats(ChatSession session)
+        private SlotValidationResult ValidateSlotFormatsForAction(ActionEntry action)
         {
             var intentDef = _intentCatalog.Intents
-                .FirstOrDefault(i => i.Name == session.Intent);
+                .FirstOrDefault(i => i.Name == action.Intent);
 
             if (intentDef == null) return SlotValidationResult.Ok();
 
             string? pendingInfo = null;
 
-            // Validazione singolo slot — Validator è definito nel handler
             foreach (var slotDef in intentDef.Slots)
             {
                 if (slotDef.Validator == null) continue;
-                if (!session.Slots.TryGetValue(slotDef.Name, out var value)) continue;
+                if (!action.Slots.TryGetValue(slotDef.Name, out var value)) continue;
                 var result = slotDef.Validator(value);
                 if (result == null) continue;
                 if (result.IsValid)
                 {
-                    // Validator ha fornito un valore canonico: sovrascrive lo slot con il nome normalizzato
                     if (result.NormalizedValue != null)
-                        session.Slots[slotDef.Name] = result.NormalizedValue;
-                    // Raccoglie eventuale messaggio informativo (non blocca)
+                        action.Slots[slotDef.Name] = result.NormalizedValue;
                     if (result.InfoMessage != null)
                         pendingInfo = result.InfoMessage;
                     continue;
@@ -751,93 +853,236 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 return result;
             }
 
-            // Validazione cross-slot — CrossValidator è definito nell'IntentDefinition
             if (intentDef.CrossValidator != null)
             {
-                var crossResult = intentDef.CrossValidator(session.Slots);
+                var crossResult = intentDef.CrossValidator(action.Slots);
                 if (crossResult != null) return crossResult;
             }
 
-            return SlotValidationResult.Ok(session.Slots.GetValueOrDefault("employeeName", string.Empty), pendingInfo);
+            return SlotValidationResult.Ok(action.Slots.GetValueOrDefault("employeeName", string.Empty), pendingInfo);
+        }
+
+        // Mantenuto per compatibilità interna con il vecchio flusso (usato da ValidateSlotFormats)
+        private SlotValidationResult ValidateSlotFormats(ChatSession session)
+        {
+            var current = session.CurrentAction;
+            return current != null ? ValidateSlotFormatsForAction(current) : SlotValidationResult.Ok();
         }
 
         // ---------------------------------------------------------------------------
         // Slot mancanti
         // ---------------------------------------------------------------------------
 
-        private List<string> GetMissingRequiredSlots(ChatSession session)
+        private List<string> GetMissingRequiredSlotsForAction(ActionEntry action)
         {
             var intentDef = _intentCatalog.Intents
-                .FirstOrDefault(i => i.Name == session.Intent);
+                .FirstOrDefault(i => i.Name == action.Intent);
 
             if (intentDef == null) return new();
 
             return intentDef.Slots
-                .Where(s => s.Required && !session.Slots.ContainsKey(s.Name))
+                .Where(s => s.Required && !action.Slots.ContainsKey(s.Name))
                 .Select(s => s.Name)
                 .ToList();
         }
 
-        private string BuildMissingSlotQuestion(string slotName, string intentName)
+        // Shim per compatibilità con Call_LLM_ExtractSingleSlotAsync
+        private List<string> GetMissingRequiredSlots(ChatSession session)
+        {
+            var current = session.CurrentAction;
+            return current != null ? GetMissingRequiredSlotsForAction(current) : new();
+        }
+
+        private string BuildMissingSlotQuestion(string slotName, string intentName,
+            ActionEntry? action = null, string? actionTitle = null)
         {
             var slotDef = FindSlotDefinition(intentName, slotName);
-            return !string.IsNullOrEmpty(slotDef?.Question)
+            var question = !string.IsNullOrEmpty(slotDef?.Question)
                 ? slotDef.Question
                 : $"Puoi specificare '{slotName}'?";
+
+            // Costruisce il contesto: titolo operazione (opzionale) + slot già raccolti
+            var contextParts = new List<string>();
+
+            if (!string.IsNullOrEmpty(actionTitle))
+                contextParts.Add($"Operazione '{actionTitle}'");
+
+            if (action != null && action.Slots.Count > 0)
+            {
+                var intentDef = _intentCatalog.Intents.FirstOrDefault(i => i.Name == intentName);
+                if (intentDef != null)
+                {
+                    foreach (var sd in intentDef.Slots)
+                    {
+                        if (sd.Name == slotName) continue;
+                        if (!action.Slots.TryGetValue(sd.Name, out var val)) continue;
+                        var label = !string.IsNullOrEmpty(sd.Label) ? sd.Label : sd.Name;
+                        contextParts.Add($"{label}: {val}");
+                    }
+                }
+            }
+
+            if (contextParts.Count > 0)
+                return string.Join("\n", contextParts) + "\n" + question;
+
+            return question;
         }
 
         // ---------------------------------------------------------------------------
-        // Esecuzione comando — delega al CommandRegistry
+        // Esecuzione singola azione
         // ---------------------------------------------------------------------------
 
-        private async Task<CommandResult> ExecuteCommandAsync(ChatSession session)
+        private async Task<CommandResult> ExecuteCommandAsync(ActionEntry action)
         {
             try
             {
-                var handler = _commandRegistry.Resolve(session.Intent);
-                return await handler.ExecuteAsync(session.Slots);
+                var handler = _commandRegistry.Resolve(action.Intent);
+                return await handler.ExecuteAsync(action.Slots);
             }
             catch (InvalidOperationException ex)
             {
-                // Handler non trovato nel registry — errore di configurazione atteso
-                Log.Warning(ex, "[ChatAI] Handler non trovato. Session={SessionId} Intent={Intent}",
-                    session.SessionId, session.Intent);
+                Log.Warning(ex, "[ChatAI] Handler non trovato. Intent={Intent}", action.Intent);
                 return CommandResult.Fail(ex.Message);
             }
             catch (Exception ex)
             {
-                // Errore imprevisto nell'esecuzione del comando (DB, timeout, ecc.)
-                Log.Error(ex, "[ChatAI] ExecuteCommandAsync fallita. Session={SessionId} Intent={Intent} Slots={Slots}",
-                    session.SessionId, session.Intent, System.Text.Json.JsonSerializer.Serialize(session.Slots));
+                Log.Error(ex, "[ChatAI] ExecuteCommandAsync fallita. Intent={Intent} Slots={Slots}",
+                    action.Intent, System.Text.Json.JsonSerializer.Serialize(action.Slots));
                 return CommandResult.Fail("Errore durante l'esecuzione del comando. Riprova.");
             }
         }
 
-        // ---------------------------------------------------------------------------
-        // Riepilogo conferma
-        // ---------------------------------------------------------------------------
-
-        private string BuildConfirmationSummary(ChatSession session)
+        // Shim per compatibilità con il blocco Help in SendMessage
+        private async Task<CommandResult> ExecuteCommandAsync(ChatSession session)
         {
-            var intentDef = _intentCatalog.Intents.FirstOrDefault(i => i.Name == session.Intent);
-            var sb = new StringBuilder();
+            var current = session.CurrentAction;
+            if (current == null) return CommandResult.Fail("Nessuna azione corrente.");
+            return await ExecuteCommandAsync(current);
+        }
 
-            sb.AppendLine("Riepilogo:");
+        // ---------------------------------------------------------------------------
+        // Esecuzione piano completo
+        // ---------------------------------------------------------------------------
 
-            if (intentDef != null)
+        private async Task<List<ActionResultItem>> ExecutePlanAsync(ChatSession session)
+        {
+            var results = new List<ActionResultItem>();
+
+            foreach (var action in session.ActionQueue)
             {
-                foreach (var slotDef in intentDef.Slots)
+                var intentDef = _intentCatalog.Intents
+                    .FirstOrDefault(i => i.Name.Equals(action.Intent, StringComparison.OrdinalIgnoreCase));
+
+                // Esegui validazione/normalizzazione degli slot per ogni azione del piano.
+                // Le azioni successive alla prima non passano per il flusso SendMessage,
+                // quindi il validator (es. risoluzione nome canonico dipendente) va rieseguito qui.
+                var validation = ValidateSlotFormatsForAction(action);
+                if (!validation.IsValid)
                 {
-                    var value = session.Slots.GetValueOrDefault(slotDef.Name,
-                        !string.IsNullOrEmpty(slotDef.Default) ? slotDef.Default : "-");
-                    var label = !string.IsNullOrEmpty(slotDef.Label) ? slotDef.Label : slotDef.Name;
-                    sb.AppendLine($"  {label}: {value}");
+                    action.State = ActionState.Failed;
+                    var failItem = new ActionResultItem
+                    {
+                        Intent  = action.Intent,
+                        Success = false,
+                        Message = $"[{GetDisplayName(action.Intent)}] {validation.MessageToUser}"
+                    };
+                    results.Add(failItem);
+
+                    if ((intentDef?.ExecutionStrategy ?? ExecutionStrategy.StopOnError)
+                        == ExecutionStrategy.StopOnError)
+                        break;
+
+                    continue;
                 }
+
+                var cmdResult = await ExecuteCommandAsync(action);
+                action.State  = cmdResult.Success ? ActionState.Done : ActionState.Failed;
+
+                var item = new ActionResultItem
+                {
+                    Intent  = action.Intent,
+                    Success = cmdResult.Success,
+                    Message = cmdResult.Message
+                };
+
+                // Se l'intent è di navigazione, il CommandResult.Data contiene il NavigatePayload
+                if (intentDef?.IsNavigation == true && cmdResult.Data is NavigatePayload nav)
+                    item.Navigate = nav;
+
+                results.Add(item);
+
+                // Strategia StopOnError: interrompe al primo errore
+                if (!cmdResult.Success && (intentDef?.ExecutionStrategy ?? ExecutionStrategy.StopOnError)
+                    == ExecutionStrategy.StopOnError)
+                    break;
             }
 
+            return results;
+        }
+
+        // ---------------------------------------------------------------------------
+        // Riepilogo piano completo
+        // ---------------------------------------------------------------------------
+
+        private string BuildPlanConfirmationSummary(ChatSession session)
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine("Riepilogo operazioni:");
             sb.AppendLine();
+
+            int idx = 1;
+            foreach (var action in session.ActionQueue)
+            {
+                var intentDef = _intentCatalog.Intents.FirstOrDefault(i => i.Name == action.Intent);
+                var label = !string.IsNullOrEmpty(intentDef?.DisplayName) ? intentDef.DisplayName : action.Intent;
+
+                // Titolo numerato + DisplayName
+                sb.AppendLine($"{"①②③④⑤⑥⑦⑧⑨⑩"[Math.Min(idx - 1, 9)]} {label}");
+
+                // Descrizione dell'intent
+                //if (!string.IsNullOrEmpty(intentDef?.Description))
+                //    sb.AppendLine($"   {intentDef.Description}");
+
+                // InfoMessage inline (es. "Dipendente agganciato: Rossi Mario")
+                if (!string.IsNullOrEmpty(action.InfoMessage))
+                    sb.AppendLine($"   ℹ️ {action.InfoMessage}");
+
+                // Tutti gli slot (obbligatori e opzionali) nell'ordine di definizione
+                if (intentDef != null)
+                {
+                    foreach (var slotDef in intentDef.Slots)
+                    {
+                        var value = action.Slots.GetValueOrDefault(slotDef.Name,
+                            !string.IsNullOrEmpty(slotDef.Default) ? slotDef.Default : "-");
+                        var slotLabel = !string.IsNullOrEmpty(slotDef.Label) ? slotDef.Label : slotDef.Name;
+                        sb.AppendLine($"   {slotLabel}: {value}");
+                    }
+                }
+
+                sb.AppendLine();
+                idx++;
+            }
+
             sb.AppendLine("Confermi? (sì / no)");
             return sb.ToString();
+        }
+
+        private string GetDisplayName(string intentName)
+        {
+            var intentDef = _intentCatalog.Intents.FirstOrDefault(i => i.Name == intentName);
+            return !string.IsNullOrEmpty(intentDef?.DisplayName) ? intentDef.DisplayName : intentName;
+        }
+
+        private string BuildNextActionQuestion(ChatSession session)
+        {
+            var next = session.ActionQueue.ElementAtOrDefault(session.CurrentActionIndex + 1);
+            if (next == null) return string.Empty;
+
+            var missing = GetMissingRequiredSlotsForAction(next).FirstOrDefault();
+            if (missing == null) return string.Empty;
+
+            var actionTitle = GetDisplayName(next.Intent);
+            return BuildMissingSlotQuestion(missing, next.Intent, next, actionTitle);
         }
 
         // ---------------------------------------------------------------------------
