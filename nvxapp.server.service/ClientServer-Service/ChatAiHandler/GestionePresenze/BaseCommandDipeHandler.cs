@@ -106,6 +106,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                         var canonical = $"{found[0].Cognome} {found[0].Nome}".Trim();
                         // Match fuzzy: salva il nome canonico e informa l'utente, senza chiedere conferma
                         var info = !exactMatch ? $"Dipendente agganciato: {canonical}" : null;
+                        info = "";
                         return SlotValidationResult.Ok(canonical, info);
                     }
 

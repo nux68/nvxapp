@@ -133,10 +133,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                     //},
                     HasRelevantContent = msg =>
                     {
-                        if (msg.Any(char.IsDigit)) return true;
                         var Words = new[]
                         {
-                            "IN","OUT"
+                            "IN","OUT",
+                            "entrata","entra","entrato","entr",
+                            "uscita","esce","uscito","usc"
                         };
                         var retVal = Words.Any(w => msg.Contains(w, StringComparison.OrdinalIgnoreCase));
                         return retVal;
@@ -161,10 +162,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
             if (!string.IsNullOrEmpty(employeeName))
             {
                 Dip_AnagraficaModel? Dip_Anagrafica = Get_Dip_Anagrafica(employeeName);
-                if (Dip_Anagrafica != null)
-                {
+                if (Dip_Anagrafica == null)
+                    return Task.FromResult(CommandResult.Fail(
+                        $"Dipendente '{employeeName}' non trovato o nome non completo. Nessuna timbratura registrata."));
 
-                    // Costruisce il DateTime di timbratura combinando date + time dagli slot.
+                // Costruisce il DateTime di timbratura combinando date + time dagli slot.
                     // date può essere "oggi" (default) oppure "yyyy-MM-dd"; time è sempre "HH:mm".
                     var dateSlot = slots.GetValueOrDefault("date", "oggi");
                     var timeSlot = slots.GetValueOrDefault("time", "00:00");
@@ -206,7 +208,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                         }
                     };
                     var c = _dip_GG_TimbraturaService.Dip_GG_TimbraturaPut(req_1, true).Result;
-                }
             }
 
 
