@@ -195,6 +195,11 @@ export class FabMenuComponent implements OnInit {
     this.messages.push({ sender, text, type });
   }
 
+  // Converte \n in <br> per la visualizzazione HTML nel template
+  formatText(text: string): string {
+    return (text ?? '').replace(/\n/g, '<br>');
+  }
+
   // -------------------------------------------------------------------------
   // Scroll
   // -------------------------------------------------------------------------

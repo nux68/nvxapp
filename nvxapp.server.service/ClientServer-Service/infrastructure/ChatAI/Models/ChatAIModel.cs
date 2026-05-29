@@ -20,8 +20,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
     {
         public string Responce { get; set; } = string.Empty;
         public string SessionId { get; set; } = string.Empty;  // restituito al client per i turni successivi
-        public string ResponseType { get; set; } = string.Empty;  // "question" | "confirmation" | "result" | "error"
+        public string ResponseType { get; set; } = string.Empty;  // "question" | "confirmation" | "result" | "error" | "navigate" | "partial_error"
         public List<string> Suggestions { get; set; } = new();     // chip/bottoni opzionali da mostrare al client
+        public NavigatePayload? Navigate { get; set; }             // payload di navigazione (ResponseType == "navigate")
+        public List<ActionResultItem> ActionResults { get; set; } = new(); // risultati per singola azione del piano
 
         public ChatAIOutModel() { }
     }
@@ -38,8 +40,18 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
         public DateTime LastActivity { get; set; } = DateTime.UtcNow;
         public SessionState State { get; set; } = SessionState.Collecting;
 
-        public string Intent { get; set; } = string.Empty;
-        public Dictionary<string, string> Slots { get; set; } = new();
+        // Piano di esecuzione multi-azione
+        public List<ActionEntry> ActionQueue { get; set; } = new();
+        public int CurrentActionIndex { get; set; } = 0;
+
+        // Azione corrente nel piano (null se piano non ancora inizializzato)
+        public ActionEntry? CurrentAction =>
+            ActionQueue.Count > CurrentActionIndex ? ActionQueue[CurrentActionIndex] : null;
+
+        // Shim di compatibilità — delegano all'azione corrente
+        public string Intent => CurrentAction?.Intent ?? string.Empty;
+        public Dictionary<string, string> Slots => CurrentAction?.Slots ?? new();
+
         public List<ConversationTurn> History { get; set; } = new();
 
         public void AddToHistory(string role, string content)
@@ -48,18 +60,17 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
             LastActivity = DateTime.UtcNow;
         }
 
-        // Merge: aggiorna solo gli slot non null ricevuti dal LLM
         public void MergeSlots(Dictionary<string, string> newSlots)
         {
+            var current = CurrentAction;
+            if (current == null) return;
             foreach (var kv in newSlots)
                 if (!string.IsNullOrEmpty(kv.Value) && kv.Value != "null")
-                    Slots[kv.Key] = kv.Value;
+                    current.Slots[kv.Key] = kv.Value;
         }
 
-        public void ResetSlot(string slotName)
-        {
-            Slots.Remove(slotName);
-        }
+        public void ResetSlot(string slotName) =>
+            CurrentAction?.Slots.Remove(slotName);
     }
 
     public class ConversationTurn
@@ -78,6 +89,49 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
         Error            // errore di business o tecnico
     }
 
+    public enum ActionState
+    {
+        Collecting,  // raccolta slot in corso
+        Ready,       // tutti gli slot presenti, pronta per essere eseguita
+        Done,        // eseguita con successo
+        Failed       // errore durante l'esecuzione
+    }
+
+    public enum ExecutionStrategy
+    {
+        StopOnError,    // interrompe il piano al primo errore (default)
+        ContinueOnError // esegue tutto e riporta i risultati parziali
+    }
+
+    // Singola azione nel piano di esecuzione
+    public class ActionEntry
+    {
+        public string Intent { get; set; } = string.Empty;
+        public Dictionary<string, string> Slots { get; set; } = new();
+        public ActionState State { get; set; } = ActionState.Collecting;
+        public bool IsConditional { get; set; }
+        public CommandResult? Result { get; set; }
+        // Messaggio informativo prodotto dal validator (es. "Dipendente agganciato: Rossi Mario").
+        // Viene mostrato in linea con i valori dell'azione nel riepilogo di conferma.
+        public string? InfoMessage { get; set; }
+    }
+
+    // Payload di navigazione restituito al client Angular
+    public class NavigatePayload
+    {
+        public string Route { get; set; } = string.Empty;
+        public Dictionary<string, string> Params { get; set; } = new();
+    }
+
+    // Risultato di una singola azione nel piano
+    public class ActionResultItem
+    {
+        public string Intent { get; set; } = string.Empty;
+        public bool Success { get; set; }
+        public string Message { get; set; } = string.Empty;
+        public NavigatePayload? Navigate { get; set; }
+    }
+
     // ---------------------------------------------------------------------------
     // Risultato estrazione LLM
     // ---------------------------------------------------------------------------
@@ -92,6 +146,25 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
 
         [JsonPropertyName("missingRequired")]
         public List<string> MissingRequired { get; set; } = new();
+
+        [JsonPropertyName("confidence")]
+        public double Confidence { get; set; }
+    }
+
+    // Piano multi-azione restituito dal LLM al primo turno
+    public class ExtractedPlan
+    {
+        [JsonPropertyName("actions")]
+        public List<ExtractedAction> Actions { get; set; } = new();
+    }
+
+    public class ExtractedAction
+    {
+        [JsonPropertyName("intent")]
+        public string Intent { get; set; } = string.Empty;
+
+        [JsonPropertyName("slots")]
+        public Dictionary<string, string> Slots { get; set; } = new();
 
         [JsonPropertyName("confidence")]
         public double Confidence { get; set; }
@@ -242,6 +315,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
     {
         IReadOnlyList<IntentDefinition> Intents { get; }
         string BuildSystemPrompt(string? intentName = null);
+        string BuildPlanSystemPrompt();
     }
 
     public class IntentCatalog : IIntentCatalog
@@ -259,6 +333,63 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
         }
 
         public IReadOnlyList<IntentDefinition> Intents => _intents;
+
+        public string BuildPlanSystemPrompt()
+        {
+            var sb = new StringBuilder();
+
+            sb.AppendLine("Risondi in italiano");
+            sb.AppendLine("Sei un assistente che estrae un piano di azioni da testo in italiano.");
+            sb.AppendLine("La risposta deve contenere UNA O PIÙ azioni da eseguire in sequenza.");
+            sb.AppendLine("Rispondi SOLO con un oggetto JSON valido, nessun testo aggiuntivo.");
+            sb.AppendLine();
+
+            BuildSystemPromptUtil.BuildSystemPrompt_Append_Intestazione_Comune(sb);
+            BuildSystemPromptUtil.BuildSystemPrompt_Append_Intent_Definition(sb, _intents, null);
+
+            sb.AppendLine("Intent disponibili:");
+            sb.AppendLine();
+
+            for (int i = 0; i < _intents.Count; i++)
+            {
+                var intent = _intents[i];
+                sb.AppendLine($"{i + 1}. {intent.Name}");
+                sb.AppendLine($"   Descrizione: {intent.Description}");
+
+                if (intent.Keywords.Count > 0)
+                {
+                    sb.Append("   Parole chiave: ");
+                    sb.AppendLine(string.Join(", ", intent.Keywords));
+                }
+
+                if (intent.Slots.Count > 0)
+                {
+                    sb.AppendLine("   Slot:");
+                    foreach (var slot in intent.Slots)
+                    {
+                        var req = slot.Required ? "obbligatorio" : "opzionale";
+                        var def = !string.IsNullOrEmpty(slot.Default) ? $", default {slot.Default}" : "";
+                        var desc = !string.IsNullOrEmpty(slot.PromptDescription) ? $": {slot.PromptDescription}" : "";
+                        sb.AppendLine($"   - {slot.Name} ({slot.Type}, {req}{def}){desc}");
+                    }
+                }
+
+                sb.AppendLine();
+            }
+
+            sb.AppendLine("Rispondi SEMPRE e SOLO con questo JSON (array di azioni):");
+            sb.AppendLine("{");
+            sb.AppendLine("  \"actions\": [");
+            sb.AppendLine("    {");
+            sb.AppendLine("      \"intent\": \"NomeIntent\",");
+            sb.AppendLine("      \"slots\": { \"nomeSlot\": \"valore o null se non presente\" },");
+            sb.AppendLine("      \"confidence\": 0.95");
+            sb.AppendLine("    }");
+            sb.AppendLine("  ]");
+            sb.AppendLine("}");
+
+            return sb.ToString();
+        }
 
         public string BuildSystemPrompt(string? currIntentName)
         {
@@ -459,6 +590,13 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
         // Se vuoto, il pre-filtro viene saltato per questo intent.
         // ATTENZIONE CON MODELLI EVOLUTI, SI POTRA ELIMINARE
         public List<string> Keywords { get; set; } = new();
+
+        // Se true, l'intent esegue solo una navigazione lato client (nessun accesso dati).
+        // Il CommandHandler restituisce un NavigatePayload in CommandResult.Data.
+        public bool IsNavigation { get; set; }
+
+        // Strategia di esecuzione in un piano multi-azione.
+        public ExecutionStrategy ExecutionStrategy { get; set; } = ExecutionStrategy.StopOnError;
     }
 
 
