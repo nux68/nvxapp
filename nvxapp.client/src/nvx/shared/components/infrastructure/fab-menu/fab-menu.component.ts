@@ -162,16 +162,14 @@ export class FabMenuComponent implements OnInit {
                 position: 'bottom'
               }).then(t => t.present());
             } else if (responseType === 'confirmation') {
-              // Auto-conferma senza aprire la modal
+              // Modal chiusa + vocale: auto-conferma senza aprire la modal
               setTimeout(() => this.sendSuggestion('Sì'), 600);
             } else {
               // question: la conversazione richiede input manuale → apri la modal
               this.openModal('vocal');
             }
-          } else if (responseType === 'confirmation') {
-            // Modal già aperta in modalità vocale: auto-conferma
-            setTimeout(() => this.sendSuggestion('Sì'), 600);
           }
+          // Modal aperta: l'utente vede il riepilogo e deve confermare manualmente
         }
 
         this.cdRef.detectChanges();
