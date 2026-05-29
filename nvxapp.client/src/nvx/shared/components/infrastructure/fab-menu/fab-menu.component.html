@@ -34,7 +34,7 @@
                  'msg-result':          message.type === 'result',
                  'msg-error':           message.type === 'error'
                }">
-            <strong>{{ message.sender }}:</strong> {{ message.text }}
+            <strong>{{ message.sender }}:</strong> <span [innerHTML]="formatText(message.text)"></span>
           </div>
 
           <!-- Chip di suggerimento (es. "Sì" / "No") -->
