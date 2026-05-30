@@ -7,8 +7,17 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.infrastructur
     // Handler per la navigazione lato client.
     // Non effettua chiamate dati: restituisce un NavigatePayload in CommandResult.Data
     // che il frontend Angular usa per spostarsi sulla route desiderata.
+    // Le route sono fornite dai provider IRouteProvider registrati nella DI
+    // (InfrastructureRouteProvider, AttendanceTrackingRouteProvider, …).
     public class NavigateHandler : BaseCommandHandler
     {
+        private readonly RouteRegistry _routeRegistry;
+
+        public NavigateHandler(RouteRegistry routeRegistry)
+        {
+            _routeRegistry = routeRegistry;
+        }
+
         private static readonly IntentDefinition _intentDefinition = new()
         {
             Name        = "Navigate",
@@ -46,80 +55,6 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.infrastructur
             ]
         };
 
-        // Mappa dei nomi pagina ? route Angular
-        // Derivata da MainMenuInfrastructureService e MainMenuAttendanceTrackingService
-        private static readonly Dictionary<string, string> _routeMap = new(StringComparer.OrdinalIgnoreCase)
-        {
-            // --- Infrastructure ---
-            ["home"]                        = "/home",
-            ["impersonate"]                 = "/userimpersonate",
-            ["login"]                       = "/login",
-            ["logout"]                      = "/logout",
-            ["utente"]                      = "/user",
-            ["user"]                        = "/user",
-            ["superuser"]                   = "/superuser",
-            ["admin"]                       = "/admin",
-            ["poweradmin"]                  = "/poweradmin",
-            ["utenti"]                      = "/userlist",
-            ["userlist"]                    = "/userlist",
-            ["centri"]                      = "/dealerlist",
-            ["dealerlist"]                  = "/dealerlist",
-            ["centro power admin"]          = "/dealerpoweradmin",
-            ["centro admin"]                = "/dealeradmin",
-            ["utenti centro"]               = "/userdealerlist",
-            ["studi"]                       = "/financialadvisorlist",
-            ["studio power admin"]          = "/financialadvisorpoweradmin",
-            ["studio admin"]                = "/financialadvisoradmin",
-            ["utenti studio"]               = "/userfinancialadvisorlist",
-            ["aziende"]                     = "/companylist",
-            ["azienda power admin"]         = "/companypoweradmin",
-            ["azienda admin"]               = "/companyadmin",
-            ["utenti azienda"]              = "/usercompanylist",
-
-            // --- AttendanceTracking User ---
-            ["timbratura"]                  = "/timeclockuser",
-            ["timeclockuser"]               = "/timeclockuser",
-            ["richieste"]                   = "/requestlistuser",
-            ["requestlistuser"]             = "/requestlistuser",
-            ["calendario"]                  = "/usertimesheet",
-            ["usertimesheet"]               = "/usertimesheet",
-            ["richiesta giustificativo"]    = "/requestjustificationuser",
-            ["giustificativo"]              = "/requestjustificationuser",
-            ["richiesta timbratura"]        = "/requestclockinguser",
-
-            // --- AttendanceTracking CompanyAdmin/PowerAdmin ---
-            ["richieste hr"]                = "/requestlistadmin",
-            ["requestlistadmin"]            = "/requestlistadmin",
-            ["calendario hr"]               = "/poweradmintimesheet",
-            ["poweradmintimesheet"]         = "/poweradmintimesheet",
-            ["calendario admin"]            = "/admintimesheet",
-            ["admintimesheet"]              = "/admintimesheet",
-            ["utenti reparto"]              = "/userdepartmentlist",
-            ["export causali"]              = "/exportcausali",
-            ["statistiche attività"]        = "/activitystatistics",
-            ["statistiche"]                 = "/activitystatistics",
-            ["personale presente"]          = "/presentstaff",
-            ["piano ferie"]                 = "/vacationplan",
-            ["giustificativi"]              = "/justificationlist",
-            ["causali"]                     = "/causalilist",
-            ["configurazione"]              = "/companycfgedit",
-            ["orari"]                       = "/orarilist",
-            ["profili orari"]               = "/profiliorarilist",
-            ["modelli export"]              = "/exportcaulist",
-            ["commesse"]                    = "/commessalist",
-            ["clienti"]                     = "/customerlist",
-            ["reparti"]                     = "/departmentlist",
-            ["sedi"]                        = "/azsedilist",
-            ["attività"]                    = "/activitylist",
-            ["competenze"]                  = "/competencelist",
-
-            // --- Alias generici ---
-            ["dashboard"]                   = "/home",
-            ["presenze"]                    = "/timeclockuser",
-            ["impostazioni"]                = "/companycfgedit",
-            ["settings"]                    = "/companycfgedit",
-        };
-
         public override IntentDefinition IntentDefinition => _intentDefinition;
 
         public override Task<CommandResult> ExecuteAsync(Dictionary<string, string> slots)
@@ -127,7 +62,7 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.infrastructur
             slots.TryGetValue("page", out var page);
             slots.TryGetValue("params", out var rawParams);
 
-            var route = ResolveRoute(page);
+            var route = _routeRegistry.Resolve(page);
 
             var navParams = new Dictionary<string, string>();
             if (!string.IsNullOrWhiteSpace(rawParams))
@@ -149,17 +84,6 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.infrastructur
             };
 
             return Task.FromResult(CommandResult.Ok($"Navigazione verso '{route}'.", payload));
-        }
-
-        private static string ResolveRoute(string? page)
-        {
-            if (string.IsNullOrWhiteSpace(page)) return "/dashboard";
-
-            if (_routeMap.TryGetValue(page.Trim(), out var route))
-                return route;
-
-            // Fallback: usa il nome della pagina direttamente come route
-            return "/" + page.Trim().ToLowerInvariant();
         }
     }
 }

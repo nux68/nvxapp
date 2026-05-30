@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { iMainMenuService, MainMenuItem, WorkingMode } from './main-menu.service';
+import { iMainMenuService, MainMenuItem, MenuType, WorkingMode } from './main-menu.service';
 
 @Injectable({
   providedIn: 'root'
@@ -12,11 +12,6 @@ export class MainMenuAttendanceTrackingService implements iMainMenuService {
   public get Pages4Admin(): MainMenuItem[] { return []; }
   public get Pages4DealerAdmin(): MainMenuItem[] { return []; }
   public get Pages4FinancialAdvisorAdmin(): MainMenuItem[] { return []; }
-<<<<<<< Updated upstream
-  public get Pages4CompanyAdmin(): MainMenuItem[] { return []; }
-  public get Pages4User(): MainMenuItem[] { return []; }
-  public get GetWorkingMode(): WorkingMode { return WorkingMode.Infrastructure; }
-=======
   public get Pages4CompanyAdmin(): MainMenuItem[] {
 
     return [
@@ -25,10 +20,10 @@ export class MainMenuAttendanceTrackingService implements iMainMenuService {
 
       { menuType: MenuType.MenuItem,   zorder: 2400, group: 0, title: 'Export causali', roles: ['CompanyPowerAdmin'], component: "ExportCausaliPageComponent", url: '/exportcausali', icon: 'cloud-download' },
       { menuType: MenuType.MenuItem,   zorder: 2500, group: 0, title: 'Statistiche attività', roles: ['CompanyPowerAdmin'], component: "ActivityStatisticsPageComponent", url: '/activitystatistics', icon: 'bar-chart' },
-      
+
       { menuType: MenuType.MenuItem,   zorder: 2600, group: 0, title: 'Personale presente'  , roles: ['CompanyPowerAdmin'], component: "PresentStaffPageComponent", url: '/presentstaff', icon: 'people-circle' },
       { menuType: MenuType.MenuItem,   zorder: 2700, group: 0, title: 'Piano ferie'          , roles: ['CompanyPowerAdmin'], component: "VacationPlanPageComponent", url: '/vacationplan', icon: 'calendar-clear' },
-      
+
 
       { menuType: MenuType.MenuItem,   zorder: 2300, group: 0, title: 'Calendario'          , roles: ['CompanyAdmin'], component: "TimeSheetAdminPageComponent", url: '/admintimesheet', icon: 'ellipse' },
       { menuType: MenuType.MenuItem,   zorder: 3000, group: 0, title: 'Utenti '             , roles: ['CompanyAdmin']                     , component: "UserDepartmentListPageComponent", url: '/userdepartmentlist', icon: 'people' },
@@ -40,7 +35,7 @@ export class MainMenuAttendanceTrackingService implements iMainMenuService {
       { menuType: MenuType.MenuItem,   zorder: 205000, group: 1, title: 'Orari'             , roles: ['CompanyPowerAdmin'], component: "OrariListPageComponent", url: '/orarilist', icon: 'time' },
       { menuType: MenuType.MenuItem,   zorder: 206000, group: 1, title: 'Profili Orari'     , roles: ['CompanyPowerAdmin'], component: "ProfiloOrarioListPageComponent", url: '/profiliorarilist', icon: 'timer' },
       { menuType: MenuType.MenuItem,   zorder: 207000, group: 1, title: 'Modelli Export'    , roles: ['CompanyPowerAdmin'], component: "ExportCauListPageComponent", url: '/exportcaulist', icon: 'hammer' },
-      
+
 
       { menuType: MenuType.MenuHeader, zorder: 205000, group: 2, title: 'Gestione Commesse' , roles: ['CompanyPowerAdmin'], component: '', url: '', icon: '' },
       { menuType: MenuType.MenuItem  , zorder: 205100, group: 2, title: 'Commesse'          , roles: ['CompanyPowerAdmin'], component: "CommessaListPageComponent", url: '/commessalist', icon: 'layers' },
@@ -51,8 +46,8 @@ export class MainMenuAttendanceTrackingService implements iMainMenuService {
       { menuType: MenuType.MenuItem  , zorder: 205600, group: 2, title: 'Competenze'        , roles: ['CompanyPowerAdmin'], component: "CompetenceListPageComponent", url: '/competencelist', icon: 'file-tray-stacked' },
 
       //{ menuType: MenuType.MenuItem, zorder: 205500, title: 'MyTemplate1', roles: ['CompanyPowerAdmin'], component: "MyTemplate1ListPageComponent", url: '/mytemplate1list', icon: 'ellipse' },
-      
-      
+
+
 
     ];
 
@@ -68,5 +63,4 @@ export class MainMenuAttendanceTrackingService implements iMainMenuService {
     ];
   }
   public get GetWorkingMode(): WorkingMode { return WorkingMode.AttendanceTracking; }
->>>>>>> Stashed changes
 }
