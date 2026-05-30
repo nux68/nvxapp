@@ -156,8 +156,14 @@ export class FabMenuComponent implements OnInit {
           ?? res.data?.actionResults?.find(r => r.navigate != null)?.navigate
           ?? null;
         if (navigatePayload?.route) {
-          if (this.isModalOpen) this.chatModal.dismiss(null, 'cancel');
-          this.navCtrl.navigateForward(navigatePayload.route);
+          const navOptions = navigatePayload.state ? { state: navigatePayload.state } : {};
+          if (this.isModalOpen) {
+            this.chatModal.dismiss(null, 'cancel').then(() =>
+              this.navCtrl.navigateForward(navigatePayload.route, navOptions)
+            );
+          } else {
+            this.navCtrl.navigateForward(navigatePayload.route, navOptions);
+          }
         }
 
         const responseType = res.data?.responseType ?? '';
