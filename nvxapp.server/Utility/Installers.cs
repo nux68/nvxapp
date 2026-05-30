@@ -121,13 +121,21 @@ namespace nvxapp.server.Utility
             builder.Services.AddSingleton<nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.IChatSessionStore,
                                           nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.InMemoryChatSessionStore>();
 
-            // IRouteProvider: registrati come Singleton per essere consumati da RouteRegistry Singleton.
-            // Esclusi dallo scanner Scoped sopra per evitare il conflitto di lifetime.
-            builder.Services.AddSingleton<nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.IRouteProvider,
-                                          nvxapp.server.service.ClientServer_Service.ChatAiHandler.infrastructure.InfrastructureRouteProvider>();
-            builder.Services.AddSingleton<nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.IRouteProvider,
-                                          nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePresenze.AttendanceTrackingRouteProvider>();
-            builder.Services.AddSingleton<nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.RouteRegistry>();
+            // IRouteProvider: auto-scopre tutte le implementazioni nell'assembly e le registra come Singleton.
+            // Escluse dallo scanner Scoped sopra per evitare conflitti di lifetime con RouteRegistry Singleton.
+            // Per aggiungere un nuovo modulo basta creare una nuova classe IRouteProvider — non serve toccare questo file.
+            var routeProviderType = typeof(nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.IRouteProvider);
+            var serviceAssembly   = System.Reflection.Assembly.GetAssembly(typeof(IServiceBase));
+            if (serviceAssembly != null)
+            {
+                foreach (var impl in serviceAssembly.GetTypes()
+                             .Where(t => t.IsClass && !t.IsAbstract && routeProviderType.IsAssignableFrom(t)))
+                {
+                    builder.Services.AddSingleton(routeProviderType, impl);
+                }
+            }
+            builder.Services.AddSingleton<nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.IRouteRegistry,
+                                          nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.RouteRegistry>();
 
 
             return builder.Services;
