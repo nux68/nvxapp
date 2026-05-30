@@ -5,7 +5,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
     // le proprie route e viene registrato automaticamente.
     // Per aggiungere un nuovo modulo basta creare un nuovo IRouteProvider
     // in qualsiasi cartella — non serve toccare questo file.
-    public class RouteRegistry
+    public class RouteRegistry : IRouteRegistry
     {
         private readonly Dictionary<string, string> _routes;
 

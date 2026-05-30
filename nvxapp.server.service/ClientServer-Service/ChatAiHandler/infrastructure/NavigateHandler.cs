@@ -11,9 +11,9 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.infrastructur
     // (InfrastructureRouteProvider, AttendanceTrackingRouteProvider, …).
     public class NavigateHandler : BaseCommandHandler
     {
-        private readonly RouteRegistry _routeRegistry;
+        private readonly IRouteRegistry _routeRegistry;
 
-        public NavigateHandler(RouteRegistry routeRegistry)
+        public NavigateHandler(IRouteRegistry routeRegistry)
         {
             _routeRegistry = routeRegistry;
         }
