@@ -7,8 +7,17 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.infrastructur
     // Handler per la navigazione lato client.
     // Non effettua chiamate dati: restituisce un NavigatePayload in CommandResult.Data
     // che il frontend Angular usa per spostarsi sulla route desiderata.
+    // Le route sono fornite dai provider IRouteProvider registrati nella DI
+    // (InfrastructureRouteProvider, AttendanceTrackingRouteProvider, …).
     public class NavigateHandler : BaseCommandHandler
     {
+        private readonly RouteRegistry _routeRegistry;
+
+        public NavigateHandler(RouteRegistry routeRegistry)
+        {
+            _routeRegistry = routeRegistry;
+        }
+
         private static readonly IntentDefinition _intentDefinition = new()
         {
             Name        = "Navigate",
@@ -24,7 +33,13 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.infrastructur
                     Name              = "page",
                     Type              = "string",
                     Required          = true,
-                    PromptDescription = "nome della pagina o sezione (es. presenze, timbrature, dipendenti, impostazioni)",
+                    PromptDescription = "nome della pagina. Pagine disponibili: " +
+                        "home, impersonate, login, logout, utente, " +
+                        "timbratura, richieste, calendario, richiesta giustificativo, richiesta timbratura, " +
+                        "richieste admin, calendario hr, calendario admin, utenti reparto, " +
+                        "export causali, statistiche attività, personale presente, piano ferie, " +
+                        "giustificativi, causali, configurazione, orari, profili orari, modelli export, " +
+                        "commesse, clienti, reparti, sedi, attività, competenze",
                     Question          = "A quale pagina vuoi andare?",
                     Label             = "Pagina"
                 },
@@ -40,18 +55,6 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.infrastructur
             ]
         };
 
-        // Mappa dei nomi pagina ? route Angular
-        private static readonly Dictionary<string, string> _routeMap = new(StringComparer.OrdinalIgnoreCase)
-        {
-            ["presenze"]     = "/presenze",
-            ["timbrature"]   = "/timbrature",
-            ["dipendenti"]   = "/dipendenti",
-            ["impostazioni"] = "/impostazioni",
-            ["settings"]     = "/impostazioni",
-            ["dashboard"]    = "/dashboard",
-            ["home"]         = "/dashboard"
-        };
-
         public override IntentDefinition IntentDefinition => _intentDefinition;
 
         public override Task<CommandResult> ExecuteAsync(Dictionary<string, string> slots)
@@ -59,7 +62,7 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.infrastructur
             slots.TryGetValue("page", out var page);
             slots.TryGetValue("params", out var rawParams);
 
-            var route = ResolveRoute(page);
+            var route = _routeRegistry.Resolve(page);
 
             var navParams = new Dictionary<string, string>();
             if (!string.IsNullOrWhiteSpace(rawParams))
@@ -81,17 +84,6 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.infrastructur
             };
 
             return Task.FromResult(CommandResult.Ok($"Navigazione verso '{route}'.", payload));
-        }
-
-        private static string ResolveRoute(string? page)
-        {
-            if (string.IsNullOrWhiteSpace(page)) return "/dashboard";
-
-            if (_routeMap.TryGetValue(page.Trim(), out var route))
-                return route;
-
-            // Fallback: usa il nome della pagina direttamente come route
-            return "/" + page.Trim().ToLowerInvariant();
         }
     }
 }
