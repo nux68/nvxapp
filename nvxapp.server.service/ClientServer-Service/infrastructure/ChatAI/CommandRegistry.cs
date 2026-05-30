@@ -1,5 +1,3 @@
-using nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Commands.Handlers;
-
 namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
 {
     // Registro centrale auto-costruito.

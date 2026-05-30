@@ -514,6 +514,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
             sb.AppendLine();
             sb.AppendLine(@"Data nel formato dd/MM/yyyy.
                             Accetta anche date scritte come '18/05/2026', '18-05-2026', '18 maggio 2026'.
+                            o anche date scritte come 'primo maggio 2026', 'due maggio 2026', '3 maggio 2026'.
                             Normalizza sempre in formato dd/MM/yyyy");
 
             sb.AppendLine();
@@ -521,6 +522,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
             sb.AppendLine();
             sb.AppendLine("IMPORTANTE:");
             sb.AppendLine("Quando l’utente usa date relative come 'oggi', 'domani', 'ieri',");
+            sb.AppendLine("Il nome del mese puo essere fornito in forma letterale 'gennaio', 'febbraio', 'marzo',");
             sb.AppendLine("devi sempre convertirle in una data assoluta nel formato dd/MM/yyyy.");
             sb.AppendLine($"Usa come riferimento la data indicata sopra. Oggi è {DateTime.Today:dd/MM/yyyy}");
         }

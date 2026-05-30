@@ -112,14 +112,22 @@ namespace nvxapp.server.Utility
             //        .AsPublicImplementedInterfaces(ServiceLifetime.Scoped);
 
             builder.Services.RegisterAssemblyPublicNonGenericClasses(Assembly.GetAssembly(typeof(IServiceBase)))
-                            .Where(type => !typeof(IRabbitMqListenerService).IsAssignableFrom(type)) // Escludi tutte le classi che implementano IRabbitMqListenerService
+                            .Where(type => !typeof(IRabbitMqListenerService).IsAssignableFrom(type)
+                                        && !typeof(nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.IRouteProvider).IsAssignableFrom(type)) // IRouteProvider registrati come Singleton sotto
                             .AsPublicImplementedInterfaces(ServiceLifetime.Scoped);
 
             // IChatSessionStore deve essere Singleton: mantiene le sessioni conversazionali
             // per tutta la vita dell'applicazione, condiviso tra richieste HTTP concorrenti.
-            // Non può essere rilevato dall'assembly scanning Scoped — va registrato esplicitamente.
             builder.Services.AddSingleton<nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.IChatSessionStore,
                                           nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.InMemoryChatSessionStore>();
+
+            // IRouteProvider: registrati come Singleton per essere consumati da RouteRegistry Singleton.
+            // Esclusi dallo scanner Scoped sopra per evitare il conflitto di lifetime.
+            builder.Services.AddSingleton<nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.IRouteProvider,
+                                          nvxapp.server.service.ClientServer_Service.ChatAiHandler.infrastructure.InfrastructureRouteProvider>();
+            builder.Services.AddSingleton<nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.IRouteProvider,
+                                          nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePresenze.AttendanceTrackingRouteProvider>();
+            builder.Services.AddSingleton<nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.RouteRegistry>();
 
 
             return builder.Services;

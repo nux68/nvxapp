@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
-import { IonContent, IonModal, ToastController } from '@ionic/angular';
+import { IonContent, IonModal, NavController, ToastController } from '@ionic/angular';
 import { SpeechService } from '../../../../Utility/infrastructure/speech.service';
 import { ChatAIService } from '../../../../ClientServer-Service/Infrastructure/ChatAI/chat-ai.service';
 import { GenericRequest } from '../../../../ClientServer-Service/ModelsBase/generic-request';
@@ -52,7 +52,8 @@ export class FabMenuComponent implements OnInit {
     private chatAIService: ChatAIService,
     private cdRef:         ChangeDetectorRef,
     public  fabMenuService: FabMenuService,
-    private toastCtrl:     ToastController
+    private toastCtrl:     ToastController,
+    private navCtrl:       NavController
   ) {
     this.fabMenuService.fabMenuItem$.subscribe(() => {
       if (this.fab) this.fab.close();
@@ -149,6 +150,15 @@ export class FabMenuComponent implements OnInit {
 
         // Mostra i chip di suggerimento se presenti
         this.suggestions = res.data?.suggestions ?? [];
+
+        // Navigazione lato client se il server restituisce un payload navigate
+        const navigatePayload = res.data?.navigate
+          ?? res.data?.actionResults?.find(r => r.navigate != null)?.navigate
+          ?? null;
+        if (navigatePayload?.route) {
+          if (this.isModalOpen) this.chatModal.dismiss(null, 'cancel');
+          this.navCtrl.navigateForward(navigatePayload.route);
+        }
 
         const responseType = res.data?.responseType ?? '';
 
