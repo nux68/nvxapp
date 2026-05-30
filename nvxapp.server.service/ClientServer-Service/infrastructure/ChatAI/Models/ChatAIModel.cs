@@ -121,6 +121,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
     {
         public string Route { get; set; } = string.Empty;
         public Dictionary<string, string> Params { get; set; } = new();
+        // Stato passato al router Angular (es. { id: 42 } per aprire un record specifico)
+        public Dictionary<string, object> State { get; set; } = new();
     }
 
     // Risultato di una singola azione nel piano

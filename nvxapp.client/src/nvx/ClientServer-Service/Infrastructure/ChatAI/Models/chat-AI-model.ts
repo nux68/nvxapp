@@ -10,6 +10,8 @@ export class ChatAIInModel {
 export class NavigatePayload {
   public route:   string                     = '';
   public params:  Record<string, string>     = {};
+  // Stato passato al router Angular (es. { id: 42 } per aprire un record specifico)
+  public state:   Record<string, any>        = {};
 }
 
 // Risultato di una singola azione nel piano multi-azione
