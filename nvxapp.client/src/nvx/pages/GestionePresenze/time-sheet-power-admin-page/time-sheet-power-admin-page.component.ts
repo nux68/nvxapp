@@ -64,6 +64,11 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
 
   public title: string;
 
+  // Valori iniziali opzionali ricevuti via history.state (es. dal ChatAI)
+  public initialUserId: string | null = null;
+  public initialYear: number | null = null;
+  public initialMonth: number | null = null;
+
   currentMonth: MonthData; // Interfaccia importata per i dati mensili
   currentDays: DayData[] = []; // Array ordinato per i giorni del mese
 
@@ -100,8 +105,13 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
   }
 
   ionViewWillEnter() {
-    
-    //riceve le notifiche di aggiornamento dei job in corso
+
+    // Legge i valori iniziali passati da history.state (es. dal ChatAI via NavigatePayload)
+    const nav = history.state;
+    this.initialUserId  = nav?.userId  ?? null;
+    this.initialYear    = nav?.year    ?? null;
+    this.initialMonth   = nav?.month   ?? null;
+
     this.longJobNotifier.jobFinished$.subscribe(jobUpdate => {
       console.log('Job finished:', jobUpdate);
 

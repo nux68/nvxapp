@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, OnChanges, SimpleChanges, Input, Output, EventEmitter } from '@angular/core';
 import { AzSediRepartoService } from '../../../../ClientServer-Service/GestionePresenze/Az_SediReparto/az-sedi-reparto.service';
 import { AzSediService } from '../../../../ClientServer-Service/GestionePresenze/Az_Sedi/az-sedi.service';
 import { AzSediRepartoUserServiceService } from '../../../../ClientServer-Service/GestionePresenze/Az_SediRepartoUser/az-sedi-reparto-user-service.service';
@@ -18,7 +18,7 @@ import { DipSelectorModalComponent, DipSelectorResult } from '../dip-selector-mo
   styleUrls: ['./sedi-reparto-user-navigation.component.scss'],
   standalone: false
 })
-export class SediRepartoUserNavigationComponent implements OnInit {
+export class SediRepartoUserNavigationComponent implements OnInit, OnChanges {
   // Input parameters to show/hide selects
   
   @Input() showPeriodSelect: boolean = true;
@@ -29,6 +29,11 @@ export class SediRepartoUserNavigationComponent implements OnInit {
   @Input() singleFieldOnRow: boolean = false;
   @Input() singleSelectReparti: boolean = false;
   @Input() singleSelectUser: boolean = true;
+
+  // Valori iniziali opzionali (es. passati via history.state dal server)
+  @Input() initialUserId: string | null = null;
+  @Input() initialYear: number | null = null;
+  @Input() initialMonth: number | null = null;
   
 
 
@@ -82,9 +87,17 @@ export class SediRepartoUserNavigationComponent implements OnInit {
         error: (err) => console.error("Error during SediRepartoUserNavigation initialization:", err)
       });
     }
+  }
 
-    
+  ngOnChanges(changes: SimpleChanges): void {
+    const yearChanged  = changes['initialYear']  && !changes['initialYear'].firstChange  && changes['initialYear'].currentValue  != null;
+    const monthChanged = changes['initialMonth'] && !changes['initialMonth'].firstChange && changes['initialMonth'].currentValue != null;
 
+    if (yearChanged || monthChanged) {
+      if (yearChanged)  this.selectedYear  = changes['initialYear'].currentValue;
+      if (monthChanged) this.selectedMonth = changes['initialMonth'].currentValue;
+      this.emitPeriodChange();
+    }
   }
 
   private initializePeriodSelection(): void {
@@ -92,8 +105,8 @@ export class SediRepartoUserNavigationComponent implements OnInit {
     const currentYear = currentDate.getFullYear();
     const currentMonth = currentDate.getMonth() + 1; // JavaScript months are 0-11
 
-    this.selectedYear = currentYear;
-    this.selectedMonth = currentMonth;
+    this.selectedYear = this.initialYear ?? currentYear;
+    this.selectedMonth = this.initialMonth ?? currentMonth;
 
     this.yearList = [];
     // 5 previous years
@@ -332,11 +345,16 @@ export class SediRepartoUserNavigationComponent implements OnInit {
         this.allUsersIdChange.emit(this.az_SediRepartoUserList.map(x => x.idAspNetUsers));
 
         if (this.showUserSelect && this.az_SediRepartoUserList.length > 0) {
-          if (this.singleSelectUser)
-            this.selectedUserId = [this.az_SediRepartoUserList[0].idAspNetUsers];
-          else
+          if (this.singleSelectUser) {
+            const preselect = this.initialUserId
+              ? this.az_SediRepartoUserList.find(u => u.idAspNetUsers === this.initialUserId)
+              : null;
+            this.selectedUserId = [preselect
+              ? preselect.idAspNetUsers
+              : this.az_SediRepartoUserList[0].idAspNetUsers];
+          } else {
             this.selectedUserId = this.az_SediRepartoUserList.map(x => x.idAspNetUsers);
-
+          }
           this.onUserChange();
         }
       },
