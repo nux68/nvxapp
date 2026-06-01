@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using nvxapp.server.Base;
 using nvxapp.server.data.Entities.Public;
@@ -139,10 +139,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                     var helpSession = _sessionStore.Create();
                     return new ChatAIOutModel
                     {
-                        SessionId    = helpSession.SessionId,
-                        Responce     = string.Empty,
+                        SessionId = helpSession.SessionId,
+                        Responce = string.Empty,
                         ResponseType = "result",
-                        Suggestions  = BuildIntentSuggestions()
+                        Suggestions = BuildIntentSuggestions()
                     };
                 }
 
@@ -172,13 +172,25 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                         return BuildErrorResponse(session, "Non ho capito la richiesta. Puoi ripetere?", BuildIntentSuggestions());
                     }
 
+                    ExtractedPlan? plan = null;
+                    try
+                    {
+                        plan = await Call_LLM_ExtractPlanAsync(session);
+                    }
+                    catch (Exception ex)
+                    {
+                        DeleteSession(session.SessionId);
+                        return BuildErrorResponse(session, ex.Message, BuildIntentSuggestions());
+                    }
+
                     // Chiedi al LLM il piano multi-azione
-                    var plan = await Call_LLM_ExtractPlanAsync(session);
+
                     if (plan == null || plan.Actions.Count == 0)
                     {
                         DeleteSession(session.SessionId);
-                        return BuildErrorResponse(session, "Non ho capito la richiesta. Puoi ripetere?", BuildIntentSuggestions());
+                        return BuildErrorResponse(session, "LLM: non ho capito la richiesta. Puoi ripetere?", BuildIntentSuggestions());
                     }
+
 
                     // Valida e normalizza ogni azione del piano
                     foreach (var extractedAction in plan.Actions)
@@ -194,7 +206,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                         var entry = new ActionEntry
                         {
                             Intent = knownIntent.Name,
-                            State  = ActionState.Collecting
+                            State = ActionState.Collecting
                         };
                         session.ActionQueue.Add(entry);
 
@@ -216,17 +228,31 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                     var currentAction = session.CurrentAction;
                     if (currentAction != null)
                     {
-                        var nextMissing = GetMissingRequiredSlotsForAction(currentAction).FirstOrDefault();
+                        string? nextMissing = GetMissingRequiredSlotsForAction(currentAction).FirstOrDefault();
+
+
+
                         if (nextMissing != null)
                         {
-                            var slotValue = await Call_LLM_ExtractSingleSlotAsync(
-                                nextMissing, currentAction.Intent, session);
+                            string? slotValue  = null;
+
+                            try
+                            {
+                                slotValue = await Call_LLM_ExtractSingleSlotAsync(nextMissing, currentAction.Intent, session);
+                            }
+                            catch (Exception ex)
+                            {
+                                //DeleteSession(session.SessionId);
+                                return BuildErrorResponse(session, ex.Message, BuildIntentSuggestions());
+                            }
+                            
+
+
 
                             if (string.IsNullOrEmpty(slotValue))
                                 slotValue = userMessage.Trim();
 
-                            SafeMergeSlotsForAction(currentAction,
-                                new Dictionary<string, string> { [nextMissing] = slotValue }, userMessage);
+                            SafeMergeSlotsForAction(currentAction, new Dictionary<string, string> { [nextMissing] = slotValue }, userMessage);
                         }
                     }
                 }
@@ -273,10 +299,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                     var helpSession = _sessionStore.Create();
                     return new ChatAIOutModel
                     {
-                        SessionId    = helpSession.SessionId,
-                        Responce     = string.Empty,
+                        SessionId = helpSession.SessionId,
+                        Responce = string.Empty,
                         ResponseType = "result",
-                        Suggestions  = BuildIntentSuggestions()
+                        Suggestions = BuildIntentSuggestions()
                     };
                 }
 
@@ -355,7 +381,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 var doneSession = _sessionStore.Create();
 
                 bool anySuccess = planResult.Any(r => r.Success);
-                bool anyFail    = planResult.Any(r => !r.Success);
+                bool anyFail = planResult.Any(r => !r.Success);
                 string responseType = anyFail ? (anySuccess ? "partial_error" : "error") : "result";
 
                 // Messaggio complessivo
@@ -368,11 +394,11 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
 
                 return new ChatAIOutModel
                 {
-                    SessionId     = doneSession.SessionId,
-                    Responce      = sb.ToString().TrimEnd(),
-                    ResponseType  = responseType,
-                    Suggestions   = anyFail ? new() : BuildIntentSuggestions(),
-                    Navigate      = navItem?.Navigate,
+                    SessionId = doneSession.SessionId,
+                    Responce = sb.ToString().TrimEnd(),
+                    ResponseType = responseType,
+                    Suggestions = anyFail ? new() : BuildIntentSuggestions(),
+                    Navigate = navItem?.Navigate,
                     ActionResults = planResult
                 };
             }
@@ -434,10 +460,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
 
                 var requestBody = new OllamaChatRequest
                 {
-                    Model    = _ollamaModel,
+                    Model = _ollamaModel,
                     Messages = messages,
-                    Stream   = false,
-                    Format   = "json"
+                    Stream = false,
+                    Format = "json"
                 };
 
                 string raw;
@@ -457,9 +483,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "[ChatAI] Call_LLM_ExtractPlanAsync fallita. Session={SessionId}",
-                    session.SessionId);
-                return null;
+                Log.Error(ex, "[ChatAI] Call_LLM_ExtractPlanAsync fallita. Session={SessionId}", session.SessionId);
+                //return null;
+                throw;
             }
         }
 
@@ -518,9 +544,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "[ChatAI] CallOllamaExtractSingleSlotAsync fallita. Session={SessionId} Slot={SlotName}",
-                    session.SessionId, slotName);
-                return null;
+                Log.Error(ex, "[ChatAI] CallOllamaExtractSingleSlotAsync fallita. Session={SessionId} Slot={SlotName}",session.SessionId, slotName);
+                //return null;
+                throw;
             }
         }
 
@@ -711,8 +737,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                         if (match != null)
                             return new ExtractedIntent
                             {
-                                Intent     = match.Intent,
-                                Slots      = match.Slots,
+                                Intent = match.Intent,
+                                Slots = match.Slots,
                                 Confidence = match.Confidence
                             };
                     }
@@ -735,7 +761,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 if (string.IsNullOrEmpty(raw)) return null;
 
                 var start = raw.IndexOf('{');
-                var end   = raw.LastIndexOf('}');
+                var end = raw.LastIndexOf('}');
                 if (start == -1 || end == -1) return null;
 
                 var cleanJson = raw.Substring(start, end - start + 1);
@@ -785,8 +811,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
 
                 if (userMessage != null && slotDef != null)
                 {
-                    bool valueInText      = userMessage.Contains(kv.Value, StringComparison.OrdinalIgnoreCase);
-                    bool isDefaultValue   = !string.IsNullOrEmpty(slotDef.Default) &&
+                    bool valueInText = userMessage.Contains(kv.Value, StringComparison.OrdinalIgnoreCase);
+                    bool isDefaultValue = !string.IsNullOrEmpty(slotDef.Default) &&
                                            kv.Value.Equals(slotDef.Default, StringComparison.OrdinalIgnoreCase);
                     bool hasRelevantContent = slotDef.HasRelevantContent != null &&
                                              slotDef.HasRelevantContent(userMessage);
@@ -982,7 +1008,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                     action.State = ActionState.Failed;
                     var failItem = new ActionResultItem
                     {
-                        Intent  = action.Intent,
+                        Intent = action.Intent,
                         Success = false,
                         Message = $"[{GetDisplayName(action.Intent)}] {validation.MessageToUser}"
                     };
@@ -996,11 +1022,11 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 }
 
                 var cmdResult = await ExecuteCommandAsync(action);
-                action.State  = cmdResult.Success ? ActionState.Done : ActionState.Failed;
+                action.State = cmdResult.Success ? ActionState.Done : ActionState.Failed;
 
                 var item = new ActionResultItem
                 {
-                    Intent  = action.Intent,
+                    Intent = action.Intent,
                     Success = cmdResult.Success,
                     Message = cmdResult.Message
                 };
