@@ -172,10 +172,12 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                         return BuildErrorResponse(session, "Non ho capito la richiesta. Puoi ripetere?", BuildIntentSuggestions());
                     }
 
+                    var compatibleIntent = GetMatchingIntentNames(userMessage, _intentCatalog.Intents);
+
                     ExtractedPlan? plan = null;
                     try
                     {
-                        plan = await Call_LLM_ExtractPlanAsync(session);
+                        plan = await Call_LLM_FirstTurnAsync(session, compatibleIntent);
                     }
                     catch (Exception ex)
                     {
@@ -238,7 +240,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
 
                             try
                             {
-                                slotValue = await Call_LLM_ExtractSingleSlotAsync(nextMissing, currentAction.Intent, session);
+                                slotValue = await Call_LLM_OtherTurnAsync(nextMissing, currentAction.Intent, session);
                             }
                             catch (Exception ex)
                             {
@@ -361,6 +363,25 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             }, isSubProcess);
         }
 
+        
+        public List<string> GetMatchingIntentNames(string userMessage, IEnumerable<IntentDefinition> intents)
+        {
+            // Se il messaggio dell'utente è vuoto o non ci sono intenti, ritorna una lista vuota
+            if (string.IsNullOrWhiteSpace(userMessage) || intents == null)
+            {
+                return new List<string>();
+            }
+
+            return intents
+                .Where(i => i.Keywords != null && i.Keywords.Count > 0)
+                .Where(i => i.Keywords.Any(k => userMessage.Contains(k, StringComparison.OrdinalIgnoreCase)))
+                .Select(i => i.Name)
+                .ToList();
+        }
+
+       
+        
+        
         // ---------------------------------------------------------------------------
         // Gestione conferma utente — esegue l'intero piano
         // ---------------------------------------------------------------------------
@@ -452,11 +473,12 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         // Chiamata LLM — primo turno: estrae il piano multi-azione
         // ---------------------------------------------------------------------------
 
-        private async Task<ExtractedPlan?> Call_LLM_ExtractPlanAsync(ChatSession session)
+        private async Task<ExtractedPlan?> Call_LLM_FirstTurnAsync(ChatSession session,List<string> compatibleIntents)
         {
             try
             {
-                var messages = BuildChatMessages(_intentCatalog.BuildPlanSystemPrompt(), session.History);
+                //var messages = BuildChatMessages(_intentCatalog.OLD_BuildPlanSystemPrompt(), session.History);
+                var messages = BuildChatMessages(_intentCatalog.BuildSystemPromptXS(compatibleIntents), session.History);
 
                 var requestBody = new OllamaChatRequest
                 {
@@ -479,7 +501,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 if (!string.IsNullOrEmpty(raw))
                     session.AddToHistory("assistant", raw);
 
-                return SafeDeserializeExtractedPlan(raw);
+                return DeserializePlanFirstTurn(raw);
             }
             catch (Exception ex)
             {
@@ -495,12 +517,14 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         // risposte contestuali (es. "quello di prima", "stessa data").
         // ---------------------------------------------------------------------------
 
-        private async Task<string?> Call_LLM_ExtractSingleSlotAsync(string slotName, string intentName, ChatSession session)
+        private async Task<string?> Call_LLM_OtherTurnAsync(string slotName, string intentName, ChatSession session)
         {
             try
             {
+                List<string> compatibleIntents = new List<string> { intentName };
 
-                var messages = BuildChatMessages(_intentCatalog.BuildSystemPrompt(intentName), session.History);
+                //var messages = BuildChatMessages(_intentCatalog.OLD_BuildSystemPrompt(compatibleIntents), session.History);
+                var messages = BuildChatMessages(_intentCatalog.BuildSystemPromptXS(compatibleIntents), session.History);
 
                 var requestBody = new OllamaChatRequest
                 {
@@ -534,7 +558,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
 
                 // Il LLM restituisce sempre un ExtractedIntent completo (stesso formato del primo turno).
                 // Deserializza e legge il valore dello slot richiesto.
-                var extracted = SafeDeserializeExtractedIntent(raw, slotName, intentName);
+                var extracted = DeserializePlanOtherTurn(raw, slotName, intentName);
                 if (extracted?.Slots != null &&
                     extracted.Slots.TryGetValue(slotName, out var slotValue) &&
                     !IsNullString(slotValue))
@@ -569,14 +593,15 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         // Costruisce la lista messages: [system] + [history completa].
         // Il messaggio corrente dell'utente è già stato aggiunto alla history
         // in SendMessage prima di questa chiamata — non va passato separatamente.
-        private List<OllamaChatMessage> BuildChatMessages(
-            string systemPrompt,
-            List<ConversationTurn> history)
+        private List<OllamaChatMessage> BuildChatMessages( string? systemPrompt , List<ConversationTurn> history )
         {
-            var messages = new List<OllamaChatMessage>
+            var messages = new List<OllamaChatMessage>();
+           
+
+            if(!string.IsNullOrEmpty(systemPrompt))
             {
-                new() { Role = "system", Content = systemPrompt }
-            };
+                messages.Add(new() { Role = "system", Content = systemPrompt });
+            }
 
             // Limita la history agli ultimi _maxHistoryTurns turni per evitare
             // payload eccessivi e finestre di contesto superate dal modello.
@@ -696,8 +721,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         // Deserializzazione sicura
         // ---------------------------------------------------------------------------
 
-        private ExtractedIntent? SafeDeserializeExtractedIntent(string raw,
-            string? expectedSlot = null, string? expectedIntent = null)
+        private ExtractedIntent? DeserializePlanOtherTurn(string raw,string? expectedSlot = null, string? expectedIntent = null)
         {
             try
             {
@@ -748,13 +772,13 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             }
             catch (Exception ex)
             {
-                Log.Warning(ex, "[ChatAI] SafeDeserializeExtractedIntent: JSON non deserializzabile. Raw={Raw}",
+                Log.Warning(ex, "[ChatAI] DeserializePlanOtherTurn: JSON non deserializzabile. Raw={Raw}",
                     raw?.Length > 500 ? raw[..500] + "…" : raw);
                 return null;
             }
         }
 
-        private ExtractedPlan? SafeDeserializeExtractedPlan(string raw)
+        private ExtractedPlan? DeserializePlanFirstTurn(string raw)
         {
             try
             {
@@ -770,7 +794,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             }
             catch (Exception ex)
             {
-                Log.Warning(ex, "[ChatAI] SafeDeserializeExtractedPlan: JSON non deserializzabile. Raw={Raw}",
+                Log.Warning(ex, "[ChatAI] DeserializePlanFirstTurn: JSON non deserializzabile. Raw={Raw}",
                     raw?.Length > 500 ? raw[..500] + "…" : raw);
                 return null;
             }
