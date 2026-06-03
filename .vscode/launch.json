@@ -1,0 +1,35 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Ionic/Angular Frontend (Chrome)",
+            "url": "http://localhost:4200",
+            // Corretto: ora punta alla sottocartella del client
+            "webRoot": "${workspaceFolder}/nvxapp.client" 
+        },
+        {
+           "type": "dotnet",
+            "request": "launch",
+            "name": ".NET Backend API",
+            "projectPath": "${workspaceFolder}/nvxapp.server/nvxapp.server.csproj",
+            // Sostituisci "launchBrowser": false con questo blocco:
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)",
+                "uriFormat": "%s",
+                "killOnServerStop": true
+            }
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Avvia Soluzione Completa",
+            "configurations": ["Ionic/Angular Frontend (Chrome)", ".NET Backend API"]
+        }
+    ]
+}

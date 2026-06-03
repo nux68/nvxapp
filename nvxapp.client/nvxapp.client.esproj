@@ -10,4 +10,7 @@
   <ItemGroup>
     <Folder Include="schema-generator\" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include=".vscode\launch.json" />
+  </ItemGroup>
 </Project>
