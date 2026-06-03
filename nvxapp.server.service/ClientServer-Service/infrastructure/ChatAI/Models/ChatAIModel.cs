@@ -316,8 +316,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
     public interface IIntentCatalog
     {
         IReadOnlyList<IntentDefinition> Intents { get; }
-        string BuildSystemPrompt(string? intentName = null);
-        string BuildPlanSystemPrompt();
+        string OLD_BuildSystemPrompt(List<string>? currIntentNames);
+        string OLD_BuildPlanSystemPrompt();
+        string BuildSystemPromptXS(List<string> compatibleIntents);
     }
 
     public class IntentCatalog : IIntentCatalog
@@ -336,7 +337,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
 
         public IReadOnlyList<IntentDefinition> Intents => _intents;
 
-        public string BuildPlanSystemPrompt()
+        public string OLD_BuildPlanSystemPrompt()
         {
             var sb = new StringBuilder();
 
@@ -347,7 +348,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
             sb.AppendLine();
 
             BuildSystemPromptUtil.BuildSystemPrompt_Append_Intestazione_Comune(sb);
-            BuildSystemPromptUtil.BuildSystemPrompt_Append_Intent_Definition(sb, _intents, null);
+            BuildSystemPromptUtil.OLD_BuildSystemPrompt_Append_Intent_Definition(sb, _intents, null);
 
             sb.AppendLine("Intent disponibili:");
             sb.AppendLine();
@@ -392,68 +393,65 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
 
             return sb.ToString();
         }
-
-        public string BuildSystemPrompt(string? currIntentName)
+        public string OLD_BuildSystemPrompt(List<string>? currIntentNames)
         {
             var sb = new StringBuilder();
 
             sb.AppendLine("Sei un assistente che estrae intent e slot da testo in italiano.");
             sb.AppendLine("Rispondi SOLO con un oggetto JSON valido, nessun testo aggiuntivo.");
 
+            // NOTA: Se anche questi metodi di utilità accettavano il vecchio parametro stringa, 
+            // andranno eventualmente aggiornati o gestiti separatamente se necessario.
             BuildSystemPromptUtil.BuildSystemPrompt_Append_Intestazione_Comune(sb);
 
-            BuildSystemPromptUtil.BuildSystemPrompt_Append_Intent_Definition(sb, _intents,currIntentName);
+            // Se necessario, estrai il primo nome o adatta il metodo di utilità qui sotto
+            string? firstIntentName = currIntentNames?.FirstOrDefault();
+            BuildSystemPromptUtil.OLD_BuildSystemPrompt_Append_Intent_Definition(sb, _intents, firstIntentName);
 
             #region "Intent"
 
-                sb.AppendLine("Intent disponibili:");
+            sb.AppendLine("Intent disponibili:");
+            sb.AppendLine();
 
-                sb.AppendLine();
+            // Gestione della lista di intenti ricevuta come parametro
+            List<IntentDefinition> intentsToInclude = (currIntentNames == null || currIntentNames.Count == 0)
+                ? _intents.ToList()
+                : _intents.Where(i => currIntentNames.Contains(i.Name, StringComparer.OrdinalIgnoreCase)).ToList();
 
-                List<IntentDefinition> intentsToInclude = string.IsNullOrEmpty(currIntentName)
-                    ? _intents.ToList()
-                    : _intents.Where(i => i.Name.Equals(currIntentName, StringComparison.OrdinalIgnoreCase)).ToList();
+            for (int i = 0; i < intentsToInclude.Count; i++)
+            {
+                var intent = intentsToInclude[i];
+                sb.AppendLine($"{i + 1}. {intent.Name}");
+                sb.AppendLine($"   Descrizione: {intent.Description}");
 
-                for (int i = 0; i < intentsToInclude.Count; i++)
+                if (intent.Keywords.Count > 0)
                 {
-                    var intent = intentsToInclude[i];
-                    sb.AppendLine($"{i + 1}. {intent.Name}");
-                    sb.AppendLine($"   Descrizione: {intent.Description}");
-
-                    if (intent.Keywords.Count > 0)
+                    //sb.AppendLine();
+                    sb.Append("   La richiesta può contenere le parole: ");
+                    foreach (var iKey in intent.Keywords)
                     {
-                        //sb.AppendLine();
-                        sb.Append("   La richiesta può contenere le parole: ");
-                        foreach (var iKey in intent.Keywords)
-                        {
-                            sb.Append($"{iKey},");
-                        }
-                        sb.AppendLine();
-                        sb.AppendLine();
+                        sb.Append($"{iKey},");
                     }
-
-
-                    sb.AppendLine($"   Slot:");
-
-                    foreach (var slot in intent.Slots)
-                    {
-                        var obbligatorio = slot.Required ? "obbligatorio" : "opzionale";
-                        var defaultVal = !string.IsNullOrEmpty(slot.Default) ? $", default {slot.Default}" : "";
-                        var description = !string.IsNullOrEmpty(slot.PromptDescription) ? $": {slot.PromptDescription}" : "";
-                        sb.AppendLine($"   - {slot.Name} ({slot.Type}, {obbligatorio}{defaultVal}){description}");
-                    }
-
+                    sb.AppendLine();
                     sb.AppendLine();
                 }
 
+                sb.AppendLine($"   Slot:");
+
+                foreach (var slot in intent.Slots)
+                {
+                    var obbligatorio = slot.Required ? "obbligatorio" : "opzionale";
+                    var defaultVal = !string.IsNullOrEmpty(slot.Default) ? $", default {slot.Default}" : "";
+                    var description = !string.IsNullOrEmpty(slot.PromptDescription) ? $": {slot.PromptDescription}" : "";
+                    sb.AppendLine($"   - {slot.Name} ({slot.Type}, {obbligatorio}{defaultVal}){description}");
+                }
+
+                sb.AppendLine();
+            }
+
             #endregion
 
-
-            sb.AppendLine("Rispondi sempre e solo con questo JSON,\n"
-                          //+ "senza modificare, riformulare o reinterpretare alcun testo degli intent\n" 
-                          //+ "o delle loro descrizioni.\n" 
-                          //+ "Mantieni esattamente i nomi e le descrizioni come definiti sopra:"
-                          );
+            sb.AppendLine("Rispondi sempre e solo con questo JSON,\n");
 
             sb.AppendLine("{");
             sb.AppendLine("  \"intent\": \"NomeIntent\",");
@@ -464,12 +462,22 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
             sb.AppendLine("  \"confidence\": 0.95");
             sb.AppendLine("}");
 
-
-
             return sb.ToString();
         }
 
+        public string BuildSystemPromptXS(List<string> compatibleIntents)
+        {
+            var sb = new StringBuilder();
 
+            sb.AppendLine("Rispondi SOLO con un oggetto JSON valido");
+
+            BuildSystemPromptUtil.BuildSystemPrompt_Append_Intestazione_Comune(sb);
+            BuildSystemPromptUtil.BuildSystemPrompt_Append_Intent_List(sb, _intents, compatibleIntents);
+            BuildSystemPromptUtil.BuildSystemPrompt_Append_Intent_Definition(sb, _intents, compatibleIntents);
+            BuildSystemPromptUtil.RetValJsoDefinition(sb);
+
+            return sb.ToString();
+        }
 
     }
 
@@ -479,17 +487,17 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
         public static void BuildSystemPrompt_Append_Intestazione_Comune(StringBuilder sb)
         {
             sb.AppendLine("REGOLA FONDAMENTALE:");
-            sb.AppendLine("Estrai SOLO i valori esplicitamente scritti dall'utente, per i queli è possibile una interpretazione usando gli esempi specificati negli slot");
+            sb.AppendLine("Estrai SOLO i valori esplicitamente scritti dall'utente, per i quali è possibile una interpretazione usando gli esempi specificati negli slot");
             sb.AppendLine("Se uno slot obbligatorio non è presente nel testo, inseriscilo in \"missingRequired\" e metti null come valore.");
-            sb.AppendLine("NON inventare valori. NON completare slot mancanti con valori plausibili o di esempio.");
-            sb.AppendLine("Un valore mancante in \"missingRequired\" è la risposta corretta — non un errore.");
+            //sb.AppendLine("NON inventare valori. NON completare slot mancanti con valori plausibili o di esempio.");
+            //sb.AppendLine("Un valore mancante in \"missingRequired\" è la risposta corretta — non un errore.");
             sb.AppendLine("");
 
-            BuildSystemPrompt_Append_Data_Oggi(sb);
+            //BuildSystemPrompt_Append_Data_Oggi(sb);
 
         }
 
-        public static void BuildSystemPrompt_Append_Intent_Definition(StringBuilder sb, IReadOnlyList<IntentDefinition> intents,string? intentName)
+        public static void OLD_BuildSystemPrompt_Append_Intent_Definition(StringBuilder sb, IReadOnlyList<IntentDefinition> intents, string? intentName)
         {
             sb.AppendLine();
             sb.AppendLine("IMPORTANTE:");
@@ -499,7 +507,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
             IReadOnlyList<IntentDefinition> intentsToInclude = string.IsNullOrEmpty(intentName)
                 ? intents
                 : intents.Where(i => i.Name.Equals(intentName, StringComparison.OrdinalIgnoreCase)).ToList();
-            
+
 
             foreach (var intent in intentsToInclude)
             {
@@ -511,22 +519,51 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
             sb.AppendLine("Non tradurre i nomi degli intent.");
         }
 
+
+        public static void BuildSystemPrompt_Append_Intent_List(StringBuilder sb, IReadOnlyList<IntentDefinition> intents, List<string> compatibleIntents)
+        {
+            sb.AppendLine();
+            sb.AppendLine("IMPORTANTE:");
+            sb.AppendLine("Il valore del campo \"intent\" deve essere SEMPRE uno dei seguenti:");
+
+            // Controllo sul 'null' rimosso, verifichiamo solo se la lista è vuota
+            IReadOnlyList<IntentDefinition> intentsToInclude = compatibleIntents.Count == 0
+                ? intents
+                : intents.Where(i => compatibleIntents.Contains(i.Name, StringComparer.OrdinalIgnoreCase)).ToList();
+
+            foreach (var intent in intentsToInclude)
+            {
+                sb.AppendLine($"- {intent.Name}");
+            }
+
+            sb.AppendLine("Non usare mai la descrizione come nome dell’intent.");
+            sb.AppendLine("Non inventare nuovi nomi.");
+            sb.AppendLine("Non tradurre i nomi degli intent.");
+        }
+
+
         public static void BuildSystemPrompt_Append_Data_Oggi(StringBuilder sb)
         {
             sb.AppendLine();
-            sb.AppendLine(@"Data nel formato dd/MM/yyyy.
-                            Accetta anche date scritte come '18/05/2026', '18-05-2026', '18 maggio 2026'.
-                            o anche date scritte come 'primo maggio 2026', 'due maggio 2026', '3 maggio 2026'.
-                            Normalizza sempre in formato dd/MM/yyyy");
+            sb.AppendLine("   Data nel formato dd/MM/yyyy.");
+            sb.AppendLine("   Accetta anche date scritte come '18/05/2026', '18-05-2026', '18 maggio 2026'.");
+            sb.AppendLine("   o anche date scritte come 'primo maggio 2026', 'due maggio 2026', '3 maggio 2026'.");
+            sb.AppendLine("   Normalizza sempre in formato dd/MM/yyyy");
+
+
+            //sb.AppendLine(@"Data nel formato dd/MM/yyyy.
+            //                Accetta anche date scritte come '18/05/2026', '18-05-2026', '18 maggio 2026'.
+            //                o anche date scritte come 'primo maggio 2026', 'due maggio 2026', '3 maggio 2026'.
+            //                Normalizza sempre in formato dd/MM/yyyy");
 
             sb.AppendLine();
-            sb.AppendLine($"Data di oggi: {DateTime.Today:dd/MM/yyyy}");
+            sb.AppendLine($"   Data di oggi: {DateTime.Today:dd/MM/yyyy}");
             sb.AppendLine();
-            sb.AppendLine("IMPORTANTE:");
-            sb.AppendLine("Quando l’utente usa date relative come 'oggi', 'domani', 'ieri',");
-            sb.AppendLine("Il nome del mese puo essere fornito in forma letterale 'gennaio', 'febbraio', 'marzo',");
-            sb.AppendLine("devi sempre convertirle in una data assoluta nel formato dd/MM/yyyy.");
-            sb.AppendLine($"Usa come riferimento la data indicata sopra. Oggi è {DateTime.Today:dd/MM/yyyy}");
+            sb.AppendLine("   IMPORTANTE:");
+            sb.AppendLine("   Quando l’utente usa date relative come 'oggi', 'domani', 'ieri' usa la data di oggi come riferimento a fai le dovute considerazioni trasformando il risultato in formato dd/MM/yyyy");
+            sb.AppendLine("   Il nome del mese puo essere fornito in forma letterale 'gennaio', 'febbraio', 'marzo',");
+            sb.AppendLine("   devi sempre convertirle in una data assoluta nel formato dd/MM/yyyy.");
+            //sb.AppendLine($"Usa come riferimento la data indicata sopra. Oggi è {DateTime.Today:dd/MM/yyyy}");
         }
 
         public static void BuildSystemPrompt_Append_Orario(StringBuilder sb)
@@ -541,6 +578,56 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
                             un numero espresso in forma letterale trasformandolo un cifra numerica come nell' esempio fornito");
         }
 
+        public static void RetValJsoDefinition(StringBuilder sb)
+        {
+            sb.AppendLine("Rispondi SEMPRE e SOLO con questo JSON (array di azioni):");
+            sb.AppendLine("{");
+            sb.AppendLine("  \"actions\": [");
+            sb.AppendLine("    {");
+            sb.AppendLine("      \"intent\": \"NomeIntent\",");
+            sb.AppendLine("      \"slots\": { \"nomeSlot\": \"valore o null se non presente\" },");
+            sb.AppendLine("      \"confidence\": 0.95");
+            sb.AppendLine("    }");
+            sb.AppendLine("  ]");
+            sb.AppendLine("}");   
+        }   
+    
+        public static void BuildSystemPrompt_Append_Intent_Definition(StringBuilder sb, IReadOnlyList<IntentDefinition> intents, List<string> compatibleIntents)
+        {
+            sb.AppendLine();
+            sb.AppendLine("Definizione delle proprietà e slot degli intent:");
+
+            var _intents =  intents.Where(i => compatibleIntents.Contains(i.Name, StringComparer.OrdinalIgnoreCase)).ToList();
+
+            for (int i = 0; i < _intents.Count; i++)
+            {
+                var intent = _intents[i];
+                sb.AppendLine($"{i + 1}. {intent.Name}");
+                sb.AppendLine($"   Descrizione: {intent.Description}");
+
+                if (intent.Keywords.Count > 0)
+                {
+                    sb.Append("   Parole chiave: ");
+                    sb.AppendLine(string.Join(", ", intent.Keywords));
+                }
+
+                if (intent.Slots.Count > 0)
+                {
+                    sb.AppendLine("   Slot:");
+                    foreach (var slot in intent.Slots)
+                    {
+                        var req = slot.Required ? "obbligatorio" : "opzionale";
+                        var def = !string.IsNullOrEmpty(slot.Default) ? $", default {slot.Default}" : "";
+                        var desc = !string.IsNullOrEmpty(slot.PromptDescription) ? $": {slot.PromptDescription}" : "";
+                        sb.AppendLine($"   - {slot.Name} ({slot.Type}, {req}{def}){desc}");
+                    }
+                }
+
+                sb.AppendLine();
+            }
+
+        }
+        
     }
 
 
