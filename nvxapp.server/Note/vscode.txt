@@ -1,4 +1,7 @@
+setup (estensioni)
+	C# Dev Kit for Visual Studio Code
+	Angular Language Service
 
 x avviare
-Ctrl + Shift + B
+	Ctrl + Shift + B
 
