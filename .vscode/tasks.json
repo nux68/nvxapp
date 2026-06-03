@@ -1,0 +1,45 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Avvia Backend (.NET Watch)",
+            "type": "shell",
+            "command": "dotnet watch",
+            "options": {
+                "cwd": "${workspaceFolder}/nvxapp.server"
+            },
+            "presentation": {
+                "group": "avvia-soluzione",
+                "reveal": "always",
+                "panel": "dedicated"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Avvia Frontend (Ionic Serve)",
+            "type": "shell",
+            "command": "ionic serve --port 4200",
+            "options": {
+                "cwd": "${workspaceFolder}/nvxapp.client"
+            },
+            "presentation": {
+                "group": "avvia-soluzione",
+                "reveal": "always",
+                "panel": "dedicated"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "avvia", // <--- QUESTO È IL TUO COMANDO UNICO
+            "dependsOn": [
+                "Avvia Backend (.NET Watch)",
+                "Avvia Frontend (Ionic Serve)"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": []
+        }
+    ]
+}

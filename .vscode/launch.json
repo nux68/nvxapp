@@ -9,21 +9,25 @@
             "request": "launch",
             "name": "Ionic/Angular Frontend (Chrome)",
             "url": "http://localhost:4200",
-            // Corretto: ora punta alla sottocartella del client
             "webRoot": "${workspaceFolder}/nvxapp.client" 
         },
         {
-           "type": "dotnet",
+            "type": "dotnet",
             "request": "launch",
             "name": ".NET Backend API",
             "projectPath": "${workspaceFolder}/nvxapp.server/nvxapp.server.csproj",
-            // Sostituisci "launchBrowser": false con questo blocco:
             "serverReadyAction": {
                 "action": "openExternally",
                 "pattern": "\\bNow listening on:\\s+(https?://\\S+)",
                 "uriFormat": "%s",
                 "killOnServerStop": true
             }
+        },
+        {
+            "type": "coreclr", // <--- Cambiato da "dotnet" a "coreclr" per accettare "attach"
+            "request": "attach",
+            "name": ".NET API (Aggancia Debugger)",
+            "processName": "nvxapp.server" // Riconosce il processo avviato dal task
         }
     ],
     "compounds": [
