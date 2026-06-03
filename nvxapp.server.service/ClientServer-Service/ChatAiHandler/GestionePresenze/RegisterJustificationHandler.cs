@@ -38,6 +38,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
             {
                 Name        = "RegisterJustification",
                 DisplayName = "Giustificativo",
+                Usable4Role = new List<string> { "CompanyPowerAdmin" },
                 Description = "registra un giustificativo (ferie, malattia, ROL, ecc.) per un dipendente in una data.",
                 Keywords    = new()
                 {

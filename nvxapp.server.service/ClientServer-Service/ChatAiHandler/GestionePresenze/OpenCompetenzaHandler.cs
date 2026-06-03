@@ -22,6 +22,7 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
         {
             Name         = "OpenCompetenza",
             DisplayName  = "Apri competenza",
+            Usable4Role = new List<string> { "CompanyPowerAdmin" },
             Description  = "apre la pagina di modifica di una competenza specifica.",
             IsNavigation = true,
             Keywords     = new() { "competenza", "apri competenza", "modifica competenza", "apri la competenza" },

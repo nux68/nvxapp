@@ -36,6 +36,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
             {
                 Name        = "RegisterCausale",
                 DisplayName = "Inserisci causale",
+                Usable4Role = new List<string> { "CompanyPowerAdmin" },
                 Description = "registra una causale per un dipendente in una data con un numero di ore.",
                 Keywords    = new()
                 {

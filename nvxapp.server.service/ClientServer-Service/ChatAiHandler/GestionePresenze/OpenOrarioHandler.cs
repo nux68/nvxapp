@@ -22,6 +22,7 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
         {
             Name         = "OpenOrario",
             DisplayName  = "Apri orario",
+            Usable4Role = new List<string> { "CompanyPowerAdmin" },
             Description  = "apre la pagina di modifica di un orario specifico.",
             IsNavigation = true,
             Keywords     = new() { "apri orario", "modifica orario", "apri l'orario", "modifica l'orario", "orario" },

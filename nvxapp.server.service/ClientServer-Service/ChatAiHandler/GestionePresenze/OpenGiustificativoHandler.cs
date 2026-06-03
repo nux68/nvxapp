@@ -22,6 +22,7 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
         {
             Name         = "OpenGiustificativo",
             DisplayName  = "Apri giustificativo",
+            Usable4Role = new List<string> { "CompanyPowerAdmin" },
             Description  = "apre la pagina di modifica di un giustificativo specifico.",
             IsNavigation = true,
             Keywords     = new() { "modifica giustificativo", "apri giustificativo", "apri il giustificativo", "modifica il giustificativo", "giustificativo" },

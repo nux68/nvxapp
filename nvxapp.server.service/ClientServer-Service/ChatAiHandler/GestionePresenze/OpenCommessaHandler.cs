@@ -22,6 +22,7 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
         {
             Name         = "OpenCommessa",
             DisplayName  = "Apri commessa",
+            Usable4Role = new List<string> { "CompanyPowerAdmin" },
             Description  = "apre la pagina di modifica di una commessa specifica.",
             IsNavigation = true,
             Keywords     = new() { "commessa", "apri commessa", "modifica commessa", "apri la commessa" },

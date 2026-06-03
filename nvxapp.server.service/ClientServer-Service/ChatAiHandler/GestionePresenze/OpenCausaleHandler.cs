@@ -22,6 +22,7 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
         {
             Name         = "OpenCausale",
             DisplayName  = "Apri causale",
+            Usable4Role = new List<string> { "CompanyPowerAdmin" },
             Description  = "apre la pagina di modifica di una causale specifica.",
             IsNavigation = true,
             Keywords     = new() { "modifica causale", "apri causale", "apri la causale", "modifica la causale", "causale" },

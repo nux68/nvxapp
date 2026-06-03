@@ -33,6 +33,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
             {
                 Name        = "CalcolaGiorno",
                 DisplayName = "Calcola presenze",
+                Usable4Role = new List<string> { "CompanyPowerAdmin" },
                 Description = "esegue il calcolo del foglio presenze per un dipendente in un intervallo di date (default: oggi).",
                 Keywords    = new()
                 {

@@ -21,6 +21,7 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
             {
                 Name         = "OpenTimeSheetPowerAdmin",
                 DisplayName  = "Calendario HR",
+                Usable4Role = new List<string> { "CompanyPowerAdmin" },
                 Description  = "apre il Calendario HR (timesheet power admin). Facoltativamente filtra per dipendente e/o periodo anno/mese.",
                 IsNavigation = true,
                 Keywords     = new()

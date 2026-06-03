@@ -22,6 +22,7 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
         {
             Name         = "OpenProfiloOrario",
             DisplayName  = "Apri profilo orario",
+            Usable4Role = new List<string> { "CompanyPowerAdmin" },
             Description  = "apre la pagina di modifica di un profilo orario specifico.",
             IsNavigation = true,
             Keywords     = new() { "apri profilo orario", "modifica profilo orario", "profilo orario", "apri il profilo orario", "modifica il profilo orario" },

@@ -37,6 +37,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
             _intentDefinition = new IntentDefinition
             {
                 Name = "RegisterClocking",
+                Usable4Role = new List<string> { "CompanyPowerAdmin" },
                 DisplayName = "Timbratura",
                 Description = @"registra una timbratura di entrata o uscita.",
                 Keywords = new() { "timbratura", "timbra","timbrare" ,

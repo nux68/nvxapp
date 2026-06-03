@@ -22,6 +22,7 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
         {
             Name         = "OpenAttivita",
             DisplayName  = "Apri attività",
+            Usable4Role = new List<string> { "CompanyPowerAdmin" },
             Description  = "apre la pagina di modifica di un'attività specifica.",
             IsNavigation = true,
             Keywords     = new() { "attività", "attivita", "apri attività", "modifica attività", "apri l'attività" },
