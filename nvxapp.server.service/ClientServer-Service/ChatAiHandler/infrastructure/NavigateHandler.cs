@@ -22,6 +22,7 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.infrastructur
         {
             Name        = "Navigate",
             DisplayName = "Vai a",
+            Usable4Role = new List<string> { "*" },
             Description = "naviga a una pagina o sezione dell'applicazione.",
             IsNavigation = true,
             ExecutionStrategy = ExecutionStrategy.ContinueOnError,

@@ -316,14 +316,17 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
     public interface IIntentCatalog
     {
         IReadOnlyList<IntentDefinition> Intents { get; }
-        string OLD_BuildSystemPrompt(List<string>? currIntentNames);
-        string OLD_BuildPlanSystemPrompt();
+
+
+        //string OLD_BuildSystemPrompt(List<string>? currIntentNames);
+        //string OLD_BuildPlanSystemPrompt();
         string BuildSystemPromptXS(List<string> compatibleIntents);
+        void Fuilter4UserRoles(List<string> userRoles);
     }
 
     public class IntentCatalog : IIntentCatalog
     {
-        private readonly IReadOnlyList<IntentDefinition> _intents;
+        private /*readonly*/ IReadOnlyList<IntentDefinition> _intents;
 
         // Riceve tutti gli ICommandHandler registrati nella DI.
         // Estrae la IntentDefinition da ognuno e costruisce il catalogo.
@@ -335,135 +338,147 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
                 .AsReadOnly();
         }
 
+        public void Fuilter4UserRoles(List<string> userRoles)
+        {
+            if (_intents != null)
+            {
+                _intents = _intents
+                    .Where(intent => intent.Usable4Role.Contains("*") || intent.Usable4Role.Intersect(userRoles).Any())
+                    .ToList()
+                    .AsReadOnly();
+            }
+        }
+
+
         public IReadOnlyList<IntentDefinition> Intents => _intents;
 
-        public string OLD_BuildPlanSystemPrompt()
-        {
-            var sb = new StringBuilder();
+        //public string OLD_BuildPlanSystemPrompt()
+        //{
+        //    var sb = new StringBuilder();
 
-            sb.AppendLine("Risondi in italiano");
-            sb.AppendLine("Sei un assistente che estrae un piano di azioni da testo in italiano.");
-            sb.AppendLine("La risposta deve contenere UNA O PIÙ azioni da eseguire in sequenza.");
-            sb.AppendLine("Rispondi SOLO con un oggetto JSON valido, nessun testo aggiuntivo.");
-            sb.AppendLine();
+        //    sb.AppendLine("Risondi in italiano");
+        //    sb.AppendLine("Sei un assistente che estrae un piano di azioni da testo in italiano.");
+        //    sb.AppendLine("La risposta deve contenere UNA O PIÙ azioni da eseguire in sequenza.");
+        //    sb.AppendLine("Rispondi SOLO con un oggetto JSON valido, nessun testo aggiuntivo.");
+        //    sb.AppendLine();
 
-            BuildSystemPromptUtil.BuildSystemPrompt_Append_Intestazione_Comune(sb);
-            BuildSystemPromptUtil.OLD_BuildSystemPrompt_Append_Intent_Definition(sb, _intents, null);
+        //    BuildSystemPromptUtil.BuildSystemPrompt_Append_Intestazione_Comune(sb);
+        //    BuildSystemPromptUtil.OLD_BuildSystemPrompt_Append_Intent_Definition(sb, _intents, null);
 
-            sb.AppendLine("Intent disponibili:");
-            sb.AppendLine();
+        //    sb.AppendLine("Intent disponibili:");
+        //    sb.AppendLine();
 
-            for (int i = 0; i < _intents.Count; i++)
-            {
-                var intent = _intents[i];
-                sb.AppendLine($"{i + 1}. {intent.Name}");
-                sb.AppendLine($"   Descrizione: {intent.Description}");
+        //    for (int i = 0; i < _intents.Count; i++)
+        //    {
+        //        var intent = _intents[i];
+        //        sb.AppendLine($"{i + 1}. {intent.Name}");
+        //        sb.AppendLine($"   Descrizione: {intent.Description}");
 
-                if (intent.Keywords.Count > 0)
-                {
-                    sb.Append("   Parole chiave: ");
-                    sb.AppendLine(string.Join(", ", intent.Keywords));
-                }
+        //        if (intent.Keywords.Count > 0)
+        //        {
+        //            sb.Append("   Parole chiave: ");
+        //            sb.AppendLine(string.Join(", ", intent.Keywords));
+        //        }
 
-                if (intent.Slots.Count > 0)
-                {
-                    sb.AppendLine("   Slot:");
-                    foreach (var slot in intent.Slots)
-                    {
-                        var req = slot.Required ? "obbligatorio" : "opzionale";
-                        var def = !string.IsNullOrEmpty(slot.Default) ? $", default {slot.Default}" : "";
-                        var desc = !string.IsNullOrEmpty(slot.PromptDescription) ? $": {slot.PromptDescription}" : "";
-                        sb.AppendLine($"   - {slot.Name} ({slot.Type}, {req}{def}){desc}");
-                    }
-                }
+        //        if (intent.Slots.Count > 0)
+        //        {
+        //            sb.AppendLine("   Slot:");
+        //            foreach (var slot in intent.Slots)
+        //            {
+        //                var req = slot.Required ? "obbligatorio" : "opzionale";
+        //                var def = !string.IsNullOrEmpty(slot.Default) ? $", default {slot.Default}" : "";
+        //                var desc = !string.IsNullOrEmpty(slot.PromptDescription) ? $": {slot.PromptDescription}" : "";
+        //                sb.AppendLine($"   - {slot.Name} ({slot.Type}, {req}{def}){desc}");
+        //            }
+        //        }
 
-                sb.AppendLine();
-            }
+        //        sb.AppendLine();
+        //    }
 
-            sb.AppendLine("Rispondi SEMPRE e SOLO con questo JSON (array di azioni):");
-            sb.AppendLine("{");
-            sb.AppendLine("  \"actions\": [");
-            sb.AppendLine("    {");
-            sb.AppendLine("      \"intent\": \"NomeIntent\",");
-            sb.AppendLine("      \"slots\": { \"nomeSlot\": \"valore o null se non presente\" },");
-            sb.AppendLine("      \"confidence\": 0.95");
-            sb.AppendLine("    }");
-            sb.AppendLine("  ]");
-            sb.AppendLine("}");
+        //    sb.AppendLine("Rispondi SEMPRE e SOLO con questo JSON (array di azioni):");
+        //    sb.AppendLine("{");
+        //    sb.AppendLine("  \"actions\": [");
+        //    sb.AppendLine("    {");
+        //    sb.AppendLine("      \"intent\": \"NomeIntent\",");
+        //    sb.AppendLine("      \"slots\": { \"nomeSlot\": \"valore o null se non presente\" },");
+        //    sb.AppendLine("      \"confidence\": 0.95");
+        //    sb.AppendLine("    }");
+        //    sb.AppendLine("  ]");
+        //    sb.AppendLine("}");
 
-            return sb.ToString();
-        }
-        public string OLD_BuildSystemPrompt(List<string>? currIntentNames)
-        {
-            var sb = new StringBuilder();
+        //    return sb.ToString();
+        //}
+        //public string OLD_BuildSystemPrompt(List<string>? currIntentNames)
+        //{
+        //    var sb = new StringBuilder();
 
-            sb.AppendLine("Sei un assistente che estrae intent e slot da testo in italiano.");
-            sb.AppendLine("Rispondi SOLO con un oggetto JSON valido, nessun testo aggiuntivo.");
+        //    sb.AppendLine("Sei un assistente che estrae intent e slot da testo in italiano.");
+        //    sb.AppendLine("Rispondi SOLO con un oggetto JSON valido, nessun testo aggiuntivo.");
 
-            // NOTA: Se anche questi metodi di utilità accettavano il vecchio parametro stringa, 
-            // andranno eventualmente aggiornati o gestiti separatamente se necessario.
-            BuildSystemPromptUtil.BuildSystemPrompt_Append_Intestazione_Comune(sb);
+        //    // NOTA: Se anche questi metodi di utilità accettavano il vecchio parametro stringa, 
+        //    // andranno eventualmente aggiornati o gestiti separatamente se necessario.
+        //    BuildSystemPromptUtil.BuildSystemPrompt_Append_Intestazione_Comune(sb);
 
-            // Se necessario, estrai il primo nome o adatta il metodo di utilità qui sotto
-            string? firstIntentName = currIntentNames?.FirstOrDefault();
-            BuildSystemPromptUtil.OLD_BuildSystemPrompt_Append_Intent_Definition(sb, _intents, firstIntentName);
+        //    // Se necessario, estrai il primo nome o adatta il metodo di utilità qui sotto
+        //    string? firstIntentName = currIntentNames?.FirstOrDefault();
+        //    BuildSystemPromptUtil.OLD_BuildSystemPrompt_Append_Intent_Definition(sb, _intents, firstIntentName);
 
-            #region "Intent"
+        //    #region "Intent"
 
-            sb.AppendLine("Intent disponibili:");
-            sb.AppendLine();
+        //    sb.AppendLine("Intent disponibili:");
+        //    sb.AppendLine();
 
-            // Gestione della lista di intenti ricevuta come parametro
-            List<IntentDefinition> intentsToInclude = (currIntentNames == null || currIntentNames.Count == 0)
-                ? _intents.ToList()
-                : _intents.Where(i => currIntentNames.Contains(i.Name, StringComparer.OrdinalIgnoreCase)).ToList();
+        //    // Gestione della lista di intenti ricevuta come parametro
+        //    List<IntentDefinition> intentsToInclude = (currIntentNames == null || currIntentNames.Count == 0)
+        //        ? _intents.ToList()
+        //        : _intents.Where(i => currIntentNames.Contains(i.Name, StringComparer.OrdinalIgnoreCase)).ToList();
 
-            for (int i = 0; i < intentsToInclude.Count; i++)
-            {
-                var intent = intentsToInclude[i];
-                sb.AppendLine($"{i + 1}. {intent.Name}");
-                sb.AppendLine($"   Descrizione: {intent.Description}");
+        //    for (int i = 0; i < intentsToInclude.Count; i++)
+        //    {
+        //        var intent = intentsToInclude[i];
+        //        sb.AppendLine($"{i + 1}. {intent.Name}");
+        //        sb.AppendLine($"   Descrizione: {intent.Description}");
 
-                if (intent.Keywords.Count > 0)
-                {
-                    //sb.AppendLine();
-                    sb.Append("   La richiesta può contenere le parole: ");
-                    foreach (var iKey in intent.Keywords)
-                    {
-                        sb.Append($"{iKey},");
-                    }
-                    sb.AppendLine();
-                    sb.AppendLine();
-                }
+        //        if (intent.Keywords.Count > 0)
+        //        {
+        //            //sb.AppendLine();
+        //            sb.Append("   La richiesta può contenere le parole: ");
+        //            foreach (var iKey in intent.Keywords)
+        //            {
+        //                sb.Append($"{iKey},");
+        //            }
+        //            sb.AppendLine();
+        //            sb.AppendLine();
+        //        }
 
-                sb.AppendLine($"   Slot:");
+        //        sb.AppendLine($"   Slot:");
 
-                foreach (var slot in intent.Slots)
-                {
-                    var obbligatorio = slot.Required ? "obbligatorio" : "opzionale";
-                    var defaultVal = !string.IsNullOrEmpty(slot.Default) ? $", default {slot.Default}" : "";
-                    var description = !string.IsNullOrEmpty(slot.PromptDescription) ? $": {slot.PromptDescription}" : "";
-                    sb.AppendLine($"   - {slot.Name} ({slot.Type}, {obbligatorio}{defaultVal}){description}");
-                }
+        //        foreach (var slot in intent.Slots)
+        //        {
+        //            var obbligatorio = slot.Required ? "obbligatorio" : "opzionale";
+        //            var defaultVal = !string.IsNullOrEmpty(slot.Default) ? $", default {slot.Default}" : "";
+        //            var description = !string.IsNullOrEmpty(slot.PromptDescription) ? $": {slot.PromptDescription}" : "";
+        //            sb.AppendLine($"   - {slot.Name} ({slot.Type}, {obbligatorio}{defaultVal}){description}");
+        //        }
 
-                sb.AppendLine();
-            }
+        //        sb.AppendLine();
+        //    }
 
-            #endregion
+        //    #endregion
 
-            sb.AppendLine("Rispondi sempre e solo con questo JSON,\n");
+        //    sb.AppendLine("Rispondi sempre e solo con questo JSON,\n");
 
-            sb.AppendLine("{");
-            sb.AppendLine("  \"intent\": \"NomeIntent\",");
-            sb.AppendLine("  \"slots\": {");
-            sb.AppendLine("    \"nomeSlot\": \"valore o null se non presente\"");
-            sb.AppendLine("  },");
-            sb.AppendLine("  \"missingRequired\": [\"slot1\"],");
-            sb.AppendLine("  \"confidence\": 0.95");
-            sb.AppendLine("}");
+        //    sb.AppendLine("{");
+        //    sb.AppendLine("  \"intent\": \"NomeIntent\",");
+        //    sb.AppendLine("  \"slots\": {");
+        //    sb.AppendLine("    \"nomeSlot\": \"valore o null se non presente\"");
+        //    sb.AppendLine("  },");
+        //    sb.AppendLine("  \"missingRequired\": [\"slot1\"],");
+        //    sb.AppendLine("  \"confidence\": 0.95");
+        //    sb.AppendLine("}");
 
-            return sb.ToString();
-        }
+        //    return sb.ToString();
+        //}
 
         public string BuildSystemPromptXS(List<string> compatibleIntents)
         {
@@ -589,15 +604,15 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
             sb.AppendLine("      \"confidence\": 0.95");
             sb.AppendLine("    }");
             sb.AppendLine("  ]");
-            sb.AppendLine("}");   
-        }   
-    
+            sb.AppendLine("}");
+        }
+
         public static void BuildSystemPrompt_Append_Intent_Definition(StringBuilder sb, IReadOnlyList<IntentDefinition> intents, List<string> compatibleIntents)
         {
             sb.AppendLine();
             sb.AppendLine("Definizione delle proprietà e slot degli intent:");
 
-            var _intents =  intents.Where(i => compatibleIntents.Contains(i.Name, StringComparer.OrdinalIgnoreCase)).ToList();
+            var _intents = intents.Where(i => compatibleIntents.Contains(i.Name, StringComparer.OrdinalIgnoreCase)).ToList();
 
             for (int i = 0; i < _intents.Count; i++)
             {
@@ -627,7 +642,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
             }
 
         }
-        
+
     }
 
 
@@ -669,6 +684,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
         public string DisplayName { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public List<SlotDefinition> Slots { get; set; } = new();
+
+        public List<string> Usable4Role { get; set; } = new List<string>();
 
         // Validazione cross-slot (es. startDate <= endDate).
         // Chiamata dopo che tutti gli slot singoli sono validi.

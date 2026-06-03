@@ -14,6 +14,7 @@ using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.RabbitMQ;
 using nvxapp.server.service.ServerModels;
 using Serilog;
+using System.Data;
 using System.Text;
 using System.Text.Json;
 
@@ -96,6 +97,23 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         {
             return await ExecuteAction(model, async () =>
             {
+
+                var applicationUser = await _userManager.FindByIdAsync(this.CurrentUserId);
+                if(applicationUser!=null)
+                {
+                    var roles = await _userManager.GetRolesAsync(applicationUser);
+                    if(roles!=null)
+                        _intentCatalog.Fuilter4UserRoles(roles.ToList());
+                    else
+                        _intentCatalog.Fuilter4UserRoles(new List<string> { "*" });
+                }
+                else
+                {
+                    _intentCatalog.Fuilter4UserRoles(new List<string> { "*" });
+                }
+
+                
+
                 var userMessage = model.Data.Request;
                 var sessionId = model.Data.SessionId;
 
