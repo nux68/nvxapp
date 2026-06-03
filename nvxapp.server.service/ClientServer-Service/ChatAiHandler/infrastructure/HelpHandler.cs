@@ -12,6 +12,7 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.infrastructur
         {
             Name        = "Help",
             DisplayName = "Aiuto",
+            Usable4Role = new List<string> { "*" },
             Description = "fornisce la lista dei comandi disponibili.",
             Keywords    = new() { "aiuto", "help", "comandi", "cosa sai fare", "menu" }
         };
