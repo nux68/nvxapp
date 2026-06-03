@@ -11,4 +11,7 @@
     <Folder Include="schema-generator\" />
     <Folder Include="src\nvx\pages\GestionePresenze\_selection\" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include=".vscode\launch.json" />
+  </ItemGroup>
 </Project>
