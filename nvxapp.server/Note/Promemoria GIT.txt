@@ -8,7 +8,7 @@ e modificare URL /Path mettento tra https:// e github.com/CentroPagheSrl/RilevaW
 
 https://github.com/nux68/nvxapp.git
 
-https:// MYTOKEN @github.com/nux68/nvxapp.git
+https:// MYTOKEN@ github.com/nux68/nvxapp.git
 
 
 e UserName mettendo:  
