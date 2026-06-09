@@ -8,6 +8,7 @@ using nvxapp.server.Base;
 using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Models;
+using nvxapp.server.service.ClientServer_Service.Infrastructure.Initializer.User;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Helpers;
 using nvxapp.server.service.HubAI;
@@ -36,7 +37,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
         private readonly IUserCompanyRepository _userCompanyRepository;
 
         private readonly IHubContext<SignalRHub> _hubContext;
-
+        private readonly IUserInitializerRegistry _userInitializerRegistry;
 
 
         public AccountService(IMapper mapper,
@@ -55,6 +56,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                               IFinancialAdvisorRepository financialAdvisorRepository,
                               IUserFinancialAdvisorRepository userFinancialAdvisorRepository,
 
+                              IUserInitializerRegistry userInitializerRegistry,
                               ICompanyRepository companyRepository,
                               IUserCompanyRepository userCompanyRepository,
                               IHubContext<SignalRHub> hubContext,
@@ -72,7 +74,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
             _userFinancialAdvisorRepository = userFinancialAdvisorRepository;
             _companyRepository = companyRepository;
             _userCompanyRepository = userCompanyRepository;
-
+            
+            _userInitializerRegistry = userInitializerRegistry;
             _hubContext = hubContext;
         }
 
@@ -949,17 +952,34 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                     {
                         result = await _userManager.AddToRolesAsync(user, model.Data.UserCompanyEdit.Roles);
 
-                        await _userCompanyRepository.UpsertAsync(new UserCompany()
-                        {
-                            IdAspNetUsers = user.Id,
-                            IdCompany = IdCompany,
-                            MainUser = false
-                        });
+                         var comUser = await _userCompanyRepository.UpsertAsync(new UserCompany()
+                                        {
+                                            IdAspNetUsers = user.Id,
+                                            IdCompany = IdCompany,
+                                            MainUser = false
+                                        });
+                          if(comUser!=null)
+                          {
+                              model.Data.UserCompanyEdit.IdUserCompany = comUser.Id;
+
+                              // Inizializzazione strutture dati per il nuovo utente
+                              // (Infrastructure + GestionePresenze + eventuali futuri moduli).
+                              // Il registry esegue tutti gli IUserInitializer in ordine di priorità,
+                              // con strategia ContinueOnError: se un modulo fallisce, gli altri
+                              // proseguono per non bloccare la creazione dell'utente.
+                              await _userInitializerRegistry.InitializeAllAsync(comUser);
+                          }
                     }
 
                 }
 
+                
+              var req_2 = new GenericRequest<UserCompanyGetInModel>();
+              req_2.Data =  new UserCompanyGetInModel() { Id= model.Data.UserCompanyEdit.IdUserCompany };
 
+              var res_2 = await  UserCompanyGet(req_2,true);
+              if(res_2.Success && res_2.Data != null)
+                 retVal.UserCompanyEdit = res_2.Data.UserCompanyEdit;
 
 
                 //eliminare
