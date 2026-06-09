@@ -7,14 +7,6 @@ using Microsoft.Extensions.Options;
 using nvxapp.server.Base;
 using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Repositories.Public;
-using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
-using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
-using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_AnagraficaService;
-using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_ProfiloOrarioService;
-using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_ProfiloOrarioService.Models;
-using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_RapportoLavoroService;
-using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_RapportoLavoroService.Models;
-using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_ProfiloOrarioGGService.Models;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Models;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Initializer.User;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
@@ -44,19 +36,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
         private readonly ICompanyRepository _companyRepository;
         private readonly IUserCompanyRepository _userCompanyRepository;
 
-        private readonly IDip_RapportoLavoroService _dip_RapportoLavoroService;
-        private readonly IDip_ProfiloOrarioService _dip_ProfiloOrarioService;
-        
-        
-        
-        private readonly IGestionePresenzeUserUtility _gestionePresenzeUserUtility;
-        
-
         private readonly IHubContext<SignalRHub> _hubContext;
         private readonly IUserInitializerRegistry _userInitializerRegistry;
-        private readonly IDip_RapportoLavoroRepository _dip_RapportoLavoroRepository;
-        //private readonly IDip_AnagraficaService _dip_AnagraficaService;
-        
 
 
         public AccountService(IMapper mapper,
@@ -71,16 +52,11 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
 
                               IDealerRepository dealerRepository,
                               IUserDealerRepository userDealerRepository,
-                              IGestionePresenzeUserUtility gestionePresenzeUserUtility,
 
                               IFinancialAdvisorRepository financialAdvisorRepository,
                               IUserFinancialAdvisorRepository userFinancialAdvisorRepository,
 
-                              IDip_RapportoLavoroRepository dip_RapportoLavoroRepository,
-                              IDip_RapportoLavoroService dip_RapportoLavoroService,
-                              IDip_ProfiloOrarioService dip_ProfiloOrarioService,
-                              //IDip_AnagraficaService dip_AnagraficaService,
-
+                              IUserInitializerRegistry userInitializerRegistry,
                               ICompanyRepository companyRepository,
                               IUserCompanyRepository userCompanyRepository,
                               IHubContext<SignalRHub> hubContext,
@@ -99,13 +75,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
             _companyRepository = companyRepository;
             _userCompanyRepository = userCompanyRepository;
             
-            _dip_RapportoLavoroRepository = dip_RapportoLavoroRepository;
-            _dip_RapportoLavoroService = dip_RapportoLavoroService;
-            _dip_ProfiloOrarioService = dip_ProfiloOrarioService;
-            //_dip_AnagraficaService = dip_AnagraficaService;
-
-            _gestionePresenzeUserUtility = gestionePresenzeUserUtility;
-
+            _userInitializerRegistry = userInitializerRegistry;
             _hubContext = hubContext;
         }
 
@@ -822,7 +792,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
         }
 
 
-        //TODO MIGLIRARE XKE VERRA USATA MOLTO
+
         public virtual async Task<GenericResult<UserCompanyListOutModel>> UserCompanyList(GenericRequest<UserCompanyListInModel> model, Boolean isSubProcess)
         {
             return await ExecuteAction(model, async () =>
@@ -881,118 +851,117 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
         }
         public virtual async Task<GenericResult<UserCompanyGetOutModel>> UserCompanyGet(GenericRequest<UserCompanyGetInModel> model, Boolean isSubProcess)
         {
-              return await ExecuteAction(model, async () =>
-              {
-                  UserCompanyGetOutModel retVal = new UserCompanyGetOutModel();
+            return await ExecuteAction(model, async () =>
+            {
+                UserCompanyGetOutModel retVal = new UserCompanyGetOutModel();
 
 
 
-                  var userCompany = await _userCompanyRepository.FindByIdAsync(model.Data.Id);
-                  if (userCompany != null)
-                  {
-                      ApplicationUser? applicationUser = await _userManager.FindByIdAsync(userCompany.IdAspNetUsers);
-                      IdentityUserRole<string>? identityUserRole = _aspNetUserRolesRepository.FindAll(x => x.UserId == userCompany.IdAspNetUsers).FirstOrDefault();
+                var userCompany = await _userCompanyRepository.FindByIdAsync(model.Data.Id);
+                if (userCompany != null)
+                {
+                    ApplicationUser? applicationUser = await _userManager.FindByIdAsync(userCompany.IdAspNetUsers);
+                    IdentityUserRole<string>? identityUserRole = _aspNetUserRolesRepository.FindAll(x => x.UserId == userCompany.IdAspNetUsers).FirstOrDefault();
 
-                      if (applicationUser != null && identityUserRole != null)
-                      {
-                          retVal.UserCompanyEdit = new UserCompanyEditModel()
-                          {
-                              Descrizione = applicationUser.UserName,
-                              IdUserCompany = userCompany.Id,
-                              Mail = applicationUser.Email,
-                              MainUser = false,
-                              RoleId = identityUserRole.RoleId,
-                              Roles = new List<string>(await _userManager.GetRolesAsync(applicationUser)),
-                               
-                          };
-                      }
-                  }
-                  else
-                  {
-                      retVal.UserCompanyEdit = new UserCompanyEditModel()
-                      {
-                          Descrizione = "",
-                          //IdAspNetUsers = string.Empty
-                          IdUserCompany = 0
-                      };
-                  }
+                    if (applicationUser != null && identityUserRole != null)
+                    {
+                        retVal.UserCompanyEdit = new UserCompanyEditModel()
+                        {
+                            Descrizione = applicationUser.UserName,
+                            IdUserCompany = userCompany.Id,
+                            Mail = applicationUser.Email,
+                            MainUser = false,
+                            RoleId = identityUserRole.RoleId,
+                            Roles = new List<string>(await _userManager.GetRolesAsync(applicationUser))
+                        };
+                    }
+                }
+                else
+                {
+                    retVal.UserCompanyEdit = new UserCompanyEditModel()
+                    {
+                        Descrizione = "",
+                        //IdAspNetUsers = string.Empty
+                        IdUserCompany = 0
+                    };
+                }
 
-                  //eliminare
-                  // Nessun 'await' qui
-                  await Task.Delay(DelayAsyncMethod);
+                //eliminare
+                // Nessun 'await' qui
+                await Task.Delay(DelayAsyncMethod);
 
-                  return retVal;
-              }, isSubProcess);
+                return retVal;
+            }, isSubProcess);
         }
         public virtual async Task<GenericResult<UserCompanyPutOutModel>> UserCompanyPut(GenericRequest<UserCompanyPutInModel> model, Boolean isSubProcess)
-  {
-      return await ExecuteAction(model, async () =>
-      {
-          UserCompanyPutOutModel retVal = new UserCompanyPutOutModel();
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                UserCompanyPutOutModel retVal = new UserCompanyPutOutModel();
 
-          UserCompany? userCompany = await _userCompanyRepository.FindByIdAsync(model.Data.UserCompanyEdit.IdUserCompany);
-          if (userCompany != null)
-          {
-              //userCompany.Descrizione = model.Data.UserCompanyEdit.Descrizione;
+                UserCompany? userCompany = await _userCompanyRepository.FindByIdAsync(model.Data.UserCompanyEdit.IdUserCompany);
+                if (userCompany != null)
+                {
+                    //userCompany.Descrizione = model.Data.UserCompanyEdit.Descrizione;
 
-              await _userCompanyRepository.UpdateAsync(userCompany);
-
-
-              var applicationUser = await _userManager.FindByIdAsync(userCompany.IdAspNetUsers);
-              if(applicationUser!=null)
-              {
-                  var ruoliAttuali = await _userManager.GetRolesAsync(applicationUser);
-
-                  // Trova i ruoli da aggiungere e rimuovere
-                  var ruoliDaAggiungere = model.Data.UserCompanyEdit.Roles.Where(ruolo => !ruoliAttuali.Contains(ruolo)).ToList();
-                  var ruoliDaRimuovere = ruoliAttuali.Where(ruolo => !model.Data.UserCompanyEdit.Roles.Contains(ruolo)).ToList();
-
-                  // Esegui gli aggiornamenti necessari
-                  if (ruoliDaAggiungere != null)
-                  {
-                      if (ruoliDaAggiungere.Count > 0)
-                          await _userManager.AddToRolesAsync(applicationUser, ruoliDaAggiungere);
-                  }
-                  if (ruoliDaRimuovere != null)
-                  {
-                      if (ruoliDaRimuovere.Count > 0)
-                          await _userManager.RemoveFromRolesAsync(applicationUser, ruoliDaRimuovere);
-                  }
-              }
-          }
-          else
-          {
-              ////
-              int IdCompany;
-              int.TryParse(this.CurrentCompany, out IdCompany);
+                    await _userCompanyRepository.UpdateAsync(userCompany);
 
 
+                    var applicationUser = await _userManager.FindByIdAsync(userCompany.IdAspNetUsers);
+                    if(applicationUser!=null)
+                    {
+                        var ruoliAttuali = await _userManager.GetRolesAsync(applicationUser);
 
-              //DealerPowerAdmin
-              string password = model.Data.UserCompanyEdit.Pw != null ? model.Data.UserCompanyEdit.Pw : "1234";
+                        // Trova i ruoli da aggiungere e rimuovere
+                        var ruoliDaAggiungere = model.Data.UserCompanyEdit.Roles.Where(ruolo => !ruoliAttuali.Contains(ruolo)).ToList();
+                        var ruoliDaRimuovere = ruoliAttuali.Where(ruolo => !model.Data.UserCompanyEdit.Roles.Contains(ruolo)).ToList();
 
-              var user = new ApplicationUser
-              {
-                  Id = Guid.NewGuid().ToString(),
-                  UserName = model.Data.UserCompanyEdit.Descrizione,
-                  Email = model.Data.UserCompanyEdit.Mail
-              };
+                        // Esegui gli aggiornamenti necessari
+                        if (ruoliDaAggiungere != null)
+                        {
+                            if (ruoliDaAggiungere.Count > 0)
+                                await _userManager.AddToRolesAsync(applicationUser, ruoliDaAggiungere);
+                        }
+                        if (ruoliDaRimuovere != null)
+                        {
+                            if (ruoliDaRimuovere.Count > 0)
+                                await _userManager.RemoveFromRolesAsync(applicationUser, ruoliDaRimuovere);
+                        }
+                    }
+                }
+                else
+                {
+                    ////
+                    int IdCompany;
+                    int.TryParse(this.CurrentCompany, out IdCompany);
 
-              var result = await _userManager.CreateAsync(user, password);
-              if (result.Succeeded)
-              {
-                  result = await _userManager.AddToRolesAsync(user, model.Data.UserCompanyEdit.Roles);
 
-                  var comUser = await _userCompanyRepository.UpsertAsync(new UserCompany()
+
+                    //DealerPowerAdmin
+                    string password = model.Data.UserCompanyEdit.Pw != null ? model.Data.UserCompanyEdit.Pw : "1234";
+
+                    var user = new ApplicationUser
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        UserName = model.Data.UserCompanyEdit.Descrizione,
+                        Email = model.Data.UserCompanyEdit.Mail
+                    };
+
+                    var result = await _userManager.CreateAsync(user, password);
+                    if (result.Succeeded)
+                    {
+                        result = await _userManager.AddToRolesAsync(user, model.Data.UserCompanyEdit.Roles);
+
+                         var comUser = await _userCompanyRepository.UpsertAsync(new UserCompany()
                                         {
                                             IdAspNetUsers = user.Id,
                                             IdCompany = IdCompany,
                                             MainUser = false
                                         });
-                  if(comUser!=null)
-                  {
-                      model.Data.UserCompanyEdit.IdUserCompany = comUser.Id;
-                  }
+                          if(comUser!=null)
+                          {
+                              model.Data.UserCompanyEdit.IdUserCompany = comUser.Id;
+
                               // Inizializzazione strutture dati per il nuovo utente
                               // (Infrastructure + GestionePresenze + eventuali futuri moduli).
                               // Il registry esegue tutti gli IUserInitializer in ordine di priorità,
@@ -1000,28 +969,26 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                               // proseguono per non bloccare la creazione dell'utente.
                               await _userInitializerRegistry.InitializeAllAsync(comUser);
                           }
-              }
+                    }
 
-          }
+                }
 
-          var req_2 = new GenericRequest<UserCompanyGetInModel>();
-          req_2.Data =  new UserCompanyGetInModel() { Id= model.Data.UserCompanyEdit.IdUserCompany };
                 
-          var res_2 = await  UserCompanyGet(req_2,true);
-          if(res_2.Success && res_2.Data != null)
-            retVal.UserCompanyEdit = res_2.Data.UserCompanyEdit;
+              var req_2 = new GenericRequest<UserCompanyGetInModel>();
+              req_2.Data =  new UserCompanyGetInModel() { Id= model.Data.UserCompanyEdit.IdUserCompany };
+
               var res_2 = await  UserCompanyGet(req_2,true);
               if(res_2.Success && res_2.Data != null)
                  retVal.UserCompanyEdit = res_2.Data.UserCompanyEdit;
 
 
-          //eliminare
-          // Nessun 'await' qui
-          await Task.Delay(DelayAsyncMethod);
+                //eliminare
+                // Nessun 'await' qui
+                await Task.Delay(DelayAsyncMethod);
 
-          return retVal;
-      }, isSubProcess);
-  }
+                return retVal;
+            }, isSubProcess);
+        }
 
 
         public virtual async Task<GenericResult<UserListOutModel>> UserList(GenericRequest<UserListInModel> model, Boolean isSubProcess)
