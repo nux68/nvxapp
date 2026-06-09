@@ -1,0 +1,16 @@
+﻿se ci sono problemi con git a livello di utente (+utenti sullo stesso pc) , ecco una possibile soluzione (con source tree)
+
+dopo ave clonato il repo con sourcetree
+
+andare in setting 
+editare la riga Remote repository pats
+e modificare URL /Path mettento tra https:// e github.com/CentroPagheSrl/RilevaWeb.git  il token+@
+
+https://github.com/nux68/nvxapp.git
+
+https:// MYTOKEN @github.com/nux68/nvxapp.git
+
+
+e UserName mettendo:  
+	MYTOKEN    (il token)
+
