@@ -3,5 +3,13 @@ setup (estensioni)
 	Angular Language Service
 
 x avviare
-	Ctrl + Shift + B
+	selezionare su profilo da avviare :
+	 .NET Backend API (Debug)
+	usare tasto F5
+
+	NB. 
+		il front end si ricarica in automatico, 
+		per il backend usare il tasto Reload (Ctrl+Shift+F5) 
+	
+	
 

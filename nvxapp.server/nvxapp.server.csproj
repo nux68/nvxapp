@@ -47,7 +47,10 @@
 	</ItemGroup>
 	
 	<!-- Target per integrare la build del progetto Angular -->
-	<Target Name="BuildAndCopyAngular" BeforeTargets="Build">
+  <!-- 
+  <Target Name="BuildAndCopyAngular" BeforeTargets="Build">
+  -->
+	<Target Name="BuildAndCopyAngular" BeforeTargets="Publish" Condition="'$(Configuration)' == 'Release'">
 	
 	  <!-- Esegui la build di Angular e gestisci gli errori -->
 	  <Exec Command="npm run build --prefix ../nvxapp.client" StandardOutputImportance="High" StandardErrorImportance="High">
@@ -62,6 +65,12 @@
 	    <SourceFiles Include="../nvxapp.client/www/**\*.*" />
 	  </ItemGroup>
 	  <Copy SourceFiles="@(SourceFiles)" DestinationFolder="wwwroot/%(RecursiveDir)" SkipUnchangedFiles="true" />
+	
+	</Target>
+  
+  <Target Name="CleanWwwrootDebug" BeforeTargets="Build" Condition="'$(Configuration)' == 'Debug'">
+	
+	  <Exec Command="powershell -Command &quot;if (Test-Path wwwroot) { Get-ChildItem wwwroot | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue }&quot;" />
 	
 	</Target>
 
