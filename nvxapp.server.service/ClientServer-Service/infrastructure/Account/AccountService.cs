@@ -860,6 +860,12 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                 var userCompany = await _userCompanyRepository.FindByIdAsync(model.Data.Id);
                 if (userCompany != null)
                 {
+                    // Inizializzazione lazy delle strutture dati per l'utente
+                    // (Infrastructure + GestionePresenze + eventuali futuri moduli).
+                    // Ogni IUserInitializer verifica autonomamente se ci sono dati da creare.
+                    // La cache in-memory del registry evita riesecuzioni inutili.
+                    await _userInitializerRegistry.InitializeAllAsync(userCompany);
+
                     ApplicationUser? applicationUser = await _userManager.FindByIdAsync(userCompany.IdAspNetUsers);
                     IdentityUserRole<string>? identityUserRole = _aspNetUserRolesRepository.FindAll(x => x.UserId == userCompany.IdAspNetUsers).FirstOrDefault();
 
@@ -960,14 +966,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                                         });
                           if(comUser!=null)
                           {
-                              model.Data.UserCompanyEdit.IdUserCompany = comUser.Id;
-
-                              // Inizializzazione strutture dati per il nuovo utente
-                              // (Infrastructure + GestionePresenze + eventuali futuri moduli).
-                              // Il registry esegue tutti gli IUserInitializer in ordine di priorità,
-                              // con strategia ContinueOnError: se un modulo fallisce, gli altri
-                              // proseguono per non bloccare la creazione dell'utente.
-                              await _userInitializerRegistry.InitializeAllAsync(comUser);
+                               model.Data.UserCompanyEdit.IdUserCompany = comUser.Id;
                           }
                     }
 
