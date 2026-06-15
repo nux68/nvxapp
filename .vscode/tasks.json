@@ -2,44 +2,45 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Avvia Backend (.NET Watch)",
-            "type": "shell",
-            "command": "dotnet watch",
+            "label": "Compila Backend (.NET Build)",
+            "type": "shell", // Cambiato a shell per gestire meglio la cartella di lavoro
+            "command": "taskkill /f /im dotnet.exe 2>$null ; dotnet build",
             "options": {
-                "cwd": "${workspaceFolder}/nvxapp.server"
+                "cwd": "${workspaceFolder}" // 🚀 IMPORTANTE: Compila tutto dalla radice (progetto + servizi)
             },
-            "presentation": {
-                "group": "avvia-soluzione",
-                "reveal": "always",
-                "panel": "dedicated"
-            },
-            "problemMatcher": []
+            "problemMatcher": "$msCompile"
         },
         {
             "label": "Avvia Frontend (Ionic Serve)",
             "type": "shell",
-            "command": "ionic serve --port 4200",
+            "command": "ionic serve --port 4200 --no-open",
             "options": {
                 "cwd": "${workspaceFolder}/nvxapp.client"
             },
+            "isBackground": true,
             "presentation": {
                 "group": "avvia-soluzione",
                 "reveal": "always",
                 "panel": "dedicated"
             },
-            "problemMatcher": []
-        },
-        {
-            "label": "avvia", // <--- QUESTO È IL TUO COMANDO UNICO
-            "dependsOn": [
-                "Avvia Backend (.NET Watch)",
-                "Avvia Frontend (Ionic Serve)"
-            ],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "problemMatcher": []
+            // MODIFICATO: Ora il problemMatcher ha sia il background che il pattern richiesto
+            "problemMatcher": {
+                "owner": "typescript",
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": ".*",
+                    "endsPattern": "Compiled successfully|Development server running|Local:"
+                },
+                "pattern": {
+                    "regexp": "^([^\\s].*)\\((\\d+),(\\d+)\\):\\s+(error|warning)\\s+(TS\\d+)\\s*:\\s*(.*)$",
+                    "file": 1,
+                    "line": 2,
+                    "column": 3,
+                    "severity": 4,
+                    "code": 5,
+                    "message": 6
+                }
+            }
         }
     ]
 }

@@ -1,7 +1,7 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    // Utilizza IntelliSense per informazioni sui possibili attributi.
+    // Al passaggio del mouse vengono visualizzate le descrizioni degli attributi esistenti.
+    // Per altre informazioni, visita: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
         {
@@ -9,31 +9,31 @@
             "request": "launch",
             "name": "Ionic/Angular Frontend (Chrome)",
             "url": "http://localhost:4200",
-            "webRoot": "${workspaceFolder}/nvxapp.client" 
+            "webRoot": "${workspaceFolder}/nvxapp.client",
+            "preLaunchTask": "Avvia Frontend (Ionic Serve)"
         },
         {
-            "type": "dotnet",
+            "type": "coreclr",
             "request": "launch",
-            "name": ".NET Backend API",
-            "projectPath": "${workspaceFolder}/nvxapp.server/nvxapp.server.csproj",
+            "name": ".NET Backend API (Debug)",
+            // 🚀 AGGIORNATO SU NET9.0: Ora punta al percorso corretto
+            "program": "${workspaceFolder}/nvxapp.server/bin/Debug/net9.0/nvxapp.server.dll", 
+            "cwd": "${workspaceFolder}/nvxapp.server",
+            "preLaunchTask": "Compila Backend (.NET Build)",
+            "requireExactSource": false, 
             "serverReadyAction": {
-                "action": "openExternally",
+                "action": "startDebugging",
+                "name": "Ionic/Angular Frontend (Chrome)",
                 "pattern": "\\bNow listening on:\\s+(https?://\\S+)",
-                "uriFormat": "%s",
                 "killOnServerStop": true
             }
         },
         {
-            "type": "coreclr", // <--- Cambiato da "dotnet" a "coreclr" per accettare "attach"
+            "type": "coreclr",
             "request": "attach",
             "name": ".NET API (Aggancia Debugger)",
-            "processName": "nvxapp.server" // Riconosce il processo avviato dal task
-        }
-    ],
-    "compounds": [
-        {
-            "name": "Avvia Soluzione Completa",
-            "configurations": ["Ionic/Angular Frontend (Chrome)", ".NET Backend API"]
+            "processName": "nvxapp.server"
         }
     ]
+    // NOTA: La sezione "compounds" non serve più e può essere rimossa per evitare confusione
 }
