@@ -8,6 +8,7 @@ using nvxapp.server.Base;
 using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Models;
+using nvxapp.server.service.ClientServer_Service.Infrastructure.Initializer.CompanyInit;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Initializer.User;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Helpers;
@@ -38,6 +39,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
 
         private readonly IHubContext<SignalRHub> _hubContext;
         private readonly IUserInitializerRegistry _userInitializerRegistry;
+        private readonly ICompanyInitializerRegistry _companyInitializerRegistry;
 
 
         public AccountService(IMapper mapper,
@@ -57,6 +59,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                               IUserFinancialAdvisorRepository userFinancialAdvisorRepository,
 
                               IUserInitializerRegistry userInitializerRegistry,
+                              ICompanyInitializerRegistry companyInitializerRegistry,
                               ICompanyRepository companyRepository,
                               IUserCompanyRepository userCompanyRepository,
                               IHubContext<SignalRHub> hubContext,
@@ -76,6 +79,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
             _userCompanyRepository = userCompanyRepository;
             
             _userInitializerRegistry = userInitializerRegistry;
+            _companyInitializerRegistry = companyInitializerRegistry;
             _hubContext = hubContext;
         }
 
@@ -681,6 +685,12 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                 var company = await _companyRepository.FindByIdAsync(model.Data.Id);
                 if (company != null)
                 {
+                    // Inizializzazione lazy delle strutture dati per l'azienda
+                    // (Infrastructure + GestionePresenze + eventuali futuri moduli).
+                    // Ogni ICompanyInitializer verifica autonomamente se ci sono dati da creare.
+                    // La cache in-memory del registry evita riesecuzioni inutili.
+                    await _companyInitializerRegistry.InitializeAllAsync(company);
+
                     retVal.CompanyEdit = new CompanyEditModel()
                     {
                         Descrizione = company.Descrizione,
