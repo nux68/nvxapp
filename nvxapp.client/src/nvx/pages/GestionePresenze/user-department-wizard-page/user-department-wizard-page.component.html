@@ -1,0 +1,156 @@
+<app-page-toolbar [title]="Title"
+                  [showFilter]="ShowFilter"
+                  [showBreadcrumbs]="true">
+</app-page-toolbar>
+
+<ion-content [fullscreen]="true">
+
+  <ion-card>
+    <ion-card-content *ngIf="_editModel!=null">
+
+      <!-- Indicatore step -->
+      <div style="text-align:center; margin-bottom:16px;">
+        <ion-text color="medium">
+          Step {{ currentStep + 1 }} di {{ totalSteps }}
+        </ion-text>
+      </div>
+
+      <form [formGroup]="_editForm">
+
+        <!-- ═══ STEP 0: Anagrafica ═══ -->
+        <div *ngIf="currentStep === 0">
+
+          <ion-item class="nvx-item-4-title">
+            <ion-label>Info Utente</ion-label>
+          </ion-item>
+
+          <!-- UserName -->
+          <ion-item>
+            <ion-label position="floating">UserName</ion-label>
+            <ion-input type="text" formControlName="descrizione" [readonly]="isFromServer"></ion-input>
+          </ion-item>
+          <ion-note color="danger" *ngIf="_editForm.get('descrizione')?.hasError('required') && _editForm.get('descrizione')?.touched">
+            UserName è obbligatorio.
+          </ion-note>
+          <ion-note color="danger" *ngIf="_editForm.get('descrizione')?.hasError('maxlength') && _editForm.get('descrizione')?.touched">
+            UserName non può superare i 50 caratteri.
+          </ion-note>
+
+          <!-- Email -->
+          <ion-item>
+            <ion-label position="floating">Email</ion-label>
+            <ion-input type="email" formControlName="mail"></ion-input>
+          </ion-item>
+          <ion-note color="danger" *ngIf="_editForm.get('mail')?.hasError('required') && _editForm.get('mail')?.touched">
+            L'email è obbligatoria.
+          </ion-note>
+          <ion-note color="danger" *ngIf="_editForm.get('mail')?.hasError('email') && _editForm.get('mail')?.touched">
+            Inserisci un'email valida.
+          </ion-note>
+
+          <!-- Ruolo -->
+          <ion-item>
+            <ion-label position="floating">Ruolo</ion-label>
+            <ion-select formControlName="roles" aria-label="Ruoli" [multiple]="true">
+              <ion-select-option value="{{item_role}}" *ngFor="let item_role of getRoles()">{{ item_role }}</ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-note color="danger" *ngIf="_editForm.get('roles')?.hasError('minArrayLength') && _editForm.get('roles')?.touched">
+            Il ruolo è obbligatorio.
+          </ion-note>
+
+          <!-- Cognome -->
+          <ion-item>
+            <ion-label position="floating">Cognome</ion-label>
+            <ion-input type="text" formControlName="cognome"></ion-input>
+          </ion-item>
+          <ion-note color="danger" *ngIf="_editForm.get('cognome')?.hasError('required') && _editForm.get('cognome')?.touched">
+            Cognome è obbligatorio.
+          </ion-note>
+          <ion-note color="danger" *ngIf="_editForm.get('cognome')?.hasError('maxlength') && _editForm.get('cognome')?.touched">
+            Cognome non può superare i 50 caratteri.
+          </ion-note>
+
+          <!-- Nome -->
+          <ion-item>
+            <ion-label position="floating">Nome</ion-label>
+            <ion-input type="text" formControlName="nome"></ion-input>
+          </ion-item>
+          <ion-note color="danger" *ngIf="_editForm.get('nome')?.hasError('required') && _editForm.get('nome')?.touched">
+            Nome è obbligatorio.
+          </ion-note>
+          <ion-note color="danger" *ngIf="_editForm.get('nome')?.hasError('maxlength') && _editForm.get('nome')?.touched">
+            Nome non può superare i 50 caratteri.
+          </ion-note>
+
+        </div>
+
+        <!-- ═══ STEP 1: Profilo Orario ═══ -->
+        <div *ngIf="currentStep === 1">
+
+          <ion-item class="nvx-item-4-title">
+            <ion-label>Rapporto di Lavoro</ion-label>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="floating">Profilo Orario</ion-label>
+            <ion-select [(ngModel)]="selectedProfiloOrarioId"
+                        (ionChange)="onProfiloOrarioChange()"
+                        [ngModelOptions]="{standalone: true}"
+                        interface="popover">
+              <ion-select-option [value]="profilo.id" *ngFor="let profilo of profiliOrario">
+                {{ profilo.descrizione }}
+              </ion-select-option>
+            </ion-select>
+          </ion-item>
+
+          <!-- Data inizio validità -->
+          <ion-item>
+            <ion-label position="floating">Dal</ion-label>
+            <ion-datetime-button datetime="wizard-dal"></ion-datetime-button>
+            <ion-modal [keepContentsMounted]="true">
+              <ng-template>
+                <ion-datetime id="wizard-dal"
+                              presentation="date"
+                              [firstDayOfWeek]="1"
+                              [showDefaultButtons]="true"
+                              doneText="OK"
+                              cancelText="Annulla"
+                              [(ngModel)]="profiloDal"
+                              (ionChange)="onDalChange($event)"
+                              [ngModelOptions]="{standalone: true}">
+                </ion-datetime>
+              </ng-template>
+            </ion-modal>
+          </ion-item>
+
+          <!-- Data fine validità -->
+          <ion-item>
+            <ion-label position="floating">Al</ion-label>
+            <ion-datetime-button datetime="wizard-al"></ion-datetime-button>
+            <ion-modal [keepContentsMounted]="true">
+              <ng-template>
+                <ion-datetime id="wizard-al"
+                              presentation="date"
+                              [firstDayOfWeek]="1"
+                              [showDefaultButtons]="true"
+                              doneText="OK"
+                              cancelText="Annulla"
+                              [(ngModel)]="profiloAl"
+                              (ionChange)="onAlChange($event)"
+                              [ngModelOptions]="{standalone: true}">
+                </ion-datetime>
+              </ng-template>
+            </ion-modal>
+          </ion-item>
+
+        </div>
+
+      </form>
+
+    </ion-card-content>
+  </ion-card>
+
+</ion-content>
+
+<app-page-buttonbar [buttonbar]="buttonbar"></app-page-buttonbar>

@@ -2,12 +2,10 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
-import { UserDepartmentEditPageComponent } from './user-department-edit-page.component';
 import { RouterModule } from '@angular/router';
 import { SharedComponentInfrastructureModule } from '../../../shared/shared-component-infrastructure.module';
 import { SharedComponentGestionePresenzeModuleModule } from '../../../shared/shared-component-gestione-presenze-module.module';
-import { JustContatorePipe } from '../../../shared/pipe/GestionePresenze/just-contatore.pipe';
-import { ParProfiloOrarioToLongTextPipePipe } from '../../../shared/pipe/GestionePresenze/par-profilo-orario-to-long-text-pipe.pipe';
+import { UserDepartmentWizardPageComponent } from './user-department-wizard-page.component';
 
 @NgModule({
   imports: [
@@ -18,14 +16,12 @@ import { ParProfiloOrarioToLongTextPipePipe } from '../../../shared/pipe/Gestion
     RouterModule.forChild([
       {
         path: '',
-        component: UserDepartmentEditPageComponent
+        component: UserDepartmentWizardPageComponent
       }
     ]),
     SharedComponentInfrastructureModule,
     SharedComponentGestionePresenzeModuleModule,
-    JustContatorePipe,
-    ParProfiloOrarioToLongTextPipePipe,
   ],
-  declarations: [UserDepartmentEditPageComponent],
+  declarations: [UserDepartmentWizardPageComponent],
 })
-export class UserDepartmentEditPageModule {}
+export class UserDepartmentWizardPageModule {}

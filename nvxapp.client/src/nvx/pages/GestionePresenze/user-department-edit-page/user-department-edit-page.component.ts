@@ -6,7 +6,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AccountService } from '../../../ClientServer-Service/Infrastructure/Account/account.service';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { Observable } from 'rxjs/internal/Observable';
-import { map, catchError } from 'rxjs';
+import { map, catchError, of } from 'rxjs';
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { StringHelperService } from '../../../Utility/infrastructure/string-helper.service';
 import { ParameterService } from '../../../ClientServer-Service/Infrastructure/Parameter/parameter.service';
@@ -211,9 +211,9 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
       request.data.id = state.id;
       return this.dipAnagraficaService.Dip_AnagraficaGet(request).pipe(
         map((res) => res.data.dip_Anagrafica),
-        catchError((error) => {
+        catchError((error): Observable<Dip_Anagrafica4EditModel | null> => {
           console.error('Errore durante la chiamata API:', error);
-          return [null];
+          return of(null);
         })
       );
     } else {
