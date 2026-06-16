@@ -56,7 +56,7 @@ export class UserCompanyListPageComponent  implements OnInit {
 
     });
 
-    const pageName = this.mainMenuService.RedefineNameOfPages('usercompanyedit');
+    const pageName = this.mainMenuService.RedefineNameOfPages('usercompanywizard');
 
     this.fabMenuService.fabMenuItem = [
 
