@@ -1,11 +1,14 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
-import { NavController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular';
 import { Observable, of } from 'rxjs';
-import { UserCompanyEditModel } from 'src/nvx/ClientServer-Service/Infrastructure/Account/Models/user-company-model';
+import { map, catchError } from 'rxjs/operators';
+import { UserCompanyEditModel, UserCompanyPutInModel } from 'src/nvx/ClientServer-Service/Infrastructure/Account/Models/user-company-model';
 import { RoleCode } from 'src/nvx/ClientServer-Service/Infrastructure/Account/Models/user-roles-model';
 import { ParameterService } from 'src/nvx/ClientServer-Service/Infrastructure/Parameter/parameter.service';
-import { BasePageConfirmCancelComponent } from 'src/nvx/pages/_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
+import { AccountService } from 'src/nvx/ClientServer-Service/Infrastructure/Account/account.service';
+import { GenericRequest } from 'src/nvx/ClientServer-Service/ModelsBase/generic-request';
+import { BaseDialogConfirmCancelComponent } from 'src/nvx/pages/_BASE/base-dialog-confirm-cancel/base-dialog-confirm-cancel.component';
 import { UserInterfaceService } from 'src/nvx/Utility/infrastructure/user-interface.service';
 
 @Component({
@@ -14,20 +17,27 @@ import { UserInterfaceService } from 'src/nvx/Utility/infrastructure/user-interf
   styleUrls: ['./add-user-company.component.scss'],
   standalone: false
 })
-export class AddUserCompanyComponent  extends BasePageConfirmCancelComponent<UserCompanyEditModel> {
+export class AddUserCompanyComponent extends BaseDialogConfirmCancelComponent<UserCompanyEditModel> {
 
   @Input() userCompanyEdit: UserCompanyEditModel;
 
   modifiedDescription: string | null = null;
 
-  constructor( protected override navCtrl: NavController,
-      protected override userInterfaceService: UserInterfaceService,
+  constructor(protected override userInterfaceService: UserInterfaceService,
       protected override fb: FormBuilder,
-       private parameterService: ParameterService
+      protected override modalCtrl: ModalController,
+       private parameterService: ParameterService,
+       private accountService: AccountService
       ) 
   {
-    super(navCtrl, userInterfaceService, fb);
+    super(userInterfaceService, fb, modalCtrl);
 
+  }
+
+  override ngOnInit() {
+    super.ngOnInit();
+    // Sovrascrive l'handler del bottone conferma per eseguire il salvataggio via API
+    this.buttonbar[0].event = () => this.handleConfirm();
   }
 
  get EditForm(): FormGroup {
@@ -40,7 +50,7 @@ export class AddUserCompanyComponent  extends BasePageConfirmCancelComponent<Use
   }
 
 
-  get Title(): string { return "AddUserCompany"; }
+  get Title(): string { return "Inserimento nuovo utente"; }
 
   LoadData = (): Observable<UserCompanyEditModel | null> => {
     // Aggiunge campi per la nuova registrazione (mail, pw, confirmPassword)
@@ -53,8 +63,35 @@ export class AddUserCompanyComponent  extends BasePageConfirmCancelComponent<Use
     return of(this.userCompanyEdit);
   }
 
-  SaveData = (editModel: UserCompanyEditModel): Observable<boolean> => {
-    return of(true);
+  SaveData = (editModel: UserCompanyEditModel): Observable<UserCompanyEditModel> => {
+    let request: GenericRequest<UserCompanyPutInModel> = new GenericRequest<UserCompanyPutInModel>(UserCompanyPutInModel);
+    request.data.userCompanyEdit = editModel;
+
+    return this.accountService.UserCompanyPut(request).pipe(
+      map(() => editModel),
+      catchError((error) => {
+        console.error('Errore durante la chiamata API:', error);
+        return of(null);
+      })
+    );
+  }
+
+  private handleConfirm() {
+    // Forza la validazione su tutto il form
+    Object.keys(this._editForm.controls).forEach((key) => {
+      const control = this._editForm.get(key);
+      control?.markAsTouched();
+      control?.updateValueAndValidity();
+    });
+
+    if (this._editForm.valid) {
+      Object.assign(this._editModel, this._editForm.value);
+      this.SaveData(this._editModel).subscribe(res => {
+        if (res) {
+          this.modalCtrl.dismiss(res, 'confirm');
+        }
+      });
+    }
   }
 
   getRoles(): string[] {
