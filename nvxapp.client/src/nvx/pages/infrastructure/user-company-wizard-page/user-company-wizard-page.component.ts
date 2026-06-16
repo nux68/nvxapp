@@ -24,6 +24,8 @@ import { RoleCode } from '../../../ClientServer-Service/Infrastructure/Account/M
 })
 export class UserCompanyWizardPageComponent  extends BasePageConfirmCancelComponent<UserCompanyEditModel> {
 
+  modifiedDescription: string | null = null;
+
   constructor(protected override navCtrl: NavController,
     protected override userInterfaceService: UserInterfaceService,
     protected override fb: FormBuilder,
@@ -35,7 +37,7 @@ export class UserCompanyWizardPageComponent  extends BasePageConfirmCancelCompon
 
   }
 
-  get Title(): string { return "UserCompanyWizardPage"; }
+  get Title(): string { return "User Company WizardPage"; }
   get EditForm(): FormGroup {
     return this.fb.group({
 

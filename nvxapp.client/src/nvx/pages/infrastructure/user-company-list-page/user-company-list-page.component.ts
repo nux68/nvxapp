@@ -87,13 +87,22 @@ export class UserCompanyListPageComponent  implements OnInit {
 
     await modal.present();
 
-    const { data } = await modal.onDidDismiss();
+    const { data, role } = await modal.onDidDismiss();
 
-    // Aggiorna la lista dopo la chiusura della modale
-    const request: GenericRequest<UserCompanyListInModel> = new GenericRequest<UserCompanyListInModel>(UserCompanyListInModel);
-    this.accountService.UserCompanyList(request).subscribe(res => {
-      this.userCompanyList = res.data.userCompanyList;
-    });
+    // Se l'utente ha confermato l'inserimento, naviga alla pagina wizard con l'id corretto
+    if (role === 'confirm' && data && data.idUserCompany) {
+      const pageName = this.mainMenuService.RedefineNameOfPages('usercompanywizard');
+      this.navCtrl.navigateForward('/' + pageName, {
+        state: { id: data.idUserCompany }
+      });
+    }
+    // else {
+    //   // Aggiorna la lista dopo la chiusura della modale senza conferma
+    //   const request: GenericRequest<UserCompanyListInModel> = new GenericRequest<UserCompanyListInModel>(UserCompanyListInModel);
+    //   this.accountService.UserCompanyList(request).subscribe(res => {
+    //     this.userCompanyList = res.data.userCompanyList;
+    //   });
+    // }
   }
 
 

@@ -3,13 +3,13 @@ import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn,
 import { ModalController } from '@ionic/angular';
 import { Observable, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
-import { UserCompanyEditModel, UserCompanyPutInModel } from 'src/nvx/ClientServer-Service/Infrastructure/Account/Models/user-company-model';
-import { RoleCode } from 'src/nvx/ClientServer-Service/Infrastructure/Account/Models/user-roles-model';
-import { ParameterService } from 'src/nvx/ClientServer-Service/Infrastructure/Parameter/parameter.service';
-import { AccountService } from 'src/nvx/ClientServer-Service/Infrastructure/Account/account.service';
-import { GenericRequest } from 'src/nvx/ClientServer-Service/ModelsBase/generic-request';
-import { BaseDialogConfirmCancelComponent } from 'src/nvx/pages/_BASE/base-dialog-confirm-cancel/base-dialog-confirm-cancel.component';
-import { UserInterfaceService } from 'src/nvx/Utility/infrastructure/user-interface.service';
+import { UserCompanyEditModel, UserCompanyPutInModel } from '../../../../ClientServer-Service/Infrastructure/Account/Models/user-company-model';
+import { RoleCode } from '../../../../ClientServer-Service/Infrastructure/Account/Models/user-roles-model';
+import { ParameterService } from '../../../../ClientServer-Service/Infrastructure/Parameter/parameter.service';
+import { GenericRequest } from '../../../../ClientServer-Service/ModelsBase/generic-request';
+import { BaseDialogConfirmCancelComponent } from '../../../../pages/_BASE/base-dialog-confirm-cancel/base-dialog-confirm-cancel.component';
+import { UserInterfaceService } from '../../../../Utility/infrastructure/user-interface.service';
+import { AccountService } from '../../../../ClientServer-Service/Infrastructure/Account/account.service';
 
 @Component({
   selector: 'app-add-user-company',
@@ -17,7 +17,7 @@ import { UserInterfaceService } from 'src/nvx/Utility/infrastructure/user-interf
   styleUrls: ['./add-user-company.component.scss'],
   standalone: false
 })
-export class AddUserCompanyComponent extends BaseDialogConfirmCancelComponent<UserCompanyEditModel> {
+export class AddUserCompanyComponent  extends BaseDialogConfirmCancelComponent<UserCompanyEditModel> {
 
   @Input() userCompanyEdit: UserCompanyEditModel;
 
@@ -68,7 +68,7 @@ export class AddUserCompanyComponent extends BaseDialogConfirmCancelComponent<Us
     request.data.userCompanyEdit = editModel;
 
     return this.accountService.UserCompanyPut(request).pipe(
-      map(() => editModel),
+      map((res) => res.data.userCompanyEdit),
       catchError((error) => {
         console.error('Errore durante la chiamata API:', error);
         return of(null);
