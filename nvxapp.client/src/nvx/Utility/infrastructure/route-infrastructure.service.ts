@@ -66,6 +66,7 @@ export class RouteInfrastructureService {
 
       { path: 'usercompanylist', loadChildren: () => import('../../pages/infrastructure/user-company-list-page/user-company-list-page.module').then(m => m.UserCompanyListPageModule), canActivate: [RoleGuard4UserCompanyList] },
       { path: 'usercompanyedit', loadChildren: () => import('../../pages/infrastructure/user-company-edit-page/user-company-edit-page.module').then(m => m.UserCompanyEditPageModule), canActivate: [RoleGuard4UserCompanyList] },
+      { path: 'usercompanywizard', loadChildren: () => import('../../pages/infrastructure/user-company-wizard-page/user-company-wizard-page.module').then(m => m.UserCompanyWizardPageModule), canActivate: [RoleGuard4UserCompanyList] },
 
 
     ];
