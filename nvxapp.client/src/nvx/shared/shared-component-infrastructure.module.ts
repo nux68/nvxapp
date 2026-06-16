@@ -4,7 +4,6 @@ import { IonicModule } from '@ionic/angular';
 import { GenericFilterPipe } from './pipe/infrastructure/generic-filter.pipe';
 import { BreadcrumbsImpersonateComponent } from './components/infrastructure/breadcrumbs-impersonate/breadcrumbs-impersonate.component';
 import { PageToolbarComponent } from './components/infrastructure/page-toolbar/page-toolbar.component';
-import { FabMenuComponent } from './components/infrastructure/fab-menu/fab-menu.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { PageButtonbarComponent } from './components/infrastructure/page-buttonbar/page-buttonbar.component';
 import { GenericDialogComponent } from './components/infrastructure/generic-dialog/generic-dialog.component';

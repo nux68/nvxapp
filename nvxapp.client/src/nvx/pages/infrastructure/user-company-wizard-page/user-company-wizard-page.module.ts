@@ -4,7 +4,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
 import { SharedComponentInfrastructureModule } from '../../../shared/shared-component-infrastructure.module';
-import { UserCompanyEditPageComponent } from './user-company-edit-page.component';
+import { UserCompanyWizardPageComponent } from './user-company-wizard-page.component';
 
 
 @NgModule({
@@ -17,13 +17,13 @@ import { UserCompanyEditPageComponent } from './user-company-edit-page.component
     RouterModule.forChild([
       {
         path: '',
-        component: UserCompanyEditPageComponent
+        component: UserCompanyWizardPageComponent
       }
     ]),
     SharedComponentInfrastructureModule
   ],
 
-  declarations: [UserCompanyEditPageComponent],
+  declarations: [UserCompanyWizardPageComponent],
 
 })
-export class UserCompanyEditPageModule { }
+export class UserCompanyWizardPageModule { }
