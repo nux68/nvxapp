@@ -12,7 +12,7 @@ import { UserCompanyListModel, UserCompanyListInModel } from '../../../ClientSer
 import { RoleCode } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-roles-model';
 import { MainMenuService } from '../../../Utility/infrastructure/main-menu.service';
 import { AddUserCompanyComponent } from '../../../shared/components/infrastructure/add-user-company/add-user-company.component';
-import { UserCompanyEditModel } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-company-model';
+import { UserCompanyEditModel, UserCompanyGetInModel } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-company-model';
 
 @Component({
   selector: 'app-user-company-list-page',
@@ -89,12 +89,16 @@ export class UserCompanyListPageComponent  implements OnInit {
 
     const { data, role } = await modal.onDidDismiss();
 
-    // Se l'utente ha confermato l'inserimento, naviga alla pagina wizard con l'id corretto
+    // Se l'utente ha confermato l'inserimento, recupera idAspNetUsers e naviga al wizard
     if (role === 'confirm' && data && data.idUserCompany) {
+      const getRequest = new GenericRequest<UserCompanyGetInModel>(UserCompanyGetInModel);
+      getRequest.data.id = data.idUserCompany;
+      
       const pageName = this.mainMenuService.RedefineNameOfPages('usercompanywizard');
       this.navCtrl.navigateForward('/' + pageName, {
-        state: { id: data.idUserCompany }
+        state: { id: data.idAspNetUsers }
       });
+      
     }
     // else {
     //   // Aggiorna la lista dopo la chiusura della modale senza conferma
