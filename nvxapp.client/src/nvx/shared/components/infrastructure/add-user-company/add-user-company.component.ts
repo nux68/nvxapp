@@ -60,6 +60,14 @@ export class AddUserCompanyComponent  extends BaseDialogConfirmCancelComponent<U
     this._editForm.setValidators(matchPasswords);
     this._editForm.updateValueAndValidity();
 
+    // Imposta il ruolo "User" come default se non già valorizzato
+    if (!this.userCompanyEdit.roles || this.userCompanyEdit.roles.length === 0) {
+      const userRole = this.parameterService.Roles.find(role => role.code === RoleCode.User);
+      if (userRole) {
+        this.userCompanyEdit.roles = [userRole.name];
+      }
+    }
+
     return of(this.userCompanyEdit);
   }
 

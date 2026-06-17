@@ -885,6 +885,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                         {
                             Descrizione = applicationUser.UserName,
                             IdUserCompany = userCompany.Id,
+                            IdAspNetUsers = userCompany.IdAspNetUsers,
                             Mail = applicationUser.Email,
                             MainUser = false,
                             RoleId = identityUserRole.RoleId,
