@@ -97,6 +97,7 @@
             <ion-select [(ngModel)]="selectedProfiloOrarioId"
                         (ionChange)="onProfiloOrarioChange()"
                         [ngModelOptions]="{standalone: true}"
+                        [compareWith]="compareProfiloOrario"
                         interface="popover">
               <ion-select-option [value]="profilo.id" *ngFor="let profilo of profiliOrario">
                 {{ profilo.descrizione }}
