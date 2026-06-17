@@ -42,6 +42,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Mode
     public class UserCompanyEditModel
     {
         public int IdUserCompany { get; set; }
+        public string? IdAspNetUsers { get; set; } = string.Empty;
         public string? Descrizione { get; set; } = string.Empty;
         public Boolean MainUser { get; set; }
         public string? Mail { get; set; } = string.Empty;

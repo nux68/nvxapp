@@ -37,6 +37,7 @@ export class UserCompanyEditModel {
   constructor(
     public descrizione: string | null = "",
     public idUserCompany: number = 0,
+    public idAspNetUsers: string = "",
     public mainUser: boolean = false,
 
     public mail: string | null = null,
