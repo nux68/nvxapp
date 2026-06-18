@@ -1,12 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import { NavController } from '@ionic/angular';
+import { ModalController, NavController } from '@ionic/angular';
 import { AccountService } from '../../../ClientServer-Service/Infrastructure/Account/account.service';
-import { CompanyListModel, CompanyListInModel } from '../../../ClientServer-Service/Infrastructure/Account/Models/company-model';
+import { CompanyListModel, CompanyListInModel, CompanyEditModel } from '../../../ClientServer-Service/Infrastructure/Account/Models/company-model';
 import { UserLoadInModel } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-load-model';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { UserNavigationService, UserDataAdditionalModel } from '../../../Utility/infrastructure/user-navigation.service';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
+import { MainMenuService } from '../../../Utility/infrastructure/main-menu.service';
+import { AddCompanyComponent } from '../../../shared/components/infrastructure/add-company/add-company.component';
 
 
 @Component({
@@ -27,7 +29,9 @@ export class CompanyListPageComponent  implements OnInit {
               private accountService: AccountService,
               public fabMenuService: FabMenuService,
               private userInterfaceService: UserInterfaceService,
-              private userNavigationService: UserNavigationService) {
+              private userNavigationService: UserNavigationService,
+              private mainMenuService: MainMenuService,
+              private modalCtrl: ModalController) {
 
     this.title = 'Companies';
     this.btnImpersona = userInterfaceService.Btn_Impersona;
@@ -46,12 +50,12 @@ export class CompanyListPageComponent  implements OnInit {
 
     });
 
+    const pageName = this.mainMenuService.RedefineNameOfPages('companywizard');
+
     this.fabMenuService.fabMenuItem = [
 
       new FabMenuItem('Elemento 1', 'add-circle-outline', () => {
-        this.navCtrl.navigateForward('/companyedit', {
-          state: { id: 0 }
-        });
+        this.openAddCompany();
       }),
 
     ];
@@ -63,6 +67,27 @@ export class CompanyListPageComponent  implements OnInit {
   }
 
   ngOnInit() {}
+
+  async openAddCompany() {
+    const modal = await this.modalCtrl.create({
+      component: AddCompanyComponent,
+      componentProps: {
+        companyEdit: new CompanyEditModel()
+      }
+    });
+
+    await modal.present();
+
+    const { data, role } = await modal.onDidDismiss();
+
+    // Se l'utente ha confermato l'inserimento, recupera idCompany e naviga al wizard
+    if (role === 'confirm' && data && data.idCompany) {
+      const pageName = this.mainMenuService.RedefineNameOfPages('companywizard');
+      this.navCtrl.navigateForward('/' + pageName, {
+        state: { id: data.idCompany }
+      });
+    }
+  }
 
   handleButtonImpersonaClick = (item: any) => {
 
