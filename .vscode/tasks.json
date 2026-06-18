@@ -4,7 +4,7 @@
         {
             "label": "Compila Backend (.NET Build)",
             "type": "shell", // Cambiato a shell per gestire meglio la cartella di lavoro
-            "command": "taskkill /f /im dotnet.exe 2>$null ; dotnet build",
+            "command": "dotnet build",
             "options": {
                 "cwd": "${workspaceFolder}" // 🚀 IMPORTANTE: Compila tutto dalla radice (progetto + servizi)
             },

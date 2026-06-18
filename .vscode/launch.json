@@ -25,7 +25,7 @@
                 "action": "startDebugging",
                 "name": "Ionic/Angular Frontend (Chrome)",
                 "pattern": "\\bNow listening on:\\s+(https?://\\S+)",
-                "killOnServerStop": true
+                "killOnServerStop": false
             }
         },
         {
@@ -35,5 +35,4 @@
             "processName": "nvxapp.server"
         }
     ]
-    // NOTA: La sezione "compounds" non serve più e può essere rimossa per evitare confusione
 }
