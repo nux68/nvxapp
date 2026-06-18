@@ -32,48 +32,54 @@
   </ItemGroup>
 
 	
-	<!-- Definisci i file da copiare -->
 	<ItemGroup>
-	  <AngularFiles Include="../nvxapp.client/www/**/*.*" />
+		<ProjectReference Include="..\nvxapp.server.data\nvxapp.server.data.csproj" />
+		<ProjectReference Include="..\nvxapp.server.service\nvxapp.server.service.csproj" />
 	</ItemGroup>
-	
+
 	<ItemGroup>
-	  <ProjectReference Include="..\nvxapp.server.data\nvxapp.server.data.csproj" />
-	  <ProjectReference Include="..\nvxapp.server.service\nvxapp.server.service.csproj" />
+		<Folder Include="Logs\" />
 	</ItemGroup>
-	
-	<ItemGroup>
-	  <Folder Include="Logs\" />
-	</ItemGroup>
-	
-	<!-- Target per integrare la build del progetto Angular -->
-  <!-- 
-  <Target Name="BuildAndCopyAngular" BeforeTargets="Build">
-  -->
-	<Target Name="BuildAndCopyAngular" BeforeTargets="Publish" Condition="'$(Configuration)' == 'Release'">
-	
-	  <!-- Esegui la build di Angular e gestisci gli errori -->
-	  <Exec Command="npm run build --prefix ../nvxapp.client" StandardOutputImportance="High" StandardErrorImportance="High">
-	    <Output TaskParameter="ExitCode" PropertyName="ErrorCode" />
-	  </Exec>
-	
-	  <!-- Verifica se la build � fallita -->
-	  <Error Condition="'$(ErrorCode)' != '0'" Text="La build di Angular � fallita. Controlla l'output." />
-	
-	  <!-- Copia l'intera cartella www nella cartella wwwroot -->
-	  <ItemGroup>
-	    <SourceFiles Include="../nvxapp.client/www/**\*.*" />
-	  </ItemGroup>
-	  <Copy SourceFiles="@(SourceFiles)" DestinationFolder="wwwroot/%(RecursiveDir)" SkipUnchangedFiles="true" />
-	
-	</Target>
-  
-  <Target Name="CleanWwwrootDebug" BeforeTargets="Build" Condition="'$(Configuration)' == 'Debug'">
-	
-	  <Exec Command="powershell -Command &quot;if (Test-Path wwwroot) { Get-ChildItem wwwroot | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue }&quot;" />
-	
+
+	<!-- PULIZIA WWWROOT SOLO IN DEBUG -->
+	<Target Name="CleanWwwrootDebug" BeforeTargets="Build" Condition="'$(Configuration)' == 'Debug'">
+		<Exec Command="powershell -Command &quot;if (Test-Path wwwroot) { Get-ChildItem wwwroot | Remove-Item -Recurse -Force -ErrorAction SilentlyContinue }&quot;" />
 	</Target>
 
-	
+	<!-- BUILD ANGULAR E COPIA IN wwwroot SOLO IN RELEASE/PUBLISH -->
+	<Target Name="BuildAngular" BeforeTargets="PrepareForPublish;WebPublish"
+					Condition="'$(Configuration)' == 'Release' AND '$(AngularBuilt)' != 'true'">
+
+		<!-- Flag per evitare doppia esecuzione se entrambi i target scattano -->
+		<PropertyGroup>
+			<AngularBuilt>true</AngularBuilt>
+		</PropertyGroup>
+
+		<!-- Elimina la cache di Angular per forzare ricompilazione completa -->
+		<RemoveDir Directories="$(MSBuildProjectDirectory)/../nvxapp.client/.angular/cache" />
+
+		<!-- Build Angular -->
+		<Exec Command="npx ng build" WorkingDirectory="$(MSBuildProjectDirectory)/../nvxapp.client" StandardOutputImportance="High" StandardErrorImportance="High">
+			<Output TaskParameter="ExitCode" PropertyName="ErrorCode" />
+		</Exec>
+		<Error Condition="'$(ErrorCode)' != '0'" Text="La build Angular è fallita. Controlla l'output." />
+
+		<!-- Pulisce wwwroot dai vecchi bundle prima di copiare i nuovi -->
+		<RemoveDir Directories="$(MSBuildProjectDirectory)/wwwroot" />
+		<MakeDir Directories="$(MSBuildProjectDirectory)/wwwroot" />
+
+		<!-- Copia l'output Angular in wwwroot — l'SDK ASP.NET Core lo includerà automaticamente nel publish -->
+		<ItemGroup>
+			<AngularOutputFiles Include="$(MSBuildProjectDirectory)/../nvxapp.client/www/**/*.*" />
+		</ItemGroup>
+		<Copy SourceFiles="@(AngularOutputFiles)"
+					DestinationFolder="$(MSBuildProjectDirectory)/wwwroot/%(RecursiveDir)"
+					SkipUnchangedFiles="false" />
+
+	</Target>
+
+
+
+
 
 </Project>
