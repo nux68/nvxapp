@@ -790,7 +790,15 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                     /////////////////////
                 }
 
+                if (company != null)
+                {
+                    var req_2 = new GenericRequest<CompanyGetInModel>();
+                    req_2.Data = new CompanyGetInModel() { Id = company.Id };
 
+                    var res_2 = await CompanyGet(req_2, true);
+                    if (res_2.Success && res_2.Data != null)
+                        retVal.CompanyEdit = res_2.Data.CompanyEdit;
+                }
 
 
                 //eliminare
