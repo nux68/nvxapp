@@ -189,6 +189,26 @@ provider.Mappings[".webmanifest"] = "application/manifest+json";
 app.UseStaticFiles(new StaticFileOptions
 {
     ContentTypeProvider = provider
+    ,
+    OnPrepareResponse = ctx =>
+    {
+        var fileName = ctx.File.Name;
+        var headers = ctx.Context.Response.Headers;
+
+        // index.html e manifest: no-cache ? il browser richiede sempre la versione aggiornata
+        if (fileName.Equals("index.html", StringComparison.OrdinalIgnoreCase) ||
+            fileName.Equals("manifest.webmanifest", StringComparison.OrdinalIgnoreCase))
+        {
+            headers["Cache-Control"] = "no-cache, no-store, must-revalidate";
+            headers["Pragma"] = "no-cache";
+            headers["Expires"] = "0";
+        }
+        else
+        {
+            // Bundle JS/CSS con hash nel nome: cache lunga (1 anno)
+            headers["Cache-Control"] = "public, max-age=31536000, immutable";
+        }
+    }
 });
 
 app.MapControllers();
