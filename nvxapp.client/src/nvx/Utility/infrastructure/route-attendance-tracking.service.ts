@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Routes } from '@angular/router';
 import { RoleGuard4CompanyAdmin } from '../../pages/RoleGuard/infrastructure/role-guard-4-company-admin';
+import { RoleGuard4CompanyList } from '../../pages/RoleGuard/infrastructure/role-guard-4-company-list';
 import { RoleGuard4User } from '../../pages/RoleGuard/infrastructure/role-guard-4-user';
 import { RoleGuard4CompanyPowerAdmin } from '../../pages/RoleGuard/infrastructure/role-guard-4-company-power-admin';
 import { RoleGuard4JustClockRequest } from '../../pages/RoleGuard/infrastructure/role-guard-4-just-clock-request';
@@ -62,6 +63,12 @@ export class RouteAttendanceTrackingService {
 
       { path: 'userdepartmentedit', loadChildren: () => import('../../pages/GestionePresenze/user-department-edit-page/user-department-edit-page.module').then(m => m.UserDepartmentEditPageModule), canActivate: [RoleGuard4CompanyAdmin] },
       { path: 'userdepartmentwizard', loadChildren: () => import('../../pages/GestionePresenze/user-department-wizard-page/user-department-wizard-page.module').then(m => m.UserDepartmentWizardPageModule), canActivate: [RoleGuard4CompanyAdmin] },
+
+      
+
+{ path: 'companyattendancewizard', loadChildren: () => import('../../pages/GestionePresenze/company-attendance-wizard-page/company-attendance-wizard-page.module').then(m => m.CompanyAttendanceWizardPageModule), canActivate: [RoleGuard4CompanyList] },
+
+      
 
       //admin
       { path: 'admintimesheet', loadChildren: () => import('../../pages/GestionePresenze/time-sheet-admin-page/time-sheet-admin-page.module').then(m => m.TimeSheetAdminModule), canActivate: [RoleGuard4CompanyAdmin] },

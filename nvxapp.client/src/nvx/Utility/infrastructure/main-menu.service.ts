@@ -125,7 +125,7 @@ export class MainMenuService implements iMainMenuService {
           return 'userdepartmentwizard';
           break;
         case 'companywizard':
-          return 'companywizard';
+          return 'companyattendancewizard';
           break;
         case 'xx3':
           return 'xx3';
