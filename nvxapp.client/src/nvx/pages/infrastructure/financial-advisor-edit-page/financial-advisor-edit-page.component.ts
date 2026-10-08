@@ -7,7 +7,7 @@ import { FinancialAdvisorEditModel, FinancialAdvisorGetInModel, FinancialAdvisor
 import { AccountService } from '../../../ClientServer-Service/Infrastructure/Account/account.service';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { Observable } from 'rxjs/internal/Observable';
-import { map, catchError } from 'rxjs';
+import { map, catchError, of } from 'rxjs';
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { StringHelperService } from '../../../Utility/infrastructure/string-helper.service';
 
@@ -55,7 +55,7 @@ export class FinancialAdvisorEditPageComponent extends BasePageConfirmCancelComp
         map((res) => res.data.financialAdvisorEdit), // Estrae il dato richiesto
         catchError((error) => {
           console.error('Errore durante la chiamata API:', error);
-          return [null]; // Restituisce null in caso di errore
+          return of(null); // Restituisce null in caso di errore
         })
       );
     }

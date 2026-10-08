@@ -5,7 +5,7 @@ import { AccountService } from '../../../ClientServer-Service/Infrastructure/Acc
 import { DealerEditModel, DealerGetInModel, DealerListInModel, DealerPutInModel } from '../../../ClientServer-Service/Infrastructure/Account/Models/dealer-model';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Observable, map, catchError } from 'rxjs';
+import { Observable, map, catchError, of } from 'rxjs';
 import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { StringHelperService } from '../../../Utility/infrastructure/string-helper.service';
@@ -52,7 +52,7 @@ export class DealerEditPageComponent extends BasePageConfirmCancelComponent<Deal
         map((res) => res.data.dealerEdit), // Estrae il dato richiesto
         catchError((error) => {
           console.error('Errore durante la chiamata API:', error);
-          return [null]; // Restituisce null in caso di errore
+          return of(null); // Restituisce null in caso di errore
         })
       );
     }

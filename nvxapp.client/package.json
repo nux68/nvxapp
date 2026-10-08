@@ -13,14 +13,13 @@
   },
   "private": true,
   "dependencies": {
-    "@angular/animations": "^19.2.25",
-    "@angular/common": "^19.2.25",
-    "@angular/compiler": "^19.2.25",
-    "@angular/core": "^19.2.25",
-    "@angular/forms": "^19.2.25",
-    "@angular/platform-browser": "^19.2.25",
-    "@angular/platform-browser-dynamic": "^19.2.25",
-    "@angular/router": "^19.2.25",
+    "@angular/animations": "^20.3.33",
+    "@angular/common": "^20.3.33",
+    "@angular/compiler": "^20.3.33",
+    "@angular/core": "^20.3.33",
+    "@angular/forms": "^20.3.33",
+    "@angular/platform-browser": "^20.3.33",
+    "@angular/router": "^20.3.33",
     "@capacitor/app": "7.0.0",
     "@capacitor/core": "7.0.0",
     "@capacitor/haptics": "7.0.0",
@@ -35,15 +34,15 @@
     "zone.js": "~0.15.0"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^19.2.27",
+    "@angular-devkit/build-angular": "^20.3.39",
     "@angular-eslint/builder": "^19.8.1",
     "@angular-eslint/eslint-plugin": "^19.8.1",
     "@angular-eslint/eslint-plugin-template": "^19.8.1",
     "@angular-eslint/schematics": "^19.8.1",
     "@angular-eslint/template-parser": "^19.8.1",
-    "@angular/cli": "^19.2.27",
-    "@angular/compiler-cli": "^19.2.25",
-    "@angular/language-service": "^19.2.25",
+    "@angular/cli": "^20.3.39",
+    "@angular/compiler-cli": "^20.3.33",
+    "@angular/language-service": "^20.3.33",
     "@capacitor/cli": "7.0.0",
     "@ionic/angular-toolkit": "^12.0.0",
     "@types/jasmine": "~5.1.0",
@@ -60,7 +59,7 @@
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
-    "typescript": "~5.6.3"
+    "typescript": "~5.9.3"
   },
   "description": "An Ionic project"
 }
