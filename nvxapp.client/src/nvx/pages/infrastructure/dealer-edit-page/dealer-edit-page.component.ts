@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { AccountService } from '../../../ClientServer-Service/Infrastructure/Account/account.service';
@@ -14,6 +14,7 @@ import { StringHelperService } from '../../../Utility/infrastructure/string-help
   selector: 'app-dealer-edit-page',
   templateUrl: './dealer-edit-page.component.html',
   styleUrls: ['./dealer-edit-page.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 }) 
 export class DealerEditPageComponent extends BasePageConfirmCancelComponent<DealerEditModel> {

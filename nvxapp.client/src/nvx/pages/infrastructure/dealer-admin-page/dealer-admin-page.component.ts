@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
   selector: 'app-dealer-admin-page',
   templateUrl: './dealer-admin-page.component.html',
   styleUrls: ['./dealer-admin-page.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class DealerAdminPageComponent  implements OnInit {

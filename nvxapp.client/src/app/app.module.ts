@@ -1,7 +1,7 @@
 import { NgModule, LOCALE_ID, importProvidersFrom } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
 
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 
@@ -39,7 +39,7 @@ registerLocaleData(localeIt); // Questa riga è essenziale!
   ],
   providers: [
               { provide: LOCALE_ID, useValue: 'it' },
-              provideHttpClient(withInterceptorsFromDi()),
+              provideHttpClient(withXhr(), withInterceptorsFromDi()),
               { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
               { provide: HTTP_INTERCEPTORS, useClass: NvxHttpInterceptor, multi: true },
               //importProvidersFrom(GenericFilterPipe)

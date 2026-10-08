@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
 import { UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { NavController } from '@ionic/angular';
@@ -16,6 +16,7 @@ import { AuthService } from '../../../Utility/infrastructure/auth.service';
   selector: 'app-company-edit-page',
   templateUrl: './company-edit-page.component.html',
   styleUrls: ['./company-edit-page.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone:false
 })  
 export class CompanyEditPageComponent extends BasePageConfirmCancelComponent<CompanyEditModel> {

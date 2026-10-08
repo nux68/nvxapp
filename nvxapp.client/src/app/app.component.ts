@@ -1,4 +1,4 @@
-import { Component, DoCheck, OnInit } from '@angular/core';
+import { Component, DoCheck, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { AccountService } from '../nvx/ClientServer-Service/Infrastructure/Account/account.service';
 import { AuthService } from '../nvx/Utility/infrastructure/auth.service';
 import { UserNavigationService } from '../nvx/Utility/infrastructure/user-navigation.service';
@@ -14,6 +14,7 @@ import { JobNotifierService } from '../nvx/Utility/infrastructure/job-notifier.s
   selector: 'app-root',
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class AppComponent implements OnInit, DoCheck {

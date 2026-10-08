@@ -17,8 +17,8 @@
             <ion-card>
               <ion-card-header>
                 <ion-card-title>
-                  <ion-icon [name]="getIcon(messageErr.messages[0]?.msgType)"></ion-icon>
-                  {{ getDescription(messageErr.messages[0]?.msgType) }}
+                  <ion-icon [name]="getIcon($safeNavigationMigration(messageErr.messages[0]?.msgType))"></ion-icon>
+                  {{ getDescription($safeNavigationMigration(messageErr.messages[0]?.msgType)) }}
                 </ion-card-title>
               </ion-card-header>
               <ion-card-content>

@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { WeatherForecastInModel, WeatherForecastModel } from '../../nvx/ClientServer-Service/WeatherForecastService/Models/weather-forecast-model';
 import { WeatherForecastService } from '../../nvx/ClientServer-Service/WeatherForecastService/weather-forecast.service';
@@ -9,6 +9,7 @@ import { GenericRequest } from '../../nvx/ClientServer-Service/ModelsBase/generi
   selector: 'app-folder',
   templateUrl: './folder.page.html',
   styleUrls: ['./folder.page.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
 export class FolderPage implements OnInit {

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, TemplateRef } from '@angular/core';
+import { Component, Input, OnInit, TemplateRef, ChangeDetectionStrategy } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { ButtonItem } from '../../../../Utility/infrastructure/user-interface.service';
 
@@ -6,6 +6,7 @@ import { ButtonItem } from '../../../../Utility/infrastructure/user-interface.se
   selector: 'app-generic-dialog',
   templateUrl: './generic-dialog.component.html',
   styleUrls: ['./generic-dialog.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 }) 
 export class GenericDialogComponent {

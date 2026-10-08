@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 
 
 @Component({
@@ -7,6 +7,7 @@ import { Component, Input } from '@angular/core';
   templateUrl: './hover-popup.component.html',
   styleUrls: ['./hover-popup.component.scss'],
   standalone: true,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [CommonModule]
 })
 export class HoverPopupComponent {

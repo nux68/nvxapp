@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 
 import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
 import { UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
@@ -18,6 +18,7 @@ import { CompanyEditModel, CompanyGetInModel, CompanyPutInModel } from '../../..
   selector: 'app-company-wizard-page-component',
   templateUrl: './company-wizard-page-component.component.html',
   styleUrls: ['./company-wizard-page-component.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class CompanyWizardPageComponentComponent  extends BasePageConfirmCancelComponent<CompanyEditModel> {

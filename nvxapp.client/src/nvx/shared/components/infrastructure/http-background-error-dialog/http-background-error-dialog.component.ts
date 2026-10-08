@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { NvxHttpInterceptorService } from '../../../../http/http-interceptor';
 import { ButtonItem, UserInterfaceService } from '../../../../Utility/infrastructure/user-interface.service';
 import { MessageType } from '../../../../ClientServer-Service/ModelsBase/message';
@@ -8,6 +8,7 @@ import { NavController } from '@ionic/angular';
   selector: 'app-http-background-error-dialog',
   templateUrl: './http-background-error-dialog.component.html',
   styleUrls: ['./http-background-error-dialog.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class HttpBackgroundErrorDialogComponent  implements OnInit {

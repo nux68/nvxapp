@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { AccountService } from '../../../ClientServer-Service/Infrastructure/Account/account.service';
 import { UserDataAdditionalModel, UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
@@ -12,6 +12,7 @@ import { FabMenuService, FabMenuItem } from '../../../Utility/infrastructure/fab
   selector: 'app-financial-advisor-list-page',
   templateUrl: './financial-advisor-list-page.component.html',
   styleUrls: ['./financial-advisor-list-page.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class FinancialAdvisorListPageComponent implements OnInit {

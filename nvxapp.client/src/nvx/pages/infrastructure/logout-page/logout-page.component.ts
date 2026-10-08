@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { AccountService } from '../../../ClientServer-Service/Infrastructure/Account/account.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NavController } from '@ionic/angular';
@@ -9,6 +9,7 @@ import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructur
   selector: 'app-logout-page',
   templateUrl: './logout-page.component.html',
   styleUrls: ['./logout-page.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class LogoutPageComponent  implements OnInit {

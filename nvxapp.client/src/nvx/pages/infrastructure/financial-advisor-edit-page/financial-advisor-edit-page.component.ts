@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
 import { UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { NavController } from '@ionic/angular';
@@ -17,6 +17,7 @@ import { StringHelperService } from '../../../Utility/infrastructure/string-help
   selector: 'app-financial-advisor-edit-page',
   templateUrl: './financial-advisor-edit-page.component.html',
   styleUrls: ['./financial-advisor-edit-page.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class FinancialAdvisorEditPageComponent extends BasePageConfirmCancelComponent<FinancialAdvisorEditModel> {
