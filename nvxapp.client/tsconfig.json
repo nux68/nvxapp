@@ -4,6 +4,7 @@
   "compilerOptions": {
     
     "strictNullChecks": false,
+    "esModuleInterop": true,
     "outDir": "./dist/out-tsc",
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
