@@ -8,200 +8,197 @@
 
           <ng-container>
             @for (group of groupedUserMenu; track group;let i = $index) {
-            @if (group.menuItem.length > 0) {
-            <ion-accordion value="{{group.menuHeader.title}}" toggleIcon="caret-down-circle" toggleIconSlot="start">
-              <ion-item slot="header">
-                <ion-label>{{ group.menuHeader.title }}</ion-label>
-              </ion-item>
+              @if (group.menuItem.length > 0) {
+                <ion-accordion value="{{group.menuHeader.title}}" toggleIcon="caret-down-circle" toggleIconSlot="start">
+                  <ion-item slot="header">
+                    <ion-label>{{ group.menuHeader.title }}</ion-label>
+                  </ion-item>
 
-              <div class="ion-padding" slot="content" style="padding:0px;">
-                <ion-list id="nvx-list">
+                  <div class="ion-padding" slot="content" style="padding:0px;">
+                    <ion-list id="nvx-list">
 
-                  @for (p of group.menuItem ; track p; let i = $index) {
-                  <ng-container *ngIf="p.menuType === 0">
-                    <ion-menu-toggle auto-hide="false" *ngIf="showPage4User(p.component)">
-                      <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
-                        <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-sharp'"></ion-icon>
-                        <ion-label>{{ p.title }}</ion-label>
-                      </ion-item>
-                    </ion-menu-toggle>
-                  </ng-container>
-                  <ng-container *ngIf="p.menuType === 2">
-                    <ion-note>{{ p.title }}</ion-note>
-                  </ng-container>
-                  }
-                </ion-list>
-              </div>
+                      @for (p of group.menuItem ; track p; let i = $index) {
+                        @if (p.menuType === 0) {
+                          @if (showPage4User(p.component)) {
+                            <ion-menu-toggle auto-hide="false">
+                              <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
+                                <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-sharp'"></ion-icon>
+                                <ion-label>{{ p.title }}</ion-label>
+                              </ion-item>
+                            </ion-menu-toggle>
+                          }
+                        }
+                        @if (p.menuType === 2) {
+                          <ion-note>{{ p.title }}</ion-note>
+                        }
+                      }
+                    </ion-list>
+                  </div>
 
-            </ion-accordion>
-            }
+                </ion-accordion>
+              }
             }
           </ng-container>
 
 
-          <ng-container *ngIf="authService.IsSuperUser">
+          @if (authService.IsSuperUser) {
             @for (group of groupedSuperUserMenu; track group;let i = $index) {
-            @if (group.menuItem.length > 0) {
-            <ion-accordion value="{{group.menuHeader.title}}" toggleIcon="caret-down-circle" toggleIconSlot="start">
-              <ion-item slot="header">
-                <ion-label>{{ group.menuHeader.title }}</ion-label>
-              </ion-item>
-
-              <div class="ion-padding" slot="content" style="padding:0px;">
-                <ion-list id="nvx-list">
-
-                  @for (p of group.menuItem ; track p; let i = $index) {
-                  <ng-container *ngIf="p.menuType === 0">
-                    <ion-menu-toggle auto-hide="false" *ngIf="showPage4SuperUser(p.component)">
-                      <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
-                        <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-sharp'"></ion-icon>
-                        <ion-label>{{ p.title }}</ion-label>
-                      </ion-item>
-                    </ion-menu-toggle>
-                  </ng-container>
-                  <ng-container *ngIf="p.menuType === 2">
-                    <ion-note>{{ p.title }}</ion-note>
-                  </ng-container>
-                  }
-                </ion-list>
-              </div>
-
-            </ion-accordion>
+              @if (group.menuItem.length > 0) {
+                <ion-accordion value="{{group.menuHeader.title}}" toggleIcon="caret-down-circle" toggleIconSlot="start">
+                  <ion-item slot="header">
+                    <ion-label>{{ group.menuHeader.title }}</ion-label>
+                  </ion-item>
+                  <div class="ion-padding" slot="content" style="padding:0px;">
+                    <ion-list id="nvx-list">
+                      @for (p of group.menuItem ; track p; let i = $index) {
+                        @if (p.menuType === 0) {
+                          @if (showPage4SuperUser(p.component)) {
+                            <ion-menu-toggle auto-hide="false">
+                              <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
+                                <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-sharp'"></ion-icon>
+                                <ion-label>{{ p.title }}</ion-label>
+                              </ion-item>
+                            </ion-menu-toggle>
+                          }
+                        }
+                        @if (p.menuType === 2) {
+                          <ion-note>{{ p.title }}</ion-note>
+                        }
+                      }
+                    </ion-list>
+                  </div>
+                </ion-accordion>
+              }
             }
-            }
-          </ng-container>
+          }
 
 
-          <ng-container *ngIf="authService.IsInGroupAdmin">
+          @if (authService.IsInGroupAdmin) {
             @for (group of groupedAdminMenu; track group;let i = $index) {
-            @if (group.menuItem.length > 0) {
-            <ion-accordion value="{{group.menuHeader.title}}" toggleIcon="caret-down-circle" toggleIconSlot="start">
-              <ion-item slot="header">
-                <ion-label>{{ group.menuHeader.title }}</ion-label>
-              </ion-item>
-
-              <div class="ion-padding" slot="content" style="padding:0px;">
-                <ion-list id="nvx-list">
-
-                  @for (p of group.menuItem ; track p; let i = $index) {
-                  <ng-container *ngIf="p.menuType === 0">
-                    <ion-menu-toggle auto-hide="false" *ngIf="showPage4Admin(p.component)">
-                      <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
-                        <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-sharp'"></ion-icon>
-                        <ion-label>{{ p.title }}</ion-label>
-                      </ion-item>
-                    </ion-menu-toggle>
-                  </ng-container>
-                  <ng-container *ngIf="p.menuType === 2">
-                    <ion-note>{{ p.title }}</ion-note>
-                  </ng-container>
-                  }
-                </ion-list>
-              </div>
-
-            </ion-accordion>
+              @if (group.menuItem.length > 0) {
+                <ion-accordion value="{{group.menuHeader.title}}" toggleIcon="caret-down-circle" toggleIconSlot="start">
+                  <ion-item slot="header">
+                    <ion-label>{{ group.menuHeader.title }}</ion-label>
+                  </ion-item>
+                  <div class="ion-padding" slot="content" style="padding:0px;">
+                    <ion-list id="nvx-list">
+                      @for (p of group.menuItem ; track p; let i = $index) {
+                        @if (p.menuType === 0) {
+                          @if (showPage4Admin(p.component)) {
+                            <ion-menu-toggle auto-hide="false">
+                              <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
+                                <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-sharp'"></ion-icon>
+                                <ion-label>{{ p.title }}</ion-label>
+                              </ion-item>
+                            </ion-menu-toggle>
+                          }
+                        }
+                        @if (p.menuType === 2) {
+                          <ion-note>{{ p.title }}</ion-note>
+                        }
+                      }
+                    </ion-list>
+                  </div>
+                </ion-accordion>
+              }
             }
-            }
-          </ng-container>
+          }
 
 
-          <ng-container *ngIf="authService.IsInGroupDealerAdmin">
+          @if (authService.IsInGroupDealerAdmin) {
             @for (group of groupedDealerAdminMenu; track group;let i = $index) {
-            @if (group.menuItem.length > 0) {
-            <ion-accordion value="{{group.menuHeader.title}}" toggleIcon="caret-down-circle" toggleIconSlot="start">
-              <ion-item slot="header">
-                <ion-label>{{ group.menuHeader.title }}</ion-label>
-              </ion-item>
-
-              <div class="ion-padding" slot="content" style="padding:0px;">
-                <ion-list id="nvx-list">
-
-                  @for (p of group.menuItem ; track p; let i = $index) {
-                  <ng-container *ngIf="p.menuType === 0">
-                    <ion-menu-toggle auto-hide="false" *ngIf="showPage4DealerAdmin(p.component)">
-                      <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
-                        <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-sharp'"></ion-icon>
-                        <ion-label>{{ p.title }}</ion-label>
-                      </ion-item>
-                    </ion-menu-toggle>
-                  </ng-container>
-                  <ng-container *ngIf="p.menuType === 2">
-                    <ion-note>{{ p.title }}</ion-note>
-                  </ng-container>
-                  }
-                </ion-list>
-              </div>
-
-            </ion-accordion>
+              @if (group.menuItem.length > 0) {
+                <ion-accordion value="{{group.menuHeader.title}}" toggleIcon="caret-down-circle" toggleIconSlot="start">
+                  <ion-item slot="header">
+                    <ion-label>{{ group.menuHeader.title }}</ion-label>
+                  </ion-item>
+                  <div class="ion-padding" slot="content" style="padding:0px;">
+                    <ion-list id="nvx-list">
+                      @for (p of group.menuItem ; track p; let i = $index) {
+                        @if (p.menuType === 0) {
+                          @if (showPage4DealerAdmin(p.component)) {
+                            <ion-menu-toggle auto-hide="false">
+                              <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
+                                <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-sharp'"></ion-icon>
+                                <ion-label>{{ p.title }}</ion-label>
+                              </ion-item>
+                            </ion-menu-toggle>
+                          }
+                        }
+                        @if (p.menuType === 2) {
+                          <ion-note>{{ p.title }}</ion-note>
+                        }
+                      }
+                    </ion-list>
+                  </div>
+                </ion-accordion>
+              }
             }
-            }
-          </ng-container>
+          }
 
 
-          <ng-container *ngIf="authService.IsInGroupFinancialAdvisorAdmin">
+          @if (authService.IsInGroupFinancialAdvisorAdmin) {
             @for (group of groupedFinancialAdvisorAdminMenu; track group;let i = $index) {
-            @if (group.menuItem.length > 0) {
-            <ion-accordion value="{{group.menuHeader.title}}" toggleIcon="caret-down-circle" toggleIconSlot="start">
-              <ion-item slot="header">
-                <ion-label>{{ group.menuHeader.title }}</ion-label>
-              </ion-item>
-
-              <div class="ion-padding" slot="content" style="padding:0px;">
-                <ion-list id="nvx-list">
-
-                  @for (p of group.menuItem ; track p; let i = $index) {
-                  <ng-container *ngIf="p.menuType === 0">
-                    <ion-menu-toggle auto-hide="false" *ngIf="showPage4FinancialAdvisorAdmin(p.component)">
-                      <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
-                        <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-sharp'"></ion-icon>
-                        <ion-label>{{ p.title }}</ion-label>
-                      </ion-item>
-                    </ion-menu-toggle>
-                  </ng-container>
-                  <ng-container *ngIf="p.menuType === 2">
-                    <ion-note>{{ p.title }}</ion-note>
-                  </ng-container>
-                  }
-                </ion-list>
-              </div>
-
-            </ion-accordion>
+              @if (group.menuItem.length > 0) {
+                <ion-accordion value="{{group.menuHeader.title}}" toggleIcon="caret-down-circle" toggleIconSlot="start">
+                  <ion-item slot="header">
+                    <ion-label>{{ group.menuHeader.title }}</ion-label>
+                  </ion-item>
+                  <div class="ion-padding" slot="content" style="padding:0px;">
+                    <ion-list id="nvx-list">
+                      @for (p of group.menuItem ; track p; let i = $index) {
+                        @if (p.menuType === 0) {
+                          @if (showPage4FinancialAdvisorAdmin(p.component)) {
+                            <ion-menu-toggle auto-hide="false">
+                              <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
+                                <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-sharp'"></ion-icon>
+                                <ion-label>{{ p.title }}</ion-label>
+                              </ion-item>
+                            </ion-menu-toggle>
+                          }
+                        }
+                        @if (p.menuType === 2) {
+                          <ion-note>{{ p.title }}</ion-note>
+                        }
+                      }
+                    </ion-list>
+                  </div>
+                </ion-accordion>
+              }
             }
-            }
-          </ng-container>
+          }
 
 
-          <ng-container *ngIf="authService.IsInGroupCompanyAdmin">
+          @if (authService.IsInGroupCompanyAdmin) {
             @for (group of groupedCompanyAdminMenu; track group;let i = $index) {
-            @if (group.menuItem.length > 0) {
-            <ion-accordion value="{{group.menuHeader.title}}" toggleIcon="caret-down-circle" toggleIconSlot="start">
-              <ion-item slot="header">
-                <ion-label>{{ group.menuHeader.title }}</ion-label>
-              </ion-item>
-
-              <div class="ion-padding" slot="content" style="padding:0px;">
-                <ion-list id="nvx-list">
-
-                  @for (p of group.menuItem ; track p; let i = $index) {
-                  <ng-container *ngIf="p.menuType === 0">
-                    <ion-menu-toggle auto-hide="false" *ngIf="showPage4CompanyAdmin(p.component)">
-                      <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
-                        <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-sharp'"></ion-icon>
-                        <ion-label>{{ p.title }}</ion-label>
-                      </ion-item>
-                    </ion-menu-toggle>
-                  </ng-container>
-                  <ng-container *ngIf="p.menuType === 2">
-                    <ion-note>{{ p.title }}</ion-note>
-                  </ng-container>
-                  }
-                </ion-list>
-              </div>
-
-            </ion-accordion>
+              @if (group.menuItem.length > 0) {
+                <ion-accordion value="{{group.menuHeader.title}}" toggleIcon="caret-down-circle" toggleIconSlot="start">
+                  <ion-item slot="header">
+                    <ion-label>{{ group.menuHeader.title }}</ion-label>
+                  </ion-item>
+                  <div class="ion-padding" slot="content" style="padding:0px;">
+                    <ion-list id="nvx-list">
+                      @for (p of group.menuItem ; track p; let i = $index) {
+                        @if (p.menuType === 0) {
+                          @if (showPage4CompanyAdmin(p.component)) {
+                            <ion-menu-toggle auto-hide="false">
+                              <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
+                                <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-sharp'"></ion-icon>
+                                <ion-label>{{ p.title }}</ion-label>
+                              </ion-item>
+                            </ion-menu-toggle>
+                          }
+                        }
+                        @if (p.menuType === 2) {
+                          <ion-note>{{ p.title }}</ion-note>
+                        }
+                      }
+                    </ion-list>
+                  </div>
+                </ion-accordion>
+              }
             }
-            }
-          </ng-container>
+          }
 
         </ion-accordion-group>
 

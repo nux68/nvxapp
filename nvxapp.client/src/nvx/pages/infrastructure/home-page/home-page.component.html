@@ -1,35 +1,32 @@
 <app-page-toolbar [title]="title"
-                  [showFilter]="false"
-                  [showBreadcrumbs]="true">
+  [showFilter]="false"
+  [showBreadcrumbs]="true">
 </app-page-toolbar>
 
 <ion-content [fullscreen]="true">
 
   <!-- Contenitore per l'immagine splash -->
-  <div *ngIf="showSplash" class="splash-container" [class.fade-out]="startFadeOut">
+  @if (showSplash) {
+    <div class="splash-container" [class.fade-out]="startFadeOut">
+      <h1 [style.color]="'var(--ion-color-primary)'" [style.font-size]="isMobile ? '9vw' : '3.5rem'">Progetto</h1>
+      <!--<img src="assets/SiSignoreOrange.png" alt="Splash Image" />-->
+      <ion-icon name="calendar-outline" class="splash-icon"></ion-icon>
+      <h1 [style.color]="'var(--ion-color-primary)'" [style.font-size]="isMobile ? '11vw' : '6rem'">SiSignore</h1>
+    </div>
+  }
 
-    <h1 [style.color]="'var(--ion-color-primary)'" [style.font-size]="isMobile ? '9vw' : '3.5rem'">Progetto</h1>
-    <!--<img src="assets/SiSignoreOrange.png" alt="Splash Image" />-->
-    <ion-icon name="calendar-outline" class="splash-icon"></ion-icon>
-    <h1 [style.color]="'var(--ion-color-primary)'" [style.font-size]="isMobile ? '11vw' : '6rem'">SiSignore</h1>
-
-    
-
-  </div>
-
-  <ion-card *ngIf="!showSplash">
-    <ion-card-content>
-
-      <!--<br />
-
-      <div id="container" >
-        <strong class="capitalize">{{ title }}</strong>
-        <p>{{title}}Component works...</p>
-      </div>
-      <br />-->
-
-    </ion-card-content>
-  </ion-card>
+  @if (!showSplash) {
+    <ion-card>
+      <ion-card-content>
+        <!--<br />
+        <div id="container" >
+          <strong class="capitalize">{{ title }}</strong>
+          <p>{{title}}Component works...</p>
+        </div>
+        <br />-->
+      </ion-card-content>
+    </ion-card>
+  }
 
   <!--<app-fab-menu></app-fab-menu>-->
 

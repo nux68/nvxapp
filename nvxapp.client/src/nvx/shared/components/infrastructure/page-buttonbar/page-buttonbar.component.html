@@ -1,11 +1,13 @@
 <ion-footer>
   <ion-toolbar color="light">
     <ion-buttons class="center-buttons">
-      
-      <ion-button size="default" shape="round" *ngFor="let item of buttonbar" (click)="item.event({})" color="{{item.color}}" [disabled]="item.disabled" fill="clear">
-        <ion-icon name="{{item.image}}"></ion-icon>
-        &nbsp;{{item.text}}&nbsp;&nbsp;
-      </ion-button>
+
+      @for (item of buttonbar; track item) {
+        <ion-button size="default" shape="round" (click)="item.event({})" color="{{item.color}}" [disabled]="item.disabled" fill="clear">
+          <ion-icon name="{{item.image}}"></ion-icon>
+          &nbsp;{{item.text}}&nbsp;&nbsp;
+        </ion-button>
+      }
 
     </ion-buttons>
   </ion-toolbar>

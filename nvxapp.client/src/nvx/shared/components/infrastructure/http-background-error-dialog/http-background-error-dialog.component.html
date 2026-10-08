@@ -1,5 +1,5 @@
 <div>
-  
+
   <ion-modal class="nvx-modal" #httpErrModal [isOpen]="isModalOpen" (willDismiss)="onWillDismissErr($event)">
     <ng-template>
 
@@ -11,40 +11,42 @@
         </ion-toolbar>
       </ion-header>
 
-      <ion-content class="ion-padding" #chatContent *ngIf="nvxHttpInterceptorService.activeHttpErr.length > 0">
-
-
-
-        <ion-card *ngFor="let messageErr of nvxHttpInterceptorService.activeHttpErr">
-          <ion-card-header>
-            <ion-card-title>
-              <ion-icon [name]="getIcon(messageErr.messages[0]?.msgType)"></ion-icon>
-              {{ getDescription(messageErr.messages[0]?.msgType) }}
-            </ion-card-title>
-          </ion-card-header>
-          <ion-card-content>
-            <ion-list>
-              <ion-item *ngFor="let msg of messageErr.messages">
-                <ion-label>
-                  <p>{{ msg.text }}</p>
-                </ion-label>
-              </ion-item>
-            </ion-list>
-          </ion-card-content>
-        </ion-card>
-
-
-
-      </ion-content>
+      @if (nvxHttpInterceptorService.activeHttpErr.length > 0) {
+        <ion-content class="ion-padding" #chatContent>
+          @for (messageErr of nvxHttpInterceptorService.activeHttpErr; track messageErr) {
+            <ion-card>
+              <ion-card-header>
+                <ion-card-title>
+                  <ion-icon [name]="getIcon(messageErr.messages[0]?.msgType)"></ion-icon>
+                  {{ getDescription(messageErr.messages[0]?.msgType) }}
+                </ion-card-title>
+              </ion-card-header>
+              <ion-card-content>
+                <ion-list>
+                  @for (msg of messageErr.messages; track msg) {
+                    <ion-item>
+                      <ion-label>
+                        <p>{{ msg.text }}</p>
+                      </ion-label>
+                    </ion-item>
+                  }
+                </ion-list>
+              </ion-card-content>
+            </ion-card>
+          }
+        </ion-content>
+      }
 
       <ion-footer>
         <ion-toolbar color="light">
           <ion-buttons class="center-buttons">
 
-            <ion-button shape="round" *ngFor="let item of buttonbar" (click)="item.event({})" color="{{item.color}}" [disabled]="item.disabled" fill="solid">
-              <ion-icon name="{{item.image}}"></ion-icon>
-              &nbsp;{{item.text}}&nbsp;&nbsp;
-            </ion-button>
+            @for (item of buttonbar; track item) {
+              <ion-button shape="round" (click)="item.event({})" color="{{item.color}}" [disabled]="item.disabled" fill="solid">
+                <ion-icon name="{{item.image}}"></ion-icon>
+                &nbsp;{{item.text}}&nbsp;&nbsp;
+              </ion-button>
+            }
 
           </ion-buttons>
         </ion-toolbar>
