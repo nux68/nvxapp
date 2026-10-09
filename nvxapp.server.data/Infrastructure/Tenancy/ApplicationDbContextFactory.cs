@@ -11,13 +11,14 @@ namespace nvxapp.server.data.Infrastructure.Tenancy
     {
         private readonly Dictionary<ApplicationType, Type> _contexts = new();
 
-        public ApplicationDbContextRegistry(string connectionString)
-        {
-            ConnectionString = connectionString;
-        }
+        private string? _connectionString;
 
         /// <summary>Connection string comune a tutti i contesti (stesso database, schemi diversi).</summary>
-        public string ConnectionString { get; }
+        public string ConnectionString
+        {
+            get => _connectionString ?? throw new InvalidOperationException("Connection string non impostata: manca AddNvxDataLayer.");
+            internal set => _connectionString = value;
+        }
 
         public IReadOnlyDictionary<ApplicationType, Type> Contexts => _contexts;
 

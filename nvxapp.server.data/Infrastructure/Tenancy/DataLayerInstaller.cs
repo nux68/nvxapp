@@ -6,8 +6,8 @@ namespace nvxapp.server.data.Infrastructure.Tenancy
     /*
      Registrazione del contesto comune, dei contesti degli applicativi e dei servizi multi-tenant.
      Ogni modulo registra il contesto del proprio applicativo con AddApplicationDbContext<T>()
-     (es. Installers4AttendanceTracking). Le stesse opzioni Npgsql sono usate dalle factory di
-     design-time (dotnet ef).
+     (es. Installers4AttendanceTracking), prima o dopo AddNvxDataLayer: l'ordine non conta.
+     Le stesse opzioni Npgsql sono usate dalle factory di design-time (dotnet ef).
     */
     public static class DataLayerInstaller
     {
@@ -18,7 +18,7 @@ namespace nvxapp.server.data.Infrastructure.Tenancy
             services.AddDbContext<PublicDbContext>(options => ConfigurePublic(options, connectionString));
 
             services.AddSingleton<TenancySettings>();
-            services.AddSingleton(new ApplicationDbContextRegistry(connectionString));
+            Registry(services).ConnectionString = connectionString;
             services.AddScoped<ITenantSchemaAccessor, TenantSchemaAccessor>();
             services.AddScoped<IApplicationDbContextFactory, ApplicationDbContextFactory>();
             services.AddScoped<ITenantProvisioningService, TenantProvisioningService>();
@@ -29,16 +29,28 @@ namespace nvxapp.server.data.Infrastructure.Tenancy
             return services;
         }
 
-        /// <summary>Registra il contesto di un applicativo (da chiamare dopo AddNvxDataLayer).</summary>
+        /// <summary>Registra il contesto di un applicativo.</summary>
         public static IServiceCollection AddApplicationDbContext<TContext>(this IServiceCollection services, ApplicationType application)
             where TContext : ApplicationDbContextBase
         {
-            var registry = (ApplicationDbContextRegistry?)services.FirstOrDefault(x => x.ServiceType == typeof(ApplicationDbContextRegistry))?.ImplementationInstance
-                ?? throw new InvalidOperationException($"Chiamare {nameof(AddNvxDataLayer)} prima di {nameof(AddApplicationDbContext)}.");
+            var registry = Registry(services);
             registry.Register(application, typeof(TContext));
 
+            // la connection string viene letta alla creazione del contesto (gia' impostata da AddNvxDataLayer)
             services.AddDbContext<TContext>(options => ConfigureApplication(options, registry.ConnectionString, application));
             return services;
+        }
+
+        // unico registro dei contesti, creato dalla prima chiamata (AddNvxDataLayer o AddApplicationDbContext)
+        private static ApplicationDbContextRegistry Registry(IServiceCollection services)
+        {
+            var registry = (ApplicationDbContextRegistry?)services.FirstOrDefault(x => x.ServiceType == typeof(ApplicationDbContextRegistry))?.ImplementationInstance;
+            if (registry == null)
+            {
+                registry = new ApplicationDbContextRegistry();
+                services.AddSingleton(registry);
+            }
+            return registry;
         }
 
         public static DbContextOptionsBuilder ConfigurePublic(DbContextOptionsBuilder options, string connectionString)
