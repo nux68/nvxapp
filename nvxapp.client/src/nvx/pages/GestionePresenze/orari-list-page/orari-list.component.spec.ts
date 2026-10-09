@@ -1,19 +1,19 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular/lazy';
 
-import { OrariListComponent } from './orari-list.component';
+import { OrariListPageComponent } from './orari-list.component';
 
-describe('OrariListComponent', () => {
-  let component: OrariListComponent;
-  let fixture: ComponentFixture<OrariListComponent>;
+describe('OrariListPageComponent', () => {
+  let component: OrariListPageComponent;
+  let fixture: ComponentFixture<OrariListPageComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ OrariListComponent ],
+      declarations: [ OrariListPageComponent ],
       imports: [IonicModule.forRoot()]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(OrariListComponent);
+    fixture = TestBed.createComponent(OrariListPageComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   }));
