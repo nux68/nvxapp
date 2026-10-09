@@ -1,11 +1,11 @@
 import { Component, OnInit, ViewChild, ElementRef, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
-import { IonContent, IonModal, NavController, ToastController } from '@ionic/angular';
+import { IonContent, IonModal, NavController, ToastController } from '@ionic/angular/lazy';
 import { SpeechService } from '../../../../Utility/infrastructure/speech.service';
 import { ChatAIService } from '../../../../ClientServer-Service/Infrastructure/ChatAI/chat-ai.service';
 import { GenericRequest } from '../../../../ClientServer-Service/ModelsBase/generic-request';
 import { ChatAIInModel } from '../../../../ClientServer-Service/Infrastructure/ChatAI/Models/chat-AI-model';
 import { FabMenuService } from '../../../../Utility/infrastructure/fab-menu.service';
-import { IonFab } from '@ionic/angular';
+import { IonFab } from '@ionic/angular/lazy';
 
 @Component({
   selector: 'app-fab-menu',

@@ -3,7 +3,7 @@ import { AccountService } from '../../../ClientServer-Service/Infrastructure/Acc
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { UserRolesInModel } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-roles-model';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { NavController } from '@ionic/angular';
+import { NavController } from '@ionic/angular/lazy';
 import { LoginInModel } from '../../../ClientServer-Service/Infrastructure/Account/Models/login-model';
 import { AuthService } from '../../../Utility/infrastructure/auth.service';
 import { UserLoadInModel } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-load-model';

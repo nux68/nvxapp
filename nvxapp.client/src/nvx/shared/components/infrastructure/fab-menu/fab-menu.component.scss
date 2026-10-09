@@ -91,3 +91,7 @@
   }
 }
 
+// Ionic 9: in modalita' md la textarea ha min-height 72px; ripristina l'altezza compatta della chat
+ion-textarea.chat-input {
+  min-height: 44px;
+}

@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule } from '@ionic/angular/lazy';
 import { GenericFilterPipe } from './pipe/infrastructure/generic-filter.pipe';
 import { BreadcrumbsImpersonateComponent } from './components/infrastructure/breadcrumbs-impersonate/breadcrumbs-impersonate.component';
 import { PageToolbarComponent } from './components/infrastructure/page-toolbar/page-toolbar.component';

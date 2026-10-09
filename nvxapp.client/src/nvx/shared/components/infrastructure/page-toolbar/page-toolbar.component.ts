@@ -4,7 +4,7 @@ import { LongJobNotifierService, LongJobProgressUpdate, LongJobCategory } from '
 import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../../environments/environment';
-import { Platform } from '@ionic/angular';
+import { Platform } from '@ionic/angular/lazy';
 
 @Component({
   selector: 'app-page-toolbar',

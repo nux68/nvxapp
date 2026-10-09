@@ -68,7 +68,7 @@
             <!-- Modalità testo -->
             @if (modalType=='text') {
               <ion-item>
-                <ion-textarea [(ngModel)]="newMessage"
+                <ion-textarea class="chat-input" [(ngModel)]="newMessage"
                   placeholder="Scrivi un messaggio..."
                   rows="1"
                   auto-grow="true"

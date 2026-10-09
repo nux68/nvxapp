@@ -2,7 +2,7 @@ import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { NvxHttpInterceptorService } from '../../../../http/http-interceptor';
 import { ButtonItem, UserInterfaceService } from '../../../../Utility/infrastructure/user-interface.service';
 import { MessageType } from '../../../../ClientServer-Service/ModelsBase/message';
-import { NavController } from '@ionic/angular';
+import { NavController } from '@ionic/angular/lazy';
 
 @Component({
   selector: 'app-http-background-error-dialog',
