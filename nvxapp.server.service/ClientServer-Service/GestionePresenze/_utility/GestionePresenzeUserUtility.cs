@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Entities.Tenant;
 using nvxapp.server.data.Entities.Tenant.GestionePresenze;
 using nvxapp.server.data.Repositories.Public;
@@ -39,6 +40,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
         private readonly IAspNetUsersRepository _aspNetUsersRepository;
         private readonly IDip_ProfiloOrarioRepository _dip_ProfiloOrarioRepository;
         private readonly IGestionePresenzeParametriDefault _gestionePresenzeParametriDefault;
+        private readonly IAz_SediRepartoUserRepository _az_SediRepartoUserRepository;
+        private readonly IAspNetUserRolesRepository _aspNetUserRolesRepository;
+        private readonly IAspNetRolesRepository _aspNetRolesRepository;
 
 
 
@@ -62,7 +66,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                                            IUserCompanyRepository userCompanyRepository,
                                            IAspNetUsersRepository aspNetUsersRepository,
                                            IDip_ProfiloOrarioRepository dip_ProfiloOrarioRepository,
-                                           IGestionePresenzeParametriDefault gestionePresenzeParametriDefault
+                                           IGestionePresenzeParametriDefault gestionePresenzeParametriDefault,
+                                           IAz_SediRepartoUserRepository az_SediRepartoUserRepository,
+                                           IAspNetUserRolesRepository aspNetUserRolesRepository,
+                                           IAspNetRolesRepository aspNetRolesRepository
                                            )
         {
             _mapper = mapper;
@@ -88,6 +95,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
             _aspNetUsersRepository = aspNetUsersRepository;
             _dip_ProfiloOrarioRepository = dip_ProfiloOrarioRepository;
             _gestionePresenzeParametriDefault = gestionePresenzeParametriDefault;
+            _az_SediRepartoUserRepository = az_SediRepartoUserRepository;
+            _aspNetUserRolesRepository = aspNetUserRolesRepository;
+            _aspNetRolesRepository = aspNetRolesRepository;
 
         }
 
@@ -109,6 +119,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                         Nome = userName
                     };
                     await _dip_AnagraficaRepository.UpsertAsync(user_DATA_COMB_DipAna_DipRapp.dip_Anagrafica);
+
+                    // nuovo dipendente: assegnazione al reparto di default dell'azienda
+                    var usrCompany = _userCompanyRepository.FindAll(x => x.IdAspNetUsers == IdAspNetUsers).FirstOrDefault();
+                    if (usrCompany != null)
+                        await AssegnaRepartoDefault(IdAspNetUsers, usrCompany.IdCompany);
                 }
                 else
                 {
@@ -165,6 +180,47 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
 
 
             return user_DATA_COMB_DipAna_DipRapp;
+        }
+
+        // Assegna l'utente al reparto di default dell'azienda in base al ruolo:
+        // CompanyAdmin / CompanyPowerAdmin -> amministratore del reparto (EnabledToAdmin)
+        // User                             -> utente del reparto (UserInDepartment)
+        // Non fa nulla se l'utente e' gia' presente nel reparto.
+        private async Task AssegnaRepartoDefault(string IdAspNetUsers, int IdCompany)
+        {
+            var company_DATA = await Get_AzAna_AzSedi_AzReparto_Az_Cfg(IdCompany, true);
+            if (company_DATA.az_Anagrafica == null)
+                return;
+
+            // reparto Default della sede Default (altrimenti quello restituito da Get_AzAna_AzSedi_AzReparto_Az_Cfg)
+            var idSedi = _az_SediRepository.FindAll(x => x.IdAz_Anagrafica == company_DATA.az_Anagrafica.Id)
+                                           .OrderByDescending(x => x.Default).ThenBy(x => x.Id)
+                                           .Select(x => x.Id).ToList();
+            var reparto = _az_RepartoRepository.FindAll(x => idSedi.Contains(x.IdAz_Sedi) && x.Default)
+                                               .AsEnumerable()
+                                               .OrderBy(x => idSedi.IndexOf(x.IdAz_Sedi)).ThenBy(x => x.Id)
+                                               .FirstOrDefault() ?? company_DATA.az_SediReparto;
+            if (reparto == null)
+                return;
+
+            if (_az_SediRepartoUserRepository.FindAll(x => x.IdAz_SediReparto == reparto.Id && x.IdAspNetUsers == IdAspNetUsers).Any())
+                return;
+
+            var roleIds = _aspNetUserRolesRepository.FindAll(x => x.UserId == IdAspNetUsers).Select(x => x.RoleId).ToList();
+            var roleCodes = _aspNetRolesRepository.FindAll(x => roleIds.Contains(x.Id)).Select(x => x.Code).ToList();
+
+            bool isAdmin = roleCodes.Contains(RoleCode.CompanyAdmin) || roleCodes.Contains(RoleCode.CompanyPowerAdmin);
+            bool isUser = roleCodes.Contains(RoleCode.User);
+            if (!isAdmin && !isUser)
+                return;
+
+            await _az_SediRepartoUserRepository.UpsertAsync(new Az_SediRepartoUser
+            {
+                IdAz_SediReparto = reparto.Id,
+                IdAspNetUsers = IdAspNetUsers,
+                EnabledToAdmin = isAdmin,
+                UserInDepartment = isUser
+            });
         }
 
         public async Task<User_DATA_COMB_DipAna_DipRapp> Get_DipRapp_DipAna(int IdDipRapp)
