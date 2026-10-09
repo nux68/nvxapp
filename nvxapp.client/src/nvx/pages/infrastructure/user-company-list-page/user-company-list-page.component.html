@@ -13,6 +13,11 @@
 
       @if (userCompanyList!=null) {
         <ion-grid>
+          <ion-row class="nvx-ion-row-4table ion-hide-sm-down">
+            <ion-col size="4"><ion-label><b>Utente</b></ion-label></ion-col>
+            <ion-col size="2"><ion-label><b>Cognome</b></ion-label></ion-col>
+            <ion-col size="2"><ion-label><b>Nome</b></ion-label></ion-col>
+          </ion-row>
           @for (item of getAll() | genericFilter: 'descrizione' : searchText; track item; let indexRow4Color = $index) {
             <ion-row
               [class.nvx-row-odd]="indexRow4Color % 2 !== 0"
@@ -33,6 +38,9 @@
                       <ion-col size="11">
                         <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
                           {{ item.descrizione }}
+                          @if (item.cognome || item.nome) {
+                            <p>{{ item.cognome }} {{ item.nome }}</p>
+                          }
                         </ion-label>
                       </ion-col>
                     </ion-row>
@@ -57,11 +65,17 @@
                   </ion-item-option>
                 </ion-item-options>
               </ion-item-sliding>
-              <ion-col size="8" class="ion-hide-sm-down">
+              <ion-col size="4" class="ion-hide-sm-down">
                 <ion-icon [name]="isAdmin(item) ? 'person-add-outline' : 'person-outline'"></ion-icon>
                 <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
                   {{ item.descrizione }}
                 </ion-label>
+              </ion-col>
+              <ion-col size="2" class="ion-hide-sm-down">
+                <ion-label>{{ item.cognome }}</ion-label>
+              </ion-col>
+              <ion-col size="2" class="ion-hide-sm-down">
+                <ion-label>{{ item.nome }}</ion-label>
               </ion-col>
               <ion-col size="2" class="ion-hide-sm-down">
                 <!--fill="solid" expand="block"-->
