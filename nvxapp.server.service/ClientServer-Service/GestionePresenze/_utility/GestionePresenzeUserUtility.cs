@@ -36,6 +36,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
 
         private readonly IAz_SubCommessaSediRepartoRepository _az_SubCommessaSediRepartoRepository;
         private readonly IUserCompanyRepository _userCompanyRepository;
+        private readonly IAspNetUsersRepository _aspNetUsersRepository;
+        private readonly IDip_ProfiloOrarioRepository _dip_ProfiloOrarioRepository;
+        private readonly IGestionePresenzeParametriDefault _gestionePresenzeParametriDefault;
 
 
 
@@ -56,7 +59,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                                            IAz_SediAttivitaRepository az_SediAttivitaRepository,
                                            IAz_SediRepartoAttivitaRepository az_SediRepartoAttivitaRepository,
                                            IAz_SubCommessaSediRepartoRepository az_SubCommessaSediRepartoRepository,
-                                           IUserCompanyRepository userCompanyRepository
+                                           IUserCompanyRepository userCompanyRepository,
+                                           IAspNetUsersRepository aspNetUsersRepository,
+                                           IDip_ProfiloOrarioRepository dip_ProfiloOrarioRepository,
+                                           IGestionePresenzeParametriDefault gestionePresenzeParametriDefault
                                            )
         {
             _mapper = mapper;
@@ -79,6 +85,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
             _az_SediRepartoAttivitaRepository = az_SediRepartoAttivitaRepository;
             _az_SubCommessaSediRepartoRepository = az_SubCommessaSediRepartoRepository;
             _userCompanyRepository = userCompanyRepository;
+            _aspNetUsersRepository = aspNetUsersRepository;
+            _dip_ProfiloOrarioRepository = dip_ProfiloOrarioRepository;
+            _gestionePresenzeParametriDefault = gestionePresenzeParametriDefault;
 
         }
 
@@ -91,9 +100,13 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
             {
                 if (InitIfNotExsist)
                 {
+                    // Cognome e Nome iniziali = username (modificabili poi dall'anagrafica)
+                    var userName = _aspNetUsersRepository.FindAll(x => x.Id == IdAspNetUsers).Select(x => x.UserName).FirstOrDefault();
                     user_DATA_COMB_DipAna_DipRapp.dip_Anagrafica = new Dip_Anagrafica()
                     {
-                        IdAspNetUsers = IdAspNetUsers
+                        IdAspNetUsers = IdAspNetUsers,
+                        Cognome = userName,
+                        Nome = userName
                     };
                     await _dip_AnagraficaRepository.UpsertAsync(user_DATA_COMB_DipAna_DipRapp.dip_Anagrafica);
                 }
@@ -121,6 +134,21 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                             IdAz_SubCommessaAttivita = res_1.Az_SubCommessaAttivita.Id
                         };
                         await _dip_RapportoLavoroRepository.UpsertAsync(user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro);
+
+                        // Profilo orario di default dell'azienda (DAY7H8) dalla data di assunzione
+                        var company_DATA = await Get_AzAna_AzSedi_AzReparto_Az_Cfg(usrC.IdCompany, true);
+                        var par_ProfiloOrario = _gestionePresenzeParametriDefault.GetProfiloOrarioDefault(company_DATA.az_Anagrafica!.Id);
+                        if (par_ProfiloOrario != null)
+                        {
+                            await _dip_ProfiloOrarioRepository.UpsertAsync(new Dip_ProfiloOrario
+                            {
+                                IdDip_RapportoLavoro = user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.Id,
+                                Dal = user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.DataAss!.Value,
+                                Al = new DateTime(2099, 12, 31),
+                                IdPar_ProfiloOrario = par_ProfiloOrario.Id,
+                                NumGiornoPartenzaCiclo = 1
+                            });
+                        }
                         //}
                     }
 
@@ -545,6 +573,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                     }
                 }
 
+                // Parametri presenze di partenza (causali, giustificativi, orario, profilo orario, export)
+                await _gestionePresenzeParametriDefault.InitParametri(company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Anagrafica.Id);
             }
 
         }

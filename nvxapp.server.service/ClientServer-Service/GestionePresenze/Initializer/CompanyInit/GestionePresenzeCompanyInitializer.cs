@@ -13,11 +13,14 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Initialize
     // - Az_Reparto (reparto default)
     // - Az_Cfg (configurazioni di default)
     // - Competenze, Attività, Cliente, Commessa, SubCommessa di default
+    // - parametri di partenza: causali, giustificativi, orario, profilo orario, export
+    //   (GestionePresenzeParametriDefault, solo se l'azienda non ha ancora causali)
     // Priority=20: eseguito dopo Infrastructure per avere le strutture
     // infrastrutturali pronte.
     public class GestionePresenzeCompanyInitializer : ICompanyInitializer
     {
         private readonly IGestionePresenzeUserUtility _gestionePresenzeUserUtility;
+        private readonly IGestionePresenzeParametriDefault _gestionePresenzeParametriDefault;
         private readonly ILogger<GestionePresenzeCompanyInitializer> _logger;
 
         public string Name => "GestionePresenze";
@@ -26,9 +29,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Initialize
 
         public GestionePresenzeCompanyInitializer(
             IGestionePresenzeUserUtility gestionePresenzeUserUtility,
+            IGestionePresenzeParametriDefault gestionePresenzeParametriDefault,
             ILogger<GestionePresenzeCompanyInitializer> logger)
         {
             _gestionePresenzeUserUtility = gestionePresenzeUserUtility;
+            _gestionePresenzeParametriDefault = gestionePresenzeParametriDefault;
             _logger = logger;
         }
 
@@ -53,6 +58,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Initialize
                 companyData.az_Anagrafica?.Id,
                 companyData.az_Sedi?.Id,
                 companyData.az_SediReparto?.Id);
+
+            // Parametri di partenza anche per le aziende gia' esistenti che non li hanno ancora
+            if (companyData.az_Anagrafica != null)
+                await _gestionePresenzeParametriDefault.InitParametri(companyData.az_Anagrafica.Id);
 
             _logger.LogInformation(
                 "[GestionePresenzeCompanyInitializer] Completato per azienda {CompanyId}.",
