@@ -57,6 +57,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                 ("ORDI2", "Ordinarie 2° fascia"),
                 ("ORDI3", "Ordinarie 3° fascia"),
                 ("ROL",   "ROL"),
+                ("MAL",   "Malattia"),
             })
             {
                 causali[codice] = await _par_CausaliRepository.UpsertAsync(new Par_Causali
@@ -71,11 +72,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
             var giustificativi = new Dictionary<string, Par_Giustificativi>();
             foreach (var g in new[]
             {
-                new { Codice = "MAL",   Descrizione = "Malattia",        Bg = (string?)"#ff0000", Tx = (string?)"#ffffff", Causale = (string?)null,  Segno = SignWithNeutral.Neutral },
-                new { Codice = "ROL",   Descrizione = "ROL",             Bg = (string?)"#7fff00", Tx = (string?)"#000000", Causale = (string?)null,  Segno = SignWithNeutral.Neutral },
-                new { Codice = "FE",    Descrizione = "Ferie",           Bg = (string?)"#ff8c00", Tx = (string?)"#ffffff", Causale = (string?)null,  Segno = SignWithNeutral.Neutral },
-                new { Codice = "ASS",   Descrizione = "Assenza ingiust", Bg = (string?)null,      Tx = (string?)null,      Causale = (string?)"ORD1",  Segno = SignWithNeutral.Down },
-                new { Codice = "STRAO", Descrizione = "Straordinario",   Bg = (string?)"#2228e2", Tx = (string?)"#f8f2f2", Causale = (string?)"STRAO", Segno = SignWithNeutral.Up },
+                new { Codice = "MAL",   Descrizione = "Malattia",        Bg = (string?)"#ff0000", Tx = (string?)"#ffffff", Causale = "MAL",   Segno = SignWithNeutral.Down, Contatore = TipoContatore.NoContatore,         PianoFerie = false },
+                new { Codice = "ROL",   Descrizione = "ROL",             Bg = (string?)"#7fff00", Tx = (string?)"#e7f524", Causale = "ROL",   Segno = SignWithNeutral.Down, Contatore = TipoContatore.Contatore,           PianoFerie = true  },
+                new { Codice = "FE",    Descrizione = "Ferie",           Bg = (string?)"#ff8c00", Tx = (string?)"#ffffff", Causale = "FERIE", Segno = SignWithNeutral.Down, Contatore = TipoContatore.ContatoreConAvviso,  PianoFerie = true  },
+                new { Codice = "ASS",   Descrizione = "Assenza ingiust", Bg = (string?)null,      Tx = (string?)"#f3eded", Causale = "ASS",   Segno = SignWithNeutral.Down, Contatore = TipoContatore.ContatoreConBlocco,  PianoFerie = false },
+                new { Codice = "STRAO", Descrizione = "Straordinario",   Bg = (string?)"#2228e2", Tx = (string?)"#f8f2f2", Causale = "STRAO", Segno = SignWithNeutral.Up,   Contatore = TipoContatore.NoContatore,         PianoFerie = false },
             })
             {
                 giustificativi[g.Codice] = await _par_GiustificativiRepository.UpsertAsync(new Par_Giustificativi
@@ -86,10 +87,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                     BackgroundColor = g.Bg,
                     TextColor = g.Tx,
                     TipoInput = JustTipoInput.InteraGiornate,
-                    IdCausale = g.Causale == null ? null : causali[g.Causale].Id,
+                    IdCausale = causali[g.Causale].Id,
                     Segno = g.Segno,
-                    VisualizzaInPianoFerie = false,
-                    TipoContatore = TipoContatore.NoContatore
+                    VisualizzaInPianoFerie = g.PianoFerie,
+                    TipoContatore = g.Contatore
                 });
             }
 
