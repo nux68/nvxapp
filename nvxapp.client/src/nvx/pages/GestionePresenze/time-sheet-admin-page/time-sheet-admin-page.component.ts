@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
 import { TimeSheetService } from '../../../Utility/GestionePresenze/time-sheet.service';
 import { MonthData } from '../../../Utility/GestionePresenze/time-sheet-common-data';
@@ -23,6 +23,7 @@ import { Subscription } from 'rxjs';
   selector: 'app-time-sheet-admin-page',
   templateUrl: './time-sheet-admin-page.component.html',
   styleUrls: ['./time-sheet-admin-page.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class TimeSheetAdminPageComponent implements OnInit, OnDestroy {

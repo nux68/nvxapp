@@ -1,6 +1,6 @@
 <app-page-toolbar [title]="Title"
-                  [showFilter]="ShowFilter"
-                  [showBreadcrumbs]="true">
+  [showFilter]="ShowFilter"
+  [showBreadcrumbs]="true">
 </app-page-toolbar>
 
 <ion-content [fullscreen]="true">
@@ -22,24 +22,32 @@
           <ion-label position="floating">Descrizione</ion-label>
           <ion-input type="text" formControlName="descrizione"></ion-input>
         </ion-item>
-        <ion-note color="danger" *ngIf="_editForm.get('descrizione')?.hasError('required') && _editForm.get('descrizione')?.touched">
-          Descrizione è obbligatorio.
-        </ion-note>
-        <ion-note color="danger" *ngIf="_editForm.get('descrizione')?.hasError('maxlength') && _editForm.get('descrizione')?.touched">
-          Descrizione non può superare i 20 caratteri.
-        </ion-note>
+        @if (_editForm.get('descrizione')?.hasError('required') && _editForm.get('descrizione')?.touched) {
+          <ion-note color="danger">
+            Descrizione è obbligatorio.
+          </ion-note>
+        }
+        @if (_editForm.get('descrizione')?.hasError('maxlength') && _editForm.get('descrizione')?.touched) {
+          <ion-note color="danger">
+            Descrizione non può superare i 20 caratteri.
+          </ion-note>
+        }
 
 
         <ion-item>
           <ion-label position="floating">Codice</ion-label>
           <ion-input type="text" formControlName="codice"></ion-input>
         </ion-item>
-        <ion-note color="danger" *ngIf="_editForm.get('codice')?.hasError('required') && _editForm.get('codice')?.touched">
-          codice è obbligatorio.
-        </ion-note>
-        <ion-note color="danger" *ngIf="_editForm.get('codice')?.hasError('maxlength') && _editForm.get('codice')?.touched">
-          codice non può superare i 5 caratteri.
-        </ion-note>
+        @if (_editForm.get('codice')?.hasError('required') && _editForm.get('codice')?.touched) {
+          <ion-note color="danger">
+            codice è obbligatorio.
+          </ion-note>
+        }
+        @if (_editForm.get('codice')?.hasError('maxlength') && _editForm.get('codice')?.touched) {
+          <ion-note color="danger">
+            codice non può superare i 5 caratteri.
+          </ion-note>
+        }
 
         <ion-item>
           <ion-label>Colore sfondo</ion-label>
@@ -59,21 +67,27 @@
             <ion-select-option [value]="signWithNeutral.Up">+</ion-select-option>
           </ion-select>
         </ion-item>
-        <ion-note color="danger" *ngIf="_editForm.get('segno')?.hasError('required') && _editForm.get('segno')?.touched">
-          Il tipo segno è obbligatorio.
-        </ion-note>
+        @if (_editForm.get('segno')?.hasError('required') && _editForm.get('segno')?.touched) {
+          <ion-note color="danger">
+            Il tipo segno è obbligatorio.
+          </ion-note>
+        }
 
         <ion-item>
           <ion-label position="floating">Causale </ion-label>
           <ion-select formControlName="idCausale" placeholder="Seleziona la causale">
-            <ion-select-option *ngFor="let causali of par_CausaliModelList" [value]="causali.id">
-              {{ causali.descrizione }}
-            </ion-select-option>
+            @for (causali of par_CausaliModelList; track causali) {
+              <ion-select-option [value]="causali.id">
+                {{ causali.descrizione }}
+              </ion-select-option>
+            }
           </ion-select>
         </ion-item>
-        <ion-note color="danger" *ngIf="_editForm.get('idCausale')?.hasError('required') && _editForm.get('idCausale')?.touched">
-          La causale è obbligatoria.
-        </ion-note>
+        @if (_editForm.get('idCausale')?.hasError('required') && _editForm.get('idCausale')?.touched) {
+          <ion-note color="danger">
+            La causale è obbligatoria.
+          </ion-note>
+        }
 
         <ion-item>
           <ion-label>Visualizza nel piano ferie</ion-label>
@@ -89,9 +103,11 @@
             <ion-select-option [value]="tipoContatore.ContatoreConBlocco">Contatore con blocco</ion-select-option>
           </ion-select>
         </ion-item>
-        <ion-note color="danger" *ngIf="_editForm.get('tipoContatore')?.hasError('required') && _editForm.get('tipoContatore')?.touched">
-          Il tipo contatore è obbligatorio.
-        </ion-note>
+        @if (_editForm.get('tipoContatore')?.hasError('required') && _editForm.get('tipoContatore')?.touched) {
+          <ion-note color="danger">
+            Il tipo contatore è obbligatorio.
+          </ion-note>
+        }
 
 
       </form>

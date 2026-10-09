@@ -1,11 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
 import { UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { NavController } from '@ionic/angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { Observable } from 'rxjs/internal/Observable';
-import { map, catchError } from 'rxjs';
+import { map, catchError, of } from 'rxjs';
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { StringHelperService } from '../../../Utility/infrastructure/string-helper.service';
 import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
@@ -17,6 +17,7 @@ import { My_Template1Model, My_template1_GetInModel, My_template1_GetOutModel, M
   selector: 'app-mytemplate1-edit-page',
   templateUrl: './mytemplate1-edit-page.component.html',
   styleUrls: ['./mytemplate1-edit-page.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class MyTemplate1EditPageComponent extends BasePageConfirmCancelComponent<My_Template1Model> {
@@ -48,7 +49,7 @@ export class MyTemplate1EditPageComponent extends BasePageConfirmCancelComponent
         }), // Estrae il dato richiesto
         catchError((error) => {
           console.error('Errore durante la chiamata API:', error);
-          return [null];
+          return of(null);
         })
       );
     } else {

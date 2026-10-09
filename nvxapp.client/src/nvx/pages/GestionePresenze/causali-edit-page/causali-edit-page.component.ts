@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NavController } from '@ionic/angular';
 import { Observable, of } from 'rxjs';
@@ -15,6 +15,7 @@ import { UserNavigationService } from '../../../Utility/infrastructure/user-navi
   selector: 'app-causali-edit-page',
   templateUrl: './causali-edit-page.component.html',
   styleUrls: ['./causali-edit-page.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class CausaliEditPageComponent extends BasePageConfirmCancelComponent<Par_CausaliModel> {

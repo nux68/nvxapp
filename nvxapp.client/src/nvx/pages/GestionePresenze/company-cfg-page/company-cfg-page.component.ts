@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Observable, map, catchError } from 'rxjs';
+import { Observable, map, catchError, of } from 'rxjs';
 import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { StringHelperService } from '../../../Utility/infrastructure/string-helper.service';
@@ -20,6 +20,7 @@ interface TipoApprovazioneOption {
   selector: 'app-company-cfg-page',
   templateUrl: './company-cfg-page.component.html',
   styleUrls: ['./company-cfg-page.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class CompanyCfgPageComponent extends BasePageConfirmCancelComponent<Az_CfgModel> {
@@ -68,7 +69,7 @@ export class CompanyCfgPageComponent extends BasePageConfirmCancelComponent<Az_C
         map((res) => res.data.az_Cfg), // Estrae il dato richiesto
         catchError((error) => {
           console.error('Errore durante la chiamata API:', error);
-          return [null]; // Restituisce null in caso di errore
+          return of(null); // Restituisce null in caso di errore
         })
       );
     

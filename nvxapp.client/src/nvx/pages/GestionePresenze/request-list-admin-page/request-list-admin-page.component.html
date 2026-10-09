@@ -1,7 +1,7 @@
 <app-page-toolbar [title]="title"
-                  [showFilter]="true"
-                  [showBreadcrumbs]="true"
-                  (ev_Filter)="Filter($event)">
+  [showFilter]="true"
+  [showBreadcrumbs]="true"
+  (ev_Filter)="Filter($event)">
 </app-page-toolbar>
 
 <ion-content [fullscreen]="true">
@@ -13,140 +13,122 @@
 
 
       <app-sedi-reparto-user-navigation [showPeriodSelect]="false"
-                                        [showSediSelect]="false"
-                                        [showRepartoSelect]="true"
-                                        [showUserSelect]="false"
-                                        (periodChange)="onPeriodChange($event)"
-                                        (sediIdChange)="onSedeChanged($event)"
-                                        (repartoIdChange)="onRepartiChanged($event)"
-                                        (allUsersIdChange)="onAllUsersInSelectionChanged($event)"
-                                        (currUserIdChange)="onCurrentUserChanged($event)">
+        [showSediSelect]="false"
+        [showRepartoSelect]="true"
+        [showUserSelect]="false"
+        (periodChange)="onPeriodChange($event)"
+        (sediIdChange)="onSedeChanged($event)"
+        (repartoIdChange)="onRepartiChanged($event)"
+        (allUsersIdChange)="onAllUsersInSelectionChanged($event)"
+        (currUserIdChange)="onCurrentUserChanged($event)">
       </app-sedi-reparto-user-navigation>
 
-      <ion-grid *ngIf="dip_GG_RichiestaList!=null">
-
-        <ion-row *ngFor="let item of getAll() | genericFilter: 'descrizione' : searchText; let indexRow4Color = index"
-                 [class.nvx-row-odd]="indexRow4Color % 2 !== 0"
-                 [class.nvx-row-even]="indexRow4Color % 2 === 0"
-                 class="nvx-ion-row-4table nvx-row-hover">
-          <!--mobile-->
-          <ion-item-sliding class="ion-hide-sm-up"
-                            [class.nvx-row-odd]="indexRow4Color % 2 !== 0"
-                            [class.nvx-row-even]="indexRow4Color % 2 === 0">
-            <ion-item>
-
-              <ion-item>
-                <ion-label>
-                  <strong>{{ item.idDip_RapportoLavoro | idDipRapportoLavoroToCognome }} {{ item.idDip_RapportoLavoro | idDipRapportoLavoroToNome }}</strong>
-
-                  <ion-text style="white-space:nowrap;">
-                    {{getItemText1(item)}}
-                  </ion-text>
-
-                  <ion-note color="medium" style="white-space:nowrap;">
-                    {{getItemText2(item)}}
-                  </ion-note>
-
+      @if (dip_GG_RichiestaList!=null) {
+        <ion-grid>
+          @for (item of getAll() | genericFilter: 'descrizione' : searchText; track item; let indexRow4Color = $index) {
+            <ion-row
+              [class.nvx-row-odd]="indexRow4Color % 2 !== 0"
+              [class.nvx-row-even]="indexRow4Color % 2 === 0"
+              class="nvx-ion-row-4table nvx-row-hover">
+              <!--mobile-->
+              <ion-item-sliding class="ion-hide-sm-up"
+                [class.nvx-row-odd]="indexRow4Color % 2 !== 0"
+                [class.nvx-row-even]="indexRow4Color % 2 === 0">
+                <ion-item>
+                  <ion-item>
+                    <ion-label>
+                      <strong>{{ item.idDip_RapportoLavoro | idDipRapportoLavoroToCognome }} {{ item.idDip_RapportoLavoro | idDipRapportoLavoroToNome }}</strong>
+                      <ion-text style="white-space:nowrap;">
+                        {{getItemText1(item)}}
+                      </ion-text>
+                      <ion-note color="medium" style="white-space:nowrap;">
+                        {{getItemText2(item)}}
+                      </ion-note>
+                    </ion-label>
+                  </ion-item>
+                </ion-item>
+                <ion-item-options side="end">
+                  @if (timeSheetService.Dip_GG_Richiesta_Admin_Can_Approve(item)) {
+                    <ion-item-option
+                      class="item-option-text-only_primary"
+                      (click)="btnApprova.event(item)">
+                      <ion-icon slot="start" name="{{btnApprova.image}}"></ion-icon>
+                      {{btnApprova.text}}
+                    </ion-item-option>
+                  }
+                  @if (timeSheetService.Dip_GG_Richiesta_Admin_Can_Reject(item)) {
+                    <ion-item-option
+                      class="item-option-text-only_cancella"
+                      (click)="btnRifiuta.event(item)">
+                      <ion-icon slot="start" name="{{btnRifiuta.image}}"></ion-icon>
+                      {{btnRifiuta.text}}
+                    </ion-item-option>
+                  }
+                </ion-item-options>
+              </ion-item-sliding>
+              <!--desktop-->
+              <ion-col class="ion-hide-sm-down">
+                <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
+                  {{ item.idDip_RapportoLavoro  | idDipRapportoLavoroToCognome}}
                 </ion-label>
-              </ion-item>
-
-            </ion-item>
-
-            <ion-item-options side="end">
-
-              <ion-item-option *ngIf="timeSheetService.Dip_GG_Richiesta_Admin_Can_Approve(item)"
-                               class="item-option-text-only_primary"
-                               (click)="btnApprova.event(item)">
-                <ion-icon slot="start" name="{{btnApprova.image}}"></ion-icon>
-                {{btnApprova.text}}
-              </ion-item-option>
-
-              <ion-item-option *ngIf="timeSheetService.Dip_GG_Richiesta_Admin_Can_Reject(item)"
-                               class="item-option-text-only_cancella"
-                               (click)="btnRifiuta.event(item)">
-                <ion-icon slot="start" name="{{btnRifiuta.image}}"></ion-icon>
-                {{btnRifiuta.text}}
-              </ion-item-option>
-
-            </ion-item-options>
-          </ion-item-sliding>
-
-          <!--desktop-->
-          <ion-col class="ion-hide-sm-down">
-            <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
-              {{ item.idDip_RapportoLavoro  | idDipRapportoLavoroToCognome}}
-            </ion-label>
-          </ion-col>
-
-          <ion-col class="ion-hide-sm-down">
-            <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
-              {{ item.idDip_RapportoLavoro | idDipRapportoLavoroToNome}}
-            </ion-label>
-          </ion-col>
-
-          <ion-col class="ion-hide-sm-down">
-            <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
-              {{ item.data }}
-            </ion-label>
-          </ion-col>
-
-          <ion-col class="ion-hide-sm-down">
-            <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
-              {{ getDataA(item) }}
-            </ion-label>
-          </ion-col>
-
-          <ion-col class="ion-hide-sm-down">
-            <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
-              {{ item.richiestaTipo | tipoRichiestaToLongText }}
-            </ion-label>
-          </ion-col>
-
-          <ion-col class="ion-hide-sm-down">
-            <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
-              {{getDati(item)}}
-            </ion-label>
-          </ion-col>
-
-          <ion-col class="ion-hide-sm-down">
-
-            <!--<ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
-      {{ item.richiestaStato | statoRichiestaLongText }}
-    </ion-label>-->
-
-            <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
-
-
-
-              {{ timeSheetService.get_StatoRichiesta_Approval_text(item) }}
-            </ion-label>
-
-
-          </ion-col>
-
-          <ion-col class="ion-hide-sm-down">
-            <ion-button size="small" fill="outline" *ngIf="timeSheetService.Dip_GG_Richiesta_Admin_Can_Approve(item)" shape="round" (click)="btnApprova.event(item)" color="{{btnApprova.color}}">
-              <ion-icon name="{{btnApprova.image}}"></ion-icon>
-              &nbsp;{{btnApprova.text}}
-            </ion-button>
-          </ion-col>
-
-          <ion-col class="ion-hide-sm-down">
-            <ion-button size="small" fill="outline" *ngIf="timeSheetService.Dip_GG_Richiesta_Admin_Can_Reject(item)" shape="round" (click)="btnRifiuta.event(item)" color="{{btnRifiuta.color}}">
-              <ion-icon name="{{btnRifiuta.image}}"></ion-icon>
-              &nbsp;{{btnRifiuta.text}}
-            </ion-button>
-          </ion-col>
-
-
-        </ion-row>
-
-
+              </ion-col>
+              <ion-col class="ion-hide-sm-down">
+                <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
+                  {{ item.idDip_RapportoLavoro | idDipRapportoLavoroToNome}}
+                </ion-label>
+              </ion-col>
+              <ion-col class="ion-hide-sm-down">
+                <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
+                  {{ item.data }}
+                </ion-label>
+              </ion-col>
+              <ion-col class="ion-hide-sm-down">
+                <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
+                  {{ getDataA(item) }}
+                </ion-label>
+              </ion-col>
+              <ion-col class="ion-hide-sm-down">
+                <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
+                  {{ item.richiestaTipo | tipoRichiestaToLongText }}
+                </ion-label>
+              </ion-col>
+              <ion-col class="ion-hide-sm-down">
+                <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
+                  {{getDati(item)}}
+                </ion-label>
+              </ion-col>
+              <ion-col class="ion-hide-sm-down">
+                <!--<ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
+                {{ item.richiestaStato | statoRichiestaLongText }}
+              </ion-label>-->
+              <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
+                {{ timeSheetService.get_StatoRichiesta_Approval_text(item) }}
+              </ion-label>
+            </ion-col>
+            <ion-col class="ion-hide-sm-down">
+              @if (timeSheetService.Dip_GG_Richiesta_Admin_Can_Approve(item)) {
+                <ion-button size="small" fill="outline" shape="round" (click)="btnApprova.event(item)" color="{{btnApprova.color}}">
+                  <ion-icon name="{{btnApprova.image}}"></ion-icon>
+                  &nbsp;{{btnApprova.text}}
+                </ion-button>
+              }
+            </ion-col>
+            <ion-col class="ion-hide-sm-down">
+              @if (timeSheetService.Dip_GG_Richiesta_Admin_Can_Reject(item)) {
+                <ion-button size="small" fill="outline" shape="round" (click)="btnRifiuta.event(item)" color="{{btnRifiuta.color}}">
+                  <ion-icon name="{{btnRifiuta.image}}"></ion-icon>
+                  &nbsp;{{btnRifiuta.text}}
+                </ion-button>
+              }
+            </ion-col>
+          </ion-row>
+        }
       </ion-grid>
+    }
 
 
-    </ion-card-content>
-  </ion-card>
+  </ion-card-content>
+</ion-card>
 
 
 </ion-content>

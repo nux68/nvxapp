@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { ButtonItem, UserInterfaceService } from '../../../../Utility/infrastructure/user-interface.service';
 import { ModalController, NavController } from '@ionic/angular';
 
@@ -6,6 +6,7 @@ import { ModalController, NavController } from '@ionic/angular';
   selector: 'app-seletion-sedi-reparto-user-dialog',
   templateUrl: './seletion-sedi-reparto-user-dialog.component.html',
   styleUrls: ['./seletion-sedi-reparto-user-dialog.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class SeletionSediRepartoUserDialogComponent  implements OnInit {

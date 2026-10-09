@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms';
 import { NavController, ModalController } from '@ionic/angular';
 import { Observable, map, catchError, of } from 'rxjs';
@@ -18,6 +18,7 @@ import { CollectionDialogService } from '../../../shared/components/infrastructu
   selector: 'app-export-cau-edit-page',
   templateUrl: './export-cau-edit-page.component.html',
   styleUrls: ['./export-cau-edit-page.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class ExportCauEditPageComponent extends BasePageConfirmCancelComponent<Par_ExportCauModel> implements OnInit {
@@ -108,7 +109,7 @@ export class ExportCauEditPageComponent extends BasePageConfirmCancelComponent<P
         ),
         catchError((error) => {
           console.error('Errore durante il caricamento dei dati:', error);
-          return [null];
+          return of(null);
         })
       );
     }
@@ -193,7 +194,7 @@ export class ExportCauEditPageComponent extends BasePageConfirmCancelComponent<P
         ),
         catchError((error) => {
           console.error('Errore durante il caricamento dei dati:', error);
-          return [null];
+          return of(null);
         })
       );
     }

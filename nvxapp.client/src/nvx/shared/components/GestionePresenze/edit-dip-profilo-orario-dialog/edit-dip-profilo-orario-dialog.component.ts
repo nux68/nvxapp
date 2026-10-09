@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { ButtonItem, UserInterfaceService } from '../../../../Utility/infrastructure/user-interface.service';
 import { ModalController } from '@ionic/angular';
 import { Dip_ProfiloOrarioModel } from '../../../../ClientServer-Service/GestionePresenze/Dip_ProfiloOrario/Models/dip-profilo-orario-model';
@@ -14,6 +14,7 @@ import { Par_ProfiloOrarioModel } from '../../../../ClientServer-Service/Gestion
   selector: 'app-edit-dip-profilo-orario-dialog',
   templateUrl: './edit-dip-profilo-orario-dialog.component.html',
   styleUrls: ['./edit-dip-profilo-orario-dialog.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class EditDipProfiloOrarioDialogComponent extends BaseDialogConfirmCancelComponent<Dip_ProfiloOrarioModel>  {

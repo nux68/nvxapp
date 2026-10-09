@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component } from '@angular/core';
+import { ChangeDetectorRef, Component, ChangeDetectionStrategy } from '@angular/core';
 import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
 import { NavController } from '@ionic/angular';
 import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
@@ -19,6 +19,7 @@ import { RoleCode } from '../../../ClientServer-Service/Infrastructure/Account/M
   selector: 'app-user-department-wizard-page',
   templateUrl: './user-department-wizard-page.component.html',
   styleUrls: ['./user-department-wizard-page.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class UserDepartmentWizardPageComponent extends BasePageConfirmCancelComponent<Dip_Anagrafica4EditModel> {

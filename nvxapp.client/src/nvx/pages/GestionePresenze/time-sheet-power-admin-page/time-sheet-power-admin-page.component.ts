@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
 import { TimeSheetService } from '../../../Utility/GestionePresenze/time-sheet.service';
 import { MonthData } from '../../../Utility/GestionePresenze/time-sheet-common-data';
@@ -51,6 +51,7 @@ interface DayData {
   styleUrls: ['./time-sheet-power-admin-page.component.scss'],
   encapsulation: ViewEncapsulation.None,
   providers: [DatePipe],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {

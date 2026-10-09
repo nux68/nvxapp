@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
@@ -14,6 +14,7 @@ import { CollectionDialogService } from '../../../shared/components/infrastructu
   selector: 'app-commessa-list-page',
   templateUrl: './commessa-list-page.component.html',
   styleUrls: ['./commessa-list-page.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class CommessaListPageComponent implements OnInit {

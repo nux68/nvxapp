@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { Az_SediRepartoUserModel } from '../../../../ClientServer-Service/GestionePresenze/Az_SediRepartoUser/Models/az-reparto-user-model';
 import { SharedParameterGestionePresenzeService } from '../../../shared-parameter-gestione-presenze.service';
@@ -17,6 +17,7 @@ export interface DipSelectorResult {
   selector: 'app-dip-selector-modal',
   templateUrl: './dip-selector-modal.component.html',
   styleUrls: ['./dip-selector-modal.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class DipSelectorModalComponent implements OnInit {

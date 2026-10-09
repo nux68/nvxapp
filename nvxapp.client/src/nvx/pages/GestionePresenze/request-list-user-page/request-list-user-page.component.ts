@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
@@ -21,6 +21,7 @@ import { CollectionDialogService } from '../../../shared/components/infrastructu
   selector: 'app-request-list-user-page',
   templateUrl: './request-list-user-page.component.html',
   styleUrls: ['./request-list-user-page.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone:false
 }) 
 export class RequestListUserPageComponent implements OnInit {

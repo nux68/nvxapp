@@ -1,10 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { ModalController, NavController } from '@ionic/angular';
 import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { Par_Orario_GetInModel, Par_Orario_PutInModel, Par_OrarioModel, OrarioTimbratureTipo } from '../../../ClientServer-Service/GestionePresenze/Par_Orario/Models/par-orario-model';
 import { ParOrarioService } from '../../../ClientServer-Service/GestionePresenze/Par_Orario/par-orario.service';
@@ -22,6 +22,7 @@ import { Az_SubCommessaAttivita_4FullListModel } from '../../../ClientServer-Ser
   selector: 'app-orari-edit-page',
   templateUrl: './orari-edit-page.component.html',
   styleUrls: ['./orari-edit-page.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class OrariEditPageComponent extends BasePageConfirmCancelComponent<Par_OrarioModel> implements OnInit {
@@ -87,7 +88,7 @@ export class OrariEditPageComponent extends BasePageConfirmCancelComponent<Par_O
           ),
           catchError((error) => {
             console.error('Errore durante il caricamento dei dati:', error);
-            return [null];
+            return of(null);
           })
         );
     }
@@ -172,7 +173,7 @@ export class OrariEditPageComponent extends BasePageConfirmCancelComponent<Par_O
       }),
       catchError((error) => {
         console.error('Errore durante il caricamento dei dati:', error);
-        return [null];
+        return of(null);
       })
     ).subscribe();
 

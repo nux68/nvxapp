@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
 import { environment } from '../../../../environments/environment';
 import { MonthNavigatorService } from '../../../Utility/infrastructure/month-navigator.service';
@@ -26,6 +26,7 @@ import { ModalController, NavController, Platform } from '@ionic/angular';
   selector: 'app-time-sheet-user-page',
   templateUrl: './time-sheet-user-page.component.html',
   styleUrls: ['./time-sheet-user-page.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 

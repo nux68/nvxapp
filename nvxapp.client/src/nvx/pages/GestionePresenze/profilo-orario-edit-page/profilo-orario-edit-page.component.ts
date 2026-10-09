@@ -1,10 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { ModalController, NavController } from '@ionic/angular';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { Par_ProfiloOrarioModel, Par_ProfiloOrario_GetInModel, Par_ProfiloOrario_PutInModel, StraoTipoConteggio, TipoProfilo } from '../../../ClientServer-Service/GestionePresenze/Par_ProfiloOrario/Models/par-profilo-orario-model';
 import { ParProfiloOrarioService } from '../../../ClientServer-Service/GestionePresenze/Par_ProfiloOrario/par-profilo-orario.service';
@@ -24,6 +24,7 @@ import { Par_GiustificativiModel } from '../../../ClientServer-Service/GestioneP
   selector: 'app-profilo-orario-edit-page',
   templateUrl: './profilo-orario-edit-page.component.html',
   styleUrls: ['./profilo-orario-edit-page.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelComponent<Par_ProfiloOrarioModel> implements OnInit {
@@ -108,7 +109,7 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
           }),
           catchError((error) => {
             console.error('Errore durante il caricamento dei dati:', error);
-            return [null];
+            return of(null);
           })
         );
     }
@@ -187,7 +188,7 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
       }),
       catchError((error) => {
         console.error('Errore durante il caricamento dei dati:', error);
-        return [null];
+        return of(null);
       })
     ).subscribe();
 

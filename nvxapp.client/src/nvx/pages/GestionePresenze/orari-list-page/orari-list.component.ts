@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
@@ -16,6 +16,7 @@ import { RefresherService } from '../../../Utility/GestionePresenze/refresher.se
   selector: 'app-orari-list',
   templateUrl: './orari-list.component.html',
   styleUrls: ['./orari-list.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class OrariListPageComponent implements OnInit {

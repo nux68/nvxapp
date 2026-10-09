@@ -1,5 +1,5 @@
 // Copia e adatta UserCompanyListPageComponent come UserDepartmentListPageComponent
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { AccountService } from '../../../ClientServer-Service/Infrastructure/Account/account.service';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
@@ -23,6 +23,7 @@ import { MainMenuService } from '../../../Utility/infrastructure/main-menu.servi
   selector: 'app-user-department-list-page',
   templateUrl: './user-department-list-page.component.html',
   styleUrls: ['./user-department-list-page.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class UserDepartmentListPageComponent implements OnInit {

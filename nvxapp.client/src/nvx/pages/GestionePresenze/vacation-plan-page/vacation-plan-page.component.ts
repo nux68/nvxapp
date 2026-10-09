@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { Observable, of, Subject } from 'rxjs';
@@ -22,6 +22,7 @@ import { DipGGRichiestaService } from '../../../ClientServer-Service/GestionePre
   templateUrl: './vacation-plan-page.component.html',
   styleUrls: ['./vacation-plan-page.component.scss'],
   providers: [DatePipe],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class VacationPlanPageComponent extends BasePageConfirmCancelComponent<VacationPlanFormData> implements OnInit, OnDestroy {

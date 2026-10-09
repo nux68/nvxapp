@@ -15,14 +15,18 @@
         <ion-item>
           <ion-label position="floating">Orario</ion-label>
           <ion-select formControlName="idPar_Orario" placeholder="Seleziona l'orario">
-            <ion-select-option *ngFor="let orario of _par_OrarioModelList" [value]="orario.id">
-              {{ orario.descrizione }}
-            </ion-select-option>
+            @for (orario of _par_OrarioModelList; track orario) {
+              <ion-select-option [value]="orario.id">
+                {{ orario.descrizione }}
+              </ion-select-option>
+            }
           </ion-select>
         </ion-item>
-        <ion-note color="danger" *ngIf="_editForm.get('_editForm.dPar_Orario')?.hasError('required') && _editForm.get('_editForm.dPar_Orario')?.touched">
-          Orario è obbligatorio.
-        </ion-note>
+        @if (_editForm.get('_editForm.dPar_Orario')?.hasError('required') && _editForm.get('_editForm.dPar_Orario')?.touched) {
+          <ion-note color="danger">
+            Orario è obbligatorio.
+          </ion-note>
+        }
 
 
       </ion-card-content>

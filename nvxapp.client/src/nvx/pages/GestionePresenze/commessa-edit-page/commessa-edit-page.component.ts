@@ -1,11 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { ModalController, NavController } from '@ionic/angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { Observable } from 'rxjs/internal/Observable';
-import { map, catchError } from 'rxjs';
+import { map, catchError, of } from 'rxjs';
 import { StringHelperService } from '../../../Utility/infrastructure/string-helper.service';
 import { Az_CommessaGetInModel, Az_CommessaGetOutModel, Az_CommessaPutInModel } from '../../../ClientServer-Service/GestionePresenze/Az_Commessa/Models/az-commessa-model';
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
@@ -28,6 +28,7 @@ import { CollectionDialogService } from '../../../shared/components/infrastructu
   selector: 'app-commessa-edit-page',
   templateUrl: './commessa-edit-page.component.html',
   styleUrls: ['./commessa-edit-page.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az_CommessaGetOutModel> {
@@ -129,7 +130,7 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
         }),
         catchError((error) => {
           console.error('Errore durante la chiamata API:', error);
-          return [null];
+          return of(null);
         })
       );
     } else {

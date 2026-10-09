@@ -1,150 +1,141 @@
 <app-page-toolbar [title]="Title"
-                  [showFilter]="ShowFilter"
-                  [showBreadcrumbs]="true">
+  [showFilter]="ShowFilter"
+  [showBreadcrumbs]="true">
 </app-page-toolbar>
 
 
 <ion-content [fullscreen]="true">
 
   <ion-card>
-    <ion-card-content *ngIf="_editForm!=null">
-
-      <form [formGroup]="_editForm">
-
-        <ion-segment (ionChange)="segmentChanged($event)" [value]="currSection">
-          <ion-segment-button value="{{SEGMENT_sez1}}" content-id="SEGMENT_sez1">
-            <ion-label>Generale</ion-label>
-          </ion-segment-button>
-          <ion-segment-button value="{{SEGMENT_sez2}}" content-id="SEGMENT_sez2">
-            <ion-label>Causali</ion-label>
-          </ion-segment-button>
-        </ion-segment>
-
-        <div [hidden]="currSection!=SEGMENT_sez1">
-          <br />
-          <ion-item class="nvx-item-4-title">
-            <ion-label>Generale </ion-label>
-          </ion-item>
-
-          <ion-item>
-            <ion-label position="floating">Descrizione</ion-label>
-            <ion-input type="text" formControlName="descrizione"></ion-input>
-          </ion-item>
-          <ion-note color="danger" *ngIf="_editForm.get('descrizione')?.hasError('required') && _editForm.get('descrizione')?.touched">
-            Descrizione è obbligatorio.
-          </ion-note>
-          <ion-note color="danger" *ngIf="_editForm.get('descrizione')?.hasError('maxlength') && _editForm.get('descrizione')?.touched">
-            Descrizione non può superare i 20 caratteri.
-          </ion-note>
-
-          <ion-item>
-            <ion-label position="floating">Codice</ion-label>
-            <ion-input type="text" formControlName="codice"></ion-input>
-          </ion-item>
-          <ion-note color="danger" *ngIf="_editForm.get('codice')?.hasError('required') && _editForm.get('codice')?.touched">
-            codice è obbligatorio.
-          </ion-note>
-          <ion-note color="danger" *ngIf="_editForm.get('codice')?.hasError('maxlength') && _editForm.get('codice')?.touched">
-            codice non può superare i 5 caratteri.
-          </ion-note>
-
-          <ion-item>
-            <ion-label position="floating">Tipo file</ion-label>
-            <ion-select formControlName="tipoFile" interface="popover">
-              <ion-select-option [value]="par_Export_TipoFile.CSV">CSV</ion-select-option>
-              <ion-select-option [value]="par_Export_TipoFile.TXT">TXT</ion-select-option>
-            </ion-select>
-          </ion-item>
-          <ion-note color="danger" *ngIf="_editForm.get('tipoFile')?.hasError('required') && _editForm.get('tipoFile')?.touched">
-            Il tipo file è obbligatorio.
-          </ion-note>
-
+    @if (_editForm!=null) {
+      <ion-card-content>
+        <form [formGroup]="_editForm">
+          <ion-segment (ionChange)="segmentChanged($event)" [value]="currSection">
+            <ion-segment-button value="{{SEGMENT_sez1}}" content-id="SEGMENT_sez1">
+              <ion-label>Generale</ion-label>
+            </ion-segment-button>
+            <ion-segment-button value="{{SEGMENT_sez2}}" content-id="SEGMENT_sez2">
+              <ion-label>Causali</ion-label>
+            </ion-segment-button>
+          </ion-segment>
+          <div [hidden]="currSection!=SEGMENT_sez1">
+            <br />
+            <ion-item class="nvx-item-4-title">
+              <ion-label>Generale </ion-label>
+            </ion-item>
+            <ion-item>
+              <ion-label position="floating">Descrizione</ion-label>
+              <ion-input type="text" formControlName="descrizione"></ion-input>
+            </ion-item>
+            @if (_editForm.get('descrizione')?.hasError('required') && _editForm.get('descrizione')?.touched) {
+              <ion-note color="danger">
+                Descrizione è obbligatorio.
+              </ion-note>
+            }
+            @if (_editForm.get('descrizione')?.hasError('maxlength') && _editForm.get('descrizione')?.touched) {
+              <ion-note color="danger">
+                Descrizione non può superare i 20 caratteri.
+              </ion-note>
+            }
+            <ion-item>
+              <ion-label position="floating">Codice</ion-label>
+              <ion-input type="text" formControlName="codice"></ion-input>
+            </ion-item>
+            @if (_editForm.get('codice')?.hasError('required') && _editForm.get('codice')?.touched) {
+              <ion-note color="danger">
+                codice è obbligatorio.
+              </ion-note>
+            }
+            @if (_editForm.get('codice')?.hasError('maxlength') && _editForm.get('codice')?.touched) {
+              <ion-note color="danger">
+                codice non può superare i 5 caratteri.
+              </ion-note>
+            }
+            <ion-item>
+              <ion-label position="floating">Tipo file</ion-label>
+              <ion-select formControlName="tipoFile" interface="popover">
+                <ion-select-option [value]="par_Export_TipoFile.CSV">CSV</ion-select-option>
+                <ion-select-option [value]="par_Export_TipoFile.TXT">TXT</ion-select-option>
+              </ion-select>
+            </ion-item>
+            @if (_editForm.get('tipoFile')?.hasError('required') && _editForm.get('tipoFile')?.touched) {
+              <ion-note color="danger">
+                Il tipo file è obbligatorio.
+              </ion-note>
+            }
+          </div>
+          <div [hidden]="currSection!=SEGMENT_sez2">
+            <br />
+            <ion-item class="nvx-item-4-title">
+              <ion-label>Causali </ion-label>
+            </ion-item>
+            @if (par_ExportCau_Causali!=null) {
+              <ion-grid>
+                @for (item of par_ExportCau_Causali | genericFilter: 'descrizione' : searchText; track item; let indexRow4Color = $index) {
+                  <ion-row
+                    [class.nvx-row-odd]="indexRow4Color % 2 !== 0"
+                    [class.nvx-row-even]="indexRow4Color % 2 === 0"
+                    class="nvx-ion-row-4table nvx-row-hover">
+                    <ion-item-sliding class="ion-hide-sm-up"
+                      [class.nvx-row-odd]="indexRow4Color % 2 !== 0"
+                      [class.nvx-row-even]="indexRow4Color % 2 === 0">
+                      <ion-item>
+                        <ion-icon [name]="false ? 'server-outline' : 'server-outline'"></ion-icon>
+                        <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
+                          {{ item.codice }}
+                        </ion-label>
+                      </ion-item>
+                      <!--<ion-item-options side="end">
+                      <ion-item-option *ngIf="!item.default" color="{{btnDelete.color}}" (click)="btnDelete.event(item)">
+                        <ion-icon slot="start" name="{{btnDelete.image}}"></ion-icon>
+                        {{btnDelete.text}}
+                      </ion-item-option>
+                      <ion-item-option color="{{btnEdit.color}}" (click)="btnEdit.event(item)">
+                        <ion-icon slot="start" name="{{btnEdit.image}}"></ion-icon>
+                        {{ btnEdit.text }}
+                      </ion-item-option>
+                    </ion-item-options>-->
+                    <app-slide-button-cancella-modifica [item]="item"
+                      [btnDelete]="btnDelete"
+                      [showDelete]="!item.default"
+                      [btnEdit]="btnEdit">
+                    </app-slide-button-cancella-modifica>
+                  </ion-item-sliding>
+                  <ion-col size="1" class="ion-hide-sm-down">
+                    <ion-icon [name]="false ? 'server-outline' : 'server-outline'"></ion-icon>
+                    <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
+                      {{ item.codice }}
+                    </ion-label>
+                  </ion-col>
+                  <ion-col size="7" class="ion-hide-sm-down">
+                    <ion-icon [name]="false ? 'server-outline' : 'server-outline'"></ion-icon>
+                    <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
+                      {{ item.idCausale | parCausaliToLongText}}
+                    </ion-label>
+                  </ion-col>
+                  <ion-col size="2" class="ion-hide-sm-down">
+                    @if (!item.default) {
+                      <ion-button size="small" fill="outline" shape="round" (click)="btnDelete.event(item)" color="{{btnDelete.color}}">
+                        <ion-icon name="{{btnDelete.image}}"></ion-icon>
+                        &nbsp;{{btnDelete.text}}
+                      </ion-button>
+                    }
+                  </ion-col>
+                  <ion-col size="2" class="ion-hide-sm-down">
+                    <ion-button size="small" fill="outline" shape="round" (click)="btnEdit.event(item)" color="{{btnEdit.color}}">
+                      <ion-icon name="{{btnEdit.image}}"></ion-icon>
+                      &nbsp;{{btnEdit.text}}
+                    </ion-button>
+                  </ion-col>
+                </ion-row>
+              }
+            </ion-grid>
+          }
         </div>
-
-        <div [hidden]="currSection!=SEGMENT_sez2">
-          <br />
-          <ion-item class="nvx-item-4-title">
-            <ion-label>Causali </ion-label>
-          </ion-item>
-
-
-          <ion-grid *ngIf="par_ExportCau_Causali!=null">
-
-            <ion-row *ngFor="let item of par_ExportCau_Causali | genericFilter: 'descrizione' : searchText; let indexRow4Color = index"
-                     [class.nvx-row-odd]="indexRow4Color % 2 !== 0"
-                     [class.nvx-row-even]="indexRow4Color % 2 === 0"
-                     class="nvx-ion-row-4table nvx-row-hover">
-
-              <ion-item-sliding class="ion-hide-sm-up"
-                                [class.nvx-row-odd]="indexRow4Color % 2 !== 0"
-                                [class.nvx-row-even]="indexRow4Color % 2 === 0">
-                <ion-item>
-                  <ion-icon [name]="false ? 'server-outline' : 'server-outline'"></ion-icon>
-                  <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
-                    {{ item.codice }}
-                  </ion-label>
-                </ion-item>
-
-                <!--<ion-item-options side="end">
-    <ion-item-option *ngIf="!item.default" color="{{btnDelete.color}}" (click)="btnDelete.event(item)">
-      <ion-icon slot="start" name="{{btnDelete.image}}"></ion-icon>
-      {{btnDelete.text}}
-    </ion-item-option>
-    <ion-item-option color="{{btnEdit.color}}" (click)="btnEdit.event(item)">
-      <ion-icon slot="start" name="{{btnEdit.image}}"></ion-icon>
-      {{ btnEdit.text }}
-    </ion-item-option>
-  </ion-item-options>-->
-
-                <app-slide-button-cancella-modifica [item]="item"
-                                                    [btnDelete]="btnDelete"
-                                                    [showDelete]="!item.default"
-                                                    [btnEdit]="btnEdit">
-                </app-slide-button-cancella-modifica>
-
-
-              </ion-item-sliding>
-
-              <ion-col size="1" class="ion-hide-sm-down">
-                <ion-icon [name]="false ? 'server-outline' : 'server-outline'"></ion-icon>
-                <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
-                  {{ item.codice }}
-                </ion-label>
-              </ion-col>
-              <ion-col size="7" class="ion-hide-sm-down">
-                <ion-icon [name]="false ? 'server-outline' : 'server-outline'"></ion-icon>
-                <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
-                  {{ item.idCausale | parCausaliToLongText}}
-                </ion-label>
-              </ion-col>
-              <ion-col size="2" class="ion-hide-sm-down">
-                <ion-button *ngIf="!item.default" size="small" fill="outline" shape="round" (click)="btnDelete.event(item)" color="{{btnDelete.color}}">
-                  <ion-icon name="{{btnDelete.image}}"></ion-icon>
-                  &nbsp;{{btnDelete.text}}
-                </ion-button>
-              </ion-col>
-              <ion-col size="2" class="ion-hide-sm-down">
-                <ion-button size="small" fill="outline" shape="round" (click)="btnEdit.event(item)" color="{{btnEdit.color}}">
-                  <ion-icon name="{{btnEdit.image}}"></ion-icon>
-                  &nbsp;{{btnEdit.text}}
-                </ion-button>
-              </ion-col>
-
-
-            </ion-row>
-
-
-          </ion-grid>
-
-
-
-        </div>
-
-
-
       </form>
-</ion-card-content>
-  </ion-card>
+    </ion-card-content>
+  }
+</ion-card>
 
 </ion-content>
 

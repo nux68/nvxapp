@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { Par_ProfiloOrarioModel } from '../../../../ClientServer-Service/GestionePresenze/Par_ProfiloOrario/Models/par-profilo-orario-model';
 import { Par_ProfiloOrarioGGModel } from '../../../../ClientServer-Service/GestionePresenze/Par_ProfiloOrarioGG/Models/par-profilo-orario-gg-model';
 import { BaseDialogConfirmCancelComponent } from '../../../../pages/_BASE/base-dialog-confirm-cancel/base-dialog-confirm-cancel.component';
@@ -17,6 +17,7 @@ import { Par_CausaliModel } from '../../../../ClientServer-Service/GestionePrese
   selector: 'app-edit-par-export-cau-causali-component',
   templateUrl: './edit-par-export-cau-causali-component.component.html',
   styleUrls: ['./edit-par-export-cau-causali-component.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class EditParExportCauCausaliComponentComponent extends BaseDialogConfirmCancelComponent<Par_ExportCau_CausaliModel> {

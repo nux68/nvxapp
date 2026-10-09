@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
@@ -17,6 +17,7 @@ import { Par_ProfiloOrario_DeleteInModel, Par_ProfiloOrario_GetAllInModel, Par_P
   selector: 'app-profilo-orario-list-page',
   templateUrl: './profilo-orario-list-page.component.html',
   styleUrls: ['./profilo-orario-list-page.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class ProfiloOrarioListPageComponent implements OnInit {

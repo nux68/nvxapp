@@ -1,11 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
 import { UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { NavController } from '@ionic/angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { Observable } from 'rxjs/internal/Observable';
-import { map, catchError } from 'rxjs';
+import { map, catchError, of } from 'rxjs';
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { StringHelperService } from '../../../Utility/infrastructure/string-helper.service';
 import { ParameterService } from '../../../ClientServer-Service/Infrastructure/Parameter/parameter.service';
@@ -20,6 +20,7 @@ import { CheckObjOn_Id_Number } from '../../../ClientServer-Service/ModelsBase/c
   selector: 'app-activity-edit-page',
   templateUrl: './activity-edit-page.component.html',
   styleUrls: ['./activity-edit-page.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class ActivityEditPageComponent extends BasePageConfirmCancelComponent<Par_AttivitaGetOutModel> {
@@ -68,7 +69,7 @@ export class ActivityEditPageComponent extends BasePageConfirmCancelComponent<Pa
         }),
         catchError((error) => {
           console.error('Errore durante la chiamata API:', error);
-          return [null];
+          return of(null);
         })
       );
     } else {

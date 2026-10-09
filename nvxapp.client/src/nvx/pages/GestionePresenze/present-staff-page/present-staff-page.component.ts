@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { Observable, of, Subject } from 'rxjs';
@@ -17,6 +17,7 @@ import { SharedParameterGestionePresenzeService } from '../../../shared/shared-p
   templateUrl: './present-staff-page.component.html',
   styleUrls: ['./present-staff-page.component.scss'],
   providers: [DatePipe],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class PresentStaffPageComponent extends BasePageConfirmCancelComponent<PresentStaffFormData> implements OnInit, OnDestroy {

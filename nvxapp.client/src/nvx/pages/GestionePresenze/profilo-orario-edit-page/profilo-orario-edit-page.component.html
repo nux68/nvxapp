@@ -1,316 +1,332 @@
 <app-page-toolbar [title]="Title"
-                  [showFilter]="ShowFilter"
-                  [showBreadcrumbs]="true">
+  [showFilter]="ShowFilter"
+  [showBreadcrumbs]="true">
 </app-page-toolbar>
 
 <ion-content [fullscreen]="true">
 
   <ion-card>
-    <ion-card-content *ngIf="_editForm!=null">
-
-      <form [formGroup]="_editForm">
-        <!--tabs-->
-        <ion-segment (ionChange)="segmentChanged($event)" [value]="currSection">
-          <ion-segment-button value="sez1" content-id="sez1">
-            <ion-label>Generale</ion-label>
-          </ion-segment-button>
-          <ion-segment-button value="sez2" content-id="sez2">
-            <ion-label>Giorni</ion-label>
-          </ion-segment-button>
-        </ion-segment>
-        <!--Sez-1-->
-        <div [hidden]="currSection!='sez1'">
-
-          <br />
-          <ion-item class="nvx-item-4-title">
-            <ion-label>Info </ion-label>
-          </ion-item>
-
-          <!--descrizione-->
-          <ion-item>
-            <ion-label position="floating">Descrizione</ion-label>
-            <ion-input type="text" formControlName="descrizione"></ion-input>
-          </ion-item>
-          <ion-note color="danger" *ngIf="_editForm.get('descrizione')?.hasError('required') && _editForm.get('descrizione')?.touched">
-            Descrizione è obbligatorio.
-          </ion-note>
-          <ion-note color="danger" *ngIf="_editForm.get('descrizione')?.hasError('maxlength') && _editForm.get('descrizione')?.touched">
-            Descrizione non può superare i 20 caratteri.
-          </ion-note>
-          <!--codice-->
-          <ion-item>
-            <ion-label position="floating">Codice</ion-label>
-            <ion-input type="text" formControlName="codice"></ion-input>
-          </ion-item>
-          <ion-note color="danger" *ngIf="_editForm.get('codice')?.hasError('required') && _editForm.get('codice')?.touched">
-            codice è obbligatorio.
-          </ion-note>
-          <ion-note color="danger" *ngIf="_editForm.get('codice')?.hasError('maxlength') && _editForm.get('codice')?.touched">
-            codice non può superare i 5 caratteri.
-          </ion-note>
-          <!--Tipo Profilo-->
-          <ion-item>
-            <ion-label position="floating">Tipo Profilo</ion-label>
-            <ion-select formControlName="tipoProfilo" interface="popover" (ionChange)="onTipoProfiloChange($event)">
-              <ion-select-option [value]="tipoProfiloEnum.Settimanale">Settimanale</ion-select-option>
-              <ion-select-option [value]="tipoProfiloEnum.Ciclico">Turno</ion-select-option>
-            </ion-select>
-          </ion-item>
-          <ion-note color="danger" *ngIf="_editForm.get('tipoProfilo')?.hasError('required') && _editForm.get('tipoProfilo')?.touched">
-            Il numero di tipoProfilo è obbligatorio.
-          </ion-note>
-          <!--Nnm giorni ciclo-->
-          <ng-container *ngIf="_editForm.get('tipoProfilo')?.value != 0">
-            <ion-item>
-              <ion-label position="floating">Num. Giorni Ciclo ( {{_editForm.get('numGiorniCiclo')?.value}} / {{getDays()}} )</ion-label>
-              <ion-range aria-label="Range with ticks" (ionChange)="onDayRangeChange($event)" formControlName="numGiorniCiclo" [ticks]="true" [snaps]="true" [min]="1" [max]="getDays()"></ion-range>
-
+    @if (_editForm!=null) {
+      <ion-card-content>
+        <form [formGroup]="_editForm">
+          <!--tabs-->
+          <ion-segment (ionChange)="segmentChanged($event)" [value]="currSection">
+            <ion-segment-button value="sez1" content-id="sez1">
+              <ion-label>Generale</ion-label>
+            </ion-segment-button>
+            <ion-segment-button value="sez2" content-id="sez2">
+              <ion-label>Giorni</ion-label>
+            </ion-segment-button>
+          </ion-segment>
+          <!--Sez-1-->
+          <div [hidden]="currSection!='sez1'">
+            <br />
+            <ion-item class="nvx-item-4-title">
+              <ion-label>Info </ion-label>
             </ion-item>
-            <ion-note color="danger" *ngIf="_editForm.get('numGiorniCiclo')?.hasError('required') && _editForm.get('numGiorniCiclo')?.touched">
-              Num. Giorni Ciclo è obbligatorio.
-            </ion-note>
-          </ng-container>
-          <!-- Combo per selezione orario Festivo-->
-          <ion-item>
-            <ion-label position="floating">Orario festivo</ion-label>
-            <ion-select formControlName="idPar_Orario_Festivo" placeholder="Seleziona l'orario">
-              <ion-select-option *ngFor="let orario of par_OrarioModelList" [value]="orario.id">
-                {{ orario.descrizione }}
-              </ion-select-option>
-            </ion-select>
-          </ion-item>
-          <ion-note color="danger" *ngIf="_editForm.get('_editForm.idPar_Orario_Festivo')?.hasError('required') && _editForm.get('_editForm.idPar_Orario_Festivo')?.touched">
-            Orario è obbligatorio.
-          </ion-note>
-          <!--strao Soglia HH FullTime -->
-          <ion-item>
-            <ion-label position="floating">Strao Soglia HH Full Time</ion-label>
-            <ion-datetime-button class="datetime-button-with-label" datetime="straoSogliaHHFullTime"></ion-datetime-button>
-            <ion-modal [keepContentsMounted]="true">
-              <ng-template>
-                <ion-datetime id="straoSogliaHHFullTime"
-                              formControlName="straoSogliaHHFullTime"
-                              presentation="time"
-                              [showDefaultButtons]="true"
-                              doneText="OK"
-                              cancelText="Annulla">
-                </ion-datetime>
-              </ng-template>
-            </ion-modal>
-          </ion-item>
-
-          <ion-grid>
-            <ion-row>
-              <!--Strao Tipo Conteggio-->
-              <ion-col size="12" size-md="6">
-                <ion-item>
-                  <ion-label position="floating">Conteggio HH Straordianrio</ion-label>
-                  <ion-select formControlName="straoTipoConteggio" interface="popover">
-                    <ion-select-option [value]="straoTipoConteggioEnum.Giornaliero">Giornaliero</ion-select-option>
-                    <ion-select-option [value]="straoTipoConteggioEnum.Settimanale">Settimanale</ion-select-option>
-                    <ion-select-option [value]="straoTipoConteggioEnum.Mensile">Mensile</ion-select-option>
-                  </ion-select>
-                </ion-item>
-              </ion-col>
-              <!-- Combo per selezione dalla causale straordinario-->
-              <ion-col size="12" size-md="6">
-                <ion-item>
-                  <ion-label position="floating">Causale lavoro Straordinario</ion-label>
-                  <ion-select formControlName="idCausale_Lavoro_Strao" placeholder="Seleziona la causale">
-                    <ion-select-option *ngFor="let causali of par_CausaliModelList" [value]="causali.id">
-                      {{ causali.descrizione }}
-                    </ion-select-option>
-                  </ion-select>
-                </ion-item>
-                <ion-note color="danger" *ngIf="_editForm.get('idCausale_Lavoro_Strao')?.hasError('required') && _editForm.get('idCausale_Lavoro_Strao')?.touched">
-                  La causale è obbligatoria.
+            <!--descrizione-->
+            <ion-item>
+              <ion-label position="floating">Descrizione</ion-label>
+              <ion-input type="text" formControlName="descrizione"></ion-input>
+            </ion-item>
+            @if (_editForm.get('descrizione')?.hasError('required') && _editForm.get('descrizione')?.touched) {
+              <ion-note color="danger">
+                Descrizione è obbligatorio.
+              </ion-note>
+            }
+            @if (_editForm.get('descrizione')?.hasError('maxlength') && _editForm.get('descrizione')?.touched) {
+              <ion-note color="danger">
+                Descrizione non può superare i 20 caratteri.
+              </ion-note>
+            }
+            <!--codice-->
+            <ion-item>
+              <ion-label position="floating">Codice</ion-label>
+              <ion-input type="text" formControlName="codice"></ion-input>
+            </ion-item>
+            @if (_editForm.get('codice')?.hasError('required') && _editForm.get('codice')?.touched) {
+              <ion-note color="danger">
+                codice è obbligatorio.
+              </ion-note>
+            }
+            @if (_editForm.get('codice')?.hasError('maxlength') && _editForm.get('codice')?.touched) {
+              <ion-note color="danger">
+                codice non può superare i 5 caratteri.
+              </ion-note>
+            }
+            <!--Tipo Profilo-->
+            <ion-item>
+              <ion-label position="floating">Tipo Profilo</ion-label>
+              <ion-select formControlName="tipoProfilo" interface="popover" (ionChange)="onTipoProfiloChange($event)">
+                <ion-select-option [value]="tipoProfiloEnum.Settimanale">Settimanale</ion-select-option>
+                <ion-select-option [value]="tipoProfiloEnum.Ciclico">Turno</ion-select-option>
+              </ion-select>
+            </ion-item>
+            @if (_editForm.get('tipoProfilo')?.hasError('required') && _editForm.get('tipoProfilo')?.touched) {
+              <ion-note color="danger">
+                Il numero di tipoProfilo è obbligatorio.
+              </ion-note>
+            }
+            <!--Nnm giorni ciclo-->
+            @if (_editForm.get('tipoProfilo')?.value != 0) {
+              <ion-item>
+                <ion-label position="floating">Num. Giorni Ciclo ( {{_editForm.get('numGiorniCiclo')?.value}} / {{getDays()}} )</ion-label>
+                <ion-range aria-label="Range with ticks" (ionChange)="onDayRangeChange($event)" formControlName="numGiorniCiclo" [ticks]="true" [snaps]="true" [min]="1" [max]="getDays()"></ion-range>
+              </ion-item>
+              @if (_editForm.get('numGiorniCiclo')?.hasError('required') && _editForm.get('numGiorniCiclo')?.touched) {
+                <ion-note color="danger">
+                  Num. Giorni Ciclo è obbligatorio.
                 </ion-note>
-              </ion-col>
-            </ion-row>
-            <ion-row>
-              <!--Suppl Tipo Conteggio-->
-              <ion-col size="12" size-md="6">
-                <ion-item>
-                  <ion-label position="floating">Conteggio HH supplementari</ion-label>
-                  <ion-select formControlName="supplTipoConteggio" interface="popover">
-                    <ion-select-option [value]="straoTipoConteggioEnum.Giornaliero">Giornaliero</ion-select-option>
-                    <ion-select-option [value]="straoTipoConteggioEnum.Settimanale">Settimanale</ion-select-option>
-                    <ion-select-option [value]="straoTipoConteggioEnum.Mensile">Mensile</ion-select-option>
-                  </ion-select>
-                </ion-item>
-              </ion-col>
-              <!-- Combo per selezione dalla causale lavoro sipplementare-->
-              <ion-col size="12" size-md="6">
-                <ion-item>
-                  <ion-label position="floating">Causale lavoro Supplementare</ion-label>
-                  <ion-select formControlName="idCausale_Lavoro_Suppl" placeholder="Seleziona la causale">
-                    <ion-select-option *ngFor="let causali of par_CausaliModelList" [value]="causali.id">
-                      {{ causali.descrizione }}
-                    </ion-select-option>
-                  </ion-select>
-                </ion-item>
-                <ion-note color="danger" *ngIf="_editForm.get('idCausale_Lavoro_Suppl')?.hasError('required') && _editForm.get('idCausale_Lavoro_Suppl')?.touched">
-                  La causale è obbligatoria.
-                </ion-note>
-              </ion-col>
-            </ion-row>
-
-
-
-            <ion-row>
-
-              <!-- Combo per selezione dal just assenza ingiust-->
-              <ion-col size="12" size-md="6">
-                <ion-item>
-                  <ion-label position="floating">Giustificativo assenza ingiustificata</ion-label>
-                  <ion-select formControlName="idGiustificativo_Assenza_Ingiust" placeholder="Seleziona il giustificativo">
-                    <ion-select-option *ngFor="let just of par_GiustificativiModelList" [value]="just.id">
-                      {{ just.descrizione }}
-                    </ion-select-option>
-                  </ion-select>
-                </ion-item>
-                <ion-note color="danger" *ngIf="_editForm.get('idGiustificativo_Assenza_Ingiust')?.hasError('required') && _editForm.get('idGiustificativo_Assenza_Ingiust')?.touched">
-                  Il giustificativo è obbligatorio.
-                </ion-note>
-              </ion-col>
-            </ion-row>
-
-
-          </ion-grid>
-
-        </div>
-        <!--Sez-2-->
-        <div [hidden]="currSection!='sez2'">
-
-          <br />
-          <ion-item class="nvx-item-4-title">
-            <ion-label>Giorni del profilo </ion-label>
-          </ion-item>
-
-          <div *ngIf="_editModel ">
-
-            <ion-card *ngFor="let giorno of getDayMock(); let idxDay = index">
-              <ion-card-content>
-                <ion-card-title>Giorno {{ idxDay + 1 }} </ion-card-title>
-
-                <ion-grid>
-                  <ion-row class="nvx-ion-row-4table" *ngFor="let giornoDett of get_par_ProfiloOrarioGG_4Day( idxDay + 1 ); let idx = index , let last = last">
-
-                    <!--mobile-->
-                    <ion-item-sliding class="ion-hide-sm-up"
-                                      [class.nvx-row-odd]="idxDay % 2 !== 0"
-                                      [class.nvx-row-even]="idxDay % 2 === 0">
-
-                      <ion-item>
-                        <ion-grid>
-                          <ion-row class="ion-align-items-center">
-
-                            <!-- Testo (parOrarioToLongText) -->
-                            <ion-col size="5">
-                              <div class="descrizione">
+              }
+            }
+            <!-- Combo per selezione orario Festivo-->
+            <ion-item>
+              <ion-label position="floating">Orario festivo</ion-label>
+              <ion-select formControlName="idPar_Orario_Festivo" placeholder="Seleziona l'orario">
+                @for (orario of par_OrarioModelList; track orario) {
+                  <ion-select-option [value]="orario.id">
+                    {{ orario.descrizione }}
+                  </ion-select-option>
+                }
+              </ion-select>
+            </ion-item>
+            @if (_editForm.get('_editForm.idPar_Orario_Festivo')?.hasError('required') && _editForm.get('_editForm.idPar_Orario_Festivo')?.touched) {
+              <ion-note color="danger">
+                Orario è obbligatorio.
+              </ion-note>
+            }
+            <!--strao Soglia HH FullTime -->
+            <ion-item>
+              <ion-label position="floating">Strao Soglia HH Full Time</ion-label>
+              <ion-datetime-button class="datetime-button-with-label" datetime="straoSogliaHHFullTime"></ion-datetime-button>
+              <ion-modal [keepContentsMounted]="true">
+                <ng-template>
+                  <ion-datetime id="straoSogliaHHFullTime"
+                    formControlName="straoSogliaHHFullTime"
+                    presentation="time"
+                    [showDefaultButtons]="true"
+                    doneText="OK"
+                    cancelText="Annulla">
+                  </ion-datetime>
+                </ng-template>
+              </ion-modal>
+            </ion-item>
+            <ion-grid>
+              <ion-row>
+                <!--Strao Tipo Conteggio-->
+                <ion-col size="12" size-md="6">
+                  <ion-item>
+                    <ion-label position="floating">Conteggio HH Straordianrio</ion-label>
+                    <ion-select formControlName="straoTipoConteggio" interface="popover">
+                      <ion-select-option [value]="straoTipoConteggioEnum.Giornaliero">Giornaliero</ion-select-option>
+                      <ion-select-option [value]="straoTipoConteggioEnum.Settimanale">Settimanale</ion-select-option>
+                      <ion-select-option [value]="straoTipoConteggioEnum.Mensile">Mensile</ion-select-option>
+                    </ion-select>
+                  </ion-item>
+                </ion-col>
+                <!-- Combo per selezione dalla causale straordinario-->
+                <ion-col size="12" size-md="6">
+                  <ion-item>
+                    <ion-label position="floating">Causale lavoro Straordinario</ion-label>
+                    <ion-select formControlName="idCausale_Lavoro_Strao" placeholder="Seleziona la causale">
+                      @for (causali of par_CausaliModelList; track causali) {
+                        <ion-select-option [value]="causali.id">
+                          {{ causali.descrizione }}
+                        </ion-select-option>
+                      }
+                    </ion-select>
+                  </ion-item>
+                  @if (_editForm.get('idCausale_Lavoro_Strao')?.hasError('required') && _editForm.get('idCausale_Lavoro_Strao')?.touched) {
+                    <ion-note color="danger">
+                      La causale è obbligatoria.
+                    </ion-note>
+                  }
+                </ion-col>
+              </ion-row>
+              <ion-row>
+                <!--Suppl Tipo Conteggio-->
+                <ion-col size="12" size-md="6">
+                  <ion-item>
+                    <ion-label position="floating">Conteggio HH supplementari</ion-label>
+                    <ion-select formControlName="supplTipoConteggio" interface="popover">
+                      <ion-select-option [value]="straoTipoConteggioEnum.Giornaliero">Giornaliero</ion-select-option>
+                      <ion-select-option [value]="straoTipoConteggioEnum.Settimanale">Settimanale</ion-select-option>
+                      <ion-select-option [value]="straoTipoConteggioEnum.Mensile">Mensile</ion-select-option>
+                    </ion-select>
+                  </ion-item>
+                </ion-col>
+                <!-- Combo per selezione dalla causale lavoro sipplementare-->
+                <ion-col size="12" size-md="6">
+                  <ion-item>
+                    <ion-label position="floating">Causale lavoro Supplementare</ion-label>
+                    <ion-select formControlName="idCausale_Lavoro_Suppl" placeholder="Seleziona la causale">
+                      @for (causali of par_CausaliModelList; track causali) {
+                        <ion-select-option [value]="causali.id">
+                          {{ causali.descrizione }}
+                        </ion-select-option>
+                      }
+                    </ion-select>
+                  </ion-item>
+                  @if (_editForm.get('idCausale_Lavoro_Suppl')?.hasError('required') && _editForm.get('idCausale_Lavoro_Suppl')?.touched) {
+                    <ion-note color="danger">
+                      La causale è obbligatoria.
+                    </ion-note>
+                  }
+                </ion-col>
+              </ion-row>
+              <ion-row>
+                <!-- Combo per selezione dal just assenza ingiust-->
+                <ion-col size="12" size-md="6">
+                  <ion-item>
+                    <ion-label position="floating">Giustificativo assenza ingiustificata</ion-label>
+                    <ion-select formControlName="idGiustificativo_Assenza_Ingiust" placeholder="Seleziona il giustificativo">
+                      @for (just of par_GiustificativiModelList; track just) {
+                        <ion-select-option [value]="just.id">
+                          {{ just.descrizione }}
+                        </ion-select-option>
+                      }
+                    </ion-select>
+                  </ion-item>
+                  @if (_editForm.get('idGiustificativo_Assenza_Ingiust')?.hasError('required') && _editForm.get('idGiustificativo_Assenza_Ingiust')?.touched) {
+                    <ion-note color="danger">
+                      Il giustificativo è obbligatorio.
+                    </ion-note>
+                  }
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+          </div>
+          <!--Sez-2-->
+          <div [hidden]="currSection!='sez2'">
+            <br />
+            <ion-item class="nvx-item-4-title">
+              <ion-label>Giorni del profilo </ion-label>
+            </ion-item>
+            @if (_editModel ) {
+              <div>
+                @for (giorno of getDayMock(); track giorno; let idxDay = $index) {
+                  <ion-card>
+                    <ion-card-content>
+                      <ion-card-title>Giorno {{ idxDay + 1 }} </ion-card-title>
+                      <ion-grid>
+                        @for (giornoDett of get_par_ProfiloOrarioGG_4Day( idxDay + 1 ); track giornoDett; let idx = $index; let last = $last) {
+                          <ion-row class="nvx-ion-row-4table">
+                            <!--mobile-->
+                            <ion-item-sliding class="ion-hide-sm-up"
+                              [class.nvx-row-odd]="idxDay % 2 !== 0"
+                              [class.nvx-row-even]="idxDay % 2 === 0">
+                              <ion-item>
+                                <ion-grid>
+                                  <ion-row class="ion-align-items-center">
+                                    <!-- Testo (parOrarioToLongText) -->
+                                    <ion-col size="5">
+                                      <div class="descrizione">
+                                        {{ giornoDett.idPar_Orario | parOrarioToLongText }}
+                                      </div>
+                                    </ion-col>
+                                    <ion-col size="7">
+                                      @if (get_par_Orario(giornoDett.idPar_Orario)?.timbratureTipo === orarioTimbratureTipoEnum.IntervalloOrario) {
+                                        <ion-label>
+                                          @for (parHH of get_par_OrarioIntervalloHH( giornoDett.idPar_Orario ); track parHH; let idxParHH = $index) {
+                                            <p>
+                                              {{ parHH.dalle }} - {{ parHH.alle }}
+                                            </p>
+                                          }
+                                        </ion-label>
+                                      }
+                                    </ion-col>
+                                  </ion-row>
+                                </ion-grid>
+                              </ion-item>
+                              <ion-item-options side="end">
+                                @if (last && idx > 0) {
+                                  <ion-item-option
+                                    class="item-option-text-only_cancella"
+                                    (click)="btnDelete.event(idxDay+1)">
+                                    <ion-icon slot="start" [name]="btnDelete.image"></ion-icon>
+                                    {{ btnDelete.text }}
+                                  </ion-item-option>
+                                }
+                                @if (idx == 0) {
+                                  <ion-item-option
+                                    class="item-option-text-only_primary"
+                                    (click)="btnAdd.event(idxDay+1)">
+                                    <ion-icon slot="start" [name]="btnAdd.image"></ion-icon>
+                                    {{ btnAdd.text }}
+                                  </ion-item-option>
+                                }
+                                <ion-item-option class="item-option-text-only_modifica"
+                                  (click)="btnEdit.event(giornoDett)">
+                                  <ion-icon slot="start" [name]="btnEdit.image"></ion-icon>
+                                  {{ btnEdit.text }}
+                                </ion-item-option>
+                              </ion-item-options>
+                            </ion-item-sliding>
+                            <!--desktop-->
+                            <ion-col size="2" class="ion-hide-sm-down">
+                              <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
                                 {{ giornoDett.idPar_Orario | parOrarioToLongText }}
-                              </div>
-                            </ion-col>
-
-                            <ion-col size="7">
-                              <ion-label *ngIf="get_par_Orario(giornoDett.idPar_Orario)?.timbratureTipo === orarioTimbratureTipoEnum.IntervalloOrario">
-                                <p *ngFor="let parHH of get_par_OrarioIntervalloHH( giornoDett.idPar_Orario ); let idxParHH = index ">
-                                  {{ parHH.dalle }} - {{ parHH.alle }}
-                                </p>
                               </ion-label>
                             </ion-col>
-
+                            <ion-col size="2" class="ion-hide-sm-down">
+                              <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
+                                {{ giornoDett.zOrder }}
+                              </ion-label>
+                            </ion-col>
+                            <ion-col size="2" class="ion-hide-sm-down">
+                              <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
+                                {{ giornoDett.idPar_Orario | parOrarioToCodice }}
+                              </ion-label>
+                            </ion-col>
+                            <ion-col size="2" class="ion-hide-sm-down">
+                              @if (get_par_Orario(giornoDett.idPar_Orario)?.timbratureTipo === orarioTimbratureTipoEnum.IntervalloOrario) {
+                                <ion-label>
+                                  @for (parHH of get_par_OrarioIntervalloHH( giornoDett.idPar_Orario ); track parHH; let idxParHH = $index) {
+                                    <p>
+                                      {{ parHH.dalle }} - {{ parHH.alle }}
+                                    </p>
+                                  }
+                                </ion-label>
+                              }
+                              @if (get_par_Orario(giornoDett.idPar_Orario)?.timbratureTipo === orarioTimbratureTipoEnum.MonteOre ||
+                                get_par_Orario(giornoDett.idPar_Orario)?.timbratureTipo === orarioTimbratureTipoEnum.MonteOreValore) {
+                                <ion-label>
+                                  <p>{{ get_par_Orario(giornoDett.idPar_Orario)?.hh_Teo_MonteOre }} - HH Teo.</p>
+                                </ion-label>
+                              }
+                            </ion-col>
+                            <ion-col size="2" class="ion-hide-sm-down">
+                              @if (last && idx > 0) {
+                                <ion-button size="small" fill="outline" shape="round" (click)="btnDelete.event(idxDay+1)" color="{{btnDelete.color}}">
+                                  <ion-icon name="{{btnDelete.image}}"></ion-icon>
+                                  &nbsp;{{btnDelete.text}}
+                                </ion-button>
+                              }
+                              @if (idx == 0) {
+                                <ion-button size="small" fill="outline" shape="round" (click)="btnAdd.event(idxDay+1)" color="{{btnAdd.color}}">
+                                  <ion-icon name="{{btnAdd.image}}"></ion-icon>
+                                  &nbsp;{{btnAdd.text}}
+                                </ion-button>
+                              }
+                            </ion-col>
+                            <ion-col size="2" class="ion-hide-sm-down">
+                              <ion-button size="small" fill="outline" shape="round" (click)="btnEdit.event(giornoDett)" color="{{btnEdit.color}}">
+                                <ion-icon name="{{btnEdit.image}}"></ion-icon>
+                                &nbsp;{{btnEdit.text}}
+                              </ion-button>
+                            </ion-col>
                           </ion-row>
-                        </ion-grid>
-                      </ion-item>
-
-                      <ion-item-options side="end">
-
-                        <ion-item-option *ngIf="last && idx > 0"
-                                         class="item-option-text-only_cancella"
-                                         (click)="btnDelete.event(idxDay+1)">
-                          <ion-icon slot="start" [name]="btnDelete.image"></ion-icon>
-                          {{ btnDelete.text }}
-                        </ion-item-option>
-
-                        <ion-item-option *ngIf="idx == 0"
-                                         class="item-option-text-only_primary"
-                                         (click)="btnAdd.event(idxDay+1)">
-                          <ion-icon slot="start" [name]="btnAdd.image"></ion-icon>
-                          {{ btnAdd.text }}
-                        </ion-item-option>
-
-                        <ion-item-option class="item-option-text-only_modifica"
-                                         (click)="btnEdit.event(giornoDett)">
-                          <ion-icon slot="start" [name]="btnEdit.image"></ion-icon>
-                          {{ btnEdit.text }}
-                        </ion-item-option>
-
-                      </ion-item-options>
-
-                    </ion-item-sliding>
-
-
-                    <!--desktop-->
-                    <ion-col size="2" class="ion-hide-sm-down">
-                      <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
-                        {{ giornoDett.idPar_Orario | parOrarioToLongText }}
-                      </ion-label>
-                    </ion-col>
-                    <ion-col size="2" class="ion-hide-sm-down">
-                      <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
-                        {{ giornoDett.zOrder }}
-                      </ion-label>
-                    </ion-col>
-                    <ion-col size="2" class="ion-hide-sm-down">
-                      <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
-                        {{ giornoDett.idPar_Orario | parOrarioToCodice }}
-                      </ion-label>
-                    </ion-col>
-                    <ion-col size="2" class="ion-hide-sm-down">
-                      <ion-label *ngIf="get_par_Orario(giornoDett.idPar_Orario)?.timbratureTipo === orarioTimbratureTipoEnum.IntervalloOrario">
-                        <p *ngFor="let parHH of get_par_OrarioIntervalloHH( giornoDett.idPar_Orario ); let idxParHH = index ">
-                          {{ parHH.dalle }} - {{ parHH.alle }}
-                        </p>
-                      </ion-label>
-                      <ion-label *ngIf="get_par_Orario(giornoDett.idPar_Orario)?.timbratureTipo === orarioTimbratureTipoEnum.MonteOre ||
-                                        get_par_Orario(giornoDett.idPar_Orario)?.timbratureTipo === orarioTimbratureTipoEnum.MonteOreValore">
-                        <p>{{ get_par_Orario(giornoDett.idPar_Orario)?.hh_Teo_MonteOre }} - HH Teo.</p>
-                      </ion-label>
-                    </ion-col>
-                    <ion-col size="2" class="ion-hide-sm-down">
-
-                      <ion-button size="small" fill="outline" shape="round" (click)="btnDelete.event(idxDay+1)" color="{{btnDelete.color}}" *ngIf="last && idx > 0">
-                        <ion-icon name="{{btnDelete.image}}"></ion-icon>
-                        &nbsp;{{btnDelete.text}}
-                      </ion-button>
-
-                      <ion-button size="small" fill="outline" shape="round" (click)="btnAdd.event(idxDay+1)" color="{{btnAdd.color}}" *ngIf="idx == 0">
-                        <ion-icon name="{{btnAdd.image}}"></ion-icon>
-                        &nbsp;{{btnAdd.text}}
-                      </ion-button>
-
-                    </ion-col>
-                    <ion-col size="2" class="ion-hide-sm-down">
-                      <ion-button size="small" fill="outline" shape="round" (click)="btnEdit.event(giornoDett)" color="{{btnEdit.color}}">
-                        <ion-icon name="{{btnEdit.image}}"></ion-icon>
-                        &nbsp;{{btnEdit.text}}
-                      </ion-button>
-                    </ion-col>
-
-                  </ion-row>
-                </ion-grid>
-
-              </ion-card-content>
-            </ion-card>
-
+                        }
+                      </ion-grid>
+                    </ion-card-content>
+                  </ion-card>
+                }
+              </div>
+            }
           </div>
-
-        </div>
-
-      </form>
-
-    </ion-card-content>
+        </form>
+      </ion-card-content>
+    }
   </ion-card>
 
 </ion-content>

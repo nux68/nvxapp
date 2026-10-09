@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
 import { AzSediRepartoService } from '../../../../ClientServer-Service/GestionePresenze/Az_SediReparto/az-sedi-reparto.service';
 import { AzSediService } from '../../../../ClientServer-Service/GestionePresenze/Az_Sedi/az-sedi.service';
 import { AzSediRepartoUserServiceService } from '../../../../ClientServer-Service/GestionePresenze/Az_SediRepartoUser/az-sedi-reparto-user-service.service';
@@ -18,6 +18,7 @@ import { HoverPopupData } from '../../infrastructure/hover-popup/hover-popup.com
   selector: 'app-sedi-reparto-user-selection',
   templateUrl: './sedi-reparto-user-selection.component.html',
   styleUrls: ['./sedi-reparto-user-selection.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class SediRepartoUserSelectionComponent implements OnInit {

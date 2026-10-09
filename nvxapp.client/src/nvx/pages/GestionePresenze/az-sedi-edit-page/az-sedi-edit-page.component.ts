@@ -1,11 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
 import { UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { NavController } from '@ionic/angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { Observable } from 'rxjs/internal/Observable';
-import { map, catchError } from 'rxjs';
+import { map, catchError, of } from 'rxjs';
 import { StringHelperService } from '../../../Utility/infrastructure/string-helper.service';
 import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
@@ -18,6 +18,7 @@ import { CheckObjOn_Id_Number } from '../../../ClientServer-Service/ModelsBase/c
   selector: 'app-az-sedi-edit-page',
   templateUrl: './az-sedi-edit-page.component.html',
   styleUrls: ['./az-sedi-edit-page.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class AzSediEditPageComponent extends BasePageConfirmCancelComponent<Az_SediGetOutModel> {
@@ -63,7 +64,7 @@ export class AzSediEditPageComponent extends BasePageConfirmCancelComponent<Az_S
         }),
         catchError((error) => {
           console.error('Errore durante la chiamata API:', error);
-          return [null];
+          return of(null);
         })
       );
     } else {

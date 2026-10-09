@@ -1,4 +1,4 @@
-import { Component,  OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
@@ -25,6 +25,7 @@ import { CollectionDialogService } from '../../../shared/components/infrastructu
   selector: 'app-request-list-admin-page',
   templateUrl: './request-list-admin-page.component.html',
   styleUrls: ['./request-list-admin-page.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 }) 
 export class RequestListAdminPageComponent implements OnInit {

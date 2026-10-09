@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
 import { Par_ProfiloOrarioGGModel } from '../../../../ClientServer-Service/GestionePresenze/Par_ProfiloOrarioGG/Models/par-profilo-orario-gg-model';
@@ -15,6 +15,7 @@ import { Az_SubCommessaAttivita_4FullListModel } from '../../../../ClientServer-
   selector: 'app-edit-par-orario-dettaglio-orario-intervallo-hhdialog',
   templateUrl: './edit-par-orario-dettaglio-orario-intervallo-hhdialog.component.html',
   styleUrls: ['./edit-par-orario-dettaglio-orario-intervallo-hhdialog.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 

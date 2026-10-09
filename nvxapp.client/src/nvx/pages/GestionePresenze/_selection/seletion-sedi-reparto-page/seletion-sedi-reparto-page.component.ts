@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { ButtonItem, UserInterfaceService } from '../../../../Utility/infrastructure/user-interface.service';
 import { NavController } from '@ionic/angular';
 
@@ -6,6 +6,7 @@ import { NavController } from '@ionic/angular';
   selector: 'app-seletion-sedi-reparto-page',
   templateUrl: './seletion-sedi-reparto-page.component.html',
   styleUrls: ['./seletion-sedi-reparto-page.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone:false
 })
 export class SeletionSediRepartoPageComponent  implements OnInit {

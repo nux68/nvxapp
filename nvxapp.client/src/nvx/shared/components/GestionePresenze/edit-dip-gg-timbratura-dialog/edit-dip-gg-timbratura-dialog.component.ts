@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
 import { BaseDialogConfirmCancelComponent } from '../../../../pages/_BASE/base-dialog-confirm-cancel/base-dialog-confirm-cancel.component';
@@ -16,6 +16,7 @@ import { Az_SubCommessaAttivita_4FullListModel } from '../../../../ClientServer-
   selector: 'app-edit-dip-gg-timbratura-dialog',
   templateUrl: './edit-dip-gg-timbratura-dialog.component.html',
   styleUrls: ['./edit-dip-gg-timbratura-dialog.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 }) 
 export class EditDipGGTimbraturaDialogComponent extends BaseDialogConfirmCancelComponent<Dip_GG_TimbraturaModel> {

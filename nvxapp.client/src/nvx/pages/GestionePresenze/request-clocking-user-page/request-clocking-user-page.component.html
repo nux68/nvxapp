@@ -1,6 +1,6 @@
 <app-page-toolbar [title]="title"
-                  [showFilter]="false"
-                  [showBreadcrumbs]="true">
+  [showFilter]="false"
+  [showBreadcrumbs]="true">
 </app-page-toolbar>
 
 
@@ -20,56 +20,60 @@
           <ion-modal [keepContentsMounted]="true">
             <ng-template>
               <ion-datetime id="currentDate-modal"
-                            formControlName="currentDate"
-                            presentation="date-time"
-                            [showDefaultButtons]="true"
-                            doneText="OK"
-                            cancelText="Annulla"
-                            (ionChange)="updateDateTime($event)">
+                formControlName="currentDate"
+                presentation="date-time"
+                [showDefaultButtons]="true"
+                doneText="OK"
+                cancelText="Annulla"
+                (ionChange)="updateDateTime($event)">
               </ion-datetime>
             </ng-template>
           </ion-modal>
 
           <!--<ion-item>
-    <ion-label position="floating">Attivita </ion-label>
-    <ion-select formControlName="idPar_Attivita" placeholder="Seleziona l attivita">
-      <ion-select-option *ngFor="let att of par_AttivitaList" [value]="att.id">
-        {{ att.descrizione }}
-      </ion-select-option>
-    </ion-select>
-  </ion-item>
-  <ion-note color="danger" *ngIf="_editForm.get('idPar_Attivita')?.hasError('required') && _editForm.get('idPar_Attivita')?.touched">
-    L attività è obbligatoria.
-  </ion-note>-->
+          <ion-label position="floating">Attivita </ion-label>
+          <ion-select formControlName="idPar_Attivita" placeholder="Seleziona l attivita">
+            <ion-select-option *ngFor="let att of par_AttivitaList" [value]="att.id">
+              {{ att.descrizione }}
+            </ion-select-option>
+          </ion-select>
+        </ion-item>
+        <ion-note color="danger" *ngIf="_editForm.get('idPar_Attivita')?.hasError('required') && _editForm.get('idPar_Attivita')?.touched">
+          L attività è obbligatoria.
+        </ion-note>-->
 
-          <ion-item>
-            <ion-label position="floating">Commessa Attivita</ion-label>
-            <ion-select formControlName="idPar_Attivita" placeholder="Seleziona l attivita">
-              <ion-select-option *ngFor="let attivita of az_SubCommessaAttivita_4FullList" [value]="attivita.subCommessaAttivita_Id">
+        <ion-item>
+          <ion-label position="floating">Commessa Attivita</ion-label>
+          <ion-select formControlName="idPar_Attivita" placeholder="Seleziona l attivita">
+            @for (attivita of az_SubCommessaAttivita_4FullList; track attivita) {
+              <ion-select-option [value]="attivita.subCommessaAttivita_Id">
                 {{ attivita.cliente_Descrizione }} {{ attivita.commessa_Decrizione }} {{ attivita.subCommessa_Decrizione }} {{ attivita.subCommessaAttivita_Par_Attivita_Descrizione }}
               </ion-select-option>
-            </ion-select>
-          </ion-item>
-          <ion-note color="danger" *ngIf="_editForm.get('idPar_Attivita')?.hasError('required') && _editForm.get('idPar_Attivita')?.touched">
+            }
+          </ion-select>
+        </ion-item>
+        @if (_editForm.get('idPar_Attivita')?.hasError('required') && _editForm.get('idPar_Attivita')?.touched) {
+          <ion-note color="danger">
             L attivita è obbligatoria.
           </ion-note>
+        }
 
 
-        </div>
+      </div>
 
-      </form>
+    </form>
 
 
 
-        <!--<div class="form-section">
-          <div class="form-label">Note</div>
-          <div class="form-input">
-            <ion-textarea [(ngModel)]="notes" placeholder="Inserisci note..." rows="4"></ion-textarea>--> <!-- Added rows for better default size -->
-          <!--</div>
-        </div>-->
+    <!--<div class="form-section">
+    <div class="form-label">Note</div>
+    <div class="form-input">
+      <ion-textarea [(ngModel)]="notes" placeholder="Inserisci note..." rows="4"></ion-textarea>--> <!-- Added rows for better default size -->
+    <!--</div>
+  </div>-->
 
 </ion-card-content>
-  </ion-card>
+</ion-card>
 </ion-content>
 
 

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
 import { BaseDialogConfirmCancelComponent } from '../../../../pages/_BASE/base-dialog-confirm-cancel/base-dialog-confirm-cancel.component';
@@ -13,6 +13,7 @@ import { Par_CausaliModel } from '../../../../ClientServer-Service/GestionePrese
   selector: 'app-edit-dip-gg-causali-dialog',
   templateUrl: './edit-dip-gg-causali-dialog.component.html',
   styleUrls: ['./edit-dip-gg-causali-dialog.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 }) 
 export class EditDipGGCausaliDialogComponent extends BaseDialogConfirmCancelComponent<Dip_GG_CausaliModel> {

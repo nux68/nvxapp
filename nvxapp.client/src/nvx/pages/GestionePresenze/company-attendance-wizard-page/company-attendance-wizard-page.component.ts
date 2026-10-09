@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
 import { NavController } from '@ionic/angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -16,6 +16,7 @@ import { CompanyEditModel, CompanyGetInModel, CompanyPutInModel } from '../../..
   selector: 'app-company-attendance-wizard-page',
   templateUrl: './company-attendance-wizard-page.component.html',
   styleUrls: ['./company-attendance-wizard-page.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class CompanyAttendanceWizardPageComponent extends BasePageConfirmCancelComponent<CompanyEditModel> {

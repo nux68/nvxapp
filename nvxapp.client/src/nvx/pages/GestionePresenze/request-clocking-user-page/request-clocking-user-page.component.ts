@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
 import { DipGGRichiestaService } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/dip-gg-richiesta.service';
 import { StringHelperService } from '../../../Utility/infrastructure/string-helper.service';
@@ -20,6 +20,7 @@ import { SharedParameterGestionePresenzeService } from '../../../shared/shared-p
   selector: 'app-request-clocking-user-page',
   templateUrl: './request-clocking-user-page.component.html',
   styleUrls: ['./request-clocking-user-page.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class RequestClockingUserPageComponent extends BasePageConfirmCancelComponent<Dip_GG_Timbratura_StampPrepare_OutModel> {

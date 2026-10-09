@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { Par_ProfiloOrarioModel } from '../../../../ClientServer-Service/GestionePresenze/Par_ProfiloOrario/Models/par-profilo-orario-model';
 import { Par_ProfiloOrarioGGModel } from '../../../../ClientServer-Service/GestionePresenze/Par_ProfiloOrarioGG/Models/par-profilo-orario-gg-model';
 import { BaseDialogConfirmCancelComponent } from '../../../../pages/_BASE/base-dialog-confirm-cancel/base-dialog-confirm-cancel.component';
@@ -15,6 +15,7 @@ import { Par_OrarioModel } from '../../../../ClientServer-Service/GestionePresen
   selector: 'app-edit-par-profilo-orario-dettaglio-orario-dialog',
   templateUrl: './edit-par-profilo-orario-dettaglio-orario-dialog.component.html',
   styleUrls: ['./edit-par-profilo-orario-dettaglio-orario-dialog.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
 import { DipGGTimbraturaService } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Timbratura/dip-gg-timbratura.service';
 import { Dip_GG_Timbratura_Stamp_InModel, Dip_GG_Timbratura_StampPrepare_InModel, Dip_GG_Timbratura_StampPrepare_OutModel } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Timbratura/Models/dip-gg-timbratura-model';
@@ -16,6 +16,7 @@ import { SharedParameterGestionePresenzeService } from '../../../shared/shared-p
   selector: 'app-time-clock-user-page',
   templateUrl: './time-clock-user-page.component.html',
   styleUrls: ['./time-clock-user-page.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class TimeClockUserPageComponent extends BasePageConfirmCancelComponent<Dip_GG_Timbratura_StampPrepare_OutModel> {

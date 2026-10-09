@@ -1,6 +1,6 @@
 <app-page-toolbar [title]="title"
-                  [showFilter]="false"
-                  [showBreadcrumbs]="true">
+  [showFilter]="false"
+  [showBreadcrumbs]="true">
 </app-page-toolbar>
 
 <ion-content [fullscreen]="true">
@@ -12,42 +12,40 @@
 
       <div class="calendar-container">
         <app-sedi-reparto-user-navigation [showPeriodSelect]="true"
-                                          [showSediSelect]="false"
-                                          [showRepartoSelect]="false"
-                                          [showUserSelect]="false"
-                                          (periodChange)="onPeriodChange($event)"
-                                          (sediIdChange)="onSedeChanged($event)"
-                                          (repartoIdChange)="onRepartiChanged($event)"
-                                          (allUsersIdChange)="onAllUsersInSelectionChanged($event)"
-                                          (currUserIdChange)="onCurrentUserChanged($event)">
+          [showSediSelect]="false"
+          [showRepartoSelect]="false"
+          [showUserSelect]="false"
+          (periodChange)="onPeriodChange($event)"
+          (sediIdChange)="onSedeChanged($event)"
+          (repartoIdChange)="onRepartiChanged($event)"
+          (allUsersIdChange)="onAllUsersInSelectionChanged($event)"
+          (currUserIdChange)="onCurrentUserChanged($event)">
         </app-sedi-reparto-user-navigation>
 
         <div class="calendar-grid">
           <!-- Intestazione giorni della settimana -->
           <div class="weekday-header">
-            <div class="weekday" *ngFor="let day of monthNavigatorService.weekDays; let i = index"
-                 [ngClass]="{'weekend': i > 4}">
-              {{ day }}
-            </div>
+            @for (day of monthNavigatorService.weekDays; track day; let i = $index) {
+              <div class="weekday"
+                [ngClass]="{'weekend': i > 4}">
+                {{ day }}
+              </div>
+            }
           </div>
 
           <!-- Griglia del calendario -->
           <div class="calendar-weeks">
-            <div class="week" *ngFor="let week of weeks">
-
-              <div class="day" *ngFor="let day of week; let i = index" [ngClass]="getDayClass(day, i)">
-
-                <div class="day-number">{{ day.day }}</div>
-
-                <div class="day-content">
-
-                  <ng-container *ngIf="day.dip_GG_Giustificativi && day.dip_GG_Giustificativi.length > 0">
-                    <div class="justifications">
-
-
-                      <ng-container *ngIf="day.dip_GG_Giustificativi?.length > 0; else noJust">
-
-                        <ion-chip *ngFor="let just of day.dip_GG_Giustificativi"
+            @for (week of weeks; track week) {
+              <div class="week">
+                @for (day of week; track day; let i = $index) {
+                  <div class="day" [ngClass]="getDayClass(day, i)">
+                    <div class="day-number">{{ day.day }}</div>
+                    <div class="day-content">
+                      @if (day.dip_GG_Giustificativi && day.dip_GG_Giustificativi.length > 0) {
+                        <div class="justifications">
+                          @if (day.dip_GG_Giustificativi?.length > 0) {
+                            @for (just of day.dip_GG_Giustificativi; track just) {
+                              <ion-chip
                                   [ngStyle]="{
                                              'background': timeSheetService.get_Dip_GG_Giustificativi_backColor(just),
                                              'color': timeSheetService.get_Dip_GG_Giustificativi_txtColor(just),
@@ -58,31 +56,21 @@
                                              'cursor': ShowActionSheet(just.idDip_GG_Richiesta) ? 'pointer' : 'default',
                                              'opacity': isMobile ? '1' :(ShowActionSheet(just.idDip_GG_Richiesta) ? '1' : '0.5')
                                            }"
-                                  (click)="ShowActionSheet(just.idDip_GG_Richiesta) ? actionSheetOpen(just) : null">
-                          {{ just.idPar_Giustificativi | parGiustificativiToLongText }} {{ just.hours.substring(0, 5)  }}
-                          <ion-icon  [name]="timeSheetService.get_StatoRichiesta_icon(get_Dip_GG_Richiesta(just.idDip_GG_Richiesta))"></ion-icon>
-                        </ion-chip>
-
-
-
-
-
-                      </ng-container>
-                      <ng-template #noJust>
-                        <span class="no-data">-</span>
-                      </ng-template>
-
-
-                    </div>
-                  </ng-container>
-
-
-                  <ng-container *ngIf="day.dip_GG_Timbratura && day.dip_GG_Timbratura.length > 0">
-                    <div class="timestamps">
-
-                      <ng-container *ngIf="day.dip_GG_Timbratura?.length > 0; else noTimb">
-
-                        <ion-chip *ngFor="let record of day.dip_GG_Timbratura"
+                                (click)="ShowActionSheet(just.idDip_GG_Richiesta) ? actionSheetOpen(just) : null">
+                                {{ just.idPar_Giustificativi | parGiustificativiToLongText }} {{ just.hours.substring(0, 5)  }}
+                                <ion-icon  [name]="timeSheetService.get_StatoRichiesta_icon(get_Dip_GG_Richiesta(just.idDip_GG_Richiesta))"></ion-icon>
+                              </ion-chip>
+                            }
+                          } @else {
+                            <span class="no-data">-</span>
+                          }
+                        </div>
+                      }
+                      @if (day.dip_GG_Timbratura && day.dip_GG_Timbratura.length > 0) {
+                        <div class="timestamps">
+                          @if (day.dip_GG_Timbratura?.length > 0) {
+                            @for (record of day.dip_GG_Timbratura; track record) {
+                              <ion-chip
                                   [ngStyle]="{
                                                'background': timeSheetService.get_Dip_GG_Timbratura_backColor(record),
                                                'color': timeSheetService.get_Dip_GG_Timbratura_txtColor(record),
@@ -93,40 +81,35 @@
                                                'cursor': ShowActionSheet(record.idDip_GG_Richiesta) ? 'pointer' : 'default',
                                                'opacity': isMobile ? '1' :(ShowActionSheet(record.idDip_GG_Richiesta) ? '1' : '0.5')
                                              }"
-                                  (click)="ShowActionSheet(record.idDip_GG_Richiesta) ? actionSheetOpen(record) : null">
-                          {{ record.timbraturaTipo | tipoTimbraturaToShortText }}{{ record.timbratura | date:'HH:mm' }}
-                          <ion-icon [name]="timeSheetService.get_StatoRichiesta_icon(get_Dip_GG_Richiesta(record.idDip_GG_Richiesta))"></ion-icon>
-                        </ion-chip>
+                                (click)="ShowActionSheet(record.idDip_GG_Richiesta) ? actionSheetOpen(record) : null">
+                                {{ record.timbraturaTipo | tipoTimbraturaToShortText }}{{ record.timbratura | date:'HH:mm' }}
+                                <ion-icon [name]="timeSheetService.get_StatoRichiesta_icon(get_Dip_GG_Richiesta(record.idDip_GG_Richiesta))"></ion-icon>
+                              </ion-chip>
+                            }
+                          } @else {
+                            <span class="no-data">-</span>
+                          }
+                        </div>
+                      }
+                    </div> <!-- Fine day-content -->
+                  </div>
+                  } <!-- Fine day -->
+                </div>
+                } <!-- Fine week -->
+              </div> <!-- Fine calendar-weeks -->
+
+            </div> <!-- Fine calendar-grid -->
 
 
-                      </ng-container>
-                      <ng-template #noTimb>
-                        <span class="no-data">-</span>
-                      </ng-template>
+          </div> <!-- Fine calendar-container -->
 
+          <ion-action-sheet [isOpen]="isActionSheetOpen"
+            [header]="actionSheetHeader"
+            [subHeader]="actionSheetSubHeader"
+            [buttons]="getActionSheetButtons()"
+          (didDismiss)="actionSheetExecute($event)"></ion-action-sheet>
 
+        </ion-card-content>
+      </ion-card>
 
-                    </div>
-                  </ng-container>
-
-                </div> <!-- Fine day-content -->
-
-              </div> <!-- Fine day -->
-            </div> <!-- Fine week -->
-          </div> <!-- Fine calendar-weeks -->
-
-        </div> <!-- Fine calendar-grid -->
-
-
-      </div> <!-- Fine calendar-container -->
-
-      <ion-action-sheet [isOpen]="isActionSheetOpen"
-                        [header]="actionSheetHeader"
-                        [subHeader]="actionSheetSubHeader"
-                        [buttons]="getActionSheetButtons()"
-                        (didDismiss)="actionSheetExecute($event)"></ion-action-sheet>
-
-    </ion-card-content>
-  </ion-card>
-
-</ion-content>
+    </ion-content>

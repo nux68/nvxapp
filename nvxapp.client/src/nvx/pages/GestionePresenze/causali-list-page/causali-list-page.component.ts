@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
@@ -15,6 +15,7 @@ import { RefresherService } from '../../../Utility/GestionePresenze/refresher.se
   selector: 'app-causali-list-page',
   templateUrl: './causali-list-page.component.html',
   styleUrls: ['./causali-list-page.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class CausaliListPageComponent implements OnInit {

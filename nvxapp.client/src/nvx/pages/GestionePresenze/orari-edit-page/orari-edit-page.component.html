@@ -1,294 +1,252 @@
 <app-page-toolbar [title]="Title"
-                  [showFilter]="ShowFilter"
-                  [showBreadcrumbs]="true">
+  [showFilter]="ShowFilter"
+  [showBreadcrumbs]="true">
 </app-page-toolbar>
 
 <ion-content [fullscreen]="true">
 
   <ion-card>
-    <ion-card-content *ngIf="_editForm!=null">
-
-
-
-
-
-      <form [formGroup]="_editForm">
-
-
-        <ion-segment (ionChange)="segmentChanged($event)" [value]="currSection">
-          <ion-segment-button value="sez1" content-id="sez1">
-            <ion-label>Generale</ion-label>
-          </ion-segment-button>
-          <ion-segment-button value="sez2" content-id="sez2" *ngIf="isSez2Visible">
-            <ion-label>Intervalli orari</ion-label>
-          </ion-segment-button>
-          <ion-segment-button value="sez3" content-id="sez3" *ngIf="isSez3Visible">
-            <ion-label>Monte Ore</ion-label>
-          </ion-segment-button>
-        </ion-segment>
-
-        <div [hidden]="currSection!='sez1'">
-          <br />
-          <ion-item class="nvx-item-4-title">
-            <ion-label>Generale </ion-label>
-          </ion-item>
-
-
-          <ion-item>
-            <ion-label position="floating">Descrizione</ion-label>
-            <ion-input type="text" formControlName="descrizione"></ion-input>
-          </ion-item>
-          <ion-note color="danger" *ngIf="_editForm.get('descrizione')?.hasError('required') && _editForm.get('descrizione')?.touched">
-            Descrizione è obbligatorio.
-          </ion-note>
-          <ion-note color="danger" *ngIf="_editForm.get('descrizione')?.hasError('maxlength') && _editForm.get('descrizione')?.touched">
-            Descrizione non può superare i 20 caratteri.
-          </ion-note>
-
-
-          <ion-item>
-            <ion-label position="floating">Codice</ion-label>
-            <ion-input type="text" formControlName="codice"></ion-input>
-          </ion-item>
-          <ion-note color="danger" *ngIf="_editForm.get('codice')?.hasError('required') && _editForm.get('codice')?.touched">
-            codice è obbligatorio.
-          </ion-note>
-          <ion-note color="danger" *ngIf="_editForm.get('codice')?.hasError('maxlength') && _editForm.get('codice')?.touched">
-            codice non può superare i 5 caratteri.
-          </ion-note>
-
-          <ion-item>
-            <ion-label position="floating">Tipo timbrature</ion-label>
-            <ion-select formControlName="timbratureTipo" interface="popover">
-              <ion-select-option [value]="orarioTimbratureTipoEnum.IntervalloOrario">Intervallo Orario</ion-select-option>
-              <ion-select-option [value]="orarioTimbratureTipoEnum.MonteOre">Monte Ore</ion-select-option>
-              <ion-select-option [value]="orarioTimbratureTipoEnum.MonteOreValore">Monte Ore Valore</ion-select-option>
-            </ion-select>
-          </ion-item>
-          <ion-note color="danger" *ngIf="_editForm.get('timbratureTipo')?.hasError('required') && _editForm.get('timbratureTipo')?.touched">
-            Il tipo timbrature è obbligatorio.
-          </ion-note>
-
-
-
-
-      
-
-
-
-
-        </div>
-
-        <div [hidden]="currSection!='sez2' || !isSez2Visible">
-          <br />
-          <ion-item class="nvx-item-4-title">
-            <ion-label>Intervalli orari </ion-label>
-          </ion-item>
-
-          <div *ngIf="_editModel ">
-
-            <ion-card>
-              <ion-card-content>
-
-                <ion-item>
-                  <ion-label position="floating">Numero Coppie</ion-label>
-                  <ion-select formControlName="numeroCoppie" interface="popover" (ionChange)="onRangeChange($event)">
-                    <ion-select-option [value]="1">1</ion-select-option>
-                    <ion-select-option [value]="2">2</ion-select-option>
-                    <ion-select-option [value]="3">3</ion-select-option>
-                    <ion-select-option [value]="4">4</ion-select-option>
-                  </ion-select>
-                </ion-item>
-                <ion-note color="danger" *ngIf="_editForm.get('numeroCoppie')?.hasError('required') && _editForm.get('numeroCoppie')?.touched">
-                  Il numero di coppie è obbligatorio.
-                </ion-note>
-
-                <br />
-
-                <ion-grid>
-
-
-
-                  <!--desktop-->
-                  <ion-row class="ion-hide-sm-down">
-
-                    <ion-col size="1" class="ion-hide-sm-down">
-                      <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
-                        Coppia
-                      </ion-label>
-                    </ion-col>
-
-                    <ion-col size="1" class="ion-hide-sm-down">
-                      <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
-                        Dalle Limite SX
-                      </ion-label>
-                    </ion-col>
-                    <ion-col size="1" class="ion-hide-sm-down">
-                      <ion-label [ngStyle]="{ color: true ? 'var(--ion-color-primary)' : '' }">
-                        DALLE
-                      </ion-label>
-                    </ion-col>
-                    <ion-col size="2" class="ion-hide-sm-down">
-                      <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
-                        Dalle Limite DX
-                      </ion-label>
-                    </ion-col>
-
-                    <ion-col size="1" class="ion-hide-sm-down">
-                      <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
-                        Alle Limite SX
-                      </ion-label>
-                    </ion-col>
-                    <ion-col size="1" class="ion-hide-sm-down">
-                      <ion-label [ngStyle]="{ color: true ? 'var(--ion-color-primary)' : '' }">
-                        ALLE
-                      </ion-label>
-                    </ion-col>
-                    <ion-col size="3" class="ion-hide-sm-down">
-                      <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
-                        Alle Limite DX
-                      </ion-label>
-                    </ion-col>
-
-                  </ion-row>
-
-                  <ion-row class="nvx-ion-row-4table" *ngFor="let coppia of get_Par_OrarioIntervalloHH(); let idxDay = index">
-
-
-                    <!--mobile-->
-                    <ion-item-sliding class="ion-hide-sm-up"
-                                      [class.nvx-row-odd]="idxDay % 2 !== 0"
-                                      [class.nvx-row-even]="idxDay % 2 === 0">
-
-                      <ion-item>
-                        <ion-grid>
-                          <ion-row class="ion-align-items-center">
-
-                            <ion-col size="2">
-                              <div class="descrizione">
-                                {{ coppia.numCoppia }}
-                              </div>
-                            </ion-col>
-
-                            <!-- Testo (dalle - alle) -->
-                            <ion-col size="5">
-                              <div class="descrizione">
-                                {{ coppia.dalle | slice:0:5 }}
-                              </div>
-                            </ion-col>
-                            <ion-col size="5">
-                              <div class="descrizione">
-                                {{ coppia.alle | slice:0:5 }}
-                              </div>
-                            </ion-col>
-
-                          </ion-row>
-                        </ion-grid>
-                      </ion-item>
-
-                      <!--<ion-item-options side="end">
-
-                        <ion-item-option [color]="btnEdit.color"
-                                         (click)="btnEdit.event(coppia)">
-                          <ion-icon slot="start" [name]="btnEdit.image"></ion-icon>
-                          {{ btnEdit.text }}
-                        </ion-item-option>
-
-                      </ion-item-options>-->
-
-                      <app-slide-button-cancella-modifica [item]="coppia"
-                                                          [showDelete]="false"
-                                                          [btnEdit]="btnEdit"
-                                                          [showEdit]="true">
-                      </app-slide-button-cancella-modifica>
-
-
-                    </ion-item-sliding>
-
-
-                    <!--desktop-->
-                    <ion-col size="1" class="ion-hide-sm-down">
-                      <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
-                        {{ coppia.numCoppia  }}
-                      </ion-label>
-                    </ion-col>
-
-                    <ion-col size="1" class="ion-hide-sm-down">
-                      <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
-                        {{ coppia.dalle_Limite_SX  | slice:0:5 }}
-                      </ion-label>
-                    </ion-col>
-
-                    <!--dalle_Use_4_Match-->
-
-                    <ion-col size="1" class="ion-hide-sm-down">
-                      <ion-label [ngStyle]="{ color: !coppia.dalle_Use_4_Match ? 'var(--ion-color-primary)' : 'var(--ion-color-danger)' }">
-                        {{ coppia.dalle  | slice:0:5 }}
-                      </ion-label>
-                    </ion-col>
-                    <ion-col size="2" class="ion-hide-sm-down">
-                      <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
-                        {{ coppia.dalle_Limite_DX  | slice:0:5 }}
-                      </ion-label>
-                    </ion-col>
-
-                    <ion-col size="1" class="ion-hide-sm-down">
-                      <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
-                        {{ coppia.alle_Limite_SX  | slice:0:5 }}
-                      </ion-label>
-                    </ion-col>
-                    <ion-col size="1" class="ion-hide-sm-down">
-                      <ion-label [ngStyle]="{ color: !coppia.alle_Use_4_Match ? 'var(--ion-color-primary)' : 'var(--ion-color-danger)' }">
-                        {{ coppia.alle  | slice:0:5 }}
-                      </ion-label>
-                    </ion-col>
-                    <ion-col size="3" class="ion-hide-sm-down">
-                      <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
-                        {{ coppia.alle_Limite_DX  | slice:0:5 }}
-                      </ion-label>
-                    </ion-col>
-
-                    <ion-col size="2" class="ion-hide-sm-down">
-                      <ion-button size="small" fill="outline" shape="round" (click)="btnEdit.event(coppia)" color="{{btnEdit.color}}">
-                        <ion-icon name="{{btnEdit.image}}"></ion-icon>
-                        &nbsp;{{btnEdit.text}}
-                      </ion-button>
-                    </ion-col>
-
-                  </ion-row>
-                </ion-grid>
-
-              </ion-card-content>
-            </ion-card>
-
+    @if (_editForm!=null) {
+      <ion-card-content>
+        <form [formGroup]="_editForm">
+          <ion-segment (ionChange)="segmentChanged($event)" [value]="currSection">
+            <ion-segment-button value="sez1" content-id="sez1">
+              <ion-label>Generale</ion-label>
+            </ion-segment-button>
+            @if (isSez2Visible) {
+              <ion-segment-button value="sez2" content-id="sez2">
+                <ion-label>Intervalli orari</ion-label>
+              </ion-segment-button>
+            }
+            @if (isSez3Visible) {
+              <ion-segment-button value="sez3" content-id="sez3">
+                <ion-label>Monte Ore</ion-label>
+              </ion-segment-button>
+            }
+          </ion-segment>
+          <div [hidden]="currSection!='sez1'">
+            <br />
+            <ion-item class="nvx-item-4-title">
+              <ion-label>Generale </ion-label>
+            </ion-item>
+            <ion-item>
+              <ion-label position="floating">Descrizione</ion-label>
+              <ion-input type="text" formControlName="descrizione"></ion-input>
+            </ion-item>
+            @if (_editForm.get('descrizione')?.hasError('required') && _editForm.get('descrizione')?.touched) {
+              <ion-note color="danger">
+                Descrizione è obbligatorio.
+              </ion-note>
+            }
+            @if (_editForm.get('descrizione')?.hasError('maxlength') && _editForm.get('descrizione')?.touched) {
+              <ion-note color="danger">
+                Descrizione non può superare i 20 caratteri.
+              </ion-note>
+            }
+            <ion-item>
+              <ion-label position="floating">Codice</ion-label>
+              <ion-input type="text" formControlName="codice"></ion-input>
+            </ion-item>
+            @if (_editForm.get('codice')?.hasError('required') && _editForm.get('codice')?.touched) {
+              <ion-note color="danger">
+                codice è obbligatorio.
+              </ion-note>
+            }
+            @if (_editForm.get('codice')?.hasError('maxlength') && _editForm.get('codice')?.touched) {
+              <ion-note color="danger">
+                codice non può superare i 5 caratteri.
+              </ion-note>
+            }
+            <ion-item>
+              <ion-label position="floating">Tipo timbrature</ion-label>
+              <ion-select formControlName="timbratureTipo" interface="popover">
+                <ion-select-option [value]="orarioTimbratureTipoEnum.IntervalloOrario">Intervallo Orario</ion-select-option>
+                <ion-select-option [value]="orarioTimbratureTipoEnum.MonteOre">Monte Ore</ion-select-option>
+                <ion-select-option [value]="orarioTimbratureTipoEnum.MonteOreValore">Monte Ore Valore</ion-select-option>
+              </ion-select>
+            </ion-item>
+            @if (_editForm.get('timbratureTipo')?.hasError('required') && _editForm.get('timbratureTipo')?.touched) {
+              <ion-note color="danger">
+                Il tipo timbrature è obbligatorio.
+              </ion-note>
+            }
           </div>
-
+          <div [hidden]="currSection!='sez2' || !isSez2Visible">
+            <br />
+            <ion-item class="nvx-item-4-title">
+              <ion-label>Intervalli orari </ion-label>
+            </ion-item>
+            @if (_editModel ) {
+              <div>
+                <ion-card>
+                  <ion-card-content>
+                    <ion-item>
+                      <ion-label position="floating">Numero Coppie</ion-label>
+                      <ion-select formControlName="numeroCoppie" interface="popover" (ionChange)="onRangeChange($event)">
+                        <ion-select-option [value]="1">1</ion-select-option>
+                        <ion-select-option [value]="2">2</ion-select-option>
+                        <ion-select-option [value]="3">3</ion-select-option>
+                        <ion-select-option [value]="4">4</ion-select-option>
+                      </ion-select>
+                    </ion-item>
+                    @if (_editForm.get('numeroCoppie')?.hasError('required') && _editForm.get('numeroCoppie')?.touched) {
+                      <ion-note color="danger">
+                        Il numero di coppie è obbligatorio.
+                      </ion-note>
+                    }
+                    <br />
+                    <ion-grid>
+                      <!--desktop-->
+                      <ion-row class="ion-hide-sm-down">
+                        <ion-col size="1" class="ion-hide-sm-down">
+                          <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
+                            Coppia
+                          </ion-label>
+                        </ion-col>
+                        <ion-col size="1" class="ion-hide-sm-down">
+                          <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
+                            Dalle Limite SX
+                          </ion-label>
+                        </ion-col>
+                        <ion-col size="1" class="ion-hide-sm-down">
+                          <ion-label [ngStyle]="{ color: true ? 'var(--ion-color-primary)' : '' }">
+                            DALLE
+                          </ion-label>
+                        </ion-col>
+                        <ion-col size="2" class="ion-hide-sm-down">
+                          <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
+                            Dalle Limite DX
+                          </ion-label>
+                        </ion-col>
+                        <ion-col size="1" class="ion-hide-sm-down">
+                          <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
+                            Alle Limite SX
+                          </ion-label>
+                        </ion-col>
+                        <ion-col size="1" class="ion-hide-sm-down">
+                          <ion-label [ngStyle]="{ color: true ? 'var(--ion-color-primary)' : '' }">
+                            ALLE
+                          </ion-label>
+                        </ion-col>
+                        <ion-col size="3" class="ion-hide-sm-down">
+                          <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
+                            Alle Limite DX
+                          </ion-label>
+                        </ion-col>
+                      </ion-row>
+                      @for (coppia of get_Par_OrarioIntervalloHH(); track coppia; let idxDay = $index) {
+                        <ion-row class="nvx-ion-row-4table">
+                          <!--mobile-->
+                          <ion-item-sliding class="ion-hide-sm-up"
+                            [class.nvx-row-odd]="idxDay % 2 !== 0"
+                            [class.nvx-row-even]="idxDay % 2 === 0">
+                            <ion-item>
+                              <ion-grid>
+                                <ion-row class="ion-align-items-center">
+                                  <ion-col size="2">
+                                    <div class="descrizione">
+                                      {{ coppia.numCoppia }}
+                                    </div>
+                                  </ion-col>
+                                  <!-- Testo (dalle - alle) -->
+                                  <ion-col size="5">
+                                    <div class="descrizione">
+                                      {{ coppia.dalle | slice:0:5 }}
+                                    </div>
+                                  </ion-col>
+                                  <ion-col size="5">
+                                    <div class="descrizione">
+                                      {{ coppia.alle | slice:0:5 }}
+                                    </div>
+                                  </ion-col>
+                                </ion-row>
+                              </ion-grid>
+                            </ion-item>
+                            <!--<ion-item-options side="end">
+                            <ion-item-option [color]="btnEdit.color"
+                              (click)="btnEdit.event(coppia)">
+                              <ion-icon slot="start" [name]="btnEdit.image"></ion-icon>
+                              {{ btnEdit.text }}
+                            </ion-item-option>
+                          </ion-item-options>-->
+                          <app-slide-button-cancella-modifica [item]="coppia"
+                            [showDelete]="false"
+                            [btnEdit]="btnEdit"
+                            [showEdit]="true">
+                          </app-slide-button-cancella-modifica>
+                        </ion-item-sliding>
+                        <!--desktop-->
+                        <ion-col size="1" class="ion-hide-sm-down">
+                          <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
+                            {{ coppia.numCoppia  }}
+                          </ion-label>
+                        </ion-col>
+                        <ion-col size="1" class="ion-hide-sm-down">
+                          <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
+                            {{ coppia.dalle_Limite_SX  | slice:0:5 }}
+                          </ion-label>
+                        </ion-col>
+                        <!--dalle_Use_4_Match-->
+                        <ion-col size="1" class="ion-hide-sm-down">
+                          <ion-label [ngStyle]="{ color: !coppia.dalle_Use_4_Match ? 'var(--ion-color-primary)' : 'var(--ion-color-danger)' }">
+                            {{ coppia.dalle  | slice:0:5 }}
+                          </ion-label>
+                        </ion-col>
+                        <ion-col size="2" class="ion-hide-sm-down">
+                          <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
+                            {{ coppia.dalle_Limite_DX  | slice:0:5 }}
+                          </ion-label>
+                        </ion-col>
+                        <ion-col size="1" class="ion-hide-sm-down">
+                          <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
+                            {{ coppia.alle_Limite_SX  | slice:0:5 }}
+                          </ion-label>
+                        </ion-col>
+                        <ion-col size="1" class="ion-hide-sm-down">
+                          <ion-label [ngStyle]="{ color: !coppia.alle_Use_4_Match ? 'var(--ion-color-primary)' : 'var(--ion-color-danger)' }">
+                            {{ coppia.alle  | slice:0:5 }}
+                          </ion-label>
+                        </ion-col>
+                        <ion-col size="3" class="ion-hide-sm-down">
+                          <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
+                            {{ coppia.alle_Limite_DX  | slice:0:5 }}
+                          </ion-label>
+                        </ion-col>
+                        <ion-col size="2" class="ion-hide-sm-down">
+                          <ion-button size="small" fill="outline" shape="round" (click)="btnEdit.event(coppia)" color="{{btnEdit.color}}">
+                            <ion-icon name="{{btnEdit.image}}"></ion-icon>
+                            &nbsp;{{btnEdit.text}}
+                          </ion-button>
+                        </ion-col>
+                      </ion-row>
+                    }
+                  </ion-grid>
+                </ion-card-content>
+              </ion-card>
+            </div>
+          }
         </div>
-
-
         <div [hidden]="currSection!='sez3' || !isSez3Visible">
-
           <br />
           <ion-item class="nvx-item-4-title">
             <ion-label>Monte ore </ion-label>
           </ion-item>
-
-          <div *ngIf="_editModel ">
-
-            <ion-card>
-              <ion-card-content>
-
-                <ion-item>
-                  <ion-label position="floating">Causale monte ore</ion-label>
-                  <ion-select formControlName="idCausale_HH_Lav_MonteOre" placeholder="Nessuna" interface="popover">
-                    <ion-select-option [value]="null">Nessuna</ion-select-option>
-                    <ion-select-option *ngFor="let causale of par_CausaliModelList" [value]="causale.id">
-                      {{ causale.descrizione }}
-                    </ion-select-option>
-                  </ion-select>
-                </ion-item>
-
-                <!--<ion-item>
+          @if (_editModel ) {
+            <div>
+              <ion-card>
+                <ion-card-content>
+                  <ion-item>
+                    <ion-label position="floating">Causale monte ore</ion-label>
+                    <ion-select formControlName="idCausale_HH_Lav_MonteOre" placeholder="Nessuna" interface="popover">
+                      <ion-select-option [value]="null">Nessuna</ion-select-option>
+                      @for (causale of par_CausaliModelList; track causale) {
+                        <ion-select-option [value]="causale.id">
+                          {{ causale.descrizione }}
+                        </ion-select-option>
+                      }
+                    </ion-select>
+                  </ion-item>
+                  <!--<ion-item>
                   <ion-label position="floating">Commessa Attivita</ion-label>
                   <ion-select formControlName="idAz_SubCommessaAttivita_MonteOre" placeholder="Seleziona l attivita">
                     <ion-select-option *ngFor="let attivita of az_SubCommessaAttivita_4FullList" [value]="attivita.subCommessaAttivita_Id">
@@ -299,43 +257,31 @@
                 <ion-note color="danger" *ngIf="_editForm.get('idAz_SubCommessaAttivita_MonteOre')?.hasError('required') && _editForm.get('idAz_SubCommessaAttivita_MonteOre')?.touched">
                   L attivita è obbligatoria.
                 </ion-note>-->
-
-
                 <ion-item>
                   <ion-label position="floating">Ore Teoriche</ion-label>
                   <ion-datetime-button class="datetime-button-with-label" datetime="hh_Teo_MonteOre-modal"></ion-datetime-button>
                   <ion-modal [keepContentsMounted]="true">
                     <ng-template>
                       <ion-datetime id="hh_Teo_MonteOre-modal"
-                                    formControlName="hh_Teo_MonteOre"
-                                    presentation="time"
-                                    [showDefaultButtons]="true"
-                                    doneText="OK"
-                                    cancelText="Annulla">
+                        formControlName="hh_Teo_MonteOre"
+                        presentation="time"
+                        [showDefaultButtons]="true"
+                        doneText="OK"
+                        cancelText="Annulla">
                       </ion-datetime>
                     </ng-template>
                   </ion-modal>
                 </ion-item>
-
-
-
-
-
               </ion-card-content>
             </ion-card>
-
           </div>
-
-       </div>
-
-
-</form>
-
-      <br />
-
-
-    </ion-card-content>
-  </ion-card>
+        }
+      </div>
+    </form>
+    <br />
+  </ion-card-content>
+}
+</ion-card>
 
 </ion-content>
 

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
@@ -16,6 +16,7 @@ import { CollectionDialogService } from '../../../shared/components/infrastructu
   selector: 'app-department-list-page',
   templateUrl: './department-list-page.component.html',
   styleUrls: ['./department-list-page.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class DepartmentListPageComponent implements OnInit {

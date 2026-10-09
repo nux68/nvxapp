@@ -1,415 +1,401 @@
 <app-page-toolbar [title]="Title"
-                  [showFilter]="ShowFilter"
-                  [showBreadcrumbs]="true">
+  [showFilter]="ShowFilter"
+  [showBreadcrumbs]="true">
 </app-page-toolbar>
 
 <ion-content [fullscreen]="true">
   <ion-card>
-    <ion-card-content *ngIf="_editModel!=null">
-
-      <!-- MENU DEI SEGMENTI -->
-      <!-- Nota: Rimosso [attr.content-id] dai bottoni -->
-      <ion-segment [value]="currSection_segment_main" (ionChange)="segment_main_segmentChanged($event)">
-
-        <!-- BUTTON Anagrafica -->
-        <ion-segment-button value="{{SEGMENT_MAIN_ANAGRAFICA}}">
-          <ion-label>Anagrafica</ion-label>
-        </ion-segment-button>
-
-        <!-- BUTTON Varie -->
-        <ion-segment-button value="{{SEGMENT_MAIN_VARIE}}">
-          <ion-label>Varie</ion-label>
-        </ion-segment-button>
-
-        <!-- BUTTON Rapporto lavoro (Dinamico) -->
-        <ng-container *ngIf="_editModel !=null && _editModel.dip_RapportoLavoro!=null">
-          @for (item_main of _editModel.dip_RapportoLavoro; track item_main.id; let idxRapp = $index) {
-          <ion-segment-button value="{{SEGMENT_MAIN_RAPP_LAV}}{{item_main.id}}">
-            <ion-label>Rapporto Lavoro (ID {{ item_main.id }})</ion-label>
+    @if (_editModel!=null) {
+      <ion-card-content>
+        <!-- MENU DEI SEGMENTI -->
+        <!-- Nota: Rimosso [attr.content-id] dai bottoni -->
+        <ion-segment [value]="currSection_segment_main" (ionChange)="segment_main_segmentChanged($event)">
+          <!-- BUTTON Anagrafica -->
+          <ion-segment-button value="{{SEGMENT_MAIN_ANAGRAFICA}}">
+            <ion-label>Anagrafica</ion-label>
           </ion-segment-button>
+          <!-- BUTTON Varie -->
+          <ion-segment-button value="{{SEGMENT_MAIN_VARIE}}">
+            <ion-label>Varie</ion-label>
+          </ion-segment-button>
+          <!-- BUTTON Rapporto lavoro (Dinamico) -->
+          @if (_editModel !=null && _editModel.dip_RapportoLavoro!=null) {
+            @for (item_main of _editModel.dip_RapportoLavoro; track item_main.id; let idxRapp = $index) {
+              <ion-segment-button value="{{SEGMENT_MAIN_RAPP_LAV}}{{item_main.id}}">
+                <ion-label>Rapporto Lavoro (ID {{ item_main.id }})</ion-label>
+              </ion-segment-button>
+            }
           }
-        </ng-container>
-
-      </ion-segment>
-
-      <!-- CONTENUTO DEL FORM -->
-      <form [formGroup]="_editForm">
-
-        <!-- CONTENUTO: Anagrafica -->
-        <!-- Visibile solo se il segmento corrente è ANAGRAFICA -->
-        <div *ngIf="currSection_segment_main === SEGMENT_MAIN_ANAGRAFICA">
-          <br />
-          <ion-item class="nvx-item-4-title">
-            <ion-label>Info </ion-label>
-          </ion-item>
-
-          <ion-item>
-            <ion-label position="floating">UserName</ion-label>
-            <ion-input type="text" formControlName="descrizione" [readonly]="_editModel!=null && _editModel.idUserCompany > 0"></ion-input>
-          </ion-item>
-          <ion-note color="danger" *ngIf="_editForm.get('descrizione')?.hasError('required') && _editForm.get('descrizione')?.touched">
-            UserName è obbligatorio.
-          </ion-note>
-          <ion-note color="danger" *ngIf="_editForm.get('descrizione')?.hasError('maxlength') && _editForm.get('descrizione')?.touched">
-            UserName non può superare i 20 caratteri.
-          </ion-note>
-          <ion-note color="warning" *ngIf="modifiedDescription">
-            {{ modifiedDescription }}
-          </ion-note>
-
-          <ng-container *ngIf="_editModel!=null && _editModel.idUserCompany == 0">
-            <ion-item>
-              <ion-label position="floating">Email</ion-label>
-              <ion-input type="email" formControlName="mail"></ion-input>
-            </ion-item>
-            <ion-note color="danger" *ngIf="_editForm.get('mail')?.hasError('required') && _editForm.get('mail')?.touched">
-              L'email è obbligatoria.
-            </ion-note>
-            <ion-note color="danger" *ngIf="_editForm.get('mail')?.hasError('email') && _editForm.get('mail')?.touched">
-              Inserisci un'email valida.
-            </ion-note>
-            <ion-item>
-              <ion-label position="floating">Password</ion-label>
-              <ion-input type="password" formControlName="pw"></ion-input>
-            </ion-item>
-            <ion-note color="danger" *ngIf="_editForm.get('pw')?.hasError('required') && _editForm.get('pw')?.touched">
-              La password è obbligatoria.
-            </ion-note>
-            <ion-item>
-              <ion-label position="floating">Conferma Password</ion-label>
-              <ion-input type="password" formControlName="confirmPassword"></ion-input>
-            </ion-item>
-            <ion-note color="danger" *ngIf="_editForm.get('confirmPassword')?.hasError('required') && _editForm.get('confirmPassword')?.touched">
-              La conferma della password è obbligatoria.
-            </ion-note>
-            <ion-note color="danger" *ngIf="_editForm.hasError('notMatching') && _editForm.get('confirmPassword')?.touched">
-              Le password non corrispondono.
-            </ion-note>
-          </ng-container>
-
-          <ion-item>
-            <ion-label position="floating">Ruolo</ion-label>
-            <ion-select formControlName="roles" aria-label="Ruoli" [multiple]="true">
-              <ion-select-option value="{{item_role}}" *ngFor="let item_role of getRoles()">{{ item_role }}</ion-select-option>
-            </ion-select>
-          </ion-item>
-          <ion-note color="danger" *ngIf="_editForm.get('roles')?.hasError('minArrayLength') && _editForm.get('roles')?.touched">
-            Il ruolo è obbligatorio.
-          </ion-note>
-
-          <ion-item>
-            <ion-label position="floating">Cognome</ion-label>
-            <ion-input type="text" formControlName="cognome"></ion-input>
-          </ion-item>
-          <ion-note color="danger" *ngIf="_editForm.get('cognome')?.hasError('required') && _editForm.get('cognome')?.touched">
-            cognome è obbligatorio.
-          </ion-note>
-          <ion-note color="danger" *ngIf="_editForm.get('cognome')?.hasError('maxlength') && _editForm.get('cognome')?.touched">
-            cognome non può superare i 20 caratteri.
-          </ion-note>
-
-          <ion-item>
-            <ion-label position="floating">Nome</ion-label>
-            <ion-input type="text" formControlName="nome"></ion-input>
-          </ion-item>
-          <ion-note color="danger" *ngIf="_editForm.get('nome')?.hasError('required') && _editForm.get('nome')?.touched">
-            nome è obbligatorio.
-          </ion-note>
-          <ion-note color="danger" *ngIf="_editForm.get('nome')?.hasError('maxlength') && _editForm.get('nome')?.touched">
-            nome non può superare i 20 caratteri.
-          </ion-note>
-
-          <br />
-        </div>
-
-        <!-- CONTENUTO: Varie -->
-        <div *ngIf="currSection_segment_main === SEGMENT_MAIN_VARIE">
-          <!-- Contenuto Varie vuoto come nell'originale -->
-        </div>
-
-        <!-- CONTENUTO: Rapporto lavoro (Dinamico) -->
-        <ng-container *ngIf="_editModel !=null && _editModel.dip_RapportoLavoro!=null">
-          @for (item_main of _editModel.dip_RapportoLavoro; track item_main.id; let idxRapp = $index) {
-
-
-          <div *ngIf="currSection_segment_main === (SEGMENT_MAIN_RAPP_LAV + item_main.id)">
-
-
-            <ion-segment [value]="currSection_segment_dip_rapp[item_main.id]" (ionChange)="segment_dip_rapp_segmentChanged($event, item_main.id)">
-
-              <ion-segment-button value="{{SEGMENT_MAIN_RAPP_LAV}}{{item_main.id}}_{{SEGMENT_DIPRAPP_PROF_HH}}">
-                <ion-label>Profili orari</ion-label>
-              </ion-segment-button>
-
-              <ion-segment-button value="{{SEGMENT_MAIN_RAPP_LAV}}{{item_main.id}}_{{SEGMENT_DIPRAPP_CONTATORI}}">
-                <ion-label>Contatori</ion-label>
-              </ion-segment-button>
-
-              <ion-segment-button value="{{SEGMENT_MAIN_RAPP_LAV}}{{item_main.id}}_{{SEGMENT_DIPRAPP_VARIE}}">
-                <ion-label>Varie</ion-label>
-              </ion-segment-button>
-
-            </ion-segment>
-
-            <!-- CONTENUTO: Rapporto lavoro Profilo orario -->
-            <div *ngIf="currSection_segment_dip_rapp[item_main.id] === (SEGMENT_MAIN_RAPP_LAV + item_main.id + '_' + SEGMENT_DIPRAPP_PROF_HH)">
-
+        </ion-segment>
+        <!-- CONTENUTO DEL FORM -->
+        <form [formGroup]="_editForm">
+          <!-- CONTENUTO: Anagrafica -->
+          <!-- Visibile solo se il segmento corrente è ANAGRAFICA -->
+          @if (currSection_segment_main === SEGMENT_MAIN_ANAGRAFICA) {
+            <div>
               <br />
               <ion-item class="nvx-item-4-title">
-                <ion-label>Profili orari </ion-label>
+                <ion-label>Info </ion-label>
               </ion-item>
-
-              <ion-grid >
-                <ion-row *ngFor="let item of getAll_Dip_ProfiloOrario() | genericFilter: 'descrizione' : searchText;let indexRow4Color = index" class="nvx-ion-row-4table" >
-
-
-                  <ion-item-sliding class="ion-hide-sm-up"
-                                    [class.nvx-row-odd]="indexRow4Color % 2 !== 0"
-                                    [class.nvx-row-even]="indexRow4Color % 2 === 0">
-                    <ion-item>
-                      <ion-icon [name]="isAdmin(item) ? 'server-outline' : 'server-outline'"></ion-icon>
-                      <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
-                        {{ item.idPar_ProfiloOrario  | parProfiloOrarioToLongTextPipe}} (ID {{ item.id}})
-                      </ion-label>
-                    </ion-item>
-
-                    <!--<ion-item-options side="end">
-                      <ion-item-option color="{{btnDelete_Dip_ProfiloOrario.color}}" (click)="btnDelete_Dip_ProfiloOrario.event(item)">
-                        <ion-icon slot="start" name="{{btnDelete_Dip_ProfiloOrario.image}}"></ion-icon>
-                        {{btnDelete_Dip_ProfiloOrario.text}}
-                      </ion-item-option>
-                      <ion-item-option color="{{btnEdit_Dip_ProfiloOrario.color}}" (click)="btnEdit_Dip_ProfiloOrario.event(item)">
-                        <ion-icon slot="start" name="{{btnEdit_Dip_ProfiloOrario.image}}"></ion-icon>
-                        {{ btnEdit_Dip_ProfiloOrario.text }}
-                      </ion-item-option>
-                    </ion-item-options>-->
-
-                    <app-slide-button-cancella-modifica [item]="item"
-                                                        [btnDelete]="btnDelete_Dip_ProfiloOrario"
-                                                        [showDelete]="true"
-                                                        [btnEdit]="btnEdit_Dip_ProfiloOrario"
-                                                        [showEdit]="true">
-                    </app-slide-button-cancella-modifica>
-
-                  </ion-item-sliding>
-
-
-                  <ion-col size="4" class="ion-hide-sm-down">
-                    <ion-icon [name]="isAdmin(item) ? 'server-outline' : 'server-outline'"></ion-icon>
-                    <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
-                      {{ item.idPar_ProfiloOrario  | parProfiloOrarioToLongTextPipe}} (ID {{ item.id}})
-                    </ion-label>
-                  </ion-col>
-
-                  <ion-col size="2" class="ion-hide-sm-down">
-                    <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
-                      {{ item.dal  | date:'dd/MM/yyyy' }}
-                    </ion-label>
-                  </ion-col>
-                  <ion-col size="2" class="ion-hide-sm-down">
-                    <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
-                      {{ item.al  | date:'dd/MM/yyyy' }}
-                    </ion-label>
-                  </ion-col>
-
-
-                  <ion-col size="2" class="ion-hide-sm-down">
-                    <ion-button *ngIf="!item.default" size="small" fill="outline" shape="round" (click)="btnDelete_Dip_ProfiloOrario.event(item)" color="{{btnDelete_Dip_ProfiloOrario.color}}">
-                      <ion-icon name="{{btnDelete_Dip_ProfiloOrario.image}}"></ion-icon>
-                      &nbsp;{{btnDelete_Dip_ProfiloOrario.text}}
-                    </ion-button>
-                  </ion-col>
-                  <ion-col size="2" class="ion-hide-sm-down">
-                    <ion-button size="small" fill="outline" shape="round" (click)="btnEdit_Dip_ProfiloOrario.event(item)" color="{{btnEdit_Dip_ProfiloOrario.color}}">
-                      <ion-icon name="{{btnEdit_Dip_ProfiloOrario.image}}"></ion-icon>
-                      &nbsp;{{btnEdit_Dip_ProfiloOrario.text}}
-                    </ion-button>
-                  </ion-col>
-
-
-
-
-
-
-                </ion-row>
-              </ion-grid>
-
-            </div>
-            <!-- CONTENUTO: Rapporto lavoro Varie -->
-            <div *ngIf="currSection_segment_dip_rapp[item_main.id] === (SEGMENT_MAIN_RAPP_LAV + item_main.id + '_' + SEGMENT_DIPRAPP_VARIE)">
-              <br />
-              <ion-item class="nvx-item-4-title">
-                <ion-label>contenuto varie </ion-label>
-              </ion-item>
-            </div>
-
-            <!-- CONTENUTO: Contatori -->
-            <div *ngIf="currSection_segment_dip_rapp[item_main.id] === (SEGMENT_MAIN_RAPP_LAV + item_main.id + '_' + SEGMENT_DIPRAPP_CONTATORI)">
-              <br />
-
-              <!-- Selettore anno -->
               <ion-item>
-                <ion-label position="floating">Anno</ion-label>
-                <ion-select [(ngModel)]="annoSelezionato"
-                            (ionChange)="onAnnoChange(item_main.id)"
-                            [ngModelOptions]="{standalone: true}"
-                            interface="popover">
-                  <ion-select-option *ngFor="let a of anniDisponibili" [value]="a">{{ a }}</ion-select-option>
+                <ion-label position="floating">UserName</ion-label>
+                <ion-input type="text" formControlName="descrizione" [readonly]="_editModel!=null && _editModel.idUserCompany > 0"></ion-input>
+              </ion-item>
+              @if (_editForm.get('descrizione')?.hasError('required') && _editForm.get('descrizione')?.touched) {
+                <ion-note color="danger">
+                  UserName è obbligatorio.
+                </ion-note>
+              }
+              @if (_editForm.get('descrizione')?.hasError('maxlength') && _editForm.get('descrizione')?.touched) {
+                <ion-note color="danger">
+                  UserName non può superare i 20 caratteri.
+                </ion-note>
+              }
+              @if (modifiedDescription) {
+                <ion-note color="warning">
+                  {{ modifiedDescription }}
+                </ion-note>
+              }
+              @if (_editModel!=null && _editModel.idUserCompany == 0) {
+                <ion-item>
+                  <ion-label position="floating">Email</ion-label>
+                  <ion-input type="email" formControlName="mail"></ion-input>
+                </ion-item>
+                @if (_editForm.get('mail')?.hasError('required') && _editForm.get('mail')?.touched) {
+                  <ion-note color="danger">
+                    L'email è obbligatoria.
+                  </ion-note>
+                }
+                @if (_editForm.get('mail')?.hasError('email') && _editForm.get('mail')?.touched) {
+                  <ion-note color="danger">
+                    Inserisci un'email valida.
+                  </ion-note>
+                }
+                <ion-item>
+                  <ion-label position="floating">Password</ion-label>
+                  <ion-input type="password" formControlName="pw"></ion-input>
+                </ion-item>
+                @if (_editForm.get('pw')?.hasError('required') && _editForm.get('pw')?.touched) {
+                  <ion-note color="danger">
+                    La password è obbligatoria.
+                  </ion-note>
+                }
+                <ion-item>
+                  <ion-label position="floating">Conferma Password</ion-label>
+                  <ion-input type="password" formControlName="confirmPassword"></ion-input>
+                </ion-item>
+                @if (_editForm.get('confirmPassword')?.hasError('required') && _editForm.get('confirmPassword')?.touched) {
+                  <ion-note color="danger">
+                    La conferma della password è obbligatoria.
+                  </ion-note>
+                }
+                @if (_editForm.hasError('notMatching') && _editForm.get('confirmPassword')?.touched) {
+                  <ion-note color="danger">
+                    Le password non corrispondono.
+                  </ion-note>
+                }
+              }
+              <ion-item>
+                <ion-label position="floating">Ruolo</ion-label>
+                <ion-select formControlName="roles" aria-label="Ruoli" [multiple]="true">
+                  @for (item_role of getRoles(); track item_role) {
+                    <ion-select-option value="{{item_role}}">{{ item_role }}</ion-select-option>
+                  }
                 </ion-select>
               </ion-item>
-
-              <br />
-
-              <!-- Riporti + Maturazione: due colonne affiancate -->
-              <ion-grid class="ion-no-padding">
-                <ion-row>
-
-                  <!-- Colonna destra: Riporto anno precedente (sensibile all'anno) -->
-                  <ion-col size="12" size-md="6">
-                    <ion-item class="nvx-item-4-title">
-                      <ion-label>Riporto anno precedente</ion-label>
-                    </ion-item>
-
-                    <ng-container *ngFor="let just of justContatori">
-                      <ion-item *ngIf="currentRiporti[just.id]">
-                        <ion-label>{{ just.descrizione }}</ion-label>
-                        <ion-input slot="end"
-                                   type="text"
-                                   inputmode="text"
-                                   placeholder="HHH:MM"
-                                   pattern="^\d+:[0-5]\d$"
-                                   style="max-width:90px; text-align:right"
-                                   [(ngModel)]="currentRiporti[just.id].saldoRiporto"
-                                   (ionChange)="onRiportoChange(just.id)"
-                                   [ngModelOptions]="{standalone: true}">
-                        </ion-input>
-                      </ion-item>
-                    </ng-container>
-                  </ion-col>
-
-                  <!-- Colonna sinistra: Maturazione mensile (NON sensibile all'anno) -->
-                  <ion-col size="12" size-md="6">
-                    <ion-item class="nvx-item-4-title">
-                      <ion-label>Maturazione mensile</ion-label>
-                    </ion-item>
-
-                    <ng-container *ngFor="let just of justContatori">
-                      <ion-item *ngIf="currentMaturazioni[just.id]">
-                        <ion-label>{{ just.descrizione }}</ion-label>
-                        <ion-input slot="end"
-                                   type="text"
-                                   inputmode="text"
-                                   placeholder="HHH:MM"
-                                   pattern="^\d+:[0-5]\d$"
-                                   style="max-width:90px; text-align:right"
-                                   [(ngModel)]="currentMaturazioni[just.id].oreMaturazione"
-                                   (ionChange)="onMaturazioneChange(just.id)"
-                                   [ngModelOptions]="{standalone: true}">
-                        </ion-input>
-                      </ion-item>
-                    </ng-container>
-                  </ion-col>
-
-                </ion-row>
-              </ion-grid>
-
-              <br />
-
-              <!-- Vista mensile contatori -->
-              <ion-item class="nvx-item-4-title">
-                <ion-label>Dettaglio mensile</ion-label>
+              @if (_editForm.get('roles')?.hasError('minArrayLength') && _editForm.get('roles')?.touched) {
+                <ion-note color="danger">
+                  Il ruolo è obbligatorio.
+                </ion-note>
+              }
+              <ion-item>
+                <ion-label position="floating">Cognome</ion-label>
+                <ion-input type="text" formControlName="cognome"></ion-input>
               </ion-item>
-
-              <ion-spinner *ngIf="contatoriLoading"></ion-spinner>
-
-              <ng-container *ngIf="!contatoriLoading && contatoriMesi.length > 0">
-                <ion-grid class="nvx-contatori-grid">
-
-                  <!-- Intestazione — nascosta su XS -->
-                  <ion-row class="nvx-row-header ion-hide-sm-down">
-                    <ion-col size-sm="1"><strong>Mese</strong></ion-col>
-                    <ion-col size-sm="2"><strong>Giustificativo</strong></ion-col>
-                    <ion-col size-sm="1" class="ion-text-center"><small>Prec.<br/>Mat.</small></ion-col>
-                    <ion-col size-sm="1" class="ion-text-center"><small>Prec.<br/>God.</small></ion-col>
-                    <ion-col size-sm="1" class="ion-text-center"><small>Prec.<br/>Saldo</small></ion-col>
-                    <ion-col size-sm="1" class="ion-text-center"><small>Corr.<br/>Mat.</small></ion-col>
-                    <ion-col size-sm="1" class="ion-text-center"><small>Corr.<br/>God.</small></ion-col>
-                    <ion-col size-sm="1" class="ion-text-center"><small>Corr.<br/>Saldo</small></ion-col>
-                    <ion-col size-sm="1" class="ion-text-center"><small>Succ.<br/>Mat.</small></ion-col>
-                    <ion-col size-sm="1" class="ion-text-center"><small>Succ.<br/>God.</small></ion-col>
-                    <ion-col size-sm="1" class="ion-text-center"><small>Succ.<br/>Saldo</small></ion-col>
-                  </ion-row>
-
-                  <!-- Righe dati -->
-                  <ion-row *ngFor="let riga of contatoriRighe"
-                           class="nvx-ion-row-4table"
-                           [class.nvx-row-odd]="riga.mese % 2 !== 0"
-                           [class.nvx-row-even]="riga.mese % 2 === 0">
-
-                    <!-- Col 1: Mese (solo prima riga del mese) -->
-                    <ion-col size="2" size-sm="1">
-                      <strong *ngIf="riga.showMese">
-                        {{ riga.nomeMese | slice:0:3 }}
-                      </strong>
-                    </ion-col>
-
-                    <!-- Col 2: Giustificativo -->
-                    <!-- XS: 2+10=12 ✓  SM: 1+2=3 -->
-                    <ion-col size="10" size-sm="2">{{ riga.just.codice }}</ion-col>
-
-                    <!-- Periodo Precedente  XS: offset(2)+4+3+3=12 ✓  SM: 1+1+1 -->
-                    <ion-col size="4" offset="2" size-sm="1" offset-sm="0" class="ion-text-center">
-                      <small class="ion-hide-sm-up" style="display:block">Prec.Mat.</small>{{ riga.risultato?.periodoPrecedente?.maturato ?? '-' }}
-                    </ion-col>
-                    <ion-col size="3" size-sm="1" class="ion-text-center">
-                      <small class="ion-hide-sm-up" style="display:block">Prec.God.</small>{{ riga.risultato?.periodoPrecedente?.goduto ?? '-' }}
-                    </ion-col>
-                    <ion-col size="3" size-sm="1" class="ion-text-center"
-                             [style.color]="riga.risultato?.periodoPrecedente?.saldo < '00:00:00' ? 'var(--ion-color-danger)' : ''">
-                      <small class="ion-hide-sm-up" style="display:block">Prec.Saldo</small>{{ riga.risultato?.periodoPrecedente?.saldo ?? '-' }}
-                    </ion-col>
-
-                    <!-- Periodo Corrente  XS: offset(2)+4+3+3=12 ✓  SM: 1+1+1 -->
-                    <ion-col size="4" offset="2" size-sm="1" offset-sm="0" class="ion-text-center">
-                      <small class="ion-hide-sm-up" style="display:block">Corr.Mat.</small>{{ riga.risultato?.periodoCorrente?.maturato ?? '-' }}
-                    </ion-col>
-                    <ion-col size="3" size-sm="1" class="ion-text-center">
-                      <small class="ion-hide-sm-up" style="display:block">Corr.God.</small>{{ riga.risultato?.periodoCorrente?.goduto ?? '-' }}
-                    </ion-col>
-                    <ion-col size="3" size-sm="1" class="ion-text-center"
-                             [style.color]="riga.risultato?.periodoCorrente?.saldo < '00:00:00' ? 'var(--ion-color-danger)' : ''">
-                      <small class="ion-hide-sm-up" style="display:block">Corr.Saldo</small>{{ riga.risultato?.periodoCorrente?.saldo ?? '-' }}
-                    </ion-col>
-
-                    <!-- Periodo Successivo  XS: offset(2)+4+3+3=12 ✓  SM: 1+1+1 -->
-                    <ion-col size="4" offset="2" size-sm="1" offset-sm="0" class="ion-text-center">
-                      <small class="ion-hide-sm-up" style="display:block">Succ.Mat.</small>{{ riga.risultato?.periodoSuccessivo?.maturato ?? '-' }}
-                    </ion-col>
-                    <ion-col size="3" size-sm="1" class="ion-text-center">
-                      <small class="ion-hide-sm-up" style="display:block">Succ.God.</small>{{ riga.risultato?.periodoSuccessivo?.goduto ?? '-' }}
-                    </ion-col>
-                    <ion-col size="3" size-sm="1" class="ion-text-center"
-                             [style.color]="riga.risultato?.periodoSuccessivo?.saldo < '00:00:00' ? 'var(--ion-color-danger)' : ''">
-                      <small class="ion-hide-sm-up" style="display:block">Succ.Saldo</small>{{ riga.risultato?.periodoSuccessivo?.saldo ?? '-' }}
-                    </ion-col>
-
-                  </ion-row>
-
-                </ion-grid>
-              </ng-container>
-
+              @if (_editForm.get('cognome')?.hasError('required') && _editForm.get('cognome')?.touched) {
+                <ion-note color="danger">
+                  cognome è obbligatorio.
+                </ion-note>
+              }
+              @if (_editForm.get('cognome')?.hasError('maxlength') && _editForm.get('cognome')?.touched) {
+                <ion-note color="danger">
+                  cognome non può superare i 20 caratteri.
+                </ion-note>
+              }
+              <ion-item>
+                <ion-label position="floating">Nome</ion-label>
+                <ion-input type="text" formControlName="nome"></ion-input>
+              </ion-item>
+              @if (_editForm.get('nome')?.hasError('required') && _editForm.get('nome')?.touched) {
+                <ion-note color="danger">
+                  nome è obbligatorio.
+                </ion-note>
+              }
+              @if (_editForm.get('nome')?.hasError('maxlength') && _editForm.get('nome')?.touched) {
+                <ion-note color="danger">
+                  nome non può superare i 20 caratteri.
+                </ion-note>
+              }
+              <br />
             </div>
-
-
-
-          </div>
-
           }
-        </ng-container>
-
+          <!-- CONTENUTO: Varie -->
+          @if (currSection_segment_main === SEGMENT_MAIN_VARIE) {
+            <div>
+              <!-- Contenuto Varie vuoto come nell'originale -->
+            </div>
+          }
+          <!-- CONTENUTO: Rapporto lavoro (Dinamico) -->
+          @if (_editModel !=null && _editModel.dip_RapportoLavoro!=null) {
+            @for (item_main of _editModel.dip_RapportoLavoro; track item_main.id; let idxRapp = $index) {
+              @if (currSection_segment_main === (SEGMENT_MAIN_RAPP_LAV + item_main.id)) {
+                <div>
+                  <ion-segment [value]="currSection_segment_dip_rapp[item_main.id]" (ionChange)="segment_dip_rapp_segmentChanged($event, item_main.id)">
+                    <ion-segment-button value="{{SEGMENT_MAIN_RAPP_LAV}}{{item_main.id}}_{{SEGMENT_DIPRAPP_PROF_HH}}">
+                      <ion-label>Profili orari</ion-label>
+                    </ion-segment-button>
+                    <ion-segment-button value="{{SEGMENT_MAIN_RAPP_LAV}}{{item_main.id}}_{{SEGMENT_DIPRAPP_CONTATORI}}">
+                      <ion-label>Contatori</ion-label>
+                    </ion-segment-button>
+                    <ion-segment-button value="{{SEGMENT_MAIN_RAPP_LAV}}{{item_main.id}}_{{SEGMENT_DIPRAPP_VARIE}}">
+                      <ion-label>Varie</ion-label>
+                    </ion-segment-button>
+                  </ion-segment>
+                  <!-- CONTENUTO: Rapporto lavoro Profilo orario -->
+                  @if (currSection_segment_dip_rapp[item_main.id] === (SEGMENT_MAIN_RAPP_LAV + item_main.id + '_' + SEGMENT_DIPRAPP_PROF_HH)) {
+                    <div>
+                      <br />
+                      <ion-item class="nvx-item-4-title">
+                        <ion-label>Profili orari </ion-label>
+                      </ion-item>
+                      <ion-grid >
+                        @for (item of getAll_Dip_ProfiloOrario() | genericFilter: 'descrizione' : searchText; track item; let indexRow4Color = $index) {
+                          <ion-row class="nvx-ion-row-4table" >
+                            <ion-item-sliding class="ion-hide-sm-up"
+                              [class.nvx-row-odd]="indexRow4Color % 2 !== 0"
+                              [class.nvx-row-even]="indexRow4Color % 2 === 0">
+                              <ion-item>
+                                <ion-icon [name]="isAdmin(item) ? 'server-outline' : 'server-outline'"></ion-icon>
+                                <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
+                                  {{ item.idPar_ProfiloOrario  | parProfiloOrarioToLongTextPipe}} (ID {{ item.id}})
+                                </ion-label>
+                              </ion-item>
+                              <!--<ion-item-options side="end">
+                              <ion-item-option color="{{btnDelete_Dip_ProfiloOrario.color}}" (click)="btnDelete_Dip_ProfiloOrario.event(item)">
+                                <ion-icon slot="start" name="{{btnDelete_Dip_ProfiloOrario.image}}"></ion-icon>
+                                {{btnDelete_Dip_ProfiloOrario.text}}
+                              </ion-item-option>
+                              <ion-item-option color="{{btnEdit_Dip_ProfiloOrario.color}}" (click)="btnEdit_Dip_ProfiloOrario.event(item)">
+                                <ion-icon slot="start" name="{{btnEdit_Dip_ProfiloOrario.image}}"></ion-icon>
+                                {{ btnEdit_Dip_ProfiloOrario.text }}
+                              </ion-item-option>
+                            </ion-item-options>-->
+                            <app-slide-button-cancella-modifica [item]="item"
+                              [btnDelete]="btnDelete_Dip_ProfiloOrario"
+                              [showDelete]="true"
+                              [btnEdit]="btnEdit_Dip_ProfiloOrario"
+                              [showEdit]="true">
+                            </app-slide-button-cancella-modifica>
+                          </ion-item-sliding>
+                          <ion-col size="4" class="ion-hide-sm-down">
+                            <ion-icon [name]="isAdmin(item) ? 'server-outline' : 'server-outline'"></ion-icon>
+                            <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
+                              {{ item.idPar_ProfiloOrario  | parProfiloOrarioToLongTextPipe}} (ID {{ item.id}})
+                            </ion-label>
+                          </ion-col>
+                          <ion-col size="2" class="ion-hide-sm-down">
+                            <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
+                              {{ item.dal  | date:'dd/MM/yyyy' }}
+                            </ion-label>
+                          </ion-col>
+                          <ion-col size="2" class="ion-hide-sm-down">
+                            <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
+                              {{ item.al  | date:'dd/MM/yyyy' }}
+                            </ion-label>
+                          </ion-col>
+                          <ion-col size="2" class="ion-hide-sm-down">
+                            @if (!item.default) {
+                              <ion-button size="small" fill="outline" shape="round" (click)="btnDelete_Dip_ProfiloOrario.event(item)" color="{{btnDelete_Dip_ProfiloOrario.color}}">
+                                <ion-icon name="{{btnDelete_Dip_ProfiloOrario.image}}"></ion-icon>
+                                &nbsp;{{btnDelete_Dip_ProfiloOrario.text}}
+                              </ion-button>
+                            }
+                          </ion-col>
+                          <ion-col size="2" class="ion-hide-sm-down">
+                            <ion-button size="small" fill="outline" shape="round" (click)="btnEdit_Dip_ProfiloOrario.event(item)" color="{{btnEdit_Dip_ProfiloOrario.color}}">
+                              <ion-icon name="{{btnEdit_Dip_ProfiloOrario.image}}"></ion-icon>
+                              &nbsp;{{btnEdit_Dip_ProfiloOrario.text}}
+                            </ion-button>
+                          </ion-col>
+                        </ion-row>
+                      }
+                    </ion-grid>
+                  </div>
+                }
+                <!-- CONTENUTO: Rapporto lavoro Varie -->
+                @if (currSection_segment_dip_rapp[item_main.id] === (SEGMENT_MAIN_RAPP_LAV + item_main.id + '_' + SEGMENT_DIPRAPP_VARIE)) {
+                  <div>
+                    <br />
+                    <ion-item class="nvx-item-4-title">
+                      <ion-label>contenuto varie </ion-label>
+                    </ion-item>
+                  </div>
+                }
+                <!-- CONTENUTO: Contatori -->
+                @if (currSection_segment_dip_rapp[item_main.id] === (SEGMENT_MAIN_RAPP_LAV + item_main.id + '_' + SEGMENT_DIPRAPP_CONTATORI)) {
+                  <div>
+                    <br />
+                    <!-- Selettore anno -->
+                    <ion-item>
+                      <ion-label position="floating">Anno</ion-label>
+                      <ion-select [(ngModel)]="annoSelezionato"
+                        (ionChange)="onAnnoChange(item_main.id)"
+                        [ngModelOptions]="{standalone: true}"
+                        interface="popover">
+                        @for (a of anniDisponibili; track a) {
+                          <ion-select-option [value]="a">{{ a }}</ion-select-option>
+                        }
+                      </ion-select>
+                    </ion-item>
+                    <br />
+                    <!-- Riporti + Maturazione: due colonne affiancate -->
+                    <ion-grid class="ion-no-padding">
+                      <ion-row>
+                        <!-- Colonna destra: Riporto anno precedente (sensibile all'anno) -->
+                        <ion-col size="12" size-md="6">
+                          <ion-item class="nvx-item-4-title">
+                            <ion-label>Riporto anno precedente</ion-label>
+                          </ion-item>
+                          @for (just of justContatori; track just) {
+                            @if (currentRiporti[just.id]) {
+                              <ion-item>
+                                <ion-label>{{ just.descrizione }}</ion-label>
+                                <ion-input slot="end"
+                                  type="text"
+                                  inputmode="text"
+                                  placeholder="HHH:MM"
+                                  pattern="^\d+:[0-5]\d$"
+                                  style="max-width:90px; text-align:right"
+                                  [(ngModel)]="currentRiporti[just.id].saldoRiporto"
+                                  (ionChange)="onRiportoChange(just.id)"
+                                  [ngModelOptions]="{standalone: true}">
+                                </ion-input>
+                              </ion-item>
+                            }
+                          }
+                        </ion-col>
+                        <!-- Colonna sinistra: Maturazione mensile (NON sensibile all'anno) -->
+                        <ion-col size="12" size-md="6">
+                          <ion-item class="nvx-item-4-title">
+                            <ion-label>Maturazione mensile</ion-label>
+                          </ion-item>
+                          @for (just of justContatori; track just) {
+                            @if (currentMaturazioni[just.id]) {
+                              <ion-item>
+                                <ion-label>{{ just.descrizione }}</ion-label>
+                                <ion-input slot="end"
+                                  type="text"
+                                  inputmode="text"
+                                  placeholder="HHH:MM"
+                                  pattern="^\d+:[0-5]\d$"
+                                  style="max-width:90px; text-align:right"
+                                  [(ngModel)]="currentMaturazioni[just.id].oreMaturazione"
+                                  (ionChange)="onMaturazioneChange(just.id)"
+                                  [ngModelOptions]="{standalone: true}">
+                                </ion-input>
+                              </ion-item>
+                            }
+                          }
+                        </ion-col>
+                      </ion-row>
+                    </ion-grid>
+                    <br />
+                    <!-- Vista mensile contatori -->
+                    <ion-item class="nvx-item-4-title">
+                      <ion-label>Dettaglio mensile</ion-label>
+                    </ion-item>
+                    @if (contatoriLoading) {
+                      <ion-spinner></ion-spinner>
+                    }
+                    @if (!contatoriLoading && contatoriMesi.length > 0) {
+                      <ion-grid class="nvx-contatori-grid">
+                        <!-- Intestazione — nascosta su XS -->
+                        <ion-row class="nvx-row-header ion-hide-sm-down">
+                          <ion-col size-sm="1"><strong>Mese</strong></ion-col>
+                          <ion-col size-sm="2"><strong>Giustificativo</strong></ion-col>
+                          <ion-col size-sm="1" class="ion-text-center"><small>Prec.<br/>Mat.</small></ion-col>
+                          <ion-col size-sm="1" class="ion-text-center"><small>Prec.<br/>God.</small></ion-col>
+                          <ion-col size-sm="1" class="ion-text-center"><small>Prec.<br/>Saldo</small></ion-col>
+                          <ion-col size-sm="1" class="ion-text-center"><small>Corr.<br/>Mat.</small></ion-col>
+                          <ion-col size-sm="1" class="ion-text-center"><small>Corr.<br/>God.</small></ion-col>
+                          <ion-col size-sm="1" class="ion-text-center"><small>Corr.<br/>Saldo</small></ion-col>
+                          <ion-col size-sm="1" class="ion-text-center"><small>Succ.<br/>Mat.</small></ion-col>
+                          <ion-col size-sm="1" class="ion-text-center"><small>Succ.<br/>God.</small></ion-col>
+                          <ion-col size-sm="1" class="ion-text-center"><small>Succ.<br/>Saldo</small></ion-col>
+                        </ion-row>
+                        <!-- Righe dati -->
+                        @for (riga of contatoriRighe; track riga) {
+                          <ion-row
+                            class="nvx-ion-row-4table"
+                            [class.nvx-row-odd]="riga.mese % 2 !== 0"
+                            [class.nvx-row-even]="riga.mese % 2 === 0">
+                            <!-- Col 1: Mese (solo prima riga del mese) -->
+                            <ion-col size="2" size-sm="1">
+                              @if (riga.showMese) {
+                                <strong>
+                                  {{ riga.nomeMese | slice:0:3 }}
+                                </strong>
+                              }
+                            </ion-col>
+                            <!-- Col 2: Giustificativo -->
+                            <!-- XS: 2+10=12 ✓  SM: 1+2=3 -->
+                            <ion-col size="10" size-sm="2">{{ riga.just.codice }}</ion-col>
+                            <!-- Periodo Precedente  XS: offset(2)+4+3+3=12 ✓  SM: 1+1+1 -->
+                            <ion-col size="4" offset="2" size-sm="1" offset-sm="0" class="ion-text-center">
+                              <small class="ion-hide-sm-up" style="display:block">Prec.Mat.</small>{{ riga.risultato?.periodoPrecedente?.maturato ?? '-' }}
+                            </ion-col>
+                            <ion-col size="3" size-sm="1" class="ion-text-center">
+                              <small class="ion-hide-sm-up" style="display:block">Prec.God.</small>{{ riga.risultato?.periodoPrecedente?.goduto ?? '-' }}
+                            </ion-col>
+                            <ion-col size="3" size-sm="1" class="ion-text-center"
+                              [style.color]="riga.risultato?.periodoPrecedente?.saldo < '00:00:00' ? 'var(--ion-color-danger)' : ''">
+                              <small class="ion-hide-sm-up" style="display:block">Prec.Saldo</small>{{ riga.risultato?.periodoPrecedente?.saldo ?? '-' }}
+                            </ion-col>
+                            <!-- Periodo Corrente  XS: offset(2)+4+3+3=12 ✓  SM: 1+1+1 -->
+                            <ion-col size="4" offset="2" size-sm="1" offset-sm="0" class="ion-text-center">
+                              <small class="ion-hide-sm-up" style="display:block">Corr.Mat.</small>{{ riga.risultato?.periodoCorrente?.maturato ?? '-' }}
+                            </ion-col>
+                            <ion-col size="3" size-sm="1" class="ion-text-center">
+                              <small class="ion-hide-sm-up" style="display:block">Corr.God.</small>{{ riga.risultato?.periodoCorrente?.goduto ?? '-' }}
+                            </ion-col>
+                            <ion-col size="3" size-sm="1" class="ion-text-center"
+                              [style.color]="riga.risultato?.periodoCorrente?.saldo < '00:00:00' ? 'var(--ion-color-danger)' : ''">
+                              <small class="ion-hide-sm-up" style="display:block">Corr.Saldo</small>{{ riga.risultato?.periodoCorrente?.saldo ?? '-' }}
+                            </ion-col>
+                            <!-- Periodo Successivo  XS: offset(2)+4+3+3=12 ✓  SM: 1+1+1 -->
+                            <ion-col size="4" offset="2" size-sm="1" offset-sm="0" class="ion-text-center">
+                              <small class="ion-hide-sm-up" style="display:block">Succ.Mat.</small>{{ riga.risultato?.periodoSuccessivo?.maturato ?? '-' }}
+                            </ion-col>
+                            <ion-col size="3" size-sm="1" class="ion-text-center">
+                              <small class="ion-hide-sm-up" style="display:block">Succ.God.</small>{{ riga.risultato?.periodoSuccessivo?.goduto ?? '-' }}
+                            </ion-col>
+                            <ion-col size="3" size-sm="1" class="ion-text-center"
+                              [style.color]="riga.risultato?.periodoSuccessivo?.saldo < '00:00:00' ? 'var(--ion-color-danger)' : ''">
+                              <small class="ion-hide-sm-up" style="display:block">Succ.Saldo</small>{{ riga.risultato?.periodoSuccessivo?.saldo ?? '-' }}
+                            </ion-col>
+                          </ion-row>
+                        }
+                      </ion-grid>
+                    }
+                  </div>
+                }
+              </div>
+            }
+          }
+        }
       </form>
-
     </ion-card-content>
-  </ion-card>
+  }
+</ion-card>
 </ion-content>
 <app-page-buttonbar [buttonbar]="buttonbar"></app-page-buttonbar>

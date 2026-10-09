@@ -1,6 +1,6 @@
 <app-page-toolbar [title]="Title"
-                  [showFilter]="false"
-                  [showBreadcrumbs]="true">
+  [showFilter]="false"
+  [showBreadcrumbs]="true">
 </app-page-toolbar>
 
 <ion-content [fullscreen]="true">
@@ -11,15 +11,15 @@
 
 
       <app-sedi-reparto-user-selection [showPeriodSelect]="true"
-                                       [showSediSelect]="false"
-                                       [showRepartoSelect]="true"
-                                       [showUserSelect]="true"
-                                       [singleSelectUser]="false"
-                                       (periodChange)="onPeriodChange($event)"
-                                       (sediIdChange)="onSedeChanged($event)"
-                                       (repartoIdChange)="onRepartiChanged($event)"
-                                       (allUsersIdChange)="onAllUsersInSelectionChanged($event)"
-                                       (currUserIdChange)="onCurrentUserChanged($event)">
+        [showSediSelect]="false"
+        [showRepartoSelect]="true"
+        [showUserSelect]="true"
+        [singleSelectUser]="false"
+        (periodChange)="onPeriodChange($event)"
+        (sediIdChange)="onSedeChanged($event)"
+        (repartoIdChange)="onRepartiChanged($event)"
+        (allUsersIdChange)="onAllUsersInSelectionChanged($event)"
+        (currUserIdChange)="onCurrentUserChanged($event)">
       </app-sedi-reparto-user-selection>
 
 
@@ -34,12 +34,12 @@
               <ion-modal [keepContentsMounted]="true">
                 <ng-template>
                   <ion-datetime id="dalle-limite-sx-modal"
-                                formControlName="dal"
-                                presentation="date"
-                                [firstDayOfWeek]="1"
-                                [showDefaultButtons]="true"
-                                doneText="OK"
-                                cancelText="Annulla">
+                    formControlName="dal"
+                    presentation="date"
+                    [firstDayOfWeek]="1"
+                    [showDefaultButtons]="true"
+                    doneText="OK"
+                    cancelText="Annulla">
                   </ion-datetime>
                 </ng-template>
               </ion-modal>
@@ -52,12 +52,12 @@
               <ion-modal [keepContentsMounted]="true">
                 <ng-template>
                   <ion-datetime id="alle-limite-sx-modal"
-                                formControlName="al"
-                                presentation="date"
-                                [firstDayOfWeek]="1"
-                                [showDefaultButtons]="true"
-                                doneText="OK"
-                                cancelText="Annulla">
+                    formControlName="al"
+                    presentation="date"
+                    [firstDayOfWeek]="1"
+                    [showDefaultButtons]="true"
+                    doneText="OK"
+                    cancelText="Annulla">
                   </ion-datetime>
                 </ng-template>
               </ion-modal>
@@ -72,14 +72,18 @@
             <ion-item>
               <ion-label position="floating">Tipo export</ion-label>
               <ion-select formControlName="idPar_ExportCau" placeholder="Seleziona il modello">
-                <ion-select-option *ngFor="let par_Export of par_ExportCauList" [value]="par_Export.id">
-                  {{ par_Export.descrizione }}
-                </ion-select-option>
+                @for (par_Export of par_ExportCauList; track par_Export) {
+                  <ion-select-option [value]="par_Export.id">
+                    {{ par_Export.descrizione }}
+                  </ion-select-option>
+                }
               </ion-select>
             </ion-item>
-            <ion-note color="danger" *ngIf="_editForm.get('idPar_ExportCau')?.hasError('required') && _editForm.get('idPar_ExportCau')?.touched">
-              Il modello è obbligatorio
-            </ion-note>
+            @if (_editForm.get('idPar_ExportCau')?.hasError('required') && _editForm.get('idPar_ExportCau')?.touched) {
+              <ion-note color="danger">
+                Il modello è obbligatorio
+              </ion-note>
+            }
           </ion-col>
         </ion-row>
 

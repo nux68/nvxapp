@@ -1,65 +1,65 @@
 <app-page-toolbar [title]="Title"
-                  [showFilter]="ShowFilter"
-                  [showBreadcrumbs]="true">
+  [showFilter]="ShowFilter"
+  [showBreadcrumbs]="true">
 </app-page-toolbar>
 
 <ion-content [fullscreen]="true">
 
   <ion-card>
-    <ion-card-content *ngIf="_editModel!=null">
-
-      <!-- Indicatore step -->
-      <div style="text-align:center; margin-bottom:16px;">
-        <ion-text color="medium">
-          Step {{ currentStep + 1 }} di {{ totalSteps }}
-        </ion-text>
-      </div>
-
-      <form [formGroup]="_editForm">
-
-        <!-- ═══ STEP 0: Dati Aziendali ═══ -->
-        <div *ngIf="currentStep === 0">
-
-          <ion-item class="nvx-item-4-title">
-            <ion-label>Info Azienda</ion-label>
-          </ion-item>
-
-          <!-- Descrizione -->
-          <ion-item>
-            <ion-label position="floating">Descrizione</ion-label>
-            <ion-input type="text" formControlName="descrizione" (ionChange)="UpdateDescription()" [readonly]="_editModel!=null && _editModel.idCompany > 0"></ion-input>
-          </ion-item>
-          <ion-note color="danger" *ngIf="_editForm.get('descrizione')?.hasError('required') && _editForm.get('descrizione')?.touched">
-            La descrizione è obbligatoria.
-          </ion-note>
-          <ion-note color="danger" *ngIf="_editForm.get('descrizione')?.hasError('maxlength') && _editForm.get('descrizione')?.touched">
-            La descrizione non può superare i 20 caratteri.
-          </ion-note>
-          <!-- Etichetta gialla che appare solo se il valore è stato modificato -->
-          <ion-note color="warning" *ngIf="modifiedDescription">
-            {{ modifiedDescription }}
-          </ion-note>
-
+    @if (_editModel!=null) {
+      <ion-card-content>
+        <!-- Indicatore step -->
+        <div style="text-align:center; margin-bottom:16px;">
+          <ion-text color="medium">
+            Step {{ currentStep + 1 }} di {{ totalSteps }}
+          </ion-text>
         </div>
-
-        <!-- ═══ STEP 1: Seconda pagina (vuota) ═══ -->
-        <div *ngIf="currentStep === 1">
-
-          <ion-item class="nvx-item-4-title">
-            <ion-label>Step 2</ion-label>
-          </ion-item>
-
-          <div style="padding: 16px; text-align: center;">
-            <ion-text color="medium">
-              <p>Seconda pagina - da implementare</p>
-            </ion-text>
-          </div>
-
-        </div>
-
-      </form>
-
-    </ion-card-content>
+        <form [formGroup]="_editForm">
+          <!-- ═══ STEP 0: Dati Aziendali ═══ -->
+          @if (currentStep === 0) {
+            <div>
+              <ion-item class="nvx-item-4-title">
+                <ion-label>Info Azienda</ion-label>
+              </ion-item>
+              <!-- Descrizione -->
+              <ion-item>
+                <ion-label position="floating">Descrizione</ion-label>
+                <ion-input type="text" formControlName="descrizione" (ionChange)="UpdateDescription()" [readonly]="_editModel!=null && _editModel.idCompany > 0"></ion-input>
+              </ion-item>
+              @if (_editForm.get('descrizione')?.hasError('required') && _editForm.get('descrizione')?.touched) {
+                <ion-note color="danger">
+                  La descrizione è obbligatoria.
+                </ion-note>
+              }
+              @if (_editForm.get('descrizione')?.hasError('maxlength') && _editForm.get('descrizione')?.touched) {
+                <ion-note color="danger">
+                  La descrizione non può superare i 20 caratteri.
+                </ion-note>
+              }
+              <!-- Etichetta gialla che appare solo se il valore è stato modificato -->
+              @if (modifiedDescription) {
+                <ion-note color="warning">
+                  {{ modifiedDescription }}
+                </ion-note>
+              }
+            </div>
+          }
+          <!-- ═══ STEP 1: Seconda pagina (vuota) ═══ -->
+          @if (currentStep === 1) {
+            <div>
+              <ion-item class="nvx-item-4-title">
+                <ion-label>Step 2</ion-label>
+              </ion-item>
+              <div style="padding: 16px; text-align: center;">
+                <ion-text color="medium">
+                  <p>Seconda pagina - da implementare</p>
+                </ion-text>
+              </div>
+            </div>
+          }
+        </form>
+      </ion-card-content>
+    }
   </ion-card>
 
 </ion-content>

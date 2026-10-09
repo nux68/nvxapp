@@ -1,6 +1,6 @@
 <app-page-toolbar [title]="Title"
-                  [showFilter]="false"
-                  [showBreadcrumbs]="true">
+  [showFilter]="false"
+  [showBreadcrumbs]="true">
 </app-page-toolbar>
 
 <ion-content [fullscreen]="true">
@@ -9,57 +9,48 @@
     <ion-card-content>
 
       <app-sedi-reparto-user-selection [showPeriodSelect]="false"
-                                       [showSediSelect]="false"
-                                       [showRepartoSelect]="true"
-                                       [showUserSelect]="true"
-                                       [singleSelectUser]="false"
-                                       (periodChange)="onPeriodChange($event)"
-                                       (sediIdChange)="onSedeChanged($event)"
-                                       (repartoIdChange)="onRepartiChanged($event)"
-                                       (allUsersIdChange)="onAllUsersInSelectionChanged($event)"
-                                       (currUserIdChange)="onCurrentUserChanged($event)">
+        [showSediSelect]="false"
+        [showRepartoSelect]="true"
+        [showUserSelect]="true"
+        [singleSelectUser]="false"
+        (periodChange)="onPeriodChange($event)"
+        (sediIdChange)="onSedeChanged($event)"
+        (repartoIdChange)="onRepartiChanged($event)"
+        (allUsersIdChange)="onAllUsersInSelectionChanged($event)"
+        (currUserIdChange)="onCurrentUserChanged($event)">
       </app-sedi-reparto-user-selection>
 
       <form [formGroup]="_editForm"></form>
 
-      <ion-grid *ngIf="daySlots!=null">
-
-        <ion-row *ngFor="let item of getAll() let indexRow4Color = index"
-                 [class.nvx-row-odd]="indexRow4Color % 2 !== 0"
-                 [class.nvx-row-even]="indexRow4Color % 2 === 0"
-                 class="nvx-ion-row-4table nvx-row-hover">
-
-          <ion-col size="1" size-xs="2">
-
-            <ion-button shape="round" fill="outline" size="small">
-              <ion-icon slot="icon-only" [name]="get_StatoDay_icon(item)"
+      @if (daySlots!=null) {
+        <ion-grid>
+          @for (item of getAll(); track item; let indexRow4Color = $index) {
+            <ion-row
+              [class.nvx-row-odd]="indexRow4Color % 2 !== 0"
+              [class.nvx-row-even]="indexRow4Color % 2 === 0"
+              class="nvx-ion-row-4table nvx-row-hover">
+              <ion-col size="1" size-xs="2">
+                <ion-button shape="round" fill="outline" size="small">
+                  <ion-icon slot="icon-only" [name]="get_StatoDay_icon(item)"
                         [ngStyle]="{
                        'color': get_StatoDay_color(item)
                      }">
-              </ion-icon>
-            </ion-button>
-
-          </ion-col>
-
-            <ion-col size="2" size-xs="4">
-
-              <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
-                {{ item.idAspNetUsers | idAspNetUsersToCognome }}
-              </ion-label>
-            </ion-col>
-
-            <ion-col size="1" size-xs="4">
-              <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
-                {{ item.idAspNetUsers | idAspNetUsersToNome }}
-              </ion-label>
-            </ion-col>
-
-
-            <ion-col size="1" size-xs="2">
-
-
-
-              <ion-chip *ngIf="item.dip_GG_Timbratura != null; else noTimb"
+                  </ion-icon>
+                </ion-button>
+              </ion-col>
+              <ion-col size="2" size-xs="4">
+                <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
+                  {{ item.idAspNetUsers | idAspNetUsersToCognome }}
+                </ion-label>
+              </ion-col>
+              <ion-col size="1" size-xs="4">
+                <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
+                  {{ item.idAspNetUsers | idAspNetUsersToNome }}
+                </ion-label>
+              </ion-col>
+              <ion-col size="1" size-xs="2">
+                @if (item.dip_GG_Timbratura != null) {
+                  <ion-chip
                         [ngStyle]="{
                               'background': timeSheetService.get_Dip_GG_Timbratura_backColor(item.dip_GG_Timbratura),
                               'color': timeSheetService.get_Dip_GG_Timbratura_txtColor(item.dip_GG_Timbratura),
@@ -69,23 +60,18 @@
                               'cursor':  false  ? 'pointer' : 'default',
                               'opacity': false  ? '1' : '0.5'
                             }"
-                        (click)="false ? null : null">
-                {{ item.dip_GG_Timbratura.timbraturaTipo | tipoTimbraturaToShortText }} {{ item.dip_GG_Timbratura.timbratura | date:'HH:mm' }}
-                <!--<ion-icon [name]="timeSheetService.get_StatoRichiesta_icon(get_Dip_GG_Richiesta(item.dip_GG_Timbratura.idDip_GG_Richiesta))"></ion-icon>-->
-              </ion-chip>
-
-
-
-              <ng-template #noTimb>
-                <span class="no-data">-</span>
-              </ng-template>
-            </ion-col>
-
-
-        </ion-row>
-
-
-      </ion-grid>
+                    (click)="false ? null : null">
+                    {{ item.dip_GG_Timbratura.timbraturaTipo | tipoTimbraturaToShortText }} {{ item.dip_GG_Timbratura.timbratura | date:'HH:mm' }}
+                    <!--<ion-icon [name]="timeSheetService.get_StatoRichiesta_icon(get_Dip_GG_Richiesta(item.dip_GG_Timbratura.idDip_GG_Richiesta))"></ion-icon>-->
+                  </ion-chip>
+                } @else {
+                  <span class="no-data">-</span>
+                }
+              </ion-col>
+            </ion-row>
+          }
+        </ion-grid>
+      }
     </ion-card-content>
   </ion-card>
 

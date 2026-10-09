@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { Observable, map, catchError } from 'rxjs';
@@ -20,6 +20,7 @@ import { CollectionDialogService } from '../../../shared/components/infrastructu
   templateUrl: './export-causali-page.component.html',
   styleUrls: ['./export-causali-page.component.scss'],
   providers: [DatePipe],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class ExportCausaliPageComponent extends BasePageConfirmCancelComponent<ExportCausaliFormData> implements OnInit {

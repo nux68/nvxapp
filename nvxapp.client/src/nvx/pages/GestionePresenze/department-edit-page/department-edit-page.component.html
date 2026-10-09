@@ -1,6 +1,6 @@
 <app-page-toolbar [title]="Title"
-                  [showFilter]="ShowFilter"
-                  [showBreadcrumbs]="true">
+  [showFilter]="ShowFilter"
+  [showBreadcrumbs]="true">
 </app-page-toolbar>
 
 
@@ -40,12 +40,16 @@
               <ion-label position="floating">Descrizione reparto</ion-label>
               <ion-input type="text" formControlName="descrizione" (ionChange)="UpdateDescription()"></ion-input>
             </ion-item>
-            <ion-note color="danger" *ngIf="_editForm.get('az_SediReparto.descrizione')?.hasError('required') && _editForm.get('az_SediReparto.descrizione')?.touched">
-              La descrizione è obbligatoria.
-            </ion-note>
-            <ion-note color="danger" *ngIf="_editForm.get('az_SediReparto.descrizione')?.hasError('maxlength') && _editForm.get('az_SediReparto.descrizione')?.touched">
-              La descrizione non può superare i 20 caratteri.
-            </ion-note>
+            @if (_editForm.get('az_SediReparto.descrizione')?.hasError('required') && _editForm.get('az_SediReparto.descrizione')?.touched) {
+              <ion-note color="danger">
+                La descrizione è obbligatoria.
+              </ion-note>
+            }
+            @if (_editForm.get('az_SediReparto.descrizione')?.hasError('maxlength') && _editForm.get('az_SediReparto.descrizione')?.touched) {
+              <ion-note color="danger">
+                La descrizione non può superare i 20 caratteri.
+              </ion-note>
+            }
           </div>
         </div>
         <div [hidden]="currSection!='sez2'">
@@ -53,98 +57,116 @@
           <ion-item class="nvx-item-4-title">
             <ion-label>Amministratori reparto e approvatori richieste</ion-label>
           </ion-item>
-          <div *ngIf="dip_Anagrafica!=null">
-            <!-- Mobile View -->
-            <ion-reorder-group class="ion-hide-sm-up" (ionItemReorder)="handleReorderAdmin($event)" [disabled]="!reorderEnabled">
-              <ion-item-sliding *ngFor="let item of getAdminSorted() | genericFilter: 'descrizione' : searchText">
-                <ion-item>
-                  <ion-checkbox slot="start" [checked]="isSelectedAdmin(item.id)" (ionChange)="toggleSelectionAdmin(item.id, $event)"></ion-checkbox>
-                  <ion-label>
-                    {{ item.id | idAspNetUsersToCognome }}  {{ item.id | idAspNetUsersToNome }}
-                  </ion-label>
-                  <ion-checkbox slot="end" *ngIf="isSelectedAdmin(item.id)" [checked]="isSelectedApproval(item.id)" (ionChange)="toggleSelectionApproval(item.id, $event)"></ion-checkbox>
-                  <ion-reorder slot="end" *ngIf="reorderEnabled"></ion-reorder>
-                </ion-item>
-              </ion-item-sliding>
-            </ion-reorder-group>
-
-            <!-- Desktop View -->
-            <ion-grid class="ion-hide-sm-down">
-              <ion-row>
-                <ion-col size="1">Admin</ion-col>
-                <ion-col>Cognome</ion-col>
-                <ion-col>Nome</ion-col>
-                <ion-col size="1">Approva richieste</ion-col>
-                <ion-col size="1" *ngIf="reorderEnabled">Ordine</ion-col>
-              </ion-row>
-              <ion-reorder-group (ionItemReorder)="handleReorderAdmin($event)" [disabled]="!reorderEnabled">
-                <ion-row *ngFor="let item of getAdminSorted() | genericFilter: 'descrizione' : searchText" class="nvx-ion-row-4table">
-                  <ion-col size="1">
-                    <ion-checkbox [checked]="isSelectedAdmin(item.id)" (ionChange)="toggleSelectionAdmin(item.id, $event)"></ion-checkbox>
-                  </ion-col>
-                  <ion-col>
-                    <ion-label>
-                      {{ item.id | idAspNetUsersToCognome }}
-                    </ion-label>
-                  </ion-col>
-                  <ion-col>
-                    <ion-label>
-                      {{ item.id | idAspNetUsersToNome }}
-                    </ion-label>
-                  </ion-col>
-                  <ion-col size="1">
-                    <ion-checkbox  *ngIf="isSelectedAdmin(item.id)" [checked]="isSelectedApproval(item.id)" (ionChange)="toggleSelectionApproval(item.id, $event)"></ion-checkbox>
-                  </ion-col>
-                  <ion-col size="1" *ngIf="reorderEnabled">
-                    <ion-reorder></ion-reorder>
-                  </ion-col>
-                </ion-row>
+          @if (dip_Anagrafica!=null) {
+            <div>
+              <!-- Mobile View -->
+              <ion-reorder-group class="ion-hide-sm-up" (ionItemReorder)="handleReorderAdmin($event)" [disabled]="!reorderEnabled">
+                @for (item of getAdminSorted() | genericFilter: 'descrizione' : searchText; track item) {
+                  <ion-item-sliding>
+                    <ion-item>
+                      <ion-checkbox slot="start" [checked]="isSelectedAdmin(item.id)" (ionChange)="toggleSelectionAdmin(item.id, $event)"></ion-checkbox>
+                      <ion-label>
+                        {{ item.id | idAspNetUsersToCognome }}  {{ item.id | idAspNetUsersToNome }}
+                      </ion-label>
+                      @if (isSelectedAdmin(item.id)) {
+                        <ion-checkbox slot="end" [checked]="isSelectedApproval(item.id)" (ionChange)="toggleSelectionApproval(item.id, $event)"></ion-checkbox>
+                      }
+                      @if (reorderEnabled) {
+                        <ion-reorder slot="end"></ion-reorder>
+                      }
+                    </ion-item>
+                  </ion-item-sliding>
+                }
               </ion-reorder-group>
-            </ion-grid>
-
-
-          </div>
+              <!-- Desktop View -->
+              <ion-grid class="ion-hide-sm-down">
+                <ion-row>
+                  <ion-col size="1">Admin</ion-col>
+                  <ion-col>Cognome</ion-col>
+                  <ion-col>Nome</ion-col>
+                  <ion-col size="1">Approva richieste</ion-col>
+                  @if (reorderEnabled) {
+                    <ion-col size="1">Ordine</ion-col>
+                  }
+                </ion-row>
+                <ion-reorder-group (ionItemReorder)="handleReorderAdmin($event)" [disabled]="!reorderEnabled">
+                  @for (item of getAdminSorted() | genericFilter: 'descrizione' : searchText; track item) {
+                    <ion-row class="nvx-ion-row-4table">
+                      <ion-col size="1">
+                        <ion-checkbox [checked]="isSelectedAdmin(item.id)" (ionChange)="toggleSelectionAdmin(item.id, $event)"></ion-checkbox>
+                      </ion-col>
+                      <ion-col>
+                        <ion-label>
+                          {{ item.id | idAspNetUsersToCognome }}
+                        </ion-label>
+                      </ion-col>
+                      <ion-col>
+                        <ion-label>
+                          {{ item.id | idAspNetUsersToNome }}
+                        </ion-label>
+                      </ion-col>
+                      <ion-col size="1">
+                        @if (isSelectedAdmin(item.id)) {
+                          <ion-checkbox  [checked]="isSelectedApproval(item.id)" (ionChange)="toggleSelectionApproval(item.id, $event)"></ion-checkbox>
+                        }
+                      </ion-col>
+                      @if (reorderEnabled) {
+                        <ion-col size="1">
+                          <ion-reorder></ion-reorder>
+                        </ion-col>
+                      }
+                    </ion-row>
+                  }
+                </ion-reorder-group>
+              </ion-grid>
+            </div>
+          }
         </div>
         <div [hidden]="currSection!='sez3'">
           <br />
           <ion-item class="nvx-item-4-title">
             <ion-label>Utenti che lavorano nel reparto</ion-label>
           </ion-item>
-          <div *ngIf="dip_Anagrafica!=null">
-            <!-- Mobile View -->
-            <ion-item-sliding *ngFor="let item of getUser() | genericFilter: 'descrizione' : searchText" class="ion-hide-sm-up">
-              <ion-item>
-                <ion-checkbox slot="start" [checked]="isSelectedUser(item.id)" (ionChange)="toggleSelectionUser(item.id, $event)"></ion-checkbox>
-                <ion-label>
-                  {{ item.id | idAspNetUsersToCognome }}  {{ item.id | idAspNetUsersToNome }}
-                </ion-label>
-              </ion-item>
-            </ion-item-sliding>
-
-            <!-- Desktop View -->
-            <ion-grid class="ion-hide-sm-down">
-              <ion-row>
-                <ion-col size="1">User</ion-col>
-                <ion-col>Cognome</ion-col>
-                <ion-col>Nome</ion-col>
-              </ion-row>
-              <ion-row *ngFor="let item of getUser() | genericFilter: 'descrizione' : searchText" class="nvx-ion-row-4table">
-                <ion-col size="1">
-                  <ion-checkbox [checked]="isSelectedUser(item.id)" (ionChange)="toggleSelectionUser(item.id, $event)"></ion-checkbox>
-                </ion-col>
-                <ion-col>
-                  <ion-label>
-                    {{ item.id | idAspNetUsersToCognome }}
-                  </ion-label>
-                </ion-col>
-                <ion-col>
-                  <ion-label>
-                    {{ item.id | idAspNetUsersToNome }}
-                  </ion-label>
-                </ion-col>
-              </ion-row>
-            </ion-grid>
-          </div>
+          @if (dip_Anagrafica!=null) {
+            <div>
+              <!-- Mobile View -->
+              @for (item of getUser() | genericFilter: 'descrizione' : searchText; track item) {
+                <ion-item-sliding class="ion-hide-sm-up">
+                  <ion-item>
+                    <ion-checkbox slot="start" [checked]="isSelectedUser(item.id)" (ionChange)="toggleSelectionUser(item.id, $event)"></ion-checkbox>
+                    <ion-label>
+                      {{ item.id | idAspNetUsersToCognome }}  {{ item.id | idAspNetUsersToNome }}
+                    </ion-label>
+                  </ion-item>
+                </ion-item-sliding>
+              }
+              <!-- Desktop View -->
+              <ion-grid class="ion-hide-sm-down">
+                <ion-row>
+                  <ion-col size="1">User</ion-col>
+                  <ion-col>Cognome</ion-col>
+                  <ion-col>Nome</ion-col>
+                </ion-row>
+                @for (item of getUser() | genericFilter: 'descrizione' : searchText; track item) {
+                  <ion-row class="nvx-ion-row-4table">
+                    <ion-col size="1">
+                      <ion-checkbox [checked]="isSelectedUser(item.id)" (ionChange)="toggleSelectionUser(item.id, $event)"></ion-checkbox>
+                    </ion-col>
+                    <ion-col>
+                      <ion-label>
+                        {{ item.id | idAspNetUsersToCognome }}
+                      </ion-label>
+                    </ion-col>
+                    <ion-col>
+                      <ion-label>
+                        {{ item.id | idAspNetUsersToNome }}
+                      </ion-label>
+                    </ion-col>
+                  </ion-row>
+                }
+              </ion-grid>
+            </div>
+          }
         </div>
         <div [hidden]="currSection!='sez4'">
           <br />
@@ -152,14 +174,16 @@
             <ion-label>Attività di reparto</ion-label>
           </ion-item>
 
-          <ion-item-sliding *ngFor="let item of getPar_Attivita() | genericFilter: 'descrizione' : searchText" class="ion-hide-sm-up">
-            <ion-item>
-              <ion-checkbox slot="start" [checked]="isSelectedaz_Az_SediRepartoAttivita(item.id)" (ionChange)="toggleSelectionaz_Az_SediRepartoAttivita(item.id, $event)"></ion-checkbox>
-              <ion-label>
-                {{ item.id | parAttivitaToLongText }}
-              </ion-label>
-            </ion-item>
-          </ion-item-sliding>
+          @for (item of getPar_Attivita() | genericFilter: 'descrizione' : searchText; track item) {
+            <ion-item-sliding class="ion-hide-sm-up">
+              <ion-item>
+                <ion-checkbox slot="start" [checked]="isSelectedaz_Az_SediRepartoAttivita(item.id)" (ionChange)="toggleSelectionaz_Az_SediRepartoAttivita(item.id, $event)"></ion-checkbox>
+                <ion-label>
+                  {{ item.id | parAttivitaToLongText }}
+                </ion-label>
+              </ion-item>
+            </ion-item-sliding>
+          }
 
           <ion-grid class="ion-hide-sm-down">
             <ion-row>
@@ -167,16 +191,18 @@
               <ion-col>Descr</ion-col>
 
             </ion-row>
-            <ion-row *ngFor="let item of getPar_Attivita() | genericFilter: 'descrizione' : searchText" class="nvx-ion-row-4table">
-              <ion-col size="1">
-                <ion-checkbox [checked]="isSelectedaz_Az_SediRepartoAttivita(item.id)" (ionChange)="toggleSelectionaz_Az_SediRepartoAttivita(item.id, $event)"></ion-checkbox>
-              </ion-col>
-              <ion-col>
-                <ion-label>
-                  {{ item.id | parAttivitaToLongText }}
-                </ion-label>
-              </ion-col>
-            </ion-row>
+            @for (item of getPar_Attivita() | genericFilter: 'descrizione' : searchText; track item) {
+              <ion-row class="nvx-ion-row-4table">
+                <ion-col size="1">
+                  <ion-checkbox [checked]="isSelectedaz_Az_SediRepartoAttivita(item.id)" (ionChange)="toggleSelectionaz_Az_SediRepartoAttivita(item.id, $event)"></ion-checkbox>
+                </ion-col>
+                <ion-col>
+                  <ion-label>
+                    {{ item.id | parAttivitaToLongText }}
+                  </ion-label>
+                </ion-col>
+              </ion-row>
+            }
           </ion-grid>
 
 

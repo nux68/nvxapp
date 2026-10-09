@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { BaseDialogConfirmCancelComponent } from '../../../../pages/_BASE/base-dialog-confirm-cancel/base-dialog-confirm-cancel.component';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
@@ -11,6 +11,7 @@ import { of } from 'rxjs/internal/observable/of';
   selector: 'app-time-sheet-engine-caller',
   templateUrl: './time-sheet-engine-caller.component.html',
   styleUrls: ['./time-sheet-engine-caller.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class TimeSheetEngineCallerComponent extends BaseDialogConfirmCancelComponent<TimeSheetEngineCallerData> {

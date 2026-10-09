@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
@@ -14,6 +14,7 @@ import { RefresherService } from '../../../Utility/GestionePresenze/refresher.se
   selector: 'app-mytemplate1-list-page',
   templateUrl: './mytemplate1-list-page.component.html',
   styleUrls: ['./mytemplate1-list-page.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class MyTemplate1ListPageComponent implements OnInit {

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { ParOrarioService } from '../../../ClientServer-Service/GestionePresenze/Par_Orario/par-orario.service';
 import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
@@ -14,6 +14,7 @@ import { Par_ExportCau_Delete_InModel, Par_ExportCau_GetAll_InModel, Par_ExportC
   selector: 'app-export-cau-list-page',
   templateUrl: './export-cau-list-page.component.html',
   styleUrls: ['./export-cau-list-page.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class ExportCauListPageComponent  implements OnInit {

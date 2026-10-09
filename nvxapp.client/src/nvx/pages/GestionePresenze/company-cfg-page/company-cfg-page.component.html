@@ -1,6 +1,6 @@
 <app-page-toolbar [title]="Title"
-                  [showFilter]="ShowFilter"
-                  [showBreadcrumbs]="true">
+  [showFilter]="ShowFilter"
+  [showBreadcrumbs]="true">
 </app-page-toolbar>
 
 
@@ -36,10 +36,12 @@
             </ion-list-header>
 
             <ion-radio-group formControlName="approvazioneTipo">
-              <ion-item *ngFor="let option of tipoApprovazioneOptions">
-                <ion-label>{{ getTipoApprovazioneLabel(option.value) }}</ion-label>
-                <ion-radio [value]="option.value" slot="start"></ion-radio>
-              </ion-item>
+              @for (option of tipoApprovazioneOptions; track option) {
+                <ion-item>
+                  <ion-label>{{ getTipoApprovazioneLabel(option.value) }}</ion-label>
+                  <ion-radio [value]="option.value" slot="start"></ion-radio>
+                </ion-item>
+              }
             </ion-radio-group>
           </ion-list>
         </div>

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { NavController } from '@ionic/angular';
@@ -14,6 +14,7 @@ import { RefresherService } from '../../../Utility/GestionePresenze/refresher.se
   selector: 'app-request-justification-user-page',
   templateUrl: './request-justification-user-page.component.html',
   styleUrls: ['./request-justification-user-page.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class RequestJustificationUserPageComponent implements OnInit {

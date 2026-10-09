@@ -1,7 +1,7 @@
 
 <app-page-toolbar [title]="Title"
-                  [showFilter]="ShowFilter"
-                  [showBreadcrumbs]="true">
+  [showFilter]="ShowFilter"
+  [showBreadcrumbs]="true">
 </app-page-toolbar>
 
 <ion-content [fullscreen]="true">
@@ -9,14 +9,14 @@
   <ion-modal [keepContentsMounted]="true">
     <ng-template>
       <ion-datetime id="startDatetime"
-                    [value]="startDate"
-                    presentation="date"
-                    [firstDayOfWeek]="1"
-                    [showDefaultButtons]="true"
-                    doneText="Fatto"
-                    cancelText="Annulla"
-                    (ionChange)="updateStartDate($event)"
-                    locale="it-IT">
+        [value]="startDate"
+        presentation="date"
+        [firstDayOfWeek]="1"
+        [showDefaultButtons]="true"
+        doneText="Fatto"
+        cancelText="Annulla"
+        (ionChange)="updateStartDate($event)"
+        locale="it-IT">
       </ion-datetime>
     </ng-template>
   </ion-modal>
@@ -24,307 +24,275 @@
   <ion-modal [keepContentsMounted]="true">
     <ng-template>
       <ion-datetime id="endDatetime"
-                    [value]="endDate"
-                    presentation="date"
-                    [firstDayOfWeek]="1"
-                    [showDefaultButtons]="true"
-                    doneText="Fatto"
-                    cancelText="Annulla"
-                    (ionChange)="updateEndDate($event)"
-                    locale="it-IT">
+        [value]="endDate"
+        presentation="date"
+        [firstDayOfWeek]="1"
+        [showDefaultButtons]="true"
+        doneText="Fatto"
+        cancelText="Annulla"
+        (ionChange)="updateEndDate($event)"
+        locale="it-IT">
       </ion-datetime>
     </ng-template>
   </ion-modal>
 
   <ion-card>
-    <ion-card-content *ngIf="_editModel!=null">
-
-      <form [formGroup]="_editForm">
-
-
-        <ion-segment (ionChange)="segmentChanged($event)" [value]="currSection">
-          <ion-segment-button value="sez_1" content-id="sez_1">
-            <ion-label>Commessa</ion-label>
-          </ion-segment-button>
-          <ion-segment-button value="sez_2" content-id="sez_2">
-            <ion-label>Sub commesse</ion-label>
-          </ion-segment-button>
-        </ion-segment>
-
-        <div [hidden]="currSection!='sez_1'">
-
-          <!--SUB FORM PER OGGETTi DI OGGETTI-->
-          <div formGroupName="az_Commessa">
-
-            <br />
-
-            <ion-item class="nvx-item-4-title">
-              <ion-label>Info commessa</ion-label>
-            </ion-item>
-
-            <ion-item>
-              <ion-label position="floating">Descrizione</ion-label>
-              <ion-input type="text" formControlName="descrizione"></ion-input>
-            </ion-item>
-            <!--SUB FORM PER OGGETTi DI OGGETTI  ATTENZIONE A az_Commessa.descrizione  PRENDERE IL formGroupName-->
-            <ion-note color="danger" *ngIf="_editForm.get('az_Commessa.descrizione')?.hasError('required') && _editForm.get('az_Commessa.descrizione')?.touched">
-              Descrizione è obbligatorio.
-            </ion-note>
-            <ion-note color="danger" *ngIf="_editForm.get('az_Commessa.descrizione')?.hasError('maxlength') && _editForm.get('az_Commessa.descrizione')?.touched">
-              Descrizione non può superare i 50 caratteri.
-            </ion-note>
-
-            <!-- Combo per selezione cliente -->
-            <ion-item>
-              <ion-label position="floating">Cliente</ion-label>
-              <ion-select formControlName="idAz_Cliente" placeholder="Seleziona cliente">
-                <ion-select-option *ngFor="let cliente of _az_ClienteModelList" [value]="cliente.id">
-                  {{ cliente.descrizione }}
-                </ion-select-option>
-              </ion-select>
-            </ion-item>
-            <ion-note color="danger" *ngIf="_editForm.get('az_Commessa.idAz_Cliente')?.hasError('required') && _editForm.get('az_Commessa.idAz_Cliente')?.touched">
-              Cliente è obbligatorio.
-            </ion-note>
-
-          </div>
-
-        </div>
-
-        <div [hidden]="currSection!='sez_2'">
-          <br />
-
-          <ion-item>
-            <ion-label position="floating">Sub commessa</ion-label>
-            <ion-select formControlName="tmp_az_SubCommessa" interface="modal" placeholder="Seleziona la Sub Commessa" (ionChange)="onSubCommessaChange($event)">
-              <ion-select-option *ngFor="let az_SubCommessa of _editModel.az_SubCommessa" [value]="az_SubCommessa.id">
-                {{ az_SubCommessa.descrizione }}
-              </ion-select-option>
-            </ion-select>
-          </ion-item>
-
-
-
-          <ion-segment (ionChange)="segmentChanged_sub($event)" [value]="currSection_sub">
-            <ion-segment-button value="sez_1_sub_4" content-id="sez_1_sub_4">
-              <ion-label>Sub Commessa</ion-label>
+    @if (_editModel!=null) {
+      <ion-card-content>
+        <form [formGroup]="_editForm">
+          <ion-segment (ionChange)="segmentChanged($event)" [value]="currSection">
+            <ion-segment-button value="sez_1" content-id="sez_1">
+              <ion-label>Commessa</ion-label>
             </ion-segment-button>
-            <ion-segment-button value="sez_1_sub_1" content-id="sez_1_sub_1">
-              <ion-label>Attività</ion-label>
-            </ion-segment-button>
-            <ion-segment-button value="sez_1_sub_2" content-id="sez_1_sub_2">
-              <ion-label>Reparti</ion-label>
-            </ion-segment-button>
-            <ion-segment-button value="sez_1_sub_3" content-id="sez_1_sub_3">
-              <ion-label>Utenti</ion-label>
+            <ion-segment-button value="sez_2" content-id="sez_2">
+              <ion-label>Sub commesse</ion-label>
             </ion-segment-button>
           </ion-segment>
-
-
-          <div [hidden]="currSection_sub!='sez_1_sub_4'">
-            <br />
-            <ion-item class="nvx-item-4-title">
-              <ion-label>Info sub commessa</ion-label>
-            </ion-item>
-
-            <!-- Sezione editabile per la sub-commessa selezionata -->
-            <div *ngIf="idxCurrCommessa !== -1">
-
-              <ion-item>
-                <ion-label position="stacked">Descrizione subcommessa</ion-label>
-                <ion-input type="text"
-                           [value]="_editModel.az_SubCommessa[idxCurrCommessa]?.descrizione || ''"
-                           (ionInput)="updateSubCommessaDescrizione($event)">
-                </ion-input>
+          <div [hidden]="currSection!='sez_1'">
+            <!--SUB FORM PER OGGETTi DI OGGETTI-->
+            <div formGroupName="az_Commessa">
+              <br />
+              <ion-item class="nvx-item-4-title">
+                <ion-label>Info commessa</ion-label>
               </ion-item>
-
               <ion-item>
-                <ion-label position="stacked" style="margin-bottom:13px;">Data inizio</ion-label>
-                <ion-datetime-button datetime="startDatetime"></ion-datetime-button>
+                <ion-label position="floating">Descrizione</ion-label>
+                <ion-input type="text" formControlName="descrizione"></ion-input>
               </ion-item>
-
+              <!--SUB FORM PER OGGETTi DI OGGETTI  ATTENZIONE A az_Commessa.descrizione  PRENDERE IL formGroupName-->
+              @if (_editForm.get('az_Commessa.descrizione')?.hasError('required') && _editForm.get('az_Commessa.descrizione')?.touched) {
+                <ion-note color="danger">
+                  Descrizione è obbligatorio.
+                </ion-note>
+              }
+              @if (_editForm.get('az_Commessa.descrizione')?.hasError('maxlength') && _editForm.get('az_Commessa.descrizione')?.touched) {
+                <ion-note color="danger">
+                  Descrizione non può superare i 50 caratteri.
+                </ion-note>
+              }
+              <!-- Combo per selezione cliente -->
               <ion-item>
-                <ion-label position="stacked" style="margin-bottom:13px;">Data fine</ion-label>
-                <ion-datetime-button datetime="endDatetime"></ion-datetime-button>
+                <ion-label position="floating">Cliente</ion-label>
+                <ion-select formControlName="idAz_Cliente" placeholder="Seleziona cliente">
+                  @for (cliente of _az_ClienteModelList; track cliente) {
+                    <ion-select-option [value]="cliente.id">
+                      {{ cliente.descrizione }}
+                    </ion-select-option>
+                  }
+                </ion-select>
               </ion-item>
-
+              @if (_editForm.get('az_Commessa.idAz_Cliente')?.hasError('required') && _editForm.get('az_Commessa.idAz_Cliente')?.touched) {
+                <ion-note color="danger">
+                  Cliente è obbligatorio.
+                </ion-note>
+              }
             </div>
-
           </div>
-
-
-          <div [hidden]="currSection_sub!='sez_1_sub_1'">
+          <div [hidden]="currSection!='sez_2'">
             <br />
-            <ion-item class="nvx-item-4-title">
-              <ion-label>Attività collegate alla commessa</ion-label>
+            <ion-item>
+              <ion-label position="floating">Sub commessa</ion-label>
+              <ion-select formControlName="tmp_az_SubCommessa" interface="modal" placeholder="Seleziona la Sub Commessa" (ionChange)="onSubCommessaChange($event)">
+                @for (az_SubCommessa of _editModel.az_SubCommessa; track az_SubCommessa) {
+                  <ion-select-option [value]="az_SubCommessa.id">
+                    {{ az_SubCommessa.descrizione }}
+                  </ion-select-option>
+                }
+              </ion-select>
             </ion-item>
-
-            <!--mobile-->
-            <ion-item-sliding *ngFor="let item of Az_SubCommessaAttivita_Get() | genericFilter: 'descrizione' : searchText" class="ion-hide-sm-up">
-              <ion-item>
-
-                <ion-label>
-                  {{ item.idPar_Attivita | parAttivitaToLongText }}
-                </ion-label>
+            <ion-segment (ionChange)="segmentChanged_sub($event)" [value]="currSection_sub">
+              <ion-segment-button value="sez_1_sub_4" content-id="sez_1_sub_4">
+                <ion-label>Sub Commessa</ion-label>
+              </ion-segment-button>
+              <ion-segment-button value="sez_1_sub_1" content-id="sez_1_sub_1">
+                <ion-label>Attività</ion-label>
+              </ion-segment-button>
+              <ion-segment-button value="sez_1_sub_2" content-id="sez_1_sub_2">
+                <ion-label>Reparti</ion-label>
+              </ion-segment-button>
+              <ion-segment-button value="sez_1_sub_3" content-id="sez_1_sub_3">
+                <ion-label>Utenti</ion-label>
+              </ion-segment-button>
+            </ion-segment>
+            <div [hidden]="currSection_sub!='sez_1_sub_4'">
+              <br />
+              <ion-item class="nvx-item-4-title">
+                <ion-label>Info sub commessa</ion-label>
               </ion-item>
-
-              <!--<ion-item-options side="end">
-    <ion-item-option *ngIf="!item.default" color="{{btnDeleteAttivita.color}}" (click)="btnDeleteAttivita.event(item)">
-      <ion-icon slot="start" name="{{btnDeleteAttivita.image}}"></ion-icon>
-      {{btnDeleteAttivita.text}}
-    </ion-item-option>
-  </ion-item-options>-->
-
-              <app-slide-button-cancella-modifica [item]="item"
-                                                  [btnDelete]="btnDeleteAttivita"
-                                                  [showDelete]="!item.default"
-                                                  [btnEdit]="false">
-              </app-slide-button-cancella-modifica>
-
-
-            </ion-item-sliding>
-
+              <!-- Sezione editabile per la sub-commessa selezionata -->
+              @if (idxCurrCommessa !== -1) {
+                <div>
+                  <ion-item>
+                    <ion-label position="stacked">Descrizione subcommessa</ion-label>
+                    <ion-input type="text"
+                      [value]="_editModel.az_SubCommessa[idxCurrCommessa]?.descrizione || ''"
+                      (ionInput)="updateSubCommessaDescrizione($event)">
+                    </ion-input>
+                  </ion-item>
+                  <ion-item>
+                    <ion-label position="stacked" style="margin-bottom:13px;">Data inizio</ion-label>
+                    <ion-datetime-button datetime="startDatetime"></ion-datetime-button>
+                  </ion-item>
+                  <ion-item>
+                    <ion-label position="stacked" style="margin-bottom:13px;">Data fine</ion-label>
+                    <ion-datetime-button datetime="endDatetime"></ion-datetime-button>
+                  </ion-item>
+                </div>
+              }
+            </div>
+            <div [hidden]="currSection_sub!='sez_1_sub_1'">
+              <br />
+              <ion-item class="nvx-item-4-title">
+                <ion-label>Attività collegate alla commessa</ion-label>
+              </ion-item>
+              <!--mobile-->
+              @for (item of Az_SubCommessaAttivita_Get() | genericFilter: 'descrizione' : searchText; track item) {
+                <ion-item-sliding class="ion-hide-sm-up">
+                  <ion-item>
+                    <ion-label>
+                      {{ item.idPar_Attivita | parAttivitaToLongText }}
+                    </ion-label>
+                  </ion-item>
+                  <!--<ion-item-options side="end">
+                  <ion-item-option *ngIf="!item.default" color="{{btnDeleteAttivita.color}}" (click)="btnDeleteAttivita.event(item)">
+                    <ion-icon slot="start" name="{{btnDeleteAttivita.image}}"></ion-icon>
+                    {{btnDeleteAttivita.text}}
+                  </ion-item-option>
+                </ion-item-options>-->
+                <app-slide-button-cancella-modifica [item]="item"
+                  [btnDelete]="btnDeleteAttivita"
+                  [showDelete]="!item.default"
+                  [btnEdit]="false">
+                </app-slide-button-cancella-modifica>
+              </ion-item-sliding>
+            }
             <ion-grid class="ion-hide-sm-down">
               <ion-row>
                 <ion-col size="10">Descr</ion-col>
               </ion-row>
-
-              <ion-row *ngFor="let item of Az_SubCommessaAttivita_Get() | genericFilter: 'descrizione' : searchText" class="nvx-ion-row-4table">
-
-                <ion-col size="10">
-                  <ion-label>
-                    {{ item.idPar_Attivita | parAttivitaToLongText }}
-                  </ion-label>
-                </ion-col>
-
-                <ion-col size="2">
-                  <ion-button *ngIf="!item.default" size="small" fill="outline" shape="round" (click)="btnDeleteAttivita.event(item)" color="{{btnDeleteAttivita.color}}">
-                    <ion-icon name="{{btnDeleteAttivita.image}}"></ion-icon>
-                    {{btnDeleteAttivita.text}}
-                  </ion-button>
-                </ion-col>
-
-              </ion-row>
+              @for (item of Az_SubCommessaAttivita_Get() | genericFilter: 'descrizione' : searchText; track item) {
+                <ion-row class="nvx-ion-row-4table">
+                  <ion-col size="10">
+                    <ion-label>
+                      {{ item.idPar_Attivita | parAttivitaToLongText }}
+                    </ion-label>
+                  </ion-col>
+                  <ion-col size="2">
+                    @if (!item.default) {
+                      <ion-button size="small" fill="outline" shape="round" (click)="btnDeleteAttivita.event(item)" color="{{btnDeleteAttivita.color}}">
+                        <ion-icon name="{{btnDeleteAttivita.image}}"></ion-icon>
+                        {{btnDeleteAttivita.text}}
+                      </ion-button>
+                    }
+                  </ion-col>
+                </ion-row>
+              }
             </ion-grid>
-
-
           </div>
-
           <div [hidden]="currSection_sub!='sez_1_sub_2'">
             <br />
             <ion-item class="nvx-item-4-title">
               <ion-label>Reparti collegati alla commessa</ion-label>
             </ion-item>
-
             <!--mobile-->
-            <ion-item-sliding *ngFor="let item of Az_SediReparto_Get() | genericFilter: 'descrizione' : searchText" class="ion-hide-sm-up">
-              <ion-item>
-                <ion-label>
-                  {{ item.idAz_SediReparto | azSediRepartoToLongText }}
-                </ion-label>
-              </ion-item>
-
-              <!--<ion-item-options side="end">
-    <ion-item-option *ngIf="!item.default" color="{{btnDeleteReparto.color}}" (click)="btnDeleteReparto.event(item)">
-      <ion-icon slot="start" name="{{btnDeleteReparto.image}}"></ion-icon>
-      {{btnDeleteReparto.text}}
-    </ion-item-option>
-  </ion-item-options>-->
-
+            @for (item of Az_SediReparto_Get() | genericFilter: 'descrizione' : searchText; track item) {
+              <ion-item-sliding class="ion-hide-sm-up">
+                <ion-item>
+                  <ion-label>
+                    {{ item.idAz_SediReparto | azSediRepartoToLongText }}
+                  </ion-label>
+                </ion-item>
+                <!--<ion-item-options side="end">
+                <ion-item-option *ngIf="!item.default" color="{{btnDeleteReparto.color}}" (click)="btnDeleteReparto.event(item)">
+                  <ion-icon slot="start" name="{{btnDeleteReparto.image}}"></ion-icon>
+                  {{btnDeleteReparto.text}}
+                </ion-item-option>
+              </ion-item-options>-->
               <app-slide-button-cancella-modifica [item]="item"
-                                                  [btnDelete]="btnDeleteReparto"
-                                                  [showDelete]="!item.default"
-                                                  [btnEdit]="false">
+                [btnDelete]="btnDeleteReparto"
+                [showDelete]="!item.default"
+                [btnEdit]="false">
               </app-slide-button-cancella-modifica>
-
-
-
             </ion-item-sliding>
-            <!--deskTop-->
-            <ion-grid class="ion-hide-sm-down">
-              <ion-row *ngFor="let item of Az_SediReparto_Get() | genericFilter: 'descrizione' : searchText" class="nvx-ion-row-4table">
+          }
+          <!--deskTop-->
+          <ion-grid class="ion-hide-sm-down">
+            @for (item of Az_SediReparto_Get() | genericFilter: 'descrizione' : searchText; track item) {
+              <ion-row class="nvx-ion-row-4table">
                 <ion-col size="10">
                   <ion-label>
                     {{ item.idAz_SediReparto | azSediRepartoToLongText }}
                   </ion-label>
                 </ion-col>
-
                 <ion-col size="2">
-                  <ion-button *ngIf="!item.default" size="small" fill="outline" shape="round" (click)="btnDeleteReparto.event(item)" color="{{btnDeleteReparto.color}}">
-                    <ion-icon name="{{btnDeleteReparto.image}}"></ion-icon>
-                    {{btnDeleteReparto.text}}
-                  </ion-button>
+                  @if (!item.default) {
+                    <ion-button size="small" fill="outline" shape="round" (click)="btnDeleteReparto.event(item)" color="{{btnDeleteReparto.color}}">
+                      <ion-icon name="{{btnDeleteReparto.image}}"></ion-icon>
+                      {{btnDeleteReparto.text}}
+                    </ion-button>
+                  }
                 </ion-col>
-
               </ion-row>
-            </ion-grid>
-
-          </div>
-
-          <div [hidden]="currSection_sub!='sez_1_sub_3'">
-            <br />
-
-
-            <ion-item class="nvx-item-4-title">
-              <ion-label>Utenti collegati alla commessa</ion-label>
-            </ion-item>
-
-            <!--mobile-->
-            <ion-item-sliding *ngFor="let item of Az_SubCommessaUser_Get() | genericFilter: 'descrizione' : searchText" class="ion-hide-sm-up">
+            }
+          </ion-grid>
+        </div>
+        <div [hidden]="currSection_sub!='sez_1_sub_3'">
+          <br />
+          <ion-item class="nvx-item-4-title">
+            <ion-label>Utenti collegati alla commessa</ion-label>
+          </ion-item>
+          <!--mobile-->
+          @for (item of Az_SubCommessaUser_Get() | genericFilter: 'descrizione' : searchText; track item) {
+            <ion-item-sliding class="ion-hide-sm-up">
               <ion-item>
                 <ion-label>
                   {{ item.idAspNetUsers | idAspNetUsersToCognome }}  {{ item.idAspNetUsers | idAspNetUsersToNome }}
                 </ion-label>
               </ion-item>
-
               <!--<ion-item-options side="end">
-    <ion-item-option *ngIf="!item.default" color="{{btnDeleteUser.color}}" (click)="btnDeleteUser.event(item)">
-      <ion-icon slot="start" name="{{btnDeleteUser.image}}"></ion-icon>
-      {{btnDeleteUser.text}}
-    </ion-item-option>
-  </ion-item-options>-->
-
-              <app-slide-button-cancella-modifica [item]="item"
-                                                  [btnDelete]="btnDeleteUser"
-                                                  [showDelete]="!item.default"
-                                                  [btnEdit]="false">
-              </app-slide-button-cancella-modifica>
-
-
-            </ion-item-sliding>
-            <!--deskTop-->
-            <ion-grid class="ion-hide-sm-down">
-              <ion-row *ngFor="let item of Az_SubCommessaUser_Get() | genericFilter: 'descrizione' : searchText" class="nvx-ion-row-4table">
-                <ion-col size="5">
-                  <ion-label>
-                    {{ item.idAspNetUsers | idAspNetUsersToCognome }}
-                  </ion-label>
-                </ion-col>
-                <ion-col size="5">
-                  <ion-label>
-                    {{ item.idAspNetUsers | idAspNetUsersToNome }}
-                  </ion-label>
-                </ion-col>
-                <ion-col size="2">
-                  <ion-button *ngIf="!item.default" size="small" fill="outline" shape="round" (click)="btnDeleteUser.event(item)" color="{{btnDeleteUser.color}}">
+              <ion-item-option *ngIf="!item.default" color="{{btnDeleteUser.color}}" (click)="btnDeleteUser.event(item)">
+                <ion-icon slot="start" name="{{btnDeleteUser.image}}"></ion-icon>
+                {{btnDeleteUser.text}}
+              </ion-item-option>
+            </ion-item-options>-->
+            <app-slide-button-cancella-modifica [item]="item"
+              [btnDelete]="btnDeleteUser"
+              [showDelete]="!item.default"
+              [btnEdit]="false">
+            </app-slide-button-cancella-modifica>
+          </ion-item-sliding>
+        }
+        <!--deskTop-->
+        <ion-grid class="ion-hide-sm-down">
+          @for (item of Az_SubCommessaUser_Get() | genericFilter: 'descrizione' : searchText; track item) {
+            <ion-row class="nvx-ion-row-4table">
+              <ion-col size="5">
+                <ion-label>
+                  {{ item.idAspNetUsers | idAspNetUsersToCognome }}
+                </ion-label>
+              </ion-col>
+              <ion-col size="5">
+                <ion-label>
+                  {{ item.idAspNetUsers | idAspNetUsersToNome }}
+                </ion-label>
+              </ion-col>
+              <ion-col size="2">
+                @if (!item.default) {
+                  <ion-button size="small" fill="outline" shape="round" (click)="btnDeleteUser.event(item)" color="{{btnDeleteUser.color}}">
                     <ion-icon name="{{btnDeleteUser.image}}"></ion-icon>
                     {{btnDeleteUser.text}}
                   </ion-button>
-                </ion-col>
-              </ion-row>
-            </ion-grid>
-
-
-          </div>
-
-
-
-        </div>
-
-      </form>
-
-    </ion-card-content>
-  </ion-card>
+                }
+              </ion-col>
+            </ion-row>
+          }
+        </ion-grid>
+      </div>
+    </div>
+  </form>
+</ion-card-content>
+}
+</ion-card>
 
 </ion-content>
 <app-page-buttonbar [buttonbar]="buttonbar"></app-page-buttonbar>

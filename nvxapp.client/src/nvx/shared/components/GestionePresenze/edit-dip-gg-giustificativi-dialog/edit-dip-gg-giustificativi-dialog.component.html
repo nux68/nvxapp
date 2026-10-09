@@ -10,28 +10,36 @@
   <form [formGroup]="_editForm">
 
     <ion-card>
-      <ion-card-header *ngIf="_editModel!=null">
-        <ion-card-title *ngIf="originalId>0">{{ _editModel.idPar_Giustificativi | parGiustificativiToShortText}} - {{ _editModel.idPar_Giustificativi | parGiustificativiToLongText}}</ion-card-title>
-      </ion-card-header>
+      @if (_editModel!=null) {
+        <ion-card-header>
+          @if (originalId>0) {
+            <ion-card-title>{{ _editModel.idPar_Giustificativi | parGiustificativiToShortText}} - {{ _editModel.idPar_Giustificativi | parGiustificativiToLongText}}</ion-card-title>
+          }
+        </ion-card-header>
+      }
       <ion-card-content>
 
         <ion-grid>
 
-          <ion-row class="ion-align-items-center" *ngIf="originalId==0">
-
-            <ion-item>
-              <ion-label position="floating">Giustificatico</ion-label>
-              <ion-select formControlName="idPar_Giustificativi" placeholder="Seleziona il giustificativo">
-                <ion-select-option *ngFor="let just of _par_GiustificativiList" [value]="just.id">
-                  {{ just.descrizione }}
-                </ion-select-option>
-              </ion-select>
-            </ion-item>
-            <ion-note color="danger" *ngIf="_editForm.get('_editForm.idPar_Giustificativi')?.hasError('required') && _editForm.get('_editForm.idPar_Giustificativi')?.touched">
-              Il giustificativo obbligatorio.
-            </ion-note>
-
-          </ion-row>
+          @if (originalId==0) {
+            <ion-row class="ion-align-items-center">
+              <ion-item>
+                <ion-label position="floating">Giustificatico</ion-label>
+                <ion-select formControlName="idPar_Giustificativi" placeholder="Seleziona il giustificativo">
+                  @for (just of _par_GiustificativiList; track just) {
+                    <ion-select-option [value]="just.id">
+                      {{ just.descrizione }}
+                    </ion-select-option>
+                  }
+                </ion-select>
+              </ion-item>
+              @if (_editForm.get('_editForm.idPar_Giustificativi')?.hasError('required') && _editForm.get('_editForm.idPar_Giustificativi')?.touched) {
+                <ion-note color="danger">
+                  Il giustificativo obbligatorio.
+                </ion-note>
+              }
+            </ion-row>
+          }
 
           <ion-row class="ion-align-items-center">
 
@@ -44,11 +52,11 @@
               <ion-modal [keepContentsMounted]="true">
                 <ng-template>
                   <ion-datetime id="hours-modal"
-                                formControlName="hours"
-                                presentation="time"
-                                [showDefaultButtons]="true"
-                                doneText="OK"
-                                cancelText="Annulla">
+                    formControlName="hours"
+                    presentation="time"
+                    [showDefaultButtons]="true"
+                    doneText="OK"
+                    cancelText="Annulla">
                   </ion-datetime>
                 </ng-template>
               </ion-modal>

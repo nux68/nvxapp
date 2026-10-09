@@ -1,11 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
 import { UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { NavController } from '@ionic/angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { Observable } from 'rxjs/internal/Observable';
-import { map, catchError } from 'rxjs';
+import { map, catchError, of } from 'rxjs';
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { StringHelperService } from '../../../Utility/infrastructure/string-helper.service';
 import { ParameterService } from '../../../ClientServer-Service/Infrastructure/Parameter/parameter.service';
@@ -20,6 +20,7 @@ import { Par_CausaliModel } from '../../../ClientServer-Service/GestionePresenze
   selector: 'app-justification-edit-page',
   templateUrl: './justification-edit-page.component.html',
   styleUrls: ['./justification-edit-page.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 }) 
 export class JustificationEditPageComponent extends BasePageConfirmCancelComponent<Par_GiustificativiModel> {
@@ -72,7 +73,7 @@ export class JustificationEditPageComponent extends BasePageConfirmCancelCompone
         map((res) => res.data.par_Giustificativi), // Estrae il dato richiesto
         catchError((error) => {
           console.error('Errore durante la chiamata API:', error);
-          return [null]; // Restituisce null in caso di errore
+          return of(null); // Restituisce null in caso di errore
         })
       );
     }

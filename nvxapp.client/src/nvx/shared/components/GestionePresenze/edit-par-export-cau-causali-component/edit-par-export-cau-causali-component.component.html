@@ -4,66 +4,70 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true" *ngIf="_par_CausaliList!=null">
-
-  <form [formGroup]="_editForm">
-
-    <ion-card>
-      <ion-card-content>
-
-        <ion-item>
-          <ion-label position="floating">Codice</ion-label>
-          <ion-input type="text" formControlName="codice"></ion-input>
-        </ion-item>
-        <ion-note color="danger" *ngIf="_editForm.get('codice')?.hasError('required') && _editForm.get('codice')?.touched">
-          codice è obbligatorio.
-        </ion-note>
-        <ion-note color="danger" *ngIf="_editForm.get('codice')?.hasError('maxlength') && _editForm.get('codice')?.touched">
-          codice non può superare i 5 caratteri.
-        </ion-note>
-
-        <ion-item>
-          <ion-label position="floating">Causale</ion-label>
-          <ion-select formControlName="idCausale" placeholder="Seleziona la causale">
-            <ion-select-option *ngFor="let causale of _par_CausaliList" [value]="causale.id">
-              {{ causale.descrizione }}
-            </ion-select-option>
-          </ion-select>
-        </ion-item>
-        <ion-note color="danger" *ngIf="_editForm.get('_editForm.idCausale')?.hasError('required') && _editForm.get('_editForm.idCausale')?.touched">
-          La causale è obbligatoria.
-        </ion-note>
-
-        <ion-item>
-          <ion-label position="floating">Tipo elaborazione</ion-label>
-          <ion-select formControlName="tipoElaborazione" interface="popover">
-            <ion-select-option [value]="par_Export_TipoElaborazione.Gionaliera">Gionaliera</ion-select-option>
-            <ion-select-option [value]="par_Export_TipoElaborazione.Mensile">Mensile</ion-select-option>
-          </ion-select>
-        </ion-item>
-        <ion-note color="danger" *ngIf="_editForm.get('tipoElaborazione')?.hasError('required') && _editForm.get('tipoElaborazione')?.touched">
-          Il tipo elaborazione è obbligatorio.
-        </ion-note>
-
-
-        <ion-item>
-          <ion-label position="floating">Unità</ion-label>
-          <ion-select formControlName="tipoUnita" interface="popover">
-            <ion-select-option [value]="par_Export_TipoUnita.Ore">Ore</ion-select-option>
-            <ion-select-option [value]="par_Export_TipoUnita.Giorni">Giorni</ion-select-option>
-            <ion-select-option [value]="par_Export_TipoUnita.Importo">Importo</ion-select-option>
-          </ion-select>
-        </ion-item>
-        <ion-note color="danger" *ngIf="_editForm.get('tipoUnita')?.hasError('required') && _editForm.get('tipoUnita')?.touched">
-          Il tipo unità è obbligatorio.
-        </ion-note>
-
-      </ion-card-content>
-    </ion-card>
-
-  </form>
-
-</ion-content>
+@if (_par_CausaliList!=null) {
+  <ion-content [fullscreen]="true">
+    <form [formGroup]="_editForm">
+      <ion-card>
+        <ion-card-content>
+          <ion-item>
+            <ion-label position="floating">Codice</ion-label>
+            <ion-input type="text" formControlName="codice"></ion-input>
+          </ion-item>
+          @if (_editForm.get('codice')?.hasError('required') && _editForm.get('codice')?.touched) {
+            <ion-note color="danger">
+              codice è obbligatorio.
+            </ion-note>
+          }
+          @if (_editForm.get('codice')?.hasError('maxlength') && _editForm.get('codice')?.touched) {
+            <ion-note color="danger">
+              codice non può superare i 5 caratteri.
+            </ion-note>
+          }
+          <ion-item>
+            <ion-label position="floating">Causale</ion-label>
+            <ion-select formControlName="idCausale" placeholder="Seleziona la causale">
+              @for (causale of _par_CausaliList; track causale) {
+                <ion-select-option [value]="causale.id">
+                  {{ causale.descrizione }}
+                </ion-select-option>
+              }
+            </ion-select>
+          </ion-item>
+          @if (_editForm.get('_editForm.idCausale')?.hasError('required') && _editForm.get('_editForm.idCausale')?.touched) {
+            <ion-note color="danger">
+              La causale è obbligatoria.
+            </ion-note>
+          }
+          <ion-item>
+            <ion-label position="floating">Tipo elaborazione</ion-label>
+            <ion-select formControlName="tipoElaborazione" interface="popover">
+              <ion-select-option [value]="par_Export_TipoElaborazione.Gionaliera">Gionaliera</ion-select-option>
+              <ion-select-option [value]="par_Export_TipoElaborazione.Mensile">Mensile</ion-select-option>
+            </ion-select>
+          </ion-item>
+          @if (_editForm.get('tipoElaborazione')?.hasError('required') && _editForm.get('tipoElaborazione')?.touched) {
+            <ion-note color="danger">
+              Il tipo elaborazione è obbligatorio.
+            </ion-note>
+          }
+          <ion-item>
+            <ion-label position="floating">Unità</ion-label>
+            <ion-select formControlName="tipoUnita" interface="popover">
+              <ion-select-option [value]="par_Export_TipoUnita.Ore">Ore</ion-select-option>
+              <ion-select-option [value]="par_Export_TipoUnita.Giorni">Giorni</ion-select-option>
+              <ion-select-option [value]="par_Export_TipoUnita.Importo">Importo</ion-select-option>
+            </ion-select>
+          </ion-item>
+          @if (_editForm.get('tipoUnita')?.hasError('required') && _editForm.get('tipoUnita')?.touched) {
+            <ion-note color="danger">
+              Il tipo unità è obbligatorio.
+            </ion-note>
+          }
+        </ion-card-content>
+      </ion-card>
+    </form>
+  </ion-content>
+}
 
 
 <app-page-buttonbar [buttonbar]="buttonbar"></app-page-buttonbar>

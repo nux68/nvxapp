@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { ButtonItem, UserInterfaceService } from '../../../../Utility/infrastructure/user-interface.service';
 import { ModalController } from '@ionic/angular';
 import { Par_AttivitaModel } from '../../../../ClientServer-Service/GestionePresenze/Par_Attivita/Models/par-attivita-model';
@@ -9,6 +9,7 @@ import { CheckObjOn_Id_Number } from '../../../../ClientServer-Service/ModelsBas
   selector: 'app-seletion-par-attivita-dialog',
   templateUrl: './seletion-par-attivita-dialog.component.html',
   styleUrls: ['./seletion-par-attivita-dialog.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class SeletionParAttivitaDialogComponent implements OnInit {

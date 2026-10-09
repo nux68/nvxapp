@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { GG_ResultStato } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Result/Models/dip-gg-result-model';
 import { UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
@@ -22,6 +22,7 @@ import {
   templateUrl: './activity-statistics-page.component.html',
   styleUrls: ['./activity-statistics-page.component.scss'],
   providers: [DatePipe],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class ActivityStatisticsPageComponent extends BasePageConfirmCancelComponent<ActivityStatisticsFormData> implements OnInit, OnDestroy {
