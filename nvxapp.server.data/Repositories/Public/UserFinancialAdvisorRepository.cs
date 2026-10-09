@@ -12,9 +12,9 @@ namespace nvxapp.server.data.Repositories.Public
 {
 
 
-    public class UserFinancialAdvisorRepository : Repository<ApplicationDbContext, UserFinancialAdvisor>, IUserFinancialAdvisorRepository
+    public class UserFinancialAdvisorRepository : Repository<PublicDbContext, UserFinancialAdvisor>, IUserFinancialAdvisorRepository
     {
-        public UserFinancialAdvisorRepository(ApplicationDbContext dbContext,
+        public UserFinancialAdvisorRepository(PublicDbContext dbContext,
                                      IServiceProvider provider,
                                      IHttpContextAccessor httpContextAccessor) : base(dbContext, provider, httpContextAccessor)
         {

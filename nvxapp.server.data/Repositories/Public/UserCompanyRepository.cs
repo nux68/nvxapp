@@ -12,9 +12,9 @@ namespace nvxapp.server.data.Repositories.Public
 {
 
 
-    public class UserCompanyRepository : Repository<ApplicationDbContext, UserCompany>, IUserCompanyRepository
+    public class UserCompanyRepository : Repository<PublicDbContext, UserCompany>, IUserCompanyRepository
     {
-        public UserCompanyRepository(ApplicationDbContext dbContext,
+        public UserCompanyRepository(PublicDbContext dbContext,
                                      IServiceProvider provider,
                                      IHttpContextAccessor httpContextAccessor) : base(dbContext, provider, httpContextAccessor)
         {

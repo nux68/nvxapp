@@ -1,5 +1,7 @@
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using nvxapp.server.data.Entities.Public;
+using nvxapp.server.data.Infrastructure.Tenancy;
 using System.Collections.Concurrent;
 
 namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Initializer.CompanyInit
@@ -21,19 +23,17 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Initializer.
 
     public class CompanyInitializerRegistry : ICompanyInitializerRegistry
     {
-        private readonly List<ICompanyInitializer> _initializers;
+        private readonly IServiceScopeFactory _scopeFactory;
         private readonly ILogger<CompanyInitializerRegistry> _logger;
         private static readonly ConcurrentDictionary<int, byte> _initializedCompanies = new();
 
-        // Riceve tutti gli ICompanyInitializer registrati nella DI.
-        // Li ordina per Priority crescente.
+        // Gli ICompanyInitializer registrati nella DI vengono risolti in uno scope dedicato
+        // all'azienda (vedi InitializeAllAsync) e ordinati per Priority crescente.
         public CompanyInitializerRegistry(
-            IEnumerable<ICompanyInitializer> initializers,
+            IServiceScopeFactory scopeFactory,
             ILogger<CompanyInitializerRegistry> logger)
         {
-            _initializers = initializers
-                .OrderBy(i => i.Priority)
-                .ToList();
+            _scopeFactory = scopeFactory;
             _logger = logger;
         }
 
@@ -49,14 +49,24 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Initializer.
                 return;
             }
 
+            // Gli inizializzatori lavorano sui dati DELL'AZIENDA indicata, non su quella della
+            // richiesta (es. CompanyGet chiamato da uno studio, senza azienda nel token):
+            // scope DI dedicato, cosi' i TenantDbContext risolvono lo schema di questa azienda.
+            using var tenantScope = TenantScope.Use(company.Schema);
+            using var scope = _scopeFactory.CreateScope();
+            var initializers = scope.ServiceProvider.GetServices<ICompanyInitializer>()
+                                                    .OrderBy(i => i.Priority)
+                                                    .ToList();
+
             _logger.LogInformation(
-                "[CompanyInit] Avvio inizializzazione per azienda {CompanyId}, Descrizione={Descrizione}. " +
+                "[CompanyInit] Avvio inizializzazione per azienda {CompanyId}, Descrizione={Descrizione}, Schema={Schema}. " +
                 "Inizializzatori disponibili: {Count}",
                 company.Id,
                 company.Descrizione,
-                _initializers.Count);
+                company.Schema,
+                initializers.Count);
 
-            foreach (var initializer in _initializers)
+            foreach (var initializer in initializers)
             {
                 try
                 {

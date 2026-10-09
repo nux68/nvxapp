@@ -9,11 +9,11 @@ using nvxapp.server.data.Infrastructure;
 
 #nullable disable
 
-namespace nvxapp.server.data.Migrations
+namespace nvxapp.server.data.Migrations.Public
 {
-    [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250404104625_MyTable")]
-    partial class MyTable
+    [DbContext(typeof(PublicDbContext))]
+    [Migration("20261009104941_InitPublic")]
+    partial class InitPublic
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -21,7 +21,7 @@ namespace nvxapp.server.data.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("public")
-                .HasAnnotation("ProductVersion", "9.0.3")
+                .HasAnnotation("ProductVersion", "10.0.12")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -130,6 +130,24 @@ namespace nvxapp.server.data.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", "public");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Public.AppSetting", b =>
+                {
+                    b.Property<string>("Key")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Value")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.HasKey("Key");
+
+                    b.ToTable("AppSetting", "public");
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Public.ApplicationRole", b =>
@@ -272,6 +290,9 @@ namespace nvxapp.server.data.Migrations
                         .IsUnique();
 
                     b.HasIndex("IdFinancialAdvisor");
+
+                    b.HasIndex("Schema")
+                        .IsUnique();
 
                     b.ToTable("Company", "public");
                 });
@@ -455,37 +476,6 @@ namespace nvxapp.server.data.Migrations
                         .IsUnique();
 
                     b.ToTable("UserFinancialAdvisor", "public");
-                });
-
-            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.MyTable", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ChangeUser")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.Property<DateTime?>("CreationDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("Descrizione")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
-                    b.Property<DateTime?>("ModifiedDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Descrizione")
-                        .IsUnique();
-
-                    b.ToTable("MyTable", "public");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

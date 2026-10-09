@@ -2,12 +2,11 @@
 using Microsoft.EntityFrameworkCore.Migrations;
 using nvxapp.server.data.Entities;
 using nvxapp.server.data.Entities.Public;
-using nvxapp.server.data.Infrastructure;
 using nvxapp.server.data.Repositories.Public;
 using System.Data;
 using static nvxapp.server.data.Entities.AspNetUsersDataUtil;
 
-namespace nvxapp.server.data.Migrations
+namespace nvxapp.server.data.Migrations.Public
 {
     public class PopolateDB
     {
@@ -38,9 +37,6 @@ namespace nvxapp.server.data.Migrations
 
         public static void PopolateDB_InitDB_UP(MigrationBuilder migrationBuilder)
         {
-
-            if (SharedSchema.CurrentSchema != "public")
-                return;
 
             List<AspNetRolesModel> roleAll = AspNetUsersDataUtil.Get_AspNetRoles(AspNetUsersDataUtil.AspNetRolesGroup.All);
 
@@ -116,7 +112,8 @@ namespace nvxapp.server.data.Migrations
                         );
 
 
-                for (int idxFinancial = 1; idxFinancial <= 10; idxFinancial++)
+                // 3 studi per dealer, 5 aziende per studio, 5 dipendenti per azienda -> 6 studi, 30 aziende, 150 dipendenti
+                for (int idxFinancial = 1; idxFinancial <= 3; idxFinancial++)
                 {
                     string key_FinancialAdvisor = key_Dealer + "_" + idxFinancial.ToString();
                     idxFinancialAdvisor++;
@@ -145,7 +142,7 @@ namespace nvxapp.server.data.Migrations
                            );
 
 
-                    for (int idxComp = 1; idxComp <= 10; idxComp++)
+                    for (int idxComp = 1; idxComp <= 5; idxComp++)
                     {
                         string key_Company = key_FinancialAdvisor + "_" + idxComp.ToString();
                         idxCompany++;
@@ -174,7 +171,7 @@ namespace nvxapp.server.data.Migrations
                              values: new object[] { idxCompany, data_AspNetUsers[1].Id ,true}
                              );
 
-                        for (int idxUs = 1; idxUs <= 10; idxUs++)
+                        for (int idxUs = 1; idxUs <= 5; idxUs++)
                         {
                             idxUser++;
                             string key_User = key_Company + "_" + idxUs.ToString();

@@ -12,9 +12,9 @@ namespace nvxapp.server.data.Repositories.Public
 {
 
 
-    public class DealerRepository : Repository<ApplicationDbContext, Dealer>, IDealerRepository
+    public class DealerRepository : Repository<PublicDbContext, Dealer>, IDealerRepository
     {
-        public DealerRepository(ApplicationDbContext dbContext,
+        public DealerRepository(PublicDbContext dbContext,
                                      IServiceProvider provider,
                                      IHttpContextAccessor httpContextAccessor) : base(dbContext, provider, httpContextAccessor)
         {

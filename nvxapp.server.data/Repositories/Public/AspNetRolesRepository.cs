@@ -7,9 +7,9 @@ namespace nvxapp.server.data.Repositories.Public
 {
 
 
-    public class AspNetRolesRepository : Repository<ApplicationDbContext, ApplicationRole>, IAspNetRolesRepository
+    public class AspNetRolesRepository : Repository<PublicDbContext, ApplicationRole>, IAspNetRolesRepository
     {
-        public AspNetRolesRepository(ApplicationDbContext dbContext,
+        public AspNetRolesRepository(PublicDbContext dbContext,
                                      IServiceProvider provider,
                                      IHttpContextAccessor httpContextAccessor) : base(dbContext, provider, httpContextAccessor)
         {

@@ -2,26 +2,23 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using nvxapp.server.data.Infrastructure;
 
 #nullable disable
 
-namespace nvxapp.server.data.Migrations
+namespace nvxapp.server.data.Migrations.Public
 {
-    [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250404104253_InitDB")]
-    partial class InitDB
+    [DbContext(typeof(PublicDbContext))]
+    partial class PublicDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
                 .HasDefaultSchema("public")
-                .HasAnnotation("ProductVersion", "9.0.3")
+                .HasAnnotation("ProductVersion", "10.0.12")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -130,6 +127,24 @@ namespace nvxapp.server.data.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", "public");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Public.AppSetting", b =>
+                {
+                    b.Property<string>("Key")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Value")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.HasKey("Key");
+
+                    b.ToTable("AppSetting", "public");
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Public.ApplicationRole", b =>
@@ -272,6 +287,9 @@ namespace nvxapp.server.data.Migrations
                         .IsUnique();
 
                     b.HasIndex("IdFinancialAdvisor");
+
+                    b.HasIndex("Schema")
+                        .IsUnique();
 
                     b.ToTable("Company", "public");
                 });
