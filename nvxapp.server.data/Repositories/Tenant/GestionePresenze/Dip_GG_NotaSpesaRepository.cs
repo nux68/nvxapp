@@ -8,10 +8,10 @@ namespace nvxapp.server.data.Repositories.Tenant.GestionePresenze
 {
 
 
-    public class Dip_GG_NotaSpesaRepository : Repository<TenantDbContext, Dip_GG_NotaSpesa>, IDip_GG_NotaSpesaRepository
+    public class Dip_GG_NotaSpesaRepository : Repository<AttendanceTrackingDbContext, Dip_GG_NotaSpesa>, IDip_GG_NotaSpesaRepository
     {
 
-        public Dip_GG_NotaSpesaRepository(TenantDbContext dbContext,
+        public Dip_GG_NotaSpesaRepository(AttendanceTrackingDbContext dbContext,
                                           IServiceProvider provider,
                                           Microsoft.AspNetCore.Http.IHttpContextAccessor httpContextAccessor)
             : base(dbContext, provider, httpContextAccessor)

@@ -8,10 +8,10 @@ namespace nvxapp.server.data.Repositories.Tenant.GestionePresenze
 {
 
 
-    public class Dip_GG_TimbraturaRepository : Repository<TenantDbContext, Dip_GG_Timbratura>, IDip_GG_TimbraturaRepository
+    public class Dip_GG_TimbraturaRepository : Repository<AttendanceTrackingDbContext, Dip_GG_Timbratura>, IDip_GG_TimbraturaRepository
     {
 
-        public Dip_GG_TimbraturaRepository(TenantDbContext dbContext,
+        public Dip_GG_TimbraturaRepository(AttendanceTrackingDbContext dbContext,
                                            IServiceProvider provider,
                                            Microsoft.AspNetCore.Http.IHttpContextAccessor httpContextAccessor)
             : base(dbContext, provider, httpContextAccessor)

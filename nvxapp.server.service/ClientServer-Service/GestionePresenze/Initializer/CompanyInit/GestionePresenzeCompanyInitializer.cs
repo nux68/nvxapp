@@ -1,3 +1,4 @@
+using nvxapp.server.data.Infrastructure.Tenancy;
 using Microsoft.Extensions.Logging;
 using nvxapp.server.data.Entities.Public;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
@@ -21,6 +22,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Initialize
 
         public string Name => "GestionePresenze";
         public int Priority => 20;
+        public ApplicationType? Application => ApplicationType.AttendanceTracking;
 
         public GestionePresenzeCompanyInitializer(
             IGestionePresenzeUserUtility gestionePresenzeUserUtility,

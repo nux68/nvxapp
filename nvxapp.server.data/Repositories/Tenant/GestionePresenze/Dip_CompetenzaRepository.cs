@@ -5,9 +5,9 @@ using nvxapp.server.data.Interfaces;
 
 namespace nvxapp.server.data.Repositories.Tenant.GestionePresenze
 {
-    public class Dip_CompetenzaRepository : Repository<TenantDbContext, Dip_Competenza>, IDip_CompetenzaRepository
+    public class Dip_CompetenzaRepository : Repository<AttendanceTrackingDbContext, Dip_Competenza>, IDip_CompetenzaRepository
     {
-        public Dip_CompetenzaRepository(TenantDbContext dbContext,
+        public Dip_CompetenzaRepository(AttendanceTrackingDbContext dbContext,
                                         IServiceProvider provider,
                                         Microsoft.AspNetCore.Http.IHttpContextAccessor httpContextAccessor)
             : base(dbContext, provider, httpContextAccessor)

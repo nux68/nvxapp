@@ -6,10 +6,10 @@ using nvxapp.server.data.Interfaces;
 namespace nvxapp.server.data.Repositories.Tenant.GestionePresenze
 {
     public class Dip_Contatori_RiportoRepository
-        : Repository<TenantDbContext, Dip_Contatori_Riporto>,
+        : Repository<AttendanceTrackingDbContext, Dip_Contatori_Riporto>,
           IDip_Contatori_RiportoRepository
     {
-        public Dip_Contatori_RiportoRepository(TenantDbContext dbContext,
+        public Dip_Contatori_RiportoRepository(AttendanceTrackingDbContext dbContext,
                                                IServiceProvider provider,
                                                Microsoft.AspNetCore.Http.IHttpContextAccessor httpContextAccessor)
             : base(dbContext, provider, httpContextAccessor)

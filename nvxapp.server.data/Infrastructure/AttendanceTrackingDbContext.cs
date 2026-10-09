@@ -7,8 +7,26 @@ using nvxapp.server.data.Infrastructure.Tenancy;
 
 namespace nvxapp.server.data.Infrastructure
 {
-    public partial class TenantDbContext : DbContext
+    /*
+     Applicativo 2 - AttendanceTracking (gestione presenze).
+     multi-tenant: tenant_<IdAzienda>_2     modalita' singola: public
+     Migration in Migrations/AttendanceTracking.
+    */
+    public class AttendanceTrackingDbContext : ApplicationDbContextBase
     {
+        public AttendanceTrackingDbContext(DbContextOptions<AttendanceTrackingDbContext> options, ITenantSchemaAccessor schemaAccessor)
+            : base(options, schemaAccessor)
+        {
+        }
+
+        public override ApplicationType Application => ApplicationType.AttendanceTracking;
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            Define_Table_AttendanceTracking(modelBuilder);
+        }
 
         public virtual DbSet<Az_Anagrafica> Az_Anagrafica { get; set; }
         public virtual DbSet<Az_Sedi> Az_Sedi { get; set; }
@@ -57,7 +75,7 @@ namespace nvxapp.server.data.Infrastructure
         
         
 
-        private void Define_Table_TenantDbContext_GestionePresenze(ModelBuilder modelBuilder)
+        private void Define_Table_AttendanceTracking(ModelBuilder modelBuilder)
         {
             Gen_PublicReferences_GestionePresenze(modelBuilder);
             Gen_Init_GestionePresenze(modelBuilder);
@@ -84,6 +102,7 @@ namespace nvxapp.server.data.Infrastructure
                 entity.ToTable("Company", TenantSchemaName.Public, t => t.ExcludeFromMigrations());
                 entity.Ignore(e => e.FinancialAdvisorNavigation);
                 entity.Ignore(e => e.UserCompany);
+                entity.Ignore(e => e.CompanyApplication);
             });
         }
 

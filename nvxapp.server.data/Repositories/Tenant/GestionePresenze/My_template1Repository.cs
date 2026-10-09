@@ -14,9 +14,9 @@ namespace nvxapp.server.data.Repositories.Tenant.GestionePresenze
     {
     }
 
-    public class My_template1Repository : Repository<TenantDbContext, My_Template1>, IMy_template1Repository
+    public class My_template1Repository : Repository<AttendanceTrackingDbContext, My_Template1>, IMy_template1Repository
     {
-        public My_template1Repository(TenantDbContext dbContext,
+        public My_template1Repository(AttendanceTrackingDbContext dbContext,
                                       IServiceProvider provider,
                                       Microsoft.AspNetCore.Http.IHttpContextAccessor httpContextAccessor)
             : base(dbContext, provider, httpContextAccessor)

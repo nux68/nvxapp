@@ -8,9 +8,9 @@ namespace nvxapp.server.data.Repositories.Tenant.GestionePresenze
 {
 
 
-    public class Par_ExportCauRepository : Repository<TenantDbContext, Par_ExportCau>, IPar_ExportCauRepository
+    public class Par_ExportCauRepository : Repository<AttendanceTrackingDbContext, Par_ExportCau>, IPar_ExportCauRepository
     {
-        public Par_ExportCauRepository(TenantDbContext dbContext,
+        public Par_ExportCauRepository(AttendanceTrackingDbContext dbContext,
                                        IServiceProvider provider,
                                        Microsoft.AspNetCore.Http.IHttpContextAccessor httpContextAccessor)
             : base(dbContext, provider, httpContextAccessor)

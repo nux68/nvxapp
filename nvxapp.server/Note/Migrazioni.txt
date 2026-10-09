@@ -74,6 +74,7 @@ dotnet ef migrations add <Nome> --context AttendanceTrackingDbContext -o Migrati
 storico migrazioni create
   Public: InitPublic (contiene anche i dati iniziali, vedi Migrations/Public/PopolateDB.cs)
   Moke:   InitMoke
+  AttendanceTracking: AttendanceTracking_Init   (tabelle del modulo presenze; ramo AttendanceTracking)
 
 
 aggiorna db

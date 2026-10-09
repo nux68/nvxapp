@@ -9,10 +9,10 @@ namespace nvxapp.server.data.Repositories.Tenant.GestionePresenze
 {
 
 
-    public class Par_ProfiloOrarioRepository : Repository<TenantDbContext, Par_ProfiloOrario>, IPar_ProfiloOrarioRepository
+    public class Par_ProfiloOrarioRepository : Repository<AttendanceTrackingDbContext, Par_ProfiloOrario>, IPar_ProfiloOrarioRepository
     {
 
-        public Par_ProfiloOrarioRepository(TenantDbContext dbContext,
+        public Par_ProfiloOrarioRepository(AttendanceTrackingDbContext dbContext,
                                            IServiceProvider provider,
                                            Microsoft.AspNetCore.Http.IHttpContextAccessor httpContextAccessor)
             : base(dbContext, provider, httpContextAccessor)

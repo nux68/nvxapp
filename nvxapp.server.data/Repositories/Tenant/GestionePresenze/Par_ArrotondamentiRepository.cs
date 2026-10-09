@@ -9,10 +9,10 @@ namespace nvxapp.server.data.Repositories.Tenant.GestionePresenze
 {
 
 
-    public class Par_ArrotondamentiRepository : Repository<TenantDbContext, Par_Arrotondamenti>, IPar_ArrotondamentiRepository
+    public class Par_ArrotondamentiRepository : Repository<AttendanceTrackingDbContext, Par_Arrotondamenti>, IPar_ArrotondamentiRepository
     {
 
-        public Par_ArrotondamentiRepository(TenantDbContext dbContext,
+        public Par_ArrotondamentiRepository(AttendanceTrackingDbContext dbContext,
                                             IServiceProvider provider,
                                             Microsoft.AspNetCore.Http.IHttpContextAccessor httpContextAccessor)
             : base(dbContext, provider, httpContextAccessor)

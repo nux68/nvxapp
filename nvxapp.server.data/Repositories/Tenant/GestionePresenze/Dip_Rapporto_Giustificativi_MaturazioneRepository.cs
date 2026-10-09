@@ -6,10 +6,10 @@ using nvxapp.server.data.Interfaces;
 namespace nvxapp.server.data.Repositories.Tenant.GestionePresenze
 {
     public class Dip_Rapporto_Giustificativi_MaturazioneRepository
-        : Repository<TenantDbContext, Dip_Rapporto_Giustificativi_Maturazione>,
+        : Repository<AttendanceTrackingDbContext, Dip_Rapporto_Giustificativi_Maturazione>,
           IDip_Rapporto_Giustificativi_MaturazioneRepository
     {
-        public Dip_Rapporto_Giustificativi_MaturazioneRepository(TenantDbContext dbContext,
+        public Dip_Rapporto_Giustificativi_MaturazioneRepository(AttendanceTrackingDbContext dbContext,
                                                                  IServiceProvider provider,
                                                                  Microsoft.AspNetCore.Http.IHttpContextAccessor httpContextAccessor)
             : base(dbContext, provider, httpContextAccessor)

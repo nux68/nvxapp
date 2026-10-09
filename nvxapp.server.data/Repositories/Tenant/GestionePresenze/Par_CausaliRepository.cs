@@ -8,10 +8,10 @@ namespace nvxapp.server.data.Repositories.Tenant.GestionePresenze
 {
 
 
-    public class Par_CausaliRepository : Repository<TenantDbContext, Par_Causali>, IPar_CausaliRepository
+    public class Par_CausaliRepository : Repository<AttendanceTrackingDbContext, Par_Causali>, IPar_CausaliRepository
     {
 
-        public Par_CausaliRepository(TenantDbContext dbContext,
+        public Par_CausaliRepository(AttendanceTrackingDbContext dbContext,
                                      IServiceProvider provider,
                                      Microsoft.AspNetCore.Http.IHttpContextAccessor httpContextAccessor)
             : base(dbContext, provider, httpContextAccessor)

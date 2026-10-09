@@ -5,9 +5,9 @@ using nvxapp.server.data.Interfaces;
 
 namespace nvxapp.server.data.Repositories.Tenant.GestionePresenze
 {
-    public class Az_CommessaRepository : Repository<TenantDbContext, Az_Commessa>, IAz_CommessaRepository
+    public class Az_CommessaRepository : Repository<AttendanceTrackingDbContext, Az_Commessa>, IAz_CommessaRepository
     {
-        public Az_CommessaRepository(TenantDbContext dbContext,
+        public Az_CommessaRepository(AttendanceTrackingDbContext dbContext,
                                      IServiceProvider provider,
                                      Microsoft.AspNetCore.Http.IHttpContextAccessor httpContextAccessor)
             : base(dbContext, provider, httpContextAccessor)

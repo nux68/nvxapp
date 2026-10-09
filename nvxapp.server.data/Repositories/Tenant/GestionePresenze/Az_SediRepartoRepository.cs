@@ -8,10 +8,10 @@ namespace nvxapp.server.data.Repositories.Tenant.GestionePresenze
 {
 
 
-    public class Az_SediRepartoRepository : Repository<TenantDbContext, Az_SediReparto>, IAz_SediRepartoRepository
+    public class Az_SediRepartoRepository : Repository<AttendanceTrackingDbContext, Az_SediReparto>, IAz_SediRepartoRepository
     {
 
-        public Az_SediRepartoRepository(TenantDbContext dbContext,
+        public Az_SediRepartoRepository(AttendanceTrackingDbContext dbContext,
                                         IServiceProvider provider,
                                         Microsoft.AspNetCore.Http.IHttpContextAccessor httpContextAccessor)
             : base(dbContext, provider, httpContextAccessor)
