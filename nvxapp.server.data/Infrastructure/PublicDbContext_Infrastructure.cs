@@ -8,6 +8,7 @@ namespace nvxapp.server.data.Infrastructure
     public partial class PublicDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, string>
     {
         public DbSet<AppSetting> AppSetting { get; set; }
+        public DbSet<CompanyApplication> CompanyApplication { get; set; }
 
         public DbSet<Dealer> Dealer { get; set; }
         public DbSet<UserDealer> UserDealer { get; set; }
@@ -23,6 +24,7 @@ namespace nvxapp.server.data.Infrastructure
             Gen_InitDB(modelBuilder);
             Gen_DealerAndCompany_Init(modelBuilder);
             Gen_AppSetting(modelBuilder);
+            Gen_CompanyApplication(modelBuilder);
         }
 
         private void Gen_InitDB(ModelBuilder modelBuilder)
@@ -41,6 +43,22 @@ namespace nvxapp.server.data.Infrastructure
             {
                 entity.ToTable("AppSetting", Schema);
                 entity.HasKey(e => e.Key);
+            });
+        }
+        private void Gen_CompanyApplication(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<CompanyApplication>(entity =>
+            {
+                entity.ToTable("CompanyApplication", Schema);
+                entity.HasKey(e => e.Id);
+
+                // un solo record per azienda/applicativo
+                entity.HasIndex(e => new { e.IdCompany, e.ApplicationType }).IsUnique();
+
+                entity.HasOne(e => e.CompanyNavigation)
+                      .WithMany(c => c.CompanyApplication)
+                      .HasForeignKey(e => e.IdCompany)
+                      .OnDelete(DeleteBehavior.Cascade);
             });
         }
         private void Gen_DealerAndCompany_Init(ModelBuilder modelBuilder)
@@ -89,8 +107,6 @@ namespace nvxapp.server.data.Infrastructure
                 entity.Property(e => e.Descrizione).IsRequired();
                 // Crea un indice univoco 
                 entity.HasIndex(e => new { e.Descrizione }).IsUnique();
-                // Schema PostgreSQL dell'azienda (usato in modalita' multi-tenant): univoco
-                entity.HasIndex(e => new { e.Schema }).IsUnique();
             });
 
             modelBuilder.Entity<UserCompany>(entity =>

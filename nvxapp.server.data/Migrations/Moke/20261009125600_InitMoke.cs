@@ -4,10 +4,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace nvxapp.server.data.Migrations.Tenant
+namespace nvxapp.server.data.Migrations.Moke
 {
     /// <inheritdoc />
-    public partial class InitTenant : Migration
+    public partial class InitMoke : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

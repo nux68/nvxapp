@@ -1,15 +1,30 @@
 using Microsoft.EntityFrameworkCore;
 using nvxapp.server.data.Entities.Tenant;
+using nvxapp.server.data.Infrastructure.Tenancy;
 
 namespace nvxapp.server.data.Infrastructure
 {
-    public partial class TenantDbContext : DbContext
+    /*
+     Applicativo 1 - Moke (applicativo di esempio).
+     multi-tenant: tenant_<IdAzienda>_1     modalita' singola: public
+     Migration in Migrations/Moke.
+    */
+    public class MokeDbContext : ApplicationDbContextBase
     {
+        public MokeDbContext(DbContextOptions<MokeDbContext> options, ITenantSchemaAccessor schemaAccessor)
+            : base(options, schemaAccessor)
+        {
+        }
+
+        public override ApplicationType Application => ApplicationType.Moke;
+
         public DbSet<MyTable> MyTables { get; set; }
 
 
-        private void Define_Table_TenantDbContext_Infrastructure(ModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
             Gen_MyTable(modelBuilder);
         }
 

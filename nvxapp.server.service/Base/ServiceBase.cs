@@ -239,8 +239,8 @@ namespace nvxapp.server.Base
                 ((ICurrentUser)item2).CurrentUserId = this.CurrentUserId;
             }
 
-            // lo schema dell'azienda non si assegna qui: TenantDbContext lo risolve da solo
-            // (claim "tenant" della richiesta o TenantScope) e lo applica con il search_path
+            // lo schema non si assegna qui: i contesti degli applicativi lo risolvono da soli
+            // (claim "company" della richiesta o TenantScope) e lo applicano con il search_path
 
         }
 
@@ -348,8 +348,8 @@ namespace nvxapp.server.Base
             _ = Task.Run(async () =>
             {
                 SetBackgroundToken(capturedToken);
-                // azienda del job: i TenantDbContext creati nello scope lavorano sul suo schema
-                using var tenantScope = TenantScope.Use(capturedToken.Tenant);
+                // azienda del job: i contesti degli applicativi creati nello scope lavorano sui suoi schemi
+                using var tenantScope = TenantScope.Use(int.TryParse(capturedToken.Company, out var idCompany) ? idCompany : null);
                 using var scope = _staticScopeFactory!.CreateScope();
                 try
                 {

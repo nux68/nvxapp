@@ -41,7 +41,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
         private readonly IHubContext<SignalRHub> _hubContext;
         private readonly IUserInitializerRegistry _userInitializerRegistry;
         private readonly ICompanyInitializerRegistry _companyInitializerRegistry;
-        private readonly ITenantProvisioningService _tenantProvisioningService;
+        private readonly ICompanyApplicationRepository _companyApplicationRepository;
 
 
         public AccountService(IMapper mapper,
@@ -65,7 +65,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                               ICompanyRepository companyRepository,
                               IUserCompanyRepository userCompanyRepository,
                               IHubContext<SignalRHub> hubContext,
-                              ITenantProvisioningService tenantProvisioningService,
+                              ICompanyApplicationRepository companyApplicationRepository,
 
                               SignInManager<ApplicationUser> signInManager
                               ) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
@@ -83,7 +83,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
             
             _userInitializerRegistry = userInitializerRegistry;
             _companyInitializerRegistry = companyInitializerRegistry;
-            _tenantProvisioningService = tenantProvisioningService;
+            _companyApplicationRepository = companyApplicationRepository;
             _hubContext = hubContext;
         }
 
@@ -194,7 +194,6 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
 
                     if (applicationUser != null)
                     {
-                        string schema = "";
                         string dealer = "";
                         string financialAdvisor = "";
                         string company = "";
@@ -239,7 +238,6 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                                         var comp = _companyRepository.FindAll(x => x.Id == userCompany.IdCompany).FirstOrDefault();
                                         if (comp != null)
                                         {
-                                            schema = comp.Schema ?? "";
                                             financialAdvisor = comp.IdFinancialAdvisor.ToString();
                                             var financial = _financialAdvisorRepository.FindAll(x => x.Id == comp.IdFinancialAdvisor).FirstOrDefault();
                                             if (financial != null)
@@ -262,7 +260,6 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                                                                             Dealer = dealer,
                                                                             FinancialAdvisor = financialAdvisor,
                                                                             Company = company,
-                                                                            Tenant = schema,
                                                                             UserId = applicationUser.Id,
                                                                             UserIdFirstConnection = userIdFirstConnection
                                                                         }
@@ -270,6 +267,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
 
                             retVal.UserData.Id = model.Data.Id;
                             retVal.UserData.UserName = applicationUser.UserName;
+
+                            // applicativi attivi dell'azienda dell'utente (il client mostra solo quelli)
+                            if (int.TryParse(company, out var idCompanyActive))
+                                retVal.UserData.ActiveApplications = _companyApplicationRepository.ActiveApplications(idCompanyActive);
 
 
                             var aspNetRoles = _aspNetRolesRepository.FindAll(x => x.Name != null && roles.Contains(x.Name)).ToList();
@@ -742,18 +743,11 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                     {
                         Descrizione = StringHelper.RemoveSpecialCharacters(model.Data.CompanyEdit.Descrizione),
                         IdFinancialAdvisor = IdFinancialAdvisor,
-                        // nome provvisorio: lo schema definitivo dipende dall'Id assegnato dal database
-                        Schema = TenantSchemaName.Pending(),
                     };
 
                     company = await _companyRepository.UpsertAsync(company);
 
-                    // schema dell'azienda: in multi-tenant viene creato e migrato subito
-                    // (in modalita' singola le tabelle stanno in public e non serve nulla)
-                    string companySchema = TenantSchemaName.ForCompany(company.Id);
-                    company.Schema = companySchema;
-                    company = await _companyRepository.UpdateAsync(company);
-                    await _tenantProvisioningService.EnsureTenantAsync(companySchema);
+                    // nessun applicativo attivo: si attivano con CompanyApplicationPut
 
                     string password = model.Data.CompanyEdit.Pw != null ? model.Data.CompanyEdit.Pw : "1234";
 

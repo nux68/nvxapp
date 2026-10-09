@@ -8,13 +8,13 @@ namespace nvxapp.server.data.Repositories.Tenant
 {
 
     /*
-     Repository di una tabella tenant: usa TenantDbContext, che lavora sullo schema
-     dell'azienda della richiesta (search_path impostato all'apertura della connessione).
+     Repository di una tabella dell'applicativo Moke: usa MokeDbContext, che lavora sullo schema
+     dell'azienda della richiesta per Moke (search_path impostato all'apertura della connessione).
      */
 
-    public class MyTableRepository : Repository<TenantDbContext, MyTable>, IMyTableRepository
+    public class MyTableRepository : Repository<MokeDbContext, MyTable>, IMyTableRepository
     {
-        public MyTableRepository(TenantDbContext dbContext,
+        public MyTableRepository(MokeDbContext dbContext,
                                  IServiceProvider provider,
                                  IHttpContextAccessor httpContextAccessor) : base(dbContext, provider, httpContextAccessor)
         {

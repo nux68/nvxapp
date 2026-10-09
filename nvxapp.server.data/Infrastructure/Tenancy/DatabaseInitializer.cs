@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using nvxapp.server.data.Entities.Public;
@@ -7,12 +9,14 @@ namespace nvxapp.server.data.Infrastructure.Tenancy
 {
     /*
      Eseguito all'avvio dell'applicazione, prima di accettare richieste:
+        0. controllo dei modelli: nessun nome di tabella in due contesti (in modalita' singola
+           tutti gli applicativi stanno in public insieme alle tabelle comuni)
         1. migra le tabelle condivise (PublicDbContext, schema public)
         2. modalita' multi-tenant:
              - primo avvio: salva in AppSetting il valore di configurazione (DbParameter:MultiTenant)
              - avvii successivi: il valore di configurazione deve coincidere con quello salvato,
                altrimenti l'avvio viene interrotto (la modalita' non si cambia dopo il primo avvio)
-        3. migra le tabelle tenant (public oppure tutti gli schemi azienda)
+        3. migra le tabelle degli applicativi (public oppure gli schemi azienda/applicativo attivi)
     */
     public static class DatabaseInitializer
     {
@@ -25,6 +29,9 @@ namespace nvxapp.server.data.Infrastructure.Tenancy
             var publicDbContext = sp.GetRequiredService<PublicDbContext>();
             var tenancySettings = sp.GetRequiredService<TenancySettings>();
 
+            // 0. nomi di tabella univoci tra i contesti
+            CheckTableNames(sp, publicDbContext);
+
             // 1. tabelle condivise
             await publicDbContext.Database.MigrateAsync(cancellationToken);
 
@@ -32,8 +39,44 @@ namespace nvxapp.server.data.Infrastructure.Tenancy
             var multiTenant = await ResolveTenancyModeAsync(publicDbContext, configuredMultiTenant, logger, cancellationToken);
             tenancySettings.Initialize(multiTenant);
 
-            // 3. tabelle tenant
-            await sp.GetRequiredService<ITenantProvisioningService>().MigrateAllTenantsAsync(cancellationToken);
+            // 3. tabelle degli applicativi
+            await sp.GetRequiredService<ITenantProvisioningService>().MigrateAllAsync(cancellationToken);
+        }
+
+        private static void CheckTableNames(IServiceProvider sp, PublicDbContext publicDbContext)
+        {
+            var owners = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
+            void Add(string? table, string owner)
+            {
+                if (string.IsNullOrEmpty(table)) return;
+                if (!owners.TryGetValue(table, out var list)) owners[table] = list = new List<string>();
+                if (!list.Contains(owner)) list.Add(owner);
+            }
+
+            // modello completo (design-time): contiene anche l'esclusione dalle migration
+            foreach (var entity in publicDbContext.GetService<IDesignTimeModel>().Model.GetEntityTypes())
+                Add(entity.GetTableName(), nameof(PublicDbContext));
+
+            var factory = sp.GetRequiredService<IApplicationDbContextFactory>();
+            foreach (var application in sp.GetRequiredService<ApplicationDbContextRegistry>().Contexts.Keys)
+            {
+                // solo il modello: nessuna connessione aperta
+                using var context = factory.Create(application, TenantSchemaName.Public);
+                foreach (var entity in context.GetService<IDesignTimeModel>().Model.GetEntityTypes())
+                {
+                    // tabelle di public referenziate in sola lettura: non appartengono all'applicativo
+                    if (entity.IsTableExcludedFromMigrations()) continue;
+                    Add(entity.GetTableName(), context.GetType().Name);
+                }
+            }
+
+            var duplicates = owners.Where(x => x.Value.Count > 1)
+                                   .Select(x => $"{x.Key} ({string.Join(", ", x.Value)})")
+                                   .ToList();
+            if (duplicates.Count > 0)
+                throw new InvalidOperationException(
+                    "Tabelle con lo stesso nome in piu' contesti (non ammesso: in modalita' singola stanno tutte in public): "
+                    + string.Join("; ", duplicates));
         }
 
         private static async Task<bool> ResolveTenancyModeAsync(PublicDbContext publicDbContext,

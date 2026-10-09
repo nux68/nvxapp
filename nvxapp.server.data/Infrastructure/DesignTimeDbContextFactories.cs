@@ -9,7 +9,7 @@ namespace nvxapp.server.data.Infrastructure
      Factory usate SOLO dagli strumenti dotnet ef (migrations add / database update).
      Vedi nvxapp.server/Note/Migrazioni.txt per i comandi.
     */
-    internal static class DesignTimeConfiguration
+    public static class DesignTimeConfiguration
     {
         public static string ConnectionString()
         {
@@ -33,14 +33,17 @@ namespace nvxapp.server.data.Infrastructure
         }
     }
 
-    public class TenantDbContextDesignTimeFactory : IDesignTimeDbContextFactory<TenantDbContext>
+    /*
+     Contesti degli applicativi: il modello non contiene lo schema, per generare le migration
+     basta "public". Ogni modulo aggiunge la factory del proprio contesto.
+    */
+    public class MokeDbContextDesignTimeFactory : IDesignTimeDbContextFactory<MokeDbContext>
     {
-        public TenantDbContext CreateDbContext(string[] args)
+        public MokeDbContext CreateDbContext(string[] args)
         {
-            var options = new DbContextOptionsBuilder<TenantDbContext>();
-            DataLayerInstaller.ConfigureTenant(options, DesignTimeConfiguration.ConnectionString());
-            // il modello tenant non contiene lo schema: per generare le migration basta "public"
-            return new TenantDbContext(options.Options, new FixedTenantSchemaAccessor(TenantSchemaName.Public));
+            var options = new DbContextOptionsBuilder<MokeDbContext>();
+            DataLayerInstaller.ConfigureApplication(options, DesignTimeConfiguration.ConnectionString(), ApplicationType.Moke);
+            return new MokeDbContext(options.Options, new FixedTenantSchemaAccessor(TenantSchemaName.Public));
         }
     }
 }

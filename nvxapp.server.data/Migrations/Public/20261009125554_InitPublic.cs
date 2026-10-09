@@ -275,7 +275,6 @@ namespace nvxapp.server.data.Migrations.Public
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     IdFinancialAdvisor = table.Column<int>(type: "integer", nullable: false),
                     Descrizione = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    Schema = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
@@ -321,6 +320,34 @@ namespace nvxapp.server.data.Migrations.Public
                         column: x => x.IdFinancialAdvisor,
                         principalSchema: "public",
                         principalTable: "FinancialAdvisor",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CompanyApplication",
+                schema: "public",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    IdCompany = table.Column<int>(type: "integer", nullable: false),
+                    ApplicationType = table.Column<int>(type: "integer", nullable: false),
+                    Active = table.Column<bool>(type: "boolean", nullable: false),
+                    ActivationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    DeactivationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CompanyApplication", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CompanyApplication_Company_IdCompany",
+                        column: x => x.IdCompany,
+                        principalSchema: "public",
+                        principalTable: "Company",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -416,10 +443,10 @@ namespace nvxapp.server.data.Migrations.Public
                 column: "IdFinancialAdvisor");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Company_Schema",
+                name: "IX_CompanyApplication_IdCompany_ApplicationType",
                 schema: "public",
-                table: "Company",
-                column: "Schema",
+                table: "CompanyApplication",
+                columns: new[] { "IdCompany", "ApplicationType" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -510,6 +537,10 @@ namespace nvxapp.server.data.Migrations.Public
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens",
+                schema: "public");
+
+            migrationBuilder.DropTable(
+                name: "CompanyApplication",
                 schema: "public");
 
             migrationBuilder.DropTable(
