@@ -43,7 +43,11 @@ export class ActivityStatisticsPageComponent extends BasePageConfirmCancelCompon
            this.giornateEscluse.length > 0;
   }
 
-  get righePerDipendente_Raggruppate(): { userId: string; nomeDipendente: string; righe: ActivityStatistics_RowModel[]; totaleMinuti: number }[] {
+  // Calcolato una sola volta all'arrivo dei dati (non in un getter): il getter creava oggetti nuovi
+  // a ogni change detection e il @for li ricreava all'infinito, bloccando il browser.
+  public righePerDipendente_Raggruppate: { userId: string; nomeDipendente: string; righe: ActivityStatistics_RowModel[]; totaleMinuti: number }[] = [];
+
+  private raggruppaPerDipendente(): { userId: string; nomeDipendente: string; righe: ActivityStatistics_RowModel[]; totaleMinuti: number }[] {
     const groups = new Map<string, ActivityStatistics_RowModel[]>();
     for (const r of this.righePerDipendente) {
       if (!groups.has(r.userId)) groups.set(r.userId, []);
@@ -54,12 +58,12 @@ export class ActivityStatisticsPageComponent extends BasePageConfirmCancelCompon
         userId,
         nomeDipendente: righe[0].nomeDipendente,
         righe: [...righe].sort((a, b) =>
-          a.nomeCliente.localeCompare(b.nomeCliente) ||
-          a.nomeCommessa.localeCompare(b.nomeCommessa) ||
-          a.nomeAttivita.localeCompare(b.nomeAttivita)),
+          (a.nomeCliente ?? '').localeCompare(b.nomeCliente ?? '') ||
+          (a.nomeCommessa ?? '').localeCompare(b.nomeCommessa ?? '') ||
+          (a.nomeAttivita ?? '').localeCompare(b.nomeAttivita ?? '')),
         totaleMinuti: righe.reduce((acc, r) => acc + r.totaleMinuti, 0)
       }))
-      .sort((a, b) => a.nomeDipendente.localeCompare(b.nomeDipendente));
+      .sort((a, b) => (a.nomeDipendente ?? '').localeCompare(b.nomeDipendente ?? ''));
   }
 
   get totaleCompletivoMinuti(): number {
@@ -173,6 +177,7 @@ export class ActivityStatisticsPageComponent extends BasePageConfirmCancelCompon
         this.righePerDipendente = x.data.righePerDipendente;
         this.totaliPerAttivita  = x.data.totaliPerAttivita;
         this.giornateEscluse    = x.data.giornateEscluse;
+        this.righePerDipendente_Raggruppate = this.raggruppaPerDipendente();
         this.selectedSegment    = 'dipendente';
       }
     });

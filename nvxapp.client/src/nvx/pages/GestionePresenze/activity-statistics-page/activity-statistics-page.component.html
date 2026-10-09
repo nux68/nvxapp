@@ -60,7 +60,7 @@
                 <ion-col size="3" class="ion-text-end"><ion-label>Ore</ion-label></ion-col>
               </ion-row>
               <!-- Gruppo per dipendente -->
-              @for (gruppo of righePerDipendente_Raggruppate; track gruppo) {
+              @for (gruppo of righePerDipendente_Raggruppate; track gruppo.userId) {
                 <!-- Intestazione gruppo -->
                 <ion-row class="nvx-group-row">
                   <ion-col>
