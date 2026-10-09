@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using nvxapp.server.data.Entities.Public;
+using nvxapp.server.data.Infrastructure.Tenancy;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.Base;
@@ -21,6 +22,7 @@ namespace nvxapp.server.service.Service.Infrastructure.WeatherForecast
     public class WeatherForecastService : ServiceBase, IWeatherForecastService
     {
         private readonly IMyTableService _myTableService;
+        private readonly ICompanyApplicationRepository _companyApplicationRepository;
         private static readonly string[] Summaries = new[]
         {
             "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
@@ -33,9 +35,11 @@ namespace nvxapp.server.service.Service.Infrastructure.WeatherForecast
                                       IHttpContextAccessor httpContextAccessor,
                                       IConfiguration configuration,
 
-                                      IMyTableService myTableService) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
+                                      IMyTableService myTableService,
+                                      ICompanyApplicationRepository companyApplicationRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _myTableService = myTableService;
+            _companyApplicationRepository = companyApplicationRepository;
         }
 
         public virtual async Task<GenericResult<WeatherForecastOutModel>> GetAll(GenericRequest<WeatherForecastInModel> model, Boolean isSubProcess)
@@ -46,13 +50,19 @@ namespace nvxapp.server.service.Service.Infrastructure.WeatherForecast
 
                 GenericRequest<MyTableInModel> requestMyTable = new GenericRequest<MyTableInModel>();
 
-                try
+                // MyTable appartiene all'applicativo Moke: si legge solo se c'e' un'azienda con Moke attivo
+                // (altrimenti TenantSchemaAccessor lancerebbe ApplicationNotActiveException)
+                if (int.TryParse(this.CurrentCompany, out int idCompany) && idCompany > 0 &&
+                    _companyApplicationRepository.ActiveApplications(idCompany).Contains(ApplicationType.Moke))
                 {
-                    retVal.MyTableModel = _myTableService.GetAll(requestMyTable, true).Result.Data;
-                }
-                catch (Exception ex)
-                {
-                    retVal.AddMessage(ex.Message, MessageType.Exception);
+                    try
+                    {
+                        retVal.MyTableModel = (await _myTableService.GetAll(requestMyTable, true)).Data;
+                    }
+                    catch (Exception ex)
+                    {
+                        retVal.AddMessage(ex.Message, MessageType.Exception);
+                    }
                 }
 
 
