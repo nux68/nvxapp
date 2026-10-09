@@ -22,6 +22,15 @@
     "module": "es2020",
     "useDefineForClassFields": false
   },
+  // Solo riferimenti: ogni file viene controllato con la configurazione giusta
+  // (tsconfig.app.json per l'app, tsconfig.spec.json per i test con i tipi Jasmine).
+  // Con TypeScript 6 i tipi non vengono piu' caricati in automatico: senza questo
+  // Visual Studio 2026 segnala describe/it/expect come sconosciuti nei file .spec.ts.
+  "files": [],
+  "references": [
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.spec.json" }
+  ],
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": true,
