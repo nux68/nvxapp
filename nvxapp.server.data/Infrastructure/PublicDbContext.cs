@@ -10,7 +10,7 @@ namespace nvxapp.server.data.Infrastructure
      Contesto delle tabelle CONDIVISE (sempre nello schema public):
      Identity, gerarchia Dealer -> FinancialAdvisor -> Company, associazioni utente, impostazioni.
 
-     Le tabelle dei dati delle aziende stanno in TenantDbContext.
+     Le tabelle degli applicativi stanno nei rispettivi contesti (ApplicationDbContextBase).
      Ogni modulo aggiunge le proprie tabelle condivise con un file partial PublicDbContext_<Modulo>.cs.
     */
     public partial class PublicDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, string>

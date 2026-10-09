@@ -143,7 +143,7 @@ namespace nvxapp.server.Utility
         }
         public static IServiceCollection InstallEntityContex(this WebApplicationBuilder builder)
         {
-            // PublicDbContext (tabelle condivise) + TenantDbContext (dati aziende, search_path per richiesta)
+            // PublicDbContext (tabelle comuni) + un contesto per applicativo (search_path per azienda/applicativo)
             string connectionString = builder.Configuration.GetConnectionString("nvxappDbContext")
                                       ?? throw new InvalidOperationException("Connection string 'nvxappDbContext' non configurata.");
             builder.Services.AddNvxDataLayer(connectionString);
