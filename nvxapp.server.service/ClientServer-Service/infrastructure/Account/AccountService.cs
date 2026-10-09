@@ -98,7 +98,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
 
                     if (applicationUser != null)
                     {
-                        var result = await _signInManager.CheckPasswordSignInAsync(applicationUser, model.Data.Password, false);
+                        var result = await _signInManager.CheckPasswordSignInAsync(applicationUser, model.Data.Password ?? string.Empty, false);
                         if (!result.Succeeded)
                         {
                             retVal.AddMessage("Password errata", MessageType.Error);
