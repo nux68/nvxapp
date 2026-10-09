@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { WeatherForecastInModel, WeatherForecastModel } from '../../nvx/ClientServer-Service/WeatherForecastService/Models/weather-forecast-model';
-import { WeatherForecastService } from '../../nvx/ClientServer-Service/WeatherForecastService/weather-forecast.service';
+import { WeatherForecastInModel, WeatherForecastModel } from '../../nvx/ClientServer-Service/Infrastructure/WeatherForecastService/Models/weather-forecast-model';
+import { WeatherForecastService } from '../../nvx/ClientServer-Service/Infrastructure/WeatherForecastService/weather-forecast.service';
 import { GenericRequest } from '../../nvx/ClientServer-Service/ModelsBase/generic-request';
 
 
