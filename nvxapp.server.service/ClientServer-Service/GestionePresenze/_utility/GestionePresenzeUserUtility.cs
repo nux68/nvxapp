@@ -37,7 +37,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
 
         private readonly IAz_SubCommessaSediRepartoRepository _az_SubCommessaSediRepartoRepository;
         private readonly IUserCompanyRepository _userCompanyRepository;
-        private readonly IAspNetUsersRepository _aspNetUsersRepository;
         private readonly IDip_ProfiloOrarioRepository _dip_ProfiloOrarioRepository;
         private readonly IGestionePresenzeParametriDefault _gestionePresenzeParametriDefault;
         private readonly IAz_SediRepartoUserRepository _az_SediRepartoUserRepository;
@@ -64,7 +63,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                                            IAz_SediRepartoAttivitaRepository az_SediRepartoAttivitaRepository,
                                            IAz_SubCommessaSediRepartoRepository az_SubCommessaSediRepartoRepository,
                                            IUserCompanyRepository userCompanyRepository,
-                                           IAspNetUsersRepository aspNetUsersRepository,
                                            IDip_ProfiloOrarioRepository dip_ProfiloOrarioRepository,
                                            IGestionePresenzeParametriDefault gestionePresenzeParametriDefault,
                                            IAz_SediRepartoUserRepository az_SediRepartoUserRepository,
@@ -92,7 +90,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
             _az_SediRepartoAttivitaRepository = az_SediRepartoAttivitaRepository;
             _az_SubCommessaSediRepartoRepository = az_SubCommessaSediRepartoRepository;
             _userCompanyRepository = userCompanyRepository;
-            _aspNetUsersRepository = aspNetUsersRepository;
             _dip_ProfiloOrarioRepository = dip_ProfiloOrarioRepository;
             _gestionePresenzeParametriDefault = gestionePresenzeParametriDefault;
             _az_SediRepartoUserRepository = az_SediRepartoUserRepository;
@@ -110,13 +107,13 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
             {
                 if (InitIfNotExsist)
                 {
-                    // Cognome e Nome iniziali = username (modificabili poi dall'anagrafica)
-                    var userName = _aspNetUsersRepository.FindAll(x => x.Id == IdAspNetUsers).Select(x => x.UserName).FirstOrDefault();
+                    // Cognome e Nome iniziali: personaggi Disney in sequenza (modificabili poi dall'anagrafica)
+                    var (cognome, nome) = PersonaggioDisney(_dip_AnagraficaRepository.FindAll(x => true).Count());
                     user_DATA_COMB_DipAna_DipRapp.dip_Anagrafica = new Dip_Anagrafica()
                     {
                         IdAspNetUsers = IdAspNetUsers,
-                        Cognome = userName,
-                        Nome = userName
+                        Cognome = cognome,
+                        Nome = nome
                     };
                     await _dip_AnagraficaRepository.UpsertAsync(user_DATA_COMB_DipAna_DipRapp.dip_Anagrafica);
 
@@ -180,6 +177,41 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
 
 
             return user_DATA_COMB_DipAna_DipRapp;
+        }
+
+        // Nomi di partenza per le anagrafiche dei dipendenti: personaggi di Topolino e Paperino.
+        // Finito l'elenco si riparte con un numero progressivo nel nome (es. "Topolino 2").
+        private static readonly (string Cognome, string Nome)[] _personaggiDisney =
+        {
+            ("Mouse", "Topolino"),
+            ("Mouse", "Minni"),
+            ("Paperino", "Paolino"),
+            ("De' Paperoni", "Paperon"),
+            ("Papera", "Paperina"),
+            ("Duck", "Qui"),
+            ("Duck", "Quo"),
+            ("Duck", "Qua"),
+            ("Goof", "Pippo"),
+            ("Paperone", "Gastone"),
+            ("Pitagorico", "Archimede"),
+            ("Papera", "Nonna"),
+            ("Duck", "Paperoga"),
+            ("Cavezza", "Orazio"),
+            ("Cow", "Clarabella"),
+            ("Gambadilegno", "Pietro"),
+            ("Beta", "Eta"),
+            ("Basettoni", "Commissario"),
+            ("Manetta", "Ispettore"),
+            ("Nera", "Macchia"),
+            ("Rockerduck", "John"),
+            ("McBridge", "Brigitta"),
+        };
+
+        private static (string Cognome, string Nome) PersonaggioDisney(int indice)
+        {
+            var p = _personaggiDisney[indice % _personaggiDisney.Length];
+            int giro = indice / _personaggiDisney.Length;
+            return giro == 0 ? p : (p.Cognome, $"{p.Nome} {giro + 1}");
         }
 
         // Assegna l'utente al reparto di default dell'azienda in base al ruolo:
