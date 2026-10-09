@@ -112,7 +112,7 @@ namespace nvxapp.server.data.Migrations.Public
                         );
 
 
-                // 3 studi per dealer -> 6 studi, 60 aziende, 600 utenti dipendenti
+                // 3 studi per dealer, 5 aziende per studio, 5 dipendenti per azienda -> 6 studi, 30 aziende, 150 dipendenti
                 for (int idxFinancial = 1; idxFinancial <= 3; idxFinancial++)
                 {
                     string key_FinancialAdvisor = key_Dealer + "_" + idxFinancial.ToString();
@@ -142,7 +142,7 @@ namespace nvxapp.server.data.Migrations.Public
                            );
 
 
-                    for (int idxComp = 1; idxComp <= 10; idxComp++)
+                    for (int idxComp = 1; idxComp <= 5; idxComp++)
                     {
                         string key_Company = key_FinancialAdvisor + "_" + idxComp.ToString();
                         idxCompany++;
@@ -171,7 +171,7 @@ namespace nvxapp.server.data.Migrations.Public
                              values: new object[] { idxCompany, data_AspNetUsers[1].Id ,true}
                              );
 
-                        for (int idxUs = 1; idxUs <= 10; idxUs++)
+                        for (int idxUs = 1; idxUs <= 5; idxUs++)
                         {
                             idxUser++;
                             string key_User = key_Company + "_" + idxUs.ToString();
