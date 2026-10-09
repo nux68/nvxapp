@@ -234,7 +234,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
         }
 
         // Assegna l'utente al reparto di default dell'azienda in base al ruolo:
-        // CompanyAdmin / CompanyPowerAdmin -> amministratore del reparto (EnabledToAdmin)
+        // CompanyAdmin / CompanyPowerAdmin -> amministratore del reparto (EnabledToAdmin), abilitato
+        //                                     all'approvazione e accodato agli approvatori (ApprovalZOrder)
         // User                             -> utente del reparto (UserInDepartment)
         // Non fa nulla se l'utente e' gia' presente nel reparto.
         private async Task AssegnaRepartoDefault(string IdAspNetUsers, int IdCompany)
@@ -265,11 +266,19 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
             if (!isAdmin && !isUser)
                 return;
 
+            int approvalZOrder = 0;
+            if (isAdmin)
+                approvalZOrder = (_az_SediRepartoUserRepository.FindAll(x => x.IdAz_SediReparto == reparto.Id && x.EnabledToApproval)
+                                                               .Select(x => (int?)x.ApprovalZOrder)
+                                                               .Max() ?? 0) + 1;
+
             await _az_SediRepartoUserRepository.UpsertAsync(new Az_SediRepartoUser
             {
                 IdAz_SediReparto = reparto.Id,
                 IdAspNetUsers = IdAspNetUsers,
                 EnabledToAdmin = isAdmin,
+                EnabledToApproval = isAdmin,
+                ApprovalZOrder = approvalZOrder,
                 UserInDepartment = isUser
             });
         }
