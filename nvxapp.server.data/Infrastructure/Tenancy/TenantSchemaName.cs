@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 namespace nvxapp.server.data.Infrastructure.Tenancy
 {
     /*
-     Regole sui nomi degli schemi PostgreSQL delle aziende.
+     Regole sui nomi degli schemi PostgreSQL degli applicativi delle aziende.
      Il nome finisce in comandi SQL (SET search_path, CREATE SCHEMA): viene sempre validato
      e usato tra doppi apici, mai concatenato senza controllo.
     */
@@ -23,11 +23,8 @@ namespace nvxapp.server.data.Infrastructure.Tenancy
             return value;
         }
 
-        /// <summary>Nome dello schema assegnato a una nuova azienda.</summary>
-        public static string ForCompany(int idCompany) => $"schema_{idCompany}";
-
-        /// <summary>Nome provvisorio, univoco, usato prima che l'azienda abbia un Id.</summary>
-        public static string Pending() => $"schema_new_{Guid.NewGuid():N}";
+        /// <summary>Schema dei dati di un applicativo di un'azienda (multi-tenant): tenant_&lt;IdAzienda&gt;_&lt;IdApplicativo&gt;.</summary>
+        public static string For(int idCompany, ApplicationType application) => $"tenant_{idCompany}_{(int)application}";
 
         /// <summary>Identificatore quotato per l'SQL.</summary>
         public static string Quote(string schema) => $"\"{Validate(schema)}\"";

@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Logging;
 using nvxapp.server.data.Entities.Public;
+using nvxapp.server.data.Infrastructure.Tenancy;
 
 namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Initializer.User
 {
@@ -13,6 +14,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Initializer.
 
         public string Name => "Infrastructure";
         public int Priority => 10;
+        public ApplicationType? Application => null; // comune a tutti gli applicativi
 
         public InfrastructureUserInitializer(ILogger<InfrastructureUserInitializer> logger)
         {

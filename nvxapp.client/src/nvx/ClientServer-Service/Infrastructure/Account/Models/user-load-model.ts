@@ -20,5 +20,13 @@ export class UserDataModel  {
 
   public roles: RolesModel[] = [];
 
+  // applicativi attivi per l'azienda dell'utente (valori di ApplicationType)
+  public activeApplications: ApplicationType[] = [];
+
 }
 
+// Applicativi (stessi valori dell'enum ApplicationType del server)
+export enum ApplicationType {
+  Moke = 1,
+  AttendanceTracking = 2,
+}

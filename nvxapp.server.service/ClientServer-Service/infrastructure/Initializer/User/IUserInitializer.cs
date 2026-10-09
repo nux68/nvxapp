@@ -1,4 +1,5 @@
 using nvxapp.server.data.Entities.Public;
+using nvxapp.server.data.Infrastructure.Tenancy;
 
 namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Initializer.User
 {
@@ -17,6 +18,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Initializer.
         // Priorità di esecuzione (numeri più bassi = eseguiti prima).
         // Esempio: Infrastructure=10, GestionePresenze=20.
         int Priority { get; }
+
+        // Applicativo a cui appartiene: eseguito solo se l'applicativo e' attivo per l'azienda.
+        // null = infrastruttura comune, eseguito sempre.
+        ApplicationType? Application { get; }
 
         // Esegue l'inizializzazione per il nuovo utente.
         // Riceve lo UserCompany appena creato con IdAspNetUsers e IdCompany popolati.

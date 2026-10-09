@@ -18,11 +18,10 @@ namespace nvxapp.server.data.Entities.Public
         [MaxLength(50)]
         public string? Descrizione { get; set; }
 
-        [Required]
-        [MaxLength(50)]
-        public string? Schema { get; set; }
-
 
         public ICollection<UserCompany>? UserCompany { get; set; }
+
+        // applicativi attivati per l'azienda
+        public ICollection<CompanyApplication>? CompanyApplication { get; set; }
     }
 }

@@ -4,7 +4,7 @@ using System.Data.Common;
 namespace nvxapp.server.data.Infrastructure.Tenancy
 {
     /*
-     Ad ogni apertura di connessione di un TenantDbContext imposta il search_path della sessione
+     Ad ogni apertura di connessione del contesto di un applicativo imposta il search_path della sessione
      PostgreSQL sullo schema di QUEL contesto:  SET search_path TO "schema_x", public
 
      - lo schema e' una proprieta' del contesto (quindi della richiesta), non uno stato globale:
@@ -33,10 +33,10 @@ namespace nvxapp.server.data.Infrastructure.Tenancy
 
         private static DbCommand CreateCommand(DbConnection connection, ConnectionEndEventData eventData)
         {
-            if (eventData.Context is not TenantDbContext tenantContext)
-                throw new InvalidOperationException($"{nameof(TenantSearchPathInterceptor)} va registrato solo su {nameof(TenantDbContext)}.");
+            if (eventData.Context is not ApplicationDbContextBase applicationContext)
+                throw new InvalidOperationException($"{nameof(TenantSearchPathInterceptor)} va registrato solo sui contesti degli applicativi ({nameof(ApplicationDbContextBase)}).");
 
-            var schema = tenantContext.Schema; // gia' validato
+            var schema = applicationContext.Schema; // gia' validato
             var command = connection.CreateCommand();
             command.CommandText = schema == TenantSchemaName.Public
                 ? "SET search_path TO public"

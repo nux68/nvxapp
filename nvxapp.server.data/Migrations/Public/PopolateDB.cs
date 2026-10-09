@@ -154,8 +154,8 @@ namespace nvxapp.server.data.Migrations.Public
 
                         migrationBuilder.InsertData(
                                                       table: "Company",
-                                                      columns: new[] { "IdFinancialAdvisor", "Descrizione", "Schema" },
-                                                      values: new object[] { idxFinancialAdvisor, "Azienda " + key_Company, "schema_" + key_Company }
+                                                      columns: new[] { "IdFinancialAdvisor", "Descrizione" },
+                                                      values: new object[] { idxFinancialAdvisor, "Azienda " + key_Company }
                                                       );
 
                         //CompanyPowerAdmin

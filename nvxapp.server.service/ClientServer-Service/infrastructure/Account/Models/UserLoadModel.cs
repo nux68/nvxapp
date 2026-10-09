@@ -1,4 +1,5 @@
-﻿using nvxapp.server.service.ClientServer_Service.ModelsBase;
+﻿using nvxapp.server.data.Infrastructure.Tenancy;
+using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,9 +30,13 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Mode
         public string? UserName { get; set; }
         public List<AspNetRolesModel> Roles { get; set; }
 
+        // applicativi attivi per l'azienda dell'utente (vuoto per utenti senza azienda)
+        public List<ApplicationType> ActiveApplications { get; set; }
+
         public UserDataModel()
         {
             Roles = new List<AspNetRolesModel>();
+            ActiveApplications = new List<ApplicationType>();
         }
     }
 

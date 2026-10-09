@@ -4,25 +4,52 @@ Package manage console  (root soluzione)
 Richiede dotnet-ef 10:  dotnet tool update -g dotnet-ef --version 10.*
 
 
-DUE CONTESTI, DUE SERIE DI MIGRAZIONI
-=====================================
-PublicDbContext  -> tabelle condivise, sempre nello schema public
-                    (Identity, Dealer, FinancialAdvisor, Company, User*, AppSetting)
-                    cartella Migrations/Public   storico public."__EFMigrationsHistory"
+APPLICATIVI E CONTESTI
+======================
+nvxapp e' multi-applicativo. Le tabelle comuni stanno in public, quelle di ogni applicativo
+in un contesto dedicato. Gli applicativi sono l'enum ApplicationType
+(nvxapp.server.data/Infrastructure/Tenancy/ApplicationType.cs):
+    1 Moke                  -> MokeDbContext                (Infrastructure)
+    2 AttendanceTracking    -> AttendanceTrackingDbContext  (ramo AttendanceTracking)
 
-TenantDbContext  -> tabelle dei dati delle aziende (es. MyTable, moduli come GestionePresenze)
-                    cartella Migrations/Tenant   storico "__EFMigrationsHistory_Tenant" (uno per schema)
+PublicDbContext         -> tabelle comuni, sempre in public
+                           (Identity, Dealer, FinancialAdvisor, Company, User*, AppSetting, CompanyApplication)
+                           cartella Migrations/Public   storico public."__EFMigrationsHistory"
 
-Le migrazioni tenant NON contengono il nome dello schema: lo decide la connessione (search_path).
-    modalita' singola       -> tabelle tenant in public, accanto a quelle condivise
-    modalita' multi-tenant  -> uno schema per azienda (Company.Schema)
-Le stesse migrazioni valgono per entrambe le modalita': NON vanno modificate a mano.
+<Applicativo>DbContext  -> tabelle dell'applicativo
+                           cartella Migrations/<Applicativo>   storico "__EFMigrationsHistory_<Applicativo>"
+
+Le migration degli applicativi NON contengono il nome dello schema: lo decide la connessione (search_path).
+    modalita' singola       -> tutte le tabelle in public
+    modalita' multi-tenant  -> uno schema per azienda e applicativo: tenant_<IdAzienda>_<IdApplicativo>
+                               (es. azienda 5 con applicativi 1 e 2: public, tenant_5_1, tenant_5_2)
+Le stesse migration valgono per entrambe le modalita': NON vanno modificate a mano.
 
 Regole:
-  - una tabella va in UN solo contesto (mai lo stesso nome in entrambi)
-  - le tabelle tenant possono riferire tabelle public (mappate con schema "public" + ExcludeFromMigrations)
-  - le tabelle public NON possono riferire tabelle tenant
-  - una migrazione riguarda un solo contesto (indicare sempre --context)
+  - un nome di tabella appartiene a UN solo contesto (in modalita' singola stanno tutte in public):
+    l'avvio si ferma se trova duplicati
+  - le tabelle di un applicativo possono riferire tabelle di public (mappate con schema "public"
+    + ExcludeFromMigrations), MAI tabelle di un altro applicativo
+  - le tabelle di public NON possono riferire tabelle di un applicativo
+  - una migration riguarda un solo contesto (indicare sempre --context)
+
+Nuovo applicativo:
+  1. aggiungere il valore all'enum ApplicationType (il numero non va mai cambiato)
+  2. creare <Applicativo>DbContext : ApplicationDbContextBase e la sua design-time factory
+  3. registrarlo con services.AddApplicationDbContext<...>(ApplicationType.X) nell'installer del modulo
+  4. gli inizializzatori del modulo dichiarano Application = ApplicationType.X
+  5. creare la migration iniziale (vedi sotto)
+
+
+ATTIVAZIONE DEGLI APPLICATIVI PER AZIENDA
+=========================================
+Tabella public."CompanyApplication". Nessun applicativo e' attivo di default.
+API: api/CompanyApplication/CompanyApplicationList   { idCompany }
+     api/CompanyApplication/CompanyApplicationPut    { idCompany, applicationType, active }
+  - attivazione: crea/migra lo schema (multi-tenant) ed esegue gli inizializzatori dell'applicativo
+  - disattivazione: blocca l'accesso, schema e dati restano (riattivando si ritrova tutto)
+L'accesso ai dati di un applicativo non attivo e' rifiutato in entrambe le modalita'.
+UserLoad restituisce userData.activeApplications.
 
 
 MODALITA' MULTI-TENANT
@@ -32,37 +59,31 @@ Si decide al PRIMO avvio su un database vuoto: viene salvata in public."AppSetti
 e non si puo' piu' cambiare. Se la configurazione non coincide l'applicazione non parte.
 
 All'avvio (DatabaseInitializer):
+  0. verifica che nessuna tabella sia in due contesti
   1. migra PublicDbContext
   2. verifica/salva la modalita'
-  3. migra TenantDbContext: public (singola) oppure ogni schema in Company.Schema (multi),
+  3. migra gli applicativi: in public (singola) oppure ogni schema azienda/applicativo ATTIVO (multi),
      creando lo schema se manca
-Alla creazione di un'azienda (CompanyPut) lo schema schema_<Id> viene creato e migrato subito.
 
 
 crea  (sostituire <Nome>)
 dotnet ef migrations add <Nome> --context PublicDbContext -o Migrations/Public --project nvxapp.server.data --startup-project nvxapp.server
-dotnet ef migrations add <Nome> --context TenantDbContext -o Migrations/Tenant --project nvxapp.server.data --startup-project nvxapp.server
+dotnet ef migrations add <Nome> --context MokeDbContext -o Migrations/Moke --project nvxapp.server.data --startup-project nvxapp.server
+dotnet ef migrations add <Nome> --context AttendanceTrackingDbContext -o Migrations/AttendanceTracking --project nvxapp.server.data --startup-project nvxapp.server
 
 storico migrazioni create
   Public: InitPublic (contiene anche i dati iniziali, vedi Migrations/Public/PopolateDB.cs)
-  Tenant: InitTenant
+  Moke:   InitMoke
 
 
 aggiorna db
 Normalmente NON serve: le migrazioni vengono applicate all'avvio dell'applicazione (tutti gli schemi).
 Solo per lo sviluppo in modalita' singola:
 dotnet ef database update --context PublicDbContext --project nvxapp.server.data --startup-project nvxapp.server
-dotnet ef database update --context TenantDbContext --project nvxapp.server.data --startup-project nvxapp.server
-
-aggiorna db alla migrazione specificata
-dotnet ef database update <Nome> --context PublicDbContext --project nvxapp.server.data --startup-project nvxapp.server
-dotnet ef database update <Nome> --context TenantDbContext --project nvxapp.server.data --startup-project nvxapp.server
-
+dotnet ef database update --context MokeDbContext --project nvxapp.server.data --startup-project nvxapp.server
 
 cancella (ultima migrazione non ancora applicata)
-dotnet ef migrations remove --context PublicDbContext --project nvxapp.server.data --startup-project nvxapp.server
-dotnet ef migrations remove --context TenantDbContext --project nvxapp.server.data --startup-project nvxapp.server
+dotnet ef migrations remove --context <Contesto> --project nvxapp.server.data --startup-project nvxapp.server
 
 lista delle migrazioni
-dotnet ef migrations list --context PublicDbContext --project nvxapp.server.data --startup-project nvxapp.server
-dotnet ef migrations list --context TenantDbContext --project nvxapp.server.data --startup-project nvxapp.server
+dotnet ef migrations list --context <Contesto> --project nvxapp.server.data --startup-project nvxapp.server

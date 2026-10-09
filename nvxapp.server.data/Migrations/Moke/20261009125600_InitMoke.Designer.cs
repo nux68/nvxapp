@@ -9,11 +9,11 @@ using nvxapp.server.data.Infrastructure;
 
 #nullable disable
 
-namespace nvxapp.server.data.Migrations.Tenant
+namespace nvxapp.server.data.Migrations.Moke
 {
-    [DbContext(typeof(TenantDbContext))]
-    [Migration("20261009104946_InitTenant")]
-    partial class InitTenant
+    [DbContext(typeof(MokeDbContext))]
+    [Migration("20261009125600_InitMoke")]
+    partial class InitMoke
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

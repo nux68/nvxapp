@@ -8,10 +8,10 @@ using nvxapp.server.data.Infrastructure;
 
 #nullable disable
 
-namespace nvxapp.server.data.Migrations.Tenant
+namespace nvxapp.server.data.Migrations.Moke
 {
-    [DbContext(typeof(TenantDbContext))]
-    partial class TenantDbContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(MokeDbContext))]
+    partial class MokeDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {

@@ -9,43 +9,47 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Initializer.
 {
     // Registro centrale auto-costruito.
     // Non contiene mapping espliciti: ogni IUserInitializer dichiara
-    // il proprio nome e priorità e viene registrato automaticamente.
-    // Per aggiungere un nuovo modulo di inizializzazione basta creare
-    // un nuovo IUserInitializer e registrarlo nella DI.
+    // il proprio nome, priorità e applicativo e viene registrato automaticamente.
     public interface IUserInitializerRegistry
     {
-        // Esegue TUTTI gli inizializzatori in ordine di priorità.
+        // Esegue gli inizializzatori comuni e quelli degli applicativi ATTIVI per l'azienda
+        // dell'utente, in ordine di priorità.
         // Se uno fallisce, logga l'errore e prosegue con i successivi
         // (strategia ContinueOnError per garantire la massima resilienza).
-        // Mantiene una cache in-memory: se l'utente è già stato inizializzato
-        // con successo in questa istanza, esce immediatamente.
+        // Mantiene una cache in-memory per utente e applicativo: cio' che e' gia' stato
+        // inizializzato con successo in questa istanza non viene ripetuto.
         Task InitializeAllAsync(UserCompany userCompany);
     }
 
     public class UserInitializerRegistry : IUserInitializerRegistry
     {
         private readonly IServiceScopeFactory _scopeFactory;
-        private readonly ICompanyRepository _companyRepository;
+        private readonly ICompanyApplicationRepository _companyApplicationRepository;
         private readonly ILogger<UserInitializerRegistry> _logger;
-        private static readonly ConcurrentDictionary<string, byte> _initializedUsers = new();
+
+        // chiave: utente + azienda + applicativo (null = comune)
+        private static readonly ConcurrentDictionary<(string IdUser, int IdCompany, ApplicationType? Application), byte> _initialized = new();
 
         // Gli IUserInitializer registrati nella DI vengono risolti in uno scope dedicato
         // all'azienda dell'utente (vedi InitializeAllAsync) e ordinati per Priority crescente.
         public UserInitializerRegistry(
             IServiceScopeFactory scopeFactory,
-            ICompanyRepository companyRepository,
+            ICompanyApplicationRepository companyApplicationRepository,
             ILogger<UserInitializerRegistry> logger)
         {
             _scopeFactory = scopeFactory;
-            _companyRepository = companyRepository;
+            _companyApplicationRepository = companyApplicationRepository;
             _logger = logger;
         }
 
         public async Task InitializeAllAsync(UserCompany userCompany)
         {
-            // Cache in-memory: se l'utente è già stato inizializzato con successo
-            // in questa istanza del server, evita ogni ulteriore esecuzione.
-            if (_initializedUsers.ContainsKey(userCompany.IdAspNetUsers))
+            var applications = new List<ApplicationType?> { null };
+            applications.AddRange(_companyApplicationRepository.ActiveApplications(userCompany.IdCompany).Select(x => (ApplicationType?)x));
+
+            // Cache in-memory: salta cio' che e' gia' stato inizializzato in questa istanza.
+            var todo = applications.Where(a => !_initialized.ContainsKey((userCompany.IdAspNetUsers, userCompany.IdCompany, a))).ToList();
+            if (todo.Count == 0)
             {
                 _logger.LogDebug(
                     "[UserInit] Utente {UserId} già inizializzato in questa istanza. Skip.",
@@ -54,30 +58,33 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Initializer.
             }
 
             // Gli inizializzatori lavorano sui dati dell'azienda DELL'UTENTE, non su quella della
-            // richiesta: scope DI dedicato, cosi' i TenantDbContext risolvono lo schema di quell'azienda.
-            var company = await _companyRepository.FindByIdAsync(userCompany.IdCompany);
-            using var tenantScope = TenantScope.Use(company?.Schema);
+            // richiesta: scope DI dedicato, cosi' i contesti degli applicativi risolvono gli schemi
+            // di quell'azienda.
+            using var tenantScope = TenantScope.Use(userCompany.IdCompany);
             using var scope = _scopeFactory.CreateScope();
             var initializers = scope.ServiceProvider.GetServices<IUserInitializer>()
+                                                    .Where(i => todo.Contains(i.Application))
                                                     .OrderBy(i => i.Priority)
                                                     .ToList();
 
             _logger.LogInformation(
-                "[UserInit] Avvio inizializzazione per utente {UserId}, Company={CompanyId}, Schema={Schema}. " +
-                "Inizializzatori disponibili: {Count}",
+                "[UserInit] Avvio inizializzazione per utente {UserId}, Company={CompanyId}, Applicativi={Applications}. " +
+                "Inizializzatori: {Count}",
                 userCompany.IdAspNetUsers,
                 userCompany.IdCompany,
-                company?.Schema,
+                string.Join(", ", todo.Select(a => a?.ToString() ?? "comune")),
                 initializers.Count);
 
+            var failed = new HashSet<ApplicationType?>();
             foreach (var initializer in initializers)
             {
                 try
                 {
                     _logger.LogInformation(
-                        "[UserInit] Esecuzione '{InitializerName}' (Priority={Priority})...",
+                        "[UserInit] Esecuzione '{InitializerName}' (Priority={Priority}, Applicativo={Application})...",
                         initializer.Name,
-                        initializer.Priority);
+                        initializer.Priority,
+                        initializer.Application?.ToString() ?? "comune");
 
                     await initializer.InitializeAsync(userCompany);
 
@@ -90,6 +97,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Initializer.
                     // Strategia ContinueOnError: logghiamo l'errore e proseguiamo
                     // con i successivi inizializzatori per non bloccare
                     // la creazione dell'utente a causa di un modulo.
+                    failed.Add(initializer.Application);
                     _logger.LogError(ex,
                         "[UserInit] ERRORE in '{InitializerName}': {Message}. " +
                         "Proseguo con i successivi inizializzatori.",
@@ -98,8 +106,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Initializer.
                 }
             }
 
-            // Marca l'utente come inizializzato in questa istanza
-            _initializedUsers.TryAdd(userCompany.IdAspNetUsers, 0);
+            // Marca come inizializzati gli applicativi senza errori in questa istanza
+            foreach (var application in todo.Where(a => !failed.Contains(a)))
+                _initialized.TryAdd((userCompany.IdAspNetUsers, userCompany.IdCompany, application), 0);
 
             _logger.LogInformation(
                 "[UserInit] Inizializzazione completata per utente {UserId}.",

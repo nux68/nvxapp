@@ -276,11 +276,6 @@ namespace nvxapp.server.data.Migrations.Public
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<string>("Schema")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
-
                     b.HasKey("Id");
 
                     b.HasIndex("Descrizione")
@@ -288,10 +283,48 @@ namespace nvxapp.server.data.Migrations.Public
 
                     b.HasIndex("IdFinancialAdvisor");
 
-                    b.HasIndex("Schema")
+                    b.ToTable("Company", "public");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Public.CompanyApplication", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime?>("ActivationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<bool>("Active")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("ApplicationType")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("DeactivationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("IdCompany")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdCompany", "ApplicationType")
                         .IsUnique();
 
-                    b.ToTable("Company", "public");
+                    b.ToTable("CompanyApplication", "public");
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Public.Dealer", b =>
@@ -537,6 +570,17 @@ namespace nvxapp.server.data.Migrations.Public
                     b.Navigation("FinancialAdvisorNavigation");
                 });
 
+            modelBuilder.Entity("nvxapp.server.data.Entities.Public.CompanyApplication", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Public.Company", "CompanyNavigation")
+                        .WithMany("CompanyApplication")
+                        .HasForeignKey("IdCompany")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CompanyNavigation");
+                });
+
             modelBuilder.Entity("nvxapp.server.data.Entities.Public.FinancialAdvisor", b =>
                 {
                     b.HasOne("nvxapp.server.data.Entities.Public.Dealer", "DealerNavigation")
@@ -616,6 +660,8 @@ namespace nvxapp.server.data.Migrations.Public
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Public.Company", b =>
                 {
+                    b.Navigation("CompanyApplication");
+
                     b.Navigation("UserCompany");
                 });
 
