@@ -1,5 +1,8 @@
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using nvxapp.server.data.Entities.Public;
+using nvxapp.server.data.Infrastructure.Tenancy;
+using nvxapp.server.data.Repositories.Public;
 using System.Collections.Concurrent;
 
 namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Initializer.User
@@ -21,19 +24,20 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Initializer.
 
     public class UserInitializerRegistry : IUserInitializerRegistry
     {
-        private readonly List<IUserInitializer> _initializers;
+        private readonly IServiceScopeFactory _scopeFactory;
+        private readonly ICompanyRepository _companyRepository;
         private readonly ILogger<UserInitializerRegistry> _logger;
         private static readonly ConcurrentDictionary<string, byte> _initializedUsers = new();
 
-        // Riceve tutti gli IUserInitializer registrati nella DI.
-        // Li ordina per Priority crescente.
+        // Gli IUserInitializer registrati nella DI vengono risolti in uno scope dedicato
+        // all'azienda dell'utente (vedi InitializeAllAsync) e ordinati per Priority crescente.
         public UserInitializerRegistry(
-            IEnumerable<IUserInitializer> initializers,
+            IServiceScopeFactory scopeFactory,
+            ICompanyRepository companyRepository,
             ILogger<UserInitializerRegistry> logger)
         {
-            _initializers = initializers
-                .OrderBy(i => i.Priority)
-                .ToList();
+            _scopeFactory = scopeFactory;
+            _companyRepository = companyRepository;
             _logger = logger;
         }
 
@@ -49,14 +53,24 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Initializer.
                 return;
             }
 
+            // Gli inizializzatori lavorano sui dati dell'azienda DELL'UTENTE, non su quella della
+            // richiesta: scope DI dedicato, cosi' i TenantDbContext risolvono lo schema di quell'azienda.
+            var company = await _companyRepository.FindByIdAsync(userCompany.IdCompany);
+            using var tenantScope = TenantScope.Use(company?.Schema);
+            using var scope = _scopeFactory.CreateScope();
+            var initializers = scope.ServiceProvider.GetServices<IUserInitializer>()
+                                                    .OrderBy(i => i.Priority)
+                                                    .ToList();
+
             _logger.LogInformation(
-                "[UserInit] Avvio inizializzazione per utente {UserId}, Company={CompanyId}. " +
+                "[UserInit] Avvio inizializzazione per utente {UserId}, Company={CompanyId}, Schema={Schema}. " +
                 "Inizializzatori disponibili: {Count}",
                 userCompany.IdAspNetUsers,
                 userCompany.IdCompany,
-                _initializers.Count);
+                company?.Schema,
+                initializers.Count);
 
-            foreach (var initializer in _initializers)
+            foreach (var initializer in initializers)
             {
                 try
                 {

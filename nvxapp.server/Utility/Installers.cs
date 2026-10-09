@@ -7,7 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using NetCore.AutoRegisterDi;
 using NpgsqlTypes;
 using nvxapp.server.data.Entities.Public;
-using nvxapp.server.data.Infrastructure;
+using nvxapp.server.data.Infrastructure;
 using nvxapp.server.data.Infrastructure.Tenancy;
 using nvxapp.server.data.Interfaces;
 using nvxapp.server.service.ClientServer_Service.infrastructure.Notifications;
