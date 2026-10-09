@@ -9,6 +9,8 @@ using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Infrastructure.Tenancy;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Models;
+using nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyApplication;
+using nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyApplication.Models;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Initializer.CompanyInit;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Initializer.User;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
@@ -42,6 +44,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
         private readonly IUserInitializerRegistry _userInitializerRegistry;
         private readonly ICompanyInitializerRegistry _companyInitializerRegistry;
         private readonly ICompanyApplicationRepository _companyApplicationRepository;
+        private readonly ICompanyApplicationService _companyApplicationService;
 
 
         public AccountService(IMapper mapper,
@@ -66,6 +69,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                               IUserCompanyRepository userCompanyRepository,
                               IHubContext<SignalRHub> hubContext,
                               ICompanyApplicationRepository companyApplicationRepository,
+                              ICompanyApplicationService companyApplicationService,
 
                               SignInManager<ApplicationUser> signInManager
                               ) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
@@ -84,6 +88,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
             _userInitializerRegistry = userInitializerRegistry;
             _companyInitializerRegistry = companyInitializerRegistry;
             _companyApplicationRepository = companyApplicationRepository;
+            _companyApplicationService = companyApplicationService;
             _hubContext = hubContext;
         }
 
@@ -699,7 +704,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                     retVal.CompanyEdit = new CompanyEditModel()
                     {
                         Descrizione = company.Descrizione,
-                        IdCompany = company.Id
+                        IdCompany = company.Id,
+                        Applications = _companyApplicationService.Applications(company.Id)
                     };
                 }
                 else
@@ -707,7 +713,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                     retVal.CompanyEdit = new CompanyEditModel()
                     {
                         Descrizione = "",
-                        IdCompany = 0
+                        IdCompany = 0,
+                        Applications = _companyApplicationService.Applications(0)
                     };
                 }
 
@@ -794,6 +801,24 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                         });
                     }
                     /////////////////////
+                }
+
+                // applicativi dell'azienda:
+                //  - spuntato: attivato se serve e schema verificato a ogni salvataggio (creato se manca)
+                //  - tolto: solo disattivato, lo schema e i dati restano
+                if (company != null && model.Data.CompanyEdit.Applications != null)
+                {
+                    foreach (var application in model.Data.CompanyEdit.Applications)
+                    {
+                        var reqApp = new GenericRequest<CompanyApplicationPutInModel>();
+                        reqApp.Data = new CompanyApplicationPutInModel()
+                        {
+                            IdCompany = company.Id,
+                            ApplicationType = application.ApplicationType,
+                            Active = application.Active
+                        };
+                        await _companyApplicationService.CompanyApplicationPut(reqApp, true);
+                    }
                 }
 
                 if (company != null)

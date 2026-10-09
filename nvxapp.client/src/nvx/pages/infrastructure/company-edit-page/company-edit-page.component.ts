@@ -60,18 +60,24 @@ export class CompanyEditPageComponent extends BasePageConfirmCancelComponent<Com
       );
     }
     else {
-      return new Observable<CompanyEditModel | null>((subscriber) => {
+      //aggiunge campi solo per le new
+      this._editForm.addControl('mail', this.fb.control(null, [Validators.required, Validators.email]));
+      this._editForm.addControl('pw', this.fb.control(null, [Validators.required]));
+      this._editForm.addControl('confirmPassword', this.fb.control(null, [Validators.required]));
+      this._editForm.setValidators(matchPasswords);
+      this._editForm.updateValueAndValidity();
 
-        //aggiunge campi solo per le new
-        this._editForm.addControl('mail', this.fb.control(null, [Validators.required, Validators.email]));
-        this._editForm.addControl('pw', this.fb.control(null, [Validators.required]));
-        this._editForm.addControl('confirmPassword', this.fb.control(null, [Validators.required]));
-        this._editForm.setValidators(matchPasswords);
-        this._editForm.updateValueAndValidity();
+      // azienda nuova (id 0): il server restituisce l'elenco degli applicativi, tutti non attivi
+      let request: GenericRequest<CompanyGetInModel> = new GenericRequest<CompanyGetInModel>(CompanyGetInModel);
+      request.data.id = 0;
 
-        subscriber.next(new CompanyEditModel());
-        subscriber.complete();
-      });
+      return this.accountService.CompanyGet(request).pipe(
+        map((res) => res.data?.companyEdit ?? new CompanyEditModel()),
+        catchError((error) => {
+          console.error('Errore durante la chiamata API:', error);
+          return of(new CompanyEditModel());
+        })
+      );
     }
   };
 
