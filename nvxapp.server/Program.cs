@@ -1,6 +1,5 @@
 using Hangfire;
-using Microsoft.EntityFrameworkCore;
-using nvxapp.server.data.Infrastructure;
+using nvxapp.server.data.Infrastructure.Tenancy;
 using nvxapp.server.Utility;
 
 
@@ -81,47 +80,11 @@ var app = builder.Build();
 nvxapp.server.Base.ServiceBase.InitScopeFactory(app.Services.GetRequiredService<IServiceScopeFactory>());
 
 
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
-
-    var factory = services.GetRequiredService<IApplicationDbContextFactory>();
-
-    // Lista degli schemi dei tenant (puoi sostituirla con una query al DB)
-    string[] schemiClienti = { "schema__1_1_1" };
-
-    SharedSchema.MigrazioneRunTime = true;
-
-    //var _configuration = app.Services.GetRequiredService<IConfiguration>();
-    Boolean MultiTenant = false;
-    string? sMultiTenant = builder.Configuration["DbParameter:MultiTenant"]; //_configuration["DbParameter:MultiTenant"];
-
-
-
-    bool.TryParse(sMultiTenant, out MultiTenant);
-    SharedSchema.MultiTenant = MultiTenant;
-
-    // Esegui la migrazione sullo schema di default (public)
-    using (var context = factory.CreateDbContext("public"))
-    {
-        context.Database.Migrate();
-    }
-
-    // Esegui la migrazione per ogni schema tenant
-    if (MultiTenant)
-    {
-        foreach (var schema in schemiClienti)
-        {
-            using (var context = factory.CreateDbContext(schema.ToLower()))
-            {
-                //context.Database.ExecuteSqlRaw($"CREATE SCHEMA IF NOT EXISTS \"{schema.ToLower()}\";");
-                ////EnsureSchemaExists(context, schema); // Assicura che lo schema esista
-                context.Database.Migrate();
-            }
-        }
-    }
-
-}
+// Database: migrazione tabelle condivise, verifica/registrazione della modalita' multi-tenant
+// (decisa al primo avvio e non piu' modificabile), migrazione tabelle tenant / schemi azienda.
+Boolean configuredMultiTenant = false;
+bool.TryParse(builder.Configuration["DbParameter:MultiTenant"], out configuredMultiTenant);
+await DatabaseInitializer.InitializeAsync(app.Services, configuredMultiTenant);
 
 
 

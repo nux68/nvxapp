@@ -7,7 +7,8 @@ using Microsoft.IdentityModel.Tokens;
 using NetCore.AutoRegisterDi;
 using NpgsqlTypes;
 using nvxapp.server.data.Entities.Public;
-using nvxapp.server.data.Infrastructure;
+using nvxapp.server.data.Infrastructure;
+using nvxapp.server.data.Infrastructure.Tenancy;
 using nvxapp.server.data.Interfaces;
 using nvxapp.server.service.ClientServer_Service.infrastructure.Notifications;
 using nvxapp.server.service.HubAI;
@@ -142,16 +143,10 @@ namespace nvxapp.server.Utility
         }
         public static IServiceCollection InstallEntityContex(this WebApplicationBuilder builder)
         {
-            var serviceProvider = builder.Services.AddEntityFrameworkNpgsql()
-                                                  .BuildServiceProvider();
-
-            builder.Services.AddDbContext<ApplicationDbContext>(options =>
-
-                options.UseNpgsql(
-                       builder.Configuration.GetConnectionString("nvxappDbContext"),
-                       npgsqlOptions => npgsqlOptions.MigrationsAssembly("nvxapp.server.data") // Specifica l'assembly per le migrazioni
-                       ).UseInternalServiceProvider(serviceProvider)
-            );
+            // PublicDbContext (tabelle condivise) + TenantDbContext (dati aziende, search_path per richiesta)
+            string connectionString = builder.Configuration.GetConnectionString("nvxappDbContext")
+                                      ?? throw new InvalidOperationException("Connection string 'nvxappDbContext' non configurata.");
+            builder.Services.AddNvxDataLayer(connectionString);
 
             builder.Services.AddIdentityCore<ApplicationUser>(options =>
             {
@@ -163,20 +158,12 @@ namespace nvxapp.server.Utility
                 options.Password.RequiredUniqueChars = 0;
             })
             .AddRoles<ApplicationRole>()
-            .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddEntityFrameworkStores<PublicDbContext>()
             .AddDefaultTokenProviders();
 
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddScoped<SignInManager<ApplicationUser>>();
 
-
-            //4 SCHEMA
-            builder.Services.AddScoped<IApplicationDbContextFactory, ApplicationDbContextFactory>();
-            builder.Services.AddEntityFrameworkNpgsql();
-            //builder.Services.AddMvc();
-            //builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            ////4 SCHEMA DISABLED
-            //builder.Services.AddScoped<IMigrationsSqlGenerator, SchemaAwareMigrationSqlGenerator>();
 
 
 
@@ -189,7 +176,9 @@ namespace nvxapp.server.Utility
         }
         public static IServiceCollection InstallRepositories(this WebApplicationBuilder builder)
         {
+            // solo i repository: i servizi di Infrastructure.Tenancy sono registrati da AddNvxDataLayer
             builder.Services.RegisterAssemblyPublicNonGenericClasses(Assembly.GetAssembly(typeof(IRepository<>)))
+                            .Where(type => type.Namespace != null && type.Namespace.StartsWith("nvxapp.server.data.Repositories"))
                             .AsPublicImplementedInterfaces(ServiceLifetime.Scoped);
 
             //builder.Services.AddScoped<IDatabaseTransaction, DatabaseTransaction>();

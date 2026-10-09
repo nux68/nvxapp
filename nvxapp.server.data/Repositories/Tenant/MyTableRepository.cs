@@ -8,29 +8,16 @@ namespace nvxapp.server.data.Repositories.Tenant
 {
 
     /*
-     ATTENZIONE !!!
-    
-     applicationDbContextFactory.CreateDbContext(null) e quello che permette la lettura dei dati
-     sul tenat in caso di multi tenant
-     
+     Repository di una tabella tenant: usa TenantDbContext, che lavora sullo schema
+     dell'azienda della richiesta (search_path impostato all'apertura della connessione).
      */
 
-    public class MyTableRepository : Repository<ApplicationDbContext, MyTable>, IMyTableRepository, ICurrentTenant
+    public class MyTableRepository : Repository<TenantDbContext, MyTable>, IMyTableRepository
     {
-
-        private readonly IApplicationDbContextFactory _applicationDbContextFactory;
-
-
-
-        public MyTableRepository(ApplicationDbContext dbContext,
+        public MyTableRepository(TenantDbContext dbContext,
                                  IServiceProvider provider,
-                                 IHttpContextAccessor httpContextAccessor,
-                                 IApplicationDbContextFactory applicationDbContextFactory) : base(applicationDbContextFactory.CreateDbContext(null), 
-                                                                                                  provider, 
-                                                                                                  httpContextAccessor)
-                                
+                                 IHttpContextAccessor httpContextAccessor) : base(dbContext, provider, httpContextAccessor)
         {
-            _applicationDbContextFactory = applicationDbContextFactory;
         }
     }
 

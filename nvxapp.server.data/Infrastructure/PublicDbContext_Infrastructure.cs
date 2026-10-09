@@ -2,13 +2,12 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using nvxapp.server.data.Entities.Public;
-using nvxapp.server.data.Entities.Tenant;
 
 namespace nvxapp.server.data.Infrastructure
 {
-    public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, string>
+    public partial class PublicDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, string>
     {
-        public DbSet<MyTable> MyTables { get; set; }
+        public DbSet<AppSetting> AppSetting { get; set; }
 
         public DbSet<Dealer> Dealer { get; set; }
         public DbSet<UserDealer> UserDealer { get; set; }
@@ -23,38 +22,32 @@ namespace nvxapp.server.data.Infrastructure
             //1
             Gen_InitDB(modelBuilder);
             Gen_DealerAndCompany_Init(modelBuilder);
-            //2 
-            Gen_MyTable(modelBuilder);
+            Gen_AppSetting(modelBuilder);
         }
 
         private void Gen_InitDB(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<ApplicationUser>(entity => { entity.ToTable("AspNetUsers", _baseSchema); });
-            modelBuilder.Entity<ApplicationRole>(entity => { entity.ToTable("AspNetRoles", _baseSchema); });
-            modelBuilder.Entity<IdentityUserRole<string>>(entity => { entity.ToTable("AspNetUserRoles", _baseSchema); });
-            modelBuilder.Entity<IdentityUserClaim<string>>(entity => { entity.ToTable("AspNetUserClaims", _baseSchema); });
-            modelBuilder.Entity<IdentityUserLogin<string>>(entity => { entity.ToTable("AspNetUserLogins", _baseSchema); });
-            modelBuilder.Entity<IdentityRoleClaim<string>>(entity => { entity.ToTable("AspNetRoleClaims", _baseSchema); });
-            modelBuilder.Entity<IdentityUserToken<string>>(entity => { entity.ToTable("AspNetUserTokens", _baseSchema); });
+            modelBuilder.Entity<ApplicationUser>(entity => { entity.ToTable("AspNetUsers", Schema); });
+            modelBuilder.Entity<ApplicationRole>(entity => { entity.ToTable("AspNetRoles", Schema); });
+            modelBuilder.Entity<IdentityUserRole<string>>(entity => { entity.ToTable("AspNetUserRoles", Schema); });
+            modelBuilder.Entity<IdentityUserClaim<string>>(entity => { entity.ToTable("AspNetUserClaims", Schema); });
+            modelBuilder.Entity<IdentityUserLogin<string>>(entity => { entity.ToTable("AspNetUserLogins", Schema); });
+            modelBuilder.Entity<IdentityRoleClaim<string>>(entity => { entity.ToTable("AspNetRoleClaims", Schema); });
+            modelBuilder.Entity<IdentityUserToken<string>>(entity => { entity.ToTable("AspNetUserTokens", Schema); });
         }
-        private void Gen_MyTable(ModelBuilder modelBuilder)
+        private void Gen_AppSetting(ModelBuilder modelBuilder)
         {
-            // Configura altre entità nello schema appropriato
-            modelBuilder.Entity<MyTable>(entity =>
+            modelBuilder.Entity<AppSetting>(entity =>
             {
-                entity.ToTable("MyTable", _currentSchema);
-                entity.HasKey(e => e.Id);
-                entity.Property(e => e.Descrizione).IsRequired();
-
-                // Crea un indice univoco 
-                entity.HasIndex(e => new { e.Descrizione }).IsUnique();
+                entity.ToTable("AppSetting", Schema);
+                entity.HasKey(e => e.Key);
             });
         }
         private void Gen_DealerAndCompany_Init(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Dealer>(entity =>
             {
-                entity.ToTable("Dealer", _baseSchema);
+                entity.ToTable("Dealer", Schema);
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.Descrizione).IsRequired();
                 // Crea un indice univoco 
@@ -63,7 +56,7 @@ namespace nvxapp.server.data.Infrastructure
 
             modelBuilder.Entity<UserDealer>(entity =>
             {
-                entity.ToTable("UserDealer", _baseSchema);
+                entity.ToTable("UserDealer", Schema);
                 entity.HasKey(e => e.Id);
 
                 // Crea un indice univoco su due colonne
@@ -73,7 +66,7 @@ namespace nvxapp.server.data.Infrastructure
 
             modelBuilder.Entity<FinancialAdvisor>(entity =>
             {
-                entity.ToTable("FinancialAdvisor", _baseSchema);
+                entity.ToTable("FinancialAdvisor", Schema);
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.Descrizione).IsRequired();
                 // Crea un indice univoco 
@@ -82,7 +75,7 @@ namespace nvxapp.server.data.Infrastructure
 
             modelBuilder.Entity<UserFinancialAdvisor>(entity =>
             {
-                entity.ToTable("UserFinancialAdvisor", _baseSchema);
+                entity.ToTable("UserFinancialAdvisor", Schema);
                 entity.HasKey(e => e.Id);
 
                 // Crea un indice univoco su due colonne
@@ -91,16 +84,18 @@ namespace nvxapp.server.data.Infrastructure
 
             modelBuilder.Entity<Company>(entity =>
             {
-                entity.ToTable("Company", _baseSchema);
+                entity.ToTable("Company", Schema);
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.Descrizione).IsRequired();
                 // Crea un indice univoco 
                 entity.HasIndex(e => new { e.Descrizione }).IsUnique();
+                // Schema PostgreSQL dell'azienda (usato in modalita' multi-tenant): univoco
+                entity.HasIndex(e => new { e.Schema }).IsUnique();
             });
 
             modelBuilder.Entity<UserCompany>(entity =>
             {
-                entity.ToTable("UserCompany", _baseSchema);
+                entity.ToTable("UserCompany", Schema);
                 entity.HasKey(e => e.Id);
 
                 // Crea un indice univoco su due colonne

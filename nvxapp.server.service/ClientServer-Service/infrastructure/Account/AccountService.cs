@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using nvxapp.server.Base;
 using nvxapp.server.data.Entities.Public;
+using nvxapp.server.data.Infrastructure.Tenancy;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Models;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Initializer.CompanyInit;
@@ -40,6 +41,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
         private readonly IHubContext<SignalRHub> _hubContext;
         private readonly IUserInitializerRegistry _userInitializerRegistry;
         private readonly ICompanyInitializerRegistry _companyInitializerRegistry;
+        private readonly ITenantProvisioningService _tenantProvisioningService;
 
 
         public AccountService(IMapper mapper,
@@ -63,6 +65,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                               ICompanyRepository companyRepository,
                               IUserCompanyRepository userCompanyRepository,
                               IHubContext<SignalRHub> hubContext,
+                              ITenantProvisioningService tenantProvisioningService,
 
                               SignInManager<ApplicationUser> signInManager
                               ) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
@@ -80,6 +83,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
             
             _userInitializerRegistry = userInitializerRegistry;
             _companyInitializerRegistry = companyInitializerRegistry;
+            _tenantProvisioningService = tenantProvisioningService;
             _hubContext = hubContext;
         }
 
@@ -738,10 +742,18 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                     {
                         Descrizione = StringHelper.RemoveSpecialCharacters(model.Data.CompanyEdit.Descrizione),
                         IdFinancialAdvisor = IdFinancialAdvisor,
-                        Schema = "schema_" + StringHelper.RemoveSpecialCharacters(model.Data.CompanyEdit.Descrizione),
+                        // nome provvisorio: lo schema definitivo dipende dall'Id assegnato dal database
+                        Schema = TenantSchemaName.Pending(),
                     };
 
                     company = await _companyRepository.UpsertAsync(company);
+
+                    // schema dell'azienda: in multi-tenant viene creato e migrato subito
+                    // (in modalita' singola le tabelle stanno in public e non serve nulla)
+                    string companySchema = TenantSchemaName.ForCompany(company.Id);
+                    company.Schema = companySchema;
+                    company = await _companyRepository.UpdateAsync(company);
+                    await _tenantProvisioningService.EnsureTenantAsync(companySchema);
 
                     string password = model.Data.CompanyEdit.Pw != null ? model.Data.CompanyEdit.Pw : "1234";
 

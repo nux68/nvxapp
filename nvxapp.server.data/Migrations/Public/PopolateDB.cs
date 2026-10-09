@@ -2,12 +2,11 @@
 using Microsoft.EntityFrameworkCore.Migrations;
 using nvxapp.server.data.Entities;
 using nvxapp.server.data.Entities.Public;
-using nvxapp.server.data.Infrastructure;
 using nvxapp.server.data.Repositories.Public;
 using System.Data;
 using static nvxapp.server.data.Entities.AspNetUsersDataUtil;
 
-namespace nvxapp.server.data.Migrations
+namespace nvxapp.server.data.Migrations.Public
 {
     public class PopolateDB
     {
@@ -38,9 +37,6 @@ namespace nvxapp.server.data.Migrations
 
         public static void PopolateDB_InitDB_UP(MigrationBuilder migrationBuilder)
         {
-
-            if (SharedSchema.CurrentSchema != "public")
-                return;
 
             List<AspNetRolesModel> roleAll = AspNetUsersDataUtil.Get_AspNetRoles(AspNetUsersDataUtil.AspNetRolesGroup.All);
 

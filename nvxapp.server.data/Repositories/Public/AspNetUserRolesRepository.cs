@@ -13,9 +13,9 @@ namespace nvxapp.server.data.Repositories.Public
 {
 
 
-    public class AspNetUserRolesRepository : Repository<ApplicationDbContext, IdentityUserRole<string>>, IAspNetUserRolesRepository
+    public class AspNetUserRolesRepository : Repository<PublicDbContext, IdentityUserRole<string>>, IAspNetUserRolesRepository
     {
-        public AspNetUserRolesRepository(ApplicationDbContext dbContext,
+        public AspNetUserRolesRepository(PublicDbContext dbContext,
                                      IServiceProvider provider,
                                      IHttpContextAccessor httpContextAccessor) : base(dbContext, provider, httpContextAccessor)
         {

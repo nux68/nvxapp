@@ -1,55 +1,68 @@
 ﻿lanciare in:
 Package manage console  (root soluzione)
 
-crea
-dotnet ef migrations add InitDB  -v --context nvxapp.server.data.Infrastructure.ApplicationDbContext --project nvxapp.server.data --startup-project nvxapp.server\nvxapp.server.csproj
-dotnet ef migrations add MyTable  -v --context nvxapp.server.data.Infrastructure.ApplicationDbContext --project nvxapp.server.data --startup-project nvxapp.server\nvxapp.server.csproj
-dotnet ef migrations add DealerAndCompany_Init  -v --context nvxapp.server.data.Infrastructure.ApplicationDbContext --project nvxapp.server.data --startup-project nvxapp.server\nvxapp.server.csproj
+Richiede dotnet-ef 10:  dotnet tool update -g dotnet-ef --version 10.*
+
+
+DUE CONTESTI, DUE SERIE DI MIGRAZIONI
+=====================================
+PublicDbContext  -> tabelle condivise, sempre nello schema public
+                    (Identity, Dealer, FinancialAdvisor, Company, User*, AppSetting)
+                    cartella Migrations/Public   storico public."__EFMigrationsHistory"
+
+TenantDbContext  -> tabelle dei dati delle aziende (es. MyTable, moduli come GestionePresenze)
+                    cartella Migrations/Tenant   storico "__EFMigrationsHistory_Tenant" (uno per schema)
+
+Le migrazioni tenant NON contengono il nome dello schema: lo decide la connessione (search_path).
+    modalita' singola       -> tabelle tenant in public, accanto a quelle condivise
+    modalita' multi-tenant  -> uno schema per azienda (Company.Schema)
+Le stesse migrazioni valgono per entrambe le modalita': NON vanno modificate a mano.
+
+Regole:
+  - una tabella va in UN solo contesto (mai lo stesso nome in entrambi)
+  - le tabelle tenant possono riferire tabelle public (mappate con schema "public" + ExcludeFromMigrations)
+  - le tabelle public NON possono riferire tabelle tenant
+  - una migrazione riguarda un solo contesto (indicare sempre --context)
+
+
+MODALITA' MULTI-TENANT
+======================
+appsettings: DbParameter:MultiTenant (true/false)
+Si decide al PRIMO avvio su un database vuoto: viene salvata in public."AppSetting" (TenancyMode)
+e non si puo' piu' cambiare. Se la configurazione non coincide l'applicazione non parte.
+
+All'avvio (DatabaseInitializer):
+  1. migra PublicDbContext
+  2. verifica/salva la modalita'
+  3. migra TenantDbContext: public (singola) oppure ogni schema in Company.Schema (multi),
+     creando lo schema se manca
+Alla creazione di un'azienda (CompanyPut) lo schema schema_<Id> viene creato e migrato subito.
+
+
+crea  (sostituire <Nome>)
+dotnet ef migrations add <Nome> --context PublicDbContext -o Migrations/Public --project nvxapp.server.data --startup-project nvxapp.server
+dotnet ef migrations add <Nome> --context TenantDbContext -o Migrations/Tenant --project nvxapp.server.data --startup-project nvxapp.server
+
+storico migrazioni create
+  Public: InitPublic (contiene anche i dati iniziali, vedi Migrations/Public/PopolateDB.cs)
+  Tenant: InitTenant
 
 
 aggiorna db
-dotnet ef database update --project nvxapp.server.data --startup-project nvxapp.server
+Normalmente NON serve: le migrazioni vengono applicate all'avvio dell'applicazione (tutti gli schemi).
+Solo per lo sviluppo in modalita' singola:
+dotnet ef database update --context PublicDbContext --project nvxapp.server.data --startup-project nvxapp.server
+dotnet ef database update --context TenantDbContext --project nvxapp.server.data --startup-project nvxapp.server
 
 aggiorna db alla migrazione specificata
-dotnet ef database update InitDB --project nvxapp.server.data --startup-project nvxapp.server
-dotnet ef database update MyTable --project nvxapp.server.data --startup-project nvxapp.server
-dotnet ef database update DealerAndCompany_Init --project nvxapp.server.data --startup-project nvxapp.server
+dotnet ef database update <Nome> --context PublicDbContext --project nvxapp.server.data --startup-project nvxapp.server
+dotnet ef database update <Nome> --context TenantDbContext --project nvxapp.server.data --startup-project nvxapp.server
 
-cancella
-dotnet ef migrations remove --project nvxapp.server.data --startup-project nvxapp.server
 
-cancella tutte migrazioni a db
-dotnet ef database update 0 --project nvxapp.server.data --startup-project nvxapp.server
+cancella (ultima migrazione non ancora applicata)
+dotnet ef migrations remove --context PublicDbContext --project nvxapp.server.data --startup-project nvxapp.server
+dotnet ef migrations remove --context TenantDbContext --project nvxapp.server.data --startup-project nvxapp.server
 
 lista delle migrazioni
-dotnet ef migrations list --project nvxapp.server.data --startup-project nvxapp.server
-
-
-//4 SCHEMA
-ATTENZIONE IMPOSTARE per le migrazioni delle tabelle che stanno nei tenat
-x:
-	migrationBuilder.CreateTable(
-		schema: SharedSchema._schema,
-	migrationBuilder.CreateIndex(
-		schema: SharedSchema._schema,
-	table.ForeignKey(
-		principalSchema: SharedSchema._schema,
-
-
-Per le tabelle che stanno in  public all'inizio dei metodi up e down
-	if (SharedSchema.CurrentSchema != "public")
-        return;
-
-Per le tabelle che stanno nei tenat all'inizio dei metodi up e down
-
-	if (SharedSchema.MultiTenant == true && SharedSchema.CurrentSchema == "public")
-	    return;
-
-
-
-
-
-
-
-
-x semplificare lo sviluppo conviene fare una migrazione che stia solo su public o solo su gli altri schemi
+dotnet ef migrations list --context PublicDbContext --project nvxapp.server.data --startup-project nvxapp.server
+dotnet ef migrations list --context TenantDbContext --project nvxapp.server.data --startup-project nvxapp.server

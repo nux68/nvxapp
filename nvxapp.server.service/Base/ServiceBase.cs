@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using nvxapp.server.data.Entities.Public;
+using nvxapp.server.data.Infrastructure.Tenancy;
 using nvxapp.server.data.Interfaces;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
@@ -238,20 +239,8 @@ namespace nvxapp.server.Base
                 ((ICurrentUser)item2).CurrentUserId = this.CurrentUserId;
             }
 
-            Boolean MultiTenant = false;
-            string? sMultiTenant = _configuration["DbParameter:MultiTenant"];
-            bool.TryParse(sMultiTenant, out MultiTenant);
-
-            if (MultiTenant)
-            {
-                //scandice i repo assegna i tenant != da public
-                repo_base = nvxReflection.GetObjectsOfType<ICurrentTenant>(this);
-                var tenant = string.IsNullOrEmpty(CurrentTenat) ? "public" : CurrentTenat;
-                foreach (var item2 in repo_base)
-                {
-                    ((ICurrentTenant)item2).CurrentTenant = tenant;
-                }
-            }
+            // lo schema dell'azienda non si assegna qui: TenantDbContext lo risolve da solo
+            // (claim "tenant" della richiesta o TenantScope) e lo applica con il search_path
 
         }
 
@@ -359,6 +348,8 @@ namespace nvxapp.server.Base
             _ = Task.Run(async () =>
             {
                 SetBackgroundToken(capturedToken);
+                // azienda del job: i TenantDbContext creati nello scope lavorano sul suo schema
+                using var tenantScope = TenantScope.Use(capturedToken.Tenant);
                 using var scope = _staticScopeFactory!.CreateScope();
                 try
                 {

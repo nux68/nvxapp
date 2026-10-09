@@ -1,27 +1,37 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using nvxapp.server.data.Infrastructure;
 
 #nullable disable
 
-namespace nvxapp.server.data.Migrations
+namespace nvxapp.server.data.Migrations.Public
 {
     /// <inheritdoc />
-    public partial class InitDB : Migration
+    public partial class InitPublic : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            if (SharedSchema.CurrentSchema != "public")
-                return;
-
             migrationBuilder.EnsureSchema(
                 name: "public");
 
             migrationBuilder.CreateTable(
+                name: "AppSetting",
+                schema: "public",
+                columns: table => new
+                {
+                    Key = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Value = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
+                    ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AppSetting", x => x.Key);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AspNetRoles",
-                schema: SharedSchema.CurrentSchema,
+                schema: "public",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
@@ -37,7 +47,7 @@ namespace nvxapp.server.data.Migrations
 
             migrationBuilder.CreateTable(
                 name: "AspNetUsers",
-                schema: SharedSchema.CurrentSchema,
+                schema: "public",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
@@ -66,7 +76,7 @@ namespace nvxapp.server.data.Migrations
 
             migrationBuilder.CreateTable(
                 name: "Dealer",
-                schema: SharedSchema.CurrentSchema,
+                schema: "public",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -83,7 +93,7 @@ namespace nvxapp.server.data.Migrations
 
             migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
-                schema: SharedSchema.CurrentSchema,
+                schema: "public",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -98,7 +108,7 @@ namespace nvxapp.server.data.Migrations
                     table.ForeignKey(
                         name: "FK_AspNetRoleClaims_AspNetRoles_RoleId",
                         column: x => x.RoleId,
-                        principalSchema: SharedSchema.CurrentSchema,
+                        principalSchema: "public",
                         principalTable: "AspNetRoles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -106,7 +116,7 @@ namespace nvxapp.server.data.Migrations
 
             migrationBuilder.CreateTable(
                 name: "AspNetUserClaims",
-                schema: SharedSchema.CurrentSchema,
+                schema: "public",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -121,7 +131,7 @@ namespace nvxapp.server.data.Migrations
                     table.ForeignKey(
                         name: "FK_AspNetUserClaims_AspNetUsers_UserId",
                         column: x => x.UserId,
-                        principalSchema: SharedSchema.CurrentSchema,
+                        principalSchema: "public",
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -129,7 +139,7 @@ namespace nvxapp.server.data.Migrations
 
             migrationBuilder.CreateTable(
                 name: "AspNetUserLogins",
-                schema: SharedSchema.CurrentSchema,
+                schema: "public",
                 columns: table => new
                 {
                     LoginProvider = table.Column<string>(type: "text", nullable: false),
@@ -143,7 +153,7 @@ namespace nvxapp.server.data.Migrations
                     table.ForeignKey(
                         name: "FK_AspNetUserLogins_AspNetUsers_UserId",
                         column: x => x.UserId,
-                        principalSchema: SharedSchema.CurrentSchema,
+                        principalSchema: "public",
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -151,7 +161,7 @@ namespace nvxapp.server.data.Migrations
 
             migrationBuilder.CreateTable(
                 name: "AspNetUserRoles",
-                schema: SharedSchema.CurrentSchema,
+                schema: "public",
                 columns: table => new
                 {
                     UserId = table.Column<string>(type: "text", nullable: false),
@@ -163,14 +173,14 @@ namespace nvxapp.server.data.Migrations
                     table.ForeignKey(
                         name: "FK_AspNetUserRoles_AspNetRoles_RoleId",
                         column: x => x.RoleId,
-                        principalSchema: SharedSchema.CurrentSchema,
+                        principalSchema: "public",
                         principalTable: "AspNetRoles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_AspNetUserRoles_AspNetUsers_UserId",
                         column: x => x.UserId,
-                        principalSchema: SharedSchema.CurrentSchema,
+                        principalSchema: "public",
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -178,7 +188,7 @@ namespace nvxapp.server.data.Migrations
 
             migrationBuilder.CreateTable(
                 name: "AspNetUserTokens",
-                schema: SharedSchema.CurrentSchema,
+                schema: "public",
                 columns: table => new
                 {
                     UserId = table.Column<string>(type: "text", nullable: false),
@@ -192,7 +202,7 @@ namespace nvxapp.server.data.Migrations
                     table.ForeignKey(
                         name: "FK_AspNetUserTokens_AspNetUsers_UserId",
                         column: x => x.UserId,
-                        principalSchema: SharedSchema.CurrentSchema,
+                        principalSchema: "public",
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -200,7 +210,7 @@ namespace nvxapp.server.data.Migrations
 
             migrationBuilder.CreateTable(
                 name: "FinancialAdvisor",
-                schema: SharedSchema.CurrentSchema,
+                schema: "public",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -217,7 +227,7 @@ namespace nvxapp.server.data.Migrations
                     table.ForeignKey(
                         name: "FK_FinancialAdvisor_Dealer_IdDealer",
                         column: x => x.IdDealer,
-                        principalSchema: SharedSchema.CurrentSchema,
+                        principalSchema: "public",
                         principalTable: "Dealer",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -225,7 +235,7 @@ namespace nvxapp.server.data.Migrations
 
             migrationBuilder.CreateTable(
                 name: "UserDealer",
-                schema: SharedSchema.CurrentSchema,
+                schema: "public",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -243,14 +253,14 @@ namespace nvxapp.server.data.Migrations
                     table.ForeignKey(
                         name: "FK_UserDealer_AspNetUsers_IdAspNetUsers",
                         column: x => x.IdAspNetUsers,
-                        principalSchema: SharedSchema.CurrentSchema,
+                        principalSchema: "public",
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_UserDealer_Dealer_IdDealer",
                         column: x => x.IdDealer,
-                        principalSchema: SharedSchema.CurrentSchema,
+                        principalSchema: "public",
                         principalTable: "Dealer",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -258,7 +268,7 @@ namespace nvxapp.server.data.Migrations
 
             migrationBuilder.CreateTable(
                 name: "Company",
-                schema: SharedSchema.CurrentSchema,
+                schema: "public",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -276,7 +286,7 @@ namespace nvxapp.server.data.Migrations
                     table.ForeignKey(
                         name: "FK_Company_FinancialAdvisor_IdFinancialAdvisor",
                         column: x => x.IdFinancialAdvisor,
-                        principalSchema: SharedSchema.CurrentSchema,
+                        principalSchema: "public",
                         principalTable: "FinancialAdvisor",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -284,7 +294,7 @@ namespace nvxapp.server.data.Migrations
 
             migrationBuilder.CreateTable(
                 name: "UserFinancialAdvisor",
-                schema: SharedSchema.CurrentSchema,
+                schema: "public",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -302,14 +312,14 @@ namespace nvxapp.server.data.Migrations
                     table.ForeignKey(
                         name: "FK_UserFinancialAdvisor_AspNetUsers_IdAspNetUsers",
                         column: x => x.IdAspNetUsers,
-                        principalSchema: SharedSchema.CurrentSchema,
+                        principalSchema: "public",
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_UserFinancialAdvisor_FinancialAdvisor_IdFinancialAdvisor",
                         column: x => x.IdFinancialAdvisor,
-                        principalSchema: SharedSchema.CurrentSchema,
+                        principalSchema: "public",
                         principalTable: "FinancialAdvisor",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -317,7 +327,7 @@ namespace nvxapp.server.data.Migrations
 
             migrationBuilder.CreateTable(
                 name: "UserCompany",
-                schema: SharedSchema.CurrentSchema,
+                schema: "public",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -335,14 +345,14 @@ namespace nvxapp.server.data.Migrations
                     table.ForeignKey(
                         name: "FK_UserCompany_AspNetUsers_IdAspNetUsers",
                         column: x => x.IdAspNetUsers,
-                        principalSchema: SharedSchema.CurrentSchema,
+                        principalSchema: "public",
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_UserCompany_Company_IdCompany",
                         column: x => x.IdCompany,
-                        principalSchema: SharedSchema.CurrentSchema,
+                        principalSchema: "public",
                         principalTable: "Company",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -350,181 +360,189 @@ namespace nvxapp.server.data.Migrations
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
-                schema: SharedSchema.CurrentSchema,
+                schema: "public",
                 table: "AspNetRoleClaims",
                 column: "RoleId");
 
             migrationBuilder.CreateIndex(
                 name: "RoleNameIndex",
-                schema: SharedSchema.CurrentSchema,
+                schema: "public",
                 table: "AspNetRoles",
                 column: "NormalizedName",
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetUserClaims_UserId",
-                schema: SharedSchema.CurrentSchema,
+                schema: "public",
                 table: "AspNetUserClaims",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetUserLogins_UserId",
-                schema: SharedSchema.CurrentSchema,
+                schema: "public",
                 table: "AspNetUserLogins",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetUserRoles_RoleId",
-                schema: SharedSchema.CurrentSchema,
+                schema: "public",
                 table: "AspNetUserRoles",
                 column: "RoleId");
 
             migrationBuilder.CreateIndex(
                 name: "EmailIndex",
-                schema: SharedSchema.CurrentSchema,
+                schema: "public",
                 table: "AspNetUsers",
                 column: "NormalizedEmail");
 
             migrationBuilder.CreateIndex(
                 name: "UserNameIndex",
-                schema: SharedSchema.CurrentSchema,
+                schema: "public",
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Company_Descrizione",
-                schema: SharedSchema.CurrentSchema,
+                schema: "public",
                 table: "Company",
                 column: "Descrizione",
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Company_IdFinancialAdvisor",
-                schema: SharedSchema.CurrentSchema,
+                schema: "public",
                 table: "Company",
                 column: "IdFinancialAdvisor");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Company_Schema",
+                schema: "public",
+                table: "Company",
+                column: "Schema",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Dealer_Descrizione",
-                schema: SharedSchema.CurrentSchema,
+                schema: "public",
                 table: "Dealer",
                 column: "Descrizione",
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_FinancialAdvisor_Descrizione",
-                schema: SharedSchema.CurrentSchema,
+                schema: "public",
                 table: "FinancialAdvisor",
                 column: "Descrizione",
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_FinancialAdvisor_IdDealer",
-                schema: SharedSchema.CurrentSchema,
+                schema: "public",
                 table: "FinancialAdvisor",
                 column: "IdDealer");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserCompany_IdAspNetUsers",
-                schema: SharedSchema.CurrentSchema,
+                schema: "public",
                 table: "UserCompany",
                 column: "IdAspNetUsers");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserCompany_IdCompany_IdAspNetUsers",
-                schema: SharedSchema.CurrentSchema,
+                schema: "public",
                 table: "UserCompany",
                 columns: new[] { "IdCompany", "IdAspNetUsers" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserDealer_IdAspNetUsers",
-                schema: SharedSchema.CurrentSchema,
+                schema: "public",
                 table: "UserDealer",
                 column: "IdAspNetUsers");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserDealer_IdDealer_IdAspNetUsers",
-                schema: SharedSchema.CurrentSchema,
+                schema: "public",
                 table: "UserDealer",
                 columns: new[] { "IdDealer", "IdAspNetUsers" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserFinancialAdvisor_IdAspNetUsers",
-                schema: SharedSchema.CurrentSchema,
+                schema: "public",
                 table: "UserFinancialAdvisor",
                 column: "IdAspNetUsers");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserFinancialAdvisor_IdFinancialAdvisor_IdAspNetUsers",
-                schema: SharedSchema.CurrentSchema,
+                schema: "public",
                 table: "UserFinancialAdvisor",
                 columns: new[] { "IdFinancialAdvisor", "IdAspNetUsers" },
                 unique: true);
 
+            // dati iniziali: ruoli, utenti base e gerarchia di prova (Dealer/FinancialAdvisor/Company/utenti)
             PopolateDB.PopolateDB_InitDB_UP(migrationBuilder);
-
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            if (SharedSchema.CurrentSchema != "public")
-                return;
+            migrationBuilder.DropTable(
+                name: "AppSetting",
+                schema: "public");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims",
-                schema: SharedSchema.CurrentSchema);
+                schema: "public");
 
             migrationBuilder.DropTable(
                 name: "AspNetUserClaims",
-                schema: SharedSchema.CurrentSchema);
+                schema: "public");
 
             migrationBuilder.DropTable(
                 name: "AspNetUserLogins",
-                schema: SharedSchema.CurrentSchema);
+                schema: "public");
 
             migrationBuilder.DropTable(
                 name: "AspNetUserRoles",
-                schema: SharedSchema.CurrentSchema);
+                schema: "public");
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens",
-                schema: SharedSchema.CurrentSchema);
+                schema: "public");
 
             migrationBuilder.DropTable(
                 name: "UserCompany",
-                schema: SharedSchema.CurrentSchema);
+                schema: "public");
 
             migrationBuilder.DropTable(
                 name: "UserDealer",
-                schema: SharedSchema.CurrentSchema);
+                schema: "public");
 
             migrationBuilder.DropTable(
                 name: "UserFinancialAdvisor",
-                schema: SharedSchema.CurrentSchema);
+                schema: "public");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles",
-                schema: SharedSchema.CurrentSchema);
+                schema: "public");
 
             migrationBuilder.DropTable(
                 name: "Company",
-                schema: SharedSchema.CurrentSchema);
+                schema: "public");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers",
-                schema: SharedSchema.CurrentSchema);
+                schema: "public");
 
             migrationBuilder.DropTable(
                 name: "FinancialAdvisor",
-                schema: SharedSchema.CurrentSchema);
+                schema: "public");
 
             migrationBuilder.DropTable(
                 name: "Dealer",
-                schema: SharedSchema.CurrentSchema);
+                schema: "public");
         }
     }
 }

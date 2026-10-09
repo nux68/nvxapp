@@ -11,9 +11,9 @@ using System.Threading.Tasks;
 
 namespace nvxapp.server.data.Repositories.Public
 {
-    public class AspNetUsersRepository : Repository<ApplicationDbContext, ApplicationUser>, IAspNetUsersRepository
+    public class AspNetUsersRepository : Repository<PublicDbContext, ApplicationUser>, IAspNetUsersRepository
     {
-        public AspNetUsersRepository(ApplicationDbContext dbContext,
+        public AspNetUsersRepository(PublicDbContext dbContext,
                                      IServiceProvider provider,
                                      IHttpContextAccessor httpContextAccessor) : base(dbContext, provider, httpContextAccessor)
         {
