@@ -3,7 +3,7 @@ import { UserNavigationService } from '../../../Utility/infrastructure/user-navi
 import { DipGGTimbraturaService } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Timbratura/dip-gg-timbratura.service';
 import { Dip_GG_Timbratura_Stamp_InModel, Dip_GG_Timbratura_StampPrepare_InModel, Dip_GG_Timbratura_StampPrepare_OutModel } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Timbratura/Models/dip-gg-timbratura-model';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
-import { NavController } from '@ionic/angular';
+import { NavController } from '@ionic/angular/lazy';
 import { UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';

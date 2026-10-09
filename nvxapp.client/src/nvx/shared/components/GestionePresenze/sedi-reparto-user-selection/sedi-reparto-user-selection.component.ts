@@ -9,7 +9,7 @@ import { Az_SediRepartoUser_GetAll_Period_InModel, Az_SediRepartoUserModel } fro
 import { catchError, forkJoin, map, Observable, throwError } from 'rxjs';
 import { SharedParameterGestionePresenzeService } from '../../../shared-parameter-gestione-presenze.service';
 import { RoleCode } from '../../../../ClientServer-Service/Infrastructure/Account/Models/user-roles-model';
-import { ModalController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular/lazy';
 import { DipSelectorModalComponent, DipSelectorResult } from '../dip-selector-modal/dip-selector-modal.component';
 import { HoverPopupData } from '../../infrastructure/hover-popup/hover-popup.component';
 

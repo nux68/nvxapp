@@ -6,7 +6,7 @@ import { UserInterfaceService } from '../../../Utility/infrastructure/user-inter
 import { Observable, of, Subject } from 'rxjs';
 import { debounceTime, takeUntil } from 'rxjs/operators';
 import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
-import { NavController } from '@ionic/angular';
+import { NavController } from '@ionic/angular/lazy';
 import { ActivityStatisticsService } from '../../../ClientServer-Service/GestionePresenze/ActivityStatisticsService/activity-statistics.service';
 import { PresentStaff_GetInModel } from '../../../ClientServer-Service/GestionePresenze/PresentStaffService/Models/present-staff-model';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
