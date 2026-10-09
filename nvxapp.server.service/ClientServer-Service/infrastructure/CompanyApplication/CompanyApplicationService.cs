@@ -55,13 +55,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyAppli
                 var company = await _companyRepository.FindByIdAsync(model.Data.IdCompany)
                               ?? throw new Exception($"Azienda {model.Data.IdCompany} non trovata.");
 
-                var rows = _companyApplicationRepository.FindAll(x => x.IdCompany == company.Id).ToList();
-
-                foreach (var application in Enum.GetValues<ApplicationType>())
-                {
-                    var row = rows.FirstOrDefault(x => x.ApplicationType == application);
-                    retVal.CompanyApplication.Add(ToModel(company.Id, application, row));
-                }
+                retVal.CompanyApplication = Applications(company.Id);
 
                 return retVal;
             }, isSubProcess);
@@ -119,6 +113,19 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyAppli
             }, isSubProcess);
         }
 
+        // Tutti gli applicativi dell'enum ApplicationType (letto dinamicamente: un nuovo valore
+        // compare da solo) con lo stato per l'azienda. idCompany = 0 (azienda nuova): tutti non attivi.
+        public List<CompanyApplicationModel> Applications(int idCompany)
+        {
+            var rows = idCompany > 0
+                ? _companyApplicationRepository.FindAll(x => x.IdCompany == idCompany).ToList()
+                : new List<nvxapp.server.data.Entities.Public.CompanyApplication>();
+
+            return Enum.GetValues<ApplicationType>()
+                       .Select(application => ToModel(idCompany, application, rows.FirstOrDefault(x => x.ApplicationType == application)))
+                       .ToList();
+        }
+
         private static CompanyApplicationModel ToModel(int idCompany, ApplicationType application, nvxapp.server.data.Entities.Public.CompanyApplication? row)
             => new CompanyApplicationModel
             {
@@ -135,5 +142,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyAppli
     {
         public Task<GenericResult<CompanyApplicationListOutModel>> CompanyApplicationList(GenericRequest<CompanyApplicationListInModel> model, Boolean isSubProcess);
         public Task<GenericResult<CompanyApplicationPutOutModel>> CompanyApplicationPut(GenericRequest<CompanyApplicationPutInModel> model, Boolean isSubProcess);
+
+        // tutti gli applicativi con lo stato per l'azienda (senza chiamata API)
+        public List<CompanyApplicationModel> Applications(int idCompany);
     }
 }

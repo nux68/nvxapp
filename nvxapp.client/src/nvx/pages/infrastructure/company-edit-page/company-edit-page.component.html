@@ -80,6 +80,27 @@
 
       </form>
 
+      <!-- Applicativi: uno per ogni valore dell'enum ApplicationType del server -->
+      @if (_editModel?.applications?.length) {
+        <br />
+        <ion-item class="nvx-item-4-title">
+          <ion-label>Applicativi</ion-label>
+        </ion-item>
+        @for (app of _editModel.applications; track app.applicationType) {
+          <ion-item>
+            <ion-checkbox justify="start" labelPlacement="end"
+                          [checked]="app.active"
+                          (ionChange)="app.active = $event.detail.checked">
+              {{ app.descrizione }}
+            </ion-checkbox>
+          </ion-item>
+        }
+        <ion-note>
+          Al salvataggio gli applicativi spuntati vengono attivati (e, in multi-tenant, viene creato il loro schema se manca).
+          Togliendo la spunta l'accesso viene bloccato, ma i dati restano.
+        </ion-note>
+      }
+
       <br />
 
     </ion-card-content>

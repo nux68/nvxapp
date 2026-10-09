@@ -1,4 +1,5 @@
 ﻿using nvxapp.server.data.Entities.Public;
+using nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyApplication.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using System;
 using System.Collections.Generic;
@@ -40,6 +41,11 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Mode
         public Boolean MainUser { get; set; }
         public string? Mail { get; set; } = string.Empty;
         public string? Pw { get; set; } = string.Empty;
+
+        // applicativi (tutti quelli dell'enum) con lo stato per l'azienda:
+        // CompanyGet li restituisce, CompanyPut li applica (attivo -> schema verificato/creato,
+        // non attivo -> accesso bloccato, lo schema resta)
+        public List<CompanyApplicationModel> Applications { get; set; } = new List<CompanyApplicationModel>();
     }
     public class CompanyGetInModel
     {
