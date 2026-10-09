@@ -1,3 +1,4 @@
+import { combineLatest } from 'rxjs';
 import { Component, DoCheck, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { AccountService } from '../nvx/ClientServer-Service/Infrastructure/Account/account.service';
 import { AuthService } from '../nvx/Utility/infrastructure/auth.service';
@@ -68,16 +69,21 @@ export class AppComponent implements OnInit, DoCheck {
               )
   {
 
+    this.loadPages();
+
+    
+
+    
+  }
+
+  // voci di menu per ruolo; quelle degli applicativi solo se attivi (MainMenuService)
+  private loadPages(): void {
     this.appPages4SuperUser = this.mainMenuService.Pages4SuperUser;
     this.appPages4Admin = this.mainMenuService.Pages4Admin;
     this.appPages4DealerAdmin = this.mainMenuService.Pages4DealerAdmin;
     this.appPages4FinancialAdvisorAdmin = this.mainMenuService.Pages4FinancialAdvisorAdmin;
     this.appPages4CompanyAdmin = this.mainMenuService.Pages4CompanyAdmin;
     this.appPages4User = this.mainMenuService.Pages4User;
-
-    
-
-    
   }
 
   ngOnInit() {
@@ -116,7 +122,9 @@ export class AppComponent implements OnInit, DoCheck {
       });
     }
 
-    this.authService.Roles$.subscribe(x => {
+    // menu ricalcolati quando cambiano i ruoli o gli applicativi attivi dell'azienda
+    combineLatest([this.authService.Roles$, this.authService.ActiveApplications$]).subscribe(() => {
+      this.loadPages();
       this.groupedCompanyAdminMenu = this.getGroupedCompanyAdminMenu();
       this.groupedFinancialAdvisorAdminMenu = this.getGroupedFinancialAdvisorAdmin();
       this.groupedDealerAdminMenu = this.getGroupedDealerAdmin();

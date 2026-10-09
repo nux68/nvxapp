@@ -41,6 +41,7 @@ export class UserNavigationService {
       this._userCronology.push(usrCrono);
 
       this.authService.setRole(userData.roles);
+      this.authService.setActiveApplications(userData.activeApplications);
     }
 
     
@@ -60,6 +61,9 @@ export class UserNavigationService {
       this.accountService.UserLoad(request).subscribe(usl => {
         if (usl.success) {
           this.authService.setRole(this._userCronology[this._userCronology.length - 1].userData.roles);
+          // applicativi letti di nuovo dal server: possono essere cambiati nel frattempo
+          this._userCronology[this._userCronology.length - 1].userData.activeApplications = usl.data.userData.activeApplications;
+          this.authService.setActiveApplications(usl.data.userData.activeApplications);
 
           if (this._userCronology[this._userCronology.length - 1].userDataAdditional.gotoBackPage != null)
             this.navCtrl.navigateForward(this._userCronology[this._userCronology.length - 1].userDataAdditional.gotoBackPage);
@@ -96,6 +100,9 @@ export class UserNavigationService {
         this.accountService.UserLoad(request).subscribe(usl => {
           if (usl.success) {
             this.authService.setRole(this._userCronology[idx].userData.roles);
+            // applicativi letti di nuovo dal server: possono essere cambiati nel frattempo
+            this._userCronology[idx].userData.activeApplications = usl.data.userData.activeApplications;
+            this.authService.setActiveApplications(usl.data.userData.activeApplications);
 
             if (this._userCronology[this._userCronology.length - 1].userDataAdditional.gotoBackPage != null)
               this.navCtrl.navigateForward(gotoBackPage);

@@ -3,6 +3,7 @@ import { AccountService } from '../../ClientServer-Service/Infrastructure/Accoun
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 import { Observable } from 'rxjs/internal/Observable';
 import { RolesModel } from '../../ClientServer-Service/Infrastructure/Account/Models/user-roles-model';
+import { ApplicationType } from '../../ClientServer-Service/Infrastructure/Account/Models/user-load-model';
 
 @Injectable({
   providedIn: 'root'
@@ -26,14 +27,31 @@ export class AuthService {
     this.rolesSubject.next(this.rolesSubject.getValue());
   }
 
+  // applicativi attivi per l'azienda dell'utente corrente (da UserLoad)
+  private activeApplicationsSubject = new BehaviorSubject<ApplicationType[]>([]);
+
+  public get ActiveApplications$(): Observable<ApplicationType[]> {
+    return this.activeApplicationsSubject.asObservable();
+  }
+
+  public setActiveApplications(applications: ApplicationType[] | null | undefined): void {
+    this.activeApplicationsSubject.next(applications ?? []);
+  }
+
+  public hasApplication(application: ApplicationType): boolean {
+    return this.activeApplicationsSubject.getValue().includes(application);
+  }
+
   private _Token$: BehaviorSubject<string | null> = new BehaviorSubject<string>(null);
   public get Token$(): Observable<string | null> {
     return this._Token$.asObservable();
   }
   public set Token(value: string | null) {
     this._Token$.next(value);
-    if (value == null)
+    if (value == null) {
       this.setRole([]);
+      this.setActiveApplications([]);
+    }
   }
   public get Token(): string | null {
     const us = this._Token$.getValue();
@@ -111,6 +129,7 @@ export class AuthService {
   public LogOut(): void {
     this.Token = null;
     this.setRole([]);
+    this.setActiveApplications([]);
   }
 
 }
