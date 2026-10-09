@@ -12,7 +12,11 @@ export class UserCompanyListModel {
     public idUserCompany: number = 0,
     public mainUser: boolean = false,
     
-    public roles: string[] = []
+    public roles: string[] = [],
+
+    // valorizzati dagli applicativi attivi (es. presenze), altrimenti null
+    public cognome: string | null = null,
+    public nome: string | null = null
   ) { }
 }
 export class UserCompanyListInModel {

@@ -8,6 +8,7 @@ using nvxapp.server.Base;
 using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Infrastructure.Tenancy;
 using nvxapp.server.data.Repositories.Public;
+using nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Extension;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Models;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyApplication;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyApplication.Models;
@@ -45,6 +46,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
         private readonly ICompanyInitializerRegistry _companyInitializerRegistry;
         private readonly ICompanyApplicationRepository _companyApplicationRepository;
         private readonly ICompanyApplicationService _companyApplicationService;
+        private readonly IEnumerable<IUserCompanyListExtension> _userCompanyListExtensions;
 
 
         public AccountService(IMapper mapper,
@@ -70,6 +72,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                               IHubContext<SignalRHub> hubContext,
                               ICompanyApplicationRepository companyApplicationRepository,
                               ICompanyApplicationService companyApplicationService,
+                              IEnumerable<IUserCompanyListExtension> userCompanyListExtensions,
 
                               SignInManager<ApplicationUser> signInManager
                               ) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
@@ -89,6 +92,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
             _companyInitializerRegistry = companyInitializerRegistry;
             _companyApplicationRepository = companyApplicationRepository;
             _companyApplicationService = companyApplicationService;
+            _userCompanyListExtensions = userCompanyListExtensions;
             _hubContext = hubContext;
         }
 
@@ -890,6 +894,11 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                     }
 
                 }
+
+                // dati aggiuntivi degli applicativi attivi per l'azienda (es. Cognome e Nome)
+                var activeApplications = _companyApplicationRepository.ActiveApplications(IdCompany);
+                foreach (var extension in _userCompanyListExtensions.Where(x => activeApplications.Contains(x.Application)))
+                    await extension.ExtendAsync(IdCompany, retVal.UserCompanyList);
 
                 //eliminare
                 // Nessun 'await' qui
