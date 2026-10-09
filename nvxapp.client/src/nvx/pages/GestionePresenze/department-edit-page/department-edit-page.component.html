@@ -61,7 +61,7 @@
             <div>
               <!-- Mobile View -->
               <ion-reorder-group class="ion-hide-sm-up" (ionItemReorder)="handleReorderAdmin($event)" [disabled]="!reorderEnabled">
-                @for (item of getAdminSorted() | genericFilter: 'descrizione' : searchText; track item) {
+                @for (item of getAdminSorted() | genericFilter: 'descrizione' : searchText; track item.id) {
                   <ion-item-sliding>
                     <ion-item>
                       <ion-checkbox slot="start" [checked]="isSelectedAdmin(item.id)" (ionChange)="toggleSelectionAdmin(item.id, $event)"></ion-checkbox>
@@ -90,7 +90,7 @@
                   }
                 </ion-row>
                 <ion-reorder-group (ionItemReorder)="handleReorderAdmin($event)" [disabled]="!reorderEnabled">
-                  @for (item of getAdminSorted() | genericFilter: 'descrizione' : searchText; track item) {
+                  @for (item of getAdminSorted() | genericFilter: 'descrizione' : searchText; track item.id) {
                     <ion-row class="nvx-ion-row-4table">
                       <ion-col size="1">
                         <ion-checkbox [checked]="isSelectedAdmin(item.id)" (ionChange)="toggleSelectionAdmin(item.id, $event)"></ion-checkbox>
@@ -130,7 +130,7 @@
           @if (dip_Anagrafica!=null) {
             <div>
               <!-- Mobile View -->
-              @for (item of getUser() | genericFilter: 'descrizione' : searchText; track item) {
+              @for (item of getUser() | genericFilter: 'descrizione' : searchText; track item.id) {
                 <ion-item-sliding class="ion-hide-sm-up">
                   <ion-item>
                     <ion-checkbox slot="start" [checked]="isSelectedUser(item.id)" (ionChange)="toggleSelectionUser(item.id, $event)"></ion-checkbox>
@@ -147,7 +147,7 @@
                   <ion-col>Cognome</ion-col>
                   <ion-col>Nome</ion-col>
                 </ion-row>
-                @for (item of getUser() | genericFilter: 'descrizione' : searchText; track item) {
+                @for (item of getUser() | genericFilter: 'descrizione' : searchText; track item.id) {
                   <ion-row class="nvx-ion-row-4table">
                     <ion-col size="1">
                       <ion-checkbox [checked]="isSelectedUser(item.id)" (ionChange)="toggleSelectionUser(item.id, $event)"></ion-checkbox>
@@ -174,7 +174,7 @@
             <ion-label>Attività di reparto</ion-label>
           </ion-item>
 
-          @for (item of getPar_Attivita() | genericFilter: 'descrizione' : searchText; track item) {
+          @for (item of getPar_Attivita() | genericFilter: 'descrizione' : searchText; track item.id) {
             <ion-item-sliding class="ion-hide-sm-up">
               <ion-item>
                 <ion-checkbox slot="start" [checked]="isSelectedaz_Az_SediRepartoAttivita(item.id)" (ionChange)="toggleSelectionaz_Az_SediRepartoAttivita(item.id, $event)"></ion-checkbox>
@@ -191,7 +191,7 @@
               <ion-col>Descr</ion-col>
 
             </ion-row>
-            @for (item of getPar_Attivita() | genericFilter: 'descrizione' : searchText; track item) {
+            @for (item of getPar_Attivita() | genericFilter: 'descrizione' : searchText; track item.id) {
               <ion-row class="nvx-ion-row-4table">
                 <ion-col size="1">
                   <ion-checkbox [checked]="isSelectedaz_Az_SediRepartoAttivita(item.id)" (ionChange)="toggleSelectionaz_Az_SediRepartoAttivita(item.id, $event)"></ion-checkbox>

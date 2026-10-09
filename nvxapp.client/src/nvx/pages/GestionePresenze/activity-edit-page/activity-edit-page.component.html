@@ -61,7 +61,7 @@
 
         </ion-item>
 
-        @for (item of getPar_Competenza() | genericFilter: 'descrizione' : searchText; track item) {
+        @for (item of getPar_Competenza() | genericFilter: 'descrizione' : searchText; track item.id) {
           <ion-item-sliding class="ion-hide-sm-up">
             <ion-item>
               <ion-checkbox slot="start" [checked]="isSelectedaz_Par_AttivitaCompetenza(item.id)" (ionChange)="toggleSelectionaz_Par_AttivitaCompetenza(item.id, $event)"></ion-checkbox>
@@ -78,7 +78,7 @@
             <ion-col>Descr</ion-col>
 
           </ion-row>
-          @for (item of getPar_Competenza() | genericFilter: 'descrizione' : searchText; track item) {
+          @for (item of getPar_Competenza() | genericFilter: 'descrizione' : searchText; track item.id) {
             <ion-row class="nvx-ion-row-4table">
               <ion-col size="1">
                 <ion-checkbox [checked]="isSelectedaz_Par_AttivitaCompetenza(item.id)" (ionChange)="toggleSelectionaz_Par_AttivitaCompetenza(item.id, $event)"></ion-checkbox>

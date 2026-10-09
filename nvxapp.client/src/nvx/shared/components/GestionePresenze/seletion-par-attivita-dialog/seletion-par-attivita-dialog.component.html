@@ -15,7 +15,7 @@
             <ion-col>Descrizione</ion-col>
 
           </ion-row>
-          @for (item of getPar_Attivita() | genericFilter: 'descrizione' : searchText; track item) {
+          @for (item of getPar_Attivita() | genericFilter: 'descrizione' : searchText; track item.id) {
             <ion-row class="nvx-ion-row-4table">
               <ion-col size="1">
                 <ion-checkbox [checked]="Par_Attivita_IsSelected(item.id)" (ionChange)="Par_Attivita_Toggle(item.id, $event)"></ion-checkbox>
