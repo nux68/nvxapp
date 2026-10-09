@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, NgZone, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, NgZone, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { ParameterService } from '../../../../ClientServer-Service/Infrastructure/Parameter/parameter.service';
 import { GenericRequest } from '../../../../ClientServer-Service/ModelsBase/generic-request';
 import { catchError, concatMap, delay, of, retry, tap, timer } from 'rxjs';
@@ -13,6 +13,7 @@ import { SharedParameterGestionePresenzeService } from '../../../shared-paramete
   selector: 'app-parameter-loader',
   templateUrl: './parameter-loader.component.html',
   styleUrls: ['./parameter-loader.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone:false
 })
 export class ParameterLoaderComponent  implements OnInit {

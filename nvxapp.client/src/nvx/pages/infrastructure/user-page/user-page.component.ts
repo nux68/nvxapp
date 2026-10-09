@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { SignalrService } from '../../../Utility/infrastructure/signalr.service';
 import { environment } from '../../../../environments/environment';
 import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
@@ -19,6 +19,7 @@ import { LongJobNotifierService } from '../../../Utility/infrastructure/long-job
   selector: 'app-user-page',
   templateUrl: './user-page.component.html',
   styleUrls: ['./user-page.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class UserPageComponent implements OnInit {

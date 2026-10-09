@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
 import { UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { NavController } from '@ionic/angular';
@@ -6,7 +6,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AccountService } from '../../../ClientServer-Service/Infrastructure/Account/account.service';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { Observable } from 'rxjs/internal/Observable';
-import { map, catchError } from 'rxjs';
+import { map, catchError, of } from 'rxjs';
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { StringHelperService } from '../../../Utility/infrastructure/string-helper.service';
 import { ParameterService } from '../../../ClientServer-Service/Infrastructure/Parameter/parameter.service';
@@ -20,6 +20,7 @@ import { RoleCode } from '../../../ClientServer-Service/Infrastructure/Account/M
   selector: 'app-user-dealer-edit-page',
   templateUrl: './user-dealer-edit-page.component.html',
   styleUrls: ['./user-dealer-edit-page.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone:false
 })
 export class UserDealerEditPageComponent extends BasePageConfirmCancelComponent<UserDealerEditModel> {
@@ -60,7 +61,7 @@ export class UserDealerEditPageComponent extends BasePageConfirmCancelComponent<
         map((res) => res.data.userDealerEdit), // Estrae il dato richiesto
         catchError((error) => {
           console.error('Errore durante la chiamata API:', error);
-          return [null]; // Restituisce null in caso di errore
+          return of(null); // Restituisce null in caso di errore
         })
       );
     }

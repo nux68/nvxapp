@@ -1,6 +1,6 @@
 <app-page-toolbar [title]="title"
-                  [showFilter]="false"
-                  [showBreadcrumbs]="false">
+  [showFilter]="false"
+  [showBreadcrumbs]="false">
 </app-page-toolbar>
 
 <ion-content [fullscreen]="true">
@@ -13,12 +13,14 @@
       <br />
 
       <ion-radio-group [(ngModel)]="selectedValue">
-        <div *ngFor="let p of userCronology">
-          <ion-radio labelPlacement="end" [value]="p.userData.id">
-            {{p.userData.userName}} {{p.userDataAdditional.gotoBackPage}}
-          </ion-radio>
-          <br />
-        </div>
+        @for (p of userCronology; track p) {
+          <div>
+            <ion-radio labelPlacement="end" [value]="p.userData.id">
+              {{p.userData.userName}} {{p.userDataAdditional.gotoBackPage}}
+            </ion-radio>
+            <br />
+          </div>
+        }
       </ion-radio-group>
 
       <br />

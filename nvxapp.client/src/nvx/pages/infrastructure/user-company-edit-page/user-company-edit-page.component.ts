@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
 import { UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { NavController } from '@ionic/angular';
@@ -19,6 +19,7 @@ import { RoleCode } from '../../../ClientServer-Service/Infrastructure/Account/M
   selector: 'app-user-company-edit-page',
   templateUrl: './user-company-edit-page.component.html',
   styleUrls: ['./user-company-edit-page.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class UserCompanyEditPageComponent extends BasePageConfirmCancelComponent<UserCompanyEditModel> {

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { UserRolesInModel } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-roles-model';
 import { AccountService } from '../../../ClientServer-Service/Infrastructure/Account/account.service';
@@ -7,6 +7,7 @@ import { AccountService } from '../../../ClientServer-Service/Infrastructure/Acc
   selector: 'app-super-user-page',
   templateUrl: './super-user-page.component.html',
   styleUrls: ['./super-user-page.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class SuperUserPageComponent  implements OnInit {

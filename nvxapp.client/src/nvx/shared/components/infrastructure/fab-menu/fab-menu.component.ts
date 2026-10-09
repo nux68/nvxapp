@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 import { IonContent, IonModal, NavController, ToastController } from '@ionic/angular';
 import { SpeechService } from '../../../../Utility/infrastructure/speech.service';
 import { ChatAIService } from '../../../../ClientServer-Service/Infrastructure/ChatAI/chat-ai.service';
@@ -11,6 +11,7 @@ import { IonFab } from '@ionic/angular';
   selector: 'app-fab-menu',
   templateUrl: './fab-menu.component.html',
   styleUrls: ['./fab-menu.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class FabMenuComponent implements OnInit {

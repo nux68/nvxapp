@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
 import { UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { NavController } from '@ionic/angular';
@@ -6,7 +6,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AccountService } from '../../../ClientServer-Service/Infrastructure/Account/account.service';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { Observable } from 'rxjs/internal/Observable';
-import { map, catchError } from 'rxjs';
+import { map, catchError, of } from 'rxjs';
 import { CompanyEditModel, CompanyGetInModel, CompanyPutInModel } from '../../../ClientServer-Service/Infrastructure/Account/Models/company-model';
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { StringHelperService } from '../../../Utility/infrastructure/string-helper.service';
@@ -16,6 +16,7 @@ import { AuthService } from '../../../Utility/infrastructure/auth.service';
   selector: 'app-company-edit-page',
   templateUrl: './company-edit-page.component.html',
   styleUrls: ['./company-edit-page.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone:false
 })  
 export class CompanyEditPageComponent extends BasePageConfirmCancelComponent<CompanyEditModel> {
@@ -54,7 +55,7 @@ export class CompanyEditPageComponent extends BasePageConfirmCancelComponent<Com
         map((res) => res.data.companyEdit), // Estrae il dato richiesto
         catchError((error) => {
           console.error('Errore durante la chiamata API:', error);
-          return [null]; // Restituisce null in caso di errore
+          return of(null); // Restituisce null in caso di errore
         })
       );
     }

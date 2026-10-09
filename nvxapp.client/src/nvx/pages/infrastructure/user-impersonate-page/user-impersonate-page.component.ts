@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { UserCronologyModel, UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NavController } from '@ionic/angular';
@@ -8,6 +8,7 @@ import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructur
   selector: 'app-user-impersonate-page',
   templateUrl: './user-impersonate-page.component.html',
   styleUrls: ['./user-impersonate-page.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class UserImpersonatePageComponent  implements OnInit {

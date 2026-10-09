@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { AccountService } from '../../../ClientServer-Service/Infrastructure/Account/account.service';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
@@ -16,6 +16,7 @@ import { RoleCode } from '../../../ClientServer-Service/Infrastructure/Account/M
   selector: 'app-user-financial-advisor-list-page',
   templateUrl: './user-financial-advisor-list-page.component.html',
   styleUrls: ['./user-financial-advisor-list-page.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone:false
 })
 export class UserFinancialAdvisorListPageComponent implements OnInit {

@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { NvxHttpInterceptorService } from '../../../../http/http-interceptor';
 
 @Component({
   selector: 'app-http-background-working-component',
   templateUrl: './http-background-working-component.component.html',
   styleUrls: ['./http-background-working-component.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone:false
 })
 export class HttpBackgroundWorkingComponentComponent  implements OnInit {

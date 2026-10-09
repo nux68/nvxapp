@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { ModalController, NavController } from '@ionic/angular';
 import { AccountService } from '../../../ClientServer-Service/Infrastructure/Account/account.service';
 import { CompanyListModel, CompanyListInModel, CompanyEditModel } from '../../../ClientServer-Service/Infrastructure/Account/Models/company-model';
@@ -15,6 +15,7 @@ import { AddCompanyComponent } from '../../../shared/components/infrastructure/a
   selector: 'app-company-list-page',
   templateUrl: './company-list-page.component.html',
   styleUrls: ['./company-list-page.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class CompanyListPageComponent  implements OnInit {

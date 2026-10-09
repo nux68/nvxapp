@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { AccountService } from '../../../ClientServer-Service/Infrastructure/Account/account.service';
 import { DealerListInModel, DealerListModel } from '../../../ClientServer-Service/Infrastructure/Account/Models/dealer-model';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
@@ -12,6 +12,7 @@ import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructur
   selector: 'app-dealer-list-page',
   templateUrl: './dealer-list-page.component.html',
   styleUrls: ['./dealer-list-page.component.scss'],
+  changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
 export class DealerListPageComponent  implements OnInit {

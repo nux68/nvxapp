@@ -1,6 +1,6 @@
 <app-page-toolbar [title]="title"
-                  [showFilter]="false"
-                  [showBreadcrumbs]="false">
+  [showFilter]="false"
+  [showBreadcrumbs]="false">
 </app-page-toolbar>
 
 <ion-content [fullscreen]="true">
@@ -16,9 +16,11 @@
             <ion-label position="floating">Password</ion-label>
             <ion-input type="password" formControlName="password"></ion-input>
           </ion-item>
-          <div *ngIf="loginError" class="error-container">
-            <p class="error-text">{{ loginError }}</p>
-          </div>
+          @if (loginError) {
+            <div class="error-container">
+              <p class="error-text">{{ loginError }}</p>
+            </div>
+          }
         </form>
         <br />
       </ion-card-content>

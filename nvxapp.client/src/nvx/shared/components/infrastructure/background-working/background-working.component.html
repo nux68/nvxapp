@@ -1,3 +1,5 @@
-<div *ngIf="show" class="BackgroundWorking">
-  <ion-spinner name="lines"></ion-spinner>
-</div>
+@if (show) {
+  <div class="BackgroundWorking">
+    <ion-spinner name="lines"></ion-spinner>
+  </div>
+}
