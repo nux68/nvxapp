@@ -1,5 +1,5 @@
 import { Injectable, TemplateRef } from '@angular/core';
-import { ModalController } from '@ionic/angular';
+import { ModalController } from '@ionic/angular/lazy';
 import { GenericDialogComponent } from './generic-dialog.component';
 import { ButtonItem } from '../../../../Utility/infrastructure/user-interface.service';
 
