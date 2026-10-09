@@ -46,6 +46,7 @@ dotnet ef migrations add <Nome> --context TenantDbContext -o Migrations/Tenant -
 storico migrazioni create
   Public: InitPublic (contiene anche i dati iniziali, vedi Migrations/Public/PopolateDB.cs)
   Tenant: InitTenant
+          GestionePresenze_Init   (tutte le tabelle del modulo presenze; ramo AttendanceTracking)
 
 
 aggiorna db

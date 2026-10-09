@@ -7,30 +7,15 @@ using nvxapp.server.data.Interfaces;
 namespace nvxapp.server.data.Repositories.Tenant.GestionePresenze
 {
 
-    /*
-     ATTENZIONE !!!
-    
-     applicationDbContextFactory.CreateDbContext(null) e quello che permette la lettura dei dati
-     sul tenat in caso di multi tenant
-     
-     */
 
-    public class Dip_ProfiloOrarioRepository : Repository<ApplicationDbContext, Dip_ProfiloOrario>, IDip_ProfiloOrarioRepository, ICurrentTenant
+    public class Dip_ProfiloOrarioRepository : Repository<TenantDbContext, Dip_ProfiloOrario>, IDip_ProfiloOrarioRepository
     {
 
-        private readonly IApplicationDbContextFactory _applicationDbContextFactory;
-
-
-
-        public Dip_ProfiloOrarioRepository(ApplicationDbContext dbContext,
-                                 IServiceProvider provider,
-                                 IHttpContextAccessor httpContextAccessor,
-                                 IApplicationDbContextFactory applicationDbContextFactory) : base(applicationDbContextFactory.CreateDbContext(null), 
-                                                                                                  provider, 
-                                                                                                  httpContextAccessor)
-                                
+        public Dip_ProfiloOrarioRepository(TenantDbContext dbContext,
+                                           IServiceProvider provider,
+                                           Microsoft.AspNetCore.Http.IHttpContextAccessor httpContextAccessor)
+            : base(dbContext, provider, httpContextAccessor)
         {
-            _applicationDbContextFactory = applicationDbContextFactory;
         }
     }
 

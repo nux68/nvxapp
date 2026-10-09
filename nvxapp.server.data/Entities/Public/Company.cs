@@ -26,7 +26,6 @@ namespace nvxapp.server.data.Entities.Public
 
         public ICollection<UserCompany>? UserCompany { get; set; }
 
-        public Az_Anagrafica? Az_Anagrafica { get; set; }
 
     }
 }

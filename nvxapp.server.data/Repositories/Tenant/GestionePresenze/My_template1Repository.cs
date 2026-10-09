@@ -14,10 +14,12 @@ namespace nvxapp.server.data.Repositories.Tenant.GestionePresenze
     {
     }
 
-    public class My_template1Repository : Repository<ApplicationDbContext, My_Template1>, IMy_template1Repository
+    public class My_template1Repository : Repository<TenantDbContext, My_Template1>, IMy_template1Repository
     {
-        public My_template1Repository(ApplicationDbContext context, IServiceProvider serviceProvider, Microsoft.AspNetCore.Http.IHttpContextAccessor httpContextAccessor)
-            : base(context, serviceProvider, httpContextAccessor)
+        public My_template1Repository(TenantDbContext dbContext,
+                                      IServiceProvider provider,
+                                      Microsoft.AspNetCore.Http.IHttpContextAccessor httpContextAccessor)
+            : base(dbContext, provider, httpContextAccessor)
         {
         }
     }

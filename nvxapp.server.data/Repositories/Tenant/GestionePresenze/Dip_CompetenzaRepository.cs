@@ -5,18 +5,13 @@ using nvxapp.server.data.Interfaces;
 
 namespace nvxapp.server.data.Repositories.Tenant.GestionePresenze
 {
-    public class Dip_CompetenzaRepository : Repository<ApplicationDbContext, Dip_Competenza>, IDip_CompetenzaRepository, ICurrentTenant
+    public class Dip_CompetenzaRepository : Repository<TenantDbContext, Dip_Competenza>, IDip_CompetenzaRepository
     {
-        private readonly IApplicationDbContextFactory _applicationDbContextFactory;
-
-        public Dip_CompetenzaRepository(ApplicationDbContext dbContext,
-                                 IServiceProvider provider,
-                                 IHttpContextAccessor httpContextAccessor,
-                                 IApplicationDbContextFactory applicationDbContextFactory) : base(applicationDbContextFactory.CreateDbContext(null), 
-                                                                                                  provider, 
-                                                                                                  httpContextAccessor)
+        public Dip_CompetenzaRepository(TenantDbContext dbContext,
+                                        IServiceProvider provider,
+                                        Microsoft.AspNetCore.Http.IHttpContextAccessor httpContextAccessor)
+            : base(dbContext, provider, httpContextAccessor)
         {
-            _applicationDbContextFactory = applicationDbContextFactory;
         }
     }
 

@@ -5,18 +5,13 @@ using nvxapp.server.data.Interfaces;
 
 namespace nvxapp.server.data.Repositories.Tenant.GestionePresenze
 {
-    public class Az_SubCommessaRepository : Repository<ApplicationDbContext, Az_SubCommessa>, IAz_SubCommessaRepository, ICurrentTenant
+    public class Az_SubCommessaRepository : Repository<TenantDbContext, Az_SubCommessa>, IAz_SubCommessaRepository
     {
-        private readonly IApplicationDbContextFactory _applicationDbContextFactory;
-
-        public Az_SubCommessaRepository(ApplicationDbContext dbContext,
-                                 IServiceProvider provider,
-                                 IHttpContextAccessor httpContextAccessor,
-                                 IApplicationDbContextFactory applicationDbContextFactory) : base(applicationDbContextFactory.CreateDbContext(null), 
-                                                                                                  provider, 
-                                                                                                  httpContextAccessor)
+        public Az_SubCommessaRepository(TenantDbContext dbContext,
+                                        IServiceProvider provider,
+                                        Microsoft.AspNetCore.Http.IHttpContextAccessor httpContextAccessor)
+            : base(dbContext, provider, httpContextAccessor)
         {
-            _applicationDbContextFactory = applicationDbContextFactory;
         }
     }
 

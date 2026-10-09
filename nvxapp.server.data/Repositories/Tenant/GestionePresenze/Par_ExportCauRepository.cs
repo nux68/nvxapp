@@ -7,27 +7,14 @@ using nvxapp.server.data.Interfaces;
 namespace nvxapp.server.data.Repositories.Tenant.GestionePresenze
 {
 
-    /*
-     ATTENZIONE !!!
-    
-     applicationDbContextFactory.CreateDbContext(null) e quello che permette la lettura dei dati
-     sul tenat in caso di multi tenant
-     
-     */
 
-    public class Par_ExportCauRepository : Repository<ApplicationDbContext, Par_ExportCau>, IPar_ExportCauRepository, ICurrentTenant
+    public class Par_ExportCauRepository : Repository<TenantDbContext, Par_ExportCau>, IPar_ExportCauRepository
     {
-        private readonly IApplicationDbContextFactory _applicationDbContextFactory;
-
-        public Par_ExportCauRepository(ApplicationDbContext dbContext,
+        public Par_ExportCauRepository(TenantDbContext dbContext,
                                        IServiceProvider provider,
-                                       IHttpContextAccessor httpContextAccessor,
-                                       IApplicationDbContextFactory applicationDbContextFactory)
-            : base(applicationDbContextFactory.CreateDbContext(null),
-                   provider,
-                   httpContextAccessor)
+                                       Microsoft.AspNetCore.Http.IHttpContextAccessor httpContextAccessor)
+            : base(dbContext, provider, httpContextAccessor)
         {
-            _applicationDbContextFactory = applicationDbContextFactory;
         }
     }
 

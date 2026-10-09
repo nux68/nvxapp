@@ -6,19 +6,14 @@ using nvxapp.server.data.Interfaces;
 namespace nvxapp.server.data.Repositories.Tenant.GestionePresenze
 {
     public class Dip_Rapporto_Giustificativi_MaturazioneRepository
-        : Repository<ApplicationDbContext, Dip_Rapporto_Giustificativi_Maturazione>,
-          IDip_Rapporto_Giustificativi_MaturazioneRepository,
-          ICurrentTenant
+        : Repository<TenantDbContext, Dip_Rapporto_Giustificativi_Maturazione>,
+          IDip_Rapporto_Giustificativi_MaturazioneRepository
     {
-        private readonly IApplicationDbContextFactory _applicationDbContextFactory;
-
-        public Dip_Rapporto_Giustificativi_MaturazioneRepository(ApplicationDbContext dbContext,
-                                                                  IServiceProvider provider,
-                                                                  IHttpContextAccessor httpContextAccessor,
-                                                                  IApplicationDbContextFactory applicationDbContextFactory)
-            : base(applicationDbContextFactory.CreateDbContext(null), provider, httpContextAccessor)
+        public Dip_Rapporto_Giustificativi_MaturazioneRepository(TenantDbContext dbContext,
+                                                                 IServiceProvider provider,
+                                                                 Microsoft.AspNetCore.Http.IHttpContextAccessor httpContextAccessor)
+            : base(dbContext, provider, httpContextAccessor)
         {
-            _applicationDbContextFactory = applicationDbContextFactory;
         }
     }
 

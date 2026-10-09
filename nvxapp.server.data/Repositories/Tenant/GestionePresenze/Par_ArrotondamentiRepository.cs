@@ -8,30 +8,15 @@ using nvxapp.server.data.Interfaces;
 namespace nvxapp.server.data.Repositories.Tenant.GestionePresenze
 {
 
-    /*
-     ATTENZIONE !!!
-    
-     applicationDbContextFactory.CreateDbContext(null) e quello che permette la lettura dei dati
-     sul tenat in caso di multi tenant
-     
-     */
 
-    public class Par_ArrotondamentiRepository : Repository<ApplicationDbContext, Par_Arrotondamenti>, IPar_ArrotondamentiRepository, ICurrentTenant
+    public class Par_ArrotondamentiRepository : Repository<TenantDbContext, Par_Arrotondamenti>, IPar_ArrotondamentiRepository
     {
 
-        private readonly IApplicationDbContextFactory _applicationDbContextFactory;
-
-
-
-        public Par_ArrotondamentiRepository(ApplicationDbContext dbContext,
-                                 IServiceProvider provider,
-                                 IHttpContextAccessor httpContextAccessor,
-                                 IApplicationDbContextFactory applicationDbContextFactory) : base(applicationDbContextFactory.CreateDbContext(null), 
-                                                                                                  provider, 
-                                                                                                  httpContextAccessor)
-                                
+        public Par_ArrotondamentiRepository(TenantDbContext dbContext,
+                                            IServiceProvider provider,
+                                            Microsoft.AspNetCore.Http.IHttpContextAccessor httpContextAccessor)
+            : base(dbContext, provider, httpContextAccessor)
         {
-            _applicationDbContextFactory = applicationDbContextFactory;
         }
     }
 

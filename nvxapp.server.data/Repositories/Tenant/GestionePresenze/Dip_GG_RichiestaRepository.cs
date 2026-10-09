@@ -7,30 +7,15 @@ using nvxapp.server.data.Interfaces;
 namespace nvxapp.server.data.Repositories.Tenant.GestionePresenze
 {
 
-    /*
-     ATTENZIONE !!!
-    
-     applicationDbContextFactory.CreateDbContext(null) e quello che permette la lettura dei dati
-     sul tenat in caso di multi tenant
-     
-     */
 
-    public class Dip_GG_RichiestaRepository : Repository<ApplicationDbContext, Dip_GG_Richiesta>, IDip_GG_RichiestaRepository, ICurrentTenant
+    public class Dip_GG_RichiestaRepository : Repository<TenantDbContext, Dip_GG_Richiesta>, IDip_GG_RichiestaRepository
     {
 
-        private readonly IApplicationDbContextFactory _applicationDbContextFactory;
-
-
-
-        public Dip_GG_RichiestaRepository(ApplicationDbContext dbContext,
-                                 IServiceProvider provider,
-                                 IHttpContextAccessor httpContextAccessor,
-                                 IApplicationDbContextFactory applicationDbContextFactory) : base(applicationDbContextFactory.CreateDbContext(null), 
-                                                                                                  provider, 
-                                                                                                  httpContextAccessor)
-                                
+        public Dip_GG_RichiestaRepository(TenantDbContext dbContext,
+                                          IServiceProvider provider,
+                                          Microsoft.AspNetCore.Http.IHttpContextAccessor httpContextAccessor)
+            : base(dbContext, provider, httpContextAccessor)
         {
-            _applicationDbContextFactory = applicationDbContextFactory;
         }
     }
 

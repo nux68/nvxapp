@@ -8,30 +8,15 @@ using nvxapp.server.data.Interfaces;
 namespace nvxapp.server.data.Repositories.Tenant.GestionePresenze
 {
 
-    /*
-     ATTENZIONE !!!
-    
-     applicationDbContextFactory.CreateDbContext(null) e quello che permette la lettura dei dati
-     sul tenat in caso di multi tenant
-     
-     */
 
-    public class Par_OrarioIntervalloHHRepository : Repository<ApplicationDbContext, Par_OrarioIntervalloHH>, IPar_OrarioIntervalloHHRepository, ICurrentTenant
+    public class Par_OrarioIntervalloHHRepository : Repository<TenantDbContext, Par_OrarioIntervalloHH>, IPar_OrarioIntervalloHHRepository
     {
 
-        private readonly IApplicationDbContextFactory _applicationDbContextFactory;
-
-
-
-        public Par_OrarioIntervalloHHRepository(ApplicationDbContext dbContext,
-                                 IServiceProvider provider,
-                                 IHttpContextAccessor httpContextAccessor,
-                                 IApplicationDbContextFactory applicationDbContextFactory) : base(applicationDbContextFactory.CreateDbContext(null), 
-                                                                                                  provider, 
-                                                                                                  httpContextAccessor)
-                                
+        public Par_OrarioIntervalloHHRepository(TenantDbContext dbContext,
+                                                IServiceProvider provider,
+                                                Microsoft.AspNetCore.Http.IHttpContextAccessor httpContextAccessor)
+            : base(dbContext, provider, httpContextAccessor)
         {
-            _applicationDbContextFactory = applicationDbContextFactory;
         }
     }
 

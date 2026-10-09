@@ -57,6 +57,7 @@ namespace nvxapp.server.data.Infrastructure
             // nessun HasDefaultSchema: lo schema arriva dal search_path della connessione
 
             Define_Table_TenantDbContext_Infrastructure(modelBuilder);
+            Define_Table_TenantDbContext_GestionePresenze(modelBuilder);
         }
 
     }

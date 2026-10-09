@@ -1,13 +1,13 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Entities.Tenant;
 using nvxapp.server.data.Entities.Tenant.GestionePresenze;
+using nvxapp.server.data.Infrastructure.Tenancy;
 
 namespace nvxapp.server.data.Infrastructure
 {
-    public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, string>
+    public partial class TenantDbContext : DbContext
     {
 
         public virtual DbSet<Az_Anagrafica> Az_Anagrafica { get; set; }
@@ -57,9 +57,34 @@ namespace nvxapp.server.data.Infrastructure
         
         
 
-        private void Define_Table_DbContext_GestionePresenze(ModelBuilder modelBuilder)
+        private void Define_Table_TenantDbContext_GestionePresenze(ModelBuilder modelBuilder)
         {
+            Gen_PublicReferences_GestionePresenze(modelBuilder);
             Gen_Init_GestionePresenze(modelBuilder);
+        }
+
+        /*
+         Tabelle di public referenziate dalle tabelle presenze (chiavi esterne verso utenti e aziende).
+         Mappate con lo schema "public" esplicito e ESCLUSE dalle migration tenant: le crea e le
+         aggiorna solo PublicDbContext. Da qui si usano in sola lettura (Include, join).
+         Le navigazioni verso altre tabelle di public non servono al modulo e vengono ignorate.
+        */
+        private void Gen_PublicReferences_GestionePresenze(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<ApplicationUser>(entity =>
+            {
+                entity.ToTable("AspNetUsers", TenantSchemaName.Public, t => t.ExcludeFromMigrations());
+                entity.Ignore(e => e.UserDealer);
+                entity.Ignore(e => e.UserCompany);
+                entity.Ignore(e => e.UserFinancialAdvisor);
+            });
+
+            modelBuilder.Entity<Company>(entity =>
+            {
+                entity.ToTable("Company", TenantSchemaName.Public, t => t.ExcludeFromMigrations());
+                entity.Ignore(e => e.FinancialAdvisorNavigation);
+                entity.Ignore(e => e.UserCompany);
+            });
         }
 
         private void Gen_Init_GestionePresenze(ModelBuilder modelBuilder)
@@ -68,7 +93,7 @@ namespace nvxapp.server.data.Infrastructure
             /* Dip_Anagrafica */
             modelBuilder.Entity<Dip_Anagrafica>()
                 .HasOne(da => da.AspNetUsersNavigation)
-                .WithOne(au => au.Dip_Anagrafica)
+                .WithOne()
                 .HasForeignKey<Dip_Anagrafica>(da => da.IdAspNetUsers)
                 .OnDelete(DeleteBehavior.Cascade);
 
@@ -185,7 +210,7 @@ namespace nvxapp.server.data.Infrastructure
             /* Az_Anagrafica */
             modelBuilder.Entity<Az_Anagrafica>()
                 .HasOne(t_padre => t_padre.CompanyNavigation)
-                .WithOne(t_figlio => t_figlio.Az_Anagrafica)
+                .WithOne()
                 .HasForeignKey<Az_Anagrafica>(key_esterna => key_esterna.IdCompany)
                 .OnDelete(DeleteBehavior.Cascade);
 
@@ -247,7 +272,7 @@ namespace nvxapp.server.data.Infrastructure
 
             modelBuilder.Entity<Az_SediRepartoUser>()
                 .HasOne(t => t.AspNetUsersNavigation)
-                .WithMany(t => t.Az_SediRepartoUser)
+                .WithMany()
                 .HasForeignKey(t => t.IdAspNetUsers)
                 .OnDelete(DeleteBehavior.Cascade);
             
@@ -519,7 +544,7 @@ namespace nvxapp.server.data.Infrastructure
 
             modelBuilder.Entity<Az_SubCommessaUser>()
                 .HasOne(t => t.AspNetUsersNavigation)
-                .WithMany(t => t.Az_SubCommessaUser)
+                .WithMany()
                 .HasForeignKey(t => t.IdAspNetUsers)
                 .OnDelete(DeleteBehavior.Cascade);
 

@@ -7,30 +7,15 @@ using nvxapp.server.data.Interfaces;
 namespace nvxapp.server.data.Repositories.Tenant.GestionePresenze
 {
 
-    /*
-     ATTENZIONE !!!
-    
-     applicationDbContextFactory.CreateDbContext(null) e quello che permette la lettura dei dati
-     sul tenat in caso di multi tenant
-     
-     */
 
-    public class Az_SediRepartoAttivitaRepository : Repository<ApplicationDbContext, Az_SediRepartoAttivita>, IAz_SediRepartoAttivitaRepository, ICurrentTenant
+    public class Az_SediRepartoAttivitaRepository : Repository<TenantDbContext, Az_SediRepartoAttivita>, IAz_SediRepartoAttivitaRepository
     {
 
-        private readonly IApplicationDbContextFactory _applicationDbContextFactory;
-
-
-
-        public Az_SediRepartoAttivitaRepository(ApplicationDbContext dbContext,
-                                 IServiceProvider provider,
-                                 IHttpContextAccessor httpContextAccessor,
-                                 IApplicationDbContextFactory applicationDbContextFactory) : base(applicationDbContextFactory.CreateDbContext(null), 
-                                                                                                  provider, 
-                                                                                                  httpContextAccessor)
-                                
+        public Az_SediRepartoAttivitaRepository(TenantDbContext dbContext,
+                                                IServiceProvider provider,
+                                                Microsoft.AspNetCore.Http.IHttpContextAccessor httpContextAccessor)
+            : base(dbContext, provider, httpContextAccessor)
         {
-            _applicationDbContextFactory = applicationDbContextFactory;
         }
     }
 

@@ -11,10 +11,12 @@ namespace nvxapp.server.data.Repositories.Tenant.GestionePresenze
     {
     }
 
-    public class Az_SubCommessaSediRepartoRepository : Repository<ApplicationDbContext, Az_SubCommessaSediReparto>, IAz_SubCommessaSediRepartoRepository
+    public class Az_SubCommessaSediRepartoRepository : Repository<TenantDbContext, Az_SubCommessaSediReparto>, IAz_SubCommessaSediRepartoRepository
     {
-        public Az_SubCommessaSediRepartoRepository(ApplicationDbContext context, IServiceProvider serviceProvider, Microsoft.AspNetCore.Http.IHttpContextAccessor httpContextAccessor)
-            : base(context, serviceProvider, httpContextAccessor)
+        public Az_SubCommessaSediRepartoRepository(TenantDbContext dbContext,
+                                                   IServiceProvider provider,
+                                                   Microsoft.AspNetCore.Http.IHttpContextAccessor httpContextAccessor)
+            : base(dbContext, provider, httpContextAccessor)
         {
         }
     }

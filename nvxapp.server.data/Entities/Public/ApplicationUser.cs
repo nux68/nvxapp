@@ -20,7 +20,6 @@ namespace nvxapp.server.data.Entities.Public
         public ICollection<UserCompany>? UserCompany { get; set; }
         public ICollection<UserFinancialAdvisor>? UserFinancialAdvisor { get; set; }
 
-        public Dip_Anagrafica? Dip_Anagrafica { get; set; }
 
     }
 
