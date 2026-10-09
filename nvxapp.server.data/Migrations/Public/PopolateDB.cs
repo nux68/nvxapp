@@ -112,7 +112,8 @@ namespace nvxapp.server.data.Migrations.Public
                         );
 
 
-                for (int idxFinancial = 1; idxFinancial <= 10; idxFinancial++)
+                // 3 studi per dealer -> 6 studi, 60 aziende, 600 utenti dipendenti
+                for (int idxFinancial = 1; idxFinancial <= 3; idxFinancial++)
                 {
                     string key_FinancialAdvisor = key_Dealer + "_" + idxFinancial.ToString();
                     idxFinancialAdvisor++;
