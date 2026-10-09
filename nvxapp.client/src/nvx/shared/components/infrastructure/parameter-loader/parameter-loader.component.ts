@@ -1,13 +1,14 @@
 import { ChangeDetectorRef, Component, NgZone, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { ParameterService } from '../../../../ClientServer-Service/Infrastructure/Parameter/parameter.service';
 import { GenericRequest } from '../../../../ClientServer-Service/ModelsBase/generic-request';
-import { catchError, concatMap, delay, of, retry, tap, timer } from 'rxjs';
+import { catchError, combineLatest, concatMap, delay, of, retry, tap, timer } from 'rxjs';
 import { merge } from 'rxjs/internal/observable/merge';
 import { concat } from 'rxjs/internal/observable/concat';
 import { from } from 'rxjs/internal/observable/from';
 import { RolesListInModel } from '../../../../ClientServer-Service/Infrastructure/Parameter/Models/roles-model';
 import { AuthService } from '../../../../Utility/infrastructure/auth.service';
 import { SharedParameterGestionePresenzeService } from '../../../shared-parameter-gestione-presenze.service';
+import { ApplicationType } from '../../../../ClientServer-Service/Infrastructure/Account/Models/user-load-model';
 
 @Component({
   selector: 'app-parameter-loader',
@@ -40,9 +41,13 @@ export class ParameterLoaderComponent  implements OnInit {
     
 
     //caricameno parametri azie/user
-    this.authService.Roles$.subscribe(res => {
+    // parametri delle presenze solo se l'applicativo AttendanceTracking e' attivo per l'azienda:
+    // altrimenti il server rifiuta le chiamate (ApplicationNotActiveException).
+    // Ricontrollato a ogni cambio di ruoli o di applicativi attivi (login, impersonificazione).
+    combineLatest([this.authService.Roles$, this.authService.ActiveApplications$]).subscribe(() => {
 
-      if (this.authService.IsUser || this.authService.IsInGroupCompanyAdmin) {
+      if ((this.authService.IsUser || this.authService.IsInGroupCompanyAdmin) &&
+          this.authService.hasApplication(ApplicationType.AttendanceTracking)) {
 
         if (this.sharedParameterGestionePresenzeService.IsLoad == false) {
 
