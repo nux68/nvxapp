@@ -1,4 +1,5 @@
-﻿net core 9
-angular 19
-nodejs v22.13.0
+﻿net core 10
+angular 22
+ionic 9
+nodejs v22.22.3
 postgres 15
