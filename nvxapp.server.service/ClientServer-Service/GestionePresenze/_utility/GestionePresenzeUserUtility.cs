@@ -214,6 +214,25 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
             return giro == 0 ? p : (p.Cognome, $"{p.Nome} {giro + 1}");
         }
 
+        // Completa Cognome e Nome delle anagrafiche esistenti che li hanno entrambi vuoti
+        // (create prima dell'assegnazione automatica), con lo stesso criterio delle nuove:
+        // il personaggio dipende dalla posizione dell'anagrafica nella tabella.
+        public async Task CompletaCognomeNome(List<string> IdAspNetUsers)
+        {
+            var vuote = _dip_AnagraficaRepository.FindAll(x => IdAspNetUsers.Contains(x.IdAspNetUsers) &&
+                                                               (x.Cognome == null || x.Cognome == "") &&
+                                                               (x.Nome == null || x.Nome == ""))
+                                                 .OrderBy(x => x.Id)
+                                                 .ToList();
+            foreach (var dip_Anagrafica in vuote)
+            {
+                var (cognome, nome) = PersonaggioDisney(_dip_AnagraficaRepository.FindAll(x => x.Id < dip_Anagrafica.Id).Count());
+                dip_Anagrafica.Cognome = cognome;
+                dip_Anagrafica.Nome = nome;
+                await _dip_AnagraficaRepository.UpsertAsync(dip_Anagrafica);
+            }
+        }
+
         // Assegna l'utente al reparto di default dell'azienda in base al ruolo:
         // CompanyAdmin / CompanyPowerAdmin -> amministratore del reparto (EnabledToAdmin)
         // User                             -> utente del reparto (UserInDepartment)
@@ -691,6 +710,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
         Task<User_DATA_COMB_DipAna_DipRapp> Get_DipRapp_DipAna(int IdDipRapp);
         Task<Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg> Get_AzAna_AzSedi_AzReparto_Az_Cfg(int IdCompany, bool InitIfNotExsist);
         Task<List<Dip_AnagraficaModel>> GetAnagraficheByUsersId(List<string> usersId);
+        Task CompletaCognomeNome(List<string> IdAspNetUsers);
         Task<Get_Az_SubCommessaAttivita_Default_OutModel> Get_Az_SubCommessaAttivita_Default(int IdCompany);
     }
 
