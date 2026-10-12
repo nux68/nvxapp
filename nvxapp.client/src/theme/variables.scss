@@ -6,6 +6,8 @@
 // Variabili --nvx-*: token dell'applicazione (global.scss, app.component.scss, componenti condivisi).
 
 :root {
+  color-scheme: light; // barre di scorrimento e controlli nativi chiari (in scuro: :root.ion-palette-dark)
+
   // marchio
   --ion-color-primary: #23B1B2;
   --ion-color-primary-rgb: 35,177,178;

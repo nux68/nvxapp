@@ -313,7 +313,8 @@ ion-content > ion-card > ion-card-content {
 ion-item:has(> ion-input),
 ion-item:has(> ion-select),
 ion-item:has(> ion-textarea),
-ion-item:has(> ion-datetime-button) {
+ion-item:has(> ion-datetime-button),
+ion-item.nvx-field {
   --background: var(--nvx-surface);
   --border-width: 0;
   --inner-border-width: 0;
