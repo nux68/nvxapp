@@ -5,7 +5,7 @@
 .header-row {
   font-weight: 600;
   background: var(--ion-color-light, #f5f5f5);
-  border-bottom: 1px solid #f4f4f4;
+  border-bottom: 1px solid var(--ion-background-color-step-100, #f4f4f4);
 }
 
 .header-cell {
@@ -32,19 +32,19 @@
 }
 
 .day-name {
-  color: #888;
+  color: var(--ion-color-medium, #888);
   font-size: 0.95em;
 }
 
 .weekend .day-number,
 .weekend .day-name {
-  color: #b71c1c;
+  color: var(--ion-color-danger, #b71c1c);
 }
 
 
 
 .no-data {
-  color: #bbb;
+  color: var(--ion-color-medium, #bbb);
   font-style: italic;
   font-size: 0.95em;
 }

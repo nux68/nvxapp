@@ -231,7 +231,8 @@ ion-menu-button {
 
 
 /* --- Dark Theme Overrides --- */
-@media (prefers-color-scheme: dark) {
+// tema scuro scelto dall'utente (classe ion-palette-dark su <html>, ThemeService), non quello del sistema
+:host-context(.ion-palette-dark) {
 
   .form-section {
     .form-label {

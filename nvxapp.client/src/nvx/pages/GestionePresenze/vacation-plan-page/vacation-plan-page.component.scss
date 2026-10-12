@@ -1,5 +1,5 @@
 .no-data {
-  color: #bbb;
+  color: var(--ion-color-medium, #bbb);
   font-style: italic;
   font-size: 0.95em;
 }
@@ -133,7 +133,7 @@
 
 /* giorno vuoto */
 .vg-empty {
-  color: #ccc;
+  color: var(--ion-color-medium, #ccc);
   font-size: 0.85em;
 }
 
@@ -206,6 +206,6 @@
 }
 
 .vg-mobile-empty {
-  color: #ccc;
+  color: var(--ion-color-medium, #ccc);
   font-size: 0.85em;
 }

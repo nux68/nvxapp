@@ -1,6 +1,6 @@
 
 .no-data {
-  color: #bbb;
+  color: var(--ion-color-medium, #bbb);
   font-style: italic;
   font-size: 0.95em;
 }
