@@ -15,9 +15,11 @@ ion-col {
 }
 
 .nvx-user-label {
+  display: block;            // il padding verticale vale solo su un blocco
   font-size: 0.95em;
   color: var(--ion-text-color);
   padding-top: 4px;
+  padding-bottom: 12px;      // nome del dipendente staccato dal bordo inferiore del campo
 }
 ion-row {
   --ion-grid-column-padding: 2px;
