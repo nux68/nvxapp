@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { UserRolesInModel } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-roles-model';
 import { AccountService } from '../../../ClientServer-Service/Infrastructure/Account/account.service';
@@ -10,7 +10,7 @@ import { AccountService } from '../../../ClientServer-Service/Infrastructure/Acc
   changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
-export class SuperUserPageComponent  implements OnInit {
+export class SuperUserPageComponent {
 
   public title!: string;
 
@@ -26,6 +26,5 @@ export class SuperUserPageComponent  implements OnInit {
     });
   }
 
-  ngOnInit() {}
 
 }

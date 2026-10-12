@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { NavController } from '@ionic/angular/lazy';
 import { AccountService } from '../../../ClientServer-Service/Infrastructure/Account/account.service';
 import { UserDataAdditionalModel, UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
@@ -15,7 +15,7 @@ import { FabMenuService, FabMenuItem } from '../../../Utility/infrastructure/fab
   changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
-export class FinancialAdvisorListPageComponent implements OnInit {
+export class FinancialAdvisorListPageComponent {
 
   public title!: string;
   public searchText!: string;
@@ -63,7 +63,6 @@ export class FinancialAdvisorListPageComponent implements OnInit {
     this.fabMenuService.fabMenuItem = [];
   }
 
-  ngOnInit() {}
 
   handleButtonImpersonaClick = (item: any) => {
 

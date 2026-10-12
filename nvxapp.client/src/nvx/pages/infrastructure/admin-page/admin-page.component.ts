@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
   selector: 'app-admin-page',
@@ -7,7 +7,7 @@ import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
   changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
-export class AdminPageComponent  implements OnInit {
+export class AdminPageComponent {
 
   public title!: string;
 
@@ -18,6 +18,5 @@ export class AdminPageComponent  implements OnInit {
   ionViewWillEnter() {
   }
 
-  ngOnInit() {}
 
 }

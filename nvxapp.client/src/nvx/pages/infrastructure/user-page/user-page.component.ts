@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { SignalrService } from '../../../Utility/infrastructure/signalr.service';
 import { environment } from '../../../../environments/environment';
 import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
@@ -22,7 +22,7 @@ import { LongJobNotifierService } from '../../../Utility/infrastructure/long-job
   changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
-export class UserPageComponent implements OnInit {
+export class UserPageComponent {
 
   public title!: string;
 
@@ -61,7 +61,6 @@ export class UserPageComponent implements OnInit {
   }
 
 
-  ngOnInit() { }
 
 
   handleButtontaskClick = async (item: any) => {

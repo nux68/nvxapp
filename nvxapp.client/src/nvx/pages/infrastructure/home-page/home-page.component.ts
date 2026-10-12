@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
 import { FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { NavController } from '@ionic/angular/lazy';
@@ -10,7 +10,7 @@ import { NavController } from '@ionic/angular/lazy';
   changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
-export class HomePageComponent  implements OnInit {
+export class HomePageComponent {
 
   public title!: string;
 
@@ -30,8 +30,6 @@ export class HomePageComponent  implements OnInit {
     return cronology && cronology.length > 0 ? cronology[cronology.length - 1].userData?.userName ?? null : null;
   }
 
-  ngOnInit() {
-  }
 
   openChat() {
     this.fabMenuService.openChat();

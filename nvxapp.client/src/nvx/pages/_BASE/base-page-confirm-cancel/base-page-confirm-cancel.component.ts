@@ -1,13 +1,12 @@
-import { Component, Injectable, OnInit } from '@angular/core';
+import { Directive, OnInit } from '@angular/core';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { NavController } from '@ionic/angular/lazy';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Observable, of } from 'rxjs';
 
 
-@Injectable({
-  providedIn: 'root'
-})
+// classe base astratta dei componenti: @Directive() (non @Injectable) perche' Angular ne invochi i lifecycle hook
+@Directive()
 export abstract class BasePageConfirmCancelComponent<T> implements OnInit {
 
   public buttonbar: ButtonItem[] = [];

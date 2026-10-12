@@ -11,7 +11,7 @@
 
 
 
-      @if (userFinancialAdvisorList!=null) {
+      @if (userFinancialAdvisorList) {
         <ion-grid>
           @for (item of getAll() | genericFilter: 'descrizione' : searchText; track item; let indexRow4Color = $index) {
             <ion-row

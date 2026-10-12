@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { AccountService } from '../../../ClientServer-Service/Infrastructure/Account/account.service';
 import { DealerListInModel, DealerListModel } from '../../../ClientServer-Service/Infrastructure/Account/Models/dealer-model';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
@@ -15,7 +15,7 @@ import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructur
   changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
-export class DealerListPageComponent  implements OnInit {
+export class DealerListPageComponent {
 
   public title!: string;
   public searchText!: string;
@@ -64,7 +64,6 @@ export class DealerListPageComponent  implements OnInit {
     this.fabMenuService.fabMenuItem = [];
   }
 
-  ngOnInit() {}
 
   
 

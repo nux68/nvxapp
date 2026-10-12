@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { UserCronologyModel, UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NavController } from '@ionic/angular/lazy';
@@ -11,7 +11,7 @@ import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructur
   changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
-export class UserImpersonatePageComponent  implements OnInit {
+export class UserImpersonatePageComponent {
 
   public title!: string;
   public selectedValue: string|null = null;
@@ -46,7 +46,6 @@ export class UserImpersonatePageComponent  implements OnInit {
     this.selectedValue = this.userCronology[this.userCronology.length - 1].userData.id;
   }
 
-  ngOnInit() {}
 
   UserGoBack() {
     this.userNavigationService.UserGoTo(this.selectedValue);

@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { UserNavigationService } from '../../../../Utility/infrastructure/user-navigation.service';
 
 @Component({
@@ -8,12 +8,11 @@ import { UserNavigationService } from '../../../../Utility/infrastructure/user-n
   changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
-export class BreadcrumbsImpersonateComponent  implements OnInit {
+export class BreadcrumbsImpersonateComponent {
 
   constructor(public userNavigationService: UserNavigationService) {
   }
 
-  ngOnInit() {}
 
   navigateTo(id: string) {
     this.userNavigationService.UserGoTo(id);

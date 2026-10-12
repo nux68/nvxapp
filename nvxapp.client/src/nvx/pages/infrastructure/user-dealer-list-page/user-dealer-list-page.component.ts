@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { NavController } from '@ionic/angular/lazy';
 import { AccountService } from '../../../ClientServer-Service/Infrastructure/Account/account.service';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
@@ -19,7 +19,7 @@ import { RoleCode } from '../../../ClientServer-Service/Infrastructure/Account/M
   changeDetection: ChangeDetectionStrategy.Eager,
   standalone:false
 })
-export class UserDealerListPageComponent implements OnInit {
+export class UserDealerListPageComponent {
 
   public title!: string;
   public searchText!: string;
@@ -64,7 +64,6 @@ export class UserDealerListPageComponent implements OnInit {
     this.fabMenuService.fabMenuItem = [];
   }
 
-  ngOnInit() { }
 
 
   handleButtonEditClick = (item: any) => {
