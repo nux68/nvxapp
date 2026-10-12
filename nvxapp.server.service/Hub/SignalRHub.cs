@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using nvxapp.server.data.Infrastructure.Tenancy;
+using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Helpers;
 using nvxapp.server.Base;
@@ -17,13 +19,16 @@ namespace nvxapp.server.service.HubAI
     {
         protected readonly JwtParameter _jwtParameter;
         protected readonly IMyTableService _myTableService;
+        protected readonly ICompanyApplicationRepository _companyApplicationRepository;
 
         public SignalRHub(IOptions<JwtParameter> jwtParameter,
-                         IMyTableService myTableService
+                         IMyTableService myTableService,
+                         ICompanyApplicationRepository companyApplicationRepository
             )
         {
             _jwtParameter = jwtParameter.Value;
             _myTableService = myTableService;
+            _companyApplicationRepository = companyApplicationRepository;
         }
 
         public override async Task OnConnectedAsync()
@@ -84,16 +89,25 @@ namespace nvxapp.server.service.HubAI
 
 
                 // Esempio di utilizzo service
-                GenericRequest<MyTableInModel> model = new GenericRequest<MyTableInModel>();
-
-                //forzatura variabili token (è una prova , qui non servirebbe)
-                ((_myTableService as ServiceBase)!).tokenProperty = tokenProperty;
-
-                var res = await _myTableService.GetAll(model, false);
-                if (res != null && res.Success)
+                // MyTable appartiene all'applicativo Moke: nell'hub l'azienda non arriva dal contesto HTTP,
+                // va presa dal token (TenantScope) e la lettura si fa solo se l'azienda ha Moke attivo
+                // (altrimenti TenantSchemaAccessor lancerebbe ApplicationNotActiveException)
+                if (int.TryParse(tokenProperty.Company, out int idCompany) && idCompany > 0 &&
+                    _companyApplicationRepository.ActiveApplications(idCompany).Contains(ApplicationType.Moke))
                 {
-                    await Clients.Group($"UserGroup-{tokenProperty.UserIdFirstConnection}").SendAsync("ReceiveMessage",
-                                        res);
+                    using var tenantScope = TenantScope.Use(idCompany);
+
+                    GenericRequest<MyTableInModel> model = new GenericRequest<MyTableInModel>();
+
+                    //forzatura variabili token (è una prova , qui non servirebbe)
+                    ((_myTableService as ServiceBase)!).tokenProperty = tokenProperty;
+
+                    var res = await _myTableService.GetAll(model, false);
+                    if (res != null && res.Success)
+                    {
+                        await Clients.Group($"UserGroup-{tokenProperty.UserIdFirstConnection}").SendAsync("ReceiveMessage",
+                                            res);
+                    }
                 }
 
 
