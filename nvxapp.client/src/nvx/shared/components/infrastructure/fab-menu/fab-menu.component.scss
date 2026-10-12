@@ -272,12 +272,16 @@ ion-button.nvx-send.button-disabled {
 // ---------------------------------------------------------------------------
 
 ion-fab.nvx-fab {
-  > ion-fab-button {
+  // stile neutro solo senza colore (con i comandi vocali attivi diventa verde: color="success")
+  > ion-fab-button:not(.ion-color) {
     --background: var(--ion-text-color);
     --background-activated: var(--ion-text-color);
     --background-hover: var(--ion-text-color);
     --color: var(--ion-background-color);
     --box-shadow: var(--nvx-shadow-soft);
+  }
+
+  > ion-fab-button {
     width: 52px;
     height: 52px;
   }

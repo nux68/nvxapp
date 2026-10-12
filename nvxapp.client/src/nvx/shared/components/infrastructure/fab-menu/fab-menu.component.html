@@ -128,7 +128,8 @@
 
   <!-- FAB -->
   <ion-fab #fab slot="fixed" vertical="bottom" horizontal="end" class="nvx-fab">
-    <ion-fab-button>
+    <!-- verde quando i comandi vocali sono attivi, come il pulsante microfono -->
+    <ion-fab-button [color]="speechService.VoiceCommandActive ? 'success' : undefined">
       <ion-icon name="grid-outline"></ion-icon>
     </ion-fab-button>
 
