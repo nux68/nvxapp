@@ -371,3 +371,121 @@ ion-segment-button::part(indicator-background) {
 ion-chip {
   border-radius: 999px;
 }
+
+
+// ---------------------------------------------------------------------------
+// Menu azioni (ion-action-sheet): pannello sospeso arrotondato, staccato dal fondo,
+// invece del foglio incollato al bordo
+// ---------------------------------------------------------------------------
+
+// classe .md: le regole interne superano quelle del componente (.sc-ion-action-sheet-md)
+ion-action-sheet.md {
+  --background: var(--nvx-surface);
+  --backdrop-opacity: 0.32;
+  --button-background-hover: var(--ion-text-color);
+  --button-background-hover-opacity: 0.05;
+  --button-background-activated: var(--ion-text-color);
+  --button-background-activated-opacity: 0.08;
+  --button-color: var(--ion-text-color);
+  --color: var(--ion-text-color);
+  --width: min(420px, calc(100% - 24px));
+  --max-width: 420px;
+
+  // pannello sospeso: staccato dal fondo (Ionic posiziona e anima il contenitore in basso)
+  .action-sheet-container {
+    padding: 0 0 max(16px, env(safe-area-inset-bottom)) 0 !important;
+
+    @media (min-width: 576px) {
+      padding-bottom: 32px !important;
+    }
+  }
+
+  .action-sheet-group {
+    padding: 6px !important;
+    border: 1px solid var(--nvx-border);
+    border-radius: var(--nvx-radius-lg) !important;
+    box-shadow: var(--nvx-shadow-soft);
+    overflow: hidden;
+  }
+
+  .action-sheet-group-cancel {
+    margin-top: 8px !important;
+  }
+
+  .action-sheet-title {
+    padding: 12px 14px 8px 14px !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    color: var(--ion-text-color) !important;
+    text-align: left !important;
+  }
+
+  .action-sheet-sub-title {
+    padding-top: 2px !important;
+    font-size: 13px !important;
+    font-weight: 400 !important;
+    color: var(--nvx-text-muted) !important;
+  }
+
+  .action-sheet-button {
+    height: 44px !important;
+    min-height: 44px !important;
+    padding: 0 14px !important;
+    border-radius: var(--nvx-radius-sm);
+    font-size: 15px !important;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  .action-sheet-destructive {
+    --button-color: var(--ion-color-danger);
+    color: var(--ion-color-danger);
+  }
+}
+
+// finestre di scelta (ion-alert, interfaccia predefinita di ion-select) e menu a discesa (ion-popover)
+ion-alert.md {
+  --background: var(--nvx-surface);
+  --max-width: 380px;
+
+  .alert-wrapper {
+    border: 1px solid var(--nvx-border);
+    border-radius: var(--nvx-radius-lg) !important;
+    box-shadow: var(--nvx-shadow-soft) !important;
+  }
+
+  .alert-head {
+    padding: 18px 20px 8px 20px !important;
+  }
+
+  .alert-title {
+    font-size: 17px !important;
+    font-weight: 600 !important;
+    color: var(--ion-text-color) !important;
+  }
+
+  .alert-radio-group,
+  .alert-checkbox-group {
+    border-top-color: var(--nvx-border) !important;
+    border-bottom-color: var(--nvx-border) !important;
+  }
+
+  .alert-button-group {
+    padding: 8px 12px 12px 12px !important;
+    gap: 6px;
+  }
+
+  .alert-button {
+    text-transform: none !important;
+    font-weight: 500 !important;
+    letter-spacing: 0 !important;
+    border-radius: 999px !important;
+    padding: 0 16px !important;
+  }
+}
+
+ion-popover::part(content) {
+  border: 1px solid var(--nvx-border);
+  border-radius: var(--nvx-radius-md);
+  box-shadow: var(--nvx-shadow-soft);
+}
