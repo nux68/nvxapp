@@ -73,9 +73,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
             foreach (var g in new[]
             {
                 new { Codice = "MAL",   Descrizione = "Malattia",        Bg = (string?)"#ff0000", Tx = (string?)"#ffffff", Causale = "MAL",   Segno = SignWithNeutral.Down, Contatore = TipoContatore.NoContatore,         PianoFerie = false },
-                new { Codice = "ROL",   Descrizione = "ROL",             Bg = (string?)"#7fff00", Tx = (string?)"#e7f524", Causale = "ROL",   Segno = SignWithNeutral.Down, Contatore = TipoContatore.Contatore,           PianoFerie = true  },
+                new { Codice = "ROL",   Descrizione = "ROL",             Bg = (string?)"#7fff00", Tx = (string?)"#e7f524", Causale = "ROL",   Segno = SignWithNeutral.Down, Contatore = TipoContatore.ContatoreConBlocco,  PianoFerie = true  },
                 new { Codice = "FE",    Descrizione = "Ferie",           Bg = (string?)"#ff8c00", Tx = (string?)"#ffffff", Causale = "FERIE", Segno = SignWithNeutral.Down, Contatore = TipoContatore.ContatoreConAvviso,  PianoFerie = true  },
-                new { Codice = "ASS",   Descrizione = "Assenza ingiust", Bg = (string?)null,      Tx = (string?)"#f3eded", Causale = "ASS",   Segno = SignWithNeutral.Down, Contatore = TipoContatore.ContatoreConBlocco,  PianoFerie = false },
+                new { Codice = "ASS",   Descrizione = "Assenza ingiust", Bg = (string?)null,      Tx = (string?)"#f3eded", Causale = "ASS",   Segno = SignWithNeutral.Down, Contatore = TipoContatore.NoContatore         ,  PianoFerie = false },
                 new { Codice = "STRAO", Descrizione = "Straordinario",   Bg = (string?)"#2228e2", Tx = (string?)"#f8f2f2", Causale = "STRAO", Segno = SignWithNeutral.Up,   Contatore = TipoContatore.NoContatore,         PianoFerie = false },
             })
             {
