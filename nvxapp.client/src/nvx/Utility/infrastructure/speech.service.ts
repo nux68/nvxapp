@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 import { Observable } from 'rxjs/internal/Observable';
+import { Subject } from 'rxjs';
 
 
 @Injectable({
@@ -39,6 +40,21 @@ export class SpeechService {
     return this.isVoiceCommandActive;
   }
 
+  // emesso quando il riconoscimento si chiude da solo (silenzio prolungato, errore) mentre era attivo,
+  // non quando e' l'utente a disattivarlo
+  private _AutoDeactivated$ = new Subject<void>();
+  public get AutoDeactivated$(): Observable<void> {
+    return this._AutoDeactivated$.asObservable();
+  }
+
+  // chiusura del riconoscimento decisa dal browser: se era attivo, e' una disattivazione automatica
+  private onRecognitionClosed() {
+    const eraAttivo = this.isVoiceCommandActive;
+    this.VoiceCommandActive = false;
+    if (eraAttivo)
+      this._AutoDeactivated$.next();
+  }
+
   public stop() {
     this.VoiceCommandActive = false;
   }
@@ -66,12 +82,12 @@ export class SpeechService {
 
       this.recognition.onerror = (event: any) => {
         console.error("⚠️ Errore nel riconoscimento vocale:", event.error);
-        this.VoiceCommandActive = false;
+        this.onRecognitionClosed();
       };
 
       this.recognition.onend = () => {
         console.log("⏹️ Riconoscimento terminato.");
-        this.VoiceCommandActive = false;
+        this.onRecognitionClosed();
       };
     } else {
       console.error("❌ Il browser non supporta il riconoscimento vocale.");
