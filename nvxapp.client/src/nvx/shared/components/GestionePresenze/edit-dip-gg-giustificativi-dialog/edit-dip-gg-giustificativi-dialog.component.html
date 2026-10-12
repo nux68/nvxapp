@@ -1,5 +1,5 @@
 <ion-header>
-  <ion-toolbar color="primary">
+  <ion-toolbar>
     <ion-title>{{Title}}</ion-title>
   </ion-toolbar>
 </ion-header>
@@ -24,7 +24,7 @@
           @if (originalId==0) {
             <ion-row class="ion-align-items-center">
               <ion-item>
-                <ion-label position="floating">Giustificatico</ion-label>
+                <ion-label position="stacked">Giustificatico</ion-label>
                 <ion-select formControlName="idPar_Giustificativi" placeholder="Seleziona il giustificativo">
                   @for (just of _par_GiustificativiList; track just) {
                     <ion-select-option [value]="just.id">

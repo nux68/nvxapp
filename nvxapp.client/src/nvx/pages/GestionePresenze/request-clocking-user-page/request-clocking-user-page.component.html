@@ -1,4 +1,4 @@
-<app-page-toolbar [title]="title"
+<app-page-toolbar [title]="Title"
   [showFilter]="false"
   [showBreadcrumbs]="true">
 </app-page-toolbar>
@@ -31,7 +31,7 @@
           </ion-modal>
 
           <!--<ion-item>
-          <ion-label position="floating">Attivita </ion-label>
+          <ion-label position="stacked">Attivita </ion-label>
           <ion-select formControlName="idPar_Attivita" placeholder="Seleziona l attivita">
             <ion-select-option *ngFor="let att of par_AttivitaList" [value]="att.id">
               {{ att.descrizione }}
@@ -43,7 +43,7 @@
         </ion-note>-->
 
         <ion-item>
-          <ion-label position="floating">Commessa Attivita</ion-label>
+          <ion-label position="stacked">Commessa Attivita</ion-label>
           <ion-select formControlName="idPar_Attivita" placeholder="Seleziona l attivita">
             @for (attivita of az_SubCommessaAttivita_4FullList; track attivita) {
               <ion-select-option [value]="attivita.subCommessaAttivita_Id">

@@ -1,5 +1,5 @@
 <ion-header>
-  <ion-toolbar color="primary">
+  <ion-toolbar>
     <ion-title>{{Title}}</ion-title>
   </ion-toolbar>
 </ion-header>
@@ -13,7 +13,7 @@
 
         <!-- Combo per selezione orario -->
         <ion-item>
-          <ion-label position="floating">Orario</ion-label>
+          <ion-label position="stacked">Orario</ion-label>
           <ion-select formControlName="idPar_Orario" placeholder="Seleziona l'orario">
             @for (orario of _par_OrarioModelList; track orario) {
               <ion-select-option [value]="orario.id">

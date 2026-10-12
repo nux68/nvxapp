@@ -1,5 +1,5 @@
 <ion-header>
-  <ion-toolbar color="primary">
+  <ion-toolbar>
     <ion-title>{{Title}}</ion-title>
   </ion-toolbar>
 </ion-header>
@@ -24,7 +24,7 @@
             </ion-note>
           }
           <ion-item>
-            <ion-label position="floating">Causale</ion-label>
+            <ion-label position="stacked">Causale</ion-label>
             <ion-select formControlName="idCausale" placeholder="Seleziona la causale">
               @for (causale of _par_CausaliList; track causale) {
                 <ion-select-option [value]="causale.id">

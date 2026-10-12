@@ -81,7 +81,7 @@
             }
             <!-- Combo per selezione orario Festivo-->
             <ion-item>
-              <ion-label position="floating">Orario festivo</ion-label>
+              <ion-label position="stacked">Orario festivo</ion-label>
               <ion-select formControlName="idPar_Orario_Festivo" placeholder="Seleziona l'orario">
                 @for (orario of par_OrarioModelList; track orario) {
                   <ion-select-option [value]="orario.id">
@@ -127,7 +127,7 @@
                 <!-- Combo per selezione dalla causale straordinario-->
                 <ion-col size="12" size-md="6">
                   <ion-item>
-                    <ion-label position="floating">Causale lavoro Straordinario</ion-label>
+                    <ion-label position="stacked">Causale lavoro Straordinario</ion-label>
                     <ion-select formControlName="idCausale_Lavoro_Strao" placeholder="Seleziona la causale">
                       @for (causali of par_CausaliModelList; track causali) {
                         <ion-select-option [value]="causali.id">
@@ -158,7 +158,7 @@
                 <!-- Combo per selezione dalla causale lavoro sipplementare-->
                 <ion-col size="12" size-md="6">
                   <ion-item>
-                    <ion-label position="floating">Causale lavoro Supplementare</ion-label>
+                    <ion-label position="stacked">Causale lavoro Supplementare</ion-label>
                     <ion-select formControlName="idCausale_Lavoro_Suppl" placeholder="Seleziona la causale">
                       @for (causali of par_CausaliModelList; track causali) {
                         <ion-select-option [value]="causali.id">
@@ -178,7 +178,7 @@
                 <!-- Combo per selezione dal just assenza ingiust-->
                 <ion-col size="12" size-md="6">
                   <ion-item>
-                    <ion-label position="floating">Giustificativo assenza ingiustificata</ion-label>
+                    <ion-label position="stacked">Giustificativo assenza ingiustificata</ion-label>
                     <ion-select formControlName="idGiustificativo_Assenza_Ingiust" placeholder="Seleziona il giustificativo">
                       @for (just of par_GiustificativiModelList; track just) {
                         <ion-select-option [value]="just.id">

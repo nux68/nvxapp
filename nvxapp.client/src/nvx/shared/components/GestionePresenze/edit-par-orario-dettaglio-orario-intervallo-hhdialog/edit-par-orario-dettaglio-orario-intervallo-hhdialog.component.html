@@ -1,5 +1,5 @@
 <ion-header>
-  <ion-toolbar color="primary">
+  <ion-toolbar>
     <ion-title>{{Title}}</ion-title>
   </ion-toolbar>
 </ion-header>
@@ -49,7 +49,7 @@
           <ion-row class="ion-align-items-center">
             <ion-col size="12" size-md="6">
               <ion-item>
-                <ion-label position="floating">Causale HH Lav</ion-label>
+                <ion-label position="stacked">Causale HH Lav</ion-label>
                 <ion-select formControlName="idCausale_HH_Lav" placeholder="Seleziona la causale">
                   @for (causali of par_CausaliModelList; track causali) {
                     <ion-select-option [value]="causali.id">
@@ -72,7 +72,7 @@
           <!--<ion-row>
           <ion-col size="12" size-md="12">
             <ion-item>
-              <ion-label position="floating">Commessa Attivita</ion-label>
+              <ion-label position="stacked">Commessa Attivita</ion-label>
               <ion-select formControlName="idAz_SubCommessaAttivita" placeholder="Seleziona l attivita">
                 <ion-select-option *ngFor="let attivita of az_SubCommessaAttivita_4FullList" [value]="attivita.subCommessaAttivita_Id">
                   {{ attivita.cliente_Descrizione }} {{ attivita.commessa_Decrizione }} {{ attivita.subCommessa_Decrizione }} {{ attivita.subCommessaAttivita_Par_Attivita_Descrizione }}

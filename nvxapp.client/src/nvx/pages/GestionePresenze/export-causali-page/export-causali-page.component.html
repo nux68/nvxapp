@@ -70,7 +70,7 @@
         <ion-row class="ion-align-items-center">
           <ion-col size="12" size-md="6">
             <ion-item>
-              <ion-label position="floating">Tipo export</ion-label>
+              <ion-label position="stacked">Tipo export</ion-label>
               <ion-select formControlName="idPar_ExportCau" placeholder="Seleziona il modello">
                 @for (par_Export of par_ExportCauList; track par_Export) {
                   <ion-select-option [value]="par_Export.id">

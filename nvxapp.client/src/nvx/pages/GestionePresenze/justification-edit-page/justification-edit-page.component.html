@@ -74,7 +74,7 @@
         }
 
         <ion-item>
-          <ion-label position="floating">Causale </ion-label>
+          <ion-label position="stacked">Causale </ion-label>
           <ion-select formControlName="idCausale" placeholder="Seleziona la causale">
             @for (causali of par_CausaliModelList; track causali) {
               <ion-select-option [value]="causali.id">

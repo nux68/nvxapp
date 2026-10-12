@@ -193,6 +193,32 @@ ion-menu-button {
   margin-bottom: 80px; // Space above fixed submit button
 }
 
+// note come riquadro, coerente con i campi dei form (stile "chat AI", global.scss)
+.form-section.notes-section {
+  margin: 10px 0 80px 0;
+  padding: 10px 14px 4px 14px;
+  border: 1px solid var(--nvx-border-strong);
+  border-radius: var(--nvx-radius-md);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+  .form-label {
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--nvx-text-muted);
+    margin-bottom: 0;
+  }
+
+  .form-input {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  &:focus-within {
+    border-color: var(--ion-color-primary);
+    box-shadow: 0 0 0 3px rgba(var(--ion-color-primary-rgb), 0.18);
+  }
+}
+
 .submit-button-container {
   position: fixed;
   bottom: 0;

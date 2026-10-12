@@ -15,6 +15,9 @@
 .vg-scroll {
   overflow-x: auto;
   overflow-y: visible;
+  // barra di scorrimento sottile e neutra
+  scrollbar-width: thin;
+  scrollbar-color: var(--nvx-border-strong) transparent;
 }
 
 /* ogni riga è un flex-row */

@@ -1,5 +1,5 @@
 <ion-header>
-  <ion-toolbar color="primary">
+  <ion-toolbar>
     <ion-title>{{Title}}</ion-title>
   </ion-toolbar>
 </ion-header>
@@ -83,7 +83,7 @@
               </ion-item>
             }
             <ion-item>
-              <ion-label position="floating">Commessa Attivita</ion-label>
+              <ion-label position="stacked">Commessa Attivita</ion-label>
               <ion-select formControlName="idAz_SubCommessaAttivita" placeholder="Seleziona l attivita">
                 @for (attivita of az_SubCommessaAttivita_4FullList; track attivita) {
                   <ion-select-option [value]="attivita.subCommessaAttivita_Id">
