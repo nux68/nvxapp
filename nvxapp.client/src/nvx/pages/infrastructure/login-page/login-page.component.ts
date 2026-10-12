@@ -53,8 +53,13 @@ export class LoginPageComponent  implements OnInit {
     //});
 
     this.loginForm = this.fb.group({
-      email: [ 'max_poweradmin', [Validators.required, Validators.minLength(3)]],
-      password: [ 'max', [Validators.required, Validators.minLength(3)]]
+      email: [ 'CompanyPowerAdmin_1_1_1', [Validators.required, Validators.minLength(3)]],
+      password: [ '1234', [Validators.required, Validators.minLength(3)]]
+
+      // email: [ 'superuser', [Validators.required, Validators.minLength(3)]],
+      // password: [ '1234', [Validators.required, Validators.minLength(3)]]
+
+
     });
 
   }
