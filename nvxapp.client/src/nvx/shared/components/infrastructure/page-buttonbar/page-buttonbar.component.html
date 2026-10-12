@@ -1,11 +1,13 @@
-<ion-footer>
-  <ion-toolbar color="light">
+<ion-footer class="nvx-buttonbar">
+  <ion-toolbar>
     <ion-buttons class="center-buttons">
 
+      <!-- azione principale (colore primary) a pillola piena, le altre "fantasma" -->
       @for (item of buttonbar; track item) {
-        <ion-button size="default" shape="round" (click)="item.event({})" color="{{item.color}}" [disabled]="item.disabled" fill="clear">
-          <ion-icon name="{{item.image}}"></ion-icon>
-          &nbsp;{{item.text}}&nbsp;&nbsp;
+        <ion-button size="default" shape="round" (click)="item.event({})" color="{{item.color}}" [disabled]="item.disabled"
+          [fill]="item.color === 'primary' ? 'solid' : 'clear'">
+          <ion-icon slot="start" name="{{item.image}}"></ion-icon>
+          {{item.text}}
         </ion-button>
       }
 

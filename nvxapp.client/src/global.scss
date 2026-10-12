@@ -39,22 +39,80 @@
 
 
 //NVX
-ion-menu {
-  width: 300px; /* Dimensione predefinita del menu */
-  max-width: 300px;
+// ---------------------------------------------------------------------------
+// Stile "chat AI moderna" (token in theme/variables.scss)
+// ---------------------------------------------------------------------------
 
-  @media (min-width: 992px) { /* Breakpoint per large screen */
-    width: 200px; /* Riduci la larghezza del menu */
-    max-width: 200px;
+body {
+  font-family: var(--nvx-font);
+  -webkit-font-smoothing: antialiased;
+}
+
+// barra laterale (stile delle voci in app.component.scss)
+ion-split-pane {
+  --side-width: 260px;
+  --side-min-width: 260px;
+  --side-max-width: 260px;
+}
+
+ion-menu {
+  --width: 280px; // menu a scomparsa (mobile)
+}
+
+// barra superiore: piatta, senza ombra, filo sottile
+ion-header {
+  box-shadow: none !important;
+  border-bottom: 1px solid var(--nvx-border);
+
+  &::after {
+    display: none; // ombra del modo md
+  }
+
+  ion-toolbar {
+    --background: var(--ion-background-color);
+    --border-width: 0;
+    --min-height: 56px;
+  }
+
+  ion-title {
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
   }
 }
 
-ion-menu-content {
-  margin-left: 300px; /* Spostamento predefinito del contenuto */
+// ricerca a pillola (classe .md per superare lo stile del modo md di Ionic)
+ion-searchbar.md {
+  --border-radius: 999px;
+  --box-shadow: none;
+  --background: var(--nvx-surface-soft);
+  --placeholder-opacity: 0.6;
+  max-width: var(--nvx-content-max);
+  margin: 0 auto;
+  padding-top: 6px;
+  padding-bottom: 8px;
+}
 
-  @media (min-width: 992px) { /* Breakpoint per large screen */
-    margin-left: 200px; /* Aggiorna lo spostamento del contenuto */
+// riquadro di pagina: superficie centrata, bordo sottile, niente ombra
+ion-content > ion-card {
+  max-width: var(--nvx-content-max);
+  margin: 20px auto;
+  border: 1px solid var(--nvx-border);
+  border-radius: var(--nvx-radius-lg);
+  box-shadow: none;
+  background: var(--nvx-surface);
+
+  @media (max-width: 575px) {
+    margin: 10px 8px;
+    border-radius: var(--nvx-radius-md);
   }
+}
+
+// pagine larghe (calendari, piano ferie): riquadro a tutta larghezza
+ion-content.nvx-wide > ion-card {
+  max-width: none;
+  margin-left: 16px;
+  margin-right: 16px;
 }
 //NVX
 
@@ -62,10 +120,19 @@ ion-menu-content {
   --background: rgba(var(--ion-color-primary-rgb), 0.5);
 }
 
+// titolo di sezione nelle pagine di modifica: etichetta piccola e attenuata, senza barra colorata
 .nvx-item-4-title {
-  --background: rgba(var(--ion-color-primary-rgb), 0.5);
-  --border-radius: 5px; // Arrotonda gli angoli
-  text-align: center;
+  --background: transparent;
+  --border-width: 0;
+  --inner-border-width: 0;
+  --padding-start: 2px;
+  --min-height: 28px;
+  --color: var(--nvx-text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-align: left;
 }
 
 
@@ -74,74 +141,68 @@ ion-menu-content {
   font-size: 30px; /* Dimensione standard per tutte le icone */
 }
 
+// modali: angoli ampi, bordo sottile, ombra morbida
 ion-modal {
-  /*--border-radius: 16px;*/
-  --box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  --box-shadow: var(--nvx-shadow-soft);
   overflow: hidden;
 }
 
 @media (min-width: 576px) {
   ion-modal,
   .nvx-modal {
-    --border-radius: 16px;
+    --border-radius: var(--nvx-radius-lg);
+  }
+
+  ion-modal::part(content) {
+    border: 1px solid var(--nvx-border);
   }
 }
 
 .nvx-modal {
-  /*--border-radius: 16px; // Arrotonda gli angoli*/
-  --box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); // Ombra elegante
+  --box-shadow: var(--nvx-shadow-soft);
   overflow: hidden; // Evita bordi tagliati
 }
 
 
+// righe delle liste: separatori sottili, niente zebra, hover tenue
 .nvx-ion-row-4table {
-  border-bottom: 1px solid var(--ion-toolbar-background);
-  transition: background-color 0.3s ease; /* Animazione fluida per il cambio colore */
+  border-bottom: 1px solid var(--nvx-border);
+  border-radius: var(--nvx-radius-sm);
+  align-items: center;
+  min-height: 52px;
+  transition: background-color 0.15s ease;
+
+  &:last-child {
+    border-bottom-color: transparent;
+  }
 }
 
 .nvx-ion-row-4table:hover {
-  background-color: var(--ion-item-background);
+  background-color: var(--nvx-hover);
 }
 
-
-// righe alternate
-.nvx-row-even {
+// righe alternate (neutralizzate: lo stile "chat AI" usa solo i separatori)
+.nvx-row-even,
+.nvx-row-odd {
   --background: transparent;
   background: transparent;
 }
 
-.nvx-row-odd {
-  --background: rgba(var(--ion-color-light-rgb), 0.5);
-  background: rgba(var(--ion-color-light-rgb), 0.5);
-}
-
 // hover riga
 .nvx-row-hover {
-  transition: background-color 0.2s ease;
+  transition: background-color 0.15s ease;
   cursor: default;
 
   &:hover {
-    --background: rgba(var(--ion-color-primary-rgb), 0.22);
-    background: rgba(var(--ion-color-primary-rgb), 0.22);
+    --background: var(--nvx-hover);
+    background: var(--nvx-hover);
   }
 }
 
-
-
-/*ion-item-sliding.nvx-row-odd ion-item {
-  --background: rgba(var(--ion-color-light-rgb), 0.5);
-}
-
+// su mobile la riga scorrevole deve restare opaca (sotto ci sono le opzioni)
+ion-item-sliding.nvx-row-odd ion-item,
 ion-item-sliding.nvx-row-even ion-item {
-  --background: transparent;
-}*/
-
-ion-item-sliding.nvx-row-odd ion-item {
-  --background: var(--ion-color-light, #f4f5f8);
-}
-
-ion-item-sliding.nvx-row-even ion-item {
-  --background: var(--ion-card-background, var(--ion-background-color, #ffffff));
+  --background: var(--nvx-surface, #ffffff);
 }
 
 
@@ -209,4 +270,103 @@ ion-item-option.item-option-text-only_cancella {
   --padding-start: 12px;
   --padding-end: 12px;
   font-weight: 500;
+}
+
+
+// ---------------------------------------------------------------------------
+// Stile "chat AI moderna": pulsanti, riquadri, campi, segmenti
+// ---------------------------------------------------------------------------
+
+// pulsanti: testo normale (non maiuscolo), angoli morbidi
+ion-button {
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 500;
+  --box-shadow: none;
+}
+
+// pulsanti "fantasma" delle righe (fill=outline): bordo neutro sottile, testo colorato
+ion-button.button-outline {
+  --border-width: 1px;
+  --border-color: var(--nvx-border-strong);
+  --background-hover: var(--ion-text-color);
+  --background-hover-opacity: 0.04;
+}
+
+// tutti i riquadri: bordo sottile al posto dell'ombra
+ion-card {
+  box-shadow: none;
+  border: 1px solid var(--nvx-border);
+  border-radius: var(--nvx-radius-md);
+  background: var(--nvx-surface);
+}
+
+ion-content > ion-card > ion-card-content {
+  padding: 20px 24px;
+
+  @media (max-width: 575px) {
+    padding: 14px 12px;
+  }
+}
+
+// campi dei form: riquadri arrotondati con bordo, anello verde acqua sul focus
+ion-item:has(> ion-input),
+ion-item:has(> ion-select),
+ion-item:has(> ion-textarea),
+ion-item:has(> ion-datetime-button) {
+  --background: var(--nvx-surface);
+  --border-width: 0;
+  --inner-border-width: 0;
+  --highlight-height: 0;
+  --padding-start: 14px;
+  --inner-padding-end: 14px;
+  --min-height: 54px;
+  border: 1px solid var(--nvx-border-strong);
+  border-radius: var(--nvx-radius-md);
+  margin: 10px 0 4px 0;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+  ion-label {
+    color: var(--nvx-text-muted) !important;
+  }
+
+  &.item-has-focus {
+    border-color: var(--ion-color-primary);
+    box-shadow: 0 0 0 3px rgba(var(--ion-color-primary-rgb), 0.18);
+  }
+}
+
+// messaggi di errore sotto i campi
+ion-note[color="danger"] {
+  display: block;
+  padding: 2px 4px 6px 4px;
+  font-size: 13px;
+}
+
+// segmenti a pillola (indicatore come "pastiglia")
+ion-segment {
+  --background: var(--nvx-surface-soft);
+  border-radius: 999px;
+  padding: 3px;
+}
+
+ion-segment-button {
+  --border-radius: 999px;
+  --indicator-color: var(--nvx-surface);
+  --indicator-height: 100%;
+  --color: var(--nvx-text-muted);
+  --color-checked: var(--ion-text-color);
+  text-transform: none;
+  letter-spacing: 0;
+  min-height: 34px;
+}
+
+ion-segment-button::part(indicator-background) {
+  border-radius: 999px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+// chip: pillole con bordo sottile
+ion-chip {
+  border-radius: 999px;
 }

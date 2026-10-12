@@ -1,102 +1,121 @@
 <div>
 
   <div>
-    <ion-modal #chatModal class="nvx-modal" [isOpen]="isModalOpen" (willDismiss)="onWillDismissChat($event)" (didPresent)="scrollToBottom()">
+    <ion-modal #chatModal class="nvx-modal nvx-chat-modal" [isOpen]="isModalOpen" (willDismiss)="onWillDismissChat($event)" (didPresent)="scrollToBottom()">
       <ng-template>
 
         <!-- HEADER -->
         <ion-header>
-          <ion-toolbar color="primary">
-
-            <ion-buttons slot="end" class="ion-hide-xl-up">
-              <ion-button (click)="cancelChat()">
-                <ion-icon class="nvx-standard-icon" name="close-outline"></ion-icon>
+          <ion-toolbar>
+            <ion-buttons slot="start">
+              <ion-icon class="nvx-chat-header-icon" [name]="modalType=='vocal' ? 'mic-outline' : 'sparkles-outline'"></ion-icon>
+            </ion-buttons>
+            <ion-title>{{ modalType=='vocal' ? 'Assistente vocale' : 'Assistente' }}</ion-title>
+            <ion-buttons slot="end">
+              <ion-button (click)="cancelChat()" aria-label="Chiudi">
+                <ion-icon slot="icon-only" name="close-outline"></ion-icon>
               </ion-button>
             </ion-buttons>
-
-            @if (modalType=='text') {
-              <ion-icon  class="nvx-standard-icon" name="chatbubbles-outline" slot="start"></ion-icon>
-            }
-            @if (modalType=='vocal') {
-              <ion-icon class="nvx-standard-icon" name="mic-outline"         slot="start"></ion-icon>
-            }
-
-            <ion-title>{{ modalType }}</ion-title>
-
           </ion-toolbar>
         </ion-header>
 
         <!-- CORPO MESSAGGI -->
-        <ion-content class="ion-padding" #chatContent>
+        <ion-content #chatContent>
+          <div class="nvx-chat-thread">
 
-          @for (message of messages; track message) {
-            <div
-               [ngClass]="{
-                 'user-message':        message.sender === 'You',
-                 'assistant-message':   message.sender === 'Assistant',
-                 'msg-question':        message.type === 'question',
-                 'msg-confirmation':    message.type === 'confirmation',
-                 'msg-result':          message.type === 'result',
-                 'msg-error':           message.type === 'error'
-               }">
-              <strong>{{ message.sender }}:</strong> <span [innerHTML]="formatText(message.text)"></span>
-            </div>
-          }
+            <!-- stato vuoto -->
+            @if (messages.length === 0 && !isChatLoading) {
+              <div class="nvx-chat-empty">
+                <div class="nvx-chat-empty-icon">
+                  <ion-icon name="sparkles-outline"></ion-icon>
+                </div>
+                <h2>Come posso aiutarti?</h2>
+                <p>
+                  @if (modalType=='vocal') {
+                    Attiva il microfono e dimmi cosa vuoi fare.
+                  } @else {
+                    Scrivi una domanda o un comando, ad esempio di aprire una pagina.
+                  }
+                </p>
+              </div>
+            }
 
-          <!-- Chip di suggerimento (es. "Sì" / "No") -->
-          @if (suggestions && suggestions.length > 0) {
-            <div class="suggestions-container">
-              @for (s of suggestions; track s) {
-                <ion-chip
-                  (click)="sendSuggestion(s)"
-                  color="primary"
-                  outline="true">
-                  {{ s }}
-                </ion-chip>
+            @for (message of messages; track $index) {
+              @if (message.sender === 'You') {
+                <div class="nvx-msg-row nvx-msg-user">
+                  <div class="nvx-bubble" [innerHTML]="formatText(message.text)"></div>
+                </div>
+              } @else {
+                <div class="nvx-msg-row nvx-msg-assistant"
+                  [ngClass]="{
+                    'msg-question':     message.type === 'question',
+                    'msg-confirmation': message.type === 'confirmation',
+                    'msg-result':       message.type === 'result',
+                    'msg-error':        message.type === 'error'
+                  }">
+                  <div class="nvx-avatar"><ion-icon name="sparkles-outline"></ion-icon></div>
+                  <div class="nvx-assistant-text" [innerHTML]="formatText(message.text)"></div>
+                </div>
               }
-            </div>
-          }
+            }
 
-          <app-background-working [show]="isChatLoading"></app-background-working>
+            <!-- l'assistente sta scrivendo -->
+            @if (isChatLoading) {
+              <div class="nvx-msg-row nvx-msg-assistant">
+                <div class="nvx-avatar"><ion-icon name="sparkles-outline"></ion-icon></div>
+                <div class="nvx-typing" aria-label="L'assistente sta scrivendo"><span></span><span></span><span></span></div>
+              </div>
+            }
 
+            <!-- Chip di suggerimento (es. "Sì" / "No") -->
+            @if (suggestions && suggestions.length > 0) {
+              <div class="suggestions-container">
+                @for (s of suggestions; track s) {
+                  <ion-chip (click)="sendSuggestion(s)" outline="true">
+                    {{ s }}
+                  </ion-chip>
+                }
+              </div>
+            }
+
+          </div>
         </ion-content>
 
         <!-- FOOTER INPUT -->
-        <ion-footer>
+        <ion-footer class="nvx-chat-footer">
           <ion-toolbar>
 
-            <!-- Modalità testo -->
+            <!-- Modalità testo: campo a pillola con invio integrato -->
             @if (modalType=='text') {
-              <ion-item>
+              <div class="nvx-composer">
                 <ion-textarea class="chat-input" [(ngModel)]="newMessage"
                   placeholder="Scrivi un messaggio..."
                   rows="1"
                   auto-grow="true"
                   (keydown.enter)="sendMessage()">
                 </ion-textarea>
-                <ion-button shape="round"
+                <ion-button class="nvx-send" shape="round"
                   (click)="sendMessage()"
-                  size="default"
-                  color="medium"
-                  [disabled]="isChatLoading">
-                  <ion-icon slot="icon-only" name="send-outline"></ion-icon>
+                  [disabled]="isChatLoading || !newMessage.trim()"
+                  aria-label="Invia">
+                  <ion-icon slot="icon-only" name="arrow-up"></ion-icon>
                 </ion-button>
-              </ion-item>
+              </div>
             }
 
             <!-- Modalità vocale -->
             @if (modalType=='vocal') {
-              <ion-item>
-                <ion-label>
+              <div class="nvx-composer nvx-composer-vocal">
+                <span class="nvx-vocal-label">
                   {{ speechService.VoiceCommandActive ? 'Comandi vocali attivi' : 'Comandi vocali disattivati' }}
-                </ion-label>
-                <ion-button shape="round"
+                </span>
+                <ion-button class="nvx-send" shape="round"
                   (click)="toggleVoiceCommand()"
-                  size="default"
-                  color="{{ speechService.VoiceCommandActive ? 'success' : 'medium' }}">
+                  [color]="speechService.VoiceCommandActive ? 'success' : 'medium'"
+                  aria-label="Microfono">
                   <ion-icon [name]="speechService.VoiceCommandActive ? 'mic' : 'mic-off'" slot="icon-only"></ion-icon>
                 </ion-button>
-              </ion-item>
+              </div>
             }
 
           </ion-toolbar>
@@ -108,7 +127,7 @@
 
 
   <!-- FAB -->
-  <ion-fab #fab slot="fixed" vertical="bottom" horizontal="end">
+  <ion-fab #fab slot="fixed" vertical="bottom" horizontal="end" class="nvx-fab">
     <ion-fab-button>
       <ion-icon name="grid-outline"></ion-icon>
     </ion-fab-button>

@@ -61,6 +61,12 @@ export class FabMenuComponent implements OnInit {
     this.fabMenuService.fabMenuItem$.subscribe(() => {
       if (this.fab) this.fab.close();
     });
+
+    // apertura della chat richiesta da altre pagine (es. home)
+    this.fabMenuService.openChat$.subscribe(() => {
+      this.openModal('text');
+      this.cdRef.markForCheck();
+    });
   }
 
   ngOnInit() {

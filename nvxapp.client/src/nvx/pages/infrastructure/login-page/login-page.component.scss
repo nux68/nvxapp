@@ -1,8 +1,4 @@
 
-ion-menu-button {
-
-  color: var(--ion-color-primary);
-}
 
 #container {
   text-align: center;
@@ -30,35 +26,74 @@ ion-menu-button {
 }
 
 .error-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  border-radius: 5px;
-  padding: 10px;
-  margin-top: 10px;
+  margin-top: 12px;
+  padding: 10px 14px;
+  border-radius: var(--nvx-radius-sm);
+  background: rgba(var(--ion-color-danger-rgb), 0.1);
 }
 
 .error-text {
-  color: red;
-  font-weight: bold;
+  margin: 0;
+  color: var(--ion-color-danger);
+  font-size: 14px;
   text-align: center;
 }
 
+// riquadro di accesso: stretto e centrato, in stile "chat AI"
 .login-content-center {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: stretch;
-  height: 100%;
+  align-items: center;
   min-height: 100%;
   width: 100%;
+  padding: 16px;
+  box-sizing: border-box;
 }
 
 .login-content-center ion-card {
-  width: calc(100% - 20px); /* 10px margine a destra e sinistra */
-  margin-left: 10px;
-  margin-right: 10px;
-  box-sizing: border-box;
-  align-self: center;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 0 8vh 0;
+  border: 1px solid var(--nvx-border);
+  border-radius: var(--nvx-radius-lg);
+  box-shadow: var(--nvx-shadow-soft);
+
+  ion-card-content {
+    padding: 28px 24px 24px 24px;
+  }
+}
+
+.nvx-login-brand {
+  text-align: center;
+  margin-bottom: 14px;
+
+  h1 {
+    margin: 12px 0 4px 0;
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--ion-text-color);
+  }
+
+  p {
+    margin: 0;
+    color: var(--nvx-text-muted);
+    font-size: 14px;
+  }
+}
+
+.nvx-login-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: rgba(var(--ion-color-primary-rgb), 0.12);
+
+  ion-icon {
+    font-size: 24px;
+    color: var(--ion-color-primary);
+  }
 }

@@ -1,5 +1,36 @@
+// barra pulsanti in fondo: fondo neutro, filo sottile, pulsanti a destra (centrati su mobile)
+ion-footer.nvx-buttonbar {
+  box-shadow: none;
+  border-top: 1px solid var(--nvx-border);
+
+  &::before {
+    display: none; // ombra del modo md
+  }
+
+  ion-toolbar {
+    --background: var(--ion-background-color);
+    --border-width: 0;
+    --padding-start: 16px;
+    --padding-end: 84px; // spazio per il FAB principale, fisso in basso a destra
+    --min-height: 64px;
+  }
+}
+
 .center-buttons {
   display: flex;
-  justify-content: center;
-  gap: 10px; /* spazio tra i bottoni */
+  justify-content: flex-end;
+  gap: 8px;
+  max-width: var(--nvx-content-max);
+  margin: 0 auto;
+  width: 100%;
+
+  @media (max-width: 575px) {
+    justify-content: center;
+  }
+
+  ion-button {
+    --padding-start: 18px;
+    --padding-end: 18px;
+    min-height: 40px;
+  }
 }

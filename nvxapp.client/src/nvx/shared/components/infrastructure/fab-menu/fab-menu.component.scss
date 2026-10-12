@@ -1,77 +1,163 @@
-.user-message {
-  background-color: var(--ion-toolbar-background);
-  text-align: left;
-  margin: 10px;
-  padding: 10px;
-  border-radius: 10px;
-}
-
-.assistant-message {
-  //background-color: #ffecb3; /* Giallo chiaro */
-  text-align: right;
-  margin: 10px;
-  padding: 10px;
-  border-radius: 10px;
-}
-
-
+// Chat dell'assistente in stile "chat AI moderna" (token in theme/variables.scss)
 
 @media (min-width: 577px) {
-  ion-modal {
-    --height: 90vh; /* Altezza del 90% della visuale verticale */
-    --width: 70%;
+  ion-modal.nvx-chat-modal {
+    --height: 86vh;
+    --width: min(760px, 92vw);
   }
 }
 
+// header neutro
+ion-modal.nvx-chat-modal ion-header {
+  ion-toolbar {
+    --background: var(--ion-background-color);
+    --padding-start: 12px;
+  }
 
-// ---------------------------------------------------------------------------
-// Messaggi utente / assistente
-// ---------------------------------------------------------------------------
-
-/*.user-message {
-  text-align: right;
-  margin: 6px 0;
-  padding: 8px 12px;
-  background: var(--ion-color-primary-tint, #e8f0fe);
-  border-radius: 12px 12px 2px 12px;
-  display: inline-block;
-  float: right;
-  clear: both;
-  max-width: 80%;
+  ion-title {
+    font-size: 16px;
+  }
 }
 
-.assistant-message {
-  text-align: left;
-  margin: 6px 0;
-  padding: 8px 12px;
-  background: var(--ion-color-light, #f4f4f4);
-  border-radius: 12px 12px 12px 2px;
-  display: inline-block;
-  float: left;
-  clear: both;
-  max-width: 80%;
-}*/
+.nvx-chat-header-icon {
+  font-size: 22px;
+  margin: 0 4px 0 6px;
+  color: var(--ion-color-primary);
+}
+
+ion-modal.nvx-chat-modal ion-content {
+  --background: var(--ion-background-color);
+}
+
+// colonna centrale della conversazione
+.nvx-chat-thread {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 20px 16px 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
 
 // ---------------------------------------------------------------------------
-// Stili per responseType
+// Stato vuoto
 // ---------------------------------------------------------------------------
 
-.msg-question {
-  border-left: 3px solid var(--ion-color-warning, #ffc409);
+.nvx-chat-empty {
+  text-align: center;
+  padding: 12vh 12px 0 12px;
+
+  h2 {
+    margin: 14px 0 6px 0;
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+
+  p {
+    margin: 0;
+    color: var(--nvx-text-muted);
+    font-size: 15px;
+  }
 }
 
-.msg-confirmation {
-  border-left: 3px solid var(--ion-color-primary, #3880ff);
-  font-weight: 500;
+.nvx-chat-empty-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(var(--ion-color-primary-rgb), 0.12);
+
+  ion-icon {
+    font-size: 26px;
+    color: var(--ion-color-primary);
+  }
 }
 
-.msg-result {
-  border-left: 3px solid var(--ion-color-success, #2dd36f);
+// ---------------------------------------------------------------------------
+// Messaggi
+// ---------------------------------------------------------------------------
+
+.nvx-msg-row {
+  display: flex;
+  gap: 12px;
+  font-size: 15px;
+  line-height: 1.55;
 }
 
-.msg-error {
-  border-left: 3px solid var(--ion-color-danger, #eb445a);
-  color: var(--ion-color-danger, #eb445a);
+// utente: bolla grigia a destra
+.nvx-msg-user {
+  justify-content: flex-end;
+
+  .nvx-bubble {
+    max-width: 80%;
+    padding: 10px 16px;
+    border-radius: 20px;
+    background: var(--nvx-surface-soft);
+    word-break: break-word;
+  }
+}
+
+// assistente: testo libero a sinistra con piccola icona
+.nvx-msg-assistant {
+  justify-content: flex-start;
+  align-items: flex-start;
+
+  .nvx-assistant-text {
+    flex: 1;
+    min-width: 0;
+    padding-top: 3px;
+    word-break: break-word;
+  }
+}
+
+.nvx-avatar {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid var(--nvx-border-strong);
+
+  ion-icon {
+    font-size: 16px;
+    color: var(--ion-color-primary);
+  }
+}
+
+// tipo di risposta: accento discreto sull'icona e sul testo
+.msg-question .nvx-avatar     { border-color: var(--ion-color-warning); }
+.msg-confirmation .nvx-avatar { border-color: var(--ion-color-primary); }
+.msg-confirmation .nvx-assistant-text { font-weight: 500; }
+.msg-result .nvx-avatar       { border-color: var(--ion-color-success); }
+.msg-error .nvx-avatar        { border-color: var(--ion-color-danger); }
+.msg-error .nvx-assistant-text { color: var(--ion-color-danger); }
+
+// l'assistente sta scrivendo: tre puntini animati
+.nvx-typing {
+  display: inline-flex;
+  gap: 5px;
+  padding: 12px 2px;
+
+  span {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--nvx-text-muted);
+    animation: nvx-typing 1.2s infinite ease-in-out;
+  }
+
+  span:nth-child(2) { animation-delay: 0.15s; }
+  span:nth-child(3) { animation-delay: 0.3s; }
+}
+
+@keyframes nvx-typing {
+  0%, 80%, 100% { opacity: 0.25; transform: translateY(0); }
+  40%           { opacity: 1;    transform: translateY(-3px); }
 }
 
 // ---------------------------------------------------------------------------
@@ -79,19 +165,128 @@
 // ---------------------------------------------------------------------------
 
 .suggestions-container {
-  clear: both;
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  padding: 8px 0 4px 0;
+  padding-left: 42px;
 
   ion-chip {
     cursor: pointer;
     font-size: 0.9rem;
+    margin: 0;
+    --background: transparent;
+    --color: var(--ion-text-color);
+    border: 1px solid var(--nvx-border-strong);
+
+    &:hover {
+      --background: var(--nvx-hover);
+    }
   }
+}
+
+// ---------------------------------------------------------------------------
+// Composer: campo a pillola con invio integrato
+// ---------------------------------------------------------------------------
+
+ion-footer.nvx-chat-footer {
+  box-shadow: none;
+
+  &::before {
+    display: none;
+  }
+
+  ion-toolbar {
+    --background: var(--ion-background-color);
+    --border-width: 0;
+    --padding-start: 16px;
+    --padding-end: 16px;
+    --padding-top: 8px;
+    --padding-bottom: 14px;
+  }
+}
+
+.nvx-composer {
+  max-width: 680px;
+  margin: 0 auto;
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 6px 6px 6px 18px;
+  border-radius: 26px;
+  background: var(--nvx-surface-soft);
+  border: 1px solid var(--nvx-border);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+  &:focus-within {
+    border-color: var(--nvx-border-strong);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  }
+}
+
+.nvx-composer-vocal {
+  align-items: center;
+}
+
+.nvx-vocal-label {
+  flex: 1;
+  color: var(--nvx-text-muted);
+  font-size: 15px;
 }
 
 // Ionic 9: in modalita' md la textarea ha min-height 72px; ripristina l'altezza compatta della chat
 ion-textarea.chat-input {
-  min-height: 44px;
+  flex: 1;
+  min-height: 40px;
+  --background: transparent;
+  --padding-top: 9px;
+  --padding-bottom: 9px;
+  --padding-start: 0;
+  --highlight-height: 0;
+  font-size: 15px;
+}
+
+ion-button.nvx-send {
+  --padding-start: 0;
+  --padding-end: 0;
+  width: 38px;
+  height: 38px;
+  min-height: 38px;
+  margin: 0;
+  --border-radius: 50%;
+  --background: var(--ion-text-color);
+  --color: var(--ion-background-color);
+  --box-shadow: none;
+}
+
+ion-button.nvx-send.ion-color {
+  --background: var(--ion-color-base);
+  --color: var(--ion-color-contrast);
+}
+
+ion-button.nvx-send.button-disabled {
+  opacity: 0.3;
+}
+
+// ---------------------------------------------------------------------------
+// FAB: neutro e compatto
+// ---------------------------------------------------------------------------
+
+ion-fab.nvx-fab {
+  > ion-fab-button {
+    --background: var(--ion-text-color);
+    --background-activated: var(--ion-text-color);
+    --background-hover: var(--ion-text-color);
+    --color: var(--ion-background-color);
+    --box-shadow: var(--nvx-shadow-soft);
+    width: 52px;
+    height: 52px;
+  }
+
+  ion-fab-list ion-fab-button:not(.ion-color) {
+    --background: var(--nvx-surface);
+    --color: var(--ion-text-color);
+    --box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+    border: 1px solid var(--nvx-border);
+    border-radius: 50%;
+  }
 }

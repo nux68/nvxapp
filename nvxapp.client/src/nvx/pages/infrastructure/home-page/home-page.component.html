@@ -5,31 +5,31 @@
 
 <ion-content [fullscreen]="true">
 
-  <!-- Contenitore per l'immagine splash -->
-  @if (showSplash) {
-    <div class="splash-container" [class.fade-out]="startFadeOut">
-      <h1 [style.color]="'var(--ion-color-primary)'" [style.font-size]="isMobile ? '9vw' : '3.5rem'">Progetto</h1>
-      <!--<img src="assets/SiSignoreOrange.png" alt="Splash Image" />-->
-      <ion-icon name="calendar-outline" class="splash-icon"></ion-icon>
-      <h1 [style.color]="'var(--ion-color-primary)'" [style.font-size]="isMobile ? '11vw' : '6rem'">SiSignore</h1>
+  <!-- accoglienza in stile "chat AI": saluto e invito a chiedere all'assistente -->
+  <div class="nvx-home">
+    <div class="nvx-home-icon">
+      <ion-icon name="calendar-clear-outline"></ion-icon>
     </div>
-  }
 
-  @if (!showSplash) {
-    <ion-card>
-      <ion-card-content>
-        <!--<br />
-        <div id="container" >
-          <strong class="capitalize">{{ title }}</strong>
-          <p>{{title}}Component works...</p>
-        </div>
-        <br />-->
-      </ion-card-content>
-    </ion-card>
-  }
+    @if (userName) {
+      <h1>Ciao, {{ userName }}</h1>
+      <p class="nvx-home-sub">Cosa vuoi fare oggi?</p>
 
-  <!--<app-fab-menu></app-fab-menu>-->
+      <button type="button" class="nvx-ask" (click)="openChat()">
+        <ion-icon name="sparkles-outline" class="nvx-ask-icon"></ion-icon>
+        <span>Chiedi all'assistente…</span>
+        <span class="nvx-ask-send"><ion-icon name="arrow-up"></ion-icon></span>
+      </button>
+
+      <p class="nvx-home-hint">oppure scegli una voce dal menu</p>
+    } @else {
+      <h1>Benvenuto in SiSignore</h1>
+      <p class="nvx-home-sub">Accedi per iniziare.</p>
+      <ion-button shape="round" (click)="goToLogin()">
+        <ion-icon slot="start" name="log-in-outline"></ion-icon>
+        Accedi
+      </ion-button>
+    }
+  </div>
 
 </ion-content>
-
-
