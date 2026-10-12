@@ -121,6 +121,10 @@
         [color]="speechService.VoiceCommandActive ? 'success' : ''">
         <ion-icon [name]="speechService.VoiceCommandActive ? 'mic' : 'mic-outline'"></ion-icon>
       </ion-fab-button>
+      <!-- tema chiaro/scuro: l'icona indica il tema verso cui si passa -->
+      <ion-fab-button (click)="themeService.toggle()">
+        <ion-icon [name]="themeService.isDark ? 'sunny-outline' : 'moon-outline'"></ion-icon>
+      </ion-fab-button>
     </ion-fab-list>
 
     <ion-fab-list side="start">

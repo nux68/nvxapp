@@ -33,8 +33,9 @@
  */
 
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
-/* @import "@ionic/angular/css/palettes/dark.class.css"; */
-@import "@ionic/angular/css/palettes/dark.system.css";
+/* @import "@ionic/angular/css/palettes/dark.system.css"; */
+/* tema scuro attivato dalla classe 'ion-palette-dark' su <html>: lo gestisce ThemeService (pulsante nel FAB) */
+@import "@ionic/angular/css/palettes/dark.class.css";
 
 
 //NVX

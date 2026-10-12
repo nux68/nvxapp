@@ -1,8 +1,9 @@
 
+  // colori dalle variabili Ionic (definite in tema scuro), con i valori del tema chiaro come riserva
   .nvx-hover-popup {
   position: fixed;
-  background: #ffffff;
-  border: 1px solid #d0d0d0;
+  background: var(--ion-background-color, #ffffff);
+  border: 1px solid var(--ion-background-color-step-200, #d0d0d0);
   border-radius: 6px;
   padding: 10px 14px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
@@ -17,14 +18,14 @@
     font-weight: 600;
     font-size: 14px;
     margin-bottom: 6px;
-    color: #222;
-    border-bottom: 1px solid #eee;
+    color: var(--ion-text-color, #222222);
+    border-bottom: 1px solid var(--ion-background-color-step-100, #eeeeee);
     padding-bottom: 4px;
     white-space: nowrap;
   }
 
   &__content {
-    color: #333;
+    color: var(--ion-text-color, #333333);
     line-height: 1.4;
     white-space: pre-line;
   }
@@ -32,7 +33,7 @@
   &__extra {
     margin-top: 8px;
     font-size: 12px;
-    color: #555;
+    color: var(--ion-text-color-step-300, #555555);
     border-collapse: collapse;
     width: 100%;
 
@@ -43,7 +44,7 @@
 
   &__extra-key {
     font-weight: 600;
-    color: #444;
+    color: var(--ion-text-color-step-250, #444444);
     white-space: nowrap;
     padding-right: 10px;
     vertical-align: top;
@@ -54,7 +55,7 @@
   }
 
   &__extra-value {
-    color: #333;
+    color: var(--ion-text-color, #333333);
     word-break: break-word;
   }
 }
