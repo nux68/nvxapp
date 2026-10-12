@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { NavController } from '@ionic/angular/lazy';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
@@ -20,7 +20,7 @@ import { Par_ProfiloOrario_DeleteInModel, Par_ProfiloOrario_GetAllInModel, Par_P
   changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
-export class ProfiloOrarioListPageComponent implements OnInit {
+export class ProfiloOrarioListPageComponent {
 
   public title: string;
   public searchText: string = '';
@@ -44,7 +44,6 @@ export class ProfiloOrarioListPageComponent implements OnInit {
     this.btnDelete.event = this.handleButtonDeleteClick;
   }
 
-  ngOnInit() { }
 
 
   private loadData() {

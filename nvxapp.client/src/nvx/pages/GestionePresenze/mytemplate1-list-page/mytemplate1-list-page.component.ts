@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { NavController } from '@ionic/angular/lazy';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
@@ -17,7 +17,7 @@ import { RefresherService } from '../../../Utility/GestionePresenze/refresher.se
   changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
-export class MyTemplate1ListPageComponent implements OnInit {
+export class MyTemplate1ListPageComponent {
   public title!: string;
   public searchText!: string;
   public myTemplate1List: My_Template1Model[] | null = null;
@@ -61,7 +61,6 @@ export class MyTemplate1ListPageComponent implements OnInit {
     this.fabMenuService.fabMenuItem = [];
   }
 
-  ngOnInit() { }
 
   handleButtonEditClick = (item: any) => {
     this.navCtrl.navigateForward('/mytemplate1edit', {

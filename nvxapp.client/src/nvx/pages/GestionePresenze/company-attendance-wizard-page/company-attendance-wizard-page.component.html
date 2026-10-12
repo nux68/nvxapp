@@ -6,7 +6,7 @@
 <ion-content [fullscreen]="true">
 
   <ion-card>
-    @if (_editModel!=null) {
+    @if (_editModel) {
       <ion-card-content>
         <!-- Indicatore step -->
         <div style="text-align:center; margin-bottom:16px;">
@@ -24,7 +24,7 @@
               <!-- Descrizione -->
               <ion-item>
                 <ion-label position="floating">Descrizione</ion-label>
-                <ion-input type="text" formControlName="descrizione" (ionChange)="UpdateDescription()" [readonly]="_editModel!=null && _editModel.idCompany > 0"></ion-input>
+                <ion-input type="text" formControlName="descrizione" (ionChange)="UpdateDescription()" [readonly]="_editModel && _editModel.idCompany > 0"></ion-input>
               </ion-item>
               @if (_editForm.get('descrizione')?.hasError('required') && _editForm.get('descrizione')?.touched) {
                 <ion-note color="danger">

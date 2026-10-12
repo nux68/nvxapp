@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { NavController } from '@ionic/angular/lazy';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
@@ -18,7 +18,7 @@ import { CollectionDialogService } from '../../../shared/components/infrastructu
   changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
-export class CompetenceListPageComponent implements OnInit {
+export class CompetenceListPageComponent {
   public title = 'Competenze';
   public searchText!: string;
   public par_CompetenzaList: Par_CompetenzaModel[] | null = null;
@@ -62,7 +62,6 @@ export class CompetenceListPageComponent implements OnInit {
     this.fabMenuService.fabMenuItem = [];
   }
   
-  ngOnInit() {}
 
   handleButtonEditClick = (item: any) => {
     this.navCtrl.navigateForward('/competenceedit', { state: { id: item.id } });

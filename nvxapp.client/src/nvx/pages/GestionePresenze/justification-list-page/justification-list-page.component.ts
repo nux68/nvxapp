@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { NavController } from '@ionic/angular/lazy';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
@@ -20,7 +20,7 @@ import { RefresherService } from '../../../Utility/GestionePresenze/refresher.se
   changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 }) 
-export class JustificationListPageComponent implements OnInit {
+export class JustificationListPageComponent {
 
   public title!: string;
   public searchText!: string;
@@ -81,7 +81,6 @@ export class JustificationListPageComponent implements OnInit {
     this.fabMenuService.fabMenuItem = [];
   }
 
-  ngOnInit() { }
 
 
   handleButtonEditClick = (item: any) => {

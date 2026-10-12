@@ -7,7 +7,7 @@
 <ion-content [fullscreen]="true">
 
   <ion-card>
-    @if (_editForm!=null) {
+    @if (_editForm) {
       <ion-card-content>
         <form [formGroup]="_editForm">
           <ion-segment (ionChange)="segmentChanged($event)" [value]="currSection">
@@ -18,7 +18,7 @@
               <ion-label>Causali</ion-label>
             </ion-segment-button>
           </ion-segment>
-          <div [hidden]="currSection!=SEGMENT_sez1">
+          <div [hidden]="currSection!==SEGMENT_sez1">
             <br />
             <ion-item class="nvx-item-4-title">
               <ion-label>Generale </ion-label>
@@ -64,12 +64,12 @@
               </ion-note>
             }
           </div>
-          <div [hidden]="currSection!=SEGMENT_sez2">
+          <div [hidden]="currSection!==SEGMENT_sez2">
             <br />
             <ion-item class="nvx-item-4-title">
               <ion-label>Causali </ion-label>
             </ion-item>
-            @if (par_ExportCau_Causali!=null) {
+            @if (par_ExportCau_Causali) {
               <ion-grid>
                 @for (item of par_ExportCau_Causali | genericFilter: 'descrizione' : searchText; track item; let indexRow4Color = $index) {
                   <ion-row

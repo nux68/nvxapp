@@ -61,7 +61,7 @@
         </ion-item>
 
 
-        @if (curr_Par_ProfiloOrario != null && curr_Par_ProfiloOrario.tipoProfilo!=0) {
+        @if (curr_Par_ProfiloOrario && curr_Par_ProfiloOrario.tipoProfilo!==0) {
           <ion-item>
             <ion-label position="floating">Num. Giorno partenza ciclo ( {{_editForm.get('numGiornoPartenzaCiclo')?.value}} / {{getDayProf()}} )</ion-label>
             <ion-range aria-label="Range with ticks" formControlName="numGiornoPartenzaCiclo" [ticks]="true" [snaps]="true" [min]="1" [max]="getDayProf()"></ion-range>

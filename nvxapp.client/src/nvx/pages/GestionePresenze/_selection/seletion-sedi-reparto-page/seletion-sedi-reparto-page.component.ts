@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { ButtonItem, UserInterfaceService } from '../../../../Utility/infrastructure/user-interface.service';
 import { NavController } from '@ionic/angular/lazy';
 
@@ -9,7 +9,7 @@ import { NavController } from '@ionic/angular/lazy';
   changeDetection: ChangeDetectionStrategy.Eager,
   standalone:false
 })
-export class SeletionSediRepartoPageComponent  implements OnInit {
+export class SeletionSediRepartoPageComponent {
 
   public title!: string;
   public buttonbar: ButtonItem[] = [];
@@ -24,7 +24,6 @@ export class SeletionSediRepartoPageComponent  implements OnInit {
 
   }
 
-  ngOnInit() {}
 
   private _handleButtonConfirmClick = (param: object) => {
     this.navCtrl.back();

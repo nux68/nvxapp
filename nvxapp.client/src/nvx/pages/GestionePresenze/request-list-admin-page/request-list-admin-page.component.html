@@ -23,7 +23,7 @@
         (currUserIdChange)="onCurrentUserChanged($event)">
       </app-sedi-reparto-user-navigation>
 
-      @if (dip_GG_RichiestaList!=null) {
+      @if (dip_GG_RichiestaList) {
         <ion-grid>
           @for (item of getAll() | genericFilter: 'descrizione' : searchText; track item; let indexRow4Color = $index) {
             <ion-row

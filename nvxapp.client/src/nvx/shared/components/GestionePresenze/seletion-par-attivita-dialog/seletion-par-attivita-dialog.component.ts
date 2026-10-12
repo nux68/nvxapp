@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { ButtonItem, UserInterfaceService } from '../../../../Utility/infrastructure/user-interface.service';
 import { ModalController } from '@ionic/angular/lazy';
 import { Par_AttivitaModel } from '../../../../ClientServer-Service/GestionePresenze/Par_Attivita/Models/par-attivita-model';
@@ -12,7 +12,7 @@ import { CheckObjOn_Id_Number } from '../../../../ClientServer-Service/ModelsBas
   changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
-export class SeletionParAttivitaDialogComponent implements OnInit {
+export class SeletionParAttivitaDialogComponent {
 
   public searchText!: string;
   public title!: string;
@@ -40,7 +40,6 @@ export class SeletionParAttivitaDialogComponent implements OnInit {
     this.par_Attivita = this.sharedParameterGestionePresenzeService.Par_Attivita;
   }
 
-  ngOnInit() { }
 
   private _handleButtonConfirmClick = (param: object) => {
     

@@ -1,5 +1,5 @@
 // Copia e adatta UserCompanyListPageComponent come UserDepartmentListPageComponent
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { NavController } from '@ionic/angular/lazy';
 import { AccountService } from '../../../ClientServer-Service/Infrastructure/Account/account.service';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
@@ -26,7 +26,7 @@ import { MainMenuService } from '../../../Utility/infrastructure/main-menu.servi
   changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
-export class UserDepartmentListPageComponent implements OnInit {
+export class UserDepartmentListPageComponent {
   public title!: string;
   public searchText!: string;
   public userCompanyList: UserCompanyListModel[] | null = null;
@@ -136,7 +136,6 @@ export class UserDepartmentListPageComponent implements OnInit {
   ionViewWillLeave() {
     this.fabMenuService.fabMenuItem = [];
   }
-  ngOnInit() { }
   handleButtonImpersonaClick = (item: any) => {
     let request: GenericRequest<UserLoadInModel> = new GenericRequest<UserLoadInModel>(UserLoadInModel);
     request.data.id = item.idAspNetUsers;

@@ -37,7 +37,7 @@
   </ion-modal>
 
   <ion-card>
-    @if (_editModel!=null) {
+    @if (_editModel) {
       <ion-card-content>
         <form [formGroup]="_editForm">
           <ion-segment (ionChange)="segmentChanged($event)" [value]="currSection">
@@ -48,7 +48,7 @@
               <ion-label>Sub commesse</ion-label>
             </ion-segment-button>
           </ion-segment>
-          <div [hidden]="currSection!='sez_1'">
+          <div [hidden]="currSection!=='sez_1'">
             <!--SUB FORM PER OGGETTi DI OGGETTI-->
             <div formGroupName="az_Commessa">
               <br />
@@ -88,7 +88,7 @@
               }
             </div>
           </div>
-          <div [hidden]="currSection!='sez_2'">
+          <div [hidden]="currSection!=='sez_2'">
             <br />
             <ion-item>
               <ion-label position="stacked">Sub commessa</ion-label>
@@ -114,7 +114,7 @@
                 <ion-label>Utenti</ion-label>
               </ion-segment-button>
             </ion-segment>
-            <div [hidden]="currSection_sub!='sez_1_sub_4'">
+            <div [hidden]="currSection_sub!=='sez_1_sub_4'">
               <br />
               <ion-item class="nvx-item-4-title">
                 <ion-label>Info sub commessa</ion-label>
@@ -140,7 +140,7 @@
                 </div>
               }
             </div>
-            <div [hidden]="currSection_sub!='sez_1_sub_1'">
+            <div [hidden]="currSection_sub!=='sez_1_sub_1'">
               <br />
               <ion-item class="nvx-item-4-title">
                 <ion-label>Attività collegate alla commessa</ion-label>
@@ -189,7 +189,7 @@
               }
             </ion-grid>
           </div>
-          <div [hidden]="currSection_sub!='sez_1_sub_2'">
+          <div [hidden]="currSection_sub!=='sez_1_sub_2'">
             <br />
             <ion-item class="nvx-item-4-title">
               <ion-label>Reparti collegati alla commessa</ion-label>
@@ -236,7 +236,7 @@
             }
           </ion-grid>
         </div>
-        <div [hidden]="currSection_sub!='sez_1_sub_3'">
+        <div [hidden]="currSection_sub!=='sez_1_sub_3'">
           <br />
           <ion-item class="nvx-item-4-title">
             <ion-label>Utenti collegati alla commessa</ion-label>

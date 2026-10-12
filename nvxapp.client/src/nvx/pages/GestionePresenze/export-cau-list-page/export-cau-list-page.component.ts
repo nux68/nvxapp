@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { NavController } from '@ionic/angular/lazy';
 import { ParOrarioService } from '../../../ClientServer-Service/GestionePresenze/Par_Orario/par-orario.service';
 import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
@@ -17,7 +17,7 @@ import { Par_ExportCau_Delete_InModel, Par_ExportCau_GetAll_InModel, Par_ExportC
   changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
-export class ExportCauListPageComponent  implements OnInit {
+export class ExportCauListPageComponent {
 
 
   public title: string;
@@ -42,7 +42,6 @@ export class ExportCauListPageComponent  implements OnInit {
     this.btnDelete.event = this.handleButtonDeleteClick;
   }
 
-  ngOnInit() { }
 
 
   private loadData() {

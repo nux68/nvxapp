@@ -11,7 +11,7 @@
 
 
 
-      @if (par_CompetenzaList!=null) {
+      @if (par_CompetenzaList) {
         <ion-grid>
           @for (item of getAll() | genericFilter: 'descrizione' : searchText; track item; let indexRow4Color = $index) {
             <ion-row

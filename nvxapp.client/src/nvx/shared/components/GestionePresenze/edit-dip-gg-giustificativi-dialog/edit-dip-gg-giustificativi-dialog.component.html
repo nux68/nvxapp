@@ -10,7 +10,7 @@
   <form [formGroup]="_editForm">
 
     <ion-card>
-      @if (_editModel!=null) {
+      @if (_editModel) {
         <ion-card-header>
           @if (originalId>0) {
             <ion-card-title>{{ _editModel.idPar_Giustificativi | parGiustificativiToShortText}} - {{ _editModel.idPar_Giustificativi | parGiustificativiToLongText}}</ion-card-title>
@@ -21,7 +21,7 @@
 
         <ion-grid>
 
-          @if (originalId==0) {
+          @if (originalId===0) {
             <ion-row class="ion-align-items-center">
               <ion-item>
                 <ion-label position="stacked">Giustificatico</ion-label>

@@ -6,7 +6,7 @@
 <ion-content [fullscreen]="true">
 
   <ion-card>
-    @if (_editForm!=null) {
+    @if (_editForm) {
       <ion-card-content>
         <form [formGroup]="_editForm">
           <!--tabs-->
@@ -19,7 +19,7 @@
             </ion-segment-button>
           </ion-segment>
           <!--Sez-1-->
-          <div [hidden]="currSection!='sez1'">
+          <div [hidden]="currSection!=='sez1'">
             <br />
             <ion-item class="nvx-item-4-title">
               <ion-label>Info </ion-label>
@@ -68,7 +68,7 @@
               </ion-note>
             }
             <!--Nnm giorni ciclo-->
-            @if (_editForm.get('tipoProfilo')?.value != 0) {
+            @if (_editForm.get('tipoProfilo')?.value !== 0) {
               <ion-item>
                 <ion-label position="floating">Num. Giorni Ciclo ( {{_editForm.get('numGiorniCiclo')?.value}} / {{getDays()}} )</ion-label>
                 <ion-range aria-label="Range with ticks" (ionChange)="onDayRangeChange($event)" formControlName="numGiorniCiclo" [ticks]="true" [snaps]="true" [min]="1" [max]="getDays()"></ion-range>
@@ -197,7 +197,7 @@
             </ion-grid>
           </div>
           <!--Sez-2-->
-          <div [hidden]="currSection!='sez2'">
+          <div [hidden]="currSection!=='sez2'">
             <br />
             <ion-item class="nvx-item-4-title">
               <ion-label>Giorni del profilo </ion-label>
@@ -247,7 +247,7 @@
                                     {{ btnDelete.text }}
                                   </ion-item-option>
                                 }
-                                @if (idx == 0) {
+                                @if (idx === 0) {
                                   <ion-item-option
                                     class="item-option-text-only_primary"
                                     (click)="btnAdd.event(idxDay+1)">
@@ -302,7 +302,7 @@
                                   &nbsp;{{btnDelete.text}}
                                 </ion-button>
                               }
-                              @if (idx == 0) {
+                              @if (idx === 0) {
                                 <ion-button size="small" fill="outline" shape="round" (click)="btnAdd.event(idxDay+1)" color="{{btnAdd.color}}">
                                   <ion-icon name="{{btnAdd.image}}"></ion-icon>
                                   &nbsp;{{btnAdd.text}}

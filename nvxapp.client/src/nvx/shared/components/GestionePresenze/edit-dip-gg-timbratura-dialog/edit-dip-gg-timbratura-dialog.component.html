@@ -9,7 +9,7 @@
 
   <form [formGroup]="_editForm">
 
-    @if (_editModel!=null) {
+    @if (_editModel) {
       <ion-card>
         <ion-card-header >
           <ion-card-title >
@@ -65,7 +65,7 @@
                 </ng-template>
               </ion-modal>
             </ion-item>
-            @if (_editModel.timbraturaTipo == TipoTimbratura.Entrata || _editModel.timbraturaTipo == TipoTimbratura.Uscita) {
+            @if (_editModel.timbraturaTipo === TipoTimbratura.Entrata || _editModel.timbraturaTipo === TipoTimbratura.Uscita) {
               <ion-item>
                 <ion-label position="floating">Timbratura Arrotondata</ion-label>
                 <ion-datetime-button [disabled]="true" class="datetime-button-with-label" datetime="timbraturaArrotondata-modal"></ion-datetime-button>

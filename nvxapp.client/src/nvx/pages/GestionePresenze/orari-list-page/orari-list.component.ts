@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { NavController } from '@ionic/angular/lazy';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
@@ -19,7 +19,7 @@ import { RefresherService } from '../../../Utility/GestionePresenze/refresher.se
   changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
-export class OrariListPageComponent implements OnInit {
+export class OrariListPageComponent {
 
   public title: string;
   public searchText: string = '';
@@ -43,7 +43,6 @@ export class OrariListPageComponent implements OnInit {
     this.btnDelete.event = this.handleButtonDeleteClick;
   }
 
-  ngOnInit() { }
 
 
   private loadData() {

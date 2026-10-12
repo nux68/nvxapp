@@ -12,7 +12,7 @@
 
 
 
-      @if (par_GiustificativiList!=null) {
+      @if (par_GiustificativiList) {
         <ion-grid>
           @for (item of getAll() | genericFilter: 'descrizione' : searchText; track item; let indexRow4Color = $index) {
             <ion-row

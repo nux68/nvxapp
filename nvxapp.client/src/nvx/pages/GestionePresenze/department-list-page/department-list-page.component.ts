@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { NavController } from '@ionic/angular/lazy';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
@@ -19,7 +19,7 @@ import { CollectionDialogService } from '../../../shared/components/infrastructu
   changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
-export class DepartmentListPageComponent implements OnInit {
+export class DepartmentListPageComponent {
 
   public title!: string;
   public searchText!: string;
@@ -77,7 +77,6 @@ export class DepartmentListPageComponent implements OnInit {
     this.fabMenuService.fabMenuItem = [];
   }
 
-  ngOnInit() { }
 
 
   handleButtonEditClick = (item: any) => {

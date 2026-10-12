@@ -119,7 +119,7 @@
                       @for (just of day.dip_GG_Giustificativi; track just) {
                         <ion-chip
                           [appHoverPopup]="timeSheetService.get_GiustificativoContatoriPopupData(just,currentMonth.month+1,currentMonth.contatori_Anno_Mese )"
-                          [appHoverPopupEnabled]="!isMobile && timeSheetService.get_GiustificativoContatoriPopupData(just,currentMonth.month+1,currentMonth.contatori_Anno_Mese )!=null"
+                          [appHoverPopupEnabled]="!isMobile && timeSheetService.get_GiustificativoContatoriPopupData(just,currentMonth.month+1,currentMonth.contatori_Anno_Mese )!==null"
                             [ngStyle]="{
                                          'background': timeSheetService.get_Dip_GG_Giustificativi_backColor(just),
                                          'color': timeSheetService.get_Dip_GG_Giustificativi_txtColor(just),

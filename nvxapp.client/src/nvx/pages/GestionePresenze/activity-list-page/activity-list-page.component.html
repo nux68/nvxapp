@@ -11,7 +11,7 @@
 
 
 
-      @if (par_AttivitaList != null) {
+      @if (par_AttivitaList) {
         <ion-grid>
           @for (item of getAll() | genericFilter: 'descrizione' : searchText; track item; let indexRow4Color = $index) {
             <ion-row

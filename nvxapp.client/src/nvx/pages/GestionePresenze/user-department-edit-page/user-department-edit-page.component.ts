@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { ModalController, NavController } from '@ionic/angular/lazy';
@@ -37,7 +37,7 @@ import { debounceTime, takeUntil } from 'rxjs/operators';
   changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
-export class UserDepartmentEditPageComponent extends BasePageConfirmCancelComponent<Dip_Anagrafica4EditModel> {
+export class UserDepartmentEditPageComponent extends BasePageConfirmCancelComponent<Dip_Anagrafica4EditModel> implements OnDestroy {
 
   public readonly SEGMENT_MAIN_ANAGRAFICA = 'MAIN_ANA_0';
   public readonly SEGMENT_MAIN_VARIE = 'MAIN_VAR_0';

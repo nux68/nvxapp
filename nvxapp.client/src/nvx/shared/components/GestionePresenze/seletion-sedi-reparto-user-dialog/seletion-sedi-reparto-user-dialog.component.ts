@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { ButtonItem, UserInterfaceService } from '../../../../Utility/infrastructure/user-interface.service';
 import { ModalController, NavController } from '@ionic/angular/lazy';
 
@@ -9,7 +9,7 @@ import { ModalController, NavController } from '@ionic/angular/lazy';
   changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
-export class SeletionSediRepartoUserDialogComponent  implements OnInit {
+export class SeletionSediRepartoUserDialogComponent {
 
   public title!: string;
   public buttonbar: ButtonItem[] = [];
@@ -32,7 +32,6 @@ export class SeletionSediRepartoUserDialogComponent  implements OnInit {
 
   }
 
-  ngOnInit() { }
 
   private _handleButtonConfirmClick = (param: object) => {
     return this.modalCtrl.dismiss(this.result, 'confirm');

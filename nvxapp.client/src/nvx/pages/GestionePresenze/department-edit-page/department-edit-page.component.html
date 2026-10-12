@@ -29,7 +29,7 @@
           </ion-segment-button>
         </ion-segment>
 
-        <div [hidden]="currSection!='sez1'">
+        <div [hidden]="currSection!=='sez1'">
           <div formGroupName="az_SediReparto">
 
             <br />
@@ -52,12 +52,12 @@
             }
           </div>
         </div>
-        <div [hidden]="currSection!='sez2'">
+        <div [hidden]="currSection!=='sez2'">
           <br />
           <ion-item class="nvx-item-4-title">
             <ion-label>Amministratori reparto e approvatori richieste</ion-label>
           </ion-item>
-          @if (dip_Anagrafica!=null) {
+          @if (dip_Anagrafica) {
             <div>
               <!-- Mobile View -->
               <ion-reorder-group class="ion-hide-sm-up" (ionItemReorder)="handleReorderAdmin($event)" [disabled]="!reorderEnabled">
@@ -122,12 +122,12 @@
             </div>
           }
         </div>
-        <div [hidden]="currSection!='sez3'">
+        <div [hidden]="currSection!=='sez3'">
           <br />
           <ion-item class="nvx-item-4-title">
             <ion-label>Utenti che lavorano nel reparto</ion-label>
           </ion-item>
-          @if (dip_Anagrafica!=null) {
+          @if (dip_Anagrafica) {
             <div>
               <!-- Mobile View -->
               @for (item of getUser() | genericFilter: 'descrizione' : searchText; track item.id) {
@@ -168,7 +168,7 @@
             </div>
           }
         </div>
-        <div [hidden]="currSection!='sez4'">
+        <div [hidden]="currSection!=='sez4'">
           <br />
           <ion-item class="nvx-item-4-title">
             <ion-label>Attività di reparto</ion-label>

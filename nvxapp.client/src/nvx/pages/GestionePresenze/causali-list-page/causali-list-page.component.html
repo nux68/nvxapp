@@ -9,7 +9,7 @@
   <ion-card>
     <ion-card-content>
 
-      @if (par_CausaliList!=null) {
+      @if (par_CausaliList) {
         <ion-grid>
           @for (item of getAll() | genericFilter: 'descrizione' : searchText; track item; let indexRow4Color = $index) {
             <ion-row
