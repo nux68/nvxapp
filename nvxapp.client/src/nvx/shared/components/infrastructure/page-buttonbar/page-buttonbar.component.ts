@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 import { ButtonItem } from '../../../../Utility/infrastructure/user-interface.service';
 
 @Component({
@@ -8,13 +8,12 @@ import { ButtonItem } from '../../../../Utility/infrastructure/user-interface.se
   changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
-export class PageButtonbarComponent  implements OnInit {
+export class PageButtonbarComponent {
 
   @Input() buttonbar: ButtonItem[]=[];
 
   constructor() { }
 
-  ngOnInit() {}
 
 }
 

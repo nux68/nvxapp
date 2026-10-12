@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, ChangeDetectionStrategy } from '@angular/core';
+import { Component, EventEmitter, Input, Output, ChangeDetectionStrategy } from '@angular/core';
 import { UserNavigationService } from '../../../../Utility/infrastructure/user-navigation.service';
 import { LongJobNotifierService, LongJobProgressUpdate, LongJobCategory } from '../../../../Utility/infrastructure/long-job-notifier.service';
 import { Observable } from 'rxjs';
@@ -13,7 +13,7 @@ import { Platform } from '@ionic/angular/lazy';
   changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
-export class PageToolbarComponent  implements OnInit {
+export class PageToolbarComponent {
 
 
   @Input() showFilter: boolean;
@@ -21,7 +21,7 @@ export class PageToolbarComponent  implements OnInit {
   @Input() showActiveJobs: boolean = true;
   @Input() headerColor: string = ""; // barra neutra anche su mobile (stile "chat AI")
 
-  @Output('ev_Filter') _emFilter: EventEmitter<string> = new EventEmitter();
+  @Output() ev_Filter: EventEmitter<string> = new EventEmitter();
   @Input() title: string;
   public queryText: string;
 
@@ -36,9 +36,6 @@ export class PageToolbarComponent  implements OnInit {
     this.activeJobs$ = this.longJobNotifierService.activeJobs$;
   }
 
-  ngOnInit() {
-    
-  }
 
   public get isMobile(): boolean {
     return this.platform.width() < 576;
@@ -46,7 +43,7 @@ export class PageToolbarComponent  implements OnInit {
 
   filter(ev: any) {
     let val = ev.target.value;
-    this._emFilter.emit(val);
+    this.ev_Filter.emit(val);
   }
 
   dismissJob(jobId: string): void {

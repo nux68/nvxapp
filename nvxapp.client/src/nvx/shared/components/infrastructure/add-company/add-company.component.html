@@ -37,7 +37,7 @@
         </ion-note>
       }
 
-      @if (_editModel!=null && _editModel.idCompany == 0) {
+      @if (_editModel && _editModel.idCompany === 0) {
         <ion-item>
           <ion-label position="floating">Email</ion-label>
           <ion-input type="email" formControlName="mail"></ion-input>

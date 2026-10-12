@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { ModalController, NavController } from '@ionic/angular/lazy';
 import { AccountService } from '../../../ClientServer-Service/Infrastructure/Account/account.service';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
@@ -21,7 +21,7 @@ import { UserCompanyEditModel, UserCompanyGetInModel } from '../../../ClientServ
   changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
-export class UserCompanyListPageComponent implements OnInit {
+export class UserCompanyListPageComponent {
 
   public title!: string;
   public searchText!: string;
@@ -76,7 +76,6 @@ export class UserCompanyListPageComponent implements OnInit {
     this.fabMenuService.fabMenuItem = [];
   }
 
-  ngOnInit() { }
 
   async openAddUserCompany() {
     const modal = await this.modalCtrl.create({

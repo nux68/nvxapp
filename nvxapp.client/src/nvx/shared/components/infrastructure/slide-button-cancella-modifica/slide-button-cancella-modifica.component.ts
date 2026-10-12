@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
   selector: 'app-slide-button-cancella-modifica',
@@ -7,7 +7,7 @@ import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core
   changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
-export class SlideButtonCancellaModificaComponent  implements OnInit {
+export class SlideButtonCancellaModificaComponent {
 
   @Input() item: any;
 
@@ -19,6 +19,5 @@ export class SlideButtonCancellaModificaComponent  implements OnInit {
 
   constructor() { }
 
-  ngOnInit() {}
 
 }

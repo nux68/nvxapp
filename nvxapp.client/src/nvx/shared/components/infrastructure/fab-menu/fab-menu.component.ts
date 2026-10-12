@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild, ElementRef, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 import { IonContent, IonModal, NavController, ToastController } from '@ionic/angular/lazy';
 import { SpeechService } from '../../../../Utility/infrastructure/speech.service';
 import { ChatAIService } from '../../../../ClientServer-Service/Infrastructure/ChatAI/chat-ai.service';
@@ -15,7 +15,7 @@ import { IonFab } from '@ionic/angular/lazy';
   changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
-export class FabMenuComponent implements OnInit {
+export class FabMenuComponent implements OnInit, AfterViewInit {
 
   // -------------------------------------------------------------------------
   // Stato chat
