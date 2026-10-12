@@ -2,9 +2,11 @@ ion-select {
   width: 100%;
 }
 
-// i campi prendono lo stile "riquadro" da global.scss; qui solo l'altezza compatta
+// i campi prendono lo stile "riquadro" da global.scss; qui altezza e spazio interno
 ion-item {
-  --min-height: 50px;
+  --min-height: 54px;
+  --padding-start: 18px;
+  --inner-padding-end: 14px;
   margin: 6px 0 2px 0 !important;
 }
 
@@ -24,7 +26,8 @@ ion-row {
 
 ion-label {
   font-size: 0.80em !important;
-  margin-bottom: 0 !important;
+  margin-top: 8px !important;   // distanza dell'etichetta dal bordo superiore
+  margin-bottom: 2px !important;
 }
 
 // frecce di navigazione: pulsanti tondi (colore primary dal template)
