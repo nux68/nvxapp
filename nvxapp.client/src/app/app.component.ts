@@ -9,6 +9,7 @@ import { MainMenuItem, MainMenuService, MenuType } from '../nvx/Utility/infrastr
 import { MainMenuInfrastructureService } from '../nvx/Utility/infrastructure/main-menu-infrastructure.service';
 import { LongJobNotifierService } from '../nvx/Utility/infrastructure/long-job-notifier.service';
 import { JobNotifierService } from '../nvx/Utility/infrastructure/job-notifier.service';
+import { ThemeService } from '../nvx/Utility/infrastructure/theme.service';
 
 
 @Component({
@@ -65,7 +66,8 @@ export class AppComponent implements OnInit, DoCheck {
               private mainMenuService: MainMenuService,
               private mainMenuInfrastructureService: MainMenuInfrastructureService,
               private longJobNotifierService: LongJobNotifierService,
-              private jobNotifierService: JobNotifierService
+              private jobNotifierService: JobNotifierService,
+              private themeService: ThemeService // applica il tema chiaro/scuro salvato fin dall'avvio
               )
   {
 

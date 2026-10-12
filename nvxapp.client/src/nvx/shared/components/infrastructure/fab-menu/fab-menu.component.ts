@@ -5,6 +5,7 @@ import { ChatAIService } from '../../../../ClientServer-Service/Infrastructure/C
 import { GenericRequest } from '../../../../ClientServer-Service/ModelsBase/generic-request';
 import { ChatAIInModel } from '../../../../ClientServer-Service/Infrastructure/ChatAI/Models/chat-AI-model';
 import { FabMenuService } from '../../../../Utility/infrastructure/fab-menu.service';
+import { ThemeService } from '../../../../Utility/infrastructure/theme.service';
 import { IonFab } from '@ionic/angular/lazy';
 
 @Component({
@@ -53,6 +54,7 @@ export class FabMenuComponent implements OnInit {
     private chatAIService: ChatAIService,
     private cdRef:         ChangeDetectorRef,
     public  fabMenuService: FabMenuService,
+    public  themeService:  ThemeService,
     private toastCtrl:     ToastController,
     private navCtrl:       NavController
   ) {
@@ -71,6 +73,11 @@ export class FabMenuComponent implements OnInit {
 
     this.speechService.VoiceCommandActive$.subscribe(() => {
       this.cdRef.detectChanges();
+    });
+
+    // icona del pulsante tema aggiornata anche quando il tema segue il sistema operativo
+    this.themeService.isDark$.subscribe(() => {
+      this.cdRef.markForCheck();
     });
   }
 

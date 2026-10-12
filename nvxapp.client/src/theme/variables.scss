@@ -22,7 +22,11 @@
   --ion-color-primary-tint: #23B1B2  /*#ffae1a*/;
 }
 
-.dark-theme {
+// Tema scuro (classe 'ion-palette-dark' su <html>, gestita da ThemeService).
+// :root.ion-palette-dark e' piu' specifico della palette Ionic (.ion-palette-dark), che altrimenti
+// sostituirebbe i colori dell'applicazione con i suoi (primary blu).
+:root.ion-palette-dark {
+  color-scheme: dark; // barre di scorrimento e controlli nativi scuri
   --ion-color-primary: #23B1B2 /*#FF7300 arancione*/;
   --ion-color-secondary: #00A8FF /*#ffa500*/;
   --ion-color-primary-rgb: 7,171,173 /*255,115,0*/;
