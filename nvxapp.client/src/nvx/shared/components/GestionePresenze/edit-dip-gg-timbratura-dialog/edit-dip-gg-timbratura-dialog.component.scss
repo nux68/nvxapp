@@ -1,3 +1,10 @@
 .datetime-button-with-label {
   margin-top: 6px; /* spazio sopra la casella data/ora (lo spazio sotto e' in global.scss) */
 }
+
+// Timbratura e Timbratura Originale affiancate: spazio tra le due colonne
+@media (min-width: 576px) {
+  .nvx-timbrature-row ion-col + ion-col {
+    padding-left: 10px !important;
+  }
+}

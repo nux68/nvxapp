@@ -51,6 +51,12 @@ export class EditDipGGTimbraturaDialogComponent extends BaseDialogConfirmCancelC
 
   get Title(): string { return "Timbratura"; }
 
+  // la timbratura originale si mostra (accanto a "Timbratura") solo se e' stata modificata
+  get mostraOriginale(): boolean {
+    return !!this._editForm && !!this._editModel && this._editModel.id > 0 &&
+      this._editForm.get('timbratura')?.value !== this._editForm.get('timbraturaOriginale')?.value;
+  }
+
   get EditForm(): FormGroup {
     return this.fb.group({
       

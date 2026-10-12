@@ -33,38 +33,45 @@
                 </ng-template>
               </ion-modal>
             </ion-item>
-            @if (_editForm.get('timbratura')?.value !== _editForm.get('timbraturaOriginale')?.value && _editModel.id>0) {
-              <ion-item>
-                <ion-label position="floating">Timbratura Originale</ion-label>
-                <ion-datetime-button [disabled]="true" class="datetime-button-with-label" datetime="timbraturaOriginale-modal"></ion-datetime-button>
-                <ion-modal [keepContentsMounted]="true">
-                  <ng-template>
-                    <ion-datetime id="timbraturaOriginale-modal"
-                      formControlName="timbraturaOriginale"
-                      presentation="date-time"
-                      [showDefaultButtons]="true"
-                      doneText="OK"
-                      cancelText="Annulla">
-                    </ion-datetime>
-                  </ng-template>
-                </ion-modal>
-              </ion-item>
-            }
-            <ion-item>
-              <ion-label position="floating">Timbratura</ion-label>
-              <ion-datetime-button class="datetime-button-with-label" datetime="timbratura-modal"></ion-datetime-button>
-              <ion-modal [keepContentsMounted]="true">
-                <ng-template>
-                  <ion-datetime id="timbratura-modal"
-                    formControlName="timbratura"
-                    presentation="date-time"
-                    [showDefaultButtons]="true"
-                    doneText="OK"
-                    cancelText="Annulla">
-                  </ion-datetime>
-                </ng-template>
-              </ion-modal>
-            </ion-item>
+            <!-- Timbratura e, se diversa, Timbratura Originale affiancate (meta' larghezza ciascuna) -->
+            <ion-row class="ion-no-padding nvx-timbrature-row">
+              <ion-col class="ion-no-padding" size="12" [sizeSm]="mostraOriginale ? 6 : 12">
+                <ion-item>
+                  <ion-label position="floating">Timbratura</ion-label>
+                  <ion-datetime-button class="datetime-button-with-label" datetime="timbratura-modal"></ion-datetime-button>
+                  <ion-modal [keepContentsMounted]="true">
+                    <ng-template>
+                      <ion-datetime id="timbratura-modal"
+                        formControlName="timbratura"
+                        presentation="date-time"
+                        [showDefaultButtons]="true"
+                        doneText="OK"
+                        cancelText="Annulla">
+                      </ion-datetime>
+                    </ng-template>
+                  </ion-modal>
+                </ion-item>
+              </ion-col>
+              @if (mostraOriginale) {
+                <ion-col class="ion-no-padding" size="12" sizeSm="6">
+                  <ion-item>
+                    <ion-label position="floating">Timbratura Originale</ion-label>
+                    <ion-datetime-button [disabled]="true" class="datetime-button-with-label" datetime="timbraturaOriginale-modal"></ion-datetime-button>
+                    <ion-modal [keepContentsMounted]="true">
+                      <ng-template>
+                        <ion-datetime id="timbraturaOriginale-modal"
+                          formControlName="timbraturaOriginale"
+                          presentation="date-time"
+                          [showDefaultButtons]="true"
+                          doneText="OK"
+                          cancelText="Annulla">
+                        </ion-datetime>
+                      </ng-template>
+                    </ion-modal>
+                  </ion-item>
+                </ion-col>
+              }
+            </ion-row>
             @if (_editModel.timbraturaTipo === TipoTimbratura.Entrata || _editModel.timbraturaTipo === TipoTimbratura.Uscita) {
               <ion-item>
                 <ion-label position="floating">Timbratura Arrotondata</ion-label>
