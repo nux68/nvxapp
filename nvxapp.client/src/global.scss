@@ -337,6 +337,11 @@ ion-item.nvx-field {
   }
 }
 
+// casella data/ora (ion-datetime-button) dentro un campo: staccata dal bordo inferiore
+ion-item:has(> ion-datetime-button) ion-datetime-button {
+  margin-bottom: 12px;
+}
+
 // messaggi di errore sotto i campi
 ion-note[color="danger"] {
   display: block;
