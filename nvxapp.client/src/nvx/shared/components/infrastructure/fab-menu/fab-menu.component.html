@@ -156,4 +156,23 @@
 
   </ion-fab>
 
+  <!-- avviso: comandi vocali disattivati automaticamente (inattivita'), con dissolvenza -->
+  @if (voiceOffNotice) {
+    <div class="nvx-voice-notice" [class.nvx-leaving]="voiceOffLeaving" role="status" aria-live="polite">
+      <div class="nvx-voice-notice-icon">
+        <ion-icon name="mic-off-outline"></ion-icon>
+      </div>
+      <div class="nvx-voice-notice-text">
+        <strong>Comandi vocali disattivati</strong>
+        <span>Dopo un periodo di inattivit&agrave; il microfono si &egrave; spento.</span>
+      </div>
+      <ion-button class="nvx-voice-notice-action" fill="clear" size="small" (click)="reactivateVoiceCommand()">
+        Riattiva
+      </ion-button>
+      <ion-button class="nvx-voice-notice-close" fill="clear" size="small" (click)="hideVoiceOffNotice()" aria-label="Chiudi">
+        <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+      </ion-button>
+    </div>
+  }
+
 </div>

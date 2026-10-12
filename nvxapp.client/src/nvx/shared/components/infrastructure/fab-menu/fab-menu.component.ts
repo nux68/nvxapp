@@ -37,6 +37,15 @@ export class FabMenuComponent implements OnInit, AfterViewInit {
   public modalType: string | null = null;
 
   // -------------------------------------------------------------------------
+  // Avviso "comandi vocali disattivati" (disattivazione automatica per inattivita')
+  // -------------------------------------------------------------------------
+
+  public voiceOffNotice = false;   // avviso presente
+  public voiceOffLeaving = false;  // dissolvenza in uscita in corso
+  private voiceOffTimers: ReturnType<typeof setTimeout>[] = [];
+  private audioCtx: AudioContext | null = null;
+
+  // -------------------------------------------------------------------------
   // ViewChild
   // -------------------------------------------------------------------------
 
@@ -79,6 +88,11 @@ export class FabMenuComponent implements OnInit, AfterViewInit {
 
     this.speechService.VoiceCommandActive$.subscribe(() => {
       this.cdRef.detectChanges();
+    });
+
+    // il browser ha chiuso il riconoscimento vocale (inattivita'/errore): avviso con suono
+    this.speechService.AutoDeactivated$.subscribe(() => {
+      this.showVoiceOffNotice();
     });
 
     // icona del pulsante tema aggiornata anche quando il tema segue il sistema operativo
@@ -274,6 +288,66 @@ export class FabMenuComponent implements OnInit, AfterViewInit {
       this.speechService.stop();
     } else {
       this.openModal('vocal');
+    }
+  }
+
+  // -------------------------------------------------------------------------
+  // Avviso di disattivazione automatica dei comandi vocali
+  // -------------------------------------------------------------------------
+
+  private showVoiceOffNotice() {
+    this.voiceOffTimers.forEach(t => clearTimeout(t));
+    this.voiceOffNotice = true;
+    this.voiceOffLeaving = false;
+    this.cdRef.detectChanges();
+    this.playVoiceOffSound();
+
+    // dopo qualche secondo scompare in dissolvenza
+    this.voiceOffTimers = [setTimeout(() => this.hideVoiceOffNotice(), 5000)];
+  }
+
+  hideVoiceOffNotice() {
+    this.voiceOffTimers.forEach(t => clearTimeout(t));
+    this.voiceOffLeaving = true;
+    this.cdRef.detectChanges();
+    this.voiceOffTimers = [setTimeout(() => {
+      this.voiceOffNotice = false;
+      this.voiceOffLeaving = false;
+      this.cdRef.detectChanges();
+    }, 400)];   // durata dell'animazione di uscita (fab-menu.component.scss)
+  }
+
+  reactivateVoiceCommand() {
+    this.hideVoiceOffNotice();
+    this.speechService.VoiceCommandActive = true;
+  }
+
+  // due note discendenti (Mi5 -> Si4) generate con Web Audio, senza file audio
+  private playVoiceOffSound() {
+    try {
+      const Ctx = window.AudioContext || (window as any).webkitAudioContext;
+      if (!Ctx) return;
+      this.audioCtx ??= new Ctx();
+      const ctx = this.audioCtx!;
+      if (ctx.state === 'suspended') ctx.resume();
+
+      const note = (freq: number, start: number, durata: number) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = freq;
+        const t0 = ctx.currentTime + start;
+        gain.gain.setValueAtTime(0.0001, t0);
+        gain.gain.exponentialRampToValueAtTime(0.18, t0 + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t0 + durata);
+        osc.connect(gain).connect(ctx.destination);
+        osc.start(t0);
+        osc.stop(t0 + durata + 0.05);
+      };
+      note(659.25, 0, 0.22);     // Mi5
+      note(493.88, 0.16, 0.35);  // Si4
+    } catch {
+      // audio non disponibile: resta l'avviso visivo
     }
   }
 
