@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -20,6 +20,17 @@ export class FabMenuService {
   public set fabMenuItem(item:FabMenuItem[] | null) {
     this._fabMenuItem = item;
     this._fabMenuItem$.next(item);
+  }
+
+  // richiesta di apertura della chat dell'assistente da altre pagine (es. home); la gestisce FabMenuComponent
+  private _openChat$ = new Subject<void>();
+
+  public get openChat$(): Observable<void> {
+    return this._openChat$.asObservable();
+  }
+
+  public openChat(): void {
+    this._openChat$.next();
   }
 
 

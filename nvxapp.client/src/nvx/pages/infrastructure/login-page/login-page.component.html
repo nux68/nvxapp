@@ -7,6 +7,12 @@
   <div class="login-content-center">
     <ion-card>
       <ion-card-content>
+        <!-- intestazione: nome dell'applicazione -->
+        <div class="nvx-login-brand">
+          <div class="nvx-login-icon"><ion-icon name="calendar-clear-outline"></ion-icon></div>
+          <h1>SiSignore</h1>
+          <p>Accedi con il tuo account</p>
+        </div>
         <form [formGroup]="loginForm">
           <ion-item>
             <ion-label position="floating">User Name</ion-label>
@@ -22,7 +28,6 @@
             </div>
           }
         </form>
-        <br />
       </ion-card-content>
     </ion-card>
   </div>

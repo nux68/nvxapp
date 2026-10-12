@@ -1,6 +1,7 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
-import { Platform } from '@ionic/angular/lazy';
+import { FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
+import { NavController } from '@ionic/angular/lazy';
 
 @Component({
   selector: 'app-home-page',
@@ -13,40 +14,31 @@ export class HomePageComponent  implements OnInit {
 
   public title!: string;
 
-  // Flag per gestire la visualizzazione e l'animazione
-  public showSplash = false;
-  public startFadeOut = false;
-  // Variabile statica per tracciare la prima visita
-  private static hasVisited = false;
-
   constructor(public userNavigationService: UserNavigationService,
-              private platform: Platform,
+              private fabMenuService: FabMenuService,
+              public navCtrl: NavController
   ) {
     this.title = 'Home';
   }
 
   ionViewWillEnter() {
   }
-  
-  public get isMobile(): boolean {
-    return this.platform.width() < 576;
+
+  // utente corrente (ultimo della cronologia di navigazione/impersonificazione); null se non autenticato
+  public get userName(): string | null {
+    const cronology = this.userNavigationService.userCronology;
+    return cronology && cronology.length > 0 ? cronology[cronology.length - 1].userData?.userName ?? null : null;
   }
 
   ngOnInit() {
-    if (!HomePageComponent.hasVisited) {
-      this.showSplash = true;
-      HomePageComponent.hasVisited = true;
+  }
 
-      // Avvia la dissolvenza dopo 2 secondi (l'animazione dura 1s, totale 3s)
-      setTimeout(() => {
-        this.startFadeOut = true;
-      }, 10000);
+  openChat() {
+    this.fabMenuService.openChat();
+  }
 
-      // Nasconde completamente l'elemento dopo 3 secondi
-      setTimeout(() => {
-        this.showSplash = false;
-      }, 50000);
-    }
+  goToLogin() {
+    this.navCtrl.navigateForward('/login');
   }
 
 }

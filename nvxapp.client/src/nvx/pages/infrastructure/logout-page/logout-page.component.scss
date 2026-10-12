@@ -27,20 +27,51 @@ ion-menu-button {
   text-decoration: none;
 }
 
+// riquadro centrato e stretto, come il login
 .login-content-center {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: stretch;
-  height: 100%;
+  align-items: center;
   min-height: 100%;
   width: 100%;
+  padding: 16px;
+  box-sizing: border-box;
 }
 
 .login-content-center ion-card {
-  width: calc(100% - 20px); /* 10px margine a destra e sinistra */
-  margin-left: 10px;
-  margin-right: 10px;
-  box-sizing: border-box;
-  align-self: center;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 0 8vh 0;
+  border: 1px solid var(--nvx-border);
+  border-radius: var(--nvx-radius-lg);
+  box-shadow: var(--nvx-shadow-soft);
+}
+
+.nvx-logout-brand {
+  text-align: center;
+  padding: 12px 0 4px 0;
+
+  h1 {
+    margin: 12px 0 0 0;
+    font-size: 19px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--ion-text-color);
+  }
+}
+
+.nvx-logout-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: var(--nvx-surface-soft);
+
+  ion-icon {
+    font-size: 24px;
+    color: var(--nvx-text-muted);
+  }
 }

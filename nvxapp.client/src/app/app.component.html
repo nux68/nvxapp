@@ -4,12 +4,18 @@
     <ion-menu contentId="main-content" type="overlay">
       <ion-content>
 
+        <!-- nome dell'applicazione in testa al menu -->
+        <div class="nvx-brand">
+          <ion-icon name="calendar-clear-outline" aria-hidden="true"></ion-icon>
+          <span>SiSignore</span>
+        </div>
+
         <ion-accordion-group [value]=selectedMenu>
 
           <ng-container>
             @for (group of groupedUserMenu; track group;let i = $index) {
               @if (group.menuItem.length > 0) {
-                <ion-accordion value="{{group.menuHeader.title}}" toggleIcon="caret-down-circle" toggleIconSlot="start">
+                <ion-accordion value="{{group.menuHeader.title}}" toggleIcon="chevron-down" toggleIconSlot="end">
                   <ion-item slot="header">
                     <ion-label>{{ group.menuHeader.title }}</ion-label>
                   </ion-item>
@@ -22,7 +28,7 @@
                           @if (showPage4User(p.component)) {
                             <ion-menu-toggle auto-hide="false">
                               <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
-                                <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-sharp'"></ion-icon>
+                                <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-outline'"></ion-icon>
                                 <ion-label>{{ p.title }}</ion-label>
                               </ion-item>
                             </ion-menu-toggle>
@@ -44,7 +50,7 @@
           @if (authService.IsSuperUser) {
             @for (group of groupedSuperUserMenu; track group;let i = $index) {
               @if (group.menuItem.length > 0) {
-                <ion-accordion value="{{group.menuHeader.title}}" toggleIcon="caret-down-circle" toggleIconSlot="start">
+                <ion-accordion value="{{group.menuHeader.title}}" toggleIcon="chevron-down" toggleIconSlot="end">
                   <ion-item slot="header">
                     <ion-label>{{ group.menuHeader.title }}</ion-label>
                   </ion-item>
@@ -55,7 +61,7 @@
                           @if (showPage4SuperUser(p.component)) {
                             <ion-menu-toggle auto-hide="false">
                               <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
-                                <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-sharp'"></ion-icon>
+                                <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-outline'"></ion-icon>
                                 <ion-label>{{ p.title }}</ion-label>
                               </ion-item>
                             </ion-menu-toggle>
@@ -76,7 +82,7 @@
           @if (authService.IsInGroupAdmin) {
             @for (group of groupedAdminMenu; track group;let i = $index) {
               @if (group.menuItem.length > 0) {
-                <ion-accordion value="{{group.menuHeader.title}}" toggleIcon="caret-down-circle" toggleIconSlot="start">
+                <ion-accordion value="{{group.menuHeader.title}}" toggleIcon="chevron-down" toggleIconSlot="end">
                   <ion-item slot="header">
                     <ion-label>{{ group.menuHeader.title }}</ion-label>
                   </ion-item>
@@ -87,7 +93,7 @@
                           @if (showPage4Admin(p.component)) {
                             <ion-menu-toggle auto-hide="false">
                               <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
-                                <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-sharp'"></ion-icon>
+                                <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-outline'"></ion-icon>
                                 <ion-label>{{ p.title }}</ion-label>
                               </ion-item>
                             </ion-menu-toggle>
@@ -108,7 +114,7 @@
           @if (authService.IsInGroupDealerAdmin) {
             @for (group of groupedDealerAdminMenu; track group;let i = $index) {
               @if (group.menuItem.length > 0) {
-                <ion-accordion value="{{group.menuHeader.title}}" toggleIcon="caret-down-circle" toggleIconSlot="start">
+                <ion-accordion value="{{group.menuHeader.title}}" toggleIcon="chevron-down" toggleIconSlot="end">
                   <ion-item slot="header">
                     <ion-label>{{ group.menuHeader.title }}</ion-label>
                   </ion-item>
@@ -119,7 +125,7 @@
                           @if (showPage4DealerAdmin(p.component)) {
                             <ion-menu-toggle auto-hide="false">
                               <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
-                                <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-sharp'"></ion-icon>
+                                <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-outline'"></ion-icon>
                                 <ion-label>{{ p.title }}</ion-label>
                               </ion-item>
                             </ion-menu-toggle>
@@ -140,7 +146,7 @@
           @if (authService.IsInGroupFinancialAdvisorAdmin) {
             @for (group of groupedFinancialAdvisorAdminMenu; track group;let i = $index) {
               @if (group.menuItem.length > 0) {
-                <ion-accordion value="{{group.menuHeader.title}}" toggleIcon="caret-down-circle" toggleIconSlot="start">
+                <ion-accordion value="{{group.menuHeader.title}}" toggleIcon="chevron-down" toggleIconSlot="end">
                   <ion-item slot="header">
                     <ion-label>{{ group.menuHeader.title }}</ion-label>
                   </ion-item>
@@ -151,7 +157,7 @@
                           @if (showPage4FinancialAdvisorAdmin(p.component)) {
                             <ion-menu-toggle auto-hide="false">
                               <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
-                                <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-sharp'"></ion-icon>
+                                <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-outline'"></ion-icon>
                                 <ion-label>{{ p.title }}</ion-label>
                               </ion-item>
                             </ion-menu-toggle>
@@ -172,7 +178,7 @@
           @if (authService.IsInGroupCompanyAdmin) {
             @for (group of groupedCompanyAdminMenu; track group;let i = $index) {
               @if (group.menuItem.length > 0) {
-                <ion-accordion value="{{group.menuHeader.title}}" toggleIcon="caret-down-circle" toggleIconSlot="start">
+                <ion-accordion value="{{group.menuHeader.title}}" toggleIcon="chevron-down" toggleIconSlot="end">
                   <ion-item slot="header">
                     <ion-label>{{ group.menuHeader.title }}</ion-label>
                   </ion-item>
@@ -183,7 +189,7 @@
                           @if (showPage4CompanyAdmin(p.component)) {
                             <ion-menu-toggle auto-hide="false">
                               <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
-                                <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-sharp'"></ion-icon>
+                                <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-outline'"></ion-icon>
                                 <ion-label>{{ p.title }}</ion-label>
                               </ion-item>
                             </ion-menu-toggle>

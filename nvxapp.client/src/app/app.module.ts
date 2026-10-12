@@ -33,7 +33,7 @@ registerLocaleData(localeIt); // Questa riga è essenziale!
   ],
   imports: [
             BrowserModule,
-            IonicModule.forRoot(),
+            IonicModule.forRoot({ mode: 'md' }), // stesso aspetto su desktop, Android e iOS
             AppRoutingModule,
             FormsModule
   ],

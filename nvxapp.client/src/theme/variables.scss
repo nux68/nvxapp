@@ -1,25 +1,49 @@
 // For information on how to create your own theme, please see:
 // http://ionicframework.com/docs/theming/
 
-
-/*:root {
-  --ion-color-primary: #87a9ff ;
-  --ion-color-secondary: #ffa500;
-}
-
-.dark-theme {
-  --ion-color-primary: #87a9ff;
-  --ion-color-secondary: #ffa500;
-}*/
+// Stile "chat AI moderna": superfici neutre quasi monocromatiche, bordi sottili al posto delle ombre,
+// angoli arrotondati, verde acqua del marchio (#23B1B2) solo come accento.
+// Variabili --nvx-*: token dell'applicazione (global.scss, app.component.scss, componenti condivisi).
 
 :root {
-  --ion-color-primary: #23B1B2 /*#FF7300 arancione*/;
-  --ion-color-secondary: #00A8FF /*#ffa500*/;
-  --ion-color-primary-rgb: 7,171,173 /*255,115,0*/;
+  // marchio
+  --ion-color-primary: #23B1B2;
+  --ion-color-primary-rgb: 35,177,178;
   --ion-color-primary-contrast: #000000;
   --ion-color-primary-contrast-rgb: 0,0,0;
-  --ion-color-primary-shade: #e09400;
-  --ion-color-primary-tint: #23B1B2  /*#ffae1a*/;
+  --ion-color-primary-shade: #1f9c9d;
+  --ion-color-primary-tint: #39b9ba;
+  --ion-color-secondary: #00A8FF;
+
+  // tipografia
+  --nvx-font: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --ion-font-family: var(--nvx-font);
+
+  // superfici e testo
+  --ion-background-color: #ffffff;
+  --ion-background-color-rgb: 255,255,255;
+  --ion-text-color: #0d0d0d;
+  --ion-text-color-rgb: 13,13,13;
+  --ion-toolbar-background: var(--ion-background-color);
+  --ion-card-background: var(--nvx-surface);
+  --ion-border-color: var(--nvx-border);
+
+  --nvx-sidebar-bg: #f9f9f9;
+  --nvx-surface: #ffffff;           // riquadri di pagina
+  --nvx-surface-soft: #f4f4f4;      // campi, bolle chat, voce di menu selezionata
+  --nvx-hover: rgba(0,0,0,0.04);
+  --nvx-border: rgba(0,0,0,0.09);
+  --nvx-border-strong: rgba(0,0,0,0.16);
+  --nvx-text-muted: #6b6b6b;
+
+  // forme
+  --nvx-radius-sm: 10px;
+  --nvx-radius-md: 14px;
+  --nvx-radius-lg: 20px;
+  --nvx-shadow-soft: 0 8px 30px rgba(0,0,0,0.08);
+
+  // larghezza massima del contenuto centrato
+  --nvx-content-max: 960px;
 }
 
 // Tema scuro (classe 'ion-palette-dark' su <html>, gestita da ThemeService).
@@ -27,11 +51,30 @@
 // sostituirebbe i colori dell'applicazione con i suoi (primary blu).
 :root.ion-palette-dark {
   color-scheme: dark; // barre di scorrimento e controlli nativi scuri
-  --ion-color-primary: #23B1B2 /*#FF7300 arancione*/;
-  --ion-color-secondary: #00A8FF /*#ffa500*/;
-  --ion-color-primary-rgb: 7,171,173 /*255,115,0*/;
+
+  --ion-color-primary: #23B1B2;
+  --ion-color-primary-rgb: 35,177,178;
   --ion-color-primary-contrast: #000000;
   --ion-color-primary-contrast-rgb: 0,0,0;
-  --ion-color-primary-shade: #e09400;
-  --ion-color-primary-tint: #23B1B2 /*#ffae1a x arancione*/;
+  --ion-color-primary-shade: #1f9c9d;
+  --ion-color-primary-tint: #39b9ba;
+  --ion-color-secondary: #00A8FF;
+
+  --ion-background-color: #212121;
+  --ion-background-color-rgb: 33,33,33;
+  --ion-text-color: #ececec;
+  --ion-text-color-rgb: 236,236,236;
+  --ion-toolbar-background: var(--ion-background-color);
+  --ion-item-background: var(--nvx-surface);
+  --ion-card-background: var(--nvx-surface);
+  --ion-border-color: var(--nvx-border);
+
+  --nvx-sidebar-bg: #171717;
+  --nvx-surface: #262626;
+  --nvx-surface-soft: #303030;
+  --nvx-hover: rgba(255,255,255,0.05);
+  --nvx-border: rgba(255,255,255,0.09);
+  --nvx-border-strong: rgba(255,255,255,0.16);
+  --nvx-text-muted: #a3a3a3;
+  --nvx-shadow-soft: 0 8px 30px rgba(0,0,0,0.45);
 }

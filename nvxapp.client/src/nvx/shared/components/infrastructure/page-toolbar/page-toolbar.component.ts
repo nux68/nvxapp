@@ -19,7 +19,7 @@ export class PageToolbarComponent  implements OnInit {
   @Input() showFilter: boolean;
   @Input() showBreadcrumbs: boolean;
   @Input() showActiveJobs: boolean = true;
-  @Input() headerColor: string =  this.isMobile? "primary":"";
+  @Input() headerColor: string = ""; // barra neutra anche su mobile (stile "chat AI")
 
   @Output('ev_Filter') _emFilter: EventEmitter<string> = new EventEmitter();
   @Input() title: string;
