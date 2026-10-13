@@ -110,6 +110,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Rappor
                                 par_ProfiloOrarioGG = _mapper.Map<Dip_RapportoLavoro>(item);
                                 par_ProfiloOrarioGG.IdDip_Anagrafica = model.Data.Id;
                                 par_ProfiloOrarioGG.Id = 0;
+                                // nuovo rapporto senza data di assunzione: assunto oggi
+                                par_ProfiloOrarioGG.DataAss ??= DateTime.Today;
                             }
                             else
                             {

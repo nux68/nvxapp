@@ -694,23 +694,24 @@ export class TimeSheetService {
       const content = "Contatori";  //record.data ? new Date(record.data).toLocaleDateString('it-IT', { weekday: 'long', day: '2-digit', month: 'long' }) : '--';
 
 
-      let idx = contatori_Anno_Mese.findIndex(x => x.mese == month);
+      const idx = contatori_Anno_Mese.findIndex(x => x.mese == month);
 
-      if (idx >= 0) {
-        let idxJust = contatori_Anno_Mese[idx].risultati.findIndex(x => x.idPar_Giustificativi == record.idPar_Giustificativi);
+      const idxJust = idx >= 0 ? contatori_Anno_Mese[idx].risultati.findIndex(x => x.idPar_Giustificativi == record.idPar_Giustificativi) : -1;
+      if (idxJust >= 0) {
 
-        extraInfo['Mese prec. maturato'] = contatori_Anno_Mese[idx - 1].risultati[idxJust].periodoPrecedente.maturato;
-        extraInfo['Mese prec. goduto'] = contatori_Anno_Mese[idx - 1].risultati[idxJust].periodoPrecedente.goduto;
-        extraInfo['Mese prec. saldo'] = contatori_Anno_Mese[idx - 1].risultati[idxJust].periodoPrecedente.saldo;
+        // periodi del mese del giustificativo: il precedente comprende il riporto dell'anno prima
+        extraInfo['Mese prec. maturato'] = contatori_Anno_Mese[idx].risultati[idxJust].periodoPrecedente.maturato;
+        extraInfo['Mese prec. goduto'] = contatori_Anno_Mese[idx].risultati[idxJust].periodoPrecedente.goduto;
+        extraInfo['Mese prec. saldo'] = contatori_Anno_Mese[idx].risultati[idxJust].periodoPrecedente.saldo;
 
 
         extraInfo['Mese corr. maturato'] = contatori_Anno_Mese[idx].risultati[idxJust].periodoCorrente.maturato;
         extraInfo['Mese corr. goduto'] = contatori_Anno_Mese[idx].risultati[idxJust].periodoCorrente.goduto;
         extraInfo['Mese corr. saldo'] = contatori_Anno_Mese[idx].risultati[idxJust].periodoCorrente.saldo;
 
-        extraInfo['Mesi succ. maturato'] = contatori_Anno_Mese[11].risultati[idxJust].periodoSuccessivo.maturato;
-        extraInfo['Mesi succ. goduto'] = contatori_Anno_Mese[11].risultati[idxJust].periodoSuccessivo.goduto;
-        extraInfo['Mesi succ. saldo'] = contatori_Anno_Mese[11].risultati[idxJust].periodoSuccessivo.saldo;
+        extraInfo['Mesi succ. maturato'] = contatori_Anno_Mese[idx].risultati[idxJust].periodoSuccessivo.maturato;
+        extraInfo['Mesi succ. goduto'] = contatori_Anno_Mese[idx].risultati[idxJust].periodoSuccessivo.goduto;
+        extraInfo['Mesi succ. saldo'] = contatori_Anno_Mese[idx].risultati[idxJust].periodoSuccessivo.saldo;
       }
       
 

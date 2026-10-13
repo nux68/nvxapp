@@ -151,6 +151,9 @@
               @if (currSection_segment_main === (SEGMENT_MAIN_RAPP_LAV + item_main.id)) {
                 <div>
                   <ion-segment [value]="currSection_segment_dip_rapp[item_main.id]" (ionChange)="segment_dip_rapp_segmentChanged($event, item_main.id)">
+                    <ion-segment-button value="{{SEGMENT_MAIN_RAPP_LAV}}{{item_main.id}}_{{SEGMENT_DIPRAPP_GENERALE}}">
+                      <ion-label>Generale</ion-label>
+                    </ion-segment-button>
                     <ion-segment-button value="{{SEGMENT_MAIN_RAPP_LAV}}{{item_main.id}}_{{SEGMENT_DIPRAPP_PROF_HH}}">
                       <ion-label>Profili orari</ion-label>
                     </ion-segment-button>
@@ -161,6 +164,63 @@
                       <ion-label>Varie</ion-label>
                     </ion-segment-button>
                   </ion-segment>
+                  <!-- CONTENUTO: Rapporto lavoro Generale -->
+                  @if (currSection_segment_dip_rapp[item_main.id] === (SEGMENT_MAIN_RAPP_LAV + item_main.id + '_' + SEGMENT_DIPRAPP_GENERALE)) {
+                    <div>
+                      <br />
+                      <ion-item class="nvx-item-4-title">
+                        <ion-label>Generale</ion-label>
+                      </ion-item>
+                      <ion-item>
+                        <ion-label position="floating">Data assunzione</ion-label>
+                        <ion-datetime-button class="datetime-button-with-label" datetime="data-ass-{{item_main.id}}"></ion-datetime-button>
+                        <ion-modal [keepContentsMounted]="true">
+                          <ng-template>
+                            <ion-datetime id="data-ass-{{item_main.id}}"
+                              [value]="item_main.dataAss"
+                              presentation="date"
+                              [firstDayOfWeek]="1"
+                              [showDefaultButtons]="true"
+                              doneText="OK"
+                              cancelText="Annulla"
+                              (ionChange)="onDataRapportoChange(item_main, 'dataAss', $event)">
+                            </ion-datetime>
+                          </ng-template>
+                        </ion-modal>
+                      </ion-item>
+                      <ion-item>
+                        <ion-label position="floating">Data licenziamento</ion-label>
+                        @if (item_main.dataLic) {
+                          <ion-datetime-button class="datetime-button-with-label" datetime="data-lic-{{item_main.id}}"></ion-datetime-button>
+                          <ion-modal [keepContentsMounted]="true">
+                            <ng-template>
+                              <ion-datetime id="data-lic-{{item_main.id}}"
+                                [value]="item_main.dataLic"
+                                presentation="date"
+                                [firstDayOfWeek]="1"
+                                [showDefaultButtons]="true"
+                                doneText="OK"
+                                cancelText="Annulla"
+                                (ionChange)="onDataRapportoChange(item_main, 'dataLic', $event)">
+                              </ion-datetime>
+                            </ng-template>
+                          </ion-modal>
+                          <ion-button slot="end" size="small" fill="clear" color="medium" (click)="item_main.dataLic = null">
+                            <ion-icon slot="icon-only" name="close-circle-outline"></ion-icon>
+                          </ion-button>
+                        } @else {
+                          <ion-button class="datetime-button-with-label" size="small" fill="outline" shape="round" (click)="item_main.dataLic = oggiIso()">
+                            Imposta
+                          </ion-button>
+                        }
+                      </ion-item>
+                      @if (item_main.dataAss && item_main.dataLic && item_main.dataLic < item_main.dataAss) {
+                        <ion-note color="danger">
+                          La data di licenziamento è precedente alla data di assunzione.
+                        </ion-note>
+                      }
+                    </div>
+                  }
                   <!-- CONTENUTO: Rapporto lavoro Profilo orario -->
                   @if (currSection_segment_dip_rapp[item_main.id] === (SEGMENT_MAIN_RAPP_LAV + item_main.id + '_' + SEGMENT_DIPRAPP_PROF_HH)) {
                     <div>
@@ -274,7 +334,7 @@
                                   type="text"
                                   inputmode="text"
                                   placeholder="HHH:MM"
-                                  pattern="^\d+:[0-5]\d$"
+                                  pattern="^-?\d+:[0-5]\d$"
                                   style="max-width:90px; text-align:right"
                                   [(ngModel)]="currentRiporti[just.id].saldoRiporto"
                                   (ionChange)="onRiportoChange(just.id)"

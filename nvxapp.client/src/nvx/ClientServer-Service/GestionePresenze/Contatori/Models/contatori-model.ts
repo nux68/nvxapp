@@ -18,7 +18,9 @@ export class Contatori_Giustificativo_Result {
   public idPar_Giustificativi: number = 0;
   public descrizione:          string = '';
   public codice:               string = '';
-  public periodoPrecedente:    Contatori_Periodo = new Contatori_Periodo();
+  /** Riporto (mese 0) usato nel calcolo, "HHH:MM": inserito o ereditato dal saldo finale dell'anno prima. */
+  public riporto:              string = '00:00';
+  public periodoPrecedente:   Contatori_Periodo = new Contatori_Periodo();
   public periodoCorrente:      Contatori_Periodo = new Contatori_Periodo();
   public periodoSuccessivo:    Contatori_Periodo = new Contatori_Periodo();
   /** Progressivo a fine mese (precedente + corrente): saldo riportato ai mesi seguenti. */

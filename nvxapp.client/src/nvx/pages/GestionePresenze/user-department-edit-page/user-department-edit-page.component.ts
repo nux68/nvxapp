@@ -43,6 +43,7 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
   public readonly SEGMENT_MAIN_VARIE = 'MAIN_VAR_0';
   public readonly SEGMENT_MAIN_RAPP_LAV = 'MAIN_RAPP_LAV_';
 
+  public readonly SEGMENT_DIPRAPP_GENERALE  = 'DIPRAPP_DETT_GENERALE';
   public readonly SEGMENT_DIPRAPP_PROF_HH   = 'DIPRAPP_DETT_PROF_HH';
   public readonly SEGMENT_DIPRAPP_VARIE     = 'DIPRAPP_DETT_VARIE';
   public readonly SEGMENT_DIPRAPP_CONTATORI = 'DIPRAPP_DETT_CONTATORI';
@@ -168,7 +169,7 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
     
     const rappLavId = this.getCurr_RappLav_Id();
     if (rappLavId !== -1 && !this.currSection_segment_dip_rapp[rappLavId]) {
-      this.currSection_segment_dip_rapp[rappLavId] = this.SEGMENT_MAIN_RAPP_LAV + rappLavId + '_' + this.SEGMENT_DIPRAPP_PROF_HH;
+      this.currSection_segment_dip_rapp[rappLavId] = this.SEGMENT_MAIN_RAPP_LAV + rappLavId + '_' + this.SEGMENT_DIPRAPP_GENERALE;
     }
 
     // Carica contatori se la scheda attiva è CONTATORI
@@ -233,6 +234,7 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
         let Dip_RapportoLavoro = new Dip_RapportoLavoroModel();
         Dip_RapportoLavoro.idDip_Anagrafica = dip_Anagrafica4Edit.id;
         Dip_RapportoLavoro.id = this.dbUtilService.GenerateCounterKey();
+        Dip_RapportoLavoro.dataAss = this.oggiIso();
         dip_Anagrafica4Edit.dip_RapportoLavoro.push(Dip_RapportoLavoro);
         
 
@@ -400,6 +402,23 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
     return false;
   }
 
+  // ── Generale: date del rapporto ──────────────────────────────────────────
+
+  /** Oggi nel formato delle date del rapporto ("YYYY-MM-DDT00:00:00", senza fuso orario). */
+  oggiIso(): string {
+    const d = new Date();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    return `${d.getFullYear()}-${mm}-${dd}T00:00:00`;
+  }
+
+  /** Salva solo il giorno scelto: senza ora e fuso orario il server non lo sposta al giorno prima. */
+  onDataRapportoChange(rapporto: Dip_RapportoLavoroModel, campo: 'dataAss' | 'dataLic', event: any): void {
+    const value = event?.detail?.value;
+    if (typeof value !== 'string' || value.length < 10) return;
+    rapporto[campo] = value.substring(0, 10) + 'T00:00:00';
+  }
+
   // ── Contatori ─────────────────────────────────────────────────────────────
 
   /**
@@ -465,8 +484,10 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
     req.data.anno                 = this.annoSelezionato;
 
     if (withOverride) {
-      // Riporti correnti (inclusi placeholder non ancora salvati)
-      req.data.riportiOverride = Object.values(this.currentRiporti).map(r => ({
+      // Solo i riporti inseriti: quelli non inseriti li eredita il server dall'anno prima
+      req.data.riportiOverride = Object.values(this.currentRiporti)
+        .filter(r => this.isRiportoNelModello(r))
+        .map(r => ({
         ...r,
         anno: this.annoSelezionato
       }));
@@ -482,6 +503,7 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
         if (res.success && res.data) {
           this.contatoriMesi = res.data.mesi;
           this.refreshContatoriRighe();
+          this.refreshRiportiEreditati(rappLavId);
         }
         this.contatoriLoading = false;
       },
@@ -515,6 +537,29 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
         this.currentRiporti[just.id] = placeholder;
       }
     }
+  }
+
+  /**
+   * I riporti non inseriti mostrano quello ereditato dal saldo finale dell'anno prima,
+   * calcolato dal server: restano fuori dal modello (non salvati) finché l'utente non li modifica.
+   */
+  private refreshRiportiEreditati(rappLavId: number): void {
+    const gennaio = this.contatoriMesi.find(m => m.mese === 1);
+    if (!gennaio || !this._editModel) return;
+    for (const just of this.justContatori) {
+      const r = this.currentRiporti[just.id];
+      if (!r || this.isRiportoNelModello(r)) continue;
+      const calcolato = gennaio.risultati.find(x => x.idPar_Giustificativi === just.id);
+      if (calcolato && r.idDip_RapportoLavoro === rappLavId)
+        r.saldoRiporto = calcolato.riporto;
+    }
+  }
+
+  private isRiportoNelModello(r: Contatori_Riporto_Model): boolean {
+    return this._editModel.dip_Contatori_Riporto
+      .some(x => x.idDip_RapportoLavoro === r.idDip_RapportoLavoro
+              && x.idPar_Giustificativi  === r.idPar_Giustificativi
+              && x.anno                  === r.anno);
   }
 
   /** Chiamato dal template quando l'utente modifica un valore di riporto. */

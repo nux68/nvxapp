@@ -4,6 +4,8 @@ export class Dip_RapportoLavoroModel {
   public id!: number;
   public idDip_Anagrafica!: number;
   public idAz_SubCommessaAttivita!: number;
+  public dataAss: string | null = null; // assunzione, "YYYY-MM-DDT00:00:00"
+  public dataLic: string | null = null; // licenziamento
 
 }
 

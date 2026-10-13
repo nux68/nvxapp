@@ -44,6 +44,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ContatoriS
         private readonly IDip_Rapporto_Giustificativi_MaturazioneRepository _maturazioneRepository;
         private readonly IDip_Contatori_RiportoRepository                   _riportoRepository;
         private readonly IDip_GG_GiustificativiRepository                   _giustificativiRepository;
+        private readonly IDip_RapportoLavoroRepository                      _dip_RapportoLavoroRepository;
 
         public ContatoriService(
             IMapper mapper,
@@ -55,13 +56,15 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ContatoriS
             IPar_GiustificativiRepository par_GiustificativiRepository,
             IDip_Rapporto_Giustificativi_MaturazioneRepository maturazioneRepository,
             IDip_Contatori_RiportoRepository riportoRepository,
-            IDip_GG_GiustificativiRepository giustificativiRepository)
+            IDip_GG_GiustificativiRepository giustificativiRepository,
+            IDip_RapportoLavoroRepository dip_RapportoLavoroRepository)
             : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _par_GiustificativiRepository = par_GiustificativiRepository;
             _maturazioneRepository        = maturazioneRepository;
             _riportoRepository            = riportoRepository;
             _giustificativiRepository     = giustificativiRepository;
+            _dip_RapportoLavoroRepository = dip_RapportoLavoroRepository;
         }
 
         public virtual async Task<GenericResult<Contatori_Calcolo_OutModel>> CalcolaContatori(
@@ -91,10 +94,12 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ContatoriS
                     .FindAll(m => m.IdDip_RapportoLavoro == idRapporto && idJust.Contains(m.IdPar_Giustificativi))
                     .ToList();
 
-                // ?? 3. Riporto mese 0 per l'anno corrente ????????????????????????
+                // ?? 3. Riporti (mese 0) fino all'anno richiesto ??????????????????
+                // servono anche gli anni precedenti: un anno senza riporto inserito
+                // eredita il saldo finale dell'anno prima
                 var riportiDb = _riportoRepository
                     .FindAll(r => r.IdDip_RapportoLavoro == idRapporto &&
-                                  r.Anno                 == anno       &&
+                                  r.Anno                 <= anno       &&
                                   idJust.Contains(r.IdPar_Giustificativi))
                     .ToList();
 
@@ -102,12 +107,19 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ContatoriS
                 var riportiOverride    = model.Data.RiportiOverride;
                 var maturazioneOverride = model.Data.MaturazioneOverride;
 
-                // ?? 4. Tutti i giustificativi dell'anno per il rapporto ???????????
-                var giustAnno = _giustificativiRepository
+                // ?? 4. Giustificativi del rapporto fino all'anno richiesto ????????
+                var giustTutti = _giustificativiRepository
                     .FindAll(g => g.IdDip_RapportoLavoro == idRapporto &&
-                                  g.Data.Year            == anno       &&
+                                  g.Data.Year            <= anno       &&
                                   idJust.Contains(g.IdPar_Giustificativi))
                     .ToList();
+                var giustAnno = giustTutti.Where(g => g.Data.Year == anno).ToList();
+
+                // le date di assunzione e licenziamento delimitano i mesi in cui si matura
+                var rapporto = _dip_RapportoLavoroRepository.FindAll(r => r.Id == idRapporto).FirstOrDefault();
+                int mesiPrecedenti = ContaMesiMaturati(rapporto, anno, 1, mese - 1);
+                int mesiCorrente   = ContaMesiMaturati(rapporto, anno, mese, mese);
+                int mesiSuccessivi = ContaMesiMaturati(rapporto, anno, mese + 1, 12);
 
                 // ?? 5. Calcolo per ciascun giustificativo ?????????????????????????
                 foreach (var just in tuttiJust)
@@ -126,19 +138,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ContatoriS
                         oreMensili = pianiDb.FirstOrDefault(p => p.IdPar_Giustificativi == just.Id)?.OreMaturazione ?? TimeSpan.Zero;
                     }
 
-                    // Riporto: override ha precedenza sul DB
-                    TimeSpan saldoRiporto;
-                    if (riportiOverride != null)
-                    {
-                        var ovRip = riportiOverride.FirstOrDefault(r => r.IdPar_Giustificativi == just.Id);
-                        saldoRiporto = ovRip != null
-                            ? ParseTimeSpan(ovRip.SaldoRiporto)
-                            : (riportiDb.FirstOrDefault(r => r.IdPar_Giustificativi == just.Id)?.SaldoRiporto ?? TimeSpan.Zero);
-                    }
-                    else
-                    {
-                        saldoRiporto = riportiDb.FirstOrDefault(r => r.IdPar_Giustificativi == just.Id)?.SaldoRiporto ?? TimeSpan.Zero;
-                    }
+                    // Riporto: override, poi valore inserito sul DB, altrimenti saldo finale dell'anno prima
+                    var ovRip = riportiOverride?.FirstOrDefault(r => r.IdPar_Giustificativi == just.Id);
+                    TimeSpan saldoRiporto = ovRip != null
+                        ? ParseTimeSpan(ovRip.SaldoRiporto)
+                        : RiportoAnno(rapporto, just.Id, anno, oreMensili, riportiDb, giustTutti);
 
                     // Giustificativi goduti suddivisi per periodo
                     var giustJust = giustAnno.Where(g => g.IdPar_Giustificativi == just.Id).ToList();
@@ -147,12 +151,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ContatoriS
                     TimeSpan godutoCorrente    = SommaOre(giustJust.Where(g => g.Data.Month == mese));
                     TimeSpan godutoSuccessivo  = SommaOre(giustJust.Where(g => g.Data.Month > mese));
 
-                    // Maturato per periodo
-                    int mesiPrecedenti  = mese - 1;                 // 0 se mese=1
-                    int mesiSuccessivi  = 12 - mese;                // 0 se mese=12
-
+                    // Maturato per periodo (solo i mesi del rapporto di lavoro)
                     TimeSpan maturatoPrecedente = saldoRiporto + Moltiplica(oreMensili, mesiPrecedenti);
-                    TimeSpan maturatoCorrente   = oreMensili;
+                    TimeSpan maturatoCorrente   = Moltiplica(oreMensili, mesiCorrente);
                     TimeSpan maturatoSuccessivo = Moltiplica(oreMensili, mesiSuccessivi);
 
                     retVal.Risultati.Add(new Contatori_Giustificativo_Result
@@ -160,6 +161,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ContatoriS
                         IdPar_Giustificativi = just.Id,
                         Descrizione          = just.Descrizione ?? string.Empty,
                         Codice               = just.Codice      ?? string.Empty,
+                        Riporto              = TimeSpanToString(saldoRiporto),
 
                         PeriodoPrecedente = new Contatori_Periodo
                         {
@@ -205,6 +207,45 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ContatoriS
         private static TimeSpan Moltiplica(TimeSpan ts, int fattore)
             => fattore <= 0 ? TimeSpan.Zero : TimeSpan.FromTicks(ts.Ticks * fattore);
 
+        /// <summary>
+        /// Mesi tra meseDa e meseA (compresi) in cui si matura: solo quelli coperti dal rapporto,
+        /// cioe' dal mese di assunzione al mese di licenziamento (entrambi interi).
+        /// </summary>
+        private static int ContaMesiMaturati(Dip_RapportoLavoro? rapporto, int anno, int meseDa, int meseA)
+        {
+            int conta = 0;
+            for (int m = Math.Max(meseDa, 1); m <= Math.Min(meseA, 12); m++)
+            {
+                var inizioMese = new DateTime(anno, m, 1);
+                var fineMese   = inizioMese.AddMonths(1).AddDays(-1);
+                if (rapporto?.DataAss != null && fineMese < rapporto.DataAss.Value.Date) continue;
+                if (rapporto?.DataLic != null && inizioMese > rapporto.DataLic.Value.Date) continue;
+                conta++;
+            }
+            return conta;
+        }
+
+        /// <summary>
+        /// Riporto (mese 0) di un anno: quello inserito, altrimenti il saldo finale dell'anno
+        /// precedente (riporto + maturato - goduto), a ritroso fino all'anno di assunzione.
+        /// </summary>
+        private static TimeSpan RiportoAnno(Dip_RapportoLavoro? rapporto, int idJust, int anno, TimeSpan oreMensili,
+                                            List<Dip_Contatori_Riporto> riporti, List<Dip_GG_Giustificativi> giustificativi)
+        {
+            var inserito = riporti.FirstOrDefault(r => r.IdPar_Giustificativi == idJust && r.Anno == anno);
+            if (inserito != null)
+                return inserito.SaldoRiporto;
+
+            // nell'anno di assunzione (o senza data di assunzione) non c'e' nulla da riportare
+            if (rapporto?.DataAss == null || anno <= rapporto.DataAss.Value.Year)
+                return TimeSpan.Zero;
+
+            int annoPrec = anno - 1;
+            return RiportoAnno(rapporto, idJust, annoPrec, oreMensili, riporti, giustificativi)
+                 + Moltiplica(oreMensili, ContaMesiMaturati(rapporto, annoPrec, 1, 12))
+                 - SommaOre(giustificativi.Where(g => g.IdPar_Giustificativi == idJust && g.Data.Year == annoPrec));
+        }
+
         private static Contatori_Riporto_Model MapRiporto(Dip_Contatori_Riporto e) => new()
         {
             Id                   = e.Id,
@@ -219,7 +260,12 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ContatoriS
         /// Formato riporto editabile: "HHH:MM" — ore totali e minuti, senza secondi.
         /// </summary>
         private static string TimeSpanToString(TimeSpan ts)
-            => $"{(long)ts.TotalHours:D2}:{ts.Minutes:D2}";
+        {
+            // segno separato: con i negativi anche i minuti sarebbero negativi ("-05:-30")
+            string segno = ts < TimeSpan.Zero ? "-" : "";
+            TimeSpan abs = ts.Duration();
+            return $"{segno}{(long)abs.TotalHours:D2}:{abs.Minutes:D2}";
+        }
 
         /// <summary>
         /// Formato visualizzazione contatori: "Xg HH:mm" se giorni > 0, altrimenti "HH:mm".
@@ -275,13 +321,17 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ContatoriS
         private static TimeSpan ParseTimeSpan(string? s)
         {
             if (string.IsNullOrWhiteSpace(s)) return TimeSpan.Zero;
-            var parts = s.Trim().Split(':');
+            s = s.Trim();
+            bool negativo = s.StartsWith("-");
+            if (negativo) s = s.Substring(1);
+            var parts = s.Split(':');
             if (parts.Length >= 2
                 && long.TryParse(parts[0].Trim(), out long totalHours)
                 && int.TryParse(parts[1].Trim(), out int minutes))
             {
                 int seconds = parts.Length >= 3 && int.TryParse(parts[2].Trim(), out int sec) ? sec : 0;
-                return TimeSpan.FromSeconds(totalHours * 3600L + minutes * 60 + seconds);
+                var ts = TimeSpan.FromSeconds(totalHours * 3600L + minutes * 60 + seconds);
+                return negativo ? -ts : ts;
             }
             return TimeSpan.Zero;
         }

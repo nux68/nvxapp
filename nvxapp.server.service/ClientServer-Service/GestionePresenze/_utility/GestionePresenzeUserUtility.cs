@@ -138,17 +138,18 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                     if (usrC != null)
                     {
                         var res_1 = await Get_Az_SubCommessaAttivita_Default(usrC.IdCompany);
-                        
+                        var company_DATA = await Get_AzAna_AzSedi_AzReparto_Az_Cfg(usrC.IdCompany, true);
+
+                        // assunzione = data di inizializzazione dell'azienda
                         user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro = new Dip_RapportoLavoro
                         {
                             IdDip_Anagrafica = user_DATA_COMB_DipAna_DipRapp.dip_Anagrafica.Id,
-                            DataAss = new DateTime(2025, 1, 1),
+                            DataAss = (company_DATA.az_Anagrafica?.CreationDate ?? DateTime.Now).Date,
                             IdAz_SubCommessaAttivita = res_1.Az_SubCommessaAttivita.Id
                         };
                         await _dip_RapportoLavoroRepository.UpsertAsync(user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro);
 
                         // Profilo orario di default dell'azienda (DAY7H8) dalla data di assunzione
-                        var company_DATA = await Get_AzAna_AzSedi_AzReparto_Az_Cfg(usrC.IdCompany, true);
                         var par_ProfiloOrario = _gestionePresenzeParametriDefault.GetProfiloOrarioDefault(company_DATA.az_Anagrafica!.Id);
                         if (par_ProfiloOrario != null)
                         {
