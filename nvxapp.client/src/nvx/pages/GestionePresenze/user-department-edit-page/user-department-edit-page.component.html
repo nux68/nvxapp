@@ -188,7 +188,7 @@
                           </ng-template>
                         </ion-modal>
                       </ion-item>
-                      <ion-item>
+                      <ion-item class="nvx-field">
                         <ion-label position="floating">Data licenziamento</ion-label>
                         @if (item_main.dataLic) {
                           <ion-datetime-button class="datetime-button-with-label" datetime="data-lic-{{item_main.id}}"></ion-datetime-button>
@@ -209,7 +209,7 @@
                             <ion-icon slot="icon-only" name="close-circle-outline"></ion-icon>
                           </ion-button>
                         } @else {
-                          <ion-button class="datetime-button-with-label" size="small" fill="outline" shape="round" (click)="item_main.dataLic = oggiIso()">
+                          <ion-button class="nvx-data-imposta" size="small" fill="outline" shape="round" (click)="item_main.dataLic = oggiIso()">
                             Imposta
                           </ion-button>
                         }
