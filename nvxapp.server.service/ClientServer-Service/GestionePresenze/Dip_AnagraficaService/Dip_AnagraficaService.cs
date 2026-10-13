@@ -184,7 +184,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
                                 if(res_2.Success && res_2.Data != null)
                                 {
                                     retVal.Dip_Anagrafica.Descrizione = !string.IsNullOrEmpty(applicationUser.UserName)? applicationUser.UserName:"";
-                                    retVal.Dip_Anagrafica.IdUserCompany = IdCompany;
+                                    // id dell'associazione utente-azienda (NON dell'azienda): al salvataggio UserCompanyPut
+                                    // aggiorna i ruoli di questo record; con l'id azienda si riscrivevano i ruoli di un altro utente
+                                    retVal.Dip_Anagrafica.IdUserCompany = usrC.Id;
                                     retVal.Dip_Anagrafica.RoleId =res_2.Data.UserCompanyEdit.RoleId;
                                     retVal.Dip_Anagrafica.Roles = res_2.Data.UserCompanyEdit.Roles;  
                                 }
