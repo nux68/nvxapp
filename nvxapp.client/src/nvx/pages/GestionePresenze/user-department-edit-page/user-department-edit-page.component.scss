@@ -1,0 +1,7 @@
+
+
+// contatori: mesi con saldo di fine mese negativo evidenziati
+.nvx-contatori-grid ion-row.nvx-saldo-negativo {
+  background: rgba(var(--ion-color-danger-rgb), 0.08);
+  box-shadow: inset 3px 0 0 var(--ion-color-danger);
+}

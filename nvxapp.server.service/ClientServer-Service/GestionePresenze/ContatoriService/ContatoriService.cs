@@ -178,6 +178,13 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ContatoriS
                             Maturato = TimeSpanToStringDisplay(maturatoSuccessivo),
                             Goduto   = TimeSpanToStringDisplay(godutoSuccessivo),
                             Saldo    = TimeSpanToStringDisplay(maturatoSuccessivo - godutoSuccessivo)
+                        },
+                        // progressivo a fine mese (precedente + corrente): saldo riportato ai mesi seguenti
+                        PeriodoFineMese = new Contatori_Periodo
+                        {
+                            Maturato = TimeSpanToStringDisplay(maturatoPrecedente + maturatoCorrente),
+                            Goduto   = TimeSpanToStringDisplay(godutoPrecedente + godutoCorrente),
+                            Saldo    = TimeSpanToStringDisplay(maturatoPrecedente + maturatoCorrente - godutoPrecedente - godutoCorrente)
                         }
                     });
                 }
@@ -217,14 +224,47 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ContatoriS
         /// <summary>
         /// Formato visualizzazione contatori: "Xg HH:mm" se giorni > 0, altrimenti "HH:mm".
         /// </summary>
+        /// <summary>Formato di visualizzazione dei contatori, anche per i messaggi di altri servizi.</summary>
+        public static string FormatTimeSpanDisplay(TimeSpan ts) => TimeSpanToStringDisplay(ts);
+
         private static string TimeSpanToStringDisplay(TimeSpan ts)
         {
-            int days  = (int)ts.TotalDays;
-            int hours = ts.Hours;
-            int mins  = ts.Minutes;
+            // segno separato: con i valori negativi i giorni non vanno persi (-32h -> "-1g 08:00", non "-08:00")
+            string segno = ts < TimeSpan.Zero ? "-" : "";
+            TimeSpan abs = ts.Duration();
+            int days  = (int)abs.TotalDays;
+            int hours = abs.Hours;
+            int mins  = abs.Minutes;
             return days > 0
-                ? $"{days}g {hours:D2}:{mins:D2}"
-                : $"{hours:D2}:{mins:D2}";
+                ? $"{segno}{days}g {hours:D2}:{mins:D2}"
+                : $"{segno}{hours:D2}:{mins:D2}";
+        }
+
+        /// <summary>
+        /// Legge il formato di visualizzazione dei contatori ("[-][Xg ]HH:mm", vedi TimeSpanToStringDisplay).
+        /// </summary>
+        public static TimeSpan ParseTimeSpanDisplay(string? s)
+        {
+            if (string.IsNullOrWhiteSpace(s)) return TimeSpan.Zero;
+            s = s.Trim();
+            bool negativo = s.StartsWith("-");
+            if (negativo) s = s.Substring(1).Trim();
+
+            int giorni = 0;
+            int g = s.IndexOf('g');
+            if (g > 0)
+            {
+                int.TryParse(s.Substring(0, g).Trim(), out giorni);
+                s = s.Substring(g + 1).Trim();
+            }
+
+            var parts = s.Split(':');
+            int.TryParse(parts.Length > 0 ? parts[0] : "0", out int ore);
+            int.TryParse(parts.Length > 1 ? parts[1] : "0", out int minuti);
+            int.TryParse(parts.Length > 2 ? parts[2] : "0", out int secondi);
+
+            var ts = new TimeSpan(giorni, ore, minuti, secondi);
+            return negativo ? -ts : ts;
         }
 
         /// <summary>

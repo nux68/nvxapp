@@ -1003,20 +1003,22 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
             int      numGiorni    = (int)(richiesta.DataA - richiesta.Data).TotalDays + 1;
             TimeSpan oreRichieste = TimeSpan.FromTicks(orePerGiorno.Ticks * numGiorni);
 
-            TimeSpan saldoAdOggi = TimeSpan.Parse(risultato.PeriodoPrecedente.Saldo) + TimeSpan.Parse(risultato.PeriodoCorrente.Saldo);
-            TimeSpan saldoFuturo = saldoAdOggi + TimeSpan.Parse(risultato.PeriodoSuccessivo.Saldo);
+            // i saldi sono nel formato di visualizzazione ("[-][Xg ]HH:mm"): TimeSpan.Parse non gestisce "Xg"
+            TimeSpan saldoAdOggi = ContatoriService.ContatoriService.ParseTimeSpanDisplay(risultato.PeriodoPrecedente.Saldo)
+                                 + ContatoriService.ContatoriService.ParseTimeSpanDisplay(risultato.PeriodoCorrente.Saldo);
+            TimeSpan saldoFuturo = saldoAdOggi + ContatoriService.ContatoriService.ParseTimeSpanDisplay(risultato.PeriodoSuccessivo.Saldo);
 
             string nomeJust = parJust.Descrizione ?? parJust.Codice ?? "Giustificativo";
 
             if (parJust.TipoContatore == TipoContatore.ContatoreConBlocco && saldoFuturo < oreRichieste)
                 return new ValidazioneContatori(
                     Bloccante: true,
-                    Messaggio: $"Saldo insufficiente per '{nomeJust}': disponibile {saldoFuturo:hh\\:mm}, richiesto {oreRichieste:hh\\:mm}.");
+                    Messaggio: $"Saldo insufficiente per '{nomeJust}': disponibile {ContatoriService.ContatoriService.FormatTimeSpanDisplay(saldoFuturo)}, richiesto {ContatoriService.ContatoriService.FormatTimeSpanDisplay(oreRichieste)}.");
 
             if (saldoAdOggi < oreRichieste)
                 return new ValidazioneContatori(
                     Bloccante: false,
-                    Messaggio: $"Attenzione: il saldo attuale di '{nomeJust}' è {saldoAdOggi:hh\\:mm}, ma il saldo futuro ({saldoFuturo:hh\\:mm}) copre la richiesta.");
+                    Messaggio: $"Attenzione: il saldo attuale di '{nomeJust}' è {ContatoriService.ContatoriService.FormatTimeSpanDisplay(saldoAdOggi)}, ma il saldo futuro ({ContatoriService.ContatoriService.FormatTimeSpanDisplay(saldoFuturo)}) copre la richiesta.");
 
             return new ValidazioneContatori(false, null);
         }

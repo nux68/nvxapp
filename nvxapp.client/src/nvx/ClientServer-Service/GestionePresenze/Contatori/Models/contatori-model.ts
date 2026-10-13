@@ -21,6 +21,8 @@ export class Contatori_Giustificativo_Result {
   public periodoPrecedente:    Contatori_Periodo = new Contatori_Periodo();
   public periodoCorrente:      Contatori_Periodo = new Contatori_Periodo();
   public periodoSuccessivo:    Contatori_Periodo = new Contatori_Periodo();
+  /** Progressivo a fine mese (precedente + corrente): saldo riportato ai mesi seguenti. */
+  public periodoFineMese:      Contatori_Periodo = new Contatori_Periodo();
 }
 
 export class Contatori_Calcolo_OutModel extends ModelResult {

@@ -329,16 +329,17 @@
                           <ion-col size-sm="1" class="ion-text-center"><small>Corr.<br/>Mat.</small></ion-col>
                           <ion-col size-sm="1" class="ion-text-center"><small>Corr.<br/>God.</small></ion-col>
                           <ion-col size-sm="1" class="ion-text-center"><small>Corr.<br/>Saldo</small></ion-col>
-                          <ion-col size-sm="1" class="ion-text-center"><small>Succ.<br/>Mat.</small></ion-col>
-                          <ion-col size-sm="1" class="ion-text-center"><small>Succ.<br/>God.</small></ion-col>
-                          <ion-col size-sm="1" class="ion-text-center"><small>Succ.<br/>Saldo</small></ion-col>
+                          <ion-col size-sm="1" class="ion-text-center"><small>Fine mese<br/>Mat.</small></ion-col>
+                          <ion-col size-sm="1" class="ion-text-center"><small>Fine mese<br/>God.</small></ion-col>
+                          <ion-col size-sm="1" class="ion-text-center"><small>Fine mese<br/>Saldo</small></ion-col>
                         </ion-row>
                         <!-- Righe dati -->
                         @for (riga of contatoriRighe; track riga) {
                           <ion-row
                             class="nvx-ion-row-4table"
                             [class.nvx-row-odd]="riga.mese % 2 !== 0"
-                            [class.nvx-row-even]="riga.mese % 2 === 0">
+                            [class.nvx-row-even]="riga.mese % 2 === 0"
+                            [class.nvx-saldo-negativo]="riga.risultato?.periodoFineMese?.saldo?.startsWith('-')">
                             <!-- Col 1: Mese (solo prima riga del mese) -->
                             <ion-col size="2" size-sm="1">
                               @if (riga.showMese) {
@@ -372,16 +373,16 @@
                               [style.color]="riga.risultato?.periodoCorrente?.saldo < '00:00:00' ? 'var(--ion-color-danger)' : ''">
                               <small class="ion-hide-sm-up" style="display:block">Corr.Saldo</small>{{ riga.risultato?.periodoCorrente?.saldo ?? '-' }}
                             </ion-col>
-                            <!-- Periodo Successivo  XS: offset(2)+4+3+3=12 ✓  SM: 1+1+1 -->
+                            <!-- Progressivo a fine mese (precedente + corrente)  XS: offset(2)+4+3+3=12 ✓  SM: 1+1+1 -->
                             <ion-col size="4" offset="2" size-sm="1" offset-sm="0" class="ion-text-center">
-                              <small class="ion-hide-sm-up" style="display:block">Succ.Mat.</small>{{ riga.risultato?.periodoSuccessivo?.maturato ?? '-' }}
+                              <small class="ion-hide-sm-up" style="display:block">Fine Mat.</small>{{ riga.risultato?.periodoFineMese?.maturato ?? '-' }}
                             </ion-col>
                             <ion-col size="3" size-sm="1" class="ion-text-center">
-                              <small class="ion-hide-sm-up" style="display:block">Succ.God.</small>{{ riga.risultato?.periodoSuccessivo?.goduto ?? '-' }}
+                              <small class="ion-hide-sm-up" style="display:block">Fine God.</small>{{ riga.risultato?.periodoFineMese?.goduto ?? '-' }}
                             </ion-col>
                             <ion-col size="3" size-sm="1" class="ion-text-center"
-                              [style.color]="riga.risultato?.periodoSuccessivo?.saldo < '00:00:00' ? 'var(--ion-color-danger)' : ''">
-                              <small class="ion-hide-sm-up" style="display:block">Succ.Saldo</small>{{ riga.risultato?.periodoSuccessivo?.saldo ?? '-' }}
+                              [style.color]="riga.risultato?.periodoFineMese?.saldo < '00:00:00' ? 'var(--ion-color-danger)' : ''">
+                              <small class="ion-hide-sm-up" style="display:block">Fine Saldo</small>{{ riga.risultato?.periodoFineMese?.saldo ?? '-' }}
                             </ion-col>
                           </ion-row>
                         }

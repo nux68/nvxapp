@@ -41,8 +41,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ContatoriS
         /// <summary>Mese selezionato.</summary>
         public Contatori_Periodo PeriodoCorrente    { get; set; } = new();
 
-        /// <summary>Mesi Mese+1 .. 12.</summary>
+        /// <summary>Mesi Mese+1 .. 12 (previsione: usata dal controllo delle richieste e dal popup del calendario).</summary>
         public Contatori_Periodo PeriodoSuccessivo  { get; set; } = new();
+
+        /// <summary>Progressivo a fine mese = precedente + corrente: il saldo che si riporta ai mesi seguenti.</summary>
+        public Contatori_Periodo PeriodoFineMese    { get; set; } = new();
     }
 
     public class Contatori_Calcolo_OutModel : ModelResult
