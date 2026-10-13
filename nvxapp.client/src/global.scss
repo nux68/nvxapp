@@ -342,6 +342,12 @@ ion-item:has(> ion-datetime-button) ion-datetime-button {
   margin-bottom: 12px;
 }
 
+// etichetta "floating" di un campo data/ora: sempre in alto. Ionic la alza solo se il campo
+// risulta "con valore" (es. con formControlName); con [value] o ngModel resterebbe sotto la casella
+ion-item:has(> ion-datetime-button) > ion-label.label-floating[position] {
+  transform: translateY(50%) scale(0.75);
+}
+
 // messaggi di errore sotto i campi
 ion-note[color="danger"] {
   display: block;
