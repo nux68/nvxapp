@@ -34,3 +34,21 @@ ion-menu-button {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+// desktop: icona e codice sulla stessa riga, testi tagliati con "..." se non ci stanno
+.nvx-col-codice {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+
+  ion-icon {
+    flex: none;
+  }
+}
+
+ion-label.codice,
+ion-label.descrizione {
+  display: block;
+  min-width: 0;
+}
