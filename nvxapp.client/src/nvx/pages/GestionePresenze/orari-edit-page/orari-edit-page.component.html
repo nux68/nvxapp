@@ -83,6 +83,7 @@
                     <ion-item>
                       <ion-label position="floating">Numero Coppie</ion-label>
                       <ion-select formControlName="numeroCoppie" interface="popover" (ionChange)="onRangeChange($event)">
+                        <ion-select-option [value]="0">0 - riposo</ion-select-option>
                         <ion-select-option [value]="1">1</ion-select-option>
                         <ion-select-option [value]="2">2</ion-select-option>
                         <ion-select-option [value]="3">3</ion-select-option>
@@ -94,8 +95,13 @@
                         Il numero di coppie è obbligatorio.
                       </ion-note>
                     }
+                    @if (_editForm.get('numeroCoppie')?.value === 0) {
+                      <ion-note>
+                        Nessuna coppia: giorno non lavorativo (0 ore teoriche).
+                      </ion-note>
+                    }
                     <br />
-                    <ion-grid>
+                    <ion-grid [hidden]="_editForm.get('numeroCoppie')?.value === 0">
                       <!--desktop-->
                       <ion-row class="ion-hide-sm-down">
                         <ion-col size="1" class="ion-hide-sm-down">

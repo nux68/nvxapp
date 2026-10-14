@@ -60,7 +60,7 @@ export class OrariEditPageComponent extends BasePageConfirmCancelComponent<Par_O
     return this.fb.group({
       codice: [null, [Validators.required, Validators.maxLength(10)]],
       descrizione: [null, [Validators.required, Validators.maxLength(50)]],
-      numeroCoppie: [null, [Validators.required, Validators.min(1)]],
+      numeroCoppie: [null, [Validators.required, Validators.min(0)]],
       idCausale_HH_Lav_MonteOre: [null],
       timbratureTipo: [null, [Validators.required]],
       hh_Teo_MonteOre: [null],

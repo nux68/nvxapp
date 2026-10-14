@@ -6,7 +6,8 @@ using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
 {
     // Parametri presenze di partenza per una nuova azienda (ricavati dalla configurazione di tenant_1_2):
-    // causali, giustificativi, orario DIURNO8H (09-13 / 14-18), profilo settimanale DAY7H8, export.
+    // causali, giustificativi, orari DIURNO8H (09-13 / 14-18) e RIPOSO, profilo settimanale DAY7H8
+    // (lun-ven DIURNO8H, sab-dom RIPOSO), export.
     // Gli Id NON sono fissi: le chiavi esterne vengono collegate ai record appena creati,
     // cosi' funziona sia in multi-tenant sia in modalita' singola (tabelle condivise tra aziende).
     // Idempotente: se l'azienda ha gia' delle causali non fa nulla.
@@ -128,7 +129,18 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                 });
             }
 
-            // Profilo orario settimanale: 7 giorni con l'orario DIURNO8H
+            // Orario RIPOSO: nessuna coppia, 0 ore teoriche (giorno non lavorativo)
+            var orarioRiposo = await _par_OrarioRepository.UpsertAsync(new Par_Orario
+            {
+                IdAz_Anagrafica = IdAz_Anagrafica,
+                Codice = "RIPOSO",
+                Descrizione = "Riposo",
+                NumeroCoppie = 0,
+                TimbratureTipo = OrarioTimbratureTipo.IntervalloOrario,
+                Hh_Teo_MonteOre = new TimeOnly(0, 0)
+            });
+
+            // Profilo orario settimanale: DIURNO8H dal lunedi' al venerdi', RIPOSO sabato e domenica
             var profilo = await _par_ProfiloOrarioRepository.UpsertAsync(new Par_ProfiloOrario
             {
                 IdAz_Anagrafica = IdAz_Anagrafica,
@@ -152,7 +164,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                     IdPar_ProfiloOrario = profilo.Id,
                     NumGiorno = numGiorno,
                     ZOrder = 1,
-                    IdPar_Orario = orario.Id
+                    IdPar_Orario = numGiorno <= 5 ? orario.Id : orarioRiposo.Id   // 1=Lun .. 6=Sab, 7=Dom
                 });
             }
 

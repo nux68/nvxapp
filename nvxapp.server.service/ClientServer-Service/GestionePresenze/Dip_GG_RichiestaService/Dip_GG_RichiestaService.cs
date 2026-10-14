@@ -74,6 +74,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
         private readonly IDip_RapportoLavoroRepository _dip_RapportoLavoroRepository;
         private readonly IAz_SediRepartoUserRepository _az_SediRepartoUserRepository;
         private readonly ITimeSheet_EngineService_OnlyCalculate _timeSheet_EngineService;
+        private readonly IGestionePresenzeOreTeoriche _gestionePresenzeOreTeoriche;
 
         public Dip_GG_RichiestaService(IMapper mapper,
                                   UserManager<ApplicationUser> userManager,
@@ -95,7 +96,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                                   ITimeSheet_EngineService_OnlyCalculate timeSheet_EngineService,
                                   IDip_GG_GiustificativiRepository dip_GG_GiustificativiRepository,
                                   IPar_GiustificativiRepository par_GiustificativiRepository,
-                                  IContatoriService contatoriService) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
+                                  IContatoriService contatoriService,
+                                  IGestionePresenzeOreTeoriche gestionePresenzeOreTeoriche) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _accountService = accountService;
             _az_CfgService = az_CfgService;
@@ -111,6 +113,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
             _timeSheet_EngineService = timeSheet_EngineService;
             _par_GiustificativiRepository = par_GiustificativiRepository;
             _contatoriService = contatoriService;
+            _gestionePresenzeOreTeoriche = gestionePresenzeOreTeoriche;
 
         }
 
@@ -254,9 +257,17 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                             // ── Validazione contatori ───────────────────────────────────────
                             if (dip_GG_Richiesta.RichiestaTipo == TipoRichiesta.Giustificativo)
                             {
+                                var orePerGiorno = OreGiustificativoPerGiorno(dip_GG_Richiesta, user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.Id);
+                                if (orePerGiorno.Count == 0)
+                                {
+                                    retVal.Messages.Add(new Message("Il periodo richiesto non contiene giorni lavorativi.", MessageType.Exception));
+                                    return retVal;
+                                }
+
                                 var validazione = await ValidaContatoriAsync(
                                     dip_GG_Richiesta,
-                                    user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.Id);
+                                    user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.Id,
+                                    TimeSpan.FromTicks(orePerGiorno.Values.Sum(x => x.Ticks)));
 
                                 if (validazione.Bloccante)
                                 {
@@ -700,10 +711,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                             if (richiesta != null)
                             {
 
-                                for (DateTime date = dip_GG_Richiesta.Data; date <= dip_GG_Richiesta.DataA; date = date.AddDays(1))
+                                // solo i giorni lavorativi, con le ore del giorno (giornata intera) o quelle richieste
+                                foreach (var (date, ore) in OreGiustificativoPerGiorno(dip_GG_Richiesta, user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.Id))
                                 {
-                                    // string fullDateTime = $"{dip_GG_Richiesta.Data.ToString("dd/MM/yyyy")} {richiesta.hhmm}";
-
                                     dip_GG_Giustificativi = new Dip_GG_Giustificativi()
                                     {
                                         Data = date,
@@ -712,7 +722,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                                         IdPar_Giustificativi = richiesta.IdPar_Giustificativi,
                                         RichiestaStato = dip_GG_Richiesta.RichiestaStato,
                                         InputType = richiesta.AllDay ? JustificationInputType.AllDay : JustificationInputType.Manual,
-                                        Hours = TimeSpan.Parse(richiesta.hhmm)
+                                        Hours = ore
                                     };
                                     await _dip_GG_GiustificativiRepository.UpsertAsync(dip_GG_Giustificativi);
                                 }
@@ -965,9 +975,35 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
 
         private record ValidazioneContatori(bool Bloccante, string? Messaggio);
 
+        // Ore del giustificativo per ogni giorno del periodo richiesto.
+        // Si saltano i giorni con 0 ore teoriche nel profilo orario (es. sabato e domenica con orario RIPOSO).
+        // Giornata intera: le ore teoriche del giorno; senza profilo orario quel giorno, le ore inviate dal client.
+        private Dictionary<DateTime, TimeSpan> OreGiustificativoPerGiorno(Dip_GG_Richiesta richiesta, int idDip_RapportoLavoro)
+        {
+            var retVal = new Dictionary<DateTime, TimeSpan>();
+
+            var body = string.IsNullOrEmpty(richiesta.Dati) ? null : JsonConvert.DeserializeObject<Dip_GG_Richiesta_Body_Giustificativo>(richiesta.Dati);
+            if (body == null)
+                return retVal;
+
+            var oreRichieste = TimeSpan.Parse(body.hhmm);
+            var oreTeoriche = _gestionePresenzeOreTeoriche.GetOreTeoriche(idDip_RapportoLavoro, richiesta.Data, richiesta.DataA);
+
+            foreach (var (giorno, oreTeo) in oreTeoriche)
+            {
+                if (oreTeo == TimeSpan.Zero)
+                    continue;
+
+                retVal[giorno] = body.AllDay && oreTeo.HasValue ? oreTeo.Value : oreRichieste;
+            }
+
+            return retVal;
+        }
+
         private async Task<ValidazioneContatori> ValidaContatoriAsync(
             Dip_GG_Richiesta richiesta,
-            int idDip_RapportoLavoro)
+            int idDip_RapportoLavoro,
+            TimeSpan oreRichieste)
         {
             if (string.IsNullOrEmpty(richiesta.Dati))
                 return new ValidazioneContatori(false, null);
@@ -998,10 +1034,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                 .FirstOrDefault(r => r.IdPar_Giustificativi == body.IdPar_Giustificativi);
             if (risultato == null)
                 return new ValidazioneContatori(false, null);
-
-            TimeSpan orePerGiorno = body.AllDay ? TimeSpan.FromHours(8) : TimeSpan.Parse(body.hhmm);
-            int      numGiorni    = (int)(richiesta.DataA - richiesta.Data).TotalDays + 1;
-            TimeSpan oreRichieste = TimeSpan.FromTicks(orePerGiorno.Ticks * numGiorni);
 
             // i saldi sono nel formato di visualizzazione ("[-][Xg ]HH:mm"): TimeSpan.Parse non gestisce "Xg"
             TimeSpan saldoAdOggi = ContatoriService.ContatoriService.ParseTimeSpanDisplay(risultato.PeriodoPrecedente.Saldo)
