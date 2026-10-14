@@ -500,7 +500,7 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
     req.data.anno                 = this.annoSelezionato;
 
     if (withOverride) {
-      // Solo i riporti inseriti: quelli non inseriti li eredita il server dall'anno prima
+      // Solo i riporti inseriti: quelli non inseriti valgono zero
       req.data.riportiOverride = Object.values(this.currentRiporti)
         .filter(r => this.isRiportoNelModello(r))
         .map(r => ({
@@ -520,7 +520,6 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
         if (res.success && res.data) {
           this.contatoriMesi = res.data.mesi;
           this.refreshContatoriRighe();
-          this.refreshRiportiEreditati(rappLavId);
         }
         this.contatoriLoading = false;
       },
@@ -539,10 +538,17 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
    * Legge i contatori dell'anno precedente e mette il saldo di fine dicembre
    * nelle caselle del riporto, come se l'utente li avesse inseriti (vengono salvati con Conferma).
    */
-  riportoDaAnnoPrecedente(rappLavId: number): void {
+  async riportoDaAnnoPrecedente(rappLavId: number): Promise<void> {
+    const conferma = await this.collectionDialogService.ConfirmCancelDialog(
+      `Sostituire il riporto del ${this.annoSelezionato} con i saldi di fine dicembre ${this.annoSelezionato - 1}?`);
+    if (!conferma) return;
+
     const req = new GenericRequest<Contatori_Anno_InModel>(Contatori_Anno_InModel);
     req.data.idDip_RapportoLavoro = rappLavId;
     req.data.anno                 = this.annoSelezionato - 1;
+    // riporti dell'anno precedente inseriti e non ancora salvati
+    req.data.riportiOverride = this._editModel.dip_Contatori_Riporto
+      .filter(r => r.idDip_RapportoLavoro === rappLavId && r.anno === req.data.anno);
     // la maturazione vale per tutti gli anni: si usano anche i valori non ancora salvati
     req.data.maturazioneOverride = Object.values(this.currentMaturazioni).map(m => ({
       idPar_Giustificativi: m.idPar_Giustificativi,
@@ -601,25 +607,9 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
         placeholder.idDip_RapportoLavoro = rappLavId;
         placeholder.idPar_Giustificativi  = just.id;
         placeholder.anno                  = this.annoSelezionato;
-        placeholder.saldoRiporto          = '00:00:00';
+        placeholder.saldoRiporto          = '00:00';
         this.currentRiporti[just.id] = placeholder;
       }
-    }
-  }
-
-  /**
-   * I riporti non inseriti mostrano quello ereditato dal saldo finale dell'anno prima,
-   * calcolato dal server: restano fuori dal modello (non salvati) finché l'utente non li modifica.
-   */
-  private refreshRiportiEreditati(rappLavId: number): void {
-    const gennaio = this.contatoriMesi.find(m => m.mese === 1);
-    if (!gennaio || !this._editModel) return;
-    for (const just of this.justContatori) {
-      const r = this.currentRiporti[just.id];
-      if (!r || this.isRiportoNelModello(r)) continue;
-      const calcolato = gennaio.risultati.find(x => x.idPar_Giustificativi === just.id);
-      if (calcolato && r.idDip_RapportoLavoro === rappLavId)
-        r.saldoRiporto = calcolato.riporto;
     }
   }
 

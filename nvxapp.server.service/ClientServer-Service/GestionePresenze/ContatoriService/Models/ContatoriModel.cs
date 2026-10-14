@@ -35,7 +35,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ContatoriS
         public string  Descrizione          { get; set; } = string.Empty;
         public string  Codice               { get; set; } = string.Empty;
 
-        /// <summary>Riporto (mese 0) usato nel calcolo, "HHH:MM": inserito o ereditato dal saldo finale dell'anno prima.</summary>
+        /// <summary>Riporto (mese 0) usato nel calcolo, "HHH:MM": quello inserito, altrimenti zero.</summary>
         public string  Riporto              { get; set; } = "00:00";
 
         /// <summary>Mesi 1 .. Mese-1 + riporto (mese 0).</summary>

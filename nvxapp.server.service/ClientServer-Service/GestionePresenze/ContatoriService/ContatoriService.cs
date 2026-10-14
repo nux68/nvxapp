@@ -95,11 +95,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ContatoriS
                     .ToList();
 
                 // ?? 3. Riporti (mese 0) fino all'anno richiesto ??????????????????
-                // servono anche gli anni precedenti: un anno senza riporto inserito
-                // eredita il saldo finale dell'anno prima
+                // il riporto non si eredita: vale solo quello inserito (a mano o letto dall'anno precedente)
                 var riportiDb = _riportoRepository
                     .FindAll(r => r.IdDip_RapportoLavoro == idRapporto &&
-                                  r.Anno                 <= anno       &&
+                                  r.Anno                 == anno       &&
                                   idJust.Contains(r.IdPar_Giustificativi))
                     .ToList();
 
@@ -108,12 +107,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ContatoriS
                 var maturazioneOverride = model.Data.MaturazioneOverride;
 
                 // ?? 4. Giustificativi del rapporto fino all'anno richiesto ????????
-                var giustTutti = _giustificativiRepository
+                var giustAnno = _giustificativiRepository
                     .FindAll(g => g.IdDip_RapportoLavoro == idRapporto &&
-                                  g.Data.Year            <= anno       &&
+                                  g.Data.Year            == anno       &&
                                   idJust.Contains(g.IdPar_Giustificativi))
                     .ToList();
-                var giustAnno = giustTutti.Where(g => g.Data.Year == anno).ToList();
 
                 // le date di assunzione e licenziamento delimitano i mesi in cui si matura
                 var rapporto = _dip_RapportoLavoroRepository.FindAll(r => r.Id == idRapporto).FirstOrDefault();
@@ -138,11 +136,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ContatoriS
                         oreMensili = pianiDb.FirstOrDefault(p => p.IdPar_Giustificativi == just.Id)?.OreMaturazione ?? TimeSpan.Zero;
                     }
 
-                    // Riporto: override, poi valore inserito sul DB, altrimenti saldo finale dell'anno prima
+                    // Riporto: override, poi valore inserito sul DB, altrimenti zero
                     var ovRip = riportiOverride?.FirstOrDefault(r => r.IdPar_Giustificativi == just.Id);
                     TimeSpan saldoRiporto = ovRip != null
                         ? ParseTimeSpan(ovRip.SaldoRiporto)
-                        : RiportoAnno(rapporto, just.Id, anno, oreMensili, riportiDb, giustTutti);
+                        : (riportiDb.FirstOrDefault(r => r.IdPar_Giustificativi == just.Id)?.SaldoRiporto ?? TimeSpan.Zero);
 
                     // Giustificativi goduti suddivisi per periodo
                     var giustJust = giustAnno.Where(g => g.IdPar_Giustificativi == just.Id).ToList();
@@ -223,27 +221,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ContatoriS
                 conta++;
             }
             return conta;
-        }
-
-        /// <summary>
-        /// Riporto (mese 0) di un anno: quello inserito, altrimenti il saldo finale dell'anno
-        /// precedente (riporto + maturato - goduto), a ritroso fino all'anno di assunzione.
-        /// </summary>
-        private static TimeSpan RiportoAnno(Dip_RapportoLavoro? rapporto, int idJust, int anno, TimeSpan oreMensili,
-                                            List<Dip_Contatori_Riporto> riporti, List<Dip_GG_Giustificativi> giustificativi)
-        {
-            var inserito = riporti.FirstOrDefault(r => r.IdPar_Giustificativi == idJust && r.Anno == anno);
-            if (inserito != null)
-                return inserito.SaldoRiporto;
-
-            // nell'anno di assunzione (o senza data di assunzione) non c'e' nulla da riportare
-            if (rapporto?.DataAss == null || anno <= rapporto.DataAss.Value.Year)
-                return TimeSpan.Zero;
-
-            int annoPrec = anno - 1;
-            return RiportoAnno(rapporto, idJust, annoPrec, oreMensili, riporti, giustificativi)
-                 + Moltiplica(oreMensili, ContaMesiMaturati(rapporto, annoPrec, 1, 12))
-                 - SommaOre(giustificativi.Where(g => g.IdPar_Giustificativi == idJust && g.Data.Year == annoPrec));
         }
 
         private static Contatori_Riporto_Model MapRiporto(Dip_Contatori_Riporto e) => new()
