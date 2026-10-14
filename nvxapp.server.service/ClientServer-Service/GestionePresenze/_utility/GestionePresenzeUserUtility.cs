@@ -140,11 +140,12 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                         var res_1 = await Get_Az_SubCommessaAttivita_Default(usrC.IdCompany);
                         var company_DATA = await Get_AzAna_AzSedi_AzReparto_Az_Cfg(usrC.IdCompany, true);
 
-                        // assunzione = data di inizializzazione dell'azienda
+                        // assunzione (e profilo orario) dal primo giorno del mese di inizializzazione dell'azienda
+                        var creazione = company_DATA.az_Anagrafica?.CreationDate ?? DateTime.Now;
                         user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro = new Dip_RapportoLavoro
                         {
                             IdDip_Anagrafica = user_DATA_COMB_DipAna_DipRapp.dip_Anagrafica.Id,
-                            DataAss = (company_DATA.az_Anagrafica?.CreationDate ?? DateTime.Now).Date,
+                            DataAss = new DateTime(creazione.Year, creazione.Month, 1),
                             IdAz_SubCommessaAttivita = res_1.Az_SubCommessaAttivita.Id
                         };
                         await _dip_RapportoLavoroRepository.UpsertAsync(user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro);

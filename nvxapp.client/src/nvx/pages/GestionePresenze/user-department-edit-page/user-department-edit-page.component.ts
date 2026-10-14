@@ -418,7 +418,23 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
   onDataRapportoChange(rapporto: Dip_RapportoLavoroModel, campo: 'dataAss' | 'dataLic', event: any): void {
     const value = event?.detail?.value;
     if (typeof value !== 'string' || value.length < 10) return;
-    rapporto[campo] = value.substring(0, 10) + 'T00:00:00';
+    const nuova = value.substring(0, 10) + 'T00:00:00';
+    if (campo === 'dataAss') this.allineaPrimoProfiloOrario(rapporto, rapporto.dataAss, nuova);
+    rapporto[campo] = nuova;
+  }
+
+  /**
+   * Il calcolo considera solo i giorni coperti da un profilo orario: se l'assunzione si sposta,
+   * il primo profilo del rapporto la segue quando partiva dalla vecchia data o dopo la nuova.
+   */
+  private allineaPrimoProfiloOrario(rapporto: Dip_RapportoLavoroModel, vecchia: string | null, nuova: string): void {
+    const primo = this._editModel.dip_ProfiloOrario
+      .filter(p => p.idDip_RapportoLavoro === rapporto.id && p.dal)
+      .sort((a, b) => a.dal.localeCompare(b.dal))[0];
+    if (!primo) return;
+    const dal = primo.dal.substring(0, 10);
+    if (dal === vecchia?.substring(0, 10) || dal > nuova.substring(0, 10))
+      primo.dal = nuova;
   }
 
   // ── Contatori ─────────────────────────────────────────────────────────────
