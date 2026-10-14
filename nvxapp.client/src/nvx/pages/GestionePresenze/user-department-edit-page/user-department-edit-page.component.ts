@@ -440,7 +440,13 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
   /** Aggiorna la cache delle righe griglia (chiamato dopo loadContatoriAnno). */
   private refreshContatoriRighe(): void {
     const righe: ContatoreRiga[] = [];
+    // solo i mesi del rapporto: dal mese di assunzione a quello di licenziamento (AAAAMM)
+    const rapporto = this._editModel?.dip_RapportoLavoro.find(x => x.id === this._currentContatoriRappLavId);
+    const meseDa = rapporto?.dataAss ? Number(rapporto.dataAss.substring(0, 7).replace('-', '')) : 0;
+    const meseA  = rapporto?.dataLic ? Number(rapporto.dataLic.substring(0, 7).replace('-', '')) : 999999;
     for (const meseItem of this.contatoriMesi) {
+      const annoMese = this.annoSelezionato * 100 + meseItem.mese;
+      if (annoMese < meseDa || annoMese > meseA) continue;
       this.justContatori.forEach((just, idx) => {
         const r = meseItem.risultati.find(x => x.idPar_Giustificativi === just.id) ?? null;
         righe.push({
@@ -453,6 +459,11 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
       });
     }
     this.contatoriRighe = righe;
+  }
+
+  /** Saldo negativo: i saldi arrivano come "[-][Xg ]HH:mm", il segno è il primo carattere. */
+  isSaldoNegativo(saldo: string | null | undefined): boolean {
+    return !!saldo?.startsWith('-');
   }
 
   /** @deprecated Usare la proprietà `justContatori` nel template. */

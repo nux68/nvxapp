@@ -377,7 +377,10 @@
                     @if (contatoriLoading) {
                       <ion-spinner></ion-spinner>
                     }
-                    @if (!contatoriLoading && contatoriMesi.length > 0) {
+                    @if (!contatoriLoading && contatoriMesi.length > 0 && contatoriRighe.length === 0) {
+                      <ion-note>Nessun mese dell'anno rientra nel rapporto di lavoro.</ion-note>
+                    }
+                    @if (!contatoriLoading && contatoriRighe.length > 0) {
                       <ion-grid class="nvx-contatori-grid">
                         <!-- Intestazione — nascosta su XS -->
                         <ion-row class="nvx-row-header ion-hide-sm-down">
@@ -399,7 +402,7 @@
                             class="nvx-ion-row-4table"
                             [class.nvx-row-odd]="riga.mese % 2 !== 0"
                             [class.nvx-row-even]="riga.mese % 2 === 0"
-                            [class.nvx-saldo-negativo]="riga.risultato?.periodoFineMese?.saldo?.startsWith('-')">
+                            [class.nvx-saldo-negativo]="isSaldoNegativo(riga.risultato?.periodoFineMese?.saldo)">
                             <!-- Col 1: Mese (solo prima riga del mese) -->
                             <ion-col size="2" size-sm="1">
                               @if (riga.showMese) {
@@ -419,7 +422,7 @@
                               <small class="ion-hide-sm-up" style="display:block">Prec.God.</small>{{ riga.risultato?.periodoPrecedente?.goduto ?? '-' }}
                             </ion-col>
                             <ion-col size="3" size-sm="1" class="ion-text-center"
-                              [style.color]="riga.risultato?.periodoPrecedente?.saldo < '00:00:00' ? 'var(--ion-color-danger)' : ''">
+                              [style.color]="isSaldoNegativo(riga.risultato?.periodoPrecedente?.saldo) ? 'var(--ion-color-danger)' : ''">
                               <small class="ion-hide-sm-up" style="display:block">Prec.Saldo</small>{{ riga.risultato?.periodoPrecedente?.saldo ?? '-' }}
                             </ion-col>
                             <!-- Periodo Corrente  XS: offset(2)+4+3+3=12 ✓  SM: 1+1+1 -->
@@ -430,7 +433,7 @@
                               <small class="ion-hide-sm-up" style="display:block">Corr.God.</small>{{ riga.risultato?.periodoCorrente?.goduto ?? '-' }}
                             </ion-col>
                             <ion-col size="3" size-sm="1" class="ion-text-center"
-                              [style.color]="riga.risultato?.periodoCorrente?.saldo < '00:00:00' ? 'var(--ion-color-danger)' : ''">
+                              [style.color]="isSaldoNegativo(riga.risultato?.periodoCorrente?.saldo) ? 'var(--ion-color-danger)' : ''">
                               <small class="ion-hide-sm-up" style="display:block">Corr.Saldo</small>{{ riga.risultato?.periodoCorrente?.saldo ?? '-' }}
                             </ion-col>
                             <!-- Progressivo a fine mese (precedente + corrente)  XS: offset(2)+4+3+3=12 ✓  SM: 1+1+1 -->
@@ -441,7 +444,7 @@
                               <small class="ion-hide-sm-up" style="display:block">Fine God.</small>{{ riga.risultato?.periodoFineMese?.goduto ?? '-' }}
                             </ion-col>
                             <ion-col size="3" size-sm="1" class="ion-text-center"
-                              [style.color]="riga.risultato?.periodoFineMese?.saldo < '00:00:00' ? 'var(--ion-color-danger)' : ''">
+                              [style.color]="isSaldoNegativo(riga.risultato?.periodoFineMese?.saldo) ? 'var(--ion-color-danger)' : ''">
                               <small class="ion-hide-sm-up" style="display:block">Fine Saldo</small>{{ riga.risultato?.periodoFineMese?.saldo ?? '-' }}
                             </ion-col>
                           </ion-row>
