@@ -57,12 +57,21 @@
   align-items: center;
 }
 
+// giorni prima della data di assunzione: righe attenuate e tratteggiate, con la nota "Non assunto"
+.day-row.nvx-prima-assunzione {
+  background: repeating-linear-gradient(-45deg,
+              transparent 0 8px,
+              rgba(var(--ion-color-medium-rgb), 0.08) 8px 16px);
+  box-shadow: inset 3px 0 0 var(--ion-color-medium);
 
+  > ion-col:not(:first-child) {
+    opacity: 0.5;
+  }
+}
 
-
-
-
-
-
-
-
+.nvx-prima-assunzione-nota {
+  font-size: 0.7em;
+  color: var(--ion-color-medium);
+  padding-left: 8px;
+  white-space: nowrap;
+}

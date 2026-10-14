@@ -422,6 +422,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                         var res_Rapporti = await _dip_RapportoLavoroService.Dip_RapportoLavoro_Get_4Users(req_Rapporti, true);
                         if (res_Rapporti.Success && res_Rapporti.Data != null)
                             retVal.Dip_RapportoLavoro = res_Rapporti.Data.Dip_RapportoLavoro;
+
+                        // tutti i rapporti, anche fuori periodo: solo per la visualizzazione del cartellino
+                        retVal.Dip_RapportoLavoro_Tutti = _mapper.Map<List<Dip_RapportoLavoroModel>>(
+                            _dip_RapportoLavoroRepository.FindAll(r => anagraficaIds.Contains(r.IdDip_Anagrafica)).ToList());
                     }
 
                     // mantiene le entity in-memory per la logica di composizione DaySlots

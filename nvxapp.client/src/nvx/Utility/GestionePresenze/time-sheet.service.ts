@@ -16,7 +16,7 @@ import { DateTimeUtilService } from '../infrastructure/date-time-util.service';
 import { TipoRichiestaToShortTextPipe } from '../../shared/pipe/GestionePresenze/tipo-richiesta-to-short-text.pipe';
 import { StatoRichiestaLongTextPipe } from '../../shared/pipe/GestionePresenze/stato-richiesta-long-text.pipe';
 import { TipoTimbraturaToLongTextPipe } from '../../shared/pipe/GestionePresenze/tipo-timbratura-to-long-text.pipe';
-import { Timesheet_AllData_InModel } from '../../ClientServer-Service/GestionePresenze/TimeSheet_EngineService/Models/time-sheet-engine-model';
+import { OrariSchema_4User_OutModel, Timesheet_AllData_InModel } from '../../ClientServer-Service/GestionePresenze/TimeSheet_EngineService/Models/time-sheet-engine-model';
 import { TimeSheetEngineService } from '../../ClientServer-Service/GestionePresenze/TimeSheet_EngineService/time-sheet-engine.service';
 import { Dip_GG_ResultModel, GG_ResultStato } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Result/Models/dip-gg-result-model';
 import { Dip_GG_CausaliModel } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Causali/Models/dip-gg-causali-model';
@@ -98,7 +98,8 @@ export class TimeSheetService {
           dip_GG_Result: x.data?.dip_GG_AllData_OutModel?.dip_GG_Result ?? [],
           dip_GG_Causali: x.data?.dip_GG_AllData_OutModel?.dip_GG_Causali ?? [],
           daySlot: x.data?.orariSchema_4User_OutModel?.daySlots ?? [],
-          contatori_Anno_Mese: []
+          contatori_Anno_Mese: [],
+          dataAssunzione: this.primaDataAssunzione(x.data?.orariSchema_4User_OutModel, idAspNetUsers)
         };
 
         // Se non abbiamo l'ID utente, restituiamo subito i dati base avvolti in un Observable
@@ -107,7 +108,8 @@ export class TimeSheetService {
         }
 
 
-        if (loadCounter == false) {
+        // senza giorni coperti dal rapporto (es. mese prima dell'assunzione) non ci sono contatori da leggere
+        if (loadCounter == false || remoteData.daySlot.length === 0) {
           return of(remoteData);
         }
         else {
@@ -135,6 +137,25 @@ export class TimeSheetService {
 
   }
     
+  /** Data di assunzione più vecchia tra i rapporti dell'utente (null se il cartellino non è di un solo utente). */
+  private primaDataAssunzione(orari: OrariSchema_4User_OutModel | undefined, idAspNetUsers: string | null): string | null {
+    if (!orari || idAspNetUsers == null) return null;
+    const idAnagrafiche = orari.dip_Anagrafica.filter(a => a.idAspNetUsers === idAspNetUsers).map(a => a.id);
+    const date = (orari.dip_RapportoLavoro_Tutti ?? [])
+      .filter(r => idAnagrafiche.includes(r.idDip_Anagrafica) && r.dataAss)
+      .map(r => r.dataAss.substring(0, 10))
+      .sort();
+    return date[0] ?? null;
+  }
+
+  /** Il giorno è prima dell'assunzione dell'utente del cartellino. */
+  isPrimaDellAssunzione(currentMonth: MonthData, data: Date): boolean {
+    if (!currentMonth?.dataAssunzione) return false;
+    const d = new Date(data);
+    const giorno = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    return giorno < currentMonth.dataAssunzione;
+  }
+
   private transformRemoteDataToMonthData(remoteData: TimeSheetRemoteData, year: number, month: number): MonthData {
     const monthData: MonthData = {
       year: year,
@@ -148,6 +169,7 @@ export class TimeSheetService {
     monthData.dip_GG_Richiesta = remoteData.dip_GG_Richiesta;
     monthData.daySlot = remoteData.daySlot;
     monthData.contatori_Anno_Mese = remoteData.contatori_Anno_Mese;
+    monthData.dataAssunzione = remoteData.dataAssunzione ?? null;
 
     // Raggruppa le timbrature per giorno
     const timbratureByDay = new Map<number, Dip_GG_TimbraturaModel[]>();

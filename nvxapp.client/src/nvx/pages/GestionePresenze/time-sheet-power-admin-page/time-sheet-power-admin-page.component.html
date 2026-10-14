@@ -55,6 +55,7 @@
                 <ion-row [ngClass]="{'weekend': isWeekend(day.date)}"
                   [class.nvx-row-odd]="indexRow4Color % 2 !== 0"
                   [class.nvx-row-even]="indexRow4Color % 2 === 0"
+                  [class.nvx-prima-assunzione]="timeSheetService.isPrimaDellAssunzione(currentMonth, day.date)"
                   class="day-row nvx-ion-row-4table nvx-row-hover">
                   <!-- COL 1 -->
                   <ion-col size="2" size-sm="1">
@@ -79,6 +80,9 @@
                       </ion-icon>
                       {{ day.date | date:'dd' }} {{ day.date | date:'EEE' }}
                     </ion-button>
+                    @if (timeSheetService.isPrimaDellAssunzione(currentMonth, day.date)) {
+                      <div class="nvx-prima-assunzione-nota">Non assunto</div>
+                    }
                   </ion-col>
                   <!-- COL 2 -->
                   <ion-col size="10" size-sm="4">

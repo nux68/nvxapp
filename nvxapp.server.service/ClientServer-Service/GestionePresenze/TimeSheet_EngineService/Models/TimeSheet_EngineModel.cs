@@ -82,6 +82,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
     {
         public List<Dip_AnagraficaModel> Dip_Anagrafica { get; set; } = new List<Dip_AnagraficaModel>();
         public List<Dip_RapportoLavoroModel> Dip_RapportoLavoro { get; set; } = new List<Dip_RapportoLavoroModel>();
+        /// <summary>Tutti i rapporti degli utenti, anche fuori dal periodo: servono al cartellino per indicare i giorni prima dell'assunzione.</summary>
+        public List<Dip_RapportoLavoroModel> Dip_RapportoLavoro_Tutti { get; set; } = new List<Dip_RapportoLavoroModel>();
         public List<Dip_ProfiloOrario_DaySlot> DaySlots { get; set; } = new List<Dip_ProfiloOrario_DaySlot>();
         public List<Par_ProfiloOrarioModel> Par_ProfiloOrario { get; set; } = new List<Par_ProfiloOrarioModel>();
         public List<Par_ProfiloOrarioGGModel> Par_ProfiloOrarioGG { get; set; } = new List<Par_ProfiloOrarioGGModel>();

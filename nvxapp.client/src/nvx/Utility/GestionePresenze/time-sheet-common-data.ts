@@ -27,6 +27,8 @@ export interface MonthData {
   dip_GG_Richiesta: Dip_GG_RichiestaModel[];
   daySlot: Dip_ProfiloOrario_DaySlot[];
   contatori_Anno_Mese: Contatori_Anno_MeseResult[];
+  /** Prima data di assunzione dell'utente ("YYYY-MM-DD..."), se il cartellino è di un solo utente. */
+  dataAssunzione?: string | null;
 }
 
 
@@ -39,6 +41,7 @@ export interface TimeSheetRemoteData {
   daySlot: Dip_ProfiloOrario_DaySlot[];
 
   contatori_Anno_Mese: Contatori_Anno_MeseResult[];
+  dataAssunzione?: string | null;
 
 }
 

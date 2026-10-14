@@ -63,6 +63,8 @@ export class OrariSchema_4User_InModel {
 export class OrariSchema_4User_OutModel extends ModelResult {
   dip_Anagrafica: Dip_AnagraficaModel[] = [];
   dip_RapportoLavoro: Dip_RapportoLavoroModel[] = [];
+  /** Tutti i rapporti degli utenti, anche fuori dal periodo richiesto. */
+  dip_RapportoLavoro_Tutti: Dip_RapportoLavoroModel[] = [];
   daySlots: Dip_ProfiloOrario_DaySlot[] = [];
   par_ProfiloOrario: Par_ProfiloOrarioModel[] = [];
   par_ProfiloOrarioGG: Par_ProfiloOrarioGGModel[] = [];
