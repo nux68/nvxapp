@@ -60,6 +60,8 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
 
   /** Id del rapporto di lavoro attivo nella tab Contatori (usato per il debounce). */
   private _currentContatoriRappLavId: number = 0;
+  private _contatoriRichiesta: number = 0;
+  public riportoLoading: boolean = false;
   /** Trigger debounced per ricalcolare i contatori dopo la modifica di un riporto. */
   private _riportoChangedSubject = new Subject<void>();
   private _destroy$ = new Subject<void>();
@@ -490,6 +492,9 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
   loadContatoriAnno(rappLavId: number, withOverride = false): void {
     this.contatoriLoading = true;
     this.contatoriMesi    = [];
+    this.contatoriRighe   = [];
+    // vale solo l'ultima richiesta: una risposta arrivata in ritardo (es. dell'anno lasciato) si scarta
+    const richiesta = ++this._contatoriRichiesta;
     const req = new GenericRequest<Contatori_Anno_InModel>(Contatori_Anno_InModel);
     req.data.idDip_RapportoLavoro = rappLavId;
     req.data.anno                 = this.annoSelezionato;
@@ -511,6 +516,7 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
 
     this.contatoriService.CalcolaContatori_Anno(req).subscribe({
       next: res => {
+        if (richiesta !== this._contatoriRichiesta) return;
         if (res.success && res.data) {
           this.contatoriMesi = res.data.mesi;
           this.refreshContatoriRighe();
@@ -518,8 +524,59 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
         }
         this.contatoriLoading = false;
       },
-      error: () => { this.contatoriLoading = false; }
+      error: () => { if (richiesta === this._contatoriRichiesta) this.contatoriLoading = false; }
     });
+  }
+
+  /** Il riporto si può leggere solo se l'anno precedente rientra nel rapporto di lavoro. */
+  get riportoDaAnnoPrecedenteAbilitato(): boolean {
+    const rapporto = this._editModel?.dip_RapportoLavoro.find(x => x.id === this._currentContatoriRappLavId);
+    const annoAss = rapporto?.dataAss ? Number(rapporto.dataAss.substring(0, 4)) : 0;
+    return !this.riportoLoading && annoAss > 0 && this.annoSelezionato - 1 >= annoAss;
+  }
+
+  /**
+   * Legge i contatori dell'anno precedente e mette il saldo di fine dicembre
+   * nelle caselle del riporto, come se l'utente li avesse inseriti (vengono salvati con Conferma).
+   */
+  riportoDaAnnoPrecedente(rappLavId: number): void {
+    const req = new GenericRequest<Contatori_Anno_InModel>(Contatori_Anno_InModel);
+    req.data.idDip_RapportoLavoro = rappLavId;
+    req.data.anno                 = this.annoSelezionato - 1;
+    // la maturazione vale per tutti gli anni: si usano anche i valori non ancora salvati
+    req.data.maturazioneOverride = Object.values(this.currentMaturazioni).map(m => ({
+      idPar_Giustificativi: m.idPar_Giustificativi,
+      oreMaturazione:       m.oreMaturazione
+    }));
+
+    this.riportoLoading = true;
+    this.contatoriService.CalcolaContatori_Anno(req).subscribe({
+      next: res => {
+        const dicembre = res.success ? res.data?.mesi.find(m => m.mese === 12) : null;
+        for (const just of this.justContatori) {
+          const saldo = dicembre?.risultati.find(x => x.idPar_Giustificativi === just.id)?.periodoFineMese?.saldo;
+          const r = this.currentRiporti[just.id];
+          if (saldo == null || !r) continue;
+          r.saldoRiporto = this.saldoToRiporto(saldo);
+          this.onRiportoChange(just.id);
+        }
+        this.riportoLoading = false;
+      },
+      error: () => { this.riportoLoading = false; }
+    });
+  }
+
+  /** Saldo visualizzato ("[-][Xg ]HH:mm") nel formato del riporto ("[-]HHH:MM"). */
+  private saldoToRiporto(saldo: string): string {
+    const negativo = saldo.trim().startsWith('-');
+    const testo = saldo.replace('-', '').trim();
+    const g = testo.indexOf('g');
+    const giorni = g > 0 ? Number(testo.substring(0, g)) || 0 : 0;
+    const [ore, minuti] = (g > 0 ? testo.substring(g + 1) : testo).trim().split(':').map(x => Number(x) || 0);
+    const totale = giorni * 24 * 60 + (ore ?? 0) * 60 + (minuti ?? 0);
+    const hh = String(Math.floor(totale / 60)).padStart(2, '0');
+    const mm = String(totale % 60).padStart(2, '0');
+    return `${negativo && totale > 0 ? '-' : ''}${hh}:${mm}`;
   }
 
   /**
@@ -589,7 +646,9 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
     this._riportoChangedSubject.next();
   }
 
-  onAnnoChange(rappLavId: number): void {
+  onAnnoChange(rappLavId: number, anno?: number): void {
+    // l'anno arriva dall'evento: non dipende dall'ordine in cui ngModel aggiorna annoSelezionato
+    if (anno) this.annoSelezionato = anno;
     this.refreshCurrentRiporti(rappLavId);
     this.loadContatoriAnno(rappLavId);
     // la maturazione NON dipende dall'anno: non serve refreshCurrentMaturazioni

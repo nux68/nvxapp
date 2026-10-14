@@ -309,7 +309,7 @@
                     <ion-item>
                       <ion-label position="floating">Anno</ion-label>
                       <ion-select [(ngModel)]="annoSelezionato"
-                        (ionChange)="onAnnoChange(item_main.id)"
+                        (ionChange)="onAnnoChange(item_main.id, $event.detail.value)"
                         [ngModelOptions]="{standalone: true}"
                         interface="popover">
                         @for (a of anniDisponibili; track a) {
@@ -325,6 +325,12 @@
                         <ion-col size="12" size-md="6">
                           <ion-item class="nvx-item-4-title">
                             <ion-label>Riporto anno precedente</ion-label>
+                            <ion-button slot="end" size="small" fill="outline" shape="round"
+                              [disabled]="!riportoDaAnnoPrecedenteAbilitato"
+                              (click)="riportoDaAnnoPrecedente(item_main.id)">
+                              <ion-icon slot="start" name="download-outline"></ion-icon>
+                              Leggi dal {{ annoSelezionato - 1 }}
+                            </ion-button>
                           </ion-item>
                           @for (just of justContatori; track just) {
                             @if (currentRiporti[just.id]) {
