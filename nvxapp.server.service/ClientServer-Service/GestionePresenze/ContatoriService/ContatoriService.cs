@@ -45,6 +45,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ContatoriS
         private readonly IDip_Contatori_RiportoRepository                   _riportoRepository;
         private readonly IDip_GG_GiustificativiRepository                   _giustificativiRepository;
         private readonly IDip_RapportoLavoroRepository                      _dip_RapportoLavoroRepository;
+        private readonly IDip_PeriodoRepository                             _dip_PeriodoRepository;
 
         public ContatoriService(
             IMapper mapper,
@@ -57,7 +58,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ContatoriS
             IDip_Rapporto_Giustificativi_MaturazioneRepository maturazioneRepository,
             IDip_Contatori_RiportoRepository riportoRepository,
             IDip_GG_GiustificativiRepository giustificativiRepository,
-            IDip_RapportoLavoroRepository dip_RapportoLavoroRepository)
+            IDip_RapportoLavoroRepository dip_RapportoLavoroRepository,
+            IDip_PeriodoRepository dip_PeriodoRepository)
             : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _par_GiustificativiRepository = par_GiustificativiRepository;
@@ -65,6 +67,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ContatoriS
             _riportoRepository            = riportoRepository;
             _giustificativiRepository     = giustificativiRepository;
             _dip_RapportoLavoroRepository = dip_RapportoLavoroRepository;
+            _dip_PeriodoRepository        = dip_PeriodoRepository;
         }
 
         public virtual async Task<GenericResult<Contatori_Calcolo_OutModel>> CalcolaContatori(
@@ -119,6 +122,14 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ContatoriS
                 int mesiCorrente   = ContaMesiMaturati(rapporto, anno, mese, mese);
                 int mesiSuccessivi = ContaMesiMaturati(rapporto, anno, mese + 1, 12);
 
+                // banca ore: si matura solo con le ore accreditate nei cartellini approvati dell'anno
+                var bancaOreMesi = _dip_PeriodoRepository
+                    .FindAll(p => p.IdDip_RapportoLavoro == idRapporto && p.Anno == anno && p.Stato == PeriodoStato.Approvato)
+                    .Select(p => new { p.Mese, p.Min_BancaOre })
+                    .ToList();
+                TimeSpan BancaOre(Func<int, bool> filtroMese)
+                    => TimeSpan.FromMinutes(bancaOreMesi.Where(p => filtroMese(p.Mese)).Sum(p => p.Min_BancaOre));
+
                 // ?? 5. Calcolo per ciascun giustificativo ?????????????????????????
                 foreach (var just in tuttiJust)
                 {
@@ -153,6 +164,13 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ContatoriS
                     TimeSpan maturatoPrecedente = saldoRiporto + Moltiplica(oreMensili, mesiPrecedenti);
                     TimeSpan maturatoCorrente   = Moltiplica(oreMensili, mesiCorrente);
                     TimeSpan maturatoSuccessivo = Moltiplica(oreMensili, mesiSuccessivi);
+
+                    if (just.BancaOre)
+                    {
+                        maturatoPrecedente = saldoRiporto + BancaOre(m => m < mese);
+                        maturatoCorrente   = BancaOre(m => m == mese);
+                        maturatoSuccessivo = BancaOre(m => m > mese);
+                    }
 
                     retVal.Risultati.Add(new Contatori_Giustificativo_Result
                     {

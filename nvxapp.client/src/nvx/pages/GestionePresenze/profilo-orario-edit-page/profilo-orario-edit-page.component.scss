@@ -31,3 +31,9 @@ ion-menu-button {
 .datetime-button-with-label {
   margin-top: 6px; /* spazio sopra la casella data/ora (lo spazio sotto e' in global.scss) */
 }
+
+.nvx-nota-profilo {
+  display: block;
+  padding: 4px 16px 8px 16px;
+  font-size: 0.85em;
+}

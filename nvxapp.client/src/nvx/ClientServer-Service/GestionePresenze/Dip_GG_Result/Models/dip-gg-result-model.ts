@@ -12,6 +12,25 @@ export class Dip_GG_ResultModel {
   public hH_Lav: string | null;
   public stato: GG_ResultStato;
 
+  // ore in piu' (minuti)
+  public min_Lavorabili: number;
+  public min_Assenze: number;
+  public min_Ord: number;
+  public min_Ecc: number;            // >0 ore in piu', <0 ore mancanti
+  public min_EccNott: number;
+  public festivo: boolean;
+  public eccProvvisoria: boolean;    // periodo di conteggio in corso: qualifica non ancora definitiva
+  public min_Suppl: number;
+  public min_SupplEcc: number;
+  public min_Strao: number;
+  public min_StraoNott: number;
+  public min_StraoFest: number;
+  public min_StraoFestNott: number;
+  public min_EccOrd: number;
+  public min_NonRiconosciute: number;
+  public bancaOre: boolean;
+  public min_NonAutorizzate: number;   // ore in piu' oltre l'autorizzazione approvata (profili "solo se autorizzate")
+  public min_DaAutorizzare: number;    // di cui con una richiesta di autorizzazione in attesa
 }
 export enum GG_ResultStato {
   Init = 1 << 0,   // 1

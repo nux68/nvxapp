@@ -72,6 +72,8 @@ namespace nvxapp.server.data.Infrastructure
 
         public virtual DbSet<Dip_Rapporto_Giustificativi_Maturazione> Dip_Rapporto_Giustificativi_Maturazione { get; set; }
         public virtual DbSet<Dip_Contatori_Riporto> Dip_Contatori_Riporto { get; set; }
+        public virtual DbSet<Par_Festivita> Par_Festivita { get; set; }
+        public virtual DbSet<Dip_Periodo> Dip_Periodo { get; set; }
         
         
 
@@ -467,6 +469,19 @@ namespace nvxapp.server.data.Infrastructure
                 .HasForeignKey(p => p.IdCausale_Lavoro_Suppl)
                 .OnDelete(DeleteBehavior.Restrict); 
 
+            foreach (var nav in new[] { "Causale_Lavoro_StraoNottNavigation",
+                                        "Causale_Lavoro_StraoFestNavigation",
+                                        "Causale_Lavoro_StraoFestNottNavigation",
+                                        "Causale_Lavoro_SupplEccNavigation",
+                                        "Causale_Lavoro_EccOrdNavigation",
+                                        "Causale_BancaOreNavigation" })
+            {
+                modelBuilder.Entity<Par_ProfiloOrario>()
+                    .HasOne(typeof(Par_Causali), nav)
+                    .WithMany()
+                    .OnDelete(DeleteBehavior.Restrict);
+            }
+
             modelBuilder.Entity<Par_ProfiloOrario>()
                 .HasOne(p => p.Giustificativo_Assenza_IngiustNavigation)
                 .WithMany() 
@@ -603,6 +618,24 @@ namespace nvxapp.server.data.Infrastructure
 
             modelBuilder.Entity<Dip_Contatori_Riporto>()
                 .HasIndex(t => new { t.IdDip_RapportoLavoro, t.IdPar_Giustificativi, t.Anno })
+                .IsUnique();
+
+            /* Par_Festivita */
+            modelBuilder.Entity<Par_Festivita>()
+                .HasOne(t => t.Az_AnagraficaNavigation)
+                .WithMany(t => t.Par_Festivita)
+                .HasForeignKey(t => t.IdAz_Anagrafica)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            /* Dip_Periodo */
+            modelBuilder.Entity<Dip_Periodo>()
+                .HasOne(t => t.Dip_RapportoLavoroNavigation)
+                .WithMany(t => t.Dip_Periodo)
+                .HasForeignKey(t => t.IdDip_RapportoLavoro)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Dip_Periodo>()
+                .HasIndex(t => new { t.IdDip_RapportoLavoro, t.Anno, t.Mese })
                 .IsUnique();
 
         }

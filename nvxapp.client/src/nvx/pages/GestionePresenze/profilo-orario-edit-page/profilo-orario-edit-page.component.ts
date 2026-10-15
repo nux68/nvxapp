@@ -6,7 +6,7 @@ import { AbstractControl, FormArray, FormBuilder, FormGroup, ValidationErrors, V
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { Observable, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
-import { Par_ProfiloOrarioModel, Par_ProfiloOrario_GetInModel, Par_ProfiloOrario_PutInModel, StraoTipoConteggio, TipoProfilo } from '../../../ClientServer-Service/GestionePresenze/Par_ProfiloOrario/Models/par-profilo-orario-model';
+import { Par_ProfiloOrarioModel, Par_ProfiloOrario_GetInModel, Par_ProfiloOrario_PutInModel, StraoTipoConteggio, TimeRoundInterval, TipoProfilo } from '../../../ClientServer-Service/GestionePresenze/Par_ProfiloOrario/Models/par-profilo-orario-model';
 import { ParProfiloOrarioService } from '../../../ClientServer-Service/GestionePresenze/Par_ProfiloOrario/par-profilo-orario.service';
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
 import { Par_ProfiloOrarioGG_Arrange_NumDay_InModel, Par_ProfiloOrarioGGModel } from '../../../ClientServer-Service/GestionePresenze/Par_ProfiloOrarioGG/Models/par-profilo-orario-gg-model';
@@ -41,6 +41,19 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
   public TMP_counter: number = 0;
   public tipoProfiloEnum = TipoProfilo;
   public straoTipoConteggioEnum = StraoTipoConteggio;
+  public timeRoundIntervalEnum = TimeRoundInterval;
+
+  /** Causali delle ore in piu' (scheda Straordinario): quelle non obbligatorie ricadono sulla causale base. */
+  public causaliEccedenze: { campo: string, etichetta: string, obbligatoria: boolean }[] = [
+    { campo: 'idCausale_Lavoro_Strao',         etichetta: 'Straordinario (diurno)',          obbligatoria: true },
+    { campo: 'idCausale_Lavoro_StraoNott',     etichetta: 'Straordinario notturno',          obbligatoria: false },
+    { campo: 'idCausale_Lavoro_StraoFest',     etichetta: 'Straordinario festivo',           obbligatoria: false },
+    { campo: 'idCausale_Lavoro_StraoFestNott', etichetta: 'Straordinario festivo notturno',  obbligatoria: false },
+    { campo: 'idCausale_Lavoro_Suppl',         etichetta: 'Supplementare (entro il limite)', obbligatoria: true },
+    { campo: 'idCausale_Lavoro_SupplEcc',      etichetta: 'Supplementare oltre il limite',   obbligatoria: false },
+    { campo: 'idCausale_Lavoro_EccOrd',        etichetta: 'Ore eccedenti non straordinarie (full-time)', obbligatoria: false },
+    { campo: 'idCausale_BancaOre',             etichetta: 'Accredito banca ore',             obbligatoria: false },
+  ];
   public orarioTimbratureTipoEnum = OrarioTimbratureTipo;
   
   
@@ -75,12 +88,28 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
       tipoProfilo: [0, [Validators.required ]],
       idPar_Orario_Festivo: [0, [Validators.required]],
 
-      straoSogliaHHFullTime: [0, [Validators.required]],
-      straoTipoConteggio: [0, [Validators.required]],
-      supplTipoConteggio: [0, [Validators.required]],
+      // straordinario / lavoro supplementare
+      eccedenzeAttive: [true],
+      tipoConteggio: [0, [Validators.required]],
+      straoSogliaHHFullTime: [null],
+      sogliaSettimanaleFT: [40, [Validators.required, Validators.min(0), Validators.max(168)]],
+      supplLimitePerc: [25, [Validators.required, Validators.min(0), Validators.max(100)]],
+      eccArrotondamento: [TimeRoundInterval.Min15, [Validators.required]],
+      eccFranchigiaMin: [0, [Validators.required, Validators.min(0)]],
+      assenzeContanoSoglia: [false],
+      straoSoloAutorizzato: [false],
+      domenicaFestiva: [true],
+      notturnoDalle: ['22:00:00', [Validators.required]],
+      notturnoAlle: ['06:00:00', [Validators.required]],
 
       idCausale_Lavoro_Strao: [0, [Validators.required]],
+      idCausale_Lavoro_StraoNott: [null],
+      idCausale_Lavoro_StraoFest: [null],
+      idCausale_Lavoro_StraoFestNott: [null],
       idCausale_Lavoro_Suppl: [0, [Validators.required]],
+      idCausale_Lavoro_SupplEcc: [null],
+      idCausale_Lavoro_EccOrd: [null],
+      idCausale_BancaOre: [null],
       idGiustificativo_Assenza_Ingiust: [0, [Validators.required]],
 
       

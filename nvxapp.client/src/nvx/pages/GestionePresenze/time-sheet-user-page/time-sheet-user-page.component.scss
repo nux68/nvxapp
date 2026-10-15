@@ -208,3 +208,32 @@ ion-menu-button {
     }
   }
 }
+
+// ore del giorno nel calendario del dipendente: in alto a destra, sulla riga del numero del giorno
+// (le ore in piu' provvisorie sono in grigio corsivo, il dettaglio e' nel tooltip)
+.day-ore {
+  position: absolute;
+  top: 3px;
+  right: 4px;
+  z-index: 1;
+  text-align: right;
+  font-size: 0.75em;
+  color: var(--ion-color-medium);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.day-ecc {
+  font-weight: 600;
+  color: var(--ion-color-success);
+}
+
+.day-ecc.day-ecc-provvisoria {
+  color: var(--ion-color-medium);
+  font-style: italic;
+}
+
+.day-ecc.day-ecc-mancanti {
+  color: var(--ion-color-danger);
+  font-weight: normal;
+}

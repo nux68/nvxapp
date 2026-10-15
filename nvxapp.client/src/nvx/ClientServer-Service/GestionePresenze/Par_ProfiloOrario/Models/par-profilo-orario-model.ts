@@ -11,12 +11,29 @@ export class Par_ProfiloOrarioModel {
   tipoProfilo: TipoProfilo; 
   idPar_Orario_Festivo: number
 
+  // straordinario / lavoro supplementare
+  eccedenzeAttive: boolean;
+  tipoConteggio: StraoTipoConteggio;
   straoSogliaHHFullTime: string | null;
-  straoTipoConteggio: StraoTipoConteggio;
-  supplTipoConteggio: StraoTipoConteggio;
+  sogliaSettimanaleFT: number;
+  supplLimitePerc: number;
+  eccArrotondamento: TimeRoundInterval;
+  eccFranchigiaMin: number;
+  assenzeContanoSoglia: boolean;
+  straoSoloAutorizzato: boolean;      // ore in piu' riconosciute solo fino alle ore autorizzate
+  domenicaFestiva: boolean;
+  notturnoDalle: string;
+  notturnoAlle: string;
+
   idCausale_Lavoro_Strao: number;
+  idCausale_Lavoro_StraoNott: number | null;
+  idCausale_Lavoro_StraoFest: number | null;
+  idCausale_Lavoro_StraoFestNott: number | null;
   idCausale_Lavoro_Suppl: number;
-  idGiustificativo_Assenza_Ingiust: number; 
+  idCausale_Lavoro_SupplEcc: number | null;
+  idCausale_Lavoro_EccOrd: number | null;
+  idCausale_BancaOre: number | null;
+  idGiustificativo_Assenza_Ingiust: number;
 
   constructor() {
     this.id = 0;
@@ -26,11 +43,26 @@ export class Par_ProfiloOrarioModel {
     this.numGiorniCiclo = 0;
     this.tipoProfilo = 0;
 
+    this.eccedenzeAttive = true;
+    this.tipoConteggio = StraoTipoConteggio.Giornaliero;
     this.straoSogliaHHFullTime = '08:00:00';
-    this.straoTipoConteggio = StraoTipoConteggio.Giornaliero;
+    this.sogliaSettimanaleFT = 40;
+    this.supplLimitePerc = 25;
+    this.eccArrotondamento = TimeRoundInterval.Min15;
+    this.eccFranchigiaMin = 0;
+    this.assenzeContanoSoglia = false;
+    this.straoSoloAutorizzato = false;
+    this.domenicaFestiva = true;
+    this.notturnoDalle = '22:00:00';
+    this.notturnoAlle = '06:00:00';
     this.idCausale_Lavoro_Strao = 0;
+    this.idCausale_Lavoro_StraoNott = null;
+    this.idCausale_Lavoro_StraoFest = null;
+    this.idCausale_Lavoro_StraoFestNott = null;
     this.idCausale_Lavoro_Suppl = 0;
-    this.supplTipoConteggio = StraoTipoConteggio.Giornaliero;
+    this.idCausale_Lavoro_SupplEcc = null;
+    this.idCausale_Lavoro_EccOrd = null;
+    this.idCausale_BancaOre = null;
     this.idGiustificativo_Assenza_Ingiust = 0;
   }
 
@@ -47,6 +79,15 @@ export enum StraoTipoConteggio {
   Giornaliero,
   Settimanale,
   Mensile
+}
+
+// blocchi di arrotondamento (minuti), come TimeRoundInterval del server
+export enum TimeRoundInterval {
+  Min1 = 1,
+  Min5 = 5,
+  Min15 = 15,
+  Min30 = 30,
+  Min60 = 60
 }
 
 

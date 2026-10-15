@@ -804,6 +804,9 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<bool>("BancaOre")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("ChangeUser")
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
@@ -814,6 +817,12 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     b.Property<DateTime>("Data")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<bool>("EccProvvisoria")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("Festivo")
+                        .HasColumnType("boolean");
+
                     b.Property<TimeOnly>("HH_Lav")
                         .HasColumnType("time without time zone");
 
@@ -821,6 +830,51 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                         .HasColumnType("time without time zone");
 
                     b.Property<int>("IdDip_RapportoLavoro")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Min_Assenze")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Min_DaAutorizzare")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Min_Ecc")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Min_EccNott")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Min_EccOrd")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Min_Lavorabili")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Min_NonAutorizzate")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Min_NonRiconosciute")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Min_Ord")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Min_Strao")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Min_StraoFest")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Min_StraoFestNott")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Min_StraoNott")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Min_Suppl")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Min_SupplEcc")
                         .HasColumnType("integer");
 
                     b.Property<DateTime?>("ModifiedDate")
@@ -947,6 +1001,112 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     b.ToTable("Dip_GG_Timbrature");
                 });
 
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Dip_Periodo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Anno")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("DataApprovazione")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("IdAspNetUsers_Approvazione")
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
+                    b.Property<int>("IdDip_RapportoLavoro")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Mese")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Min_Assenze")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Min_BancaOre")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Min_Compensate")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Min_DaAutorizzare")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Min_Ecc")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Min_EccOrd")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Min_Lav")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Min_NonAutorizzate")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Min_NonRiconosciute")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Min_Ord")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Min_Provvisorie")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("Min_Riconosciute")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Min_Strao")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Min_StraoFest")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Min_StraoFestNott")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Min_StraoNott")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Min_Suppl")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Min_SupplEcc")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Min_Teo")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<int>("Stato")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdDip_RapportoLavoro", "Anno", "Mese")
+                        .IsUnique();
+
+                    b.ToTable("Dip_Periodo");
+                });
+
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Dip_ProfiloOrario", b =>
                 {
                     b.Property<int>("Id")
@@ -997,6 +1157,10 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Ccnl")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
                     b.Property<string>("ChangeUser")
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
@@ -1010,6 +1174,9 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     b.Property<DateTime?>("DataLic")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<int>("DestinazioneEccedenze")
+                        .HasColumnType("integer");
+
                     b.Property<int>("IdAz_SubCommessaAttivita")
                         .HasColumnType("integer");
 
@@ -1019,6 +1186,12 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
 
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("timestamp without time zone");
+
+                    b.Property<decimal?>("OreSettimanaliContratto")
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<int>("TipoContratto")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -1273,6 +1446,45 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     b.ToTable("Par_ExportCau_Causali");
                 });
 
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.GestionePresenze.Par_Festivita", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("Data")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Descrizione")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<int>("IdAz_Anagrafica")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("TipoFestivita")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdAz_Anagrafica");
+
+                    b.ToTable("Par_Festivita");
+                });
+
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.GestionePresenze.Par_Orario", b =>
                 {
                     b.Property<int>("Id")
@@ -1415,6 +1627,9 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<bool>("AssenzeContanoSoglia")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("ChangeUser")
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
@@ -1432,13 +1647,43 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
+                    b.Property<bool>("DomenicaFestiva")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("EccArrotondamento")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("EccFranchigiaMin")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("EccedenzeAttive")
+                        .HasColumnType("boolean");
+
                     b.Property<int>("IdAz_Anagrafica")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("IdCausale_BancaOre")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("IdCausale_Lavoro_EccOrd")
                         .HasColumnType("integer");
 
                     b.Property<int>("IdCausale_Lavoro_Strao")
                         .HasColumnType("integer");
 
+                    b.Property<int?>("IdCausale_Lavoro_StraoFest")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("IdCausale_Lavoro_StraoFestNott")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("IdCausale_Lavoro_StraoNott")
+                        .HasColumnType("integer");
+
                     b.Property<int>("IdCausale_Lavoro_Suppl")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("IdCausale_Lavoro_SupplEcc")
                         .HasColumnType("integer");
 
                     b.Property<int>("IdGiustificativo_Assenza_Ingiust")
@@ -1450,16 +1695,28 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<TimeOnly>("NotturnoAlle")
+                        .HasColumnType("time without time zone");
+
+                    b.Property<TimeOnly>("NotturnoDalle")
+                        .HasColumnType("time without time zone");
+
                     b.Property<int>("NumGiorniCiclo")
                         .HasColumnType("integer");
+
+                    b.Property<decimal>("SogliaSettimanaleFT")
+                        .HasColumnType("decimal(5,2)");
 
                     b.Property<TimeOnly?>("StraoSogliaHHFullTime")
                         .HasColumnType("time without time zone");
 
-                    b.Property<int>("StraoTipoConteggio")
-                        .HasColumnType("integer");
+                    b.Property<bool>("StraoSoloAutorizzato")
+                        .HasColumnType("boolean");
 
-                    b.Property<int>("SupplTipoConteggio")
+                    b.Property<decimal>("SupplLimitePerc")
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<int>("TipoConteggio")
                         .HasColumnType("integer");
 
                     b.Property<int>("TipoProfilo")
@@ -1469,9 +1726,21 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
 
                     b.HasIndex("IdAz_Anagrafica");
 
+                    b.HasIndex("IdCausale_BancaOre");
+
+                    b.HasIndex("IdCausale_Lavoro_EccOrd");
+
                     b.HasIndex("IdCausale_Lavoro_Strao");
 
+                    b.HasIndex("IdCausale_Lavoro_StraoFest");
+
+                    b.HasIndex("IdCausale_Lavoro_StraoFestNott");
+
+                    b.HasIndex("IdCausale_Lavoro_StraoNott");
+
                     b.HasIndex("IdCausale_Lavoro_Suppl");
+
+                    b.HasIndex("IdCausale_Lavoro_SupplEcc");
 
                     b.HasIndex("IdGiustificativo_Assenza_Ingiust");
 
@@ -1709,9 +1978,15 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<bool>("AutorizzaStraordinario")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("BackgroundColor")
                         .HasMaxLength(7)
                         .HasColumnType("character varying(7)");
+
+                    b.Property<bool>("BancaOre")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("ChangeUser")
                         .HasMaxLength(256)
@@ -2107,6 +2382,17 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     b.Navigation("Dip_RichiestaNavigation");
                 });
 
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Dip_Periodo", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Dip_RapportoLavoro", "Dip_RapportoLavoroNavigation")
+                        .WithMany("Dip_Periodo")
+                        .HasForeignKey("IdDip_RapportoLavoro")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Dip_RapportoLavoroNavigation");
+                });
+
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Dip_ProfiloOrario", b =>
                 {
                     b.HasOne("nvxapp.server.data.Entities.Tenant.Dip_RapportoLavoro", "Dip_RapportoLavoroNavigation")
@@ -2242,6 +2528,17 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     b.Navigation("Par_ExportCauNavigation");
                 });
 
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.GestionePresenze.Par_Festivita", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Az_Anagrafica", "Az_AnagraficaNavigation")
+                        .WithMany("Par_Festivita")
+                        .HasForeignKey("IdAz_Anagrafica")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Az_AnagraficaNavigation");
+                });
+
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.GestionePresenze.Par_Orario", b =>
                 {
                     b.HasOne("nvxapp.server.data.Entities.Tenant.Az_SubCommessaAttivita", null)
@@ -2294,17 +2591,47 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Par_Causali", "Causale_BancaOreNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdCausale_BancaOre")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Par_Causali", "Causale_Lavoro_EccOrdNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdCausale_Lavoro_EccOrd")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("nvxapp.server.data.Entities.Tenant.Par_Causali", "Causale_Lavoro_StraoNavigation")
                         .WithMany()
                         .HasForeignKey("IdCausale_Lavoro_Strao")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Par_Causali", "Causale_Lavoro_StraoFestNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdCausale_Lavoro_StraoFest")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Par_Causali", "Causale_Lavoro_StraoFestNottNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdCausale_Lavoro_StraoFestNott")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Par_Causali", "Causale_Lavoro_StraoNottNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdCausale_Lavoro_StraoNott")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("nvxapp.server.data.Entities.Tenant.Par_Causali", "Causale_Lavoro_SupplNavigation")
                         .WithMany()
                         .HasForeignKey("IdCausale_Lavoro_Suppl")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Par_Causali", "Causale_Lavoro_SupplEccNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdCausale_Lavoro_SupplEcc")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("nvxapp.server.data.Entities.Tenant.Par_Giustificativi", "Giustificativo_Assenza_IngiustNavigation")
                         .WithMany()
@@ -2320,7 +2647,19 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
 
                     b.Navigation("Az_AnagraficaNavigation");
 
+                    b.Navigation("Causale_BancaOreNavigation");
+
+                    b.Navigation("Causale_Lavoro_EccOrdNavigation");
+
+                    b.Navigation("Causale_Lavoro_StraoFestNavigation");
+
+                    b.Navigation("Causale_Lavoro_StraoFestNottNavigation");
+
                     b.Navigation("Causale_Lavoro_StraoNavigation");
+
+                    b.Navigation("Causale_Lavoro_StraoNottNavigation");
+
+                    b.Navigation("Causale_Lavoro_SupplEccNavigation");
 
                     b.Navigation("Causale_Lavoro_SupplNavigation");
 
@@ -2438,6 +2777,8 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
 
                     b.Navigation("Par_ExportCau");
 
+                    b.Navigation("Par_Festivita");
+
                     b.Navigation("Par_Giustificativi");
 
                     b.Navigation("Par_Orario");
@@ -2519,6 +2860,8 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     b.Navigation("Dip_GG_Richiesta");
 
                     b.Navigation("Dip_GG_Timbratura");
+
+                    b.Navigation("Dip_Periodo");
 
                     b.Navigation("Dip_ProfiloOrario");
 

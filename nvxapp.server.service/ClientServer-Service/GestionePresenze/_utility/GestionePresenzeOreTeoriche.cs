@@ -1,5 +1,6 @@
 using nvxapp.server.data.Entities.Tenant.GestionePresenze;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_FestivitaService.Models;
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
 {
@@ -7,6 +8,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
     // Stessa regola del motore di calcolo (TimeSheet_EngineService.CalcolaOreTeoriche):
     // vale l'orario con ZOrder piu' basso del giorno; a coppie somma gli intervalli, a monte ore prende Hh_Teo_MonteOre.
     // Un orario senza coppie (es. RIPOSO) vale 0 ore: giorno non lavorativo.
+    // Nelle festivita' del calendario aziendale vale l'orario festivo del profilo.
     public class GestionePresenzeOreTeoriche : IGestionePresenzeOreTeoriche
     {
         private readonly IDip_ProfiloOrarioRepository _dip_ProfiloOrarioRepository;
@@ -14,18 +16,21 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
         private readonly IPar_ProfiloOrarioGGRepository _par_ProfiloOrarioGGRepository;
         private readonly IPar_OrarioRepository _par_OrarioRepository;
         private readonly IPar_OrarioIntervalloHHRepository _par_OrarioIntervalloHHRepository;
+        private readonly IPar_FestivitaRepository _par_FestivitaRepository;
 
         public GestionePresenzeOreTeoriche(IDip_ProfiloOrarioRepository dip_ProfiloOrarioRepository,
                                            IPar_ProfiloOrarioRepository par_ProfiloOrarioRepository,
                                            IPar_ProfiloOrarioGGRepository par_ProfiloOrarioGGRepository,
                                            IPar_OrarioRepository par_OrarioRepository,
-                                           IPar_OrarioIntervalloHHRepository par_OrarioIntervalloHHRepository)
+                                           IPar_OrarioIntervalloHHRepository par_OrarioIntervalloHHRepository,
+                                           IPar_FestivitaRepository par_FestivitaRepository)
         {
             _dip_ProfiloOrarioRepository = dip_ProfiloOrarioRepository;
             _par_ProfiloOrarioRepository = par_ProfiloOrarioRepository;
             _par_ProfiloOrarioGGRepository = par_ProfiloOrarioGGRepository;
             _par_OrarioRepository = par_OrarioRepository;
             _par_OrarioIntervalloHHRepository = par_OrarioIntervalloHHRepository;
+            _par_FestivitaRepository = par_FestivitaRepository;
         }
 
         // Una voce per ogni giorno da Dal ad Al: null se quel giorno non e' coperto da un profilo orario
@@ -43,7 +48,16 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
             var parProfili = _par_ProfiloOrarioRepository.FindAll(p => idProfili.Contains(p.Id)).ToList();
             var parProfiliGG = _par_ProfiloOrarioGGRepository.FindAll(g => idProfili.Contains(g.IdPar_ProfiloOrario)).ToList();
 
-            var idOrari = parProfiliGG.Select(g => g.IdPar_Orario).Distinct().ToList();
+            var idOrari = parProfiliGG.Select(g => g.IdPar_Orario)
+                                      .Concat(parProfili.Select(p => p.IdPar_Orario_Festivo))
+                                      .Distinct().ToList();
+
+            // calendario festivita' dell'azienda (nei festivi vale l'orario festivo del profilo, come nel motore)
+            var idAziende = parProfili.Select(p => p.IdAz_Anagrafica).Distinct().ToList();
+            var festivita = _par_FestivitaRepository.FindAll(f => idAziende.Contains(f.IdAz_Anagrafica))
+                                                    .ToList()
+                                                    .Select(f => new Par_FestivitaModel { TipoFestivita = f.TipoFestivita, Data = f.Data })
+                                                    .ToList();
             var orari = _par_OrarioRepository.FindAll(o => idOrari.Contains(o.Id)).ToList();
             var coppie = _par_OrarioIntervalloHHRepository.FindAll(c => idOrari.Contains(c.IdPar_Orario)).ToList();
 
@@ -66,6 +80,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                                              .OrderBy(g => g.ZOrder)
                                              .FirstOrDefault();
                 var orario = orarioBase != null ? orari.FirstOrDefault(o => o.Id == orarioBase.IdPar_Orario) : null;
+                if (parProfilo.IdPar_Orario_Festivo > 0 && GestionePresenzeFestivita.IsFestivita(festivita, giorno))
+                    orario = orari.FirstOrDefault(o => o.Id == parProfilo.IdPar_Orario_Festivo);
 
                 var ore = TimeSpan.Zero;
                 if (orario?.TimbratureTipo == OrarioTimbratureTipo.IntervalloOrario)

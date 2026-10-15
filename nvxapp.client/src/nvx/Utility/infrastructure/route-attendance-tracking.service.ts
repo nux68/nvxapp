@@ -28,6 +28,10 @@ export class RouteAttendanceTrackingService {
       { path: 'presentstaff', loadChildren: () => import('../../pages/GestionePresenze/present-staff-page/present-staff-page.module').then(m => m.PresentStaffPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
       { path: 'vacationplan', loadChildren: () => import('../../pages/GestionePresenze/vacation-plan-page/vacation-plan-page.module').then(m => m.VacationPlanPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
 
+      { path: 'quadraturamensile', loadChildren: () => import('../../pages/GestionePresenze/quadratura-mensile-page/quadratura-mensile-page.module').then(m => m.QuadraturaMensilePageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
+      { path: 'festivitalist', loadChildren: () => import('../../pages/GestionePresenze/festivita-list-page/festivita-list-page.module').then(m => m.FestivitaListPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
+      { path: 'festivitaedit', loadChildren: () => import('../../pages/GestionePresenze/festivita-edit-page/festivita-edit-page.module').then(m => m.FestivitaEditPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
+
       { path: 'poweradmintimesheet', loadChildren: () => import('../../pages/GestionePresenze/time-sheet-power-admin-page/time-sheet-power-admin-page.module').then(m => m.TimeSheetPowerAdminPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
       { path: 'justificationlist', loadChildren: () => import('../../pages/GestionePresenze/justification-list-page/justification-list-page.module').then(m => m.JustificationListPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
       { path: 'justificationedit', loadChildren: () => import('../../pages/GestionePresenze/justification-edit-page/justification-edit-page.module').then(m => m.JustificationEditPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },

@@ -109,6 +109,25 @@
           </ion-note>
         }
 
+        <ion-item>
+          <ion-toggle formControlName="bancaOre" justify="space-between">Recupero banca ore</ion-toggle>
+        </ion-item>
+        <ion-item>
+          <ion-toggle formControlName="autorizzaStraordinario" justify="space-between">Autorizza ore in più</ion-toggle>
+        </ion-item>
+        @if (_editForm.get('autorizzaStraordinario')?.value) {
+          <ion-note>
+            Autorizzazione allo straordinario: le ore del giustificativo approvato sono il massimo di ore in più riconosciute nel giorno
+            (profili con "Ore in più solo se autorizzate"). Non cambia le ore dovute e non scrive causali: lascia vuota la causale e il segno neutro.
+            Il calcolo non approva mai in automatico queste richieste.
+          </ion-note>
+        }
+        @if (_editForm.get('bancaOre')?.value) {
+          <ion-note>
+            Il maturato del contatore sono le ore in più accreditate in banca ore nei cartellini approvati.
+          </ion-note>
+        }
+
 
       </form>
 

@@ -27,6 +27,7 @@ using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_RapportoLa
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_RapportoLavoroService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_GiustificativiService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_GiustificativiService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_FestivitaService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_OrarioIntervalloHHService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_OrarioService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_OrarioService.Models;
@@ -174,6 +175,12 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
         private readonly IPar_ProfiloOrarioService _par_ProfiloOrarioService;
         private readonly IDip_RapportoLavoroService _dip_RapportoLavoroService;
         private readonly IPar_GiustificativiService _par_GiustificativiService;
+        private readonly IPar_FestivitaRepository _par_FestivitaRepository;
+        private readonly IDip_PeriodoRepository _dip_PeriodoRepository;
+
+        // causali del giorno calcolate nella fase giornaliera: la fase di periodo aggiunge quelle delle
+        // ore in piu' e poi vengono scritte (chiave: rapporto, giorno)
+        private readonly Dictionary<(int, DateTime), Dictionary<int, TimeSpan>> _causaliGiorno = new();
 
 
         //private readonly IDip_GG_TimbraturaRepository _dip_GG_TimbraturaRepository;
@@ -200,7 +207,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                       IDip_GG_GiustificativiService dip_GG_GiustificativiService,
                                       IDip_GG_ResultService dip_GG_ResultService,
                                       IPar_GiustificativiService par_GiustificativiService,
-                                      IDip_GG_RichiestaService dip_GG_RichiestaService
+                                      IDip_GG_RichiestaService dip_GG_RichiestaService,
+                                      IPar_FestivitaRepository par_FestivitaRepository,
+                                      IDip_PeriodoRepository dip_PeriodoRepository
 
                                       ) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
@@ -219,6 +228,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
             _par_ProfiloOrarioService = par_ProfiloOrarioService;
             _dip_RapportoLavoroService = dip_RapportoLavoroService;
             _par_GiustificativiService = par_GiustificativiService;
+            _par_FestivitaRepository = par_FestivitaRepository;
+            _dip_PeriodoRepository = dip_PeriodoRepository;
 
             //_dip_GG_TimbraturaRepository = dip_GG_TimbraturaRepository;
         }
@@ -267,9 +278,12 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                                                             }
                                                                          );
 
+                                // si caricano i mesi interi e le settimane a cavallo: le ore in piu' si qualificano
+                                // sul periodo di conteggio (giorno, settimana, mese) e servono anche i giorni non ricalcolati
+                                var caricamento = RangeCaricamento(model.Data.TimeSheet_Calculate.Dal, model.Data.TimeSheet_Calculate.Al);
                                 var req_OrariSchema_4User = new GenericRequest<Timesheet_AllData_InModel>();
-                                req_OrariSchema_4User.Data.Dal = model.Data.TimeSheet_Calculate.Dal;
-                                req_OrariSchema_4User.Data.Al = model.Data.TimeSheet_Calculate.Al;
+                                req_OrariSchema_4User.Data.Dal = caricamento.Dal;
+                                req_OrariSchema_4User.Data.Al = caricamento.Al;
                                 req_OrariSchema_4User.Data.UsersId = model.Data.TimeSheet_Calculate.SelectedUserId;
 
                                 var AllData = await scopedEngine.Get_Timesheet_AllData(req_OrariSchema_4User, true);
@@ -307,20 +321,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
                                         foreach (var rapporto_calc in rapporti_calc)
                                         {
-                                            // limita il ciclo al range effettivo del rapporto
-                                            var giornoInizio_calc = model.Data.TimeSheet_Calculate.Dal > rapporto_calc.DataAss!.Value
-                                                                    ? model.Data.TimeSheet_Calculate.Dal
-                                                                    : rapporto_calc.DataAss!.Value;
-
-                                            var giornoFine_calc = (rapporto_calc.DataLic == null || rapporto_calc.DataLic.Value > model.Data.TimeSheet_Calculate.Al)
-                                                                   ? model.Data.TimeSheet_Calculate.Al
-                                                                   : rapporto_calc.DataLic.Value;
-
-                                            // ciclo su ogni giorno del periodo richiesto
-                                            for (var giorno = giornoInizio_calc; giorno <= giornoFine_calc; giorno = giorno.AddDays(1))
-                                            {
-                                                await scopedEngine.CalcolaGiorno(anagrafica_calc, model.Data.TimeSheet_Calculate, rapporto_calc, giorno, AllData.Data);
-                                            }
+                                            await scopedEngine.CalcolaRapporto(anagrafica_calc, model.Data.TimeSheet_Calculate, rapporto_calc, AllData.Data);
                                         }
 
                                         //notifica singola, per il refresh di che fosse posizionato sul cartellino
@@ -481,6 +482,13 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
                     #endregion
 
+                    #region "Festivita'"
+
+                    retVal.Par_Festivita = _mapper.Map<List<Par_FestivitaModel>>(
+                        _par_FestivitaRepository.FindAll(f => f.IdAz_Anagrafica == company_DATA.az_Anagrafica.Id).ToList());
+
+                    #endregion
+
                     #region "DaySlots"
 
                     // per ogni dipendente × ogni giorno del periodo richiesto, risolve
@@ -537,8 +545,19 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                 })
                                 .ToList();
 
+                            // festivita' del calendario: vale l'orario festivo del profilo
+                            bool festivo = GestionePresenzeFestivita.IsFestivita(retVal.Par_Festivita, giorno);
+                            if (festivo && parProfilo.idPar_Orario_Festivo > 0)
+                            {
+                                orariDelGiorno = new List<Dip_ProfiloOrario_DaySlot_GG>
+                                {
+                                    new Dip_ProfiloOrario_DaySlot_GG { ZOrder = 1, IdPar_Orario = parProfilo.idPar_Orario_Festivo }
+                                };
+                            }
+
                             retVal.DaySlots.Add(new Dip_ProfiloOrario_DaySlot
                             {
+                                Festivo = festivo,
                                 IdAspNetUsers = anagrafica.IdAspNetUsers,
                                 IdDip_RapportoLavoro = rapporto.Id,
                                 Data = giorno,
@@ -748,19 +767,273 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
 
 
-        private async Task CalcolaGiorno(Dip_AnagraficaModel Dip_Anagrafica, TimeSheet_CalculateModel timeSheet_CalculateModel, Dip_RapportoLavoroModel rapporto_calc, DateTime giorno, Timesheet_AllData_OutModel AllData)
+        /// <summary>
+        /// Range di dati da caricare per un ricalcolo: i mesi interi coinvolti, estesi alle settimane a cavallo
+        /// (e ai rispettivi mesi), cosi' ogni periodo di conteggio toccato e il cartellino del mese sono completi.
+        /// </summary>
+        private static (DateTime Dal, DateTime Al) RangeCaricamento(DateTime dal, DateTime al)
         {
-            if (timeSheet_CalculateModel.Approva_Richieste_Giustificativo)
+            var inizio = GestionePresenzeEccedenze.InizioSettimana(new DateTime(dal.Year, dal.Month, 1));
+            inizio = new DateTime(inizio.Year, inizio.Month, 1);
+
+            var fineMese = new DateTime(al.Year, al.Month, 1).AddMonths(1).AddDays(-1);
+            var fine = GestionePresenzeEccedenze.InizioSettimana(fineMese).AddDays(6);
+            fine = new DateTime(fine.Year, fine.Month, 1).AddMonths(1).AddDays(-1);
+
+            return (inizio, fine);
+        }
+
+        private static Par_ProfiloOrarioModel? ProfiloDelGiorno(OrariSchema_4User_OutModel orariSchema, int IdDip_RapportoLavoro, DateTime day)
+        {
+            var daySlot = orariSchema.DaySlots.FirstOrDefault(ds => ds.IdDip_RapportoLavoro == IdDip_RapportoLavoro && ds.Data.Date == day.Date);
+            if (daySlot == null)
+                return null;
+            return orariSchema.Par_ProfiloOrario.FirstOrDefault(p => p.Id == daySlot.IdPar_ProfiloOrario);
+        }
+
+        private static GestionePresenzeEccedenze.Parametri ParametriEccedenze(Par_ProfiloOrarioModel profilo, Dip_RapportoLavoroModel rapporto)
+        {
+            return new GestionePresenzeEccedenze.Parametri
             {
-                await this.ApprovaRichiesta(TipoRichiesta.Giustificativo, AllData.Dip_GG_AllData_OutModel, rapporto_calc.Id, giorno);
+                TipoConteggio = profilo.TipoConteggio,
+                PartTime = rapporto.TipoContratto == TipoContratto.PartTime,
+                SogliaGiornalieraFT = profilo.StraoSogliaHHFullTime.HasValue ? (int)profilo.StraoSogliaHHFullTime.Value.ToTimeSpan().TotalMinutes : 0,
+                SogliaSettimanaleFT = (int)Math.Round(profilo.SogliaSettimanaleFT * 60),
+                SupplLimitePerc = profilo.SupplLimitePerc,
+                OreSettimanaliContratto = rapporto.OreSettimanaliContratto.HasValue ? (int)Math.Round(rapporto.OreSettimanaliContratto.Value * 60) : null,
+                AssenzeContanoSoglia = profilo.AssenzeContanoSoglia
+            };
+        }
+
+        /// <summary>
+        /// Calcolo di un rapporto di lavoro sul periodo richiesto:
+        ///   1) periodi di conteggio delle ore in piu' toccati dal ricalcolo (giorno / settimana / mese del profilo)
+        ///   2) fase giornaliera su tutti i giorni di quei periodi (le opzioni del calcolo solo nel periodo richiesto)
+        ///   3) qualifica delle ore in piu' per periodo, limite del supplementare per settimana, tetto mensile HR
+        ///   4) causali dei giorni e cartellini mensili (Dip_Periodo)
+        /// I giorni dei mesi approvati sono bloccati: non si ricalcolano e mantengono la loro qualifica.
+        /// </summary>
+        private async Task CalcolaRapporto(Dip_AnagraficaModel anagrafica, TimeSheet_CalculateModel calc, Dip_RapportoLavoroModel rapporto, Timesheet_AllData_OutModel AllData)
+        {
+            var orariSchema = AllData.OrariSchema_4User_OutModel;
+            var results = AllData.Dip_GG_AllData_OutModel.Dip_GG_Result.Where(r => r.IdDip_RapportoLavoro == rapporto.Id).ToList();
+
+            var inizioRapporto = rapporto.DataAss!.Value.Date;
+            var fineRapporto = rapporto.DataLic?.Date;
+            bool NelRapporto(DateTime d) => d >= inizioRapporto && (fineRapporto == null || d <= fineRapporto.Value);
+
+            var dal = calc.Dal.Date;
+            var al = calc.Al.Date;
+
+            // 1) periodi di conteggio
+            var periodi = new List<(DateTime Dal, DateTime Al, Par_ProfiloOrarioModel Profilo)>();
+            var giorniDaCalcolare = new SortedSet<DateTime>();
+            for (var d = dal; d <= al; d = d.AddDays(1))
+            {
+                if (!NelRapporto(d)) continue;
+                giorniDaCalcolare.Add(d);
+
+                var profilo = ProfiloDelGiorno(orariSchema, rapporto.Id, d);
+                if (profilo == null || !profilo.EccedenzeAttive) continue;
+
+                var per = GestionePresenzeEccedenze.Periodo(d, profilo.TipoConteggio);
+                if (!periodi.Any(p => p.Dal == per.Dal && p.Al == per.Al))
+                    periodi.Add((per.Dal, per.Al, profilo));
+            }
+            foreach (var per in periodi)
+                for (var d = per.Dal; d <= per.Al; d = d.AddDays(1))
+                    if (NelRapporto(d) && results.Any(r => r.Data.Date == d))
+                        giorniDaCalcolare.Add(d);
+
+            // 2) fase giornaliera
+            foreach (var d in giorniDaCalcolare)
+                await CalcolaGiorno(anagrafica, calc, rapporto, d, AllData, conOpzioni: d >= dal && d <= al);
+
+            // 3) fase di periodo
+            var giorni = results.Where(r => NelRapporto(r.Data.Date))
+                                .Select(r => new GestionePresenzeEccedenze.Giorno
+                                {
+                                    Data = r.Data.Date,
+                                    Bloccato = r.Stato.HasFlag(GG_ResultStato.Locked) || !giorniDaCalcolare.Contains(r.Data.Date),
+                                    Teo = (int)r.HH_Teo.ToTimeSpan().TotalMinutes,
+                                    Lavorabili = r.Min_Lavorabili,
+                                    Assenze = r.Min_Assenze,
+                                    Ecc = r.Min_Ecc,
+                                    EccNott = r.Min_EccNott,
+                                    Festivo = r.Festivo,
+                                    Provvisoria = r.EccProvvisoria,
+                                    Suppl = r.Min_Suppl,
+                                    SupplEcc = r.Min_SupplEcc,
+                                    Strao = r.Min_Strao,
+                                    StraoNott = r.Min_StraoNott,
+                                    StraoFest = r.Min_StraoFest,
+                                    StraoFestNott = r.Min_StraoFestNott,
+                                    EccOrd = r.Min_EccOrd,
+                                    NonRiconosciute = r.Min_NonRiconosciute
+                                })
+                                .OrderBy(g => g.Data)
+                                .ToList();
+
+            // i giorni ricalcolati ripartono da zero: quelli senza profilo o con le eccedenze spente restano senza qualifica
+            foreach (var g in giorni.Where(g => !g.Bloccato))
+                g.AzzeraQualifica();
+
+            foreach (var per in periodi)
+            {
+                var giorniPeriodo = giorni.Where(g => g.Data >= per.Dal && g.Data <= per.Al).ToList();
+                GestionePresenzeEccedenze.QualificaPeriodo(giorniPeriodo, per.Al, ParametriEccedenze(per.Profilo, rapporto), DateTime.Today);
             }
 
-            if (timeSheet_CalculateModel.Approva_Richieste_Timbrature)
+            // supplementare oltre il limite: per settimana lun-dom
+            foreach (var lunedi in giorniDaCalcolare.Select(GestionePresenzeEccedenze.InizioSettimana).Distinct())
             {
-                await this.ApprovaRichiesta(TipoRichiesta.Timbratura, AllData.Dip_GG_AllData_OutModel, rapporto_calc.Id, giorno);
+                var giorniSettimana = giorni.Where(g => g.Data >= lunedi && g.Data <= lunedi.AddDays(6)).ToList();
+                var profilo = giorniSettimana.Where(g => !g.Bloccato)
+                                             .Select(g => ProfiloDelGiorno(orariSchema, rapporto.Id, g.Data))
+                                             .LastOrDefault(p => p != null && p.EccedenzeAttive);
+                if (profilo != null && rapporto.TipoContratto == TipoContratto.PartTime)
+                    GestionePresenzeEccedenze.SeparaSupplementare(giorniSettimana, ParametriEccedenze(profilo, rapporto));
             }
 
-            if (timeSheet_CalculateModel.Genera_Timbrature_Mancanti)
+            // tetto delle ore riconosciute deciso dall'HR sul cartellino del mese
+            var mesi = giorniDaCalcolare.Select(d => (d.Year, d.Month)).Distinct().ToList();
+            foreach (var (anno, mese) in mesi)
+            {
+                var periodo = _dip_PeriodoRepository.FindAll(p => p.IdDip_RapportoLavoro == rapporto.Id && p.Anno == anno && p.Mese == mese).FirstOrDefault();
+                if (periodo?.Min_Riconosciute != null && periodo.Stato != PeriodoStato.Approvato)
+                    GestionePresenzeEccedenze.ApplicaTetto(giorni.Where(g => g.Data.Year == anno && g.Data.Month == mese).ToList(), periodo.Min_Riconosciute.Value);
+            }
+
+            // 4) risultati e causali dei giorni ricalcolati
+            bool bancaOre = rapporto.DestinazioneEccedenze == DestinazioneEccedenze.BancaOre;
+            foreach (var g in giorni.Where(g => !g.Bloccato))
+            {
+                var res = results.First(r => r.Data.Date == g.Data);
+                res.EccProvvisoria = g.Provvisoria;
+                res.Min_Suppl = g.Suppl;
+                res.Min_SupplEcc = g.SupplEcc;
+                res.Min_Strao = g.Strao;
+                res.Min_StraoNott = g.StraoNott;
+                res.Min_StraoFest = g.StraoFest;
+                res.Min_StraoFestNott = g.StraoFestNott;
+                res.Min_EccOrd = g.EccOrd;
+                res.Min_NonRiconosciute = g.NonRiconosciute;
+                res.BancaOre = bancaOre && g.Qualificate > 0;
+
+                if (!_causaliGiorno.TryGetValue((rapporto.Id, g.Data), out var causali))
+                    continue;
+
+                var profilo = ProfiloDelGiorno(orariSchema, rapporto.Id, g.Data);
+                if (profilo != null)
+                    AggiungiCausaliEccedenze(causali, profilo, g, bancaOre);
+
+                ScriviCausali(AllData, rapporto.Id, g.Data, causali);
+            }
+
+            // 5) cartellini mensili
+            foreach (var (anno, mese) in mesi)
+                await AggiornaCartellinoMese(orariSchema, rapporto, anno, mese, results);
+        }
+
+        private static void AggiungiCausaliEccedenze(Dictionary<int, TimeSpan> causali, Par_ProfiloOrarioModel profilo, GestionePresenzeEccedenze.Giorno g, bool bancaOre)
+        {
+            void Aggiungi(int? idCausale, int minuti)
+            {
+                if (idCausale is int id && id > 0 && minuti > 0)
+                    causali[id] = causali.GetValueOrDefault(id) + TimeSpan.FromMinutes(minuti);
+            }
+
+            if (bancaOre && profilo.IdCausale_BancaOre > 0)
+            {
+                Aggiungi(profilo.IdCausale_BancaOre, g.Qualificate);
+                return;
+            }
+
+            // le causali facoltative, se non impostate, ricadono su quella base
+            int strao = profilo.IdCausale_Lavoro_Strao;
+            Aggiungi(strao, g.Strao);
+            Aggiungi(profilo.IdCausale_Lavoro_StraoNott ?? strao, g.StraoNott);
+            Aggiungi(profilo.IdCausale_Lavoro_StraoFest ?? strao, g.StraoFest);
+            Aggiungi(profilo.IdCausale_Lavoro_StraoFestNott ?? profilo.IdCausale_Lavoro_StraoFest ?? profilo.IdCausale_Lavoro_StraoNott ?? strao, g.StraoFestNott);
+            Aggiungi(profilo.IdCausale_Lavoro_Suppl, g.Suppl);
+            Aggiungi(profilo.IdCausale_Lavoro_SupplEcc ?? profilo.IdCausale_Lavoro_Suppl, g.SupplEcc);
+            Aggiungi(profilo.IdCausale_Lavoro_EccOrd ?? strao, g.EccOrd);
+        }
+
+        /// <summary>Totali del cartellino mensile (Dip_Periodo); un mese approvato non viene piu' toccato.</summary>
+        private async Task AggiornaCartellinoMese(OrariSchema_4User_OutModel orariSchema, Dip_RapportoLavoroModel rapporto, int anno, int mese, List<Dip_GG_ResultModel> results)
+        {
+            var periodo = _dip_PeriodoRepository.FindAll(p => p.IdDip_RapportoLavoro == rapporto.Id && p.Anno == anno && p.Mese == mese).FirstOrDefault()
+                          ?? new Dip_Periodo { IdDip_RapportoLavoro = rapporto.Id, Anno = anno, Mese = mese };
+
+            if (periodo.Stato == PeriodoStato.Approvato)
+                return;
+
+            var inizioRapporto = rapporto.DataAss!.Value.Date;
+            var fineRapporto = rapporto.DataLic?.Date;
+            var giorni = results.Where(r => r.Data.Year == anno && r.Data.Month == mese &&
+                                            r.Data.Date >= inizioRapporto && (fineRapporto == null || r.Data.Date <= fineRapporto.Value))
+                                .ToList();
+
+            int Qualificate(Dip_GG_ResultModel r) => r.Min_Suppl + r.Min_SupplEcc + r.Min_Strao + r.Min_StraoNott + r.Min_StraoFest + r.Min_StraoFestNott + r.Min_EccOrd;
+
+            periodo.Min_Teo = giorni.Sum(r => (int)r.HH_Teo.ToTimeSpan().TotalMinutes);
+            periodo.Min_Lav = giorni.Sum(r => (int)r.HH_Lav.ToTimeSpan().TotalMinutes);
+            periodo.Min_Ord = giorni.Sum(r => r.Min_Ord);
+            periodo.Min_Assenze = giorni.Sum(r => r.Min_Assenze);
+            periodo.Min_Ecc = giorni.Sum(r => Math.Max(0, r.Min_Ecc));
+            periodo.Min_Provvisorie = giorni.Where(r => r.EccProvvisoria).Sum(r => Math.Max(0, r.Min_Ecc));
+            periodo.Min_Suppl = giorni.Sum(r => r.Min_Suppl);
+            periodo.Min_SupplEcc = giorni.Sum(r => r.Min_SupplEcc);
+            periodo.Min_Strao = giorni.Sum(r => r.Min_Strao);
+            periodo.Min_StraoNott = giorni.Sum(r => r.Min_StraoNott);
+            periodo.Min_StraoFest = giorni.Sum(r => r.Min_StraoFest);
+            periodo.Min_StraoFestNott = giorni.Sum(r => r.Min_StraoFestNott);
+            periodo.Min_EccOrd = giorni.Sum(r => r.Min_EccOrd);
+            periodo.Min_NonRiconosciute = giorni.Sum(r => r.Min_NonRiconosciute);
+            periodo.Min_BancaOre = giorni.Where(r => r.BancaOre).Sum(Qualificate);
+            periodo.Min_NonAutorizzate = giorni.Sum(r => r.Min_NonAutorizzate);
+            periodo.Min_DaAutorizzare = giorni.Sum(r => r.Min_DaAutorizzare);
+            periodo.Min_Compensate = Math.Max(0, periodo.Min_Ecc - periodo.Min_Provvisorie - giorni.Sum(Qualificate) - periodo.Min_NonRiconosciute);
+
+            // il mese e' concluso quando e' passato l'ultimo giorno (con il conteggio settimanale: la domenica della sua ultima settimana)
+            var ultimo = new DateTime(anno, mese, 1).AddMonths(1).AddDays(-1);
+            var fine = ultimo;
+            var profilo = ProfiloDelGiorno(orariSchema, rapporto.Id, ultimo);
+            if (profilo != null && profilo.EccedenzeAttive && profilo.TipoConteggio == StraoTipoConteggio.Settimanale)
+                fine = GestionePresenzeEccedenze.InizioSettimana(ultimo).AddDays(6);
+
+            // provvisorio anche con autorizzazioni allo straordinario ancora da approvare
+            periodo.Stato = (fine >= DateTime.Today || giorni.Any(r => r.EccProvvisoria || r.Min_DaAutorizzare > 0))
+                            ? PeriodoStato.Provvisorio
+                            : PeriodoStato.DaApprovare;
+
+            await _dip_PeriodoRepository.UpsertAsync(periodo);
+        }
+
+        private async Task CalcolaGiorno(Dip_AnagraficaModel Dip_Anagrafica, TimeSheet_CalculateModel timeSheet_CalculateModel, Dip_RapportoLavoroModel rapporto_calc, DateTime giorno, Timesheet_AllData_OutModel AllData, bool conOpzioni)
+        {
+            var dip_GG_Result = AllData.Dip_GG_AllData_OutModel.Dip_GG_Result.FirstOrDefault(x => x.IdDip_RapportoLavoro == rapporto_calc.Id &&
+                                                                                                 x.Data.Date == giorno.Date);
+
+            // giorno di un mese approvato: resta com'e'
+            if (dip_GG_Result != null && dip_GG_Result.Stato.HasFlag(GG_ResultStato.Locked))
+                return;
+
+            // le opzioni del calcolo valgono solo nel periodo richiesto, non nei giorni ricalcolati per completare il periodo di conteggio
+            var idGiustAutorizzazione = AllData.OrariSchema_4User_OutModel.Par_Giustificativi.Where(pg => pg.AutorizzaStraordinario).Select(pg => pg.Id).ToList();
+
+            if (conOpzioni && timeSheet_CalculateModel.Approva_Richieste_Giustificativo)
+            {
+                await this.ApprovaRichiesta(TipoRichiesta.Giustificativo, AllData.Dip_GG_AllData_OutModel, rapporto_calc.Id, giorno, idGiustAutorizzazione);
+            }
+
+            if (conOpzioni && timeSheet_CalculateModel.Approva_Richieste_Timbrature)
+            {
+                await this.ApprovaRichiesta(TipoRichiesta.Timbratura, AllData.Dip_GG_AllData_OutModel, rapporto_calc.Id, giorno, idGiustAutorizzazione);
+            }
+
+            if (conOpzioni && timeSheet_CalculateModel.Genera_Timbrature_Mancanti)
             {
                 GeneraTimbratureMancanti(AllData, rapporto_calc.Id, rapporto_calc.IdAz_SubCommessaAttivita, giorno);
             }
@@ -770,37 +1043,23 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
             GG_ResultStato VersoTimbratureResult = AssegnaVersoTimbrature(AllData, rapporto_calc.Id, giorno);
 
-            var dip_GG_Result = AllData.Dip_GG_AllData_OutModel.Dip_GG_Result.Where(x => x.Data == giorno).FirstOrDefault();
             if (dip_GG_Result != null)
             {
                 dip_GG_Result.HH_Teo = TimeOnly.FromTimeSpan(this.CalcolaOreTeoriche(AllData, rapporto_calc.Id, giorno));
                 dip_GG_Result.HH_Lav = TimeOnly.FromTimeSpan(this.CalcolaOreLavorate(AllData, rapporto_calc.Id, giorno));
-            }
 
-            if (dip_GG_Result != null)
-            {
                 /* genera il giustificativo di assenza che farà quadrare la giornata (non è detto che questa funzione sia attiva) */
-                if (timeSheet_CalculateModel.Genera_Giustificativo_Assenza)
+                if (conOpzioni && timeSheet_CalculateModel.Genera_Giustificativo_Assenza)
                 {
                     await GeneraGiustificativoAssenza(Dip_Anagrafica, AllData, rapporto_calc.Id, giorno, dip_GG_Result);
                 }
 
-                /*await*/
                 Calcolo2Result = GeneraCausali(Dip_Anagrafica, AllData, rapporto_calc.Id, giorno, dip_GG_Result);
-
 
                 dip_GG_Result.Stato = Dip_GG_Result_Helper.Combine(Calcolo1Result,
                                                                     Calcolo2Result,
                                                                     VersoTimbratureResult);
-
-
-
-
             }
-
-
-
-
 
             return;
         }
@@ -912,7 +1171,23 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
             return;
         }
-        private async Task ApprovaRichiesta(TipoRichiesta tipoRichiesta, Dip_GG_AllData_OutModel dip_GG_AllData, int IdDip_RapportoLavoro, DateTime day)
+        // le autorizzazioni alle ore in piu' non si approvano mai in automatico dal calcolo: le decide l'approvatore
+        private static bool IsAutorizzazioneStraordinario(Dip_GG_RichiestaModel richiesta, List<int> idGiustAutorizzazione)
+        {
+            if (richiesta.RichiestaTipo != TipoRichiesta.Giustificativo || idGiustAutorizzazione.Count == 0 || string.IsNullOrEmpty(richiesta.Dati))
+                return false;
+            try
+            {
+                var body = JsonSerializer.Deserialize<Dip_GG_Richiesta_Body_Giustificativo>(richiesta.Dati, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                return body != null && idGiustAutorizzazione.Contains(body.IdPar_Giustificativi);
+            }
+            catch (JsonException)
+            {
+                return false;
+            }
+        }
+
+        private async Task ApprovaRichiesta(TipoRichiesta tipoRichiesta, Dip_GG_AllData_OutModel dip_GG_AllData, int IdDip_RapportoLavoro, DateTime day, List<int> idGiustAutorizzazione)
         {
 
 
@@ -924,7 +1199,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                                                                     (x.RichiestaStato == StatoRichiesta.Immessa || x.RevocaStato == StatoRichiesta.Immessa) &&
                                                                                     x.IdDip_RapportoLavoro == IdDip_RapportoLavoro &&
                                                                                     x.Data == x.DataA &&
-                                                                                    DateTime.Parse(x.Data) == day)
+                                                                                    DateTime.Parse(x.Data) == day &&
+                                                                                    !IsAutorizzazioneStraordinario(x, idGiustAutorizzazione))
                                                                            .Select(x => x.Id)
                                                                            .ToList();
 
@@ -1109,9 +1385,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                     .OrderBy(hh => hh.NumCoppia)
                     .ToList();
 
-                if (coppie.Count == 0)
-                    return retVal;
-
                 // solo SenzaVerso, ordinate per orario crescente — Attivita escluse
                 var timbratureSenzaVerso = allData.Dip_GG_AllData_OutModel.Dip_GG_Timbratura.Where(t => t.IdDip_RapportoLavoro == IdDip_RapportoLavoro &&
                                                                                                         t.GiornoCompetenza.Date == day.Date
@@ -1149,6 +1422,15 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                 if (timbratureSenzaVerso.Count < timbratura_From_Coppia.Count)
                 {
                     Dip_GG_Result_Helper.AddDetail(ref retVal, GG_ResultStato.Err_TimbratureMancanti);
+                    return retVal;
+                }
+
+                // giorno senza coppie (es. RIPOSO): tutte le timbrature sono lavoro fuori orario
+                if (timbratura_From_Coppia.Count == 0)
+                {
+                    foreach (var t in timbratureSenzaVerso)
+                        t.TimbraturaTipo = TipoTimbratura.SenzaVerso;
+                    AccoppiaTimbratureFuoriOrario(timbratureSenzaVerso);
                     return retVal;
                 }
 
@@ -1227,6 +1509,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
                 }
 
+                // timbrature oltre le coppie dell'orario (es. rientro serale): coppie aggiuntive di lavoro fuori orario
+                AccoppiaTimbratureFuoriOrario(timbratureSenzaVerso);
+
 
             }
             else if (parOrario.TimbratureTipo == OrarioTimbratureTipo.MonteOre || parOrario.TimbratureTipo == OrarioTimbratureTipo.MonteOreValore)
@@ -1240,6 +1525,25 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
             return retVal;
 
         }
+        /// <summary>
+        /// Le timbrature rimaste senza verso dopo l'abbinamento alle coppie dell'orario si accoppiano in ordine
+        /// cronologico (entrata, uscita, ...) senza arrotondamento: sono lavoro fuori orario, che concorre alle ore in piu'.
+        /// Un'eventuale timbratura dispari resta senza verso (segnalata come anomalia dal cartellino).
+        /// </summary>
+        private static void AccoppiaTimbratureFuoriOrario(List<Dip_GG_TimbraturaModel> timbrature)
+        {
+            var libere = timbrature.Where(t => t.TimbraturaTipo == TipoTimbratura.SenzaVerso)
+                                   .OrderBy(t => t.Timbratura)
+                                   .ToList();
+            for (int i = 0; i + 1 < libere.Count; i += 2)
+            {
+                libere[i].TimbraturaTipo = TipoTimbratura.Entrata;
+                libere[i].TimbraturaArrotondata = libere[i].Timbratura;
+                libere[i + 1].TimbraturaTipo = TipoTimbratura.Uscita;
+                libere[i + 1].TimbraturaArrotondata = libere[i + 1].Timbratura;
+            }
+        }
+
         private void GeneraTimbratureMancanti(Timesheet_AllData_OutModel allData, int IdDip_RapportoLavoro, int IdAz_SubCommessaAttivita, DateTime day)
         {
             var orariSchema = allData.OrariSchema_4User_OutModel;
@@ -1606,17 +1910,30 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
 
 
+        /// <summary>
+        /// Fase giornaliera: causali dei giustificativi e delle ore ordinarie, ore lavorabili, eccedenza del giorno.
+        /// Le causali restano in _causaliGiorno: la fase di periodo aggiunge quelle delle ore in piu' e le scrive.
+        /// </summary>
         private GG_ResultStato GeneraCausali(Dip_AnagraficaModel Dip_Anagrafica, Timesheet_AllData_OutModel allData, int IdDip_RapportoLavoro, DateTime day, Dip_GG_ResultModel dip_GG_Result)
         {
 
             GG_ResultStato retVal = GG_ResultStato.OK;
 
+            var orariSchema = allData.OrariSchema_4User_OutModel;
+
             TimeSpan oreLavorate = new TimeSpan();    // ore che hanno riscontro sulle timbrature
             TimeSpan oreLavorabili = this.CalcolaOreTeoriche(allData, IdDip_RapportoLavoro, day);  // alle ore teoriche si sommano i just con segno + e si sottraggono quelli con -
+            TimeSpan oreAssenza = TimeSpan.Zero;      // giustificativi che riducono il lavorabile
+            TimeSpan oreAutorizzate = TimeSpan.Zero;  // autorizzazioni alle ore in piu' approvate (o inserite dall'HR)
+            TimeSpan oreInAttesa = TimeSpan.Zero;     // autorizzazioni alle ore in piu' richieste e non ancora approvate
 
-
-            // dizionario temporaneo IdCausale ? TimeSpan accumulato
+            // dizionario temporaneo IdCausale -> TimeSpan accumulato
             var causaliAccumulate = new Dictionary<int, TimeSpan>();
+            void Accumula(int idCausale, TimeSpan valore)
+            {
+                if (idCausale <= 0 || valore <= TimeSpan.Zero) return;
+                causaliAccumulate[idCausale] = causaliAccumulate.GetValueOrDefault(idCausale) + valore;
+            }
 
             // -- A) Causali da Giustificativi -------------------------------------
 
@@ -1628,78 +1945,69 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                          )
                 .ToList();
 
-
-
             foreach (var giustificativo in giustificativiDelGiorno)
             {
                 // cerca il parametro giustificativo per ottenere IdCausale
-                var parGiust = allData.OrariSchema_4User_OutModel.Par_Giustificativi
+                var parGiust = orariSchema.Par_Giustificativi
                     .FirstOrDefault(pg => pg.Id == giustificativo.IdPar_Giustificativi);
 
-                if (parGiust == null || !parGiust.IdCausale.HasValue || parGiust.IdCausale.Value == 0)
+                if (parGiust == null)
                     continue;
 
-                int idCausale = parGiust.IdCausale.Value;
+                TimeSpan valoreOre = giustificativo.Hours ?? TimeSpan.Zero;
 
-                // determina il valore ore del giustificativo
-                TimeSpan valoreOre = TimeSpan.Zero;
+                // autorizzazione alle ore in piu': non cambia il dovuto e non ha causale, fissa solo il massimo riconosciuto
+                if (parGiust.AutorizzaStraordinario)
+                {
+                    oreAutorizzate = oreAutorizzate.Add(valoreOre);
+                    continue;
+                }
 
-                //switch (giustificativo.InputType)
-                //{
-                //    case JustificationInputType.Manual:
-                //        // ore inserite manualmente
-                valoreOre = giustificativo.Hours ?? TimeSpan.Zero;
-                //        break;
-
-                //    case JustificationInputType.AllDay:
-                //        // intera giornata: prende le ore teoriche del giorno
-                //        valoreOre = this.CalcolaOreTeoriche(allData, IdDip_RapportoLavoro, day);
-                //        break;
-
-                //    case JustificationInputType.IntegrateDay:
-                //        // integra la giornata: differenza tra ore teoriche e ore reali
-                //        var oreTeoInt = this.CalcolaOreTeoriche(allData, IdDip_RapportoLavoro, day);
-                //        var oreRealiInt = this.CalcolaOreLavorate(allData, IdDip_RapportoLavoro, day);
-                //        valoreOre = oreTeoInt - oreRealiInt;
-                //        if (valoreOre < TimeSpan.Zero)
-                //            valoreOre = TimeSpan.Zero;
-                //        break;
-                //}
-
-                //// applica il segno del giustificativo
-                //if (parGiust.Segno == SignWithNeutral.Down)
-                //    valoreOre = valoreOre.Negate();
-
-                // accumula
-                if (causaliAccumulate.ContainsKey(idCausale))
-                    causaliAccumulate[idCausale] += valoreOre;
-                else
-                    causaliAccumulate[idCausale] = valoreOre;
-
-
+                if (parGiust.IdCausale.HasValue)
+                    Accumula(parGiust.IdCausale.Value, valoreOre);
 
                 if (parGiust.Segno == SignWithNeutral.Up)
                     oreLavorabili = oreLavorabili.Add(valoreOre);
                 else if (parGiust.Segno == SignWithNeutral.Down)
+                {
                     oreLavorabili = oreLavorabili.Subtract(valoreOre);
-
+                    oreAssenza = oreAssenza.Add(valoreOre);
+                }
             }
 
+            if (oreLavorabili < TimeSpan.Zero)
+                oreLavorabili = TimeSpan.Zero;
 
+            // richieste di autorizzazione ancora in approvazione: il giorno le mostra "in attesa di autorizzazione"
+            var idGiustAutorizzazione = orariSchema.Par_Giustificativi.Where(pg => pg.AutorizzaStraordinario).Select(pg => pg.Id).ToList();
+            if (idGiustAutorizzazione.Count > 0)
+            {
+                oreInAttesa = allData.Dip_GG_AllData_OutModel.Dip_GG_Giustificativi
+                    .Where(g => g.IdDip_RapportoLavoro == IdDip_RapportoLavoro
+                             && g.Data.Date == day.Date
+                             && g.ToBeDeleted == false
+                             && idGiustAutorizzazione.Contains(g.IdPar_Giustificativi)
+                             && (g.RichiestaStato == StatoRichiesta.Immessa ||
+                                 g.RichiestaStato == StatoRichiesta.ApprovazioneInCorso ||
+                                 g.RichiestaStato == StatoRichiesta.ParzialmenteApprovata))
+                    .Aggregate(TimeSpan.Zero, (acc, g) => acc + (g.Hours ?? TimeSpan.Zero));
+            }
 
+            // -- B) Ore Lavorate per Intervallo ------------------------------------
 
+            var daySlot = orariSchema.DaySlots.FirstOrDefault(ds => ds.IdDip_RapportoLavoro == IdDip_RapportoLavoro &&
+                                                                    ds.Data.Date == day.Date);
+            var profilo = daySlot != null ? orariSchema.Par_ProfiloOrario.FirstOrDefault(p => p.Id == daySlot.IdPar_ProfiloOrario) : null;
 
-            // -- B) Causali da Ore Lavorate per Intervallo ------------------------
-
-            var daySlot = allData.OrariSchema_4User_OutModel.DaySlots.FirstOrDefault(ds => ds.IdDip_RapportoLavoro == IdDip_RapportoLavoro &&
-                                                                                           ds.Data.Date == day.Date);
+            var oreFasce = new List<(int IdCausale, TimeSpan Ore)>();   // ore lavorate dentro ogni coppia dell'orario, in ordine
+            int idCausaleOrd = 0;                                        // causale delle ore ordinarie lavorate fuori dalle coppie
+            TimeSpan oreFuoriFasceNotte = TimeSpan.Zero;                 // ore lavorate fuori dalle coppie in fascia notturna
 
             if (daySlot != null && daySlot.Orari.Count > 0)
             {
                 var orarioBase = daySlot.Orari.OrderBy(o => o.ZOrder).First();
 
-                var parOrario = allData.OrariSchema_4User_OutModel.ParOrario
-                    .FirstOrDefault(o => o.Id == orarioBase.IdPar_Orario);
+                var parOrario = orariSchema.ParOrario.FirstOrDefault(o => o.Id == orarioBase.IdPar_Orario);
 
                 if (parOrario != null)
                 {
@@ -1707,9 +2015,18 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
                     if (parOrario.TimbratureTipo == OrarioTimbratureTipo.IntervalloOrario)
                     {
-                        var coppie = allData.OrariSchema_4User_OutModel.Par_OrarioIntervalloHH.Where(hh => hh.IdPar_Orario == parOrario.Id)
-                                                                                              .OrderBy(hh => hh.NumCoppia)
-                                                                                              .ToList();
+                        // coppie dell'orario come intervalli del giorno (un'uscita prima dell'entrata e' del giorno dopo)
+                        var fasce = orariSchema.Par_OrarioIntervalloHH.Where(hh => hh.IdPar_Orario == parOrario.Id &&
+                                                                                   hh.Dalle.HasValue && hh.Alle.HasValue &&
+                                                                                   hh.Dalle.Value != hh.Alle.Value)
+                                                                      .OrderBy(hh => hh.NumCoppia)
+                                                                      .Select(hh => (IdCausale: hh.IdCausale_HH_Lav,
+                                                                                     Dal: day.Date + hh.Dalle!.Value.ToTimeSpan(),
+                                                                                     Al: day.Date + hh.Alle!.Value.ToTimeSpan() + (hh.Alle.Value < hh.Dalle.Value ? TimeSpan.FromDays(1) : TimeSpan.Zero)))
+                                                                      .ToList();
+
+                        idCausaleOrd = fasce.Select(f => f.IdCausale).FirstOrDefault(id => id > 0);
+                        var oreFascia = new TimeSpan[fasce.Count];
 
                         // scorre le coppie timbratura E/U in sequenza
                         for (int i = 0; i + 1 < timbrature.Count; i += 2)
@@ -1724,80 +2041,124 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                             if (!entrata.TimbraturaArrotondata.HasValue || !uscita.TimbraturaArrotondata.HasValue)
                                 continue;
 
-                            var tStart = entrata.TimbraturaArrotondata.Value.TimeOfDay;
-                            var tEnd = uscita.TimbraturaArrotondata.Value.TimeOfDay;
+                            // date complete: una coppia puo' superare la mezzanotte
+                            var tStart = entrata.TimbraturaArrotondata.Value;
+                            var tEnd = uscita.TimbraturaArrotondata.Value;
 
                             if (tEnd <= tStart)
                                 continue;
 
-                            // ore lavorate reali della coppia E/U: uscita - entrata, sommata UNA volta sola
                             oreLavorate = oreLavorate.Add(tEnd - tStart);
 
-                            // per ogni coppia del profilo, calcola la sovrapposizione per le causali
-                            foreach (var coppia in coppie)
-                            {
-                                if (coppia.IdCausale_HH_Lav == 0)
-                                    continue;
+                            for (int k = 0; k < fasce.Count; k++)
+                                oreFascia[k] += Sovrapposizione(tStart, tEnd, fasce[k].Dal, fasce[k].Al);
 
-                                if (!coppia.Dalle.HasValue || !coppia.Alle.HasValue)
-                                    continue;
-
-                                if (coppia.Alle.Value == coppia.Dalle.Value)
-                                    continue;
-
-                                var cStart = coppia.Dalle.Value.ToTimeSpan();
-                                var cEnd = coppia.Alle.Value.ToTimeSpan();
-
-                                // sovrapposizione tra [tStart, tEnd] e [cStart, cEnd] → solo per le causali
-                                var overlapStart = tStart > cStart ? tStart : cStart;
-                                var overlapEnd = tEnd < cEnd ? tEnd : cEnd;
-
-                                if (overlapEnd <= overlapStart)
-                                    continue;
-
-                                var oreCausale = overlapEnd - overlapStart;
-
-                                if (oreCausale > TimeSpan.Zero)
-                                {
-                                    int idCausale = coppia.IdCausale_HH_Lav;
-
-                                    if (causaliAccumulate.ContainsKey(idCausale))
-                                        causaliAccumulate[idCausale] += oreCausale;
-                                    else
-                                        causaliAccumulate[idCausale] = oreCausale;
-                                }
-                            }
+                            foreach (var (s, e) in Sottrai(tStart, tEnd, fasce.Select(f => (f.Dal, f.Al))))
+                                oreFuoriFasceNotte += OreNotturne(s, e, profilo);
                         }
 
+                        for (int k = 0; k < fasce.Count; k++)
+                            oreFasce.Add((fasce[k].IdCausale, oreFascia[k]));
                     }
                     else if (parOrario.TimbratureTipo == OrarioTimbratureTipo.MonteOre || parOrario.TimbratureTipo == OrarioTimbratureTipo.MonteOreValore)
                     {
+                        idCausaleOrd = parOrario.IdCausale_HH_Lav_MonteOre ?? 0;
+
                         for (int i = 0; i < timbrature.Count; i++)
                         {
-
-                            TimeSpan valoreOre = new TimeSpan();
-                            if (timbrature[i].Timbratura is DateTime arrotondata)
-                                valoreOre = arrotondata.TimeOfDay;
-
-                            oreLavorate += valoreOre;
-
-                            if (parOrario.IdCausale_HH_Lav_MonteOre != null)
-                            {
-                                if (causaliAccumulate.ContainsKey((int)parOrario.IdCausale_HH_Lav_MonteOre))
-                                    causaliAccumulate[(int)parOrario.IdCausale_HH_Lav_MonteOre] += valoreOre;
-                                else
-                                    causaliAccumulate[(int)parOrario.IdCausale_HH_Lav_MonteOre] = valoreOre;
-                            }
-
-
+                            if (timbrature[i].Timbratura is DateTime valore)
+                                oreLavorate += valore.TimeOfDay;
                         }
-                    }
 
+                        oreFasce.Add((idCausaleOrd, oreLavorate));
+                    }
+                }
+            }
+
+            // -- C) Ordinarie: il lavorato entro il lavorabile ---------------------
+            // le ore dentro le coppie oltre il lavorabile (es. permesso) si tolgono dalle ultime coppie,
+            // quelle lavorate fuori dalle coppie fino al lavorabile vanno sulla causale della prima coppia
+            var oreOrd = oreLavorate < oreLavorabili ? oreLavorate : oreLavorabili;
+            var totFasce = oreFasce.Aggregate(TimeSpan.Zero, (acc, f) => acc + f.Ore);
+
+            if (totFasce > oreOrd)
+            {
+                var daTogliere = totFasce - oreOrd;
+                for (int k = oreFasce.Count - 1; k >= 0 && daTogliere > TimeSpan.Zero; k--)
+                {
+                    var t = oreFasce[k].Ore < daTogliere ? oreFasce[k].Ore : daTogliere;
+                    oreFasce[k] = (oreFasce[k].IdCausale, oreFasce[k].Ore - t);
+                    daTogliere -= t;
+                }
+            }
+            else if (totFasce < oreOrd && idCausaleOrd > 0)
+            {
+                oreFasce.Add((idCausaleOrd, oreOrd - totFasce));
+            }
+
+            foreach (var (idCausale, ore) in oreFasce)
+                Accumula(idCausale, ore);
+
+            // -- D) Eccedenza del giorno ---------------------------------------------
+            var differenza = oreLavorate - oreLavorabili;
+            int minEcc;
+            if (differenza > TimeSpan.Zero)
+            {
+                int minuti = (int)differenza.TotalMinutes;
+                int blocco = profilo != null ? Math.Max(1, (int)profilo.EccArrotondamento) : 1;
+                minuti = minuti / blocco * blocco;                          // arrotondamento per difetto a blocchi
+                if (profilo != null && minuti < profilo.EccFranchigiaMin)   // sotto la franchigia non si riconosce
+                    minuti = 0;
+                minEcc = minuti;
+            }
+            else
+            {
+                minEcc = (int)Math.Round(differenza.TotalMinutes);         // ore mancanti (negativo)
+            }
+
+            // profilo con ore in piu' solo se autorizzate: si riconoscono fino alle ore autorizzate del giorno,
+            // il resto non entra nella qualifica (ne' nella soglia) e resta visibile come "non autorizzato"
+            int minNonAutorizzate = 0, minDaAutorizzare = 0;
+            if (profilo != null && profilo.StraoSoloAutorizzato && minEcc > 0)
+            {
+                int riconosciute = Math.Min(minEcc, (int)oreAutorizzate.TotalMinutes);
+                minNonAutorizzate = minEcc - riconosciute;
+                minDaAutorizzare = Math.Min(minNonAutorizzate, (int)oreInAttesa.TotalMinutes);
+                minEcc = riconosciute;
+            }
+
+            dip_GG_Result.Min_NonAutorizzate = minNonAutorizzate;
+            dip_GG_Result.Min_DaAutorizzare = minDaAutorizzare;
+            dip_GG_Result.Min_Lavorabili = (int)oreLavorabili.TotalMinutes;
+            dip_GG_Result.Min_Assenze = (int)oreAssenza.TotalMinutes;
+            dip_GG_Result.Min_Ord = (int)oreOrd.TotalMinutes;
+            dip_GG_Result.Min_Ecc = minEcc;
+            dip_GG_Result.Min_EccNott = minEcc > 0 ? Math.Min(minEcc, (int)oreFuoriFasceNotte.TotalMinutes) : 0;
+            dip_GG_Result.Festivo = (daySlot?.Festivo ?? false) ||
+                                    (profilo != null && profilo.DomenicaFestiva && day.DayOfWeek == DayOfWeek.Sunday);
+
+            _causaliGiorno[(IdDip_RapportoLavoro, day.Date)] = causaliAccumulate;
+
+            if (oreLavorabili != oreLavorate)
+            {
+                if (oreLavorate < oreLavorabili)
+                {
+                    Dip_GG_Result_Helper.AddDetail(ref retVal, GG_ResultStato.Err_2);
+                }
+                else
+                {
+                    // ore in piu': non e' un errore, le qualifica il calcolo di straordinario/supplementare
+                    Dip_GG_Result_Helper.AddDetail(ref retVal, GG_ResultStato.Warning_1);
                 }
             }
 
 
+            return retVal;
+        }
 
+        /// <summary>Scrive le causali del giorno: aggiorna quelle esistenti, aggiunge le nuove, cancella le altre.</summary>
+        private void ScriviCausali(Timesheet_AllData_OutModel allData, int IdDip_RapportoLavoro, DateTime day, Dictionary<int, TimeSpan> causaliAccumulate)
+        {
             // recupera le causali pre-esistenti per questo giorno/rapporto
             var causaliEsistenti = allData.Dip_GG_AllData_OutModel.Dip_GG_Causali.Where(c => c.IdDip_RapportoLavoro == IdDip_RapportoLavoro &&
                                                                                              c.Data.Date == day.Date)
@@ -1812,8 +2173,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
             // 2) per ogni causale calcolata, cerca se esiste già → aggiorna, altrimenti aggiungi
             foreach (var kvp in causaliAccumulate)
             {
-                var durataAssoluta = kvp.Value.Duration(); // valore assoluto per TimeOnly
-                var nuovoValore = TimeOnly.FromTimeSpan(durataAssoluta);
+                if (kvp.Value <= TimeSpan.Zero)
+                    continue;
+
+                var nuovoValore = TimeOnly.FromTimeSpan(kvp.Value);
 
                 var causaleEsistente = causaliEsistenti
                     .FirstOrDefault(c => c.IdPar_Causali == kvp.Key);
@@ -1838,23 +2201,52 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                     });
                 }
             }
+        }
 
+        private static TimeSpan Sovrapposizione(DateTime s1, DateTime e1, DateTime s2, DateTime e2)
+        {
+            var s = s1 > s2 ? s1 : s2;
+            var e = e1 < e2 ? e1 : e2;
+            return e > s ? e - s : TimeSpan.Zero;
+        }
 
-            if (oreLavorabili != oreLavorate)
+        /// <summary>Parti dell'intervallo [inizio, fine] non coperte dagli intervalli indicati.</summary>
+        private static List<(DateTime Dal, DateTime Al)> Sottrai(DateTime inizio, DateTime fine, IEnumerable<(DateTime Dal, DateTime Al)> intervalli)
+        {
+            var retVal = new List<(DateTime, DateTime)>();
+            var corrente = inizio;
+            foreach (var (dal, al) in intervalli.Where(x => x.Al > inizio && x.Dal < fine).OrderBy(x => x.Dal))
             {
-                if (oreLavorate < oreLavorabili)
-                {
-                    Dip_GG_Result_Helper.AddDetail(ref retVal, GG_ResultStato.Err_2);
-                }
-                else
-                {
-                    Dip_GG_Result_Helper.AddDetail(ref retVal, GG_ResultStato.Err_3);
-                }
+                if (dal > corrente)
+                    retVal.Add((corrente, dal < fine ? dal : fine));
+                if (al > corrente)
+                    corrente = al;
+                if (corrente >= fine)
+                    break;
             }
-
-
+            if (corrente < fine)
+                retVal.Add((corrente, fine));
             return retVal;
         }
+
+        /// <summary>Ore dell'intervallo che cadono nella fascia notturna del profilo (es. 22:00-06:00).</summary>
+        private static TimeSpan OreNotturne(DateTime inizio, DateTime fine, Par_ProfiloOrarioModel? profilo)
+        {
+            if (profilo == null || profilo.NotturnoDalle == profilo.NotturnoAlle)
+                return TimeSpan.Zero;
+
+            var retVal = TimeSpan.Zero;
+            for (var d = inizio.Date.AddDays(-1); d <= fine.Date; d = d.AddDays(1))
+            {
+                var dal = d + profilo.NotturnoDalle.ToTimeSpan();
+                var al = d + profilo.NotturnoAlle.ToTimeSpan();
+                if (profilo.NotturnoAlle < profilo.NotturnoDalle)
+                    al = al.AddDays(1);
+                retVal += Sovrapposizione(inizio, fine, dal, al);
+            }
+            return retVal;
+        }
+
         private List<Dip_GG_TimbraturaModel> Get_Timbrature_Giorno(Timesheet_AllData_OutModel allData, int IdDip_RapportoLavoro, DateTime day, OrarioTimbratureTipo TimbratureTipo)
         {
             var timbrature = allData.Dip_GG_AllData_OutModel.Dip_GG_Timbratura.Where(t => t.IdDip_RapportoLavoro == IdDip_RapportoLavoro &&

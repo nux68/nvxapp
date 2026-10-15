@@ -15,6 +15,8 @@ export class Par_GiustificativiModel {
   public segno!: SignWithNeutral;
   public visualizzaInPianoFerie!: boolean;
   public tipoContatore: TipoContatore = TipoContatore.NoContatore;
+  public bancaOre: boolean = false; // recupero banca ore: maturato = ore accreditate nei mesi approvati
+  public autorizzaStraordinario: boolean = false; // autorizzazione alle ore in piu' (non cambia il dovuto, nessuna causale)
 
 }
 

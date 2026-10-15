@@ -1,3 +1,4 @@
+import { Dip_GG_ResultModel } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Result/Models/dip-gg-result-model';
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
 import { environment } from '../../../../environments/environment';
@@ -48,12 +49,14 @@ export class TimeSheetUserPageComponent implements OnInit, OnDestroy {
     day: number,
     isCurrentMonth: boolean,
     dip_GG_Timbratura: Dip_GG_TimbraturaModel[],
-    dip_GG_Giustificativi: Dip_GG_GiustificativiModel[]
+    dip_GG_Giustificativi: Dip_GG_GiustificativiModel[],
+    dip_GG_Result?: Dip_GG_ResultModel
   }>>;
 
   
   public currYear: number
   public currMonth: number
+  public refreshCartellino = 0;  // fa rileggere il riepilogo del mese
 
   
 
@@ -152,6 +155,7 @@ export class TimeSheetUserPageComponent implements OnInit, OnDestroy {
       this.currentMonth = monthData; // monthData è già del tipo corretto MonthData
       this.buildCalendarWeeks();     // Costruisce la UI dopo aver ricevuto i dati
       this.segmenti = this.timeSheetService.segmentiDelMese(this.currentMonth);
+      this.refreshCartellino++;
     });
   }
 
@@ -170,7 +174,8 @@ export class TimeSheetUserPageComponent implements OnInit, OnDestroy {
       day: number,
       isCurrentMonth: boolean,
       dip_GG_Timbratura: Dip_GG_TimbraturaModel[],
-      dip_GG_Giustificativi: Dip_GG_GiustificativiModel[]
+      dip_GG_Giustificativi: Dip_GG_GiustificativiModel[],
+      dip_GG_Result?: Dip_GG_ResultModel
     }> = [];
 
     // Giorni mese precedente
@@ -195,7 +200,8 @@ export class TimeSheetUserPageComponent implements OnInit, OnDestroy {
         // Il servizio dati dovrebbe già fornire array vuoti dove appropriato
         isCurrentMonth: true,
         dip_GG_Timbratura: dayData?.dip_GG_Timbratura || [],
-        dip_GG_Giustificativi: dayData?.dip_GG_Giustificativi || []
+        dip_GG_Giustificativi: dayData?.dip_GG_Giustificativi || [],
+        dip_GG_Result: dayData?.dip_GG_Result
       });
 
       if (currentWeek.length === 7) {

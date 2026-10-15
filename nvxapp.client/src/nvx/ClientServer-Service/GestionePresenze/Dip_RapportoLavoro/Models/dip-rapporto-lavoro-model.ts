@@ -6,7 +6,20 @@ export class Dip_RapportoLavoroModel {
   public idAz_SubCommessaAttivita!: number;
   public dataAss: string | null = null; // assunzione, "YYYY-MM-DDT00:00:00"
   public dataLic: string | null = null; // licenziamento
+  public tipoContratto: TipoContratto = TipoContratto.FullTime;
+  public oreSettimanaliContratto: number | null = null; // part-time: base del limite % del supplementare
+  public ccnl: string | null = null;
+  public destinazioneEccedenze: DestinazioneEccedenze = DestinazioneEccedenze.Pagamento;
+}
 
+export enum TipoContratto {
+  FullTime,
+  PartTime
+}
+
+export enum DestinazioneEccedenze {
+  Pagamento,
+  BancaOre
 }
 
 export class Dip_RapportoLavoro_Get_InModel {

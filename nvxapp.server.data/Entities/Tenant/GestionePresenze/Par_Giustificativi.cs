@@ -41,6 +41,13 @@ namespace nvxapp.server.data.Entities.Tenant
 
         public TipoContatore TipoContatore { get; set; }
 
+        // recupero di banca ore: il maturato del contatore sono le ore accreditate nei mesi approvati
+        public Boolean BancaOre { get; set; }
+
+        // autorizzazione alle ore in piu': le ore del giustificativo approvato sono il massimo di ore in piu'
+        // riconosciute nel giorno (profili con "solo se autorizzate"); non cambia il dovuto e non ha causale
+        public Boolean AutorizzaStraordinario { get; set; }
+
         public ICollection<Dip_GG_Giustificativi>? Dip_GG_Giustificativi { get; set; }
         public ICollection<Dip_Rapporto_Giustificativi_Maturazione>? Dip_Rapporto_Giustificativi_Maturazione { get; set; }
 

@@ -24,6 +24,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Giusti
         public SignWithNeutral Segno { get; set; }
         public bool VisualizzaInPianoFerie { get; set; }
         public TipoContatore TipoContatore { get; set; }
+        public bool BancaOre { get; set; }
+        public bool AutorizzaStraordinario { get; set; }
     }
 
 

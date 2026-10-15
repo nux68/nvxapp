@@ -155,9 +155,15 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Profil
 
         private Par_ProfiloOrario Init_Par_ProfiloOrario(int IdAz_Anagrafica)
         {
-            var par_Orario = _par_OrarioRepository.FindAll(x => x.IdAz_Anagrafica == IdAz_Anagrafica).FirstOrDefault();
-            var par_causali = _par_CausaliRepository.FindAll(x => x.IdAz_Anagrafica == IdAz_Anagrafica).FirstOrDefault();
-            var par_just = _par_GiustificativiRepository.FindAll(x => x.IdAz_Anagrafica == IdAz_Anagrafica).FirstOrDefault();
+            // preferisce i parametri di default (RIPOSO, STRAO, SUPPL, ASS), altrimenti il primo disponibile
+            var orari = _par_OrarioRepository.FindAll(x => x.IdAz_Anagrafica == IdAz_Anagrafica).ToList();
+            var causali = _par_CausaliRepository.FindAll(x => x.IdAz_Anagrafica == IdAz_Anagrafica).ToList();
+            var giust = _par_GiustificativiRepository.FindAll(x => x.IdAz_Anagrafica == IdAz_Anagrafica).ToList();
+
+            var par_Orario = orari.FirstOrDefault(x => x.Codice == "RIPOSO") ?? orari.FirstOrDefault();
+            var par_causali_strao = causali.FirstOrDefault(x => x.Codice == "STRAO") ?? causali.FirstOrDefault();
+            var par_causali_suppl = causali.FirstOrDefault(x => x.Codice == "SUPPL") ?? causali.FirstOrDefault();
+            var par_just = giust.FirstOrDefault(x => x.Codice == "ASS") ?? giust.FirstOrDefault();
             
 
             Par_ProfiloOrario retVal = new Par_ProfiloOrario()
@@ -168,11 +174,16 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Profil
                 NumGiorniCiclo = 7,
                 TipoProfilo = TipoProfilo.Settimanale,
                 StraoSogliaHHFullTime = new TimeOnly(8, 0),
-                StraoTipoConteggio = StraoTipoConteggio.Giornaliero,
-                SupplTipoConteggio = StraoTipoConteggio.Giornaliero,
-                IdPar_Orario_Festivo = par_Orario != null ? par_Orario.Id : 0,     //MIGLIORARE,
-                IdCausale_Lavoro_Strao = par_causali != null ? par_causali.Id : 0, //MIGLIORARE
-                IdCausale_Lavoro_Suppl = par_causali != null ? par_causali.Id : 0,  //MIGLIORARE
+                TipoConteggio = StraoTipoConteggio.Giornaliero,
+                IdPar_Orario_Festivo = par_Orario != null ? par_Orario.Id : 0,
+                IdCausale_Lavoro_Strao = par_causali_strao != null ? par_causali_strao.Id : 0,
+                IdCausale_Lavoro_Suppl = par_causali_suppl != null ? par_causali_suppl.Id : 0,
+                IdCausale_Lavoro_StraoNott = causali.FirstOrDefault(x => x.Codice == "STRNOT")?.Id,
+                IdCausale_Lavoro_StraoFest = causali.FirstOrDefault(x => x.Codice == "STRFES")?.Id,
+                IdCausale_Lavoro_StraoFestNott = causali.FirstOrDefault(x => x.Codice == "STRFN")?.Id,
+                IdCausale_Lavoro_SupplEcc = causali.FirstOrDefault(x => x.Codice == "SUPEC")?.Id,
+                IdCausale_Lavoro_EccOrd = causali.FirstOrDefault(x => x.Codice == "ECCOR")?.Id,
+                IdCausale_BancaOre = causali.FirstOrDefault(x => x.Codice == "BOACC")?.Id,
                 IdGiustificativo_Assenza_Ingiust = par_just != null ? par_just.Id : 0,  //MIGLIORARE
             };
             return retVal;

@@ -76,6 +76,7 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
   public segmenti = new Map<SegmentoItem, SegmentoRichiesta>();
   public richiestaEvidenziata: number | null = null;
   currentDays: DayData[] = []; // Array ordinato per i giorni del mese
+  public refreshCartellino = 0;  // fa rileggere il riepilogo del mese dopo un ricalcolo
 
   TipoTimbratura = TipoTimbratura;
   StatoRichiesta = StatoRichiesta;
@@ -227,6 +228,7 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
       //this.loadCounter = false;
       this.buildDaysList();
       this.segmenti = this.timeSheetService.segmentiDelMese(this.currentMonth);
+      this.refreshCartellino++;
     });
 
     //////////////////////////

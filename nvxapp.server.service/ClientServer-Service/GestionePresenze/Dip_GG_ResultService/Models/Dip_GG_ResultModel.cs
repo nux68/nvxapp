@@ -15,6 +15,25 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Res
         public TimeOnly HH_Lav { get; set; }
         [HashField]
         public GG_ResultStato Stato { get; set; }
+
+        [HashField] public int Min_Lavorabili { get; set; }
+        [HashField] public int Min_Assenze { get; set; }
+        [HashField] public int Min_Ord { get; set; }
+        [HashField] public int Min_Ecc { get; set; }
+        [HashField] public int Min_EccNott { get; set; }
+        [HashField] public bool Festivo { get; set; }
+        [HashField] public bool EccProvvisoria { get; set; }
+        [HashField] public int Min_Suppl { get; set; }
+        [HashField] public int Min_SupplEcc { get; set; }
+        [HashField] public int Min_Strao { get; set; }
+        [HashField] public int Min_StraoNott { get; set; }
+        [HashField] public int Min_StraoFest { get; set; }
+        [HashField] public int Min_StraoFestNott { get; set; }
+        [HashField] public int Min_EccOrd { get; set; }
+        [HashField] public int Min_NonRiconosciute { get; set; }
+        [HashField] public bool BancaOre { get; set; }
+        [HashField] public int Min_NonAutorizzate { get; set; }
+        [HashField] public int Min_DaAutorizzare { get; set; }
     }
 
 

@@ -1,4 +1,5 @@
-﻿using nvxapp.server.service.ClientServer_Service.ModelsBase;
+﻿using nvxapp.server.data.Entities.Tenant;
+using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +15,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Rappor
         public DateTime? DataAss { get; set; }
         public DateTime? DataLic { get; set; }
         public int IdAz_SubCommessaAttivita { get; set; }
+        public TipoContratto TipoContratto { get; set; }
+        public decimal? OreSettimanaliContratto { get; set; }
+        public string? Ccnl { get; set; }
+        public DestinazioneEccedenze DestinazioneEccedenze { get; set; }
     }
 
     public class Dip_RapportoLavoro_Get_InModel

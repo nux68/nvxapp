@@ -54,6 +54,8 @@ export class JustificationEditPageComponent extends BasePageConfirmCancelCompone
       idCausale: [null, []],
       visualizzaInPianoFerie: [false, []],
       tipoContatore: [TipoContatore.NoContatore, [Validators.required]],
+      bancaOre: [false],
+      autorizzaStraordinario: [false],
 
 
       //roleId: [null, [Validators.required]],

@@ -7,7 +7,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
 {
     // Parametri presenze di partenza per una nuova azienda (ricavati dalla configurazione di tenant_1_2):
     // causali, giustificativi, orari DIURNO8H (09-13 / 14-18) e RIPOSO, profilo settimanale DAY7H8
-    // (lun-ven DIURNO8H, sab-dom RIPOSO), export.
+    // (lun-ven DIURNO8H, sab-dom RIPOSO, festivi RIPOSO, straordinario/supplementare giornaliero),
+    // calendario delle festivita' nazionali, export.
     // Gli Id NON sono fissi: le chiavi esterne vengono collegate ai record appena creati,
     // cosi' funziona sia in multi-tenant sia in modalita' singola (tabelle condivise tra aziende).
     // Idempotente: se l'azienda ha gia' delle causali non fa nulla.
@@ -23,6 +24,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
         private readonly IPar_ProfiloOrarioRepository _par_ProfiloOrarioRepository;
         private readonly IPar_ProfiloOrarioGGRepository _par_ProfiloOrarioGGRepository;
         private readonly IPar_ExportCauRepository _par_ExportCauRepository;
+        private readonly IPar_FestivitaRepository _par_FestivitaRepository;
 
         public GestionePresenzeParametriDefault(IPar_CausaliRepository par_CausaliRepository,
                                                 IPar_GiustificativiRepository par_GiustificativiRepository,
@@ -30,7 +32,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                                                 IPar_OrarioIntervalloHHRepository par_OrarioIntervalloHHRepository,
                                                 IPar_ProfiloOrarioRepository par_ProfiloOrarioRepository,
                                                 IPar_ProfiloOrarioGGRepository par_ProfiloOrarioGGRepository,
-                                                IPar_ExportCauRepository par_ExportCauRepository)
+                                                IPar_ExportCauRepository par_ExportCauRepository,
+                                                IPar_FestivitaRepository par_FestivitaRepository)
         {
             _par_CausaliRepository = par_CausaliRepository;
             _par_GiustificativiRepository = par_GiustificativiRepository;
@@ -39,6 +42,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
             _par_ProfiloOrarioRepository = par_ProfiloOrarioRepository;
             _par_ProfiloOrarioGGRepository = par_ProfiloOrarioGGRepository;
             _par_ExportCauRepository = par_ExportCauRepository;
+            _par_FestivitaRepository = par_FestivitaRepository;
         }
 
         public async Task InitParametri(int IdAz_Anagrafica)
@@ -52,7 +56,14 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
             {
                 ("ORD1",  "Ordinarie 1° fascia"),
                 ("STRAO", "Straordinario"),
+                ("STRNOT", "Straordinario notturno"),
+                ("STRFES", "Straordinario festivo"),
+                ("STRFN", "Straordinario festivo notturno"),
                 ("SUPPL", "Supplementare"),
+                ("SUPEC", "Supplementare oltre limite"),
+                ("ECCOR", "Ore eccedenti non straord."),
+                ("BOACC", "Accredito banca ore"),
+                ("BO",    "Recupero banca ore"),
                 ("ASS",   "Assenza ingiustificata"),
                 ("FERIE", "Ferie"),
                 ("ORDI2", "Ordinarie 2° fascia"),
@@ -77,7 +88,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                 new { Codice = "ROL",   Descrizione = "ROL",             Bg = (string?)"#7fff00", Tx = (string?)"#e7f524", Causale = "ROL",   Segno = SignWithNeutral.Down, Contatore = TipoContatore.ContatoreConBlocco,  PianoFerie = true  },
                 new { Codice = "FE",    Descrizione = "Ferie",           Bg = (string?)"#ff8c00", Tx = (string?)"#ffffff", Causale = "FERIE", Segno = SignWithNeutral.Down, Contatore = TipoContatore.ContatoreConAvviso,  PianoFerie = true  },
                 new { Codice = "ASS",   Descrizione = "Assenza ingiust", Bg = (string?)null,      Tx = (string?)"#f3eded", Causale = "ASS",   Segno = SignWithNeutral.Down, Contatore = TipoContatore.NoContatore         ,  PianoFerie = false },
-                new { Codice = "STRAO", Descrizione = "Straordinario",   Bg = (string?)"#2228e2", Tx = (string?)"#f8f2f2", Causale = "STRAO", Segno = SignWithNeutral.Up,   Contatore = TipoContatore.NoContatore,         PianoFerie = false },
+                // straordinario e supplementare li calcola il motore: niente piu' giustificativo STRAO manuale
+                new { Codice = "BO",    Descrizione = "Recupero banca ore", Bg = (string?)"#2228e2", Tx = (string?)"#f8f2f2", Causale = "BO", Segno = SignWithNeutral.Down, Contatore = TipoContatore.ContatoreConBlocco, PianoFerie = true },
+                // autorizzazione alle ore in piu' (profili con "solo se autorizzate"): nessuna causale, non cambia il dovuto
+                new { Codice = "AUTS",  Descrizione = "Autorizzazione straordinario", Bg = (string?)"#ffc409", Tx = (string?)"#000000", Causale = (string)null!, Segno = SignWithNeutral.Neutral, Contatore = TipoContatore.NoContatore, PianoFerie = false },
             })
             {
                 giustificativi[g.Codice] = await _par_GiustificativiRepository.UpsertAsync(new Par_Giustificativi
@@ -88,10 +102,12 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                     BackgroundColor = g.Bg,
                     TextColor = g.Tx,
                     TipoInput = JustTipoInput.InteraGiornate,
-                    IdCausale = causali[g.Causale].Id,
+                    IdCausale = g.Causale != null ? causali[g.Causale].Id : null,
                     Segno = g.Segno,
                     VisualizzaInPianoFerie = g.PianoFerie,
-                    TipoContatore = g.Contatore
+                    TipoContatore = g.Contatore,
+                    BancaOre = g.Codice == "BO",
+                    AutorizzaStraordinario = g.Codice == "AUTS"
                 });
             }
 
@@ -148,13 +164,28 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                 Descrizione = "Settimanale 8H",
                 NumGiorniCiclo = 7,
                 TipoProfilo = TipoProfilo.Settimanale,
+                EccedenzeAttive = true,
+                TipoConteggio = StraoTipoConteggio.Giornaliero,
                 StraoSogliaHHFullTime = new TimeOnly(8, 0),
-                StraoTipoConteggio = StraoTipoConteggio.Giornaliero,
-                SupplTipoConteggio = StraoTipoConteggio.Giornaliero,
-                IdPar_Orario_Festivo = orario.Id,
-                IdCausale_Lavoro_Strao = causali["ORD1"].Id,
-                IdCausale_Lavoro_Suppl = causali["ORD1"].Id,
-                IdGiustificativo_Assenza_Ingiust = giustificativi["MAL"].Id
+                SogliaSettimanaleFT = 40,
+                SupplLimitePerc = 25,
+                EccArrotondamento = TimeRoundInterval.Min15,
+                EccFranchigiaMin = 0,
+                AssenzeContanoSoglia = false,
+                StraoSoloAutorizzato = false,
+                DomenicaFestiva = true,
+                NotturnoDalle = new TimeOnly(22, 0),
+                NotturnoAlle = new TimeOnly(6, 0),
+                IdPar_Orario_Festivo = orarioRiposo.Id,
+                IdCausale_Lavoro_Strao = causali["STRAO"].Id,
+                IdCausale_Lavoro_StraoNott = causali["STRNOT"].Id,
+                IdCausale_Lavoro_StraoFest = causali["STRFES"].Id,
+                IdCausale_Lavoro_StraoFestNott = causali["STRFN"].Id,
+                IdCausale_Lavoro_Suppl = causali["SUPPL"].Id,
+                IdCausale_Lavoro_SupplEcc = causali["SUPEC"].Id,
+                IdCausale_Lavoro_EccOrd = causali["ECCOR"].Id,
+                IdCausale_BancaOre = causali["BOACC"].Id,
+                IdGiustificativo_Assenza_Ingiust = giustificativi["ASS"].Id
             });
 
             for (int numGiorno = 1; numGiorno <= profilo.NumGiorniCiclo; numGiorno++)
@@ -165,6 +196,31 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                     NumGiorno = numGiorno,
                     ZOrder = 1,
                     IdPar_Orario = numGiorno <= 5 ? orario.Id : orarioRiposo.Id   // 1=Lun .. 6=Sab, 7=Dom
+                });
+            }
+
+            // Festivita' nazionali (l'anno delle date ricorrenti non conta)
+            foreach (var (descrizione, tipo, data) in new[]
+            {
+                ("Capodanno",                TipoFestivita.DataRicorrente, new DateTime(2000, 1, 1)),
+                ("Epifania",                 TipoFestivita.DataRicorrente, new DateTime(2000, 1, 6)),
+                ("Lunedi' dell'Angelo",      TipoFestivita.Pasquetta,      new DateTime(2000, 1, 1)),
+                ("Festa della Liberazione",  TipoFestivita.DataRicorrente, new DateTime(2000, 4, 25)),
+                ("Festa del Lavoro",         TipoFestivita.DataRicorrente, new DateTime(2000, 5, 1)),
+                ("Festa della Repubblica",   TipoFestivita.DataRicorrente, new DateTime(2000, 6, 2)),
+                ("Ferragosto",               TipoFestivita.DataRicorrente, new DateTime(2000, 8, 15)),
+                ("Ognissanti",               TipoFestivita.DataRicorrente, new DateTime(2000, 11, 1)),
+                ("Immacolata Concezione",    TipoFestivita.DataRicorrente, new DateTime(2000, 12, 8)),
+                ("Natale",                   TipoFestivita.DataRicorrente, new DateTime(2000, 12, 25)),
+                ("Santo Stefano",            TipoFestivita.DataRicorrente, new DateTime(2000, 12, 26)),
+            })
+            {
+                await _par_FestivitaRepository.UpsertAsync(new Par_Festivita
+                {
+                    IdAz_Anagrafica = IdAz_Anagrafica,
+                    Descrizione = descrizione,
+                    TipoFestivita = tipo,
+                    Data = data
                 });
             }
 

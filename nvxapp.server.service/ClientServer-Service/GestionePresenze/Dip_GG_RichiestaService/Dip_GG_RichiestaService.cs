@@ -1001,6 +1001,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
         // Ore del giustificativo per ogni giorno del periodo richiesto.
         // Si saltano i giorni con 0 ore teoriche nel profilo orario (es. sabato e domenica con orario RIPOSO).
         // Giornata intera: le ore teoriche del giorno; senza profilo orario quel giorno, le ore inviate dal client.
+        // Autorizzazione alle ore in piu': vale per tutti i giorni (anche riposo e festivi, dove lo straordinario
+        // e' tutto fuori orario) e sempre per le ore indicate, mai per la giornata intera.
         private Dictionary<DateTime, TimeSpan> OreGiustificativoPerGiorno(Dip_GG_Richiesta richiesta, int idDip_RapportoLavoro)
         {
             var retVal = new Dictionary<DateTime, TimeSpan>();
@@ -1011,6 +1013,16 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
 
             var oreRichieste = TimeSpan.Parse(body.hhmm);
             var oreTeoriche = _gestionePresenzeOreTeoriche.GetOreTeoriche(idDip_RapportoLavoro, richiesta.Data, richiesta.DataA);
+
+            bool autorizzazione = _par_GiustificativiRepository.FindAll(j => j.Id == body.IdPar_Giustificativi)
+                                                               .Select(j => j.AutorizzaStraordinario)
+                                                               .FirstOrDefault();
+            if (autorizzazione)
+            {
+                foreach (var giorno in oreTeoriche.Keys)
+                    retVal[giorno] = oreRichieste;
+                return retVal;
+            }
 
             foreach (var (giorno, oreTeo) in oreTeoriche)
             {

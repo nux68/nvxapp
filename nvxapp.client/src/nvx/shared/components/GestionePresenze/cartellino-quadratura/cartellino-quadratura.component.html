@@ -1,0 +1,133 @@
+@if (dati) {
+  <div class="cq">
+    <!-- intestazione: stato del periodo -->
+    <div class="cq-testa" (click)="aperto = !aperto">
+      <ion-icon [name]="aperto ? 'chevron-down' : 'chevron-forward'"></ion-icon>
+      <span class="cq-titolo">Riepilogo del mese</span>
+      @if (dati.dip_Periodo) {
+        <ion-chip [color]="statoColore" class="cq-stato">
+          <ion-icon [name]="statoIcona"></ion-icon>
+          <ion-label>{{ statoTesto }}</ion-label>
+        </ion-chip>
+        <span class="cq-sintesi">
+          lavorate {{ hhmm(dati.dip_Periodo.min_Lav) }} su {{ hhmm(dati.dip_Periodo.min_Teo) }}
+          @if (dati.dip_Periodo.min_Ecc > 0) {
+            · in più {{ hhmm(dati.dip_Periodo.min_Ecc) }}
+          }
+          @if (totaleQualificate() > 0) {
+            · qualificate {{ hhmm(totaleQualificate()) }}
+          }
+        </span>
+      } @else {
+        <span class="cq-sintesi">nessun calcolo per il mese</span>
+      }
+    </div>
+
+    @if (aperto && dati.dip_Periodo) {
+      <div class="cq-corpo">
+        <div class="cq-info">
+          {{ partTime ? 'Part-time' : 'Full-time' }} · {{ conteggioTesto }}
+          @if (!dati.eccedenzeAttive) {
+            · calcolo straordinario non attivo nel profilo orario
+          }
+          · {{ destinazioneTesto }}
+        </div>
+
+        <!-- voci del riepilogo -->
+        <div class="cq-tabella">
+          @for (voce of voci; track voce.etichetta) {
+            <div class="cq-riga"
+                 [class.cq-livello1]="voce.livello === 1"
+                 [class.cq-cliccabile]="voce.dettaglio && voce.minuti !== 0"
+                 [class.cq-aperta]="voceAperta === voce"
+                 (click)="apriVoce(voce)">
+              <span class="cq-etichetta">
+                {{ voce.etichetta }}
+                @if (voce.dettaglio && voce.minuti !== 0) {
+                  <ion-icon name="search-outline" class="cq-lente"></ion-icon>
+                }
+              </span>
+              <span class="cq-valore"
+                    [class.cq-positivo]="voce.evidenza === 'positivo' && voce.minuti > 0"
+                    [class.cq-negativo]="voce.evidenza === 'negativo' && voce.minuti !== 0"
+                    [class.cq-provvisorio]="voce.evidenza === 'provvisorio'">
+                {{ hhmm(voce.minuti, voce.etichetta === 'Saldo del periodo') }}
+              </span>
+              <span class="cq-nota">{{ voce.nota }}</span>
+            </div>
+            @if (voceAperta === voce) {
+              <div class="cq-dettaglio">
+                @for (g of giorniVoce(); track g.testo) {
+                  <ion-chip [outline]="true" [color]="g.provvisoria ? 'medium' : 'primary'">
+                    <ion-label>{{ g.testo }} +{{ hhmm(g.minuti) }}</ion-label>
+                  </ion-chip>
+                } @empty {
+                  <span class="cq-nota">nessun giorno</span>
+                }
+              </div>
+            }
+          }
+        </div>
+
+        <!-- settimane: utile con il conteggio settimanale -->
+        @if (dati.settimane.length > 0 && conteggioSettimanale) {
+          <div class="cq-settimane">
+            <div class="cq-sottotitolo">Settimane</div>
+            @for (s of dati.settimane; track s.dal) {
+              <div class="cq-riga cq-livello1">
+                <span class="cq-etichetta">{{ s.dal | date:'dd/MM' }} - {{ s.al | date:'dd/MM' }}</span>
+                <span class="cq-valore">{{ hhmm(s.min_Lav) }} / {{ hhmm(s.min_Teo) }}</span>
+                <span class="cq-nota">
+                  @if (s.provvisoria) {
+                    in attesa di quadratura: +{{ hhmm(s.min_Ecc) }}
+                  } @else if (s.min_Ecc > 0) {
+                    in più {{ hhmm(s.min_Ecc) }}, qualificate {{ hhmm(s.min_Qualificate) }}
+                  }
+                </span>
+              </div>
+            }
+          </div>
+        }
+
+        @if (dati.dip_Periodo.note) {
+          <div class="cq-info">Note HR: {{ dati.dip_Periodo.note }}</div>
+        }
+        @if (stato === PeriodoStato.Approvato && dati.dip_Periodo.dataApprovazione) {
+          <div class="cq-info">Approvato il {{ dati.dip_Periodo.dataApprovazione | date:'dd/MM/yyyy HH:mm' }}</div>
+        }
+
+        <!-- azioni HR -->
+        @if (isHR) {
+          <div class="cq-azioni">
+            @if (stato !== PeriodoStato.Approvato) {
+              <ion-item class="cq-riconosciute" lines="none">
+                <ion-label position="stacked">Ore in più riconosciute (h:mm, vuoto = tutte)</ion-label>
+                <ion-input type="text" [value]="riconosciuteTesto" placeholder="tutte"
+                  (ionInput)="riconosciuteTesto = $event.detail.value ?? ''"></ion-input>
+              </ion-item>
+              <ion-button size="small" fill="outline" shape="round" (click)="salvaRiconosciute(riconosciuteTesto)">
+                <ion-icon name="save-outline"></ion-icon>&nbsp;Applica e ricalcola
+              </ion-button>
+              <ion-button size="small" fill="outline" shape="round" color="medium" (click)="salvaRiconosciute(null)">
+                Riconosci tutte
+              </ion-button>
+              <ion-button size="small" fill="outline" shape="round" color="danger" (click)="salvaRiconosciute('0')">
+                Rifiuta tutte
+              </ion-button>
+            }
+            @if (stato === PeriodoStato.DaApprovare) {
+              <ion-button size="small" shape="round" color="success" (click)="cambiaStato(PeriodoStato.Approvato)">
+                <ion-icon name="checkmark-circle-outline"></ion-icon>&nbsp;Approva
+              </ion-button>
+            }
+            @if (stato === PeriodoStato.Approvato) {
+              <ion-button size="small" fill="outline" shape="round" color="warning" (click)="cambiaStato(PeriodoStato.DaApprovare)">
+                <ion-icon name="lock-open-outline"></ion-icon>&nbsp;Riapri
+              </ion-button>
+            }
+          </div>
+        }
+      </div>
+    }
+  </div>
+}

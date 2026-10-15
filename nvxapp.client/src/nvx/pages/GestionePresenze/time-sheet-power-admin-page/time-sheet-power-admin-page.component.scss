@@ -77,3 +77,38 @@
   padding-left: 8px;
   white-space: nowrap;
 }
+
+// ore in piu' / mancanti del giorno
+.nvx-ecc {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  color: var(--ion-color-success);
+}
+
+.nvx-ecc.nvx-ecc-provvisoria {
+  color: var(--ion-color-medium);
+  font-style: italic;
+}
+
+.nvx-ecc.nvx-ecc-mancanti {
+  color: var(--ion-color-danger);
+  font-weight: normal;
+}
+
+.nvx-ecc-nota {
+  font-size: 0.7em;
+  color: var(--ion-color-medium);
+  line-height: 1.2;
+}
+
+// chip di timbrature, giustificativi e causali: un po' piu' piccoli del default Ionic
+.day-row ion-chip {
+  height: 26px;
+  min-height: 26px;
+  --padding-start: 9px;
+  --padding-end: 9px;
+
+  ion-icon {
+    font-size: 14px;
+  }
+}

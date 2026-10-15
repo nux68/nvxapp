@@ -24,6 +24,7 @@ namespace nvxapp.server.data.Entities.Tenant
         public ICollection<Par_Causali>? Par_Causali { get; set; }
         public ICollection<Par_Giustificativi>? Par_Giustificativi { get; set; }
         public ICollection<Par_Arrotondamenti>? Par_Arrotondamenti { get; set; }
+        public ICollection<Par_Festivita>? Par_Festivita { get; set; }
         public ICollection<Par_Orario>? Par_Orario { get; set; }
         public ICollection<Par_ProfiloOrario>? Par_ProfiloOrario { get; set; }
         public ICollection<Par_Competenza>? Par_Competenza { get; set; }

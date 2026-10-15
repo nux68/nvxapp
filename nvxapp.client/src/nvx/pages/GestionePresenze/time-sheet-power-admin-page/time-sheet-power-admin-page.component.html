@@ -33,6 +33,13 @@
 
 
         @if (currentDays && currentDays.length > 0) {
+          <app-cartellino-quadratura [userId]="currUserId"
+            [year]="currYear"
+            [month]="currMonth + 1"
+            [isHR]="true"
+            [refresh]="refreshCartellino"
+            (changed)="loadMonth()">
+          </app-cartellino-quadratura>
           <div class="day-list-container">
             <ion-grid class="ion-no-padding">
               @if (!isMobile) {
@@ -40,13 +47,15 @@
                   <!-- COL 1 -->
                   <ion-col size="2" size-sm="1" class="header-cell">Giorno</ion-col>
                   <!-- COL 2 -->
-                  <ion-col size="10" size-sm="4" class="header-cell">Timbrature</ion-col>
+                  <ion-col size="10" size-sm="3" class="header-cell">Timbrature</ion-col>
                   <!-- COL 3 -->
                   <ion-col size="10" offset="2" size-sm="2" offset-sm="0" class="header-cell">Giustificativi</ion-col>
                   <!-- COL 4 -->
                   <ion-col size="3" offset="2" size-sm="1" offset-sm="0" class="header-cell">HH Teo</ion-col>
                   <!-- COL 5 -->
-                  <ion-col size="7" size-sm="1" offset-sm="0" class="header-cell">HH Ord</ion-col>
+                  <ion-col size="7" size-sm="1" offset-sm="0" class="header-cell">HH Lav</ion-col>
+                  <!-- COL 5b -->
+                  <ion-col size="10" offset="2" size-sm="1" offset-sm="0" class="header-cell">In più</ion-col>
                   <!-- COL 6 -->
                   <ion-col size="10" offset="2" size-sm="3" offset-sm="0" class="header-cell">Causali</ion-col>
                 </ion-row>
@@ -88,7 +97,7 @@
                     }
                   </ion-col>
                   <!-- COL 2 -->
-                  <ion-col size="10" size-sm="4">
+                  <ion-col size="10" size-sm="3">
                     @if (day.dip_GG_Timbratura?.length > 0) {
                       @for (record of day.dip_GG_Timbratura; track record) {
                         <ion-chip
@@ -97,7 +106,7 @@
                             [ngStyle]="{
                                          'background': timeSheetService.get_Dip_GG_Timbratura_backColor(record),
                                          'color': timeSheetService.get_Dip_GG_Timbratura_txtColor(record),
-                                         'font-size': '0.8em',
+                                         'font-size': '0.72em',
                                          'margin-bottom': '0px',
                                          'margin-top': '0px',
                                          'padding': isMobile ? '5px' : null,
@@ -134,7 +143,7 @@
                             [ngStyle]="{
                                          'background': timeSheetService.get_Dip_GG_Giustificativi_backColor(just),
                                          'color': timeSheetService.get_Dip_GG_Giustificativi_txtColor(just),
-                                         'font-size': '0.8em',
+                                         'font-size': '0.72em',
                                          'margin-bottom': '0px',
                                          'margin-top': '0px',
                                          'cursor': CanOpenMenuActionGiustificativi(just)  ? 'pointer' : 'default',
@@ -165,8 +174,24 @@
                     <!-- COL 5 -->
                     <ion-col size="7" size-sm="1" offset-sm="0">
                       @if (isMobile) {
-                        <span>HH Ord </span>
+                        <span>HH Lav </span>
                         }{{ day.dip_GG_Result.hH_Lav | slice:0:5 }}
+                      </ion-col>
+                      <!-- COL 5b: ore in piu' e loro qualifica -->
+                      <ion-col size="10" offset="2" size-sm="1" offset-sm="0">
+                        @if (timeSheetService.eccedenzaGiorno(day.dip_GG_Result); as ecc) {
+                          <span class="nvx-ecc"
+                            [class.nvx-ecc-provvisoria]="ecc.provvisoria"
+                            [class.nvx-ecc-mancanti]="ecc.minuti < 0"
+                            [title]="ecc.dettaglio">
+                            {{ ecc.testo }}
+                          </span>
+                          @if (ecc.provvisoria) {
+                            <div class="nvx-ecc-nota">in attesa di quadratura</div>
+                          } @else if (ecc.qualifica) {
+                            <div class="nvx-ecc-nota">{{ ecc.qualifica }}</div>
+                          }
+                        }
                       </ion-col>
                       <!-- COL 6 -->
                       <ion-col size="10" offset="2" size-sm="3" offset-sm="0">
@@ -176,7 +201,7 @@
                             [ngStyle]="{
                                          'background': timeSheetService.get_Dip_GG_Causali_backColor(caus),
                                          'color': timeSheetService.get_Dip_GG_Causali_txtColor(caus),
-                                         'font-size': '0.8em',
+                                         'font-size': '0.72em',
                                          'margin-bottom': '0px',
                                          'margin-top': '0px',
                                          'cursor': (true)

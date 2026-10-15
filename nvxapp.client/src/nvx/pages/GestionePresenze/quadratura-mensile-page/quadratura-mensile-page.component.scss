@@ -1,0 +1,46 @@
+.qm-vuoto {
+  padding: 16px;
+  color: var(--ion-color-medium);
+}
+
+.qm-azioni {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 8px 0;
+}
+
+.qm-testata {
+  font-weight: 600;
+  border-bottom: 1px solid var(--ion-color-light-shade);
+  padding: 4px 0;
+}
+
+.qm-riga {
+  align-items: center;
+  padding: 4px 0;
+}
+
+.qm-num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  padding-right: 8px;
+}
+
+.qm-nota {
+  font-size: 0.8em;
+  color: var(--ion-color-medium);
+}
+
+.qm-stato {
+  margin: 0;
+  height: 24px;
+  font-size: 0.85em;
+}
+
+@media (max-width: 575px) {
+  .qm-num {
+    text-align: left;
+  }
+}

@@ -151,8 +151,27 @@ export class RequestJustificationUserPageComponent implements OnInit {
     }
   }
 
+  /** Il giustificativo scelto e' un'autorizzazione alle ore in piu': ore libere, mai giornata intera. */
+  get autorizzazione(): boolean {
+    return this.giustificativi.find(g => g.codice === this.justificationType)?.autorizzaStraordinario === true;
+  }
+
+  /** Ore massime per giorno: 8 per ferie e permessi, 16 per un'autorizzazione alle ore in piu'. */
+  get maxOre(): number {
+    return this.autorizzazione ? 16 : 8;
+  }
+
+  onGiustificativoChange() {
+    if (this.autorizzazione && this.fullDay) {
+      this.fullDay = false;
+      this.hours = 2;
+      this.minutes = 0;
+      this.updateHoursFormatted();
+    }
+  }
+
   increaseHours() {
-    if (!this.fullDay && this.hours < 8) {
+    if (!this.fullDay && this.hours < this.maxOre) {
       this.hours++;
       this.updateHoursFormatted();
     }
@@ -169,7 +188,7 @@ export class RequestJustificationUserPageComponent implements OnInit {
     if (!this.fullDay) {
       if (this.minutes === 45) {
         this.minutes = 0;
-        if (this.hours < 8) {
+        if (this.hours < this.maxOre) {
           this.hours++;
         }
       } else {

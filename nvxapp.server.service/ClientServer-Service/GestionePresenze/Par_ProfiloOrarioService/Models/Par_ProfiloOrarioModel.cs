@@ -1,4 +1,5 @@
 ﻿using nvxapp.server.data.Entities.Tenant.GestionePresenze;
+using nvxapp.server.data.Extensions;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubCommessaService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_OrarioIntervalloHHService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_ProfiloOrarioGGService.Models;
@@ -20,13 +21,28 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Profil
         public int NumGiorniCiclo { get; set; }
         public TipoProfilo TipoProfilo { get; set; }
         public int idPar_Orario_Festivo { get; set; }
+        public bool EccedenzeAttive { get; set; }
+        public StraoTipoConteggio TipoConteggio { get; set; }
         public TimeOnly? StraoSogliaHHFullTime { get; set; }
-        public StraoTipoConteggio StraoTipoConteggio { get; set; } 
-        public StraoTipoConteggio SupplTipoConteggio { get; set; } 
+        public decimal SogliaSettimanaleFT { get; set; }
+        public decimal SupplLimitePerc { get; set; }
+        public TimeRoundInterval EccArrotondamento { get; set; }
+        public int EccFranchigiaMin { get; set; }
+        public bool AssenzeContanoSoglia { get; set; }
+        public bool StraoSoloAutorizzato { get; set; }
+        public bool DomenicaFestiva { get; set; }
+        public TimeOnly NotturnoDalle { get; set; }
+        public TimeOnly NotturnoAlle { get; set; }
 
 
         public int IdCausale_Lavoro_Strao { get; set; }
+        public int? IdCausale_Lavoro_StraoNott { get; set; }
+        public int? IdCausale_Lavoro_StraoFest { get; set; }
+        public int? IdCausale_Lavoro_StraoFestNott { get; set; }
         public int IdCausale_Lavoro_Suppl { get; set; }
+        public int? IdCausale_Lavoro_SupplEcc { get; set; }
+        public int? IdCausale_Lavoro_EccOrd { get; set; }
+        public int? IdCausale_BancaOre { get; set; }
         public int IdGiustificativo_Assenza_Ingiust { get; set; }
 
     }

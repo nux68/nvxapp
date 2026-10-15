@@ -14,6 +14,32 @@ namespace nvxapp.server.data.Entities.Tenant
         public TimeOnly HH_Teo { get; set; }
         public TimeOnly HH_Lav { get; set; }
         public GG_ResultStato Stato { get; set; }
+
+        // ── eccedenze (minuti) ──────────────────────────────────────────
+        // fase giornaliera
+        public int Min_Lavorabili { get; set; }   // teorico +/- giustificativi
+        public int Min_Assenze { get; set; }      // giustificativi che riducono il lavorabile
+        public int Min_Ord { get; set; }          // lavorato entro il lavorabile
+        public int Min_Ecc { get; set; }          // lavorato - lavorabile: >0 arrotondato e oltre franchigia, <0 ore mancanti
+        public int Min_EccNott { get; set; }      // parte dell'eccedenza svolta in fascia notturna
+        public bool Festivo { get; set; }         // festivita' del calendario (o domenica, se il profilo la considera festiva)
+
+        // fase di periodo: qualifica delle ore in piu' del giorno
+        public bool EccProvvisoria { get; set; }  // periodo di conteggio non ancora concluso
+        public int Min_Suppl { get; set; }
+        public int Min_SupplEcc { get; set; }
+        public int Min_Strao { get; set; }
+        public int Min_StraoNott { get; set; }
+        public int Min_StraoFest { get; set; }
+        public int Min_StraoFestNott { get; set; }
+        public int Min_EccOrd { get; set; }
+        public int Min_NonRiconosciute { get; set; }
+        public bool BancaOre { get; set; }        // ore qualificate accreditate in banca ore
+
+        // profili con ore in piu' solo se autorizzate: ore oltre l'autorizzazione approvata del giorno
+        // (non qualificate, senza causale); di queste, quelle coperte da una richiesta di autorizzazione in attesa
+        public int Min_NonAutorizzate { get; set; }
+        public int Min_DaAutorizzare { get; set; }
     }
 
 

@@ -42,6 +42,7 @@ import { ParExportTipoFileToShortTextPipe } from './pipe/GestionePresenze/par-ex
 import { EditParExportCauCausaliComponentComponent } from './components/GestionePresenze/edit-par-export-cau-causali-component/edit-par-export-cau-causali-component.component';
 import { DipSelectorModalComponent } from './components/GestionePresenze/dip-selector-modal/dip-selector-modal.component';
 import { TipoContatoreToLongTextPipe } from './pipe/GestionePresenze/tipo-contatore-to-long-text.pipe';
+import { CartellinoQuadraturaComponent } from './components/GestionePresenze/cartellino-quadratura/cartellino-quadratura.component';
 
 @NgModule({
   declarations: [
@@ -53,6 +54,7 @@ import { TipoContatoreToLongTextPipe } from './pipe/GestionePresenze/tipo-contat
     EditParOrarioDettaglioOrarioIntervalloHHDialogComponent, TimeSheetEngineCallerComponent,
     EditDipGGCausaliDialogComponent, EditDipGGTimbraturaDialogComponent, DipSelectorModalComponent,
     EditDipGGGiustificativiDialogComponent, EditParExportCauCausaliComponentComponent,
+    CartellinoQuadraturaComponent,
   ],
   imports: [
     SharedComponentInfrastructureModule,
@@ -79,7 +81,7 @@ import { TipoContatoreToLongTextPipe } from './pipe/GestionePresenze/tipo-contat
     EditDipProfiloOrarioDialogComponent, ParProfiloOrarioToLongTextPipePipe, EditParProfiloOrarioDettaglioOrarioDialogComponent,
     EditParOrarioDettaglioOrarioIntervalloHHDialogComponent, TimeSheetEngineCallerComponent, EditParExportCauCausaliComponentComponent,
     EditDipGGCausaliDialogComponent, EditDipGGTimbraturaDialogComponent, DipSelectorModalComponent,
-    EditDipGGGiustificativiDialogComponent,
+    EditDipGGGiustificativiDialogComponent, CartellinoQuadraturaComponent,
     ParOrarioToCodicePipe, ParOrarioToLongTextPipe, ParExportTipoFileToShortTextPipe,
     TipoContatoreToLongTextPipe
   ]

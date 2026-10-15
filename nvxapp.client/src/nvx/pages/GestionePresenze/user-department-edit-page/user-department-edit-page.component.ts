@@ -21,7 +21,7 @@ import { EditDipProfiloOrarioDialogComponent } from '../../../shared/components/
 import { Dip_ProfiloOrarioModel } from '../../../ClientServer-Service/GestionePresenze/Dip_ProfiloOrario/Models/dip-profilo-orario-model';
 import { DbUtilService } from '../../../Utility/infrastructure/db-util.service';
 import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
-import { Dip_RapportoLavoroModel } from '../../../ClientServer-Service/GestionePresenze/Dip_RapportoLavoro/Models/dip-rapporto-lavoro-model';
+import { DestinazioneEccedenze, Dip_RapportoLavoroModel, TipoContratto } from '../../../ClientServer-Service/GestionePresenze/Dip_RapportoLavoro/Models/dip-rapporto-lavoro-model';
 import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
 import { ContatoriService } from '../../../ClientServer-Service/GestionePresenze/Contatori/contatori.service';
 import { Contatori_Anno_MeseResult, Contatori_Anno_InModel, Contatori_Riporto_Model, Contatori_Maturazione_Model } from '../../../ClientServer-Service/GestionePresenze/Contatori/Models/contatori-model';
@@ -44,6 +44,8 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
   public readonly SEGMENT_MAIN_RAPP_LAV = 'MAIN_RAPP_LAV_';
 
   public readonly SEGMENT_DIPRAPP_GENERALE  = 'DIPRAPP_DETT_GENERALE';
+  public readonly tipoContrattoEnum = TipoContratto;
+  public readonly destinazioneEccedenzeEnum = DestinazioneEccedenze;
   public readonly SEGMENT_DIPRAPP_PROF_HH   = 'DIPRAPP_DETT_PROF_HH';
   public readonly SEGMENT_DIPRAPP_VARIE     = 'DIPRAPP_DETT_VARIE';
   public readonly SEGMENT_DIPRAPP_CONTATORI = 'DIPRAPP_DETT_CONTATORI';

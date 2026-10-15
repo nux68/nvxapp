@@ -10,6 +10,7 @@ using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_OrarioInte
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_OrarioService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_ProfiloOrarioGGService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_ProfiloOrarioService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_FestivitaService.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_EngineService.Models
@@ -67,6 +68,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
         public int IdPar_ProfiloOrario { get; set; }
         public  int IdAz_SubCommessaAttivita { get; set; }
 
+        // festivita' del calendario aziendale: l'orario e' quello festivo del profilo
+        public bool Festivo { get; set; }
+
         // righe orario del giorno ordinate per ZOrder (1=base, 2+=override)
         public List<Dip_ProfiloOrario_DaySlot_GG> Orari { get; set; } = new List<Dip_ProfiloOrario_DaySlot_GG>();
     }
@@ -90,6 +94,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
         public List<Par_OrarioModel> ParOrario { get; set; } = new List<Par_OrarioModel>();
         public List<Par_OrarioIntervalloHHModel> Par_OrarioIntervalloHH { get; set; } = new List<Par_OrarioIntervalloHHModel>();
         public List<Par_GiustificativiModel> Par_Giustificativi { get; set; } = new List<Par_GiustificativiModel>();
+        public List<Par_FestivitaModel> Par_Festivita { get; set; } = new List<Par_FestivitaModel>();
     }
 
 

@@ -22,6 +22,14 @@
           (currUserIdChange)="onCurrentUserChanged($event)">
         </app-sedi-reparto-user-navigation>
 
+        @if (currYear !== undefined && currMonth !== undefined) {
+          <app-cartellino-quadratura [year]="currYear"
+            [month]="currMonth + 1"
+            [isHR]="false"
+            [refresh]="refreshCartellino">
+          </app-cartellino-quadratura>
+        }
+
         <div class="calendar-grid">
           <!-- Intestazione giorni della settimana -->
           <div class="weekday-header">
@@ -40,6 +48,20 @@
                 @for (day of week; track day; let i = $index) {
                   <div class="day" [ngClass]="getDayClass(day, i)">
                     <div class="day-number">{{ day.day }}</div>
+                    <!-- ore lavorate e ore in piu' del giorno (provvisorie finche' il periodo di conteggio non si chiude) -->
+                    @if (day.isCurrentMonth && day.dip_GG_Result && day.dip_GG_Result.hH_Lav && day.dip_GG_Result.hH_Lav !== '00:00:00') {
+                      <div class="day-ore">
+                        {{ day.dip_GG_Result.hH_Lav | slice:0:5 }}
+                        @if (timeSheetService.eccedenzaGiorno(day.dip_GG_Result); as ecc) {
+                          <span class="day-ecc"
+                            [class.day-ecc-provvisoria]="ecc.provvisoria"
+                            [class.day-ecc-mancanti]="ecc.minuti < 0"
+                            [title]="ecc.dettaglio">
+                            {{ ecc.testo }}
+                          </span>
+                        }
+                      </div>
+                    }
                     <div class="day-content">
                       @if (day.dip_GG_Giustificativi && day.dip_GG_Giustificativi.length > 0) {
                         <div class="justifications">

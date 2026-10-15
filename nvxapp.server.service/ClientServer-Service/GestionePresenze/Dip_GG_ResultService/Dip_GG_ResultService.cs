@@ -107,12 +107,12 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Res
                     TimeSpan diff = model.Data.Al - model.Data.Dal;
                     foreach (var item in idRapportoLavoroList)
                     {
-                        if (retVal.Dip_GG_Result.Select(x => x.IdDip_RapportoLavoro == item).Count() != diff.Days + 1)
+                        if (retVal.Dip_GG_Result.Count(x => x.IdDip_RapportoLavoro == item) != diff.Days + 1)
                         {
                             List<DateTime> DayToAdd = new List<DateTime>();
                             for (var giorno = model.Data.Dal; giorno <= model.Data.Al; giorno = giorno.AddDays(1))
                             {
-                                var currDay = retVal.Dip_GG_Result.Where(x => x.Data.Date == giorno).FirstOrDefault();
+                                var currDay = retVal.Dip_GG_Result.Where(x => x.IdDip_RapportoLavoro == item && x.Data.Date == giorno).FirstOrDefault();
                                 if (currDay == null)
                                     DayToAdd.Add(giorno);
                             }

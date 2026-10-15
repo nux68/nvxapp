@@ -42,6 +42,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
         private readonly IAz_SediRepartoUserRepository _az_SediRepartoUserRepository;
         private readonly IAspNetUserRolesRepository _aspNetUserRolesRepository;
         private readonly IAspNetRolesRepository _aspNetRolesRepository;
+        private readonly IDip_PeriodoRepository _dip_PeriodoRepository;
 
 
 
@@ -67,7 +68,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                                            IGestionePresenzeParametriDefault gestionePresenzeParametriDefault,
                                            IAz_SediRepartoUserRepository az_SediRepartoUserRepository,
                                            IAspNetUserRolesRepository aspNetUserRolesRepository,
-                                           IAspNetRolesRepository aspNetRolesRepository
+                                           IAspNetRolesRepository aspNetRolesRepository,
+                                           IDip_PeriodoRepository dip_PeriodoRepository
                                            )
         {
             _mapper = mapper;
@@ -95,6 +97,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
             _az_SediRepartoUserRepository = az_SediRepartoUserRepository;
             _aspNetUserRolesRepository = aspNetUserRolesRepository;
             _aspNetRolesRepository = aspNetRolesRepository;
+            _dip_PeriodoRepository = dip_PeriodoRepository;
 
         }
 
@@ -588,8 +591,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
 
         //////
 
-        // Movimenti (richieste, timbrature, giustificativi, causali) ammessi solo nei giorni del rapporto di lavoro:
-        // ritorna il messaggio d'errore per il primo giorno fuori da assunzione..cessazione, altrimenti null
+        // Movimenti (richieste, timbrature, giustificativi, causali) ammessi solo nei giorni del rapporto di lavoro
+        // e fuori dai mesi con il cartellino approvato:
+        // ritorna il messaggio d'errore per il primo giorno non ammesso, altrimenti null
         public string? VerificaGiorniNelRapporto(int IdDip_RapportoLavoro, DateTime Dal, DateTime Al)
         {
             var rapporto = _dip_RapportoLavoroRepository.FindAll(r => r.Id == IdDip_RapportoLavoro).FirstOrDefault();
@@ -602,6 +606,15 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                     return $"Il {giorno:dd/MM/yyyy} è prima dell'assunzione ({rapporto.DataAss.Value:dd/MM/yyyy}): non si possono inserire movimenti.";
                 if (rapporto.DataLic != null && giorno > rapporto.DataLic.Value.Date)
                     return $"Il {giorno:dd/MM/yyyy} è dopo la cessazione ({rapporto.DataLic.Value:dd/MM/yyyy}): non si possono inserire movimenti.";
+            }
+
+            var approvati = _dip_PeriodoRepository.FindAll(p => p.IdDip_RapportoLavoro == IdDip_RapportoLavoro && p.Stato == PeriodoStato.Approvato)
+                                                  .Select(p => new { p.Anno, p.Mese })
+                                                  .ToList();
+            for (var giorno = Dal.Date; giorno <= Al.Date; giorno = giorno.AddDays(1))
+            {
+                if (approvati.Any(p => p.Anno == giorno.Year && p.Mese == giorno.Month))
+                    return $"Il cartellino di {giorno:MM/yyyy} è approvato: per inserire o modificare movimenti l'HR deve riaprirlo.";
             }
             return null;
         }

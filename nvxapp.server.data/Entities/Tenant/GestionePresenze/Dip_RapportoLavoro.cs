@@ -20,6 +20,18 @@ namespace nvxapp.server.data.Entities.Tenant
         public DateTime? DataAss { get; set; } // assunzione
         public DateTime? DataLic { get; set; } // lic
 
+        public TipoContratto TipoContratto { get; set; } = TipoContratto.FullTime;
+
+        // ore settimanali contrattuali (part-time): base del limite % del supplementare
+        [Column(TypeName = "decimal(5,2)")]
+        public decimal? OreSettimanaliContratto { get; set; }
+
+        [MaxLength(50)]
+        public string? Ccnl { get; set; }
+
+        // ore di straordinario/supplementare pagate o accreditate in banca ore
+        public DestinazioneEccedenze DestinazioneEccedenze { get; set; } = DestinazioneEccedenze.Pagamento;
+
         [Required]
         public required int IdAz_SubCommessaAttivita { get; set; }
         [ForeignKey("IdAz_SubCommessaAttivita")]
@@ -35,6 +47,19 @@ namespace nvxapp.server.data.Entities.Tenant
         public ICollection<Dip_GG_Result>? Dip_GG_Result { get; set; }
         public ICollection<Dip_Rapporto_Giustificativi_Maturazione>? Dip_Rapporto_Giustificativi_Maturazione { get; set; }
         public ICollection<Dip_Contatori_Riporto>? Dip_Contatori_Riporto { get; set; }
+        public ICollection<Dip_Periodo>? Dip_Periodo { get; set; }
+    }
+
+    public enum TipoContratto
+    {
+        FullTime,
+        PartTime
+    }
+
+    public enum DestinazioneEccedenze
+    {
+        Pagamento,
+        BancaOre
     }
 
 }

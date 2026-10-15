@@ -19,6 +19,7 @@ import { TipoTimbraturaToLongTextPipe } from '../../shared/pipe/GestionePresenze
 import { OrariSchema_4User_OutModel, Timesheet_AllData_InModel } from '../../ClientServer-Service/GestionePresenze/TimeSheet_EngineService/Models/time-sheet-engine-model';
 import { TimeSheetEngineService } from '../../ClientServer-Service/GestionePresenze/TimeSheet_EngineService/time-sheet-engine.service';
 import { Dip_GG_ResultModel, GG_ResultStato } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Result/Models/dip-gg-result-model';
+import { minutiToHHMM } from '../../ClientServer-Service/GestionePresenze/Dip_Periodo/Models/dip-periodo-model';
 import { Dip_GG_CausaliModel } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Causali/Models/dip-gg-causali-model';
 import { Contatori_Anno_InModel, Contatori_Anno_MeseResult } from '../../ClientServer-Service/GestionePresenze/Contatori/Models/contatori-model';
 import { ContatoriService } from '../../ClientServer-Service/GestionePresenze/Contatori/contatori.service';
@@ -478,9 +479,68 @@ export class TimeSheetService {
   }
 
 
+  /**
+   * Ore in piu' (o mancanti) del giorno e loro qualifica, per la colonna "In piu'" dei calendari.
+   * null se il giorno non e' calcolato o quadra con il lavorabile.
+   * Con il conteggio settimanale/mensile, finche' il periodo e' in corso, le ore sono "in attesa di quadratura".
+   */
+  eccedenzaGiorno(r: Dip_GG_ResultModel | null | undefined): { minuti: number, testo: string, provvisoria: boolean, qualifica: string, dettaglio: string } | null {
+    const nonAutorizzate = r?.min_NonAutorizzate ?? 0;
+    if (!r || (!r.min_Ecc && !nonAutorizzate))
+      return null;
+    if (!(Number(r.stato) & ~GG_ResultStato.Init))
+      return null;
+
+    const parti: string[] = [];
+    const aggiungi = (etichetta: string, minuti: number) => { if (minuti > 0) parti.push(`${etichetta} ${minutiToHHMM(minuti)}`); };
+    aggiungi('Suppl.', r.min_Suppl);
+    aggiungi('Suppl. oltre', r.min_SupplEcc);
+    aggiungi('Strao', r.min_Strao);
+    aggiungi('Strao nott.', r.min_StraoNott);
+    aggiungi('Strao fest.', r.min_StraoFest);
+    aggiungi('Strao fest. nott.', r.min_StraoFestNott);
+    aggiungi('Eccedenti', r.min_EccOrd);
+    aggiungi('Non ric.', r.min_NonRiconosciute);
+    if (r.min_DaAutorizzare > 0)
+      parti.push(`in attesa di autorizzazione ${minutiToHHMM(r.min_DaAutorizzare)}`);
+    if (nonAutorizzate - (r.min_DaAutorizzare ?? 0) > 0)
+      parti.push(`non autorizzate ${minutiToHHMM(nonAutorizzate - (r.min_DaAutorizzare ?? 0))}`);
+
+    const qualificate = r.min_Suppl + r.min_SupplEcc + r.min_Strao + r.min_StraoNott + r.min_StraoFest + r.min_StraoFestNott + r.min_EccOrd + r.min_NonRiconosciute;
+    let qualifica = parti.join(' · ');
+    if (r.min_Ecc > 0 && !r.eccProvvisoria && qualificate < r.min_Ecc)
+      qualifica = (qualifica ? qualifica + ' · ' : '') + `compensate ${minutiToHHMM(r.min_Ecc - qualificate)}`;
+    if (r.bancaOre && qualificate > 0)
+      qualifica += ' (banca ore)';
+
+    // le ore in piu' mostrate sono tutte quelle lavorate oltre il dovuto, anche quelle non autorizzate
+    const totale = r.min_Ecc > 0 ? r.min_Ecc + nonAutorizzate : (r.min_Ecc < 0 ? r.min_Ecc : nonAutorizzate);
+    return {
+      minuti: totale,
+      testo: minutiToHHMM(totale, true),
+      provvisoria: (r.min_Ecc > 0 && r.eccProvvisoria) || r.min_DaAutorizzare > 0,
+      qualifica,
+      dettaglio: r.min_Ecc < 0
+        ? 'Ore mancanti rispetto al lavorabile'
+        : (r.eccProvvisoria ? 'Ore in più provvisorie: si qualificano a fine periodo di conteggio' : (qualifica || 'Ore in più'))
+    };
+  }
+
+  /**
+   * Le ore in piu' non sono un errore: un giorno il cui unico errore e' Err_3 (ore lavorate oltre le previste,
+   * segnale dei calcoli precedenti allo straordinario) si mostra come avviso, con il "!" giallo.
+   * I nuovi calcoli segnalano gia' le ore in piu' con Warning_1.
+   */
+  private statoPerIcona(stato: number): number {
+    const dettagliErrore = ((1 << 25) - 1) & ~((1 << 5) - 1);   // Err_TimbratureMancanti .. Err_20
+    if ((stato & GG_ResultStato.Err) && (stato & dettagliErrore) === GG_ResultStato.Err_3)
+      return (stato & ~GG_ResultStato.Err) | GG_ResultStato.Warning;
+    return stato;
+  }
+
   get_StatoDay_icon(dip_GG_ResultModel: Dip_GG_ResultModel): string {
 
-    const stato = Number(dip_GG_ResultModel.stato);
+    const stato = this.statoPerIcona(Number(dip_GG_ResultModel.stato));
 
     let main: GG_ResultStato;
 
@@ -520,7 +580,7 @@ export class TimeSheetService {
   get_StatoDay_color(dip_GG_ResultModel: Dip_GG_ResultModel): string {
     
 
-    const stato = Number(dip_GG_ResultModel.stato);
+    const stato = this.statoPerIcona(Number(dip_GG_ResultModel.stato));
 
     let main: GG_ResultStato;
 
@@ -892,7 +952,7 @@ export class TimeSheetService {
     const errLabels: Partial<Record<GG_ResultStato, string>> = {
       [GG_ResultStato.Err_TimbratureMancanti]: 'Timbrature mancanti rispetto all\'orario atteso',
       [GG_ResultStato.Err_2]:  'Ore lavorate inferiori alle ore previste',
-      [GG_ResultStato.Err_3]:  'Ore lavorate superiori alle ore previste',
+      [GG_ResultStato.Err_3]:  'Ore lavorate superiori alle ore previste (vedi colonna "In più")',
       [GG_ResultStato.Err_4]:  'Errore 4',
       [GG_ResultStato.Err_5]:  'Errore 5',
       [GG_ResultStato.Err_6]:  'Errore 6',
@@ -914,7 +974,7 @@ export class TimeSheetService {
 
     // --- Dettagli warning ---
     const warnLabels: Partial<Record<GG_ResultStato, string>> = {
-      [GG_ResultStato.Warning_1]:  'Avvertimento 1',
+      [GG_ResultStato.Warning_1]:  'Ore lavorate superiori alle ore previste (vedi colonna "In più")',
       [GG_ResultStato.Warning_2]:  'Avvertimento 2',
       [GG_ResultStato.Warning_3]:  'Avvertimento 3',
       [GG_ResultStato.Warning_4]:  'Avvertimento 4',

@@ -1,0 +1,122 @@
+.cq {
+  border: 1px solid var(--ion-color-light-shade);
+  border-radius: 8px;
+  margin: 8px 0 12px 0;
+  font-size: 0.9em;
+}
+
+.cq-testa {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+.cq-titolo {
+  font-weight: 600;
+}
+
+.cq-stato {
+  margin: 0;
+  height: 24px;
+  font-size: 0.85em;
+}
+
+.cq-sintesi,
+.cq-nota,
+.cq-info {
+  color: var(--ion-color-medium);
+}
+
+.cq-corpo {
+  padding: 0 10px 10px 10px;
+}
+
+.cq-info {
+  padding: 4px 0;
+}
+
+.cq-tabella,
+.cq-settimane {
+  max-width: 760px;
+}
+
+.cq-sottotitolo {
+  font-weight: 600;
+  margin-top: 10px;
+}
+
+.cq-riga {
+  display: grid;
+  grid-template-columns: minmax(150px, 1fr) 80px minmax(120px, 1.4fr);
+  gap: 8px;
+  padding: 3px 4px;
+  border-bottom: 1px solid var(--ion-color-light);
+  align-items: center;
+}
+
+.cq-livello1 .cq-etichetta {
+  padding-left: 16px;
+}
+
+.cq-cliccabile {
+  cursor: pointer;
+}
+
+.cq-cliccabile:hover,
+.cq-aperta {
+  background: var(--ion-color-light);
+}
+
+.cq-lente {
+  font-size: 0.85em;
+  vertical-align: middle;
+}
+
+.cq-valore {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.cq-positivo {
+  color: var(--ion-color-success);
+}
+
+.cq-negativo {
+  color: var(--ion-color-danger);
+}
+
+.cq-provvisorio {
+  color: var(--ion-color-medium);
+  font-style: italic;
+}
+
+.cq-dettaglio {
+  padding: 4px 4px 8px 20px;
+}
+
+.cq-azioni {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.cq-riconosciute {
+  max-width: 260px;
+  --padding-start: 0;
+}
+
+@media (max-width: 575px) {
+  .cq-riga {
+    grid-template-columns: 1fr 70px;
+  }
+  .cq-riga .cq-nota {
+    grid-column: 1 / -1;
+    font-size: 0.85em;
+  }
+}

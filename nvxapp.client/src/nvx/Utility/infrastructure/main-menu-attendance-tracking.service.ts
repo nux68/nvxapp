@@ -17,6 +17,7 @@ export class MainMenuAttendanceTrackingService implements iMainMenuService {
     return [
       { menuType: MenuType.MenuItem, zorder: 2100, group: 0, title: 'Richieste', roles: ['CompanyPowerAdmin', 'CompanyAdmin'], component: "JustificationListPageComponent", url: '/requestlistadmin', icon: 'create' },
       { menuType: MenuType.MenuItem, zorder: 2200, group: 0, title: 'Calendario HR', roles: ['CompanyPowerAdmin'], component: "TimeSheetPowerAdminPageComponent", url: '/poweradmintimesheet', icon: 'calendar-number' },
+      { menuType: MenuType.MenuItem, zorder: 2250, group: 0, title: 'Quadratura mensile', roles: ['CompanyPowerAdmin'], component: "QuadraturaMensilePageComponent", url: '/quadraturamensile', icon: 'checkmark-done-circle' },
 
       { menuType: MenuType.MenuItem, zorder: 2400, group: 0, title: 'Export causali', roles: ['CompanyPowerAdmin'], component: "ExportCausaliPageComponent", url: '/exportcausali', icon: 'cloud-download' },
       { menuType: MenuType.MenuItem, zorder: 2500, group: 0, title: 'Statistiche attività', roles: ['CompanyPowerAdmin'], component: "ActivityStatisticsPageComponent", url: '/activitystatistics', icon: 'bar-chart' },
@@ -34,6 +35,7 @@ export class MainMenuAttendanceTrackingService implements iMainMenuService {
       { menuType: MenuType.MenuItem, zorder: 204000, group: 1, title: 'Configurazione', roles: ['CompanyPowerAdmin'], component: "CompanyCfgPageComponent", url: '/companycfgedit', icon: 'construct' },
       { menuType: MenuType.MenuItem, zorder: 205000, group: 1, title: 'Orari', roles: ['CompanyPowerAdmin'], component: "OrariListPageComponent", url: '/orarilist', icon: 'time' },
       { menuType: MenuType.MenuItem, zorder: 206000, group: 1, title: 'Profili Orari', roles: ['CompanyPowerAdmin'], component: "ProfiloOrarioListPageComponent", url: '/profiliorarilist', icon: 'timer' },
+      { menuType: MenuType.MenuItem, zorder: 206500, group: 1, title: 'Festività', roles: ['CompanyPowerAdmin'], component: "FestivitaListPageComponent", url: '/festivitalist', icon: 'flag' },
       { menuType: MenuType.MenuItem, zorder: 207000, group: 1, title: 'Modelli Export', roles: ['CompanyPowerAdmin'], component: "ExportCauListPageComponent", url: '/exportcaulist', icon: 'hammer' },
 
 
