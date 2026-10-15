@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
 import { TimeSheetService } from '../../../Utility/GestionePresenze/time-sheet.service';
-import { MonthData } from '../../../Utility/GestionePresenze/time-sheet-common-data';
+import { MonthData, SegmentoItem, SegmentoRichiesta } from '../../../Utility/GestionePresenze/time-sheet-common-data';
 import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
 import { Dip_GG_Timbratura_DeleteInModel, Dip_GG_TimbraturaGetInModel, Dip_GG_TimbraturaModel, Dip_GG_TimbraturaPutInModel, TipoTimbratura } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Timbratura/Models/dip-gg-timbratura-model';
 import { Dip_GG_Giustificativi_DeleteInModel, Dip_GG_GiustificativiGetInModel, Dip_GG_GiustificativiModel, Dip_GG_GiustificativiPutInModel } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Giustificativi/Models/dip-gg-giustificativi-model';
@@ -71,6 +71,10 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
   public initialMonth: number | null = null;
 
   currentMonth: MonthData; // Interfaccia importata per i dati mensili
+
+  /** Pezzi delle richieste su più giorni (inizio/mezzo/fine) e richiesta evidenziata al passaggio del mouse. */
+  public segmenti = new Map<SegmentoItem, SegmentoRichiesta>();
+  public richiestaEvidenziata: number | null = null;
   currentDays: DayData[] = []; // Array ordinato per i giorni del mese
 
   TipoTimbratura = TipoTimbratura;
@@ -222,6 +226,7 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
       /*  DISABILIATTO xke manca strategia di refresh efficace */
       //this.loadCounter = false;
       this.buildDaysList();
+      this.segmenti = this.timeSheetService.segmentiDelMese(this.currentMonth);
     });
 
     //////////////////////////

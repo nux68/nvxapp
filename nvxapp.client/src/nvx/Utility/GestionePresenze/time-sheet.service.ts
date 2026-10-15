@@ -10,7 +10,7 @@ import { DipGGTimbraturaService } from '../../ClientServer-Service/GestionePrese
 import { GenericRequest } from '../../ClientServer-Service/ModelsBase/generic-request';
 import { forkJoin } from 'rxjs/internal/observable/forkJoin';
 import { DipGGRichiestaService } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/dip-gg-richiesta.service';
-import { FuoriRapporto, MonthData, PeriodoRapporto, TimeSheetRemoteData } from './time-sheet-common-data';
+import { FuoriRapporto, MonthData, PeriodoRapporto, SegmentoItem, SegmentoRichiesta, TimeSheetRemoteData } from './time-sheet-common-data';
 import { SharedParameterGestionePresenzeService } from '../../shared/shared-parameter-gestione-presenze.service';
 import { DateTimeUtilService } from '../infrastructure/date-time-util.service';
 import { TipoRichiestaToShortTextPipe } from '../../shared/pipe/GestionePresenze/tipo-richiesta-to-short-text.pipe';
@@ -158,12 +158,71 @@ export class TimeSheetService {
   fuoriRapporto(currentMonth: MonthData, data: Date | string): FuoriRapporto | null {
     const periodi = currentMonth?.periodiRapporto;
     if (!periodi) return null;
-    const d = new Date(data);
-    const giorno = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    const giorno = this.giornoIso(data);
     if (periodi.some(p => p.dal <= giorno && (p.al == null || giorno <= p.al))) return null;
     if (periodi.length === 0 || giorno < periodi[0].dal) return 'prima';
     if (periodi.every(p => p.al != null && p.al < giorno)) return 'dopo';
     return 'tra';
+  }
+
+  /**
+   * Posizione di un giustificativo nella sua richiesta su più giorni ('inizio' | 'mezzo' | 'fine'),
+   * null se la richiesta copre un solo giorno. `tutti` sono i giustificativi visibili nella pagina,
+   * `inizioVista`/`fineVista` ("YYYY-MM-DD") il periodo mostrato: se la richiesta continua oltre,
+   * il pezzo sul bordo resta aperto da quel lato.
+   */
+  segmentoRichiesta(g: SegmentoItem, tutti: SegmentoItem[], richiesta: Dip_GG_RichiestaModel | null | undefined,
+                    inizioVista: string, fineVista: string): SegmentoRichiesta | null {
+    if (g?.idDip_GG_Richiesta == null) return null;
+    const giorno = this.giornoIso(g.data);
+    const stessa = tutti.filter(x => x.idDip_GG_Richiesta === g.idDip_GG_Richiesta).map(x => this.giornoIso(x.data));
+    const dal = richiesta?.data ? this.ddmmyyyyToIso(richiesta.data) : null;
+    const al  = richiesta?.dataA ? this.ddmmyyyyToIso(richiesta.dataA) : null;
+    const prima = stessa.some(x => x < giorno) || (dal != null && dal < inizioVista && giorno <= fineVista);
+    const dopo  = stessa.some(x => x > giorno) || (al != null && al > fineVista && giorno >= inizioVista);
+    if (prima && dopo) return 'mezzo';
+    if (dopo) return 'inizio';
+    if (prima) return 'fine';
+    return null;
+  }
+
+  /**
+   * Pezzi di richiesta di tutti i giustificativi indicati (chiave = l'oggetto giustificativo):
+   * contiene solo quelli di richieste su più giorni. Va calcolato una volta al caricamento dei dati.
+   */
+  segmentiRichieste(tutti: SegmentoItem[], richieste: Dip_GG_RichiestaModel[], inizioVista: string, fineVista: string): Map<SegmentoItem, SegmentoRichiesta> {
+    const retVal = new Map<SegmentoItem, SegmentoRichiesta>();
+    for (const g of tutti) {
+      const richiesta = richieste?.find(r => r.id === g.idDip_GG_Richiesta);
+      const seg = this.segmentoRichiesta(g, tutti, richiesta, inizioVista, fineVista);
+      if (seg) retVal.set(g, seg);
+    }
+    return retVal;
+  }
+
+  /** Pezzi di richiesta dei giustificativi del mese del cartellino. */
+  segmentiDelMese(month: MonthData): Map<SegmentoItem, SegmentoRichiesta> {
+    const tutti = Object.values(month?.days ?? {}).flatMap(d => d.dip_GG_Giustificativi ?? []);
+    const inizio = this.giornoIso(new Date(month.year, month.month, 1));
+    const fine = this.giornoIso(new Date(month.year, month.month + 1, 0));
+    return this.segmentiRichieste(tutti, month.dip_GG_Richiesta, inizio, fine);
+  }
+
+  /** "Richiesta dal … al …" per i tooltip dei giustificativi di una richiesta su più giorni. */
+  periodoRichiestaTesto(richiesta: Dip_GG_RichiestaModel | null | undefined): string {
+    return richiesta?.data && richiesta.dataA && richiesta.data !== richiesta.dataA
+      ? `Richiesta dal ${richiesta.data} al ${richiesta.dataA}` : '';
+  }
+
+  /** "YYYY-MM-DD" di una data (oggetto Date o stringa ISO), nel fuso locale. */
+  giornoIso(data: Date | string): string {
+    const d = new Date(data);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  }
+
+  private ddmmyyyyToIso(s: string): string {
+    const [gg, mm, aaaa] = s.substring(0, 10).split('/');
+    return `${aaaa}-${mm}-${gg}`;
   }
 
   /** Testo breve per i giorni fuori rapporto. */

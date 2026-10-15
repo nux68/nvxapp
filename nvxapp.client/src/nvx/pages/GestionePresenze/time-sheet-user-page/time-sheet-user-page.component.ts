@@ -4,7 +4,7 @@ import { environment } from '../../../../environments/environment';
 import { MonthNavigatorService } from '../../../Utility/infrastructure/month-navigator.service';
 import { SignalrService } from '../../../Utility/infrastructure/signalr.service';
 import { TimeSheetService } from '../../../Utility/GestionePresenze/time-sheet.service';
-import { MonthData } from '../../../Utility/GestionePresenze/time-sheet-common-data';
+import { MonthData, SegmentoItem, SegmentoRichiesta } from '../../../Utility/GestionePresenze/time-sheet-common-data';
 import { Dip_GG_TimbraturaModel, TipoTimbratura } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Timbratura/Models/dip-gg-timbratura-model';
 import { Dip_GG_GiustificativiModel, JustificationInputType } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Giustificativi/Models/dip-gg-giustificativi-model';
 import { Dip_GG_Richiesta_SetState_InModel, Dip_GG_RichiestaModel, StatoRichiesta } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/Models/dip-gg-richiesta-model';
@@ -39,6 +39,10 @@ export class TimeSheetUserPageComponent implements OnInit, OnDestroy {
   private Dip_GG_Richiesta_refreshSub: Subscription;
 
   currentMonth: MonthData; // Usa l'interfaccia importata
+
+  /** Pezzi delle richieste su più giorni (inizio/mezzo/fine) e richiesta evidenziata al passaggio del mouse. */
+  public segmenti = new Map<SegmentoItem, SegmentoRichiesta>();
+  public richiestaEvidenziata: number | null = null;
   // Usa le interfacce importate nella definizione di 'weeks'
   weeks: Array<Array<{
     day: number,
@@ -147,6 +151,7 @@ export class TimeSheetUserPageComponent implements OnInit, OnDestroy {
     this.timeSheetService.getMonthData(this.currYear, this.currMonth,null,false).subscribe(monthData => {
       this.currentMonth = monthData; // monthData è già del tipo corretto MonthData
       this.buildCalendarWeeks();     // Costruisce la UI dopo aver ricevuto i dati
+      this.segmenti = this.timeSheetService.segmentiDelMese(this.currentMonth);
     });
   }
 

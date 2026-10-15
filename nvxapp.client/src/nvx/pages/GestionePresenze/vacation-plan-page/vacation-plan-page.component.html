@@ -24,7 +24,7 @@
 
       <!-- GRIGLIA PIANO FERIE — MOBILE (ion-hide-sm-up) -->
       @if (daySlots?.length > 0 && getDaysInMonth().length > 0) {
-        <div class="ion-hide-sm-up">
+        <div class="ion-hide-sm-up nvx-seg-verticale">
           @for (slot of getAll(); track slot; let i = $index) {
             <div class="vg-mobile-dip-block">
               <!-- Nome dipendente -->
@@ -47,6 +47,10 @@
                       @if (giust.length > 0) {
                         @for (g of giust; track g) {
                           <ion-chip
+                              [ngClass]="'nvx-seg-' + (segmenti.get(g) ?? 'no')"
+                              [class.nvx-seg-attiva]="segmenti.has(g) && g.idDip_GG_Richiesta === richiestaEvidenziata"
+                              (mouseenter)="richiestaEvidenziata = segmenti.has(g) ? g.idDip_GG_Richiesta : null"
+                              (mouseleave)="richiestaEvidenziata = null"
                               [ngStyle]="{
                                 'background': timeSheetService.get_Dip_GG_Giustificativi_backColor(g),
                                 'color':      timeSheetService.get_Dip_GG_Giustificativi_txtColor(g),
@@ -57,7 +61,7 @@
                                 'opacity': CanOpenMenuActionGiustificativi(slot,g) ? '1' : '0.5'
                               }"
                             (click)="CanOpenMenuActionGiustificativi(slot,g) ? actionSheetOpen(g) : null"
-                            [title]="g.idPar_Giustificativi | parGiustificativiToLongText">
+                            [title]="titoloGiustificativo(slot, g, g.idPar_Giustificativi | parGiustificativiToLongText)">
                             {{ g.idPar_Giustificativi | parGiustificativiToShortText }}&nbsp;{{ g.hours.substring(0, 5) }}
                           </ion-chip>
                         }
@@ -110,6 +114,10 @@
                         <div class="vg-chips-stack">
                           @for (g of giust; track g) {
                             <ion-chip
+                              [ngClass]="'nvx-seg-' + (segmenti.get(g) ?? 'no')"
+                              [class.nvx-seg-attiva]="segmenti.has(g) && g.idDip_GG_Richiesta === richiestaEvidenziata"
+                              (mouseenter)="richiestaEvidenziata = segmenti.has(g) ? g.idDip_GG_Richiesta : null"
+                              (mouseleave)="richiestaEvidenziata = null"
                               [ngStyle]="{
                                 'background': timeSheetService.get_Dip_GG_Giustificativi_backColor(g),
                                 'color':      timeSheetService.get_Dip_GG_Giustificativi_txtColor(g),
@@ -120,7 +128,7 @@
                                 'opacity': CanOpenMenuActionGiustificativi(slot,g) ? '1' : '0.5'
                               }"
                               (click)="CanOpenMenuActionGiustificativi(slot,g) ? actionSheetOpen(g) : null"
-                              [title]="g.idPar_Giustificativi | parGiustificativiToLongText">
+                              [title]="titoloGiustificativo(slot, g, g.idPar_Giustificativi | parGiustificativiToLongText)">
                               {{ g.idPar_Giustificativi | parGiustificativiToShortText }}  {{ g.hours.substring(0, 5) }}
                             </ion-chip>
                           }

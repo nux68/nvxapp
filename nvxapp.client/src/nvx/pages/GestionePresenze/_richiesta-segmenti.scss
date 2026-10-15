@@ -1,0 +1,34 @@
+// Giustificativi di una richiesta su più giorni (classi da TimeSheetService.segmentiRichieste):
+// come un evento che attraversa più giorni nei calendari, i pezzi sono arrotondati solo
+// alle estremità della richiesta (primo e ultimo giorno), squadrati verso i giorni collegati.
+ion-chip.nvx-seg-inizio {
+  border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
+}
+
+ion-chip.nvx-seg-mezzo {
+  border-radius: 3px;
+}
+
+ion-chip.nvx-seg-fine {
+  border-top-left-radius: 3px;
+  border-bottom-left-radius: 3px;
+}
+
+// liste con un giorno per riga (Calendario HR, piano ferie su mobile): la richiesta prosegue
+// verso il basso, quindi il primo giorno è arrotondato in alto e l'ultimo in basso
+.nvx-seg-verticale {
+  ion-chip.nvx-seg-inizio {
+    border-radius: 12px 12px 3px 3px;
+  }
+
+  ion-chip.nvx-seg-fine {
+    border-radius: 3px 3px 12px 12px;
+  }
+}
+
+// passando su un pezzo si evidenziano tutti i pezzi della stessa richiesta:
+// anello interno al chip, così non viene tagliato dai bordi della cella o dal numero del giorno
+ion-chip.nvx-seg-attiva {
+  box-shadow: inset 0 0 0 2px var(--ion-text-color);
+}

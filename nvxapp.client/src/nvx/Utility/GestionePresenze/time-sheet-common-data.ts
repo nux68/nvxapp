@@ -39,6 +39,15 @@ export interface PeriodoRapporto {
 /** Giorno fuori da tutti i rapporti: prima dell'assunzione, dopo la cessazione o tra due rapporti. */
 export type FuoriRapporto = 'prima' | 'dopo' | 'tra';
 
+/** Pezzo di una richiesta su più giorni: primo giorno, giorni intermedi, ultimo giorno. */
+export type SegmentoRichiesta = 'inizio' | 'mezzo' | 'fine';
+
+/** Quanto serve per collocare un giustificativo nella sua richiesta. */
+export interface SegmentoItem {
+  idDip_GG_Richiesta?: number | null;
+  data: Date | string;
+}
+
 
 export interface TimeSheetRemoteData {
   dip_GG_Timbratura: Dip_GG_TimbraturaModel[];

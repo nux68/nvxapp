@@ -121,10 +121,14 @@
                     }
                   </ion-col>
                   <!-- COL 3 -->
-                  <ion-col size="10" offset="2" size-sm="2" offset-sm="0">
+                  <ion-col size="10" offset="2" size-sm="2" offset-sm="0" class="nvx-seg-verticale">
                     @if (day.dip_GG_Giustificativi?.length > 0) {
                       @for (just of day.dip_GG_Giustificativi; track just) {
                         <ion-chip
+                          [ngClass]="'nvx-seg-' + (segmenti.get(just) ?? 'no')"
+                          [class.nvx-seg-attiva]="segmenti.has(just) && just.idDip_GG_Richiesta === richiestaEvidenziata"
+                          (mouseenter)="richiestaEvidenziata = segmenti.has(just) ? just.idDip_GG_Richiesta : null"
+                          (mouseleave)="richiestaEvidenziata = null"
                           [appHoverPopup]="timeSheetService.get_GiustificativoContatoriPopupData(just,currentMonth.month+1,currentMonth.contatori_Anno_Mese )"
                           [appHoverPopupEnabled]="!isMobile && timeSheetService.get_GiustificativoContatoriPopupData(just,currentMonth.month+1,currentMonth.contatori_Anno_Mese )!==null"
                             [ngStyle]="{

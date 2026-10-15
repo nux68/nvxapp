@@ -12,6 +12,7 @@ import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic
 import { VacationPlanService } from '../../../ClientServer-Service/GestionePresenze/VacationPlanService/vacation-plan.service';
 import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
 import { TimeSheetService } from '../../../Utility/GestionePresenze/time-sheet.service';
+import { SegmentoItem, SegmentoRichiesta } from '../../../Utility/GestionePresenze/time-sheet-common-data';
 import { Dip_GG_Richiesta_SetState_InModel, Dip_GG_RichiestaModel, StatoRichiesta } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/Models/dip-gg-richiesta-model';
 import { ParGiustificativiToLongTextPipe } from '../../../shared/pipe/GestionePresenze/par-giustificativi-to-long-text.pipe';
 import { DateTimeUtilService } from '../../../Utility/infrastructure/date-time-util.service';
@@ -29,6 +30,9 @@ export class VacationPlanPageComponent extends BasePageConfirmCancelComponent<Va
 
   public currUserId: string[] | undefined;
   public year: number;
+  /** Pezzi delle richieste su più giorni (inizio/mezzo/fine) e richiesta evidenziata al passaggio del mouse. */
+  public segmenti = new Map<SegmentoItem, SegmentoRichiesta>();
+  public richiestaEvidenziata: number | null = null;
   public month: number;
   public daySlots: VacationPlan_DaySlot[] = [];
 
@@ -118,8 +122,26 @@ export class VacationPlanPageComponent extends BasePageConfirmCancelComponent<Va
 
     this.vacationPlanService.VacationPlanGet(request).subscribe(x => {
       this.daySlots = x.data.daySlots;
+      this.calcolaSegmenti();
     });
   };
+
+  /** Pezzi delle richieste su più giorni, dipendente per dipendente, nel mese mostrato. */
+  private calcolaSegmenti(): void {
+    const inizio = this.timeSheetService.giornoIso(new Date(this.year, this.month - 1, 1));
+    const fine = this.timeSheetService.giornoIso(new Date(this.year, this.month, 0));
+    this.segmenti = new Map<SegmentoItem, SegmentoRichiesta>();
+    for (const slot of this.daySlots ?? []) {
+      this.timeSheetService.segmentiRichieste(slot.dip_GG_Giustificativi ?? [], slot.dip_GG_Richieste ?? [], inizio, fine)
+        .forEach((seg, g) => this.segmenti.set(g, seg));
+    }
+  }
+
+  /** Tooltip del giustificativo: tipo e, per le richieste su più giorni, il periodo. */
+  titoloGiustificativo(slot: VacationPlan_DaySlot, g: Dip_GG_GiustificativiModel, tipo: string | number): string {
+    const periodo = this.timeSheetService.periodoRichiestaTesto(slot.dip_GG_Richieste?.find(r => r.id === g.idDip_GG_Richiesta));
+    return periodo ? `${tipo} - ${periodo}` : String(tipo);
+  }
 
   getAll(): VacationPlan_DaySlot[] {
     return [...this.daySlots].sort((a, b) => {

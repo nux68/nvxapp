@@ -1,3 +1,5 @@
+@use '../richiesta-segmenti';
+
 .no-data {
   color: var(--ion-color-medium, #bbb);
   font-style: italic;
@@ -102,6 +104,16 @@
 }
 
 /* stack verticale dei chip quando ci sono più giustificativi nello stesso giorno */
+// piano ferie: i pezzi della stessa richiesta si toccano tra una cella e l'altra (barra continua)
+.vg-chips-stack ion-chip.nvx-seg-inizio,
+.vg-chips-stack ion-chip.nvx-seg-mezzo {
+  margin-right: -2px !important;
+}
+.vg-chips-stack ion-chip.nvx-seg-mezzo,
+.vg-chips-stack ion-chip.nvx-seg-fine {
+  margin-left: -1px !important;
+}
+
 .vg-chips-stack {
   display: flex;
   flex-direction: column;
