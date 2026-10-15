@@ -10,7 +10,7 @@ import { DipGGTimbraturaService } from '../../ClientServer-Service/GestionePrese
 import { GenericRequest } from '../../ClientServer-Service/ModelsBase/generic-request';
 import { forkJoin } from 'rxjs/internal/observable/forkJoin';
 import { DipGGRichiestaService } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/dip-gg-richiesta.service';
-import { MonthData, TimeSheetRemoteData } from './time-sheet-common-data';
+import { FuoriRapporto, MonthData, PeriodoRapporto, TimeSheetRemoteData } from './time-sheet-common-data';
 import { SharedParameterGestionePresenzeService } from '../../shared/shared-parameter-gestione-presenze.service';
 import { DateTimeUtilService } from '../infrastructure/date-time-util.service';
 import { TipoRichiestaToShortTextPipe } from '../../shared/pipe/GestionePresenze/tipo-richiesta-to-short-text.pipe';
@@ -99,7 +99,7 @@ export class TimeSheetService {
           dip_GG_Causali: x.data?.dip_GG_AllData_OutModel?.dip_GG_Causali ?? [],
           daySlot: x.data?.orariSchema_4User_OutModel?.daySlots ?? [],
           contatori_Anno_Mese: [],
-          dataAssunzione: this.primaDataAssunzione(x.data?.orariSchema_4User_OutModel, idAspNetUsers)
+          periodiRapporto: this.periodiRapporto(x.data?.orariSchema_4User_OutModel, idAspNetUsers)
         };
 
         // Se non abbiamo l'ID utente, restituiamo subito i dati base avvolti in un Observable
@@ -137,23 +137,43 @@ export class TimeSheetService {
 
   }
     
-  /** Data di assunzione più vecchia tra i rapporti dell'utente (null se il cartellino non è di un solo utente). */
-  private primaDataAssunzione(orari: OrariSchema_4User_OutModel | undefined, idAspNetUsers: string | null): string | null {
-    if (!orari || idAspNetUsers == null) return null;
-    const idAnagrafiche = orari.dip_Anagrafica.filter(a => a.idAspNetUsers === idAspNetUsers).map(a => a.id);
-    const date = (orari.dip_RapportoLavoro_Tutti ?? [])
-      .filter(r => idAnagrafiche.includes(r.idDip_Anagrafica) && r.dataAss)
-      .map(r => r.dataAss.substring(0, 10))
-      .sort();
-    return date[0] ?? null;
+  /**
+   * Periodi (assunzione..cessazione) dei rapporti dell'utente del cartellino.
+   * Senza utente indicato vale l'unica anagrafica restituita (cartellino del dipendente stesso);
+   * null se il cartellino è di più utenti.
+   */
+  private periodiRapporto(orari: OrariSchema_4User_OutModel | undefined, idAspNetUsers: string | null): PeriodoRapporto[] | null {
+    if (!orari) return null;
+    const anagrafiche = idAspNetUsers != null
+      ? orari.dip_Anagrafica.filter(a => a.idAspNetUsers === idAspNetUsers)
+      : orari.dip_Anagrafica;
+    if (anagrafiche.length !== 1) return null;
+    return (orari.dip_RapportoLavoro_Tutti ?? [])
+      .filter(r => r.idDip_Anagrafica === anagrafiche[0].id && r.dataAss)
+      .map(r => ({ dal: r.dataAss.substring(0, 10), al: r.dataLic ? r.dataLic.substring(0, 10) : null }))
+      .sort((a, b) => a.dal.localeCompare(b.dal));
   }
 
-  /** Il giorno è prima dell'assunzione dell'utente del cartellino. */
-  isPrimaDellAssunzione(currentMonth: MonthData, data: Date): boolean {
-    if (!currentMonth?.dataAssunzione) return false;
+  /** Dove cade il giorno rispetto ai rapporti di lavoro: null se è dentro un rapporto (o se non si sa). */
+  fuoriRapporto(currentMonth: MonthData, data: Date | string): FuoriRapporto | null {
+    const periodi = currentMonth?.periodiRapporto;
+    if (!periodi) return null;
     const d = new Date(data);
     const giorno = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-    return giorno < currentMonth.dataAssunzione;
+    if (periodi.some(p => p.dal <= giorno && (p.al == null || giorno <= p.al))) return null;
+    if (periodi.length === 0 || giorno < periodi[0].dal) return 'prima';
+    if (periodi.every(p => p.al != null && p.al < giorno)) return 'dopo';
+    return 'tra';
+  }
+
+  /** Testo breve per i giorni fuori rapporto. */
+  fuoriRapportoTesto(stato: FuoriRapporto | null): string {
+    switch (stato) {
+      case 'prima': return 'Non assunto';
+      case 'dopo':  return 'Cessato';
+      case 'tra':   return 'Fuori rapporto';
+      default:      return '';
+    }
   }
 
   private transformRemoteDataToMonthData(remoteData: TimeSheetRemoteData, year: number, month: number): MonthData {
@@ -169,7 +189,7 @@ export class TimeSheetService {
     monthData.dip_GG_Richiesta = remoteData.dip_GG_Richiesta;
     monthData.daySlot = remoteData.daySlot;
     monthData.contatori_Anno_Mese = remoteData.contatori_Anno_Mese;
-    monthData.dataAssunzione = remoteData.dataAssunzione ?? null;
+    monthData.periodiRapporto = remoteData.periodiRapporto ?? null;
 
     // Raggruppa le timbrature per giorno
     const timbratureByDay = new Map<number, Dip_GG_TimbraturaModel[]>();

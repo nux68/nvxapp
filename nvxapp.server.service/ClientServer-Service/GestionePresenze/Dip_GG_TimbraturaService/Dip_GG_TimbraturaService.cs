@@ -159,6 +159,17 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
 
                 if (user_DATA_COMB_DipAna_DipRapp != null && user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro != null)
                 {
+                    // dal client non si movimentano i giorni fuori dal rapporto di lavoro (le chiamate interne del motore sono gia' nel rapporto)
+                    if (!isSubProcess)
+                    {
+                        var fuoriRapporto = _gestionePresenzeUserUtility.VerificaGiorniNelRapporto(user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.Id, finalDate, finalDate);
+                        if (fuoriRapporto != null)
+                        {
+                            retVal.Messages.Add(new Message(fuoriRapporto, MessageType.Exception));
+                            return retVal;
+                        }
+                    }
+
                     Dip_GG_Timbratura dip_GG_Timbratura = new Dip_GG_Timbratura()
                     {
                         IdDip_RapportoLavoro = user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.Id,
@@ -277,6 +288,17 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
                 else
                 {
                     dip_GG_Timbratura = _mapper.Map<Dip_GG_Timbratura>(model.Data.Dip_GG_Timbratura);
+                }
+
+                // dal client non si movimentano i giorni fuori dal rapporto di lavoro (le chiamate interne del motore sono gia' nel rapporto)
+                if (!isSubProcess)
+                {
+                    var fuoriRapporto = _gestionePresenzeUserUtility.VerificaGiorniNelRapporto(dip_GG_Timbratura.IdDip_RapportoLavoro, dip_GG_Timbratura.GiornoCompetenza, dip_GG_Timbratura.GiornoCompetenza);
+                    if (fuoriRapporto != null)
+                    {
+                        retVal.Messages.Add(new Message(fuoriRapporto, MessageType.Exception));
+                        return retVal;
+                    }
                 }
 
                 dip_GG_Timbratura = await _dip_GG_TimbraturaRepository.UpsertAsync(dip_GG_Timbratura);

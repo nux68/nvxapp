@@ -27,9 +27,17 @@ export interface MonthData {
   dip_GG_Richiesta: Dip_GG_RichiestaModel[];
   daySlot: Dip_ProfiloOrario_DaySlot[];
   contatori_Anno_Mese: Contatori_Anno_MeseResult[];
-  /** Prima data di assunzione dell'utente ("YYYY-MM-DD..."), se il cartellino è di un solo utente. */
-  dataAssunzione?: string | null;
+  /** Periodi dei rapporti di lavoro dell'utente ("YYYY-MM-DD"), se il cartellino è di un solo utente. */
+  periodiRapporto?: PeriodoRapporto[] | null;
 }
+
+export interface PeriodoRapporto {
+  dal: string;
+  al: string | null;
+}
+
+/** Giorno fuori da tutti i rapporti: prima dell'assunzione, dopo la cessazione o tra due rapporti. */
+export type FuoriRapporto = 'prima' | 'dopo' | 'tra';
 
 
 export interface TimeSheetRemoteData {
@@ -41,7 +49,7 @@ export interface TimeSheetRemoteData {
   daySlot: Dip_ProfiloOrario_DaySlot[];
 
   contatori_Anno_Mese: Contatori_Anno_MeseResult[];
-  dataAssunzione?: string | null;
+  periodiRapporto?: PeriodoRapporto[] | null;
 
 }
 

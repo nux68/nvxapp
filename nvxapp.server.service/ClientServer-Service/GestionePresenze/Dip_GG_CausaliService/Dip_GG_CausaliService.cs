@@ -150,6 +150,17 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Cau
                         par_Causale = _mapper.Map<Dip_GG_Causali>(model.Data.Dip_GG_Causali);
                     }
 
+                    // dal client non si movimentano i giorni fuori dal rapporto di lavoro (le chiamate interne del motore sono gia' nel rapporto)
+                    if (!isSubProcess)
+                    {
+                        var fuoriRapporto = _gestionePresenzeUserUtility.VerificaGiorniNelRapporto(par_Causale.IdDip_RapportoLavoro, par_Causale.Data, par_Causale.Data);
+                        if (fuoriRapporto != null)
+                        {
+                            retVal.Messages.Add(new Message(fuoriRapporto, MessageType.Exception));
+                            return retVal;
+                        }
+                    }
+
                     //aggiurna il valore ritornato al client
                     par_Causale = await _Dip_GG_CausaliRepository.UpsertAsync(par_Causale);
                     retVal.Dip_GG_Causali = _mapper.Map<Dip_GG_CausaliModel>(par_Causale);

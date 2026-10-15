@@ -141,6 +141,17 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Giu
                     dip_GG_Giustificativi = _mapper.Map<Dip_GG_Giustificativi>(model.Data.Dip_GG_Giustificativi);
                 }
 
+                // dal client non si movimentano i giorni fuori dal rapporto di lavoro (le chiamate interne del motore sono gia' nel rapporto)
+                if (!isSubProcess)
+                {
+                    var fuoriRapporto = _gestionePresenzeUserUtility.VerificaGiorniNelRapporto(dip_GG_Giustificativi.IdDip_RapportoLavoro, dip_GG_Giustificativi.Data, dip_GG_Giustificativi.Data);
+                    if (fuoriRapporto != null)
+                    {
+                        retVal.Messages.Add(new Message(fuoriRapporto, MessageType.Exception));
+                        return retVal;
+                    }
+                }
+
                 dip_GG_Giustificativi = await _Dip_GG_GiustificativiRepository.UpsertAsync(dip_GG_Giustificativi);
                 retVal.Dip_GG_Giustificativi = _mapper.Map<Dip_GG_GiustificativiModel>(dip_GG_Giustificativi);
 

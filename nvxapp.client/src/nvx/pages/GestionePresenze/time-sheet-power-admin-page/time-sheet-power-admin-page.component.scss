@@ -57,8 +57,9 @@
   align-items: center;
 }
 
-// giorni prima della data di assunzione: righe attenuate e tratteggiate, con la nota "Non assunto"
-.day-row.nvx-prima-assunzione {
+// giorni fuori dal rapporto di lavoro (prima dell'assunzione, dopo la cessazione):
+// righe attenuate e tratteggiate, con la nota "Non assunto" / "Cessato"
+.day-row.nvx-fuori-rapporto {
   background: repeating-linear-gradient(-45deg,
               transparent 0 8px,
               rgba(var(--ion-color-medium-rgb), 0.08) 8px 16px);
@@ -69,7 +70,7 @@
   }
 }
 
-.nvx-prima-assunzione-nota {
+.nvx-fuori-rapporto-nota {
   font-size: 0.7em;
   color: var(--ion-color-medium);
   padding-left: 8px;

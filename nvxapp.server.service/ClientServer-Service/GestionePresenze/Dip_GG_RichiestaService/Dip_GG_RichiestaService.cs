@@ -202,6 +202,17 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
 
                     dip_GG_Richiesta.RichiestaStato = model.Data.FromHR ? StatoRichiesta.Approvata : StatoRichiesta.Immessa;
 
+                    // dal client non si movimentano i giorni fuori dal rapporto di lavoro (le chiamate interne del motore sono gia' nel rapporto)
+                    if (!isSubProcess)
+                    {
+                        var fuoriRapporto = _gestionePresenzeUserUtility.VerificaGiorniNelRapporto(dip_GG_Richiesta.IdDip_RapportoLavoro, dip_GG_Richiesta.Data, dip_GG_Richiesta.DataA < dip_GG_Richiesta.Data ? dip_GG_Richiesta.Data : dip_GG_Richiesta.DataA);
+                        if (fuoriRapporto != null)
+                        {
+                            retVal.Messages.Add(new Message(fuoriRapporto, MessageType.Exception));
+                            return retVal;
+                        }
+                    }
+
                     var RichiestaApprovazioneData = new List<Dip_GG_Richiesta_Stato_Cronology>();
 
                     var reqSediRep = new GenericRequest<Az_SediReparto_Get4User_InModel>();
@@ -405,6 +416,18 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                                     break;
 
                                 case StatoRichiesta.Approvata:
+                                    // dal client non si approva una richiesta con giorni fuori dal rapporto di lavoro (la revoca si')
+                                    if (idxStato == 0 && !isSubProcess)
+                                    {
+                                        var fuoriRapporto = _gestionePresenzeUserUtility.VerificaGiorniNelRapporto(curr_richiesta.IdDip_RapportoLavoro,
+                                                                                                                    curr_richiesta.Data,
+                                                                                                                    curr_richiesta.DataA < curr_richiesta.Data ? curr_richiesta.Data : curr_richiesta.DataA);
+                                        if (fuoriRapporto != null)
+                                        {
+                                            retVal.Messages.Add(new Message(fuoriRapporto, MessageType.Exception));
+                                            continue;
+                                        }
+                                    }
                                     if (Stato == StatoRichiesta.Immessa || Stato == StatoRichiesta.ApprovazioneInCorso || Stato == StatoRichiesta.ParzialmenteApprovata)
                                     {
                                         List<Dip_GG_Richiesta_Stato_Cronology> listaAppr = !string.IsNullOrEmpty(jsonReq) ? JsonConvert.DeserializeObject<List<Dip_GG_Richiesta_Stato_Cronology>>(jsonReq) ?? new List<Dip_GG_Richiesta_Stato_Cronology>() : new List<Dip_GG_Richiesta_Stato_Cronology>();

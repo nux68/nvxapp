@@ -221,7 +221,7 @@ export class TimeSheetAdminPageComponent implements OnInit, OnDestroy {
   //////
 
   isActionSheetOpen = false;
-  public actionSheetButtons = [
+  private readonly actionSheetButtonsTutti = [
     {
       text: 'Approva richiesta',
       role: 'approva',
@@ -238,6 +238,7 @@ export class TimeSheetAdminPageComponent implements OnInit, OnDestroy {
     },
   
   ];
+  public actionSheetButtons = this.actionSheetButtonsTutti;
 
   private actionSheetOpenSelectObj: Dip_GG_GiustificativiModel | Dip_GG_TimbraturaModel;
   public actionSheetHeader = '';
@@ -266,6 +267,15 @@ export class TimeSheetAdminPageComponent implements OnInit, OnDestroy {
       this.actionSheetHeader = `Timbratura : ${tipoTimbraturaToLongTextPipe.transform(timbratura.timbraturaTipo)} ${this.dateTimeUtilService.DateTo_ggmmyyyy_hhmm(timbratura.timbratura)}`;
       this.actionSheetSubHeader = null;
     }
+
+    // giorno fuori dal rapporto di lavoro: la richiesta si può solo rifiutare
+    const fuori = this.timeSheetService.fuoriRapporto(this.currentMonth, 'timbraturaTipo' in obj ? obj.giornoCompetenza : obj.data);
+    this.actionSheetButtons = fuori
+      ? this.actionSheetButtonsTutti.filter(b => b.role === 'rifiuta')
+      : this.actionSheetButtonsTutti;
+    if (fuori)
+      this.actionSheetSubHeader = 'Giorno fuori dal rapporto di lavoro: la richiesta si può solo rifiutare';
+
     this.isActionSheetOpen = true;
   }
 

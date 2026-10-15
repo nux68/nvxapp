@@ -593,6 +593,22 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
       this.actionSheetSubHeader = null;
 
     }
+
+    // giorno fuori dal rapporto di lavoro: nessun nuovo movimento, si possono solo togliere quelli presenti
+    const giorno = 'dayOfMonth' in obj ? obj.date : ('timbraturaTipo' in obj ? obj.giornoCompetenza : obj.data);
+    const fuori = this.timeSheetService.fuoriRapporto(this.currentMonth, giorno);
+    if (fuori) {
+      const ammessi = (this.actionSheetButtons ?? []).filter((b: any) =>
+        b.role === 'cancel' || b.role?.includes('cancella') || b.role?.includes(actionSheet_Action.rifiuta));
+      if (!ammessi.some((b: any) => b.role !== 'cancel')) {
+        this.collectionDialogService.ConfirmCancelDialog(
+          `${this.datePipe.transform(giorno, 'dd-MM-yyyy')}: ${this.timeSheetService.fuoriRapportoTesto(fuori).toLowerCase()}, giorno fuori dal rapporto di lavoro. Non sono ammessi movimenti.`);
+        return;
+      }
+      this.actionSheetButtons = ammessi;
+      this.actionSheetSubHeader = 'Giorno fuori dal rapporto di lavoro: si può solo cancellare';
+    }
+
     this.isActionSheetOpen = true;
   }
 

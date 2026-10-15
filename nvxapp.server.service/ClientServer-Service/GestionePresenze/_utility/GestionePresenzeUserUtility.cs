@@ -588,6 +588,24 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
 
         //////
 
+        // Movimenti (richieste, timbrature, giustificativi, causali) ammessi solo nei giorni del rapporto di lavoro:
+        // ritorna il messaggio d'errore per il primo giorno fuori da assunzione..cessazione, altrimenti null
+        public string? VerificaGiorniNelRapporto(int IdDip_RapportoLavoro, DateTime Dal, DateTime Al)
+        {
+            var rapporto = _dip_RapportoLavoroRepository.FindAll(r => r.Id == IdDip_RapportoLavoro).FirstOrDefault();
+            if (rapporto == null)
+                return "Rapporto di lavoro non trovato.";
+
+            for (var giorno = Dal.Date; giorno <= Al.Date; giorno = giorno.AddDays(1))
+            {
+                if (rapporto.DataAss != null && giorno < rapporto.DataAss.Value.Date)
+                    return $"Il {giorno:dd/MM/yyyy} è prima dell'assunzione ({rapporto.DataAss.Value:dd/MM/yyyy}): non si possono inserire movimenti.";
+                if (rapporto.DataLic != null && giorno > rapporto.DataLic.Value.Date)
+                    return $"Il {giorno:dd/MM/yyyy} è dopo la cessazione ({rapporto.DataLic.Value:dd/MM/yyyy}): non si possono inserire movimenti.";
+            }
+            return null;
+        }
+
         public async Task<List<Dip_AnagraficaModel>> GetAnagraficheByUsersId(List<string> usersId)
         {
             await Task.Delay(1);
@@ -719,6 +737,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
     {
         Task<User_DATA_COMB_DipAna_DipRapp> Get_DipAna_DipRapp(string IdAspNetUsers, bool InitIfNotExsist);
         Task<User_DATA_COMB_DipAna_DipRapp> Get_DipRapp_DipAna(int IdDipRapp);
+        string? VerificaGiorniNelRapporto(int IdDip_RapportoLavoro, DateTime Dal, DateTime Al);
         Task<Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg> Get_AzAna_AzSedi_AzReparto_Az_Cfg(int IdCompany, bool InitIfNotExsist);
         Task<List<Dip_AnagraficaModel>> GetAnagraficheByUsersId(List<string> usersId);
         Task CompletaCognomeNome(List<string> IdAspNetUsers);
