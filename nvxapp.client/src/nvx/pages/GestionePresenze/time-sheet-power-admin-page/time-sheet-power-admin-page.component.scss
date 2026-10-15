@@ -63,7 +63,6 @@
   background: repeating-linear-gradient(-45deg,
               transparent 0 8px,
               rgba(var(--ion-color-medium-rgb), 0.08) 8px 16px);
-  box-shadow: inset 3px 0 0 var(--ion-color-medium);
 
   > ion-col:not(:first-child) {
     opacity: 0.5;

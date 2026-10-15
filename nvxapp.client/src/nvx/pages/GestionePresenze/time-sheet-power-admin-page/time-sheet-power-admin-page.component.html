@@ -60,6 +60,7 @@
                   <!-- COL 1 -->
                   <ion-col size="2" size-sm="1">
                     <ion-button [appHoverPopup]="timeSheetService.get_DayPopupStato(day.dip_GG_Result)"
+                            [appHoverPopupEnabled]="!timeSheetService.fuoriRapporto(currentMonth, day.date)"
                             fill="clear" size="small" [ngStyle]="{
                                                       '--color': get_label_day_color(day.date),
                                                       '--padding-top': '0px',
@@ -69,7 +70,9 @@
                                                       'margin-top':'0px'
                                                     }"
                       (click)="actionSheetOpen(day)">
+                      <!-- fuori dal rapporto lo stato del giorno non ha senso: icona nascosta, spazio mantenuto per l'allineamento -->
                       <ion-icon [name]="timeSheetService.get_StatoDay_icon(day.dip_GG_Result)"
+                            [style.visibility]="timeSheetService.fuoriRapporto(currentMonth, day.date) ? 'hidden' : null"
                             [ngStyle]="{
                                         'color': timeSheetService.get_StatoDay_color(day.dip_GG_Result),
                                         'border-radius': '50%',
