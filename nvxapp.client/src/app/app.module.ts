@@ -19,6 +19,8 @@ import { ParameterLoaderComponent } from '../nvx/shared/components/infrastructur
 //import { GenericFilterPipe } from '../nvx/pipe/generic-filter.pipe';
 import localeIt from '@angular/common/locales/it';
 import { registerLocaleData } from '@angular/common';
+import { DIALOG_REDEFINITION } from '../nvx/Utility/infrastructure/dialog-redefinition';
+import { DialogRedefinitionAttendanceTrackingService } from '../nvx/Utility/GestionePresenze/dialog-redefinition-attendance-tracking.service';
 
 // Registra i dati di localizzazione italiana
 registerLocaleData(localeIt); // Questa riga è essenziale!
@@ -42,6 +44,8 @@ registerLocaleData(localeIt); // Questa riga è essenziale!
               provideHttpClient(withXhr(), withInterceptorsFromDi()),
               { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
               { provide: HTTP_INTERCEPTORS, useClass: NvxHttpInterceptor, multi: true },
+              // dialog di Infrastructure sostituiti dalla gestione presenze
+              { provide: DIALOG_REDEFINITION, useClass: DialogRedefinitionAttendanceTrackingService, multi: true },
               //importProvidersFrom(GenericFilterPipe)
   ],
   bootstrap: [AppComponent],
