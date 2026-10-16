@@ -24,6 +24,8 @@ export class UserFinancialAdvisorListPageComponent {
   public title!: string;
   public searchText!: string;
   public userFinancialAdvisorList: UserFinancialAdvisorListModel[] | null = null;
+  /** true = si vedono anche le righe disabilitate */
+  public showDisabled: boolean = false;
   public btnImpersona: ButtonItem;
   public btnEdit: ButtonItem;
 
@@ -104,7 +106,7 @@ export class UserFinancialAdvisorListPageComponent {
   
 
   getAll() {
-    const sortedUserList = this.userFinancialAdvisorList.sort((a, b) => {
+    const sortedUserList = this.userFinancialAdvisorList.filter(x => this.showDisabled || !x.disabled).sort((a, b) => {
       const roleA = this.parameterService.Roles.find(role => role.id === a.roleId)?.code || 0;
       const roleB = this.parameterService.Roles.find(role => role.id === b.roleId)?.code || 0;
 

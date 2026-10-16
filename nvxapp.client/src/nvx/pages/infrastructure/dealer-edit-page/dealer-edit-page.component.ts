@@ -39,6 +39,7 @@ export class DealerEditPageComponent extends BasePageConfirmCancelComponent<Deal
       fb.group({
 
       descrizione: [null, [Validators.required, Validators.maxLength(20)]],
+      disabled: [false],
 
     });
   }

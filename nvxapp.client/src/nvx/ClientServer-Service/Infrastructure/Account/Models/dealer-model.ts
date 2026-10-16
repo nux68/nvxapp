@@ -3,6 +3,9 @@ import { RolesModel } from "./user-roles-model";
 
 
 export class DealerListModel {
+  /** collegamento disabilitato: la riga si vede solo con "Mostra anche i disabilitati" */
+  public disabled: boolean = false;
+
 
   constructor(
     public idDealer: number = 0,
@@ -25,6 +28,9 @@ export class DealerListOutModel extends ModelResult {
 
 
 export class DealerEditModel {
+  /** collegamento disabilitato: la riga si vede solo con "Mostra anche i disabilitati" */
+  public disabled: boolean = false;
+
 
   constructor(
     public idDealer: number = 0,

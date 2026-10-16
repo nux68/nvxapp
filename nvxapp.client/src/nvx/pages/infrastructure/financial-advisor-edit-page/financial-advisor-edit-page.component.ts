@@ -41,6 +41,7 @@ export class FinancialAdvisorEditPageComponent extends BasePageConfirmCancelComp
     return this.fb.group({
       
       descrizione: [null, [Validators.required, Validators.maxLength(20)]],
+      disabled: [false],
       
     });
   }

@@ -500,3 +500,21 @@ ion-popover::part(content) {
   border-radius: var(--nvx-radius-md);
   box-shadow: var(--nvx-shadow-soft);
 }
+
+// liste: righe disabilitate (visibili con "Mostra anche i disabilitati") attenuate
+.nvx-row-disabled {
+  opacity: 0.55;
+}
+
+// intestazione delle liste: casella "(mostra disabilitati)" nella prima colonna,
+// testo centrato in verticale come negli altri titoli di colonna
+.nvx-row-header ion-col {
+  display: flex;
+  align-items: center;
+}
+
+.nvx-nota-disabled {
+  display: block;
+  padding: 2px 16px 6px 16px;
+  font-size: 0.85em;
+}

@@ -12,6 +12,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Mode
 {
     public class UserFinancialAdvisorModel
     {
+        public Boolean Disabled { get; set; }
         public string? IdAspNetUsers { get; set; }
         public int IdUserFinancialAdvisor { get; set; }
         public string? Descrizione { get; set; }
@@ -35,6 +36,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Mode
 
     public class UserFinancialAdvisorEditModel
     {
+        // null = non modificare (es. salvataggi da altri flussi che non conoscono il campo)
+        public Boolean? Disabled { get; set; }
         public int IdUserFinancialAdvisor { get; set; }
         public string? Descrizione { get; set; } = string.Empty;
         public Boolean MainUser { get; set; }
