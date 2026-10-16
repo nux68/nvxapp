@@ -209,9 +209,25 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Cap")
+                        .HasMaxLength(10)
+                        .HasColumnType("character varying(10)");
+
                     b.Property<string>("ChangeUser")
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
+
+                    b.Property<string>("Citta")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("CodiceDestinatario")
+                        .HasMaxLength(7)
+                        .HasColumnType("character varying(7)");
+
+                    b.Property<string>("CodiceFiscale")
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)");
 
                     b.Property<DateTime?>("CreationDate")
                         .HasColumnType("timestamp without time zone");
@@ -224,11 +240,47 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
+                    b.Property<string>("Email")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
                     b.Property<int>("IdAz_Anagrafica")
                         .HasColumnType("integer");
 
+                    b.Property<string>("Indirizzo")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Nazione")
+                        .HasMaxLength(2)
+                        .HasColumnType("character varying(2)");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("PartitaIva")
+                        .HasMaxLength(11)
+                        .HasColumnType("character varying(11)");
+
+                    b.Property<string>("Pec")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Provincia")
+                        .HasMaxLength(2)
+                        .HasColumnType("character varying(2)");
+
+                    b.Property<string>("Referente")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Telefono")
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
 
                     b.HasKey("Id");
 
@@ -838,6 +890,9 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     b.Property<int>("Min_Assenze")
                         .HasColumnType("integer");
 
+                    b.Property<int>("Min_DaAutorizzare")
+                        .HasColumnType("integer");
+
                     b.Property<int>("Min_Ecc")
                         .HasColumnType("integer");
 
@@ -848,6 +903,9 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                         .HasColumnType("integer");
 
                     b.Property<int>("Min_Lavorabili")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Min_NonAutorizzate")
                         .HasColumnType("integer");
 
                     b.Property<int>("Min_NonRiconosciute")
@@ -1038,6 +1096,9 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     b.Property<int>("Min_Compensate")
                         .HasColumnType("integer");
 
+                    b.Property<int>("Min_DaAutorizzare")
+                        .HasColumnType("integer");
+
                     b.Property<int>("Min_Ecc")
                         .HasColumnType("integer");
 
@@ -1045,6 +1106,9 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                         .HasColumnType("integer");
 
                     b.Property<int>("Min_Lav")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Min_NonAutorizzate")
                         .HasColumnType("integer");
 
                     b.Property<int>("Min_NonRiconosciute")
@@ -1701,6 +1765,9 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     b.Property<TimeOnly?>("StraoSogliaHHFullTime")
                         .HasColumnType("time without time zone");
 
+                    b.Property<bool>("StraoSoloAutorizzato")
+                        .HasColumnType("boolean");
+
                     b.Property<decimal>("SupplLimitePerc")
                         .HasColumnType("decimal(5,2)");
 
@@ -1965,6 +2032,9 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("AutorizzaStraordinario")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("BackgroundColor")
                         .HasMaxLength(7)
