@@ -1,13 +1,17 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Type, inject } from '@angular/core';
 import { MainMenuAttendanceTrackingService } from './main-menu-attendance-tracking.service';
 import { MainMenuInfrastructureService } from './main-menu-infrastructure.service';
 import { AuthService } from './auth.service';
 import { ApplicationType } from '../../ClientServer-Service/Infrastructure/Account/Models/user-load-model';
+import { DIALOG_REDEFINITION } from './dialog-redefinition';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MainMenuService implements iMainMenuService {
+
+  // ridefinizioni dei dialog registrate dagli applicativi (vedi dialog-redefinition.ts)
+  private readonly dialogRedefinitions = inject(DIALOG_REDEFINITION, { optional: true }) ?? [];
 
   constructor(private mainMenuInfrastructureService: MainMenuInfrastructureService,
               private mainMenuAttendanceTrackingService: MainMenuAttendanceTrackingService,
@@ -118,6 +122,22 @@ export class MainMenuService implements iMainMenuService {
       this.mainMenuAttendanceTrackingService.GetWorkingMode
     );
 
+  }
+
+  /**
+   * Dialog che un applicativo puo' sostituire (vedi dialog-redefinition.ts): si interrogano le ridefinizioni
+   * con tutti gli applicativi attivi per l'azienda, dalla priorita' piu' alta; senza ridefinizioni si apre quello indicato.
+   */
+  public async RedefineDialog(dialogName: string, defaultDialog: Type<any>): Promise<Type<any>> {
+    const candidate = this.dialogRedefinitions
+      .filter(r => r.applications.length > 0 && r.applications.every(a => this.authService.hasApplication(a)))
+      .sort((a, b) => b.priority - a.priority);
+    for (const redefinition of candidate) {
+      const component = await redefinition.redefineDialog(dialogName);
+      if (component)
+        return component;
+    }
+    return defaultDialog;
   }
 
   public RedefineNameOfPages(pageName: string): string {

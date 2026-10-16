@@ -11,6 +11,7 @@ import { UserLoadInModel } from '../../../ClientServer-Service/Infrastructure/Ac
 import { UserCompanyListModel, UserCompanyListInModel } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-company-model';
 import { RoleCode } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-roles-model';
 import { MainMenuService } from '../../../Utility/infrastructure/main-menu.service';
+import { DialogName } from '../../../Utility/infrastructure/dialog-redefinition';
 import { AddUserCompanyComponent } from '../../../shared/components/infrastructure/add-user-company/add-user-company.component';
 import { UserCompanyEditModel, UserCompanyGetInModel } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-company-model';
 
@@ -78,16 +79,25 @@ export class UserCompanyListPageComponent {
 
 
   async openAddUserCompany() {
+    // un applicativo puo' sostituire il dialog di inserimento (es. wizard della gestione presenze)
+    const component = await this.mainMenuService.RedefineDialog(DialogName.AddUserCompany, AddUserCompanyComponent);
     const modal = await this.modalCtrl.create({
-      component: AddUserCompanyComponent,
-      componentProps: {
-        userCompanyEdit: new UserCompanyEditModel()
-      }
+      component: component,
+      componentProps: component === AddUserCompanyComponent ? { userCompanyEdit: new UserCompanyEditModel() } : {}
     });
 
     await modal.present();
 
     const { data, role } = await modal.onDidDismiss();
+
+    // il dialog ha gia' completato l'inserimento: basta rileggere la lista
+    if (role === 'confirm' && data && data.inserimentoCompletato) {
+      let request: GenericRequest<UserCompanyListInModel> = new GenericRequest<UserCompanyListInModel>(UserCompanyListInModel);
+      this.accountService.UserCompanyList(request).subscribe(res => {
+        this.userCompanyList = res.data.userCompanyList;
+      });
+      return;
+    }
 
     // Se l'utente ha confermato l'inserimento, recupera idAspNetUsers e naviga al wizard
     if (role === 'confirm' && data && data.idUserCompany) {
