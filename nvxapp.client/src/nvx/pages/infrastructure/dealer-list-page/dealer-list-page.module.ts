@@ -10,7 +10,7 @@ import { SharedComponentInfrastructureModule } from '../../../shared/shared-comp
 @NgModule({
   imports: [
     CommonModule,
-    //FormsModule,
+    FormsModule,
     ReactiveFormsModule ,
     IonicModule,
     RouterModule.forChild([

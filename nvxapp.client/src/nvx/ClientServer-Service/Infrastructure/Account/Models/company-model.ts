@@ -4,6 +4,9 @@ import { RolesModel } from "./user-roles-model";
 
 
 export class CompanyListModel {
+  /** collegamento disabilitato: la riga si vede solo con "Mostra anche i disabilitati" */
+  public disabled: boolean = false;
+
   constructor(
     public idCompany: number = 0,
     public descrizione: string | null = "",
@@ -23,6 +26,9 @@ export class CompanyListOutModel extends ModelResult {
 
 
 export class CompanyEditModel {
+  /** collegamento disabilitato: la riga si vede solo con "Mostra anche i disabilitati" */
+  public disabled: boolean = false;
+
   constructor(
     public idCompany: number = 0,
     public descrizione: string | null = "",

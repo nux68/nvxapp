@@ -20,6 +20,8 @@ export class FinancialAdvisorListPageComponent {
   public title!: string;
   public searchText!: string;
   public financialAdvisorList: FinancialAdvisorListModel[] | null = null;
+  /** true = si vedono anche le righe disabilitate */
+  public showDisabled: boolean = false;
   public btnEdit: ButtonItem;
   public btnImpersona: ButtonItem;
 
@@ -101,7 +103,7 @@ export class FinancialAdvisorListPageComponent {
   }
 
   getAll() {
-    const sortedUserCompanyList = this.financialAdvisorList.sort((a, b) =>
+    const sortedUserCompanyList = this.financialAdvisorList.filter(x => this.showDisabled || !x.disabled).sort((a, b) =>
       a.descrizione.localeCompare(b.descrizione)
     );
     return sortedUserCompanyList;

@@ -13,8 +13,13 @@
 
       @if (userFinancialAdvisorList) {
         <ion-grid>
+          <ion-row class="nvx-ion-row-4table nvx-row-header">
+            <!-- prima colonna: anche le righe disabilitate -->
+            <ion-col size="12"><ion-checkbox [(ngModel)]="showDisabled" labelPlacement="start" justify="start"><b>Utente</b> (mostra disabilitati)</ion-checkbox></ion-col>
+          </ion-row>
           @for (item of getAll() | genericFilter: 'descrizione' : searchText; track item; let indexRow4Color = $index) {
             <ion-row
+              [class.nvx-row-disabled]="item.disabled"
               [class.nvx-row-odd]="indexRow4Color % 2 !== 0"
               [class.nvx-row-even]="indexRow4Color % 2 === 0"
               class="nvx-ion-row-4table nvx-row-hover">

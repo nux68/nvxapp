@@ -23,6 +23,8 @@ export class CompanyListPageComponent {
   public title!: string;
   public searchText!: string;
   public companyList: CompanyListModel[] | null = null;
+  /** true = si vedono anche le righe disabilitate */
+  public showDisabled: boolean = false;
   public btnImpersona: ButtonItem;
   public btnEdit: ButtonItem;
 
@@ -126,7 +128,7 @@ export class CompanyListPageComponent {
   }
 
   getAll() {
-    const sortedUserCompanyList = this.companyList.sort((a, b) =>
+    const sortedUserCompanyList = this.companyList.filter(x => this.showDisabled || !x.disabled).sort((a, b) =>
       a.descrizione.localeCompare(b.descrizione)
     );
     return sortedUserCompanyList;

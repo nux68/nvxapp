@@ -3,6 +3,9 @@ import { RolesModel } from "./user-roles-model";
 
 
 export class UserFinancialAdvisorListModel {
+  /** collegamento disabilitato: la riga si vede solo con "Mostra anche i disabilitati" */
+  public disabled: boolean = false;
+
   constructor(
     public descrizione: string | null = "",
     public idAspNetUsers: string = "",
@@ -23,6 +26,9 @@ export class UserFinancialAdvisorListOutModel extends ModelResult {
 
 
 export class UserFinancialAdvisorEditModel {
+  /** collegamento disabilitato: la riga si vede solo con "Mostra anche i disabilitati" */
+  public disabled: boolean = false;
+
   constructor(
     public descrizione: string | null = "",
     public idUserFinancialAdvisor: number = 0,

@@ -13,6 +13,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Mode
 {
     public class CompanyModel
     {
+        public Boolean Disabled { get; set; }
         public int IdCompany { get; set; }
 
         public required string IdAspNetUsers { get; set; }
@@ -35,6 +36,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Mode
 
     public class CompanyEditModel
     {
+        // null = non modificare (es. salvataggi da altri flussi che non conoscono il campo)
+        public Boolean? Disabled { get; set; }
         public int IdCompany { get; set; }
         public string IdAspNetUsers { get; set; } = string.Empty;
         public string? Descrizione { get; set; } = string.Empty;

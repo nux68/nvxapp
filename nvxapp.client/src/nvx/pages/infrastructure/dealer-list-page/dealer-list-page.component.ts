@@ -20,6 +20,8 @@ export class DealerListPageComponent {
   public title!: string;
   public searchText!: string;
   public dealerList: DealerListModel[] | null = null;
+  /** true = si vedono anche le righe disabilitate */
+  public showDisabled: boolean = false;
   public btnEdit: ButtonItem;
   public btnImpersona: ButtonItem;
 
@@ -104,7 +106,7 @@ export class DealerListPageComponent {
   }
 
   getAll() {
-    const sortedUserCompanyList = this.dealerList.sort((a, b) =>
+    const sortedUserCompanyList = this.dealerList.filter(x => this.showDisabled || !x.disabled).sort((a, b) =>
       a.descrizione.localeCompare(b.descrizione)
     );
     return sortedUserCompanyList;

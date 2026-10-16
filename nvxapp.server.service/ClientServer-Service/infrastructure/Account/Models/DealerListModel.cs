@@ -13,6 +13,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Mode
 
     public class DealerListModel
     {
+        public Boolean Disabled { get; set; }
         public int IdDealer { get; set; }
         public string IdAspNetUsers { get; set; } = string.Empty;
         public string Descrizione { get; set; } = string.Empty;
@@ -37,6 +38,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Mode
 
     public class DealerEditModel
     {
+        // null = non modificare (es. salvataggi da altri flussi che non conoscono il campo)
+        public Boolean? Disabled { get; set; }
         public int IdDealer { get; set; }
         public string IdAspNetUsers { get; set; } = string.Empty;
         public string? Descrizione { get; set; } = string.Empty;

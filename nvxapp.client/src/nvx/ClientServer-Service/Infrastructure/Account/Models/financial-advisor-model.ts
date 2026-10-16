@@ -3,6 +3,9 @@ import { RolesModel } from "./user-roles-model";
 
 
 export class FinancialAdvisorListModel {
+  /** collegamento disabilitato: la riga si vede solo con "Mostra anche i disabilitati" */
+  public disabled: boolean = false;
+
   constructor(
     public idFinancialAdvisor: number = 0,
     public descrizione: string | null = "",
@@ -21,6 +24,9 @@ export class FinancialAdvisorListOutModel extends ModelResult {
 
 
 export class FinancialAdvisorEditModel {
+  /** collegamento disabilitato: la riga si vede solo con "Mostra anche i disabilitati" */
+  public disabled: boolean = false;
+
   constructor(
     public idFinancialAdvisor: number = 0,
     public descrizione: string | null = "",

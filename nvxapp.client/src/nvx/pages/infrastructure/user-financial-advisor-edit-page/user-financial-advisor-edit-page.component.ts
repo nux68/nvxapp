@@ -44,6 +44,7 @@ export class UserFinancialAdvisorEditPageComponent extends BasePageConfirmCancel
     return this.fb.group({
 
       descrizione: [null, [Validators.required, Validators.maxLength(50)]],
+      disabled: [false],
       roleId: [null, [Validators.required]],
 
     });

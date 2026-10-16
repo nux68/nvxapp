@@ -18,5 +18,8 @@ namespace nvxapp.server.data.Entities.Public
         public ApplicationUser? AspNetUsersNavigation { get; set; }
 
         public Boolean MainUser { get; set; }
+
+        // utente disabilitato per questo collegamento: escluso dalle liste (salvo "mostra anche i disabilitati")
+        public Boolean Disabled { get; set; }
     }
 }

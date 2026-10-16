@@ -44,6 +44,7 @@ export class UserDealerEditPageComponent extends BasePageConfirmCancelComponent<
     return this.fb.group({
 
       descrizione: [null, [Validators.required, Validators.maxLength(50)]],
+      disabled: [false],
       roleId: [null, [Validators.required]],
 
     });

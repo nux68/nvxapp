@@ -409,6 +409,9 @@ namespace nvxapp.server.data.Migrations.Public
                     b.Property<DateTime?>("CreationDate")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<bool>("Disabled")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("IdAspNetUsers")
                         .IsRequired()
                         .HasColumnType("text");
@@ -447,6 +450,9 @@ namespace nvxapp.server.data.Migrations.Public
                     b.Property<DateTime?>("CreationDate")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<bool>("Disabled")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("IdAspNetUsers")
                         .IsRequired()
                         .HasColumnType("text");
@@ -484,6 +490,9 @@ namespace nvxapp.server.data.Migrations.Public
 
                     b.Property<DateTime?>("CreationDate")
                         .HasColumnType("timestamp without time zone");
+
+                    b.Property<bool>("Disabled")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("IdAspNetUsers")
                         .IsRequired()

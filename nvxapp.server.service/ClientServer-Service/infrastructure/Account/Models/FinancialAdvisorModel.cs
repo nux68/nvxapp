@@ -12,6 +12,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Mode
 {
     public class FinancialAdvisorListModel
     {
+        public Boolean Disabled { get; set; }
         public int IdFinancialAdvisor { get; set; }
 
         public string? IdAspNetUsers { get; set; }
@@ -37,6 +38,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Mode
 
     public class FinancialAdvisorEditModel
     {
+        // null = non modificare (es. salvataggi da altri flussi che non conoscono il campo)
+        public Boolean? Disabled { get; set; }
         public int IdFinancialAdvisor { get; set; }
         public string IdAspNetUsers { get; set; } = string.Empty;
         public string? Descrizione { get; set; } = string.Empty;

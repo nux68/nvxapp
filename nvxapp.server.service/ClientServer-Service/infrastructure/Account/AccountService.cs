@@ -325,7 +325,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                                         IdAspNetUsers = item.IdAspNetUsers,
                                         IdDealer = item.IdDealer,
                                         Descrizione = _dealer?.Descrizione ?? "",
-                                        MainUser = item.MainUser
+                                        MainUser = item.MainUser,
+                                        Disabled = item.Disabled
                                     });
                                 }
 
@@ -365,7 +366,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                     retVal.DealerEdit = new DealerEditModel()
                     {
                         Descrizione = dealer.Descrizione,
-                        IdDealer = dealer.Id
+                        IdDealer = dealer.Id,
+                        Disabled = _userDealerRepository.FindAll(x => x.IdDealer == dealer.Id && x.MainUser).Any(x => x.Disabled)
                     };
                 }
                 else
@@ -400,6 +402,17 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                     dealer.Descrizione = model.Data.DealerEdit.Descrizione;
 
                     await _dealerRepository.UpdateAsync(dealer);
+
+
+                    // disabilitato: vale per gli utenti principali (quelli mostrati nella lista)
+                    if (model.Data.DealerEdit.Disabled != null)
+                    {
+                        foreach (var row in _userDealerRepository.FindAll(x => x.IdDealer == dealer.Id && x.MainUser).ToList())
+                        {
+                            row.Disabled = model.Data.DealerEdit.Disabled.Value;
+                            await _userDealerRepository.UpdateAsync(row);
+                        }
+                    }
                 }
                 else
                 {
@@ -503,7 +516,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                                     IdAspNetUsers = item.IdAspNetUsers,
                                     IdFinancialAdvisor = item.IdFinancialAdvisor,
                                     Descrizione = _financialAdvisor?.Descrizione,
-                                    MainUser = item.MainUser
+                                    MainUser = item.MainUser,
+                                    Disabled = item.Disabled
                                 });
                             }
                         }
@@ -532,7 +546,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                     retVal.FinancialAdvisorEdit = new FinancialAdvisorEditModel()
                     {
                         Descrizione = financialAdvisor.Descrizione,
-                        IdFinancialAdvisor = financialAdvisor.Id
+                        IdFinancialAdvisor = financialAdvisor.Id,
+                        Disabled = _userFinancialAdvisorRepository.FindAll(x => x.IdFinancialAdvisor == financialAdvisor.Id && x.MainUser).Any(x => x.Disabled)
                     };
                 }
                 else
@@ -565,6 +580,17 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                     financialAdvisor.Descrizione = model.Data.FinancialAdvisorEdit.Descrizione;
 
                     await _financialAdvisorRepository.UpdateAsync(financialAdvisor);
+
+
+                    // disabilitato: vale per gli utenti principali (quelli mostrati nella lista)
+                    if (model.Data.FinancialAdvisorEdit.Disabled != null)
+                    {
+                        foreach (var row in _userFinancialAdvisorRepository.FindAll(x => x.IdFinancialAdvisor == financialAdvisor.Id && x.MainUser).ToList())
+                        {
+                            row.Disabled = model.Data.FinancialAdvisorEdit.Disabled.Value;
+                            await _userFinancialAdvisorRepository.UpdateAsync(row);
+                        }
+                    }
                 }
                 else
                 {
@@ -673,7 +699,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                                 {
                                     IdAspNetUsers = item.IdAspNetUsers,
                                     IdCompany = item.IdCompany,
-                                    Descrizione = _company?.Descrizione
+                                    Descrizione = _company?.Descrizione,
+                                    Disabled = item.Disabled
                                 });
                             }
                         }
@@ -709,6 +736,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                     {
                         Descrizione = company.Descrizione,
                         IdCompany = company.Id,
+                        Disabled = _userCompanyRepository.FindAll(x => x.IdCompany == company.Id && x.MainUser).Any(x => x.Disabled),
                         Applications = _companyApplicationService.Applications(company.Id)
                     };
                 }
@@ -742,6 +770,17 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                     company.Descrizione = model.Data.CompanyEdit.Descrizione;
 
                     await _companyRepository.UpdateAsync(company);
+
+
+                    // disabilitato: vale per gli utenti principali (quelli mostrati nella lista)
+                    if (model.Data.CompanyEdit.Disabled != null)
+                    {
+                        foreach (var row in _userCompanyRepository.FindAll(x => x.IdCompany == company.Id && x.MainUser).ToList())
+                        {
+                            row.Disabled = model.Data.CompanyEdit.Disabled.Value;
+                            await _userCompanyRepository.UpdateAsync(row);
+                        }
+                    }
                 }
                 else
                 {
@@ -889,6 +928,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                             IdUserCompany = item.Id,
                             Descrizione = cur_user?.UserName,
                             MainUser = item.MainUser,
+                            Disabled = item.Disabled,
                             Roles = new List<string>((await _userManager.GetRolesAsync(cur_user!)).OrderBy(r => r))
                         });
                     }
@@ -936,6 +976,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                             IdAspNetUsers = userCompany.IdAspNetUsers,
                             Mail = applicationUser.Email,
                             MainUser = false,
+                            Disabled = userCompany.Disabled,
                             RoleId = identityUserRole.RoleId,
                             Roles = new List<string>(await _userManager.GetRolesAsync(applicationUser))
                         };
@@ -968,6 +1009,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                 if (userCompany != null)
                 {
                     //userCompany.Descrizione = model.Data.UserCompanyEdit.Descrizione;
+
+                    if (model.Data.UserCompanyEdit.Disabled != null)
+                        userCompany.Disabled = model.Data.UserCompanyEdit.Disabled.Value;
 
                     await _userCompanyRepository.UpdateAsync(userCompany);
 
@@ -1206,6 +1250,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                             IdUserDealer = item.Id,
                             Descrizione = cur_user?.UserName,
                             MainUser = item.MainUser,
+                            Disabled = item.Disabled,
                             RoleId = cur_role.RoleId
                         });
                     }
@@ -1241,6 +1286,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                             IdUserDealer = userDealer.Id,
                             Mail = applicationUser.Email,
                             MainUser = false,
+                            Disabled = userDealer.Disabled,
                             RoleId = identityUserRole.RoleId
                         };
                     }
@@ -1272,6 +1318,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                 if (userDealer != null)
                 {
 
+
+                    if (model.Data.UserDealerEdit.Disabled != null)
+                        userDealer.Disabled = model.Data.UserDealerEdit.Disabled.Value;
 
                     await _userDealerRepository.UpdateAsync(userDealer);
                 }
@@ -1356,6 +1405,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                             IdUserFinancialAdvisor = item.Id,
                             Descrizione = cur_user?.UserName,
                             MainUser = item.MainUser,
+                            Disabled = item.Disabled,
                             RoleId = cur_role.RoleId
                         });
                     }
@@ -1391,6 +1441,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                             IdUserFinancialAdvisor = userFinancialAdvisor.Id,
                             Mail = applicationUser.Email,
                             MainUser = false,
+                            Disabled = userFinancialAdvisor.Disabled,
                             RoleId = identityUserRole.RoleId
                         };
                     }
@@ -1422,6 +1473,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                 if (userFinancialAdvisor != null)
                 {
 
+
+                    if (model.Data.UserFinancialAdvisorEdit.Disabled != null)
+                        userFinancialAdvisor.Disabled = model.Data.UserFinancialAdvisorEdit.Disabled.Value;
 
                     await _userFinancialAdvisorRepository.UpdateAsync(userFinancialAdvisor);
                 }
