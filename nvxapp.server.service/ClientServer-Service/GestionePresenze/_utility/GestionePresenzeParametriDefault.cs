@@ -24,6 +24,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
         private readonly IPar_ProfiloOrarioRepository _par_ProfiloOrarioRepository;
         private readonly IPar_ProfiloOrarioGGRepository _par_ProfiloOrarioGGRepository;
         private readonly IPar_ExportCauRepository _par_ExportCauRepository;
+        private readonly IPar_ExportCau_CausaliRepository _par_ExportCau_CausaliRepository;
         private readonly IPar_FestivitaRepository _par_FestivitaRepository;
 
         public GestionePresenzeParametriDefault(IPar_CausaliRepository par_CausaliRepository,
@@ -33,6 +34,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                                                 IPar_ProfiloOrarioRepository par_ProfiloOrarioRepository,
                                                 IPar_ProfiloOrarioGGRepository par_ProfiloOrarioGGRepository,
                                                 IPar_ExportCauRepository par_ExportCauRepository,
+                                                IPar_ExportCau_CausaliRepository par_ExportCau_CausaliRepository,
                                                 IPar_FestivitaRepository par_FestivitaRepository)
         {
             _par_CausaliRepository = par_CausaliRepository;
@@ -42,6 +44,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
             _par_ProfiloOrarioRepository = par_ProfiloOrarioRepository;
             _par_ProfiloOrarioGGRepository = par_ProfiloOrarioGGRepository;
             _par_ExportCauRepository = par_ExportCauRepository;
+            _par_ExportCau_CausaliRepository = par_ExportCau_CausaliRepository;
             _par_FestivitaRepository = par_FestivitaRepository;
         }
 
@@ -225,13 +228,27 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
             }
 
             // Export
-            await _par_ExportCauRepository.UpsertAsync(new Par_ExportCau
+            var exportCau = await _par_ExportCauRepository.UpsertAsync(new Par_ExportCau
             {
                 IdAz_Anagrafica = IdAz_Anagrafica,
                 Codice = "0001",
                 Descrizione = "ExportProva",
                 TipoFile = Par_Export_TipoFile.CSV
             });
+
+            // tutte le causali nel tracciato di prova, con il loro codice (senza causali l'export non produce file);
+            // elaborazione e unita' come quando si aggiunge una causale dalla pagina del tracciato
+            foreach (var causale in causali.Values)
+            {
+                await _par_ExportCau_CausaliRepository.UpsertAsync(new Par_ExportCau_Causali
+                {
+                    IdPar_ExportCau = exportCau.Id,
+                    IdCausale = causale.Id,
+                    Codice = causale.Codice,
+                    TipoElaborazione = Par_Export_TipoElaborazione.Gionaliera,
+                    TipoUnita = Par_Export_TipoUnita.Ore
+                });
+            }
         }
 
         // Profilo orario da assegnare ai nuovi rapporti di lavoro (quello di default, altrimenti il primo)

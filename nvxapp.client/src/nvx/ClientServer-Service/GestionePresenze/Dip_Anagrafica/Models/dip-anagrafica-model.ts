@@ -50,6 +50,8 @@ export class Dip_Anagrafica4EditModel extends Dip_AnagraficaModel {
   public roleId: string;
 
   public mainUser: boolean;
+  /** collegamento utente-azienda disabilitato: non compare nelle liste, salvo "mostra disabilitati" */
+  public disabled: boolean = false;
   public mail: string;
   public pw: string;
 

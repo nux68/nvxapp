@@ -211,6 +211,7 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
     return this.fb.group({
       descrizione: [null, [Validators.required, Validators.maxLength(50)]],
       roles: [[], this.minArrayLength(1)],
+      disabled: [false],
       cognome: [null, [Validators.required, Validators.maxLength(50)]],
       nome: [null, [Validators.required, Validators.maxLength(50)]],
     });

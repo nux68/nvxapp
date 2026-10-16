@@ -52,7 +52,12 @@ export class PageToolbarComponent {
 
   onJobLabelClick(job: LongJobProgressUpdate): void {
     const downloadUrl = job.downloadUrl;
-    if (job.category !== LongJobCategory.FileGeneration || !job.isFinished || !downloadUrl) return;
+    if (job.category !== LongJobCategory.FileGeneration || !job.isFinished) return;
+    // job finito senza file (es. niente da esportare): il messaggio spiega il motivo, il click lo chiude
+    if (!downloadUrl) {
+      this.dismissJob(job.jobId);
+      return;
+    }
 
     this.http.get(environment.remoteData.apiUri + downloadUrl, { responseType: 'blob' })
       .subscribe(blob => {

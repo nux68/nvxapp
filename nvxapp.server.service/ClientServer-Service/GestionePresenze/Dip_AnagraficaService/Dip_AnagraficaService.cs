@@ -193,7 +193,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
                                     // aggiorna i ruoli di questo record; con l'id azienda si riscrivevano i ruoli di un altro utente
                                     retVal.Dip_Anagrafica.IdUserCompany = usrC.Id;
                                     retVal.Dip_Anagrafica.RoleId =res_2.Data.UserCompanyEdit.RoleId;
-                                    retVal.Dip_Anagrafica.Roles = res_2.Data.UserCompanyEdit.Roles;  
+                                    retVal.Dip_Anagrafica.Roles = res_2.Data.UserCompanyEdit.Roles;
+                                    retVal.Dip_Anagrafica.Disabled = res_2.Data.UserCompanyEdit.Disabled;  
                                 }
 
                                 var req_1 = new GenericRequest<Dip_RapportoLavoro_Get_InModel>();
@@ -278,6 +279,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
                             IdUserCompany = model.Data.Dip_Anagrafica.IdUserCompany,
                             Descrizione = !string.IsNullOrEmpty(model.Data.Dip_Anagrafica.Descrizione) ? model.Data.Dip_Anagrafica.Descrizione : "",
                             MainUser = model.Data.Dip_Anagrafica.MainUser,
+                            Disabled = model.Data.Dip_Anagrafica.Disabled,
                             Mail = model.Data.Dip_Anagrafica.Mail,
                             Pw = model.Data.Dip_Anagrafica.Pw,
                             RoleId = model.Data.Dip_Anagrafica.RoleId,

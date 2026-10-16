@@ -162,6 +162,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                 req_AllData_4User.Data.UsersId = model.Data.TimeSheet_Export.SelectedUserId;
 
                                 string? downloadUrl = null;
+                                // perche' non e' stato generato il file (null = file generato)
+                                string? motivoSenzaFile = null;
                                 var AllData_Res = await _timeSheet_EngineService.Get_Timesheet_AllData(req_AllData_4User, true);
 
                                 if (AllData_Res.Success && AllData_Res.Data != null)
@@ -198,8 +200,19 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
                                             Log.Information("Export file created for job {JobId}: {FileName}", jobId, fileName);
                                         }
+                                        else if (exportCau == null)
+                                            motivoSenzaFile = "tracciato di export non trovato.";
+                                        else
+                                            motivoSenzaFile = $"il tracciato \"{exportCau.Descrizione}\" non ha causali associate: aggiungile nella pagina del tracciato di export.";
                                     }
+                                    else
+                                        motivoSenzaFile = "tracciato di export non trovato.";
                                 }
+                                else
+                                    motivoSenzaFile = "dati delle presenze non disponibili.";
+
+                                if (motivoSenzaFile != null)
+                                    Log.Warning("Export job {JobId}: nessun file generato, {Motivo}", jobId, motivoSenzaFile);
 
                                 await Task.Delay(10000);
                                 Log.Information("Background task for job {JobId} has finished successfully.", jobId);
@@ -212,7 +225,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                                                                     Category = LongJobCategory.FileGeneration,
                                                                                     DownloadUrl = downloadUrl,
                                                                                     ProgressPercentage = 100,
-                                                                                    Message = new Message { Text = "Export completato, clicca per scaricare", MsgType = MessageType.Information },
+                                                                                    Message = motivoSenzaFile == null
+                                                                                        ? new Message { Text = "Export completato, clicca per scaricare", MsgType = MessageType.Information }
+                                                                                        : new Message { Text = $"Nessun file generato: {motivoSenzaFile}", MsgType = MessageType.Warning },
                                                                                     IsFinished = true
                                                                                 }
                                                                             );

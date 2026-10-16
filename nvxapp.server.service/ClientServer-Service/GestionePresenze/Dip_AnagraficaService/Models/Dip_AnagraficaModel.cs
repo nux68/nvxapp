@@ -50,6 +50,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
         public List<string> Roles { get; set; } = new List<string>();
         ////
         public Boolean MainUser { get; set; }
+        // collegamento utente-azienda disabilitato (UserCompany.Disabled); null = non modificare
+        public Boolean? Disabled { get; set; }
         public string? Mail { get; set; } = string.Empty;
         public string? Pw { get; set; } = string.Empty;
 

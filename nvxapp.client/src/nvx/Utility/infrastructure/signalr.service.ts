@@ -27,8 +27,10 @@ export class SignalrService {
               private ngZone: NgZone) { }
 
   public startConnection() {
-    if (this.hubConnection && this.hubConnection.state === signalR.HubConnectionState.Connected) {
-      return; // Connessione già attiva
+    if (this.hubConnection && (this.hubConnection.state === signalR.HubConnectionState.Connected ||
+                               this.hubConnection.state === signalR.HubConnectionState.Connecting ||
+                               this.hubConnection.state === signalR.HubConnectionState.Reconnecting)) {
+      return; // Connessione già attiva (o in corso): non se ne apre una seconda
     }
     
 
@@ -46,6 +48,10 @@ export class SignalrService {
       .configureLogging(signalR.LogLevel.Warning)  // Trace genera log per ogni frame WebSocket (inclusi ping) causando change-detection inattesi
       .withAutomaticReconnect()
       .build();
+
+    // ogni connessione e' un oggetto nuovo (dopo disconnessione, nuovo login o aggiornamento del token):
+    // gli eventi gia' sottoscritti con on() vanno riattaccati, altrimenti le notifiche non arrivano piu'
+    this.eventSubjects.forEach((_, eventName) => this.attachHandler(eventName));
 
     setTimeout(() => {
 
@@ -88,16 +94,23 @@ export class SignalrService {
   on(eventName: string) {
     if (!this.eventSubjects.has(eventName)) {
       this.eventSubjects.set(eventName, new Subject<any>());
-      this.hubConnection.on(eventName, (data: any) => {
-        // Esegui il callback dentro NgZone: SignalR gira fuori dalla zona Angular
-        // e senza questo ogni messaggio causa una change-detection spuria che può
-        // far ripartire la pagina corrente dall'inizio.
-        this.ngZone.run(() => {
-          this.eventSubjects.get(eventName)?.next(data);
-        });
-      });
+      this.attachHandler(eventName);
     }
     return this.eventSubjects.get(eventName)!.asObservable();
+  }
+
+  // collega l'evento alla connessione corrente (una sola volta per connessione)
+  private attachHandler(eventName: string) {
+    if (!this.hubConnection) return; // si collega quando la connessione viene creata
+    this.hubConnection.off(eventName);
+    this.hubConnection.on(eventName, (data: any) => {
+      // Esegui il callback dentro NgZone: SignalR gira fuori dalla zona Angular
+      // e senza questo ogni messaggio causa una change-detection spuria che può
+      // far ripartire la pagina corrente dall'inizio.
+      this.ngZone.run(() => {
+        this.eventSubjects.get(eventName)?.next(data);
+      });
+    });
   }
 
   // ?? Metodo per inviare un messaggio/evento generico

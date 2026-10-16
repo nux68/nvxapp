@@ -30,6 +30,8 @@ export class UserDepartmentListPageComponent {
   public title!: string;
   public searchText!: string;
   public userCompanyList: UserCompanyListModel[] | null = null;
+  /** true = si vedono anche le righe disabilitate */
+  public showDisabled: boolean = false;
   public btnImpersona: ButtonItem;
   public btnEdit: ButtonItem;
   constructor(private navCtrl: NavController,
@@ -172,7 +174,7 @@ export class UserDepartmentListPageComponent {
     return filteredUserCompanyList;
   }
   getAll() {
-    const sortedUserList = this.userCompanyList.sort((a, b) => {
+    const sortedUserList = this.userCompanyList.filter(x => this.showDisabled || !x.disabled).sort((a, b) => {
       const roleA = this.parameterService.Roles.find(role => role.name === a.roles[0])?.code || 0;
       const roleB = this.parameterService.Roles.find(role => role.name === b.roles[0])?.code || 0;
       if (roleB !== roleA) {
