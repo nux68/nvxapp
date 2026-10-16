@@ -7,8 +7,26 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_Cliente
     {
         public int Id { get; set; }
         public int IdAz_Anagrafica { get; set; }
-        public string? Descrizione { get; set; }
+        public string? Descrizione { get; set; }   // ragione sociale
         public Boolean Default { get; set; }
+
+        public string? PartitaIva { get; set; }
+        public string? CodiceFiscale { get; set; }
+
+        public string? Indirizzo { get; set; }
+        public string? Cap { get; set; }
+        public string? Citta { get; set; }
+        public string? Provincia { get; set; }
+        public string? Nazione { get; set; }
+
+        public string? Telefono { get; set; }
+        public string? Email { get; set; }
+        public string? Pec { get; set; }
+        public string? Referente { get; set; }
+
+        public string? CodiceDestinatario { get; set; }
+
+        public string? Note { get; set; }
     }
 
     public class Az_Cliente_GetAll_InModel

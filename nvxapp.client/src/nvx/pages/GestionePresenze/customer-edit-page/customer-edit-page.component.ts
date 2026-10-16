@@ -33,7 +33,25 @@ export class CustomerEditPageComponent extends BasePageConfirmCancelComponent<Az
   get Title(): string { return "Customer"; }
   get EditForm(): FormGroup {
     return this.fb.group({
-      descrizione: [null, [Validators.required, Validators.maxLength(50)]]
+      descrizione: [null, [Validators.required, Validators.maxLength(100)]],
+
+      partitaIva: [null, [Validators.pattern(/^\d{11}$/)]],
+      codiceFiscale: [null, [Validators.pattern(/^([A-Za-z0-9]{16}|\d{11})$/)]],
+
+      indirizzo: [null, [Validators.maxLength(100)]],
+      cap: [null, [Validators.maxLength(10)]],
+      citta: [null, [Validators.maxLength(50)]],
+      provincia: [null, [Validators.pattern(/^[A-Za-z]{2}$/)]],
+      nazione: [null, [Validators.pattern(/^[A-Za-z]{2}$/)]],
+
+      telefono: [null, [Validators.maxLength(30)]],
+      email: [null, [Validators.email, Validators.maxLength(100)]],
+      pec: [null, [Validators.email, Validators.maxLength(100)]],
+      referente: [null, [Validators.maxLength(100)]],
+
+      codiceDestinatario: [null, [Validators.pattern(/^[A-Za-z0-9]{6,7}$/)]],
+
+      note: [null, [Validators.maxLength(500)]]
     });
   }
 
@@ -59,6 +77,9 @@ export class CustomerEditPageComponent extends BasePageConfirmCancelComponent<Az
 
   SaveData = (editModel: Az_ClienteModel): Observable<boolean> => {
     let request: GenericRequest<Az_ClientePutInModel> = new GenericRequest<Az_ClientePutInModel>(Az_ClientePutInModel);
+    // codici in maiuscolo come da standard
+    for (const campo of ['codiceFiscale', 'provincia', 'nazione', 'codiceDestinatario'] as const)
+      if (editModel[campo]) editModel[campo] = editModel[campo].toUpperCase();
     request.data.az_Cliente = editModel;
     return this.azClienteService.Az_ClientePut(request).pipe(
       map(() => {
