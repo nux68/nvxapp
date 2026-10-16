@@ -27,6 +27,8 @@ import { ContatoriService } from '../../../ClientServer-Service/GestionePresenze
 import { Contatori_Anno_MeseResult, Contatori_Anno_InModel, Contatori_Riporto_Model, Contatori_Maturazione_Model } from '../../../ClientServer-Service/GestionePresenze/Contatori/Models/contatori-model';
 import { Par_GiustificativiModel, TipoContatore } from '../../../ClientServer-Service/GestionePresenze/Par_Giustificativi/Models/par-giustificativi-model';
 import { Dip_Rapporto_Giustificativi_MaturazioneModel } from '../../../ClientServer-Service/GestionePresenze/Dip_Rapporto_Giustificativi_Maturazione/Models/dip-rapporto-giustificativi-maturazione-model';
+import { Dip_CompetenzaModel } from '../../../ClientServer-Service/GestionePresenze/Dip_Competenza/Models/dip-competenza-model';
+import { SeletionParCompetenzaDialogComponent, SeletionParCompetenzaDialogResult } from '../../../shared/components/GestionePresenze/seletion-par-competenza-dialog/seletion-par-competenza-dialog.component';
 import { Subject } from 'rxjs';
 import { debounceTime, takeUntil } from 'rxjs/operators';
 
@@ -41,6 +43,7 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
 
   public readonly SEGMENT_MAIN_ANAGRAFICA = 'MAIN_ANA_0';
   public readonly SEGMENT_MAIN_VARIE = 'MAIN_VAR_0';
+  public readonly SEGMENT_MAIN_COMPETENZE = 'MAIN_COMP_0';
   public readonly SEGMENT_MAIN_RAPP_LAV = 'MAIN_RAPP_LAV_';
 
   public readonly SEGMENT_DIPRAPP_GENERALE  = 'DIPRAPP_DETT_GENERALE';
@@ -74,6 +77,8 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
   public btnEdit_Dip_ProfiloOrario: ButtonItem;
   public btnDelete_Dip_ProfiloOrario: ButtonItem;
 
+  public btnDelete_Dip_Competenza: ButtonItem;
+
 
   public currSection_segment_main: string = this.SEGMENT_MAIN_ANAGRAFICA;
   //public currSection_segment_dip_rapp: string = this.SEGMENT_DIPRAPP_PROF_HH;
@@ -103,6 +108,9 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
 
     this.btnDelete_Dip_ProfiloOrario = userInterfaceService.Btn_Cancella;
     this.btnDelete_Dip_ProfiloOrario.event = this.handleButton_Dip_ProfiloOrario_DeleteClick;
+
+    this.btnDelete_Dip_Competenza = userInterfaceService.Btn_Cancella;
+    this.btnDelete_Dip_Competenza.event = this.handleButton_Dip_Competenza_DeleteClick;
 
     // Ricalcola i contatori 800ms dopo l'ultima modifica al riporto, passando i valori non ancora salvati
     this._riportoChangedSubject.pipe(
@@ -141,6 +149,14 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
       // non faccio nulla
     } else if (this.currSection_segment_main == this.SEGMENT_MAIN_VARIE) {
       // non faccio nulla
+    } else if (this.currSection_segment_main == this.SEGMENT_MAIN_COMPETENZE) {
+
+      this.fabMenuService.fabMenuItem = [
+        new FabMenuItem('xxx', 'add-circle-outline', () => {
+          this.Dip_Competenza_DialogOpen();
+        }),
+      ];
+
     } else if (this.currSection_segment_main.startsWith(this.SEGMENT_MAIN_RAPP_LAV)) {
 
       const curr_RappLav = this.getCurr_RappLav_Id();
@@ -252,6 +268,16 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
 
           dip_Anagrafica4Edit.dip_ProfiloOrario.push(dip_ProfiloOrarioModel);
 
+        }
+
+        // nuovo dipendente: competenza di default dell'azienda
+        const par_CompetenzaDefault = (this.sharedParameterGestionePresenzeService.Par_Competenza ?? []).find(x => x.default);
+        if (par_CompetenzaDefault) {
+          let dip_Competenza = new Dip_CompetenzaModel();
+          dip_Competenza.id = this.dbUtilService.GenerateCounterKey();
+          dip_Competenza.idDip_Anagrafica = dip_Anagrafica4Edit.id;
+          dip_Competenza.idPar_Competenza = par_CompetenzaDefault.id;
+          dip_Anagrafica4Edit.dip_Competenza.push(dip_Competenza);
         }
 
 
@@ -378,6 +404,53 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
 
 
 
+
+
+
+  // ── Competenze ────────────────────────────────────────────────────────────
+
+  getAll_Dip_Competenza(): Dip_CompetenzaModel[] {
+    if (!this._editModel) return [];
+    return this._editModel.dip_Competenza;
+  }
+
+  handleButton_Dip_Competenza_DeleteClick = async (item: Dip_CompetenzaModel) => {
+
+    const result = await this.collectionDialogService.ConfirmCancelDialog('Confermi la cancellazione della competenza');
+    if (result) {
+      const index = this._editModel.dip_Competenza.findIndex(p => p.idPar_Competenza === item.idPar_Competenza);
+      if (index > -1) {
+        this._editModel.dip_Competenza.splice(index, 1);
+      }
+    }
+
+  }
+
+  async Dip_Competenza_DialogOpen() {
+
+    const modal = await this.modalCtrl.create({
+      component: SeletionParCompetenzaDialogComponent,
+      componentProps: {
+        idPar_Competenza_Escluse: this._editModel.dip_Competenza.map(x => x.idPar_Competenza)
+      },
+    });
+
+    await modal.present();
+
+    const { data, role } = await modal.onWillDismiss<SeletionParCompetenzaDialogResult | null>();
+
+    if (role === 'confirm' && data && data.id) {
+      data.id.forEach(idPar_Competenza => {
+        if (!this._editModel.dip_Competenza.some(x => x.idPar_Competenza === idPar_Competenza)) {
+          let dip_Competenza = new Dip_CompetenzaModel();
+          dip_Competenza.id = this.dbUtilService.GenerateCounterKey();
+          dip_Competenza.idDip_Anagrafica = this._editModel.id;
+          dip_Competenza.idPar_Competenza = idPar_Competenza;
+          this._editModel.dip_Competenza.push(dip_Competenza);
+        }
+      });
+    }
+  }
 
 
 

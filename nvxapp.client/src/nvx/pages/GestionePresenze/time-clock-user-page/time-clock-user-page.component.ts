@@ -7,9 +7,10 @@ import { NavController } from '@ionic/angular/lazy';
 import { UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { catchError, map, Observable, of } from 'rxjs';
+import { catchError, map, Observable, of, forkJoin } from 'rxjs';
 import { Par_AttivitaModel } from '../../../ClientServer-Service/GestionePresenze/Par_Attivita/Models/par-attivita-model';
-import { Az_SubCommessaAttivita_4FullListModel } from '../../../ClientServer-Service/GestionePresenze/Az_SubCommessaAttivita/Models/az-subcommessa-attivita-model';
+import { Az_SubCommessaAttivita_4FullListModel, Az_SubCommessaAttivita_GetAll_4FullList_4User_InModel } from '../../../ClientServer-Service/GestionePresenze/Az_SubCommessaAttivita/Models/az-subcommessa-attivita-model';
+import { AzSubCommessaAttivitaService } from '../../../ClientServer-Service/GestionePresenze/Az_SubCommessaAttivita/az-subcommessa-attivita.service';
 import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
 
 @Component({
@@ -37,7 +38,8 @@ export class TimeClockUserPageComponent extends BasePageConfirmCancelComponent<D
     protected override userInterfaceService: UserInterfaceService,
     protected override fb: FormBuilder,
     private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
-    private dipGGTimbraturaService: DipGGTimbraturaService
+    private dipGGTimbraturaService: DipGGTimbraturaService,
+    private azSubCommessaAttivitaService: AzSubCommessaAttivitaService
   ) {
     super(navCtrl, userInterfaceService, fb);
   }
@@ -53,15 +55,25 @@ export class TimeClockUserPageComponent extends BasePageConfirmCancelComponent<D
 
   LoadData = (): Observable<Dip_GG_Timbratura_StampPrepare_OutModel | null> => {
 
-    this.az_SubCommessaAttivita_4FullList = this.sharedParameterGestionePresenzeService.Az_SubCommessaAttivita_4Full;
+    // solo le attività consentite al dipendente (l'utente corrente)
+    const request_att = new GenericRequest<Az_SubCommessaAttivita_GetAll_4FullList_4User_InModel>(Az_SubCommessaAttivita_GetAll_4FullList_4User_InModel);
+    request_att.data.idAspNetUsers = null;
 
     const request = new GenericRequest<Dip_GG_Timbratura_StampPrepare_InModel>(Dip_GG_Timbratura_StampPrepare_InModel);
-    return this.dipGGTimbraturaService.PrepareStamp(request).pipe(
-      map(res => {
+    return forkJoin({
+      prepare: this.dipGGTimbraturaService.PrepareStamp(request),
+      attivita: this.azSubCommessaAttivitaService.GetAll_4FullList_4User(request_att)
+    }).pipe(
+      map(({ prepare, attivita }) => {
 
-        this.par_AttivitaList = res.data.par_Attivita;
+        this.par_AttivitaList = prepare.data.par_Attivita;
+        this.az_SubCommessaAttivita_4FullList = attivita.data?.az_SubCommessaAttivita ?? [];
 
-        return res.data;
+        // preselezione: attività dell'ultima timbratura se ancora consentita, altrimenti la prima consentita
+        if (attivita.data?.idAz_SubCommessaAttivita_Proposta)
+          prepare.data.idPar_Attivita = attivita.data.idAz_SubCommessaAttivita_Proposta;
+
+        return prepare.data;
       }),
       catchError(error => {
         console.error('Errore durante PrepareStamp:', error);

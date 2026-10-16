@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using nvxapp.server.Base;
 using nvxapp.server.data.Entities.Public;
+using nvxapp.server.data.Entities.Tenant;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
@@ -56,10 +57,66 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Compet
                 return retVal;
             }, isSubProcess);
         }
+
+        public virtual async Task<GenericResult<Dip_Competenza_Selected_GetOutModel>> GetSelected_On_Dip_Anagrafica(GenericRequest<Dip_Competenza_Selected_GetInModel> model, Boolean isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                Dip_Competenza_Selected_GetOutModel retVal = new Dip_Competenza_Selected_GetOutModel();
+
+                var dip_Competenza = _dip_CompetenzaRepository.FindAll(x => x.IdDip_Anagrafica == model.Data.IdDip_Anagrafica).ToList();
+
+                retVal.Dip_Competenza = _mapper.Map<List<Dip_CompetenzaModel>>(dip_Competenza);
+
+                await Task.Delay(DelayAsyncMethod);
+
+                return retVal;
+            }, isSubProcess);
+        }
+
+        public virtual async Task<GenericResult<Dip_Competenza_Selected_PutOutModel>> PutSelected_On_Dip_Anagrafica(GenericRequest<Dip_Competenza_Selected_PutInModel> model, Boolean isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                Dip_Competenza_Selected_PutOutModel retVal = new Dip_Competenza_Selected_PutOutModel();
+
+                //cancellazione
+                var dip_Competenza = _dip_CompetenzaRepository.FindAll(x => x.IdDip_Anagrafica == model.Data.IdDip_Anagrafica).ToList();
+
+                foreach (var item in dip_Competenza)
+                {
+                    // ciclo i dati a db, se non presente nella lista tornata dal client, allora e' stata cancellata
+                    // e la elimino dal db
+                    var rec = model.Data.Dip_Competenza.Where(x => x.IdPar_Competenza == item.IdPar_Competenza).FirstOrDefault();
+                    if (rec == null)
+                    {
+                        await _dip_CompetenzaRepository.DeleteAsync(item);
+                    }
+                }
+
+                //aggiornamento
+                foreach (var idPar_Competenza in model.Data.Dip_Competenza.Select(x => x.IdPar_Competenza).Distinct())
+                {
+                    var rec = dip_Competenza.Where(x => x.IdPar_Competenza == idPar_Competenza).FirstOrDefault();
+                    if (rec == null)
+                    {
+                        rec = await _dip_CompetenzaRepository.UpsertAsync(new Dip_Competenza() { IdDip_Anagrafica = model.Data.IdDip_Anagrafica, IdPar_Competenza = idPar_Competenza });
+                    }
+                    retVal.Dip_Competenza.Add(_mapper.Map<Dip_CompetenzaModel>(rec));
+                }
+
+                await Task.Delay(DelayAsyncMethod);
+
+                return retVal;
+            }, isSubProcess);
+        }
     }
 
     public interface IDip_CompetenzaService : IServiceBase
     {
         Task<GenericResult<Dip_Competenza_GetAll_OutModel>> GetAll(GenericRequest<Dip_Competenza_GetAll_InModel> model, bool isSubProcess);
+
+        public Task<GenericResult<Dip_Competenza_Selected_GetOutModel>> GetSelected_On_Dip_Anagrafica(GenericRequest<Dip_Competenza_Selected_GetInModel> model, Boolean isSubProcess);
+        public Task<GenericResult<Dip_Competenza_Selected_PutOutModel>> PutSelected_On_Dip_Anagrafica(GenericRequest<Dip_Competenza_Selected_PutInModel> model, Boolean isSubProcess);
     }
 }

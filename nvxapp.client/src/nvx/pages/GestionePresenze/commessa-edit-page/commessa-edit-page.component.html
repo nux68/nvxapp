@@ -194,6 +194,7 @@
             <ion-item class="nvx-item-4-title">
               <ion-label>Reparti collegati alla commessa</ion-label>
             </ion-item>
+            <ion-note>Si possono collegare solo i reparti in cui si svolge almeno una delle attività della sub commessa.</ion-note>
             <!--mobile-->
             @for (item of Az_SediReparto_Get() | genericFilter: 'descrizione' : searchText; track item) {
               <ion-item-sliding class="ion-hide-sm-up">
@@ -201,6 +202,9 @@
                   <ion-label>
                     {{ item.idAz_SediReparto | azSediRepartoToLongText }}
                   </ion-label>
+                  @if (!isRepartoCompatibile(item.idAz_SediReparto)) {
+                    <ion-note color="warning">&nbsp;Non compatibile</ion-note>
+                  }
                 </ion-item>
                 <!--<ion-item-options side="end">
                 <ion-item-option *ngIf="!item.default" color="{{btnDeleteReparto.color}}" (click)="btnDeleteReparto.event(item)">
@@ -223,6 +227,9 @@
                   <ion-label>
                     {{ item.idAz_SediReparto | azSediRepartoToLongText }}
                   </ion-label>
+                  @if (!isRepartoCompatibile(item.idAz_SediReparto)) {
+                    <ion-note color="warning">&nbsp;Non compatibile</ion-note>
+                  }
                 </ion-col>
                 <ion-col size="2">
                   @if (!item.default) {
@@ -241,6 +248,7 @@
           <ion-item class="nvx-item-4-title">
             <ion-label>Utenti collegati alla commessa</ion-label>
           </ion-item>
+          <ion-note>Si possono collegare solo gli utenti con almeno una delle competenze richieste dalle attività della sub commessa.</ion-note>
           <!--mobile-->
           @for (item of Az_SubCommessaUser_Get() | genericFilter: 'descrizione' : searchText; track item) {
             <ion-item-sliding class="ion-hide-sm-up">
@@ -248,6 +256,9 @@
                 <ion-label>
                   {{ item.idAspNetUsers | idAspNetUsersToCognome }}  {{ item.idAspNetUsers | idAspNetUsersToNome }}
                 </ion-label>
+                @if (!isUserCompatibile(item.idAspNetUsers)) {
+                  <ion-note color="warning">&nbsp;Non compatibile</ion-note>
+                }
               </ion-item>
               <!--<ion-item-options side="end">
               <ion-item-option *ngIf="!item.default" color="{{btnDeleteUser.color}}" (click)="btnDeleteUser.event(item)">
@@ -275,6 +286,9 @@
                 <ion-label>
                   {{ item.idAspNetUsers | idAspNetUsersToNome }}
                 </ion-label>
+                @if (!isUserCompatibile(item.idAspNetUsers)) {
+                  <ion-note color="warning">&nbsp;Non compatibile</ion-note>
+                }
               </ion-col>
               <ion-col size="2">
                 @if (!item.default) {

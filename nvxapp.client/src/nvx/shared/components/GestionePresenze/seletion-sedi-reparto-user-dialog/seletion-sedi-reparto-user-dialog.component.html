@@ -9,9 +9,14 @@
     <ion-card>
       <ion-card-content>
 
+        @if (filterIdAspNetUsers) {
+          <ion-note>Sono proposti solo i dipendenti con almeno una delle competenze richieste dalle attività della sub commessa.</ion-note>
+        }
+
         <br />
 
         <app-sedi-reparto-user-navigation [showPeriodSelect]="false"
+                                          [filterIdAspNetUsers]="filterIdAspNetUsers"
                                           [showSediSelect]="true"
                                           [showRepartoSelect]="true"
                                           [showUserSelect]="true"

@@ -1,5 +1,6 @@
 ﻿using nvxapp.server.data.Entities.Public;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.ContatoriService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_CompetenzaService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_RichiestaService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_ProfiloOrarioService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_RapportoLavoroService.Models;
@@ -59,6 +60,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
 
         /// <summary>Configurazione maturazione ore per ciascun giustificativo-contatore del rapporto di lavoro.</summary>
         public List<Dip_Rapporto_Giustificativi_MaturazioneModel> Dip_Maturazione { get; set; } = new List<Dip_Rapporto_Giustificativi_MaturazioneModel>();
+
+        /// <summary>Competenze del dipendente: determinano le attivita' che puo' svolgere.</summary>
+        public List<Dip_CompetenzaModel> Dip_Competenza { get; set; } = new List<Dip_CompetenzaModel>();
 
     }
     

@@ -15,4 +15,25 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Compet
     {
         public List<Dip_CompetenzaModel> Dip_Competenza { get; set; } = new List<Dip_CompetenzaModel>();
     }
+
+
+
+    public class Dip_Competenza_Selected_GetInModel
+    {
+        public int IdDip_Anagrafica { get; set; }
+    }
+    public class Dip_Competenza_Selected_GetOutModel : ModelResult
+    {
+        public List<Dip_CompetenzaModel> Dip_Competenza { get; set; } = new List<Dip_CompetenzaModel>();
+    }
+
+    public class Dip_Competenza_Selected_PutInModel
+    {
+        public int IdDip_Anagrafica { get; set; }
+        public List<Dip_CompetenzaModel> Dip_Competenza { get; set; } = new List<Dip_CompetenzaModel>();
+    }
+    public class Dip_Competenza_Selected_PutOutModel : ModelResult
+    {
+        public List<Dip_CompetenzaModel> Dip_Competenza { get; set; } = new List<Dip_CompetenzaModel>();
+    }
 }

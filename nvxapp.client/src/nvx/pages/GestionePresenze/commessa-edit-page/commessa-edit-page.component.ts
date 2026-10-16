@@ -1,11 +1,11 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
-import { ModalController, NavController } from '@ionic/angular/lazy';
+import { ModalController, NavController, ToastController } from '@ionic/angular/lazy';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { Observable } from 'rxjs/internal/Observable';
-import { map, catchError, of } from 'rxjs';
+import { map, catchError, of, firstValueFrom } from 'rxjs';
 import { StringHelperService } from '../../../Utility/infrastructure/string-helper.service';
 import { Az_CommessaGetInModel, Az_CommessaGetOutModel, Az_CommessaPutInModel } from '../../../ClientServer-Service/GestionePresenze/Az_Commessa/Models/az-commessa-model';
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
@@ -23,6 +23,8 @@ import { Az_SubCommessaUser4EditModel } from '../../../ClientServer-Service/Gest
 import { Az_SubCommessaAttivita4EditModel } from '../../../ClientServer-Service/GestionePresenze/Az_SubCommessaAttivita/Models/az-subcommessa-attivita-model';
 import { Az_SubCommessaSediRepartoModel4EditModel } from '../../../ClientServer-Service/GestionePresenze/Az_SubCommessaSediReparto/Models/az-subcommessa-sedi-reparto-model';
 import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
+import { AzSubCommessaService } from '../../../ClientServer-Service/GestionePresenze/Az_SubCommessa/az-subcommessa.service';
+import { Az_SubCommessa_GetCompatibili_InModel, Az_SubCommessa_GetCompatibili_OutModel } from '../../../ClientServer-Service/GestionePresenze/Az_SubCommessa/Models/az-subcommessa-model';
 
 @Component({
   selector: 'app-commessa-edit-page',
@@ -64,6 +66,8 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
     private azCommessaService: AzCommessaService,
     private refresherService: RefresherService,
     private modalCtrl: ModalController,
+    private azSubCommessaService: AzSubCommessaService,
+    private toastCtrl: ToastController,
     private collectionDialogService: CollectionDialogService) {
     super(navCtrl, userInterfaceService, fb);
 
@@ -118,6 +122,7 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
             this._editModel = res.data;
 
             this.setSubCommessaDates(this.idxCurrCommessa);
+            this.Load_Compatibili();
           } else {
             this.idxCurrCommessa = -1;
             // --- MODIFICA: Assegna null invece di stringa vuota
@@ -213,6 +218,7 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
     const selectedId = event.detail.value;
     this.idxCurrCommessa = this._editModel.az_SubCommessa.findIndex(x => x.id === selectedId);
     this.setSubCommessaDates(this.idxCurrCommessa);
+    this.Load_Compatibili();
     this.setfabMenuService();
   }
 
@@ -292,26 +298,34 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
             break;
 
 
+          // attività: serve una sub commessa selezionata
           case 'sez_1_sub_1':
-            this.fabMenuService.fabMenuItem = [
-              new FabMenuItem('xxx', 'add-circle-outline', () => {
-                this.Az_SubCommessaAttivita_DialogOpen();
-              }),
-            ];
+            if (this.idxCurrCommessa !== -1) {
+              this.fabMenuService.fabMenuItem = [
+                new FabMenuItem('xxx', 'add-circle-outline', () => {
+                  this.Az_SubCommessaAttivita_DialogOpen();
+                }),
+              ];
+            }
             break;
+          // reparti e utenti: servono attività collegate, i compatibili dipendono da quelle
           case 'sez_1_sub_2':
-            this.fabMenuService.fabMenuItem = [
-              new FabMenuItem('xxx', 'add-circle-outline', () => {
-                this.Az_SediReparto_DialogOpen();
-              }),
-            ];
+            if (this.idxCurrCommessa !== -1 && this.getIdPar_Attivita_Collegate().length > 0) {
+              this.fabMenuService.fabMenuItem = [
+                new FabMenuItem('xxx', 'add-circle-outline', () => {
+                  this.Az_SediReparto_DialogOpen();
+                }),
+              ];
+            }
             break;
           case 'sez_1_sub_3':
-            this.fabMenuService.fabMenuItem = [
-              new FabMenuItem('xxx', 'add-circle-outline', () => {
-                this.Az_SubCommessaUser_DialogOpen();
-              }),
-            ];
+            if (this.idxCurrCommessa !== -1 && this.getIdPar_Attivita_Collegate().length > 0) {
+              this.fabMenuService.fabMenuItem = [
+                new FabMenuItem('xxx', 'add-circle-outline', () => {
+                  this.Az_SubCommessaUser_DialogOpen();
+                }),
+              ];
+            }
             break;
         }
         break;
@@ -353,6 +367,8 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
 
       // Aggiorna le date mostrate
       this.setSubCommessaDates(this.idxCurrCommessa);
+      this.Load_Compatibili();
+      this.setfabMenuService();
 
     }
 
@@ -382,6 +398,8 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
             this._editForm.get('tmp_az_SubCommessa')?.setValue(null);
             this.setSubCommessaDates(-1);
           }
+          this.Load_Compatibili();
+          this.setfabMenuService();
         }
 
       }
@@ -394,6 +412,85 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
 
 
 
+
+  /*COMPATIBILITA' CON LE ATTIVITA'*/
+  // Reparti e utenti compatibili con le attività collegate alla sub commessa corrente:
+  // reparti in cui si svolge almeno una attività, utenti con almeno una competenza richiesta.
+  public compatibili: Az_SubCommessa_GetCompatibili_OutModel | null = null;
+  // vale solo l'ultima richiesta: una risposta arrivata in ritardo (es. di un'altra sub commessa) si scarta
+  private _compatibiliRichiesta: number = 0;
+
+  private getIdPar_Attivita_Collegate(): number[] {
+    return this.Az_SubCommessaAttivita_Get().map(x => x.idPar_Attivita);
+  }
+
+  /** Compatibili con le attività indicate; senza attività nessun reparto/utente è compatibile. */
+  private async GetCompatibili(idPar_Attivita: number[]): Promise<Az_SubCommessa_GetCompatibili_OutModel> {
+    if (idPar_Attivita.length === 0) return new Az_SubCommessa_GetCompatibili_OutModel();
+
+    let request: GenericRequest<Az_SubCommessa_GetCompatibili_InModel> = new GenericRequest<Az_SubCommessa_GetCompatibili_InModel>(Az_SubCommessa_GetCompatibili_InModel);
+    request.data.idPar_Attivita = idPar_Attivita;
+    const res = await firstValueFrom(this.azSubCommessaService.GetCompatibili(request));
+    if (!res.success || !res.data) throw new Error('GetCompatibili non riuscita');
+    return res.data;
+  }
+
+  /** Rilegge i compatibili della sub commessa corrente. */
+  public async Load_Compatibili(): Promise<void> {
+    const richiesta = ++this._compatibiliRichiesta;
+    this.compatibili = null;
+    if (this.idxCurrCommessa === -1) return;
+    try {
+      const res = await this.GetCompatibili(this.getIdPar_Attivita_Collegate());
+      if (richiesta === this._compatibiliRichiesta) this.compatibili = res;
+    } catch (error) {
+      console.error('Errore durante la chiamata API:', error);
+    }
+  }
+
+  /** true finché i compatibili non sono stati letti, per non segnalare a vuoto. */
+  isRepartoCompatibile(idAz_SediReparto: number): boolean {
+    return this.compatibili?.idAz_SediReparto.includes(idAz_SediReparto) ?? true;
+  }
+
+  isUserCompatibile(idAspNetUsers: string): boolean {
+    return this.compatibili?.idAspNetUsers.includes(idAspNetUsers) ?? true;
+  }
+
+  private Toast(message: string) {
+    this.toastCtrl.create({ message: message, duration: 4000, position: 'bottom' }).then(t => t.present());
+  }
+
+  /**
+   * Tolta un'attività, scollega i reparti e gli utenti che erano compatibili prima
+   * e non lo sono più con le attività rimaste.
+   */
+  private async ScollegaNonPiuCompatibili(idPar_Attivita_Prima: number[]): Promise<void> {
+    const richiesta = ++this._compatibiliRichiesta;
+    const idx = this.idxCurrCommessa;
+    try {
+      const [prima, dopo] = await Promise.all([
+        this.GetCompatibili(idPar_Attivita_Prima),
+        this.GetCompatibili(this.getIdPar_Attivita_Collegate())
+      ]);
+      if (richiesta !== this._compatibiliRichiesta || idx !== this.idxCurrCommessa) return;
+      this.compatibili = dopo;
+
+      const sub = this._editModel.az_SubCommessa[idx];
+      const reparti = sub.az_SubCommessaSediReparto
+        .filter(x => x.checked && prima.idAz_SediReparto.includes(x.idAz_SediReparto) && !dopo.idAz_SediReparto.includes(x.idAz_SediReparto));
+      const utenti = sub.az_SubCommessaUser
+        .filter(x => x.checked && prima.idAspNetUsers.includes(x.idAspNetUsers) && !dopo.idAspNetUsers.includes(x.idAspNetUsers));
+
+      reparti.forEach(x => x.checked = false);
+      utenti.forEach(x => x.checked = false);
+
+      if (reparti.length > 0 || utenti.length > 0)
+        this.Toast(`Non più compatibili con le attività rimaste, scollegati: ${reparti.length} reparti, ${utenti.length} utenti`);
+    } catch (error) {
+      console.error('Errore durante la chiamata API:', error);
+    }
+  }
 
   /*SCHEDA USER*/
   public Az_SubCommessaUser_Get(): Az_SubCommessaUser4EditModel[] {
@@ -451,10 +548,19 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
   }
 
   async Az_SubCommessaUser_DialogOpen() {
+    if (this.idxCurrCommessa === -1) return;
+    let compatibili: Az_SubCommessa_GetCompatibili_OutModel;
+    try {
+      compatibili = await this.GetCompatibili(this.getIdPar_Attivita_Collegate());
+    } catch (error) {
+      console.error('Errore durante la chiamata API:', error);
+      return;
+    }
     const modal = await this.modalCtrl.create({
       component: SeletionSediRepartoUserDialogComponent,
       componentProps: {
-        nomeUtente: 'Mario Rossi'
+        nomeUtente: 'Mario Rossi',
+        filterIdAspNetUsers: compatibili.idAspNetUsers
       },
     });
 
@@ -532,10 +638,19 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
   }
 
   async Az_SediReparto_DialogOpen() {
+    if (this.idxCurrCommessa === -1) return;
+    let compatibili: Az_SubCommessa_GetCompatibili_OutModel;
+    try {
+      compatibili = await this.GetCompatibili(this.getIdPar_Attivita_Collegate());
+    } catch (error) {
+      console.error('Errore durante la chiamata API:', error);
+      return;
+    }
     const modal = await this.modalCtrl.create({
       component: SeletionSediRepartoDialogComponent,
       componentProps: {
-        nomeUtente: 'Mario Rossi'
+        nomeUtente: 'Mario Rossi',
+        filterIdAz_SediReparto: compatibili.idAz_SediReparto
       },
     });
 
@@ -543,7 +658,7 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
 
     const { data, role } = await modal.onWillDismiss<SeletionSediRepartoDialogResult | null>();
 
-    if (role === 'confirm' && data) {
+    if (role === 'confirm' && data && data.idReparto > 0) {
       this.Az_SediReparto_SetCheck(data.idReparto, true);
     }
   }
@@ -601,18 +716,23 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
 
   Az_SubCommessaAttivita_HandleButtonDelete = async (item: any) => {
 
-    const result = await this.collectionDialogService.ConfirmCancelDialog('Vuoi scollegare l\'attività?');
+    const result = await this.collectionDialogService.ConfirmCancelDialog('Vuoi scollegare l\'attività? I reparti e gli utenti non più compatibili verranno scollegati.');
     if (result) {
+      const idPar_Attivita_Prima = this.getIdPar_Attivita_Collegate();
       this.Az_SubCommessaAttivita_SetCheck(item.idPar_Attivita, false);
+      this.setfabMenuService();
+      await this.ScollegaNonPiuCompatibili(idPar_Attivita_Prima);
     }
 
   }
 
   async Az_SubCommessaAttivita_DialogOpen() {
+    if (this.idxCurrCommessa === -1) return;
     const modal = await this.modalCtrl.create({
       component: SeletionParAttivitaDialogComponent,
       componentProps: {
-        nomeUtente: 'Mario Rossi'
+        nomeUtente: 'Mario Rossi',
+        idPar_Attivita_Escluse: this.getIdPar_Attivita_Collegate()
       },
     });
 
@@ -625,6 +745,8 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
         data.id.forEach(item => {
           this.Az_SubCommessaAttivita_SetCheck(item, true);
         });
+        this.setfabMenuService();
+        this.Load_Compatibili();
       }
     }
   }

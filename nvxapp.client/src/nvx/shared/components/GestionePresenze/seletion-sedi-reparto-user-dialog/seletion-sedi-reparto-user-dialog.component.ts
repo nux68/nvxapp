@@ -14,6 +14,9 @@ export class SeletionSediRepartoUserDialogComponent {
   public title!: string;
   public buttonbar: ButtonItem[] = [];
 
+  /** Se valorizzato si propongono solo questi utenti (es. con le competenze per le attività della sub commessa). */
+  public filterIdAspNetUsers: string[] | null = null;
+
   result: SeletionSediRepartoUserDialogResult = {
     idSede: 0,
     idReparto: 0,
@@ -52,7 +55,7 @@ export class SeletionSediRepartoUserDialogComponent {
   }
   onRepartiChanged(repartoIds: number[] | undefined): void {
 
-    if (repartoIds.length == 0)
+    if (!repartoIds || repartoIds.length == 0)
       this.result.idReparto = 0;
     else
       this.result.idReparto = repartoIds[0];

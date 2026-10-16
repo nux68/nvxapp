@@ -57,8 +57,18 @@ export class Az_SubCommessaAttivita_4FullListModel {
 
 export class Az_SubCommessaAttivita_GetAll_4FullList_InModel {}
 
+// attività consentite al dipendente (sub commesse in cui è collegato come utente o tramite reparto)
+export class Az_SubCommessaAttivita_GetAll_4FullList_4User_InModel {
+  idAspNetUsers: string | null = null; // null = utente corrente
+}
+
 export class Az_SubCommessaAttivita_GetAll_4FullList_OutModel extends ModelResult {
   az_SubCommessaAttivita: Az_SubCommessaAttivita_4FullListModel[] = [];
+}
+
+export class Az_SubCommessaAttivita_GetAll_4FullList_4User_OutModel extends Az_SubCommessaAttivita_GetAll_4FullList_OutModel {
+  /** Attività da proporre: quella dell'ultima timbratura se ancora consentita, altrimenti la prima consentita. */
+  idAz_SubCommessaAttivita_Proposta: number = 0;
 }
 
 //export class Get_Az_SubCommessaAttivita_Default_InModel {}

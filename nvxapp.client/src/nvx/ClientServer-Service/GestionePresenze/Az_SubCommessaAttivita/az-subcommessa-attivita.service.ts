@@ -8,6 +8,7 @@ import { map, Observable } from 'rxjs';
 import {
   Az_SubCommessaAttivita_GetAll_InModel, Az_SubCommessaAttivita_GetAll_OutModel,
   Az_SubCommessaAttivita_GetAll_4FullList_InModel, Az_SubCommessaAttivita_GetAll_4FullList_OutModel,
+  Az_SubCommessaAttivita_GetAll_4FullList_4User_InModel, Az_SubCommessaAttivita_GetAll_4FullList_4User_OutModel,
   Az_SubCommessaAttivita_Get4SubCommessa_InModel, Az_SubCommessaAttivita_Get4SubCommessa_OutModel,
   Az_SubCommessaAttivita_Put4SubCommessa_InModel, Az_SubCommessaAttivita_Put4SubCommessa_OutModel
 } from './Models/az-subcommessa-attivita-model';
@@ -25,6 +26,12 @@ export class AzSubCommessaAttivitaService {
 
   GetAll_4FullList(model: GenericRequest<Az_SubCommessaAttivita_GetAll_4FullList_InModel>): Observable<GenericResult<Az_SubCommessaAttivita_GetAll_4FullList_OutModel>> {
     return this.http.post<GenericResult<Az_SubCommessaAttivita_GetAll_4FullList_OutModel>>(environment.remoteData.apiUri + 'Az_SubCommessaAttivita/GetAll_4FullList', model)
+      .pipe(map(r => r));
+  }
+
+  /** Attività consentite al dipendente: sub commesse in cui è collegato come utente o tramite reparto. */
+  GetAll_4FullList_4User(model: GenericRequest<Az_SubCommessaAttivita_GetAll_4FullList_4User_InModel>): Observable<GenericResult<Az_SubCommessaAttivita_GetAll_4FullList_4User_OutModel>> {
+    return this.http.post<GenericResult<Az_SubCommessaAttivita_GetAll_4FullList_4User_OutModel>>(environment.remoteData.apiUri + 'Az_SubCommessaAttivita/GetAll_4FullList_4User', model)
       .pipe(map(r => r));
   }
 

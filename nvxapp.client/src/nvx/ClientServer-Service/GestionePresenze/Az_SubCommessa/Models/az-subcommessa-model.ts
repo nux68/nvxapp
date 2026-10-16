@@ -34,4 +34,14 @@ export class Az_SubCommessa_GetAll_4Edit_OutModel extends ModelResult {
   public az_SubCommessa: Az_SubCommessa_4EditModel[] = [];
 }
 
+// Reparti e utenti compatibili con le attività della sub commessa
+export class Az_SubCommessa_GetCompatibili_InModel {
+  public idPar_Attivita: number[] = [];
+}
+
+export class Az_SubCommessa_GetCompatibili_OutModel extends ModelResult {
+  public idAz_SediReparto: number[] = [];
+  public idAspNetUsers: string[] = [];
+}
+
 

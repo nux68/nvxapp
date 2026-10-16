@@ -1,6 +1,7 @@
 import { RoleCode } from "../../../Infrastructure/Account/Models/user-roles-model";
 import { ModelResult } from "../../../ModelsBase/model-result";
 import { Contatori_Riporto_Model } from "../../Contatori/Models/contatori-model";
+import { Dip_CompetenzaModel } from "../../Dip_Competenza/Models/dip-competenza-model";
 import { Dip_Rapporto_Giustificativi_MaturazioneModel } from "../../Dip_Rapporto_Giustificativi_Maturazione/Models/dip-rapporto-giustificativi-maturazione-model";
 import { Dip_ProfiloOrarioModel } from "../../Dip_ProfiloOrario/Models/dip-profilo-orario-model";
 import { Dip_RapportoLavoroModel } from "../../Dip_RapportoLavoro/Models/dip-rapporto-lavoro-model";
@@ -66,11 +67,14 @@ export class Dip_Anagrafica4EditModel extends Dip_AnagraficaModel {
     this.dip_ProfiloOrario = [];
     this.dip_Contatori_Riporto = [];
     this.dip_Maturazione = [];
+    this.dip_Competenza = [];
   }
 
   public dip_Contatori_Riporto: Contatori_Riporto_Model[];
   /** Configurazione maturazione ore/mese per ciascun giustificativo-contatore. */
   public dip_Maturazione: Dip_Rapporto_Giustificativi_MaturazioneModel[];
+  /** Competenze del dipendente: determinano le attività che può svolgere. */
+  public dip_Competenza: Dip_CompetenzaModel[];
 
 }
 

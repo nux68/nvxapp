@@ -35,6 +35,14 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
         private readonly IAz_SubCommessaAttivitaService _az_SubCommessaAttivitaService;
         private readonly IAz_SubCommessaSediRepartoService _az_SubCommessaSediRepartoService;
 
+        private readonly IAz_SediRepository _az_SediRepository;
+        private readonly IAz_SediRepartoRepository _az_SediRepartoRepository;
+        private readonly IAz_SediRepartoAttivitaRepository _az_SediRepartoAttivitaRepository;
+        private readonly IPar_AttivitaCompetenzaRepository _par_AttivitaCompetenzaRepository;
+        private readonly IDip_AnagraficaRepository _dip_AnagraficaRepository;
+        private readonly IDip_CompetenzaRepository _dip_CompetenzaRepository;
+        private readonly IUserCompanyRepository _userCompanyRepository;
+
         public Az_SubCommessaService(IMapper mapper,
                                   UserManager<ApplicationUser> userManager,
                                   IAspNetUsersRepository aspNetUsersRepository,
@@ -50,7 +58,14 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
                                   IAz_SubCommessaAttivitaService az_SubCommessaAttivitaService,
                                   IAz_SubCommessaSediRepartoRepository az_SubCommessaSediRepartoRepository,
                                   IAz_SubCommessaRepository az_SubCommessaRepository,
-                                  IAz_SubCommessaSediRepartoService az_SubCommessaSediRepartoService) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
+                                  IAz_SubCommessaSediRepartoService az_SubCommessaSediRepartoService,
+                                  IAz_SediRepository az_SediRepository,
+                                  IAz_SediRepartoRepository az_SediRepartoRepository,
+                                  IAz_SediRepartoAttivitaRepository az_SediRepartoAttivitaRepository,
+                                  IPar_AttivitaCompetenzaRepository par_AttivitaCompetenzaRepository,
+                                  IDip_AnagraficaRepository dip_AnagraficaRepository,
+                                  IDip_CompetenzaRepository dip_CompetenzaRepository,
+                                  IUserCompanyRepository userCompanyRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _az_SubCommessaRepository = az_SubCommessaRepository;
             _gestionePresenzeUserUtility = gestionePresenzeUserUtility;
@@ -61,6 +76,14 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
             _az_SubCommessaUserService = az_SubCommessaUserService;
             _az_SubCommessaAttivitaService = az_SubCommessaAttivitaService;
             _az_SubCommessaSediRepartoService = az_SubCommessaSediRepartoService;
+
+            _az_SediRepository = az_SediRepository;
+            _az_SediRepartoRepository = az_SediRepartoRepository;
+            _az_SediRepartoAttivitaRepository = az_SediRepartoAttivitaRepository;
+            _par_AttivitaCompetenzaRepository = par_AttivitaCompetenzaRepository;
+            _dip_AnagraficaRepository = dip_AnagraficaRepository;
+            _dip_CompetenzaRepository = dip_CompetenzaRepository;
+            _userCompanyRepository = userCompanyRepository;
         }
 
         public virtual async Task<GenericResult<Az_SubCommessa_GetAll_OutModel>> GetAll(GenericRequest<Az_SubCommessa_GetAll_InModel> model, bool isSubProcess)
@@ -215,6 +238,59 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
                 return retVal;
             }, isSubProcess);
         }
+
+        // Reparti e utenti che si possono collegare a una sub commessa con le attivita' indicate:
+        // - reparto: vi si svolge almeno una delle attivita'
+        // - utente: ha almeno una delle competenze richieste da almeno una delle attivita'
+        //   (un'attivita' senza competenze richieste puo' essere svolta da tutti)
+        public virtual async Task<GenericResult<Az_SubCommessa_GetCompatibili_OutModel>> GetCompatibili(GenericRequest<Az_SubCommessa_GetCompatibili_InModel> model, bool isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                Az_SubCommessa_GetCompatibili_OutModel retVal = new Az_SubCommessa_GetCompatibili_OutModel();
+
+                int IdCompany;
+                int.TryParse(this.CurrentCompany, out IdCompany);
+
+                Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg company_DATA = await _gestionePresenzeUserUtility.Get_AzAna_AzSedi_AzReparto_Az_Cfg(IdCompany, true);
+                if (company_DATA != null && company_DATA.az_Anagrafica != null)
+                {
+                    var idPar_Attivita = model.Data.IdPar_Attivita.Distinct().ToList();
+
+                    // reparti dell'azienda in cui si svolge almeno una delle attivita'
+                    var idAz_Sedi = _az_SediRepository.FindAll(x => x.IdAz_Anagrafica == company_DATA.az_Anagrafica.Id).Select(x => x.Id).ToList();
+                    var idAz_SediReparto = _az_SediRepartoRepository.FindAll(x => idAz_Sedi.Contains(x.IdAz_Sedi)).Select(x => x.Id).ToList();
+                    retVal.IdAz_SediReparto = _az_SediRepartoAttivitaRepository.FindAll(x => idAz_SediReparto.Contains(x.IdAz_SediReparto) &&
+                                                                                            idPar_Attivita.Contains(x.IdPar_Attivita))
+                                                                               .Select(x => x.IdAz_SediReparto)
+                                                                               .Distinct()
+                                                                               .ToList();
+
+                    // competenze richieste da ciascuna attivita'
+                    var attivitaCompetenza = _par_AttivitaCompetenzaRepository.FindAll(x => idPar_Attivita.Contains(x.IdPar_Attivita)).ToList();
+                    var competenzeRichieste = idPar_Attivita.Select(id => attivitaCompetenza.Where(x => x.IdPar_Attivita == id)
+                                                                                            .Select(x => x.IdPar_Competenza)
+                                                                                            .ToList())
+                                                            .ToList();
+
+                    // utenti dell'azienda con almeno una competenza di almeno una attivita'
+                    var idAspNetUsers = _userCompanyRepository.FindAll(x => x.IdCompany == IdCompany).Select(x => x.IdAspNetUsers).ToList();
+                    var dip_Anagrafica = _dip_AnagraficaRepository.FindAll(x => idAspNetUsers.Contains(x.IdAspNetUsers)).ToList();
+                    var idDip_Anagrafica = dip_Anagrafica.Select(x => x.Id).ToList();
+                    var dip_Competenza = _dip_CompetenzaRepository.FindAll(x => idDip_Anagrafica.Contains(x.IdDip_Anagrafica)).ToList();
+
+                    foreach (var dip in dip_Anagrafica)
+                    {
+                        var competenzeDip = dip_Competenza.Where(x => x.IdDip_Anagrafica == dip.Id).Select(x => x.IdPar_Competenza).ToList();
+                        if (competenzeRichieste.Any(richieste => richieste.Count == 0 || richieste.Any(c => competenzeDip.Contains(c))))
+                            retVal.IdAspNetUsers.Add(dip.IdAspNetUsers);
+                    }
+                }
+
+                await Task.Delay(DelayAsyncMethod);
+                return retVal;
+            }, isSubProcess);
+        }
     }
 
     public interface IAz_SubCommessaService : IServiceBase
@@ -222,5 +298,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
         Task<GenericResult<Az_SubCommessa_GetAll_OutModel>> GetAll(GenericRequest<Az_SubCommessa_GetAll_InModel> model, bool isSubProcess);
         Task<GenericResult<Az_SubCommessa_GetAll_4Edit_OutModel>> GetAll_4Edit(GenericRequest<Az_SubCommessa_GetAll_4Edit_InModel> model, bool isSubProcess);
         Task<GenericResult<Az_SubCommessa_PutAll_4Edit_OutModel>> PutAll_4Edit(GenericRequest<Az_SubCommessa_PutAll_4Edit_InModel> model, bool isSubProcess);
+        Task<GenericResult<Az_SubCommessa_GetCompatibili_OutModel>> GetCompatibili(GenericRequest<Az_SubCommessa_GetCompatibili_InModel> model, bool isSubProcess);
     }
 }

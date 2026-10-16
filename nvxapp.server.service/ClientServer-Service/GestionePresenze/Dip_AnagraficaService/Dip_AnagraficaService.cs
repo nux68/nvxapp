@@ -13,6 +13,8 @@ using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.ContatoriService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.ContatoriService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_AnagraficaService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_CompetenzaService;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_CompetenzaService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Rapporto_Giustificativi_MaturazioneService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Rapporto_Giustificativi_MaturazioneService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_ProfiloOrarioService;
@@ -43,6 +45,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
         private readonly IDip_ProfiloOrarioService                               _dip_ProfiloOrarioService;
         private readonly IContatoriService                                       _contatoriService;
         private readonly IDip_Rapporto_Giustificativi_MaturazioneService         _maturazioneService;
+        private readonly IDip_CompetenzaService                                  _dip_CompetenzaService;
         
         
 
@@ -59,6 +62,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
                                   IDip_ProfiloOrarioService dip_ProfiloOrarioService,
                                   IContatoriService contatoriService,
                                   IDip_Rapporto_Giustificativi_MaturazioneService maturazioneService,
+                                  IDip_CompetenzaService dip_CompetenzaService,
                                   IUserCompanyRepository userCompanyRepository,
                                   IAspNetUserRolesRepository aspNetUserRolesRepository,
                                   IAspNetRolesRepository aspNetRolesRepository,
@@ -78,6 +82,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
             _dip_ProfiloOrarioService  = dip_ProfiloOrarioService;
             _contatoriService          = contatoriService;
             _maturazioneService        = maturazioneService;
+            _dip_CompetenzaService     = dip_CompetenzaService;
         }
 
         public virtual async Task<GenericResult<Dip_Anagrafica_GetAll_OutModel>> GetAll(GenericRequest<Dip_Anagrafica_GetAll_InModel> model, Boolean isSubProcess)
@@ -199,6 +204,15 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
                                     retVal.Dip_Anagrafica.Dip_RapportoLavoro = res_1.Data.Dip_RapportoLavoro;
                                 }
 
+                                // ── Competenze del dipendente ────────────────────────────────
+                                var req_Comp = new GenericRequest<Dip_Competenza_Selected_GetInModel>();
+                                req_Comp.Data.IdDip_Anagrafica = retVal.Dip_Anagrafica.Id;
+                                var res_Comp = await _dip_CompetenzaService.GetSelected_On_Dip_Anagrafica(req_Comp, true);
+                                if (res_Comp.Success && res_Comp.Data != null)
+                                {
+                                    retVal.Dip_Anagrafica.Dip_Competenza = res_Comp.Data.Dip_Competenza;
+                                }
+
                                 foreach(var item in retVal.Dip_Anagrafica.Dip_RapportoLavoro)
                                 {
                                     var req_3 = new GenericRequest<Dip_ProfiloOrario_Get_InModel>();
@@ -303,6 +317,23 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
                                     entity = await _dip_AnagraficaRepository.UpsertAsync(entity);
                                 }
 
+
+                                // ── Salvataggio competenze ───────────────────────────────────
+                                var req_Comp = new GenericRequest<Dip_Competenza_Selected_PutInModel>();
+                                req_Comp.Data.IdDip_Anagrafica = entity.Id;
+                                req_Comp.Data.Dip_Competenza = model.Data.Dip_Anagrafica.Dip_Competenza;
+                                // il dipendente ha sempre almeno una competenza: senza competenze riceve quella di default
+                                if (req_Comp.Data.Dip_Competenza.Count == 0)
+                                {
+                                    var par_Competenza = _gestionePresenzeUserUtility.GetCompetenzaDefault(company_DATA.az_Anagrafica.Id);
+                                    if (par_Competenza != null)
+                                        req_Comp.Data.Dip_Competenza.Add(new Dip_CompetenzaModel() { IdDip_Anagrafica = entity.Id, IdPar_Competenza = par_Competenza.Id });
+                                }
+                                var res_Comp = await _dip_CompetenzaService.PutSelected_On_Dip_Anagrafica(req_Comp, true);
+                                if (res_Comp.Success && res_Comp.Data != null)
+                                {
+                                    retVal.Dip_Anagrafica.Dip_Competenza = res_Comp.Data.Dip_Competenza;
+                                }
 
                                 var req_1 = new GenericRequest<Dip_RapportoLavoro_Put_InModel>();
                                 req_1.Data.Id = entity.Id;

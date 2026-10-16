@@ -28,6 +28,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
         private readonly IPar_AttivitaRepository _par_AttivitaRepository;
         private readonly IAz_ClienteRepository _az_ClienteRepository;
         private readonly IGestionePresenzeUserUtility _gestionePresenzeUserUtility;
+        private readonly IDip_AnagraficaRepository _dip_AnagraficaRepository;
+        private readonly IDip_RapportoLavoroRepository _dip_RapportoLavoroRepository;
 
         public Az_SubCommessaAttivitaService(IMapper mapper,
                                   UserManager<ApplicationUser> userManager,
@@ -40,7 +42,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
                                   IAz_CommessaRepository az_CommessaRepository,
                                   IAz_SubCommessaRepository az_SubCommessaRepository,
                                   IPar_AttivitaRepository par_AttivitaRepository,
-                                  IAz_ClienteRepository az_ClienteRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
+                                  IAz_ClienteRepository az_ClienteRepository,
+                                  IDip_AnagraficaRepository dip_AnagraficaRepository,
+                                  IDip_RapportoLavoroRepository dip_RapportoLavoroRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _az_SubCommessaAttivitaRepository = az_SubCommessaAttivitaRepository;
             _az_CommessaRepository = az_CommessaRepository;
@@ -48,6 +52,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
             _par_AttivitaRepository = par_AttivitaRepository;
             _az_ClienteRepository = az_ClienteRepository;
             _gestionePresenzeUserUtility = gestionePresenzeUserUtility;
+            _dip_AnagraficaRepository = dip_AnagraficaRepository;
+            _dip_RapportoLavoroRepository = dip_RapportoLavoroRepository;
         }
 
         public virtual async Task<GenericResult<Az_SubCommessaAttivita_GetAll_OutModel>> GetAll(GenericRequest<Az_SubCommessaAttivita_GetAll_InModel> model, bool isSubProcess)
@@ -216,6 +222,44 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
             }, isSubProcess);
         }
 
+        // Attivita' che il dipendente puo' selezionare: quelle delle sub commesse in cui e' collegato
+        // direttamente come utente o tramite un reparto di cui fa parte (utente del reparto).
+        // Se non ne ha nessuna resta disponibile l'attivita' proposta, per non bloccare le timbrature.
+        // Le regole sono in GestionePresenzeUserUtility (le stesse usate al salvataggio delle timbrature).
+        public virtual async Task<GenericResult<Az_SubCommessaAttivita_GetAll_4FullList_4User_OutModel>> GetAll_4FullList_4User(GenericRequest<Az_SubCommessaAttivita_GetAll_4FullList_4User_InModel> model, bool isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                Az_SubCommessaAttivita_GetAll_4FullList_4User_OutModel retVal = new Az_SubCommessaAttivita_GetAll_4FullList_4User_OutModel();
+
+                string idAspNetUsers = !string.IsNullOrEmpty(model.Data.IdAspNetUsers) ? model.Data.IdAspNetUsers : this.CurrentUserId;
+
+                var res = await GetAll_4FullList(new GenericRequest<Az_SubCommessaAttivita_GetAll_4FullList_InModel>(), true);
+                if (res.Success && res.Data != null)
+                {
+                    var idConsentite = _gestionePresenzeUserUtility.GetIdAz_SubCommessaAttivita_Consentite(idAspNetUsers);
+                    retVal.Az_SubCommessaAttivita = res.Data.Az_SubCommessaAttivita.Where(x => idConsentite.Contains(x.SubCommessaAttivita_Id)).ToList();
+
+                    // attivita' proposta: ultima timbratura, rapporto o default (vedi GetIdAz_SubCommessaAttivita_Proposta)
+                    var dip_Anagrafica = _dip_AnagraficaRepository.FindAll(x => x.IdAspNetUsers == idAspNetUsers).FirstOrDefault();
+                    var dip_RapportoLavoro = dip_Anagrafica == null ? null :
+                        _dip_RapportoLavoroRepository.FindAll(x => x.IdDip_Anagrafica == dip_Anagrafica.Id).FirstOrDefault();
+                    int proposta = dip_RapportoLavoro != null ? await _gestionePresenzeUserUtility.GetIdAz_SubCommessaAttivita_Proposta(dip_RapportoLavoro.Id) : 0;
+
+                    // senza attivita' consentite resta disponibile quella proposta, per non bloccare le timbrature
+                    if (retVal.Az_SubCommessaAttivita.Count == 0)
+                        retVal.Az_SubCommessaAttivita = res.Data.Az_SubCommessaAttivita.Where(x => x.SubCommessaAttivita_Id == proposta).ToList();
+
+                    retVal.IdAz_SubCommessaAttivita_Proposta = retVal.Az_SubCommessaAttivita.Any(x => x.SubCommessaAttivita_Id == proposta)
+                        ? proposta
+                        : retVal.Az_SubCommessaAttivita.Select(x => x.SubCommessaAttivita_Id).FirstOrDefault();
+                }
+
+                await Task.Delay(DelayAsyncMethod);
+                return retVal;
+            }, isSubProcess);
+        }
+
         //public virtual async Task<GenericResult<Get_Az_SubCommessaAttivita_Default_OutModel>> Get_Az_SubCommessaAttivita_Default(GenericRequest<Get_Az_SubCommessaAttivita_Default_InModel> model, bool isSubProcess)
         //{
         //    return await ExecuteAction(model, async () =>
@@ -319,6 +363,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
         Task<GenericResult<Az_SubCommessaAttivita_Get4SubCommessa_OutModel>> Get4SubCommessa(GenericRequest<Az_SubCommessaAttivita_Get4SubCommessa_InModel> model, bool isSubProcess);
         Task<GenericResult<Az_SubCommessaAttivita_Put4SubCommessa_OutModel>> Put4SubCommessa(GenericRequest<Az_SubCommessaAttivita_Put4SubCommessa_InModel> model, bool isSubProcess);
         Task<GenericResult<Az_SubCommessaAttivita_GetAll_4FullList_OutModel>> GetAll_4FullList(GenericRequest<Az_SubCommessaAttivita_GetAll_4FullList_InModel> model, bool isSubProcess);
+        Task<GenericResult<Az_SubCommessaAttivita_GetAll_4FullList_4User_OutModel>> GetAll_4FullList_4User(GenericRequest<Az_SubCommessaAttivita_GetAll_4FullList_4User_InModel> model, bool isSubProcess);
 
         //Task<GenericResult<Get_Az_SubCommessaAttivita_Default_OutModel>> Get_Az_SubCommessaAttivita_Default(GenericRequest<Get_Az_SubCommessaAttivita_Default_InModel> model, bool isSubProcess);
     }

@@ -57,4 +57,19 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
         public List<Az_SubCommessa_4EditModel> Az_SubCommessa { get; set; } = new List<Az_SubCommessa_4EditModel>();
     }
 
+
+    // reparti e utenti compatibili con le attivita' della sub commessa
+    public class Az_SubCommessa_GetCompatibili_InModel
+    {
+        public List<int> IdPar_Attivita { get; set; } = new List<int>();
+    }
+
+    public class Az_SubCommessa_GetCompatibili_OutModel : ModelResult
+    {
+        // reparti in cui si svolge almeno una delle attivita'
+        public List<int> IdAz_SediReparto { get; set; } = new List<int>();
+        // utenti con almeno una delle competenze richieste da almeno una delle attivita'
+        public List<string> IdAspNetUsers { get; set; } = new List<string>();
+    }
+
 }

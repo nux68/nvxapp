@@ -170,6 +170,19 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
                         }
                     }
 
+                    // la timbratura e' sempre su un'attivita': senza attivita' si usa quella proposta,
+                    // dal client il dipendente puo' usare solo quelle consentite
+                    int idAz_SubCommessaAttivita = await _gestionePresenzeUserUtility.GetIdAz_SubCommessaAttivita_4Timbratura(user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.Id, model.Data.IdAz_SubCommessaAttivita);
+                    if (!isSubProcess)
+                    {
+                        var nonConsentita = await _gestionePresenzeUserUtility.VerificaAttivitaConsentita(user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.Id, idAz_SubCommessaAttivita);
+                        if (nonConsentita != null)
+                        {
+                            retVal.Messages.Add(new Message(nonConsentita, MessageType.Exception));
+                            return retVal;
+                        }
+                    }
+
                     Dip_GG_Timbratura dip_GG_Timbratura = new Dip_GG_Timbratura()
                     {
                         IdDip_RapportoLavoro = user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.Id,
@@ -179,12 +192,12 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
                         GiornoCompetenza = finalDate.Date,
                         TimbraturaTipo = TipoTimbratura.SenzaVerso,
                         RichiestaStato = StatoRichiesta.Diretta,
-                        IdAz_SubCommessaAttivita = model.Data.IdAz_SubCommessaAttivita //nvx 27/04/2026
+                        IdAz_SubCommessaAttivita = idAz_SubCommessaAttivita //nvx 27/04/2026
                     };
                     dip_GG_Timbratura = await _dip_GG_TimbraturaRepository.UpsertAsync(dip_GG_Timbratura);
                     
                     //aggiono l'attivita del dip rapporto
-                    user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.IdAz_SubCommessaAttivita = model.Data.IdAz_SubCommessaAttivita;
+                    user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.IdAz_SubCommessaAttivita = idAz_SubCommessaAttivita;
                     await _dip_RapportoLavoroRepository.UpsertAsync(user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro);
 
                     if(!model.Data.ExcludeRicalc)
@@ -256,8 +269,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
                             TimbraturaOriginale = model.Data.Data != null ? model.Data.Data.Value : DateTime.Now,
                             TimbraturaArrotondata = model.Data.Data != null ? model.Data.Data.Value : DateTime.Now,
                             TimbraturaTipo = TipoTimbratura.SenzaVerso,
-                            GiornoCompetenza = model.Data.Data != null ? model.Data.Data.Value : DateTime.Now
-
+                            GiornoCompetenza = model.Data.Data != null ? model.Data.Data.Value : DateTime.Now,
+                            // nuova timbratura: attivita' proposta (ultima timbratura, rapporto o default)
+                            IdAz_SubCommessaAttivita = await _gestionePresenzeUserUtility.GetIdAz_SubCommessaAttivita_Proposta(user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.Id)
                         };
 
 
@@ -289,6 +303,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Tim
                 {
                     dip_GG_Timbratura = _mapper.Map<Dip_GG_Timbratura>(model.Data.Dip_GG_Timbratura);
                 }
+
+                // la timbratura e' sempre su un'attivita': senza attivita' (o con una non piu' esistente) si usa quella proposta
+                dip_GG_Timbratura.IdAz_SubCommessaAttivita = await _gestionePresenzeUserUtility.GetIdAz_SubCommessaAttivita_4Timbratura(dip_GG_Timbratura.IdDip_RapportoLavoro, dip_GG_Timbratura.IdAz_SubCommessaAttivita);
 
                 // dal client non si movimentano i giorni fuori dal rapporto di lavoro (le chiamate interne del motore sono gia' nel rapporto)
                 if (!isSubProcess)

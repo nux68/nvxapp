@@ -1,9 +1,9 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { NavController } from '@ionic/angular/lazy';
+import { NavController, ToastController } from '@ionic/angular/lazy';
 import { UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Observable, map, catchError, of } from 'rxjs';
+import { Observable, map, catchError, of, forkJoin } from 'rxjs';
 import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { StringHelperService } from '../../../Utility/infrastructure/string-helper.service';
@@ -16,6 +16,8 @@ import { ItemReorderEventDetail } from '@ionic/angular/lazy';
 import { TipoApprovazione } from '../../../ClientServer-Service/GestionePresenze/Az_Cfg/Models/az-cfg-model';
 import { Par_AttivitaModel } from '../../../ClientServer-Service/GestionePresenze/Par_Attivita/Models/par-attivita-model';
 import { CheckObjOn_Id_Number } from '../../../ClientServer-Service/ModelsBase/check-obj';
+import { AzSubCommessaService } from '../../../ClientServer-Service/GestionePresenze/Az_SubCommessa/az-subcommessa.service';
+import { Az_SubCommessa_GetCompatibili_InModel } from '../../../ClientServer-Service/GestionePresenze/Az_SubCommessa/Models/az-subcommessa-model';
 
 @Component({
   selector: 'app-department-edit-page',
@@ -36,6 +38,11 @@ export class DepartmentEditPageComponent extends BasePageConfirmCancelComponent<
   // Flag per abilitare/disabilitare il riordino
   reorderEnabled: boolean = false;
 
+  /** Utenti con almeno una competenza richiesta dalle attività di reparto selezionate (null = non ancora letti). */
+  public idAspNetUsers_Compatibili: string[] | null = null;
+  // vale solo l'ultima richiesta: una risposta arrivata in ritardo si scarta
+  private _compatibiliRichiesta: number = 0;
+
 
 
 
@@ -44,7 +51,9 @@ export class DepartmentEditPageComponent extends BasePageConfirmCancelComponent<
     protected override fb: FormBuilder,
     private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
     private stringHelperService: StringHelperService,
-    private azSediRepartoService: AzSediRepartoService) {
+    private azSediRepartoService: AzSediRepartoService,
+    private azSubCommessaService: AzSubCommessaService,
+    private toastCtrl: ToastController) {
 
     super(navCtrl, userInterfaceService, fb);
 
@@ -81,6 +90,10 @@ export class DepartmentEditPageComponent extends BasePageConfirmCancelComponent<
       return this.azSediRepartoService.Az_SediRepartoGet(request).pipe(
         map((res) => {
 
+          if (res.data) {
+            this._editModel = res.data;
+            this.Load_UserCompatibili();
+          }
           return res.data;
 
         }), // Estrae il dato richiesto
@@ -168,12 +181,15 @@ export class DepartmentEditPageComponent extends BasePageConfirmCancelComponent<
     return combinedAdmins;
   }
 
+  // Utenti proposti: solo quelli compatibili con le attività di reparto selezionate,
+  // piu' quelli gia' collegati (per poterli scollegare anche se non piu' compatibili)
   public getUser(): CheckObjOn_Id_Text_4ApprovalZorder[] {
 
     let retVal: CheckObjOn_Id_Text_4ApprovalZorder[] = [];
 
     this.dip_Anagrafica.filter(dip =>
-      dip.roleCode.includes(RoleCode.User)
+      dip.roleCode.includes(RoleCode.User) &&
+      (this.isUserCompatibile(dip.idAspNetUsers) || this.isSelectedUser(dip.idAspNetUsers))
     ).forEach(item => {
       let appo = { id: item.idAspNetUsers, checked: false, enabledToApproval: false, approvalZOrder: 0 };
       retVal.push(appo);
@@ -223,6 +239,10 @@ export class DepartmentEditPageComponent extends BasePageConfirmCancelComponent<
 
     return this._editModel.selectedUser.find(entry => entry.id === itemId)?.checked ?? false;
 
+  }
+
+  isUserCompatibile(itemId: string): boolean {
+    return this.idAspNetUsers_Compatibili?.includes(itemId) ?? false;
   }
 
   toggleSelectionApproval(itemId: string, event: any) {
@@ -335,7 +355,8 @@ export class DepartmentEditPageComponent extends BasePageConfirmCancelComponent<
 
   toggleSelectionaz_Az_SediRepartoAttivita(itemId: number, event: any) {
 
-
+    // attività selezionate prima della modifica: servono per capire chi era collegato tramite quella tolta
+    const idPar_Attivita_Prima = this.getIdPar_Attivita_Selezionate();
 
     const existingEntry = this._editModel.az_SediRepartoAttivita.find(entry => entry.id === itemId);
 
@@ -347,6 +368,70 @@ export class DepartmentEditPageComponent extends BasePageConfirmCancelComponent<
       this._editModel.az_SediRepartoAttivita.push({ id: itemId, checked: event.detail.checked });
     }
 
+    if (event.detail.checked)
+      this.Load_UserCompatibili();
+    else
+      this.ScollegaUserNonPiuCompatibili(idPar_Attivita_Prima);
+
+  }
+
+  private getIdPar_Attivita_Selezionate(): number[] {
+    return this._editModel.az_SediRepartoAttivita.filter(x => x.checked).map(x => x.id);
+  }
+
+  private GetCompatibili(idPar_Attivita: number[]): Observable<string[]> {
+    if (idPar_Attivita.length === 0) return of([]);
+
+    let request: GenericRequest<Az_SubCommessa_GetCompatibili_InModel> = new GenericRequest<Az_SubCommessa_GetCompatibili_InModel>(Az_SubCommessa_GetCompatibili_InModel);
+    request.data.idPar_Attivita = idPar_Attivita;
+    return this.azSubCommessaService.GetCompatibili(request).pipe(
+      map(res => res.success && res.data ? res.data.idAspNetUsers : [])
+    );
+  }
+
+  /** Rilegge gli utenti compatibili con le attività di reparto selezionate. */
+  private Load_UserCompatibili(): void {
+    const richiesta = ++this._compatibiliRichiesta;
+    this.GetCompatibili(this.getIdPar_Attivita_Selezionate()).subscribe({
+      next: idAspNetUsers => {
+        if (richiesta === this._compatibiliRichiesta)
+          this.idAspNetUsers_Compatibili = idAspNetUsers;
+      },
+      error: error => console.error('Errore durante la chiamata API:', error)
+    });
+  }
+
+  /**
+   * Tolta un'attività, scollega dal reparto gli utenti che erano compatibili prima
+   * e non lo sono più con le attività rimaste.
+   */
+  private ScollegaUserNonPiuCompatibili(idPar_Attivita_Prima: number[]): void {
+    const richiesta = ++this._compatibiliRichiesta;
+    forkJoin({
+      prima: this.GetCompatibili(idPar_Attivita_Prima),
+      dopo: this.GetCompatibili(this.getIdPar_Attivita_Selezionate())
+    }).subscribe({
+      next: res => {
+        if (richiesta !== this._compatibiliRichiesta) return;
+        this.idAspNetUsers_Compatibili = res.dopo;
+
+        const daScollegare = this._editModel.selectedUser
+          .filter(x => x.checked && res.prima.includes(x.id) && !res.dopo.includes(x.id));
+        if (daScollegare.length === 0) return;
+
+        daScollegare.forEach(x => x.checked = false);
+        const nomi = daScollegare.map(x => {
+          const dip = this.dip_Anagrafica?.find(d => d.idAspNetUsers === x.id);
+          return dip ? `${dip.cognome} ${dip.nome}` : x.id;
+        });
+        this.toastCtrl.create({
+          message: `Scollegati dal reparto, non hanno le competenze per le attività rimaste: ${nomi.join(', ')}`,
+          duration: 4000,
+          position: 'bottom'
+        }).then(t => t.present());
+      },
+      error: error => console.error('Errore durante la chiamata API:', error)
+    });
   }
 
 }

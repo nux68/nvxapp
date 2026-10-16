@@ -9,9 +9,14 @@
     <ion-card>
       <ion-card-content>
 
+        @if (filterIdAz_SediReparto) {
+          <ion-note>Sono proposti solo i reparti in cui si svolge almeno una delle attività della sub commessa.</ion-note>
+        }
+
         <br />
 
         <app-sedi-reparto-user-navigation [showPeriodSelect]="false"
+                                          [filterIdAz_SediReparto]="filterIdAz_SediReparto"
                                           [showSediSelect]="true"
                                           [showRepartoSelect]="true"
                                           [showUserSelect]="false"

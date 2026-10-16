@@ -14,6 +14,9 @@ import { CheckObjOn_Id_Number } from '../../../../ClientServer-Service/ModelsBas
 })
 export class SeletionParAttivitaDialogComponent {
 
+  /** Attività gia' collegate: non vengono proposte. */
+  public idPar_Attivita_Escluse: number[] = [];
+
   public searchText!: string;
   public title!: string;
   public buttonbar: ButtonItem[] = [];
@@ -59,7 +62,7 @@ export class SeletionParAttivitaDialogComponent {
     let retVal: CheckObjOn_Id_Number[] = [];
 
     this.par_Attivita.filter(rep =>
-      rep.id > 0
+      rep.id > 0 && !this.idPar_Attivita_Escluse.includes(rep.id)
     ).forEach(item => {
       let appo = { id: item.id, checked: false };
       retVal.push(appo);

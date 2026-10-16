@@ -18,6 +18,10 @@
           <ion-segment-button value="{{SEGMENT_MAIN_VARIE}}">
             <ion-label>Varie</ion-label>
           </ion-segment-button>
+          <!-- BUTTON Competenze -->
+          <ion-segment-button value="{{SEGMENT_MAIN_COMPETENZE}}">
+            <ion-label>Competenze</ion-label>
+          </ion-segment-button>
           <!-- BUTTON Rapporto lavoro (Dinamico) -->
           @if (_editModel && _editModel.dip_RapportoLavoro) {
             @for (item_main of _editModel.dip_RapportoLavoro; track item_main.id; let idxRapp = $index) {
@@ -143,6 +147,59 @@
           @if (currSection_segment_main === SEGMENT_MAIN_VARIE) {
             <div>
               <!-- Contenuto Varie vuoto come nell'originale -->
+            </div>
+          }
+          <!-- CONTENUTO: Competenze -->
+          @if (currSection_segment_main === SEGMENT_MAIN_COMPETENZE) {
+            <div>
+              <br />
+              <ion-item class="nvx-item-4-title">
+                <ion-label>Competenze</ion-label>
+              </ion-item>
+              <ion-note class="nvx-nota-contratto">
+                Le competenze determinano le attività che il dipendente può svolgere. Senza competenze viene assegnata quella di default.
+              </ion-note>
+              <ion-grid>
+                @for (item of getAll_Dip_Competenza(); track item.idPar_Competenza; let indexRow4Color = $index) {
+                  <ion-row class="nvx-ion-row-4table">
+                    <!--mobile-->
+                    <ion-item-sliding class="ion-hide-sm-up"
+                      [class.nvx-row-odd]="indexRow4Color % 2 !== 0"
+                      [class.nvx-row-even]="indexRow4Color % 2 === 0">
+                      <ion-item>
+                        <ion-icon name="ribbon-outline"></ion-icon>
+                        <ion-label>
+                          {{ item.idPar_Competenza | parCompetenzaToLongText }}
+                        </ion-label>
+                      </ion-item>
+                      <app-slide-button-cancella-modifica [item]="item"
+                        [btnDelete]="btnDelete_Dip_Competenza"
+                        [showDelete]="true"
+                        [btnEdit]="false">
+                      </app-slide-button-cancella-modifica>
+                    </ion-item-sliding>
+                    <!--deskTop-->
+                    <ion-col size="10" class="ion-hide-sm-down">
+                      <ion-icon name="ribbon-outline"></ion-icon>
+                      <ion-label>
+                        {{ item.idPar_Competenza | parCompetenzaToLongText }}
+                      </ion-label>
+                    </ion-col>
+                    <ion-col size="2" class="ion-hide-sm-down">
+                      <ion-button size="small" fill="outline" shape="round" (click)="btnDelete_Dip_Competenza.event(item)" color="{{btnDelete_Dip_Competenza.color}}">
+                        <ion-icon name="{{btnDelete_Dip_Competenza.image}}"></ion-icon>
+                        &nbsp;{{btnDelete_Dip_Competenza.text}}
+                      </ion-button>
+                    </ion-col>
+                  </ion-row>
+                } @empty {
+                  <ion-row>
+                    <ion-col>
+                      <ion-note>Nessuna competenza assegnata.</ion-note>
+                    </ion-col>
+                  </ion-row>
+                }
+              </ion-grid>
             </div>
           }
           <!-- CONTENUTO: Rapporto lavoro (Dinamico) -->

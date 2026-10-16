@@ -40,6 +40,15 @@ namespace nvxapp.server.Controllers
 
         [Authorize]
         [HttpPost]
+        [Route("GetAll_4FullList_4User")]
+        public async Task<GenericResult<Az_SubCommessaAttivita_GetAll_4FullList_4User_OutModel>> GetAll_4FullList_4User(GenericRequest<Az_SubCommessaAttivita_GetAll_4FullList_4User_InModel> inModel)
+        {
+            var res = await _az_SubCommessaAttivitaService.GetAll_4FullList_4User(inModel, false);
+            return res;
+        }
+
+        [Authorize]
+        [HttpPost]
         [Route("Get4SubCommessa")]
         public async Task<GenericResult<Az_SubCommessaAttivita_Get4SubCommessa_OutModel>> Get4SubCommessa(GenericRequest<Az_SubCommessaAttivita_Get4SubCommessa_InModel> inModel)
         {

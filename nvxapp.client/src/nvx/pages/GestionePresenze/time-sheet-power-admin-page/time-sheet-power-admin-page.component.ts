@@ -965,7 +965,8 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
     const modal = await this.modalCtrl.create({
       component: EditDipGGTimbraturaDialogComponent,
       componentProps: {
-        dip_GG_Timbratura: item
+        dip_GG_Timbratura: item,
+        idAspNetUsers: this.currUserId
       },
     });
 

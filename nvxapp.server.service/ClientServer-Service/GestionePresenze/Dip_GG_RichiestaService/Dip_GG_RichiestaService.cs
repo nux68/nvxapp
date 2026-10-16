@@ -211,6 +211,21 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                             retVal.Messages.Add(new Message(fuoriRapporto, MessageType.Exception));
                             return retVal;
                         }
+
+                        // richiesta di timbratura del dipendente: solo su un'attivita' consentita (l'HR puo' usarne anche altre)
+                        if (dip_GG_Richiesta.RichiestaTipo == TipoRichiesta.Timbratura && !model.Data.FromHR && dip_GG_Richiesta.Dati != null)
+                        {
+                            var body = JsonConvert.DeserializeObject<Dip_GG_Richiesta_Body_Timbratura>(dip_GG_Richiesta.Dati);
+                            if (body != null && body.IdAz_SubCommessaAttivita > 0)
+                            {
+                                var nonConsentita = await _gestionePresenzeUserUtility.VerificaAttivitaConsentita(dip_GG_Richiesta.IdDip_RapportoLavoro, body.IdAz_SubCommessaAttivita);
+                                if (nonConsentita != null)
+                                {
+                                    retVal.Messages.Add(new Message(nonConsentita, MessageType.Exception));
+                                    return retVal;
+                                }
+                            }
+                        }
                     }
 
                     var RichiestaApprovazioneData = new List<Dip_GG_Richiesta_Stato_Cronology>();
@@ -704,7 +719,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                                 GiornoCompetenza = new DateTime(parsedDateTime.Year, parsedDateTime.Month, parsedDateTime.Day),
                                 TimbraturaTipo = TipoTimbratura.SenzaVerso,
                                 RichiestaStato = dip_GG_Richiesta.RichiestaStato,
-                                IdAz_SubCommessaAttivita = richiesta.IdAz_SubCommessaAttivita //nvx 27/04/2026
+                                // la timbratura e' sempre su un'attivita': senza attivita' si usa quella proposta
+                                IdAz_SubCommessaAttivita = await _gestionePresenzeUserUtility.GetIdAz_SubCommessaAttivita_4Timbratura(user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.Id, richiesta.IdAz_SubCommessaAttivita) //nvx 27/04/2026
                                 
                             };
                             dip_GG_Timbratura = await _dip_GG_TimbraturaRepository.UpsertAsync(dip_GG_Timbratura);

@@ -8,7 +8,9 @@ import { Observable, of } from 'rxjs';
 import { StringHelperService } from '../../../../Utility/infrastructure/string-helper.service';
 import { Par_CausaliModel } from '../../../../ClientServer-Service/GestionePresenze/Par_Causali/Models/par-causali-model';
 import { Dip_GG_TimbraturaModel, TipoTimbratura } from '../../../../ClientServer-Service/GestionePresenze/Dip_GG_Timbratura/Models/dip-gg-timbratura-model';
-import { Az_SubCommessaAttivita_4FullListModel } from '../../../../ClientServer-Service/GestionePresenze/Az_SubCommessaAttivita/Models/az-subcommessa-attivita-model';
+import { Az_SubCommessaAttivita_4FullListModel, Az_SubCommessaAttivita_GetAll_4FullList_4User_InModel } from '../../../../ClientServer-Service/GestionePresenze/Az_SubCommessaAttivita/Models/az-subcommessa-attivita-model';
+import { GenericRequest } from '../../../../ClientServer-Service/ModelsBase/generic-request';
+import { AzSubCommessaAttivitaService } from '../../../../ClientServer-Service/GestionePresenze/Az_SubCommessaAttivita/az-subcommessa-attivita.service';
 
 
 
@@ -22,6 +24,8 @@ import { Az_SubCommessaAttivita_4FullListModel } from '../../../../ClientServer-
 export class EditDipGGTimbraturaDialogComponent extends BaseDialogConfirmCancelComponent<Dip_GG_TimbraturaModel> {
 
   @Input() dip_GG_Timbratura: Dip_GG_TimbraturaModel;
+  /** Dipendente della timbratura: si propongono solo le attività che gli sono consentite. */
+  @Input() idAspNetUsers: string | null = null;
 
   TipoTimbratura =  TipoTimbratura;
   //public _par_CausaliList: Par_CausaliModel[] = [];
@@ -37,7 +41,8 @@ export class EditDipGGTimbraturaDialogComponent extends BaseDialogConfirmCancelC
     protected override fb: FormBuilder,
     protected override modalCtrl: ModalController,
     private stringHelperService: StringHelperService,
-    public sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService
+    public sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
+    private azSubCommessaAttivitaService: AzSubCommessaAttivitaService
   ) {
     super(userInterfaceService, fb, modalCtrl);
   }
@@ -46,7 +51,20 @@ export class EditDipGGTimbraturaDialogComponent extends BaseDialogConfirmCancelC
     super.ionViewWillEnter();
     this.originalId = this.dip_GG_Timbratura.id;
     //this._par_CausaliList = this.sharedParameterGestionePresenzeService.Par_Causali;
-    this.az_SubCommessaAttivita_4FullList = this.sharedParameterGestionePresenzeService.Az_SubCommessaAttivita_4Full;
+    this.az_SubCommessaAttivita_4FullList = [];
+
+    const request = new GenericRequest<Az_SubCommessaAttivita_GetAll_4FullList_4User_InModel>(Az_SubCommessaAttivita_GetAll_4FullList_4User_InModel);
+    request.data.idAspNetUsers = this.idAspNetUsers;
+    this.azSubCommessaAttivitaService.GetAll_4FullList_4User(request).subscribe(res => {
+      const consentite = res.data?.az_SubCommessaAttivita ?? [];
+      // l'attività già registrata resta visibile anche se non è più consentita
+      const corrente = this.dip_GG_Timbratura?.idAz_SubCommessaAttivita;
+      if (corrente && !consentite.some(x => x.subCommessaAttivita_Id === corrente)) {
+        const item = (this.sharedParameterGestionePresenzeService.Az_SubCommessaAttivita_4Full ?? []).find(x => x.subCommessaAttivita_Id === corrente);
+        if (item) consentite.push(item);
+      }
+      this.az_SubCommessaAttivita_4FullList = consentite;
+    });
   }
 
   get Title(): string { return "Timbratura"; }

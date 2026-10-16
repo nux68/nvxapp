@@ -16,6 +16,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Initialize
     // - Competenze, Attività, Cliente, Commessa, SubCommessa di default
     // - parametri di partenza: causali, giustificativi, orario, profilo orario, export
     //   (GestionePresenzeParametriDefault, solo se l'azienda non ha ancora causali)
+    // - competenza di default ai dipendenti che non hanno ancora competenze
     // Priority=20: eseguito dopo Infrastructure per avere le strutture
     // infrastrutturali pronte.
     public class GestionePresenzeCompanyInitializer : ICompanyInitializer
@@ -70,6 +71,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Initialize
             // Cognome e Nome dei dipendenti esistenti che non li hanno ancora
             var idAspNetUsers = _userCompanyRepository.FindAll(x => x.IdCompany == company.Id).Select(x => x.IdAspNetUsers).ToList();
             await _gestionePresenzeUserUtility.CompletaCognomeNome(idAspNetUsers);
+
+            // Competenza di default ai dipendenti esistenti che non hanno ancora competenze
+            if (companyData.az_Anagrafica != null)
+                await _gestionePresenzeUserUtility.CompletaCompetenzaDefault(idAspNetUsers, companyData.az_Anagrafica.Id);
 
             _logger.LogInformation(
                 "[GestionePresenzeCompanyInitializer] Completato per azienda {CompanyId}.",

@@ -14,6 +14,9 @@ export class SeletionSediRepartoDialogComponent {
   public title!: string;
   public buttonbar: ButtonItem[] = [];
 
+  /** Se valorizzato si propongono solo questi reparti (es. compatibili con le attività della sub commessa). */
+  public filterIdAz_SediReparto: number[] | null = null;
+
   result: SeletionSediRepartoDialogResult = {
     idSede: 0,   
     idReparto: 0 
@@ -49,7 +52,7 @@ export class SeletionSediRepartoDialogComponent {
   }
   onRepartiChanged(repartoIds: number[] | undefined): void {
   
-    if (repartoIds.length == 0)
+    if (!repartoIds || repartoIds.length == 0)
       this.result.idReparto = 0;
     else
       this.result.idReparto = repartoIds[0];

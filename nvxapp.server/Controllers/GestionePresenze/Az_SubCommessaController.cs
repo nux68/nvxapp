@@ -28,5 +28,14 @@ namespace nvxapp.server.Controllers
             var res = await _az_SubCommessaService.GetAll(inModel, false);
             return res;
         }
+
+        [Authorize]
+        [HttpPost]
+        [Route("GetCompatibili")]
+        public async Task<GenericResult<Az_SubCommessa_GetCompatibili_OutModel>> GetCompatibili(GenericRequest<Az_SubCommessa_GetCompatibili_InModel> inModel)
+        {
+            var res = await _az_SubCommessaService.GetCompatibili(inModel, false);
+            return res;
+        }
     }
 }

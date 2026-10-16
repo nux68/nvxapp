@@ -43,6 +43,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
         private readonly IAspNetUserRolesRepository _aspNetUserRolesRepository;
         private readonly IAspNetRolesRepository _aspNetRolesRepository;
         private readonly IDip_PeriodoRepository _dip_PeriodoRepository;
+        private readonly IDip_CompetenzaRepository _dip_CompetenzaRepository;
+        private readonly IAz_SubCommessaUserRepository _az_SubCommessaUserRepository;
+        private readonly IDip_GG_TimbraturaRepository _dip_GG_TimbraturaRepository;
 
 
 
@@ -69,7 +72,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                                            IAz_SediRepartoUserRepository az_SediRepartoUserRepository,
                                            IAspNetUserRolesRepository aspNetUserRolesRepository,
                                            IAspNetRolesRepository aspNetRolesRepository,
-                                           IDip_PeriodoRepository dip_PeriodoRepository
+                                           IDip_PeriodoRepository dip_PeriodoRepository,
+                                           IDip_CompetenzaRepository dip_CompetenzaRepository,
+                                           IAz_SubCommessaUserRepository az_SubCommessaUserRepository,
+                                           IDip_GG_TimbraturaRepository dip_GG_TimbraturaRepository
                                            )
         {
             _mapper = mapper;
@@ -98,6 +104,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
             _aspNetUserRolesRepository = aspNetUserRolesRepository;
             _aspNetRolesRepository = aspNetRolesRepository;
             _dip_PeriodoRepository = dip_PeriodoRepository;
+            _dip_CompetenzaRepository = dip_CompetenzaRepository;
+            _az_SubCommessaUserRepository = az_SubCommessaUserRepository;
+            _dip_GG_TimbraturaRepository = dip_GG_TimbraturaRepository;
 
         }
 
@@ -120,10 +129,16 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                     };
                     await _dip_AnagraficaRepository.UpsertAsync(user_DATA_COMB_DipAna_DipRapp.dip_Anagrafica);
 
-                    // nuovo dipendente: assegnazione al reparto di default dell'azienda
+                    // nuovo dipendente: assegnazione al reparto e alla competenza di default dell'azienda
                     var usrCompany = _userCompanyRepository.FindAll(x => x.IdAspNetUsers == IdAspNetUsers).FirstOrDefault();
                     if (usrCompany != null)
+                    {
                         await AssegnaRepartoDefault(IdAspNetUsers, usrCompany.IdCompany);
+
+                        var company_DATA = await Get_AzAna_AzSedi_AzReparto_Az_Cfg(usrCompany.IdCompany, true);
+                        if (company_DATA.az_Anagrafica != null)
+                            await CompletaCompetenzaDefault(new List<string> { IdAspNetUsers }, company_DATA.az_Anagrafica.Id);
+                    }
                 }
                 else
                 {
@@ -235,6 +250,40 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                 dip_Anagrafica.Cognome = cognome;
                 dip_Anagrafica.Nome = nome;
                 await _dip_AnagraficaRepository.UpsertAsync(dip_Anagrafica);
+            }
+        }
+
+        // Competenza di default dell'azienda (creata con l'azienda e collegata all'attivita' di default)
+        public Par_Competenza? GetCompetenzaDefault(int IdAz_Anagrafica)
+        {
+            return _par_CompetenzaRepository.FindAll(x => x.IdAz_Anagrafica == IdAz_Anagrafica && x.Default)
+                                            .OrderBy(x => x.Id)
+                                            .FirstOrDefault();
+        }
+
+        // Assegna la competenza di default ai dipendenti che non hanno ancora competenze:
+        // ogni dipendente ha almeno una competenza, cosi' puo' svolgere l'attivita' di default.
+        public async Task CompletaCompetenzaDefault(List<string> IdAspNetUsers, int IdAz_Anagrafica)
+        {
+            var par_Competenza = GetCompetenzaDefault(IdAz_Anagrafica);
+            if (par_Competenza == null)
+                return;
+
+            var idDip_Anagrafica_List = _dip_AnagraficaRepository.FindAll(x => IdAspNetUsers.Contains(x.IdAspNetUsers))
+                                                                 .Select(x => x.Id)
+                                                                 .ToList();
+            var conCompetenze = _dip_CompetenzaRepository.FindAll(x => idDip_Anagrafica_List.Contains(x.IdDip_Anagrafica))
+                                                         .Select(x => x.IdDip_Anagrafica)
+                                                         .Distinct()
+                                                         .ToList();
+            var senzaCompetenze = idDip_Anagrafica_List.Except(conCompetenze).ToList();
+            foreach (var idDip_Anagrafica in senzaCompetenze)
+            {
+                await _dip_CompetenzaRepository.UpsertAsync(new Dip_Competenza
+                {
+                    IdDip_Anagrafica = idDip_Anagrafica,
+                    IdPar_Competenza = par_Competenza.Id
+                });
             }
         }
 
@@ -619,6 +668,93 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
             return null;
         }
 
+        // ── Attivita' delle timbrature ───────────────────────────────────────────
+        // Ogni timbratura e' sempre su un'attivita' (Az_SubCommessaAttivita).
+
+        // Attivita' che il dipendente puo' usare: quelle delle sub commesse in cui e' collegato
+        // direttamente come utente o tramite un reparto di cui fa parte (utente del reparto)
+        public List<int> GetIdAz_SubCommessaAttivita_Consentite(string IdAspNetUsers)
+        {
+            var idSubCommessa = _az_SubCommessaUserRepository.FindAll(x => x.IdAspNetUsers == IdAspNetUsers)
+                                                             .Select(x => x.IdAz_SubCommessa)
+                                                             .ToList();
+            var idAz_SediReparto = _az_SediRepartoUserRepository.FindAll(x => x.IdAspNetUsers == IdAspNetUsers && x.UserInDepartment)
+                                                                .Select(x => x.IdAz_SediReparto)
+                                                                .ToList();
+            idSubCommessa.AddRange(_az_SubCommessaSediRepartoRepository.FindAll(x => idAz_SediReparto.Contains(x.IdAz_SediReparto))
+                                                                       .Select(x => x.IdAz_SubCommessa)
+                                                                       .ToList());
+
+            return _az_SubCommessaAttivitaRepository.FindAll(x => idSubCommessa.Contains(x.IdAz_SubCommessa))
+                                                    .OrderByDescending(x => x.Default).ThenBy(x => x.Id)
+                                                    .Select(x => x.Id)
+                                                    .ToList();
+        }
+
+        // Attivita' da proporre per una timbratura del rapporto (mai 0 se il rapporto esiste):
+        // - con attivita' consentite: quella dell'ultima timbratura, poi quella del rapporto, poi la prima consentita
+        // - senza attivita' consentite: quella del rapporto, altrimenti quella di default dell'azienda
+        public async Task<int> GetIdAz_SubCommessaAttivita_Proposta(int IdDip_RapportoLavoro)
+        {
+            var rapporto = _dip_RapportoLavoroRepository.FindAll(x => x.Id == IdDip_RapportoLavoro).FirstOrDefault();
+            if (rapporto == null)
+                return 0;
+
+            var dip_Anagrafica = _dip_AnagraficaRepository.FindAll(x => x.Id == rapporto.IdDip_Anagrafica).FirstOrDefault();
+            var consentite = dip_Anagrafica != null ? GetIdAz_SubCommessaAttivita_Consentite(dip_Anagrafica.IdAspNetUsers) : new List<int>();
+
+            if (consentite.Count > 0)
+            {
+                var adesso = DateTime.Now;
+                var ultima = _dip_GG_TimbraturaRepository.FindAll(x => x.IdDip_RapportoLavoro == IdDip_RapportoLavoro && x.Timbratura <= adesso)
+                                                         .OrderByDescending(x => x.Timbratura)
+                                                         .Select(x => x.IdAz_SubCommessaAttivita)
+                                                         .FirstOrDefault();
+                if (consentite.Contains(ultima))
+                    return ultima;
+                if (consentite.Contains(rapporto.IdAz_SubCommessaAttivita))
+                    return rapporto.IdAz_SubCommessaAttivita;
+                return consentite[0];
+            }
+
+            if (EsisteAttivita(rapporto.IdAz_SubCommessaAttivita))
+                return rapporto.IdAz_SubCommessaAttivita;
+
+            var usrCompany = dip_Anagrafica != null ? _userCompanyRepository.FindAll(x => x.IdAspNetUsers == dip_Anagrafica.IdAspNetUsers).FirstOrDefault() : null;
+            if (usrCompany == null)
+                return 0;
+            var res = await Get_Az_SubCommessaAttivita_Default(usrCompany.IdCompany);
+            return res.Az_SubCommessaAttivita.Id;
+        }
+
+        // Attivita' da salvare sulla timbratura: quella indicata se esiste, altrimenti quella proposta
+        public async Task<int> GetIdAz_SubCommessaAttivita_4Timbratura(int IdDip_RapportoLavoro, int IdAz_SubCommessaAttivita)
+        {
+            if (EsisteAttivita(IdAz_SubCommessaAttivita))
+                return IdAz_SubCommessaAttivita;
+            return await GetIdAz_SubCommessaAttivita_Proposta(IdDip_RapportoLavoro);
+        }
+
+        // Messaggio d'errore se l'attivita' non e' tra quelle consentite al dipendente, altrimenti null.
+        // Senza attivita' consentite vale solo quella proposta (rapporto o default dell'azienda).
+        public async Task<string?> VerificaAttivitaConsentita(int IdDip_RapportoLavoro, int IdAz_SubCommessaAttivita)
+        {
+            var rapporto = _dip_RapportoLavoroRepository.FindAll(x => x.Id == IdDip_RapportoLavoro).FirstOrDefault();
+            var dip_Anagrafica = rapporto != null ? _dip_AnagraficaRepository.FindAll(x => x.Id == rapporto.IdDip_Anagrafica).FirstOrDefault() : null;
+            var consentite = dip_Anagrafica != null ? GetIdAz_SubCommessaAttivita_Consentite(dip_Anagrafica.IdAspNetUsers) : new List<int>();
+            if (consentite.Count == 0)
+                consentite.Add(await GetIdAz_SubCommessaAttivita_Proposta(IdDip_RapportoLavoro));
+
+            return consentite.Contains(IdAz_SubCommessaAttivita)
+                ? null
+                : "L'attività selezionata non è tra quelle consentite al dipendente: sceglierne una delle sub commesse a cui è collegato.";
+        }
+
+        private bool EsisteAttivita(int IdAz_SubCommessaAttivita)
+        {
+            return IdAz_SubCommessaAttivita > 0 && _az_SubCommessaAttivitaRepository.FindAll(x => x.Id == IdAz_SubCommessaAttivita).Any();
+        }
+
         public async Task<List<Dip_AnagraficaModel>> GetAnagraficheByUsersId(List<string> usersId)
         {
             await Task.Delay(1);
@@ -754,7 +890,13 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
         Task<Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg> Get_AzAna_AzSedi_AzReparto_Az_Cfg(int IdCompany, bool InitIfNotExsist);
         Task<List<Dip_AnagraficaModel>> GetAnagraficheByUsersId(List<string> usersId);
         Task CompletaCognomeNome(List<string> IdAspNetUsers);
+        Par_Competenza? GetCompetenzaDefault(int IdAz_Anagrafica);
+        Task CompletaCompetenzaDefault(List<string> IdAspNetUsers, int IdAz_Anagrafica);
         Task<Get_Az_SubCommessaAttivita_Default_OutModel> Get_Az_SubCommessaAttivita_Default(int IdCompany);
+        List<int> GetIdAz_SubCommessaAttivita_Consentite(string IdAspNetUsers);
+        Task<int> GetIdAz_SubCommessaAttivita_Proposta(int IdDip_RapportoLavoro);
+        Task<int> GetIdAz_SubCommessaAttivita_4Timbratura(int IdDip_RapportoLavoro, int IdAz_SubCommessaAttivita);
+        Task<string?> VerificaAttivitaConsentita(int IdDip_RapportoLavoro, int IdAz_SubCommessaAttivita);
     }
 
 

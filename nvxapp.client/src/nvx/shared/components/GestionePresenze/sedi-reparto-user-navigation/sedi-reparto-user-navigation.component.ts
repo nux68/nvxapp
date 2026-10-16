@@ -35,6 +35,11 @@ export class SediRepartoUserNavigationComponent implements OnInit, OnChanges {
   @Input() initialUserId: string | null = null;
   @Input() initialYear: number | null = null;
   @Input() initialMonth: number | null = null;
+
+  // Filtri opzionali: se valorizzati si propongono solo i reparti / gli utenti indicati
+  // (es. quelli compatibili con le attività di una sub commessa). null = nessun filtro.
+  @Input() filterIdAz_SediReparto: number[] | null = null;
+  @Input() filterIdAspNetUsers: string[] | null = null;
   
 
 
@@ -191,6 +196,12 @@ export class SediRepartoUserNavigationComponent implements OnInit, OnChanges {
         this.az_SediList = results.sediResult?.data?.az_Sedi || [];
         this.az_SediRepartoList = results.sediRepartoResult?.data?.az_SediReparto || [];
 
+        if (this.filterIdAz_SediReparto) {
+          // solo i reparti ammessi e le sedi che ne contengono almeno uno
+          this.az_SediRepartoList = this.az_SediRepartoList.filter(x => this.filterIdAz_SediReparto.includes(x.id));
+          this.az_SediList = this.az_SediList.filter(sede => this.az_SediRepartoList.some(x => x.idAz_Sedi === sede.id));
+        }
+
         if (!this.showSediSelect) { // Sedi select is hidden
           this.selectedSediId = null;
           this.filteredReparti = [...this.az_SediRepartoList];
@@ -331,6 +342,8 @@ export class SediRepartoUserNavigationComponent implements OnInit, OnChanges {
     }
     else {
       this.allUsersIdChange.emit(this.az_SediRepartoUserList.map(x => x.idAspNetUsers));
+      // in selezione multipla si comunicano anche i dipendenti scelti (es. dialog di selezione utenti)
+      this.currUserIdChange.emit(selectedUserId);
     }
   }
 
@@ -343,6 +356,9 @@ export class SediRepartoUserNavigationComponent implements OnInit, OnChanges {
         var repUser = res.data?.az_RepartoUser || [];
         var idAspNetUsers = this.sharedParameterGestionePresenzeService.Dip_Anagrafica_OnRoles([RoleCode.User]).map(x => x.idAspNetUsers);
         this.az_SediRepartoUserList = repUser.filter(x => idAspNetUsers.includes(x.idAspNetUsers) && x.userInDepartment==true);
+        if (this.filterIdAspNetUsers) {
+          this.az_SediRepartoUserList = this.az_SediRepartoUserList.filter(x => this.filterIdAspNetUsers.includes(x.idAspNetUsers));
+        }
         this.allUsersIdChange.emit(this.az_SediRepartoUserList.map(x => x.idAspNetUsers));
 
         if (this.showUserSelect && this.az_SediRepartoUserList.length > 0) {

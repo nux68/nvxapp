@@ -24,6 +24,7 @@ import { SeletionSediRepartoDialogComponent } from './components/GestionePresenz
 import { SeletionSediRepartoUserDialogComponent } from './components/GestionePresenze/seletion-sedi-reparto-user-dialog/seletion-sedi-reparto-user-dialog.component';
 import { SharedComponentInfrastructureModule } from './shared-component-infrastructure.module';
 import { SeletionParAttivitaDialogComponent } from './components/GestionePresenze/seletion-par-attivita-dialog/seletion-par-attivita-dialog.component';
+import { SeletionParCompetenzaDialogComponent } from './components/GestionePresenze/seletion-par-competenza-dialog/seletion-par-competenza-dialog.component';
 import { AzSediRepartoToShortTextPipe } from './pipe/GestionePresenze/az-sedireparto-to-short-text.pipe';
 import { EditDipProfiloOrarioDialogComponent } from './components/GestionePresenze/edit-dip-profilo-orario-dialog/edit-dip-profilo-orario-dialog.component';
 import { ParProfiloOrarioToLongTextPipePipe } from './pipe/GestionePresenze/par-profilo-orario-to-long-text-pipe.pipe';
@@ -50,6 +51,7 @@ import { CartellinoQuadraturaComponent } from './components/GestionePresenze/car
     SeletionSediRepartoDialogComponent,
     SeletionSediRepartoUserDialogComponent,
     SeletionParAttivitaDialogComponent,
+    SeletionParCompetenzaDialogComponent,
     EditDipProfiloOrarioDialogComponent, EditParProfiloOrarioDettaglioOrarioDialogComponent,
     EditParOrarioDettaglioOrarioIntervalloHHDialogComponent, TimeSheetEngineCallerComponent,
     EditDipGGCausaliDialogComponent, EditDipGGTimbraturaDialogComponent, DipSelectorModalComponent,
@@ -77,7 +79,7 @@ import { CartellinoQuadraturaComponent } from './components/GestionePresenze/car
     IdDipRapportoLavoroToNomePipe, IdDipRapportoLavoroToCognomePipe,
     IdAspNetUsersToCognomePipe, IdAspNetUsersToNomePipe,
     ParAttivitaToLongTextPipe, ParCompetenzaToLongTextPipe, AzCommessaToLongTextPipe, AzClienteToLongTextPipe,
-    SediRepartoUserNavigationComponent, SediRepartoUserSelectionComponent , SeletionSediRepartoDialogComponent, SeletionSediRepartoUserDialogComponent, SeletionParAttivitaDialogComponent, AzSediRepartoToLongTextPipe,
+    SediRepartoUserNavigationComponent, SediRepartoUserSelectionComponent , SeletionSediRepartoDialogComponent, SeletionSediRepartoUserDialogComponent, SeletionParAttivitaDialogComponent, SeletionParCompetenzaDialogComponent, AzSediRepartoToLongTextPipe,
     EditDipProfiloOrarioDialogComponent, ParProfiloOrarioToLongTextPipePipe, EditParProfiloOrarioDettaglioOrarioDialogComponent,
     EditParOrarioDettaglioOrarioIntervalloHHDialogComponent, TimeSheetEngineCallerComponent, EditParExportCauCausaliComponentComponent,
     EditDipGGCausaliDialogComponent, EditDipGGTimbraturaDialogComponent, DipSelectorModalComponent,

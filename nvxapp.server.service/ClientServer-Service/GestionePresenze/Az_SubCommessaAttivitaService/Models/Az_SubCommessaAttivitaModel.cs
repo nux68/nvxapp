@@ -72,6 +72,19 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubComm
 
     public class Az_SubCommessaAttivita_GetAll_4FullList_InModel { }
 
+    // attivita' consentite al dipendente: quelle delle sub commesse in cui e' collegato
+    // direttamente come utente o tramite un reparto di cui fa parte
+    public class Az_SubCommessaAttivita_GetAll_4FullList_4User_InModel
+    {
+        public string? IdAspNetUsers { get; set; }  // vuoto = utente corrente
+    }
+
+    public class Az_SubCommessaAttivita_GetAll_4FullList_4User_OutModel : Az_SubCommessaAttivita_GetAll_4FullList_OutModel
+    {
+        // attivita' da proporre: quella dell'ultima timbratura se ancora consentita, altrimenti la prima consentita
+        public int IdAz_SubCommessaAttivita_Proposta { get; set; }
+    }
+
     public class Az_SubCommessaAttivita_GetAll_4FullList_OutModel : ModelResult
     {
         public List<Az_SubCommessaAttivita_4FullListModel> Az_SubCommessaAttivita { get; set; } = new List<Az_SubCommessaAttivita_4FullListModel>();

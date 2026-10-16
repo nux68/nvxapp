@@ -10,7 +10,8 @@ namespace nvxapp.server.service.Mappers.Tenant.GestionePresenze
         public Dip_Anagrafica_To_Dip_Anagrafica4EditModel_Mapper()
         {
             CreateMap<Dip_Anagrafica, Dip_Anagrafica4EditModel>()
-                 .ForMember(dest => dest.Dip_RapportoLavoro, opt => opt.Ignore());
+                 .ForMember(dest => dest.Dip_RapportoLavoro, opt => opt.Ignore())
+                 .ForMember(dest => dest.Dip_Competenza, opt => opt.Ignore());
         }
     }
 
