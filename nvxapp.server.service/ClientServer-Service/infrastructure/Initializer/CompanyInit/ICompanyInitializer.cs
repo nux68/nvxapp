@@ -23,6 +23,11 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Initializer.
         // null = infrastruttura comune, eseguito sempre.
         ApplicationType? Application { get; }
 
+        // true = l'applicativo si attiva da solo su ogni nuova azienda (creata dal menu),
+        // che viene cosi' inizializzata completa. Di default no: ogni ramo dichiara i propri.
+        // Non vale per l'infrastruttura comune (Application = null), che si esegue sempre.
+        bool ActivateOnNewCompany => false;
+
         // Esegue l'inizializzazione per la nuova azienda.
         // Riceve la Company appena creata con Id popolato.
         Task InitializeAsync(Company company);

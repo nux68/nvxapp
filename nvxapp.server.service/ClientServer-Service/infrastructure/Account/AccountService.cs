@@ -737,6 +737,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
 
 
                 Company? company = await _companyRepository.FindByIdAsync(model.Data.CompanyEdit.IdCompany);
+                bool nuovaAzienda = company == null;
                 if (company != null)
                 {
                     company.Descrizione = model.Data.CompanyEdit.Descrizione;
@@ -804,6 +805,27 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                             MainUser = true
                         });
                     }
+
+                    //User: un dipendente, come per le aziende create con il DB (PopolateDB), ma uno solo
+                    user = new ApplicationUser
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        UserName = company.Descrizione + "_User", //User
+                        Email = model.Data.CompanyEdit.Mail
+                    };
+
+                    result = await _userManager.CreateAsync(user, password);
+                    if (result.Succeeded)
+                    {
+                        result = await _userManager.AddToRoleAsync(user, "User");
+
+                        await _userCompanyRepository.UpsertAsync(new UserCompany()
+                        {
+                            IdAspNetUsers = user.Id,
+                            IdCompany = company.Id,
+                            MainUser = false
+                        });
+                    }
                     /////////////////////
                 }
 
@@ -823,6 +845,33 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                         };
                         await _companyApplicationService.CompanyApplicationPut(reqApp, true);
                     }
+                }
+
+                // nuova azienda: si attivano gli applicativi che il ramo prevede per le nuove aziende
+                // (salvo quelli indicati esplicitamente nella richiesta), si inizializza l'azienda
+                // con gli ICompanyInitializer e i suoi utenti con gli IUserInitializer
+                if (nuovaAzienda && company != null)
+                {
+                    var richiesti = model.Data.CompanyEdit.Applications?.Select(x => x.ApplicationType).ToList() ?? new List<ApplicationType>();
+                    foreach (var application in _companyInitializerRegistry.ApplicationsForNewCompany().Where(a => !richiesti.Contains(a)))
+                    {
+                        var reqApp = new GenericRequest<CompanyApplicationPutInModel>();
+                        reqApp.Data = new CompanyApplicationPutInModel()
+                        {
+                            IdCompany = company.Id,
+                            ApplicationType = application,
+                            Active = true
+                        };
+                        await _companyApplicationService.CompanyApplicationPut(reqApp, true);
+                    }
+
+                    await _companyInitializerRegistry.InitializeAllAsync(company);
+
+                    // utenti dell'azienda (PowerAdmin, Admin e dipendente) inizializzati con gli IUserInitializer
+                    // degli applicativi ora attivi (es. anagrafica e rapporto di lavoro della gestione presenze)
+                    var userCompanies = _userCompanyRepository.FindAll(x => x.IdCompany == company.Id).ToList();
+                    foreach (var userCompany in userCompanies)
+                        await _userInitializerRegistry.InitializeAllAsync(userCompany);
                 }
 
                 if (company != null)

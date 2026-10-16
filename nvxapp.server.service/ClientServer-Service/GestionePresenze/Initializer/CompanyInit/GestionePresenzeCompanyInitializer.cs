@@ -30,6 +30,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Initialize
         public int Priority => 20;
         public ApplicationType? Application => ApplicationType.AttendanceTracking;
 
+        // la gestione presenze si attiva (e inizializza) su ogni nuova azienda
+        public bool ActivateOnNewCompany => true;
+
         public GestionePresenzeCompanyInitializer(
             IGestionePresenzeUserUtility gestionePresenzeUserUtility,
             IGestionePresenzeParametriDefault gestionePresenzeParametriDefault,

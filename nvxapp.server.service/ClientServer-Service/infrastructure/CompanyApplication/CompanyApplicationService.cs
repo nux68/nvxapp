@@ -114,15 +114,23 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyAppli
         }
 
         // Tutti gli applicativi dell'enum ApplicationType (letto dinamicamente: un nuovo valore
-        // compare da solo) con lo stato per l'azienda. idCompany = 0 (azienda nuova): tutti non attivi.
+        // compare da solo) con lo stato per l'azienda. idCompany = 0 (azienda nuova): proposti attivi
+        // quelli che il ramo attiva sulle nuove aziende (ICompanyInitializer.ActivateOnNewCompany).
         public List<CompanyApplicationModel> Applications(int idCompany)
         {
             var rows = idCompany > 0
                 ? _companyApplicationRepository.FindAll(x => x.IdCompany == idCompany).ToList()
                 : new List<nvxapp.server.data.Entities.Public.CompanyApplication>();
+            var perNuovaAzienda = idCompany > 0 ? new List<ApplicationType>() : _companyInitializerRegistry.ApplicationsForNewCompany();
 
             return Enum.GetValues<ApplicationType>()
-                       .Select(application => ToModel(idCompany, application, rows.FirstOrDefault(x => x.ApplicationType == application)))
+                       .Select(application =>
+                       {
+                           var app = ToModel(idCompany, application, rows.FirstOrDefault(x => x.ApplicationType == application));
+                           if (idCompany == 0)
+                               app.Active = perNuovaAzienda.Contains(application);
+                           return app;
+                       })
                        .ToList();
         }
 

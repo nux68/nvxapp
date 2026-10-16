@@ -24,6 +24,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Initializer.
 
         // Esegue solo gli inizializzatori di un applicativo (usato all'attivazione).
         Task InitializeApplicationAsync(Company company, ApplicationType application);
+
+        // Applicativi da attivare su una nuova azienda: quelli i cui inizializzatori
+        // dichiarano ActivateOnNewCompany (dipende dai moduli presenti nel ramo).
+        List<ApplicationType> ApplicationsForNewCompany();
     }
 
     public class CompanyInitializerRegistry : ICompanyInitializerRegistry
@@ -52,6 +56,17 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Initializer.
             var applications = new List<ApplicationType?> { null };
             applications.AddRange(_companyApplicationRepository.ActiveApplications(company.Id).Select(x => (ApplicationType?)x));
             await RunAsync(company, applications);
+        }
+
+        public List<ApplicationType> ApplicationsForNewCompany()
+        {
+            // la costruzione degli inizializzatori non tocca i dati: lo schema dei contesti si risolve al primo utilizzo
+            using var scope = _scopeFactory.CreateScope();
+            return scope.ServiceProvider.GetServices<ICompanyInitializer>()
+                                        .Where(i => i.Application != null && i.ActivateOnNewCompany)
+                                        .Select(i => i.Application!.Value)
+                                        .Distinct()
+                                        .ToList();
         }
 
         public async Task InitializeApplicationAsync(Company company, ApplicationType application)
