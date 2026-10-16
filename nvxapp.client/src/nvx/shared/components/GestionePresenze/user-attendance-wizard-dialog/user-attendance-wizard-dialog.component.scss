@@ -1,0 +1,19 @@
+.nvx-wizard-step {
+  text-align: center;
+  margin-bottom: 16px;
+
+  ion-progress-bar {
+    margin-top: 8px;
+  }
+}
+
+// casella data sotto l'etichetta, come negli altri campi data/ora (lo spazio sotto e' in global.scss)
+.datetime-button-with-label {
+  margin-top: 6px;
+}
+
+.nvx-wizard-nota {
+  display: block;
+  padding: 4px 16px 8px;
+  font-size: 0.85em;
+}
