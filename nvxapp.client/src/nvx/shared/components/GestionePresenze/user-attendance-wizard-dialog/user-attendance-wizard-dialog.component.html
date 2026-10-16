@@ -77,6 +77,9 @@
               @if (formUtente.get('descrizione')?.hasError('required') && formUtente.get('descrizione')?.touched) {
                 <ion-note color="danger">Lo UserName è obbligatorio.</ion-note>
               }
+              @if (formUtente.get('descrizione')?.hasError('giaUsato')) {
+                <ion-note color="danger">Questo UserName è già usato da un altro utente.</ion-note>
+              }
               </ion-col>
               <ion-col size="12" size-md="6">
               <ion-item>
@@ -98,6 +101,9 @@
           }
           @if (formUtente.get('mail')?.hasError('email') && formUtente.get('mail')?.touched) {
             <ion-note color="danger">Inserisci un'email valida.</ion-note>
+          }
+          @if (formUtente.get('mail')?.hasError('giaUsato')) {
+            <ion-note color="danger">Questa email è già usata da un altro utente.</ion-note>
           }
           <ion-item>
             <ion-label position="floating">Ruolo</ion-label>

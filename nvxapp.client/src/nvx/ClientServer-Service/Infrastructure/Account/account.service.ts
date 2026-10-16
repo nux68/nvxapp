@@ -8,6 +8,7 @@ import { UserRolesInModel, UserRolesOutModel } from './Models/user-roles-model';
 import { LoginInModel, LoginOutModel } from './Models/login-model';
 import { AuthService } from '../../../Utility/infrastructure/auth.service';
 import { UserLoadInModel, UserLoadOutModel } from './Models/user-load-model';
+import { UserCheckInModel, UserCheckOutModel } from './Models/user-check-model';
 import { DealerGetInModel, DealerGetOutModel, DealerListInModel, DealerListOutModel, DealerPutInModel, DealerPutOutModel } from './Models/dealer-model';
 import { CompanyGetInModel, CompanyGetOutModel, CompanyListInModel, CompanyListOutModel, CompanyPutInModel, CompanyPutOutModel } from './Models/company-model';
 import { UserCompanyGetInModel, UserCompanyGetOutModel, UserCompanyListInModel, UserCompanyListOutModel, UserCompanyPutInModel, UserCompanyPutOutModel } from './Models/user-company-model';
@@ -39,6 +40,12 @@ export class AccountService {
         )
       );
 
+  }
+
+  /** Username / email già usati da un altro utente (controllo prima di un inserimento). */
+  UserCheck(model: GenericRequest<UserCheckInModel>): Observable<GenericResult<UserCheckOutModel>> {
+    return this.http.post<GenericResult<UserCheckOutModel>>(environment.remoteData.apiUri + 'Account/UserCheck', model)
+      .pipe(map(r => r));
   }
 
   UserRoles(model: GenericRequest<UserRolesInModel>): Observable<GenericResult<UserRolesOutModel>> {

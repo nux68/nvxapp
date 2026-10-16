@@ -11,6 +11,7 @@ import { AccountService } from '../../../../ClientServer-Service/Infrastructure/
 import { ParameterService } from '../../../../ClientServer-Service/Infrastructure/Parameter/parameter.service';
 import { RoleCode } from '../../../../ClientServer-Service/Infrastructure/Account/Models/user-roles-model';
 import { UserCompanyEditModel, UserCompanyPutInModel } from '../../../../ClientServer-Service/Infrastructure/Account/Models/user-company-model';
+import { UserCheckInModel } from '../../../../ClientServer-Service/Infrastructure/Account/Models/user-check-model';
 import { DipAnagraficaService } from '../../../../ClientServer-Service/GestionePresenze/Dip_Anagrafica/dip-anagrafica.service';
 import { Dip_Anagrafica_Get_InModel, Dip_Anagrafica_Put_InModel } from '../../../../ClientServer-Service/GestionePresenze/Dip_Anagrafica/Models/dip-anagrafica-model';
 import { DestinazioneEccedenze, TipoContratto } from '../../../../ClientServer-Service/GestionePresenze/Dip_RapportoLavoro/Models/dip-rapporto-lavoro-model';
@@ -49,6 +50,8 @@ export class UserAttendanceWizardDialogComponent implements OnInit {
 
   public currentStep: number = 0;
   public saving: boolean = false;
+  /** verifica in corso di username ed email (passaggio dallo step 1 allo step 2) */
+  public checking: boolean = false;
   public erroreSalvataggio: string | null = null;
 
   public buttonbar: ButtonItem[] = [];
@@ -211,13 +214,51 @@ export class UserAttendanceWizardDialogComponent implements OnInit {
     return true;
   }
 
-  private handleNext = () => {
-    if (!this.stepValido(this.currentStep)) return;
+  private handleNext = async () => {
+    if (this.checking || !this.stepValido(this.currentStep)) return;
+    // dallo step 1: username ed email non devono essere già usati da un altro utente
+    if (this.currentStep === 0 && !(await this.verificaUsernameMail())) return;
     if (this.currentStep < this.titoliStep.length - 1) {
       this.currentStep++;
       this.updateButtonbar();
     }
   };
+
+  /**
+   * Controlla in archivio username ed email: se già usati segna l'errore sul campo e resta allo step 1.
+   * In caso di errore della chiamata non blocca: il controllo definitivo resta alla creazione dell'utente.
+   */
+  private async verificaUsernameMail(): Promise<boolean> {
+    const request = new GenericRequest<UserCheckInModel>(UserCheckInModel);
+    request.data.userName = this.formUtente.value.descrizione;
+    request.data.mail = this.formUtente.value.mail;
+
+    this.checking = true;
+    this.updateButtonbar();
+    try {
+      const res = await firstValueFrom(this.accountService.UserCheck(request));
+      if (!res?.success || !res.data) return true;
+      this.segnaGiaUsato('descrizione', res.data.userNameExists);
+      this.segnaGiaUsato('mail', res.data.mailExists);
+      return !res.data.userNameExists && !res.data.mailExists;
+    } catch (error) {
+      console.error('Errore durante la chiamata API:', error);
+      return true;
+    } finally {
+      this.checking = false;
+      this.updateButtonbar();
+    }
+  }
+
+  /** Aggiunge o toglie l'errore "giaUsato" lasciando gli altri errori del campo. */
+  private segnaGiaUsato(campo: string, giaUsato: boolean): void {
+    const control = this.formUtente.get(campo);
+    if (!control) return;
+    const { giaUsato: _, ...altri } = control.errors ?? {};
+    const errori = giaUsato ? { ...altri, giaUsato: true } : altri;
+    control.setErrors(Object.keys(errori).length ? errori : null);
+    control.markAsTouched();
+  }
 
   private handleBack = () => {
     if (this.currentStep > 0) {
@@ -233,8 +274,8 @@ export class UserAttendanceWizardDialogComponent implements OnInit {
   private updateButtonbar(): void {
     const ultimo = this.currentStep === this.titoliStep.length - 1;
     this.btnConfirm.disabled = this.saving;
-    this.btnNext.disabled = this.saving;
-    this.btnBack.disabled = this.saving;
+    this.btnNext.disabled = this.saving || this.checking;
+    this.btnBack.disabled = this.saving || this.checking;
 
     const bar: ButtonItem[] = [];
     if (this.currentStep > 0) bar.push(this.btnBack);

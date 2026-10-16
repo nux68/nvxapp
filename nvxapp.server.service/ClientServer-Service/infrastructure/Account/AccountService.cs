@@ -154,6 +154,32 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                 return retVal;
             }, isSubProcess);
         }
+        // username / email gia' usati da un altro utente (controllo prima di un inserimento)
+        public virtual async Task<GenericResult<UserCheckOutModel>> UserCheck(GenericRequest<UserCheckInModel> model, Boolean isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                UserCheckOutModel retVal = new UserCheckOutModel();
+
+                string? escludi = string.IsNullOrEmpty(model.Data.IdAspNetUsers) ? null : model.Data.IdAspNetUsers;
+
+                if (!string.IsNullOrWhiteSpace(model.Data.UserName))
+                {
+                    var userName = _userManager.NormalizeName(model.Data.UserName.Trim());
+                    retVal.UserNameExists = _userManager.Users.Any(x => x.NormalizedUserName == userName && x.Id != escludi);
+                }
+
+                if (!string.IsNullOrWhiteSpace(model.Data.Mail))
+                {
+                    var mail = _userManager.NormalizeEmail(model.Data.Mail.Trim());
+                    retVal.MailExists = _userManager.Users.Any(x => x.NormalizedEmail == mail && x.Id != escludi);
+                }
+
+                await Task.Delay(DelayAsyncMethod);
+                return retVal;
+            }, isSubProcess);
+        }
+
         public virtual async Task<GenericResult<UserRolesOutModel>> UserRoles(GenericRequest<UserRolesInModel> model, Boolean isSubProcess)
         {
             return await ExecuteAction(model, async () =>
@@ -1530,6 +1556,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
     {
         public Task<GenericResult<LoginOutModel>> Login(GenericRequest<LoginInModel> model, Boolean isSubProcess);
         public Task<GenericResult<UserRolesOutModel>> UserRoles(GenericRequest<UserRolesInModel> model, Boolean isSubProcess);
+        public Task<GenericResult<UserCheckOutModel>> UserCheck(GenericRequest<UserCheckInModel> model, Boolean isSubProcess);
         public Task<GenericResult<UserLoadOutModel>> UserLoad(GenericRequest<UserLoadInModel> model, Boolean isSubProcess);
 
         public Task<GenericResult<DealerListOutModel>> DealerList(GenericRequest<DealerListInModel> inModel, Boolean isSubProcess);

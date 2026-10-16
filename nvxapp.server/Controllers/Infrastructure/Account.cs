@@ -43,6 +43,16 @@ namespace nvxapp.server.Controllers.Infrastructure
 
         [Authorize]
         [HttpPost]
+        [Route("UserCheck")]
+        public async Task<GenericResult<UserCheckOutModel>> UserCheck(GenericRequest<UserCheckInModel> inModel)
+        {
+            var res = await _accountService.UserCheck(inModel, false);
+
+            return res;
+        }
+
+        [Authorize]
+        [HttpPost]
         [Route("UserLoad")]
         public async Task<GenericResult<UserLoadOutModel>> UserLoad(GenericRequest<UserLoadInModel> inModel)
         {
