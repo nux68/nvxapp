@@ -21,6 +21,13 @@
   align-items: center;
   padding-top: 2px;
   padding-bottom: 2px;
+  // righe piu' basse del default delle tabelle (52px): le chip sono gia' ridotte
+  min-height: 38px;
+
+  ion-col {
+    padding-top: 2px;
+    padding-bottom: 2px;
+  }
 }
 
 .day-cell {
