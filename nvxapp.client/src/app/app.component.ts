@@ -374,7 +374,10 @@ export class AppComponent implements OnInit, DoCheck {
     // Risultato: [0, 0, 1, 1, 1]
 
     // 2. Usa un Set per ottenere solo i valori unici e riconvertilo in array
-    const uniqueGroups = [...new Set(allGroups)];
+    //    sezioni nell'ordine di zorder della loro intestazione (a parita', nell'ordine in cui compaiono):
+    //    ogni applicativo decide dove mettere le sue sezioni, anche rispetto a quelle di Infrastructure
+    const zorderSezione = (group: number) => menuItems.find(item => item.group === group && item.menuType === MenuType.MenuHeader)?.zorder ?? 0;
+    const uniqueGroups = [...new Set(allGroups)].sort((a, b) => zorderSezione(a) - zorderSezione(b));
 
     for (const groupNumber of uniqueGroups) {
 
