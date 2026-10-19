@@ -1,0 +1,40 @@
+<app-page-toolbar [title]="title"
+  [showFilter]="false"
+  [showBreadcrumbs]="false">
+</app-page-toolbar>
+
+<ion-content [fullscreen]="true">
+  <div class="nvx-sc">
+
+    <section class="nvx-sc-hero">
+      <h1 class="nvx-sc-title">{{ c.titolo }}</h1>
+      <p class="nvx-sc-sub">{{ c.sottotitolo }}</p>
+    </section>
+
+    <section class="nvx-sc-section nvx-sc-text">
+      @for (p of c.paragrafi; track p) {
+        <p>{{ p }}</p>
+      }
+    </section>
+
+    <section class="nvx-sc-section">
+      <div class="nvx-sc-grid">
+        @for (v of c.valori; track v.title) {
+          <div class="nvx-sc-card">
+            <div class="nvx-sc-card-icon"><ion-icon [name]="v.icon"></ion-icon></div>
+            <h3>{{ v.title }}</h3>
+            <p>{{ v.text }}</p>
+          </div>
+        }
+      </div>
+    </section>
+
+    <section class="nvx-sc-band">
+      <h2>Parliamone</h2>
+      <p>Raccontaci come lavori: ti mostriamo come la piattaforma può aiutarti.</p>
+      <ion-button shape="round" (click)="vai('/contact')">Contattaci</ion-button>
+    </section>
+
+  </div>
+  <app-showcase-footer></app-showcase-footer>
+</ion-content>

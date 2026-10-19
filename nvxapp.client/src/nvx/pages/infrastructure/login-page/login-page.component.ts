@@ -11,6 +11,7 @@ import { UserDataAdditionalModel, UserNavigationService } from '../../../Utility
 import { SignalrService } from '../../../Utility/infrastructure/signalr.service';
 import { environment } from '../../../../environments/environment';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
+import { SHOWCASE_AFTER_LOGIN } from '../../RoleGuard/infrastructure/showcase-guard';
 
 @Component({
   selector: 'app-login-page',
@@ -65,6 +66,12 @@ export class LoginPageComponent  implements OnInit {
   }
 
   ionViewWillEnter() {
+    // arrivo dalla registrazione: utente appena creato gia' compilato, password da inserire
+    const userName = history.state?.userName;
+    if (userName) {
+      this.loginForm.controls['email'].setValue(userName);
+      this.loginForm.controls['password'].setValue('');
+    }
   }
 
   ngOnInit() {
@@ -109,10 +116,10 @@ export class LoginPageComponent  implements OnInit {
               
 
               let userDataAdditional: UserDataAdditionalModel = new UserDataAdditionalModel();
-              userDataAdditional.gotoBackPage = "/home";
+              userDataAdditional.gotoBackPage = SHOWCASE_AFTER_LOGIN;
 
               this.userNavigationService.UserPush(usl.data.userData, userDataAdditional);
-              this.navCtrl.navigateForward('/home');
+              this.navCtrl.navigateForward(SHOWCASE_AFTER_LOGIN);
             }
             else {
 

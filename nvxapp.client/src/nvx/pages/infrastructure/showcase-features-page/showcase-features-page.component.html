@@ -1,0 +1,37 @@
+<app-page-toolbar [title]="title"
+  [showFilter]="false"
+  [showBreadcrumbs]="false">
+</app-page-toolbar>
+
+<ion-content [fullscreen]="true">
+  <div class="nvx-sc">
+
+    <section class="nvx-sc-hero">
+      <h1 class="nvx-sc-title">{{ c.titolo }}</h1>
+      <p class="nvx-sc-sub">{{ c.sottotitolo }}</p>
+    </section>
+
+    <section class="nvx-sc-section">
+      <div class="nvx-sc-grid">
+        @for (s of c.sezioni; track s.title) {
+          <div class="nvx-sc-card">
+            <div class="nvx-sc-card-icon"><ion-icon [name]="s.icon"></ion-icon></div>
+            <h3>{{ s.title }}</h3>
+            <p>{{ s.text }}</p>
+          </div>
+        }
+      </div>
+    </section>
+
+    <section class="nvx-sc-band">
+      <h2>{{ showcaseService.Contenuti.home.chiusuraTitolo }}</h2>
+      <p>{{ showcaseService.Contenuti.home.chiusuraTesto }}</p>
+      <div class="nvx-sc-cta">
+        <ion-button shape="round" (click)="vai('/register')">{{ showcaseService.Contenuti.home.ctaPrimaria }}</ion-button>
+        <ion-button shape="round" fill="outline" (click)="vai('/pricing')">Vedi i prezzi</ion-button>
+      </div>
+    </section>
+
+  </div>
+  <app-showcase-footer></app-showcase-footer>
+</ion-content>

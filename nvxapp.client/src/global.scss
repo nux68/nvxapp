@@ -518,3 +518,6 @@ ion-popover::part(content) {
   padding: 2px 16px 6px 16px;
   font-size: 0.85em;
 }
+
+// pagine dello showcase (sito pubblico prima del login)
+@import "./theme/showcase.scss";

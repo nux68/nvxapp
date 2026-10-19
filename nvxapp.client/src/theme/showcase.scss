@@ -1,0 +1,328 @@
+// Pagine dello showcase (sito pubblico prima del login): stili comuni ai template.
+// Stesso linguaggio delle altre pagine (stile "chat AI"): fondo neutro, riquadri tenui,
+// angoli arrotondati. Token in theme/variables.scss.
+
+.nvx-sc {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 24px 16px 0 16px;
+  box-sizing: border-box;
+}
+
+// apertura della pagina: titolo grande centrato
+.nvx-sc-hero {
+  text-align: center;
+  padding: 40px 0 32px 0;
+
+  &.nvx-sc-hero-home {
+    padding: 64px 0 48px 0;
+  }
+}
+
+.nvx-sc-label {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(var(--ion-color-primary-rgb), 0.12);
+  color: var(--ion-color-primary);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.nvx-sc-title {
+  margin: 16px auto 12px auto;
+  max-width: 820px;
+  font-size: clamp(28px, 4.5vw, 46px);
+  line-height: 1.12;
+  font-weight: 650;
+  letter-spacing: -0.025em;
+}
+
+.nvx-sc-sub {
+  margin: 0 auto;
+  max-width: 680px;
+  color: var(--nvx-text-muted);
+  font-size: clamp(16px, 2vw, 19px);
+  line-height: 1.5;
+}
+
+.nvx-sc-cta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 28px;
+}
+
+// sezioni
+.nvx-sc-section {
+  padding: 28px 0;
+}
+
+.nvx-sc-section-title {
+  margin: 0 0 18px 0;
+  text-align: center;
+  font-size: clamp(22px, 3vw, 28px);
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+
+.nvx-sc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 14px;
+}
+
+.nvx-sc-card {
+  padding: 20px;
+  border: 1px solid var(--nvx-border);
+  border-radius: var(--nvx-radius-lg);
+  background: var(--nvx-surface);
+
+  h3 {
+    margin: 12px 0 6px 0;
+    font-size: 17px;
+    font-weight: 600;
+  }
+
+  p {
+    margin: 0;
+    color: var(--nvx-text-muted);
+    font-size: 15px;
+    line-height: 1.5;
+  }
+}
+
+.nvx-sc-card-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: rgba(var(--ion-color-primary-rgb), 0.12);
+
+  ion-icon {
+    font-size: 22px;
+    color: var(--ion-color-primary);
+  }
+}
+
+// passi numerati
+.nvx-sc-step-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--ion-text-color);
+  color: var(--ion-background-color);
+  font-size: 14px;
+  font-weight: 650;
+}
+
+// piani dei prezzi
+.nvx-sc-plan {
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  border: 1px solid var(--nvx-border);
+  border-radius: var(--nvx-radius-lg);
+  background: var(--nvx-surface);
+
+  &.nvx-sc-plan-evidenza {
+    border: 2px solid var(--ion-color-primary);
+    box-shadow: var(--nvx-shadow-soft);
+  }
+
+  h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  ul {
+    flex: 1;
+    margin: 16px 0 20px 0;
+    padding: 0;
+    list-style: none;
+
+    li {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 0;
+      font-size: 15px;
+
+      ion-icon {
+        color: var(--ion-color-success);
+      }
+    }
+  }
+}
+
+.nvx-sc-price {
+  margin: 12px 0 2px 0;
+  font-size: 36px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+
+  small {
+    margin-left: 4px;
+    color: var(--nvx-text-muted);
+    font-size: 15px;
+    font-weight: 400;
+  }
+}
+
+.nvx-sc-muted {
+  color: var(--nvx-text-muted);
+  font-size: 14px;
+}
+
+.nvx-sc-note {
+  margin: 16px 0 0 0;
+  text-align: center;
+  color: var(--nvx-text-muted);
+  font-size: 13px;
+}
+
+// domande frequenti e paragrafi
+.nvx-sc-text {
+  max-width: 760px;
+  margin: 0 auto;
+
+  p {
+    font-size: 17px;
+    line-height: 1.65;
+  }
+}
+
+.nvx-sc-faq {
+  max-width: 760px;
+  margin: 0 auto;
+
+  ion-accordion {
+    margin-bottom: 8px;
+    border: 1px solid var(--nvx-border);
+    border-radius: var(--nvx-radius-md);
+    background: var(--nvx-surface);
+  }
+
+  ion-item[slot='header'] {
+    --background: transparent;
+    font-weight: 600;
+  }
+
+  .nvx-sc-faq-risposta {
+    padding: 0 16px 16px 16px;
+    color: var(--nvx-text-muted);
+    line-height: 1.5;
+  }
+}
+
+// fascia di chiusura con invito all'azione
+.nvx-sc-band {
+  margin: 28px 0;
+  padding: 36px 20px;
+  border-radius: var(--nvx-radius-lg);
+  background: var(--nvx-surface-soft);
+  text-align: center;
+
+  h2 {
+    margin: 0 0 8px 0;
+    font-size: clamp(22px, 3vw, 28px);
+    font-weight: 650;
+  }
+
+  p {
+    margin: 0 0 20px 0;
+    color: var(--nvx-text-muted);
+  }
+}
+
+// moduli (contatti, registrazione)
+.nvx-sc-form-wrap {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 18px;
+  align-items: start;
+  padding-bottom: 28px;
+}
+
+.nvx-sc-form {
+  padding: 8px 8px 16px 8px;
+  border: 1px solid var(--nvx-border);
+  border-radius: var(--nvx-radius-lg);
+  background: var(--nvx-surface);
+  box-shadow: var(--nvx-shadow-soft);
+
+  ion-item {
+    --background: transparent;
+  }
+}
+
+.nvx-sc-info {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.nvx-sc-info-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  strong {
+    display: block;
+    font-size: 14px;
+  }
+
+  span,
+  a {
+    color: var(--nvx-text-muted);
+    font-size: 15px;
+  }
+}
+
+.nvx-sc-error {
+  margin: 12px 12px 0 12px;
+  padding: 10px 14px;
+  border-radius: var(--nvx-radius-sm);
+  background: rgba(var(--ion-color-danger-rgb), 0.1);
+  color: var(--ion-color-danger);
+  font-size: 14px;
+
+  p {
+    margin: 2px 0;
+  }
+}
+
+// pie' di pagina
+.nvx-sc-footer {
+  margin-top: 24px;
+  padding: 28px 16px 36px 16px;
+  border-top: 1px solid var(--nvx-border);
+  text-align: center;
+  color: var(--nvx-text-muted);
+  font-size: 14px;
+
+  nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px 18px;
+    margin-bottom: 12px;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+
+    &:hover {
+      color: var(--ion-text-color);
+    }
+  }
+}

@@ -5,6 +5,9 @@ import { RouteAttendanceTrackingService } from './route-attendance-tracking.serv
 import { applicationGuard } from '../../pages/RoleGuard/infrastructure/application-guard';
 import { menuRestrictionGuard } from '../../pages/RoleGuard/infrastructure/menu-restriction-guard';
 import { ApplicationType } from '../../ClientServer-Service/Infrastructure/Account/Models/user-load-model';
+import { ShowcaseService } from './showcase.service';
+import { ShowcaseInfrastructureService } from './showcase-infrastructure.service';
+import { ShowcaseAttendanceTrackingService } from './showcase-attendance-tracking.service';
 
 
 @Injectable({
@@ -18,8 +21,10 @@ export class RouteService {
   public getRoutes(): Routes {
     const routesFromService1 = this.routeInfrastructureService.getRoutes();
     const routesFromService2 = this.forApplication(this.routeAttendanceTrackingService.getRoutes(), ApplicationType.AttendanceTracking);
+    // showcase (pagine pubbliche prima del login): non dipende dagli applicativi attivi
+    const routesShowcase = new ShowcaseService(new ShowcaseInfrastructureService(), new ShowcaseAttendanceTrackingService()).getRoutes();
 
-    return this.withMenuRestriction(routesFromService1.concat(routesFromService2));
+    return this.withMenuRestriction(routesShowcase.concat(routesFromService1, routesFromService2));
   }
 
   // A tutte le rotte (di ogni applicativo) si aggiunge menuRestrictionGuard: blocca le voci di menu

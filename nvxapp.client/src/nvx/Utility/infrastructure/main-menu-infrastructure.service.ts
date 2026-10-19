@@ -79,7 +79,7 @@ export class MainMenuInfrastructureService implements iMainMenuService{
     return [
       { menuType: MenuType.MenuHeader, zorder: 0,   group: 0, title: 'Accesso', component: '', url: '', icon: '' },
       { menuType: MenuType.MenuItem,   zorder: 100, group: 0, title: 'Impersonate', component: "UserImpersonatePageComponent", url: '/userimpersonate', icon: 'people-circle', nonConfigurabile: true },
-      { menuType: MenuType.MenuItem,   zorder: 200, group: 0, title: 'Home', component: "HomePageComponent", url: '/home', icon: 'home', nonConfigurabile: true },
+      { menuType: MenuType.MenuItem,   zorder: 200, group: 0, title: 'Dashboard', component: "DashboardPageComponent", url: '/dashboard', icon: 'home', nonConfigurabile: true },
       { menuType: MenuType.MenuItem,   zorder: 300, group: 0, title: 'Login', component: "LoginPageComponent", url: '/login', icon: 'enter', nonConfigurabile: true },
       { menuType: MenuType.MenuItem,   zorder: 400, group: 0, title: 'Logout', component: "LogoutPageComponent", url: '/logout', icon: 'exit', nonConfigurabile: true },
       { menuType: MenuType.MenuItem,   zorder: 500, group: 0, title: 'User Data', component: "UserPageComponent", url: '/user', icon: 'person', nonConfigurabile: true }

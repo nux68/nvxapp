@@ -1,0 +1,57 @@
+<app-page-toolbar [title]="title"
+  [showFilter]="false"
+  [showBreadcrumbs]="false">
+</app-page-toolbar>
+
+<ion-content [fullscreen]="true">
+  <div class="nvx-sc">
+
+    <section class="nvx-sc-hero nvx-sc-hero-home">
+      <span class="nvx-sc-label">{{ c.etichetta }}</span>
+      <h1 class="nvx-sc-title">{{ c.titolo }}</h1>
+      <p class="nvx-sc-sub">{{ c.sottotitolo }}</p>
+      <div class="nvx-sc-cta">
+        <ion-button shape="round" (click)="vai('/register')">
+          <ion-icon slot="start" name="person-add-outline"></ion-icon>
+          {{ c.ctaPrimaria }}
+        </ion-button>
+        <ion-button shape="round" fill="outline" (click)="vai('/features')">
+          {{ c.ctaSecondaria }}
+        </ion-button>
+      </div>
+    </section>
+
+    <section class="nvx-sc-section">
+      <div class="nvx-sc-grid">
+        @for (p of c.punti; track p.title) {
+          <div class="nvx-sc-card">
+            <div class="nvx-sc-card-icon"><ion-icon [name]="p.icon"></ion-icon></div>
+            <h3>{{ p.title }}</h3>
+            <p>{{ p.text }}</p>
+          </div>
+        }
+      </div>
+    </section>
+
+    <section class="nvx-sc-section">
+      <h2 class="nvx-sc-section-title">{{ c.passiTitolo }}</h2>
+      <div class="nvx-sc-grid">
+        @for (s of c.passi; track s.title; let i = $index) {
+          <div class="nvx-sc-card">
+            <span class="nvx-sc-step-num">{{ i + 1 }}</span>
+            <h3>{{ s.title }}</h3>
+            <p>{{ s.text }}</p>
+          </div>
+        }
+      </div>
+    </section>
+
+    <section class="nvx-sc-band">
+      <h2>{{ c.chiusuraTitolo }}</h2>
+      <p>{{ c.chiusuraTesto }}</p>
+      <ion-button shape="round" (click)="vai('/register')">{{ c.ctaPrimaria }}</ion-button>
+    </section>
+
+  </div>
+  <app-showcase-footer></app-showcase-footer>
+</ion-content>

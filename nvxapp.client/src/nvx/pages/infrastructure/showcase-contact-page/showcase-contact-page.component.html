@@ -1,0 +1,56 @@
+<app-page-toolbar [title]="title"
+  [showFilter]="false"
+  [showBreadcrumbs]="false">
+</app-page-toolbar>
+
+<ion-content [fullscreen]="true">
+  <div class="nvx-sc">
+
+    <section class="nvx-sc-hero">
+      <h1 class="nvx-sc-title">{{ c.titolo }}</h1>
+      <p class="nvx-sc-sub">{{ c.sottotitolo }}</p>
+    </section>
+
+    <section class="nvx-sc-form-wrap">
+      <div class="nvx-sc-info">
+        <div class="nvx-sc-info-row">
+          <div class="nvx-sc-card-icon"><ion-icon name="mail-outline"></ion-icon></div>
+          <div><strong>Email</strong><a [href]="'mailto:' + c.email">{{ c.email }}</a></div>
+        </div>
+        <div class="nvx-sc-info-row">
+          <div class="nvx-sc-card-icon"><ion-icon name="call-outline"></ion-icon></div>
+          <div><strong>Telefono</strong><span>{{ c.telefono }}</span></div>
+        </div>
+        <div class="nvx-sc-info-row">
+          <div class="nvx-sc-card-icon"><ion-icon name="location-outline"></ion-icon></div>
+          <div><strong>Indirizzo</strong><span>{{ c.indirizzo }}</span></div>
+        </div>
+        <div class="nvx-sc-info-row">
+          <div class="nvx-sc-card-icon"><ion-icon name="time-outline"></ion-icon></div>
+          <div><strong>Orari</strong><span>{{ c.orari }}</span></div>
+        </div>
+      </div>
+
+      <div class="nvx-sc-form">
+        <ion-item lines="full">
+          <ion-input label="Nome e cognome" labelPlacement="floating" [(ngModel)]="nome"></ion-input>
+        </ion-item>
+        <ion-item lines="full">
+          <ion-input label="Email" labelPlacement="floating" type="email" [(ngModel)]="email"></ion-input>
+        </ion-item>
+        <ion-item lines="full">
+          <ion-textarea label="Messaggio" labelPlacement="floating" [autoGrow]="true" rows="4" [(ngModel)]="messaggio"></ion-textarea>
+        </ion-item>
+        <p class="nvx-sc-note">{{ c.testoModulo }}</p>
+        <div class="nvx-sc-cta">
+          <ion-button shape="round" [disabled]="!valido" (click)="invia()">
+            <ion-icon slot="start" name="send-outline"></ion-icon>
+            Invia
+          </ion-button>
+        </div>
+      </div>
+    </section>
+
+  </div>
+  <app-showcase-footer></app-showcase-footer>
+</ion-content>
