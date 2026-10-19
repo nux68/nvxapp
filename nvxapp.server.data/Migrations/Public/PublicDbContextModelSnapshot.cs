@@ -327,6 +327,45 @@ namespace nvxapp.server.data.Migrations.Public
                     b.ToTable("CompanyApplication", "public");
                 });
 
+            modelBuilder.Entity("nvxapp.server.data.Entities.Public.CompanyMenuRestriction", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("IdCompany")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdCompany", "Url", "Role")
+                        .IsUnique();
+
+                    b.ToTable("CompanyMenuRestriction", "public");
+                });
+
             modelBuilder.Entity("nvxapp.server.data.Entities.Public.Dealer", b =>
                 {
                     b.Property<int>("Id")
@@ -583,6 +622,17 @@ namespace nvxapp.server.data.Migrations.Public
                 {
                     b.HasOne("nvxapp.server.data.Entities.Public.Company", "CompanyNavigation")
                         .WithMany("CompanyApplication")
+                        .HasForeignKey("IdCompany")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CompanyNavigation");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Public.CompanyMenuRestriction", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Public.Company", "CompanyNavigation")
+                        .WithMany()
                         .HasForeignKey("IdCompany")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();

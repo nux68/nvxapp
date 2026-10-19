@@ -42,6 +42,35 @@ export class AuthService {
     return this.activeApplicationsSubject.getValue().includes(application);
   }
 
+  // voci di menu nascoste ai ruoli dell'azienda dell'utente corrente (da UserLoad)
+  private menuRestrictionsSubject = new BehaviorSubject<{ url: string, role: string }[]>([]);
+
+  public get MenuRestrictions$(): Observable<{ url: string, role: string }[]> {
+    return this.menuRestrictionsSubject.asObservable();
+  }
+
+  public setMenuRestrictions(restrictions: { url: string, role: string }[] | null | undefined): void {
+    this.menuRestrictionsSubject.next(restrictions ?? []);
+  }
+
+  /** La voce di menu (url) e' stata nascosta al ruolo dal CompanyPowerAdmin. */
+  public isMenuRestricted(url: string, role: string): boolean {
+    const key = AuthService.normalizeMenuUrl(url);
+    return this.menuRestrictionsSubject.getValue().some(x => x.role === role && AuthService.normalizeMenuUrl(x.url) === key);
+  }
+
+  /** Url di una voce di menu senza parametri, in minuscolo e senza "/" finale (es. "/VacationPlan/?x=1" -> "/vacationplan"). */
+  public static normalizeMenuUrl(url: string | null | undefined): string {
+    const path = (url ?? '').split(/[?#;]/)[0].trim().toLowerCase();
+    const trimmed = path.replace(/\/+$/, '');
+    return trimmed.startsWith('/') ? trimmed : '/' + trimmed;
+  }
+
+  /** Nomi dei ruoli dell'utente corrente. */
+  public get RoleNames(): string[] {
+    return this.rolesSubject.getValue().map(x => x.name);
+  }
+
   private _Token$: BehaviorSubject<string | null> = new BehaviorSubject<string>(null);
   public get Token$(): Observable<string | null> {
     return this._Token$.asObservable();
@@ -51,6 +80,7 @@ export class AuthService {
     if (value == null) {
       this.setRole([]);
       this.setActiveApplications([]);
+      this.setMenuRestrictions([]);
     }
   }
   public get Token(): string | null {
@@ -130,6 +160,7 @@ export class AuthService {
     this.Token = null;
     this.setRole([]);
     this.setActiveApplications([]);
+    this.setMenuRestrictions([]);
   }
 
 }

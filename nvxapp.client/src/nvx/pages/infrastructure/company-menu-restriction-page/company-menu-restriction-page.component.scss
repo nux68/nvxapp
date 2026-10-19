@@ -1,0 +1,32 @@
+.nvx-menu-nota {
+  display: block;
+  margin-bottom: 12px;
+}
+
+.nvx-menu-header {
+  font-size: 0.85em;
+  color: var(--ion-color-medium);
+}
+
+// icona e titolo della voce sulla stessa riga, titolo tagliato con "..." se non ci sta
+.nvx-menu-voce {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+
+  ion-icon {
+    flex: none;
+    color: var(--ion-color-medium);
+  }
+
+  span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.nvx-menu-nd {
+  color: var(--ion-color-medium);
+}

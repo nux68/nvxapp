@@ -101,14 +101,14 @@ namespace nvxapp.server.data.Migrations.Public
                 //DealerPowerAdmin
                 migrationBuilder.InsertData(
                         table: "UserDealer",
-                        columns: new[] { "IdDealer", "IdAspNetUsers", "MainUser" },
-                        values: new object[] { idxDealer, data_AspNetUsers[0].Id ,true}
+                        columns: new[] { "IdDealer", "IdAspNetUsers", "MainUser", "Disabled" },
+                        values: new object[] { idxDealer, data_AspNetUsers[0].Id ,true, false }
                         );
                 //DealerAdmin
                 migrationBuilder.InsertData(
                         table: "UserDealer",
-                        columns: new[] { "IdDealer", "IdAspNetUsers", "MainUser" },
-                        values: new object[] { idxDealer, data_AspNetUsers[1].Id ,true}
+                        columns: new[] { "IdDealer", "IdAspNetUsers", "MainUser", "Disabled" },
+                        values: new object[] { idxDealer, data_AspNetUsers[1].Id ,true, false }
                         );
 
 
@@ -131,14 +131,14 @@ namespace nvxapp.server.data.Migrations.Public
                     //FinancialAdvisorPowerAdmin
                     migrationBuilder.InsertData(
                            table: "UserFinancialAdvisor",
-                           columns: new[] { "IdFinancialAdvisor", "IdAspNetUsers" , "MainUser" },
-                           values: new object[] { idxFinancialAdvisor, data_AspNetUsers[0].Id ,true}
+                           columns: new[] { "IdFinancialAdvisor", "IdAspNetUsers" , "MainUser", "Disabled" },
+                           values: new object[] { idxFinancialAdvisor, data_AspNetUsers[0].Id ,true, false }
                            );
                     //FinancialAdvisorAdmin
                     migrationBuilder.InsertData(
                            table: "UserFinancialAdvisor",
-                           columns: new[] { "IdFinancialAdvisor", "IdAspNetUsers", "MainUser" },
-                           values: new object[] { idxFinancialAdvisor, data_AspNetUsers[1].Id ,true}
+                           columns: new[] { "IdFinancialAdvisor", "IdAspNetUsers", "MainUser", "Disabled" },
+                           values: new object[] { idxFinancialAdvisor, data_AspNetUsers[1].Id ,true, false }
                            );
 
 
@@ -161,14 +161,14 @@ namespace nvxapp.server.data.Migrations.Public
                         //CompanyPowerAdmin
                         migrationBuilder.InsertData(
                              table: "UserCompany",
-                             columns: new[] { "IdCompany", "IdAspNetUsers" , "MainUser" },
-                             values: new object[] { idxCompany, data_AspNetUsers[0].Id,true }
+                             columns: new[] { "IdCompany", "IdAspNetUsers" , "MainUser", "Disabled" },
+                             values: new object[] { idxCompany, data_AspNetUsers[0].Id,true, false }
                              );
                         //CompanyAdmin
                         migrationBuilder.InsertData(
                              table: "UserCompany",
-                             columns: new[] { "IdCompany", "IdAspNetUsers" , "MainUser" },
-                             values: new object[] { idxCompany, data_AspNetUsers[1].Id ,true}
+                             columns: new[] { "IdCompany", "IdAspNetUsers" , "MainUser", "Disabled" },
+                             values: new object[] { idxCompany, data_AspNetUsers[1].Id ,true, false }
                              );
 
                         for (int idxUs = 1; idxUs <= 5; idxUs++)
@@ -181,8 +181,8 @@ namespace nvxapp.server.data.Migrations.Public
 
                             migrationBuilder.InsertData(
                                                          table: "UserCompany",
-                                                         columns: new[] { "IdCompany", "IdAspNetUsers", "MainUser" },
-                                                         values: new object[] { idxCompany, data_AspNetUsers[0].Id,false }
+                                                         columns: new[] { "IdCompany", "IdAspNetUsers", "MainUser", "Disabled" },
+                                                         values: new object[] { idxCompany, data_AspNetUsers[0].Id,false, false }
                                                          );
                         }
 

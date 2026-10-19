@@ -9,6 +9,7 @@ namespace nvxapp.server.data.Infrastructure
     {
         public DbSet<AppSetting> AppSetting { get; set; }
         public DbSet<CompanyApplication> CompanyApplication { get; set; }
+        public DbSet<CompanyMenuRestriction> CompanyMenuRestriction { get; set; }
 
         public DbSet<Dealer> Dealer { get; set; }
         public DbSet<UserDealer> UserDealer { get; set; }
@@ -25,6 +26,7 @@ namespace nvxapp.server.data.Infrastructure
             Gen_DealerAndCompany_Init(modelBuilder);
             Gen_AppSetting(modelBuilder);
             Gen_CompanyApplication(modelBuilder);
+            Gen_CompanyMenuRestriction(modelBuilder);
         }
 
         private void Gen_InitDB(ModelBuilder modelBuilder)
@@ -57,6 +59,24 @@ namespace nvxapp.server.data.Infrastructure
 
                 entity.HasOne(e => e.CompanyNavigation)
                       .WithMany(c => c.CompanyApplication)
+                      .HasForeignKey(e => e.IdCompany)
+                      .OnDelete(DeleteBehavior.Cascade);
+            });
+        }
+        private void Gen_CompanyMenuRestriction(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<CompanyMenuRestriction>(entity =>
+            {
+                entity.ToTable("CompanyMenuRestriction", Schema);
+                entity.HasKey(e => e.Id);
+
+                // un solo record per azienda/voce/ruolo
+                entity.HasIndex(e => new { e.IdCompany, e.Url, e.Role }).IsUnique();
+
+                // relazione senza collezione su Company: i contesti degli applicativi mappano Company
+                // e scoprirebbero la tabella seguendo la collezione (tabella duplicata, avvio bloccato)
+                entity.HasOne(e => e.CompanyNavigation)
+                      .WithMany()
                       .HasForeignKey(e => e.IdCompany)
                       .OnDelete(DeleteBehavior.Cascade);
             });
