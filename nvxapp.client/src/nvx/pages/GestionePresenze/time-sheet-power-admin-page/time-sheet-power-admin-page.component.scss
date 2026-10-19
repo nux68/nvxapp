@@ -113,10 +113,12 @@
 .day-row ion-chip {
   height: 34px;
   min-height: 34px;
-  --padding-start: 9px;
-  --padding-end: 9px;
+  // spazio tra testo e bordo: ion-chip non usa --padding-start/end, il suo padding e' fisso a 12px
+  padding-inline-start: 4px;
+  padding-inline-end: 4px;
 
   ion-icon {
     font-size: 14px;
+    margin-inline-start: 3px; // icona di stato piu' vicina al testo (Ionic: 8px)
   }
 }
