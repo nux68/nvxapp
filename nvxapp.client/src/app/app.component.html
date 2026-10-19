@@ -4,12 +4,28 @@
     <ion-menu contentId="main-content" type="overlay">
       <ion-content>
 
-        <!-- nome dell'applicazione in testa al menu -->
+        <!-- nome dell'applicazione in testa al menu (dai contenuti dello showcase, ridefinibili dal ramo) -->
         <div class="nvx-brand">
-          <ion-icon name="calendar-clear-outline" aria-hidden="true"></ion-icon>
-          <span>SiSignore</span>
+          <ion-icon [name]="showcaseService.Contenuti.brand.icon" aria-hidden="true"></ion-icon>
+          <span>{{ showcaseService.Contenuti.brand.nome }}</span>
         </div>
 
+        <!-- prima del login: solo le voci dello showcase (ShowcaseService); dopo il login i menu per ruolo -->
+        @if (authService.Token == null) {
+          @for (group of groupedShowcaseMenu; track group) {
+            <div class="nvx-menu-gruppo">{{ group.menuHeader.title }}</div>
+            <ion-list id="nvx-list">
+              @for (p of group.menuItem; track p) {
+                <ion-menu-toggle auto-hide="false">
+                  <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
+                    <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-outline'"></ion-icon>
+                    <ion-label>{{ p.title }}</ion-label>
+                  </ion-item>
+                </ion-menu-toggle>
+              }
+            </ion-list>
+          }
+        } @else {
         <ion-accordion-group [value]=selectedMenu>
 
           <ng-container>
@@ -207,6 +223,7 @@
           }
 
         </ion-accordion-group>
+        }
 
 
 

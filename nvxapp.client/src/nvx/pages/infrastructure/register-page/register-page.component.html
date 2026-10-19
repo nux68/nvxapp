@@ -1,0 +1,91 @@
+<app-page-toolbar [title]="title"
+  [showFilter]="false"
+  [showBreadcrumbs]="false">
+</app-page-toolbar>
+
+<ion-content [fullscreen]="true">
+  <div class="nvx-sc">
+
+    <section class="nvx-sc-hero">
+      <h1 class="nvx-sc-title">{{ c.titolo }}</h1>
+      <p class="nvx-sc-sub">{{ c.sottotitolo }}</p>
+    </section>
+
+    <section class="nvx-sc-form-wrap">
+      <div class="nvx-sc-info">
+        @for (v of c.vantaggi; track v) {
+          <div class="nvx-sc-info-row">
+            <div class="nvx-sc-card-icon"><ion-icon name="checkmark-outline"></ion-icon></div>
+            <div><strong>{{ v }}</strong></div>
+          </div>
+        }
+      </div>
+
+      @if (utentiCreati) {
+        <!-- registrazione fatta: utenti per il primo accesso -->
+        <div class="nvx-sc-form">
+          <div class="ion-padding">
+            <h2>{{ descrizioneCreata }}</h2>
+            <p class="nvx-sc-muted">{{ c.esito }}</p>
+          </div>
+          <ion-list lines="full">
+            @for (u of utentiCreati; track u.userName) {
+              <ion-item>
+                <ion-icon slot="start" name="person-circle-outline"></ion-icon>
+                <ion-label>
+                  <h3>{{ u.userName }}</h3>
+                  <p>{{ u.roles.join(', ') }}</p>
+                </ion-label>
+              </ion-item>
+            }
+          </ion-list>
+        </div>
+      } @else {
+        <form class="nvx-sc-form" [formGroup]="form">
+          <ion-item lines="full">
+            <ion-input label="Ragione sociale" labelPlacement="floating" formControlName="ragioneSociale" [maxlength]="ragioneSocialeMaxLength"></ion-input>
+          </ion-item>
+          @if (erroreCampo('ragioneSociale')) {
+            <ion-note color="danger" class="nvx-nota-disabled">Almeno 3 lettere o cifre, al massimo {{ ragioneSocialeMaxLength }} caratteri.</ion-note>
+          } @else if (nomeAzienda) {
+            <ion-note class="nvx-nota-disabled">Gli utenti di accesso inizieranno con «{{ nomeAzienda }}_»</ion-note>
+          }
+          <ion-item lines="full">
+            <ion-input label="Email" labelPlacement="floating" type="email" formControlName="mail"></ion-input>
+          </ion-item>
+          @if (erroreCampo('mail')) {
+            <ion-note color="danger" class="nvx-nota-disabled">Indirizzo email non valido.</ion-note>
+          }
+          <ion-item lines="full">
+            <ion-input label="Password" labelPlacement="floating" type="password" formControlName="pw"></ion-input>
+          </ion-item>
+          @if (erroreCampo('pw')) {
+            <ion-note color="danger" class="nvx-nota-disabled">Almeno {{ passwordMinLength }} caratteri.</ion-note>
+          }
+          <ion-item lines="full">
+            <ion-input label="Conferma password" labelPlacement="floating" type="password" formControlName="conferma"></ion-input>
+          </ion-item>
+          @if (passwordDiverse) {
+            <ion-note color="danger" class="nvx-nota-disabled">Le password non coincidono.</ion-note>
+          }
+          <ion-item lines="none">
+            <ion-checkbox formControlName="accettaCondizioni" labelPlacement="end" justify="start">
+              <span class="ion-text-wrap">{{ c.condizioni }}</span>
+            </ion-checkbox>
+          </ion-item>
+          @if (errori.length > 0) {
+            <div class="nvx-sc-error">
+              @for (e of errori; track e) {
+                <p>{{ e }}</p>
+              }
+            </div>
+          }
+        </form>
+      }
+    </section>
+
+  </div>
+  <app-showcase-footer></app-showcase-footer>
+</ion-content>
+
+<app-page-buttonbar [buttonbar]="buttonbar"></app-page-buttonbar>

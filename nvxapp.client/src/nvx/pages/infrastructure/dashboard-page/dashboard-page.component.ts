@@ -4,13 +4,13 @@ import { FabMenuService } from '../../../Utility/infrastructure/fab-menu.service
 import { NavController } from '@ionic/angular/lazy';
 
 @Component({
-  selector: 'app-home-page',
-  templateUrl: './home-page.component.html',
-  styleUrls: ['./home-page.component.scss'],
+  selector: 'app-dashboard-page',
+  templateUrl: './dashboard-page.component.html',
+  styleUrls: ['./dashboard-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
-export class HomePageComponent {
+export class DashboardPageComponent {
 
   public title!: string;
 
@@ -18,13 +18,13 @@ export class HomePageComponent {
               private fabMenuService: FabMenuService,
               public navCtrl: NavController
   ) {
-    this.title = 'Home';
+    this.title = 'Dashboard';
   }
 
   ionViewWillEnter() {
   }
 
-  // utente corrente (ultimo della cronologia di navigazione/impersonificazione); null se non autenticato
+  // utente corrente (ultimo della cronologia di navigazione/impersonificazione)
   public get userName(): string | null {
     const cronology = this.userNavigationService.userCronology;
     return cronology && cronology.length > 0 ? cronology[cronology.length - 1].userData?.userName ?? null : null;
@@ -33,10 +33,6 @@ export class HomePageComponent {
 
   openChat() {
     this.fabMenuService.openChat();
-  }
-
-  goToLogin() {
-    this.navCtrl.navigateForward('/login');
   }
 
 }

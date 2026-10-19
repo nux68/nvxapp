@@ -33,6 +33,16 @@ ion-menu ion-content {
   }
 }
 
+// gruppi del menu dello showcase (sempre aperti): stessa intestazione degli accordion
+.nvx-menu-gruppo {
+  padding: 14px 10px 6px 10px;
+  color: var(--nvx-text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
 // gruppi (accordion): nessun fondo, intestazione piccola e attenuata
 ion-accordion-group {
   ion-accordion {

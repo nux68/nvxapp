@@ -1,0 +1,51 @@
+<app-page-toolbar [title]="title"
+  [showFilter]="false"
+  [showBreadcrumbs]="false">
+</app-page-toolbar>
+
+<ion-content [fullscreen]="true">
+  <div class="nvx-sc">
+
+    <section class="nvx-sc-hero">
+      <h1 class="nvx-sc-title">{{ c.titolo }}</h1>
+      <p class="nvx-sc-sub">{{ c.sottotitolo }}</p>
+    </section>
+
+    <section class="nvx-sc-section">
+      <div class="nvx-sc-grid">
+        @for (p of c.piani; track p.nome) {
+          <div class="nvx-sc-plan" [class.nvx-sc-plan-evidenza]="p.evidenza">
+            <h3>{{ p.nome }}</h3>
+            <div class="nvx-sc-muted">{{ p.descrizione }}</div>
+            <div class="nvx-sc-price">{{ p.prezzo }}<small>{{ p.periodo }}</small></div>
+            <ul>
+              @for (f of p.caratteristiche; track f) {
+                <li><ion-icon name="checkmark-circle-outline"></ion-icon>{{ f }}</li>
+              }
+            </ul>
+            <ion-button shape="round" expand="block" [fill]="p.evidenza ? 'solid' : 'outline'" (click)="vai(p.url ?? '/register')">{{ p.cta }}</ion-button>
+          </div>
+        }
+      </div>
+      <p class="nvx-sc-note">{{ c.nota }}</p>
+    </section>
+
+    @if (c.domande.length > 0) {
+      <section class="nvx-sc-section">
+        <h2 class="nvx-sc-section-title">Domande frequenti</h2>
+        <ion-accordion-group class="nvx-sc-faq">
+          @for (d of c.domande; track d.domanda) {
+            <ion-accordion [value]="d.domanda" toggleIcon="chevron-down" toggleIconSlot="end">
+              <ion-item slot="header" lines="none">
+                <ion-label class="ion-text-wrap">{{ d.domanda }}</ion-label>
+              </ion-item>
+              <div slot="content" class="nvx-sc-faq-risposta">{{ d.risposta }}</div>
+            </ion-accordion>
+          }
+        </ion-accordion-group>
+      </section>
+    }
+
+  </div>
+  <app-showcase-footer></app-showcase-footer>
+</ion-content>

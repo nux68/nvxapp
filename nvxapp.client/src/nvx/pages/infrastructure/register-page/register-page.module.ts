@@ -1,10 +1,11 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular/lazy';
 import { RouterModule } from '@angular/router';
-import { HomePageComponent } from './home-page.component';
+import { RegisterPageComponent } from './register-page.component';
 import { SharedComponentInfrastructureModule } from '../../../shared/shared-component-infrastructure.module';
+import { SharedShowcaseModule } from '../../../shared/shared-showcase.module';
 
 
 
@@ -12,15 +13,17 @@ import { SharedComponentInfrastructureModule } from '../../../shared/shared-comp
   imports: [
     CommonModule,
     FormsModule,
+    ReactiveFormsModule,
     IonicModule,
     RouterModule.forChild([
       {
         path: '',
-        component: HomePageComponent
+        component: RegisterPageComponent
       }
     ]),
-    SharedComponentInfrastructureModule
+    SharedComponentInfrastructureModule,
+    SharedShowcaseModule
   ],
-  declarations: [HomePageComponent]
+  declarations: [RegisterPageComponent]
 })
-export class HomePageModule { }
+export class RegisterPageModule { }

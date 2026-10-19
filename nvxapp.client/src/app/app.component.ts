@@ -10,6 +10,7 @@ import { MainMenuInfrastructureService } from '../nvx/Utility/infrastructure/mai
 import { LongJobNotifierService } from '../nvx/Utility/infrastructure/long-job-notifier.service';
 import { JobNotifierService } from '../nvx/Utility/infrastructure/job-notifier.service';
 import { ThemeService } from '../nvx/Utility/infrastructure/theme.service';
+import { ShowcaseService } from '../nvx/Utility/infrastructure/showcase.service';
 
 
 @Component({
@@ -34,6 +35,8 @@ export class AppComponent implements OnInit, DoCheck {
   public groupedAdminMenu: GroupMainMenuItem[] = [];
   public groupedSuperUserMenu: GroupMainMenuItem[] = [];
   public groupedUserMenu: GroupMainMenuItem[] = [];
+  // menu dello showcase, mostrato al posto degli altri prima del login
+  public groupedShowcaseMenu: GroupMainMenuItem[] = [];
   public selectedMenu: string[] = [(this.mainMenuInfrastructureService.GetMenuHeaderMenu(this.mainMenuService.Pages4User)).title];
   
   IsInGroupCompanyAdmin: boolean = false;
@@ -67,15 +70,14 @@ export class AppComponent implements OnInit, DoCheck {
               private mainMenuInfrastructureService: MainMenuInfrastructureService,
               private longJobNotifierService: LongJobNotifierService,
               private jobNotifierService: JobNotifierService,
-              private themeService: ThemeService // applica il tema chiaro/scuro salvato fin dall'avvio
+              private themeService: ThemeService, // applica il tema chiaro/scuro salvato fin dall'avvio
+              public showcaseService: ShowcaseService
               )
   {
 
     this.loadPages();
+    this.groupedShowcaseMenu = this.groupMenu(this.showcaseService.Pages);
 
-    
-
-    
   }
 
   // voci di menu per ruolo; quelle degli applicativi solo se attivi (MainMenuService)
@@ -248,8 +250,8 @@ export class AppComponent implements OnInit, DoCheck {
 
     switch (component) {
 
-      case 'HomePageComponent':
-        return true;
+      case 'DashboardPageComponent':
+        return this.authService.Token != null;
         break;
 
       case 'LoginPageComponent':
