@@ -58,6 +58,15 @@ namespace nvxapp.server.Controllers
 
         [Authorize]
         [HttpPost]
+        [Route("NotaSpesaUpdate")]
+        public async Task<GenericResult<Dip_GG_Richiesta_NotaSpesaUpdate_OutModel>> NotaSpesaUpdate(GenericRequest<Dip_GG_Richiesta_NotaSpesaUpdate_InModel> inModel)
+        {
+            // modifica della nota spese da parte del dipendente, finche' non e' approvata
+            return await _dip_GG_RichiestaService.NotaSpesaUpdate(inModel, false);
+        }
+
+        [Authorize]
+        [HttpPost]
         [Route("SetState")]
         public async Task<GenericResult<Dip_GG_Richiesta_SetState_OutModel>> SetState(GenericRequest<Dip_GG_Richiesta_SetState_InModel> inModel)
         {

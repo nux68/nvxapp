@@ -18,7 +18,7 @@ export class TipoRichiestaToLongTextPipe implements PipeTransform {
       case TipoRichiesta.Giustificativo:
         return 'Giustificativo';
       case TipoRichiesta.NotaSpesa:
-        return 'NotaSpesa';
+        return 'Nota spese';
 
       default:
         return '';

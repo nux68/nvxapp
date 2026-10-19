@@ -1,0 +1,137 @@
+.ns-raggruppa {
+  display: flex;
+  align-items: center;
+  padding: 8px 0;
+}
+
+.ns-totale-generale {
+  text-align: right;
+  margin: 12px 4px 4px;
+}
+
+// un gruppo (dipendente o tipo di spesa) con il suo totale e le spese
+.ns-gruppo {
+  margin-top: 12px;
+}
+
+.ns-gruppo-titolo {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 4px;
+  border-bottom: 2px solid var(--ion-color-step-200, rgba(127, 127, 127, 0.3));
+}
+
+.ns-riga {
+  cursor: pointer;
+  display: grid;
+  grid-template-columns: 90px 170px 1fr auto 100px;
+  gap: 4px 12px;
+  align-items: center;
+  padding: 6px 4px;
+  border-bottom: 1px solid var(--ion-color-step-100, rgba(127, 127, 127, 0.15));
+
+  .ns-data, .ns-chi {
+    color: var(--ion-color-medium);
+    font-size: 0.9em;
+  }
+
+  .ns-descr small {
+    color: var(--ion-color-medium);
+  }
+
+  .ns-importo {
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .ns-allegati {
+    grid-column: 1 / -1;
+  }
+
+  @media (max-width: 767px) {
+    grid-template-columns: 1fr auto;
+
+    .ns-descr {
+      grid-column: 1 / -1;
+    }
+  }
+}
+
+// dialog di dettaglio della nota spese
+.ns-modal {
+  --width: min(760px, 96vw);
+  --height: min(640px, 92vh);
+  --border-radius: 16px;
+}
+
+.ns-dett-testata {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+
+  div {
+    display: flex;
+    flex-direction: column;
+  }
+
+  small {
+    color: var(--ion-color-medium);
+  }
+}
+
+.ns-dett-spesa {
+  display: grid;
+  grid-template-columns: 90px 150px 1fr auto;
+  gap: 4px 12px;
+  align-items: center;
+  padding: 8px 0;
+  border-top: 1px solid var(--ion-color-step-150, rgba(127, 127, 127, 0.2));
+
+  .ns-data, .ns-chi, .ns-senza-allegati {
+    color: var(--ion-color-medium);
+    font-size: 0.9em;
+  }
+
+  .ns-importo {
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .ns-allegati, .ns-senza-allegati {
+    grid-column: 1 / -1;
+  }
+
+  @media (max-width: 575px) {
+    grid-template-columns: 1fr auto;
+
+    .ns-descr {
+      grid-column: 1 / -1;
+    }
+  }
+}
+
+.ns-dett-totale {
+  text-align: right;
+  padding: 10px 0;
+  border-top: 2px solid var(--ion-color-step-200, rgba(127, 127, 127, 0.3));
+}
+
+.ns-dett-pulsanti {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 0 8px;
+}
+
+.ns-allegati ion-chip {
+  cursor: pointer;
+
+  ion-label {
+    max-width: 220px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}

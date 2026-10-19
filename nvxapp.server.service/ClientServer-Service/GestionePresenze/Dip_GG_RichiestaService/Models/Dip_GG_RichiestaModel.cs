@@ -51,9 +51,39 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
         public required bool AllDay { get; set; } = false;
         public required int IdPar_Giustificativi { get; set; } = 0;
     }
+    /*
+     Nota spese: la richiesta e' il contenitore delle spese (dettagli). All'invio arrivano spese e allegati;
+     salvati i dettagli (Dip_GG_NotaSpesa e Dip_GG_NotaSpesa_Allegato), in Dati resta solo il riepilogo.
+    */
     public class Dip_GG_Richiesta_Body_NotaSpesa
     {
+        public string Descrizione { get; set; } = string.Empty;
+        public decimal Totale { get; set; }
+        public int NumeroSpese { get; set; }
 
+        /// <summary>solo nell'invio: spese con i loro allegati</summary>
+        public List<Dip_GG_Richiesta_Body_NotaSpesa_Spesa>? Spese { get; set; }
+    }
+
+    public class Dip_GG_Richiesta_Body_NotaSpesa_Spesa
+    {
+        /// <summary>solo nella modifica: spesa gia' salvata da aggiornare (null = nuova spesa)</summary>
+        public int? Id { get; set; }
+        public DateTime Data { get; set; }
+        public int IdPar_TipoSpesa { get; set; }
+        public decimal Importo { get; set; }
+        public string? Descrizione { get; set; }
+        public List<Dip_GG_Richiesta_Body_NotaSpesa_Allegato>? Allegati { get; set; }
+    }
+
+    public class Dip_GG_Richiesta_Body_NotaSpesa_Allegato
+    {
+        /// <summary>solo nella modifica: allegato gia' salvato da tenere (senza contenuto); null = nuovo allegato</summary>
+        public int? Id { get; set; }
+        public string NomeFile { get; set; } = string.Empty;
+        public string ContentType { get; set; } = string.Empty;
+        /// <summary>contenuto del file in base64</summary>
+        public string Contenuto { get; set; } = string.Empty;
     }
 
 
@@ -89,6 +119,18 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
         public Dip_GG_RichiestaModel? Dip_GG_Richiesta { get; set; }
         public Boolean FromHR { get; set; }
     }
+    // modifica di una nota spese non ancora approvata (dipendente che l'ha inviata)
+    public class Dip_GG_Richiesta_NotaSpesaUpdate_InModel
+    {
+        public int IdDip_GG_Richiesta { get; set; }
+        /// <summary>corpo della nota spese (Dip_GG_Richiesta_Body_NotaSpesa) con tutte le spese da tenere</summary>
+        public string Dati { get; set; } = string.Empty;
+    }
+    public class Dip_GG_Richiesta_NotaSpesaUpdate_OutModel : ModelResult
+    {
+        public Dip_GG_RichiestaModel? Dip_GG_Richiesta { get; set; }
+    }
+
     public class Dip_GG_Richiesta_Send_OutModel : ModelResult
     {
         public Dip_GG_Richiesta_Send_OutModel()

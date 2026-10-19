@@ -20,5 +20,19 @@ namespace nvxapp.server.data.Entities.Tenant
         [ForeignKey("IdDip_GG_Richiesta")]
         public virtual Dip_GG_Richiesta? Dip_GG_RichiestaNavigation { get; set; }
 
+        // spesa: tipo, importo e descrizione; i documenti sono in Dip_GG_NotaSpesa_Allegato
+        [Required]
+        public required int IdPar_TipoSpesa { get; set; }
+        [ForeignKey("IdPar_TipoSpesa")]
+        public virtual Par_TipoSpesa? Par_TipoSpesaNavigation { get; set; }
+
+        [Column(TypeName = "numeric(10,2)")]
+        public decimal Importo { get; set; }
+
+        [MaxLength(200)]
+        public string? Descrizione { get; set; }
+
+        public ICollection<Dip_GG_NotaSpesa_Allegato>? Dip_GG_NotaSpesa_Allegato { get; set; }
+
     }
 }

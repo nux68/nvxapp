@@ -24,6 +24,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
         private readonly IPar_ProfiloOrarioRepository _par_ProfiloOrarioRepository;
         private readonly IPar_ProfiloOrarioGGRepository _par_ProfiloOrarioGGRepository;
         private readonly IPar_ExportCauRepository _par_ExportCauRepository;
+        private readonly IPar_TipoSpesaRepository _par_TipoSpesaRepository;
         private readonly IPar_ExportCau_CausaliRepository _par_ExportCau_CausaliRepository;
         private readonly IPar_FestivitaRepository _par_FestivitaRepository;
 
@@ -35,7 +36,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                                                 IPar_ProfiloOrarioGGRepository par_ProfiloOrarioGGRepository,
                                                 IPar_ExportCauRepository par_ExportCauRepository,
                                                 IPar_ExportCau_CausaliRepository par_ExportCau_CausaliRepository,
-                                                IPar_FestivitaRepository par_FestivitaRepository)
+                                                IPar_FestivitaRepository par_FestivitaRepository,
+                                                IPar_TipoSpesaRepository par_TipoSpesaRepository)
         {
             _par_CausaliRepository = par_CausaliRepository;
             _par_GiustificativiRepository = par_GiustificativiRepository;
@@ -46,6 +48,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
             _par_ExportCauRepository = par_ExportCauRepository;
             _par_ExportCau_CausaliRepository = par_ExportCau_CausaliRepository;
             _par_FestivitaRepository = par_FestivitaRepository;
+            _par_TipoSpesaRepository = par_TipoSpesaRepository;
         }
 
         public async Task InitParametri(int IdAz_Anagrafica)
@@ -224,6 +227,26 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                     Descrizione = descrizione,
                     TipoFestivita = tipo,
                     Data = data
+                });
+            }
+
+            // Tipi di spesa delle note spese
+            foreach (var (codice, descrizione) in new[]
+            {
+                ("VITTO",  "Vitto"),
+                ("ALLOGG", "Alloggio"),
+                ("TRASP",  "Trasporti (treno, aereo, taxi)"),
+                ("CARB",   "Carburante"),
+                ("PEDAG",  "Pedaggi e parcheggi"),
+                ("RIMBGEN", "Rimborso generico"),
+                ("ALTRO",  "Altro"),
+            })
+            {
+                await _par_TipoSpesaRepository.UpsertAsync(new Par_TipoSpesa
+                {
+                    IdAz_Anagrafica = IdAz_Anagrafica,
+                    Codice = codice,
+                    Descrizione = descrizione
                 });
             }
 

@@ -37,6 +37,10 @@ export class MainMenuAttendanceTrackingService implements iMainMenuService {
       { menuType: MenuType.MenuItem, zorder: 206000, group: 1, title: 'Profili Orari', roles: ['CompanyPowerAdmin'], component: "ProfiloOrarioListPageComponent", url: '/profiliorarilist', icon: 'timer' },
       { menuType: MenuType.MenuItem, zorder: 206500, group: 1, title: 'Festività', roles: ['CompanyPowerAdmin'], component: "FestivitaListPageComponent", url: '/festivitalist', icon: 'flag' },
       { menuType: MenuType.MenuItem, zorder: 207000, group: 1, title: 'Modelli Export', roles: ['CompanyPowerAdmin'], component: "ExportCauListPageComponent", url: '/exportcaulist', icon: 'hammer' },
+      { menuType: MenuType.MenuItem, zorder: 207500, group: 1, title: 'Tipi spesa', roles: ['CompanyPowerAdmin'], component: "TipoSpesaListPageComponent", url: '/tipospesalist', icon: 'pricetags' },
+
+      { menuType: MenuType.MenuHeader, zorder: 300000, group: 3, title: 'Nota spese', roles: ['CompanyPowerAdmin'], component: '', url: '', icon: '' },
+      { menuType: MenuType.MenuItem, zorder: 301000, group: 3, title: 'Esame spese', roles: ['CompanyPowerAdmin'], component: "NotaSpeseAdminPageComponent", url: '/notaspeseadmin', icon: 'receipt' },
 
 
       { menuType: MenuType.MenuHeader, zorder: 205000, group: 2, title: 'Gestione Commesse', roles: ['CompanyPowerAdmin'], component: '', url: '', icon: '' },
@@ -62,6 +66,10 @@ export class MainMenuAttendanceTrackingService implements iMainMenuService {
       { menuType: MenuType.MenuItem, zorder: 4000, group: 1, title: 'Calendario', component: "TimeSheetUserPageComponent", url: '/usertimesheet', icon: 'calendar-number' },
       { menuType: MenuType.MenuItem, zorder: 5000, group: 1, title: 'Richiesta giustificativo', component: "RequestJustificationUserPageComponent", url: '/requestjustificationuser', icon: 'person' },
       { menuType: MenuType.MenuItem, zorder: 6000, group: 1, title: 'Richiesta timbratura', component: "RequestClockingUserPageComponent", url: '/requestclockinguser', icon: 'person' },
+
+      { menuType: MenuType.MenuHeader, zorder: 7000, group: 2, title: 'Nota spese', roles: ['User'], component: '', url: '', icon: '' },
+      { menuType: MenuType.MenuItem, zorder: 7100, group: 2, title: 'Richiesta rimborso', component: "NotaSpesaRequestUserPageComponent", url: '/notaspesarequestuser', icon: 'wallet' },
+      { menuType: MenuType.MenuItem, zorder: 7200, group: 2, title: 'Le mie note spese', component: "NotaSpeseUserPageComponent", url: '/notaspeseuser', icon: 'receipt' },
     ];
   }
   public get GetWorkingMode(): WorkingMode { return WorkingMode.AttendanceTracking; }

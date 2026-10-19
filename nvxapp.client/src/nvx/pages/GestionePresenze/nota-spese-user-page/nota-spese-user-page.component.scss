@@ -1,0 +1,95 @@
+.ns-azioni {
+  display: flex;
+  justify-content: flex-end;
+  margin: 4px 0 8px;
+}
+
+// una nota spese: riga riassuntiva cliccabile, aperta mostra le spese
+.ns-nota {
+  border-bottom: 1px solid var(--ion-color-step-150, rgba(127, 127, 127, 0.2));
+
+  &.ns-aperta {
+    background: rgba(var(--ion-color-primary-rgb), 0.04);
+  }
+}
+
+.ns-nota-riga {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 4px;
+  cursor: pointer;
+}
+
+.ns-freccia {
+  flex: none;
+  color: var(--ion-color-medium);
+}
+
+.ns-nota-testo {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+
+  strong, small {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  small {
+    color: var(--ion-color-medium);
+  }
+}
+
+.ns-nota-importo {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.ns-dettagli {
+  padding: 0 8px 10px 34px;
+}
+
+.ns-spesa {
+  display: grid;
+  grid-template-columns: 90px 160px 1fr auto;
+  gap: 4px 12px;
+  align-items: center;
+  padding: 6px 0;
+  border-top: 1px dashed var(--ion-color-step-150, rgba(127, 127, 127, 0.2));
+
+  .ns-data, .ns-tipo {
+    color: var(--ion-color-medium);
+    font-size: 0.9em;
+  }
+
+  .ns-importo {
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .ns-allegati {
+    grid-column: 1 / -1;
+  }
+
+  @media (max-width: 575px) {
+    grid-template-columns: 1fr auto;
+
+    .ns-descr {
+      grid-column: 1 / -1;
+    }
+  }
+}
+
+.ns-allegati ion-chip {
+  cursor: pointer;
+
+  ion-label {
+    max-width: 220px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}

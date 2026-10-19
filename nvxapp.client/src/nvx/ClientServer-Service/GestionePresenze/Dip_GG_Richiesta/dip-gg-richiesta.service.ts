@@ -15,7 +15,9 @@ import {
   Dip_GG_Richiesta_SetState_InModel,
   Dip_GG_Richiesta_SetState_OutModel,
   Dip_GG_Richiesta_Get_4Calculation_InModel,
-  Dip_GG_Richiesta_Get_4Calculation_OutModel
+  Dip_GG_Richiesta_Get_4Calculation_OutModel,
+  Dip_GG_Richiesta_NotaSpesaUpdate_InModel,
+  Dip_GG_Richiesta_NotaSpesaUpdate_OutModel
 } from './Models/dip-gg-richiesta-model';
 
 @Injectable({
@@ -61,6 +63,11 @@ export class DipGGRichiestaService {
         )
       );
 
+  }
+
+  /** modifica di una nota spese non ancora approvata */
+  NotaSpesaUpdate(model: GenericRequest<Dip_GG_Richiesta_NotaSpesaUpdate_InModel>): Observable<GenericResult<Dip_GG_Richiesta_NotaSpesaUpdate_OutModel>> {
+    return this.http.post<GenericResult<Dip_GG_Richiesta_NotaSpesaUpdate_OutModel>>(environment.remoteData.apiUri + 'Dip_GG_Richiesta/NotaSpesaUpdate', model);
   }
 
   SetState(model: GenericRequest<Dip_GG_Richiesta_SetState_InModel>): Observable<GenericResult<Dip_GG_Richiesta_SetState_OutModel>> {

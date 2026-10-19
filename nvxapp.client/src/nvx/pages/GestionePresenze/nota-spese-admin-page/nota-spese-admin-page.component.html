@@ -1,0 +1,179 @@
+<app-page-toolbar [title]="title"
+  [showFilter]="false"
+  [showBreadcrumbs]="true">
+</app-page-toolbar>
+
+<ion-content [fullscreen]="true">
+
+  <ion-card>
+    <ion-card-content>
+
+      <app-sedi-reparto-user-selection [showPeriodSelect]="true"
+        [showSediSelect]="false"
+        [showRepartoSelect]="true"
+        [showUserSelect]="true"
+        [singleSelectUser]="false"
+        (periodChange)="onPeriodChange($event)"
+        (allUsersIdChange)="onAllUsersInSelectionChanged($event)">
+      </app-sedi-reparto-user-selection>
+
+      <ion-grid class="ion-no-padding">
+        <ion-row>
+          <ion-col size="12" size-md="4">
+            <ion-item class="nvx-field">
+              <ion-label position="stacked">Tipo di spesa</ion-label>
+              <ion-select [(ngModel)]="idTipoSpesa" interface="popover" (ionChange)="filtriCambiati()">
+                <ion-select-option [value]="0">Tutti</ion-select-option>
+                @for (t of tipiSpesa; track t.id) {
+                  <ion-select-option [value]="t.id">{{ t.descrizione }}</ion-select-option>
+                }
+              </ion-select>
+            </ion-item>
+          </ion-col>
+          <ion-col size="12" size-md="4">
+            <ion-item class="nvx-field">
+              <ion-label position="stacked">Stato</ion-label>
+              <ion-select [(ngModel)]="filtroStato" interface="popover" (ionChange)="filtriCambiati()">
+                <ion-select-option value="valide">In attesa e approvate</ion-select-option>
+                <ion-select-option value="attesa">In attesa di approvazione</ion-select-option>
+                <ion-select-option value="approvate">Approvate</ion-select-option>
+                <ion-select-option value="respinte">Rifiutate o annullate</ion-select-option>
+                <ion-select-option value="tutte">Tutte</ion-select-option>
+              </ion-select>
+            </ion-item>
+          </ion-col>
+          <ion-col size="12" size-md="4" class="ns-raggruppa">
+            <ion-segment [(ngModel)]="raggruppa" (ionChange)="raggruppaSpese()">
+              <ion-segment-button value="dipendente"><ion-label>Per dipendente</ion-label></ion-segment-button>
+              <ion-segment-button value="tipo"><ion-label>Per tipo di spesa</ion-label></ion-segment-button>
+            </ion-segment>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+
+      @if (spese === null) {
+        <ion-spinner></ion-spinner>
+      } @else if (spese.length === 0) {
+        <ion-note>Nessuna spesa nel periodo per la selezione fatta.</ion-note>
+      } @else {
+        <div class="ns-totale-generale">
+          {{ spese.length }} {{ spese.length === 1 ? 'spesa' : 'spese' }} · totale <strong>{{ euro(totale) }}</strong>
+        </div>
+
+        @for (g of gruppi; track g.chiave) {
+          <div class="ns-gruppo">
+            <div class="ns-gruppo-titolo">
+              <strong>{{ g.titolo }}</strong>
+              <span>{{ euro(g.totale) }}</span>
+            </div>
+            @for (s of g.spese; track s.id) {
+              <div class="ns-riga" (click)="apriDettaglio(s)" title="Apri il dettaglio della nota spese">
+                <span class="ns-data">{{ s.data | date:'dd/MM/yyyy' }}</span>
+                <span class="ns-chi">{{ raggruppa === 'dipendente' ? tipo(s.idPar_TipoSpesa) : dipendente(s.idAspNetUsers) }}</span>
+                <span class="ns-descr">
+                  {{ s.descrizione }}
+                  @if (s.richiestaDescrizione) { <small>· {{ s.richiestaDescrizione }}</small> }
+                </span>
+                <ion-badge [color]="coloreStato(s.richiestaStato)">{{ s.richiestaStato | statoRichiestaLongText }}</ion-badge>
+                <span class="ns-importo">{{ euro(s.importo) }}</span>
+                @if (s.allegati.length > 0) {
+                  <div class="ns-allegati">
+                    @for (a of s.allegati; track a.id) {
+                      <ion-chip (click)="apriAllegato(a, $event)">
+                        <ion-icon [name]="a.contentType === 'application/pdf' ? 'document-text-outline' : 'image-outline'"></ion-icon>
+                        <ion-label>{{ a.nomeFile }}</ion-label>
+                      </ion-chip>
+                    }
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        }
+      }
+
+    </ion-card-content>
+  </ion-card>
+
+  <!-- dettaglio della nota spese, con approvazione e rifiuto -->
+  <ion-modal [isOpen]="dettaglioAperto" (didDismiss)="chiudiDettaglio()" class="ns-modal">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>{{ dettaglioRiepilogo.descrizione || 'Nota spese' }}</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="chiudiDettaglio()" aria-label="Chiudi">
+              <ion-icon slot="icon-only" name="close"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="ion-padding">
+        @if (!dettaglioRichiesta) {
+          <ion-spinner></ion-spinner>
+        } @else {
+          <div class="ns-dett-testata">
+            <div>
+              <strong>{{ dipendente(dettaglioIdAspNetUsers) }}</strong>
+              <small>
+                {{ dettaglioRichiesta.data }}@if (dettaglioRichiesta.dataA !== dettaglioRichiesta.data) { – {{ dettaglioRichiesta.dataA }} }
+                · {{ dettaglioSpese.length }} {{ dettaglioSpese.length === 1 ? 'spesa' : 'spese' }}
+              </small>
+            </div>
+            <ion-badge [color]="statoNota(dettaglioRichiesta).colore">
+              {{ statoNota(dettaglioRichiesta).testo ?? (dettaglioRichiesta.richiestaStato | statoRichiestaLongText) }}
+            </ion-badge>
+          </div>
+
+          @for (s of dettaglioSpese; track s.id) {
+            <div class="ns-dett-spesa">
+              <span class="ns-data">{{ s.data | date:'dd/MM/yyyy' }}</span>
+              <span class="ns-chi">{{ tipo(s.idPar_TipoSpesa) }}</span>
+              <span class="ns-descr">{{ s.descrizione }}</span>
+              <span class="ns-importo">{{ euro(s.importo) }}</span>
+              @if (s.allegati.length > 0) {
+                <div class="ns-allegati">
+                  @for (a of s.allegati; track a.id) {
+                    <ion-chip (click)="apriAllegato(a, $event)">
+                      <ion-icon [name]="a.contentType === 'application/pdf' ? 'document-text-outline' : 'image-outline'"></ion-icon>
+                      <ion-label>{{ a.nomeFile }}</ion-label>
+                    </ion-chip>
+                  }
+                </div>
+              } @else {
+                <small class="ns-senza-allegati">Nessun allegato</small>
+              }
+            </div>
+          }
+
+          <div class="ns-dett-totale">Totale <strong>{{ euro(dettaglioTotale) }}</strong></div>
+        }
+      </ion-content>
+
+      <ion-footer>
+        <ion-toolbar>
+          <div class="ns-dett-pulsanti">
+            @if (puoApprovare) {
+              <ion-button size="small" fill="outline" shape="round" (click)="btnApprova.event(dettaglioRichiesta)" color="{{btnApprova.color}}">
+                <ion-icon name="{{btnApprova.image}}"></ion-icon>
+                &nbsp;{{ dettaglioRevoca ? btnApprova.text + ' revoca' : btnApprova.text }}
+              </ion-button>
+            }
+            @if (puoRifiutare) {
+              <ion-button size="small" fill="outline" shape="round" (click)="btnRifiuta.event(dettaglioRichiesta)" color="{{btnRifiuta.color}}">
+                <ion-icon name="{{btnRifiuta.image}}"></ion-icon>
+                &nbsp;{{ dettaglioRevoca ? btnRifiuta.text + ' revoca' : btnRifiuta.text }}
+              </ion-button>
+            }
+            <ion-button size="small" fill="outline" shape="round" (click)="btnAnnulla.event(dettaglioRichiesta)" color="{{btnAnnulla.color}}">
+              <ion-icon name="{{btnAnnulla.image}}"></ion-icon>
+              &nbsp;{{btnAnnulla.text}}
+            </ion-button>
+          </div>
+        </ion-toolbar>
+      </ion-footer>
+    </ng-template>
+  </ion-modal>
+
+</ion-content>

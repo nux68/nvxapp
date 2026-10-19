@@ -35,6 +35,27 @@ namespace nvxapp.server.Controllers
             return res;
         }
 
+        // spese (con l'elenco degli allegati) di una richiesta di nota spese
+        [Authorize]
+        [HttpPost]
+        [Route("Get4Richiesta")]
+        public async Task<GenericResult<Dip_GG_NotaSpesa_Get4Richiesta_OutModel>> Get4Richiesta(GenericRequest<Dip_GG_NotaSpesa_Get4Richiesta_InModel> inModel)
+            => await _dip_GG_NotaSpesaService.Get4Richiesta(inModel, false);
+
+        // ricerca delle spese per dipendente / tipo di spesa (CompanyPowerAdmin)
+        [Authorize]
+        [HttpPost]
+        [Route("Search")]
+        public async Task<GenericResult<Dip_GG_NotaSpesa_Search_OutModel>> Search(GenericRequest<Dip_GG_NotaSpesa_Search_InModel> inModel)
+            => await _dip_GG_NotaSpesaService.Search(inModel, false);
+
+        // contenuto di un allegato (base64)
+        [Authorize]
+        [HttpPost]
+        [Route("AllegatoGet")]
+        public async Task<GenericResult<Dip_GG_NotaSpesa_Allegato_Get_OutModel>> AllegatoGet(GenericRequest<Dip_GG_NotaSpesa_Allegato_Get_InModel> inModel)
+            => await _dip_GG_NotaSpesaService.AllegatoGet(inModel, false);
+
         
 
     }

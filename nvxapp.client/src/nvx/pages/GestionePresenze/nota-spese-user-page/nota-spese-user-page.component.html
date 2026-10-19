@@ -1,0 +1,86 @@
+<app-page-toolbar [title]="title"
+  [showFilter]="false"
+  [showBreadcrumbs]="true">
+</app-page-toolbar>
+
+<ion-content [fullscreen]="true">
+
+  <ion-card>
+    <ion-card-content>
+
+      <!--<div class="ns-azioni">
+        <ion-button shape="round" (click)="nuova()">
+          <ion-icon slot="start" name="add-circle-outline"></ion-icon>
+          Nuova nota spese
+        </ion-button>
+      </div>-->
+
+      @if (note === null) {
+        <ion-spinner></ion-spinner>
+      } @else if (note.length === 0) {
+        <ion-note>Non hai ancora inviato note spese.</ion-note>
+      }
+
+      @for (nota of note; track nota.id) {
+        <div class="ns-nota" [class.ns-aperta]="aperta === nota.id">
+          <div class="ns-nota-riga" (click)="apriChiudi(nota)">
+            <ion-icon class="ns-freccia" [name]="aperta === nota.id ? 'chevron-down' : 'chevron-forward'"></ion-icon>
+            <div class="ns-nota-testo">
+              <strong>{{ riepilogo(nota).descrizione || 'Nota spese' }}</strong>
+              <small>
+                {{ nota.data }}@if (nota.dataA !== nota.data) { – {{ nota.dataA }} }
+                · {{ riepilogo(nota).numeroSpese }} {{ riepilogo(nota).numeroSpese === 1 ? 'spesa' : 'spese' }}
+              </small>
+            </div>
+            <div class="ns-nota-importo">{{ euro(riepilogo(nota).totale) }}</div>
+            <ion-badge [color]="stato(nota).colore">
+              {{ stato(nota).testo ?? (nota.richiestaStato | statoRichiestaLongText) }}
+            </ion-badge>
+          </div>
+
+          @if (aperta === nota.id) {
+            <div class="ns-dettagli">
+              @if (!dettagli.has(nota.id)) {
+                <ion-spinner name="dots"></ion-spinner>
+              }
+              @for (spesa of dettagli.get(nota.id); track spesa.id) {
+                <div class="ns-spesa">
+                  <span class="ns-data">{{ spesa.data | date:'dd/MM/yyyy' }}</span>
+                  <span class="ns-tipo">{{ tipo(spesa.idPar_TipoSpesa) }}</span>
+                  <span class="ns-descr">{{ spesa.descrizione }}</span>
+                  <span class="ns-importo">{{ euro(spesa.importo) }}</span>
+                  <div class="ns-allegati">
+                    @for (allegato of spesa.allegati; track allegato.id) {
+                      <ion-chip (click)="apriAllegato(allegato)">
+                        <ion-icon [name]="allegato.contentType === 'application/pdf' ? 'document-text-outline' : 'image-outline'"></ion-icon>
+                        <ion-label>{{ allegato.nomeFile }}</ion-label>
+                      </ion-chip>
+                    }
+                  </div>
+                </div>
+              }
+              @if (puoModificare(nota) || puoAnnullare(nota)) {
+                <div class="ns-azioni">
+                  @if (puoModificare(nota)) {
+                    <ion-button fill="outline" size="small" shape="round" (click)="modifica(nota)">
+                      <ion-icon slot="start" name="create-outline"></ion-icon>
+                      Modifica
+                    </ion-button>
+                  }
+                  @if (puoAnnullare(nota)) {
+                    <ion-button fill="outline" size="small" shape="round" color="danger" (click)="annulla(nota)">
+                      <ion-icon slot="start" name="close-circle-outline"></ion-icon>
+                      {{ nota.richiestaStato === 6 ? 'Chiedi revoca' : 'Annulla nota' }}
+                    </ion-button>
+                  }
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+
+    </ion-card-content>
+  </ion-card>
+
+</ion-content>

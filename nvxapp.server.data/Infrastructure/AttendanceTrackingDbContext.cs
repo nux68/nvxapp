@@ -50,6 +50,8 @@ namespace nvxapp.server.data.Infrastructure
         public virtual DbSet<Dip_GG_Giustificativi> Dip_GG_Giustificativi { get; set; }
         public virtual DbSet<Dip_GG_Timbratura> Dip_GG_Timbrature { get; set; }
         public virtual DbSet<Dip_GG_NotaSpesa> Dip_GG_NotaSpese { get; set; }
+        public virtual DbSet<Dip_GG_NotaSpesa_Allegato> Dip_GG_NotaSpesa_Allegato { get; set; }
+        public virtual DbSet<Par_TipoSpesa> Par_TipoSpesa { get; set; }
         public virtual DbSet<Dip_GG_Richiesta> Dip_GG_Richieste { get; set; }
         public virtual DbSet<Dip_GG_Causali> Dip_GG_Causali { get; set; }
 
@@ -208,6 +210,27 @@ namespace nvxapp.server.data.Infrastructure
                 .HasOne(t_padre => t_padre.Dip_GG_RichiestaNavigation)
                 .WithMany(t_figlio => t_figlio.Dip_GG_NotaSpesa)
                 .HasForeignKey(key_esterna => key_esterna.IdDip_GG_Richiesta)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // un tipo di spesa usato da qualche spesa non si puo' cancellare
+            modelBuilder.Entity<Dip_GG_NotaSpesa>()
+                .HasOne(t_padre => t_padre.Par_TipoSpesaNavigation)
+                .WithMany(t_figlio => t_figlio.Dip_GG_NotaSpesa)
+                .HasForeignKey(key_esterna => key_esterna.IdPar_TipoSpesa)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            /* Dip_GG_NotaSpesa_Allegato */
+            modelBuilder.Entity<Dip_GG_NotaSpesa_Allegato>()
+                .HasOne(t_padre => t_padre.Dip_GG_NotaSpesaNavigation)
+                .WithMany(t_figlio => t_figlio.Dip_GG_NotaSpesa_Allegato)
+                .HasForeignKey(key_esterna => key_esterna.IdDip_GG_NotaSpesa)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            /* Par_TipoSpesa */
+            modelBuilder.Entity<Par_TipoSpesa>()
+                .HasOne(t_padre => t_padre.Az_AnagraficaNavigation)
+                .WithMany()
+                .HasForeignKey(key_esterna => key_esterna.IdAz_Anagrafica)
                 .OnDelete(DeleteBehavior.Cascade);
 
 

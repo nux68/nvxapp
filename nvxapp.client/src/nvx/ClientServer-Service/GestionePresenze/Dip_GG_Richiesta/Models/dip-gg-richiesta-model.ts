@@ -40,7 +40,39 @@ export class Dip_GG_Richiesta_Body_Giustificativo {
   allDay!: boolean;
   idPar_Giustificativi!: number;
 }
+/*
+ Nota spese: la richiesta contiene le spese (dettagli). All'invio si mandano spese e allegati;
+ il server salva i dettagli e in "dati" lascia solo il riepilogo (Descrizione, Totale, NumeroSpese).
+*/
 export class Dip_GG_Richiesta_Body_NotaSpesa {
+  descrizione: string = '';
+  totale?: number;
+  numeroSpese?: number;
+  spese?: Dip_GG_Richiesta_Body_NotaSpesa_Spesa[];
+}
+export class Dip_GG_Richiesta_Body_NotaSpesa_Spesa {
+  id?: number | null = null;     // solo in modifica: spesa gia' salvata
+  data: string = '';             // "YYYY-MM-DD"
+  idPar_TipoSpesa: number = 0;
+  importo: number = 0;
+  descrizione: string = '';
+  allegati: Dip_GG_Richiesta_Body_NotaSpesa_Allegato[] = [];
+}
+export class Dip_GG_Richiesta_Body_NotaSpesa_Allegato {
+  id?: number | null = null;     // solo in modifica: allegato gia' salvato (senza contenuto)
+  nomeFile: string = '';
+  contentType: string = '';
+  contenuto: string = '';        // base64
+}
+
+/** Riepilogo di una nota spese dal campo "dati" della richiesta (il server lo scrive con le maiuscole). */
+export function riepilogoNotaSpesa(dati: string | null | undefined): { descrizione: string, totale: number, numeroSpese: number } {
+  try {
+    const d = JSON.parse(dati ?? '{}');
+    return { descrizione: d.Descrizione ?? d.descrizione ?? '', totale: d.Totale ?? d.totale ?? 0, numeroSpese: d.NumeroSpese ?? d.numeroSpese ?? 0 };
+  } catch {
+    return { descrizione: '', totale: 0, numeroSpese: 0 };
+  }
 }
 
 
@@ -93,6 +125,21 @@ export class Dip_GG_Richiesta_GetAll4Admin_OutModel extends ModelResult {
 
 }
 
+
+// modifica di una nota spese non ancora approvata (dipendente che l'ha inviata)
+export class Dip_GG_Richiesta_NotaSpesaUpdate_InModel {
+  public idDip_GG_Richiesta: number = 0;
+  public dati: string = '';
+}
+export class Dip_GG_Richiesta_NotaSpesaUpdate_OutModel extends ModelResult {
+  public dip_GG_Richiesta: Dip_GG_RichiestaModel | null = null;
+}
+
+/** Nota spese ancora modificabile dal dipendente: non approvata, non chiusa e senza revoca. */
+export function notaSpesaModificabile(nota: Dip_GG_RichiestaModel | null | undefined): boolean {
+  return !!nota && nota.revocaStato == null &&
+    [StatoRichiesta.Immessa, StatoRichiesta.ApprovazioneInCorso, StatoRichiesta.ParzialmenteApprovata].includes(nota.richiestaStato);
+}
 
 export class Dip_GG_Richiesta_Send_InModel {
   public excludeRicalc: boolean;

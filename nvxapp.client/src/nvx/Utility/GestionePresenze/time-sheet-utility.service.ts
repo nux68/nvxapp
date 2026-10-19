@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Dip_GG_Richiesta_Body_Giustificativo, Dip_GG_Richiesta_Body_Timbratura, Dip_GG_RichiestaModel, TipoRichiesta } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/Models/dip-gg-richiesta-model';
+import { Dip_GG_Richiesta_Body_Giustificativo, Dip_GG_Richiesta_Body_Timbratura, Dip_GG_RichiestaModel, riepilogoNotaSpesa, TipoRichiesta } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/Models/dip-gg-richiesta-model';
 import { SharedParameterGestionePresenzeService } from '../../shared/shared-parameter-gestione-presenze.service';
 
 @Injectable({
@@ -45,8 +45,10 @@ export class TimeSheetUtilityService {
           }
 
           break;
-        case TipoRichiesta.NotaSpesa:
-          break;
+        case TipoRichiesta.NotaSpesa: {
+          const nota = riepilogoNotaSpesa(item.dati);
+          return `${nota.descrizione} € ${nota.totale.toFixed(2).replace('.', ',')}`.trim();
+        }
       }
 
 

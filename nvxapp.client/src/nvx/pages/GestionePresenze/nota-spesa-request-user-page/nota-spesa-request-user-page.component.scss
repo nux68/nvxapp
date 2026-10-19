@@ -1,0 +1,46 @@
+// una spesa: riquadro con data, tipo, importo, descrizione e allegati
+.ns-spesa {
+  border: 1px solid var(--ion-color-step-150, rgba(127, 127, 127, 0.25));
+  border-radius: 12px;
+  padding: 8px 12px 12px;
+  margin: 8px 0 12px;
+}
+
+.ns-spesa-titolo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 36px;
+}
+
+.ns-allegati {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  margin-top: 8px;
+
+  ion-chip ion-label {
+    max-width: 220px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+// allegato gia' salvato: si apre con un clic
+.ns-apribile {
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.ns-totale {
+  text-align: right;
+  font-size: 1.1em;
+  margin: 8px 4px;
+}
+
+.ns-nota {
+  display: block;
+  margin-top: 8px;
+}

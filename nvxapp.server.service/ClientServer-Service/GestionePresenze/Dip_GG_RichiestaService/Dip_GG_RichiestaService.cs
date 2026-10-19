@@ -66,6 +66,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
         private readonly IDip_GG_TimbraturaRepository _dip_GG_TimbraturaRepository;
         private readonly IDip_GG_GiustificativiRepository _dip_GG_GiustificativiRepository;
         private readonly IDip_GG_NotaSpesaRepository _dip_GG_NotaSpesaRepository;
+        private readonly IDip_GG_NotaSpesa_AllegatoRepository _dip_GG_NotaSpesa_AllegatoRepository;
+        private readonly IPar_TipoSpesaRepository _par_TipoSpesaRepository;
 
         private readonly IPar_GiustificativiRepository _par_GiustificativiRepository;
         private readonly IContatoriService _contatoriService;
@@ -93,6 +95,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                                   IDip_GG_RichiestaRepository dip_GG_RichiestaRepository,
                                   IDip_GG_TimbraturaRepository dip_GG_TimbraturaRepository,
                                   IDip_GG_NotaSpesaRepository dip_GG_NotaSpesaRepository,
+                                  IDip_GG_NotaSpesa_AllegatoRepository dip_GG_NotaSpesa_AllegatoRepository,
+                                  IPar_TipoSpesaRepository par_TipoSpesaRepository,
                                   ITimeSheet_EngineService_OnlyCalculate timeSheet_EngineService,
                                   IDip_GG_GiustificativiRepository dip_GG_GiustificativiRepository,
                                   IPar_GiustificativiRepository par_GiustificativiRepository,
@@ -107,6 +111,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
             _dip_GG_TimbraturaRepository = dip_GG_TimbraturaRepository;
             _dip_GG_GiustificativiRepository = dip_GG_GiustificativiRepository;
             _dip_GG_NotaSpesaRepository = dip_GG_NotaSpesaRepository;
+            _dip_GG_NotaSpesa_AllegatoRepository = dip_GG_NotaSpesa_AllegatoRepository;
+            _par_TipoSpesaRepository = par_TipoSpesaRepository;
             _dip_AnagraficaRepository = dip_AnagraficaRepository;
             _dip_RapportoLavoroRepository = dip_RapportoLavoroRepository;
             _az_SediRepartoUserRepository = az_SediRepartoUserRepository;
@@ -201,6 +207,32 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                     dip_GG_Richiesta.IdDip_RapportoLavoro = user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.Id;
 
                     dip_GG_Richiesta.RichiestaStato = model.Data.FromHR ? StatoRichiesta.Approvata : StatoRichiesta.Immessa;
+
+                    // nota spese: le spese (con gli allegati) arrivano nel corpo della richiesta; si controllano
+                    // e il periodo della richiesta va dalla prima all'ultima spesa
+                    Dip_GG_Richiesta_Body_NotaSpesa? notaSpesa = null;
+                    if (dip_GG_Richiesta.RichiestaTipo == TipoRichiesta.NotaSpesa)
+                    {
+                        try { notaSpesa = string.IsNullOrEmpty(dip_GG_Richiesta.Dati) ? null : JsonConvert.DeserializeObject<Dip_GG_Richiesta_Body_NotaSpesa>(dip_GG_Richiesta.Dati); }
+                        catch { notaSpesa = null; }
+
+                        int.TryParse(this.CurrentCompany, out int idCompanyNota);
+                        var aziendaNota = await _gestionePresenzeUserUtility.Get_AzAna_AzSedi_AzReparto_Az_Cfg(idCompanyNota, true);
+                        var tipiSpesa = _par_TipoSpesaRepository.FindAll(x => x.IdAz_Anagrafica == (aziendaNota.az_Anagrafica != null ? aziendaNota.az_Anagrafica.Id : 0))
+                                                                .Select(x => x.Id).ToList();
+
+                        var erroreNota = Dip_GG_NotaSpesaService.Dip_GG_NotaSpesaService.ValidaNotaSpesa(notaSpesa, tipiSpesa);
+                        if (erroreNota == null && notaSpesa!.Spese!.Any(s => s.Id != null || (s.Allegati ?? new()).Any(a => a.Id != null)))
+                            erroreNota = "Una nuova nota spese non puo' riferirsi a spese o allegati gia' salvati.";
+                        if (erroreNota != null)
+                        {
+                            retVal.Messages.Add(new Message(erroreNota, MessageType.Exception));
+                            return retVal;
+                        }
+
+                        dip_GG_Richiesta.Data = notaSpesa!.Spese!.Min(x => x.Data).Date;
+                        dip_GG_Richiesta.DataA = notaSpesa.Spese!.Max(x => x.Data).Date;
+                    }
 
                     // dal client non si movimentano i giorni fuori dal rapporto di lavoro (le chiamate interne del motore sono gia' nel rapporto)
                     if (!isSubProcess)
@@ -326,10 +358,13 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
 
                                     break;
                                 case TipoRichiesta.NotaSpesa:
+                                    dip_GG_Richiesta = await Add_Dip_GG_NotaSpesa(dip_GG_Richiesta, notaSpesa!);
+                                    retVal.Dip_GG_Richiesta[retVal.Dip_GG_Richiesta.Count - 1] = _mapper.Map<Dip_GG_RichiestaModel>(dip_GG_Richiesta);
                                     break;
                             }
 
-                            if(!model.Data.ExcludeRicalc)
+                            // la nota spese non tocca il cartellino
+                            if(!model.Data.ExcludeRicalc && dip_GG_Richiesta.RichiestaTipo != TipoRichiesta.NotaSpesa)
                                 await CalculateGiorno(dip_GG_Richiesta.IdDip_RapportoLavoro, dip_GG_Richiesta.Data);
 
                         }
@@ -349,6 +384,164 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                 // Nessun 'await' qui
                 await Task.Delay(DelayAsyncMethod);
 
+                return retVal;
+            }, isSubProcess);
+        }
+
+        /// <summary>
+        /// Modifica di una nota spese da parte del dipendente che l'ha inviata, finche' non e' approvata
+        /// (immessa o in approvazione, senza revoca). Le spese mandate con Id si aggiornano, quelle nuove si
+        /// aggiungono, quelle assenti si tolgono; lo stesso per gli allegati. La nota torna "Immessa" e le
+        /// approvazioni gia' date si azzerano: chi approva deve rivedere la versione modificata.
+        /// </summary>
+        public virtual async Task<GenericResult<Dip_GG_Richiesta_NotaSpesaUpdate_OutModel>> NotaSpesaUpdate(GenericRequest<Dip_GG_Richiesta_NotaSpesaUpdate_InModel> model, Boolean isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                var retVal = new Dip_GG_Richiesta_NotaSpesaUpdate_OutModel();
+
+                var richiesta = _dip_GG_RichiestaRepository.FindAll(x => x.Id == model.Data.IdDip_GG_Richiesta).FirstOrDefault();
+                if (richiesta == null || richiesta.RichiestaTipo != TipoRichiesta.NotaSpesa)
+                    throw new Exception("Nota spese non trovata.");
+
+                // solo il dipendente che l'ha inviata
+                var utente = await _gestionePresenzeUserUtility.Get_DipAna_DipRapp(this.CurrentUserId, false);
+                bool propria = utente?.dip_Anagrafica != null &&
+                               _dip_RapportoLavoroRepository.FindAll(r => r.Id == richiesta.IdDip_RapportoLavoro && r.IdDip_Anagrafica == utente.dip_Anagrafica.Id).Any();
+                if (!propria)
+                    throw new Exception("Si possono modificare solo le proprie note spese.");
+
+                var modificabile = new[] { StatoRichiesta.Immessa, StatoRichiesta.ApprovazioneInCorso, StatoRichiesta.ParzialmenteApprovata };
+                if (!modificabile.Contains(richiesta.RichiestaStato) || richiesta.RevocaStato != null)
+                {
+                    retVal.Messages.Add(new Message("La nota spese non si puo' piu' modificare: e' gia' approvata, rifiutata o annullata.", MessageType.Exception));
+                    return retVal;
+                }
+
+                Dip_GG_Richiesta_Body_NotaSpesa? notaSpesa;
+                try { notaSpesa = JsonConvert.DeserializeObject<Dip_GG_Richiesta_Body_NotaSpesa>(model.Data.Dati); }
+                catch { notaSpesa = null; }
+
+                int.TryParse(this.CurrentCompany, out int idCompany);
+                var azienda = await _gestionePresenzeUserUtility.Get_AzAna_AzSedi_AzReparto_Az_Cfg(idCompany, true);
+                var tipiSpesa = _par_TipoSpesaRepository.FindAll(x => x.IdAz_Anagrafica == (azienda.az_Anagrafica != null ? azienda.az_Anagrafica.Id : 0)).Select(x => x.Id).ToList();
+
+                var errore = Dip_GG_NotaSpesaService.Dip_GG_NotaSpesaService.ValidaNotaSpesa(notaSpesa, tipiSpesa);
+
+                // le spese e gli allegati con Id devono essere di questa nota
+                var speseSalvate = _dip_GG_NotaSpesaRepository.FindAll(x => x.IdDip_GG_Richiesta == richiesta.Id).ToList();
+                var idSpeseSalvate = speseSalvate.Select(x => x.Id).ToList();
+                var allegatiSalvati = _dip_GG_NotaSpesa_AllegatoRepository.FindAll(x => idSpeseSalvate.Contains(x.IdDip_GG_NotaSpesa))
+                    .Select(x => new { x.Id, x.IdDip_GG_NotaSpesa, x.Dimensione }).ToList();
+                if (errore == null)
+                {
+                    foreach (var spesa in notaSpesa!.Spese!)
+                    {
+                        if (spesa.Id != null && !idSpeseSalvate.Contains(spesa.Id.Value))
+                            errore = "Spesa non appartenente alla nota spese.";
+                        foreach (var a in (spesa.Allegati ?? new()).Where(a => a.Id != null))
+                            if (spesa.Id == null || !allegatiSalvati.Any(x => x.Id == a.Id && x.IdDip_GG_NotaSpesa == spesa.Id))
+                                errore = "Allegato non appartenente alla spesa.";
+                    }
+                }
+                if (errore == null)
+                {
+                    // limite complessivo: allegati tenuti + nuovi
+                    long byteTenuti = notaSpesa!.Spese!.SelectMany(s => s.Allegati ?? new()).Where(a => a.Id != null)
+                                                       .Sum(a => (long)allegatiSalvati.First(x => x.Id == a.Id).Dimensione);
+                    long byteNuovi = notaSpesa.Spese!.SelectMany(s => s.Allegati ?? new()).Where(a => a.Id == null)
+                                                     .Sum(a => (long)(((a.Contenuto ?? string.Empty).Length * 3) / 4));
+                    if (byteTenuti + byteNuovi > Dip_GG_NotaSpesaService.Dip_GG_NotaSpesaService.AllegatiMaxByteRichiesta)
+                        errore = $"Allegati della nota spese oltre i {Dip_GG_NotaSpesaService.Dip_GG_NotaSpesaService.AllegatiMaxByteRichiesta / (1024 * 1024)} MB complessivi.";
+                }
+                if (errore == null)
+                {
+                    var dal = notaSpesa!.Spese!.Min(x => x.Data).Date;
+                    var al = notaSpesa.Spese!.Max(x => x.Data).Date;
+                    errore = _gestionePresenzeUserUtility.VerificaGiorniNelRapporto(richiesta.IdDip_RapportoLavoro, dal, al);
+                }
+                if (errore != null)
+                {
+                    retVal.Messages.Add(new Message(errore, MessageType.Exception));
+                    return retVal;
+                }
+
+                // spese tolte (con i loro allegati)
+                var idTenute = notaSpesa!.Spese!.Where(s => s.Id != null).Select(s => s.Id!.Value).ToList();
+                foreach (var tolta in speseSalvate.Where(s => !idTenute.Contains(s.Id)))
+                    await _dip_GG_NotaSpesaRepository.DeleteAsync(tolta);
+
+                foreach (var spesa in notaSpesa.Spese!)
+                {
+                    Dip_GG_NotaSpesa dettaglio;
+                    if (spesa.Id != null)
+                    {
+                        dettaglio = speseSalvate.First(s => s.Id == spesa.Id);
+                        dettaglio.Data = spesa.Data.Date;
+                        dettaglio.IdPar_TipoSpesa = spesa.IdPar_TipoSpesa;
+                        dettaglio.Importo = Math.Round(spesa.Importo, 2);
+                        dettaglio.Descrizione = spesa.Descrizione?.Trim();
+                        dettaglio.RichiestaStato = StatoRichiesta.Immessa;
+                        dettaglio = await _dip_GG_NotaSpesaRepository.UpsertAsync(dettaglio);
+
+                        // allegati tolti
+                        var allegatiTenuti = (spesa.Allegati ?? new()).Where(a => a.Id != null).Select(a => a.Id!.Value).ToList();
+                        var daTogliere = _dip_GG_NotaSpesa_AllegatoRepository.FindAll(x => x.IdDip_GG_NotaSpesa == dettaglio.Id && !allegatiTenuti.Contains(x.Id)).ToList();
+                        if (daTogliere.Count > 0)
+                            await _dip_GG_NotaSpesa_AllegatoRepository.DeleteRangeAsync(daTogliere);
+                    }
+                    else
+                    {
+                        dettaglio = await _dip_GG_NotaSpesaRepository.UpsertAsync(new Dip_GG_NotaSpesa
+                        {
+                            IdDip_RapportoLavoro = richiesta.IdDip_RapportoLavoro,
+                            IdDip_GG_Richiesta = richiesta.Id,
+                            RichiestaStato = StatoRichiesta.Immessa,
+                            Data = spesa.Data.Date,
+                            IdPar_TipoSpesa = spesa.IdPar_TipoSpesa,
+                            Importo = Math.Round(spesa.Importo, 2),
+                            Descrizione = spesa.Descrizione?.Trim()
+                        });
+                    }
+
+                    // allegati nuovi
+                    foreach (var allegato in (spesa.Allegati ?? new()).Where(a => a.Id == null))
+                    {
+                        var contenuto = Convert.FromBase64String(allegato.Contenuto);
+                        await _dip_GG_NotaSpesa_AllegatoRepository.UpsertAsync(new Dip_GG_NotaSpesa_Allegato
+                        {
+                            IdDip_GG_NotaSpesa = dettaglio.Id,
+                            NomeFile = Path.GetFileName(allegato.NomeFile ?? "allegato"),
+                            ContentType = allegato.ContentType.ToLowerInvariant(),
+                            Dimensione = contenuto.Length,
+                            Contenuto = contenuto
+                        });
+                    }
+                }
+
+                // richiesta: periodo, riepilogo, di nuovo "Immessa" con le approvazioni azzerate
+                var approvazioni = !string.IsNullOrEmpty(richiesta.RichiestaApprovazioneData)
+                    ? JsonConvert.DeserializeObject<List<Dip_GG_Richiesta_Stato_Cronology>>(richiesta.RichiestaApprovazioneData) ?? new List<Dip_GG_Richiesta_Stato_Cronology>()
+                    : new List<Dip_GG_Richiesta_Stato_Cronology>();
+                foreach (var a in approvazioni)
+                {
+                    a.RichiestaStato = StatoRichiesta.Immessa;
+                    a.Data = DateTime.Now;
+                }
+                richiesta.RichiestaApprovazioneData = JsonConvert.SerializeObject(approvazioni, Formatting.Indented);
+                richiesta.RichiestaStato = StatoRichiesta.Immessa;
+                richiesta.Data = notaSpesa.Spese!.Min(x => x.Data).Date;
+                richiesta.DataA = notaSpesa.Spese!.Max(x => x.Data).Date;
+                richiesta.Dati = JsonConvert.SerializeObject(new Dip_GG_Richiesta_Body_NotaSpesa
+                {
+                    Descrizione = (notaSpesa.Descrizione ?? string.Empty).Trim(),
+                    Totale = notaSpesa.Spese!.Sum(x => Math.Round(x.Importo, 2)),
+                    NumeroSpese = notaSpesa.Spese!.Count,
+                    Spese = null
+                });
+                richiesta = await _dip_GG_RichiestaRepository.UpsertAsync(richiesta);
+
+                retVal.Dip_GG_Richiesta = _mapper.Map<Dip_GG_RichiestaModel>(richiesta);
                 return retVal;
             }, isSubProcess);
         }
@@ -680,8 +873,15 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                     break;
                 case TipoRichiesta.NotaSpesa:
 
+                    // le note spese non approvate (annullate, rifiutate, revocate) restano con spese e allegati:
+                    // le spese prendono lo stato della nota (revoca approvata = annullata)
+                    var statoSpese = item.RevocaStato == StatoRichiesta.Approvata ? StatoRichiesta.Cancellata : item.RichiestaStato;
                     var nota = _dip_GG_NotaSpesaRepository.FindAll(x => x.IdDip_GG_Richiesta == item.Id).ToList();
-                    await _dip_GG_NotaSpesaRepository.DeleteRangeAsync(nota);
+                    foreach (var spesa in nota)
+                    {
+                        spesa.RichiestaStato = statoSpese;
+                        await _dip_GG_NotaSpesaRepository.UpsertAsync(spesa);
+                    }
 
                     break;
             }
@@ -732,6 +932,46 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
             return dip_GG_Timbratura;
 
         }
+        // salva le spese (dettagli) e i loro allegati; nella richiesta resta solo il riepilogo (senza i file)
+        private async Task<Dip_GG_Richiesta> Add_Dip_GG_NotaSpesa(Dip_GG_Richiesta dip_GG_Richiesta, Dip_GG_Richiesta_Body_NotaSpesa notaSpesa)
+        {
+            foreach (var spesa in notaSpesa.Spese!)
+            {
+                var dettaglio = await _dip_GG_NotaSpesaRepository.UpsertAsync(new Dip_GG_NotaSpesa
+                {
+                    IdDip_RapportoLavoro = dip_GG_Richiesta.IdDip_RapportoLavoro,
+                    IdDip_GG_Richiesta = dip_GG_Richiesta.Id,
+                    RichiestaStato = dip_GG_Richiesta.RichiestaStato,
+                    Data = spesa.Data.Date,
+                    IdPar_TipoSpesa = spesa.IdPar_TipoSpesa,
+                    Importo = Math.Round(spesa.Importo, 2),
+                    Descrizione = spesa.Descrizione?.Trim()
+                });
+
+                foreach (var allegato in spesa.Allegati ?? new List<Dip_GG_Richiesta_Body_NotaSpesa_Allegato>())
+                {
+                    var contenuto = Convert.FromBase64String(allegato.Contenuto);
+                    await _dip_GG_NotaSpesa_AllegatoRepository.UpsertAsync(new Dip_GG_NotaSpesa_Allegato
+                    {
+                        IdDip_GG_NotaSpesa = dettaglio.Id,
+                        NomeFile = Path.GetFileName(allegato.NomeFile ?? "allegato"),
+                        ContentType = allegato.ContentType.ToLowerInvariant(),
+                        Dimensione = contenuto.Length,
+                        Contenuto = contenuto
+                    });
+                }
+            }
+
+            dip_GG_Richiesta.Dati = JsonConvert.SerializeObject(new Dip_GG_Richiesta_Body_NotaSpesa
+            {
+                Descrizione = (notaSpesa.Descrizione ?? string.Empty).Trim(),
+                Totale = notaSpesa.Spese!.Sum(x => Math.Round(x.Importo, 2)),
+                NumeroSpese = notaSpesa.Spese!.Count,
+                Spese = null
+            });
+            return await _dip_GG_RichiestaRepository.UpsertAsync(dip_GG_Richiesta);
+        }
+
         private async Task<Dip_GG_Giustificativi?> Add_Dip_GG_Giustificativi(Dip_GG_Richiesta dip_GG_Richiesta,
                                                      User_DATA_COMB_DipAna_DipRapp user_DATA_COMB_DipAna_DipRapp)
         {
@@ -1140,6 +1380,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
         public Task<GenericResult<Dip_GG_Richiesta_GetAll4Admin_OutModel>> GetAll4Admin(GenericRequest<Dip_GG_Richiesta_GetAll4Admin_InModel> model, Boolean isSubProcess);
         public Task<GenericResult<Dip_GG_Richiesta_Send_OutModel>> Send(GenericRequest<Dip_GG_Richiesta_Send_InModel> model, Boolean isSubProcess);
         public Task<GenericResult<Dip_GG_Richiesta_SetState_OutModel>> SetState(GenericRequest<Dip_GG_Richiesta_SetState_InModel> model, Boolean isSubProcess);
+        public Task<GenericResult<Dip_GG_Richiesta_NotaSpesaUpdate_OutModel>> NotaSpesaUpdate(GenericRequest<Dip_GG_Richiesta_NotaSpesaUpdate_InModel> model, Boolean isSubProcess);
         public Task<GenericResult<Dip_GG_Richiesta_Get_4Calculation_OutModel>> Dip_GG_Richiesta_Get_4Calculation(GenericRequest<Dip_GG_Richiesta_Get_4Calculation_InModel> model, Boolean isSubProcess);
         public Task<GenericResult<Dip_GG_Richiesta_DeleteOutModel>> Dip_GG_RichiestaDelete(GenericRequest<Dip_GG_Richiesta_DeleteInModel> model, bool isSubProcess);
         public Task<GenericResult<Dip_GG_RichiestaPutOutModel>> Dip_GG_RichiestaPut(GenericRequest<Dip_GG_RichiestaPutInModel> model, bool isSubProcess);
