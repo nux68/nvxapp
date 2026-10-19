@@ -17,6 +17,7 @@ namespace nvxapp.server.data.Infrastructure.Tenancy
              - avvii successivi: il valore di configurazione deve coincidere con quello salvato,
                altrimenti l'avvio viene interrotto (la modalita' non si cambia dopo il primo avvio)
         3. migra le tabelle degli applicativi (public oppure gli schemi azienda/applicativo attivi)
+        4. (solo fase beta) crea, se mancanti, Dealer e FinancialAdvisor 'DEMO'
     */
     public static class DatabaseInitializer
     {
@@ -41,6 +42,53 @@ namespace nvxapp.server.data.Infrastructure.Tenancy
 
             // 3. tabelle degli applicativi
             await sp.GetRequiredService<ITenantProvisioningService>().MigrateAllAsync(cancellationToken);
+
+            // 4. dati demo (solo fase beta)
+            await SeedDemoAsync(publicDbContext, logger, cancellationToken);
+        }
+
+        /*
+         FASE BETA: crea (se mancanti) il Dealer 'DEMO' e il FinancialAdvisor 'DEMO' collegato.
+         Da rimuovere al termine della fase beta.
+        */
+        public const string DemoDescrizione = "DEMO";
+
+        private static async Task SeedDemoAsync(PublicDbContext publicDbContext, ILogger logger, CancellationToken cancellationToken)
+        {
+            var now = DateTime.Now;
+
+            var dealer = await publicDbContext.Dealer
+                                              .AsTracking()
+                                              .FirstOrDefaultAsync(x => x.Descrizione == DemoDescrizione, cancellationToken);
+            if (dealer == null)
+            {
+                dealer = new Dealer
+                {
+                    Descrizione = DemoDescrizione,
+                    CreationDate = now,
+                    ModifiedDate = now
+                };
+                publicDbContext.Dealer.Add(dealer);
+                await publicDbContext.SaveChangesAsync(cancellationToken);
+
+                logger.LogInformation("[Init] Creato Dealer '{Descrizione}'.", DemoDescrizione);
+            }
+
+            var exists = await publicDbContext.FinancialAdvisor
+                                              .AnyAsync(x => x.IdDealer == dealer.Id && x.Descrizione == DemoDescrizione, cancellationToken);
+            if (!exists)
+            {
+                publicDbContext.FinancialAdvisor.Add(new FinancialAdvisor
+                {
+                    IdDealer = dealer.Id,
+                    Descrizione = DemoDescrizione,
+                    CreationDate = now,
+                    ModifiedDate = now
+                });
+                await publicDbContext.SaveChangesAsync(cancellationToken);
+
+                logger.LogInformation("[Init] Creato FinancialAdvisor '{Descrizione}'.", DemoDescrizione);
+            }
         }
 
         private static void CheckTableNames(IServiceProvider sp, PublicDbContext publicDbContext)
