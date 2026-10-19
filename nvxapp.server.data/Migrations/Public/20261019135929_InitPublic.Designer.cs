@@ -12,8 +12,8 @@ using nvxapp.server.data.Infrastructure;
 namespace nvxapp.server.data.Migrations.Public
 {
     [DbContext(typeof(PublicDbContext))]
-    [Migration("20261019095555_AddCompanyMenuRestriction")]
-    partial class AddCompanyMenuRestriction
+    [Migration("20261019135929_InitPublic")]
+    partial class InitPublic
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

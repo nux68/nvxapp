@@ -84,7 +84,8 @@ namespace nvxapp.server.data.Migrations.Public
             int idxFinancialAdvisor = 0;
             int idxCompany = 0;
             int idxUser = 0;
-            for (int idxDealer = 1; idxDealer <= 2; idxDealer++)
+            int numDealer = 2;
+            for (int idxDealer = 1; idxDealer <= numDealer; idxDealer++)
             {
                 string key_Dealer = "_" + idxDealer.ToString();
                 data_AspNetUsers = new List<Data_AspNetUsers>();
@@ -193,6 +194,57 @@ namespace nvxapp.server.data.Migrations.Public
 
             }
 
+            // DEMO: un dealer e uno studio (FinancialAdvisor) con chiave DEMO, inseriti in coda per non cambiare gli Id esistenti.
+            // Come gli altri hanno i loro utenti principali: le liste Centri e Studi partono dagli utenti PowerAdmin principali.
+            string key_Demo = "_DEMO";
+            int idDealerDemo = numDealer + 1;
+            int idFinancialAdvisorDemo = idxFinancialAdvisor + 1;
+
+            data_AspNetUsers = new List<Data_AspNetUsers>();
+            data_AspNetUsers.Add(new Data_AspNetUsers() { Id = Guid.NewGuid().ToString(), UserName = "DealerPowerAdmin" + key_Demo, Email = "nello68@hotmail.com", Code = RoleCode.DealerPowerAdmin });
+            data_AspNetUsers.Add(new Data_AspNetUsers() { Id = Guid.NewGuid().ToString(), UserName = "DealerAdmin" + key_Demo, Email = "nello68@hotmail.com", Code = RoleCode.DealerAdmin });
+            PopolateDB_Save_User(migrationBuilder, data_AspNetRoles_All, data_AspNetUsers);
+
+            migrationBuilder.InsertData(
+                    table: "Dealer",
+                    columns: new[] { "Descrizione" },
+                    values: new object[] { "DEMO" }
+                    );
+            //DealerPowerAdmin
+            migrationBuilder.InsertData(
+                    table: "UserDealer",
+                    columns: new[] { "IdDealer", "IdAspNetUsers", "MainUser", "Disabled" },
+                    values: new object[] { idDealerDemo, data_AspNetUsers[0].Id, true, false }
+                    );
+            //DealerAdmin
+            migrationBuilder.InsertData(
+                    table: "UserDealer",
+                    columns: new[] { "IdDealer", "IdAspNetUsers", "MainUser", "Disabled" },
+                    values: new object[] { idDealerDemo, data_AspNetUsers[1].Id, true, false }
+                    );
+
+            data_AspNetUsers = new List<Data_AspNetUsers>();
+            data_AspNetUsers.Add(new Data_AspNetUsers() { Id = Guid.NewGuid().ToString(), UserName = "FinancialAdvisorPowerAdmin" + key_Demo, Email = "nello68@hotmail.com", Code = RoleCode.FinancialAdvisorPowerAdmin });
+            data_AspNetUsers.Add(new Data_AspNetUsers() { Id = Guid.NewGuid().ToString(), UserName = "FinancialAdvisorAdmin" + key_Demo, Email = "nello68@hotmail.com", Code = RoleCode.FinancialAdvisorAdmin });
+            PopolateDB_Save_User(migrationBuilder, data_AspNetRoles_All, data_AspNetUsers);
+
+            migrationBuilder.InsertData(
+                    table: "FinancialAdvisor",
+                    columns: new[] { "IdDealer", "Descrizione" },
+                    values: new object[] { idDealerDemo, "DEMO" }
+                    );
+            //FinancialAdvisorPowerAdmin
+            migrationBuilder.InsertData(
+                    table: "UserFinancialAdvisor",
+                    columns: new[] { "IdFinancialAdvisor", "IdAspNetUsers", "MainUser", "Disabled" },
+                    values: new object[] { idFinancialAdvisorDemo, data_AspNetUsers[0].Id, true, false }
+                    );
+            //FinancialAdvisorAdmin
+            migrationBuilder.InsertData(
+                    table: "UserFinancialAdvisor",
+                    columns: new[] { "IdFinancialAdvisor", "IdAspNetUsers", "MainUser", "Disabled" },
+                    values: new object[] { idFinancialAdvisorDemo, data_AspNetUsers[1].Id, true, false }
+                    );
 
         }
         private static void PopolateDB_Save_User(MigrationBuilder migrationBuilder,
