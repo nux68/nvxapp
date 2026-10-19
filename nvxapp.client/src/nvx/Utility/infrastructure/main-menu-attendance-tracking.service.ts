@@ -22,8 +22,8 @@ export class MainMenuAttendanceTrackingService implements iMainMenuService {
       { menuType: MenuType.MenuItem, zorder: 2400, group: 0, title: 'Export causali', roles: ['CompanyPowerAdmin'], component: "ExportCausaliPageComponent", url: '/exportcausali', icon: 'cloud-download' },
       { menuType: MenuType.MenuItem, zorder: 2500, group: 0, title: 'Statistiche attività', roles: ['CompanyPowerAdmin'], component: "ActivityStatisticsPageComponent", url: '/activitystatistics', icon: 'bar-chart' },
 
-      { menuType: MenuType.MenuItem, zorder: 2600, group: 0, title: 'Personale presente', roles: ['CompanyPowerAdmin'], component: "PresentStaffPageComponent", url: '/presentstaff', icon: 'people-circle' },
-      { menuType: MenuType.MenuItem, zorder: 2700, group: 0, title: 'Piano ferie', roles: ['CompanyPowerAdmin'], component: "VacationPlanPageComponent", url: '/vacationplan', icon: 'calendar-clear' },
+      { menuType: MenuType.MenuItem, zorder: 2600, group: 0, title: 'Personale presente', roles: ['CompanyPowerAdmin', 'CompanyAdmin'], component: "PresentStaffPageComponent", url: '/presentstaff', icon: 'people-circle' },
+      { menuType: MenuType.MenuItem, zorder: 2700, group: 0, title: 'Piano ferie', roles: ['CompanyPowerAdmin', 'CompanyAdmin'], component: "VacationPlanPageComponent", url: '/vacationplan', icon: 'calendar-clear' },
 
 
       { menuType: MenuType.MenuItem, zorder: 2300, group: 0, title: 'Calendario', roles: ['CompanyAdmin'], component: "TimeSheetAdminPageComponent", url: '/admintimesheet', icon: 'ellipse' },
