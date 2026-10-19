@@ -125,7 +125,7 @@ export class AppComponent implements OnInit, DoCheck {
     }
 
     // menu ricalcolati quando cambiano i ruoli o gli applicativi attivi dell'azienda
-    combineLatest([this.authService.Roles$, this.authService.ActiveApplications$]).subscribe(() => {
+    combineLatest([this.authService.Roles$, this.authService.ActiveApplications$, this.authService.MenuRestrictions$]).subscribe(() => {
       this.loadPages();
       this.groupedCompanyAdminMenu = this.getGroupedCompanyAdminMenu();
       this.groupedFinancialAdvisorAdminMenu = this.getGroupedFinancialAdvisorAdmin();
@@ -299,7 +299,8 @@ export class AppComponent implements OnInit, DoCheck {
     }
 
     let retVal = this.appPages4User.filter(item =>
-      !item.roles || item.roles.some(role => currRole.includes(role))
+      (!item.roles || item.roles.some(role => currRole.includes(role))) &&
+      this.mainMenuService.VoceVisibile(item, 'user', this.authService.RoleNames)
     );
 
     return retVal;
@@ -322,7 +323,8 @@ export class AppComponent implements OnInit, DoCheck {
     }
 
     let retVal =this.appPages4CompanyAdmin.filter(item =>
-      !item.roles || item.roles.some(role => currRole.includes(role))
+      (!item.roles || item.roles.some(role => currRole.includes(role))) &&
+      this.mainMenuService.VoceVisibile(item, 'company', this.authService.RoleNames)
     );
 
     //non permette di impersonarsi a un user che ha anche ruoli admin
@@ -373,7 +375,8 @@ export class AppComponent implements OnInit, DoCheck {
       const items = menuItems.filter(item => item.group === groupNumber && item.menuType === MenuType.MenuItem);
 
       // 5. Se esiste un header, crea il nuovo oggetto gruppo e aggiungilo all'array
-      if (header) {
+      //    (una sezione rimasta senza voci, es. tutte nascoste dal CompanyPowerAdmin, non si mostra)
+      if (header && items.length > 0) {
         const newGroup = new GroupMainMenuItem(header, items);
         groups.push(newGroup);
       }
@@ -420,7 +423,8 @@ export class AppComponent implements OnInit, DoCheck {
     }
 
     let retVal = this.appPages4User.filter(item =>
-      !item.roles || item.roles.some(role => currRole.includes(role))
+      (!item.roles || item.roles.some(role => currRole.includes(role))) &&
+      this.mainMenuService.VoceVisibile(item, 'user', this.authService.RoleNames)
     );
 
 

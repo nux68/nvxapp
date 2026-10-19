@@ -124,6 +124,84 @@ export class MainMenuService implements iMainMenuService {
 
   }
 
+  // ---------------------------------------------------------------------------
+  // Voci di menu nascoste ai ruoli CompanyAdmin e User (pagina "Menu utenti").
+  // Le voci si leggono dagli elenchi uniti degli applicativi attivi, quindi le voci aggiunte
+  // in un ramo applicativo (es. presenze) sono configurabili senza toccare Infrastructure.
+  // Si puo' solo togliere: una voce e' configurabile per un ruolo solo se il codice gliela concede.
+  // ---------------------------------------------------------------------------
+
+  /** Ruoli per cui il codice prevede la voce, nell'elenco in cui e' dichiarata. */
+  private ruoliDaCodice(item: MainMenuItem, lista: ListaMenu): string[] {
+    if (item.roles?.length)
+      return item.roles;
+    return lista === 'user' ? ['User'] : ['CompanyPowerAdmin', 'CompanyAdmin'];
+  }
+
+  /** Ruoli dell'utente che vedono la voce per codice. */
+  private ruoliChePrevedono(item: MainMenuItem, lista: ListaMenu, ruoliUtente: string[]): string[] {
+    return this.ruoliDaCodice(item, lista).filter(r => ruoliUtente.includes(r));
+  }
+
+  /**
+   * La voce resta nel menu per l'utente con questi ruoli: si toglie solo se tutti i suoi ruoli che la
+   * prevedono l'hanno esclusa. Intestazioni, voci non configurabili e ruoli non configurabili
+   * (es. CompanyPowerAdmin) non sono mai toccati; gli altri filtri per ruolo restano quelli di sempre.
+   */
+  public VoceVisibile(item: MainMenuItem, lista: ListaMenu, ruoliUtente: string[]): boolean {
+    if (item.menuType !== MenuType.MenuItem || item.nonConfigurabile || !item.url)
+      return true;
+    // chi configura il menu vede sempre tutto, anche con altri ruoli (es. CompanyPowerAdmin + User)
+    if (ruoliUtente.includes(RUOLO_CONFIGURATORE_MENU))
+      return true;
+    const ruoli = this.ruoliChePrevedono(item, lista, ruoliUtente);
+    if (ruoli.length === 0 || ruoli.some(r => !RUOLI_MENU_CONFIGURABILI.includes(r)))
+      return true;
+    return ruoli.some(r => !this.authService.isMenuRestricted(item.url, r));
+  }
+
+  /** Navigazione verso un url: bloccata solo se e' una voce di menu nascosta a tutti i ruoli dell'utente che la prevedono. */
+  public UrlVisibile(url: string): boolean {
+    const key = AuthService.normalizeMenuUrl(url);
+    const ruoliUtente = this.authService.RoleNames;
+    const voci = this.vociPerLista()
+      .filter(v => v.item.menuType === MenuType.MenuItem && v.item.url && AuthService.normalizeMenuUrl(v.item.url) === key)
+      .filter(v => this.ruoliChePrevedono(v.item, v.lista, ruoliUtente).length > 0);
+    return voci.length === 0 || voci.some(v => this.VoceVisibile(v.item, v.lista, ruoliUtente));
+  }
+
+  /** Voci configurabili dal CompanyPowerAdmin, una per url, con i ruoli a cui si possono togliere. */
+  public get VociMenuConfigurabili(): VoceMenuConfigurabile[] {
+    const voci: VoceMenuConfigurabile[] = [];
+    for (const { item, lista, elenco } of this.vociPerLista()) {
+      if (item.menuType !== MenuType.MenuItem || item.nonConfigurabile || !item.url)
+        continue;
+      const ruoli = this.ruoliDaCodice(item, lista).filter(r => RUOLI_MENU_CONFIGURABILI.includes(r));
+      if (ruoli.length === 0)
+        continue;
+
+      const url = AuthService.normalizeMenuUrl(item.url);
+      const esistente = voci.find(v => v.url === url);
+      if (esistente) {
+        ruoli.filter(r => !esistente.ruoli.includes(r)).forEach(r => esistente.ruoli.push(r));
+        continue;
+      }
+      const sezione = elenco.find(x => x.menuType === MenuType.MenuHeader && x.group === item.group)?.title ?? '';
+      voci.push({ url, title: item.title.trim(), icon: item.icon, sezione, zorder: item.zorder, ruoli: [...ruoli] });
+    }
+    return voci;
+  }
+
+  // voci degli elenchi dei ruoli dell'azienda (CompanyAdmin e User), con l'elenco di provenienza
+  private vociPerLista(): { item: MainMenuItem, lista: ListaMenu, elenco: MainMenuItem[] }[] {
+    const company = this.Pages4CompanyAdmin;
+    const user = this.Pages4User;
+    return [
+      ...company.map(item => ({ item, lista: 'company' as ListaMenu, elenco: company })),
+      ...user.map(item => ({ item, lista: 'user' as ListaMenu, elenco: user })),
+    ];
+  }
+
   /**
    * Dialog che un applicativo puo' sostituire (vedi dialog-redefinition.ts): si interrogano le ridefinizioni
    * con tutti gli applicativi attivi per l'azienda, dalla priorita' piu' alta; senza ridefinizioni si apre quello indicato.
@@ -200,6 +278,7 @@ export class MainMenuItem {
   url: string;
   icon: string;
   roles?: string[]; // aggiunta proprietà opzionale per i ruoli
+  nonConfigurabile?: boolean; // voce di sistema: il CompanyPowerAdmin non puo' nasconderla (pagina "Menu utenti")
 
   constructor(menuType: MenuType, zorder: number, group: number,title: string, component: string, url: string, icon: string, roles?: string[]) {
     this.menuType = menuType;
@@ -213,6 +292,26 @@ export class MainMenuItem {
   }
 }
 
+
+/** Ruoli dell'azienda a cui il CompanyPowerAdmin puo' nascondere le voci di menu (lui vede sempre tutto). */
+export const RUOLI_MENU_CONFIGURABILI = ['CompanyAdmin', 'User'];
+
+/** Ruolo che configura il menu dell'azienda: vede sempre tutte le voci. */
+export const RUOLO_CONFIGURATORE_MENU = 'CompanyPowerAdmin';
+
+/** Elenco di menu in cui e' dichiarata una voce: Pages4CompanyAdmin o Pages4User. */
+export type ListaMenu = 'company' | 'user';
+
+/** Voce di menu configurabile nella pagina "Menu utenti". */
+export interface VoceMenuConfigurabile {
+  url: string;
+  title: string;
+  icon: string;
+  sezione: string;
+  zorder: number;
+  /** ruoli configurabili a cui il codice concede la voce */
+  ruoli: string[];
+}
 
 export enum MenuType {
 

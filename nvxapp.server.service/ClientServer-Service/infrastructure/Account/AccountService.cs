@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyMenuRestriction.Models;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
@@ -45,6 +46,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
         private readonly IUserInitializerRegistry _userInitializerRegistry;
         private readonly ICompanyInitializerRegistry _companyInitializerRegistry;
         private readonly ICompanyApplicationRepository _companyApplicationRepository;
+        private readonly ICompanyMenuRestrictionRepository _companyMenuRestrictionRepository;
         private readonly ICompanyApplicationService _companyApplicationService;
         private readonly IEnumerable<IUserCompanyListExtension> _userCompanyListExtensions;
 
@@ -71,6 +73,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                               IUserCompanyRepository userCompanyRepository,
                               IHubContext<SignalRHub> hubContext,
                               ICompanyApplicationRepository companyApplicationRepository,
+                              ICompanyMenuRestrictionRepository companyMenuRestrictionRepository,
                               ICompanyApplicationService companyApplicationService,
                               IEnumerable<IUserCompanyListExtension> userCompanyListExtensions,
 
@@ -91,6 +94,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
             _userInitializerRegistry = userInitializerRegistry;
             _companyInitializerRegistry = companyInitializerRegistry;
             _companyApplicationRepository = companyApplicationRepository;
+            _companyMenuRestrictionRepository = companyMenuRestrictionRepository;
             _companyApplicationService = companyApplicationService;
             _userCompanyListExtensions = userCompanyListExtensions;
             _hubContext = hubContext;
@@ -305,7 +309,14 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
 
                             // applicativi attivi dell'azienda dell'utente (il client mostra solo quelli)
                             if (int.TryParse(company, out var idCompanyActive))
+                            {
                                 retVal.UserData.ActiveApplications = _companyApplicationRepository.ActiveApplications(idCompanyActive);
+
+                                // voci di menu nascoste ai ruoli dell'azienda (il client le toglie da menu e navigazione)
+                                retVal.UserData.MenuRestrictions = _companyMenuRestrictionRepository.Restrictions(idCompanyActive)
+                                    .Select(x => new CompanyMenuRestrictionModel { Url = x.Url, Role = x.Role })
+                                    .ToList();
+                            }
 
 
                             var aspNetRoles = _aspNetRolesRepository.FindAll(x => x.Name != null && roles.Contains(x.Name)).ToList();

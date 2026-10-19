@@ -1,4 +1,5 @@
 ﻿using nvxapp.server.data.Infrastructure.Tenancy;
+using nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyMenuRestriction.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using System;
 using System.Collections.Generic;
@@ -33,10 +34,14 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Mode
         // applicativi attivi per l'azienda dell'utente (vuoto per utenti senza azienda)
         public List<ApplicationType> ActiveApplications { get; set; }
 
+        // voci di menu nascoste ai ruoli dell'azienda dell'utente
+        public List<CompanyMenuRestrictionModel> MenuRestrictions { get; set; }
+
         public UserDataModel()
         {
             Roles = new List<AspNetRolesModel>();
             ActiveApplications = new List<ApplicationType>();
+            MenuRestrictions = new List<CompanyMenuRestrictionModel>();
         }
     }
 

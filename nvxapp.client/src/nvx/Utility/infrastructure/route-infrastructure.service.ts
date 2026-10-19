@@ -40,6 +40,7 @@ export class RouteInfrastructureService {
       { path: 'admin', loadChildren: () => import('../../pages/infrastructure/admin-page/admin-page.module').then(m => m.AdminPageModule), canActivate: [RoleGuard4Admin] },
 
       { path: 'companypoweradmin', loadChildren: () => import('../../pages/infrastructure/company-power-admin-page/company-power-admin-page.module').then(m => m.CompanyPowerAdminPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
+      { path: 'companymenurestriction', loadChildren: () => import('../../pages/infrastructure/company-menu-restriction-page/company-menu-restriction-page.module').then(m => m.CompanyMenuRestrictionPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
       { path: 'companyadmin', loadChildren: () => import('../../pages/infrastructure/company-admin-page/company-admin-page.module').then(m => m.CompanyAdminPageModule), canActivate: [RoleGuard4CompanyAdmin] },
       { path: 'companylist', loadChildren: () => import('../../pages/infrastructure/company-list-page/company-list-page.module').then(m => m.CompanyListPageModule), canActivate: [RoleGuard4CompanyList] },
       { path: 'companyedit', loadChildren: () => import('../../pages/infrastructure/company-edit-page/company-edit-page.module').then(m => m.CompanyEditPageModule), canActivate: [RoleGuard4CompanyEdit] },

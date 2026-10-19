@@ -23,6 +23,15 @@ export class UserDataModel  {
   // applicativi attivi per l'azienda dell'utente (valori di ApplicationType)
   public activeApplications: ApplicationType[] = [];
 
+  // voci di menu nascoste ai ruoli dell'azienda (configurate dal CompanyPowerAdmin)
+  public menuRestrictions: MenuRestrictionModel[] = [];
+
+}
+
+// voce di menu (url) nascosta a un ruolo dell'azienda
+export class MenuRestrictionModel {
+  public url: string = '';
+  public role: string = '';
 }
 
 // Applicativi (stessi valori dell'enum ApplicationType del server)

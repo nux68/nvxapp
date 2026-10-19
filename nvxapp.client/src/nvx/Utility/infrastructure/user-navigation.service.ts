@@ -42,6 +42,7 @@ export class UserNavigationService {
 
       this.authService.setRole(userData.roles);
       this.authService.setActiveApplications(userData.activeApplications);
+      this.authService.setMenuRestrictions(userData.menuRestrictions);
     }
 
     
@@ -64,6 +65,8 @@ export class UserNavigationService {
           // applicativi letti di nuovo dal server: possono essere cambiati nel frattempo
           this._userCronology[this._userCronology.length - 1].userData.activeApplications = usl.data.userData.activeApplications;
           this.authService.setActiveApplications(usl.data.userData.activeApplications);
+          this._userCronology[this._userCronology.length - 1].userData.menuRestrictions = usl.data.userData.menuRestrictions;
+          this.authService.setMenuRestrictions(usl.data.userData.menuRestrictions);
 
           if (this._userCronology[this._userCronology.length - 1].userDataAdditional.gotoBackPage != null)
             this.navCtrl.navigateForward(this._userCronology[this._userCronology.length - 1].userDataAdditional.gotoBackPage);
@@ -103,6 +106,8 @@ export class UserNavigationService {
             // applicativi letti di nuovo dal server: possono essere cambiati nel frattempo
             this._userCronology[idx].userData.activeApplications = usl.data.userData.activeApplications;
             this.authService.setActiveApplications(usl.data.userData.activeApplications);
+            this._userCronology[idx].userData.menuRestrictions = usl.data.userData.menuRestrictions;
+            this.authService.setMenuRestrictions(usl.data.userData.menuRestrictions);
 
             if (this._userCronology[this._userCronology.length - 1].userDataAdditional.gotoBackPage != null)
               this.navCtrl.navigateForward(gotoBackPage);

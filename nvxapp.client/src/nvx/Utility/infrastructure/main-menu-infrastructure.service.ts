@@ -65,7 +65,8 @@ export class MainMenuInfrastructureService implements iMainMenuService{
       { menuType: MenuType.MenuHeader, zorder:    0,  group: 0, title: 'Azienda'                                            , component: '', url: '', icon: '' },
       { menuType: MenuType.MenuItem,   zorder:  100,  group: 0, title: 'Azienda Power Admin', roles: ['CompanyPowerAdmin']  , component: "CompanyPowerAdminPageComponent", url: '/companypoweradmin', icon: 'ellipse' },
       { menuType: MenuType.MenuItem,   zorder:  200,  group: 0, title: 'Azienda Admin'      , roles: ['CompanyAdmin']       , component: "CompanyAdminPageComponent", url: '/companyadmin', icon: 'ellipse' },
-      { menuType: MenuType.MenuItem  , zorder: 3000,  group: 0, title: 'Utenti'             , roles: ['CompanyPowerAdmin']  , component: "UserCompanyListPageComponent", url: '/usercompanylist', icon: 'people' }
+      { menuType: MenuType.MenuItem  , zorder: 3000,  group: 0, title: 'Utenti'             , roles: ['CompanyPowerAdmin']  , component: "UserCompanyListPageComponent", url: '/usercompanylist', icon: 'people' },
+      { menuType: MenuType.MenuItem  , zorder: 3100,  group: 0, title: 'Menu utenti'        , roles: ['CompanyPowerAdmin']  , component: "CompanyMenuRestrictionPageComponent", url: '/companymenurestriction', icon: 'options' }
     ];
   }
 
@@ -76,11 +77,11 @@ export class MainMenuInfrastructureService implements iMainMenuService{
 
     return [
       { menuType: MenuType.MenuHeader, zorder: 0,   group: 0, title: 'Menu', component: '', url: '', icon: '' },
-      { menuType: MenuType.MenuItem,   zorder: 100, group: 0, title: 'Impersonate', component: "UserImpersonatePageComponent", url: '/userimpersonate', icon: 'people-circle' },
-      { menuType: MenuType.MenuItem,   zorder: 200, group: 0, title: 'Home', component: "HomePageComponent", url: '/home', icon: 'home' },
-      { menuType: MenuType.MenuItem,   zorder: 300, group: 0, title: 'Login', component: "LoginPageComponent", url: '/login', icon: 'enter' },
-      { menuType: MenuType.MenuItem,   zorder: 400, group: 0, title: 'Logout', component: "LogoutPageComponent", url: '/logout', icon: 'exit' },
-      { menuType: MenuType.MenuItem,   zorder: 500, group: 0, title: 'User Data', component: "UserPageComponent", url: '/user', icon: 'person' }
+      { menuType: MenuType.MenuItem,   zorder: 100, group: 0, title: 'Impersonate', component: "UserImpersonatePageComponent", url: '/userimpersonate', icon: 'people-circle', nonConfigurabile: true },
+      { menuType: MenuType.MenuItem,   zorder: 200, group: 0, title: 'Home', component: "HomePageComponent", url: '/home', icon: 'home', nonConfigurabile: true },
+      { menuType: MenuType.MenuItem,   zorder: 300, group: 0, title: 'Login', component: "LoginPageComponent", url: '/login', icon: 'enter', nonConfigurabile: true },
+      { menuType: MenuType.MenuItem,   zorder: 400, group: 0, title: 'Logout', component: "LogoutPageComponent", url: '/logout', icon: 'exit', nonConfigurabile: true },
+      { menuType: MenuType.MenuItem,   zorder: 500, group: 0, title: 'User Data', component: "UserPageComponent", url: '/user', icon: 'person', nonConfigurabile: true }
     ];
   }
 
