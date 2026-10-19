@@ -361,6 +361,12 @@ export class AppComponent implements OnInit, DoCheck {
 
     const groups: GroupMainMenuItem[] = [];
 
+    // una voce il cui gruppo non ha intestazione (es. la sezione e' dichiarata da un applicativo non attivo
+    // o non presente nel ramo) va nella prima sezione invece di sparire
+    const gruppiConIntestazione = new Set(menuItems.filter(item => item.menuType === MenuType.MenuHeader).map(item => item.group));
+    const primoGruppo = [...gruppiConIntestazione].sort((a, b) => a - b)[0];
+    const gruppoDi = (item: MainMenuItem) => gruppiConIntestazione.has(item.group) ? item.group : primoGruppo;
+
     // 1. Estrai tutti i valori di 'group' in un array
     const allGroups = menuItems.map(item => item.group);
     // Risultato: [0, 0, 1, 1, 1]
@@ -372,7 +378,9 @@ export class AppComponent implements OnInit, DoCheck {
 
       
       const header = menuItems.find(item => item.group === groupNumber && item.menuType === MenuType.MenuHeader);
-      const items = menuItems.filter(item => item.group === groupNumber && item.menuType === MenuType.MenuItem);
+      // voci nell'ordine di zorder: gli elenchi dei vari applicativi (es. Infrastructure e presenze) si mescolano nella stessa sezione
+      const items = menuItems.filter(item => gruppoDi(item) === groupNumber && item.menuType === MenuType.MenuItem)
+                             .sort((a, b) => a.zorder - b.zorder);
 
       // 5. Se esiste un header, crea il nuovo oggetto gruppo e aggiungilo all'array
       //    (una sezione rimasta senza voci, es. tutte nascoste dal CompanyPowerAdmin, non si mostra)

@@ -62,11 +62,12 @@ export class MainMenuInfrastructureService implements iMainMenuService{
 
   public get Pages4CompanyAdmin(): MainMenuItem[] {
     return [
-      { menuType: MenuType.MenuHeader, zorder:    0,  group: 0, title: 'Azienda'                                            , component: '', url: '', icon: '' },
+      { menuType: MenuType.MenuHeader, zorder:    0,  group: 0, title: 'Generale'                                           , component: '', url: '', icon: '' },
       { menuType: MenuType.MenuItem,   zorder:  100,  group: 0, title: 'Azienda Power Admin', roles: ['CompanyPowerAdmin']  , component: "CompanyPowerAdminPageComponent", url: '/companypoweradmin', icon: 'ellipse' },
       { menuType: MenuType.MenuItem,   zorder:  200,  group: 0, title: 'Azienda Admin'      , roles: ['CompanyAdmin']       , component: "CompanyAdminPageComponent", url: '/companyadmin', icon: 'ellipse' },
       { menuType: MenuType.MenuItem  , zorder: 3000,  group: 0, title: 'Utenti'             , roles: ['CompanyPowerAdmin']  , component: "UserCompanyListPageComponent", url: '/usercompanylist', icon: 'people' },
-      { menuType: MenuType.MenuItem  , zorder: 3100,  group: 0, title: 'Menu utenti'        , roles: ['CompanyPowerAdmin']  , component: "CompanyMenuRestrictionPageComponent", url: '/companymenurestriction', icon: 'options' }
+      // nella sezione Parametri (gruppo 1, intestazione dichiarata dal menu presenze), dopo le altre voci
+      { menuType: MenuType.MenuItem  , zorder: 208000, group: 1, title: 'Menu utenti'      , roles: ['CompanyPowerAdmin']  , component: "CompanyMenuRestrictionPageComponent", url: '/companymenurestriction', icon: 'options' }
     ];
   }
 
@@ -76,7 +77,7 @@ export class MainMenuInfrastructureService implements iMainMenuService{
     //const roles = ['SuperUser', 'PowerAdmin', 'Admin', 'DealerPowerAdmin', 'DealerAdmin', 'FinancialAdvisorPowerAdmin', 'FinancialAdvisorAdmin', 'CompanyPowerAdmin', 'CompanyAdmin', 'User'];
 
     return [
-      { menuType: MenuType.MenuHeader, zorder: 0,   group: 0, title: 'Menu', component: '', url: '', icon: '' },
+      { menuType: MenuType.MenuHeader, zorder: 0,   group: 0, title: 'Accesso', component: '', url: '', icon: '' },
       { menuType: MenuType.MenuItem,   zorder: 100, group: 0, title: 'Impersonate', component: "UserImpersonatePageComponent", url: '/userimpersonate', icon: 'people-circle', nonConfigurabile: true },
       { menuType: MenuType.MenuItem,   zorder: 200, group: 0, title: 'Home', component: "HomePageComponent", url: '/home', icon: 'home', nonConfigurabile: true },
       { menuType: MenuType.MenuItem,   zorder: 300, group: 0, title: 'Login', component: "LoginPageComponent", url: '/login', icon: 'enter', nonConfigurabile: true },
