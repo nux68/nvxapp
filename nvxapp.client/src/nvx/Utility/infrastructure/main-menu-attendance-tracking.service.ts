@@ -29,7 +29,8 @@ export class MainMenuAttendanceTrackingService implements iMainMenuService {
       { menuType: MenuType.MenuItem, zorder: 2300, group: 0, title: 'Calendario', roles: ['CompanyAdmin'], component: "TimeSheetAdminPageComponent", url: '/admintimesheet', icon: 'ellipse' },
       { menuType: MenuType.MenuItem, zorder: 3000, group: 0, title: 'Utenti ', roles: ['CompanyAdmin'], component: "UserDepartmentListPageComponent", url: '/userdepartmentlist', icon: 'people' },
 
-      { menuType: MenuType.MenuHeader, zorder: 201000, group: 1, title: 'Parametri', roles: ['CompanyPowerAdmin'], component: '', url: '', icon: '' },
+      // Parametri: ultima sezione del menu (le sezioni seguono lo zorder dell'intestazione)
+      { menuType: MenuType.MenuHeader, zorder: 900000, group: 1, title: 'Parametri', roles: ['CompanyPowerAdmin'], component: '', url: '', icon: '' },
       { menuType: MenuType.MenuItem, zorder: 202000, group: 1, title: 'Giustificativi', roles: ['CompanyPowerAdmin'], component: "JustificationListPageComponent", url: '/justificationlist', icon: 'reader' },
       { menuType: MenuType.MenuItem, zorder: 203000, group: 1, title: 'Causali', roles: ['CompanyPowerAdmin'], component: "CausaliListPageComponent", url: '/causalilist', icon: 'receipt' },
       { menuType: MenuType.MenuItem, zorder: 204000, group: 1, title: 'Configurazione', roles: ['CompanyPowerAdmin'], component: "CompanyCfgPageComponent", url: '/companycfgedit', icon: 'construct' },
