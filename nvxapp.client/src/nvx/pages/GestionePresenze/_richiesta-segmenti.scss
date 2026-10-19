@@ -32,3 +32,21 @@ ion-chip.nvx-seg-fine {
 ion-chip.nvx-seg-attiva {
   box-shadow: inset 0 0 0 2px var(--ion-text-color);
 }
+
+// stessi pezzi per i giustificativi mostrati come pulsanti (Calendario admin): ion-button
+// prende forma e contorno dalle sue variabili, anche con shape="round"
+ion-button.nvx-seg-inizio {
+  --border-radius: 999px 3px 3px 999px;
+}
+
+ion-button.nvx-seg-mezzo {
+  --border-radius: 3px;
+}
+
+ion-button.nvx-seg-fine {
+  --border-radius: 3px 999px 999px 3px;
+}
+
+ion-button.nvx-seg-attiva {
+  --box-shadow: inset 0 0 0 2px var(--ion-text-color);
+}

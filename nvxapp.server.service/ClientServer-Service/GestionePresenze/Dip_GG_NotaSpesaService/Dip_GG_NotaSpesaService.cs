@@ -19,7 +19,8 @@ using nvxapp.server.service.ServerModels;
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_NotaSpesaService
 {
     /*
-     Note spese: lettura delle spese di una richiesta, ricerca per il CompanyPowerAdmin, allegati.
+     Note spese: lettura delle spese di una richiesta, ricerca per il CompanyPowerAdmin (tutti i dipendenti)
+     e per il CompanyAdmin (dipendenti dei reparti che amministra), allegati.
      L'invio passa dal ciclo standard delle richieste (Dip_GG_RichiestaService.Send, tipo NotaSpesa):
      la richiesta e' il contenitore, le spese sono i dettagli e ne seguono lo stato (approvazione compresa).
     */
@@ -37,6 +38,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Not
         private readonly IDip_RapportoLavoroRepository _dip_RapportoLavoroRepository;
         private readonly IDip_AnagraficaRepository _dip_AnagraficaRepository;
         private readonly IGestionePresenzeUserUtility _gestionePresenzeUserUtility;
+        private readonly IAz_SediRepartoUserRepository _az_SediRepartoUserRepository;
 
         public Dip_GG_NotaSpesaService(IMapper mapper,
                                   UserManager<ApplicationUser> userManager,
@@ -50,7 +52,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Not
                                   IDip_GG_RichiestaRepository dip_GG_RichiestaRepository,
                                   IDip_RapportoLavoroRepository dip_RapportoLavoroRepository,
                                   IDip_AnagraficaRepository dip_AnagraficaRepository,
-                                  IGestionePresenzeUserUtility gestionePresenzeUserUtility) : base(mapper , userManager  , aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
+                                  IGestionePresenzeUserUtility gestionePresenzeUserUtility,
+                                  IAz_SediRepartoUserRepository az_SediRepartoUserRepository) : base(mapper , userManager  , aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _dip_GG_NotaSpesaRepository = dip_GG_NotaSpesaRepository;
             _dip_GG_NotaSpesa_AllegatoRepository = dip_GG_NotaSpesa_AllegatoRepository;
@@ -58,6 +61,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Not
             _dip_RapportoLavoroRepository = dip_RapportoLavoroRepository;
             _dip_AnagraficaRepository = dip_AnagraficaRepository;
             _gestionePresenzeUserUtility = gestionePresenzeUserUtility;
+            _az_SediRepartoUserRepository = az_SediRepartoUserRepository;
         }
 
         public virtual async Task<GenericResult<Dip_GG_NotaSpesaOutModel>> GetAll(GenericRequest<Dip_GG_NotaSpesaInModel> model, Boolean isSubProcess)
@@ -93,11 +97,19 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Not
             {
                 var retVal = new Dip_GG_NotaSpesa_Search_OutModel();
 
+                // dipendenti richiesti (quelli della selezione reparto/dipendente): il CompanyPowerAdmin
+                // li vede tutti, il CompanyAdmin solo quelli dei reparti che amministra
+                var usersId = model.Data.UsersId ?? new List<string>();
                 if (!await HaRuolo("CompanyPowerAdmin"))
-                    throw new Exception("Esame delle note spese riservato al CompanyPowerAdmin.");
+                {
+                    if (!await HaRuolo("CompanyAdmin"))
+                        throw new Exception("Esame delle note spese riservato agli amministratori dell'azienda.");
+                    var dipendentiAmministrati = DipendentiAmministrati(this.CurrentUserId);
+                    usersId = usersId.Where(u => dipendentiAmministrati.Contains(u)).ToList();
+                }
 
-                // rapporti dei dipendenti richiesti (quelli della selezione reparto/dipendente)
-                var anagrafiche = await _gestionePresenzeUserUtility.GetAnagraficheByUsersId(model.Data.UsersId ?? new List<string>());
+                // rapporti dei dipendenti richiesti
+                var anagrafiche = await _gestionePresenzeUserUtility.GetAnagraficheByUsersId(usersId);
                 var idAnagrafiche = anagrafiche.Select(a => a.Id).ToList();
                 var idRapporti = _dip_RapportoLavoroRepository.FindAll(r => idAnagrafiche.Contains(r.IdDip_Anagrafica)).Select(r => r.Id).ToList();
 
@@ -149,6 +161,15 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Not
             bool proprio = anagrafica != null && _dip_RapportoLavoroRepository.FindAll(r => r.Id == idDip_RapportoLavoro && r.IdDip_Anagrafica == anagrafica.Id).Any();
             if (!proprio)
                 throw new Exception("Nota spese non accessibile.");
+        }
+
+        // dipendenti dei reparti in cui l'utente e' amministratore (come i reparti di Get4Admin)
+        private HashSet<string> DipendentiAmministrati(string idAspNetUsers)
+        {
+            var reparti = _az_SediRepartoUserRepository.FindAll(x => x.IdAspNetUsers == idAspNetUsers && x.EnabledToAdmin)
+                                                       .Select(x => x.IdAz_SediReparto).ToList();
+            return _az_SediRepartoUserRepository.FindAll(x => reparti.Contains(x.IdAz_SediReparto) && x.UserInDepartment)
+                                                .Select(x => x.IdAspNetUsers).ToHashSet();
         }
 
         private async Task<bool> HaRuolo(string ruolo)

@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
 import { TimeSheetService } from '../../../Utility/GestionePresenze/time-sheet.service';
-import { MonthData } from '../../../Utility/GestionePresenze/time-sheet-common-data';
+import { MonthData, SegmentoItem, SegmentoRichiesta } from '../../../Utility/GestionePresenze/time-sheet-common-data';
 import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
 import { Dip_GG_TimbraturaModel, TipoTimbratura } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Timbratura/Models/dip-gg-timbratura-model';
 import { Dip_GG_GiustificativiModel, JustificationInputType } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Giustificativi/Models/dip-gg-giustificativi-model';
@@ -47,6 +47,10 @@ export class TimeSheetAdminPageComponent implements OnInit, OnDestroy {
   public currYear: number
   public currMonth: number
   public currUserId: string | undefined;
+
+  /** Pezzi delle richieste su più giorni (inizio/mezzo/fine) e richiesta evidenziata al passaggio del mouse (come in usertimesheet). */
+  public segmenti = new Map<SegmentoItem, SegmentoRichiesta>();
+  public richiestaEvidenziata: number | null = null;
 
   constructor(private navCtrl: NavController,
               private refresherService: RefresherService,
@@ -115,6 +119,7 @@ export class TimeSheetAdminPageComponent implements OnInit, OnDestroy {
     this.timeSheetService.getMonthData(this.currYear, this.currMonth, this.currUserId,false).subscribe(monthData => {
       this.currentMonth = monthData; // monthData è già del tipo corretto MonthData
       this.buildCalendarWeeks();     // Costruisce la UI dopo aver ricevuto i dati
+      this.segmenti = this.timeSheetService.segmentiDelMese(this.currentMonth);
     });
   }
 

@@ -48,6 +48,11 @@
 <ion-button [disabled]="(!timeSheetService.Dip_GG_Richiesta_Admin_Can_Approve( get_Dip_GG_Richiesta(just.idDip_GG_Richiesta) ) &&
                                              !timeSheetService.Dip_GG_Richiesta_Admin_Can_Reject(get_Dip_GG_Richiesta(just.idDip_GG_Richiesta)) )"
                                 size="small" shape="round"
+                                [ngClass]="'nvx-seg-' + (segmenti.get(just) ?? 'no')"
+                                [class.nvx-seg-attiva]="segmenti.has(just) && just.idDip_GG_Richiesta === richiestaEvidenziata"
+                                (mouseenter)="richiestaEvidenziata = segmenti.has(just) ? just.idDip_GG_Richiesta : null"
+                                (mouseleave)="richiestaEvidenziata = null"
+                                [title]="timeSheetService.periodoRichiestaTesto(get_Dip_GG_Richiesta(just.idDip_GG_Richiesta))"
                                     [ngStyle]="{
                                               '--background': timeSheetService.get_Dip_GG_Giustificativi_backColor(just),
                                               '--color': timeSheetService.get_Dip_GG_Giustificativi_txtColor(just),

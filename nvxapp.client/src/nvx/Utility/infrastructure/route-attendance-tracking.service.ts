@@ -19,7 +19,7 @@ export class RouteAttendanceTrackingService {
       // note spese: richiesta e consultazione dell'utente, esame del CompanyPowerAdmin, tipi di spesa (parametri)
       { path: 'notaspesarequestuser', loadChildren: () => import('../../pages/GestionePresenze/nota-spesa-request-user-page/nota-spesa-request-user-page.module').then(m => m.NotaSpesaRequestUserPageModule), canActivate: [RoleGuard4User] },
       { path: 'notaspeseuser', loadChildren: () => import('../../pages/GestionePresenze/nota-spese-user-page/nota-spese-user-page.module').then(m => m.NotaSpeseUserPageModule), canActivate: [RoleGuard4User] },
-      { path: 'notaspeseadmin', loadChildren: () => import('../../pages/GestionePresenze/nota-spese-admin-page/nota-spese-admin-page.module').then(m => m.NotaSpeseAdminPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
+      { path: 'notaspeseadmin', loadChildren: () => import('../../pages/GestionePresenze/nota-spese-admin-page/nota-spese-admin-page.module').then(m => m.NotaSpeseAdminPageModule), canActivate: [RoleGuard4CompanyAdmin] },
       { path: 'tipospesalist', loadChildren: () => import('../../pages/GestionePresenze/tipo-spesa-list-page/tipo-spesa-list-page.module').then(m => m.TipoSpesaListPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
       { path: 'tipospesaedit', loadChildren: () => import('../../pages/GestionePresenze/tipo-spesa-edit-page/tipo-spesa-edit-page.module').then(m => m.TipoSpesaEditPageModule), canActivate: [RoleGuard4CompanyPowerAdmin] },
       { path: 'usertimesheet', loadChildren: () => import('../../pages/GestionePresenze/time-sheet-user-page/time-sheet-user-page.module').then(m => m.TimeSheetUserModule), canActivate: [RoleGuard4User] },

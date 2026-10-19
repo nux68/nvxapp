@@ -40,8 +40,8 @@ export class MainMenuAttendanceTrackingService implements iMainMenuService {
       { menuType: MenuType.MenuItem, zorder: 207000, group: 1, title: 'Modelli Export', roles: ['CompanyPowerAdmin'], component: "ExportCauListPageComponent", url: '/exportcaulist', icon: 'hammer' },
       { menuType: MenuType.MenuItem, zorder: 207500, group: 1, title: 'Tipi spesa', roles: ['CompanyPowerAdmin'], component: "TipoSpesaListPageComponent", url: '/tipospesalist', icon: 'pricetags' },
 
-      { menuType: MenuType.MenuHeader, zorder: 300000, group: 3, title: 'Nota spese', roles: ['CompanyPowerAdmin'], component: '', url: '', icon: '' },
-      { menuType: MenuType.MenuItem, zorder: 301000, group: 3, title: 'Esame spese', roles: ['CompanyPowerAdmin'], component: "NotaSpeseAdminPageComponent", url: '/notaspeseadmin', icon: 'receipt' },
+      { menuType: MenuType.MenuHeader, zorder: 300000, group: 3, title: 'Nota spese', roles: ['CompanyPowerAdmin', 'CompanyAdmin'], component: '', url: '', icon: '' },
+      { menuType: MenuType.MenuItem, zorder: 301000, group: 3, title: 'Esame spese', roles: ['CompanyPowerAdmin', 'CompanyAdmin'], component: "NotaSpeseAdminPageComponent", url: '/notaspeseadmin', icon: 'receipt' },
 
 
       { menuType: MenuType.MenuHeader, zorder: 205000, group: 2, title: 'Gestione Commesse', roles: ['CompanyPowerAdmin'], component: '', url: '', icon: '' },

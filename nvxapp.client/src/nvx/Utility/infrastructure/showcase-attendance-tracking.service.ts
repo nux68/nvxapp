@@ -47,6 +47,7 @@ export class ShowcaseAttendanceTrackingService {
         titolo: 'Funzionalità',
         sottotitolo: 'Tutto quello che serve per gestire presenze e assenze, dalla timbratura all’export per le paghe.',
         sezioni: [
+          { icon: 'mic-outline', title: 'Comandi vocali e chat', text: 'Parla o scrivi all’assistente: timbra, chiedi un giustificativo o apri la pagina che ti serve, senza cercarla nel menu.' },
           { icon: 'finger-print-outline', title: 'Timbrature', text: 'Timbratura di entrata e uscita e richiesta di correzione delle timbrature dimenticate o errate.' },
           { icon: 'document-text-outline', title: 'Giustificativi', text: 'Ferie, permessi, malattia e le altre causali, chieste dal dipendente e approvate dal responsabile.' },
           { icon: 'time-outline', title: 'Straordinari e banca ore', text: 'Straordinario autorizzato con giustificativo e ore in più accreditate in banca ore nei cartellini approvati.' },
