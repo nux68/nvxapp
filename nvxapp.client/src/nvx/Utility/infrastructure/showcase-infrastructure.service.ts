@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Routes } from '@angular/router';
 import { MainMenuItem, MenuType } from './main-menu.service';
 import { ShowcaseContenuti } from './showcase.model';
+import { SITE_NAME } from './site-name';
 
 /*
  Showcase generico di Infrastructure: voci di menu, rotte e testi delle pagine pubbliche
@@ -44,14 +45,14 @@ export class ShowcaseInfrastructureService {
   public get Contenuti(): ShowcaseContenuti {
     return {
       brand: {
-        nome: 'SiSignore',
+        nome: SITE_NAME,
         icon: 'calendar-clear-outline',
         slogan: 'La piattaforma in cloud per far lavorare meglio la tua azienda.'
       },
       home: {
         etichetta: 'Gestionale in cloud',
         titolo: 'Tutto il lavoro della tua azienda, in un unico posto',
-        sottotitolo: 'SiSignore riunisce utenti, processi e dati in una piattaforma semplice da usare, accessibile da computer, tablet e smartphone.',
+        sottotitolo: `${SITE_NAME} riunisce utenti, processi e dati in una piattaforma semplice da usare, accessibile da computer, tablet e smartphone.`,
         ctaPrimaria: 'Prova gratis',
         ctaSecondaria: 'Scopri le funzionalità',
         punti: [
@@ -101,7 +102,7 @@ export class ShowcaseInfrastructureService {
         sottotitolo: 'Un team che costruisce software gestionale da anni, accanto ad aziende e professionisti.',
         paragrafi: [
           'Crediamo che il software gestionale debba essere semplice: poche pagine chiare, che fanno bene il loro lavoro.',
-          'Per questo sviluppiamo SiSignore insieme a chi lo usa ogni giorno, aggiungendo funzioni a partire dalle esigenze reali.'
+          `Per questo sviluppiamo ${SITE_NAME} insieme a chi lo usa ogni giorno, aggiungendo funzioni a partire dalle esigenze reali.`
         ],
         valori: [
           { icon: 'happy-outline', title: 'Semplicità', text: 'Ogni funzione deve essere chiara al primo utilizzo.' },
@@ -112,7 +113,7 @@ export class ShowcaseInfrastructureService {
       contact: {
         titolo: 'Contatti',
         sottotitolo: 'Hai domande o vuoi una dimostrazione? Scrivici, ti rispondiamo entro un giorno lavorativo.',
-        email: 'info@sisignore.it',
+        email: `info@${SITE_NAME.toLowerCase()}.it`,
         telefono: '+39 000 000 0000',
         indirizzo: 'Via Esempio 1, 00100 Roma',
         orari: 'Lunedì - venerdì, 9:00 - 18:00',

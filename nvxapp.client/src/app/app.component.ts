@@ -1,5 +1,6 @@
 import { combineLatest } from 'rxjs';
 import { Component, DoCheck, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Title } from '@angular/platform-browser';
 import { AccountService } from '../nvx/ClientServer-Service/Infrastructure/Account/account.service';
 import { AuthService } from '../nvx/Utility/infrastructure/auth.service';
 import { UserNavigationService } from '../nvx/Utility/infrastructure/user-navigation.service';
@@ -11,6 +12,7 @@ import { LongJobNotifierService } from '../nvx/Utility/infrastructure/long-job-n
 import { JobNotifierService } from '../nvx/Utility/infrastructure/job-notifier.service';
 import { ThemeService } from '../nvx/Utility/infrastructure/theme.service';
 import { ShowcaseService } from '../nvx/Utility/infrastructure/showcase.service';
+import { SITE_NAME } from '../nvx/Utility/infrastructure/site-name';
 
 
 @Component({
@@ -71,9 +73,13 @@ export class AppComponent implements OnInit, DoCheck {
               private longJobNotifierService: LongJobNotifierService,
               private jobNotifierService: JobNotifierService,
               private themeService: ThemeService, // applica il tema chiaro/scuro salvato fin dall'avvio
-              public showcaseService: ShowcaseService
+              public showcaseService: ShowcaseService,
+              titleService: Title
               )
   {
+
+    // titolo della scheda del browser: nome del sito del ramo
+    titleService.setTitle(SITE_NAME);
 
     this.loadPages();
     this.groupedShowcaseMenu = this.groupMenu(this.showcaseService.Pages);
