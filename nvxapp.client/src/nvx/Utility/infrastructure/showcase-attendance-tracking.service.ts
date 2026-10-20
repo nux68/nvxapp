@@ -97,6 +97,8 @@ export class ShowcaseAttendanceTrackingService {
         sottotitolo: 'Crea l’account della tua azienda: la gestione presenze è subito attiva, con causali e parametri pronti.',
         vantaggi: ['Gratis per 30 giorni', 'Gestione presenze già attiva', 'Nessuna carta di credito'],
         condizioni: 'Accetto le condizioni del servizio e l’informativa sulla privacy',
+        inviata: 'Ti abbiamo inviato un’email con il link per attivare l’account: aprilo e la gestione presenze sarà subito pronta.',
+        confermaTitolo: 'Attivazione account',
         esito: 'La tua azienda è pronta con la gestione presenze attiva. Questi sono gli utenti creati: accedi con la password che hai scelto.'
       }
     };
