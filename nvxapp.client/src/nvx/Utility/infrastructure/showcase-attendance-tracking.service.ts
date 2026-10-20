@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Routes } from '@angular/router';
 import { MainMenuItem } from './main-menu.service';
 import { ShowcaseContenutiRidefiniti } from './showcase.model';
+import { SITE_NAME } from './site-name';
 
 // Showcase della gestione presenze: stesse pagine template di Infrastructure (ShowcaseService),
 // con i testi sulle funzioni del ramo. Le voci di menu e le rotte restano quelle generiche.
@@ -18,7 +19,7 @@ export class ShowcaseAttendanceTrackingService {
   public get Contenuti(): ShowcaseContenutiRidefiniti {
     return {
       brand: {
-        nome: 'SiSignore',
+        nome: SITE_NAME,
         icon: 'calendar-clear-outline',
         slogan: 'Presenze, richieste e note spese della tua azienda, in cloud.'
       },
@@ -83,7 +84,7 @@ export class ShowcaseAttendanceTrackingService {
         sottotitolo: 'Lavoriamo da anni accanto a consulenti del lavoro, uffici del personale e aziende.',
         paragrafi: [
           'Conosciamo da vicino il lavoro di chi chiude le presenze a fine mese: fogli da ricontrollare, richieste via email, causali da ricopiare nel programma paghe.',
-          'SiSignore nasce per togliere questo lavoro: i dipendenti chiedono, i responsabili approvano e i dati arrivano alle paghe già controllati.'
+          `${SITE_NAME} nasce per togliere questo lavoro: i dipendenti chiedono, i responsabili approvano e i dati arrivano alle paghe già controllati.`
         ],
         valori: [
           { icon: 'happy-outline', title: 'Semplice per i dipendenti', text: 'Timbrare e chiedere un permesso richiede pochi secondi.' },
