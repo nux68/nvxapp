@@ -334,11 +334,17 @@ export class TimeSheetAdminPageComponent implements OnInit, OnDestroy {
     return this.platform.width() < 576;
   }
 
-  /** Richiesta ancora da decidere (approvabile o rifiutabile): come ShowActionSheet del calendario del dipendente,
-   *  decide se il chip si apre al clic ed e' a piena intensita'; le altre si vedono attenuate. */
+  /** Richiesta ancora da decidere (approvabile o rifiutabile): il chip si apre al clic. */
   public Decidibile(idDip_GG_Richiesta?: number): boolean {
     const req = this.get_Dip_GG_Richiesta(idDip_GG_Richiesta);
     return !!req && (this.timeSheetService.Dip_GG_Richiesta_Admin_Can_Approve(req) || this.timeSheetService.Dip_GG_Richiesta_Admin_Can_Reject(req));
+  }
+
+  /** Intensita' del chip: la stessa regola del calendario del dipendente (ShowActionSheet), cosi' i due
+   *  calendari si vedono uguali; attenuate le richieste su cui il dipendente non puo' piu' agire. */
+  public Attiva(idDip_GG_Richiesta?: number): boolean {
+    const req = this.get_Dip_GG_Richiesta(idDip_GG_Richiesta);
+    return !!req && this.timeSheetService.Dip_GG_Richiesta_User_Can_Delete(req);
   }
 
   get_Dip_GG_Richiesta(idDip_GG_Richiesta?: number): Dip_GG_RichiestaModel|null{
