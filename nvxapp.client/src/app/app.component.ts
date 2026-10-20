@@ -39,6 +39,8 @@ export class AppComponent implements OnInit, DoCheck {
   public groupedUserMenu: GroupMainMenuItem[] = [];
   // menu dello showcase, mostrato al posto degli altri prima del login
   public groupedShowcaseMenu: GroupMainMenuItem[] = [];
+  // sezione dello showcase aperta all'inizio: la prima
+  public showcaseMenuAperto = '';
   public selectedMenu: string[] = [(this.mainMenuInfrastructureService.GetMenuHeaderMenu(this.mainMenuService.Pages4User)).title];
   
   IsInGroupCompanyAdmin: boolean = false;
@@ -83,6 +85,7 @@ export class AppComponent implements OnInit, DoCheck {
 
     this.loadPages();
     this.groupedShowcaseMenu = this.groupMenu(this.showcaseService.Pages);
+    this.showcaseMenuAperto = this.groupedShowcaseMenu[0]?.menuHeader.title ?? '';
 
   }
 
