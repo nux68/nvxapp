@@ -21,24 +21,15 @@
         }
       </div>
 
-      @if (utentiCreati) {
-        <!-- registrazione fatta: utenti per il primo accesso -->
+      @if (mailInviata) {
+        <!-- richiesta inviata: l'account si attiva dal link ricevuto per email -->
         <div class="nvx-sc-form">
           <div class="ion-padding">
-            <h2>{{ descrizioneCreata }}</h2>
-            <p class="nvx-sc-muted">{{ c.esito }}</p>
+            <div class="nvx-sc-card-icon"><ion-icon name="mail-unread-outline"></ion-icon></div>
+            <h2>Controlla la posta</h2>
+            <p>{{ c.inviata }}</p>
+            <p class="nvx-sc-muted">Email inviata a <strong>{{ mailInviata }}</strong>. Il link vale {{ scadenzaOre }} ore; se non la trovi guarda anche nella posta indesiderata.</p>
           </div>
-          <ion-list lines="full">
-            @for (u of utentiCreati; track u.userName) {
-              <ion-item>
-                <ion-icon slot="start" name="person-circle-outline"></ion-icon>
-                <ion-label>
-                  <h3>{{ u.userName }}</h3>
-                  <p>{{ u.roles.join(', ') }}</p>
-                </ion-label>
-              </ion-item>
-            }
-          </ion-list>
         </div>
       } @else {
         <form class="nvx-sc-form" [formGroup]="form">

@@ -7,7 +7,8 @@ using nvxapp.server.service.ClientServer_Service.ModelsBase;
 
 namespace nvxapp.server.Controllers.Infrastructure
 {
-    // Registrazione di una nuova azienda dallo showcase: senza login, l'azienda nasce nel ramo DEMO.
+    // Registrazione di una nuova azienda dallo showcase, senza login: richiesta con invio del link
+    // di conferma per email, poi conferma dal link (l'azienda nasce nel ramo DEMO).
     [ApiController]
     [Route("api/[controller]")]
     public class RegistrationController : NvxControllerBase
@@ -28,6 +29,15 @@ namespace nvxapp.server.Controllers.Infrastructure
         public async Task<GenericResult<CompanyRegisterOutModel>> CompanyRegister(GenericRequest<CompanyRegisterInModel> inModel)
         {
             return await _registrationService.CompanyRegister(inModel, false);
+        }
+
+        // conferma dal link dell'email: crea l'azienda
+        [AllowAnonymous]
+        [HttpPost]
+        [Route("CompanyRegisterConfirm")]
+        public async Task<GenericResult<CompanyRegisterConfirmOutModel>> CompanyRegisterConfirm(GenericRequest<CompanyRegisterConfirmInModel> inModel)
+        {
+            return await _registrationService.CompanyRegisterConfirm(inModel, false);
         }
     }
 }
