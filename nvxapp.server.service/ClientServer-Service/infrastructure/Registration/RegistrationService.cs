@@ -360,16 +360,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Registration
         private string LinkConferma(string token)
             => BaseUrl() + PaginaConferma + "?token=" + Uri.EscapeDataString(token);
 
-        // indirizzo del sito: App:PublicUrl, altrimenti l'origine della pagina chiamante
-        private string BaseUrl()
-        {
-            string? baseUrl = _configuration["App:PublicUrl"];
-            if (string.IsNullOrWhiteSpace(baseUrl))
-                baseUrl = _httpContextAccessor.HttpContext?.Request.Headers["Origin"].FirstOrDefault();
-            if (string.IsNullOrWhiteSpace(baseUrl))
-                throw new Exception("Indirizzo del sito non configurato (App:PublicUrl).");
-            return baseUrl.TrimEnd('/');
-        }
+        // indirizzo del sito: App:PublicUrl, altrimenti l'origine della pagina chiamante (SiteUrl)
+        private string BaseUrl() => SiteUrl.Base(_configuration, _httpContextAccessor);
 
         // token del link (solo nell'email) e suo hash (nel database)
         private static string NuovoToken()
