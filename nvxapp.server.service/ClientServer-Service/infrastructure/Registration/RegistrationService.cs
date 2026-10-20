@@ -29,7 +29,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Registration
       2. CompanyRegisterConfirm: dal link, crea l'azienda nel ramo DEMO (studio DEMO del centro DEMO,
          creati da PopolateDB) con la stessa creazione del menu "Aziende" (AccountService.CompanyPut):
          stessi utenti principali e, nei rami applicativi, gli stessi applicativi attivati e
-         inizializzati sulle nuove aziende. Gli utenti ricevono la password scelta alla registrazione.
+         inizializzati sulle nuove aziende. Gli utenti ricevono la password scelta alla registrazione;
+         all'email arriva il riepilogo degli utenti creati con il link di accesso (senza password).
      Non si usa EmailConfirmed di Identity: gli utenti nascono anche dai menu, senza registrazione.
      Gli errori di compilazione dei dati tornano come messaggi (MessageType.Error), mostrati dalla pagina.
      Indirizzo del link: App:PublicUrl di appsettings (es. https://miosito.it), altrimenti l'origine
@@ -46,8 +47,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Registration
         private const int RagioneSocialeMaxLength = 40;
         // richieste in attesa ammesse per lo stesso indirizzo email (contro gli invii ripetuti)
         private const int RichiesteMaxPerMail = 3;
-        // pagina dello showcase che riceve il link
+        // pagina dello showcase che riceve il link e pagina di accesso (nell'email di riepilogo)
         private const string PaginaConferma = "/confirm-email";
+        private const string PaginaLogin = "/login";
         // suffissi degli utenti creati con l'azienda (CompanyPut; "_User" nei rami che creano anche il dipendente)
         private static readonly string[] SuffissiUtenti = { "_PowerAdmin", "_Admin", "_User" };
 
@@ -249,6 +251,17 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Registration
 
                 await RiempiAzienda(retVal, idCompany);
 
+                // riepilogo delle utenze per email (solo alla prima conferma): se non parte,
+                // l'azienda resta creata e gli utenti si vedono comunque nella pagina
+                try
+                {
+                    await InviaEmailRiepilogo(richiesta.Mail, retVal.Descrizione, retVal.Users);
+                }
+                catch (Exception e)
+                {
+                    Log.Warning(e, "Registrazione: invio del riepilogo delle utenze a {mail} non riuscito.", richiesta.Mail);
+                }
+
                 await Task.Delay(DelayAsyncMethod);
                 return retVal;
             }, isSubProcess);
@@ -317,15 +330,45 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Registration
             await _emailService.SendAsync(mail, subject, html, text);
         }
 
-        // indirizzo della pagina di conferma: App:PublicUrl, altrimenti l'origine della pagina chiamante
+        // azienda attivata: utenti creati con i ruoli e link di accesso (la password e' quella
+        // scelta alla registrazione e non si invia)
+        private async Task InviaEmailRiepilogo(string mail, string descrizione, List<CompanyRegisterUserModel> users)
+        {
+            string sito = SiteName.Value;
+            string linkLogin = BaseUrl() + PaginaLogin;
+            string linkHtml = WebUtility.HtmlEncode(linkLogin);
+            string righeHtml = string.Join("", users.Select(u =>
+                $@"<tr><td style=""padding:8px 12px;border-bottom:1px solid #eee;font-weight:bold"">{WebUtility.HtmlEncode(u.UserName)}</td>" +
+                $@"<td style=""padding:8px 12px;border-bottom:1px solid #eee;color:#666"">{WebUtility.HtmlEncode(string.Join(", ", u.Roles))}</td></tr>"));
+            string righeTesto = string.Join("\n", users.Select(u => $"  - {u.UserName} ({string.Join(", ", u.Roles)})"));
+
+            string subject = $"{sito}: l'azienda {descrizione} e' attiva";
+            string html = $@"<div style=""font-family:Arial,Helvetica,sans-serif;font-size:15px;color:#222;max-width:560px"">
+  <h2 style=""margin:0 0 16px 0"">{WebUtility.HtmlEncode(sito)}</h2>
+  <p>L'azienda <b>{WebUtility.HtmlEncode(descrizione)}</b> e' attiva. Questi sono gli utenti creati:</p>
+  <table style=""border-collapse:collapse;margin:16px 0"">{righeHtml}</table>
+  <p>Per tutti vale la password che hai scelto alla registrazione.</p>
+  <p style=""margin:24px 0""><a href=""{linkHtml}"" style=""background:#ff7a00;color:#fff;padding:12px 22px;border-radius:22px;text-decoration:none;font-weight:bold"">Accedi</a></p>
+  <p style=""color:#666;font-size:13px"">Conserva questa email: contiene i nomi degli utenti per accedere.</p>
+</div>";
+            string text = $"{sito}\n\nL'azienda {descrizione} e' attiva. Questi sono gli utenti creati:\n{righeTesto}\n\n" +
+                          $"Per tutti vale la password che hai scelto alla registrazione.\nAccedi da: {linkLogin}";
+            await _emailService.SendAsync(mail, subject, html, text);
+        }
+
+        // indirizzo della pagina di conferma
         private string LinkConferma(string token)
+            => BaseUrl() + PaginaConferma + "?token=" + Uri.EscapeDataString(token);
+
+        // indirizzo del sito: App:PublicUrl, altrimenti l'origine della pagina chiamante
+        private string BaseUrl()
         {
             string? baseUrl = _configuration["App:PublicUrl"];
             if (string.IsNullOrWhiteSpace(baseUrl))
                 baseUrl = _httpContextAccessor.HttpContext?.Request.Headers["Origin"].FirstOrDefault();
             if (string.IsNullOrWhiteSpace(baseUrl))
                 throw new Exception("Indirizzo del sito non configurato (App:PublicUrl).");
-            return baseUrl.TrimEnd('/') + PaginaConferma + "?token=" + Uri.EscapeDataString(token);
+            return baseUrl.TrimEnd('/');
         }
 
         // token del link (solo nell'email) e suo hash (nel database)
