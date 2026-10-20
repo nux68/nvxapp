@@ -25,6 +25,18 @@
   text-decoration: none;
 }
 
+.nvx-login-forgot {
+  margin-top: 14px;
+  text-align: center;
+  font-size: 14px;
+
+  a {
+    color: var(--ion-color-primary);
+    cursor: pointer;
+    text-decoration: none;
+  }
+}
+
 .error-container {
   margin-top: 12px;
   padding: 10px 14px;

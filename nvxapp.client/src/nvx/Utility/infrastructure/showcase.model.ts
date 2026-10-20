@@ -86,6 +86,15 @@ export interface ShowcaseContenuti {
     confermaTitolo: string;
     esito: string;
   };
+  /** recupero dell'accesso con password dimenticata (/forgot-password e /reset-password) */
+  passwordRecovery: {
+    titolo: string;
+    sottotitolo: string;
+    inviata: string;
+    resetTitolo: string;
+    resetSottotitolo: string;
+    resetFatto: string;
+  };
 }
 
 /** Ridefinizione di un ramo applicativo: solo le sezioni da sostituire (ognuna per intero). */

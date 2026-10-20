@@ -148,6 +148,11 @@ export class LoginPageComponent  implements OnInit {
   }
 
 
+  // recupero dell'accesso: nome utente gia' scritto, se c'e'
+  passwordDimenticata() {
+    this.navCtrl.navigateRoot('/forgot-password', { state: { userName: this.loginForm.controls['email'].value ?? '' } });
+  }
+
   private _handleButtonConfirmClick = (param: object) => {
 
     this.login()

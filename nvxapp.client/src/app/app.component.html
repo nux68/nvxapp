@@ -12,19 +12,28 @@
 
         <!-- prima del login: solo le voci dello showcase (ShowcaseService); dopo il login i menu per ruolo -->
         @if (authService.Token == null) {
-          @for (group of groupedShowcaseMenu; track group) {
-            <div class="nvx-menu-gruppo">{{ group.menuHeader.title }}</div>
-            <ion-list id="nvx-list">
-              @for (p of group.menuItem; track p) {
-                <ion-menu-toggle auto-hide="false">
-                  <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
-                    <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-outline'"></ion-icon>
-                    <ion-label>{{ p.title }}</ion-label>
-                  </ion-item>
-                </ion-menu-toggle>
-              }
-            </ion-list>
-          }
+          <!-- sezioni che si aprono una alla volta, come dopo il login (all'inizio la prima) -->
+          <ion-accordion-group [value]="showcaseMenuAperto">
+            @for (group of groupedShowcaseMenu; track group) {
+              <ion-accordion value="{{group.menuHeader.title}}" toggleIcon="chevron-down" toggleIconSlot="end">
+                <ion-item slot="header">
+                  <ion-label>{{ group.menuHeader.title }}</ion-label>
+                </ion-item>
+                <div class="ion-padding" slot="content" style="padding:0px;">
+                  <ion-list id="nvx-list">
+                    @for (p of group.menuItem; track p) {
+                      <ion-menu-toggle auto-hide="false">
+                        <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
+                          <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-outline'"></ion-icon>
+                          <ion-label>{{ p.title }}</ion-label>
+                        </ion-item>
+                      </ion-menu-toggle>
+                    }
+                  </ion-list>
+                </div>
+              </ion-accordion>
+            }
+          </ion-accordion-group>
         } @else {
         <ion-accordion-group [value]=selectedMenu>
 

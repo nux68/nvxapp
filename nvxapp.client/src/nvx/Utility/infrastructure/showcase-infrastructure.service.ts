@@ -26,7 +26,8 @@ export class ShowcaseInfrastructureService {
       { menuType: MenuType.MenuItem,   zorder: 500, group: 0, title: 'Contatti'        , component: "ShowcaseContactPageComponent", url: '/contact', icon: 'mail' },
       { menuType: MenuType.MenuHeader, zorder:   0, group: 1, title: 'Area riservata'  , component: '', url: '', icon: '' },
       { menuType: MenuType.MenuItem,   zorder: 100, group: 1, title: 'Accedi'          , component: "LoginPageComponent", url: '/login', icon: 'log-in' },
-      { menuType: MenuType.MenuItem,   zorder: 200, group: 1, title: 'Registrati'      , component: "RegisterPageComponent", url: '/register', icon: 'person-add' }
+      { menuType: MenuType.MenuItem,   zorder: 200, group: 1, title: 'Registrati'      , component: "RegisterPageComponent", url: '/register', icon: 'person-add' },
+      { menuType: MenuType.MenuItem,   zorder: 300, group: 1, title: 'Password dimenticata', component: "ForgotPasswordPageComponent", url: '/forgot-password', icon: 'key' }
     ];
   }
 
@@ -41,6 +42,9 @@ export class ShowcaseInfrastructureService {
       { path: 'register', loadChildren: () => import('../../pages/infrastructure/register-page/register-page.module').then(m => m.RegisterPageModule) },
       // link dell'email di conferma della registrazione (non e' una voce di menu)
       { path: 'confirm-email', loadChildren: () => import('../../pages/infrastructure/confirm-email-page/confirm-email-page.module').then(m => m.ConfirmEmailPageModule) },
+      // recupero dell'accesso: richiesta del link e nuova password dal link dell'email
+      { path: 'forgot-password', loadChildren: () => import('../../pages/infrastructure/forgot-password-page/forgot-password-page.module').then(m => m.ForgotPasswordPageModule) },
+      { path: 'reset-password', loadChildren: () => import('../../pages/infrastructure/reset-password-page/reset-password-page.module').then(m => m.ResetPasswordPageModule) },
     ];
   }
 
@@ -129,6 +133,14 @@ export class ShowcaseInfrastructureService {
         inviata: 'Ti abbiamo inviato un’email con il link per attivare l’account: aprilo per completare la registrazione.',
         confermaTitolo: 'Attivazione account',
         esito: 'La tua azienda è pronta. Questi sono gli utenti creati: accedi con la password che hai scelto.'
+      },
+      passwordRecovery: {
+        titolo: 'Password dimenticata',
+        sottotitolo: 'Indica il tuo nome utente: ti invieremo all’email dell’utente il link per sceglierne una nuova.',
+        inviata: 'Se il nome utente esiste, all’email associata è stato inviato il link per reimpostare la password.',
+        resetTitolo: 'Nuova password',
+        resetSottotitolo: 'Scegli la nuova password per il tuo utente.',
+        resetFatto: 'La password è stata cambiata: accedi con quella nuova.'
       }
     };
   }
