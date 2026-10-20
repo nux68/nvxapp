@@ -12,6 +12,7 @@ import { SignalrService } from '../../../Utility/infrastructure/signalr.service'
 import { environment } from '../../../../environments/environment';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { SHOWCASE_AFTER_LOGIN } from '../../RoleGuard/infrastructure/showcase-guard';
+import { SITE_NAME } from '../../../Utility/infrastructure/site-name';
 
 @Component({
   selector: 'app-login-page',
@@ -23,6 +24,7 @@ import { SHOWCASE_AFTER_LOGIN } from '../../RoleGuard/infrastructure/showcase-gu
 export class LoginPageComponent  implements OnInit {
 
   public title!: string;
+  public readonly siteName = SITE_NAME;
   loginForm: FormGroup;
   public loginError!: string;
 
