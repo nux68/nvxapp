@@ -10,6 +10,7 @@ namespace nvxapp.server.data.Infrastructure
         public DbSet<AppSetting> AppSetting { get; set; }
         public DbSet<CompanyApplication> CompanyApplication { get; set; }
         public DbSet<CompanyMenuRestriction> CompanyMenuRestriction { get; set; }
+        public DbSet<CompanyRegistrationRequest> CompanyRegistrationRequest { get; set; }
 
         public DbSet<Dealer> Dealer { get; set; }
         public DbSet<UserDealer> UserDealer { get; set; }
@@ -27,6 +28,7 @@ namespace nvxapp.server.data.Infrastructure
             Gen_AppSetting(modelBuilder);
             Gen_CompanyApplication(modelBuilder);
             Gen_CompanyMenuRestriction(modelBuilder);
+            Gen_CompanyRegistrationRequest(modelBuilder);
         }
 
         private void Gen_InitDB(ModelBuilder modelBuilder)
@@ -63,6 +65,20 @@ namespace nvxapp.server.data.Infrastructure
                       .OnDelete(DeleteBehavior.Cascade);
             });
         }
+        // richieste di registrazione dallo showcase in attesa della conferma dell'email
+        private void Gen_CompanyRegistrationRequest(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<CompanyRegistrationRequest>(entity =>
+            {
+                entity.ToTable("CompanyRegistrationRequest", Schema);
+                entity.HasKey(e => e.Id);
+
+                // il link si cerca per hash del token
+                entity.HasIndex(e => e.TokenHash).IsUnique();
+                entity.HasIndex(e => e.Descrizione);
+            });
+        }
+
         private void Gen_CompanyMenuRestriction(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<CompanyMenuRestriction>(entity =>

@@ -80,6 +80,10 @@ export interface ShowcaseContenuti {
     sottotitolo: string;
     vantaggi: string[];
     condizioni: string;
+    /** dopo la richiesta: invito ad aprire il link ricevuto per email */
+    inviata: string;
+    /** pagina di conferma (/confirm-email): titolo e testo con gli utenti creati */
+    confermaTitolo: string;
     esito: string;
   };
 }

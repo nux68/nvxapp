@@ -39,6 +39,8 @@ export class ShowcaseInfrastructureService {
       { path: 'about', loadChildren: () => import('../../pages/infrastructure/showcase-about-page/showcase-about-page.module').then(m => m.ShowcaseAboutPageModule) },
       { path: 'contact', loadChildren: () => import('../../pages/infrastructure/showcase-contact-page/showcase-contact-page.module').then(m => m.ShowcaseContactPageModule) },
       { path: 'register', loadChildren: () => import('../../pages/infrastructure/register-page/register-page.module').then(m => m.RegisterPageModule) },
+      // link dell'email di conferma della registrazione (non e' una voce di menu)
+      { path: 'confirm-email', loadChildren: () => import('../../pages/infrastructure/confirm-email-page/confirm-email-page.module').then(m => m.ConfirmEmailPageModule) },
     ];
   }
 
@@ -124,6 +126,8 @@ export class ShowcaseInfrastructureService {
         sottotitolo: 'Crea l’account della tua azienda e inizia subito a usare la piattaforma.',
         vantaggi: ['Gratis per 30 giorni', 'Nessuna carta di credito', 'Attiva in un minuto'],
         condizioni: 'Accetto le condizioni del servizio e l’informativa sulla privacy',
+        inviata: 'Ti abbiamo inviato un’email con il link per attivare l’account: aprilo per completare la registrazione.',
+        confermaTitolo: 'Attivazione account',
         esito: 'La tua azienda è pronta. Questi sono gli utenti creati: accedi con la password che hai scelto.'
       }
     };

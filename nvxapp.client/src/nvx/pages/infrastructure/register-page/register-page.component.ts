@@ -3,15 +3,16 @@ import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators }
 import { NavController } from '@ionic/angular/lazy';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { RegistrationService } from '../../../ClientServer-Service/Infrastructure/Registration/registration.service';
-import { CompanyRegisterInModel, CompanyRegisterUserModel } from '../../../ClientServer-Service/Infrastructure/Registration/Models/company-register-model';
+import { CompanyRegisterInModel } from '../../../ClientServer-Service/Infrastructure/Registration/Models/company-register-model';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { ShowcaseService } from '../../../Utility/infrastructure/showcase.service';
 import { ShowcaseContenuti } from '../../../Utility/infrastructure/showcase.model';
 
 /*
- Showcase: registrazione di una nuova azienda (prima del login). L'azienda nasce nel ramo DEMO
- con i suoi utenti principali (e, nei rami applicativi, gli applicativi previsti per le nuove aziende).
- A registrazione fatta si mostrano gli utenti creati e si va al login con il primo gia' compilato.
+ Showcase: registrazione di una nuova azienda (prima del login). Il server salva la richiesta e invia
+ all'email indicata il link di conferma: l'azienda nasce (nel ramo DEMO, con i suoi utenti principali e,
+ nei rami applicativi, gli applicativi previsti per le nuove aziende) solo aprendo il link, nella
+ pagina /confirm-email (ConfirmEmailPageComponent).
 */
 @Component({
   selector: 'app-register-page',
@@ -29,13 +30,14 @@ export class RegisterPageComponent implements OnInit {
 
   public form: FormGroup;
   public errori: string[] = [];
-  public utentiCreati: CompanyRegisterUserModel[] | null = null;
-  public descrizioneCreata = '';
+  // richiesta inviata: indirizzo a cui e' arrivato il link e sua validita'
+  public mailInviata: string | null = null;
+  public scadenzaOre = 0;
 
   public buttonbar: ButtonItem[] = [];
   private btnRegistrati: ButtonItem;
   private btnAnnulla: ButtonItem;
-  private btnAccedi: ButtonItem;
+  private btnHome: ButtonItem;
 
   constructor(private registrationService: RegistrationService,
               public showcaseService: ShowcaseService,
@@ -46,9 +48,7 @@ export class RegisterPageComponent implements OnInit {
     this.btnRegistrati = new ButtonItem('Registrati', 'person-add-outline', 'primary', true, () => this.registra());
     this.btnAnnulla = userInterfaceService.Btn_Annulla;
     this.btnAnnulla.event = () => this.navCtrl.navigateRoot('/home');
-    this.btnAccedi = userInterfaceService.Btn_LogIn;
-    this.btnAccedi.text = 'Accedi';
-    this.btnAccedi.event = () => this.accedi();
+    this.btnHome = new ButtonItem('Home', 'home-outline', 'primary', false, () => this.navCtrl.navigateRoot('/home'));
     this.buttonbar = [this.btnRegistrati, this.btnAnnulla];
 
     this.form = this.fb.group({
@@ -107,16 +107,12 @@ export class RegisterPageComponent implements OnInit {
           this.errori = messaggi.map(m => m.text);
           return;
         }
-        this.descrizioneCreata = res.data.descrizione;
-        this.utentiCreati = res.data.users;
-        this.buttonbar = [this.btnAccedi];
+        this.mailInviata = res.data.mail;
+        this.scadenzaOre = res.data.scadenzaOre;
+        this.buttonbar = [this.btnHome];
       },
       error: () => this.btnRegistrati.disabled = !this.form.valid
     });
-  }
-
-  private accedi(): void {
-    this.navCtrl.navigateRoot('/login', { state: { userName: this.utentiCreati?.[0]?.userName ?? '' } });
   }
 
   private static lettereOCifre(control: AbstractControl): ValidationErrors | null {

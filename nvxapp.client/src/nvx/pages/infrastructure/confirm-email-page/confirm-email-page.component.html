@@ -1,0 +1,51 @@
+<app-page-toolbar [title]="title"
+  [showFilter]="false"
+  [showBreadcrumbs]="false">
+</app-page-toolbar>
+
+<ion-content [fullscreen]="true">
+  <div class="nvx-sc">
+
+    <section class="nvx-sc-hero">
+      <h1 class="nvx-sc-title">{{ c.confermaTitolo }}</h1>
+    </section>
+
+    <section class="nvx-sc-form-wrap nvx-sc-text">
+      <div class="nvx-sc-form">
+        @if (inCorso) {
+          <div class="ion-padding ion-text-center">
+            <ion-spinner name="crescent"></ion-spinner>
+            <p class="nvx-sc-muted">Attivazione in corso…</p>
+          </div>
+        } @else if (utentiCreati) {
+          <!-- azienda creata: utenti per il primo accesso -->
+          <div class="ion-padding">
+            <h2>{{ descrizione }}</h2>
+            <p class="nvx-sc-muted">{{ c.esito }}</p>
+          </div>
+          <ion-list lines="full">
+            @for (u of utentiCreati; track u.userName) {
+              <ion-item>
+                <ion-icon slot="start" name="person-circle-outline"></ion-icon>
+                <ion-label>
+                  <h3>{{ u.userName }}</h3>
+                  <p>{{ u.roles.join(', ') }}</p>
+                </ion-label>
+              </ion-item>
+            }
+          </ion-list>
+        } @else if (errori.length > 0) {
+          <div class="nvx-sc-error">
+            @for (e of errori; track e) {
+              <p>{{ e }}</p>
+            }
+          </div>
+        }
+      </div>
+    </section>
+
+  </div>
+  <app-showcase-footer></app-showcase-footer>
+</ion-content>
+
+<app-page-buttonbar [buttonbar]="buttonbar"></app-page-buttonbar>
