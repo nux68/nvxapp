@@ -40,32 +40,47 @@
                 @for (day of week; track day; let i = $index) {
                   <div class="day" [ngClass]="getDayClass(day, i)">
                     <div class="day-number">{{ day.day }}</div>
+                    <!-- ore lavorate e ore in piu' del giorno (provvisorie finche' il periodo di conteggio non si chiude) -->
+                    @if (day.isCurrentMonth && day.dip_GG_Result && day.dip_GG_Result.hH_Lav && day.dip_GG_Result.hH_Lav !== '00:00:00') {
+                      <div class="day-ore">
+                        {{ day.dip_GG_Result.hH_Lav | slice:0:5 }}
+                        @if (timeSheetService.eccedenzaGiorno(day.dip_GG_Result); as ecc) {
+                          <span class="day-ecc"
+                            [class.day-ecc-provvisoria]="ecc.provvisoria"
+                            [class.day-ecc-mancanti]="ecc.minuti < 0"
+                            [title]="ecc.dettaglio">
+                            {{ ecc.testo }}
+                          </span>
+                        }
+                      </div>
+                    }
+                    <!-- come nel calendario del dipendente (usertimesheet): si aprono e sono a piena intensita'
+                         solo le richieste ancora da decidere -->
                     <div class="day-content">
                       @if (day.dip_GG_Giustificativi && day.dip_GG_Giustificativi.length > 0) {
                         <div class="justifications">
                           @if (day.dip_GG_Giustificativi?.length > 0) {
                             @for (just of day.dip_GG_Giustificativi; track just) {
-<ion-button [disabled]="(!timeSheetService.Dip_GG_Richiesta_Admin_Can_Approve( get_Dip_GG_Richiesta(just.idDip_GG_Richiesta) ) &&
-                                             !timeSheetService.Dip_GG_Richiesta_Admin_Can_Reject(get_Dip_GG_Richiesta(just.idDip_GG_Richiesta)) )"
-                                size="small" shape="round"
-                                [ngClass]="'nvx-seg-' + (segmenti.get(just) ?? 'no')"
-                                [class.nvx-seg-attiva]="segmenti.has(just) && just.idDip_GG_Richiesta === richiestaEvidenziata"
-                                (mouseenter)="richiestaEvidenziata = segmenti.has(just) ? just.idDip_GG_Richiesta : null"
-                                (mouseleave)="richiestaEvidenziata = null"
-                                [title]="timeSheetService.periodoRichiestaTesto(get_Dip_GG_Richiesta(just.idDip_GG_Richiesta))"
-                                    [ngStyle]="{
-                                              '--background': timeSheetService.get_Dip_GG_Giustificativi_backColor(just),
-                                              '--color': timeSheetService.get_Dip_GG_Giustificativi_txtColor(just),
-                                              '--padding-top': '0px',
-                                              '--padding-bottom': '0px',
-                                              'font-size': '0.6em',
-                                              'margin-bottom':'1px',
-                                              'margin-top':'0px'
-                                            }"
-                                (click)="actionSheetOpen(just)">
-                                {{ just.idPar_Giustificativi | parGiustificativiToLongText }}
-                                <ion-icon slot="end" [name]="timeSheetService.get_StatoRichiesta_icon(get_Dip_GG_Richiesta(just.idDip_GG_Richiesta))"></ion-icon>
-                              </ion-button>
+                              <ion-chip
+                                  [ngClass]="'nvx-seg-' + (segmenti.get(just) ?? 'no')"
+                                  [class.nvx-seg-attiva]="segmenti.has(just) && just.idDip_GG_Richiesta === richiestaEvidenziata"
+                                  (mouseenter)="richiestaEvidenziata = segmenti.has(just) ? just.idDip_GG_Richiesta : null"
+                                  (mouseleave)="richiestaEvidenziata = null"
+                                  [title]="timeSheetService.periodoRichiestaTesto(get_Dip_GG_Richiesta(just.idDip_GG_Richiesta))"
+                                  [ngStyle]="{
+                                             'background': timeSheetService.get_Dip_GG_Giustificativi_backColor(just),
+                                             'color': timeSheetService.get_Dip_GG_Giustificativi_txtColor(just),
+                                             'font-size': '0.8em',
+                                             'margin-bottom': '0px',
+                                             'margin-top': '0px',
+                                             'padding': isMobile ? '5px' : null,
+                                             'cursor': Decidibile(just.idDip_GG_Richiesta) ? 'pointer' : 'default',
+                                             'opacity': isMobile ? '1' :(Decidibile(just.idDip_GG_Richiesta) ? '1' : '0.5')
+                                           }"
+                                (click)="Decidibile(just.idDip_GG_Richiesta) ? actionSheetOpen(just) : null">
+                                {{ just.idPar_Giustificativi | parGiustificativiToShortText }} {{ just.hours.substring(0, 5)  }}
+                                <ion-icon  [name]="timeSheetService.get_StatoRichiesta_icon(get_Dip_GG_Richiesta(just.idDip_GG_Richiesta))"></ion-icon>
+                              </ion-chip>
                             }
                           } @else {
                             <span class="no-data">-</span>
@@ -76,22 +91,21 @@
                         <div class="timestamps">
                           @if (day.dip_GG_Timbratura?.length > 0) {
                             @for (record of day.dip_GG_Timbratura; track record) {
-<ion-button [disabled]="(!timeSheetService.Dip_GG_Richiesta_Admin_Can_Approve( get_Dip_GG_Richiesta(record.idDip_GG_Richiesta) ) &&
-                                             !timeSheetService.Dip_GG_Richiesta_Admin_Can_Reject(get_Dip_GG_Richiesta(record.idDip_GG_Richiesta)) )"
-                                size="small" shape="round"
-                                    [ngStyle]="{
-                                             '--background': timeSheetService.get_Dip_GG_Timbratura_backColor(record),
-                                             '--color': timeSheetService.get_Dip_GG_Timbratura_txtColor(record),
-                                             '--padding-top': '0px',
-                                             '--padding-bottom': '0px',
-                                             'font-size': '0.6em',
-                                             'margin-bottom':'1px',
-                                             'margin-top':'0px'
-                                           }"
-                                (click)="actionSheetOpen(record)">
+                              <ion-chip
+                                  [ngStyle]="{
+                                               'background': timeSheetService.get_Dip_GG_Timbratura_backColor(record),
+                                               'color': timeSheetService.get_Dip_GG_Timbratura_txtColor(record),
+                                               'font-size': '0.8em',
+                                               'margin-bottom': '0px',
+                                               'margin-top': '0px',
+                                               'padding': isMobile ? '3px' : null,
+                                               'cursor': Decidibile(record.idDip_GG_Richiesta) ? 'pointer' : 'default',
+                                               'opacity': isMobile ? '1' :(Decidibile(record.idDip_GG_Richiesta) ? '1' : '0.5')
+                                             }"
+                                (click)="Decidibile(record.idDip_GG_Richiesta) ? actionSheetOpen(record) : null">
                                 {{ record.timbraturaTipo | tipoTimbraturaToShortText }}{{ record.timbratura | date:'HH:mm' }}
-                                <ion-icon slot="end" [name]="timeSheetService.get_StatoRichiesta_icon(get_Dip_GG_Richiesta(record.idDip_GG_Richiesta))"></ion-icon>
-                              </ion-button>
+                                <ion-icon [name]="timeSheetService.get_StatoRichiesta_icon(get_Dip_GG_Richiesta(record.idDip_GG_Richiesta))"></ion-icon>
+                              </ion-chip>
                             }
                           } @else {
                             <span class="no-data">-</span>

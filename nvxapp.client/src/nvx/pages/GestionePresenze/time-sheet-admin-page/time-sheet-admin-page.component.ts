@@ -12,7 +12,8 @@ import { ParGiustificativiToLongTextPipe } from '../../../shared/pipe/GestionePr
 import { TipoTimbraturaToLongTextPipe } from '../../../shared/pipe/GestionePresenze/tipo-timbratura-to-long-text.pipe';
 import { DipGGRichiestaService } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/dip-gg-richiesta.service';
 import { DateTimeUtilService } from '../../../Utility/infrastructure/date-time-util.service';
-import { NavController } from '@ionic/angular/lazy';
+import { NavController, Platform } from '@ionic/angular/lazy';
+import { Dip_GG_ResultModel } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Result/Models/dip-gg-result-model';
 import { FabMenuService, FabMenuItem } from '../../../Utility/infrastructure/fab-menu.service';
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
 import { Subscription } from 'rxjs';
@@ -40,7 +41,8 @@ export class TimeSheetAdminPageComponent implements OnInit, OnDestroy {
     day: number,
     isCurrentMonth: boolean,
     dip_GG_Timbratura: Dip_GG_TimbraturaModel[],
-    dip_GG_Giustificativi: Dip_GG_GiustificativiModel[]
+    dip_GG_Giustificativi: Dip_GG_GiustificativiModel[],
+    dip_GG_Result?: Dip_GG_ResultModel
   }>>;
 
 
@@ -59,7 +61,8 @@ export class TimeSheetAdminPageComponent implements OnInit, OnDestroy {
               public timeSheetService: TimeSheetService,
               private dipGGRichiestaService: DipGGRichiestaService,
               public dateTimeUtilService: DateTimeUtilService,
-              private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService
+              private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
+              private platform: Platform
   ) {
     this.title = 'Calendario';
     this.weeks = [];
@@ -70,7 +73,12 @@ export class TimeSheetAdminPageComponent implements OnInit, OnDestroy {
 
   ionViewWillEnter() {
 
-  
+    // rientrando nella pagina (che Ionic tiene in memoria) il mese si ricarica: richieste approvate,
+    // rifiutate o annullate da altre pagine (es. Richieste) non devono restare come prima.
+    // Al primo ingresso il dipendente non c'e' ancora: il mese lo carica la sua selezione.
+    if (this.currUserId)
+      this.loadMonth();
+
     this.fabMenuService.fabMenuItem = [
 
       new FabMenuItem('Elemento 1', 'calendar-number-outline', () => {
@@ -138,7 +146,8 @@ export class TimeSheetAdminPageComponent implements OnInit, OnDestroy {
       day: number,
       isCurrentMonth: boolean,
       dip_GG_Timbratura: Dip_GG_TimbraturaModel[],
-      dip_GG_Giustificativi: Dip_GG_GiustificativiModel[]
+      dip_GG_Giustificativi: Dip_GG_GiustificativiModel[],
+      dip_GG_Result?: Dip_GG_ResultModel
     }> = [];
 
     // Giorni mese precedente
@@ -163,7 +172,8 @@ export class TimeSheetAdminPageComponent implements OnInit, OnDestroy {
         // Il servizio dati dovrebbe già fornire array vuoti dove appropriato
         isCurrentMonth: true,
         dip_GG_Timbratura: dayData?.dip_GG_Timbratura || [],
-        dip_GG_Giustificativi: dayData?.dip_GG_Giustificativi || []
+        dip_GG_Giustificativi: dayData?.dip_GG_Giustificativi || [],
+        dip_GG_Result: dayData?.dip_GG_Result
       });
 
       if (currentWeek.length === 7) {
@@ -318,6 +328,17 @@ export class TimeSheetAdminPageComponent implements OnInit, OnDestroy {
 
 
 
+  }
+
+  public get isMobile(): boolean {
+    return this.platform.width() < 576;
+  }
+
+  /** Richiesta ancora da decidere (approvabile o rifiutabile): come ShowActionSheet del calendario del dipendente,
+   *  decide se il chip si apre al clic ed e' a piena intensita'; le altre si vedono attenuate. */
+  public Decidibile(idDip_GG_Richiesta?: number): boolean {
+    const req = this.get_Dip_GG_Richiesta(idDip_GG_Richiesta);
+    return !!req && (this.timeSheetService.Dip_GG_Richiesta_Admin_Can_Approve(req) || this.timeSheetService.Dip_GG_Richiesta_Admin_Can_Reject(req));
   }
 
   get_Dip_GG_Richiesta(idDip_GG_Richiesta?: number): Dip_GG_RichiestaModel|null{

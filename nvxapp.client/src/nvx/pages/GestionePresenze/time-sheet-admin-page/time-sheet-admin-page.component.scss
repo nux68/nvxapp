@@ -141,7 +141,7 @@ ion-menu-button {
   }
 
   .day {
-    border-right: 1px solid var(--ion-background-color-step-150, #e0e0e0); 
+    border-right: 1px solid var(--ion-background-color-step-150, #e0e0e0);
     position: relative;
     padding: 0px;
     display: flex;
@@ -153,7 +153,8 @@ ion-menu-button {
     }
 
     &.non-current-month {
-      background-color: rgba(var(--ion-color-primary-rgb), 0.05); 
+      background-color: rgba(var(--ion-color-primary-rgb), 0.05);
+
       .day-number {
         color: var(--ion-color-step-600, #555555);
       }
@@ -197,17 +198,42 @@ ion-menu-button {
     .justifications {
       display: flex;
       flex-direction: column;
-      gap: 3px;
+      gap: 1px;
     }
 
     .timestamps {
       display: flex;
       flex-direction: column;
-      gap: 3px;
+      gap: 1px;
     }
   }
 }
 
+// ore del giorno nel calendario del dipendente: in alto a destra, sulla riga del numero del giorno
+// (le ore in piu' provvisorie sono in grigio corsivo, il dettaglio e' nel tooltip)
+.day-ore {
+  position: absolute;
+  top: 3px;
+  right: 4px;
+  z-index: 1;
+  text-align: right;
+  font-size: 0.75em;
+  color: var(--ion-color-medium);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
 
+.day-ecc {
+  font-weight: 600;
+  color: var(--ion-color-success);
+}
 
+.day-ecc.day-ecc-provvisoria {
+  color: var(--ion-color-medium);
+  font-style: italic;
+}
 
+.day-ecc.day-ecc-mancanti {
+  color: var(--ion-color-danger);
+  font-weight: normal;
+}
