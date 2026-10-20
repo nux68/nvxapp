@@ -22,3 +22,4 @@ nvxapp.client/www/
 .vs/
 nvxapp.server/groq.key
 nvxapp.server/openrouter.key
+nvxapp.server/brevo.key
