@@ -71,9 +71,9 @@ namespace nvxapp.server.data.Migrations.Public
         private static List<Data_AspNetUsers> PopolateDB_Init_Base()
         {
             List<Data_AspNetUsers> data_AspNetUsers = new List<Data_AspNetUsers>();
-            data_AspNetUsers.Add(new Data_AspNetUsers() { Id = Guid.NewGuid().ToString(), UserName = "SuperUser", Email = "nello68@hotmail.com", Code = RoleCode.SuperUser });
-            data_AspNetUsers.Add(new Data_AspNetUsers() { Id = Guid.NewGuid().ToString(), UserName = "PowerAdmin", Email = "nello68@hotmail.com", Code = RoleCode.PowerAdmin });
-            data_AspNetUsers.Add(new Data_AspNetUsers() { Id = Guid.NewGuid().ToString(), UserName = "Admin", Email = "nello68@hotmail.com", Code = RoleCode.Admin });
+            data_AspNetUsers.Add(new Data_AspNetUsers() { Id = Guid.NewGuid().ToString(), UserName = "SuperUser", Email = "myMail@myMail.com", Code = RoleCode.SuperUser });
+            data_AspNetUsers.Add(new Data_AspNetUsers() { Id = Guid.NewGuid().ToString(), UserName = "PowerAdmin", Email = "myMail@myMail.com", Code = RoleCode.PowerAdmin });
+            data_AspNetUsers.Add(new Data_AspNetUsers() { Id = Guid.NewGuid().ToString(), UserName = "Admin", Email = "myMail@myMail.com", Code = RoleCode.Admin });
 
             return data_AspNetUsers;
         }
@@ -90,8 +90,8 @@ namespace nvxapp.server.data.Migrations.Public
                 string key_Dealer = "_" + idxDealer.ToString();
                 data_AspNetUsers = new List<Data_AspNetUsers>();
 
-                data_AspNetUsers.Add(new Data_AspNetUsers() { Id = Guid.NewGuid().ToString(), UserName = "DealerPowerAdmin" + key_Dealer, Email = "nello68@hotmail.com", Code = RoleCode.DealerPowerAdmin });
-                data_AspNetUsers.Add(new Data_AspNetUsers() { Id = Guid.NewGuid().ToString(), UserName = "DealerAdmin" + key_Dealer, Email = "nello68@hotmail.com", Code = RoleCode.DealerAdmin });
+                data_AspNetUsers.Add(new Data_AspNetUsers() { Id = Guid.NewGuid().ToString(), UserName = "DealerPowerAdmin" + key_Dealer, Email = "myMail@myMail.com", Code = RoleCode.DealerPowerAdmin });
+                data_AspNetUsers.Add(new Data_AspNetUsers() { Id = Guid.NewGuid().ToString(), UserName = "DealerAdmin" + key_Dealer, Email = "myMail@myMail.com", Code = RoleCode.DealerAdmin });
                 PopolateDB_Save_User(migrationBuilder, data_AspNetRoles_All, data_AspNetUsers);
 
                 migrationBuilder.InsertData(
@@ -120,8 +120,8 @@ namespace nvxapp.server.data.Migrations.Public
                     idxFinancialAdvisor++;
 
                     data_AspNetUsers = new List<Data_AspNetUsers>();
-                    data_AspNetUsers.Add(new Data_AspNetUsers() { Id = Guid.NewGuid().ToString(), UserName = "FinancialAdvisorPowerAdmin" + key_FinancialAdvisor, Email = "nello68@hotmail.com", Code = RoleCode.FinancialAdvisorPowerAdmin });
-                    data_AspNetUsers.Add(new Data_AspNetUsers() { Id = Guid.NewGuid().ToString(), UserName = "FinancialAdvisorAdmin" + key_FinancialAdvisor, Email = "nello68@hotmail.com", Code = RoleCode.FinancialAdvisorAdmin });
+                    data_AspNetUsers.Add(new Data_AspNetUsers() { Id = Guid.NewGuid().ToString(), UserName = "FinancialAdvisorPowerAdmin" + key_FinancialAdvisor, Email = "myMail@myMail.com", Code = RoleCode.FinancialAdvisorPowerAdmin });
+                    data_AspNetUsers.Add(new Data_AspNetUsers() { Id = Guid.NewGuid().ToString(), UserName = "FinancialAdvisorAdmin" + key_FinancialAdvisor, Email = "myMail@myMail.com", Code = RoleCode.FinancialAdvisorAdmin });
                     PopolateDB_Save_User(migrationBuilder, data_AspNetRoles_All, data_AspNetUsers);
 
                     migrationBuilder.InsertData(
@@ -149,8 +149,8 @@ namespace nvxapp.server.data.Migrations.Public
                         idxCompany++;
 
                         data_AspNetUsers = new List<Data_AspNetUsers>();
-                        data_AspNetUsers.Add(new Data_AspNetUsers() { Id = Guid.NewGuid().ToString(), UserName = "CompanyPowerAdmin" + key_Company, Email = "nello68@hotmail.com", Code = RoleCode.CompanyPowerAdmin });
-                        data_AspNetUsers.Add(new Data_AspNetUsers() { Id = Guid.NewGuid().ToString(), UserName = "CompanyAdmin" + key_Company, Email = "nello68@hotmail.com", Code = RoleCode.CompanyAdmin });
+                        data_AspNetUsers.Add(new Data_AspNetUsers() { Id = Guid.NewGuid().ToString(), UserName = "CompanyPowerAdmin" + key_Company, Email = "myMail@myMail.com", Code = RoleCode.CompanyPowerAdmin });
+                        data_AspNetUsers.Add(new Data_AspNetUsers() { Id = Guid.NewGuid().ToString(), UserName = "CompanyAdmin" + key_Company, Email = "myMail@myMail.com", Code = RoleCode.CompanyAdmin });
                         PopolateDB_Save_User(migrationBuilder, data_AspNetRoles_All, data_AspNetUsers);
 
                         migrationBuilder.InsertData(
@@ -177,7 +177,7 @@ namespace nvxapp.server.data.Migrations.Public
                             idxUser++;
                             string key_User = key_Company + "_" + idxUs.ToString();
                             data_AspNetUsers = new List<Data_AspNetUsers>();
-                            data_AspNetUsers.Add(new Data_AspNetUsers() { Id = Guid.NewGuid().ToString(), UserName = "User"+ key_User, Email = "nello68@hotmail.com", Code = RoleCode.User });
+                            data_AspNetUsers.Add(new Data_AspNetUsers() { Id = Guid.NewGuid().ToString(), UserName = "User"+ key_User, Email = "myMail@myMail.com", Code = RoleCode.User });
                             PopolateDB_Save_User(migrationBuilder, data_AspNetRoles_All, data_AspNetUsers);
 
                             migrationBuilder.InsertData(
@@ -201,8 +201,8 @@ namespace nvxapp.server.data.Migrations.Public
             int idFinancialAdvisorDemo = idxFinancialAdvisor + 1;
 
             data_AspNetUsers = new List<Data_AspNetUsers>();
-            data_AspNetUsers.Add(new Data_AspNetUsers() { Id = Guid.NewGuid().ToString(), UserName = "DealerPowerAdmin" + key_Demo, Email = "nello68@hotmail.com", Code = RoleCode.DealerPowerAdmin });
-            data_AspNetUsers.Add(new Data_AspNetUsers() { Id = Guid.NewGuid().ToString(), UserName = "DealerAdmin" + key_Demo, Email = "nello68@hotmail.com", Code = RoleCode.DealerAdmin });
+            data_AspNetUsers.Add(new Data_AspNetUsers() { Id = Guid.NewGuid().ToString(), UserName = "DealerPowerAdmin" + key_Demo, Email = "myMail@myMail.com", Code = RoleCode.DealerPowerAdmin });
+            data_AspNetUsers.Add(new Data_AspNetUsers() { Id = Guid.NewGuid().ToString(), UserName = "DealerAdmin" + key_Demo, Email = "myMail@myMail.com", Code = RoleCode.DealerAdmin });
             PopolateDB_Save_User(migrationBuilder, data_AspNetRoles_All, data_AspNetUsers);
 
             migrationBuilder.InsertData(
@@ -224,8 +224,8 @@ namespace nvxapp.server.data.Migrations.Public
                     );
 
             data_AspNetUsers = new List<Data_AspNetUsers>();
-            data_AspNetUsers.Add(new Data_AspNetUsers() { Id = Guid.NewGuid().ToString(), UserName = "FinancialAdvisorPowerAdmin" + key_Demo, Email = "nello68@hotmail.com", Code = RoleCode.FinancialAdvisorPowerAdmin });
-            data_AspNetUsers.Add(new Data_AspNetUsers() { Id = Guid.NewGuid().ToString(), UserName = "FinancialAdvisorAdmin" + key_Demo, Email = "nello68@hotmail.com", Code = RoleCode.FinancialAdvisorAdmin });
+            data_AspNetUsers.Add(new Data_AspNetUsers() { Id = Guid.NewGuid().ToString(), UserName = "FinancialAdvisorPowerAdmin" + key_Demo, Email = "myMail@myMail.com", Code = RoleCode.FinancialAdvisorPowerAdmin });
+            data_AspNetUsers.Add(new Data_AspNetUsers() { Id = Guid.NewGuid().ToString(), UserName = "FinancialAdvisorAdmin" + key_Demo, Email = "myMail@myMail.com", Code = RoleCode.FinancialAdvisorAdmin });
             PopolateDB_Save_User(migrationBuilder, data_AspNetRoles_All, data_AspNetUsers);
 
             migrationBuilder.InsertData(
