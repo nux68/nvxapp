@@ -15,7 +15,6 @@ import { EditParProfiloOrarioDettaglioOrarioDialogComponent } from '../../../sha
 import { Par_OrarioIntervalloHHModel } from '../../../ClientServer-Service/GestionePresenze/Par_OrarioIntervalloHH/Models/par-orario-intervallo-hh-model';
 import { OrarioTimbratureTipo, Par_OrarioModel } from '../../../ClientServer-Service/GestionePresenze/Par_Orario/Models/par-orario-model';
 import { SharedParameterGestionePresenzeService, ParTable } from '../../../shared/shared-parameter-gestione-presenze.service';
-import { state } from '@angular/animations';
 import { ParProfiloOrarioGGService } from '../../../ClientServer-Service/GestionePresenze/Par_ProfiloOrarioGG/par-profilo-orario-gg.service';
 import { Par_CausaliModel } from '../../../ClientServer-Service/GestionePresenze/Par_Causali/Models/par-causali-model';
 import { Par_GiustificativiModel } from '../../../ClientServer-Service/GestionePresenze/Par_Giustificativi/Models/par-giustificativi-model';
