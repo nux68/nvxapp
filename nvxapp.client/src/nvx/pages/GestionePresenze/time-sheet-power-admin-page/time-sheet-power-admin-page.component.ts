@@ -82,6 +82,7 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
   StatoRichiesta = StatoRichiesta;
 
   private Dip_GG_Richiesta_refreshSub: Subscription;
+  private commandExecutedSub: Subscription;
 
   constructor(private navCtrl: NavController,
               private refresherService: RefresherService,
@@ -184,6 +185,13 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
     this.Dip_GG_Richiesta_refreshSub = this.refresherService.Dip_GG_Richiesta_refresh$.subscribe(() => {
       this.loadMonth();
     });
+
+    // comando dell'assistente (chat o voce) eseguito: il mese si rilegge subito, senza aspettare
+    // la notifica SignalR di fine ricalcolo (che aggiorna poi anche le ore)
+    this.commandExecutedSub = this.fabMenuService.commandExecuted$.subscribe(() => {
+      if (this.currUserId)
+        this.loadMonth();
+    });
     
   }
 
@@ -192,6 +200,7 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
     if (this.Dip_GG_Richiesta_refreshSub) {
       this.Dip_GG_Richiesta_refreshSub.unsubscribe();
     }
+    this.commandExecutedSub?.unsubscribe();
     
   }
 

@@ -34,6 +34,7 @@ export class TimeSheetAdminPageComponent implements OnInit, OnDestroy {
   StatoRichiesta = StatoRichiesta;
 
   private Dip_GG_Richiesta_refreshSub: Subscription;
+  private commandExecutedSub: Subscription;
 
   currentMonth: MonthData; // Usa l'interfaccia importata
   // Usa le interfacce importate nella definizione di 'weeks'
@@ -107,6 +108,13 @@ export class TimeSheetAdminPageComponent implements OnInit, OnDestroy {
       this.loadMonth();
     });
 
+    // comando dell'assistente (chat o voce) eseguito: il mese si rilegge subito, senza aspettare
+    // la notifica SignalR di fine ricalcolo (che aggiorna poi anche le ore)
+    this.commandExecutedSub = this.fabMenuService.commandExecuted$.subscribe(() => {
+      if (this.currUserId)
+        this.loadMonth();
+    });
+
   }
 
   ngOnDestroy() {
@@ -114,6 +122,7 @@ export class TimeSheetAdminPageComponent implements OnInit, OnDestroy {
     if (this.Dip_GG_Richiesta_refreshSub) {
       this.Dip_GG_Richiesta_refreshSub.unsubscribe();
     }
+    this.commandExecutedSub?.unsubscribe();
 
   }
 
