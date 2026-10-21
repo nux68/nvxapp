@@ -3,6 +3,7 @@ import { NavController } from '@ionic/angular';
 import { catchError, map } from 'rxjs';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
+import { NvxListAction, NvxListColumn } from '../../../shared/components/infrastructure/nvx-list/nvx-list.component';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
 import { ParFestivitaService } from '../../../ClientServer-Service/GestionePresenze/Par_Festivita/par-festivita.service';
@@ -20,6 +21,12 @@ export class FestivitaListPageComponent {
   public title = 'Calendario festività';
   public searchText!: string;
   public par_FestivitaList: Par_FestivitaModel[] | null = null;
+  public readonly columns: NvxListColumn<Par_FestivitaModel>[] = [
+    { key: 'descrizione', title: 'Festività' },
+    { key: 'quando', title: 'Quando', value: x => this.quando(x), sortValue: x => this.chiaveOrdine(x) },
+  ];
+  public actions: NvxListAction<Par_FestivitaModel>[] = [];
+  public readonly sortList = (a: Par_FestivitaModel, b: Par_FestivitaModel) => this.chiaveOrdine(a).localeCompare(this.chiaveOrdine(b));
   public btnEdit: ButtonItem;
   public btnDelete: ButtonItem;
 
@@ -34,6 +41,8 @@ export class FestivitaListPageComponent {
 
     this.btnDelete = userInterfaceService.Btn_Cancella;
     this.btnDelete.event = this.handleButtonDeleteClick;
+
+    this.actions = [{ button: this.btnDelete }, { button: this.btnEdit }];
   }
 
   private loadData() {
@@ -96,13 +105,9 @@ export class FestivitaListPageComponent {
   }
 
   /** Ordine: ricorrenti per mese/giorno, poi Pasquetta, poi le date singole in ordine cronologico. */
-  getAll(): Par_FestivitaModel[] {
-    if (!this.par_FestivitaList)
-      return [];
-    const chiave = (f: Par_FestivitaModel) =>
-      f.tipoFestivita === TipoFestivita.DataRicorrente ? '0' + (f.data ?? '').substring(5, 10)
-        : f.tipoFestivita === TipoFestivita.Pasquetta ? '1'
-          : '2' + (f.data ?? '');
-    return [...this.par_FestivitaList].sort((a, b) => chiave(a).localeCompare(chiave(b)));
+  chiaveOrdine(f: Par_FestivitaModel): string {
+    return f.tipoFestivita === TipoFestivita.DataRicorrente ? '0' + (f.data ?? '').substring(5, 10)
+      : f.tipoFestivita === TipoFestivita.Pasquetta ? '1'
+        : '2' + (f.data ?? '');
   }
 }

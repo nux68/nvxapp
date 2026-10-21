@@ -2,6 +2,7 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
+import { NvxListAction, NvxListColumn } from '../../../shared/components/infrastructure/nvx-list/nvx-list.component';
 import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
 import { Az_Cliente_GetAll_InModel, Az_ClienteModel, Az_ClienteDeleteInModel } from '../../../ClientServer-Service/GestionePresenze/Az_Cliente/Models/az-cliente-model';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
@@ -9,6 +10,7 @@ import { AzClienteService } from '../../../ClientServer-Service/GestionePresenze
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
 import { map, catchError } from 'rxjs';
 import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
+import { ParTable, SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
 
 @Component({
   selector: 'app-customer-list-page',
@@ -21,11 +23,20 @@ export class CustomerListPageComponent {
 
   public title!: string;
   public searchText!: string;
-  public az_ClienteList: Az_ClienteModel[] | null = null;
+  /** dalla cache caricata al login: si aggiorna da sola dopo salvataggi e cancellazioni (refresh mirato) */
+  public get az_ClienteList(): Az_ClienteModel[] | null {
+    return this.sharedParameterGestionePresenzeService.Az_Cliente;
+  }
+  public readonly columns: NvxListColumn<Az_ClienteModel>[] = [
+    { key: 'descrizione', title: 'Cliente', mobile: 'title' }
+  ];
+  public actions: NvxListAction<Az_ClienteModel>[] = [];
+  public readonly sortList = (a: Az_ClienteModel, b: Az_ClienteModel) => (a.descrizione ?? '').localeCompare(b.descrizione ?? '');
   public btnEdit: ButtonItem;
   public btnDelete: ButtonItem;
 
-  constructor(private navCtrl: NavController,
+  constructor(private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
+              private navCtrl: NavController,
               public fabMenuService: FabMenuService,
               private azClienteService: AzClienteService,
               private userInterfaceService: UserInterfaceService,
@@ -38,17 +49,12 @@ export class CustomerListPageComponent {
     this.btnEdit.event = this.handleButtonEditClick;
     this.btnDelete = userInterfaceService.Btn_Cancella;
     this.btnDelete.event = this.handleButtonDeleteClick;
+
+    this.actions = [{ button: this.btnDelete, visible: item => !item.default }, { button: this.btnEdit }];
   }
 
-  private loadData() {
-    let request: GenericRequest<Az_Cliente_GetAll_InModel> = new GenericRequest<Az_Cliente_GetAll_InModel>(Az_Cliente_GetAll_InModel);
-    this.azClienteService.GetAll(request).subscribe(res => {
-      this.az_ClienteList = res.data.az_Cliente;
-    });
-  }
 
   ionViewWillEnter() {
-    this.loadData();
 
     this.fabMenuService.fabMenuItem = [
       new FabMenuItem('Nuovo', 'add-circle-outline', () => {
@@ -79,8 +85,7 @@ export class CustomerListPageComponent {
       request.data.id = item.id;
       this.azClienteService.Az_ClienteDelete(request).pipe(
         map(() => {
-          this.refresherService.SharedParameterGestionePresenze_triggerRefresh();
-          this.loadData();
+          this.refresherService.SharedParameterGestionePresenze_triggerRefresh(ParTable.Az_Cliente);
           return true;
         }),
         catchError((error) => {
@@ -97,15 +102,5 @@ export class CustomerListPageComponent {
     this.searchText = CurrFilter;
   }
 
-  isAdmin(item: any) {
-    return false;
-  }
 
-  getAll() {
-    if (!this.az_ClienteList) return [];
-    const sorted_ClienteList = this.az_ClienteList.sort((a, b) =>
-      a.descrizione.localeCompare(b.descrizione)
-    );
-    return sorted_ClienteList;
-  }
 }

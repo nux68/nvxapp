@@ -13,7 +13,7 @@ import { RefresherService } from '../../../Utility/GestionePresenze/refresher.se
 import { EditParOrarioDettaglioOrarioIntervalloHHDialogComponent } from '../../../shared/components/GestionePresenze/edit-par-orario-dettaglio-orario-intervallo-hhdialog/edit-par-orario-dettaglio-orario-intervallo-hhdialog.component';
 import { ParOrarioIntervalloHHService } from '../../../ClientServer-Service/GestionePresenze/Par_OrarioIntervalloHH/par-orario-intervallo-hh.service';
 import { Par_CausaliModel } from '../../../ClientServer-Service/GestionePresenze/Par_Causali/Models/par-causali-model';
-import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
+import { SharedParameterGestionePresenzeService, ParTable } from '../../../shared/shared-parameter-gestione-presenze.service';
 import { Az_SubCommessaAttivita_4FullListModel } from '../../../ClientServer-Service/GestionePresenze/Az_SubCommessaAttivita/Models/az-subcommessa-attivita-model';
 
 
@@ -109,7 +109,7 @@ export class OrariEditPageComponent extends BasePageConfirmCancelComponent<Par_O
 
     return this.parOrarioService.Par_OrarioPut(request).pipe(
       map(() => {
-        this.refresherService.SharedParameterGestionePresenze_triggerRefresh(); 
+        this.refresherService.SharedParameterGestionePresenze_triggerRefresh(ParTable.Par_Orario); 
         return true;
       }),
       catchError((error) => {

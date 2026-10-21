@@ -2,6 +2,7 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
+import { NvxListAction, NvxListColumn } from '../../../shared/components/infrastructure/nvx-list/nvx-list.component';
 import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
 import { Par_GiustificativiInModel, Par_GiustificativiModel } from '../../../ClientServer-Service/GestionePresenze/Par_Giustificativi/Models/par-giustificativi-model';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
@@ -14,6 +15,7 @@ import { StatoRichiestaShortTextPipe } from '../../../shared/pipe/GestionePresen
 import { TipoRichiestaToShortTextPipe } from '../../../shared/pipe/GestionePresenze/tipo-richiesta-to-short-text.pipe';
 import { TimeSheetService } from '../../../Utility/GestionePresenze/time-sheet.service';
 import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
+import { TipoRichiestaToLongTextPipe } from '../../../shared/pipe/GestionePresenze/tipo-richiesta-to-long-text.pipe';
 
 
 
@@ -29,6 +31,15 @@ export class RequestListUserPageComponent {
   public title!: string;
   public searchText!: string;
   public dip_GG_RichiestaList: Dip_GG_RichiestaModel[] | null = null;
+  public readonly columns: NvxListColumn<Dip_GG_RichiestaModel>[] = [
+    { key: 'data', title: 'Dal' },
+    { key: 'dataA', title: 'Al', value: x => this.getDataA(x) },
+    { key: 'richiestaTipo', title: 'Tipo', value: x => this.tipoRichiestaToLongText.transform(x.richiestaTipo) },
+    { key: 'dati', title: 'Dettaglio', value: x => this.getDati(x), sortable: false },
+    { key: 'stato', title: 'Stato', value: x => this.timeSheetService.get_StatoRichiesta_Approval_text(x) },
+  ];
+  public actions: NvxListAction<Dip_GG_RichiestaModel>[] = [];
+  private readonly tipoRichiestaToLongText = new TipoRichiestaToLongTextPipe();
   public btnDelete: ButtonItem;
   public StatoRichiesta = StatoRichiesta;
 
@@ -45,6 +56,8 @@ export class RequestListUserPageComponent {
     this.title = 'Richieste';
     this.btnDelete = userInterfaceService.Btn_Cancella;
     this.btnDelete.event = this.handleButtonDeleteClick;
+
+    this.actions = [{ button: this.btnDelete, visible: item => this.timeSheetService.Dip_GG_Richiesta_User_Can_Delete(item) }];
   }
 
   ionViewWillEnter() {
@@ -114,14 +127,6 @@ export class RequestListUserPageComponent {
     return false;
   }
 
-  getAll() {
-    //const sorted_GiustificativiList = this.par_GiustificativiList.sort((a, b) =>
-    //  a.descrizione.localeCompare(b.descrizione)
-    //);
-    //return sorted_GiustificativiList;
-
-    return this.dip_GG_RichiestaList;
-  }
 
   public getDataA(item:Dip_GG_RichiestaModel): string{
     if (item.data != item.dataA)

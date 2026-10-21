@@ -2,6 +2,7 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
+import { NvxListAction, NvxListColumn } from '../../../shared/components/infrastructure/nvx-list/nvx-list.component';
 import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
 import { Par_AttivitaDeleteInModel, Par_AttivitaModel, Par_Attivita_GetAll_InModel } from '../../../ClientServer-Service/GestionePresenze/Par_Attivita/Models/par-attivita-model';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
@@ -9,6 +10,7 @@ import { ParAttivitaService } from '../../../ClientServer-Service/GestionePresen
 import { map, catchError } from 'rxjs';
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
 import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
+import { ParTable, SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
 
 @Component({
   selector: 'app-activity-list-page',
@@ -20,11 +22,22 @@ import { CollectionDialogService } from '../../../shared/components/infrastructu
 export class ActivityListPageComponent {
   public title = 'Attività';
   public searchText!: string;
-  public par_AttivitaList: Par_AttivitaModel[] | null = null;
+  /** dalla cache caricata al login: si aggiorna da sola dopo salvataggi e cancellazioni (refresh mirato) */
+  public get par_AttivitaList(): Par_AttivitaModel[] | null {
+    return this.sharedParameterGestionePresenzeService.Par_Attivita;
+  }
+  public readonly columns: NvxListColumn<Par_AttivitaModel>[] = [
+    { key: 'descrizione', title: 'Attività', mobile: 'title' }
+  ];
+  public actions: NvxListAction<Par_AttivitaModel>[] = [];
+  // prima le voci di default, poi per descrizione
+  public readonly sortList = (a: Par_AttivitaModel, b: Par_AttivitaModel) =>
+    a.default === b.default ? (a.descrizione ?? '').localeCompare(b.descrizione ?? '') : (a.default ? -1 : 1);
   public btnEdit: ButtonItem;
   public btnDelete: ButtonItem;
 
   constructor(
+    private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
     private navCtrl: NavController,
     public fabMenuService: FabMenuService,
     private azAttivitaService: ParAttivitaService,
@@ -38,17 +51,12 @@ export class ActivityListPageComponent {
 
     this.btnDelete = userInterfaceService.Btn_Cancella;
     this.btnDelete.event = this.handleButtonDeleteClick;
+
+    this.actions = [{ button: this.btnDelete, visible: item => !item.default }, { button: this.btnEdit }];
   }
 
-  private loadData() {
-    let request: GenericRequest<Par_Attivita_GetAll_InModel> = new GenericRequest<Par_Attivita_GetAll_InModel>(Par_Attivita_GetAll_InModel);
-    this.azAttivitaService.GetAll(request).subscribe(res => {
-      this.par_AttivitaList = res.data.par_Attivita;
-    });
-  }
 
   ionViewWillEnter() {
-    this.loadData();
 
     this.fabMenuService.fabMenuItem = [
       new FabMenuItem('Nuova Attività', 'add-circle-outline', () => {
@@ -75,8 +83,7 @@ export class ActivityListPageComponent {
         request.data.id = item.id;
         return this.azAttivitaService.Par_AttivitaDelete(request).pipe(
           map(() => {
-            this.refresherService.SharedParameterGestionePresenze_triggerRefresh();
-            this.loadData();
+            this.refresherService.SharedParameterGestionePresenze_triggerRefresh(ParTable.Par_Attivita);
             return true;
           }),
           catchError((error) => {
@@ -94,14 +101,4 @@ export class ActivityListPageComponent {
     this.searchText = CurrFilter;
   }
 
-  getAll() {
-    return this.par_AttivitaList?.sort((a, b) => {
-      // Prima ordina per default (true prima di false)
-      if (a.default === b.default) {
-        // Poi ordina per descrizione
-        return a.descrizione.localeCompare(b.descrizione);
-      }
-      return a.default ? -1 : 1;
-    });
-  }
 }

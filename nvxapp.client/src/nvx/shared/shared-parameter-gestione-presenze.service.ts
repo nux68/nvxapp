@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, catchError, Observable, of, retry, tap, timer } from 'rxjs';
+import { BehaviorSubject, catchError, forkJoin, map, Observable, of, retry, tap, timer } from 'rxjs';
 import { GenericRequest } from '../ClientServer-Service/ModelsBase/generic-request';
 import { Par_GiustificativiInModel, Par_GiustificativiModel } from '../ClientServer-Service/GestionePresenze/Par_Giustificativi/Models/par-giustificativi-model';
 import { ParGiustificativiService } from '../ClientServer-Service/GestionePresenze/Par_Giustificativi/par-giustificativi.service';
@@ -34,6 +34,25 @@ import { ParExportCauService } from '../ClientServer-Service/GestionePresenze/Pa
 import { Az_SubCommessaAttivita_4FullListModel, Az_SubCommessaAttivita_GetAll_4FullList_InModel } from '../ClientServer-Service/GestionePresenze/Az_SubCommessaAttivita/Models/az-subcommessa-attivita-model';
 import { AzSubCommessaAttivitaService } from '../ClientServer-Service/GestionePresenze/Az_SubCommessaAttivita/az-subcommessa-attivita.service';
 
+/** tabelle dei parametri tenute in cache dal login */
+export enum ParTable {
+  Par_Giustificativi = 'Par_Giustificativi',
+  Par_Attivita = 'Par_Attivita',
+  Par_Competenza = 'Par_Competenza',
+  Az_Commessa = 'Az_Commessa',
+  Az_Cliente = 'Az_Cliente',
+  Dip_Anagrafica = 'Dip_Anagrafica',
+  Az_SediReparto = 'Az_SediReparto',
+  Az_Sedi = 'Az_Sedi',
+  Az_Cfg = 'Az_Cfg',
+  Par_ProfiloOrario = 'Par_ProfiloOrario',
+  Par_Orario = 'Par_Orario',
+  Par_OrarioIntervalloHH = 'Par_OrarioIntervalloHH',
+  Par_Causali = 'Par_Causali',
+  Par_ExportCau = 'Par_ExportCau',
+  Az_SubCommessaAttivita_4Full = 'Az_SubCommessaAttivita_4Full',
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -62,275 +81,111 @@ export class SharedParameterGestionePresenzeService {
     
   ) { }
 
+  // un caricatore per ogni tabella in cache: usati tutti insieme al login (InitCall) o singolarmente (Reload)
+  private readonly loaders: Record<ParTable, { label: string, load: () => Observable<any> }> = {
+    [ParTable.Par_Giustificativi]: {
+      label: 'dei giustificativi',
+      load: () => this.parGiustificativiService.GetAll(new GenericRequest<Par_GiustificativiInModel>(Par_GiustificativiInModel)).pipe(tap(r => this.Par_Giustificativi = r.data.par_Giustificativi))
+    },
+    [ParTable.Par_Attivita]: {
+      label: 'delle attività',
+      load: () => this.parAttivitaService.GetAll(new GenericRequest<Par_Attivita_GetAll_InModel>(Par_Attivita_GetAll_InModel)).pipe(tap(r => this.Par_Attivita = r.data.par_Attivita))
+    },
+    [ParTable.Par_Competenza]: {
+      label: 'delle competenze',
+      load: () => this.parCompetenzaService.GetAll(new GenericRequest<Par_Competenza_GetAll_InModel>(Par_Competenza_GetAll_InModel)).pipe(tap(r => this.Par_Competenza = r.data.par_Competenza))
+    },
+    [ParTable.Az_Commessa]: {
+      label: 'delle commesse',
+      load: () => this.azCommessaService.GetAll(new GenericRequest<Az_Commessa_GetAll_InModel>(Az_Commessa_GetAll_InModel)).pipe(tap(r => this.Az_Commessa = r.data.az_Commessa))
+    },
+    [ParTable.Az_Cliente]: {
+      label: 'dei clienti',
+      load: () => this.azClienteService.GetAll(new GenericRequest<Az_Cliente_GetAll_InModel>(Az_Cliente_GetAll_InModel)).pipe(tap(r => this.Az_Cliente = r.data.az_Cliente))
+    },
+    [ParTable.Dip_Anagrafica]: {
+      label: 'delle anagrafiche',
+      load: () => this.dipAnagraficaService.GetAll(new GenericRequest<Dip_Anagrafica_GetAll_InModel>(Dip_Anagrafica_GetAll_InModel)).pipe(tap(r => this.Dip_Anagrafica = r.data.dip_Anagrafica))
+    },
+    [ParTable.Az_SediReparto]: {
+      label: 'dei reparti',
+      load: () => this.azSediRepartoService.GetAll(new GenericRequest<Az_SediReparto_GetAll_InModel>(Az_SediReparto_GetAll_InModel)).pipe(tap(r => this.Az_SediReparto = r.data.az_SediReparto))
+    },
+    [ParTable.Az_Sedi]: {
+      label: 'delle sedi',
+      load: () => this.azSediService.GetAll(new GenericRequest<Az_Sedi_GetAll_InModel>(Az_Sedi_GetAll_InModel)).pipe(tap(r => this.Az_Sedi = r.data.az_Sedi))
+    },
+    [ParTable.Az_Cfg]: {
+      label: 'della configurazione azienda',
+      load: () => this.azCfgService.Az_CfgGet(new GenericRequest<Az_Cfg_Get_InModel>(Az_Cfg_Get_InModel)).pipe(tap(r => this.Az_Cfg = r.data.az_Cfg))
+    },
+    [ParTable.Par_ProfiloOrario]: {
+      label: 'dei profili orari',
+      load: () => this.parProfiloOrarioService.GetAll(new GenericRequest<Par_ProfiloOrario_GetAllInModel>(Par_ProfiloOrario_GetAllInModel)).pipe(tap(r => this.Par_ProfiloOrario = r.data.par_ProfiloOrario))
+    },
+    [ParTable.Par_Orario]: {
+      label: 'degli orari',
+      load: () => this.parOrarioService.GetAll(new GenericRequest<Par_Orario_GetAllInModel>(Par_Orario_GetAllInModel)).pipe(tap(r => this.Par_Orario = r.data.par_Orario))
+    },
+    [ParTable.Par_OrarioIntervalloHH]: {
+      label: 'degli intervalli orari',
+      load: () => this.parOrarioIntervalloHHService.GetAll(new GenericRequest<Par_OrarioIntervalloHHInModel>(Par_OrarioIntervalloHHInModel)).pipe(tap(r => this.Par_OrarioIntervalloHH = r.data.par_OrarioIntervalloHH))
+    },
+    [ParTable.Par_Causali]: {
+      label: 'delle causali',
+      load: () => this.parCausaliService.GetAll(new GenericRequest<Par_CausaliInModel>(Par_CausaliInModel)).pipe(tap(r => this.Par_Causali = r.data.par_Causali))
+    },
+    [ParTable.Par_ExportCau]: {
+      label: 'del export causali',
+      load: () => this.parExportCauService.GetAll(new GenericRequest<Par_ExportCau_GetAll_InModel>(Par_ExportCau_GetAll_InModel)).pipe(tap(r => this.Par_ExportCau = r.data.par_ExportCau))
+    },
+    [ParTable.Az_SubCommessaAttivita_4Full]: {
+      label: 'di Az_SubCommessaAttivita_4Full',
+      load: () => this.azSubCommessaAttivitaService.GetAll_4FullList(new GenericRequest<Az_SubCommessaAttivita_GetAll_4FullList_InModel>(Az_SubCommessaAttivita_GetAll_4FullList_InModel)).pipe(tap(r => this.Az_SubCommessaAttivita_4Full = r.data.az_SubCommessaAttivita))
+    },
+  };
+
+  // tabelle che contengono dati di altre tabelle: vanno ricaricate insieme
+  private static readonly dependencies: Partial<Record<ParTable, ParTable[]>> = {
+    [ParTable.Az_Commessa]: [ParTable.Az_SubCommessaAttivita_4Full],
+    [ParTable.Az_Cliente]: [ParTable.Az_SubCommessaAttivita_4Full],
+    [ParTable.Par_Attivita]: [ParTable.Az_SubCommessaAttivita_4Full],
+    [ParTable.Az_Sedi]: [ParTable.Az_SediReparto],
+    [ParTable.Par_Orario]: [ParTable.Par_OrarioIntervalloHH],
+  };
+
+  private withRetry(call: Observable<any>, label: string): Observable<any> {
+    return call.pipe(
+      retry({
+        count: 20,
+        delay: (error, retryCount) => {
+          console.error(`Errore rilevato, ritento dopo ${retryCount} secondi:`, error);
+          return timer(500);
+        }
+      }),
+      catchError((error) => {
+        console.error(`Errore durante il caricamento ${label}:`, error);
+        return of(null);
+      }));
+  }
+
+  /** tutte le tabelle, al login (con la barra di avanzamento del parameter-loader) */
   public InitCall(updateProgress: (calls: any[]) => void): any[] {
     let calls: any[] = [];
-
-    calls.push(
-      this.parGiustificativiService.GetAll(new GenericRequest<Par_GiustificativiInModel>(Par_GiustificativiInModel)).pipe(
-        tap((result) => {
-          this.Par_Giustificativi = result.data.par_Giustificativi
-          updateProgress(calls)
-        }),
-        retry({
-          count: 20,
-          delay: (error, retryCount) => {
-            console.error(`Errore rilevato, ritento dopo ${retryCount} secondi:`, error);
-            return timer(500);
-          }
-        }),
-        catchError((error) => {
-          console.error(`Errore durante il caricamento dei giustificativi:`, error);
-          return of(null);
-        })),
-
-      this.parAttivitaService.GetAll(new GenericRequest<Par_Attivita_GetAll_InModel>(Par_Attivita_GetAll_InModel)).pipe(
-        tap((result) => {
-          this.Par_Attivita = result.data.par_Attivita;
-          updateProgress(calls);
-        }),
-        retry({
-          count: 20,
-          delay: (error, retryCount) => {
-            console.error(`Errore rilevato, ritento dopo ${retryCount} secondi:`, error);
-            return timer(500);
-          }
-        }),
-        catchError((error) => {
-          console.error(`Errore durante il caricamento delle attività:`, error);
-          return of(null);
-        })),
-
-      this.parCompetenzaService.GetAll(new GenericRequest<Par_Competenza_GetAll_InModel>(Par_Competenza_GetAll_InModel)).pipe(
-        tap((result) => {
-          this.Par_Competenza = result.data.par_Competenza;
-          updateProgress(calls);
-        }),
-        retry({
-          count: 20,
-          delay: (error, retryCount) => {
-            console.error(`Errore rilevato, ritento dopo ${retryCount} secondi:`, error);
-            return timer(500);
-          }
-        }),
-        catchError((error) => {
-          console.error(`Errore durante il caricamento delle competenze:`, error);
-          return of(null);
-        })),
-
-      this.azCommessaService.GetAll(new GenericRequest<Az_Commessa_GetAll_InModel>(Az_Commessa_GetAll_InModel)).pipe(
-        tap((result) => {
-          this.Az_Commessa = result.data.az_Commessa;
-          updateProgress(calls);
-        }),
-        retry({
-          count: 20,
-          delay: (error, retryCount) => {
-            console.error(`Errore rilevato, ritento dopo ${retryCount} secondi:`, error);
-            return timer(500);
-          }
-        }),
-        catchError((error) => {
-          console.error(`Errore durante il caricamento delle commesse:`, error);
-          return of(null);
-        })),
-
-      this.azClienteService.GetAll(new GenericRequest<Az_Cliente_GetAll_InModel>(Az_Cliente_GetAll_InModel)).pipe(
-        tap((result) => {
-          this.Az_Cliente = result.data.az_Cliente;
-          updateProgress(calls);
-        }),
-        retry({
-          count: 20,
-          delay: (error, retryCount) => {
-            console.error(`Errore rilevato, ritento dopo ${retryCount} secondi:`, error);
-            return timer(500);
-          }
-        }),
-        catchError((error) => {
-          console.error(`Errore durante il caricamento dei clienti:`, error);
-          return of(null);
-        })),
-
-      this.dipAnagraficaService.GetAll(new GenericRequest<Dip_Anagrafica_GetAll_InModel>(Dip_Anagrafica_GetAll_InModel)).pipe(
-        tap((result) => {
-          this.Dip_Anagrafica = result.data.dip_Anagrafica
-          updateProgress(calls)
-        }),
-        retry({
-          count: 20,
-          delay: (error, retryCount) => {
-            console.error(`Errore rilevato, ritento dopo ${retryCount} secondi:`, error);
-            return timer(500);
-          }
-        }),
-        catchError((error) => {
-          console.error(`Errore durante il caricamento delle anagrafiche:`, error);
-          return of(null);
-        })),
-
-      this.azSediRepartoService.GetAll(new GenericRequest<Az_SediReparto_GetAll_InModel>(Az_SediReparto_GetAll_InModel)).pipe(
-        tap((result) => {
-          this.Az_SediReparto = result.data.az_SediReparto;
-          updateProgress(calls);
-        }),
-        retry({
-          count: 20,
-          delay: (error, retryCount) => {
-            console.error(`Errore rilevato, ritento dopo ${retryCount} secondi:`, error);
-            return timer(500);
-          }
-        }),
-        catchError((error) => {
-          console.error(`Errore durante il caricamento dei reparti:`, error);
-          return of(null);
-        })
-      ),
-
-      this.azSediService.GetAll(new GenericRequest<Az_Sedi_GetAll_InModel>(Az_Sedi_GetAll_InModel)).pipe(
-        tap((result) => {
-          this.Az_Sedi = result.data.az_Sedi;
-          updateProgress(calls);
-        }),
-        retry({
-          count: 20,
-          delay: (error, retryCount) => {
-            console.error(`Errore rilevato, ritento dopo ${retryCount} secondi:`, error);
-            return timer(500);
-          }
-        }),
-        catchError((error) => {
-          console.error(`Errore durante il caricamento dei reparti:`, error);
-          return of(null);
-        })
-      ),
-
-      this.azCfgService.Az_CfgGet(new GenericRequest<Az_Cfg_Get_InModel>(Az_Cfg_Get_InModel)).pipe(
-        tap((result) => {
-          this.Az_Cfg = result.data.az_Cfg
-          updateProgress(calls)
-        }),
-        retry({
-          count: 20,
-          delay: (error, retryCount) => {
-            console.error(`Errore rilevato, ritento dopo ${retryCount} secondi:`, error);
-            return timer(500);
-          }
-        }),
-        catchError((error) => {
-          console.error(`Errore durante il caricamento dell condigurazione azienda:`, error);
-          return of(null);
-        })),
-
-      this.parProfiloOrarioService.GetAll(new GenericRequest<Par_ProfiloOrario_GetAllInModel>(Par_ProfiloOrario_GetAllInModel)).pipe(
-        tap((result) => {
-          this.Par_ProfiloOrario = result.data.par_ProfiloOrario
-          updateProgress(calls)
-        }),
-        retry({
-          count: 20,
-          delay: (error, retryCount) => {
-            console.error(`Errore rilevato, ritento dopo ${retryCount} secondi:`, error);
-            return timer(500);
-          }
-        }),
-        catchError((error) => {
-          console.error(`Errore durante il caricamento dei profili orari:`, error);
-          return of(null);
-        })),
-
-      this.parOrarioService.GetAll(new GenericRequest<Par_Orario_GetAllInModel>(Par_Orario_GetAllInModel)).pipe(
-        tap((result) => {
-          this.Par_Orario = result.data.par_Orario
-          updateProgress(calls)
-        }),
-        retry({
-          count: 20,
-          delay: (error, retryCount) => {
-            console.error(`Errore rilevato, ritento dopo ${retryCount} secondi:`, error);
-            return timer(500);
-          }
-        }),
-        catchError((error) => {
-          console.error(`Errore durante il caricamento dei profili orari:`, error);
-          return of(null);
-        })),
-
-      this.parOrarioIntervalloHHService.GetAll(new GenericRequest<Par_OrarioIntervalloHHInModel>(Par_OrarioIntervalloHHInModel)).pipe(
-        tap((result) => {
-          this._par_OrarioIntervalloHH = result.data.par_OrarioIntervalloHH
-          updateProgress(calls)
-        }),
-        retry({
-          count: 20,
-          delay: (error, retryCount) => {
-            console.error(`Errore rilevato, ritento dopo ${retryCount} secondi:`, error);
-            return timer(500);
-          }
-        }),
-        catchError((error) => {
-          console.error(`Errore durante il caricamento dei profili orari:`, error);
-          return of(null);
-        })),
-
-
-
-      this.parCausaliService.GetAll(new GenericRequest<Par_CausaliInModel>(Par_CausaliInModel)).pipe(
-        tap((result) => {
-          this.Par_Causali = result.data.par_Causali
-          updateProgress(calls)
-        }),
-        retry({
-          count: 20,
-          delay: (error, retryCount) => {
-            console.error(`Errore rilevato, ritento dopo ${retryCount} secondi:`, error);
-            return timer(500);
-          }
-        }),
-        catchError((error) => {
-          console.error(`Errore durante il caricamento dei profili orari:`, error);
-          return of(null);
-        })),
-
-
-      this.parExportCauService.GetAll(new GenericRequest<Par_ExportCau_GetAll_InModel>(Par_ExportCau_GetAll_InModel)).pipe(
-        tap((result) => {
-          this.Par_ExportCau = result.data.par_ExportCau
-          updateProgress(calls)
-        }),
-        retry({
-          count: 20,
-          delay: (error, retryCount) => {
-            console.error(`Errore rilevato, ritento dopo ${retryCount} secondi:`, error);
-            return timer(500);
-          }
-        }),
-        catchError((error) => {
-          console.error(`Errore durante il caricamento del export causali:`, error);
-          return of(null);
-        })),
-
-        
-      this.azSubCommessaAttivitaService.GetAll_4FullList(new GenericRequest<Az_SubCommessaAttivita_GetAll_4FullList_InModel>(Az_SubCommessaAttivita_GetAll_4FullList_InModel)).pipe(
-        tap((result) => {
-          this.Az_SubCommessaAttivita_4Full = result.data.az_SubCommessaAttivita
-          updateProgress(calls)
-        }),
-        retry({
-          count: 20,
-          delay: (error, retryCount) => {
-            console.error(`Errore rilevato, ritento dopo ${retryCount} secondi:`, error);
-            return timer(500);
-          }
-        }),
-        catchError((error) => {
-          console.error(`Errore durante il caricamento di Az_SubCommessaAttivita_4Full:`, error);
-          return of(null);
-        })),
-
-        
-
-    );
+    calls = Object.values(ParTable).map(t =>
+      this.withRetry(this.loaders[t].load().pipe(tap(() => updateProgress(calls))), this.loaders[t].label));
     return calls;
+  }
+
+  /** ricarica solo le tabelle indicate (e quelle che ne dipendono), senza riquadro di caricamento */
+  public Reload(...tables: ParTable[]): Observable<void> {
+    const all = new Set<ParTable>();
+    for (const t of tables) {
+      all.add(t);
+      (SharedParameterGestionePresenzeService.dependencies[t] ?? []).forEach(d => all.add(d));
+    }
+    if (all.size == 0) return of(undefined);
+    return forkJoin([...all].map(t => this.withRetry(this.loaders[t].load(), this.loaders[t].label))).pipe(map((): void => undefined));
   }
 
   private _par_Giustificativi: Par_GiustificativiModel[] | null = [];

@@ -12,6 +12,7 @@ import { ParameterService } from '../../../ClientServer-Service/Infrastructure/P
 import { Par_CompetenzaModel, Par_CompetenzaGetInModel, Par_CompetenzaPutInModel } from '../../../ClientServer-Service/GestionePresenze/Par_Competenza/Models/par-competenza-model';
 import { ParCompetenzaService } from '../../../ClientServer-Service/GestionePresenze/Par_Competenza/par-competenza.service';
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
+import { ParTable } from '../../../shared/shared-parameter-gestione-presenze.service';
 
 @Component({
   selector: 'app-competence-edit-page',
@@ -69,7 +70,7 @@ export class CompetenceEditPageComponent extends BasePageConfirmCancelComponent<
     request.data.par_Competenza = editModel;
     return this.azCompetenzaService.Par_CompetenzaPut(request).pipe(
       map(() => {
-        this.refresherService.SharedParameterGestionePresenze_triggerRefresh();
+        this.refresherService.SharedParameterGestionePresenze_triggerRefresh(ParTable.Par_Competenza);
         return true;
       }),
       catchError((error) => {

@@ -66,7 +66,6 @@ export class MyTemplate1EditPageComponent extends BasePageConfirmCancelComponent
     request.data.my_Template1 = editModel;
     return this.myTemplate1Service.MyTemplate1Put(request).pipe(
       map(() => {
-        this.refresherService.SharedParameterGestionePresenze_triggerRefresh();
         return true;
       }),
       catchError((error) => {

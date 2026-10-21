@@ -2,10 +2,11 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
+import { NvxListAction, NvxListColumn } from '../../../shared/components/infrastructure/nvx-list/nvx-list.component';
 import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
 import { Par_GiustificativiInModel, Par_GiustificativiModel } from '../../../ClientServer-Service/GestionePresenze/Par_Giustificativi/Models/par-giustificativi-model';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
-import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
+import { SharedParameterGestionePresenzeService, ParTable } from '../../../shared/shared-parameter-gestione-presenze.service';
 import { AzSediRepartoService } from '../../../ClientServer-Service/GestionePresenze/Az_SediReparto/az-sedi-reparto.service';
 import { Az_SediReparto_GetAll_InModel, Az_SediRepartoModel, Az_SediRepartoDeleteInModel } from '../../../ClientServer-Service/GestionePresenze/Az_SediReparto/Models/az-sedi-reparto-model';
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
@@ -23,7 +24,25 @@ export class DepartmentListPageComponent {
 
   public title!: string;
   public searchText!: string;
-  public az_SediRepartoList: Az_SediRepartoModel[] | null = null;
+  public readonly columns: NvxListColumn<Az_SediRepartoModel>[] = [{ key: 'descrizione', title: 'Reparto' }];
+  public actions: NvxListAction<Az_SediRepartoModel>[] = [];
+  // prima le voci di default, poi per descrizione
+  public readonly sortList = (a: Az_SediRepartoModel, b: Az_SediRepartoModel) =>
+    a.default === b.default ? (a.descrizione ?? '').localeCompare(b.descrizione ?? '') : (a.default ? -1 : 1);
+
+  // reparti della sede scelta, dalla cache caricata al login; ricalcolati solo se cambiano cache o sede
+  private _src: Az_SediRepartoModel[] | null = null;
+  private _srcSedi: number | undefined;
+  private _list: Az_SediRepartoModel[] | null = null;
+  public get az_SediRepartoList(): Az_SediRepartoModel[] | null {
+    const src = this.sharedParameterGestionePresenzeService.Az_SediReparto;
+    if (src !== this._src || this.curr_idAz_Sedi !== this._srcSedi) {
+      this._src = src;
+      this._srcSedi = this.curr_idAz_Sedi;
+      this._list = src?.filter(x => x.idAz_Sedi === this.curr_idAz_Sedi) ?? null;
+    }
+    return this._list;
+  }
   public btnEdit: ButtonItem;
   public btnDelete: ButtonItem;
   public curr_idAz_Sedi: number;
@@ -44,22 +63,13 @@ export class DepartmentListPageComponent {
     this.btnDelete = userInterfaceService.Btn_Cancella;
     this.btnDelete.event = this.handleButtonDeleteClick;
 
-    //TODO DISAB SHARED DATA
-    //this.sharedParameterGestionePresenzeService.Par_Giustificativi$.subscribe(res => {
-    //  this.par_GiustificativiList = this.sharedParameterGestionePresenzeService.Par_Giustificativi;
-    //});
+    this.actions = [{ button: this.btnDelete, visible: item => !item.default }, { button: this.btnEdit }];
+
 
   }
 
-  private loadData() {
-    let request: GenericRequest<Az_SediReparto_GetAll_InModel> = new GenericRequest<Az_SediReparto_GetAll_InModel>(Az_SediReparto_GetAll_InModel);
-    this.azSediRepartoService.GetAll(request).subscribe(res => {
-      this.az_SediRepartoList = res.data.az_SediReparto;
-    });
-  }
 
   ionViewWillEnter() {
-    this.loadData();
 
     this.fabMenuService.fabMenuItem = [
 
@@ -94,8 +104,7 @@ export class DepartmentListPageComponent {
         request.data.id = item.id;
         this.azSediRepartoService.Az_SediRepartoDelete(request).pipe(
           map(() => {
-            this.refresherService.SharedParameterGestionePresenze_triggerRefresh();
-            this.loadData();
+            this.refresherService.SharedParameterGestionePresenze_triggerRefresh(ParTable.Az_SediReparto);
             return true;
           }),
           catchError((error: any) => {
@@ -112,24 +121,7 @@ export class DepartmentListPageComponent {
     this.searchText = CurrFilter;
   }
 
-  isAdmin(item: any) {
 
-    return false;
-  }
-
-  getAll() {
-    if (!this.az_SediRepartoList) return [];
-    const filteredList = this.az_SediRepartoList.filter(x => x.idAz_Sedi === this.curr_idAz_Sedi);
-    const sorted_SediList = filteredList.sort((a, b) => {
-      // Prima ordina per default (true prima di false)
-      if (a.default === b.default) {
-        // Poi ordina per descrizione
-        return a.descrizione.localeCompare(b.descrizione);
-      }
-      return a.default ? -1 : 1;
-    });
-    return sorted_SediList;
-  }
 
 
   onPeriodChange(period: { year: number, month: number } | undefined): void { }

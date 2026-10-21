@@ -21,7 +21,7 @@ import { Dip_Rapporto_Giustificativi_MaturazioneModel } from '../../../../Client
 import { Par_GiustificativiModel, TipoContatore } from '../../../../ClientServer-Service/GestionePresenze/Par_Giustificativi/Models/par-giustificativi-model';
 import { Par_ProfiloOrarioModel } from '../../../../ClientServer-Service/GestionePresenze/Par_ProfiloOrario/Models/par-profilo-orario-model';
 import { Par_CompetenzaModel } from '../../../../ClientServer-Service/GestionePresenze/Par_Competenza/Models/par-competenza-model';
-import { SharedParameterGestionePresenzeService } from '../../../shared-parameter-gestione-presenze.service';
+import { SharedParameterGestionePresenzeService, ParTable } from '../../../shared-parameter-gestione-presenze.service';
 
 /**
  * Inserimento di un nuovo dipendente a step:
@@ -306,7 +306,7 @@ export class UserAttendanceWizardDialogComponent implements OnInit {
         return;
       }
       if (await this.SalvaDatiPresenze(idAspNetUsers)) {
-        this.refresherService.SharedParameterGestionePresenze_triggerRefresh();
+        this.refresherService.SharedParameterGestionePresenze_triggerRefresh(ParTable.Dip_Anagrafica);
         // inserimento completato: la lista utenti deve solo rileggersi
         this.modalCtrl.dismiss({ idAspNetUsers, inserimentoCompletato: true }, 'confirm');
       }

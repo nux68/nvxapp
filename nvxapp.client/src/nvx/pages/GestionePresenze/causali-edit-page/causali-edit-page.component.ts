@@ -10,6 +10,7 @@ import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic
 import { ParCausaliService } from '../../../ClientServer-Service/GestionePresenze/Par_Causali/par-causali.service';
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
 import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
+import { ParTable } from '../../../shared/shared-parameter-gestione-presenze.service';
 
 @Component({
   selector: 'app-causali-edit-page',
@@ -68,7 +69,7 @@ export class CausaliEditPageComponent extends BasePageConfirmCancelComponent<Par
 
     return this.parCausaliService.Par_CausaliPut(request).pipe(
       map(() => {
-        this.refresherService.SharedParameterGestionePresenze_triggerRefresh();
+        this.refresherService.SharedParameterGestionePresenze_triggerRefresh(ParTable.Par_Causali);
         return true;
       }),
       catchError((error) => {

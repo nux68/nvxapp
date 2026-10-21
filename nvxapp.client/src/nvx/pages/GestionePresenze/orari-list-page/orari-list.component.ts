@@ -2,6 +2,7 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
+import { NvxListAction, NvxListColumn } from '../../../shared/components/infrastructure/nvx-list/nvx-list.component';
 import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
 
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
@@ -11,6 +12,7 @@ import { map, catchError } from 'rxjs';
 import { Az_SediRepartoDeleteInModel } from '../../../ClientServer-Service/GestionePresenze/Az_SediReparto/Models/az-sedi-reparto-model';
 import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
+import { ParTable, SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
 
 @Component({
   selector: 'app-orari-list',
@@ -23,11 +25,21 @@ export class OrariListPageComponent {
 
   public title: string;
   public searchText: string = '';
-  public par_OrarioList: Par_OrarioModel[] = [];
+  /** dalla cache caricata al login: si aggiorna da sola dopo salvataggi e cancellazioni (refresh mirato) */
+  public get par_OrarioList(): Par_OrarioModel[] | null {
+    return this.sharedParameterGestionePresenzeService.Par_Orario;
+  }
+  public readonly columns: NvxListColumn<Par_OrarioModel>[] = [
+    { key: 'codice', title: 'Codice', width: '140px', mobile: 'subtitle' },
+    { key: 'descrizione', title: 'Descrizione', mobile: 'title' }
+  ];
+  public actions: NvxListAction<Par_OrarioModel>[] = [];
+  public readonly sortList = (a: Par_OrarioModel, b: Par_OrarioModel) => (a.descrizione ?? '').localeCompare(b.descrizione ?? '');
   public btnEdit: ButtonItem;
   public btnDelete: ButtonItem;
 
   constructor(
+    private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
     private navCtrl: NavController,
     public fabMenuService: FabMenuService,
     private parOrarioService: ParOrarioService,
@@ -41,20 +53,15 @@ export class OrariListPageComponent {
 
     this.btnDelete = userInterfaceService.Btn_Cancella;
     this.btnDelete.event = this.handleButtonDeleteClick;
+
+    this.actions = [{ button: this.btnDelete, visible: item => !(item as any).default }, { button: this.btnEdit }];
   }
 
 
 
-  private loadData() {
-    let request = new GenericRequest<Par_Orario_GetAllInModel>(Par_Orario_GetAllInModel);
-    this.parOrarioService.GetAll(request).subscribe(res => {
-      this.par_OrarioList = res.data.par_Orario;
-    });
-  }
 
   ionViewWillEnter() {
     
-    this.loadData();
 
     this.fabMenuService.fabMenuItem = [
 
@@ -88,8 +95,7 @@ export class OrariListPageComponent {
       request.data.id = item.id;
       this.parOrarioService.Par_OrarioDelete(request).pipe(
         map(() => {
-          this.refresherService.SharedParameterGestionePresenze_triggerRefresh();
-          this.loadData();
+          this.refresherService.SharedParameterGestionePresenze_triggerRefresh(ParTable.Par_Orario);
           return true;
         }),
         catchError((error: any) => {
@@ -107,16 +113,7 @@ export class OrariListPageComponent {
     this.searchText = CurrFilter;
   }
 
-  isAdmin(item: any) {
-    return false;
-  }
 
-  getAll() {
-    if (!this.par_OrarioList) return [];
-    return this.par_OrarioList.sort((a, b) =>
-      a.descrizione.localeCompare(b.descrizione)
-    );
-  }
 
 }
 

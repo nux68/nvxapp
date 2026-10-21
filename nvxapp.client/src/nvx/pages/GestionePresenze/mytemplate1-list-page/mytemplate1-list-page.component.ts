@@ -2,14 +2,17 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
-import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
+import { NvxListAction, NvxListColumn } from '../../../shared/components/infrastructure/nvx-list/nvx-list.component';
 import { My_template1_GetAllInModel, My_Template1Model, My_template1_DeleteInModel } from '../../../ClientServer-Service/GestionePresenze/My_Template1Service/Models/my-template1-model';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { MyTemplate1Service } from '../../../ClientServer-Service/GestionePresenze/My_Template1Service/my-template1.service';
-import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
+import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
 import { map, catchError } from 'rxjs';
-import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
 
+// Modello delle pagine elenco.
+// Se la tabella e' tra quelle caricate al login (SharedParameterGestionePresenzeService), l'elenco va letto
+// dalla cache con un getter (vedi causali-list-page) e dopo salvataggi / cancellazioni si chiama
+// RefresherService.SharedParameterGestionePresenze_triggerRefresh(ParTable.<tabella>) invece di loadData().
 @Component({
   selector: 'app-mytemplate1-list-page',
   templateUrl: './mytemplate1-list-page.component.html',
@@ -21,22 +24,27 @@ export class MyTemplate1ListPageComponent {
   public title!: string;
   public searchText!: string;
   public myTemplate1List: My_Template1Model[] | null = null;
+  public readonly columns: NvxListColumn<My_Template1Model>[] = [
+    { key: 'descrizione', title: 'Descrizione' },
+  ];
+  public actions: NvxListAction<My_Template1Model>[] = [];
+  public readonly sortList = (a: My_Template1Model, b: My_Template1Model) => (a.descrizione ?? '').localeCompare(b.descrizione ?? '');
   public btnEdit: ButtonItem;
   public btnDelete: ButtonItem;
 
   constructor(private navCtrl: NavController,
-              private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
               public fabMenuService: FabMenuService,
               private myTemplate1Service: MyTemplate1Service,
               private userInterfaceService: UserInterfaceService,
-              private userNavigationService: UserNavigationService,
-              private refresherService: RefresherService) {
+              private collectionDialogService: CollectionDialogService) {
     this.title = 'MyTemplate1';
     this.btnEdit = userInterfaceService.Btn_Modifica;
     this.btnEdit.event = this.handleButtonEditClick;
 
     this.btnDelete = userInterfaceService.Btn_Cancella;
     this.btnDelete.event = this.handleButtonDeleteClick;
+
+    this.actions = [{ button: this.btnDelete }, { button: this.btnEdit }];
   }
 
   private loadData() {
@@ -68,31 +76,25 @@ export class MyTemplate1ListPageComponent {
     });
   }
 
-  handleButtonDeleteClick = (item: any) => {
-    let request: GenericRequest<My_template1_DeleteInModel> = new GenericRequest<My_template1_DeleteInModel>(My_template1_DeleteInModel);
-    request.data.id = item.id;
-    return this.myTemplate1Service.MyTemplate1Delete(request).pipe(
-      map(() => {
-        this.refresherService.SharedParameterGestionePresenze_triggerRefresh();
-        this.loadData();
-        return true;
-      }),
-      catchError((error) => {
-        console.error('Errore durante la chiamata API:', error);
-        return [false];
-      })
-    ).subscribe();
+  handleButtonDeleteClick = async (item: any) => {
+    const result = await this.collectionDialogService.ConfirmCancelDialog('Confermi la cancellazione?');
+    if (result) {
+      let request: GenericRequest<My_template1_DeleteInModel> = new GenericRequest<My_template1_DeleteInModel>(My_template1_DeleteInModel);
+      request.data.id = item.id;
+      this.myTemplate1Service.MyTemplate1Delete(request).pipe(
+        map(() => {
+          this.loadData();
+          return true;
+        }),
+        catchError((error) => {
+          console.error('Errore durante la chiamata API:', error);
+          return [false];
+        })
+      ).subscribe();
+    }
   }
 
   Filter(CurrFilter: any) {
     this.searchText = CurrFilter;
-  }
-
-  isAdmin(item: any) {
-    return false;
-  }
-
-  getAll() {
-    return this.myTemplate1List?.sort((a, b) => a.descrizione.localeCompare(b.descrizione));
   }
 }

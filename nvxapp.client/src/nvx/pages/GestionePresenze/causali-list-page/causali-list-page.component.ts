@@ -2,11 +2,12 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
+import { NvxListAction, NvxListColumn } from '../../../shared/components/infrastructure/nvx-list/nvx-list.component';
 import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
 import { Par_Causali_DeleteInModel, Par_CausaliInModel, Par_CausaliModel } from '../../../ClientServer-Service/GestionePresenze/Par_Causali/Models/par-causali-model';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { ParCausaliService } from '../../../ClientServer-Service/GestionePresenze/Par_Causali/par-causali.service';
-import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
+import { SharedParameterGestionePresenzeService, ParTable } from '../../../shared/shared-parameter-gestione-presenze.service';
 import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
 import { map, catchError } from 'rxjs';
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
@@ -22,7 +23,16 @@ export class CausaliListPageComponent {
 
   public title!: string;
   public searchText!: string;
-  public par_CausaliList: Par_CausaliModel[] | null = null;
+  /** dalla cache caricata al login: si aggiorna da sola dopo salvataggi e cancellazioni (refresh mirato) */
+  public get par_CausaliList(): Par_CausaliModel[] | null {
+    return this.sharedParameterGestionePresenzeService.Par_Causali;
+  }
+  public readonly columns: NvxListColumn<Par_CausaliModel>[] = [
+    { key: 'codice', title: 'Codice', width: '140px', mobile: 'subtitle' },
+    { key: 'descrizione', title: 'Descrizione', mobile: 'title' }
+  ];
+  public actions: NvxListAction<Par_CausaliModel>[] = [];
+  public readonly sortList = (a: Par_CausaliModel, b: Par_CausaliModel) => (a.descrizione ?? '').localeCompare(b.descrizione ?? '');
   public btnEdit: ButtonItem;
   public btnDelete: ButtonItem;
 
@@ -41,19 +51,13 @@ export class CausaliListPageComponent {
 
     this.btnDelete = userInterfaceService.Btn_Cancella;
     this.btnDelete.event = this.handleButtonDeleteClick;
+
+    this.actions = [{ button: this.btnDelete, visible: item => !(item as any).default }, { button: this.btnEdit }];
   }
 
-  private loadData() {
-    let request: GenericRequest<Par_CausaliInModel> = new GenericRequest<Par_CausaliInModel>(Par_CausaliInModel);
-    this.parCausaliService.GetAll(request).subscribe(res => {
-      this.par_CausaliList = res.data.par_Causali;
-    });
-
-  }
 
   ionViewWillEnter() {
 
-    this.loadData();
 
     this.fabMenuService.fabMenuItem = [
       new FabMenuItem('Nuova Causale', 'add-circle-outline', () => {
@@ -79,8 +83,7 @@ export class CausaliListPageComponent {
       request.data.id = item.id;
       this.parCausaliService.Par_CausaliDelete(request).pipe(
         map(() => {
-          this.refresherService.SharedParameterGestionePresenze_triggerRefresh();
-          this.loadData();
+          this.refresherService.SharedParameterGestionePresenze_triggerRefresh(ParTable.Par_Causali);
           return true;
         }),
         catchError((error: any) => {
@@ -103,17 +106,5 @@ export class CausaliListPageComponent {
     this.searchText = CurrFilter;
   }
 
-  isAdmin(item: any) {
-    return false;
-  }
 
-  getAll() {
-    if (!this.par_CausaliList) {
-      return [];
-    }
-    const sorted_CausaliList = this.par_CausaliList.sort((a, b) =>
-      a.descrizione.localeCompare(b.descrizione)
-    );
-    return sorted_CausaliList;
-  }
 }

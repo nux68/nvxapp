@@ -13,7 +13,7 @@ import { Par_AttivitaModel, Par_AttivitaGetInModel, Par_AttivitaPutInModel, Par_
 import { ParAttivitaService } from '../../../ClientServer-Service/GestionePresenze/Par_Attivita/par-attivita.service';
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
 import { Par_CompetenzaModel } from '../../../ClientServer-Service/GestionePresenze/Par_Competenza/Models/par-competenza-model';
-import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
+import { SharedParameterGestionePresenzeService, ParTable } from '../../../shared/shared-parameter-gestione-presenze.service';
 import { CheckObjOn_Id_Number } from '../../../ClientServer-Service/ModelsBase/check-obj';
 
 @Component({
@@ -92,7 +92,7 @@ export class ActivityEditPageComponent extends BasePageConfirmCancelComponent<Pa
     request.data.par_Competenza = editModel.par_Competenza;
     return this.azAttivitaService.Par_AttivitaPut(request).pipe(
       map(() => {
-        this.refresherService.SharedParameterGestionePresenze_triggerRefresh();
+        this.refresherService.SharedParameterGestionePresenze_triggerRefresh(ParTable.Par_Attivita);
         return true;
       }),
       catchError((error) => {

@@ -2,6 +2,7 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
+import { NvxListAction, NvxListColumn } from '../../../shared/components/infrastructure/nvx-list/nvx-list.component';
 import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
 import { Az_Sedi_GetAll_InModel, Az_SediModel, Az_SediDeleteInModel } from '../../../ClientServer-Service/GestionePresenze/Az_Sedi/Models/az-sedi-model';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
@@ -9,6 +10,7 @@ import { AzSediService } from '../../../ClientServer-Service/GestionePresenze/Az
 import { map, catchError } from 'rxjs';
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
 import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
+import { ParTable, SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
 
 @Component({
   selector: 'app-az-sedi-list-page',
@@ -21,11 +23,22 @@ export class AzSediListPageComponent {
 
   public title = 'Sedi';
   public searchText!: string;
-  public azSediList: Az_SediModel[] | null = null;
+  /** dalla cache caricata al login: si aggiorna da sola dopo salvataggi e cancellazioni (refresh mirato) */
+  public get azSediList(): Az_SediModel[] | null {
+    return this.sharedParameterGestionePresenzeService.Az_Sedi;
+  }
+  public readonly columns: NvxListColumn<Az_SediModel>[] = [
+    { key: 'descrizione', title: 'Sede', mobile: 'title' }
+  ];
+  public actions: NvxListAction<Az_SediModel>[] = [];
+  // prima le voci di default, poi per descrizione
+  public readonly sortList = (a: Az_SediModel, b: Az_SediModel) =>
+    a.default === b.default ? (a.descrizione ?? '').localeCompare(b.descrizione ?? '') : (a.default ? -1 : 1);
   public btnEdit: ButtonItem;
   public btnDelete: ButtonItem;
 
-  constructor(private navCtrl: NavController,
+  constructor(private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
+              private navCtrl: NavController,
               public fabMenuService: FabMenuService,
               private azSediService: AzSediService,
               private userInterfaceService: UserInterfaceService,
@@ -37,17 +50,12 @@ export class AzSediListPageComponent {
     this.btnEdit.event = this.handleButtonEditClick;
     this.btnDelete = userInterfaceService.Btn_Cancella;
     this.btnDelete.event = this.handleButtonDeleteClick;
+
+    this.actions = [{ button: this.btnDelete, visible: item => !item.default }, { button: this.btnEdit }];
   }
 
-  private loadData() {
-    let request: GenericRequest<Az_Sedi_GetAll_InModel> = new GenericRequest<Az_Sedi_GetAll_InModel>(Az_Sedi_GetAll_InModel);
-    this.azSediService.GetAll(request).subscribe(res => {
-      this.azSediList = res.data.az_Sedi;
-    });
-  }
 
   ionViewWillEnter() {
-    this.loadData();
     this.fabMenuService.fabMenuItem = [
       new FabMenuItem('Nuova Sede', 'add-circle-outline', () => {
         this.navCtrl.navigateForward('/azsediedit', {
@@ -78,8 +86,7 @@ export class AzSediListPageComponent {
         request.data.id = item.id;
         return this.azSediService.AzSediDelete(request).pipe(
           map(() => {
-            this.refresherService.SharedParameterGestionePresenze_triggerRefresh();
-            this.loadData();
+            this.refresherService.SharedParameterGestionePresenze_triggerRefresh(ParTable.Az_Sedi);
             return true;
           }),
           catchError((error) => {
@@ -96,20 +103,6 @@ export class AzSediListPageComponent {
     this.searchText = CurrFilter;
   }
 
-  isAdmin(item: any) {
-    return false;
-  }
 
-  getAll() {
-    if (!this.azSediList) return [];
-    return this.azSediList.sort((a, b) => {
-      // Prima ordina per default (true prima di false)
-      if (a.default === b.default) {
-        // Poi ordina per descrizione
-        return a.descrizione.localeCompare(b.descrizione);
-      }
-      return a.default ? -1 : 1;
-    });
-  }
 
 }

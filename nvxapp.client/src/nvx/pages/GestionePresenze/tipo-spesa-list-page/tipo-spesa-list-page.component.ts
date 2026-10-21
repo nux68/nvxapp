@@ -2,6 +2,7 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
+import { NvxListAction, NvxListColumn } from '../../../shared/components/infrastructure/nvx-list/nvx-list.component';
 import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
 import { Par_TipoSpesa_DeleteInModel, Par_TipoSpesaInModel, Par_TipoSpesaModel } from '../../../ClientServer-Service/GestionePresenze/Par_TipoSpesa/Models/par-tipo-spesa-model';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
@@ -23,6 +24,12 @@ export class TipoSpesaListPageComponent {
   public title!: string;
   public searchText!: string;
   public par_TipoSpesaList: Par_TipoSpesaModel[] | null = null;
+  public readonly columns: NvxListColumn<Par_TipoSpesaModel>[] = [
+    { key: 'codice', title: 'Codice', width: '140px', mobile: 'subtitle' },
+    { key: 'descrizione', title: 'Descrizione', mobile: 'title' },
+  ];
+  public actions: NvxListAction<Par_TipoSpesaModel>[] = [];
+  public readonly sortList = (a: Par_TipoSpesaModel, b: Par_TipoSpesaModel) => (a.descrizione ?? '').localeCompare(b.descrizione ?? '');
   public btnEdit: ButtonItem;
   public btnDelete: ButtonItem;
 
@@ -41,6 +48,8 @@ export class TipoSpesaListPageComponent {
 
     this.btnDelete = userInterfaceService.Btn_Cancella;
     this.btnDelete.event = this.handleButtonDeleteClick;
+
+    this.actions = [{ button: this.btnDelete, visible: item => !(item as any).default }, { button: this.btnEdit }];
   }
 
   private loadData() {
@@ -79,7 +88,6 @@ export class TipoSpesaListPageComponent {
       request.data.id = item.id;
       this.parTipoSpesaService.Par_TipoSpesaDelete(request).pipe(
         map(() => {
-          this.refresherService.SharedParameterGestionePresenze_triggerRefresh();
           this.loadData();
           return true;
         }),
@@ -103,17 +111,5 @@ export class TipoSpesaListPageComponent {
     this.searchText = CurrFilter;
   }
 
-  isAdmin(item: any) {
-    return false;
-  }
 
-  getAll() {
-    if (!this.par_TipoSpesaList) {
-      return [];
-    }
-    const sorted_TipoSpesaList = this.par_TipoSpesaList.sort((a, b) =>
-      a.descrizione.localeCompare(b.descrizione)
-    );
-    return sorted_TipoSpesaList;
-  }
 }

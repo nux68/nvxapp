@@ -10,6 +10,7 @@ import { StringHelperService } from '../../../Utility/infrastructure/string-help
 import { AzCfgService } from '../../../ClientServer-Service/GestionePresenze/Az_Cfg/az-cfg.service';
 import { Az_Cfg_Get_InModel, Az_Cfg_Put_InModel, Az_CfgModel, TipoApprovazione } from '../../../ClientServer-Service/GestionePresenze/Az_Cfg/Models/az-cfg-model';
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
+import { ParTable } from '../../../shared/shared-parameter-gestione-presenze.service';
 
 interface TipoApprovazioneOption {
   value: TipoApprovazione;
@@ -83,7 +84,7 @@ export class CompanyCfgPageComponent extends BasePageConfirmCancelComponent<Az_C
     return this.azCfgService.Az_CfgPut(request).pipe(
       map(() => {
         // Notifica il refresh dei parametri condivisi
-        this.refresherService.SharedParameterGestionePresenze_triggerRefresh(); 
+        this.refresherService.SharedParameterGestionePresenze_triggerRefresh(ParTable.Az_Cfg); 
 
         return true;
       }), // Restituisce true in caso di successo

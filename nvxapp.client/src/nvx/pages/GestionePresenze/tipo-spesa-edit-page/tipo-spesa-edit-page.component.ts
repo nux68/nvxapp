@@ -68,7 +68,6 @@ export class TipoSpesaEditPageComponent extends BasePageConfirmCancelComponent<P
 
     return this.parTipoSpesaService.Par_TipoSpesaPut(request).pipe(
       map(() => {
-        this.refresherService.SharedParameterGestionePresenze_triggerRefresh();
         return true;
       }),
       catchError((error) => {

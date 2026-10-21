@@ -2,6 +2,7 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
+import { NvxListAction, NvxListColumn } from '../../../shared/components/infrastructure/nvx-list/nvx-list.component';
 import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
 
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
@@ -12,6 +13,7 @@ import { CollectionDialogService } from '../../../shared/components/infrastructu
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
 import { ParProfiloOrarioService } from '../../../ClientServer-Service/GestionePresenze/Par_ProfiloOrario/par-profilo-orario.service';
 import { Par_ProfiloOrario_DeleteInModel, Par_ProfiloOrario_GetAllInModel, Par_ProfiloOrarioModel } from '../../../ClientServer-Service/GestionePresenze/Par_ProfiloOrario/Models/par-profilo-orario-model';
+import { ParTable, SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
 
 @Component({
   selector: 'app-profilo-orario-list-page',
@@ -24,11 +26,21 @@ export class ProfiloOrarioListPageComponent {
 
   public title: string;
   public searchText: string = '';
-  public par_ProfiloOrarioList: Par_ProfiloOrarioModel[] = [];
+  /** dalla cache caricata al login: si aggiorna da sola dopo salvataggi e cancellazioni (refresh mirato) */
+  public get par_ProfiloOrarioList(): Par_ProfiloOrarioModel[] | null {
+    return this.sharedParameterGestionePresenzeService.Par_ProfiloOrario;
+  }
+  public readonly columns: NvxListColumn<Par_ProfiloOrarioModel>[] = [
+    { key: 'codice', title: 'Codice', width: '140px', mobile: 'subtitle' },
+    { key: 'descrizione', title: 'Descrizione', mobile: 'title' }
+  ];
+  public actions: NvxListAction<Par_ProfiloOrarioModel>[] = [];
+  public readonly sortList = (a: Par_ProfiloOrarioModel, b: Par_ProfiloOrarioModel) => (a.descrizione ?? '').localeCompare(b.descrizione ?? '');
   public btnEdit: ButtonItem;
   public btnDelete: ButtonItem;
 
   constructor(
+    private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
     private navCtrl: NavController,
     public fabMenuService: FabMenuService,
     private parProfiloOrarioService: ParProfiloOrarioService,
@@ -42,20 +54,15 @@ export class ProfiloOrarioListPageComponent {
 
     this.btnDelete = userInterfaceService.Btn_Cancella;
     this.btnDelete.event = this.handleButtonDeleteClick;
+
+    this.actions = [{ button: this.btnDelete, visible: item => !(item as any).default }, { button: this.btnEdit }];
   }
 
 
 
-  private loadData() {
-    let request = new GenericRequest<Par_ProfiloOrario_GetAllInModel>(Par_ProfiloOrario_GetAllInModel);
-    this.parProfiloOrarioService.GetAll(request).subscribe(res => {
-      this.par_ProfiloOrarioList = res.data.par_ProfiloOrario;
-    });
-  }
 
   ionViewWillEnter() {
 
-    this.loadData();
 
     this.fabMenuService.fabMenuItem = [
 
@@ -89,8 +96,7 @@ export class ProfiloOrarioListPageComponent {
       request.data.id = item.id;
       this.parProfiloOrarioService.Par_ProfiloOrarioDelete(request).pipe(
         map(() => {
-          this.refresherService.SharedParameterGestionePresenze_triggerRefresh();
-          this.loadData();
+          this.refresherService.SharedParameterGestionePresenze_triggerRefresh(ParTable.Par_ProfiloOrario);
           return true;
         }),
         catchError((error: any) => {
@@ -108,15 +114,6 @@ export class ProfiloOrarioListPageComponent {
     this.searchText = CurrFilter;
   }
 
-  isAdmin(item: any) {
-    return false;
-  }
 
-  getAll() {
-    if (!this.par_ProfiloOrarioList) return [];
-    return this.par_ProfiloOrarioList.sort((a, b) =>
-      a.descrizione.localeCompare(b.descrizione)
-    );
-  }
 }
 

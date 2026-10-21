@@ -11,6 +11,7 @@ import { StringHelperService } from '../../../Utility/infrastructure/string-help
 import { Az_ClienteGetInModel, Az_ClienteModel, Az_ClientePutInModel } from '../../../ClientServer-Service/GestionePresenze/Az_Cliente/Models/az-cliente-model';
 import { AzClienteService } from '../../../ClientServer-Service/GestionePresenze/Az_Cliente/az-cliente.service';
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
+import { ParTable } from '../../../shared/shared-parameter-gestione-presenze.service';
 
 @Component({
   selector: 'app-customer-edit-page',
@@ -83,7 +84,7 @@ export class CustomerEditPageComponent extends BasePageConfirmCancelComponent<Az
     request.data.az_Cliente = editModel;
     return this.azClienteService.Az_ClientePut(request).pipe(
       map(() => {
-        this.refresherService.SharedParameterGestionePresenze_triggerRefresh();
+        this.refresherService.SharedParameterGestionePresenze_triggerRefresh(ParTable.Az_Cliente);
         return true;
       }),
       catchError((error) => {

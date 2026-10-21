@@ -11,7 +11,7 @@ import { StringHelperService } from '../../../Utility/infrastructure/string-help
 import { ParameterService } from '../../../ClientServer-Service/Infrastructure/Parameter/parameter.service';
 import { Par_GiustificativiGetInModel, Par_GiustificativiInModel, Par_GiustificativiModel, Par_GiustificativiPutInModel, SignWithNeutral, TipoContatore } from '../../../ClientServer-Service/GestionePresenze/Par_Giustificativi/Models/par-giustificativi-model';
 import { ParGiustificativiService } from '../../../ClientServer-Service/GestionePresenze/Par_Giustificativi/par-giustificativi.service';
-import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
+import { SharedParameterGestionePresenzeService, ParTable } from '../../../shared/shared-parameter-gestione-presenze.service';
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
 import { Title } from '@angular/platform-browser';
 import { Par_CausaliModel } from '../../../ClientServer-Service/GestionePresenze/Par_Causali/Models/par-causali-model';
@@ -102,7 +102,7 @@ export class JustificationEditPageComponent extends BasePageConfirmCancelCompone
     return this.parGiustificativiService.Par_GiustificativiPut(request).pipe(
       map(() => {
 
-        this.refresherService.SharedParameterGestionePresenze_triggerRefresh(); 
+        this.refresherService.SharedParameterGestionePresenze_triggerRefresh(ParTable.Par_Giustificativi); 
 
         //TODO DISAB SHARED DATA
         // Aggiorno il dato condiviso

@@ -5,10 +5,12 @@ import { CollectionDialogService } from '../../../shared/components/infrastructu
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
+import { NvxListAction, NvxListColumn } from '../../../shared/components/infrastructure/nvx-list/nvx-list.component';
 import { map, catchError } from 'rxjs';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { ParExportCauService } from '../../../ClientServer-Service/GestionePresenze/Par_ExportCau/par-export-cau.service';
 import { Par_ExportCau_Delete_InModel, Par_ExportCau_GetAll_InModel, Par_ExportCauModel } from '../../../ClientServer-Service/GestionePresenze/Par_ExportCau/Models/par-export-cau-model';
+import { ParTable, SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
 
 @Component({
   selector: 'app-export-cau-list-page',
@@ -22,11 +24,22 @@ export class ExportCauListPageComponent {
 
   public title: string;
   public searchText: string = '';
-  public par_ExportCauList: Par_ExportCauModel[] = [];
+  /** dalla cache caricata al login: si aggiorna da sola dopo salvataggi e cancellazioni (refresh mirato) */
+  public get par_ExportCauList(): Par_ExportCauModel[] | null {
+    return this.sharedParameterGestionePresenzeService.Par_ExportCau;
+  }
+  public readonly columns: NvxListColumn<Par_ExportCauModel>[] = [
+    { key: 'codice', title: 'Codice', width: '140px', mobile: 'subtitle' },
+    { key: 'descrizione', title: 'Descrizione', mobile: 'title' },
+    { key: 'tipoFile', title: 'Tipo file', width: '160px', mobile: 'note' }
+  ];
+  public actions: NvxListAction<Par_ExportCauModel>[] = [];
+  public readonly sortList = (a: Par_ExportCauModel, b: Par_ExportCauModel) => (a.descrizione ?? '').localeCompare(b.descrizione ?? '');
   public btnEdit: ButtonItem;
   public btnDelete: ButtonItem;
 
   constructor(
+    private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
     private navCtrl: NavController,
     public fabMenuService: FabMenuService,
     private parExportCauService: ParExportCauService,
@@ -40,20 +53,15 @@ export class ExportCauListPageComponent {
 
     this.btnDelete = userInterfaceService.Btn_Cancella;
     this.btnDelete.event = this.handleButtonDeleteClick;
+
+    this.actions = [{ button: this.btnDelete }, { button: this.btnEdit }];
   }
 
 
 
-  private loadData() {
-    let request = new GenericRequest<Par_ExportCau_GetAll_InModel>(Par_ExportCau_GetAll_InModel);
-    this.parExportCauService.GetAll(request).subscribe(res => {
-      this.par_ExportCauList = res.data.par_ExportCau;
-    });
-  }
 
   ionViewWillEnter() {
 
-    this.loadData();
 
     this.fabMenuService.fabMenuItem = [
 
@@ -87,8 +95,7 @@ export class ExportCauListPageComponent {
       request.data.id = item.id;
       this.parExportCauService.Par_ExportCauDelete(request).pipe(
         map(() => {
-          this.refresherService.SharedParameterGestionePresenze_triggerRefresh();
-          this.loadData();
+          this.refresherService.SharedParameterGestionePresenze_triggerRefresh(ParTable.Par_ExportCau);
           return true;
         }),
         catchError((error: any) => {
@@ -106,16 +113,7 @@ export class ExportCauListPageComponent {
     this.searchText = CurrFilter;
   }
 
-  isAdmin(item: any) {
-    return false;
-  }
 
-  getAll() {
-    if (!this.par_ExportCauList) return [];
-    return this.par_ExportCauList.sort((a, b) =>
-      a.descrizione.localeCompare(b.descrizione)
-    );
-  }
 
 
 }

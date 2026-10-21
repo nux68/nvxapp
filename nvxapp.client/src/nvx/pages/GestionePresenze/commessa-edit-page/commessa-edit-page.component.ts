@@ -10,7 +10,7 @@ import { StringHelperService } from '../../../Utility/infrastructure/string-help
 import { Az_CommessaGetInModel, Az_CommessaGetOutModel, Az_CommessaPutInModel } from '../../../ClientServer-Service/GestionePresenze/Az_Commessa/Models/az-commessa-model';
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
 import { Az_ClienteModel } from '../../../ClientServer-Service/GestionePresenze/Az_Cliente/Models/az-cliente-model';
-import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
+import { SharedParameterGestionePresenzeService, ParTable } from '../../../shared/shared-parameter-gestione-presenze.service';
 import { AzCommessaService } from '../../../ClientServer-Service/GestionePresenze/Az_Commessa/az-commessa.service';
 import { CheckObjOn_Id_Number, CheckObjOn_Id_Text } from '../../../ClientServer-Service/ModelsBase/check-obj';
 import { Az_SediRepartoModel } from '../../../ClientServer-Service/GestionePresenze/Az_SediReparto/Models/az-sedi-reparto-model';
@@ -152,7 +152,7 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
     request.data.az_SubCommessa = editModel.az_SubCommessa;
     return this.azCommessaService.Az_CommessaPut(request).pipe(
       map(() => {
-        this.refresherService.SharedParameterGestionePresenze_triggerRefresh();
+        this.refresherService.SharedParameterGestionePresenze_triggerRefresh(ParTable.Az_Commessa);
         return true;
       }),
       catchError((error) => {

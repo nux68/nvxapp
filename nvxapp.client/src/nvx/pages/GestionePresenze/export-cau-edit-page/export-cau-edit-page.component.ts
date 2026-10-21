@@ -13,6 +13,7 @@ import { FabMenuService, FabMenuItem } from '../../../Utility/infrastructure/fab
 import { EditParExportCauCausaliComponentComponent } from '../../../shared/components/GestionePresenze/edit-par-export-cau-causali-component/edit-par-export-cau-causali-component.component';
 import { ParExportCauCausaliService } from '../../../ClientServer-Service/GestionePresenze/Par_ExportCau_Causali/par-export-cau-causali.service';
 import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
+import { ParTable } from '../../../shared/shared-parameter-gestione-presenze.service';
 
 @Component({
   selector: 'app-export-cau-edit-page',
@@ -127,7 +128,7 @@ export class ExportCauEditPageComponent extends BasePageConfirmCancelComponent<P
 
     return this.parExportCauService.Par_ExportCauPut(request).pipe(
       map(() => {
-        this.refresherService.SharedParameterGestionePresenze_triggerRefresh();
+        this.refresherService.SharedParameterGestionePresenze_triggerRefresh(ParTable.Par_ExportCau);
         return true;
       }),
       catchError((error) => {

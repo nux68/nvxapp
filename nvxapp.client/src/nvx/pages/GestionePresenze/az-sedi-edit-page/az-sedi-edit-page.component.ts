@@ -7,7 +7,7 @@ import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic
 import { Observable } from 'rxjs/internal/Observable';
 import { map, catchError, of } from 'rxjs';
 import { StringHelperService } from '../../../Utility/infrastructure/string-helper.service';
-import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
+import { SharedParameterGestionePresenzeService, ParTable } from '../../../shared/shared-parameter-gestione-presenze.service';
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
 import { AzSediService } from '../../../ClientServer-Service/GestionePresenze/Az_Sedi/az-sedi.service';
 import { Az_SediModel, Az_SediGetInModel, Az_SediPutInModel, Az_SediGetOutModel } from '../../../ClientServer-Service/GestionePresenze/Az_Sedi/Models/az-sedi-model';
@@ -83,7 +83,7 @@ export class AzSediEditPageComponent extends BasePageConfirmCancelComponent<Az_S
 
     return this.azSediService.AzSediPut(request).pipe(
       map(() => {
-        this.refresherService.SharedParameterGestionePresenze_triggerRefresh();
+        this.refresherService.SharedParameterGestionePresenze_triggerRefresh(ParTable.Az_Sedi);
         return true;
       }),
       catchError((error) => {

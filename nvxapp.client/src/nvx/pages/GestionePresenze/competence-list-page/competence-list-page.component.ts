@@ -2,6 +2,7 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
+import { NvxListAction, NvxListColumn } from '../../../shared/components/infrastructure/nvx-list/nvx-list.component';
 import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
 import { Par_CompetenzaDeleteInModel, Par_CompetenzaModel, Par_Competenza_GetAll_InModel } from '../../../ClientServer-Service/GestionePresenze/Par_Competenza/Models/par-competenza-model';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
@@ -9,6 +10,7 @@ import { ParCompetenzaService } from '../../../ClientServer-Service/GestionePres
 import { map, catchError } from 'rxjs';
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
 import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
+import { ParTable, SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
 //import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
 
 @Component({
@@ -21,11 +23,22 @@ import { CollectionDialogService } from '../../../shared/components/infrastructu
 export class CompetenceListPageComponent {
   public title = 'Competenze';
   public searchText!: string;
-  public par_CompetenzaList: Par_CompetenzaModel[] | null = null;
+  /** dalla cache caricata al login: si aggiorna da sola dopo salvataggi e cancellazioni (refresh mirato) */
+  public get par_CompetenzaList(): Par_CompetenzaModel[] | null {
+    return this.sharedParameterGestionePresenzeService.Par_Competenza;
+  }
+  public readonly columns: NvxListColumn<Par_CompetenzaModel>[] = [
+    { key: 'descrizione', title: 'Competenza', mobile: 'title' }
+  ];
+  public actions: NvxListAction<Par_CompetenzaModel>[] = [];
+  // prima le voci di default, poi per descrizione
+  public readonly sortList = (a: Par_CompetenzaModel, b: Par_CompetenzaModel) =>
+    a.default === b.default ? (a.descrizione ?? '').localeCompare(b.descrizione ?? '') : (a.default ? -1 : 1);
   public btnEdit: ButtonItem;
   public btnDelete: ButtonItem;
 
   constructor(
+    private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
     private navCtrl: NavController,
     public fabMenuService: FabMenuService,
     private refresherService: RefresherService,
@@ -39,17 +52,12 @@ export class CompetenceListPageComponent {
 
     this.btnDelete = userInterfaceService.Btn_Cancella;
     this.btnDelete.event = this.handleButtonDeleteClick;
+
+    this.actions = [{ button: this.btnDelete, visible: item => !item.default }, { button: this.btnEdit }];
   }
 
-  private loadData() {
-    let request: GenericRequest<Par_Competenza_GetAll_InModel> = new GenericRequest<Par_Competenza_GetAll_InModel>(Par_Competenza_GetAll_InModel);
-    this.parCompetenzaService.GetAll(request).subscribe(res => {
-      this.par_CompetenzaList = res.data.par_Competenza;
-    });
-  }
 
   ionViewWillEnter() {
-    this.loadData();
 
     this.fabMenuService.fabMenuItem = [
       new FabMenuItem('Nuova Competenza', 'add-circle-outline', () => {
@@ -76,8 +84,7 @@ export class CompetenceListPageComponent {
         request.data.id = item.id ;
         return this.parCompetenzaService.Par_CompetenzaDelete(request).pipe(
           map(() => {
-            this.refresherService.SharedParameterGestionePresenze_triggerRefresh();
-            this.loadData();
+            this.refresherService.SharedParameterGestionePresenze_triggerRefresh(ParTable.Par_Competenza);
             return true;
           }),
           catchError((error) => {
@@ -92,15 +99,5 @@ export class CompetenceListPageComponent {
 
   Filter(CurrFilter: any) {
     this.searchText = CurrFilter;
-  }
-  getAll() {
-    return this.par_CompetenzaList?.sort((a, b) => {
-      // Prima ordina per default (true prima di false)
-      if (a.default === b.default) {
-        // Poi ordina per descrizione
-        return a.descrizione.localeCompare(b.descrizione);
-      }
-      return a.default ? -1 : 1;
-    });
   }
 }

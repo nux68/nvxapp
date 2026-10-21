@@ -2,6 +2,7 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
+import { NvxListAction, NvxListColumn } from '../../../shared/components/infrastructure/nvx-list/nvx-list.component';
 import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
 import { Par_GiustificativiInModel, Par_GiustificativiModel } from '../../../ClientServer-Service/GestionePresenze/Par_Giustificativi/Models/par-giustificativi-model';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
@@ -33,6 +34,17 @@ export class RequestListAdminPageComponent {
   public title!: string;
   public searchText!: string;
   public dip_GG_RichiestaList: Dip_GG_RichiestaModel[] | null = null;
+  public readonly columns: NvxListColumn<Dip_GG_RichiestaModel>[] = [
+    { key: 'cognome', title: 'Cognome', value: x => this.cognome(x) },
+    { key: 'nome', title: 'Nome', value: x => this.nome(x) },
+    { key: 'data', title: 'Dal' },
+    { key: 'dataA', title: 'Al', value: x => this.getDataA(x) },
+    { key: 'richiestaTipo', title: 'Tipo', value: x => this.tipoRichiestaToLongText.transform(x.richiestaTipo) },
+    { key: 'dati', title: 'Dettaglio', value: x => this.getDati(x), sortable: false },
+    { key: 'stato', title: 'Stato', value: x => this.timeSheetService.get_StatoRichiesta_Approval_text(x) },
+  ];
+  public actions: NvxListAction<Dip_GG_RichiestaModel>[] = [];
+  private readonly tipoRichiestaToLongText = new TipoRichiestaToLongTextPipe();
   public btnApprova: ButtonItem;
   public btnRifiuta: ButtonItem;
   public currRappLavSel: number[] = [];
@@ -61,6 +73,11 @@ export class RequestListAdminPageComponent {
 
     this.btnRifiuta = userInterfaceService.Btn_Rifiuta;
     this.btnRifiuta.event = this.handleButtonRifiutaClick;
+
+    this.actions = [
+      { button: this.btnApprova, visible: item => this.timeSheetService.Dip_GG_Richiesta_Admin_Can_Approve(item) },
+      { button: this.btnRifiuta, visible: item => this.timeSheetService.Dip_GG_Richiesta_Admin_Can_Reject(item) },
+    ];
 
     
   }
@@ -141,13 +158,31 @@ export class RequestListAdminPageComponent {
     return false;
   }
 
-  getAll() {
-    //const sorted_GiustificativiList = this.par_GiustificativiList.sort((a, b) =>
-    //  a.descrizione.localeCompare(b.descrizione)
-    //);
-    //return sorted_GiustificativiList;
+  // richieste dei rapporti di lavoro selezionati, escluse le cancellate
+  private _src: Dip_GG_RichiestaModel[] | null = null;
+  private _srcSel: number[] | null = null;
+  private _filtered: Dip_GG_RichiestaModel[] | null = null;
+  public get richiesteFiltrate(): Dip_GG_RichiestaModel[] | null {
+    if (this.dip_GG_RichiestaList !== this._src || this.currRappLavSel !== this._srcSel) {
+      this._src = this.dip_GG_RichiestaList;
+      this._srcSel = this.currRappLavSel;
+      this._filtered = this._src?.filter(x => x.richiestaStato != StatoRichiesta.Cancellata && this.currRappLavSel.includes(x.idDip_RapportoLavoro)) ?? null;
+    }
+    return this._filtered;
+  }
 
-    return this.dip_GG_RichiestaList.filter(x => x.richiestaStato != StatoRichiesta.Cancellata && this.currRappLavSel.includes(x.idDip_RapportoLavoro));
+  public cognome(item: Dip_GG_RichiestaModel): string {
+    const dip = this.anagrafica(item);
+    return dip ? (dip.cognome ?? dip.userName ?? '') : '';
+  }
+
+  public nome(item: Dip_GG_RichiestaModel): string {
+    return this.anagrafica(item)?.nome ?? '';
+  }
+
+  private anagrafica(item: Dip_GG_RichiestaModel) {
+    return this.sharedParameterGestionePresenzeService.Dip_Anagrafica?.find(dip =>
+      dip.dip_RapportoLavoro.some(rapporto => rapporto.id === item.idDip_RapportoLavoro));
   }
 
   public getDataA(item: Dip_GG_RichiestaModel): string {

@@ -2,6 +2,7 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
+import { NvxListAction, NvxListColumn } from '../../../shared/components/infrastructure/nvx-list/nvx-list.component';
 import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
 import { Az_Commessa_GetAll_InModel, Az_CommessaModel, Az_CommessaDeleteInModel } from '../../../ClientServer-Service/GestionePresenze/Az_Commessa/Models/az-commessa-model';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
@@ -9,6 +10,7 @@ import { AzCommessaService } from '../../../ClientServer-Service/GestionePresenz
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
 import { map, catchError } from 'rxjs';
 import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
+import { ParTable, SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
 
 @Component({
   selector: 'app-commessa-list-page',
@@ -21,11 +23,20 @@ export class CommessaListPageComponent {
 
   public title!: string;
   public searchText!: string;
-  public commessaList: Az_CommessaModel[] | null = null;
+  /** dalla cache caricata al login: si aggiorna da sola dopo salvataggi e cancellazioni (refresh mirato) */
+  public get commessaList(): Az_CommessaModel[] | null {
+    return this.sharedParameterGestionePresenzeService.Az_Commessa;
+  }
+  public readonly columns: NvxListColumn<Az_CommessaModel>[] = [
+    { key: 'descrizione', title: 'Commessa', mobile: 'title' }
+  ];
+  public actions: NvxListAction<Az_CommessaModel>[] = [];
+  public readonly sortList = (a: Az_CommessaModel, b: Az_CommessaModel) => (a.descrizione ?? '').localeCompare(b.descrizione ?? '');
   public btnEdit: ButtonItem;
   public btnDelete: ButtonItem;
 
-  constructor(private navCtrl: NavController,
+  constructor(private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
+              private navCtrl: NavController,
               public fabMenuService: FabMenuService,
               private azCommessaService: AzCommessaService,
               private userInterfaceService: UserInterfaceService,
@@ -39,17 +50,12 @@ export class CommessaListPageComponent {
 
     this.btnDelete = userInterfaceService.Btn_Cancella;
     this.btnDelete.event = this.handleButtonDeleteClick;
+
+    this.actions = [{ button: this.btnDelete, visible: item => !item.default }, { button: this.btnEdit }];
   }
 
-  private loadData() {
-    let request: GenericRequest<Az_Commessa_GetAll_InModel> = new GenericRequest<Az_Commessa_GetAll_InModel>(Az_Commessa_GetAll_InModel);
-    this.azCommessaService.GetAll(request).subscribe(res => {
-      this.commessaList = res.data.az_Commessa;
-    });
-  }
 
   ionViewWillEnter() {
-    this.loadData();
 
     this.fabMenuService.fabMenuItem = [
 
@@ -84,8 +90,7 @@ export class CommessaListPageComponent {
       request.data.id = item.id;
       this.azCommessaService.Az_CommessaDelete(request).pipe(
         map(() => {
-          this.refresherService.SharedParameterGestionePresenze_triggerRefresh();
-          this.loadData();
+          this.refresherService.SharedParameterGestionePresenze_triggerRefresh(ParTable.Az_Commessa);
           return true;
         }),
         catchError((error) => {
@@ -102,15 +107,5 @@ export class CommessaListPageComponent {
     this.searchText = CurrFilter;
   }
 
-  isAdmin(item: any) {
-    return false;
-  }
 
-  getAll() {
-    if (!this.commessaList) return [];
-    const sortedList = this.commessaList.sort((a, b) =>
-      a.descrizione.localeCompare(b.descrizione)
-    );
-    return sortedList;
-  }
 }

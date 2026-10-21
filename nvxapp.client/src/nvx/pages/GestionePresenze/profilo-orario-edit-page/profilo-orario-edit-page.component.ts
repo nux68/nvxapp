@@ -14,7 +14,7 @@ import { CollectionDialogService } from '../../../shared/components/infrastructu
 import { EditParProfiloOrarioDettaglioOrarioDialogComponent } from '../../../shared/components/GestionePresenze/edit-par-profilo-orario-dettaglio-orario-dialog/edit-par-profilo-orario-dettaglio-orario-dialog.component';
 import { Par_OrarioIntervalloHHModel } from '../../../ClientServer-Service/GestionePresenze/Par_OrarioIntervalloHH/Models/par-orario-intervallo-hh-model';
 import { OrarioTimbratureTipo, Par_OrarioModel } from '../../../ClientServer-Service/GestionePresenze/Par_Orario/Models/par-orario-model';
-import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
+import { SharedParameterGestionePresenzeService, ParTable } from '../../../shared/shared-parameter-gestione-presenze.service';
 import { state } from '@angular/animations';
 import { ParProfiloOrarioGGService } from '../../../ClientServer-Service/GestionePresenze/Par_ProfiloOrarioGG/par-profilo-orario-gg.service';
 import { Par_CausaliModel } from '../../../ClientServer-Service/GestionePresenze/Par_Causali/Models/par-causali-model';
@@ -159,7 +159,7 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
 
     return this.parProfiloOrarioService.Par_ProfiloOrarioPut(request).pipe(
       map(() => {
-        this.refresherService.SharedParameterGestionePresenze_triggerRefresh(); 
+        this.refresherService.SharedParameterGestionePresenze_triggerRefresh(ParTable.Par_ProfiloOrario); 
         return true;
       }),
       catchError((error) => {

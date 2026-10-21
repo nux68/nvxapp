@@ -10,7 +10,8 @@ import { StringHelperService } from '../../../Utility/infrastructure/string-help
 import { AzSediRepartoService } from '../../../ClientServer-Service/GestionePresenze/Az_SediReparto/az-sedi-reparto.service';
 import { Az_SediRepartoGetInModel, Az_SediRepartoGetOutModel, Az_SediRepartoModel, Az_SediRepartoPutInModel, CheckObjOn_Id_Text_4ApprovalZorder } from '../../../ClientServer-Service/GestionePresenze/Az_SediReparto/Models/az-sedi-reparto-model';
 import { Dip_AnagraficaModel } from '../../../ClientServer-Service/GestionePresenze/Dip_Anagrafica/Models/dip-anagrafica-model';
-import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
+import { ParTable, SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
+import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
 import { RoleCode } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-roles-model';
 import { ItemReorderEventDetail } from '@ionic/angular';
 import { TipoApprovazione } from '../../../ClientServer-Service/GestionePresenze/Az_Cfg/Models/az-cfg-model';
@@ -53,7 +54,8 @@ export class DepartmentEditPageComponent extends BasePageConfirmCancelComponent<
     private stringHelperService: StringHelperService,
     private azSediRepartoService: AzSediRepartoService,
     private azSubCommessaService: AzSubCommessaService,
-    private toastCtrl: ToastController) {
+    private toastCtrl: ToastController,
+    private refresherService: RefresherService) {
 
     super(navCtrl, userInterfaceService, fb);
 
@@ -113,7 +115,11 @@ export class DepartmentEditPageComponent extends BasePageConfirmCancelComponent<
     
 
     return this.azSediRepartoService.Az_SediRepartoPut(request).pipe(
-      map(() => true), // Restituisce true in caso di successo
+      map(() => {
+        // la cache dei reparti (selettori, liste) va riletta dopo il salvataggio
+        this.refresherService.SharedParameterGestionePresenze_triggerRefresh(ParTable.Az_SediReparto);
+        return true;
+      }),
       catchError((error) => {
         console.error('Errore durante la chiamata API:', error);
         return [false]; // Restituisce false in caso di errore
