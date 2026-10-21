@@ -196,6 +196,11 @@ export class FabMenuComponent implements OnInit, AfterViewInit {
 
         const responseType = res.data?.responseType ?? '';
 
+        // comando eseguito (anche solo in parte): la pagina corrente rilegge i dati
+        if (responseType === 'result' || res.data?.actionResults?.some(r => r.success)) {
+          this.fabMenuService.commandExecuted();
+        }
+
         if (this.speechService.VoiceCommandActive) {
           if (!this.isModalOpen) {
             if (responseType === 'result' || responseType === 'error') {

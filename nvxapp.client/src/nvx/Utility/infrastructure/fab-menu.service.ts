@@ -33,6 +33,18 @@ export class FabMenuService {
     this._openChat$.next();
   }
 
+  // comando dell'assistente (chat o voce) eseguito: le pagine con dati che il comando puo' aver cambiato
+  // (es. i calendari delle presenze) si ricaricano subito, senza aspettare le notifiche SignalR
+  private _commandExecuted$ = new Subject<void>();
+
+  public get commandExecuted$(): Observable<void> {
+    return this._commandExecuted$.asObservable();
+  }
+
+  public commandExecuted(): void {
+    this._commandExecuted$.next();
+  }
+
 
   constructor() { }
 }
