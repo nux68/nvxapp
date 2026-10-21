@@ -1,0 +1,128 @@
+@if (items()) {
+
+  @if (disabledToggleLabel()) {
+    <div class="nvx-list-toggle">
+      <ion-checkbox labelPlacement="end" justify="start"
+        [checked]="showDisabled()"
+        (ionChange)="showDisabled.set($event.detail.checked)">
+        {{ disabledToggleLabel() }}
+      </ion-checkbox>
+    </div>
+  }
+
+  @if (rows().length === 0) {
+    <div class="nvx-list-empty">{{ emptyText() }}</div>
+  }
+  @else if (ui.isMobileSignal()) {
+
+    <!-- Mobile: righe a scorrimento, le azioni compaiono trascinando a sinistra -->
+    <ion-list class="nvx-list-mobile" lines="full">
+      @for (item of rows(); track trackOf(item)) {
+        <ion-item-sliding>
+          <ion-item [class.nvx-row-disabled]="isDisabled(item)">
+            @if (mobileTemplate(); as mt) {
+              <ng-container *ngTemplateOutlet="mt.template; context: { $implicit: item }"></ng-container>
+            }
+            @else {
+              @if (iconOf(item); as ic) {
+                <ion-icon slot="start" [name]="ic" [class.nvx-highlight]="isHighlighted(item)" aria-hidden="true"></ion-icon>
+              }
+              <ion-label>
+                @if (mobileTitle(); as col) {
+                  <h2 [class.nvx-highlight]="isHighlighted(item)">
+                    <ng-container *ngTemplateOutlet="cell; context: { $implicit: item, col: col }"></ng-container>
+                  </h2>
+                }
+                @for (col of mobileSubtitles(); track col.key) {
+                  @if (text(col, item) || cellTemplate().has(col.key)) {
+                    <p><ng-container *ngTemplateOutlet="cell; context: { $implicit: item, col: col }"></ng-container></p>
+                  }
+                }
+              </ion-label>
+              @for (col of mobileNotes(); track col.key) {
+                <ion-note slot="end"><ng-container *ngTemplateOutlet="cell; context: { $implicit: item, col: col }"></ng-container></ion-note>
+              }
+            }
+          </ion-item>
+          @if (visibleActions(item); as acts) {
+            @if (acts.length > 0) {
+              <ion-item-options side="end">
+                @for (a of acts; track a.button.text) {
+                  <ion-item-option [class]="optionClass(a)" [disabled]="a.button.disabled" (click)="a.button.event(item)">
+                    <ion-icon slot="start" [name]="a.button.image"></ion-icon>
+                    {{ a.button.text }}
+                  </ion-item-option>
+                }
+              </ion-item-options>
+            }
+          }
+        </ion-item-sliding>
+      }
+    </ion-list>
+
+  }
+  @else {
+
+    <!-- Desktop: tabella, intestazioni cliccabili per ordinare -->
+    <table class="nvx-table">
+      <thead>
+        <tr>
+          @for (col of tableColumns(); track col.key; let first = $first) {
+            <th scope="col"
+              [style.width]="col.width"
+              [class]="'align-' + (col.align ?? 'start')"
+              [class.sortable]="col.sortable !== false"
+              [attr.aria-sort]="ariaSort(col)"
+              [attr.tabindex]="col.sortable !== false ? 0 : null"
+              (click)="toggleSort(col)"
+              (keydown.enter)="toggleSort(col)">
+              {{ col.title }}
+              @if (sortKey() === col.key) {
+                <span class="sort-ind" aria-hidden="true">{{ sortDir() === 1 ? '▲' : '▼' }}</span>
+              }
+            </th>
+          }
+          @if (hasActions()) {
+            <th scope="col" class="actions"><span class="sr-only">Azioni</span></th>
+          }
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of rows(); track trackOf(item)) {
+          <tr [class.nvx-row-disabled]="isDisabled(item)">
+            @for (col of tableColumns(); track col.key; let first = $first) {
+              <td [class]="'align-' + (col.align ?? 'start') + (col.cellClass ? ' ' + col.cellClass : '')"
+                [class.nvx-highlight]="first && isHighlighted(item)">
+                @if (first && iconOf(item); as ic) {
+                  <ion-icon class="cell-icon" [name]="ic" aria-hidden="true"></ion-icon>
+                }
+                <ng-container *ngTemplateOutlet="cell; context: { $implicit: item, col: col }"></ng-container>
+              </td>
+            }
+            @if (hasActions()) {
+              <td class="actions">
+                @for (a of visibleActions(item); track a.button.text) {
+                  <ion-button size="small" fill="outline" shape="round" [color]="a.button.color" [disabled]="a.button.disabled" (click)="a.button.event(item)">
+                    <ion-icon slot="start" [name]="a.button.image"></ion-icon>
+                    {{ a.button.text }}
+                  </ion-button>
+                }
+              </td>
+            }
+          </tr>
+        }
+      </tbody>
+    </table>
+
+  }
+}
+
+<!-- contenuto di una cella: template della pagina (nvxCell) oppure il testo della colonna -->
+<ng-template #cell let-item let-col="col">
+  @if (cellTemplate().get(col.key); as tpl) {
+    <ng-container *ngTemplateOutlet="tpl; context: { $implicit: item }"></ng-container>
+  }
+  @else {
+    {{ text(col, item) }}
+  }
+</ng-template>

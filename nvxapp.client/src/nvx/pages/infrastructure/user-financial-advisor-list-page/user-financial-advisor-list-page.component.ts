@@ -4,6 +4,7 @@ import { AccountService } from '../../../ClientServer-Service/Infrastructure/Acc
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { UserNavigationService, UserDataAdditionalModel } from '../../../Utility/infrastructure/user-navigation.service';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
+import { NvxListAction, NvxListColumn } from '../../../shared/components/infrastructure/nvx-list/nvx-list.component';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { ParameterService } from '../../../ClientServer-Service/Infrastructure/Parameter/parameter.service';
 
@@ -24,9 +25,11 @@ export class UserFinancialAdvisorListPageComponent {
   public title!: string;
   public searchText!: string;
   public userFinancialAdvisorList: UserFinancialAdvisorListModel[] | null = null;
-  /** true = si vedono anche le righe disabilitate */
-  public showDisabled: boolean = false;
-  public btnImpersona: ButtonItem;
+  public readonly columns: NvxListColumn<UserFinancialAdvisorListModel>[] = [{ key: 'descrizione', title: 'Utente' }];
+  public readonly actions: NvxListAction<UserFinancialAdvisorListModel>[];
+  public readonly isDisabled = (item: UserFinancialAdvisorListModel) => item.disabled;
+  public readonly isHighlighted = (item: UserFinancialAdvisorListModel) => this.isPowerAdmin(item);
+  public readonly iconOf = (item: UserFinancialAdvisorListModel) => this.isPowerAdmin(item) ? 'person-add-outline' : 'person-outline';
   public btnEdit: ButtonItem;
 
   constructor(private navCtrl: NavController,
@@ -40,6 +43,8 @@ export class UserFinancialAdvisorListPageComponent {
 
     this.btnEdit = userInterfaceService.Btn_Modifica;
     this.btnEdit.event = this.handleButtonEditClick;
+
+    this.actions = [{ button: this.btnEdit }];
   }
 
   ionViewWillEnter() {
@@ -105,27 +110,25 @@ export class UserFinancialAdvisorListPageComponent {
 
   
 
-  getAll() {
-    const sortedUserList = this.userFinancialAdvisorList.filter(x => this.showDisabled || !x.disabled).sort((a, b) => {
-      const roleA = this.parameterService.Roles.find(role => role.id === a.roleId)?.code || 0;
-      const roleB = this.parameterService.Roles.find(role => role.id === b.roleId)?.code || 0;
+  // ruolo decrescente, poi descrizione
+  public readonly sortByRole = (a: UserFinancialAdvisorListModel, b: UserFinancialAdvisorListModel) => {
+    const roleA = this.parameterService.Roles.find(role => role.id === a.roleId)?.code || 0;
+    const roleB = this.parameterService.Roles.find(role => role.id === b.roleId)?.code || 0;
 
-      // Primo criterio: ordinamento decrescente su roleId
-      if (roleB !== roleA) {
-        return roleB - roleA;
-      }
+    // Primo criterio: ordinamento decrescente su roleId
+    if (roleB !== roleA) {
+      return roleB - roleA;
+    }
 
-      // Secondo criterio: ordinamento ascendente su descrizione
-      return a.descrizione.localeCompare(b.descrizione);
-    });
-    return sortedUserList;
-  }
+    // Secondo criterio: ordinamento ascendente su descrizione
+    return a.descrizione.localeCompare(b.descrizione);
+  };
 
   isPowerAdmin(item: UserFinancialAdvisorListModel) {
 
     const roles = this.parameterService.Roles.filter(role => role.code == RoleCode.FinancialAdvisorPowerAdmin);
 
-    if (item.roleId == roles[0].id)
+    if (item.roleId == roles[0]?.id)
       return true;
     else
       return false;

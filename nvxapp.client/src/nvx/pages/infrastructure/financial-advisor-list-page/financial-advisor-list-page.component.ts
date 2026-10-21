@@ -6,6 +6,7 @@ import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic
 import { UserLoadInModel } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-load-model';
 import { FinancialAdvisorListInModel, FinancialAdvisorListModel } from '../../../ClientServer-Service/Infrastructure/Account/Models/financial-advisor-model';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
+import { NvxListAction, NvxListColumn } from '../../../shared/components/infrastructure/nvx-list/nvx-list.component';
 import { FabMenuService, FabMenuItem } from '../../../Utility/infrastructure/fab-menu.service';
 
 @Component({
@@ -20,8 +21,10 @@ export class FinancialAdvisorListPageComponent {
   public title!: string;
   public searchText!: string;
   public financialAdvisorList: FinancialAdvisorListModel[] | null = null;
-  /** true = si vedono anche le righe disabilitate */
-  public showDisabled: boolean = false;
+  public readonly columns: NvxListColumn<FinancialAdvisorListModel>[] = [{ key: 'descrizione', title: 'Studio' }];
+  public readonly actions: NvxListAction<FinancialAdvisorListModel>[];
+  public readonly isDisabled = (item: FinancialAdvisorListModel) => item.disabled;
+  public readonly sortByDescrizione = (a: FinancialAdvisorListModel, b: FinancialAdvisorListModel) => a.descrizione.localeCompare(b.descrizione);
   public btnEdit: ButtonItem;
   public btnImpersona: ButtonItem;
 
@@ -38,6 +41,8 @@ export class FinancialAdvisorListPageComponent {
 
     this.btnImpersona = userInterfaceService.Btn_Impersona;
     this.btnImpersona.event = this.handleButtonImpersonaClick;
+
+    this.actions = [{ button: this.btnImpersona }, { button: this.btnEdit }];
 
   }
 
@@ -96,18 +101,7 @@ export class FinancialAdvisorListPageComponent {
     this.searchText = CurrFilter;
   }
 
-  isAdmin(item: FinancialAdvisorListModel) {
 
-
-    return false;
-  }
-
-  getAll() {
-    const sortedUserCompanyList = this.financialAdvisorList.filter(x => this.showDisabled || !x.disabled).sort((a, b) =>
-      a.descrizione.localeCompare(b.descrizione)
-    );
-    return sortedUserCompanyList;
-  }
 
 }
 

@@ -6,104 +6,20 @@
 
 <ion-content [fullscreen]="true">
 
-
   <ion-card>
     <ion-card-content>
-
-
-
-      @if (companyList) {
-        <ion-grid>
-          <ion-row class="nvx-ion-row-4table nvx-row-header">
-            <!-- prima colonna: anche le righe disabilitate -->
-            <ion-col size="12"><ion-checkbox [(ngModel)]="showDisabled" labelPlacement="start" justify="start"><b>Azienda</b> (mostra disabilitati)</ion-checkbox></ion-col>
-          </ion-row>
-          @for (item of getAll() | genericFilter: 'descrizione' : searchText; track item; let indexRow4Color = $index) {
-            <ion-row
-              [class.nvx-row-disabled]="item.disabled"
-              [class.nvx-row-odd]="indexRow4Color % 2 !== 0"
-              [class.nvx-row-even]="indexRow4Color % 2 === 0"
-              class="nvx-ion-row-4table nvx-row-hover">
-              <ion-item-sliding class="ion-hide-sm-up">
-                <ion-item>
-                  <ion-grid>
-                    <ion-row class="ion-align-items-center">
-                      <!-- Icona -->
-                      <ion-col size="2">
-                        <ion-icon [name]="isAdmin(item) ? 'server-outline' : 'server-outline'"
-                          [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
-                        </ion-icon>
-                      </ion-col>
-                      <!-- Descrizione -->
-                      <ion-col size="10">
-                        <div class="descrizione">{{ item.descrizione }}</div>
-                      </ion-col>
-                    </ion-row>
-                  </ion-grid>
-                </ion-item>
-                <ion-item-options side="end">
-                  <!--<ion-item-option [color]="btnImpersona.color"-->
-                  <ion-item-option class="item-option-text-only_primary"
-                    (click)="btnImpersona.event(item)">
-                    <ion-icon slot="start" [name]="btnImpersona.image"></ion-icon>
-                    Impersona
-                  </ion-item-option>
-                  <!--<ion-item-option [color]="btnEdit.color"-->
-                  <ion-item-option class="item-option-text-only_modifica"
-                    (click)="btnEdit.event(item)">
-                    <ion-icon slot="start" [name]="btnEdit.image"></ion-icon>
-                    Modifica
-                  </ion-item-option>
-                </ion-item-options>
-              </ion-item-sliding>
-              <ion-col size="8" class="ion-hide-sm-down">
-                <ion-icon [name]="isAdmin(item) ? 'server-outline' : 'server-outline'"></ion-icon>
-                <ion-label [ngStyle]="{ color: isAdmin(item) ? 'var(--ion-color-primary)' : '' }">
-                  {{ item.descrizione }}
-                </ion-label>
-              </ion-col>
-              <ion-col size="2" class="ion-hide-sm-down">
-                <ion-button size="small" fill="outline" shape="round" (click)="btnImpersona.event(item)" color="{{btnImpersona.color}}">
-                  <ion-icon name="{{btnImpersona.image}}"></ion-icon>
-                  &nbsp;{{btnImpersona.text}}
-                </ion-button>
-              </ion-col>
-              <ion-col size="2" class="ion-hide-sm-down">
-                <ion-button size="small" fill="outline" shape="round" (click)="btnEdit.event(item)" color="{{btnEdit.color}}">
-                  <ion-icon name="{{btnEdit.image}}"></ion-icon>
-                  &nbsp;{{btnEdit.text}}
-                </ion-button>
-              </ion-col>
-            </ion-row>
-          }
-          <!--<ion-row>
-          <ion-col *ngFor="let item of companyList | genericFilter: 'descrizione' : searchText" size-xs="6" size-sm="3" size-md="3" size-lg="3" size-xl="2">
-            <ion-card>
-              <img alt="Silhouette of mountains" src="assets/card-media.png" />
-              <ion-card-header>
-                <ion-card-title>{{ item.descrizione }}</ion-card-title>
-                <ion-card-subtitle>bla bla bla</ion-card-subtitle>
-              </ion-card-header>
-              <ion-card-content>
-                bla bla bla
-              </ion-card-content>
-              <ion-button shape="round" (click)="btnImpersona.event(item)" color="{{btnImpersona.color}}" fill="solid" expand="block">
-                <ion-icon name="{{btnImpersona.image}}"></ion-icon>
-                &nbsp;{{btnImpersona.text}}
-              </ion-button>
-              <ion-button shape="round" (click)="btnEdit.event(item)" color="{{btnEdit.color}}" fill="solid" expand="block">
-                <ion-icon name="{{btnEdit.image}}"></ion-icon>
-                &nbsp;{{btnEdit.text}}
-              </ion-button>
-            </ion-card>
-          </ion-col>
-        </ion-row>-->
-      </ion-grid>
-    }
-
-  </ion-card-content>
-</ion-card>
-
-
+      <nvx-list
+        [items]="companyList"
+        [columns]="columns"
+        [actions]="actions"
+        trackKey="idCompany"
+        icon="server-outline"
+        [searchText]="searchText"
+        [sort]="sortByDescrizione"
+        [rowDisabled]="isDisabled"
+        disabledToggleLabel="Mostra disabilitati">
+      </nvx-list>
+    </ion-card-content>
+  </ion-card>
 
 </ion-content>

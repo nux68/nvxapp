@@ -20,6 +20,13 @@ export class ParameterLoaderComponent  implements OnInit {
   public progress = 0;
   public currStep = 0;
 
+  // ruoli (Parameter/Roles) gia' caricati: servono solo alle pagine dopo il login
+  private rolesLoaded = false;
+
+  // chiamate ancora da completare e totale della barra di avanzamento
+  private pendingCalls = 0;
+  private totalSteps = 0;
+
 
   constructor(
     private parameterService: ParameterService,
@@ -30,33 +37,38 @@ export class ParameterLoaderComponent  implements OnInit {
 
 
   ngOnInit() {
-    
-    this.isModalOpen = true;  
 
-    //caricamento parametri iniziali
-    this.startProgress( this.AddCallInfrastructure() );
-    
+    // All'avvio non si carica nulla: le pagine vetrina (prima del login) non usano i parametri.
+    // Tutto viene caricato quando arrivano i ruoli dell'utente, cioe' al login.
 
     //caricameno parametri azie/user
     // parametri delle presenze solo se l'applicativo AttendanceTracking e' attivo per l'azienda:
     // altrimenti il server rifiuta le chiamate (ApplicationNotActiveException).
     // Ricontrollato a ogni cambio di ruoli o di applicativi attivi (login, impersonificazione).
-    combineLatest([this.authService.Roles$, this.authService.ActiveApplications$]).subscribe(() => {
+    combineLatest([this.authService.Roles$, this.authService.ActiveApplications$]).subscribe(([roles]) => {
+
+      let calls: any[] = [];
+
+      //caricamento parametri iniziali (ruoli), una sola volta dopo il login
+      if (roles.length > 0 && this.rolesLoaded == false) {
+        this.rolesLoaded = true;
+        calls = calls.concat(this.AddCallInfrastructure());
+      }
 
       if ((this.authService.IsUser || this.authService.IsInGroupCompanyAdmin) &&
           this.authService.hasApplication(ApplicationType.AttendanceTracking)) {
 
         if (this.sharedParameterGestionePresenzeService.IsLoad == false) {
-
-          let presCall: any[] = [];
-          presCall = this.sharedParameterGestionePresenzeService.InitCall(this.updateProgress.bind(this));
-          this.currStep = 0;
-          this.startProgress(presCall);
+          calls = calls.concat(this.sharedParameterGestionePresenzeService.InitCall(this.updateProgress.bind(this)));
           this.sharedParameterGestionePresenzeService.IsLoad = true;
         }
       }
       else {
         this.sharedParameterGestionePresenzeService.IsLoad = false;
+      }
+
+      if (calls.length > 0) {
+        this.startProgress(calls);
       }
     });
 
@@ -80,6 +92,7 @@ export class ParameterLoaderComponent  implements OnInit {
           }),
           catchError((error) => {
             console.error(`Errore durante il caricamento del ruolo:`, error);
+            this.rolesLoaded = false; // si ritenta al prossimo login
             // Puoi decidere cosa fare in caso di fallimento finale
             return of(null); // Continua per evitare il blocco
           })
@@ -94,23 +107,34 @@ export class ParameterLoaderComponent  implements OnInit {
 
 
   async startProgress(calls: any[]) {
+    // un caricamento puo' partire mentre un altro e' in corso (ruoli e applicativi arrivano separati):
+    // la barra conta tutte le chiamate e il riquadro si chiude solo quando sono finite tutte
+    if (this.pendingCalls == 0) {
+      this.currStep = 0;
+      this.totalSteps = 0;
+      this.progress = 0; // Resetta la progress bar
+    }
+    this.pendingCalls += calls.length;
+    this.totalSteps += calls.length;
+    this.canClose = false;
     this.isModalOpen = true;
 
-    this.progress = 0; // Resetta la progress bar
-
     from(calls).pipe(
-      concatMap(call => call)  
+      concatMap(call => call)
     ).subscribe({
       complete: () => {
-        this.isModalOpen = false; 
-        this.canClose = true;
+        this.pendingCalls -= calls.length;
+        if (this.pendingCalls == 0) {
+          this.isModalOpen = false;
+          this.canClose = true;
+        }
       }
     });
   }
 
   updateProgress(calls: any[]):void {
     this.currStep = this.currStep + 1;
-    this.progress = Math.floor(this.currStep * (100 / calls.length)); // Aggiorna la barra progressivamente
+    this.progress = Math.min(100, Math.floor(this.currStep * (100 / this.totalSteps))); // Aggiorna la barra progressivamente
   }
 
 }
