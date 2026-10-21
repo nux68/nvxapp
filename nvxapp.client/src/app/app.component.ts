@@ -1,5 +1,5 @@
 import { combineLatest } from 'rxjs';
-import { Component, DoCheck, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { AccountService } from '../nvx/ClientServer-Service/Infrastructure/Account/account.service';
 import { AuthService } from '../nvx/Utility/infrastructure/auth.service';
@@ -22,7 +22,7 @@ import { SITE_NAME } from '../nvx/Utility/infrastructure/site-name';
   changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false,
 })
-export class AppComponent implements OnInit, DoCheck {
+export class AppComponent implements OnInit {
 
   public appPages4SuperUser: MainMenuItem[] = [];
   public appPages4Admin: MainMenuItem[] = [];
@@ -43,13 +43,6 @@ export class AppComponent implements OnInit, DoCheck {
   public showcaseMenuAperto = '';
   public selectedMenu: string[] = [(this.mainMenuInfrastructureService.GetMenuHeaderMenu(this.mainMenuService.Pages4User)).title];
   
-  IsInGroupCompanyAdmin: boolean = false;
-  IsInGroupDealerAdmin: boolean = false;
-  IsSuperUser: boolean = false;
-  IsInGroupFinancialAdvisorAdmin: boolean = false;
-  IsCompanyAdmin: boolean = false;
-  IsInGroupAdmin: boolean = false;
-  IsUser: boolean = false;
 
 
   
@@ -145,6 +138,9 @@ export class AppComponent implements OnInit, DoCheck {
       this.groupedSuperUserMenu = this.getGroupedSuperUser();
       this.groupedUserMenu = this.getGroupedUser();
 
+      // dopo il login (e dopo un'impersonificazione) si apre la prima sezione con voci, esclusa "Accesso"
+      this.selectedMenu = [this.primaSezioneAperta()];
+
       
 
       
@@ -154,46 +150,25 @@ export class AppComponent implements OnInit, DoCheck {
   }
 
   
-  ngDoCheck(): void {
-
-
-    if (this.IsSuperUser !== this.authService.IsSuperUser) {
-      this.IsSuperUser = this.authService.IsSuperUser;
-      if (this.IsSuperUser)
-        this.selectedMenu = [(this.mainMenuInfrastructureService.GetMenuHeaderMenu(this.mainMenuService.Pages4SuperUser)).title ];
+  // prima sezione del menu con voci visibili, nell'ordine in cui compaiono (utente, SuperUser, Admin, Centro,
+  // Studio, Azienda), saltando "Accesso" (login, logout, dati utente); se non ce ne sono altre resta "Accesso"
+  private primaSezioneAperta(): string {
+    const accesso = this.mainMenuInfrastructureService.GetMenuHeaderMenu(this.mainMenuService.Pages4User)?.title ?? '';
+    const sezioni: [GroupMainMenuItem[], boolean, (component: string) => boolean][] = [
+      [this.groupedUserMenu, true, c => this.showPage4User(c)],
+      [this.groupedSuperUserMenu, this.authService.IsSuperUser, c => this.showPage4SuperUser(c)],
+      [this.groupedAdminMenu, this.authService.IsInGroupAdmin, c => this.showPage4Admin(c)],
+      [this.groupedDealerAdminMenu, this.authService.IsInGroupDealerAdmin, c => this.showPage4DealerAdmin(c)],
+      [this.groupedFinancialAdvisorAdminMenu, this.authService.IsInGroupFinancialAdvisorAdmin, c => this.showPage4FinancialAdvisorAdmin(c)],
+      [this.groupedCompanyAdminMenu, this.authService.IsInGroupCompanyAdmin, c => this.showPage4CompanyAdmin(c)],
+    ];
+    for (const [gruppi, visibili, mostra] of sezioni) {
+      if (!visibili) continue;
+      const gruppo = gruppi.find(g => g.menuHeader.title !== accesso &&
+        g.menuItem.some(p => p.menuType === MenuType.MenuItem && mostra(p.component)));
+      if (gruppo) return gruppo.menuHeader.title;
     }
-
-    if (this.IsInGroupAdmin !== this.authService.IsInGroupAdmin) {
-      this.IsInGroupAdmin = this.authService.IsInGroupAdmin;
-      if (this.IsInGroupAdmin)
-        this.selectedMenu = [(this.mainMenuInfrastructureService.GetMenuHeaderMenu(this.mainMenuService.Pages4Admin)).title ];
-    }
-
-    if (this.IsInGroupDealerAdmin !== this.authService.IsInGroupDealerAdmin) {
-      this.IsInGroupDealerAdmin = this.authService.IsInGroupDealerAdmin;
-      if (this.IsInGroupDealerAdmin)
-        this.selectedMenu = [(this.mainMenuInfrastructureService.GetMenuHeaderMenu(this.mainMenuService.Pages4DealerAdmin)).title];
-    }
-
-    if (this.IsInGroupFinancialAdvisorAdmin !== this.authService.IsInGroupFinancialAdvisorAdmin) {
-      this.IsInGroupFinancialAdvisorAdmin = this.authService.IsInGroupFinancialAdvisorAdmin;
-      if (this.IsInGroupFinancialAdvisorAdmin)
-        this.selectedMenu = [(this.mainMenuInfrastructureService.GetMenuHeaderMenu(this.mainMenuService.Pages4FinancialAdvisorAdmin)).title];
-    }
-
-    if (this.IsInGroupCompanyAdmin !== this.authService.IsInGroupCompanyAdmin) {
-      this.IsInGroupCompanyAdmin = this.authService.IsInGroupCompanyAdmin;
-      if (this.IsInGroupCompanyAdmin)
-        this.selectedMenu = [(this.mainMenuInfrastructureService.GetMenuHeaderMenu(this.mainMenuService.Pages4CompanyAdmin)).title];
-    }
-
-    if (this.IsUser !== this.authService.IsUser) {
-      this.IsUser = this.authService.IsUser;
-      if (this.IsUser)
-        this.selectedMenu = [(this.mainMenuInfrastructureService.GetMenuHeaderMenu(this.mainMenuService.Pages4User,1)).title];
-    }
-
-
+    return accesso;
   }
 
   public showPage4SuperUser(component: string): boolean {
