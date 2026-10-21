@@ -41,7 +41,9 @@ export class AppComponent implements OnInit {
   public groupedShowcaseMenu: GroupMainMenuItem[] = [];
   // sezione dello showcase aperta all'inizio: la prima
   public showcaseMenuAperto = '';
-  public selectedMenu: string[] = [(this.mainMenuInfrastructureService.GetMenuHeaderMenu(this.mainMenuService.Pages4User)).title];
+  // sezione aperta del menu: una stringa, non un array (ion-accordion-group non e' "multiple": con un array
+  // la sezione non si apriva quando il valore cambiava dopo il login)
+  public selectedMenu: string = this.mainMenuInfrastructureService.GetMenuHeaderMenu(this.mainMenuService.Pages4User)?.title ?? '';
   
 
 
@@ -138,8 +140,11 @@ export class AppComponent implements OnInit {
       this.groupedSuperUserMenu = this.getGroupedSuperUser();
       this.groupedUserMenu = this.getGroupedUser();
 
-      // dopo il login (e dopo un'impersonificazione) si apre la prima sezione con voci, esclusa "Accesso"
-      this.selectedMenu = [this.primaSezioneAperta()];
+      // dopo il login (e dopo un'impersonificazione) si apre la prima sezione con voci, esclusa "Accesso".
+      // Si imposta dopo che le sezioni nuove sono state disegnate: ion-accordion-group apre solo gli accordion
+      // che esistono gia' quando il valore cambia (al login le sezioni arrivano insieme ai ruoli).
+      const sezione = this.primaSezioneAperta();
+      setTimeout(() => this.selectedMenu = sezione);
 
       
 
