@@ -26,7 +26,8 @@ export class MainMenuInfrastructureService implements iMainMenuService{
       { menuType: MenuType.MenuHeader, zorder:   0, group: 0, title: 'SuperUser', component: '', url: '', icon: '' },
       { menuType: MenuType.MenuItem,   zorder: 100, group: 0, title: 'SuperUser Page', component: "SuperUserPageComponent", url: '/superuser', icon: 'triangle' },
       { menuType: MenuType.MenuItem,   zorder: 200, group: 0, title: 'Centri', component: "DealerListPageComponent", url: '/dealerlist', icon: 'list-circle' },
-      { menuType: MenuType.MenuItem, zorder: 300, group: 0, title: 'Utenti', component: "UserListPageComponent", url: '/userlist', icon: 'people' }
+      { menuType: MenuType.MenuItem, zorder: 300, group: 0, title: 'Utenti', component: "UserListPageComponent", url: '/userlist', icon: 'people' },
+      { menuType: MenuType.MenuItem, zorder: 400, group: 0, title: 'Sposta azienda', component: "CompanyMovePageComponent", url: '/companymove', icon: 'swap-horizontal' }
     ];
   }
 

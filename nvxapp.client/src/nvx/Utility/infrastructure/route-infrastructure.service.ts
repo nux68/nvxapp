@@ -38,6 +38,7 @@ export class RouteInfrastructureService {
 
 
       { path: 'superuser', loadChildren: () => import('../../pages/infrastructure/super-user-page/super-user-page.module').then(m => m.SuperUserPageModule), canActivate: [RoleGuard4SuperUser] },
+      { path: 'companymove', loadChildren: () => import('../../pages/infrastructure/company-move-page/company-move-page.module').then(m => m.CompanyMovePageModule), canActivate: [RoleGuard4SuperUser] },
       { path: 'poweradmin', loadChildren: () => import('../../pages/infrastructure/power-admin-page/power-admin-page.module').then(m => m.PowerAdminPageModule), canActivate: [RoleGuard4Admin] },
       { path: 'admin', loadChildren: () => import('../../pages/infrastructure/admin-page/admin-page.module').then(m => m.AdminPageModule), canActivate: [RoleGuard4Admin] },
 
