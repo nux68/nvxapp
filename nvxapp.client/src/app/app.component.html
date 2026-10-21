@@ -14,7 +14,7 @@
         @if (authService.Token == null) {
           <!-- sezioni che si aprono una alla volta, come dopo il login (all'inizio la prima) -->
           <ion-accordion-group [value]="showcaseMenuAperto">
-            @for (group of groupedShowcaseMenu; track group) {
+            @for (group of groupedShowcaseMenu; track group.menuHeader.title) {
               <ion-accordion value="{{group.menuHeader.title}}" toggleIcon="chevron-down" toggleIconSlot="end">
                 <ion-item slot="header">
                   <ion-label>{{ group.menuHeader.title }}</ion-label>
@@ -35,10 +35,10 @@
             }
           </ion-accordion-group>
         } @else {
-        <ion-accordion-group [value]=selectedMenu>
+        <ion-accordion-group [value]="selectedMenu">
 
           <ng-container>
-            @for (group of groupedUserMenu; track group;let i = $index) {
+            @for (group of groupedUserMenu; track group.menuHeader.title;let i = $index) {
               @if (group.menuItem.length > 0) {
                 <ion-accordion value="{{group.menuHeader.title}}" toggleIcon="chevron-down" toggleIconSlot="end">
                   <ion-item slot="header">
@@ -73,7 +73,7 @@
 
 
           @if (authService.IsSuperUser) {
-            @for (group of groupedSuperUserMenu; track group;let i = $index) {
+            @for (group of groupedSuperUserMenu; track group.menuHeader.title;let i = $index) {
               @if (group.menuItem.length > 0) {
                 <ion-accordion value="{{group.menuHeader.title}}" toggleIcon="chevron-down" toggleIconSlot="end">
                   <ion-item slot="header">
@@ -105,7 +105,7 @@
 
 
           @if (authService.IsInGroupAdmin) {
-            @for (group of groupedAdminMenu; track group;let i = $index) {
+            @for (group of groupedAdminMenu; track group.menuHeader.title;let i = $index) {
               @if (group.menuItem.length > 0) {
                 <ion-accordion value="{{group.menuHeader.title}}" toggleIcon="chevron-down" toggleIconSlot="end">
                   <ion-item slot="header">
@@ -137,7 +137,7 @@
 
 
           @if (authService.IsInGroupDealerAdmin) {
-            @for (group of groupedDealerAdminMenu; track group;let i = $index) {
+            @for (group of groupedDealerAdminMenu; track group.menuHeader.title;let i = $index) {
               @if (group.menuItem.length > 0) {
                 <ion-accordion value="{{group.menuHeader.title}}" toggleIcon="chevron-down" toggleIconSlot="end">
                   <ion-item slot="header">
@@ -169,7 +169,7 @@
 
 
           @if (authService.IsInGroupFinancialAdvisorAdmin) {
-            @for (group of groupedFinancialAdvisorAdminMenu; track group;let i = $index) {
+            @for (group of groupedFinancialAdvisorAdminMenu; track group.menuHeader.title;let i = $index) {
               @if (group.menuItem.length > 0) {
                 <ion-accordion value="{{group.menuHeader.title}}" toggleIcon="chevron-down" toggleIconSlot="end">
                   <ion-item slot="header">
@@ -201,7 +201,7 @@
 
 
           @if (authService.IsInGroupCompanyAdmin) {
-            @for (group of groupedCompanyAdminMenu; track group;let i = $index) {
+            @for (group of groupedCompanyAdminMenu; track group.menuHeader.title;let i = $index) {
               @if (group.menuItem.length > 0) {
                 <ion-accordion value="{{group.menuHeader.title}}" toggleIcon="chevron-down" toggleIconSlot="end">
                   <ion-item slot="header">
