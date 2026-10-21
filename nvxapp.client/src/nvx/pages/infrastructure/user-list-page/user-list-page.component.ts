@@ -4,6 +4,7 @@ import { AccountService } from '../../../ClientServer-Service/Infrastructure/Acc
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
+import { NvxListAction, NvxListColumn } from '../../../shared/components/infrastructure/nvx-list/nvx-list.component';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { ParameterService } from '../../../ClientServer-Service/Infrastructure/Parameter/parameter.service';
 import { UserListInModel, UserListModel } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-model';
@@ -21,6 +22,10 @@ export class UserListPageComponent {
   public title!: string;
   public searchText!: string;
   public userList: UserListModel[] | null = null;
+  public readonly columns: NvxListColumn<UserListModel>[] = [{ key: 'descrizione', title: 'Utente' }];
+  public readonly actions: NvxListAction<UserListModel>[];
+  public readonly isHighlighted = (item: UserListModel) => this.isPowerAdmin(item);
+  public readonly iconOf = (item: UserListModel) => this.isPowerAdmin(item) ? 'person-add-outline' : 'person-outline';
   public btnEdit: ButtonItem;
 
   constructor(private navCtrl: NavController,
@@ -33,6 +38,8 @@ export class UserListPageComponent {
     this.title = 'Users';
     this.btnEdit = userInterfaceService.Btn_Modifica;
     this.btnEdit.event = this.handleButtonEditClick;
+
+    this.actions = [{ button: this.btnEdit }];
   }
 
   ionViewWillEnter() {
@@ -95,27 +102,25 @@ export class UserListPageComponent {
   }
 
  
-  getAll() {
-    const sortedUserList = this.userList.sort((a, b) => {
-      const roleA = this.parameterService.Roles.find(role => role.id === a.roleId)?.code || 0;
-      const roleB = this.parameterService.Roles.find(role => role.id === b.roleId)?.code || 0;
+  // ruolo decrescente, poi descrizione
+  public readonly sortByRole = (a: UserListModel, b: UserListModel) => {
+    const roleA = this.parameterService.Roles.find(role => role.id === a.roleId)?.code || 0;
+    const roleB = this.parameterService.Roles.find(role => role.id === b.roleId)?.code || 0;
 
-      // Primo criterio: ordinamento decrescente su roleId
-      if (roleB !== roleA) {
-        return roleB - roleA;
-      }
+    // Primo criterio: ordinamento decrescente su roleId
+    if (roleB !== roleA) {
+      return roleB - roleA;
+    }
 
-      // Secondo criterio: ordinamento ascendente su descrizione
-      return a.descrizione.localeCompare(b.descrizione);
-    });
-    return sortedUserList;
-  }
+    // Secondo criterio: ordinamento ascendente su descrizione
+    return a.descrizione.localeCompare(b.descrizione);
+  };
 
   isPowerAdmin(item: UserListModel) {
 
     const roles = this.parameterService.Roles.filter(role => role.code == RoleCode.PowerAdmin);
 
-    if (item.roleId == roles[0].id)
+    if (item.roleId == roles[0]?.id)
       return true;
     else
       return false;

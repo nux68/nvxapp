@@ -1,0 +1,119 @@
+:host {
+  display: block;
+}
+
+.nvx-list-toggle {
+  padding: 4px 4px 10px;
+}
+
+.nvx-list-empty {
+  padding: 24px 12px;
+  text-align: center;
+  color: var(--nvx-text-muted);
+}
+
+.nvx-highlight {
+  color: var(--ion-color-primary);
+}
+
+// ---------- desktop ----------
+.nvx-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+  color: var(--ion-text-color);
+
+  th,
+  td {
+    padding: 10px 12px;
+    vertical-align: middle;
+  }
+
+  th {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--nvx-text-muted);
+    text-align: left;
+    white-space: nowrap;
+    border-bottom: 1px solid var(--nvx-border-strong);
+
+    &.sortable {
+      cursor: pointer;
+      user-select: none;
+
+      &:hover,
+      &:focus-visible {
+        color: var(--ion-text-color);
+        outline: none;
+      }
+    }
+  }
+
+  td {
+    border-bottom: 1px solid var(--nvx-border);
+  }
+
+  tbody tr:last-child td {
+    border-bottom-color: transparent;
+  }
+
+  tbody tr {
+    transition: background-color 0.15s ease;
+
+    &:hover {
+      background-color: var(--nvx-hover);
+    }
+  }
+
+  .align-center { text-align: center; }
+  .align-end { text-align: right; }
+
+  // colonna azioni: stretta quanto i bottoni, allineata a destra
+  .actions {
+    width: 1%;
+    white-space: nowrap;
+    text-align: right;
+
+    ion-button + ion-button {
+      margin-left: 6px;
+    }
+  }
+
+  .cell-icon {
+    vertical-align: middle;
+    margin-right: 8px;
+    font-size: 1.15em;
+  }
+
+  .sort-ind {
+    margin-left: 4px;
+    font-size: 0.75em;
+  }
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+// ---------- mobile ----------
+.nvx-list-mobile {
+  background: transparent;
+  padding: 0;
+
+  ion-item {
+    --background: transparent;
+  }
+
+  ion-label h2 {
+    font-weight: 500;
+  }
+
+  ion-label p {
+    color: var(--nvx-text-muted);
+  }
+}

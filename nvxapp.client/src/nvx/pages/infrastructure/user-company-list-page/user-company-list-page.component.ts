@@ -4,6 +4,7 @@ import { AccountService } from '../../../ClientServer-Service/Infrastructure/Acc
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { UserNavigationService, UserDataAdditionalModel } from '../../../Utility/infrastructure/user-navigation.service';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
+import { NvxListAction, NvxListColumn } from '../../../shared/components/infrastructure/nvx-list/nvx-list.component';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { ParameterService } from '../../../ClientServer-Service/Infrastructure/Parameter/parameter.service';
 
@@ -27,8 +28,17 @@ export class UserCompanyListPageComponent {
   public title!: string;
   public searchText!: string;
   public userCompanyList: UserCompanyListModel[] | null = null;
-  /** true = si vedono anche le righe disabilitate */
-  public showDisabled: boolean = false;
+  // su mobile cognome e nome vanno nella stessa riga sotto la descrizione
+  public readonly columns: NvxListColumn<UserCompanyListModel>[] = [
+    { key: 'descrizione', title: 'Utente' },
+    { key: 'cognome', title: 'Cognome', mobile: 'hidden' },
+    { key: 'nome', title: 'Nome', mobile: 'hidden' },
+    { key: 'cognomeNome', title: '', value: x => [x.cognome, x.nome].filter(v => v).join(' '), mobile: 'subtitle', desktop: false, searchable: false },
+  ];
+  public readonly actions: NvxListAction<UserCompanyListModel>[];
+  public readonly isDisabled = (item: UserCompanyListModel) => item.disabled;
+  public readonly isHighlighted = (item: UserCompanyListModel) => this.isAdmin(item);
+  public readonly iconOf = (item: UserCompanyListModel) => this.isAdmin(item) ? 'person-add-outline' : 'person-outline';
   public btnImpersona: ButtonItem;
   public btnEdit: ButtonItem;
 
@@ -50,6 +60,9 @@ export class UserCompanyListPageComponent {
     this.btnImpersona.event = this.handleButtonImpersonaClick;
     this.btnEdit = userInterfaceService.Btn_Modifica;
     this.btnEdit.event = this.handleButtonEditClick;
+
+    // Impersona solo per gli utenti (non per gli amministratori)
+    this.actions = [{ button: this.btnImpersona, visible: item => this.isUser(item) }, { button: this.btnEdit }];
   }
 
   ionViewWillEnter() {
@@ -187,22 +200,20 @@ export class UserCompanyListPageComponent {
  
 
 
-  getAll() {
-    const sortedUserList = this.userCompanyList.filter(x => this.showDisabled || !x.disabled).sort((a, b) => {
-      const roleA = this.parameterService.Roles.find(role => role.name === a.roles[0])?.code || 0;
-      const roleB = this.parameterService.Roles.find(role => role.name === b.roles[0])?.code || 0;
-      
+  // ruolo decrescente, poi descrizione
+  public readonly sortByRole = (a: UserCompanyListModel, b: UserCompanyListModel) => {
+    const roleA = this.parameterService.Roles.find(role => role.name === a.roles[0])?.code || 0;
+    const roleB = this.parameterService.Roles.find(role => role.name === b.roles[0])?.code || 0;
+    
 
-      // Primo criterio: ordinamento decrescente su roleId
-      if (roleB !== roleA) {
-        return roleB - roleA;
-      }
+    // Primo criterio: ordinamento decrescente su roleId
+    if (roleB !== roleA) {
+      return roleB - roleA;
+    }
 
-      // Secondo criterio: ordinamento ascendente su descrizione
-      return a.descrizione.localeCompare(b.descrizione);
-    });
-    return sortedUserList;
-  }
+    // Secondo criterio: ordinamento ascendente su descrizione
+    return a.descrizione.localeCompare(b.descrizione);
+  };
 
 
   isAdmin(item: UserCompanyListModel) {

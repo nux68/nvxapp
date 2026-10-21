@@ -6,6 +6,7 @@ import { UserLoadInModel } from '../../../ClientServer-Service/Infrastructure/Ac
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { UserNavigationService, UserDataAdditionalModel } from '../../../Utility/infrastructure/user-navigation.service';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
+import { NvxListAction, NvxListColumn } from '../../../shared/components/infrastructure/nvx-list/nvx-list.component';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { MainMenuService } from '../../../Utility/infrastructure/main-menu.service';
 import { AddCompanyComponent } from '../../../shared/components/infrastructure/add-company/add-company.component';
@@ -23,8 +24,10 @@ export class CompanyListPageComponent {
   public title!: string;
   public searchText!: string;
   public companyList: CompanyListModel[] | null = null;
-  /** true = si vedono anche le righe disabilitate */
-  public showDisabled: boolean = false;
+  public readonly columns: NvxListColumn<CompanyListModel>[] = [{ key: 'descrizione', title: 'Azienda' }];
+  public readonly actions: NvxListAction<CompanyListModel>[];
+  public readonly isDisabled = (item: CompanyListModel) => item.disabled;
+  public readonly sortByDescrizione = (a: CompanyListModel, b: CompanyListModel) => a.descrizione.localeCompare(b.descrizione);
   public btnImpersona: ButtonItem;
   public btnEdit: ButtonItem;
 
@@ -41,6 +44,8 @@ export class CompanyListPageComponent {
     this.btnImpersona.event = this.handleButtonImpersonaClick;
     this.btnEdit = userInterfaceService.Btn_Modifica;
     this.btnEdit.event = this.handleButtonEditClick;
+
+    this.actions = [{ button: this.btnImpersona }, { button: this.btnEdit }];
 
   }
 
@@ -121,18 +126,7 @@ export class CompanyListPageComponent {
     this.searchText = CurrFilter;
   }
 
-  isAdmin(item: CompanyListModel) {
 
-
-    return false;
-  }
-
-  getAll() {
-    const sortedUserCompanyList = this.companyList.filter(x => this.showDisabled || !x.disabled).sort((a, b) =>
-      a.descrizione.localeCompare(b.descrizione)
-    );
-    return sortedUserCompanyList;
-  }
 
 
 }

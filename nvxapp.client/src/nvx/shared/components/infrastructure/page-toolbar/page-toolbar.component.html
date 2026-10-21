@@ -62,6 +62,7 @@
       <!-- End of Active Jobs List -->
       @if (showFilter) {
         <ion-searchbar
+          [debounce]="250"
           (ionInput)="filter($event)"
           placeholder="Search">
         </ion-searchbar>

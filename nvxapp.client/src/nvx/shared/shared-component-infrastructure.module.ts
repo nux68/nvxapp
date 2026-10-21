@@ -12,6 +12,7 @@ import { HoverPopupDirective } from './components/infrastructure/hover-popup/hov
 import { SlideButtonCancellaModificaComponent } from './components/infrastructure/slide-button-cancella-modifica/slide-button-cancella-modifica.component';
 import { AddUserCompanyComponent } from './components/infrastructure/add-user-company/add-user-company.component';
 import { AddCompanyComponent } from './components/infrastructure/add-company/add-company.component';
+import { NvxListCellDirective, NvxListComponent, NvxListMobileDirective } from './components/infrastructure/nvx-list/nvx-list.component';
 
 
 @NgModule({
@@ -21,9 +22,10 @@ import { AddCompanyComponent } from './components/infrastructure/add-company/add
     ReactiveFormsModule,
     IonBreadcrumb, IonBreadcrumbs, IonButton, IonButtons, IonCard, IonCardContent, IonCol, IonContent, IonFooter, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonItemOption, IonItemOptions, IonLabel, IonMenuButton, IonNote, IonProgressBar, IonRow, IonSearchbar, IonSelect, IonSelectOption, IonTitle, IonToolbar,
     GenericFilterPipe,
-    HoverPopupComponent, HoverPopupDirective
+    HoverPopupComponent, HoverPopupDirective,
+    NvxListComponent, NvxListCellDirective, NvxListMobileDirective
   ],
   declarations: [BreadcrumbsImpersonateComponent, PageToolbarComponent, SlideButtonCancellaModificaComponent, PageButtonbarComponent, GenericDialogComponent, AddUserCompanyComponent, AddCompanyComponent/*, FabMenuComponent*/],
-  exports: [BreadcrumbsImpersonateComponent, GenericFilterPipe, PageToolbarComponent, SlideButtonCancellaModificaComponent, PageButtonbarComponent, HoverPopupComponent, HoverPopupDirective, AddUserCompanyComponent, AddCompanyComponent/*, FabMenuComponent*/]
+  exports: [BreadcrumbsImpersonateComponent, GenericFilterPipe, PageToolbarComponent, SlideButtonCancellaModificaComponent, PageButtonbarComponent, HoverPopupComponent, HoverPopupDirective, AddUserCompanyComponent, AddCompanyComponent, NvxListComponent, NvxListCellDirective, NvxListMobileDirective/*, FabMenuComponent*/]
 })
 export class SharedComponentInfrastructureModule { }

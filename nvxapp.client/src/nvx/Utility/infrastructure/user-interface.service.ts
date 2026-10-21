@@ -1,15 +1,21 @@
-import { Injectable } from '@angular/core';
-import { Platform } from '@ionic/angular';
+import { Injectable, Signal, signal } from '@angular/core';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserInterfaceService {
 
-  constructor(private platform: Platform) { }
+  // stesso limite delle classi ion-hide-sm-* di Ionic (576px); segue il ridimensionamento della finestra
+  private readonly mobileQuery = window.matchMedia('(max-width: 575.98px)');
+  private readonly _isMobile = signal(this.mobileQuery.matches);
+  public readonly isMobileSignal: Signal<boolean> = this._isMobile.asReadonly();
+
+  constructor() {
+    this.mobileQuery.addEventListener('change', e => this._isMobile.set(e.matches));
+  }
 
   public get isMobile(): boolean {
-    return this.platform.width() < 576;
+    return this._isMobile();
   }
 
   get Btn_Conferma(): ButtonItem {

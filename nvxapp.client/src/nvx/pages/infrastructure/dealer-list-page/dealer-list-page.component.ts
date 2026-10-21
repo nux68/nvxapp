@@ -7,6 +7,7 @@ import { UserDataAdditionalModel, UserNavigationService } from '../../../Utility
 import { NavController } from '@ionic/angular';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
+import { NvxListAction, NvxListColumn } from '../../../shared/components/infrastructure/nvx-list/nvx-list.component';
 
 @Component({
   selector: 'app-dealer-list-page',
@@ -20,8 +21,10 @@ export class DealerListPageComponent {
   public title!: string;
   public searchText!: string;
   public dealerList: DealerListModel[] | null = null;
-  /** true = si vedono anche le righe disabilitate */
-  public showDisabled: boolean = false;
+  public readonly columns: NvxListColumn<DealerListModel>[] = [{ key: 'descrizione', title: 'Centro' }];
+  public readonly actions: NvxListAction<DealerListModel>[];
+  public readonly isDisabled = (item: DealerListModel) => item.disabled;
+  public readonly sortByDescrizione = (a: DealerListModel, b: DealerListModel) => a.descrizione.localeCompare(b.descrizione);
   public btnEdit: ButtonItem;
   public btnImpersona: ButtonItem;
 
@@ -38,6 +41,8 @@ export class DealerListPageComponent {
 
     this.btnImpersona = userInterfaceService.Btn_Impersona;
     this.btnImpersona.event = this.handleButtonImpersonaClick;
+
+    this.actions = [{ button: this.btnImpersona }, { button: this.btnEdit }];
 
   }
 
@@ -99,16 +104,5 @@ export class DealerListPageComponent {
     this.searchText = CurrFilter;
   }
 
-  isAdmin(item: DealerListModel) {
 
-
-      return false;
-  }
-
-  getAll() {
-    const sortedUserCompanyList = this.dealerList.filter(x => this.showDisabled || !x.disabled).sort((a, b) =>
-      a.descrizione.localeCompare(b.descrizione)
-    );
-    return sortedUserCompanyList;
-  }
 }
