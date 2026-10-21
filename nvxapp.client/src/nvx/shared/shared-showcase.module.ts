@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular/lazy';
 import { ShowcaseFooterComponent } from './components/infrastructure/showcase-footer/showcase-footer.component';
 
 
@@ -8,7 +7,6 @@ import { ShowcaseFooterComponent } from './components/infrastructure/showcase-fo
 @NgModule({
   imports: [
     CommonModule,
-    IonicModule
   ],
   declarations: [ShowcaseFooterComponent],
   exports: [ShowcaseFooterComponent]

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Platform } from '@ionic/angular/lazy';
+import { Platform } from '@ionic/angular';
 
 @Injectable({
   providedIn: 'root'

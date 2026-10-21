@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular/lazy';
+import { IonSpinner, provideIonicAngular } from '@ionic/angular';
 
 import { BackgroundWorkingComponent } from './background-working.component';
 
@@ -10,7 +10,8 @@ describe('HttpBackgroundWorkingComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ BackgroundWorkingComponent ],
-      imports: [IonicModule.forRoot()]
+      providers: [provideIonicAngular()],
+      imports: [IonSpinner]
     }).compileComponents();
 
     fixture = TestBed.createComponent(BackgroundWorkingComponent);

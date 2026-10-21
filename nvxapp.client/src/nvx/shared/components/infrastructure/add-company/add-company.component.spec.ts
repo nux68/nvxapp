@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular/lazy';
+import { IonCard, IonCardContent, IonContent, IonInput, IonItem, IonLabel, IonNote, provideIonicAngular } from '@ionic/angular';
 
 import { AddCompanyComponent } from './add-company.component';
 
@@ -10,7 +10,8 @@ describe('AddCompanyComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ AddCompanyComponent ],
-      imports: [IonicModule.forRoot()]
+      providers: [provideIonicAngular()],
+      imports: [IonCard, IonCardContent, IonContent, IonInput, IonItem, IonLabel, IonNote]
     }).compileComponents();
 
     fixture = TestBed.createComponent(AddCompanyComponent);

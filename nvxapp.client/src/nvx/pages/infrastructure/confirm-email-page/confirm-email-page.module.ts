@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular/lazy';
+import { IonContent, IonIcon, IonItem, IonLabel, IonList, IonSpinner } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
 import { ConfirmEmailPageComponent } from './confirm-email-page.component';
 import { SharedComponentInfrastructureModule } from '../../../shared/shared-component-infrastructure.module';
@@ -11,7 +11,7 @@ import { SharedShowcaseModule } from '../../../shared/shared-showcase.module';
 @NgModule({
   imports: [
     CommonModule,
-    IonicModule,
+    IonContent, IonIcon, IonItem, IonLabel, IonList, IonSpinner,
     RouterModule.forChild([
       {
         path: '',

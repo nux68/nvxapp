@@ -3,7 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
 import { provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
 
-import { IonicModule, IonicRouteStrategy } from '@ionic/angular/lazy';
+import { IonAccordion, IonAccordionGroup, IonApp, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonChip, IonContent, IonFab, IonFabButton, IonFabList, IonFooter, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonMenu, IonMenuToggle, IonModal, IonNote, IonProgressBar, IonRouterLink, IonRouterOutlet, IonSpinner, IonSplitPane, IonTextarea, IonTitle, IonToolbar, IonicRouteStrategy, provideIonicAngular } from '@ionic/angular';
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
@@ -33,11 +33,12 @@ registerLocaleData(localeIt); // Questa riga è essenziale!
   ],
   imports: [
             BrowserModule,
-            IonicModule.forRoot({ mode: 'md' }), // stesso aspetto su desktop, Android e iOS
+            IonAccordion, IonAccordionGroup, IonApp, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonChip, IonContent, IonFab, IonFabButton, IonFabList, IonFooter, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonMenu, IonMenuToggle, IonModal, IonNote, IonProgressBar, IonRouterLink, IonRouterOutlet, IonSpinner, IonSplitPane, IonTextarea, IonTitle, IonToolbar,
             AppRoutingModule,
             FormsModule
   ],
   providers: [
+              provideIonicAngular({ mode: 'md' }), // stesso aspetto su desktop, Android e iOS
               { provide: LOCALE_ID, useValue: 'it' },
               provideHttpClient(withXhr(), withInterceptorsFromDi()),
               { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },

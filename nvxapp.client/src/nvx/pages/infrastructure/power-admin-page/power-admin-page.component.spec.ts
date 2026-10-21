@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular/lazy';
+import { IonContent, provideIonicAngular } from '@ionic/angular';
 
 import { PowerAdminPageComponent } from './power-admin-page.component';
 
@@ -10,7 +10,8 @@ describe('PowerAdminPageComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ PowerAdminPageComponent ],
-      imports: [IonicModule.forRoot()]
+      providers: [provideIonicAngular()],
+      imports: [IonContent]
     }).compileComponents();
 
     fixture = TestBed.createComponent(PowerAdminPageComponent);

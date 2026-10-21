@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular/lazy';
+import { IonCard, IonCardContent, IonContent, IonIcon, IonInput, IonItem, IonLabel, provideIonicAngular } from '@ionic/angular';
 
 import { LoginPageComponent } from './login-page.component';
 
@@ -10,7 +10,8 @@ describe('LoginPageComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ LoginPageComponent ],
-      imports: [IonicModule.forRoot()]
+      providers: [provideIonicAngular()],
+      imports: [IonCard, IonCardContent, IonContent, IonIcon, IonInput, IonItem, IonLabel]
     }).compileComponents();
 
     fixture = TestBed.createComponent(LoginPageComponent);

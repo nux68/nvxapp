@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular/lazy';
+import { IonContent, IonIcon, provideIonicAngular } from '@ionic/angular';
 
 import { DashboardPageComponent } from './dashboard-page.component';
 
@@ -10,7 +10,8 @@ describe('DashboardPageComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ DashboardPageComponent ],
-      imports: [IonicModule.forRoot()]
+      providers: [provideIonicAngular()],
+      imports: [IonContent, IonIcon]
     }).compileComponents();
 
     fixture = TestBed.createComponent(DashboardPageComponent);

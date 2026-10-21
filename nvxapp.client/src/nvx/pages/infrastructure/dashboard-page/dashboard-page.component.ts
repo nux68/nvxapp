@@ -1,7 +1,7 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
 import { FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
-import { NavController } from '@ionic/angular/lazy';
+import { NavController } from '@ionic/angular';
 
 @Component({
   selector: 'app-dashboard-page',

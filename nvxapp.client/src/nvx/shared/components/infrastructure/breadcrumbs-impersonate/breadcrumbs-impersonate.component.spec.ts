@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular/lazy';
+import { IonBreadcrumb, IonBreadcrumbs, IonToolbar, provideIonicAngular } from '@ionic/angular';
 
 import { BreadcrumbsImpersonateComponent } from './breadcrumbs-impersonate.component';
 
@@ -10,7 +10,8 @@ describe('BreadcrumbsImpersonateComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ BreadcrumbsImpersonateComponent ],
-      imports: [IonicModule.forRoot()]
+      providers: [provideIonicAngular()],
+      imports: [IonBreadcrumb, IonBreadcrumbs, IonToolbar]
     }).compileComponents();
 
     fixture = TestBed.createComponent(BreadcrumbsImpersonateComponent);

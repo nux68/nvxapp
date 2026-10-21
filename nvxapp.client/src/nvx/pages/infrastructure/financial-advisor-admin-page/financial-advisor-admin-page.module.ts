@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonicModule } from '@ionic/angular/lazy';
+import { IonCard, IonCardContent, IonContent } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
 import { FinancialAdvisorAdminPageComponent } from './financial-advisor-admin-page.component';
 import { SharedComponentInfrastructureModule } from '../../../shared/shared-component-infrastructure.module';
@@ -11,7 +11,7 @@ import { SharedComponentInfrastructureModule } from '../../../shared/shared-comp
   imports: [
     CommonModule,
     FormsModule,
-    IonicModule,
+    IonCard, IonCardContent, IonContent,
     RouterModule.forChild([
       {
         path: '',
