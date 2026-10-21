@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular/lazy';
+import { IonCard, IonCardContent, IonContent, IonDatetime, IonDatetimeButton, IonIcon, IonItem, IonLabel, IonModal, IonNote, IonSelect, IonSelectOption, IonTextarea, IonToggle, provideIonicAngular } from '@ionic/angular';
 
 import { RequestJustificationUserPageComponent } from './request-justification-user-page.component';
 
@@ -10,7 +10,8 @@ describe('RequestJustificationUserPageComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ RequestJustificationUserPageComponent ],
-      imports: [IonicModule.forRoot()]
+      providers: [provideIonicAngular()],
+      imports: [IonCard, IonCardContent, IonContent, IonDatetime, IonDatetimeButton, IonIcon, IonItem, IonLabel, IonModal, IonNote, IonSelect, IonSelectOption, IonTextarea, IonToggle]
     }).compileComponents();
 
     fixture = TestBed.createComponent(RequestJustificationUserPageComponent);

@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular/lazy';
+import { IonCard, IonCardContent, IonContent, IonInput, IonItem, IonLabel, IonNote, IonText, provideIonicAngular } from '@ionic/angular';
 
 import { CompanyAttendanceWizardPageComponent } from './company-attendance-wizard-page.component';
 
@@ -10,7 +10,8 @@ describe('CompanyAttendanceWizardPageComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ CompanyAttendanceWizardPageComponent ],
-      imports: [IonicModule.forRoot()]
+      providers: [provideIonicAngular()],
+      imports: [IonCard, IonCardContent, IonContent, IonInput, IonItem, IonLabel, IonNote, IonText]
     }).compileComponents();
 
     fixture = TestBed.createComponent(CompanyAttendanceWizardPageComponent);

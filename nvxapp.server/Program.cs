@@ -149,7 +149,7 @@ app.UseDefaultFiles(); // Serve automaticamente il file "index.html"
 // Aggiunge il MIME type per il manifest PWA
 var provider = new Microsoft.AspNetCore.StaticFiles.FileExtensionContentTypeProvider();
 provider.Mappings[".webmanifest"] = "application/manifest+json";
-app.UseStaticFiles(new StaticFileOptions
+var staticFileOptions = new StaticFileOptions
 {
     ContentTypeProvider = provider
     ,
@@ -172,7 +172,8 @@ app.UseStaticFiles(new StaticFileOptions
             headers["Cache-Control"] = "public, max-age=31536000, immutable";
         }
     }
-});
+};
+app.UseStaticFiles(staticFileOptions);
 
 app.MapControllers();
 
@@ -190,6 +191,9 @@ if (useHangFire)
 }
 
 
-
+// Fallback del client Angular: le sue rotte (es. /confirm-email e /reset-password dei link nelle email,
+// o una pagina ricaricata con F5) non sono file e senza fallback il server risponde 404. Si risponde con
+// index.html e la rotta la gestisce Angular. Esclusi le API, l'hub SignalR e i file (es. un .js mancante resta 404).
+app.MapFallbackToFile("{*path:nonfile:regex(^(?!api/|chathub).*$)}", "index.html", staticFileOptions);
 
 app.Run();

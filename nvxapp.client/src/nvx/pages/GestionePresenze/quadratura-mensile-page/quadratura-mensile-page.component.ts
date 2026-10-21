@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy, OnDestroy } from '@angular/core';
-import { NavController, Platform } from '@ionic/angular/lazy';
+import { NavController, Platform } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { DipPeriodoService } from '../../../ClientServer-Service/GestionePresenze/Dip_Periodo/dip-periodo.service';

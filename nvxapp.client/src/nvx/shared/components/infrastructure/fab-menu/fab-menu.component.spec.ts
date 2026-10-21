@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular/lazy';
+import { IonButton, IonButtons, IonChip, IonContent, IonFab, IonFabButton, IonFabList, IonFooter, IonHeader, IonIcon, IonModal, IonTextarea, IonTitle, IonToolbar, provideIonicAngular } from '@ionic/angular';
 
 import { FabMenuComponent } from './fab-menu.component';
 
@@ -10,7 +10,8 @@ describe('FabMenuComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ FabMenuComponent ],
-      imports: [IonicModule.forRoot()]
+      providers: [provideIonicAngular()],
+      imports: [IonButton, IonButtons, IonChip, IonContent, IonFab, IonFabButton, IonFabList, IonFooter, IonHeader, IonIcon, IonModal, IonTextarea, IonTitle, IonToolbar]
     }).compileComponents();
 
     fixture = TestBed.createComponent(FabMenuComponent);

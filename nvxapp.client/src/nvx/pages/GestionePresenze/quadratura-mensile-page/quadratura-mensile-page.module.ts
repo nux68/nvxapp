@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonicModule } from '@ionic/angular/lazy';
+import { IonButton, IonCard, IonCardContent, IonCheckbox, IonChip, IonCol, IonContent, IonGrid, IonIcon, IonRow } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
 import { SharedComponentInfrastructureModule } from '../../../shared/shared-component-infrastructure.module';
 import { SharedComponentGestionePresenzeModuleModule } from '../../../shared/shared-component-gestione-presenze-module.module';
@@ -11,7 +11,7 @@ import { QuadraturaMensilePageComponent } from './quadratura-mensile-page.compon
   imports: [
     CommonModule,
     FormsModule,
-    IonicModule,
+    IonButton, IonCard, IonCardContent, IonCheckbox, IonChip, IonCol, IonContent, IonGrid, IonIcon, IonRow,
     RouterModule.forChild([
       {
         path: '',

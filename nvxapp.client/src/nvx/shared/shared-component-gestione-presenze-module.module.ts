@@ -17,7 +17,7 @@ import { ParCompetenzaToLongTextPipe } from './pipe/GestionePresenze/par-compete
 import { AzCommessaToLongTextPipe } from './pipe/GestionePresenze/az-commessa-to-long-text.pipe';
 import { AzClienteToLongTextPipe } from './pipe/GestionePresenze/az-cliente-to-long-text.pipe';
 import { SediRepartoUserNavigationComponent } from './components/GestionePresenze/sedi-reparto-user-navigation/sedi-reparto-user-navigation.component';
-import { IonicModule } from '@ionic/angular/lazy';
+import { IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonCheckbox, IonChip, IonCol, IonContent, IonDatetime, IonDatetimeButton, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonList, IonModal, IonNote, IonRange, IonRow, IonSearchbar, IonSegment, IonSegmentButton, IonSelect, IonSelectOption, IonText, IonTitle, IonToggle, IonToolbar } from '@ionic/angular';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { AzSediRepartoToLongTextPipe } from './pipe/GestionePresenze/az-sedireparto-to-long-text.pipe';
 import { SeletionSediRepartoDialogComponent } from './components/GestionePresenze/seletion-sedi-reparto-dialog/seletion-sedi-reparto-dialog.component';
@@ -61,7 +61,7 @@ import { CartellinoQuadraturaComponent } from './components/GestionePresenze/car
   imports: [
     SharedComponentInfrastructureModule,
     CommonModule,
-    IonicModule,
+    IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonCheckbox, IonChip, IonCol, IonContent, IonDatetime, IonDatetimeButton, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonList, IonModal, IonNote, IonRange, IonRow, IonSearchbar, IonSegment, IonSegmentButton, IonSelect, IonSelectOption, IonText, IonTitle, IonToggle, IonToolbar,
     FormsModule,
     ReactiveFormsModule,
     TipoTimbraturaToLongTextPipe, TipoTimbraturaToShortTextPipe, ParGiustificativiToLongTextPipe, ParGiustificativiToShortTextPipe, ParCausaliToShortTextPipe, ParCausaliToLongTextPipe,

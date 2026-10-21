@@ -20,7 +20,7 @@ import { RefresherService } from '../../../Utility/GestionePresenze/refresher.se
 import { Subscription } from 'rxjs';
 import { JobNotifierService } from '../../../Utility/infrastructure/job-notifier.service';
 import { GestionePresenze_JobType } from '../../../Utility/GestionePresenze/GestionePresenze_JobType';
-import { ModalController, NavController, Platform } from '@ionic/angular/lazy';
+import { ModalController, NavController, Platform } from '@ionic/angular';
 
 
 @Component({

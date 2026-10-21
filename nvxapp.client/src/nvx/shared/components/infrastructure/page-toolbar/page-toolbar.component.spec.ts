@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular/lazy';
+import { IonButton, IonButtons, IonCol, IonGrid, IonHeader, IonIcon, IonItem, IonLabel, IonMenuButton, IonProgressBar, IonRow, IonSearchbar, IonTitle, IonToolbar, provideIonicAngular } from '@ionic/angular';
 
 import { PageToolbarComponent } from './page-toolbar.component';
 
@@ -10,7 +10,8 @@ describe('PageToolbarComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ PageToolbarComponent ],
-      imports: [IonicModule.forRoot()]
+      providers: [provideIonicAngular()],
+      imports: [IonButton, IonButtons, IonCol, IonGrid, IonHeader, IonIcon, IonItem, IonLabel, IonMenuButton, IonProgressBar, IonRow, IonSearchbar, IonTitle, IonToolbar]
     }).compileComponents();
 
     fixture = TestBed.createComponent(PageToolbarComponent);

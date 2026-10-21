@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonicModule } from '@ionic/angular/lazy';
+import { IonActionSheet, IonCard, IonCardContent, IonChip, IonContent, IonIcon } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
 import { TimeSheetAdminPageComponent } from './time-sheet-admin-page.component';
 import { SharedComponentInfrastructureModule } from '../../../shared/shared-component-infrastructure.module';
@@ -12,7 +12,7 @@ import { SharedComponentGestionePresenzeModuleModule } from '../../../shared/sha
   imports: [
     CommonModule,
     FormsModule,
-    IonicModule,
+    IonActionSheet, IonCard, IonCardContent, IonChip, IonContent, IonIcon,
     RouterModule.forChild([
       {
         path: '',

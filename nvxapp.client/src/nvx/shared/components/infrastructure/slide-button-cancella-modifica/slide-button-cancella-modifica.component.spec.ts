@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular/lazy';
+import { IonIcon, IonItemOption, IonItemOptions, provideIonicAngular } from '@ionic/angular';
 
 import { SlideButtonCancellaModificaComponent } from './slide-button-cancella-modifica.component';
 
@@ -10,7 +10,8 @@ describe('SlideButtonCancellaModificaComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ SlideButtonCancellaModificaComponent ],
-      imports: [IonicModule.forRoot()]
+      providers: [provideIonicAngular()],
+      imports: [IonIcon, IonItemOption, IonItemOptions]
     }).compileComponents();
 
     fixture = TestBed.createComponent(SlideButtonCancellaModificaComponent);

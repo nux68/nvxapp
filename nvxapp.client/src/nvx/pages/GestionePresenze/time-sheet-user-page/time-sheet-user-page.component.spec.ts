@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular/lazy';
+import { IonActionSheet, IonCard, IonCardContent, IonChip, IonContent, IonIcon, provideIonicAngular } from '@ionic/angular';
 
 import { TimeSheetUserPageComponent } from './time-sheet-user-page.component';
 
@@ -10,7 +10,8 @@ describe('TimeSheetUserComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ TimeSheetUserPageComponent ],
-      imports: [IonicModule.forRoot()]
+      providers: [provideIonicAngular()],
+      imports: [IonActionSheet, IonCard, IonCardContent, IonChip, IonContent, IonIcon]
     }).compileComponents();
 
     fixture = TestBed.createComponent(TimeSheetUserPageComponent);

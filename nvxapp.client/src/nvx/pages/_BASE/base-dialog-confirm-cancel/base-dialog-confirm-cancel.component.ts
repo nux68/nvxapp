@@ -1,6 +1,6 @@
 import { Directive, OnInit } from '@angular/core';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
-import { ModalController, NavController } from '@ionic/angular/lazy';
+import { ModalController, NavController } from '@ionic/angular';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Observable, of } from 'rxjs';
 

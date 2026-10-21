@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { IonicModule } from '@ionic/angular/lazy';
+import { IonButton, IonCard, IonCardContent, IonCol, IonContent, IonDatetime, IonDatetimeButton, IonIcon, IonItem, IonLabel, IonModal, IonNote, IonRow, IonSelect, IonSelectOption } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
 import { SharedComponentInfrastructureModule } from '../../../shared/shared-component-infrastructure.module';
 import { SharedComponentGestionePresenzeModuleModule } from '../../../shared/shared-component-gestione-presenze-module.module';
@@ -12,7 +12,7 @@ import { ExportCausaliPageComponent } from './export-causali-page.component';
   imports: [
     CommonModule,
     FormsModule,
-    IonicModule,
+    IonButton, IonCard, IonCardContent, IonCol, IonContent, IonDatetime, IonDatetimeButton, IonIcon, IonItem, IonLabel, IonModal, IonNote, IonRow, IonSelect, IonSelectOption,
     ReactiveFormsModule,
     RouterModule.forChild([
       {

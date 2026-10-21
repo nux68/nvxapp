@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular/lazy';
+import { IonContent, IonHeader, IonModal, IonProgressBar, IonTitle, IonToolbar, provideIonicAngular } from '@ionic/angular';
 
 import { ParameterLoaderComponent } from './parameter-loader.component';
 
@@ -10,7 +10,8 @@ describe('ParameterLoaderComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ ParameterLoaderComponent ],
-      imports: [IonicModule.forRoot()]
+      providers: [provideIonicAngular()],
+      imports: [IonContent, IonHeader, IonModal, IonProgressBar, IonTitle, IonToolbar]
     }).compileComponents();
 
     fixture = TestBed.createComponent(ParameterLoaderComponent);

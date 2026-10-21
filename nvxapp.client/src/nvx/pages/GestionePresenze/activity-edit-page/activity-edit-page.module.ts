@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { IonicModule } from '@ionic/angular/lazy';
+import { IonCard, IonCardContent, IonCheckbox, IonCol, IonContent, IonGrid, IonInput, IonItem, IonItemSliding, IonLabel, IonNote, IonRow, IonSegment, IonSegmentButton, IonText } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
 import { SharedComponentInfrastructureModule } from '../../../shared/shared-component-infrastructure.module';
 import { ActivityEditPageComponent } from './activity-edit-page.component';
@@ -12,7 +12,7 @@ import { SharedComponentGestionePresenzeModuleModule } from '../../../shared/sha
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    IonicModule,
+    IonCard, IonCardContent, IonCheckbox, IonCol, IonContent, IonGrid, IonInput, IonItem, IonItemSliding, IonLabel, IonNote, IonRow, IonSegment, IonSegmentButton, IonText,
     RouterModule.forChild([
       {
         path: '',

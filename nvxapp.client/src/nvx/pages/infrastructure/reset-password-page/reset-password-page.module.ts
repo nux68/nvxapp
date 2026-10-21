@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { IonicModule } from '@ionic/angular/lazy';
+import { IonContent, IonIcon, IonInput, IonItem, IonNote } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
 import { ResetPasswordPageComponent } from './reset-password-page.component';
 import { SharedComponentInfrastructureModule } from '../../../shared/shared-component-infrastructure.module';
@@ -14,7 +14,7 @@ import { SharedShowcaseModule } from '../../../shared/shared-showcase.module';
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    IonicModule,
+    IonContent, IonIcon, IonInput, IonItem, IonNote,
     RouterModule.forChild([
       {
         path: '',

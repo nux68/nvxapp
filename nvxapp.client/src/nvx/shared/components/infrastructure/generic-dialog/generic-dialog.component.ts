@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, TemplateRef, ChangeDetectionStrategy } from '@angular/core';
-import { ModalController } from '@ionic/angular/lazy';
+import { ModalController } from '@ionic/angular';
 import { ButtonItem } from '../../../../Utility/infrastructure/user-interface.service';
 
 @Component({

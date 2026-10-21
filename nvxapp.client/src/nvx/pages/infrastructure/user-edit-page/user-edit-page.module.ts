@@ -1,5 +1,5 @@
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { IonicModule } from '@ionic/angular/lazy';
+import { IonCard, IonCardContent, IonContent, IonInput, IonItem, IonLabel, IonNote, IonSelect, IonSelectOption } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
 import { SharedComponentInfrastructureModule } from '../../../shared/shared-component-infrastructure.module';
 import { CommonModule } from '@angular/common';
@@ -15,7 +15,7 @@ import { UserEditPageComponent } from './user-edit-page.component';
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    IonicModule,
+    IonCard, IonCardContent, IonContent, IonInput, IonItem, IonLabel, IonNote, IonSelect, IonSelectOption,
     RouterModule.forChild([
       {
         path: '',

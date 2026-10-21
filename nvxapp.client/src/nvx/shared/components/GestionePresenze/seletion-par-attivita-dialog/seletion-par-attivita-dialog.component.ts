@@ -1,6 +1,6 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { ButtonItem, UserInterfaceService } from '../../../../Utility/infrastructure/user-interface.service';
-import { ModalController } from '@ionic/angular/lazy';
+import { ModalController } from '@ionic/angular';
 import { Par_AttivitaModel } from '../../../../ClientServer-Service/GestionePresenze/Par_Attivita/Models/par-attivita-model';
 import { SharedParameterGestionePresenzeService } from '../../../shared-parameter-gestione-presenze.service';
 import { CheckObjOn_Id_Number } from '../../../../ClientServer-Service/ModelsBase/check-obj';

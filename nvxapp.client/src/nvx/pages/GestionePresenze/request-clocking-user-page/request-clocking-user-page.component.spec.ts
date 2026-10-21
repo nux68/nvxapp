@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular/lazy';
+import { IonCard, IonCardContent, IonContent, IonDatetime, IonDatetimeButton, IonItem, IonLabel, IonModal, IonNote, IonSelect, IonSelectOption, provideIonicAngular } from '@ionic/angular';
 
 import { RequestClockingUserPageComponent } from './request-clocking-user-page.component';
 
@@ -10,7 +10,8 @@ describe('RequestClockingUserPageComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ RequestClockingUserPageComponent ],
-      imports: [IonicModule.forRoot()]
+      providers: [provideIonicAngular()],
+      imports: [IonCard, IonCardContent, IonContent, IonDatetime, IonDatetimeButton, IonItem, IonLabel, IonModal, IonNote, IonSelect, IonSelectOption]
     }).compileComponents();
 
     fixture = TestBed.createComponent(RequestClockingUserPageComponent);

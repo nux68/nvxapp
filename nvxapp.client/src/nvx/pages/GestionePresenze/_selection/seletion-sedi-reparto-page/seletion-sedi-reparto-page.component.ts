@@ -1,6 +1,6 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { ButtonItem, UserInterfaceService } from '../../../../Utility/infrastructure/user-interface.service';
-import { NavController } from '@ionic/angular/lazy';
+import { NavController } from '@ionic/angular';
 
 @Component({
   selector: 'app-seletion-sedi-reparto-page',

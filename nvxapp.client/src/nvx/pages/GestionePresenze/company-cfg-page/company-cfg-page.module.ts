@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { IonicModule } from '@ionic/angular/lazy';
+import { IonCard, IonCardContent, IonContent, IonItem, IonLabel, IonList, IonListHeader, IonRadio, IonRadioGroup, IonSegment, IonSegmentButton } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
 import { SharedComponentInfrastructureModule } from '../../../shared/shared-component-infrastructure.module';
 import { CompanyCfgPageComponent } from './company-cfg-page.component';
@@ -12,7 +12,7 @@ import { CompanyCfgPageComponent } from './company-cfg-page.component';
   imports: [
     CommonModule,
     FormsModule,
-    IonicModule,
+    IonCard, IonCardContent, IonContent, IonItem, IonLabel, IonList, IonListHeader, IonRadio, IonRadioGroup, IonSegment, IonSegmentButton,
     ReactiveFormsModule,
     RouterModule.forChild([
       {

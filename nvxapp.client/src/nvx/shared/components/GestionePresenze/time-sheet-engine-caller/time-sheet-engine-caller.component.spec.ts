@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular/lazy';
+import { IonCard, IonCardContent, IonCol, IonContent, IonDatetime, IonDatetimeButton, IonHeader, IonItem, IonLabel, IonModal, IonRow, IonSegment, IonSegmentButton, IonTitle, IonToggle, IonToolbar, provideIonicAngular } from '@ionic/angular';
 
 import { TimeSheetEngineCallerComponent } from './time-sheet-engine-caller.component';
 
@@ -10,7 +10,8 @@ describe('TimeSheetEngineCallerComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ TimeSheetEngineCallerComponent ],
-      imports: [IonicModule.forRoot()]
+      providers: [provideIonicAngular()],
+      imports: [IonCard, IonCardContent, IonCol, IonContent, IonDatetime, IonDatetimeButton, IonHeader, IonItem, IonLabel, IonModal, IonRow, IonSegment, IonSegmentButton, IonTitle, IonToggle, IonToolbar]
     }).compileComponents();
 
     fixture = TestBed.createComponent(TimeSheetEngineCallerComponent);

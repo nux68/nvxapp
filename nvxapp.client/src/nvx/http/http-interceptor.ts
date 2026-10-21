@@ -4,7 +4,7 @@ import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { catchError, finalize, tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { AuthService } from '../Utility/infrastructure/auth.service';
-import { NavController } from '@ionic/angular/lazy';
+import { NavController } from '@ionic/angular';
 import { UserNavigationService } from '../Utility/infrastructure/user-navigation.service';
 import { GenericResult } from '../ClientServer-Service/ModelsBase/generic-result';
 

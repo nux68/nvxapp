@@ -1,5 +1,5 @@
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { IonicModule } from '@ionic/angular/lazy';
+import { IonCard, IonCardContent, IonCol, IonContent, IonGrid, IonInput, IonItem, IonLabel, IonNote, IonRow, IonTextarea } from '@ionic/angular';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { SharedComponentInfrastructureModule } from '../../../shared/shared-component-infrastructure.module';
@@ -11,7 +11,7 @@ import { CustomerEditPageComponent } from './customer-edit-page.component';
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    IonicModule,
+    IonCard, IonCardContent, IonCol, IonContent, IonGrid, IonInput, IonItem, IonLabel, IonNote, IonRow, IonTextarea,
     RouterModule.forChild([
       {
         path: '',

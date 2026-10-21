@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular/lazy';
+import { IonBadge, IonCard, IonCardContent, IonChip, IonCol, IonContent, IonGrid, IonIcon, IonItem, IonLabel, IonNote, IonRow, IonSegment, IonSegmentButton, provideIonicAngular } from '@ionic/angular';
 
 import { ActivityStatisticsPageComponent } from './activity-statistics-page.component';
 
@@ -10,7 +10,8 @@ describe('ActivityStatisticsPageComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ ActivityStatisticsPageComponent ],
-      imports: [IonicModule.forRoot()]
+      providers: [provideIonicAngular()],
+      imports: [IonBadge, IonCard, IonCardContent, IonChip, IonCol, IonContent, IonGrid, IonIcon, IonItem, IonLabel, IonNote, IonRow, IonSegment, IonSegmentButton]
     }).compileComponents();
 
     fixture = TestBed.createComponent(ActivityStatisticsPageComponent);

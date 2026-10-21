@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
-import { NavController } from '@ionic/angular/lazy';
+import { NavController } from '@ionic/angular';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { RegistrationService } from '../../../ClientServer-Service/Infrastructure/Registration/registration.service';
 import { CompanyRegisterInModel } from '../../../ClientServer-Service/Infrastructure/Registration/Models/company-register-model';

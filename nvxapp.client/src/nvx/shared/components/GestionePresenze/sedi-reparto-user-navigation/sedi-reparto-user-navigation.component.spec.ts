@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular/lazy';
+import { IonButton, IonCol, IonIcon, IonItem, IonLabel, IonRow, IonSelect, IonSelectOption, IonText, provideIonicAngular } from '@ionic/angular';
 
 import { SediRepartoUserNavigationComponent } from './sedi-reparto-user-navigation.component';
 
@@ -10,7 +10,8 @@ describe('SediRepartoUserNavigationComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ SediRepartoUserNavigationComponent ],
-      imports: [IonicModule.forRoot()]
+      providers: [provideIonicAngular()],
+      imports: [IonButton, IonCol, IonIcon, IonItem, IonLabel, IonRow, IonSelect, IonSelectOption, IonText]
     }).compileComponents();
 
     fixture = TestBed.createComponent(SediRepartoUserNavigationComponent);

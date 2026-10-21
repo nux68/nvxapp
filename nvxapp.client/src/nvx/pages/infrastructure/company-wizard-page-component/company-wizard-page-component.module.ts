@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { IonicModule } from '@ionic/angular/lazy';
+import { IonCard, IonCardContent, IonContent, IonInput, IonItem, IonLabel, IonNote } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
 import { SharedComponentInfrastructureModule } from '../../../shared/shared-component-infrastructure.module';
 import { CompanyWizardPageComponentComponent } from './company-wizard-page-component.component';
@@ -13,7 +13,7 @@ import { CompanyWizardPageComponentComponent } from './company-wizard-page-compo
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    IonicModule,
+    IonCard, IonCardContent, IonContent, IonInput, IonItem, IonLabel, IonNote,
     RouterModule.forChild([
       {
         path: '',

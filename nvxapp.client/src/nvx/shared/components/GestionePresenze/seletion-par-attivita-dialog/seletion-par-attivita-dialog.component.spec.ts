@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular/lazy';
+import { IonCard, IonCardContent, IonCheckbox, IonCol, IonContent, IonGrid, IonHeader, IonLabel, IonNote, IonRow, IonTitle, IonToolbar, provideIonicAngular } from '@ionic/angular';
 
 import { SeletionParAttivitaDialogComponent } from './seletion-par-attivita-dialog.component';
 
@@ -10,7 +10,8 @@ describe('SeletionParAttivitaDialogComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ SeletionParAttivitaDialogComponent ],
-      imports: [IonicModule.forRoot()]
+      providers: [provideIonicAngular()],
+      imports: [IonCard, IonCardContent, IonCheckbox, IonCol, IonContent, IonGrid, IonHeader, IonLabel, IonNote, IonRow, IonTitle, IonToolbar]
     }).compileComponents();
 
     fixture = TestBed.createComponent(SeletionParAttivitaDialogComponent);

@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonicModule } from '@ionic/angular/lazy';
+import { IonCard, IonCardContent, IonContent, IonDatetime, IonDatetimeButton, IonIcon, IonItem, IonLabel, IonModal, IonNote, IonSelect, IonSelectOption, IonTextarea, IonToggle } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
 import { SharedComponentInfrastructureModule } from '../../../shared/shared-component-infrastructure.module';
 import { RequestJustificationUserPageComponent } from './request-justification-user-page.component';
@@ -13,7 +13,7 @@ import { SharedComponentGestionePresenzeModuleModule } from '../../../shared/sha
   imports: [
     CommonModule,
     FormsModule,
-    IonicModule,
+    IonCard, IonCardContent, IonContent, IonDatetime, IonDatetimeButton, IonIcon, IonItem, IonLabel, IonModal, IonNote, IonSelect, IonSelectOption, IonTextarea, IonToggle,
     RouterModule.forChild([
       {
         path: '',

@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular/lazy';
+import { IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonContent, IonDatetime, IonDatetimeButton, IonGrid, IonHeader, IonItem, IonLabel, IonModal, IonNote, IonRow, IonSelect, IonSelectOption, IonTitle, IonToolbar, provideIonicAngular } from '@ionic/angular';
 
 import { EditDipGGGiustificativiDialogComponent } from './edit-dip-gg-giustificativi-dialog.component';
 
@@ -10,7 +10,8 @@ describe('EditDipGGGiustificativiDialogComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ EditDipGGGiustificativiDialogComponent ],
-      imports: [IonicModule.forRoot()]
+      providers: [provideIonicAngular()],
+      imports: [IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonContent, IonDatetime, IonDatetimeButton, IonGrid, IonHeader, IonItem, IonLabel, IonModal, IonNote, IonRow, IonSelect, IonSelectOption, IonTitle, IonToolbar]
     }).compileComponents();
 
     fixture = TestBed.createComponent(EditDipGGGiustificativiDialogComponent);

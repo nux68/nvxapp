@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
-import { NavController } from '@ionic/angular/lazy';
+import { NavController } from '@ionic/angular';
 import { MainMenuItem, MenuType } from '../../../../Utility/infrastructure/main-menu.service';
 import { ShowcaseService } from '../../../../Utility/infrastructure/showcase.service';
 

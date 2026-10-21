@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular/lazy';
+import { IonCard, IonCardContent, IonContent, IonHeader, IonItem, IonLabel, IonNote, IonSelect, IonSelectOption, IonTitle, IonToolbar, provideIonicAngular } from '@ionic/angular';
 
 import { EditParProfiloOrarioDettaglioOrarioDialogComponent } from './edit-par-profilo-orario-dettaglio-orario-dialog.component';
 
@@ -10,7 +10,8 @@ describe('EditParProfiloOrarioDettaglioOrarioDialogComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ EditParProfiloOrarioDettaglioOrarioDialogComponent ],
-      imports: [IonicModule.forRoot()]
+      providers: [provideIonicAngular()],
+      imports: [IonCard, IonCardContent, IonContent, IonHeader, IonItem, IonLabel, IonNote, IonSelect, IonSelectOption, IonTitle, IonToolbar]
     }).compileComponents();
 
     fixture = TestBed.createComponent(EditParProfiloOrarioDettaglioOrarioDialogComponent);

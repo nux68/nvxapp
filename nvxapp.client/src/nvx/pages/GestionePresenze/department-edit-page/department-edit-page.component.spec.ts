@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular/lazy';
+import { IonCard, IonCardContent, IonCheckbox, IonCol, IonContent, IonGrid, IonInput, IonItem, IonItemSliding, IonLabel, IonNote, IonReorder, IonReorderGroup, IonRow, IonSegment, IonSegmentButton, provideIonicAngular } from '@ionic/angular';
 
 import { DepartmentEditPageComponent } from './department-edit-page.component';
 
@@ -10,7 +10,8 @@ describe('DepartmentEditPageComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ DepartmentEditPageComponent ],
-      imports: [IonicModule.forRoot()]
+      providers: [provideIonicAngular()],
+      imports: [IonCard, IonCardContent, IonCheckbox, IonCol, IonContent, IonGrid, IonInput, IonItem, IonItemSliding, IonLabel, IonNote, IonReorder, IonReorderGroup, IonRow, IonSegment, IonSegmentButton]
     }).compileComponents();
 
     fixture = TestBed.createComponent(DepartmentEditPageComponent);

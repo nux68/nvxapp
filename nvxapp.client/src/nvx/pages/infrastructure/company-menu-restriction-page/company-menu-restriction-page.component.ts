@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
-import { NavController } from '@ionic/angular/lazy';
+import { NavController } from '@ionic/angular';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { MainMenuService, VoceMenuConfigurabile } from '../../../Utility/infrastructure/main-menu.service';
 import { AuthService } from '../../../Utility/infrastructure/auth.service';

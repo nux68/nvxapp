@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular/lazy';
+import { IonBreadcrumb, IonBreadcrumbs, IonButton, IonButtons, IonCard, IonCardContent, IonCol, IonContent, IonFooter, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonItemOption, IonItemOptions, IonLabel, IonMenuButton, IonNote, IonProgressBar, IonRow, IonSearchbar, IonSelect, IonSelectOption, IonTitle, IonToolbar } from '@ionic/angular';
 import { GenericFilterPipe } from './pipe/infrastructure/generic-filter.pipe';
 import { BreadcrumbsImpersonateComponent } from './components/infrastructure/breadcrumbs-impersonate/breadcrumbs-impersonate.component';
 import { PageToolbarComponent } from './components/infrastructure/page-toolbar/page-toolbar.component';
@@ -19,7 +19,7 @@ import { AddCompanyComponent } from './components/infrastructure/add-company/add
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    IonicModule,
+    IonBreadcrumb, IonBreadcrumbs, IonButton, IonButtons, IonCard, IonCardContent, IonCol, IonContent, IonFooter, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonItemOption, IonItemOptions, IonLabel, IonMenuButton, IonNote, IonProgressBar, IonRow, IonSearchbar, IonSelect, IonSelectOption, IonTitle, IonToolbar,
     GenericFilterPipe,
     HoverPopupComponent, HoverPopupDirective
   ],

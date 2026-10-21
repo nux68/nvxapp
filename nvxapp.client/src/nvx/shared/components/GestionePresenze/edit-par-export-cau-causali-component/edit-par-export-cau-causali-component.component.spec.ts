@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular/lazy';
+import { IonCard, IonCardContent, IonContent, IonHeader, IonInput, IonItem, IonLabel, IonNote, IonSelect, IonSelectOption, IonTitle, IonToolbar, provideIonicAngular } from '@ionic/angular';
 
 import { EditParExportCauCausaliComponentComponent } from './edit-par-export-cau-causali-component.component';
 
@@ -10,7 +10,8 @@ describe('EditParExportCauCausaliComponentComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ EditParExportCauCausaliComponentComponent ],
-      imports: [IonicModule.forRoot()]
+      providers: [provideIonicAngular()],
+      imports: [IonCard, IonCardContent, IonContent, IonHeader, IonInput, IonItem, IonLabel, IonNote, IonSelect, IonSelectOption, IonTitle, IonToolbar]
     }).compileComponents();
 
     fixture = TestBed.createComponent(EditParExportCauCausaliComponentComponent);

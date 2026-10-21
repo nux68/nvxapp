@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { IonicModule } from '@ionic/angular/lazy';
+import { IonCard, IonCardContent, IonContent } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
 import { SharedComponentInfrastructureModule } from '../../../../shared/shared-component-infrastructure.module';
 import { SeletionSediRepartoPageComponent } from './seletion-sedi-reparto-page.component';
@@ -14,7 +14,7 @@ import { SeletionSediRepartoPageComponent } from './seletion-sedi-reparto-page.c
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    IonicModule,
+    IonCard, IonCardContent, IonContent,
     RouterModule.forChild([
       {
         path: '',

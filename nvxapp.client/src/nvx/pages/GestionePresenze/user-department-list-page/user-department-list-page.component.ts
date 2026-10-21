@@ -1,6 +1,6 @@
 // Copia e adatta UserCompanyListPageComponent come UserDepartmentListPageComponent
 import { Component, ChangeDetectionStrategy } from '@angular/core';
-import { NavController } from '@ionic/angular/lazy';
+import { NavController } from '@ionic/angular';
 import { AccountService } from '../../../ClientServer-Service/Infrastructure/Account/account.service';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { UserNavigationService, UserDataAdditionalModel } from '../../../Utility/infrastructure/user-navigation.service';

@@ -2,12 +2,11 @@ import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 
 import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
 import { UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
-import { NavController } from '@ionic/angular/lazy';
+import { NavController } from '@ionic/angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AccountService } from '../../../ClientServer-Service/Infrastructure/Account/account.service';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
-import { Observable } from 'rxjs/internal/Observable';
-import { map, catchError } from 'rxjs';
+import { map, catchError, Observable } from 'rxjs';
 import { StringHelperService } from '../../../Utility/infrastructure/string-helper.service';
 import { ParameterService } from '../../../ClientServer-Service/Infrastructure/Parameter/parameter.service';
 import { AuthService } from '../../../Utility/infrastructure/auth.service';

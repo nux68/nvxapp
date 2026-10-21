@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular/lazy';
+import { provideIonicAngular } from '@ionic/angular';
 
 import { HoverPopupComponent } from './hover-popup.component';
 
@@ -10,7 +10,8 @@ describe('HoverPopupComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ HoverPopupComponent ],
-      imports: [IonicModule.forRoot()]
+      providers: [provideIonicAngular()],
+      imports: []
     }).compileComponents();
 
     fixture = TestBed.createComponent(HoverPopupComponent);

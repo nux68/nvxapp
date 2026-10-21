@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular/lazy';
+import { IonCard, IonCardContent, IonContent, provideIonicAngular } from '@ionic/angular';
 
 import { CompanyAdminPageComponent } from './company-admin-page.component';
 
@@ -10,7 +10,8 @@ describe('DomainAdminPageComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ CompanyAdminPageComponent ],
-      imports: [IonicModule.forRoot()]
+      providers: [provideIonicAngular()],
+      imports: [IonCard, IonCardContent, IonContent]
     }).compileComponents();
 
     fixture = TestBed.createComponent(CompanyAdminPageComponent);

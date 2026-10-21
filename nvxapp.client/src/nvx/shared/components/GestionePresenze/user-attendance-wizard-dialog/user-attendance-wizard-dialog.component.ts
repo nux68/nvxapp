@@ -1,7 +1,7 @@
 import { Component, ChangeDetectionStrategy, ElementRef, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AbstractControl, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
-import { IonicModule, ModalController } from '@ionic/angular/lazy';
+import { IonCard, IonCardContent, IonCheckbox, IonCol, IonContent, IonDatetime, IonDatetimeButton, IonGrid, IonHeader, IonInput, IonItem, IonLabel, IonModal, IonNote, IonProgressBar, IonRow, IonSelect, IonSelectOption, IonSpinner, IonText, IonTitle, IonToolbar, ModalController } from '@ionic/angular';
 import { SharedComponentInfrastructureModule } from '../../../shared-component-infrastructure.module';
 import { RefresherService } from '../../../../Utility/GestionePresenze/refresher.service';
 import { firstValueFrom } from 'rxjs';
@@ -40,7 +40,7 @@ import { SharedParameterGestionePresenzeService } from '../../../shared-paramete
   styleUrls: ['./user-attendance-wizard-dialog.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, IonicModule, SharedComponentInfrastructureModule]
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, IonCard, IonCardContent, IonCheckbox, IonCol, IonContent, IonDatetime, IonDatetimeButton, IonGrid, IonHeader, IonInput, IonItem, IonLabel, IonModal, IonNote, IonProgressBar, IonRow, IonSelect, IonSelectOption, IonSpinner, IonText, IonTitle, IonToolbar, SharedComponentInfrastructureModule]
 })
 export class UserAttendanceWizardDialogComponent implements OnInit {
 

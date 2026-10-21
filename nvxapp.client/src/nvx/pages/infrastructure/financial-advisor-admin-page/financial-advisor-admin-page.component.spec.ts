@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular/lazy';
+import { IonCard, IonCardContent, IonContent, provideIonicAngular } from '@ionic/angular';
 
 import { FinancialAdvisorAdminPageComponent } from './financial-advisor-admin-page.component';
 
@@ -10,7 +10,8 @@ describe('FinancialAdvisorAdminPageComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ FinancialAdvisorAdminPageComponent ],
-      imports: [IonicModule.forRoot()]
+      providers: [provideIonicAngular()],
+      imports: [IonCard, IonCardContent, IonContent]
     }).compileComponents();
 
     fixture = TestBed.createComponent(FinancialAdvisorAdminPageComponent);

@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonicModule } from '@ionic/angular/lazy';
+import { IonButton, IonContent, IonIcon, IonInput, IonItem, IonTextarea } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
 import { ShowcaseContactPageComponent } from './showcase-contact-page.component';
 import { SharedComponentInfrastructureModule } from '../../../shared/shared-component-infrastructure.module';
@@ -13,7 +13,7 @@ import { SharedShowcaseModule } from '../../../shared/shared-showcase.module';
   imports: [
     CommonModule,
     FormsModule,
-    IonicModule,
+    IonButton, IonContent, IonIcon, IonInput, IonItem, IonTextarea,
     RouterModule.forChild([
       {
         path: '',

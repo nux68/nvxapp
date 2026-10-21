@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { IonicModule } from '@ionic/angular/lazy';
+import { IonActionSheet, IonCard, IonCardContent, IonChip, IonContent, IonLabel, provideIonicAngular } from '@ionic/angular';
 
 import { VacationPlanPageComponent } from './vacation-plan-page.component';
 
@@ -10,7 +10,8 @@ describe('VacationPlanPageComponent', () => {
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ VacationPlanPageComponent ],
-      imports: [IonicModule.forRoot()]
+      providers: [provideIonicAngular()],
+      imports: [IonActionSheet, IonCard, IonCardContent, IonChip, IonContent, IonLabel]
     }).compileComponents();
 
     fixture = TestBed.createComponent(VacationPlanPageComponent);

@@ -1,10 +1,7 @@
-import { ChangeDetectorRef, Component, NgZone, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { ParameterService } from '../../../../ClientServer-Service/Infrastructure/Parameter/parameter.service';
 import { GenericRequest } from '../../../../ClientServer-Service/ModelsBase/generic-request';
-import { catchError, combineLatest, concatMap, delay, of, retry, tap, timer } from 'rxjs';
-import { merge } from 'rxjs/internal/observable/merge';
-import { concat } from 'rxjs/internal/observable/concat';
-import { from } from 'rxjs/internal/observable/from';
+import { catchError, combineLatest, concatMap, from, of, retry, tap, timer } from 'rxjs';
 import { RolesListInModel } from '../../../../ClientServer-Service/Infrastructure/Parameter/Models/roles-model';
 import { AuthService } from '../../../../Utility/infrastructure/auth.service';
 import { SharedParameterGestionePresenzeService } from '../../../shared-parameter-gestione-presenze.service';
@@ -69,7 +66,7 @@ export class ParameterLoaderComponent  implements OnInit {
 
     let calls: any[] = [];
 
-    for (let i = 0; i < 50; i++) {
+    //for (let i = 0; i < 50; i++) {
       calls.push(
 
         this.parameterService.Load_Roles(new GenericRequest<RolesListInModel>(RolesListInModel)).pipe(
@@ -89,7 +86,7 @@ export class ParameterLoaderComponent  implements OnInit {
         )
 
       );
-    }
+    //}
 
     return calls;
 
