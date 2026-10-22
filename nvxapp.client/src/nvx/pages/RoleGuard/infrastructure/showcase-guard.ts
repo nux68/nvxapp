@@ -21,5 +21,12 @@ export const authenticatedGuard: CanActivateFn = () => {
   return inject(Router).createUrlTree(['/home']);
 };
 
+// Ingresso nel sito (url vuoto): chi ha gia' fatto almeno un login su questo browser va al login,
+// gli altri alla home dello showcase (che porta alla dashboard chi e' collegato).
+export const paginaIngresso = (): string => {
+  const authService = inject(AuthService);
+  return authService.Token == null && authService.LoginEffettuato ? '/login' : '/home';
+};
+
 /** Pagina iniziale dopo il login (la home dello showcase e' riservata a chi non ha fatto il login). */
 export const SHOWCASE_AFTER_LOGIN = '/dashboard';

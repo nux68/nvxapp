@@ -70,6 +70,18 @@ export class AuthService {
     return this.rolesSubject.getValue().map(x => x.name);
   }
 
+  // su questo browser e' stato fatto almeno un login: entrando nel sito si va al login invece che alla home
+  // dello showcase (vedi paginaIngresso). Resta anche dopo il logout.
+  private static readonly LoginEffettuatoKey = 'nvx-login-effettuato';
+
+  public get LoginEffettuato(): boolean {
+    try { return localStorage.getItem(AuthService.LoginEffettuatoKey) === '1'; } catch { return false; }
+  }
+
+  private segnaLoginEffettuato(): void {
+    try { localStorage.setItem(AuthService.LoginEffettuatoKey, '1'); } catch { }
+  }
+
   private _Token$: BehaviorSubject<string | null> = new BehaviorSubject<string>(null);
   public get Token$(): Observable<string | null> {
     return this._Token$.asObservable();
@@ -81,6 +93,8 @@ export class AuthService {
       this.setActiveApplications([]);
       this.setMenuRestrictions([]);
     }
+    else
+      this.segnaLoginEffettuato();
   }
   public get Token(): string | null {
     const us = this._Token$.getValue();
