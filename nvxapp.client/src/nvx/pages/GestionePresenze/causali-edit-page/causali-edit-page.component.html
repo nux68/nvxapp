@@ -7,40 +7,40 @@
     <ion-card-content>
 
       <ion-item class="nvx-item-4-title">
-        <ion-label>Info</ion-label>
+        <ion-label>{{ 'attendance.pages.causaliEdit.info' | transloco }}</ion-label>
       </ion-item>
 
       <form [formGroup]="_editForm">
 
 
         <ion-item>
-          <ion-label position="floating">Codice</ion-label>
+          <ion-label position="floating">{{ 'attendance.pages.causaliEdit.code' | transloco }}</ion-label>
           <ion-input type="text" formControlName="codice"></ion-input>
         </ion-item>
         @if (_editForm.get('codice')?.hasError('required') && _editForm.get('codice')?.touched) {
           <ion-note color="danger">
-            Codice è obbligatorio.
+            {{ 'attendance.pages.causaliEdit.codeRequired' | transloco }}
           </ion-note>
         }
         @if (_editForm.get('codice')?.hasError('maxlength') && _editForm.get('codice')?.touched) {
           <ion-note color="danger">
-            Codice non può superare i 5 caratteri.
+            {{ 'attendance.pages.causaliEdit.codeMaxLength' | transloco: { max: 5 } }}
           </ion-note>
         }
 
 
         <ion-item>
-          <ion-label position="floating">Descrizione</ion-label>
+          <ion-label position="floating">{{ 'attendance.pages.causaliEdit.description' | transloco }}</ion-label>
           <ion-input type="text" formControlName="descrizione"></ion-input>
         </ion-item>
         @if (_editForm.get('descrizione')?.hasError('required') && _editForm.get('descrizione')?.touched) {
           <ion-note color="danger">
-            Descrizione è obbligatorio.
+            {{ 'attendance.pages.causaliEdit.descriptionRequired' | transloco }}
           </ion-note>
         }
         @if (_editForm.get('descrizione')?.hasError('maxlength') && _editForm.get('descrizione')?.touched) {
           <ion-note color="danger">
-            Descrizione non può superare i 50 caratteri.
+            {{ 'attendance.pages.causaliEdit.descriptionMaxLength' | transloco: { max: 50 } }}
           </ion-note>
         }
 

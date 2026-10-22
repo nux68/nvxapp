@@ -17,6 +17,8 @@ import { Dip_GG_Richiesta_SetState_InModel, Dip_GG_RichiestaModel, StatoRichiest
 import { ParGiustificativiToLongTextPipe } from '../../../shared/pipe/GestionePresenze/par-giustificativi-to-long-text.pipe';
 import { DateTimeUtilService } from '../../../Utility/infrastructure/date-time-util.service';
 import { DipGGRichiestaService } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/dip-gg-richiesta.service';
+import { TranslocoService } from '@jsverse/transloco';
+import { LanguageService } from '../../../Utility/infrastructure/language.service';
 
 @Component({
   selector: 'app-vacation-plan-page',
@@ -47,7 +49,9 @@ export class VacationPlanPageComponent extends BasePageConfirmCancelComponent<Va
               private dipGGRichiestaService: DipGGRichiestaService,
               public dateTimeUtilService: DateTimeUtilService,
               private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
-              public timeSheetService: TimeSheetService
+              public timeSheetService: TimeSheetService,
+              private transloco: TranslocoService,
+              private languageService: LanguageService
   )
   {
     super(navCtrl, userInterfaceService, fb);
@@ -66,7 +70,7 @@ export class VacationPlanPageComponent extends BasePageConfirmCancelComponent<Va
     this._destroy$.complete();
   }
 
-  get Title(): string { return 'Piano ferie'; }
+  get Title(): string { return this.transloco.translate('attendance.pages.vacationPlan.title'); }
 
   LoadData = (): Observable<VacationPlanFormData | null> => {
     return new Observable<VacationPlanFormData | null>((subscriber) => {
@@ -177,7 +181,7 @@ export class VacationPlanPageComponent extends BasePageConfirmCancelComponent<Va
   /** Restituisce il nome abbreviato del giorno della settimana (Lun, Mar, ...) */
   getDayLabel(day: number): string {
     const date = new Date(this.year, this.month - 1, day);
-    return date.toLocaleDateString('it-IT', { weekday: 'short' });
+    return date.toLocaleDateString(this.languageService.locale, { weekday: 'short' });
   }
 
   /** true se il giorno è sabato o domenica */
@@ -222,14 +226,14 @@ export class VacationPlanPageComponent extends BasePageConfirmCancelComponent<Va
 
   public actionSheetButtonsRequest = [
     {
-      text: 'Approva richiesta',
+      text: this.transloco.translate('attendance.pages.vacationPlan.approveRequest'),
       role: vacationPlan_Action.richieste_PREFIX + "_" + vacationPlan_Action.approva,
       data: {
         action: vacationPlan_Action.richieste_PREFIX + "_" + vacationPlan_Action.approva,
       },
     },
     {
-      text: 'Rifiuta richiesta',
+      text: this.transloco.translate('attendance.pages.vacationPlan.rejectRequest'),
       role: vacationPlan_Action.richieste_PREFIX + "_" + vacationPlan_Action.rifiuta,
       data: {
         action: vacationPlan_Action.richieste_PREFIX + "_" + vacationPlan_Action.rifiuta,
@@ -266,7 +270,7 @@ export class VacationPlanPageComponent extends BasePageConfirmCancelComponent<Va
 
 
       this.actionSheetOpenSelectObj = giustificativo;
-      this.actionSheetHeader = `Giustificativo : ${parGiustificativiToLongTextPipe.transform(giustificativo.idPar_Giustificativi)} ${this.dateTimeUtilService.DateTo_ggmmyyyy(giustificativo.data)}`;
+      this.actionSheetHeader = this.transloco.translate('attendance.pages.vacationPlan.headerJustification', { type: parGiustificativiToLongTextPipe.transform(giustificativo.idPar_Giustificativi), date: this.dateTimeUtilService.DateTo_ggmmyyyy(giustificativo.data) });
       this.actionSheetSubHeader = null;
     }
     this.isActionSheetOpen = true;

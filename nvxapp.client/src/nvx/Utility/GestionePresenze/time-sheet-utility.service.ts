@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { LanguageService } from '../infrastructure/language.service';
 import { Dip_GG_Richiesta_Body_Giustificativo, Dip_GG_Richiesta_Body_Timbratura, Dip_GG_RichiestaModel, riepilogoNotaSpesa, TipoRichiesta } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/Models/dip-gg-richiesta-model';
 import { SharedParameterGestionePresenzeService } from '../../shared/shared-parameter-gestione-presenze.service';
 
@@ -7,7 +8,8 @@ import { SharedParameterGestionePresenzeService } from '../../shared/shared-para
 })
 export class TimeSheetUtilityService {
 
-  constructor(private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService) { }
+  constructor(private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
+              private languageService: LanguageService) { }
 
   public getDatiObj(item: Dip_GG_RichiestaModel): any {
 
@@ -47,7 +49,8 @@ export class TimeSheetUtilityService {
           break;
         case TipoRichiesta.NotaSpesa: {
           const nota = riepilogoNotaSpesa(item.dati);
-          return `${nota.descrizione} € ${nota.totale.toFixed(2).replace('.', ',')}`.trim();
+          const totale = nota.totale.toLocaleString(this.languageService.locale, { minimumFractionDigits: 2, maximumFractionDigits: 2, useGrouping: false });
+          return `${nota.descrizione} € ${totale}`.trim();
         }
       }
 

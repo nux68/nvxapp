@@ -1,4 +1,5 @@
 import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { TranslocoService } from '@jsverse/transloco';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
 import { BaseDialogConfirmCancelComponent } from '../../../../pages/_BASE/base-dialog-confirm-cancel/base-dialog-confirm-cancel.component';
@@ -40,6 +41,7 @@ export class EditDipGGTimbraturaDialogComponent extends BaseDialogConfirmCancelC
     protected override userInterfaceService: UserInterfaceService,
     protected override fb: FormBuilder,
     protected override modalCtrl: ModalController,
+    private transloco: TranslocoService,
     private stringHelperService: StringHelperService,
     public sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
     private azSubCommessaAttivitaService: AzSubCommessaAttivitaService
@@ -67,7 +69,7 @@ export class EditDipGGTimbraturaDialogComponent extends BaseDialogConfirmCancelC
     });
   }
 
-  get Title(): string { return "Timbratura"; }
+  get Title(): string { return this.transloco.translate('attendance.components.editDipGgTimbraturaDialog.title'); }
 
   // la timbratura originale si mostra (accanto a "Timbratura") solo se e' stata modificata
   get mostraOriginale(): boolean {

@@ -1,3 +1,4 @@
+import { TranslocoService } from '@jsverse/transloco';
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { ButtonItem, UserInterfaceService } from '../../../../Utility/infrastructure/user-interface.service';
 import { NavController } from '@ionic/angular';
@@ -15,8 +16,9 @@ export class SeletionSediRepartoPageComponent {
   public buttonbar: ButtonItem[] = [];
 
   constructor(protected userInterfaceService: UserInterfaceService,
-              private navCtrl: NavController,) {
-    this.title = 'xxx';
+              private navCtrl: NavController,
+              private transloco: TranslocoService) {
+    this.title = this.transloco.translate('attendance.pages.selection.title');
 
     this.buttonbar = userInterfaceService.Btn_LogInAnnulla;
     this.buttonbar[0].event = this._handleButtonConfirmClick;

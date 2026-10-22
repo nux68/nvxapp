@@ -24,8 +24,8 @@
           @if (originalId===0) {
             <ion-row class="ion-align-items-center">
               <ion-item>
-                <ion-label position="stacked">Giustificatico</ion-label>
-                <ion-select formControlName="idPar_Giustificativi" placeholder="Seleziona il giustificativo">
+                <ion-label position="stacked">{{ 'attendance.components.editDipGgGiustificativiDialog.giustificativo' | transloco }}</ion-label>
+                <ion-select formControlName="idPar_Giustificativi" placeholder="{{ 'attendance.components.editDipGgGiustificativiDialog.selezionaGiustificativo' | transloco }}">
                   @for (just of _par_GiustificativiList; track just) {
                     <ion-select-option [value]="just.id">
                       {{ just.descrizione }}
@@ -35,7 +35,7 @@
               </ion-item>
               @if (_editForm.get('_editForm.idPar_Giustificativi')?.hasError('required') && _editForm.get('_editForm.idPar_Giustificativi')?.touched) {
                 <ion-note color="danger">
-                  Il giustificativo obbligatorio.
+                  {{ 'attendance.components.editDipGgGiustificativiDialog.giustificativoObbligatorio' | transloco }}
                 </ion-note>
               }
             </ion-row>
@@ -47,7 +47,7 @@
             <!-- Valore -->
 
             <ion-item>
-              <ion-label position="floating">Valore</ion-label>
+              <ion-label position="floating">{{ 'attendance.components.editDipGgGiustificativiDialog.valore' | transloco }}</ion-label>
               <ion-datetime-button class="datetime-button-with-label" datetime="hours-modal"></ion-datetime-button>
               <ion-modal [keepContentsMounted]="true">
                 <ng-template>
@@ -56,7 +56,7 @@
                     presentation="time"
                     [showDefaultButtons]="true"
                     doneText="OK"
-                    cancelText="Annulla">
+                    [cancelText]="'common.buttons.cancel' | transloco">
                   </ion-datetime>
                 </ng-template>
               </ion-modal>

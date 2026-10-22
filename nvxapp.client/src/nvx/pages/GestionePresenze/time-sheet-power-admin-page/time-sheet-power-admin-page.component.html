@@ -27,7 +27,7 @@
 
         @if (!currentDays || currentDays.length === 0) {
           <div class="no-data-message">
-            <p>Seleziona un utente per visualizzare i dati</p>
+            <p>{{ 'attendance.pages.timeSheetPowerAdmin.selectUser' | transloco }}</p>
           </div>
         }
 
@@ -45,19 +45,19 @@
               @if (!isMobile) {
                 <ion-row class="header-row">
                   <!-- COL 1 -->
-                  <ion-col size="2" size-sm="1" class="header-cell">Giorno</ion-col>
+                  <ion-col size="2" size-sm="1" class="header-cell">{{ 'attendance.pages.timeSheetPowerAdmin.colDay' | transloco }}</ion-col>
                   <!-- COL 2 -->
-                  <ion-col size="10" size-sm="3" class="header-cell">Timbrature</ion-col>
+                  <ion-col size="10" size-sm="3" class="header-cell">{{ 'attendance.pages.timeSheetPowerAdmin.colClockings' | transloco }}</ion-col>
                   <!-- COL 3 -->
-                  <ion-col size="10" offset="2" size-sm="2" offset-sm="0" class="header-cell">Giustificativi</ion-col>
+                  <ion-col size="10" offset="2" size-sm="2" offset-sm="0" class="header-cell">{{ 'attendance.pages.timeSheetPowerAdmin.colJustifications' | transloco }}</ion-col>
                   <!-- COL 4 -->
-                  <ion-col size="3" offset="2" size-sm="1" offset-sm="0" class="header-cell">HH Teo</ion-col>
+                  <ion-col size="3" offset="2" size-sm="1" offset-sm="0" class="header-cell">{{ 'attendance.pages.timeSheetPowerAdmin.hoursTheoretical' | transloco }}</ion-col>
                   <!-- COL 5 -->
-                  <ion-col size="7" size-sm="1" offset-sm="0" class="header-cell">HH Lav</ion-col>
+                  <ion-col size="7" size-sm="1" offset-sm="0" class="header-cell">{{ 'attendance.pages.timeSheetPowerAdmin.hoursWorked' | transloco }}</ion-col>
                   <!-- COL 5b -->
-                  <ion-col size="10" offset="2" size-sm="1" offset-sm="0" class="header-cell">In più</ion-col>
+                  <ion-col size="10" offset="2" size-sm="1" offset-sm="0" class="header-cell">{{ 'attendance.pages.timeSheetPowerAdmin.colExtra' | transloco }}</ion-col>
                   <!-- COL 6 -->
-                  <ion-col size="10" offset="2" size-sm="3" offset-sm="0" class="header-cell">Causali</ion-col>
+                  <ion-col size="10" offset="2" size-sm="3" offset-sm="0" class="header-cell">{{ 'attendance.pages.timeSheetPowerAdmin.colReasonCodes' | transloco }}</ion-col>
                 </ion-row>
               }
               @for (day of currentDays; track day; let indexRow4Color = $index) {
@@ -125,7 +125,7 @@
                         <span class="no-data">-</span>
                       }
                       @if (isMobile) {
-                        <span class="no-data">Nessuna timbratura</span>
+                        <span class="no-data">{{ 'attendance.pages.timeSheetPowerAdmin.noClockings' | transloco }}</span>
                       }
                     }
                   </ion-col>
@@ -161,20 +161,20 @@
                         <span class="no-data">-</span>
                       }
                       @if (isMobile) {
-                        <span class="no-data">Nessun giustificativo</span>
+                        <span class="no-data">{{ 'attendance.pages.timeSheetPowerAdmin.noJustifications' | transloco }}</span>
                       }
                     }
                   </ion-col>
                   <!-- COL 4 -->
                   <ion-col size="3" offset="2" size-sm="1" offset-sm="0">
                     @if (isMobile) {
-                      <span>HH Teo </span>
+                      <span>{{ 'attendance.pages.timeSheetPowerAdmin.hoursTheoretical' | transloco }} </span>
                       } {{ day.dip_GG_Result.hH_Teo | slice:0:5 }}
                     </ion-col>
                     <!-- COL 5 -->
                     <ion-col size="7" size-sm="1" offset-sm="0">
                       @if (isMobile) {
-                        <span>HH Lav </span>
+                        <span>{{ 'attendance.pages.timeSheetPowerAdmin.hoursWorked' | transloco }} </span>
                         }{{ day.dip_GG_Result.hH_Lav | slice:0:5 }}
                       </ion-col>
                       <!-- COL 5b: ore in piu' e loro qualifica -->
@@ -187,7 +187,7 @@
                             {{ ecc.testo }}
                           </span>
                           @if (ecc.provvisoria) {
-                            <div class="nvx-ecc-nota">in attesa di quadratura</div>
+                            <div class="nvx-ecc-nota">{{ 'attendance.pages.timeSheetPowerAdmin.pendingReconciliation' | transloco }}</div>
                           } @else if (ecc.qualifica) {
                             <div class="nvx-ecc-nota">{{ ecc.qualifica }}</div>
                           }
@@ -218,7 +218,7 @@
                             <span class="no-data">-</span>
                           }
                           @if (isMobile) {
-                            <span class="no-data">Nessuna causale</span>
+                            <span class="no-data">{{ 'attendance.pages.timeSheetPowerAdmin.noReasonCodes' | transloco }}</span>
                           }
                         }
                       </ion-col>

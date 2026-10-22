@@ -9,23 +9,23 @@
     <ion-card-content>
       <br />
       <ion-item class="nvx-item-4-title">
-        <ion-label>Info </ion-label>
+        <ion-label>{{ 'attendance.pages.mytemplate1Edit.info' | transloco }}</ion-label>
       </ion-item>
 
       <form [formGroup]="_editForm">
         <ion-list>
           <ion-item>
-            <ion-label position="floating">Descrizione</ion-label>
+            <ion-label position="floating">{{ 'attendance.pages.mytemplate1Edit.description' | transloco }}</ion-label>
             <ion-input formControlName="descrizione"></ion-input>
           </ion-item>
           @if (_editForm.get('descrizione')?.hasError('required') && _editForm.get('descrizione')?.touched) {
             <ion-note color="danger">
-              Descrizione è obbligatorio.
+              {{ 'attendance.pages.mytemplate1Edit.descriptionRequired' | transloco }}
             </ion-note>
           }
           @if (_editForm.get('descrizione')?.hasError('maxlength') && _editForm.get('descrizione')?.touched) {
             <ion-note color="danger">
-              Descrizione non può superare i 20 caratteri.
+              {{ 'attendance.pages.mytemplate1Edit.descriptionMaxLength' | transloco: { max: 20 } }}
             </ion-note>
           }
 

@@ -14,6 +14,7 @@ import { DbUtilService } from '../../../Utility/infrastructure/db-util.service';
 import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
 import { ParameterService } from '../../../ClientServer-Service/Infrastructure/Parameter/parameter.service';
 import { RoleCode } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-roles-model';
+import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
   selector: 'app-user-department-wizard-page',
@@ -57,15 +58,16 @@ export class UserDepartmentWizardPageComponent extends BasePageConfirmCancelComp
     private dbUtilService: DbUtilService,
     private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
     private parameterService: ParameterService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private transloco: TranslocoService
   ) {
     super(navCtrl, userInterfaceService, fb);
 
     this.baseConfirm = this.buttonbar[0];
     this.baseCancel = this.buttonbar[1];
 
-    this.btnNext = new ButtonItem('Avanti', 'arrow-forward-outline', 'primary', false, this.handleNext);
-    this.btnBack = new ButtonItem('Indietro', 'arrow-back-outline', 'medium', false, this.handleBack);
+    this.btnNext = new ButtonItem(this.transloco.translate('attendance.pages.userDepartmentWizard.next'), 'arrow-forward-outline', 'primary', false, this.handleNext);
+    this.btnBack = new ButtonItem(this.transloco.translate('attendance.pages.userDepartmentWizard.back'), 'arrow-back-outline', 'medium', false, this.handleBack);
   }
 
   override ionViewWillEnter() {
@@ -94,7 +96,7 @@ export class UserDepartmentWizardPageComponent extends BasePageConfirmCancelComp
     this.profiloOrarioSub = null;
   }
 
-  get Title(): string { return "Nuovo Utente"; }
+  get Title(): string { return this.transloco.translate('attendance.pages.userDepartmentWizard.title'); }
 
   get EditForm(): FormGroup {
     return this.fb.group({

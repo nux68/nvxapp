@@ -10,6 +10,7 @@ import { Par_TipoSpesaInModel, Par_TipoSpesaModel } from '../../../ClientServer-
 import { TimeSheetService } from '../../../Utility/GestionePresenze/time-sheet.service';
 import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
+import { TranslocoService } from '@jsverse/transloco';
 
 
 /*
@@ -25,7 +26,7 @@ import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab
 })
 export class NotaSpeseUserPageComponent {
 
-  public readonly title = 'Le mie note spese';
+  public readonly title: string;
   public note: Dip_GG_RichiestaModel[] | null = null;
   public tipiSpesa: Par_TipoSpesaModel[] = [];
 
@@ -39,7 +40,10 @@ export class NotaSpeseUserPageComponent {
               private parTipoSpesaService: ParTipoSpesaService,
               public timeSheetService: TimeSheetService,
               private collectionDialogService: CollectionDialogService,
-              private fabMenuService: FabMenuService) { }
+              private fabMenuService: FabMenuService,
+              private transloco: TranslocoService) {
+    this.title = this.transloco.translate('attendance.pages.notaSpeseUser.title');
+  }
 
   ionViewWillEnter() {
     this.carica();
@@ -47,7 +51,7 @@ export class NotaSpeseUserPageComponent {
       this.tipiSpesa = res.data?.par_TipoSpesa ?? [];
     });
     this.fabMenuService.fabMenuItem = [
-      new FabMenuItem('Nuova nota spese', 'add-circle-outline', () => this.navCtrl.navigateForward('/notaspesarequestuser')),
+      new FabMenuItem(this.transloco.translate('attendance.pages.notaSpeseUser.nuovaNota'), 'add-circle-outline', () => this.navCtrl.navigateForward('/notaspesarequestuser')),
     ];
   }
 
@@ -106,9 +110,9 @@ export class NotaSpeseUserPageComponent {
   /** stato della nota da mostrare, tenendo conto della revoca di una nota approvata */
   public stato(nota: Dip_GG_RichiestaModel): { testo: string | null, colore: string } {
     if (nota.revocaStato === StatoRichiesta.Approvata)
-      return { testo: 'Revocata', colore: 'dark' };
+      return { testo: this.transloco.translate('attendance.pages.notaSpeseUser.revocata'), colore: 'dark' };
     if (nota.revocaStato === StatoRichiesta.Immessa || nota.revocaStato === StatoRichiesta.ApprovazioneInCorso)
-      return { testo: 'Revoca in attesa', colore: 'warning' };
+      return { testo: this.transloco.translate('attendance.pages.notaSpeseUser.revocaInAttesa'), colore: 'warning' };
     switch (nota.richiestaStato) {
       case StatoRichiesta.Approvata: return { testo: null, colore: 'success' };
       case StatoRichiesta.Rifiutata: return { testo: null, colore: 'danger' };
@@ -134,8 +138,8 @@ export class NotaSpeseUserPageComponent {
   public async annulla(nota: Dip_GG_RichiestaModel): Promise<void> {
     const revoca = nota.richiestaStato === StatoRichiesta.Approvata;
     const conferma = await this.collectionDialogService.ConfirmCancelDialog(revoca
-      ? 'La nota spese è già approvata: confermi la richiesta di revoca?'
-      : 'Confermi l\'annullamento della nota spese?');
+      ? this.transloco.translate('attendance.pages.notaSpeseUser.confermaRevoca')
+      : this.transloco.translate('attendance.pages.notaSpeseUser.confermaAnnullamento'));
     if (!conferma)
       return;
 

@@ -1,13 +1,13 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>{{ mode === 'single' ? 'Seleziona dipendente' : 'Seleziona dipendenti' }}</ion-title>
+    <ion-title>{{ (mode === 'single' ? 'attendance.components.dipSelectorModal.selezionaDipendente' : 'attendance.components.dipSelectorModal.selezionaDipendenti') | transloco }}</ion-title>
   </ion-toolbar>
 
   <ion-toolbar>
     <ion-searchbar
       [(ngModel)]="searchText"
       (ionInput)="onSearchChange()"
-      placeholder="Cerca per cognome, nome..."
+      placeholder="{{ 'attendance.components.dipSelectorModal.cercaPlaceholder' | transloco }}"
       [debounce]="200"
       animated>
     </ion-searchbar>
@@ -16,11 +16,11 @@
   @if (mode === 'multi') {
     <ion-toolbar>
       <ion-buttons slot="start">
-        <ion-button fill="clear" size="small" (click)="selectAll()">Seleziona tutti</ion-button>
-        <ion-button fill="clear" size="small" (click)="clearAll()">Deseleziona tutti</ion-button>
+        <ion-button fill="clear" size="small" (click)="selectAll()">{{ 'attendance.components.dipSelectorModal.selezionaTutti' | transloco }}</ion-button>
+        <ion-button fill="clear" size="small" (click)="clearAll()">{{ 'attendance.components.dipSelectorModal.deselezionaTutti' | transloco }}</ion-button>
       </ion-buttons>
       <ion-label slot="end" class="nvx-selected-count">
-        {{ selectedIds.size }} selezionati
+        {{ 'attendance.components.dipSelectorModal.selezionati' | transloco: { count: selectedIds.size } }}
       </ion-label>
     </ion-toolbar>
   }
@@ -60,7 +60,7 @@
 
     @if (filteredUsers.length === 0) {
       <ion-item>
-        <ion-label class="ion-text-center" color="medium">Nessun dipendente trovato</ion-label>
+        <ion-label class="ion-text-center" color="medium">{{ 'attendance.components.dipSelectorModal.nessunDipendente' | transloco }}</ion-label>
       </ion-item>
     }
   </ion-list>

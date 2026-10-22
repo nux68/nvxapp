@@ -7,6 +7,7 @@ import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-ca
 import { UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { ParFestivitaService } from '../../../ClientServer-Service/GestionePresenze/Par_Festivita/par-festivita.service';
+import { TranslocoService } from '@jsverse/transloco';
 import { Par_Festivita_GetInModel, Par_Festivita_PutInModel, Par_FestivitaModel, TipoFestivita } from '../../../ClientServer-Service/GestionePresenze/Par_Festivita/Models/par-festivita-model';
 
 @Component({
@@ -24,12 +25,13 @@ export class FestivitaEditPageComponent extends BasePageConfirmCancelComponent<P
     protected override navCtrl: NavController,
     protected override userInterfaceService: UserInterfaceService,
     protected override fb: FormBuilder,
-    private parFestivitaService: ParFestivitaService
+    private parFestivitaService: ParFestivitaService,
+    private transloco: TranslocoService
   ) {
     super(navCtrl, userInterfaceService, fb);
   }
 
-  get Title(): string { return "Festività"; }
+  get Title(): string { return this.transloco.translate('attendance.pages.festivitaEdit.title'); }
 
   get EditForm(): FormGroup {
     return this.fb.group({

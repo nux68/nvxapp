@@ -1,0 +1,606 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="RequestNotFound" xml:space="preserve">
+    <value>Richiesta non trovata.</value>
+  </data>
+  <data name="ExpenseReviewAdminsOnly" xml:space="preserve">
+    <value>Esame delle note spese riservato agli amministratori dell'azienda.</value>
+  </data>
+  <data name="AttachmentNotFound" xml:space="preserve">
+    <value>Allegato non trovato.</value>
+  </data>
+  <data name="ExpenseReportNotAccessible" xml:space="preserve">
+    <value>Nota spese non accessibile.</value>
+  </data>
+  <data name="ExpenseReportEmpty" xml:space="preserve">
+    <value>La nota spese non contiene spese.</value>
+  </data>
+  <data name="ExpenseReportDescriptionTooLong" xml:space="preserve">
+    <value>La descrizione della nota spese supera i 200 caratteri.</value>
+  </data>
+  <data name="ExpenseInvalidAmount" xml:space="preserve">
+    <value>Importo non valido nella spesa del {0:dd/MM/yyyy}.</value>
+  </data>
+  <data name="ExpenseInvalidType" xml:space="preserve">
+    <value>Tipo di spesa non valido nella spesa del {0:dd/MM/yyyy}.</value>
+  </data>
+  <data name="ExpenseDescriptionTooLong" xml:space="preserve">
+    <value>La descrizione della spesa del {0:dd/MM/yyyy} supera i 200 caratteri.</value>
+  </data>
+  <data name="ExpenseTooManyAttachments" xml:space="preserve">
+    <value>Al massimo {0} allegati per spesa.</value>
+  </data>
+  <data name="AttachmentTypeNotAllowed" xml:space="preserve">
+    <value>Allegato '{0}': sono ammessi solo PDF e immagini.</value>
+  </data>
+  <data name="AttachmentUnreadable" xml:space="preserve">
+    <value>Allegato '{0}' non leggibile.</value>
+  </data>
+  <data name="AttachmentEmpty" xml:space="preserve">
+    <value>Allegato '{0}' vuoto.</value>
+  </data>
+  <data name="AttachmentTooLarge" xml:space="preserve">
+    <value>Allegato '{0}' oltre i {1} MB.</value>
+  </data>
+  <data name="ExpenseReportAttachmentsTooLarge" xml:space="preserve">
+    <value>Allegati della nota spese oltre i {0} MB complessivi.</value>
+  </data>
+  <data name="NewExpenseReportWithSavedItems" xml:space="preserve">
+    <value>Una nuova nota spese non puo' riferirsi a spese o allegati gia' salvati.</value>
+  </data>
+  <data name="RequestedPeriodNoWorkingDays" xml:space="preserve">
+    <value>Il periodo richiesto non contiene giorni lavorativi.</value>
+  </data>
+  <data name="NoApproverEnabled" xml:space="preserve">
+    <value>Nessun amministratore abilitato all'approvazione</value>
+  </data>
+  <data name="ExpenseReportNotFound" xml:space="preserve">
+    <value>Nota spese non trovata.</value>
+  </data>
+  <data name="ExpenseReportOnlyOwn" xml:space="preserve">
+    <value>Si possono modificare solo le proprie note spese.</value>
+  </data>
+  <data name="ExpenseReportNotEditable" xml:space="preserve">
+    <value>La nota spese non si puo' piu' modificare: e' gia' approvata, rifiutata o annullata.</value>
+  </data>
+  <data name="ExpenseNotInReport" xml:space="preserve">
+    <value>Spesa non appartenente alla nota spese.</value>
+  </data>
+  <data name="AttachmentNotInExpense" xml:space="preserve">
+    <value>Allegato non appartenente alla spesa.</value>
+  </data>
+  <data name="JustificationFallbackName" xml:space="preserve">
+    <value>Giustificativo</value>
+  </data>
+  <data name="BalanceInsufficient" xml:space="preserve">
+    <value>Saldo insufficiente per '{0}': disponibile {1}, richiesto {2}.</value>
+  </data>
+  <data name="BalanceWarningFutureCovers" xml:space="preserve">
+    <value>Attenzione: il saldo attuale di '{0}' è {1}, ma il saldo futuro ({2}) copre la richiesta.</value>
+  </data>
+  <data name="TimesheetStillProvisional" xml:space="preserve">
+    <value>Il cartellino {0} e' ancora provvisorio: si approva a periodo concluso, dopo il ricalcolo.</value>
+  </data>
+  <data name="TimesheetApprovedReopenToChangeHours" xml:space="preserve">
+    <value>Il cartellino e' approvato: va riaperto prima di cambiare le ore riconosciute.</value>
+  </data>
+  <data name="DefaultActivityNeedsCompetence" xml:space="preserve">
+    <value>L'attivita di default deve avere almeno una competenza</value>
+  </data>
+  <data name="ActivityWithIdNotFound" xml:space="preserve">
+    <value>Attività con Id {0} non trovata.</value>
+  </data>
+  <data name="ExpenseTypeInUse" xml:space="preserve">
+    <value>Tipo di spesa usato in {0} spese: non si puo' cancellare.</value>
+  </data>
+  <data name="ItemWithIdNotFound" xml:space="preserve">
+    <value>Elemento con Id {0} non trovato.</value>
+  </data>
+  <data name="DepartmentNotFound" xml:space="preserve">
+    <value>Reparto non trovato.</value>
+  </data>
+  <data name="TimesheetCalcStarted" xml:space="preserve">
+    <value>Calcolo presenze avviato...</value>
+  </data>
+  <data name="TimesheetCalcStep" xml:space="preserve">
+    <value>Calcolo presenze step {0} of {1}</value>
+  </data>
+  <data name="TimesheetCalcCompleted" xml:space="preserve">
+    <value>Calcolo presenze completato</value>
+  </data>
+  <data name="TimesheetCalcFailed" xml:space="preserve">
+    <value>Calcolo presenze fallito: {0}</value>
+  </data>
+  <data name="ExportStarted" xml:space="preserve">
+    <value>Export presenze avviato...</value>
+  </data>
+  <data name="ExportLayoutNotFound" xml:space="preserve">
+    <value>tracciato di export non trovato.</value>
+  </data>
+  <data name="ExportLayoutWithoutCausali" xml:space="preserve">
+    <value>il tracciato "{0}" non ha causali associate: aggiungile nella pagina del tracciato di export.</value>
+  </data>
+  <data name="ExportAttendanceDataUnavailable" xml:space="preserve">
+    <value>dati delle presenze non disponibili.</value>
+  </data>
+  <data name="ExportCompletedClickToDownload" xml:space="preserve">
+    <value>Export completato, clicca per scaricare</value>
+  </data>
+  <data name="ExportNoFileGenerated" xml:space="preserve">
+    <value>Nessun file generato: {0}</value>
+  </data>
+  <data name="ExportFailed" xml:space="preserve">
+    <value>Export presenze fallito: {0}</value>
+  </data>
+  <data name="ExportProcessingProgress" xml:space="preserve">
+    <value>Elaborazione {0}/{1}...</value>
+  </data>
+  <data name="EmployeeRecordNotFound" xml:space="preserve">
+    <value>Anagrafica non trovata</value>
+  </data>
+  <data name="EmploymentNotFound" xml:space="preserve">
+    <value>Rapporto lavoro non trovato</value>
+  </data>
+  <data name="CompanyRecordNotFound" xml:space="preserve">
+    <value>Az_Anagrafica non trovata</value>
+  </data>
+  <data name="CompanyCfgNotFound" xml:space="preserve">
+    <value>Az_Cfg non trovata</value>
+  </data>
+  <data name="SiteNotFound" xml:space="preserve">
+    <value>Sede non trovata</value>
+  </data>
+  <data name="EmploymentRelationshipNotFound" xml:space="preserve">
+    <value>Rapporto di lavoro non trovato.</value>
+  </data>
+  <data name="DayBeforeHiring" xml:space="preserve">
+    <value>Il {0:dd/MM/yyyy} è prima dell'assunzione ({1:dd/MM/yyyy}): non si possono inserire movimenti.</value>
+  </data>
+  <data name="DayAfterTermination" xml:space="preserve">
+    <value>Il {0:dd/MM/yyyy} è dopo la cessazione ({1:dd/MM/yyyy}): non si possono inserire movimenti.</value>
+  </data>
+  <data name="TimesheetMonthApproved" xml:space="preserve">
+    <value>Il cartellino di {0:MM/yyyy} è approvato: per inserire o modificare movimenti l'HR deve riaprirlo.</value>
+  </data>
+  <data name="ActivityNotAllowed" xml:space="preserve">
+    <value>L'attività selezionata non è tra quelle consentite al dipendente: sceglierne una delle sub commesse a cui è collegato.</value>
+  </data>
+  <data name="ChatOpenAttivitaDisplayName" xml:space="preserve">
+    <value>Apri attività</value>
+  </data>
+  <data name="ChatOpenAttivitaDescription" xml:space="preserve">
+    <value>apre la pagina di modifica di un'attività specifica.</value>
+  </data>
+  <data name="ChatOpenAttivitaQuestion" xml:space="preserve">
+    <value>Quale attività vuoi aprire?</value>
+  </data>
+  <data name="ChatOpenAttivitaLabel" xml:space="preserve">
+    <value>Attività</value>
+  </data>
+  <data name="ChatOpenAttivitaNameMissing" xml:space="preserve">
+    <value>Nome attività non specificato.</value>
+  </data>
+  <data name="ChatOpenAttivitaLoadError" xml:space="preserve">
+    <value>Impossibile caricare l'elenco attività.</value>
+  </data>
+  <data name="ChatOpenAttivitaNotFound" xml:space="preserve">
+    <value>Attività '{0}' non trovata.</value>
+  </data>
+  <data name="ChatOpenAttivitaOpening" xml:space="preserve">
+    <value>Apertura attività '{0}' (id: {1}).</value>
+  </data>
+  <data name="ChatOpenCausaleDisplayName" xml:space="preserve">
+    <value>Apri causale</value>
+  </data>
+  <data name="ChatOpenCausaleDescription" xml:space="preserve">
+    <value>apre la pagina di modifica di una causale specifica.</value>
+  </data>
+  <data name="ChatOpenCausaleQuestion" xml:space="preserve">
+    <value>Quale causale vuoi aprire?</value>
+  </data>
+  <data name="ChatOpenCausaleLabel" xml:space="preserve">
+    <value>Causale</value>
+  </data>
+  <data name="ChatOpenCausaleNameMissing" xml:space="preserve">
+    <value>Nome causale non specificato.</value>
+  </data>
+  <data name="ChatCausaliLoadError" xml:space="preserve">
+    <value>Impossibile caricare l'elenco causali.</value>
+  </data>
+  <data name="ChatCausaleNotFound" xml:space="preserve">
+    <value>Causale '{0}' non trovata.</value>
+  </data>
+  <data name="ChatOpenCausaleOpening" xml:space="preserve">
+    <value>Apertura causale '{0}' (id: {1}).</value>
+  </data>
+  <data name="ChatOpenClienteDisplayName" xml:space="preserve">
+    <value>Apri cliente</value>
+  </data>
+  <data name="ChatOpenClienteDescription" xml:space="preserve">
+    <value>apre la pagina di modifica di un cliente specifico.</value>
+  </data>
+  <data name="ChatOpenClienteQuestion" xml:space="preserve">
+    <value>Quale cliente vuoi aprire?</value>
+  </data>
+  <data name="ChatOpenClienteLabel" xml:space="preserve">
+    <value>Cliente</value>
+  </data>
+  <data name="ChatOpenClienteNameMissing" xml:space="preserve">
+    <value>Nome cliente non specificato.</value>
+  </data>
+  <data name="ChatOpenClienteLoadError" xml:space="preserve">
+    <value>Impossibile caricare l'elenco clienti.</value>
+  </data>
+  <data name="ChatOpenClienteNotFound" xml:space="preserve">
+    <value>Cliente '{0}' non trovato.</value>
+  </data>
+  <data name="ChatOpenClienteOpening" xml:space="preserve">
+    <value>Apertura cliente '{0}' (id: {1}).</value>
+  </data>
+  <data name="ChatOpenCommessaDisplayName" xml:space="preserve">
+    <value>Apri commessa</value>
+  </data>
+  <data name="ChatOpenCommessaDescription" xml:space="preserve">
+    <value>apre la pagina di modifica di una commessa specifica.</value>
+  </data>
+  <data name="ChatOpenCommessaQuestion" xml:space="preserve">
+    <value>Quale commessa vuoi aprire?</value>
+  </data>
+  <data name="ChatOpenCommessaLabel" xml:space="preserve">
+    <value>Commessa</value>
+  </data>
+  <data name="ChatOpenCommessaNameMissing" xml:space="preserve">
+    <value>Nome commessa non specificato.</value>
+  </data>
+  <data name="ChatOpenCommessaLoadError" xml:space="preserve">
+    <value>Impossibile caricare l'elenco commesse.</value>
+  </data>
+  <data name="ChatOpenCommessaNotFound" xml:space="preserve">
+    <value>Commessa '{0}' non trovata.</value>
+  </data>
+  <data name="ChatOpenCommessaOpening" xml:space="preserve">
+    <value>Apertura commessa '{0}' (id: {1}).</value>
+  </data>
+  <data name="ChatOpenCompetenzaDisplayName" xml:space="preserve">
+    <value>Apri competenza</value>
+  </data>
+  <data name="ChatOpenCompetenzaDescription" xml:space="preserve">
+    <value>apre la pagina di modifica di una competenza specifica.</value>
+  </data>
+  <data name="ChatOpenCompetenzaQuestion" xml:space="preserve">
+    <value>Quale competenza vuoi aprire?</value>
+  </data>
+  <data name="ChatOpenCompetenzaLabel" xml:space="preserve">
+    <value>Competenza</value>
+  </data>
+  <data name="ChatOpenCompetenzaNameMissing" xml:space="preserve">
+    <value>Nome competenza non specificato.</value>
+  </data>
+  <data name="ChatOpenCompetenzaLoadError" xml:space="preserve">
+    <value>Impossibile caricare l'elenco competenze.</value>
+  </data>
+  <data name="ChatOpenCompetenzaNotFound" xml:space="preserve">
+    <value>Competenza '{0}' non trovata.</value>
+  </data>
+  <data name="ChatOpenCompetenzaOpening" xml:space="preserve">
+    <value>Apertura competenza '{0}' (id: {1}).</value>
+  </data>
+  <data name="ChatOpenGiustificativoDisplayName" xml:space="preserve">
+    <value>Apri giustificativo</value>
+  </data>
+  <data name="ChatOpenGiustificativoDescription" xml:space="preserve">
+    <value>apre la pagina di modifica di un giustificativo specifico.</value>
+  </data>
+  <data name="ChatOpenGiustificativoQuestion" xml:space="preserve">
+    <value>Quale giustificativo vuoi aprire?</value>
+  </data>
+  <data name="ChatOpenGiustificativoLabel" xml:space="preserve">
+    <value>Giustificativo</value>
+  </data>
+  <data name="ChatOpenGiustificativoNameMissing" xml:space="preserve">
+    <value>Nome giustificativo non specificato.</value>
+  </data>
+  <data name="ChatGiustificativiLoadError" xml:space="preserve">
+    <value>Impossibile caricare l'elenco giustificativi.</value>
+  </data>
+  <data name="ChatOpenGiustificativoNotFound" xml:space="preserve">
+    <value>Giustificativo '{0}' non trovato.</value>
+  </data>
+  <data name="ChatOpenGiustificativoOpening" xml:space="preserve">
+    <value>Apertura giustificativo '{0}' (id: {1}).</value>
+  </data>
+  <data name="ChatOpenModelloExportDisplayName" xml:space="preserve">
+    <value>Apri modello export</value>
+  </data>
+  <data name="ChatOpenModelloExportDescription" xml:space="preserve">
+    <value>apre la pagina di modifica di un modello di export specifico.</value>
+  </data>
+  <data name="ChatOpenModelloExportQuestion" xml:space="preserve">
+    <value>Quale modello di export vuoi aprire?</value>
+  </data>
+  <data name="ChatOpenModelloExportLabel" xml:space="preserve">
+    <value>Modello export</value>
+  </data>
+  <data name="ChatOpenModelloExportNameMissing" xml:space="preserve">
+    <value>Nome modello export non specificato.</value>
+  </data>
+  <data name="ChatOpenModelloExportLoadError" xml:space="preserve">
+    <value>Impossibile caricare l'elenco modelli export.</value>
+  </data>
+  <data name="ChatOpenModelloExportNotFound" xml:space="preserve">
+    <value>Modello export '{0}' non trovato.</value>
+  </data>
+  <data name="ChatOpenModelloExportOpening" xml:space="preserve">
+    <value>Apertura modello export '{0}' (id: {1}).</value>
+  </data>
+  <data name="ChatOpenOrarioDisplayName" xml:space="preserve">
+    <value>Apri orario</value>
+  </data>
+  <data name="ChatOpenOrarioDescription" xml:space="preserve">
+    <value>apre la pagina di modifica di un orario specifico.</value>
+  </data>
+  <data name="ChatOpenOrarioQuestion" xml:space="preserve">
+    <value>Quale orario vuoi aprire?</value>
+  </data>
+  <data name="ChatOpenOrarioLabel" xml:space="preserve">
+    <value>Orario</value>
+  </data>
+  <data name="ChatOpenOrarioNameMissing" xml:space="preserve">
+    <value>Nome orario non specificato.</value>
+  </data>
+  <data name="ChatOpenOrarioLoadError" xml:space="preserve">
+    <value>Impossibile caricare l'elenco orari.</value>
+  </data>
+  <data name="ChatOpenOrarioNotFound" xml:space="preserve">
+    <value>Orario '{0}' non trovato.</value>
+  </data>
+  <data name="ChatOpenOrarioOpening" xml:space="preserve">
+    <value>Apertura orario '{0}' (id: {1}).</value>
+  </data>
+  <data name="ChatOpenProfiloOrarioDisplayName" xml:space="preserve">
+    <value>Apri profilo orario</value>
+  </data>
+  <data name="ChatOpenProfiloOrarioDescription" xml:space="preserve">
+    <value>apre la pagina di modifica di un profilo orario specifico.</value>
+  </data>
+  <data name="ChatOpenProfiloOrarioQuestion" xml:space="preserve">
+    <value>Quale profilo orario vuoi aprire?</value>
+  </data>
+  <data name="ChatOpenProfiloOrarioLabel" xml:space="preserve">
+    <value>Profilo orario</value>
+  </data>
+  <data name="ChatOpenProfiloOrarioNameMissing" xml:space="preserve">
+    <value>Nome profilo orario non specificato.</value>
+  </data>
+  <data name="ChatOpenProfiloOrarioLoadError" xml:space="preserve">
+    <value>Impossibile caricare l'elenco profili orario.</value>
+  </data>
+  <data name="ChatOpenProfiloOrarioNotFound" xml:space="preserve">
+    <value>Profilo orario '{0}' non trovato.</value>
+  </data>
+  <data name="ChatOpenProfiloOrarioOpening" xml:space="preserve">
+    <value>Apertura profilo orario '{0}' (id: {1}).</value>
+  </data>
+  <data name="ChatOpenRepartoDisplayName" xml:space="preserve">
+    <value>Apri reparto</value>
+  </data>
+  <data name="ChatOpenRepartoDescription" xml:space="preserve">
+    <value>apre la pagina di modifica di un reparto specifico.</value>
+  </data>
+  <data name="ChatOpenRepartoQuestion" xml:space="preserve">
+    <value>Quale reparto vuoi aprire?</value>
+  </data>
+  <data name="ChatOpenRepartoLabel" xml:space="preserve">
+    <value>Reparto</value>
+  </data>
+  <data name="ChatOpenRepartoNameMissing" xml:space="preserve">
+    <value>Nome reparto non specificato.</value>
+  </data>
+  <data name="ChatOpenRepartoLoadError" xml:space="preserve">
+    <value>Impossibile caricare l'elenco reparti.</value>
+  </data>
+  <data name="ChatOpenRepartoNotFound" xml:space="preserve">
+    <value>Reparto '{0}' non trovato.</value>
+  </data>
+  <data name="ChatOpenRepartoOpening" xml:space="preserve">
+    <value>Apertura reparto '{0}' (id: {1}).</value>
+  </data>
+  <data name="ChatEmployeeQuestion" xml:space="preserve">
+    <value>Per quale dipendente?</value>
+  </data>
+  <data name="ChatEmployeeLabel" xml:space="preserve">
+    <value>Dipendente</value>
+  </data>
+  <data name="ChatEmployeeInvalidName" xml:space="preserve">
+    <value>'{0}' non sembra un nome valido. Inserire nome e/o cognome del dipendente.</value>
+  </data>
+  <data name="ChatEmployeesReadError" xml:space="preserve">
+    <value>Errore nella lettura dei dipendenti.</value>
+  </data>
+  <data name="ChatNoEmployeesAvailable" xml:space="preserve">
+    <value>Nessun dipendente disponibile.</value>
+  </data>
+  <data name="ChatEmployeeNotFoundRetry" xml:space="preserve">
+    <value>Nessun dipendente trovato per '{0}'. Riprova con nome e/o cognome.</value>
+  </data>
+  <data name="ChatEmployeeMatched" xml:space="preserve">
+    <value>Dipendente agganciato: {0}</value>
+  </data>
+  <data name="ChatEmployeesAmbiguous" xml:space="preserve">
+    <value>Trovati {0} dipendenti per '{1}'. Seleziona:</value>
+  </data>
+  <data name="ChatCalcolaGiornoDisplayName" xml:space="preserve">
+    <value>Calcola presenze</value>
+  </data>
+  <data name="ChatCalcolaGiornoDescription" xml:space="preserve">
+    <value>esegue il calcolo del foglio presenze per un dipendente in un intervallo di date (default: oggi).</value>
+  </data>
+  <data name="ChatCalcolaGiornoMonthQuestion" xml:space="preserve">
+    <value>Vuoi calcolare un intero mese? (es. luglio 2025 oppure 07/2025 — lascia vuoto per usare le date)</value>
+  </data>
+  <data name="ChatMonthLabel" xml:space="preserve">
+    <value>Mese</value>
+  </data>
+  <data name="ChatCalcolaGiornoFromQuestion" xml:space="preserve">
+    <value>Da quale data vuoi calcolare? (lascia vuoto per oggi)</value>
+  </data>
+  <data name="ChatFromLabel" xml:space="preserve">
+    <value>Dal</value>
+  </data>
+  <data name="ChatCalcolaGiornoToQuestion" xml:space="preserve">
+    <value>Fino a quale data? (lascia vuoto per oggi)</value>
+  </data>
+  <data name="ChatToLabel" xml:space="preserve">
+    <value>Al</value>
+  </data>
+  <data name="ChatInvalidDate" xml:space="preserve">
+    <value>'{0}' non è una data valida. Usa il formato gg/mm/aaaa.</value>
+  </data>
+  <data name="ChatCalcolaGiornoEmployeeNotFound" xml:space="preserve">
+    <value>Dipendente '{0}' non trovato o nome non completo. Nessun calcolo eseguito.</value>
+  </data>
+  <data name="ChatCalcolaGiornoNoSystemUser" xml:space="preserve">
+    <value>Impossibile determinare l'utente di sistema per '{0}'.</value>
+  </data>
+  <data name="ChatCalcolaGiornoError" xml:space="preserve">
+    <value>Errore durante il calcolo: {0}</value>
+  </data>
+  <data name="ChatCalcolaGiornoDone" xml:space="preserve">
+    <value>Calcolo presenze completato per {0} ({1}).</value>
+  </data>
+  <data name="ChatRegisterCausaleDisplayName" xml:space="preserve">
+    <value>Inserisci causale</value>
+  </data>
+  <data name="ChatRegisterCausaleDescription" xml:space="preserve">
+    <value>registra una causale per un dipendente in una data con un numero di ore.</value>
+  </data>
+  <data name="ChatRegisterCausaleCausaleQuestion" xml:space="preserve">
+    <value>Quale causale vuoi inserire?</value>
+  </data>
+  <data name="ChatRegisterCausaleHoursQuestion" xml:space="preserve">
+    <value>Quante ore vuoi registrare? (es. 08:00 oppure due)</value>
+  </data>
+  <data name="ChatHoursLabel" xml:space="preserve">
+    <value>Ore</value>
+  </data>
+  <data name="ChatDateQuestion" xml:space="preserve">
+    <value>Per quale data?</value>
+  </data>
+  <data name="ChatDateLabel" xml:space="preserve">
+    <value>Data</value>
+  </data>
+  <data name="ChatInvalidHours" xml:space="preserve">
+    <value>'{0}' non è un formato ore valido. Usa HH:mm (es. 08:00) oppure un numero in lettere (es. otto).</value>
+  </data>
+  <data name="ChatRegisterCausaleEmployeeNotFound" xml:space="preserve">
+    <value>Dipendente '{0}' non trovato o nome non completo. Nessuna causale registrata.</value>
+  </data>
+  <data name="ChatEmploymentNotFoundFor" xml:space="preserve">
+    <value>Nessun rapporto di lavoro trovato per '{0}'.</value>
+  </data>
+  <data name="ChatRegisterCausaleError" xml:space="preserve">
+    <value>Errore durante la registrazione della causale: {0}</value>
+  </data>
+  <data name="ChatRegisterCausaleDone" xml:space="preserve">
+    <value>Causale '{0}' di {1} ore registrata per {2} il {3}.</value>
+  </data>
+  <data name="ChatRegisterClockingDisplayName" xml:space="preserve">
+    <value>Timbratura</value>
+  </data>
+  <data name="ChatRegisterClockingDescription" xml:space="preserve">
+    <value>registra una timbratura di entrata o uscita.</value>
+  </data>
+  <data name="ChatRegisterClockingTimeQuestion" xml:space="preserve">
+    <value>A che orario? (es. 09:00)</value>
+  </data>
+  <data name="ChatTimeLabel" xml:space="preserve">
+    <value>Orario</value>
+  </data>
+  <data name="ChatInvalidTime" xml:space="preserve">
+    <value>'{0}' non è un orario valido. Usa il formato HH:mm (es. 09:00).</value>
+  </data>
+  <data name="ChatRegisterClockingDirectionQuestion" xml:space="preserve">
+    <value>Entrata o uscita?</value>
+  </data>
+  <data name="ChatRegisterClockingDirectionLabel" xml:space="preserve">
+    <value>Tipo</value>
+  </data>
+  <data name="ChatRegisterClockingEmployeeNotFound" xml:space="preserve">
+    <value>Dipendente '{0}' non trovato o nome non completo. Nessuna timbratura registrata.</value>
+  </data>
+  <data name="ChatRegisterClockingDone" xml:space="preserve">
+    <value>Timbratura di {0} registrata: {1} alle {2} del {3}.</value>
+  </data>
+  <data name="ChatRegisterJustificationDisplayName" xml:space="preserve">
+    <value>Giustificativo</value>
+  </data>
+  <data name="ChatRegisterJustificationDescription" xml:space="preserve">
+    <value>registra un giustificativo (ferie, malattia, ROL, ecc.) per un dipendente in una data.</value>
+  </data>
+  <data name="ChatRegisterJustificationTypeQuestion" xml:space="preserve">
+    <value>Quale tipo di giustificativo? (es. Ferie, Malattia, ROL)</value>
+  </data>
+  <data name="ChatRegisterJustificationHoursQuestion" xml:space="preserve">
+    <value>Quante ore vuoi giustificare? (es. 08:00 oppure otto)</value>
+  </data>
+  <data name="ChatRegisterJustificationEmployeeNotFound" xml:space="preserve">
+    <value>Dipendente '{0}' non trovato o nome non completo. Nessun giustificativo registrato.</value>
+  </data>
+  <data name="ChatJustificationTypeNotFound" xml:space="preserve">
+    <value>Tipo di giustificativo '{0}' non trovato.</value>
+  </data>
+  <data name="ChatRegisterJustificationError" xml:space="preserve">
+    <value>Errore durante la registrazione del giustificativo: {0}</value>
+  </data>
+  <data name="ChatRegisterJustificationDone" xml:space="preserve">
+    <value>Giustificativo '{0}' di {1} ore registrato per {2} il {3}.</value>
+  </data>
+  <data name="ChatTimeSheetPowerAdminDisplayName" xml:space="preserve">
+    <value>Calendario HR</value>
+  </data>
+  <data name="ChatTimeSheetPowerAdminDescription" xml:space="preserve">
+    <value>apre il Calendario HR (timesheet power admin). Facoltativamente filtra per dipendente e/o periodo anno/mese.</value>
+  </data>
+  <data name="ChatTimeSheetPowerAdminEmployeeQuestion" xml:space="preserve">
+    <value>Per quale dipendente? (lascia vuoto per non filtrare)</value>
+  </data>
+  <data name="ChatYearQuestion" xml:space="preserve">
+    <value>Per quale anno?</value>
+  </data>
+  <data name="ChatYearLabel" xml:space="preserve">
+    <value>Anno</value>
+  </data>
+  <data name="ChatMonthQuestion" xml:space="preserve">
+    <value>Per quale mese?</value>
+  </data>
+  <data name="ChatEmployeeNotFound" xml:space="preserve">
+    <value>Dipendente '{0}' non trovato.</value>
+  </data>
+  <data name="ChatTimeSheetPowerAdminFilterEmployee" xml:space="preserve">
+    <value>dipendente {0} {1}</value>
+  </data>
+  <data name="ChatTimeSheetPowerAdminFilterYear" xml:space="preserve">
+    <value>anno {0}</value>
+  </data>
+  <data name="ChatTimeSheetPowerAdminFilterMonth" xml:space="preserve">
+    <value>mese {0}</value>
+  </data>
+  <data name="ChatTimeSheetPowerAdminOpenFiltered" xml:space="preserve">
+    <value>Apertura Calendario HR ({0}).</value>
+  </data>
+  <data name="ChatTimeSheetPowerAdminOpen" xml:space="preserve">
+    <value>Apertura Calendario HR.</value>
+  </data>
+</root>

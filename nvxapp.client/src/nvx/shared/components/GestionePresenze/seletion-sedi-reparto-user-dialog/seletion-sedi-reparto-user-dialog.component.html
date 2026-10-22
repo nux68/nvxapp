@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Seleziona</ion-title>
+    <ion-title>{{ title }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -10,7 +10,7 @@
       <ion-card-content>
 
         @if (filterIdAspNetUsers) {
-          <ion-note>Sono proposti solo i dipendenti con almeno una delle competenze richieste dalle attività della sub commessa.</ion-note>
+          <ion-note>{{ 'attendance.components.seletionSediRepartoUserDialog.nota' | transloco }}</ion-note>
         }
 
         <br />

@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using nvxapp.server.data.Localization;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
@@ -503,7 +504,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRep
                 }
                 else
                 {
-                    retVal.Messages.Add(new Message("Reparto non trovato.", MessageType.Error));
+                    retVal.Messages.Add(new Message(AttendanceTrackingMessages.Get("DepartmentNotFound"), MessageType.Error));
                 }
 
                 await Task.Delay(DelayAsyncMethod);

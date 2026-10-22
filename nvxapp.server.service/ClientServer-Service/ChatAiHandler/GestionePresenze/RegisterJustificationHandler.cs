@@ -1,3 +1,4 @@
+using nvxapp.server.data.Localization;
 using nvxapp.server.data.Entities.Tenant;
 using nvxapp.server.data.Entities.Tenant.GestionePresenze;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_AnagraficaService;
@@ -37,12 +38,13 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
             _intentDefinition = new IntentDefinition
             {
                 Name        = "RegisterJustification",
-                DisplayName = "Giustificativo",
+                DisplayName = AttendanceTrackingMessages.Get("ChatRegisterJustificationDisplayName"),
                 Usable4Role = new List<string> { "CompanyPowerAdmin" },
-                Description = "registra un giustificativo (ferie, malattia, ROL, ecc.) per un dipendente in una data.",
+                Description = AttendanceTrackingMessages.Get("ChatRegisterJustificationDescription"),
                 Keywords    = new()
                 {
-                    "giustificativo", "giustifica"
+                    "giustificativo", "giustifica",
+                    "leave", "absence", "register leave", "add leave", "justification"
                 },
                 Slots = BuildSlots(
                     EmployeeNameSlot,
@@ -52,8 +54,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                         Type               = "string",
                         Required           = true,
                         PromptDescription  = "nome o codice del tipo di giustificativo (es. Ferie, Malattia, ROL)",
-                        Question           = "Quale tipo di giustificativo? (es. Ferie, Malattia, ROL)",
-                        Label              = "Giustificativo",
+                        Question           = AttendanceTrackingMessages.Get("ChatRegisterJustificationTypeQuestion"),
+                        Label              = AttendanceTrackingMessages.Get("ChatRegisterJustificationDisplayName"),
                         HasRelevantContent = msg => msg.Length > 0
                     },
                     new()
@@ -62,14 +64,14 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                         Type               = "HH:mm o numero testuale",
                         Required           = true,
                         PromptDescription  = "ore da giustificare nel formato HH:mm (es. 08:00, 04:30) oppure come numero scritto in lettere (es. uno, due, otto)",
-                        Question           = "Quante ore vuoi giustificare? (es. 08:00 oppure otto)",
-                        Label              = "Ore",
+                        Question           = AttendanceTrackingMessages.Get("ChatRegisterJustificationHoursQuestion"),
+                        Label              = AttendanceTrackingMessages.Get("ChatHoursLabel"),
                         Validator          = v =>
                         {
                             if (HoursSlotHelper.TryParse(v, out _)) return null;
                             return SlotValidationResult.Failed(
                                 SlotValidationError.InvalidFormat,
-                                $"'{v}' non è un formato ore valido. Usa HH:mm (es. 08:00) oppure un numero in lettere (es. otto).",
+                                AttendanceTrackingMessages.Get("ChatInvalidHours", v),
                                 "hours");
                         },
                         HasRelevantContent = msg => HoursSlotHelper.TryParse(msg.Trim(), out _)
@@ -81,20 +83,20 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                         Required           = false,
                         Default            = "oggi",
                         PromptDescription  = datePromptDescription,
-                        Question           = "Per quale data?",
-                        Label              = "Data",
+                        Question           = AttendanceTrackingMessages.Get("ChatDateQuestion"),
+                        Label              = AttendanceTrackingMessages.Get("ChatDateLabel"),
                         Validator          = v =>
                         {
                             if (DateOnly.TryParseExact(v, "yyyy-MM-dd", out _)) return null;
                             if (DateOnly.TryParseExact(v, "dd/MM/yyyy",  out _)) return null;
                             return SlotValidationResult.Failed(
                                 SlotValidationError.InvalidFormat,
-                                $"'{v}' non è una data valida. Usa il formato gg/mm/aaaa.",
+                                AttendanceTrackingMessages.Get("ChatInvalidDate", v),
                                 "date");
                         },
                         HasRelevantContent = msg =>
                         {
-                            var words = new[] { "oggi", "domani", "ieri" };
+                            var words = ChatSlotWords.RelativeDays;
                             return words.Any(w => msg.Contains(w, StringComparison.OrdinalIgnoreCase));
                         }
                     }
@@ -115,18 +117,18 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
             Dip_AnagraficaModel? dipendente = Get_Dip_Anagrafica(employeeName);
             if (dipendente == null)
                 return CommandResult.Fail(
-                    $"Dipendente '{employeeName}' non trovato o nome non completo. Nessun giustificativo registrato.");
+                    AttendanceTrackingMessages.Get("ChatRegisterJustificationEmployeeNotFound", employeeName));
 
             if (dipendente.Dip_RapportoLavoro == null || dipendente.Dip_RapportoLavoro.Count == 0)
                 return CommandResult.Fail(
-                    $"Nessun rapporto di lavoro trovato per '{employeeName}'.");
+                    AttendanceTrackingMessages.Get("ChatEmploymentNotFoundFor", employeeName));
 
             // --- Risolvi tipo giustificativo ---
             var parResult = await _par_GiustificativiService.GetAll(
                 new GenericRequest<Par_GiustificativiInModel>(new Par_GiustificativiInModel()), false);
 
             if (!parResult.Success || parResult.Data?.Par_Giustificativi == null)
-                return CommandResult.Fail("Impossibile caricare l'elenco giustificativi.");
+                return CommandResult.Fail(AttendanceTrackingMessages.Get("ChatGiustificativiLoadError"));
 
             var nomeTrimmed    = justification.Trim();
             var parGiustificativo = parResult.Data.Par_Giustificativi.FirstOrDefault(g =>
@@ -141,10 +143,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
 
             if (parGiustificativo == null)
                 return CommandResult.Fail(
-                    $"Tipo di giustificativo '{justification}' non trovato.");
+                    AttendanceTrackingMessages.Get("ChatJustificationTypeNotFound", justification));
 
             // --- Risolvi data ---
-            DateTime competenzaDate = dateSlot.Equals("oggi", StringComparison.OrdinalIgnoreCase)
+            DateTime competenzaDate = ChatSlotWords.IsToday(dateSlot)
                 ? DateTime.Today
                 : DateOnly.TryParse(dateSlot, out var parsedDate)
                     ? parsedDate.ToDateTime(TimeOnly.MinValue)
@@ -182,11 +184,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
 
             if (!result.Success)
                 return CommandResult.Fail(
-                    $"Errore durante la registrazione del giustificativo: {string.Join(", ", result.Messages.Select(m => m.Text))}");
+                    AttendanceTrackingMessages.Get("ChatRegisterJustificationError", string.Join(", ", result.Messages.Select(m => m.Text))));
 
             var dateLabel = competenzaDate.ToString("dd/MM/yyyy");
             return CommandResult.Ok(
-                $"Giustificativo '{parGiustificativo.Descrizione}' di {oreLabel} ore registrato per {employeeName} il {dateLabel}.");
+                AttendanceTrackingMessages.Get("ChatRegisterJustificationDone", parGiustificativo.Descrizione, oreLabel, employeeName, dateLabel));
         }
     }
 }

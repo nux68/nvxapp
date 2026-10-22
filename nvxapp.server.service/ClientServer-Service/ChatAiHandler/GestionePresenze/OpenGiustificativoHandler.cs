@@ -1,3 +1,4 @@
+using nvxapp.server.data.Localization;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_GiustificativiService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_GiustificativiService.Models;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Commands;
@@ -18,14 +19,17 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
             _par_GiustificativiService = par_GiustificativiService;
         }
 
-        private static readonly IntentDefinition _intentDefinition = new()
+        // Definizione creata per istanza (handler Scoped): i testi sono nella lingua della richiesta.
+        // Keywords: unione italiano + inglese, qualunque sia la lingua dell'interfaccia.
+        private readonly IntentDefinition _intentDefinition = new()
         {
             Name         = "OpenGiustificativo",
-            DisplayName  = "Apri giustificativo",
+            DisplayName  = AttendanceTrackingMessages.Get("ChatOpenGiustificativoDisplayName"),
             Usable4Role = new List<string> { "CompanyPowerAdmin" },
-            Description  = "apre la pagina di modifica di un giustificativo specifico.",
+            Description  = AttendanceTrackingMessages.Get("ChatOpenGiustificativoDescription"),
             IsNavigation = true,
-            Keywords     = new() { "modifica giustificativo", "apri giustificativo", "apri il giustificativo", "modifica il giustificativo", "giustificativo" },
+            Keywords     = new() { "modifica giustificativo", "apri giustificativo", "apri il giustificativo", "modifica il giustificativo", "giustificativo",
+                                   "edit leave type", "open leave type", "leave type", "absence type" },
             Slots        =
             [
                 new()
@@ -34,8 +38,8 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
                     Type               = "string",
                     Required           = true,
                     PromptDescription  = "nome o codice del giustificativo da aprire",
-                    Question           = "Quale giustificativo vuoi aprire?",
-                    Label              = "Giustificativo",
+                    Question           = AttendanceTrackingMessages.Get("ChatOpenGiustificativoQuestion"),
+                    Label              = AttendanceTrackingMessages.Get("ChatOpenGiustificativoLabel"),
                     HasRelevantContent = msg => msg.Length > 0
                 }
             ]
@@ -48,13 +52,13 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
             slots.TryGetValue("nome", out var nome);
 
             if (string.IsNullOrWhiteSpace(nome))
-                return CommandResult.Fail("Nome giustificativo non specificato.");
+                return CommandResult.Fail(AttendanceTrackingMessages.Get("ChatOpenGiustificativoNameMissing"));
 
             var result = await _par_GiustificativiService.GetAll(
                 new GenericRequest<Par_GiustificativiInModel>(new Par_GiustificativiInModel()), false);
 
             if (!result.Success || result.Data?.Par_Giustificativi == null)
-                return CommandResult.Fail("Impossibile caricare l'elenco giustificativi.");
+                return CommandResult.Fail(AttendanceTrackingMessages.Get("ChatGiustificativiLoadError"));
 
             var nomeTrimmed = nome.Trim();
 
@@ -70,7 +74,7 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
                     (g.Codice?.Contains(nomeTrimmed, StringComparison.OrdinalIgnoreCase) ?? false));
 
             if (giustificativo == null)
-                return CommandResult.Fail($"Giustificativo '{nome}' non trovato.");
+                return CommandResult.Fail(AttendanceTrackingMessages.Get("ChatOpenGiustificativoNotFound", nome));
 
             var payload = new NavigatePayload
             {
@@ -79,7 +83,7 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
             };
 
             return CommandResult.Ok(
-                $"Apertura giustificativo '{giustificativo.Descrizione}' (id: {giustificativo.Id}).",
+                AttendanceTrackingMessages.Get("ChatOpenGiustificativoOpening", giustificativo.Descrizione, giustificativo.Id),
                 payload);
         }
     }

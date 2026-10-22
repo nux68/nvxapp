@@ -11,79 +11,79 @@
         <form [formGroup]="_editForm">
           <ion-segment (ionChange)="segmentChanged($event)" [value]="currSection">
             <ion-segment-button value="sez1" content-id="sez1">
-              <ion-label>Generale</ion-label>
+              <ion-label>{{ 'attendance.pages.orariEdit.tabGeneral' | transloco }}</ion-label>
             </ion-segment-button>
             @if (isSez2Visible) {
               <ion-segment-button value="sez2" content-id="sez2">
-                <ion-label>Intervalli orari</ion-label>
+                <ion-label>{{ 'attendance.pages.orariEdit.tabTimeRanges' | transloco }}</ion-label>
               </ion-segment-button>
             }
             @if (isSez3Visible) {
               <ion-segment-button value="sez3" content-id="sez3">
-                <ion-label>Monte Ore</ion-label>
+                <ion-label>{{ 'attendance.pages.orariEdit.tabHoursBank' | transloco }}</ion-label>
               </ion-segment-button>
             }
           </ion-segment>
           <div [hidden]="currSection!=='sez1'">
             <br />
             <ion-item class="nvx-item-4-title">
-              <ion-label>Generale </ion-label>
+              <ion-label>{{ 'attendance.pages.orariEdit.tabGeneral' | transloco }} </ion-label>
             </ion-item>
             <ion-item>
-              <ion-label position="floating">Descrizione</ion-label>
+              <ion-label position="floating">{{ 'attendance.pages.orariEdit.description' | transloco }}</ion-label>
               <ion-input type="text" formControlName="descrizione"></ion-input>
             </ion-item>
             @if (_editForm.get('descrizione')?.hasError('required') && _editForm.get('descrizione')?.touched) {
               <ion-note color="danger">
-                Descrizione è obbligatorio.
+                {{ 'attendance.pages.orariEdit.descriptionRequired' | transloco }}
               </ion-note>
             }
             @if (_editForm.get('descrizione')?.hasError('maxlength') && _editForm.get('descrizione')?.touched) {
               <ion-note color="danger">
-                Descrizione non può superare i 20 caratteri.
+                {{ 'attendance.pages.orariEdit.descriptionMaxLength' | transloco }}
               </ion-note>
             }
             <ion-item>
-              <ion-label position="floating">Codice</ion-label>
+              <ion-label position="floating">{{ 'attendance.pages.orariEdit.code' | transloco }}</ion-label>
               <ion-input type="text" formControlName="codice"></ion-input>
             </ion-item>
             @if (_editForm.get('codice')?.hasError('required') && _editForm.get('codice')?.touched) {
               <ion-note color="danger">
-                codice è obbligatorio.
+                {{ 'attendance.pages.orariEdit.codeRequired' | transloco }}
               </ion-note>
             }
             @if (_editForm.get('codice')?.hasError('maxlength') && _editForm.get('codice')?.touched) {
               <ion-note color="danger">
-                codice non può superare i 5 caratteri.
+                {{ 'attendance.pages.orariEdit.codeMaxLength' | transloco }}
               </ion-note>
             }
             <ion-item>
-              <ion-label position="floating">Tipo timbrature</ion-label>
+              <ion-label position="floating">{{ 'attendance.pages.orariEdit.clockingType' | transloco }}</ion-label>
               <ion-select formControlName="timbratureTipo" interface="popover">
-                <ion-select-option [value]="orarioTimbratureTipoEnum.IntervalloOrario">Intervallo Orario</ion-select-option>
-                <ion-select-option [value]="orarioTimbratureTipoEnum.MonteOre">Monte Ore</ion-select-option>
-                <ion-select-option [value]="orarioTimbratureTipoEnum.MonteOreValore">Monte Ore Valore</ion-select-option>
+                <ion-select-option [value]="orarioTimbratureTipoEnum.IntervalloOrario">{{ 'attendance.pages.orariEdit.typeTimeRange' | transloco }}</ion-select-option>
+                <ion-select-option [value]="orarioTimbratureTipoEnum.MonteOre">{{ 'attendance.pages.orariEdit.typeHoursBank' | transloco }}</ion-select-option>
+                <ion-select-option [value]="orarioTimbratureTipoEnum.MonteOreValore">{{ 'attendance.pages.orariEdit.typeHoursBankValue' | transloco }}</ion-select-option>
               </ion-select>
             </ion-item>
             @if (_editForm.get('timbratureTipo')?.hasError('required') && _editForm.get('timbratureTipo')?.touched) {
               <ion-note color="danger">
-                Il tipo timbrature è obbligatorio.
+                {{ 'attendance.pages.orariEdit.clockingTypeRequired' | transloco }}
               </ion-note>
             }
           </div>
           <div [hidden]="currSection!=='sez2' || !isSez2Visible">
             <br />
             <ion-item class="nvx-item-4-title">
-              <ion-label>Intervalli orari </ion-label>
+              <ion-label>{{ 'attendance.pages.orariEdit.tabTimeRanges' | transloco }} </ion-label>
             </ion-item>
             @if (_editModel ) {
               <div>
                 <ion-card>
                   <ion-card-content>
                     <ion-item>
-                      <ion-label position="floating">Numero Coppie</ion-label>
+                      <ion-label position="floating">{{ 'attendance.pages.orariEdit.pairsNumber' | transloco }}</ion-label>
                       <ion-select formControlName="numeroCoppie" interface="popover" (ionChange)="onRangeChange($event)">
-                        <ion-select-option [value]="0">0 - riposo</ion-select-option>
+                        <ion-select-option [value]="0">{{ 'attendance.pages.orariEdit.pairsZero' | transloco }}</ion-select-option>
                         <ion-select-option [value]="1">1</ion-select-option>
                         <ion-select-option [value]="2">2</ion-select-option>
                         <ion-select-option [value]="3">3</ion-select-option>
@@ -92,12 +92,12 @@
                     </ion-item>
                     @if (_editForm.get('numeroCoppie')?.hasError('required') && _editForm.get('numeroCoppie')?.touched) {
                       <ion-note color="danger">
-                        Il numero di coppie è obbligatorio.
+                        {{ 'attendance.pages.orariEdit.pairsRequired' | transloco }}
                       </ion-note>
                     }
                     @if (_editForm.get('numeroCoppie')?.value === 0) {
                       <ion-note>
-                        Nessuna coppia: giorno non lavorativo (0 ore teoriche).
+                        {{ 'attendance.pages.orariEdit.noPairsNote' | transloco }}
                       </ion-note>
                     }
                     <br />
@@ -106,37 +106,37 @@
                       <ion-row class="ion-hide-sm-down">
                         <ion-col size="1" class="ion-hide-sm-down">
                           <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
-                            Coppia
+                            {{ 'attendance.pages.orariEdit.colPair' | transloco }}
                           </ion-label>
                         </ion-col>
                         <ion-col size="1" class="ion-hide-sm-down">
                           <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
-                            Dalle Limite SX
+                            {{ 'attendance.pages.orariEdit.colFromLimitLeft' | transloco }}
                           </ion-label>
                         </ion-col>
                         <ion-col size="1" class="ion-hide-sm-down">
                           <ion-label [ngStyle]="{ color: true ? 'var(--ion-color-primary)' : '' }">
-                            DALLE
+                            {{ 'attendance.pages.orariEdit.colFrom' | transloco }}
                           </ion-label>
                         </ion-col>
                         <ion-col size="2" class="ion-hide-sm-down">
                           <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
-                            Dalle Limite DX
+                            {{ 'attendance.pages.orariEdit.colFromLimitRight' | transloco }}
                           </ion-label>
                         </ion-col>
                         <ion-col size="1" class="ion-hide-sm-down">
                           <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
-                            Alle Limite SX
+                            {{ 'attendance.pages.orariEdit.colToLimitLeft' | transloco }}
                           </ion-label>
                         </ion-col>
                         <ion-col size="1" class="ion-hide-sm-down">
                           <ion-label [ngStyle]="{ color: true ? 'var(--ion-color-primary)' : '' }">
-                            ALLE
+                            {{ 'attendance.pages.orariEdit.colTo' | transloco }}
                           </ion-label>
                         </ion-col>
                         <ion-col size="3" class="ion-hide-sm-down">
                           <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
-                            Alle Limite DX
+                            {{ 'attendance.pages.orariEdit.colToLimitRight' | transloco }}
                           </ion-label>
                         </ion-col>
                       </ion-row>
@@ -235,16 +235,16 @@
         <div [hidden]="currSection!=='sez3' || !isSez3Visible">
           <br />
           <ion-item class="nvx-item-4-title">
-            <ion-label>Monte ore </ion-label>
+            <ion-label>{{ 'attendance.pages.orariEdit.sectionHoursBank' | transloco }} </ion-label>
           </ion-item>
           @if (_editModel ) {
             <div>
               <ion-card>
                 <ion-card-content>
                   <ion-item>
-                    <ion-label position="stacked">Causale monte ore</ion-label>
-                    <ion-select formControlName="idCausale_HH_Lav_MonteOre" placeholder="Nessuna" interface="popover">
-                      <ion-select-option [value]="null">Nessuna</ion-select-option>
+                    <ion-label position="stacked">{{ 'attendance.pages.orariEdit.hoursBankPayCode' | transloco }}</ion-label>
+                    <ion-select formControlName="idCausale_HH_Lav_MonteOre" [placeholder]="'attendance.pages.orariEdit.none' | transloco" interface="popover">
+                      <ion-select-option [value]="null">{{ 'attendance.pages.orariEdit.none' | transloco }}</ion-select-option>
                       @for (causale of par_CausaliModelList; track causale) {
                         <ion-select-option [value]="causale.id">
                           {{ causale.descrizione }}
@@ -264,7 +264,7 @@
                   L attivita è obbligatoria.
                 </ion-note>-->
                 <ion-item>
-                  <ion-label position="floating">Ore Teoriche</ion-label>
+                  <ion-label position="floating">{{ 'attendance.pages.orariEdit.theoreticalHours' | transloco }}</ion-label>
                   <ion-datetime-button class="datetime-button-with-label" datetime="hh_Teo_MonteOre-modal"></ion-datetime-button>
                   <ion-modal [keepContentsMounted]="true">
                     <ng-template>
@@ -273,7 +273,7 @@
                         presentation="time"
                         [showDefaultButtons]="true"
                         doneText="OK"
-                        cancelText="Annulla">
+                        [cancelText]="'common.buttons.cancel' | transloco">
                       </ion-datetime>
                     </ng-template>
                   </ion-modal>

@@ -1,3 +1,4 @@
+using nvxapp.server.data.Localization;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_CompetenzaService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_CompetenzaService.Models;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Commands;
@@ -18,14 +19,17 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
             _par_CompetenzaService = par_CompetenzaService;
         }
 
-        private static readonly IntentDefinition _intentDefinition = new()
+        // Definizione creata per istanza (handler Scoped): i testi sono nella lingua della richiesta.
+        // Keywords: unione italiano + inglese, qualunque sia la lingua dell'interfaccia.
+        private readonly IntentDefinition _intentDefinition = new()
         {
             Name         = "OpenCompetenza",
-            DisplayName  = "Apri competenza",
+            DisplayName  = AttendanceTrackingMessages.Get("ChatOpenCompetenzaDisplayName"),
             Usable4Role = new List<string> { "CompanyPowerAdmin" },
-            Description  = "apre la pagina di modifica di una competenza specifica.",
+            Description  = AttendanceTrackingMessages.Get("ChatOpenCompetenzaDescription"),
             IsNavigation = true,
-            Keywords     = new() { "competenza", "apri competenza", "modifica competenza", "apri la competenza" },
+            Keywords     = new() { "competenza", "apri competenza", "modifica competenza", "apri la competenza",
+                                   "skill", "competence", "open skill", "edit skill" },
             Slots        =
             [
                 new()
@@ -34,8 +38,8 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
                     Type               = "string",
                     Required           = true,
                     PromptDescription  = "nome della competenza da aprire",
-                    Question           = "Quale competenza vuoi aprire?",
-                    Label              = "Competenza",
+                    Question           = AttendanceTrackingMessages.Get("ChatOpenCompetenzaQuestion"),
+                    Label              = AttendanceTrackingMessages.Get("ChatOpenCompetenzaLabel"),
                     HasRelevantContent = msg => msg.Length > 0
                 }
             ]
@@ -48,13 +52,13 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
             slots.TryGetValue("nome", out var nome);
 
             if (string.IsNullOrWhiteSpace(nome))
-                return CommandResult.Fail("Nome competenza non specificato.");
+                return CommandResult.Fail(AttendanceTrackingMessages.Get("ChatOpenCompetenzaNameMissing"));
 
             var result = await _par_CompetenzaService.GetAll(
                 new GenericRequest<Par_Competenza_GetAll_InModel>(new Par_Competenza_GetAll_InModel()), false);
 
             if (!result.Success || result.Data?.Par_Competenza == null)
-                return CommandResult.Fail("Impossibile caricare l'elenco competenze.");
+                return CommandResult.Fail(AttendanceTrackingMessages.Get("ChatOpenCompetenzaLoadError"));
 
             var nomeTrimmed = nome.Trim();
             var record = result.Data.Par_Competenza.FirstOrDefault(r =>
@@ -65,7 +69,7 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
                     r.Descrizione?.Contains(nomeTrimmed, StringComparison.OrdinalIgnoreCase) ?? false);
 
             if (record == null)
-                return CommandResult.Fail($"Competenza '{nome}' non trovata.");
+                return CommandResult.Fail(AttendanceTrackingMessages.Get("ChatOpenCompetenzaNotFound", nome));
 
             var payload = new NavigatePayload
             {
@@ -73,7 +77,7 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
                 State = new Dictionary<string, object> { ["id"] = record.Id }
             };
 
-            return CommandResult.Ok($"Apertura competenza '{record.Descrizione}' (id: {record.Id}).", payload);
+            return CommandResult.Ok(AttendanceTrackingMessages.Get("ChatOpenCompetenzaOpening", record.Descrizione, record.Id), payload);
         }
     }
 }

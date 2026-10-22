@@ -1,4 +1,6 @@
 import { Injectable } from '@angular/core';
+import { TranslocoService } from '@jsverse/transloco';
+import { LanguageService } from '../infrastructure/language.service';
 import { catchError, Observable, of, switchMap, throwError } from 'rxjs';
 import { map } from 'rxjs/operators'; // Import map operator if you plan real sorting/processing
 import { Dip_GG_Timbratura_GetAll_InModel, Dip_GG_TimbraturaModel, TipoTimbratura } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Timbratura/Models/dip-gg-timbratura-model';
@@ -40,7 +42,23 @@ export class TimeSheetService {
               private dipGGRichiestaService: DipGGRichiestaService,
               private contatoriService: ContatoriService,
               public timeSheetEngineService: TimeSheetEngineService,
-              public dateTimeUtilService: DateTimeUtilService) {
+              public dateTimeUtilService: DateTimeUtilService,
+              private transloco: TranslocoService,
+              private languageService: LanguageService) {
+  }
+
+  private t(key: string, params?: Record<string, unknown>): string {
+    return this.transloco.translate('attendance.services.timeSheet.' + key, params);
+  }
+
+  /** "giovedì 05 marzo" nella lingua dell'interfaccia */
+  private giornoLungo(data: string | Date): string {
+    return new Date(data).toLocaleDateString(this.languageService.locale, { weekday: 'long', day: '2-digit', month: 'long' });
+  }
+
+  /** "08:30" nella lingua dell'interfaccia */
+  private oraBreve(data: string | Date): string {
+    return new Date(data).toLocaleTimeString(this.languageService.locale, { hour: '2-digit', minute: '2-digit' });
   }
 
 
@@ -212,7 +230,7 @@ export class TimeSheetService {
   /** "Richiesta dal … al …" per i tooltip dei giustificativi di una richiesta su più giorni. */
   periodoRichiestaTesto(richiesta: Dip_GG_RichiestaModel | null | undefined): string {
     return richiesta?.data && richiesta.dataA && richiesta.data !== richiesta.dataA
-      ? `Richiesta dal ${richiesta.data} al ${richiesta.dataA}` : '';
+      ? this.t('richiestaDalAl', { dal: richiesta.data, al: richiesta.dataA }) : '';
   }
 
   /** "YYYY-MM-DD" di una data (oggetto Date o stringa ISO), nel fuso locale. */
@@ -229,9 +247,9 @@ export class TimeSheetService {
   /** Testo breve per i giorni fuori rapporto. */
   fuoriRapportoTesto(stato: FuoriRapporto | null): string {
     switch (stato) {
-      case 'prima': return 'Non assunto';
-      case 'dopo':  return 'Cessato';
-      case 'tra':   return 'Fuori rapporto';
+      case 'prima': return this.t('fuoriRapporto.prima');
+      case 'dopo':  return this.t('fuoriRapporto.dopo');
+      case 'tra':   return this.t('fuoriRapporto.tra');
       default:      return '';
     }
   }
@@ -493,25 +511,25 @@ export class TimeSheetService {
 
     const parti: string[] = [];
     const aggiungi = (etichetta: string, minuti: number) => { if (minuti > 0) parti.push(`${etichetta} ${minutiToHHMM(minuti)}`); };
-    aggiungi('Suppl.', r.min_Suppl);
-    aggiungi('Suppl. oltre', r.min_SupplEcc);
-    aggiungi('Strao', r.min_Strao);
-    aggiungi('Strao nott.', r.min_StraoNott);
-    aggiungi('Strao fest.', r.min_StraoFest);
-    aggiungi('Strao fest. nott.', r.min_StraoFestNott);
-    aggiungi('Eccedenti', r.min_EccOrd);
-    aggiungi('Non ric.', r.min_NonRiconosciute);
+    aggiungi(this.t('eccedenza.suppl'), r.min_Suppl);
+    aggiungi(this.t('eccedenza.supplOltre'), r.min_SupplEcc);
+    aggiungi(this.t('eccedenza.strao'), r.min_Strao);
+    aggiungi(this.t('eccedenza.straoNott'), r.min_StraoNott);
+    aggiungi(this.t('eccedenza.straoFest'), r.min_StraoFest);
+    aggiungi(this.t('eccedenza.straoFestNott'), r.min_StraoFestNott);
+    aggiungi(this.t('eccedenza.eccedenti'), r.min_EccOrd);
+    aggiungi(this.t('eccedenza.nonRic'), r.min_NonRiconosciute);
     if (r.min_DaAutorizzare > 0)
-      parti.push(`in attesa di autorizzazione ${minutiToHHMM(r.min_DaAutorizzare)}`);
+      parti.push(this.t('eccedenza.inAttesaAutorizzazione', { ore: minutiToHHMM(r.min_DaAutorizzare) }));
     if (nonAutorizzate - (r.min_DaAutorizzare ?? 0) > 0)
-      parti.push(`non autorizzate ${minutiToHHMM(nonAutorizzate - (r.min_DaAutorizzare ?? 0))}`);
+      parti.push(this.t('eccedenza.nonAutorizzate', { ore: minutiToHHMM(nonAutorizzate - (r.min_DaAutorizzare ?? 0)) }));
 
     const qualificate = r.min_Suppl + r.min_SupplEcc + r.min_Strao + r.min_StraoNott + r.min_StraoFest + r.min_StraoFestNott + r.min_EccOrd + r.min_NonRiconosciute;
     let qualifica = parti.join(' · ');
     if (r.min_Ecc > 0 && !r.eccProvvisoria && qualificate < r.min_Ecc)
-      qualifica = (qualifica ? qualifica + ' · ' : '') + `compensate ${minutiToHHMM(r.min_Ecc - qualificate)}`;
+      qualifica = (qualifica ? qualifica + ' · ' : '') + this.t('eccedenza.compensate', { ore: minutiToHHMM(r.min_Ecc - qualificate) });
     if (r.bancaOre && qualificate > 0)
-      qualifica += ' (banca ore)';
+      qualifica += ' ' + this.t('eccedenza.bancaOre');
 
     // le ore in piu' mostrate sono tutte quelle lavorate oltre il dovuto, anche quelle non autorizzate
     const totale = r.min_Ecc > 0 ? r.min_Ecc + nonAutorizzate : (r.min_Ecc < 0 ? r.min_Ecc : nonAutorizzate);
@@ -521,8 +539,8 @@ export class TimeSheetService {
       provvisoria: (r.min_Ecc > 0 && r.eccProvvisoria) || r.min_DaAutorizzare > 0,
       qualifica,
       dettaglio: r.min_Ecc < 0
-        ? 'Ore mancanti rispetto al lavorabile'
-        : (r.eccProvvisoria ? 'Ore in più provvisorie: si qualificano a fine periodo di conteggio' : (qualifica || 'Ore in più'))
+        ? this.t('eccedenza.oreMancanti')
+        : (r.eccProvvisoria ? this.t('eccedenza.oreInPiuProvvisorie') : (qualifica || this.t('eccedenza.oreInPiu')))
     };
   }
 
@@ -794,7 +812,7 @@ export class TimeSheetService {
       return this.get_StatoRichiesta_text(dip_GG_Richiesta.richiestaStato);
     }
     else {
-      return "(" + this.get_StatoRichiesta_text(dip_GG_Richiesta.richiestaStato) + ") Revoca " + this.get_StatoRichiesta_text(dip_GG_Richiesta.revocaStato); 
+      return this.t('statoConRevoca', { stato: this.get_StatoRichiesta_text(dip_GG_Richiesta.richiestaStato), revoca: this.get_StatoRichiesta_text(dip_GG_Richiesta.revocaStato) });
     }
     
   }
@@ -851,8 +869,8 @@ export class TimeSheetService {
     const just = this.sharedParameterGestionePresenzeService.Par_Giustificativi.find(x => x.id == record.idPar_Giustificativi);
     if (just != null && just.tipoContatore != TipoContatore.NoContatore) {
 
-      const tipoLabel = this.sharedParameterGestionePresenzeService.Par_Giustificativi.find(x => x.id == record.idPar_Giustificativi)?.descrizione ?? 'Giustificativo';
-      const content = "Contatori";  //record.data ? new Date(record.data).toLocaleDateString('it-IT', { weekday: 'long', day: '2-digit', month: 'long' }) : '--';
+      const tipoLabel = this.sharedParameterGestionePresenzeService.Par_Giustificativi.find(x => x.id == record.idPar_Giustificativi)?.descrizione ?? this.t('giustificativo');
+      const content = this.t('contatori');
 
 
       const idx = contatori_Anno_Mese.findIndex(x => x.mese == month);
@@ -861,18 +879,18 @@ export class TimeSheetService {
       if (idxJust >= 0) {
 
         // periodi del mese del giustificativo: il precedente comprende il riporto dell'anno prima
-        extraInfo['Mese prec. maturato'] = contatori_Anno_Mese[idx].risultati[idxJust].periodoPrecedente.maturato;
-        extraInfo['Mese prec. goduto'] = contatori_Anno_Mese[idx].risultati[idxJust].periodoPrecedente.goduto;
-        extraInfo['Mese prec. saldo'] = contatori_Anno_Mese[idx].risultati[idxJust].periodoPrecedente.saldo;
+        extraInfo[this.t('contatoriInfo.mesePrecMaturato')] = contatori_Anno_Mese[idx].risultati[idxJust].periodoPrecedente.maturato;
+        extraInfo[this.t('contatoriInfo.mesePrecGoduto')] = contatori_Anno_Mese[idx].risultati[idxJust].periodoPrecedente.goduto;
+        extraInfo[this.t('contatoriInfo.mesePrecSaldo')] = contatori_Anno_Mese[idx].risultati[idxJust].periodoPrecedente.saldo;
 
 
-        extraInfo['Mese corr. maturato'] = contatori_Anno_Mese[idx].risultati[idxJust].periodoCorrente.maturato;
-        extraInfo['Mese corr. goduto'] = contatori_Anno_Mese[idx].risultati[idxJust].periodoCorrente.goduto;
-        extraInfo['Mese corr. saldo'] = contatori_Anno_Mese[idx].risultati[idxJust].periodoCorrente.saldo;
+        extraInfo[this.t('contatoriInfo.meseCorrMaturato')] = contatori_Anno_Mese[idx].risultati[idxJust].periodoCorrente.maturato;
+        extraInfo[this.t('contatoriInfo.meseCorrGoduto')] = contatori_Anno_Mese[idx].risultati[idxJust].periodoCorrente.goduto;
+        extraInfo[this.t('contatoriInfo.meseCorrSaldo')] = contatori_Anno_Mese[idx].risultati[idxJust].periodoCorrente.saldo;
 
-        extraInfo['Mesi succ. maturato'] = contatori_Anno_Mese[idx].risultati[idxJust].periodoSuccessivo.maturato;
-        extraInfo['Mesi succ. goduto'] = contatori_Anno_Mese[idx].risultati[idxJust].periodoSuccessivo.goduto;
-        extraInfo['Mesi succ. saldo'] = contatori_Anno_Mese[idx].risultati[idxJust].periodoSuccessivo.saldo;
+        extraInfo[this.t('contatoriInfo.mesiSuccMaturato')] = contatori_Anno_Mese[idx].risultati[idxJust].periodoSuccessivo.maturato;
+        extraInfo[this.t('contatoriInfo.mesiSuccGoduto')] = contatori_Anno_Mese[idx].risultati[idxJust].periodoSuccessivo.goduto;
+        extraInfo[this.t('contatoriInfo.mesiSuccSaldo')] = contatori_Anno_Mese[idx].risultati[idxJust].periodoSuccessivo.saldo;
       }
       
 
@@ -896,33 +914,33 @@ export class TimeSheetService {
   get_TimbraturaPopupData(record: Dip_GG_TimbraturaModel, richiesta: Dip_GG_RichiestaModel | null): HoverPopupData {
     const tipoLabel = new TipoTimbraturaToLongTextPipe().transform(record.timbraturaTipo);
 
-    const timbratura       = record.timbratura       ? new Date(record.timbratura).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }) : '--';
-    const timbraturaOrig   = record.timbraturaOriginale ? new Date(record.timbraturaOriginale).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }) : null;
-    const timbraturaArrot  = record.timbraturaArrotondata ? new Date(record.timbraturaArrotondata).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }) : null;
-    const giornoComp       = record.giornoCompetenza ? new Date(record.giornoCompetenza).toLocaleDateString('it-IT', { weekday: 'long', day: '2-digit', month: 'long' }) : '--';
+    const timbratura       = record.timbratura       ? this.oraBreve(record.timbratura) : '--';
+    const timbraturaOrig   = record.timbraturaOriginale ? this.oraBreve(record.timbraturaOriginale) : null;
+    const timbraturaArrot  = record.timbraturaArrotondata ? this.oraBreve(record.timbraturaArrotondata) : null;
+    const giornoComp       = record.giornoCompetenza ? this.giornoLungo(record.giornoCompetenza) : '--';
 
     const extraInfo: Record<string, string> = {};
 
-    extraInfo['Timbratura'] = timbratura;
+    extraInfo[this.t('popup.timbratura')] = timbratura;
 
     if (timbraturaOrig && timbraturaOrig !== timbratura)
-      extraInfo['Originale'] = timbraturaOrig;
+      extraInfo[this.t('popup.originale')] = timbraturaOrig;
 
     if (timbraturaArrot &&
         (record.timbraturaTipo === TipoTimbratura.Entrata || record.timbraturaTipo === TipoTimbratura.Uscita))
-      extraInfo['Arrotondata'] = timbraturaArrot;
+      extraInfo[this.t('popup.arrotondata')] = timbraturaArrot;
 
-    extraInfo['Giorno competenza'] = giornoComp;
+    extraInfo[this.t('popup.giornoCompetenza')] = giornoComp;
 
     if (richiesta)
-      extraInfo['Stato richiesta'] = new StatoRichiestaLongTextPipe().transform(
+      extraInfo[this.t('popup.statoRichiesta')] = new StatoRichiestaLongTextPipe().transform(
         richiesta.revocaStato != null ? richiesta.revocaStato : richiesta.richiestaStato
       );
 
     const attivita = this.sharedParameterGestionePresenzeService.Az_SubCommessaAttivita_4Full
       ?.find(a => a.subCommessaAttivita_Id === record.idAz_SubCommessaAttivita);
     if (attivita)
-      extraInfo['Attività'] = `${attivita.cliente_Descrizione} › ${attivita.commessa_Decrizione} › ${attivita.subCommessa_Decrizione} › ${attivita.subCommessaAttivita_Par_Attivita_Descrizione}`;
+      extraInfo[this.t('popup.attivita')] = `${attivita.cliente_Descrizione} › ${attivita.commessa_Decrizione} › ${attivita.subCommessa_Decrizione} › ${attivita.subCommessaAttivita_Par_Attivita_Descrizione}`;
 
     return {
       title: tipoLabel,
@@ -933,7 +951,7 @@ export class TimeSheetService {
 
   get_DayPopupStato(result: Dip_GG_ResultModel): HoverPopupData {
     if (!result) {
-      return { title: 'Stato giornata', content: 'Nessun dato disponibile' };
+      return { title: this.t('giornata.statoGiornata'), content: this.t('giornata.nessunDato') };
     }
 
     const stato = Number(result.stato);
@@ -941,64 +959,64 @@ export class TimeSheetService {
 
     // --- Stato principale ---
     const statoLabels: Partial<Record<GG_ResultStato, string>> = {
-      [GG_ResultStato.Init]:    '⬜ Non ancora elaborata',
-      [GG_ResultStato.OK]:      '✅ Giornata corretta',
-      [GG_ResultStato.Locked]:  '🔒 Giornata bloccata',
-      [GG_ResultStato.Warning]: '⚠️ Presenza di avvertimenti',
-      [GG_ResultStato.Err]:     '❌ Presenza di errori',
+      [GG_ResultStato.Init]:    this.t('giornata.stato.init'),
+      [GG_ResultStato.OK]:      this.t('giornata.stato.ok'),
+      [GG_ResultStato.Locked]:  this.t('giornata.stato.locked'),
+      [GG_ResultStato.Warning]: this.t('giornata.stato.warning'),
+      [GG_ResultStato.Err]:     this.t('giornata.stato.err'),
     };
 
     // --- Dettagli errori ---
     const errLabels: Partial<Record<GG_ResultStato, string>> = {
-      [GG_ResultStato.Err_TimbratureMancanti]: 'Timbrature mancanti rispetto all\'orario atteso',
-      [GG_ResultStato.Err_2]:  'Ore lavorate inferiori alle ore previste',
-      [GG_ResultStato.Err_3]:  'Ore lavorate superiori alle ore previste (vedi colonna "In più")',
-      [GG_ResultStato.Err_4]:  'Errore 4',
-      [GG_ResultStato.Err_5]:  'Errore 5',
-      [GG_ResultStato.Err_6]:  'Errore 6',
-      [GG_ResultStato.Err_7]:  'Errore 7',
-      [GG_ResultStato.Err_8]:  'Errore 8',
-      [GG_ResultStato.Err_9]:  'Errore 9',
-      [GG_ResultStato.Err_10]: 'Errore 10',
-      [GG_ResultStato.Err_11]: 'Errore 11',
-      [GG_ResultStato.Err_12]: 'Errore 12',
-      [GG_ResultStato.Err_13]: 'Errore 13',
-      [GG_ResultStato.Err_14]: 'Errore 14',
-      [GG_ResultStato.Err_15]: 'Errore 15',
-      [GG_ResultStato.Err_16]: 'Errore 16',
-      [GG_ResultStato.Err_17]: 'Errore 17',
-      [GG_ResultStato.Err_18]: 'Errore 18',
-      [GG_ResultStato.Err_19]: 'Errore 19',
-      [GG_ResultStato.Err_20]: 'Errore 20',
+      [GG_ResultStato.Err_TimbratureMancanti]: this.t('giornata.err.timbratureMancanti'),
+      [GG_ResultStato.Err_2]:  this.t('giornata.err.oreInferiori'),
+      [GG_ResultStato.Err_3]:  this.t('giornata.oreSuperiori'),
+      [GG_ResultStato.Err_4]:  this.t('giornata.erroreN', { n: 4 }),
+      [GG_ResultStato.Err_5]:  this.t('giornata.erroreN', { n: 5 }),
+      [GG_ResultStato.Err_6]:  this.t('giornata.erroreN', { n: 6 }),
+      [GG_ResultStato.Err_7]:  this.t('giornata.erroreN', { n: 7 }),
+      [GG_ResultStato.Err_8]:  this.t('giornata.erroreN', { n: 8 }),
+      [GG_ResultStato.Err_9]:  this.t('giornata.erroreN', { n: 9 }),
+      [GG_ResultStato.Err_10]: this.t('giornata.erroreN', { n: 10 }),
+      [GG_ResultStato.Err_11]: this.t('giornata.erroreN', { n: 11 }),
+      [GG_ResultStato.Err_12]: this.t('giornata.erroreN', { n: 12 }),
+      [GG_ResultStato.Err_13]: this.t('giornata.erroreN', { n: 13 }),
+      [GG_ResultStato.Err_14]: this.t('giornata.erroreN', { n: 14 }),
+      [GG_ResultStato.Err_15]: this.t('giornata.erroreN', { n: 15 }),
+      [GG_ResultStato.Err_16]: this.t('giornata.erroreN', { n: 16 }),
+      [GG_ResultStato.Err_17]: this.t('giornata.erroreN', { n: 17 }),
+      [GG_ResultStato.Err_18]: this.t('giornata.erroreN', { n: 18 }),
+      [GG_ResultStato.Err_19]: this.t('giornata.erroreN', { n: 19 }),
+      [GG_ResultStato.Err_20]: this.t('giornata.erroreN', { n: 20 }),
     };
 
     // --- Dettagli warning ---
     const warnLabels: Partial<Record<GG_ResultStato, string>> = {
-      [GG_ResultStato.Warning_1]:  'Ore lavorate superiori alle ore previste (vedi colonna "In più")',
-      [GG_ResultStato.Warning_2]:  'Avvertimento 2',
-      [GG_ResultStato.Warning_3]:  'Avvertimento 3',
-      [GG_ResultStato.Warning_4]:  'Avvertimento 4',
-      [GG_ResultStato.Warning_5]:  'Avvertimento 5',
-      [GG_ResultStato.Warning_6]:  'Avvertimento 6',
-      [GG_ResultStato.Warning_7]:  'Avvertimento 7',
-      [GG_ResultStato.Warning_8]:  'Avvertimento 8',
-      [GG_ResultStato.Warning_9]:  'Avvertimento 9',
-      [GG_ResultStato.Warning_10]: 'Avvertimento 10',
-      [GG_ResultStato.Warning_11]: 'Avvertimento 11',
-      [GG_ResultStato.Warning_12]: 'Avvertimento 12',
-      [GG_ResultStato.Warning_13]: 'Avvertimento 13',
-      [GG_ResultStato.Warning_14]: 'Avvertimento 14',
-      [GG_ResultStato.Warning_15]: 'Avvertimento 15',
-      [GG_ResultStato.Warning_16]: 'Avvertimento 16',
-      [GG_ResultStato.Warning_17]: 'Avvertimento 17',
-      [GG_ResultStato.Warning_18]: 'Avvertimento 18',
-      [GG_ResultStato.Warning_19]: 'Avvertimento 19',
-      [GG_ResultStato.Warning_20]: 'Avvertimento 20',
+      [GG_ResultStato.Warning_1]:  this.t('giornata.oreSuperiori'),
+      [GG_ResultStato.Warning_2]:  this.t('giornata.avvertimentoN', { n: 2 }),
+      [GG_ResultStato.Warning_3]:  this.t('giornata.avvertimentoN', { n: 3 }),
+      [GG_ResultStato.Warning_4]:  this.t('giornata.avvertimentoN', { n: 4 }),
+      [GG_ResultStato.Warning_5]:  this.t('giornata.avvertimentoN', { n: 5 }),
+      [GG_ResultStato.Warning_6]:  this.t('giornata.avvertimentoN', { n: 6 }),
+      [GG_ResultStato.Warning_7]:  this.t('giornata.avvertimentoN', { n: 7 }),
+      [GG_ResultStato.Warning_8]:  this.t('giornata.avvertimentoN', { n: 8 }),
+      [GG_ResultStato.Warning_9]:  this.t('giornata.avvertimentoN', { n: 9 }),
+      [GG_ResultStato.Warning_10]: this.t('giornata.avvertimentoN', { n: 10 }),
+      [GG_ResultStato.Warning_11]: this.t('giornata.avvertimentoN', { n: 11 }),
+      [GG_ResultStato.Warning_12]: this.t('giornata.avvertimentoN', { n: 12 }),
+      [GG_ResultStato.Warning_13]: this.t('giornata.avvertimentoN', { n: 13 }),
+      [GG_ResultStato.Warning_14]: this.t('giornata.avvertimentoN', { n: 14 }),
+      [GG_ResultStato.Warning_15]: this.t('giornata.avvertimentoN', { n: 15 }),
+      [GG_ResultStato.Warning_16]: this.t('giornata.avvertimentoN', { n: 16 }),
+      [GG_ResultStato.Warning_17]: this.t('giornata.avvertimentoN', { n: 17 }),
+      [GG_ResultStato.Warning_18]: this.t('giornata.avvertimentoN', { n: 18 }),
+      [GG_ResultStato.Warning_19]: this.t('giornata.avvertimentoN', { n: 19 }),
+      [GG_ResultStato.Warning_20]: this.t('giornata.avvertimentoN', { n: 20 }),
     };
 
     // Stato principale (primo attivo tra Init/OK/Locked/Warning/Err)
     const statoPrincipale = Object.entries(statoLabels).find(([flag]) => stato & Number(flag));
-    const titleText = statoPrincipale ? statoPrincipale[1] : 'Stato sconosciuto';
+    const titleText = statoPrincipale ? statoPrincipale[1] : this.t('giornata.statoSconosciuto');
 
     // Dettagli errori attivi
     for (const [flag, label] of Object.entries(errLabels)) {
@@ -1011,13 +1029,13 @@ export class TimeSheetService {
     }
 
     const extraInfo: Record<string, string> = {};
-    if (result.hH_Teo != null) extraInfo['Ore teoriche'] = result.hH_Teo;
-    if (result.hH_Lav != null) extraInfo['Ore lavorate'] = result.hH_Lav;
+    if (result.hH_Teo != null) extraInfo[this.t('popup.oreTeoriche')] = result.hH_Teo;
+    if (result.hH_Lav != null) extraInfo[this.t('popup.oreLavorate')] = result.hH_Lav;
 
     return {
       title: result.data
-        ? new Date(result.data).toLocaleDateString('it-IT', { weekday: 'long', day: '2-digit', month: 'long' })
-        : 'Stato giornata',
+        ? this.giornoLungo(result.data)
+        : this.t('giornata.statoGiornata'),
       content: activeFlags.length > 0 ? activeFlags.join('\n') : titleText,
       extraInfo
     };
@@ -1032,15 +1050,15 @@ export class TimeSheetService {
 
     const extraInfo: Record<string, string> = {};
 
-    if (result?.hH_Teo != null)  extraInfo['Ore teoriche']  = result.hH_Teo;
-    if (result?.hH_Lav != null)  extraInfo['Ore lavorate']  = result.hH_Lav;
-    if (timbrature?.length > 0)  extraInfo['Timbrature']    = `${timbrature.length}`;
-    if (giustificativi?.length > 0) extraInfo['Giustificativi'] = `${giustificativi.length}`;
-    if (causali?.length > 0)     extraInfo['Causali']       = `${causali.length}`;
+    if (result?.hH_Teo != null)  extraInfo[this.t('popup.oreTeoriche')]  = result.hH_Teo;
+    if (result?.hH_Lav != null)  extraInfo[this.t('popup.oreLavorate')]  = result.hH_Lav;
+    if (timbrature?.length > 0)  extraInfo[this.t('popup.timbrature')]    = `${timbrature.length}`;
+    if (giustificativi?.length > 0) extraInfo[this.t('popup.giustificativi')] = `${giustificativi.length}`;
+    if (causali?.length > 0)     extraInfo[this.t('popup.causali')]       = `${causali.length}`;
 
     return {
-      title: result?.data ? new Date(result.data).toLocaleDateString('it-IT', { weekday: 'long', day: '2-digit', month: 'long' }) : 'Dettaglio giorno',
-      content: this.get_StatoDay_icon(result) ? `Stato: ${this.get_StatoDay_color(result)}` : 'Nessun risultato calcolato',
+      title: result?.data ? this.giornoLungo(result.data) : this.t('giornata.dettaglioGiorno'),
+      content: this.get_StatoDay_icon(result) ? this.t('giornata.statoValore', { stato: this.get_StatoDay_color(result) }) : this.t('giornata.nessunRisultato'),
       extraInfo
     };
   }

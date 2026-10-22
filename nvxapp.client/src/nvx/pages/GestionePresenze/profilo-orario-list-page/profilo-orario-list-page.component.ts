@@ -1,3 +1,4 @@
+import { TranslocoService } from '@jsverse/transloco';
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
@@ -31,8 +32,8 @@ export class ProfiloOrarioListPageComponent {
     return this.sharedParameterGestionePresenzeService.Par_ProfiloOrario;
   }
   public readonly columns: NvxListColumn<Par_ProfiloOrarioModel>[] = [
-    { key: 'codice', title: 'Codice', width: '140px', mobile: 'subtitle' },
-    { key: 'descrizione', title: 'Descrizione', mobile: 'title' }
+    { key: 'codice', title: this.transloco.translate('attendance.pages.profiloOrarioList.columnCode'), width: '140px', mobile: 'subtitle' },
+    { key: 'descrizione', title: this.transloco.translate('attendance.pages.profiloOrarioList.columnDescription'), mobile: 'title' }
   ];
   public actions: NvxListAction<Par_ProfiloOrarioModel>[] = [];
   public readonly sortList = (a: Par_ProfiloOrarioModel, b: Par_ProfiloOrarioModel) => (a.descrizione ?? '').localeCompare(b.descrizione ?? '');
@@ -46,9 +47,10 @@ export class ProfiloOrarioListPageComponent {
     private parProfiloOrarioService: ParProfiloOrarioService,
     private collectionDialogService: CollectionDialogService,
     private refresherService: RefresherService,
-    private userInterfaceService: UserInterfaceService
+    private userInterfaceService: UserInterfaceService,
+    private transloco: TranslocoService
   ) {
-    this.title = 'Profili Orari';
+    this.title = this.transloco.translate('attendance.pages.profiloOrarioList.title');
     this.btnEdit = this.userInterfaceService.Btn_Modifica;
     this.btnEdit.event = this.handleButtonEditClick;
 
@@ -89,7 +91,7 @@ export class ProfiloOrarioListPageComponent {
 
   handleButtonDeleteClick = async (item: any) => {
 
-    const result = await this.collectionDialogService.ConfirmCancelDialog('Confermi la cancellazione dell Profilo Orario');
+    const result = await this.collectionDialogService.ConfirmCancelDialog(this.transloco.translate('attendance.pages.profiloOrarioList.confirmDelete'));
     if (result) {
 
       const request: GenericRequest<Par_ProfiloOrario_DeleteInModel> = new GenericRequest<Par_ProfiloOrario_DeleteInModel>(Par_ProfiloOrario_DeleteInModel);

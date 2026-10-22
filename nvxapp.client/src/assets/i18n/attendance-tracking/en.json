@@ -1,0 +1,1382 @@
+{
+  "attendance": {
+    "pages": {
+      "presentStaff": {
+        "title": "Staff present"
+      },
+      "timeSheetPowerAdmin": {
+        "title": "HR calendar",
+        "selectUser": "Select a user to view the data",
+        "colDay": "Day",
+        "colClockings": "Clockings",
+        "colJustifications": "Absence justifications",
+        "hoursTheoretical": "Sched. hrs",
+        "hoursWorked": "Worked hrs",
+        "colExtra": "Extra",
+        "colReasonCodes": "Pay codes",
+        "noClockings": "No clockings",
+        "noJustifications": "No absence justifications",
+        "noReasonCodes": "No pay codes",
+        "pendingReconciliation": "awaiting reconciliation",
+        "approveRequest": "Approve request",
+        "rejectRequest": "Reject request",
+        "editReasonCode": "Edit pay code",
+        "deleteReasonCode": "Delete pay code",
+        "addReasonCode": "Add pay code",
+        "editClocking": "Edit clocking",
+        "deleteClocking": "Delete clocking",
+        "addClocking": "Add clocking",
+        "editJustification": "Edit absence justification",
+        "deleteJustification": "Delete absence justification",
+        "addJustification": "Add absence justification",
+        "calcWholeMonth": "Calculate the whole month",
+        "justificationHeader": "Absence justification: {{name}} {{date}}",
+        "clockingHeader": "Clocking: {{type}} {{date}}",
+        "reasonCodeHeader": "Day: {{date}}",
+        "deleteReasonCodeDetail": "Delete pay code: {{code}}   {{date}}  {{value}}",
+        "editReasonCodeDetail": "Edit pay code: {{code}}   {{date}}  {{value}}",
+        "dayHeader": "Day {{day}}",
+        "calcDay": "Calculate {{day}}",
+        "calcToDay": "Calculate from 01 to {{day}}",
+        "calcFromDay": "Calculate from {{day}} to {{lastDay}}",
+        "addReasonCodeToDay": "Add pay code to day {{day}}",
+        "addClockingToDay": "Add clocking to day {{day}}",
+        "addJustificationToDay": "Add absence justification to day {{day}}",
+        "outOfEmploymentNoMovements": "{{date}}: {{status}}, day outside the employment period. No entries are allowed.",
+        "outOfEmploymentDeleteOnly": "Day outside the employment period: deletion only",
+        "noActiveEmployment": "No active employment on {{date}}",
+        "confirmDeleteReasonCode": "Confirm deletion of the pay code",
+        "confirmDeleteClocking": "Confirm deletion of the clocking",
+        "confirmDeleteJustification": "Confirm deletion of the absence justification"
+      },
+      "userDepartmentEdit": {
+        "title": "Edit employee",
+        "segPersonalData": "Personal data",
+        "segOther": "Other",
+        "segSkills": "Skills",
+        "segEmployment": "Employment (ID {{id}})",
+        "segGeneral": "General",
+        "segWorkSchedules": "Work schedule profiles",
+        "segCounters": "Counters",
+        "info": "Info",
+        "userName": "UserName",
+        "email": "Email",
+        "password": "Password",
+        "confirmPassword": "Confirm Password",
+        "role": "Role",
+        "rolesAria": "Roles",
+        "surname": "Surname",
+        "surnameRequired": "Surname is required.",
+        "surnameMaxLength": "Surname cannot exceed {{max}} characters.",
+        "name": "First name",
+        "nameRequired": "First name is required.",
+        "nameMaxLength": "First name cannot exceed {{max}} characters.",
+        "disabled": "Disabled",
+        "disabledNote": "Disabled rows are not shown in lists unless \"show disabled\" is selected.",
+        "skillsNote": "Skills determine the activities the employee can perform. If none is set, the default skill is assigned.",
+        "noSkills": "No skills assigned.",
+        "hireDate": "Hire date",
+        "dismissalDate": "Termination date",
+        "setDate": "Set",
+        "dismissalBeforeHire": "The termination date is earlier than the hire date.",
+        "contract": "Contract",
+        "contractType": "Contract type",
+        "fullTime": "Full-time",
+        "partTime": "Part-time",
+        "weeklyHours": "Contractual weekly hours",
+        "weeklyHoursNote": "Basis for the additional-hours limit; if empty, the scheduled hours of the week are used.",
+        "ccnl": "CCNL",
+        "overtimeAndAdditional": "Overtime and additional hours",
+        "payInPayslip": "Paid in the payslip",
+        "hoursBank": "Credited to the hours bank",
+        "otherContent": "other content",
+        "year": "Year",
+        "carryOver": "Previous year carry-over",
+        "readFromYear": "Read from {{year}}",
+        "monthlyAccrual": "Monthly accrual",
+        "monthlyDetail": "Monthly detail",
+        "noMonthInEmployment": "No month of the year falls within the employment period.",
+        "colMonth": "Month",
+        "colJustification": "Absence justification",
+        "colPrev": "Prev.",
+        "colCurr": "Curr.",
+        "colEndOfMonth": "Month end",
+        "colEndShort": "End",
+        "colAccrued": "Acc.",
+        "colUsed": "Used",
+        "colBalance": "Bal.",
+        "confirmDeleteWorkSchedule": "Confirm deletion of the work schedule profile",
+        "confirmDeleteSkill": "Confirm deletion of the skill",
+        "replaceCarryOverConfirm": "Replace the {{year}} carry-over with the end-of-December {{prevYear}} balances?"
+      },
+      "commessaEdit": {
+        "title": "Job order",
+        "done": "Done",
+        "tabCommessa": "Job order",
+        "tabSubCommesse": "Sub job orders",
+        "infoCommessa": "Job order info",
+        "descrizione": "Description",
+        "descrizioneRequired": "Description is required.",
+        "descrizioneMaxLength": "Description cannot exceed {{max}} characters.",
+        "cliente": "Customer",
+        "selezionaCliente": "Select customer",
+        "clienteRequired": "Customer is required.",
+        "subCommessa": "Sub job order",
+        "selezionaSubCommessa": "Select the sub job order",
+        "tabSubCommessa": "Sub job order",
+        "tabAttivita": "Activities",
+        "tabReparti": "Departments",
+        "tabUtenti": "Users",
+        "infoSubCommessa": "Sub job order info",
+        "descrizioneSubCommessa": "Sub job order description",
+        "dataInizio": "Start date",
+        "dataFine": "End date",
+        "attivitaCollegate": "Activities linked to the job order",
+        "colDescr": "Descr.",
+        "repartiCollegati": "Departments linked to the job order",
+        "repartiNote": "Only departments where at least one of the sub job order's activities is carried out can be linked.",
+        "nonCompatibile": "Not compatible",
+        "utentiCollegati": "Users linked to the job order",
+        "utentiNote": "Only users with at least one of the skills required by the sub job order's activities can be linked.",
+        "confirmAddSubCommessa": "Confirm adding a new sub job order",
+        "nuovaSubCommessa": "New sub job order",
+        "confirmDeleteSubCommessa": "Confirm deleting the sub job order",
+        "toastScollegati": "No longer compatible with the remaining activities, unlinked: {{reparti}} departments, {{utenti}} users",
+        "confirmUnlinkUser": "Do you want to unlink the user?",
+        "confirmUnlinkReparto": "Do you want to unlink the department?",
+        "confirmUnlinkAttivita": "Do you want to unlink the activity? Departments and users that are no longer compatible will be unlinked."
+      },
+      "profiloOrarioEdit": {
+        "title": "Work Schedule Profile",
+        "confirmDeleteOrario": "Confirm deleting the schedule",
+        "tabGenerale": "General",
+        "tabGiorni": "Days",
+        "tabStraordinario": "Overtime",
+        "info": "Info",
+        "descrizione": "Description",
+        "descrizioneRequired": "Description is required.",
+        "descrizioneMaxLength": "Description cannot exceed {{max}} characters.",
+        "codice": "Code",
+        "codiceRequired": "Code is required.",
+        "codiceMaxLength": "Code cannot exceed {{max}} characters.",
+        "tipoProfilo": "Profile Type",
+        "tipoSettimanale": "Weekly",
+        "tipoTurno": "Shift",
+        "tipoProfiloRequired": "Profile type is required.",
+        "numGiorniCicloValue": "No. of Cycle Days ( {{value}} / {{max}} )",
+        "numGiorniCicloAria": "No. of cycle days",
+        "numGiorniCicloRequired": "No. of cycle days is required.",
+        "orarioFestivo": "Holiday schedule",
+        "selezionaOrario": "Select the schedule",
+        "orarioRequired": "Schedule is required.",
+        "giustAssenzaIngiust": "Unjustified absence justification",
+        "selezionaGiustificativo": "Select the absence justification",
+        "giustificativoRequired": "The absence justification is required.",
+        "oreInPiu": "Extra hours",
+        "eccedenzeAttive": "Calculate overtime and additional hours",
+        "eccedenzeNote": "Hours beyond the scheduled time (plus or minus absence justifications) become additional hours (part-time, up to the full-time threshold) or overtime (beyond the threshold). If disabled, they are only flagged on the timesheet.",
+        "periodoConteggio": "Counting period",
+        "conteggioGiornaliero": "Daily",
+        "conteggioSettimanale": "Weekly (Mon-Sun)",
+        "conteggioMensile": "Monthly",
+        "sogliaGiornalieraFT": "Full-time daily threshold",
+        "sogliaSettimanaleFT": "Full-time weekly threshold (hours)",
+        "supplLimitePerc": "Additional hours limit (% of contractual weekly hours)",
+        "eccArrotondamento": "Extra hours recognised in blocks of",
+        "minuto1": "1 minute",
+        "minuti": "{{n}} minutes",
+        "eccFranchigiaMin": "Daily allowance (unrecognised minutes)",
+        "assenzeContanoSoglia": "Holidays and leave hours count towards the threshold",
+        "domenicaFestiva": "Sunday is a holiday",
+        "straoSoloAutorizzato": "Extra hours only if authorised",
+        "straoSoloAutorizzatoNote": "At most the hours authorised for the day with an approved authorisation justification are recognised (e.g. AUTS, requested by the employee or entered by HR). Any further hours remain visible as \"not authorised\", without a pay code.",
+        "notturnoDalle": "Night shift from",
+        "notturnoAlle": "to",
+        "causali": "Pay codes",
+        "causaliNote": "Optional pay codes, if empty, use the base overtime or additional hours pay code.",
+        "selezionaCausale": "Select the pay code",
+        "causaleBase": "(base pay code)",
+        "causaleRequired": "The pay code is required.",
+        "causaleStrao": "Overtime (daytime)",
+        "causaleStraoNott": "Night overtime",
+        "causaleStraoFest": "Holiday overtime",
+        "causaleStraoFestNott": "Holiday night overtime",
+        "causaleSuppl": "Additional hours (within the limit)",
+        "causaleSupplEcc": "Additional hours beyond the limit",
+        "causaleEccOrd": "Excess non-overtime hours (full-time)",
+        "causaleBancaOre": "Hour bank credit",
+        "giorniProfilo": "Profile days",
+        "giorno": "Day {{n}}",
+        "riposo": "Rest",
+        "hhTeo": "Sched. hrs"
+      },
+      "departmentEdit": {
+        "title": "Departments",
+        "tabGenerale": "General",
+        "tabAmministratori": "Administrators",
+        "tabAttivita": "Activities",
+        "tabUtenti": "Users",
+        "infoReparto": "Department info",
+        "descrizioneReparto": "Department description",
+        "amministratoriTitle": "Department administrators and request approvers",
+        "colAdmin": "Admin",
+        "colCognome": "Surname",
+        "colNome": "Name",
+        "colApprovaRichieste": "Approves requests",
+        "colOrdine": "Order",
+        "attivitaReparto": "Department activities",
+        "colAbil": "Enabled",
+        "colDescr": "Descr.",
+        "utentiReparto": "Users working in the department",
+        "utentiNote": "Only users with at least one of the skills required by the department's activities are shown. Removing an activity unlinks users who no longer have any compatible activity.",
+        "nonCompatibile": "Not compatible",
+        "colUser": "User",
+        "nessunUtenteCompatibile": "No user is compatible with the selected activities.",
+        "toastScollegati": "Unlinked from the department, they lack the skills for the remaining activities: {{nomi}}"
+      },
+      "requestListUser": {
+        "title": "Requests",
+        "columnDal": "From",
+        "columnAl": "To",
+        "columnTipo": "Type",
+        "columnDettaglio": "Details",
+        "columnStato": "Status",
+        "confirmDelete": "Do you confirm deleting the request?"
+      },
+      "companyCfg": {
+        "title": "Company settings",
+        "tabApprovazioni": "Approvals",
+        "tabVarie": "Miscellaneous",
+        "modalitaApprovazione": "Request approval mode",
+        "tipoApprovazione": "Approval Type",
+        "varie": "Miscellaneous",
+        "approvazioneSingolo": "Single administrator",
+        "approvazioneTutti": "All administrators",
+        "approvazioneGerarchica": "All administrators, hierarchically"
+      },
+      "timeSheetUser": {
+        "title": "Calendar",
+        "deleteRequest": "Delete request",
+        "deleteRevocation": "Delete revocation",
+        "headerJustification": "Absence justification: {{type}} {{date}}",
+        "headerClocking": "Clocking: {{type}} {{date}}"
+      },
+      "timeSheetAdmin": {
+        "title": "Calendar",
+        "approveRequest": "Approve request",
+        "rejectRequest": "Reject request",
+        "headerJustification": "Absence justification: {{type}} {{date}}",
+        "headerClocking": "Clocking: {{type}} {{date}}",
+        "outsideEmployment": "Day outside the employment period: the request can only be rejected"
+      },
+      "userDepartmentWizard": {
+        "title": "New User",
+        "step": "Step {{current}} of {{total}}",
+        "userInfo": "User info",
+        "userName": "UserName",
+        "email": "Email",
+        "role": "Role",
+        "rolesAria": "Roles",
+        "surname": "Surname",
+        "surnameRequired": "Surname is required.",
+        "surnameMaxLength": "Surname cannot exceed {{max}} characters.",
+        "name": "First name",
+        "nameRequired": "First name is required.",
+        "nameMaxLength": "First name cannot exceed {{max}} characters.",
+        "employment": "Employment",
+        "scheduleProfile": "Work schedule profile",
+        "from": "From",
+        "to": "To",
+        "next": "Next",
+        "back": "Back"
+      },
+      "orariEdit": {
+        "title": "Schedule",
+        "tabGeneral": "General",
+        "tabTimeRanges": "Time ranges",
+        "tabHoursBank": "Hours bank",
+        "sectionHoursBank": "Hours bank",
+        "description": "Description",
+        "descriptionRequired": "Description is required.",
+        "descriptionMaxLength": "Description cannot exceed 20 characters.",
+        "code": "Code",
+        "codeRequired": "Code is required.",
+        "codeMaxLength": "Code cannot exceed 5 characters.",
+        "clockingType": "Clocking type",
+        "typeTimeRange": "Time range",
+        "typeHoursBank": "Hours bank",
+        "typeHoursBankValue": "Hours bank value",
+        "clockingTypeRequired": "The clocking type is required.",
+        "pairsNumber": "Number of pairs",
+        "pairsZero": "0 - rest",
+        "pairsRequired": "The number of pairs is required.",
+        "noPairsNote": "No pairs: non-working day (0 theoretical hours).",
+        "colPair": "Pair",
+        "colFromLimitLeft": "From left limit",
+        "colFrom": "FROM",
+        "colFromLimitRight": "From right limit",
+        "colToLimitLeft": "To left limit",
+        "colTo": "TO",
+        "colToLimitRight": "To right limit",
+        "hoursBankPayCode": "Hours bank pay code",
+        "none": "None",
+        "theoreticalHours": "Theoretical hours"
+      },
+      "vacationPlan": {
+        "title": "Holiday plan",
+        "employee": "Employee",
+        "approveRequest": "Approve request",
+        "rejectRequest": "Reject request",
+        "headerJustification": "Absence justification: {{type}} {{date}}"
+      },
+      "festivitaEdit": {
+        "title": "Public holiday",
+        "section": "Public holiday",
+        "description": "Description",
+        "descriptionRequired": "Description is required.",
+        "descriptionMaxLength": "Description cannot exceed {{max}} characters.",
+        "type": "Type",
+        "typeRecurring": "Every year, same day",
+        "typeSingle": "Only on the given date",
+        "typeEasterMonday": "Easter Monday (calculated)",
+        "dayYearIgnored": "Day (the year is ignored)",
+        "date": "Date",
+        "note": "On public holidays the holiday schedule of the work schedule profile applies, and hours worked beyond the theoretical hours count as holiday overtime."
+      },
+      "festivitaList": {
+        "title": "Public holiday calendar",
+        "columnHoliday": "Public holiday",
+        "columnWhen": "When",
+        "easterMonday": "Monday after Easter",
+        "everyYear": "{{date}} every year",
+        "deleteConfirm": "Do you confirm deleting the public holiday"
+      },
+      "requestJustificationUser": {
+        "title": "Holiday and leave request",
+        "giustificativo": "Absence justification",
+        "seleziona": "Select",
+        "dataInizio": "Start date",
+        "dataFine": "End date",
+        "notaAutorizzazione": "Extra hours you are asking to have recognised on each day of the period (including Saturdays, Sundays and public holidays). Hours worked beyond the approved authorisation are not recognised.",
+        "giornoIntero": "Full day",
+        "ore": "Hours",
+        "min": "Min",
+        "totale": "Total",
+        "note": "Notes",
+        "notePlaceholder": "Enter notes...",
+        "fatto": "Done"
+      },
+      "notaSpeseAdmin": {
+        "title": "Expense review",
+        "tipoSpesa": "Expense type",
+        "tutti": "All",
+        "stato": "Status",
+        "filtroValide": "Pending and approved",
+        "filtroAttesa": "Pending approval",
+        "filtroApprovate": "Approved",
+        "filtroRespinte": "Rejected or cancelled",
+        "filtroTutte": "All",
+        "perDipendente": "By employee",
+        "perTipoSpesa": "By expense type",
+        "nessunaSpesa": "No expenses in the period for the current selection.",
+        "spesa": "expense",
+        "spese": "expenses",
+        "totaleMinuscolo": "total",
+        "apriDettaglio": "Open the expense report details",
+        "notaSpese": "Expense report",
+        "nessunAllegato": "No attachments",
+        "totale": "Total",
+        "azioneRevoca": "{{azione}} revocation",
+        "confermaApprovazione": "Do you confirm approval of the expense report?",
+        "confermaApprovazioneRevoca": "Do you confirm approval of the expense report revocation?",
+        "confermaRifiuto": "Do you confirm rejection of the expense report?",
+        "confermaRifiutoRevoca": "Do you confirm rejection of the expense report revocation?",
+        "revocata": "Revoked",
+        "revocaRichiesta": "Revocation requested"
+      },
+      "activityStatistics": {
+        "title": "Activity statistics",
+        "perDipendente": "By employee",
+        "totaliAttivita": "Activity totals",
+        "giornateEscluse": "Excluded days",
+        "attivita": "Activity",
+        "commessaSubCommessa": "Job order / Sub-order",
+        "cliente": "Customer",
+        "ore": "Hours",
+        "oreTotali": "Total hours",
+        "dipendente": "Employee",
+        "data": "Date",
+        "stato": "Status",
+        "nessunDato": "No data available",
+        "totaleComplessivo": "Grand total",
+        "nessunaGiornataEsclusa": "No excluded days",
+        "statoErrore": "Error",
+        "statoNonElaborata": "Not processed",
+        "statoWarning": "Warning"
+      },
+      "exportCauEdit": {
+        "title": "Export templates",
+        "generale": "General",
+        "causali": "Pay codes",
+        "descrizione": "Description",
+        "codice": "Code",
+        "tipoFile": "File type",
+        "descrizioneObbligatoria": "Description is required.",
+        "descrizioneMaxLength": "Description cannot exceed 20 characters.",
+        "codiceObbligatorio": "Code is required.",
+        "codiceMaxLength": "Code cannot exceed 5 characters.",
+        "tipoFileObbligatorio": "File type is required.",
+        "confermaCancellazione": "Do you confirm deletion of the export pay code?"
+      },
+      "notaSpesaRequestUser": {
+        "title": "Expense reimbursement request",
+        "titleModifica": "Edit expense report",
+        "salva": "Save",
+        "descrizioneNota": "Expense report description",
+        "descrizioneNotaPlaceholder": "E.g. Customer trip to Milan",
+        "spese": "Expenses",
+        "spesaN": "Expense {{n}}",
+        "togli": "Remove",
+        "data": "Date",
+        "tipoSpesa": "Expense type",
+        "scegli": "Choose",
+        "importo": "Amount (€)",
+        "descrizione": "Description",
+        "descrizionePlaceholder": "E.g. lunch with the customer, return train",
+        "allega": "Attach receipt / invoice",
+        "aggiungiSpesa": "Add expense",
+        "totale": "Total",
+        "nota": "Allowed attachments: PDF and images, up to 5 MB each and 15 MB in total. The request follows the standard approval process: once the report is approved, all its expenses are approved. Until it is approved you can edit it; saving a change puts it back awaiting approval.",
+        "erroreTipoFile": "\"{{nome}}\": only PDF files and images are allowed.",
+        "erroreDimensioneFile": "\"{{nome}}\" exceeds {{mb}} MB.",
+        "erroreMaxAllegati": "At most {{max}} attachments per expense.",
+        "erroreDimensioneTotale": "The expense report attachments exceed {{mb}} MB in total.",
+        "erroreNessunaSpesa": "Add at least one expense.",
+        "erroreData": "Expense {{n}}: enter the date.",
+        "erroreTipoSpesa": "Expense {{n}}: choose the expense type.",
+        "erroreImporto": "Expense {{n}}: enter an amount greater than zero."
+      },
+      "requestListAdmin": {
+        "title": "Requests",
+        "colCognome": "Surname",
+        "colNome": "Name",
+        "colDal": "From",
+        "colAl": "To",
+        "colTipo": "Type",
+        "colDettaglio": "Details",
+        "colStato": "Status",
+        "confermaApprovazione": "Do you confirm approval of the request?",
+        "confermaRifiuto": "Do you confirm rejection of the request?"
+      },
+      "notaSpeseUser": {
+        "title": "My expense reports",
+        "nessunaNota": "You have not sent any expense reports yet.",
+        "notaSpese": "Expense report",
+        "spesa": "expense",
+        "spese": "expenses",
+        "chiediRevoca": "Request revocation",
+        "annullaNota": "Cancel report",
+        "nuovaNota": "New expense report",
+        "revocata": "Revoked",
+        "revocaInAttesa": "Revocation pending",
+        "confermaRevoca": "The expense report has already been approved: do you confirm the revocation request?",
+        "confermaAnnullamento": "Do you confirm cancellation of the expense report?"
+      },
+      "tipoSpesaList": {
+        "title": "Expense types",
+        "colCodice": "Code",
+        "colDescrizione": "Description",
+        "nuovo": "New expense type",
+        "confermaCancellazione": "Do you confirm deletion of the expense type?"
+      },
+      "tipoSpesaEdit": {
+        "title": "Expense type",
+        "info": "Info",
+        "codice": "Code",
+        "descrizione": "Description",
+        "codiceObbligatorio": "Code is required.",
+        "codiceMaxLength": "Code cannot exceed 10 characters.",
+        "descrizioneObbligatoria": "Description is required.",
+        "descrizioneMaxLength": "Description cannot exceed 50 characters."
+      },
+      "activityEdit": {
+        "title": "Activity",
+        "segGenerale": "General",
+        "segCompetenze": "Skills",
+        "infoAttivita": "Activity info",
+        "descrizione": "Description",
+        "descrizioneInvalid": "The description is required (max 50 characters).",
+        "backgroundColor": "Background colour",
+        "textColor": "Text colour",
+        "competenzeTitle": "Skills required to perform the activity",
+        "diDescr": "of: \"{{descr}}\"",
+        "colAbil": "Enab.",
+        "colDescr": "Descr."
+      },
+      "azSediEdit": {
+        "title": "Site",
+        "segGenerale": "General",
+        "segAttivita": "Activities",
+        "infoSede": "Site info",
+        "descrizione": "Description",
+        "attivitaTitle": "Activities performed at the site",
+        "diDescr": "of: \"{{descr}}\"",
+        "colAbil": "Enab.",
+        "colDescr": "Descr."
+      },
+      "companyAttendanceWizard": {
+        "title": "Company data entry",
+        "stepOf": "Step {{step}} of {{total}}",
+        "infoAzienda": "Company info",
+        "descrizione": "Description",
+        "step2": "Step 2",
+        "secondaPagina": "Second page - to be implemented",
+        "next": "Next",
+        "back": "Back",
+        "usersWarning": "Warning: to access this account the following users will be created    ->   {{admin}} / {{powerAdmin}}"
+      },
+      "customerEdit": {
+        "title": "Customer",
+        "anagrafica": "Personal data",
+        "ragioneSociale": "Company name",
+        "ragioneSocialeRequired": "The company name is required.",
+        "ragioneSocialeMaxLength": "The company name cannot exceed {{max}} characters.",
+        "referente": "Contact person",
+        "datiFiscali": "Tax details",
+        "partitaIva": "VAT number",
+        "partitaIvaPattern": "The VAT number consists of 11 digits.",
+        "codiceFiscale": "Tax code",
+        "codiceFiscalePattern": "The tax code is 16 characters (individual) or 11 digits (company).",
+        "sede": "Site",
+        "indirizzo": "Address",
+        "cap": "Postcode",
+        "citta": "City",
+        "provincia": "Province",
+        "nazione": "Country",
+        "provinciaPattern": "The province is the 2-letter code (e.g. MI).",
+        "nazionePattern": "The country is the 2-letter code (e.g. IT).",
+        "contatti": "Contacts",
+        "telefono": "Phone",
+        "email": "Email",
+        "pec": "PEC",
+        "pecInvalid": "Enter a valid PEC address.",
+        "fatturazioneElettronica": "Electronic invoicing",
+        "codiceDestinatario": "Recipient code (SDI)",
+        "codiceDestinatarioPattern": "The recipient code is 7 characters (6 for the Public Administration).",
+        "note": "Notes"
+      },
+      "departmentList": {
+        "title": "Departments",
+        "columnReparto": "Department",
+        "fabAdd": "Item 1",
+        "confirmDelete": "Confirm deletion of the department"
+      },
+      "exportCausali": {
+        "title": "Reason code export",
+        "dal": "From",
+        "al": "To",
+        "tipoExport": "Export type",
+        "modelloPlaceholder": "Select the template",
+        "modelloRequired": "The template is required",
+        "confirmExport": "Confirm the reason code export? "
+      },
+      "justificationEdit": {
+        "title": "Absence justifications",
+        "info": "Info",
+        "descrizione": "Description",
+        "descrizioneRequired": "Description is required.",
+        "descrizioneMaxLength": "Description cannot exceed {{max}} characters.",
+        "codice": "Code",
+        "codiceRequired": "Code is required.",
+        "codiceMaxLength": "Code cannot exceed {{max}} characters.",
+        "backgroundColor": "Background colour",
+        "textColor": "Text colour",
+        "segno": "Sign",
+        "segnoNeutral": "No effect",
+        "segnoRequired": "The sign type is required.",
+        "causale": "Reason code",
+        "causalePlaceholder": "Select the reason code",
+        "causaleRequired": "The reason code is required.",
+        "visualizzaInPianoFerie": "Show in holiday plan",
+        "tipoContatore": "Counter type",
+        "noContatore": "No counter",
+        "contatore": "Counter",
+        "contatoreConAvviso": "Counter with warning",
+        "contatoreConBlocco": "Counter with block",
+        "tipoContatoreRequired": "The counter type is required.",
+        "bancaOre": "Hour bank recovery",
+        "autorizzaStraordinario": "Authorise extra hours",
+        "autorizzaStraordinarioNote": "Overtime authorisation: the hours of the approved justification are the maximum extra hours recognised on that day (profiles with \"Extra hours only if authorised\"). It does not change the hours due and does not write reason codes: leave the reason code empty and the sign neutral. The calculation never approves these requests automatically.",
+        "bancaOreNote": "The counter's accrued amount is the extra hours credited to the hour bank in approved timesheets."
+      },
+      "quadraturaMensile": {
+        "title": "Monthly reconciliation",
+        "vuoto": "No employee with an employment relationship in the selected month.",
+        "selezionaDaApprovare": "Select to approve",
+        "approvaN": "Approve ({{n}})",
+        "notaApprova": "Only closed timesheets can be approved: a month in progress remains provisional.",
+        "colDipendente": "Employee",
+        "colStato": "Status",
+        "colLavorate": "Worked",
+        "colInPiu": "Extra",
+        "colSuppl": "Add.",
+        "colStrao": "Overtime",
+        "colEccedenti": "Excess",
+        "colNonRic": "Not recog.",
+        "mLav": "Worked",
+        "mEcced": "Excess",
+        "provv": "prov.",
+        "nonAutoriz": "not auth.",
+        "daAutorizzare": "to authorise",
+        "bancaOre": "hour bank",
+        "ricalcolare": "Recalculate the month from the HR Calendar.",
+        "partTime": "Part-time",
+        "fullTime": "Full-time",
+        "statoNonCalcolato": "Not calculated",
+        "statoApprovato": "Approved",
+        "statoDaApprovare": "To be approved",
+        "statoProvvisorio": "Provisional",
+        "confirmApprova": "Approve {{n}} timesheets? The days of the month will no longer be editable."
+      },
+      "requestClockingUser": {
+        "title": "Request clocking",
+        "commessaAttivita": "Job order activity",
+        "attivitaPlaceholder": "Select the activity",
+        "attivitaRequired": "The activity is required."
+      },
+      "timeClockUser": {
+        "title": "Clock-in terminal",
+        "ultimaTimbratura": "Last clocking: {{value}}",
+        "commessaAttivita": "Job order activity",
+        "attivitaPlaceholder": "Select the activity",
+        "attivitaRequired": "The activity is required."
+      },
+      "userDepartmentList": {
+        "title": "Users",
+        "columnUser": "User",
+        "columnSurname": "Surname",
+        "columnName": "Name",
+        "fabAdd": "Item 1",
+        "showDisabled": "Show disabled"
+      },
+      "justificationList": {
+        "title": "Absence justifications",
+        "confirmDelete": "Confirm deletion of the absence justification",
+        "columnCode": "Code",
+        "columnDescription": "Description",
+        "columnCounter": "Counter"
+      },
+      "exportCauList": {
+        "title": "Export templates",
+        "confirmDelete": "Confirm deletion of the table",
+        "columnCode": "Code",
+        "columnDescription": "Description",
+        "columnFileType": "File type"
+      },
+      "profiloOrarioList": {
+        "title": "Work schedule profiles",
+        "confirmDelete": "Confirm deletion of the work schedule profile",
+        "columnCode": "Code",
+        "columnDescription": "Description"
+      },
+      "orariList": {
+        "title": "Schedules",
+        "confirmDelete": "Confirm deletion of the schedule",
+        "columnCode": "Code",
+        "columnDescription": "Description"
+      },
+      "commessaList": {
+        "title": "Job orders",
+        "confirmDelete": "Confirm deletion of the job order?",
+        "fabAdd": "New job order",
+        "columnJob": "Job order"
+      },
+      "causaliList": {
+        "title": "Reason codes",
+        "confirmDelete": "Confirm deletion of the reason code",
+        "fabAdd": "New reason code",
+        "columnCode": "Code",
+        "columnDescription": "Description"
+      },
+      "azSediList": {
+        "title": "Sites",
+        "confirmDelete": "Confirm deletion of the site?",
+        "fabAdd": "New site",
+        "columnSite": "Site"
+      },
+      "customerList": {
+        "title": "Customers",
+        "confirmDelete": "Confirm deletion of the customer?",
+        "fabAdd": "New",
+        "columnCustomer": "Customer"
+      },
+      "activityList": {
+        "title": "Activities",
+        "confirmDelete": "Confirm deletion of the activity",
+        "fabAdd": "New activity",
+        "columnActivity": "Activity"
+      },
+      "competenceList": {
+        "title": "Competences",
+        "confirmDelete": "Confirm deletion of the competence?",
+        "fabAdd": "New competence",
+        "columnCompetence": "Competence"
+      },
+      "mytemplate1List": {
+        "title": "MyTemplate1",
+        "confirmDelete": "Confirm deletion?",
+        "fabAdd": "New",
+        "columnDescription": "Description"
+      },
+      "causaliEdit": {
+        "title": "Reason code",
+        "info": "Info",
+        "description": "Description",
+        "descriptionRequired": "Description is required.",
+        "descriptionMaxLength": "Description cannot exceed {{max}} characters.",
+        "code": "Code",
+        "codeRequired": "Code is required.",
+        "codeMaxLength": "Code cannot exceed {{max}} characters."
+      },
+      "competenceEdit": {
+        "title": "Competences",
+        "info": "Info",
+        "description": "Description",
+        "descriptionRequired": "Description is required.",
+        "descriptionMaxLength": "Description cannot exceed {{max}} characters."
+      },
+      "mytemplate1Edit": {
+        "title": "MyTemplate1",
+        "info": "Info",
+        "description": "Description",
+        "descriptionRequired": "Description is required.",
+        "descriptionMaxLength": "Description cannot exceed {{max}} characters."
+      },
+      "selection": {
+        "title": "xxx"
+      }
+    },
+    "components": {
+      "cartellinoQuadratura": {
+        "riepilogoMese": "Monthly summary",
+        "sintesiLavorate": "worked {{lav}} of {{teo}}",
+        "sintesiInPiu": "extra {{min}}",
+        "sintesiQualificate": "classified {{min}}",
+        "nessunCalcolo": "no calculation for the month",
+        "partTime": "Part-time",
+        "fullTime": "Full-time",
+        "straoNonAttivo": "overtime calculation not enabled in the work schedule profile",
+        "nessunGiorno": "no days",
+        "settimane": "Weeks",
+        "settimanaInAttesa": "awaiting reconciliation: +{{min}}",
+        "settimanaInPiu": "extra {{ecc}}, classified {{qual}}",
+        "noteHR": "HR notes:",
+        "approvatoIl": "Approved on",
+        "riconosciuteLabel": "Recognised extra hours (h:mm, empty = all)",
+        "riconosciutePlaceholder": "all",
+        "applicaRicalcola": "Apply and recalculate",
+        "riconosciTutte": "Recognise all",
+        "rifiutaTutte": "Reject all",
+        "riapri": "Reopen",
+        "stato": {
+          "approvato": "Approved",
+          "daApprovare": "Closed, awaiting approval",
+          "provvisorio": "Provisional, period in progress"
+        },
+        "conteggio": {
+          "settimanale": "weekly count",
+          "mensile": "monthly count",
+          "giornaliero": "daily count"
+        },
+        "destinazione": {
+          "bancaOre": "Credited to the hour bank",
+          "pagamento": "Paid out"
+        },
+        "voci": {
+          "oreTeoriche": "Expected theoretical hours",
+          "notaPartTime": "part-time {{ore}}h/week",
+          "oreLavorate": "Actual hours worked",
+          "notaTimbratureNette": "net clockings",
+          "diCuiOrdinarie": "of which ordinary",
+          "notaPagaBase": "paid at the base rate",
+          "assenze": "Leave, holidays, absences",
+          "notaSottratti": "deducted from theoretical hours",
+          "oreInPiu": "Extra hours",
+          "notaOltreTeorico": "above theoretical hours, after rounding",
+          "inAttesaQuadratura": "awaiting reconciliation",
+          "notaPeriodoInCorso": "counting period in progress",
+          "compensate": "offset",
+          "notaCompensate": "make up missing hours in the same period",
+          "supplementare": "Additional hours",
+          "notaSupplementare": "within the contract limit",
+          "supplementareOltre": "Additional hours over the limit",
+          "straordinario": "Overtime",
+          "notaStraordinario": "above the full-time threshold",
+          "straoNotturno": "Night overtime",
+          "straoFestivo": "Holiday overtime",
+          "straoFestivoNotturno": "Holiday night overtime",
+          "eccedentiNonStrao": "Excess hours not counted as overtime",
+          "notaEccedenti": "above theoretical hours but within the threshold",
+          "nonAutorizzate": "Unauthorised extra hours",
+          "notaNonAutorizzate": "beyond the approved authorisation: not recognised",
+          "inAttesaAutorizzazione": "awaiting authorisation",
+          "notaInAttesaAutorizzazione": "requests still to be approved",
+          "nonRiconosciute": "Not recognised",
+          "notaNonRiconosciute": "excluded by HR",
+          "saldo": "Period balance",
+          "notaSaldo": "worked minus workable, up to yesterday"
+        },
+        "festivo": "(holiday)",
+        "domandaApprova": "Approve the timesheet for {{periodo}}? The days of the month will no longer be editable.",
+        "domandaRiapri": "Reopen the timesheet for {{periodo}}? The days become editable and recalculable again."
+      },
+      "dipSelectorModal": {
+        "selezionaDipendente": "Select employee",
+        "selezionaDipendenti": "Select employees",
+        "cercaPlaceholder": "Search by surname, first name...",
+        "selezionaTutti": "Select all",
+        "deselezionaTutti": "Deselect all",
+        "selezionati": "{{count}} selected",
+        "nessunDipendente": "No employees found"
+      },
+      "editDipGgCausaliDialog": {
+        "title": "Pay code",
+        "causale": "Pay code",
+        "selezionaCausale": "Select the pay code",
+        "causaleObbligatoria": "The pay code is required.",
+        "valore": "Value"
+      },
+      "editDipGgGiustificativiDialog": {
+        "title": "Absence justification",
+        "giustificativo": "Absence justification",
+        "selezionaGiustificativo": "Select the absence justification",
+        "giustificativoObbligatorio": "The absence justification is required.",
+        "valore": "Value"
+      },
+      "editDipGgTimbraturaDialog": {
+        "title": "Clocking",
+        "giornoCompetenza": "Reference day",
+        "timbratura": "Clocking",
+        "timbraturaOriginale": "Original clocking",
+        "timbraturaArrotondata": "Rounded clocking",
+        "commessaAttivita": "Job order activity",
+        "selezionaAttivita": "Select the activity",
+        "attivitaObbligatoria": "The activity is required."
+      },
+      "editDipProfiloOrarioDialog": {
+        "title": "Work schedule profile",
+        "profiloOrario": "Work schedule profile",
+        "selezionaProfilo": "Select a work schedule profile",
+        "dal": "From",
+        "al": "To",
+        "numGiornoPartenza": "Cycle start day no. ( {{giorno}} / {{totale}} )"
+      },
+      "editParExportCauCausaliComponent": {
+        "title": "Export pay code",
+        "codice": "Code",
+        "codiceObbligatorio": "code is required.",
+        "codiceMaxLength": "code cannot exceed {{max}} characters.",
+        "causale": "Pay code",
+        "selezionaCausale": "Select the pay code",
+        "causaleObbligatoria": "The pay code is required.",
+        "tipoElaborazione": "Processing type",
+        "giornaliera": "Daily",
+        "mensile": "Monthly",
+        "tipoElaborazioneObbligatorio": "The processing type is required.",
+        "unita": "Unit",
+        "ore": "Hours",
+        "giorni": "Days",
+        "importo": "Amount",
+        "tipoUnitaObbligatorio": "The unit type is required."
+      },
+      "editParOrarioDettaglioOrarioIntervalloHhdialog": {
+        "title": "Time interval",
+        "varie": "General",
+        "orarioInizio": "Start time",
+        "orarioFine": "End time",
+        "causaleHHLav": "Worked hours pay code",
+        "selezionaCausale": "Select the pay code",
+        "causaleObbligatoria": "The pay code is required.",
+        "limiteSX": "Lower limit",
+        "limiteDX": "Upper limit",
+        "dalle": "From",
+        "alle": "To",
+        "tipoArrotondamento": "Rounding type",
+        "tipoArrotondamentoObbligatorio": "The rounding type is required.",
+        "segnoArrotondamento": "Rounding direction",
+        "segnoArrotondamentoObbligatorio": "The rounding direction is required.",
+        "usaPerMatch": "Use for matching"
+      },
+      "editParProfiloOrarioDettaglioOrarioDialog": {
+        "title": "Schedule",
+        "orario": "Schedule",
+        "selezionaOrario": "Select the schedule",
+        "orarioObbligatorio": "Schedule is required."
+      },
+      "timeSheetEngineCaller": {
+        "title": "Calculate",
+        "tipoCalcolo": "Calculation type",
+        "selezione": "Selection",
+        "dal": "From",
+        "al": "To",
+        "approvaRichiesteTimbrature": "Approve clocking requests",
+        "approvaRichiesteGiustificativo": "Approve absence justification requests",
+        "generaTimbratureMancanti": "Generate missing clockings",
+        "generaGiustificativiAssenza": "Generate absence justifications"
+      },
+      "seletionParAttivitaDialog": {
+        "title": "Select activities",
+        "descrizione": "Description",
+        "tutteCollegate": "All activities are already linked."
+      },
+      "seletionParCompetenzaDialog": {
+        "title": "Select skills",
+        "descrizione": "Description",
+        "tutteAssegnate": "All skills are already assigned."
+      },
+      "seletionSediRepartoDialog": {
+        "title": "Select",
+        "nota": "Only departments where at least one of the sub-order's activities takes place are shown."
+      },
+      "seletionSediRepartoUserDialog": {
+        "title": "Select",
+        "nota": "Only employees with at least one of the skills required by the sub-order's activities are shown."
+      },
+      "userAttendanceWizardDialog": {
+        "title": "New employee",
+        "step": "Step {{n}} of {{totale}} - {{titolo}}",
+        "steps": {
+          "utente": "User",
+          "rapporto": "Employment relationship",
+          "profilo": "Work schedule profile",
+          "competenze": "Skills",
+          "maturazione": "Counter accrual"
+        },
+        "avanti": "Next",
+        "indietro": "Back",
+        "datiUtente": "User details",
+        "cognome": "Surname",
+        "cognomeObbligatorio": "Surname is required.",
+        "nome": "First name",
+        "nomeObbligatorio": "First name is required.",
+        "userNameObbligatorio": "UserName is required.",
+        "userNameGiaUsato": "This UserName is already used by another user.",
+        "emailGiaUsata": "This email is already used by another user.",
+        "ruolo": "Role",
+        "ruoli": "Roles",
+        "rapportoLavoro": "Employment relationship",
+        "dataAssunzione": "Hiring date",
+        "dataAssunzioneObbligatoria": "The hiring date is required.",
+        "tipoContratto": "Contract type",
+        "fullTime": "Full-time",
+        "partTime": "Part-time",
+        "oreSettimanali": "Contractual weekly hours",
+        "notaOreSettimanali": "Basis for the additional-hours limit; if empty, the week's theoretical hours are used.",
+        "straordinarioSupplementare": "Overtime and additional hours",
+        "pagamento": "Paid in the payslip",
+        "bancaOre": "Credited to the hour bank",
+        "profiloOrario": "Work schedule profile",
+        "selezionaProfilo": "Select the work schedule profile",
+        "profiloObbligatorio": "The work schedule profile is required.",
+        "giornoPartenza": "Cycle start day",
+        "giornoPartenzaMin": "The start day must be at least 1.",
+        "notaProfilo": "The profile applies from the hiring date.",
+        "competenze": "Skills",
+        "notaCompetenze": "Skills determine the activities the employee can perform. Without skills, the default one is assigned.",
+        "maturazioneMensile": "Monthly accrual",
+        "formatoOreNonValido": "Invalid hours format (HHH:MM).",
+        "nessunGiustificativoContatore": "No absence justification with a counter configured.",
+        "erroreSalvataggio": "Save failed.",
+        "creazioneUtenteNonRiuscita": "User creation failed.",
+        "datiDipendenteNonDisponibili": "User created, but the employee data is not available: complete it from the employee's record.",
+        "salvataggioDipendenteNonRiuscito": "User created, but saving the employee data failed: complete it from the employee's record."
+      },
+      "sediRepartoUserNavigation": {
+        "anno": "Year",
+        "mese": "Month",
+        "mesePrecedente": "Previous month",
+        "meseSuccessivo": "Next month",
+        "sede": "Site",
+        "selezionaSede": "Select a site",
+        "reparto": "Department",
+        "selezionaReparti": "Select one or more departments",
+        "dipendente": "Employee",
+        "dipendenti": "Employees",
+        "utentePrecedente": "Previous user",
+        "utenteSuccessivo": "Next user",
+        "selezionaDipendente": "Select employee",
+        "selezionaDipendenti": "Select employees",
+        "dipendentiSelezionati": "{{count}} employees selected"
+      },
+      "sediRepartoUserSelection": {
+        "anno": "Year",
+        "mese": "Month",
+        "mesePrecedente": "Previous month",
+        "meseSuccessivo": "Next month",
+        "sede": "Site",
+        "selezionaSede": "Select a site",
+        "reparto": "Department",
+        "selezionaReparti": "Select one or more departments",
+        "dipendente": "Employee",
+        "dipendenti": "Employees",
+        "utentePrecedente": "Previous user",
+        "utenteSuccessivo": "Next user",
+        "selezionaDipendente": "Select employee",
+        "selezionaDipendenti": "Select employees",
+        "dipendentiSelezionati": "{{count}} employees selected"
+      }
+    },
+    "pipes": {
+      "statoRichiestaLongText": {
+        "diretta": "Direct",
+        "immessa": "Submitted",
+        "cancellata": "Cancelled",
+        "rifiutata": "Rejected",
+        "approvazioneInCorso": "Approval in progress",
+        "parzialmenteApprovata": "Partially approved",
+        "approvata": "Approved"
+      },
+      "statoRichiestaShortText": {
+        "diretta": "Dir.",
+        "immessa": "Subm.",
+        "cancellata": "Canc.",
+        "rifiutata": "Rej.",
+        "approvazioneInCorso": "In appr.",
+        "parzialmenteApprovata": "Part. appr.",
+        "approvata": "Appr."
+      },
+      "tipoContatoreToLongText": {
+        "noContatore": "No counter",
+        "contatore": "Counter",
+        "contatoreConAvviso": "Counter with warning",
+        "contatoreConBlocco": "Counter with block"
+      },
+      "tipoRichiestaToLongText": {
+        "timbratura": "Clocking",
+        "giustificativo": "Absence justification",
+        "notaSpesa": "Expense report"
+      },
+      "tipoRichiestaToShortText": {
+        "timbratura": "Clock.",
+        "giustificativo": "Just.",
+        "notaSpesa": "Expense"
+      },
+      "tipoTimbraturaToLongText": {
+        "entrata": "In",
+        "uscita": "Out",
+        "senzaVerso": "No direction",
+        "attivita": "Activity"
+      },
+      "tipoTimbraturaToShortText": {
+        "entrata": "I",
+        "uscita": "O",
+        "senzaVerso": "N",
+        "attivita": "A"
+      }
+    },
+    "menu": {
+      "richieste": "Requests",
+      "calendarioHR": "HR calendar",
+      "quadraturaMensile": "Monthly reconciliation",
+      "exportCausali": "Pay code export",
+      "statisticheAttivita": "Activity statistics",
+      "personalePresente": "Staff present",
+      "pianoFerie": "Holiday plan",
+      "calendario": "Calendar",
+      "utenti": "Users",
+      "parametri": "Parameters",
+      "giustificativi": "Absence justifications",
+      "causali": "Pay codes",
+      "configurazione": "Configuration",
+      "orari": "Schedules",
+      "profiliOrari": "Work schedule profiles",
+      "festivita": "Public holidays",
+      "modelliExport": "Export templates",
+      "tipiSpesa": "Expense types",
+      "notaSpese": "Expense reports",
+      "esameSpese": "Expense review",
+      "gestioneCommesse": "Job order management",
+      "commesse": "Job orders",
+      "clienti": "Customers",
+      "reparti": "Departments",
+      "sedi": "Sites",
+      "attivita": "Activities",
+      "competenze": "Skills",
+      "presenze": "Attendance",
+      "timbratura": "Clock in/out",
+      "richiestaGiustificativo": "Absence justification request",
+      "richiestaTimbratura": "Clocking request",
+      "richiestaRimborso": "Reimbursement request",
+      "mieNoteSpese": "My expense reports"
+    },
+    "showcase": {
+      "brand": {
+        "slogan": "Your company's attendance, requests and expense reports, in the cloud."
+      },
+      "home": {
+        "etichetta": "Cloud attendance management",
+        "titolo": "Your employees' attendance, without paper sheets or chasing people",
+        "sottotitolo": "Clockings, holidays, leave, overtime and expense reports in a single app: employees request, managers approve, and at month end the timesheet is ready for payroll.",
+        "ctaPrimaria": "Try it free",
+        "ctaSecondaria": "Discover the features",
+        "punti": {
+          "timbratura": {
+            "title": "Clock in from anywhere",
+            "text": "Clock in and out from your smartphone or computer; corrections go through a request."
+          },
+          "richieste": {
+            "title": "Requests and approvals",
+            "text": "Holidays, leave and absence justifications reach the department manager, who approves or rejects them with one click."
+          },
+          "cartellino": {
+            "title": "Always up-to-date timesheet",
+            "text": "Hours worked, absences and overtime calculated every day according to each person's work schedule profile."
+          },
+          "noteSpese": {
+            "title": "Expense reports",
+            "text": "Reimbursements with receipts and invoices attached, approved together with the report."
+          }
+        },
+        "passiTitolo": "Up and running in three steps",
+        "passi": {
+          "registra": {
+            "title": "Register your company",
+            "text": "Attendance management is active straight away, with pay codes and parameters ready to use."
+          },
+          "organizza": {
+            "title": "Organise",
+            "text": "Sites, departments, schedules and approvers: every request reaches the right person."
+          },
+          "chiudi": {
+            "title": "Close the month",
+            "text": "Timesheet reconciliation and approval, then the pay code export for payroll."
+          }
+        },
+        "chiusuraTitolo": "No more attendance sheets",
+        "chiusuraTesto": "Register your company and try attendance management with your employees."
+      },
+      "features": {
+        "titolo": "Features",
+        "sottotitolo": "Everything you need to manage attendance and absences, from clocking in to the payroll export.",
+        "sezioni": {
+          "vocale": {
+            "title": "Voice commands and chat",
+            "text": "Speak or write to the assistant: clock in, request an absence justification or open the page you need, without looking for it in the menu."
+          },
+          "timbrature": {
+            "title": "Clockings",
+            "text": "Clock in and out, and request corrections for forgotten or wrong clockings."
+          },
+          "giustificativi": {
+            "title": "Absence justifications",
+            "text": "Holidays, leave, sickness and the other reason codes, requested by the employee and approved by the manager."
+          },
+          "straordinari": {
+            "title": "Overtime and hour bank",
+            "text": "Overtime authorised with an absence justification, and extra hours credited to the hour bank in approved timesheets."
+          },
+          "reparti": {
+            "title": "Departments and approvers",
+            "text": "For each department, who administers and who approves requests, with the approval mode chosen by the company."
+          },
+          "calendario": {
+            "title": "Calendar and holiday plan",
+            "text": "Each employee's calendar, the HR calendar and the holiday plan for the whole company."
+          },
+          "presenti": {
+            "title": "Staff present",
+            "text": "Who is at work, who is absent and why, in real time."
+          },
+          "profili": {
+            "title": "Work schedule profiles",
+            "text": "Schedules, public holidays and sites: the timesheet is calculated on each person's rules."
+          },
+          "quadratura": {
+            "title": "Monthly reconciliation",
+            "text": "Check of the month's timesheets, anomalies highlighted and bulk approval."
+          },
+          "export": {
+            "title": "Payroll export",
+            "text": "Pay code export with configurable templates, ready for your payroll software."
+          },
+          "noteSpese": {
+            "title": "Expense reports",
+            "text": "Reimbursements with multiple expenses and attachments; approving the report approves all its expenses."
+          },
+          "commesse": {
+            "title": "Job orders and activities",
+            "text": "Customers, job orders and activities to know what is being worked on, with statistics."
+          },
+          "menu": {
+            "title": "Tailored menu",
+            "text": "The administrator chooses which pages administrators and employees can see."
+          }
+        }
+      },
+      "pricing": {
+        "titolo": "Pricing",
+        "sottotitolo": "You pay for the employees you manage: all features are always included.",
+        "piani": {
+          "prova": {
+            "nome": "Trial",
+            "periodo": "for 30 days",
+            "descrizione": "To try it with your employees.",
+            "cta": "Start the trial"
+          },
+          "azienda": {
+            "nome": "Business",
+            "periodo": "per employee per month",
+            "descrizione": "For small and medium-sized businesses.",
+            "cta": "Choose Business"
+          },
+          "studio": {
+            "nome": "Practice",
+            "prezzo": "Custom",
+            "descrizione": "For labour consultants and payroll firms.",
+            "cta": "Contact us"
+          }
+        },
+        "caratteristiche": {
+          "tutteLeFunzioni": "All features",
+          "fino10Dipendenti": "Up to 10 employees",
+          "causaliPronte": "Ready-made pay codes and parameters",
+          "timbraturaSmartphone": "Clock in from your smartphone",
+          "exportPaghe": "Payroll export",
+          "assistenzaEmailTelefono": "Email and phone support",
+          "piuAziende": "Multiple client companies",
+          "accessoPerCliente": "Access on behalf of the client",
+          "modelliExport": "Dedicated export templates",
+          "assistenzaPrioritaria": "Priority support"
+        },
+        "nota": "Prices exclude VAT. No commitment: cancel whenever you like.",
+        "domande": {
+          "installare": {
+            "domanda": "Do employees need to install anything?",
+            "risposta": "No: they clock in and make requests from the browser on their smartphone or computer."
+          },
+          "paghe": {
+            "domanda": "Can I use it with my payroll software?",
+            "risposta": "Yes: the pay code export is configured with templates suited to the payroll software you use."
+          },
+          "approvazione": {
+            "domanda": "Who approves requests?",
+            "risposta": "The approvers of the employee's department; the administrator can approve for everyone."
+          },
+          "consulente": {
+            "domanda": "I am a labour consultant: can I manage several companies?",
+            "risposta": "Yes, with the Practice plan you manage your client companies and log in on their behalf when needed."
+          }
+        }
+      },
+      "about": {
+        "titolo": "About us",
+        "sottotitolo": "For years we have worked alongside labour consultants, HR offices and companies.",
+        "paragrafo1": "We know first-hand the work of those who close attendance at month end: sheets to double-check, requests by email, pay codes to copy into the payroll software.",
+        "paragrafo2": "{{siteName}} was created to remove this work: employees request, managers approve and the data reaches payroll already checked.",
+        "valori": {
+          "semplice": {
+            "title": "Simple for employees",
+            "text": "Clocking in and requesting leave takes just a few seconds."
+          },
+          "preciso": {
+            "title": "Accurate for the HR office",
+            "text": "Schedule rules, pay codes and approvals always tracked."
+          },
+          "vicino": {
+            "title": "Close to consultants",
+            "text": "Exports and templates designed with those who process payroll."
+          }
+        }
+      },
+      "register": {
+        "titolo": "Register your company",
+        "sottotitolo": "Create your company's account: attendance management is active straight away, with pay codes and parameters ready.",
+        "vantaggi": {
+          "gratis": "Free for 30 days",
+          "attiva": "Attendance management already active",
+          "nessunaCarta": "No credit card"
+        },
+        "condizioni": "I accept the terms of service and the privacy policy",
+        "inviata": "We have sent you an email with the link to activate your account: open it and attendance management will be ready straight away.",
+        "confermaTitolo": "Account activation",
+        "esito": "Your company is ready with attendance management active. These are the users created: log in with the password you chose."
+      }
+    },
+    "services": {
+      "timeSheet": {
+        "richiestaDalAl": "Request from {{dal}} to {{al}}",
+        "fuoriRapporto": {
+          "prima": "Not yet hired",
+          "dopo": "Terminated",
+          "tra": "Outside employment"
+        },
+        "eccedenza": {
+          "suppl": "Add.",
+          "supplOltre": "Add. over",
+          "strao": "OT",
+          "straoNott": "OT night",
+          "straoFest": "OT hol.",
+          "straoFestNott": "OT hol. night",
+          "eccedenti": "Excess",
+          "nonRic": "Not rec.",
+          "inAttesaAutorizzazione": "awaiting authorisation {{ore}}",
+          "nonAutorizzate": "unauthorised {{ore}}",
+          "compensate": "offset {{ore}}",
+          "bancaOre": "(hour bank)",
+          "oreMancanti": "Missing hours compared to workable hours",
+          "oreInPiuProvvisorie": "Provisional extra hours: classified at the end of the counting period",
+          "oreInPiu": "Extra hours"
+        },
+        "statoConRevoca": "({{stato}}) Revocation {{revoca}}",
+        "giustificativo": "Absence justification",
+        "contatori": "Counters",
+        "contatoriInfo": {
+          "mesePrecMaturato": "Prev. month accrued",
+          "mesePrecGoduto": "Prev. month used",
+          "mesePrecSaldo": "Prev. month balance",
+          "meseCorrMaturato": "Curr. month accrued",
+          "meseCorrGoduto": "Curr. month used",
+          "meseCorrSaldo": "Curr. month balance",
+          "mesiSuccMaturato": "Next months accrued",
+          "mesiSuccGoduto": "Next months used",
+          "mesiSuccSaldo": "Next months balance"
+        },
+        "popup": {
+          "timbratura": "Clocking",
+          "originale": "Original",
+          "arrotondata": "Rounded",
+          "giornoCompetenza": "Reference day",
+          "statoRichiesta": "Request status",
+          "attivita": "Activity",
+          "oreTeoriche": "Theoretical hours",
+          "oreLavorate": "Hours worked",
+          "timbrature": "Clockings",
+          "giustificativi": "Absence justifications",
+          "causali": "Pay codes"
+        },
+        "giornata": {
+          "statoGiornata": "Day status",
+          "nessunDato": "No data available",
+          "stato": {
+            "init": "⬜ Not yet processed",
+            "ok": "✅ Day correct",
+            "locked": "🔒 Day locked",
+            "warning": "⚠️ Warnings present",
+            "err": "❌ Errors present"
+          },
+          "err": {
+            "timbratureMancanti": "Missing clockings compared to the expected schedule",
+            "oreInferiori": "Hours worked below the expected hours"
+          },
+          "oreSuperiori": "Hours worked above the expected hours (see the \"Extra\" column)",
+          "erroreN": "Error {{n}}",
+          "avvertimentoN": "Warning {{n}}",
+          "statoSconosciuto": "Unknown status",
+          "dettaglioGiorno": "Day detail",
+          "statoValore": "Status: {{stato}}",
+          "nessunRisultato": "No calculated result"
+        }
+      }
+    }
+  }
+}

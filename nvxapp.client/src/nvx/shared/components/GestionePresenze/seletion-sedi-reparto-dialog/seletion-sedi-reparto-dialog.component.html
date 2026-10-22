@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Seleziona</ion-title>
+    <ion-title>{{ title }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -10,7 +10,7 @@
       <ion-card-content>
 
         @if (filterIdAz_SediReparto) {
-          <ion-note>Sono proposti solo i reparti in cui si svolge almeno una delle attività della sub commessa.</ion-note>
+          <ion-note>{{ 'attendance.components.seletionSediRepartoDialog.nota' | transloco }}</ion-note>
         }
 
         <br />

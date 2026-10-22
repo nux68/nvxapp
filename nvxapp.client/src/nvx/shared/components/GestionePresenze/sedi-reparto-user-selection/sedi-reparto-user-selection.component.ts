@@ -1,4 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
+import { TranslocoService } from '@jsverse/transloco';
+import { LanguageService } from '../../../../Utility/infrastructure/language.service';
 import { AzSediRepartoService } from '../../../../ClientServer-Service/GestionePresenze/Az_SediReparto/az-sedi-reparto.service';
 import { AzSediService } from '../../../../ClientServer-Service/GestionePresenze/Az_Sedi/az-sedi.service';
 import { AzSediRepartoUserServiceService } from '../../../../ClientServer-Service/GestionePresenze/Az_SediRepartoUser/az-sedi-reparto-user-service.service';
@@ -57,14 +59,8 @@ export class SediRepartoUserSelectionComponent implements OnInit {
   public selectedYear: number | null = null;
   public selectedMonth: number | null = null; // 1-12
   public yearList: number[] = [];
-  public monthList: { value: number, name: string }[] = [
-    { value: 1, name: 'Gennaio' }, { value: 2, name: 'Febbraio' },
-    { value: 3, name: 'Marzo' }, { value: 4, name: 'Aprile' },
-    { value: 5, name: 'Maggio' }, { value: 6, name: 'Giugno' },
-    { value: 7, name: 'Luglio' }, { value: 8, name: 'Agosto' },
-    { value: 9, name: 'Settembre' }, { value: 10, name: 'Ottobre' },
-    { value: 11, name: 'Novembre' }, { value: 12, name: 'Dicembre' }
-  ];
+  // nomi dei mesi nella lingua dell'interfaccia, con l'iniziale maiuscola (Gennaio ... Dicembre)
+  public monthList: { value: number, name: string }[] = [];
 
   // Index for user navigation
   public currentUserIndex: number = -1;
@@ -74,8 +70,16 @@ export class SediRepartoUserSelectionComponent implements OnInit {
     private azSediService: AzSediService,
     private azSediRepartoService: AzSediRepartoService,
     private azSediRepartoUserServiceService: AzSediRepartoUserServiceService,
-    private modalCtrl: ModalController
-  ) { }
+    private modalCtrl: ModalController,
+    private transloco: TranslocoService,
+    languageService: LanguageService
+  ) {
+    const formatoMese = new Intl.DateTimeFormat(languageService.locale, { month: 'long' });
+    this.monthList = [...Array(12).keys()].map(i => {
+      const nome = formatoMese.format(new Date(2024, i, 1));
+      return { value: i + 1, name: nome.charAt(0).toUpperCase() + nome.slice(1) };
+    });
+  }
 
   ngOnInit() {
     this.initializePeriodSelection();
@@ -557,7 +561,7 @@ export class SediRepartoUserSelectionComponent implements OnInit {
 
   public get selectedUserLabel(): string {
     if (!this.selectedUserId || (Array.isArray(this.selectedUserId) && this.selectedUserId.length === 0))
-      return this.singleSelectUser ? 'Seleziona dipendente' : 'Seleziona dipendenti';
+      return this.transloco.translate(this.singleSelectUser ? 'attendance.components.sediRepartoUserSelection.selezionaDipendente' : 'attendance.components.sediRepartoUserSelection.selezionaDipendenti');
 
     const ids: string[] = Array.isArray(this.selectedUserId) ? this.selectedUserId : [this.selectedUserId];
     const anagrafica = this.sharedParameterGestionePresenzeService.Dip_Anagrafica_OnRoles([RoleCode.User]);
@@ -566,7 +570,7 @@ export class SediRepartoUserSelectionComponent implements OnInit {
       const dip = anagrafica.find(a => a.idAspNetUsers === ids[0]);
       return dip ? `${dip.cognome} ${dip.nome}` : ids[0];
     } else {
-      return `${ids.length} dipendenti selezionati`;
+      return this.transloco.translate('attendance.components.sediRepartoUserSelection.dipendentiSelezionati', { count: ids.length });
     }
   }
 
@@ -584,7 +588,7 @@ export class SediRepartoUserSelectionComponent implements OnInit {
     });
 
     return {
-      title: `${ids.length} dipendenti selezionati`,
+      title: this.transloco.translate('attendance.components.sediRepartoUserSelection.dipendentiSelezionati', { count: ids.length }),
       content: '',
       extraInfo
     };

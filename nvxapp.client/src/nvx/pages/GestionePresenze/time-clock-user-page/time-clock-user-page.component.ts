@@ -12,6 +12,7 @@ import { Par_AttivitaModel } from '../../../ClientServer-Service/GestionePresenz
 import { Az_SubCommessaAttivita_4FullListModel, Az_SubCommessaAttivita_GetAll_4FullList_4User_InModel } from '../../../ClientServer-Service/GestionePresenze/Az_SubCommessaAttivita/Models/az-subcommessa-attivita-model';
 import { AzSubCommessaAttivitaService } from '../../../ClientServer-Service/GestionePresenze/Az_SubCommessaAttivita/az-subcommessa-attivita.service';
 import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
+import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
   selector: 'app-time-clock-user-page',
@@ -39,12 +40,13 @@ export class TimeClockUserPageComponent extends BasePageConfirmCancelComponent<D
     protected override fb: FormBuilder,
     private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
     private dipGGTimbraturaService: DipGGTimbraturaService,
-    private azSubCommessaAttivitaService: AzSubCommessaAttivitaService
+    private azSubCommessaAttivitaService: AzSubCommessaAttivitaService,
+    private transloco: TranslocoService
   ) {
     super(navCtrl, userInterfaceService, fb);
   }
 
-  get Title(): string { return 'Terminale di timbratura'; }
+  get Title(): string { return this.transloco.translate('attendance.pages.timeClockUser.title'); }
 
   get EditForm(): FormGroup {
     return this.fb.group({

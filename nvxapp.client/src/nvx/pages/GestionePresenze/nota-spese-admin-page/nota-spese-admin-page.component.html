@@ -21,9 +21,9 @@
         <ion-row>
           <ion-col size="12" size-md="4">
             <ion-item class="nvx-field">
-              <ion-label position="stacked">Tipo di spesa</ion-label>
+              <ion-label position="stacked">{{ 'attendance.pages.notaSpeseAdmin.tipoSpesa' | transloco }}</ion-label>
               <ion-select [(ngModel)]="idTipoSpesa" interface="popover" (ionChange)="filtriCambiati()">
-                <ion-select-option [value]="0">Tutti</ion-select-option>
+                <ion-select-option [value]="0">{{ 'attendance.pages.notaSpeseAdmin.tutti' | transloco }}</ion-select-option>
                 @for (t of tipiSpesa; track t.id) {
                   <ion-select-option [value]="t.id">{{ t.descrizione }}</ion-select-option>
                 }
@@ -32,20 +32,20 @@
           </ion-col>
           <ion-col size="12" size-md="4">
             <ion-item class="nvx-field">
-              <ion-label position="stacked">Stato</ion-label>
+              <ion-label position="stacked">{{ 'attendance.pages.notaSpeseAdmin.stato' | transloco }}</ion-label>
               <ion-select [(ngModel)]="filtroStato" interface="popover" (ionChange)="filtriCambiati()">
-                <ion-select-option value="valide">In attesa e approvate</ion-select-option>
-                <ion-select-option value="attesa">In attesa di approvazione</ion-select-option>
-                <ion-select-option value="approvate">Approvate</ion-select-option>
-                <ion-select-option value="respinte">Rifiutate o annullate</ion-select-option>
-                <ion-select-option value="tutte">Tutte</ion-select-option>
+                <ion-select-option value="valide">{{ 'attendance.pages.notaSpeseAdmin.filtroValide' | transloco }}</ion-select-option>
+                <ion-select-option value="attesa">{{ 'attendance.pages.notaSpeseAdmin.filtroAttesa' | transloco }}</ion-select-option>
+                <ion-select-option value="approvate">{{ 'attendance.pages.notaSpeseAdmin.filtroApprovate' | transloco }}</ion-select-option>
+                <ion-select-option value="respinte">{{ 'attendance.pages.notaSpeseAdmin.filtroRespinte' | transloco }}</ion-select-option>
+                <ion-select-option value="tutte">{{ 'attendance.pages.notaSpeseAdmin.filtroTutte' | transloco }}</ion-select-option>
               </ion-select>
             </ion-item>
           </ion-col>
           <ion-col size="12" size-md="4" class="ns-raggruppa">
             <ion-segment [(ngModel)]="raggruppa" (ionChange)="raggruppaSpese()">
-              <ion-segment-button value="dipendente"><ion-label>Per dipendente</ion-label></ion-segment-button>
-              <ion-segment-button value="tipo"><ion-label>Per tipo di spesa</ion-label></ion-segment-button>
+              <ion-segment-button value="dipendente"><ion-label>{{ 'attendance.pages.notaSpeseAdmin.perDipendente' | transloco }}</ion-label></ion-segment-button>
+              <ion-segment-button value="tipo"><ion-label>{{ 'attendance.pages.notaSpeseAdmin.perTipoSpesa' | transloco }}</ion-label></ion-segment-button>
             </ion-segment>
           </ion-col>
         </ion-row>
@@ -54,10 +54,10 @@
       @if (spese === null) {
         <ion-spinner></ion-spinner>
       } @else if (spese.length === 0) {
-        <ion-note>Nessuna spesa nel periodo per la selezione fatta.</ion-note>
+        <ion-note>{{ 'attendance.pages.notaSpeseAdmin.nessunaSpesa' | transloco }}</ion-note>
       } @else {
         <div class="ns-totale-generale">
-          {{ spese.length }} {{ spese.length === 1 ? 'spesa' : 'spese' }} · totale <strong>{{ euro(totale) }}</strong>
+          {{ spese.length }} {{ (spese.length === 1 ? 'attendance.pages.notaSpeseAdmin.spesa' : 'attendance.pages.notaSpeseAdmin.spese') | transloco }} · {{ 'attendance.pages.notaSpeseAdmin.totaleMinuscolo' | transloco }} <strong>{{ euro(totale) }}</strong>
         </div>
 
         @for (g of gruppi; track g.chiave) {
@@ -67,7 +67,7 @@
               <span>{{ euro(g.totale) }}</span>
             </div>
             @for (s of g.spese; track s.id) {
-              <div class="ns-riga" (click)="apriDettaglio(s)" title="Apri il dettaglio della nota spese">
+              <div class="ns-riga" (click)="apriDettaglio(s)" [title]="'attendance.pages.notaSpeseAdmin.apriDettaglio' | transloco">
                 <span class="ns-data">{{ s.data | date:'dd/MM/yyyy' }}</span>
                 <span class="ns-chi">{{ raggruppa === 'dipendente' ? tipo(s.idPar_TipoSpesa) : dipendente(s.idAspNetUsers) }}</span>
                 <span class="ns-descr">
@@ -100,9 +100,9 @@
     <ng-template>
       <ion-header>
         <ion-toolbar>
-          <ion-title>{{ dettaglioRiepilogo.descrizione || 'Nota spese' }}</ion-title>
+          <ion-title>{{ dettaglioRiepilogo.descrizione || ('attendance.pages.notaSpeseAdmin.notaSpese' | transloco) }}</ion-title>
           <ion-buttons slot="end">
-            <ion-button (click)="chiudiDettaglio()" aria-label="Chiudi">
+            <ion-button (click)="chiudiDettaglio()" [attr.aria-label]="'common.buttons.close' | transloco">
               <ion-icon slot="icon-only" name="close"></ion-icon>
             </ion-button>
           </ion-buttons>
@@ -118,7 +118,7 @@
               <strong>{{ dipendente(dettaglioIdAspNetUsers) }}</strong>
               <small>
                 {{ dettaglioRichiesta.data }}@if (dettaglioRichiesta.dataA !== dettaglioRichiesta.data) { – {{ dettaglioRichiesta.dataA }} }
-                · {{ dettaglioSpese.length }} {{ dettaglioSpese.length === 1 ? 'spesa' : 'spese' }}
+                · {{ dettaglioSpese.length }} {{ (dettaglioSpese.length === 1 ? 'attendance.pages.notaSpeseAdmin.spesa' : 'attendance.pages.notaSpeseAdmin.spese') | transloco }}
               </small>
             </div>
             <ion-badge [color]="statoNota(dettaglioRichiesta).colore">
@@ -142,12 +142,12 @@
                   }
                 </div>
               } @else {
-                <small class="ns-senza-allegati">Nessun allegato</small>
+                <small class="ns-senza-allegati">{{ 'attendance.pages.notaSpeseAdmin.nessunAllegato' | transloco }}</small>
               }
             </div>
           }
 
-          <div class="ns-dett-totale">Totale <strong>{{ euro(dettaglioTotale) }}</strong></div>
+          <div class="ns-dett-totale">{{ 'attendance.pages.notaSpeseAdmin.totale' | transloco }} <strong>{{ euro(dettaglioTotale) }}</strong></div>
         }
       </ion-content>
 
@@ -157,13 +157,13 @@
             @if (puoApprovare) {
               <ion-button size="small" fill="outline" shape="round" (click)="btnApprova.event(dettaglioRichiesta)" color="{{btnApprova.color}}">
                 <ion-icon name="{{btnApprova.image}}"></ion-icon>
-                &nbsp;{{ dettaglioRevoca ? btnApprova.text + ' revoca' : btnApprova.text }}
+                &nbsp;{{ dettaglioRevoca ? ('attendance.pages.notaSpeseAdmin.azioneRevoca' | transloco: { azione: btnApprova.text }) : btnApprova.text }}
               </ion-button>
             }
             @if (puoRifiutare) {
               <ion-button size="small" fill="outline" shape="round" (click)="btnRifiuta.event(dettaglioRichiesta)" color="{{btnRifiuta.color}}">
                 <ion-icon name="{{btnRifiuta.image}}"></ion-icon>
-                &nbsp;{{ dettaglioRevoca ? btnRifiuta.text + ' revoca' : btnRifiuta.text }}
+                &nbsp;{{ dettaglioRevoca ? ('attendance.pages.notaSpeseAdmin.azioneRevoca' | transloco: { azione: btnRifiuta.text }) : btnRifiuta.text }}
               </ion-button>
             }
             <ion-button size="small" fill="outline" shape="round" (click)="btnAnnulla.event(dettaglioRichiesta)" color="{{btnAnnulla.color}}">

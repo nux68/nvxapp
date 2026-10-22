@@ -1,3 +1,4 @@
+using nvxapp.server.data.Localization;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_AnagraficaService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_AnagraficaService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_CausaliService;
@@ -35,12 +36,13 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
             _intentDefinition = new IntentDefinition
             {
                 Name        = "RegisterCausale",
-                DisplayName = "Inserisci causale",
+                DisplayName = AttendanceTrackingMessages.Get("ChatRegisterCausaleDisplayName"),
                 Usable4Role = new List<string> { "CompanyPowerAdmin" },
-                Description = "registra una causale per un dipendente in una data con un numero di ore.",
+                Description = AttendanceTrackingMessages.Get("ChatRegisterCausaleDescription"),
                 Keywords    = new()
                 {
-                    "causale", "inserisci causale", "registra causale", "aggiungi causale"
+                    "causale", "inserisci causale", "registra causale", "aggiungi causale",
+                    "attendance code", "add attendance code", "register attendance code", "insert attendance code"
                 },
                 Slots = BuildSlots(
                     EmployeeNameSlot,
@@ -50,8 +52,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                         Type               = "string",
                         Required           = true,
                         PromptDescription  = "nome o codice della causale (es. Straordinario, Reperibilità)",
-                        Question           = "Quale causale vuoi inserire?",
-                        Label              = "Causale",
+                        Question           = AttendanceTrackingMessages.Get("ChatRegisterCausaleCausaleQuestion"),
+                        Label              = AttendanceTrackingMessages.Get("ChatOpenCausaleLabel"),
                         HasRelevantContent = msg => msg.Length > 0
                     },
                     new()
@@ -60,14 +62,14 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                         Type               = "HH:mm o numero testuale",
                         Required           = true,
                         PromptDescription  = "ore da registrare nel formato HH:mm (es. 08:00, 02:30) oppure come numero in lettere (es. due, otto)",
-                        Question           = "Quante ore vuoi registrare? (es. 08:00 oppure due)",
-                        Label              = "Ore",
+                        Question           = AttendanceTrackingMessages.Get("ChatRegisterCausaleHoursQuestion"),
+                        Label              = AttendanceTrackingMessages.Get("ChatHoursLabel"),
                         Validator          = v =>
                         {
                             if (HoursSlotHelper.TryParse(v, out _)) return null;
                             return SlotValidationResult.Failed(
                                 SlotValidationError.InvalidFormat,
-                                $"'{v}' non è un formato ore valido. Usa HH:mm (es. 08:00) oppure un numero in lettere (es. otto).",
+                                AttendanceTrackingMessages.Get("ChatInvalidHours", v),
                                 "hours");
                         },
                         HasRelevantContent = msg => HoursSlotHelper.TryParse(msg.Trim(), out _)
@@ -79,20 +81,20 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                         Required           = false,
                         Default            = "oggi",
                         PromptDescription  = datePromptDescription,
-                        Question           = "Per quale data?",
-                        Label              = "Data",
+                        Question           = AttendanceTrackingMessages.Get("ChatDateQuestion"),
+                        Label              = AttendanceTrackingMessages.Get("ChatDateLabel"),
                         Validator          = v =>
                         {
                             if (DateOnly.TryParseExact(v, "yyyy-MM-dd", out _)) return null;
                             if (DateOnly.TryParseExact(v, "dd/MM/yyyy",  out _)) return null;
                             return SlotValidationResult.Failed(
                                 SlotValidationError.InvalidFormat,
-                                $"'{v}' non è una data valida. Usa il formato gg/mm/aaaa.",
+                                AttendanceTrackingMessages.Get("ChatInvalidDate", v),
                                 "date");
                         },
                         HasRelevantContent = msg =>
                         {
-                            var words = new[] { "oggi", "domani", "ieri" };
+                            var words = ChatSlotWords.RelativeDays;
                             return words.Any(w => msg.Contains(w, StringComparison.OrdinalIgnoreCase));
                         }
                     }
@@ -113,18 +115,18 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
             Dip_AnagraficaModel? dipendente = Get_Dip_Anagrafica(employeeName);
             if (dipendente == null)
                 return CommandResult.Fail(
-                    $"Dipendente '{employeeName}' non trovato o nome non completo. Nessuna causale registrata.");
+                    AttendanceTrackingMessages.Get("ChatRegisterCausaleEmployeeNotFound", employeeName));
 
             if (dipendente.Dip_RapportoLavoro == null || dipendente.Dip_RapportoLavoro.Count == 0)
                 return CommandResult.Fail(
-                    $"Nessun rapporto di lavoro trovato per '{employeeName}'.");
+                    AttendanceTrackingMessages.Get("ChatEmploymentNotFoundFor", employeeName));
 
             // --- Risolvi tipo causale ---
             var parResult = await _par_CausaliService.GetAll(
                 new GenericRequest<Par_CausaliInModel>(new Par_CausaliInModel()), false);
 
             if (!parResult.Success || parResult.Data?.Par_Causali == null)
-                return CommandResult.Fail("Impossibile caricare l'elenco causali.");
+                return CommandResult.Fail(AttendanceTrackingMessages.Get("ChatCausaliLoadError"));
 
             var nomeTrimmed = causaleNome.Trim();
             var parCausale = parResult.Data.Par_Causali.FirstOrDefault(c =>
@@ -138,10 +140,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                     (c.Codice?.Contains(nomeTrimmed,      StringComparison.OrdinalIgnoreCase) ?? false));
 
             if (parCausale == null)
-                return CommandResult.Fail($"Causale '{causaleNome}' non trovata.");
+                return CommandResult.Fail(AttendanceTrackingMessages.Get("ChatCausaleNotFound", causaleNome));
 
             // --- Risolvi data ---
-            DateTime competenzaDate = dateSlot.Equals("oggi", StringComparison.OrdinalIgnoreCase)
+            DateTime competenzaDate = ChatSlotWords.IsToday(dateSlot)
                 ? DateTime.Today
                 : DateOnly.TryParse(dateSlot, out var parsedDate)
                     ? parsedDate.ToDateTime(TimeOnly.MinValue)
@@ -178,11 +180,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
 
             if (!result.Success)
                 return CommandResult.Fail(
-                    $"Errore durante la registrazione della causale: {string.Join(", ", result.Messages.Select(m => m.Text))}");
+                    AttendanceTrackingMessages.Get("ChatRegisterCausaleError", string.Join(", ", result.Messages.Select(m => m.Text))));
 
             var dateLabel = competenzaDate.ToString("dd/MM/yyyy");
             return CommandResult.Ok(
-                $"Causale '{parCausale.Descrizione}' di {oreLabel} ore registrata per {employeeName} il {dateLabel}.");
+                AttendanceTrackingMessages.Get("ChatRegisterCausaleDone", parCausale.Descrizione, oreLabel, employeeName, dateLabel));
         }
     }
 }

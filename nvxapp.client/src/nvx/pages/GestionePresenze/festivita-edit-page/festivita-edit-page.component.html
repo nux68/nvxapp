@@ -7,36 +7,36 @@
     <ion-card-content>
 
       <ion-item class="nvx-item-4-title">
-        <ion-label>Festività</ion-label>
+        <ion-label>{{ 'attendance.pages.festivitaEdit.section' | transloco }}</ion-label>
       </ion-item>
 
       @if (_editForm) {
         <form [formGroup]="_editForm">
 
           <ion-item>
-            <ion-label position="floating">Descrizione</ion-label>
+            <ion-label position="floating">{{ 'attendance.pages.festivitaEdit.description' | transloco }}</ion-label>
             <ion-input type="text" formControlName="descrizione"></ion-input>
           </ion-item>
           @if (_editForm.get('descrizione')?.hasError('required') && _editForm.get('descrizione')?.touched) {
-            <ion-note color="danger">Descrizione è obbligatoria.</ion-note>
+            <ion-note color="danger">{{ 'attendance.pages.festivitaEdit.descriptionRequired' | transloco }}</ion-note>
           }
           @if (_editForm.get('descrizione')?.hasError('maxlength') && _editForm.get('descrizione')?.touched) {
-            <ion-note color="danger">Descrizione non può superare i 50 caratteri.</ion-note>
+            <ion-note color="danger">{{ 'attendance.pages.festivitaEdit.descriptionMaxLength' | transloco: { max: 50 } }}</ion-note>
           }
 
           <ion-item>
-            <ion-label position="stacked">Tipo</ion-label>
+            <ion-label position="stacked">{{ 'attendance.pages.festivitaEdit.type' | transloco }}</ion-label>
             <ion-select formControlName="tipoFestivita" interface="popover">
-              <ion-select-option [value]="tipoFestivitaEnum.DataRicorrente">Ogni anno, stesso giorno</ion-select-option>
-              <ion-select-option [value]="tipoFestivitaEnum.DataSingola">Solo nella data indicata</ion-select-option>
-              <ion-select-option [value]="tipoFestivitaEnum.Pasquetta">Lunedì dell'Angelo (calcolato)</ion-select-option>
+              <ion-select-option [value]="tipoFestivitaEnum.DataRicorrente">{{ 'attendance.pages.festivitaEdit.typeRecurring' | transloco }}</ion-select-option>
+              <ion-select-option [value]="tipoFestivitaEnum.DataSingola">{{ 'attendance.pages.festivitaEdit.typeSingle' | transloco }}</ion-select-option>
+              <ion-select-option [value]="tipoFestivitaEnum.Pasquetta">{{ 'attendance.pages.festivitaEdit.typeEasterMonday' | transloco }}</ion-select-option>
             </ion-select>
           </ion-item>
 
           @if (_editForm.get('tipoFestivita')?.value !== tipoFestivitaEnum.Pasquetta) {
             <ion-item>
               <ion-label position="floating">
-                {{ _editForm.get('tipoFestivita')?.value === tipoFestivitaEnum.DataRicorrente ? 'Giorno (l\'anno non conta)' : 'Data' }}
+                {{ (_editForm.get('tipoFestivita')?.value === tipoFestivitaEnum.DataRicorrente ? 'attendance.pages.festivitaEdit.dayYearIgnored' : 'attendance.pages.festivitaEdit.date') | transloco }}
               </ion-label>
               <ion-datetime-button class="datetime-button-with-label" datetime="data-festivita"></ion-datetime-button>
               <ion-modal [keepContentsMounted]="true">
@@ -47,14 +47,14 @@
                     [firstDayOfWeek]="1"
                     [showDefaultButtons]="true"
                     doneText="OK"
-                    cancelText="Annulla">
+                    [cancelText]="'common.buttons.cancel' | transloco">
                   </ion-datetime>
                 </ng-template>
               </ion-modal>
             </ion-item>
           }
           <ion-note class="nvx-nota-festivita">
-            Nei giorni festivi vale l'orario festivo del profilo orario e le ore lavorate oltre il teorico sono straordinario festivo.
+            {{ 'attendance.pages.festivitaEdit.note' | transloco }}
           </ion-note>
 
         </form>

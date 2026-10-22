@@ -16,6 +16,7 @@ import { TipoRichiestaToShortTextPipe } from '../../../shared/pipe/GestionePrese
 import { TimeSheetService } from '../../../Utility/GestionePresenze/time-sheet.service';
 import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
 import { TipoRichiestaToLongTextPipe } from '../../../shared/pipe/GestionePresenze/tipo-richiesta-to-long-text.pipe';
+import { TranslocoService } from '@jsverse/transloco';
 
 
 
@@ -32,11 +33,11 @@ export class RequestListUserPageComponent {
   public searchText!: string;
   public dip_GG_RichiestaList: Dip_GG_RichiestaModel[] | null = null;
   public readonly columns: NvxListColumn<Dip_GG_RichiestaModel>[] = [
-    { key: 'data', title: 'Dal' },
-    { key: 'dataA', title: 'Al', value: x => this.getDataA(x) },
-    { key: 'richiestaTipo', title: 'Tipo', value: x => this.tipoRichiestaToLongText.transform(x.richiestaTipo) },
-    { key: 'dati', title: 'Dettaglio', value: x => this.getDati(x), sortable: false },
-    { key: 'stato', title: 'Stato', value: x => this.timeSheetService.get_StatoRichiesta_Approval_text(x) },
+    { key: 'data', title: this.transloco.translate('attendance.pages.requestListUser.columnDal') },
+    { key: 'dataA', title: this.transloco.translate('attendance.pages.requestListUser.columnAl'), value: x => this.getDataA(x) },
+    { key: 'richiestaTipo', title: this.transloco.translate('attendance.pages.requestListUser.columnTipo'), value: x => this.tipoRichiestaToLongText.transform(x.richiestaTipo) },
+    { key: 'dati', title: this.transloco.translate('attendance.pages.requestListUser.columnDettaglio'), value: x => this.getDati(x), sortable: false },
+    { key: 'stato', title: this.transloco.translate('attendance.pages.requestListUser.columnStato'), value: x => this.timeSheetService.get_StatoRichiesta_Approval_text(x) },
   ];
   public actions: NvxListAction<Dip_GG_RichiestaModel>[] = [];
   private readonly tipoRichiestaToLongText = new TipoRichiestaToLongTextPipe();
@@ -51,9 +52,10 @@ export class RequestListUserPageComponent {
     private userInterfaceService: UserInterfaceService,
     private collectionDialogService: CollectionDialogService,
     private dipGGTimbraturaUtilityService: TimeSheetUtilityService,
-    private userNavigationService: UserNavigationService) {
+    private userNavigationService: UserNavigationService,
+    private transloco: TranslocoService) {
 
-    this.title = 'Richieste';
+    this.title = this.transloco.translate('attendance.pages.requestListUser.title');
     this.btnDelete = userInterfaceService.Btn_Cancella;
     this.btnDelete.event = this.handleButtonDeleteClick;
 
@@ -95,7 +97,7 @@ export class RequestListUserPageComponent {
 
   handleButtonDeleteClick = async (item: any) => {
 
-    const result = await this.collectionDialogService.ConfirmCancelDialog('Confermi la cancellazione della richiesta?');
+    const result = await this.collectionDialogService.ConfirmCancelDialog(this.transloco.translate('attendance.pages.requestListUser.confirmDelete'));
     if (result) {
 
         let IdDip_GG_Richiesta: number[] = [];

@@ -1,3 +1,4 @@
+import { TranslocoService } from '@jsverse/transloco';
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NavController } from '@ionic/angular';
@@ -27,12 +28,13 @@ export class CausaliEditPageComponent extends BasePageConfirmCancelComponent<Par
     protected override fb: FormBuilder,
     private parCausaliService: ParCausaliService,
     private refresherService: RefresherService,
-    private userNavigationService: UserNavigationService
+    private userNavigationService: UserNavigationService,
+    private transloco: TranslocoService
   ) {
     super(navCtrl, userInterfaceService, fb);
   }
 
-  get Title(): string { return "Causale"; }
+  get Title(): string { return this.transloco.translate('attendance.pages.causaliEdit.title'); }
 
   get EditForm(): FormGroup {
     return this.fb.group({

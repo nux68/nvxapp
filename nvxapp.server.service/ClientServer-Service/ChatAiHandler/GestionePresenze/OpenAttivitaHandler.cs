@@ -1,3 +1,4 @@
+using nvxapp.server.data.Localization;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_AttivitaService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_AttivitaService.Models;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Commands;
@@ -18,14 +19,17 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
             _par_AttivitaService = par_AttivitaService;
         }
 
-        private static readonly IntentDefinition _intentDefinition = new()
+        // Definizione creata per istanza (handler Scoped): i testi sono nella lingua della richiesta.
+        // Keywords: unione italiano + inglese, qualunque sia la lingua dell'interfaccia.
+        private readonly IntentDefinition _intentDefinition = new()
         {
             Name         = "OpenAttivita",
-            DisplayName  = "Apri attività",
+            DisplayName  = AttendanceTrackingMessages.Get("ChatOpenAttivitaDisplayName"),
             Usable4Role = new List<string> { "CompanyPowerAdmin" },
-            Description  = "apre la pagina di modifica di un'attività specifica.",
+            Description  = AttendanceTrackingMessages.Get("ChatOpenAttivitaDescription"),
             IsNavigation = true,
-            Keywords     = new() { "attività", "attivita", "apri attività", "modifica attività", "apri l'attività" },
+            Keywords     = new() { "attività", "attivita", "apri attività", "modifica attività", "apri l'attività",
+                                   "activity", "open activity", "edit activity", "open the activity" },
             Slots        =
             [
                 new()
@@ -34,8 +38,8 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
                     Type               = "string",
                     Required           = true,
                     PromptDescription  = "nome dell'attività da aprire",
-                    Question           = "Quale attività vuoi aprire?",
-                    Label              = "Attività",
+                    Question           = AttendanceTrackingMessages.Get("ChatOpenAttivitaQuestion"),
+                    Label              = AttendanceTrackingMessages.Get("ChatOpenAttivitaLabel"),
                     HasRelevantContent = msg => msg.Length > 0
                 }
             ]
@@ -48,13 +52,13 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
             slots.TryGetValue("nome", out var nome);
 
             if (string.IsNullOrWhiteSpace(nome))
-                return CommandResult.Fail("Nome attività non specificato.");
+                return CommandResult.Fail(AttendanceTrackingMessages.Get("ChatOpenAttivitaNameMissing"));
 
             var result = await _par_AttivitaService.GetAll(
                 new GenericRequest<Par_Attivita_GetAll_InModel>(new Par_Attivita_GetAll_InModel()), false);
 
             if (!result.Success || result.Data?.Par_Attivita == null)
-                return CommandResult.Fail("Impossibile caricare l'elenco attività.");
+                return CommandResult.Fail(AttendanceTrackingMessages.Get("ChatOpenAttivitaLoadError"));
 
             var nomeTrimmed = nome.Trim();
             var record = result.Data.Par_Attivita.FirstOrDefault(r =>
@@ -65,7 +69,7 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
                     r.Descrizione?.Contains(nomeTrimmed, StringComparison.OrdinalIgnoreCase) ?? false);
 
             if (record == null)
-                return CommandResult.Fail($"Attività '{nome}' non trovata.");
+                return CommandResult.Fail(AttendanceTrackingMessages.Get("ChatOpenAttivitaNotFound", nome));
 
             var payload = new NavigatePayload
             {
@@ -73,7 +77,7 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
                 State = new Dictionary<string, object> { ["id"] = record.Id }
             };
 
-            return CommandResult.Ok($"Apertura attività '{record.Descrizione}' (id: {record.Id}).", payload);
+            return CommandResult.Ok(AttendanceTrackingMessages.Get("ChatOpenAttivitaOpening", record.Descrizione, record.Id), payload);
         }
     }
 }

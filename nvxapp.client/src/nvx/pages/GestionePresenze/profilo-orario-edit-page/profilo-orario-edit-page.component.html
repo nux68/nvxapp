@@ -12,80 +12,80 @@
           <!--tabs-->
           <ion-segment (ionChange)="segmentChanged($event)" [value]="currSection">
             <ion-segment-button value="sez1" content-id="sez1">
-              <ion-label>Generale</ion-label>
+              <ion-label>{{ 'attendance.pages.profiloOrarioEdit.tabGenerale' | transloco }}</ion-label>
             </ion-segment-button>
             <ion-segment-button value="sez2" content-id="sez2">
-              <ion-label>Giorni</ion-label>
+              <ion-label>{{ 'attendance.pages.profiloOrarioEdit.tabGiorni' | transloco }}</ion-label>
             </ion-segment-button>
             <ion-segment-button value="sez3" content-id="sez3">
-              <ion-label>Straordinario</ion-label>
+              <ion-label>{{ 'attendance.pages.profiloOrarioEdit.tabStraordinario' | transloco }}</ion-label>
             </ion-segment-button>
           </ion-segment>
           <!--Sez-1-->
           <div [hidden]="currSection!=='sez1'">
             <br />
             <ion-item class="nvx-item-4-title">
-              <ion-label>Info </ion-label>
+              <ion-label>{{ 'attendance.pages.profiloOrarioEdit.info' | transloco }} </ion-label>
             </ion-item>
             <!--descrizione-->
             <ion-item>
-              <ion-label position="floating">Descrizione</ion-label>
+              <ion-label position="floating">{{ 'attendance.pages.profiloOrarioEdit.descrizione' | transloco }}</ion-label>
               <ion-input type="text" formControlName="descrizione"></ion-input>
             </ion-item>
             @if (_editForm.get('descrizione')?.hasError('required') && _editForm.get('descrizione')?.touched) {
               <ion-note color="danger">
-                Descrizione è obbligatorio.
+                {{ 'attendance.pages.profiloOrarioEdit.descrizioneRequired' | transloco }}
               </ion-note>
             }
             @if (_editForm.get('descrizione')?.hasError('maxlength') && _editForm.get('descrizione')?.touched) {
               <ion-note color="danger">
-                Descrizione non può superare i 20 caratteri.
+                {{ 'attendance.pages.profiloOrarioEdit.descrizioneMaxLength' | transloco: { max: 20 } }}
               </ion-note>
             }
             <!--codice-->
             <ion-item>
-              <ion-label position="floating">Codice</ion-label>
+              <ion-label position="floating">{{ 'attendance.pages.profiloOrarioEdit.codice' | transloco }}</ion-label>
               <ion-input type="text" formControlName="codice"></ion-input>
             </ion-item>
             @if (_editForm.get('codice')?.hasError('required') && _editForm.get('codice')?.touched) {
               <ion-note color="danger">
-                codice è obbligatorio.
+                {{ 'attendance.pages.profiloOrarioEdit.codiceRequired' | transloco }}
               </ion-note>
             }
             @if (_editForm.get('codice')?.hasError('maxlength') && _editForm.get('codice')?.touched) {
               <ion-note color="danger">
-                codice non può superare i 5 caratteri.
+                {{ 'attendance.pages.profiloOrarioEdit.codiceMaxLength' | transloco: { max: 5 } }}
               </ion-note>
             }
             <!--Tipo Profilo-->
             <ion-item>
-              <ion-label position="floating">Tipo Profilo</ion-label>
+              <ion-label position="floating">{{ 'attendance.pages.profiloOrarioEdit.tipoProfilo' | transloco }}</ion-label>
               <ion-select formControlName="tipoProfilo" interface="popover" (ionChange)="onTipoProfiloChange($event)">
-                <ion-select-option [value]="tipoProfiloEnum.Settimanale">Settimanale</ion-select-option>
-                <ion-select-option [value]="tipoProfiloEnum.Ciclico">Turno</ion-select-option>
+                <ion-select-option [value]="tipoProfiloEnum.Settimanale">{{ 'attendance.pages.profiloOrarioEdit.tipoSettimanale' | transloco }}</ion-select-option>
+                <ion-select-option [value]="tipoProfiloEnum.Ciclico">{{ 'attendance.pages.profiloOrarioEdit.tipoTurno' | transloco }}</ion-select-option>
               </ion-select>
             </ion-item>
             @if (_editForm.get('tipoProfilo')?.hasError('required') && _editForm.get('tipoProfilo')?.touched) {
               <ion-note color="danger">
-                Il numero di tipoProfilo è obbligatorio.
+                {{ 'attendance.pages.profiloOrarioEdit.tipoProfiloRequired' | transloco }}
               </ion-note>
             }
             <!--Nnm giorni ciclo-->
             @if (_editForm.get('tipoProfilo')?.value !== 0) {
               <ion-item>
-                <ion-label position="floating">Num. Giorni Ciclo ( {{_editForm.get('numGiorniCiclo')?.value}} / {{getDays()}} )</ion-label>
-                <ion-range aria-label="Range with ticks" (ionChange)="onDayRangeChange($event)" formControlName="numGiorniCiclo" [ticks]="true" [snaps]="true" [min]="1" [max]="getDays()"></ion-range>
+                <ion-label position="floating">{{ 'attendance.pages.profiloOrarioEdit.numGiorniCicloValue' | transloco: { value: _editForm.get('numGiorniCiclo')?.value, max: getDays() } }}</ion-label>
+                <ion-range [attr.aria-label]="'attendance.pages.profiloOrarioEdit.numGiorniCicloAria' | transloco" (ionChange)="onDayRangeChange($event)" formControlName="numGiorniCiclo" [ticks]="true" [snaps]="true" [min]="1" [max]="getDays()"></ion-range>
               </ion-item>
               @if (_editForm.get('numGiorniCiclo')?.hasError('required') && _editForm.get('numGiorniCiclo')?.touched) {
                 <ion-note color="danger">
-                  Num. Giorni Ciclo è obbligatorio.
+                  {{ 'attendance.pages.profiloOrarioEdit.numGiorniCicloRequired' | transloco }}
                 </ion-note>
               }
             }
             <!-- Combo per selezione orario Festivo-->
             <ion-item>
-              <ion-label position="stacked">Orario festivo</ion-label>
-              <ion-select formControlName="idPar_Orario_Festivo" placeholder="Seleziona l'orario">
+              <ion-label position="stacked">{{ 'attendance.pages.profiloOrarioEdit.orarioFestivo' | transloco }}</ion-label>
+              <ion-select formControlName="idPar_Orario_Festivo" [placeholder]="'attendance.pages.profiloOrarioEdit.selezionaOrario' | transloco">
                 @for (orario of par_OrarioModelList; track orario) {
                   <ion-select-option [value]="orario.id">
                     {{ orario.descrizione }}
@@ -95,7 +95,7 @@
             </ion-item>
             @if (_editForm.get('_editForm.idPar_Orario_Festivo')?.hasError('required') && _editForm.get('_editForm.idPar_Orario_Festivo')?.touched) {
               <ion-note color="danger">
-                Orario è obbligatorio.
+                {{ 'attendance.pages.profiloOrarioEdit.orarioRequired' | transloco }}
               </ion-note>
             }
             <ion-grid>
@@ -103,8 +103,8 @@
                 <!-- Combo per selezione dal just assenza ingiust-->
                 <ion-col size="12" size-md="6">
                   <ion-item>
-                    <ion-label position="stacked">Giustificativo assenza ingiustificata</ion-label>
-                    <ion-select formControlName="idGiustificativo_Assenza_Ingiust" placeholder="Seleziona il giustificativo">
+                    <ion-label position="stacked">{{ 'attendance.pages.profiloOrarioEdit.giustAssenzaIngiust' | transloco }}</ion-label>
+                    <ion-select formControlName="idGiustificativo_Assenza_Ingiust" [placeholder]="'attendance.pages.profiloOrarioEdit.selezionaGiustificativo' | transloco">
                       @for (just of par_GiustificativiModelList; track just) {
                         <ion-select-option [value]="just.id">
                           {{ just.descrizione }}
@@ -114,7 +114,7 @@
                   </ion-item>
                   @if (_editForm.get('idGiustificativo_Assenza_Ingiust')?.hasError('required') && _editForm.get('idGiustificativo_Assenza_Ingiust')?.touched) {
                     <ion-note color="danger">
-                      Il giustificativo è obbligatorio.
+                      {{ 'attendance.pages.profiloOrarioEdit.giustificativoRequired' | transloco }}
                     </ion-note>
                   }
                 </ion-col>
@@ -125,32 +125,31 @@
           <div [hidden]="currSection!=='sez3'">
             <br />
             <ion-item class="nvx-item-4-title">
-              <ion-label>Ore in più</ion-label>
+              <ion-label>{{ 'attendance.pages.profiloOrarioEdit.oreInPiu' | transloco }}</ion-label>
             </ion-item>
             <ion-item>
-              <ion-toggle formControlName="eccedenzeAttive" justify="space-between">Calcola straordinario e supplementare</ion-toggle>
+              <ion-toggle formControlName="eccedenzeAttive" justify="space-between">{{ 'attendance.pages.profiloOrarioEdit.eccedenzeAttive' | transloco }}</ion-toggle>
             </ion-item>
             <ion-note class="nvx-nota-profilo">
-              Le ore oltre il teorico (più o meno i giustificativi) diventano lavoro supplementare (part-time, fino alla soglia full-time)
-              o straordinario (oltre la soglia). Se disattivato restano solo segnalate nel cartellino.
+              {{ 'attendance.pages.profiloOrarioEdit.eccedenzeNote' | transloco }}
             </ion-note>
             <ion-grid>
               <ion-row>
                 <!--periodo di conteggio-->
                 <ion-col size="12" size-md="6">
                   <ion-item>
-                    <ion-label position="stacked">Periodo di conteggio</ion-label>
+                    <ion-label position="stacked">{{ 'attendance.pages.profiloOrarioEdit.periodoConteggio' | transloco }}</ion-label>
                     <ion-select formControlName="tipoConteggio" interface="popover">
-                      <ion-select-option [value]="straoTipoConteggioEnum.Giornaliero">Giornaliero</ion-select-option>
-                      <ion-select-option [value]="straoTipoConteggioEnum.Settimanale">Settimanale (lun-dom)</ion-select-option>
-                      <ion-select-option [value]="straoTipoConteggioEnum.Mensile">Mensile</ion-select-option>
+                      <ion-select-option [value]="straoTipoConteggioEnum.Giornaliero">{{ 'attendance.pages.profiloOrarioEdit.conteggioGiornaliero' | transloco }}</ion-select-option>
+                      <ion-select-option [value]="straoTipoConteggioEnum.Settimanale">{{ 'attendance.pages.profiloOrarioEdit.conteggioSettimanale' | transloco }}</ion-select-option>
+                      <ion-select-option [value]="straoTipoConteggioEnum.Mensile">{{ 'attendance.pages.profiloOrarioEdit.conteggioMensile' | transloco }}</ion-select-option>
                     </ion-select>
                   </ion-item>
                 </ion-col>
                 <!--soglia giornaliera FT-->
                 <ion-col size="12" size-md="6">
                   <ion-item>
-                    <ion-label position="stacked">Soglia giornaliera full-time</ion-label>
+                    <ion-label position="stacked">{{ 'attendance.pages.profiloOrarioEdit.sogliaGiornalieraFT' | transloco }}</ion-label>
                     <ion-datetime-button class="datetime-button-with-label" datetime="straoSogliaHHFullTime"></ion-datetime-button>
                     <ion-modal [keepContentsMounted]="true">
                       <ng-template>
@@ -159,7 +158,7 @@
                           presentation="time"
                           [showDefaultButtons]="true"
                           doneText="OK"
-                          cancelText="Annulla">
+                          [cancelText]="'common.buttons.cancel' | transloco">
                         </ion-datetime>
                       </ng-template>
                     </ion-modal>
@@ -170,14 +169,14 @@
                 <!--soglia settimanale FT-->
                 <ion-col size="12" size-md="6">
                   <ion-item>
-                    <ion-label position="stacked">Soglia settimanale full-time (ore)</ion-label>
+                    <ion-label position="stacked">{{ 'attendance.pages.profiloOrarioEdit.sogliaSettimanaleFT' | transloco }}</ion-label>
                     <ion-input type="number" formControlName="sogliaSettimanaleFT" min="0" max="168" step="0.5"></ion-input>
                   </ion-item>
                 </ion-col>
                 <!--limite supplementare-->
                 <ion-col size="12" size-md="6">
                   <ion-item>
-                    <ion-label position="stacked">Limite supplementare (% ore settimanali contrattuali)</ion-label>
+                    <ion-label position="stacked">{{ 'attendance.pages.profiloOrarioEdit.supplLimitePerc' | transloco }}</ion-label>
                     <ion-input type="number" formControlName="supplLimitePerc" min="0" max="100" step="1"></ion-input>
                   </ion-item>
                 </ion-col>
@@ -186,20 +185,20 @@
                 <!--arrotondamento-->
                 <ion-col size="12" size-md="6">
                   <ion-item>
-                    <ion-label position="stacked">Ore in più riconosciute a blocchi di</ion-label>
+                    <ion-label position="stacked">{{ 'attendance.pages.profiloOrarioEdit.eccArrotondamento' | transloco }}</ion-label>
                     <ion-select formControlName="eccArrotondamento" interface="popover">
-                      <ion-select-option [value]="timeRoundIntervalEnum.Min1">1 minuto</ion-select-option>
-                      <ion-select-option [value]="timeRoundIntervalEnum.Min5">5 minuti</ion-select-option>
-                      <ion-select-option [value]="timeRoundIntervalEnum.Min15">15 minuti</ion-select-option>
-                      <ion-select-option [value]="timeRoundIntervalEnum.Min30">30 minuti</ion-select-option>
-                      <ion-select-option [value]="timeRoundIntervalEnum.Min60">60 minuti</ion-select-option>
+                      <ion-select-option [value]="timeRoundIntervalEnum.Min1">{{ 'attendance.pages.profiloOrarioEdit.minuto1' | transloco }}</ion-select-option>
+                      <ion-select-option [value]="timeRoundIntervalEnum.Min5">{{ 'attendance.pages.profiloOrarioEdit.minuti' | transloco: { n: 5 } }}</ion-select-option>
+                      <ion-select-option [value]="timeRoundIntervalEnum.Min15">{{ 'attendance.pages.profiloOrarioEdit.minuti' | transloco: { n: 15 } }}</ion-select-option>
+                      <ion-select-option [value]="timeRoundIntervalEnum.Min30">{{ 'attendance.pages.profiloOrarioEdit.minuti' | transloco: { n: 30 } }}</ion-select-option>
+                      <ion-select-option [value]="timeRoundIntervalEnum.Min60">{{ 'attendance.pages.profiloOrarioEdit.minuti' | transloco: { n: 60 } }}</ion-select-option>
                     </ion-select>
                   </ion-item>
                 </ion-col>
                 <!--franchigia-->
                 <ion-col size="12" size-md="6">
                   <ion-item>
-                    <ion-label position="stacked">Franchigia giornaliera (minuti non riconosciuti)</ion-label>
+                    <ion-label position="stacked">{{ 'attendance.pages.profiloOrarioEdit.eccFranchigiaMin' | transloco }}</ion-label>
                     <ion-input type="number" formControlName="eccFranchigiaMin" min="0" step="1"></ion-input>
                   </ion-item>
                 </ion-col>
@@ -207,23 +206,22 @@
               <ion-row>
                 <ion-col size="12" size-md="6">
                   <ion-item>
-                    <ion-toggle formControlName="assenzeContanoSoglia" justify="space-between">Ferie e permessi contano per la soglia</ion-toggle>
+                    <ion-toggle formControlName="assenzeContanoSoglia" justify="space-between">{{ 'attendance.pages.profiloOrarioEdit.assenzeContanoSoglia' | transloco }}</ion-toggle>
                   </ion-item>
                 </ion-col>
                 <ion-col size="12" size-md="6">
                   <ion-item>
-                    <ion-toggle formControlName="domenicaFestiva" justify="space-between">Domenica festiva</ion-toggle>
+                    <ion-toggle formControlName="domenicaFestiva" justify="space-between">{{ 'attendance.pages.profiloOrarioEdit.domenicaFestiva' | transloco }}</ion-toggle>
                   </ion-item>
                 </ion-col>
               </ion-row>
               <ion-row>
                 <ion-col size="12">
                   <ion-item>
-                    <ion-toggle formControlName="straoSoloAutorizzato" justify="space-between">Ore in più solo se autorizzate</ion-toggle>
+                    <ion-toggle formControlName="straoSoloAutorizzato" justify="space-between">{{ 'attendance.pages.profiloOrarioEdit.straoSoloAutorizzato' | transloco }}</ion-toggle>
                   </ion-item>
                   <ion-note class="nvx-nota-profilo">
-                    Si riconoscono al massimo le ore autorizzate nel giorno con un giustificativo di autorizzazione approvato
-                    (es. AUTS, richiesto dal dipendente o inserito dall'HR). Le ore oltre restano visibili come "non autorizzate", senza causale.
+                    {{ 'attendance.pages.profiloOrarioEdit.straoSoloAutorizzatoNote' | transloco }}
                   </ion-note>
                 </ion-col>
               </ion-row>
@@ -231,12 +229,12 @@
                 <!--fascia notturna-->
                 <ion-col size="6" size-md="3">
                   <ion-item>
-                    <ion-label position="stacked">Notturno dalle</ion-label>
+                    <ion-label position="stacked">{{ 'attendance.pages.profiloOrarioEdit.notturnoDalle' | transloco }}</ion-label>
                     <ion-datetime-button class="datetime-button-with-label" datetime="notturnoDalle"></ion-datetime-button>
                     <ion-modal [keepContentsMounted]="true">
                       <ng-template>
                         <ion-datetime id="notturnoDalle" formControlName="notturnoDalle" presentation="time"
-                          [showDefaultButtons]="true" doneText="OK" cancelText="Annulla">
+                          [showDefaultButtons]="true" doneText="OK" [cancelText]="'common.buttons.cancel' | transloco">
                         </ion-datetime>
                       </ng-template>
                     </ion-modal>
@@ -244,12 +242,12 @@
                 </ion-col>
                 <ion-col size="6" size-md="3">
                   <ion-item>
-                    <ion-label position="stacked">alle</ion-label>
+                    <ion-label position="stacked">{{ 'attendance.pages.profiloOrarioEdit.notturnoAlle' | transloco }}</ion-label>
                     <ion-datetime-button class="datetime-button-with-label" datetime="notturnoAlle"></ion-datetime-button>
                     <ion-modal [keepContentsMounted]="true">
                       <ng-template>
                         <ion-datetime id="notturnoAlle" formControlName="notturnoAlle" presentation="time"
-                          [showDefaultButtons]="true" doneText="OK" cancelText="Annulla">
+                          [showDefaultButtons]="true" doneText="OK" [cancelText]="'common.buttons.cancel' | transloco">
                         </ion-datetime>
                       </ng-template>
                     </ion-modal>
@@ -259,18 +257,18 @@
             </ion-grid>
 
             <ion-item class="nvx-item-4-title">
-              <ion-label>Causali</ion-label>
+              <ion-label>{{ 'attendance.pages.profiloOrarioEdit.causali' | transloco }}</ion-label>
             </ion-item>
-            <ion-note class="nvx-nota-profilo">Le causali facoltative, se vuote, usano la causale base dello straordinario o del supplementare.</ion-note>
+            <ion-note class="nvx-nota-profilo">{{ 'attendance.pages.profiloOrarioEdit.causaliNote' | transloco }}</ion-note>
             <ion-grid>
               <ion-row>
                 @for (c of causaliEccedenze; track c.campo) {
                   <ion-col size="12" size-md="6">
                     <ion-item>
-                      <ion-label position="stacked">{{ c.etichetta }}</ion-label>
-                      <ion-select [formControlName]="c.campo" placeholder="Seleziona la causale" interface="popover">
+                      <ion-label position="stacked">{{ c.etichetta | transloco }}</ion-label>
+                      <ion-select [formControlName]="c.campo" [placeholder]="'attendance.pages.profiloOrarioEdit.selezionaCausale' | transloco" interface="popover">
                         @if (!c.obbligatoria) {
-                          <ion-select-option [value]="null">(causale base)</ion-select-option>
+                          <ion-select-option [value]="null">{{ 'attendance.pages.profiloOrarioEdit.causaleBase' | transloco }}</ion-select-option>
                         }
                         @for (causali of par_CausaliModelList; track causali) {
                           <ion-select-option [value]="causali.id">
@@ -280,7 +278,7 @@
                       </ion-select>
                     </ion-item>
                     @if (_editForm.get(c.campo)?.hasError('required') && _editForm.get(c.campo)?.touched) {
-                      <ion-note color="danger">La causale è obbligatoria.</ion-note>
+                      <ion-note color="danger">{{ 'attendance.pages.profiloOrarioEdit.causaleRequired' | transloco }}</ion-note>
                     }
                   </ion-col>
                 }
@@ -291,14 +289,14 @@
           <div [hidden]="currSection!=='sez2'">
             <br />
             <ion-item class="nvx-item-4-title">
-              <ion-label>Giorni del profilo </ion-label>
+              <ion-label>{{ 'attendance.pages.profiloOrarioEdit.giorniProfilo' | transloco }} </ion-label>
             </ion-item>
             @if (_editModel ) {
               <div>
                 @for (giorno of getDayMock(); track giorno; let idxDay = $index) {
                   <ion-card>
                     <ion-card-content>
-                      <ion-card-title>Giorno {{ idxDay + 1 }} </ion-card-title>
+                      <ion-card-title>{{ 'attendance.pages.profiloOrarioEdit.giorno' | transloco: { n: idxDay + 1 } }} </ion-card-title>
                       <ion-grid>
                         @for (giornoDett of get_par_ProfiloOrarioGG_4Day( idxDay + 1 ); track giornoDett; let idx = $index; let last = $last) {
                           <ion-row class="nvx-ion-row-4table">
@@ -323,7 +321,7 @@
                                               {{ parHH.dalle }} - {{ parHH.alle }}
                                             </p>
                                           } @empty {
-                                            <p>Riposo</p>
+                                            <p>{{ 'attendance.pages.profiloOrarioEdit.riposo' | transloco }}</p>
                                           }
                                         </ion-label>
                                       }
@@ -379,14 +377,14 @@
                                       {{ parHH.dalle }} - {{ parHH.alle }}
                                     </p>
                                   } @empty {
-                                    <p>Riposo</p>
+                                    <p>{{ 'attendance.pages.profiloOrarioEdit.riposo' | transloco }}</p>
                                   }
                                 </ion-label>
                               }
                               @if (get_par_Orario(giornoDett.idPar_Orario)?.timbratureTipo === orarioTimbratureTipoEnum.MonteOre ||
                                 get_par_Orario(giornoDett.idPar_Orario)?.timbratureTipo === orarioTimbratureTipoEnum.MonteOreValore) {
                                 <ion-label>
-                                  <p>{{ get_par_Orario(giornoDett.idPar_Orario)?.hh_Teo_MonteOre }} - HH Teo.</p>
+                                  <p>{{ get_par_Orario(giornoDett.idPar_Orario)?.hh_Teo_MonteOre }} - {{ 'attendance.pages.profiloOrarioEdit.hhTeo' | transloco }}</p>
                                 </ion-label>
                               }
                             </ion-col>

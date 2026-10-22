@@ -1,4 +1,5 @@
 import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { TranslocoService } from '@jsverse/transloco';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
 import { BaseDialogConfirmCancelComponent } from '../../../../pages/_BASE/base-dialog-confirm-cancel/base-dialog-confirm-cancel.component';
@@ -32,6 +33,7 @@ export class EditDipGGCausaliDialogComponent extends BaseDialogConfirmCancelComp
     protected override userInterfaceService: UserInterfaceService,
     protected override fb: FormBuilder,
     protected override modalCtrl: ModalController,
+    private transloco: TranslocoService,
     private stringHelperService: StringHelperService,
     public sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService
   ) {
@@ -44,7 +46,7 @@ export class EditDipGGCausaliDialogComponent extends BaseDialogConfirmCancelComp
     this._par_CausaliList = this.sharedParameterGestionePresenzeService.Par_Causali;
   }
 
-  get Title(): string { return "Causale"; }
+  get Title(): string { return this.transloco.translate('attendance.components.editDipGgCausaliDialog.title'); }
 
   get EditForm(): FormGroup {
     return this.fb.group({

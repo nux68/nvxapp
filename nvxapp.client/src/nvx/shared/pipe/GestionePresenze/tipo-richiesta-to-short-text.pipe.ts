@@ -1,6 +1,9 @@
 import { Pipe, PipeTransform } from '@angular/core';
+import { translate } from '@jsverse/transloco';
 import { TipoRichiesta } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/Models/dip-gg-richiesta-model';
 
+// translate() globale (non TranslocoService iniettato): la pipe viene creata anche con new fuori dalla DI;
+// i testi sono calcolati una volta, il cambio lingua ricarica la pagina
 @Pipe({
   name: 'tipoRichiestaToShortText',
   standalone: true
@@ -14,11 +17,11 @@ export class TipoRichiestaToShortTextPipe implements PipeTransform {
 
     switch (value) {
       case TipoRichiesta.Timbratura:
-        return 'Timbr.';
+        return translate('attendance.pipes.tipoRichiestaToShortText.timbratura');
       case TipoRichiesta.Giustificativo:
-        return 'Giust.';
+        return translate('attendance.pipes.tipoRichiestaToShortText.giustificativo');
       case TipoRichiesta.NotaSpesa:
-        return 'Spesa';
+        return translate('attendance.pipes.tipoRichiestaToShortText.notaSpesa');
     
       default:
         return '';

@@ -19,6 +19,7 @@ import { Par_AttivitaModel } from '../../../ClientServer-Service/GestionePresenz
 import { CheckObjOn_Id_Number } from '../../../ClientServer-Service/ModelsBase/check-obj';
 import { AzSubCommessaService } from '../../../ClientServer-Service/GestionePresenze/Az_SubCommessa/az-subcommessa.service';
 import { Az_SubCommessa_GetCompatibili_InModel } from '../../../ClientServer-Service/GestionePresenze/Az_SubCommessa/Models/az-subcommessa-model';
+import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
   selector: 'app-department-edit-page',
@@ -55,7 +56,8 @@ export class DepartmentEditPageComponent extends BasePageConfirmCancelComponent<
     private azSediRepartoService: AzSediRepartoService,
     private azSubCommessaService: AzSubCommessaService,
     private toastCtrl: ToastController,
-    private refresherService: RefresherService) {
+    private refresherService: RefresherService,
+    private transloco: TranslocoService) {
 
     super(navCtrl, userInterfaceService, fb);
 
@@ -69,7 +71,7 @@ export class DepartmentEditPageComponent extends BasePageConfirmCancelComponent<
     this._par_Attivita = this.sharedParameterGestionePresenzeService.Par_Attivita;
   }
 
-  get Title(): string { return "Reparti"; }
+  get Title(): string { return this.transloco.translate('attendance.pages.departmentEdit.title'); }
   get EditForm(): FormGroup {
     return this.
       fb.group({
@@ -431,7 +433,7 @@ export class DepartmentEditPageComponent extends BasePageConfirmCancelComponent<
           return dip ? `${dip.cognome} ${dip.nome}` : x.id;
         });
         this.toastCtrl.create({
-          message: `Scollegati dal reparto, non hanno le competenze per le attività rimaste: ${nomi.join(', ')}`,
+          message: this.transloco.translate('attendance.pages.departmentEdit.toastScollegati', { nomi: nomi.join(', ') }),
           duration: 4000,
           position: 'bottom'
         }).then(t => t.present());

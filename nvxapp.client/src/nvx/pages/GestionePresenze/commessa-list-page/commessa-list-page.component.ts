@@ -1,3 +1,4 @@
+import { TranslocoService } from '@jsverse/transloco';
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
@@ -28,7 +29,7 @@ export class CommessaListPageComponent {
     return this.sharedParameterGestionePresenzeService.Az_Commessa;
   }
   public readonly columns: NvxListColumn<Az_CommessaModel>[] = [
-    { key: 'descrizione', title: 'Commessa', mobile: 'title' }
+    { key: 'descrizione', title: this.transloco.translate('attendance.pages.commessaList.columnJob'), mobile: 'title' }
   ];
   public actions: NvxListAction<Az_CommessaModel>[] = [];
   public readonly sortList = (a: Az_CommessaModel, b: Az_CommessaModel) => (a.descrizione ?? '').localeCompare(b.descrizione ?? '');
@@ -42,9 +43,10 @@ export class CommessaListPageComponent {
               private userInterfaceService: UserInterfaceService,
               private userNavigationService: UserNavigationService,
               private collectionDialogService: CollectionDialogService,
-              private refresherService: RefresherService) {
+              private refresherService: RefresherService,
+              private transloco: TranslocoService) {
 
-    this.title = 'Commesse';
+    this.title = this.transloco.translate('attendance.pages.commessaList.title');
     this.btnEdit = userInterfaceService.Btn_Modifica;
     this.btnEdit.event = this.handleButtonEditClick;
 
@@ -59,7 +61,7 @@ export class CommessaListPageComponent {
 
     this.fabMenuService.fabMenuItem = [
 
-      new FabMenuItem('Nuova Commessa', 'add-circle-outline', () => {
+      new FabMenuItem(this.transloco.translate('attendance.pages.commessaList.fabAdd'), 'add-circle-outline', () => {
         this.navCtrl.navigateForward('/commessaedit', {
           state: { id: 0 }
         });
@@ -83,7 +85,7 @@ export class CommessaListPageComponent {
 
   handleButtonDeleteClick = async (item: any) => {
 
-    const result = await this.collectionDialogService.ConfirmCancelDialog('Confermi la cancellazione della commessa?');
+    const result = await this.collectionDialogService.ConfirmCancelDialog(this.transloco.translate('attendance.pages.commessaList.confirmDelete'));
     if (result) {
 
       let request: GenericRequest<Az_CommessaDeleteInModel> = new GenericRequest<Az_CommessaDeleteInModel>(Az_CommessaDeleteInModel);

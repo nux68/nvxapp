@@ -1,3 +1,4 @@
+using nvxapp.server.data.Localization;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -205,7 +206,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Period
                             continue;
                         if (periodo.Stato != PeriodoStato.DaApprovare)
                         {
-                            retVal.Messages.Add(new Message($"Il cartellino {etichetta} e' ancora provvisorio: si approva a periodo concluso, dopo il ricalcolo.", MessageType.Warning));
+                            retVal.Messages.Add(new Message(AttendanceTrackingMessages.Get("TimesheetStillProvisional", etichetta), MessageType.Warning));
                             continue;
                         }
 
@@ -246,7 +247,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Period
 
                 if (periodo.Stato == PeriodoStato.Approvato)
                 {
-                    retVal.Messages.Add(new Message("Il cartellino e' approvato: va riaperto prima di cambiare le ore riconosciute.", MessageType.Warning));
+                    retVal.Messages.Add(new Message(AttendanceTrackingMessages.Get("TimesheetApprovedReopenToChangeHours"), MessageType.Warning));
                     retVal.Dip_Periodo = _mapper.Map<Dip_PeriodoModel>(periodo);
                     return retVal;
                 }

@@ -10,22 +10,22 @@
       <ion-card>
         <ion-card-content>
           <ion-item>
-            <ion-label position="floating">Codice</ion-label>
+            <ion-label position="floating">{{ 'attendance.components.editParExportCauCausaliComponent.codice' | transloco }}</ion-label>
             <ion-input type="text" formControlName="codice"></ion-input>
           </ion-item>
           @if (_editForm.get('codice')?.hasError('required') && _editForm.get('codice')?.touched) {
             <ion-note color="danger">
-              codice è obbligatorio.
+              {{ 'attendance.components.editParExportCauCausaliComponent.codiceObbligatorio' | transloco }}
             </ion-note>
           }
           @if (_editForm.get('codice')?.hasError('maxlength') && _editForm.get('codice')?.touched) {
             <ion-note color="danger">
-              codice non può superare i 5 caratteri.
+              {{ 'attendance.components.editParExportCauCausaliComponent.codiceMaxLength' | transloco: { max: 5 } }}
             </ion-note>
           }
           <ion-item>
-            <ion-label position="stacked">Causale</ion-label>
-            <ion-select formControlName="idCausale" placeholder="Seleziona la causale">
+            <ion-label position="stacked">{{ 'attendance.components.editParExportCauCausaliComponent.causale' | transloco }}</ion-label>
+            <ion-select formControlName="idCausale" placeholder="{{ 'attendance.components.editParExportCauCausaliComponent.selezionaCausale' | transloco }}">
               @for (causale of _par_CausaliList; track causale) {
                 <ion-select-option [value]="causale.id">
                   {{ causale.descrizione }}
@@ -35,32 +35,32 @@
           </ion-item>
           @if (_editForm.get('_editForm.idCausale')?.hasError('required') && _editForm.get('_editForm.idCausale')?.touched) {
             <ion-note color="danger">
-              La causale è obbligatoria.
+              {{ 'attendance.components.editParExportCauCausaliComponent.causaleObbligatoria' | transloco }}
             </ion-note>
           }
           <ion-item>
-            <ion-label position="floating">Tipo elaborazione</ion-label>
+            <ion-label position="floating">{{ 'attendance.components.editParExportCauCausaliComponent.tipoElaborazione' | transloco }}</ion-label>
             <ion-select formControlName="tipoElaborazione" interface="popover">
-              <ion-select-option [value]="par_Export_TipoElaborazione.Gionaliera">Gionaliera</ion-select-option>
-              <ion-select-option [value]="par_Export_TipoElaborazione.Mensile">Mensile</ion-select-option>
+              <ion-select-option [value]="par_Export_TipoElaborazione.Gionaliera">{{ 'attendance.components.editParExportCauCausaliComponent.giornaliera' | transloco }}</ion-select-option>
+              <ion-select-option [value]="par_Export_TipoElaborazione.Mensile">{{ 'attendance.components.editParExportCauCausaliComponent.mensile' | transloco }}</ion-select-option>
             </ion-select>
           </ion-item>
           @if (_editForm.get('tipoElaborazione')?.hasError('required') && _editForm.get('tipoElaborazione')?.touched) {
             <ion-note color="danger">
-              Il tipo elaborazione è obbligatorio.
+              {{ 'attendance.components.editParExportCauCausaliComponent.tipoElaborazioneObbligatorio' | transloco }}
             </ion-note>
           }
           <ion-item>
-            <ion-label position="floating">Unità</ion-label>
+            <ion-label position="floating">{{ 'attendance.components.editParExportCauCausaliComponent.unita' | transloco }}</ion-label>
             <ion-select formControlName="tipoUnita" interface="popover">
-              <ion-select-option [value]="par_Export_TipoUnita.Ore">Ore</ion-select-option>
-              <ion-select-option [value]="par_Export_TipoUnita.Giorni">Giorni</ion-select-option>
-              <ion-select-option [value]="par_Export_TipoUnita.Importo">Importo</ion-select-option>
+              <ion-select-option [value]="par_Export_TipoUnita.Ore">{{ 'attendance.components.editParExportCauCausaliComponent.ore' | transloco }}</ion-select-option>
+              <ion-select-option [value]="par_Export_TipoUnita.Giorni">{{ 'attendance.components.editParExportCauCausaliComponent.giorni' | transloco }}</ion-select-option>
+              <ion-select-option [value]="par_Export_TipoUnita.Importo">{{ 'attendance.components.editParExportCauCausaliComponent.importo' | transloco }}</ion-select-option>
             </ion-select>
           </ion-item>
           @if (_editForm.get('tipoUnita')?.hasError('required') && _editForm.get('tipoUnita')?.touched) {
             <ion-note color="danger">
-              Il tipo unità è obbligatorio.
+              {{ 'attendance.components.editParExportCauCausaliComponent.tipoUnitaObbligatorio' | transloco }}
             </ion-note>
           }
         </ion-card-content>

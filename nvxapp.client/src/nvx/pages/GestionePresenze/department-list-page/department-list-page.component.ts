@@ -12,6 +12,7 @@ import { Az_SediReparto_GetAll_InModel, Az_SediRepartoModel, Az_SediRepartoDelet
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
 import { map, catchError } from 'rxjs';
 import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
+import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
   selector: 'app-department-list-page',
@@ -24,7 +25,7 @@ export class DepartmentListPageComponent {
 
   public title!: string;
   public searchText!: string;
-  public readonly columns: NvxListColumn<Az_SediRepartoModel>[] = [{ key: 'descrizione', title: 'Reparto' }];
+  public readonly columns: NvxListColumn<Az_SediRepartoModel>[] = [{ key: 'descrizione', title: this.transloco.translate('attendance.pages.departmentList.columnReparto') }];
   public actions: NvxListAction<Az_SediRepartoModel>[] = [];
   // prima le voci di default, poi per descrizione
   public readonly sortList = (a: Az_SediRepartoModel, b: Az_SediRepartoModel) =>
@@ -54,9 +55,10 @@ export class DepartmentListPageComponent {
     private userInterfaceService: UserInterfaceService,
     private userNavigationService: UserNavigationService,
     private collectionDialogService: CollectionDialogService,
-    private refresherService: RefresherService) {
+    private refresherService: RefresherService,
+    private transloco: TranslocoService) {
 
-    this.title = 'Reparti';
+    this.title = this.transloco.translate('attendance.pages.departmentList.title');
     this.btnEdit = userInterfaceService.Btn_Modifica;
     this.btnEdit.event = this.handleButtonEditClick;
 
@@ -73,7 +75,7 @@ export class DepartmentListPageComponent {
 
     this.fabMenuService.fabMenuItem = [
 
-      new FabMenuItem('Elemento 1', 'add-circle-outline', () => {
+      new FabMenuItem(this.transloco.translate('attendance.pages.departmentList.fabAdd'), 'add-circle-outline', () => {
         this.navCtrl.navigateForward('/departmentedit', {
           state: { id: 0, idAz_Sedi: this.curr_idAz_Sedi }
         });
@@ -97,7 +99,7 @@ export class DepartmentListPageComponent {
 
   handleButtonDeleteClick = async (item: any) => {
 
-    const result = await this.collectionDialogService.ConfirmCancelDialog('Confermi la cancellazione del reparto');
+    const result = await this.collectionDialogService.ConfirmCancelDialog(this.transloco.translate('attendance.pages.departmentList.confirmDelete'));
     if (result) {
 
         const request: GenericRequest<Az_SediRepartoDeleteInModel> = new GenericRequest<Az_SediRepartoDeleteInModel>(Az_SediRepartoDeleteInModel);

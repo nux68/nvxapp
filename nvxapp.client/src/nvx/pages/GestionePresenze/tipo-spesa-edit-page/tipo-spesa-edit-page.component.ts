@@ -10,6 +10,7 @@ import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic
 import { ParTipoSpesaService } from '../../../ClientServer-Service/GestionePresenze/Par_TipoSpesa/par-tipo-spesa.service';
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
 import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
+import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
   selector: 'app-tipo-spesa-edit-page',
@@ -26,12 +27,13 @@ export class TipoSpesaEditPageComponent extends BasePageConfirmCancelComponent<P
     protected override fb: FormBuilder,
     private parTipoSpesaService: ParTipoSpesaService,
     private refresherService: RefresherService,
-    private userNavigationService: UserNavigationService
+    private userNavigationService: UserNavigationService,
+    private transloco: TranslocoService
   ) {
     super(navCtrl, userInterfaceService, fb);
   }
 
-  get Title(): string { return "Tipo spesa"; }
+  get Title(): string { return this.transloco.translate('attendance.pages.tipoSpesaEdit.title'); }
 
   get EditForm(): FormGroup {
     return this.fb.group({

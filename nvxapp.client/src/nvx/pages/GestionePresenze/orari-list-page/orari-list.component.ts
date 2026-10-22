@@ -1,3 +1,4 @@
+import { TranslocoService } from '@jsverse/transloco';
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
@@ -30,8 +31,8 @@ export class OrariListPageComponent {
     return this.sharedParameterGestionePresenzeService.Par_Orario;
   }
   public readonly columns: NvxListColumn<Par_OrarioModel>[] = [
-    { key: 'codice', title: 'Codice', width: '140px', mobile: 'subtitle' },
-    { key: 'descrizione', title: 'Descrizione', mobile: 'title' }
+    { key: 'codice', title: this.transloco.translate('attendance.pages.orariList.columnCode'), width: '140px', mobile: 'subtitle' },
+    { key: 'descrizione', title: this.transloco.translate('attendance.pages.orariList.columnDescription'), mobile: 'title' }
   ];
   public actions: NvxListAction<Par_OrarioModel>[] = [];
   public readonly sortList = (a: Par_OrarioModel, b: Par_OrarioModel) => (a.descrizione ?? '').localeCompare(b.descrizione ?? '');
@@ -45,9 +46,10 @@ export class OrariListPageComponent {
     private parOrarioService: ParOrarioService,
     private collectionDialogService: CollectionDialogService,
     private refresherService: RefresherService,
-    private userInterfaceService: UserInterfaceService
+    private userInterfaceService: UserInterfaceService,
+    private transloco: TranslocoService
   ) {
-    this.title = 'Orari';
+    this.title = this.transloco.translate('attendance.pages.orariList.title');
     this.btnEdit = this.userInterfaceService.Btn_Modifica;
     this.btnEdit.event = this.handleButtonEditClick;
 
@@ -88,7 +90,7 @@ export class OrariListPageComponent {
 
   handleButtonDeleteClick = async (item: any) => {
 
-    const result = await this.collectionDialogService.ConfirmCancelDialog('Confermi la cancellazione dell orario');
+    const result = await this.collectionDialogService.ConfirmCancelDialog(this.transloco.translate('attendance.pages.orariList.confirmDelete'));
     if (result) {
 
       const request: GenericRequest<Par_Orario_DeleteInModel> = new GenericRequest<Par_Orario_DeleteInModel>(Par_Orario_DeleteInModel);

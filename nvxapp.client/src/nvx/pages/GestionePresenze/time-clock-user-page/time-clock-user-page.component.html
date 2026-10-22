@@ -25,7 +25,7 @@
                 presentation="date-time"
                 [showDefaultButtons]="true"
                 doneText="OK"
-                cancelText="Annulla"
+                [cancelText]="'common.buttons.cancel' | transloco"
                 (ionChange)="onStartDatetimeChange($event)">
               </ion-datetime>
             </ng-template>
@@ -36,7 +36,7 @@
           </div>
 
           <ion-item class="nvx-item-4-title">
-            <ion-label>Ultima timbratura: {{ lastAction }}</ion-label>
+            <ion-label>{{ 'attendance.pages.timeClockUser.ultimaTimbratura' | transloco: { value: lastAction } }}</ion-label>
           </ion-item>
 
 
@@ -53,8 +53,8 @@
         </ion-note>
         -->
         <ion-item>
-          <ion-label position="stacked">Commessa Attivita</ion-label>
-          <ion-select formControlName="idPar_Attivita" placeholder="Seleziona l attivita">
+          <ion-label position="stacked">{{ 'attendance.pages.timeClockUser.commessaAttivita' | transloco }}</ion-label>
+          <ion-select formControlName="idPar_Attivita" [placeholder]="'attendance.pages.timeClockUser.attivitaPlaceholder' | transloco">
             @for (attivita of az_SubCommessaAttivita_4FullList; track attivita) {
               <ion-select-option [value]="attivita.subCommessaAttivita_Id">
                 {{ attivita.cliente_Descrizione }} {{ attivita.commessa_Decrizione }} {{ attivita.subCommessa_Decrizione }} {{ attivita.subCommessaAttivita_Par_Attivita_Descrizione }}
@@ -64,7 +64,7 @@
         </ion-item>
         @if (_editForm.get('idPar_Attivita')?.hasError('required') && _editForm.get('idPar_Attivita')?.touched) {
           <ion-note color="danger">
-            L attivita è obbligatoria.
+            {{ 'attendance.pages.timeClockUser.attivitaRequired' | transloco }}
           </ion-note>
         }
 

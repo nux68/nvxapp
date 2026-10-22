@@ -1,3 +1,4 @@
+import { TranslocoService } from '@jsverse/transloco';
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
@@ -30,9 +31,9 @@ export class JustificationListPageComponent {
     return this.sharedParameterGestionePresenzeService.Par_Giustificativi;
   }
   public readonly columns: NvxListColumn<Par_GiustificativiModel>[] = [
-    { key: 'codice', title: 'Codice', width: '140px', mobile: 'subtitle' },
-    { key: 'descrizione', title: 'Descrizione', mobile: 'title' },
-    { key: 'tipoContatore', title: 'Contatore', mobile: 'subtitle' }
+    { key: 'codice', title: this.transloco.translate('attendance.pages.justificationList.columnCode'), width: '140px', mobile: 'subtitle' },
+    { key: 'descrizione', title: this.transloco.translate('attendance.pages.justificationList.columnDescription'), mobile: 'title' },
+    { key: 'tipoContatore', title: this.transloco.translate('attendance.pages.justificationList.columnCounter'), mobile: 'subtitle' }
   ];
   public actions: NvxListAction<Par_GiustificativiModel>[] = [];
   public readonly sortList = (a: Par_GiustificativiModel, b: Par_GiustificativiModel) => (a.descrizione ?? '').localeCompare(b.descrizione ?? '');
@@ -46,9 +47,10 @@ export class JustificationListPageComponent {
               private userInterfaceService: UserInterfaceService,
               private collectionDialogService: CollectionDialogService,
               private refresherService: RefresherService,
-              private userNavigationService: UserNavigationService) {
+              private userNavigationService: UserNavigationService,
+              private transloco: TranslocoService) {
 
-    this.title = 'Giustificativi';
+    this.title = this.transloco.translate('attendance.pages.justificationList.title');
     this.btnEdit = userInterfaceService.Btn_Modifica;
     this.btnEdit.event = this.handleButtonEditClick;
 
@@ -96,7 +98,7 @@ export class JustificationListPageComponent {
 
   handleButtonDeleteClick = async (item: any) => {
 
-    const result = await this.collectionDialogService.ConfirmCancelDialog('Confermi la cancellazione del giustificativo');
+    const result = await this.collectionDialogService.ConfirmCancelDialog(this.transloco.translate('attendance.pages.justificationList.confirmDelete'));
     if (result) {
 
       const request: GenericRequest<Par_Giustificativi_DeleteInModel> = new GenericRequest<Par_Giustificativi_DeleteInModel>(Par_Giustificativi_DeleteInModel);

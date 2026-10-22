@@ -12,53 +12,53 @@
 
         <!-- Anagrafica -->
         <ion-item class="nvx-item-4-title">
-          <ion-label>Anagrafica</ion-label>
+          <ion-label>{{ 'attendance.pages.customerEdit.anagrafica' | transloco }}</ion-label>
         </ion-item>
         <ion-item>
-          <ion-label position="floating">Ragione sociale</ion-label>
+          <ion-label position="floating">{{ 'attendance.pages.customerEdit.ragioneSociale' | transloco }}</ion-label>
           <ion-input type="text" formControlName="descrizione" maxlength="100"></ion-input>
         </ion-item>
         @if (_editForm.get('descrizione')?.hasError('required') && _editForm.get('descrizione')?.touched) {
           <ion-note color="danger">
-            La ragione sociale è obbligatoria.
+            {{ 'attendance.pages.customerEdit.ragioneSocialeRequired' | transloco }}
           </ion-note>
         }
         @if (_editForm.get('descrizione')?.hasError('maxlength') && _editForm.get('descrizione')?.touched) {
           <ion-note color="danger">
-            La ragione sociale non può superare i 100 caratteri.
+            {{ 'attendance.pages.customerEdit.ragioneSocialeMaxLength' | transloco: { max: 100 } }}
           </ion-note>
         }
         <ion-item>
-          <ion-label position="floating">Referente</ion-label>
+          <ion-label position="floating">{{ 'attendance.pages.customerEdit.referente' | transloco }}</ion-label>
           <ion-input type="text" formControlName="referente" maxlength="100"></ion-input>
         </ion-item>
 
         <!-- Dati fiscali -->
         <br />
         <ion-item class="nvx-item-4-title">
-          <ion-label>Dati fiscali</ion-label>
+          <ion-label>{{ 'attendance.pages.customerEdit.datiFiscali' | transloco }}</ion-label>
         </ion-item>
         <ion-grid class="ion-no-padding">
           <ion-row>
             <ion-col size="12" size-md="6">
               <ion-item>
-                <ion-label position="floating">Partita IVA</ion-label>
+                <ion-label position="floating">{{ 'attendance.pages.customerEdit.partitaIva' | transloco }}</ion-label>
                 <ion-input type="text" inputmode="numeric" formControlName="partitaIva" maxlength="11"></ion-input>
               </ion-item>
               @if (_editForm.get('partitaIva')?.hasError('pattern') && _editForm.get('partitaIva')?.touched) {
                 <ion-note color="danger">
-                  La partita IVA è composta da 11 cifre.
+                  {{ 'attendance.pages.customerEdit.partitaIvaPattern' | transloco }}
                 </ion-note>
               }
             </ion-col>
             <ion-col size="12" size-md="6">
               <ion-item>
-                <ion-label position="floating">Codice fiscale</ion-label>
+                <ion-label position="floating">{{ 'attendance.pages.customerEdit.codiceFiscale' | transloco }}</ion-label>
                 <ion-input type="text" formControlName="codiceFiscale" maxlength="16"></ion-input>
               </ion-item>
               @if (_editForm.get('codiceFiscale')?.hasError('pattern') && _editForm.get('codiceFiscale')?.touched) {
                 <ion-note color="danger">
-                  Il codice fiscale è di 16 caratteri (persona) o 11 cifre (società).
+                  {{ 'attendance.pages.customerEdit.codiceFiscalePattern' | transloco }}
                 </ion-note>
               }
             </ion-col>
@@ -68,35 +68,35 @@
         <!-- Sede -->
         <br />
         <ion-item class="nvx-item-4-title">
-          <ion-label>Sede</ion-label>
+          <ion-label>{{ 'attendance.pages.customerEdit.sede' | transloco }}</ion-label>
         </ion-item>
         <ion-item>
-          <ion-label position="floating">Indirizzo</ion-label>
+          <ion-label position="floating">{{ 'attendance.pages.customerEdit.indirizzo' | transloco }}</ion-label>
           <ion-input type="text" formControlName="indirizzo" maxlength="100"></ion-input>
         </ion-item>
         <ion-grid class="ion-no-padding">
           <ion-row>
             <ion-col size="4" size-md="2">
               <ion-item>
-                <ion-label position="floating">CAP</ion-label>
+                <ion-label position="floating">{{ 'attendance.pages.customerEdit.cap' | transloco }}</ion-label>
                 <ion-input type="text" inputmode="numeric" formControlName="cap" maxlength="10"></ion-input>
               </ion-item>
             </ion-col>
             <ion-col size="8" size-md="6">
               <ion-item>
-                <ion-label position="floating">Città</ion-label>
+                <ion-label position="floating">{{ 'attendance.pages.customerEdit.citta' | transloco }}</ion-label>
                 <ion-input type="text" formControlName="citta" maxlength="50"></ion-input>
               </ion-item>
             </ion-col>
             <ion-col size="6" size-md="2">
               <ion-item>
-                <ion-label position="floating">Provincia</ion-label>
+                <ion-label position="floating">{{ 'attendance.pages.customerEdit.provincia' | transloco }}</ion-label>
                 <ion-input type="text" formControlName="provincia" maxlength="2"></ion-input>
               </ion-item>
             </ion-col>
             <ion-col size="6" size-md="2">
               <ion-item>
-                <ion-label position="floating">Nazione</ion-label>
+                <ion-label position="floating">{{ 'attendance.pages.customerEdit.nazione' | transloco }}</ion-label>
                 <ion-input type="text" formControlName="nazione" maxlength="2"></ion-input>
               </ion-item>
             </ion-col>
@@ -104,62 +104,62 @@
         </ion-grid>
         @if (_editForm.get('provincia')?.hasError('pattern') && _editForm.get('provincia')?.touched) {
           <ion-note color="danger">
-            La provincia è la sigla di 2 lettere (es. MI).
+            {{ 'attendance.pages.customerEdit.provinciaPattern' | transloco }}
           </ion-note>
         }
         @if (_editForm.get('nazione')?.hasError('pattern') && _editForm.get('nazione')?.touched) {
           <ion-note color="danger">
-            La nazione è il codice di 2 lettere (es. IT).
+            {{ 'attendance.pages.customerEdit.nazionePattern' | transloco }}
           </ion-note>
         }
 
         <!-- Contatti -->
         <br />
         <ion-item class="nvx-item-4-title">
-          <ion-label>Contatti</ion-label>
+          <ion-label>{{ 'attendance.pages.customerEdit.contatti' | transloco }}</ion-label>
         </ion-item>
         <ion-item>
-          <ion-label position="floating">Telefono</ion-label>
+          <ion-label position="floating">{{ 'attendance.pages.customerEdit.telefono' | transloco }}</ion-label>
           <ion-input type="tel" formControlName="telefono" maxlength="30"></ion-input>
         </ion-item>
         <ion-item>
-          <ion-label position="floating">Email</ion-label>
+          <ion-label position="floating">{{ 'attendance.pages.customerEdit.email' | transloco }}</ion-label>
           <ion-input type="email" formControlName="email" maxlength="100"></ion-input>
         </ion-item>
         @if (_editForm.get('email')?.hasError('email') && _editForm.get('email')?.touched) {
           <ion-note color="danger">
-            Inserisci un'email valida.
+            {{ 'common.validation.emailInvalid' | transloco }}
           </ion-note>
         }
         <ion-item>
-          <ion-label position="floating">PEC</ion-label>
+          <ion-label position="floating">{{ 'attendance.pages.customerEdit.pec' | transloco }}</ion-label>
           <ion-input type="email" formControlName="pec" maxlength="100"></ion-input>
         </ion-item>
         @if (_editForm.get('pec')?.hasError('email') && _editForm.get('pec')?.touched) {
           <ion-note color="danger">
-            Inserisci una PEC valida.
+            {{ 'attendance.pages.customerEdit.pecInvalid' | transloco }}
           </ion-note>
         }
 
         <!-- Fatturazione elettronica -->
         <br />
         <ion-item class="nvx-item-4-title">
-          <ion-label>Fatturazione elettronica</ion-label>
+          <ion-label>{{ 'attendance.pages.customerEdit.fatturazioneElettronica' | transloco }}</ion-label>
         </ion-item>
         <ion-item>
-          <ion-label position="floating">Codice destinatario (SDI)</ion-label>
+          <ion-label position="floating">{{ 'attendance.pages.customerEdit.codiceDestinatario' | transloco }}</ion-label>
           <ion-input type="text" formControlName="codiceDestinatario" maxlength="7"></ion-input>
         </ion-item>
         @if (_editForm.get('codiceDestinatario')?.hasError('pattern') && _editForm.get('codiceDestinatario')?.touched) {
           <ion-note color="danger">
-            Il codice destinatario è di 7 caratteri (6 per la Pubblica Amministrazione).
+            {{ 'attendance.pages.customerEdit.codiceDestinatarioPattern' | transloco }}
           </ion-note>
         }
 
         <!-- Note -->
         <br />
         <ion-item class="nvx-item-4-title">
-          <ion-label>Note</ion-label>
+          <ion-label>{{ 'attendance.pages.customerEdit.note' | transloco }}</ion-label>
         </ion-item>
         <ion-item>
           <ion-textarea formControlName="note" rows="3" maxlength="500" [autoGrow]="true"></ion-textarea>

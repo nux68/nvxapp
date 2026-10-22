@@ -11,6 +11,7 @@ import { ParameterService } from '../../../ClientServer-Service/Infrastructure/P
 import { AuthService } from '../../../Utility/infrastructure/auth.service';
 import { AccountService } from '../../../ClientServer-Service/Infrastructure/Account/account.service';
 import { CompanyEditModel, CompanyGetInModel, CompanyPutInModel } from '../../../ClientServer-Service/Infrastructure/Account/Models/company-model';
+import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
   selector: 'app-company-attendance-wizard-page',
@@ -42,15 +43,16 @@ export class CompanyAttendanceWizardPageComponent extends BasePageConfirmCancelC
     private parameterService: ParameterService,
     private stringHelperService: StringHelperService,
     private authService: AuthService,
-    private accountService: AccountService
+    private accountService: AccountService,
+    private transloco: TranslocoService
   ) {
     super(navCtrl, userInterfaceService, fb);
 
     this.baseConfirm = this.buttonbar[0];
     this.baseCancel = this.buttonbar[1];
 
-    this.btnNext = new ButtonItem('Avanti', 'arrow-forward-outline', 'primary', false, this.handleNext);
-    this.btnBack = new ButtonItem('Indietro', 'arrow-back-outline', 'medium', false, this.handleBack);
+    this.btnNext = new ButtonItem(this.transloco.translate('attendance.pages.companyAttendanceWizard.next'), 'arrow-forward-outline', 'primary', false, this.handleNext);
+    this.btnBack = new ButtonItem(this.transloco.translate('attendance.pages.companyAttendanceWizard.back'), 'arrow-back-outline', 'medium', false, this.handleBack);
   }
 
   override ionViewWillEnter() {
@@ -58,7 +60,7 @@ export class CompanyAttendanceWizardPageComponent extends BasePageConfirmCancelC
     this.updateButtonbar();
   }
 
-  get Title(): string { return "Caricamento Dati Aziendali"; }
+  get Title(): string { return this.transloco.translate('attendance.pages.companyAttendanceWizard.title'); }
 
   get EditForm(): FormGroup {
     return this.fb.group({
@@ -107,7 +109,8 @@ export class CompanyAttendanceWizardPageComponent extends BasePageConfirmCancelC
     const descrizione = this._editForm.get('descrizione')?.value;
 
     if (descrizione) {
-      this.modifiedDescription = "Attenzione per accedere a questa utenza verrano creati i seguenti user    ->   " + this.stringHelperService.removeSpecialCharacters(descrizione) + "_Admin" + " / " + this.stringHelperService.removeSpecialCharacters(descrizione) + "_PowerAdmin";
+      const userBase = this.stringHelperService.removeSpecialCharacters(descrizione);
+      this.modifiedDescription = this.transloco.translate('attendance.pages.companyAttendanceWizard.usersWarning', { admin: userBase + "_Admin", powerAdmin: userBase + "_PowerAdmin" });
     } else {
       this.modifiedDescription = null;
     }

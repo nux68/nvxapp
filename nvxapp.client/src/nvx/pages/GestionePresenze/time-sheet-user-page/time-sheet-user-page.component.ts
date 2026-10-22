@@ -21,6 +21,7 @@ import { Subscription } from 'rxjs';
 import { JobNotifierService } from '../../../Utility/infrastructure/job-notifier.service';
 import { GestionePresenze_JobType } from '../../../Utility/GestionePresenze/GestionePresenze_JobType';
 import { ModalController, NavController, Platform } from '@ionic/angular';
+import { TranslocoService } from '@jsverse/transloco';
 
 
 @Component({
@@ -71,9 +72,10 @@ export class TimeSheetUserPageComponent implements OnInit, OnDestroy {
               private dipGGRichiestaService: DipGGRichiestaService,
               private jobNotifierService: JobNotifierService, /* RICVEVE LE NOTIFICHE  */
               private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
-              private platform: Platform
+              private platform: Platform,
+              private transloco: TranslocoService
   ) {
-    this.title = 'Calendario';
+    this.title = this.transloco.translate('attendance.pages.timeSheetUser.title');
     this.weeks = [];
     // Inizializza con una struttura valida ma vuota
     this.currentMonth = { year: 0, month: 0, days: {}, dip_GG_Richiesta: [], daySlot: [], contatori_Anno_Mese: []};
@@ -280,12 +282,12 @@ export class TimeSheetUserPageComponent implements OnInit, OnDestroy {
 
   public getActionSheetButtons(): any {
 
-    let text = 'Cancella richiesta';
+    let text = this.transloco.translate('attendance.pages.timeSheetUser.deleteRequest');
     if (this.actionSheet_Dip_GG_Richiesta != null) {
       if (this.actionSheet_Dip_GG_Richiesta.revocaStato == null)
-        text = 'Cancella richiesta';
+        text = this.transloco.translate('attendance.pages.timeSheetUser.deleteRequest');
       else
-        text = 'Cancella revoca';
+        text = this.transloco.translate('attendance.pages.timeSheetUser.deleteRevocation');
 
     }
 
@@ -338,7 +340,7 @@ export class TimeSheetUserPageComponent implements OnInit, OnDestroy {
 
       const giustificativo = obj as Dip_GG_GiustificativiModel;
       this.actionSheetOpenSelectObj = giustificativo;
-      this.actionSheetHeader = `Giustificativo : ${parGiustificativiToLongTextPipe.transform(giustificativo.idPar_Giustificativi)} ${this.dateTimeUtilService.DateTo_ggmmyyyy(giustificativo.data)}`;
+      this.actionSheetHeader = this.transloco.translate('attendance.pages.timeSheetUser.headerJustification', { type: parGiustificativiToLongTextPipe.transform(giustificativo.idPar_Giustificativi), date: this.dateTimeUtilService.DateTo_ggmmyyyy(giustificativo.data) });
       this.actionSheetSubHeader = null;
 
       this.actionSheet_Dip_GG_Richiesta = this.get_Dip_GG_Richiesta(giustificativo.idDip_GG_Richiesta);
@@ -350,7 +352,7 @@ export class TimeSheetUserPageComponent implements OnInit, OnDestroy {
 
       const timbratura = obj as Dip_GG_TimbraturaModel;
       this.actionSheetOpenSelectObj = timbratura;
-      this.actionSheetHeader = `Timbratura : ${tipoTimbraturaToLongTextPipe.transform(timbratura.timbraturaTipo)} ${this.dateTimeUtilService.DateTo_ggmmyyyy_hhmm(timbratura.timbratura)}`;
+      this.actionSheetHeader = this.transloco.translate('attendance.pages.timeSheetUser.headerClocking', { type: tipoTimbraturaToLongTextPipe.transform(timbratura.timbraturaTipo), date: this.dateTimeUtilService.DateTo_ggmmyyyy_hhmm(timbratura.timbratura) });
       this.actionSheetSubHeader = null;
 
       this.actionSheet_Dip_GG_Richiesta = this.get_Dip_GG_Richiesta(timbratura.idDip_GG_Richiesta);

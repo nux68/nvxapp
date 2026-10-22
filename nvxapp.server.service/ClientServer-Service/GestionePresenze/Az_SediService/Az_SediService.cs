@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using nvxapp.server.data.Localization;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
@@ -167,7 +168,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediSer
                 }
                 else
                 {
-                    retVal.AddMessage($"Elemento con Id {model.Data.Id} non trovato.", MessageType.Warning);
+                    retVal.AddMessage(AttendanceTrackingMessages.Get("ItemWithIdNotFound", model.Data.Id), MessageType.Warning);
                 }
                 await Task.Delay(DelayAsyncMethod);
                 return retVal;

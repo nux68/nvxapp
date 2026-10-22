@@ -14,6 +14,7 @@ import { EditParOrarioDettaglioOrarioIntervalloHHDialogComponent } from '../../.
 import { ParOrarioIntervalloHHService } from '../../../ClientServer-Service/GestionePresenze/Par_OrarioIntervalloHH/par-orario-intervallo-hh.service';
 import { Par_CausaliModel } from '../../../ClientServer-Service/GestionePresenze/Par_Causali/Models/par-causali-model';
 import { SharedParameterGestionePresenzeService, ParTable } from '../../../shared/shared-parameter-gestione-presenze.service';
+import { TranslocoService } from '@jsverse/transloco';
 import { Az_SubCommessaAttivita_4FullListModel } from '../../../ClientServer-Service/GestionePresenze/Az_SubCommessaAttivita/Models/az-subcommessa-attivita-model';
 
 
@@ -44,6 +45,7 @@ export class OrariEditPageComponent extends BasePageConfirmCancelComponent<Par_O
     private parOrarioIntervalloHHService: ParOrarioIntervalloHHService,
     private modalCtrl: ModalController,
     private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
+    private transloco: TranslocoService,
   ) {
     super(navCtrl, userInterfaceService, fb);
 
@@ -53,7 +55,7 @@ export class OrariEditPageComponent extends BasePageConfirmCancelComponent<Par_O
   }
 
   get Title(): string {
-    return "Orario";
+    return this.transloco.translate('attendance.pages.orariEdit.title');
   }
 
   get EditForm(): FormGroup {

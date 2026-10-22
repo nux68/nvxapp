@@ -1,0 +1,606 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="RequestNotFound" xml:space="preserve">
+    <value>Request not found.</value>
+  </data>
+  <data name="ExpenseReviewAdminsOnly" xml:space="preserve">
+    <value>Reviewing expense reports is reserved to the company administrators.</value>
+  </data>
+  <data name="AttachmentNotFound" xml:space="preserve">
+    <value>Attachment not found.</value>
+  </data>
+  <data name="ExpenseReportNotAccessible" xml:space="preserve">
+    <value>Expense report not accessible.</value>
+  </data>
+  <data name="ExpenseReportEmpty" xml:space="preserve">
+    <value>The expense report contains no expenses.</value>
+  </data>
+  <data name="ExpenseReportDescriptionTooLong" xml:space="preserve">
+    <value>The expense report description exceeds 200 characters.</value>
+  </data>
+  <data name="ExpenseInvalidAmount" xml:space="preserve">
+    <value>Invalid amount in the expense of {0:dd/MM/yyyy}.</value>
+  </data>
+  <data name="ExpenseInvalidType" xml:space="preserve">
+    <value>Invalid expense type in the expense of {0:dd/MM/yyyy}.</value>
+  </data>
+  <data name="ExpenseDescriptionTooLong" xml:space="preserve">
+    <value>The description of the expense of {0:dd/MM/yyyy} exceeds 200 characters.</value>
+  </data>
+  <data name="ExpenseTooManyAttachments" xml:space="preserve">
+    <value>At most {0} attachments per expense.</value>
+  </data>
+  <data name="AttachmentTypeNotAllowed" xml:space="preserve">
+    <value>Attachment '{0}': only PDF files and images are allowed.</value>
+  </data>
+  <data name="AttachmentUnreadable" xml:space="preserve">
+    <value>Attachment '{0}' cannot be read.</value>
+  </data>
+  <data name="AttachmentEmpty" xml:space="preserve">
+    <value>Attachment '{0}' is empty.</value>
+  </data>
+  <data name="AttachmentTooLarge" xml:space="preserve">
+    <value>Attachment '{0}' exceeds {1} MB.</value>
+  </data>
+  <data name="ExpenseReportAttachmentsTooLarge" xml:space="preserve">
+    <value>The expense report attachments exceed {0} MB in total.</value>
+  </data>
+  <data name="NewExpenseReportWithSavedItems" xml:space="preserve">
+    <value>A new expense report cannot refer to expenses or attachments that are already saved.</value>
+  </data>
+  <data name="RequestedPeriodNoWorkingDays" xml:space="preserve">
+    <value>The requested period contains no working days.</value>
+  </data>
+  <data name="NoApproverEnabled" xml:space="preserve">
+    <value>No administrator enabled for approval</value>
+  </data>
+  <data name="ExpenseReportNotFound" xml:space="preserve">
+    <value>Expense report not found.</value>
+  </data>
+  <data name="ExpenseReportOnlyOwn" xml:space="preserve">
+    <value>You can only edit your own expense reports.</value>
+  </data>
+  <data name="ExpenseReportNotEditable" xml:space="preserve">
+    <value>The expense report can no longer be edited: it has already been approved, rejected or cancelled.</value>
+  </data>
+  <data name="ExpenseNotInReport" xml:space="preserve">
+    <value>Expense not belonging to the expense report.</value>
+  </data>
+  <data name="AttachmentNotInExpense" xml:space="preserve">
+    <value>Attachment not belonging to the expense.</value>
+  </data>
+  <data name="JustificationFallbackName" xml:space="preserve">
+    <value>Leave type</value>
+  </data>
+  <data name="BalanceInsufficient" xml:space="preserve">
+    <value>Insufficient balance for '{0}': available {1}, requested {2}.</value>
+  </data>
+  <data name="BalanceWarningFutureCovers" xml:space="preserve">
+    <value>Warning: the current balance of '{0}' is {1}, but the future balance ({2}) covers the request.</value>
+  </data>
+  <data name="TimesheetStillProvisional" xml:space="preserve">
+    <value>The timesheet {0} is still provisional: it can be approved once the period has ended, after recalculation.</value>
+  </data>
+  <data name="TimesheetApprovedReopenToChangeHours" xml:space="preserve">
+    <value>The timesheet is approved: it must be reopened before changing the recognised hours.</value>
+  </data>
+  <data name="DefaultActivityNeedsCompetence" xml:space="preserve">
+    <value>The default activity must have at least one skill</value>
+  </data>
+  <data name="ActivityWithIdNotFound" xml:space="preserve">
+    <value>Activity with Id {0} not found.</value>
+  </data>
+  <data name="ExpenseTypeInUse" xml:space="preserve">
+    <value>Expense type used in {0} expenses: it cannot be deleted.</value>
+  </data>
+  <data name="ItemWithIdNotFound" xml:space="preserve">
+    <value>Item with Id {0} not found.</value>
+  </data>
+  <data name="DepartmentNotFound" xml:space="preserve">
+    <value>Department not found.</value>
+  </data>
+  <data name="TimesheetCalcStarted" xml:space="preserve">
+    <value>Attendance calculation started...</value>
+  </data>
+  <data name="TimesheetCalcStep" xml:space="preserve">
+    <value>Attendance calculation step {0} of {1}</value>
+  </data>
+  <data name="TimesheetCalcCompleted" xml:space="preserve">
+    <value>Attendance calculation completed</value>
+  </data>
+  <data name="TimesheetCalcFailed" xml:space="preserve">
+    <value>Attendance calculation failed: {0}</value>
+  </data>
+  <data name="ExportStarted" xml:space="preserve">
+    <value>Attendance export started...</value>
+  </data>
+  <data name="ExportLayoutNotFound" xml:space="preserve">
+    <value>export layout not found.</value>
+  </data>
+  <data name="ExportLayoutWithoutCausali" xml:space="preserve">
+    <value>the layout "{0}" has no associated attendance codes: add them in the export layout page.</value>
+  </data>
+  <data name="ExportAttendanceDataUnavailable" xml:space="preserve">
+    <value>attendance data not available.</value>
+  </data>
+  <data name="ExportCompletedClickToDownload" xml:space="preserve">
+    <value>Export completed, click to download</value>
+  </data>
+  <data name="ExportNoFileGenerated" xml:space="preserve">
+    <value>No file generated: {0}</value>
+  </data>
+  <data name="ExportFailed" xml:space="preserve">
+    <value>Attendance export failed: {0}</value>
+  </data>
+  <data name="ExportProcessingProgress" xml:space="preserve">
+    <value>Processing {0}/{1}...</value>
+  </data>
+  <data name="EmployeeRecordNotFound" xml:space="preserve">
+    <value>Employee record not found</value>
+  </data>
+  <data name="EmploymentNotFound" xml:space="preserve">
+    <value>Employment relationship not found</value>
+  </data>
+  <data name="CompanyRecordNotFound" xml:space="preserve">
+    <value>Company attendance record (Az_Anagrafica) not found</value>
+  </data>
+  <data name="CompanyCfgNotFound" xml:space="preserve">
+    <value>Company attendance configuration (Az_Cfg) not found</value>
+  </data>
+  <data name="SiteNotFound" xml:space="preserve">
+    <value>Site not found</value>
+  </data>
+  <data name="EmploymentRelationshipNotFound" xml:space="preserve">
+    <value>Employment relationship not found.</value>
+  </data>
+  <data name="DayBeforeHiring" xml:space="preserve">
+    <value>{0:dd/MM/yyyy} is before the hiring date ({1:dd/MM/yyyy}): entries cannot be added.</value>
+  </data>
+  <data name="DayAfterTermination" xml:space="preserve">
+    <value>{0:dd/MM/yyyy} is after the termination date ({1:dd/MM/yyyy}): entries cannot be added.</value>
+  </data>
+  <data name="TimesheetMonthApproved" xml:space="preserve">
+    <value>The timesheet of {0:MM/yyyy} is approved: HR must reopen it to add or change entries.</value>
+  </data>
+  <data name="ActivityNotAllowed" xml:space="preserve">
+    <value>The selected activity is not among those allowed for the employee: choose one from the sub-projects the employee is linked to.</value>
+  </data>
+  <data name="ChatOpenAttivitaDisplayName" xml:space="preserve">
+    <value>Open activity</value>
+  </data>
+  <data name="ChatOpenAttivitaDescription" xml:space="preserve">
+    <value>opens the edit page of a specific activity.</value>
+  </data>
+  <data name="ChatOpenAttivitaQuestion" xml:space="preserve">
+    <value>Which activity do you want to open?</value>
+  </data>
+  <data name="ChatOpenAttivitaLabel" xml:space="preserve">
+    <value>Activity</value>
+  </data>
+  <data name="ChatOpenAttivitaNameMissing" xml:space="preserve">
+    <value>Activity name not specified.</value>
+  </data>
+  <data name="ChatOpenAttivitaLoadError" xml:space="preserve">
+    <value>Unable to load the activity list.</value>
+  </data>
+  <data name="ChatOpenAttivitaNotFound" xml:space="preserve">
+    <value>Activity '{0}' not found.</value>
+  </data>
+  <data name="ChatOpenAttivitaOpening" xml:space="preserve">
+    <value>Opening activity '{0}' (id: {1}).</value>
+  </data>
+  <data name="ChatOpenCausaleDisplayName" xml:space="preserve">
+    <value>Open attendance code</value>
+  </data>
+  <data name="ChatOpenCausaleDescription" xml:space="preserve">
+    <value>opens the edit page of a specific attendance code.</value>
+  </data>
+  <data name="ChatOpenCausaleQuestion" xml:space="preserve">
+    <value>Which attendance code do you want to open?</value>
+  </data>
+  <data name="ChatOpenCausaleLabel" xml:space="preserve">
+    <value>Attendance code</value>
+  </data>
+  <data name="ChatOpenCausaleNameMissing" xml:space="preserve">
+    <value>Attendance code name not specified.</value>
+  </data>
+  <data name="ChatCausaliLoadError" xml:space="preserve">
+    <value>Unable to load the attendance code list.</value>
+  </data>
+  <data name="ChatCausaleNotFound" xml:space="preserve">
+    <value>Attendance code '{0}' not found.</value>
+  </data>
+  <data name="ChatOpenCausaleOpening" xml:space="preserve">
+    <value>Opening attendance code '{0}' (id: {1}).</value>
+  </data>
+  <data name="ChatOpenClienteDisplayName" xml:space="preserve">
+    <value>Open customer</value>
+  </data>
+  <data name="ChatOpenClienteDescription" xml:space="preserve">
+    <value>opens the edit page of a specific customer.</value>
+  </data>
+  <data name="ChatOpenClienteQuestion" xml:space="preserve">
+    <value>Which customer do you want to open?</value>
+  </data>
+  <data name="ChatOpenClienteLabel" xml:space="preserve">
+    <value>Customer</value>
+  </data>
+  <data name="ChatOpenClienteNameMissing" xml:space="preserve">
+    <value>Customer name not specified.</value>
+  </data>
+  <data name="ChatOpenClienteLoadError" xml:space="preserve">
+    <value>Unable to load the customer list.</value>
+  </data>
+  <data name="ChatOpenClienteNotFound" xml:space="preserve">
+    <value>Customer '{0}' not found.</value>
+  </data>
+  <data name="ChatOpenClienteOpening" xml:space="preserve">
+    <value>Opening customer '{0}' (id: {1}).</value>
+  </data>
+  <data name="ChatOpenCommessaDisplayName" xml:space="preserve">
+    <value>Open project</value>
+  </data>
+  <data name="ChatOpenCommessaDescription" xml:space="preserve">
+    <value>opens the edit page of a specific project (job order).</value>
+  </data>
+  <data name="ChatOpenCommessaQuestion" xml:space="preserve">
+    <value>Which project do you want to open?</value>
+  </data>
+  <data name="ChatOpenCommessaLabel" xml:space="preserve">
+    <value>Project</value>
+  </data>
+  <data name="ChatOpenCommessaNameMissing" xml:space="preserve">
+    <value>Project name not specified.</value>
+  </data>
+  <data name="ChatOpenCommessaLoadError" xml:space="preserve">
+    <value>Unable to load the project list.</value>
+  </data>
+  <data name="ChatOpenCommessaNotFound" xml:space="preserve">
+    <value>Project '{0}' not found.</value>
+  </data>
+  <data name="ChatOpenCommessaOpening" xml:space="preserve">
+    <value>Opening project '{0}' (id: {1}).</value>
+  </data>
+  <data name="ChatOpenCompetenzaDisplayName" xml:space="preserve">
+    <value>Open skill</value>
+  </data>
+  <data name="ChatOpenCompetenzaDescription" xml:space="preserve">
+    <value>opens the edit page of a specific skill.</value>
+  </data>
+  <data name="ChatOpenCompetenzaQuestion" xml:space="preserve">
+    <value>Which skill do you want to open?</value>
+  </data>
+  <data name="ChatOpenCompetenzaLabel" xml:space="preserve">
+    <value>Skill</value>
+  </data>
+  <data name="ChatOpenCompetenzaNameMissing" xml:space="preserve">
+    <value>Skill name not specified.</value>
+  </data>
+  <data name="ChatOpenCompetenzaLoadError" xml:space="preserve">
+    <value>Unable to load the skill list.</value>
+  </data>
+  <data name="ChatOpenCompetenzaNotFound" xml:space="preserve">
+    <value>Skill '{0}' not found.</value>
+  </data>
+  <data name="ChatOpenCompetenzaOpening" xml:space="preserve">
+    <value>Opening skill '{0}' (id: {1}).</value>
+  </data>
+  <data name="ChatOpenGiustificativoDisplayName" xml:space="preserve">
+    <value>Open leave type</value>
+  </data>
+  <data name="ChatOpenGiustificativoDescription" xml:space="preserve">
+    <value>opens the edit page of a specific leave type.</value>
+  </data>
+  <data name="ChatOpenGiustificativoQuestion" xml:space="preserve">
+    <value>Which leave type do you want to open?</value>
+  </data>
+  <data name="ChatOpenGiustificativoLabel" xml:space="preserve">
+    <value>Leave type</value>
+  </data>
+  <data name="ChatOpenGiustificativoNameMissing" xml:space="preserve">
+    <value>Leave type name not specified.</value>
+  </data>
+  <data name="ChatGiustificativiLoadError" xml:space="preserve">
+    <value>Unable to load the leave type list.</value>
+  </data>
+  <data name="ChatOpenGiustificativoNotFound" xml:space="preserve">
+    <value>Leave type '{0}' not found.</value>
+  </data>
+  <data name="ChatOpenGiustificativoOpening" xml:space="preserve">
+    <value>Opening leave type '{0}' (id: {1}).</value>
+  </data>
+  <data name="ChatOpenModelloExportDisplayName" xml:space="preserve">
+    <value>Open export template</value>
+  </data>
+  <data name="ChatOpenModelloExportDescription" xml:space="preserve">
+    <value>opens the edit page of a specific export template.</value>
+  </data>
+  <data name="ChatOpenModelloExportQuestion" xml:space="preserve">
+    <value>Which export template do you want to open?</value>
+  </data>
+  <data name="ChatOpenModelloExportLabel" xml:space="preserve">
+    <value>Export template</value>
+  </data>
+  <data name="ChatOpenModelloExportNameMissing" xml:space="preserve">
+    <value>Export template name not specified.</value>
+  </data>
+  <data name="ChatOpenModelloExportLoadError" xml:space="preserve">
+    <value>Unable to load the export template list.</value>
+  </data>
+  <data name="ChatOpenModelloExportNotFound" xml:space="preserve">
+    <value>Export template '{0}' not found.</value>
+  </data>
+  <data name="ChatOpenModelloExportOpening" xml:space="preserve">
+    <value>Opening export template '{0}' (id: {1}).</value>
+  </data>
+  <data name="ChatOpenOrarioDisplayName" xml:space="preserve">
+    <value>Open work schedule</value>
+  </data>
+  <data name="ChatOpenOrarioDescription" xml:space="preserve">
+    <value>opens the edit page of a specific work schedule.</value>
+  </data>
+  <data name="ChatOpenOrarioQuestion" xml:space="preserve">
+    <value>Which work schedule do you want to open?</value>
+  </data>
+  <data name="ChatOpenOrarioLabel" xml:space="preserve">
+    <value>Work schedule</value>
+  </data>
+  <data name="ChatOpenOrarioNameMissing" xml:space="preserve">
+    <value>Work schedule name not specified.</value>
+  </data>
+  <data name="ChatOpenOrarioLoadError" xml:space="preserve">
+    <value>Unable to load the work schedule list.</value>
+  </data>
+  <data name="ChatOpenOrarioNotFound" xml:space="preserve">
+    <value>Work schedule '{0}' not found.</value>
+  </data>
+  <data name="ChatOpenOrarioOpening" xml:space="preserve">
+    <value>Opening work schedule '{0}' (id: {1}).</value>
+  </data>
+  <data name="ChatOpenProfiloOrarioDisplayName" xml:space="preserve">
+    <value>Open schedule profile</value>
+  </data>
+  <data name="ChatOpenProfiloOrarioDescription" xml:space="preserve">
+    <value>opens the edit page of a specific schedule profile.</value>
+  </data>
+  <data name="ChatOpenProfiloOrarioQuestion" xml:space="preserve">
+    <value>Which schedule profile do you want to open?</value>
+  </data>
+  <data name="ChatOpenProfiloOrarioLabel" xml:space="preserve">
+    <value>Schedule profile</value>
+  </data>
+  <data name="ChatOpenProfiloOrarioNameMissing" xml:space="preserve">
+    <value>Schedule profile name not specified.</value>
+  </data>
+  <data name="ChatOpenProfiloOrarioLoadError" xml:space="preserve">
+    <value>Unable to load the schedule profile list.</value>
+  </data>
+  <data name="ChatOpenProfiloOrarioNotFound" xml:space="preserve">
+    <value>Schedule profile '{0}' not found.</value>
+  </data>
+  <data name="ChatOpenProfiloOrarioOpening" xml:space="preserve">
+    <value>Opening schedule profile '{0}' (id: {1}).</value>
+  </data>
+  <data name="ChatOpenRepartoDisplayName" xml:space="preserve">
+    <value>Open department</value>
+  </data>
+  <data name="ChatOpenRepartoDescription" xml:space="preserve">
+    <value>opens the edit page of a specific department.</value>
+  </data>
+  <data name="ChatOpenRepartoQuestion" xml:space="preserve">
+    <value>Which department do you want to open?</value>
+  </data>
+  <data name="ChatOpenRepartoLabel" xml:space="preserve">
+    <value>Department</value>
+  </data>
+  <data name="ChatOpenRepartoNameMissing" xml:space="preserve">
+    <value>Department name not specified.</value>
+  </data>
+  <data name="ChatOpenRepartoLoadError" xml:space="preserve">
+    <value>Unable to load the department list.</value>
+  </data>
+  <data name="ChatOpenRepartoNotFound" xml:space="preserve">
+    <value>Department '{0}' not found.</value>
+  </data>
+  <data name="ChatOpenRepartoOpening" xml:space="preserve">
+    <value>Opening department '{0}' (id: {1}).</value>
+  </data>
+  <data name="ChatEmployeeQuestion" xml:space="preserve">
+    <value>Which employee?</value>
+  </data>
+  <data name="ChatEmployeeLabel" xml:space="preserve">
+    <value>Employee</value>
+  </data>
+  <data name="ChatEmployeeInvalidName" xml:space="preserve">
+    <value>'{0}' does not look like a valid name. Enter the employee's first and/or last name.</value>
+  </data>
+  <data name="ChatEmployeesReadError" xml:space="preserve">
+    <value>Error while reading the employees.</value>
+  </data>
+  <data name="ChatNoEmployeesAvailable" xml:space="preserve">
+    <value>No employees available.</value>
+  </data>
+  <data name="ChatEmployeeNotFoundRetry" xml:space="preserve">
+    <value>No employee found for '{0}'. Try again with first and/or last name.</value>
+  </data>
+  <data name="ChatEmployeeMatched" xml:space="preserve">
+    <value>Employee matched: {0}</value>
+  </data>
+  <data name="ChatEmployeesAmbiguous" xml:space="preserve">
+    <value>Found {0} employees for '{1}'. Select one:</value>
+  </data>
+  <data name="ChatCalcolaGiornoDisplayName" xml:space="preserve">
+    <value>Calculate attendance</value>
+  </data>
+  <data name="ChatCalcolaGiornoDescription" xml:space="preserve">
+    <value>calculates the attendance sheet of an employee over a date range (default: today).</value>
+  </data>
+  <data name="ChatCalcolaGiornoMonthQuestion" xml:space="preserve">
+    <value>Do you want to calculate a whole month? (e.g. July 2025 or 07/2025 — leave empty to use the dates)</value>
+  </data>
+  <data name="ChatMonthLabel" xml:space="preserve">
+    <value>Month</value>
+  </data>
+  <data name="ChatCalcolaGiornoFromQuestion" xml:space="preserve">
+    <value>From which date do you want to calculate? (leave empty for today)</value>
+  </data>
+  <data name="ChatFromLabel" xml:space="preserve">
+    <value>From</value>
+  </data>
+  <data name="ChatCalcolaGiornoToQuestion" xml:space="preserve">
+    <value>Up to which date? (leave empty for today)</value>
+  </data>
+  <data name="ChatToLabel" xml:space="preserve">
+    <value>To</value>
+  </data>
+  <data name="ChatInvalidDate" xml:space="preserve">
+    <value>'{0}' is not a valid date. Use the format dd/mm/yyyy.</value>
+  </data>
+  <data name="ChatCalcolaGiornoEmployeeNotFound" xml:space="preserve">
+    <value>Employee '{0}' not found or name incomplete. No calculation performed.</value>
+  </data>
+  <data name="ChatCalcolaGiornoNoSystemUser" xml:space="preserve">
+    <value>Unable to determine the system user for '{0}'.</value>
+  </data>
+  <data name="ChatCalcolaGiornoError" xml:space="preserve">
+    <value>Error during the calculation: {0}</value>
+  </data>
+  <data name="ChatCalcolaGiornoDone" xml:space="preserve">
+    <value>Attendance calculation completed for {0} ({1}).</value>
+  </data>
+  <data name="ChatRegisterCausaleDisplayName" xml:space="preserve">
+    <value>Add attendance code</value>
+  </data>
+  <data name="ChatRegisterCausaleDescription" xml:space="preserve">
+    <value>records an attendance code for an employee on a date with a number of hours.</value>
+  </data>
+  <data name="ChatRegisterCausaleCausaleQuestion" xml:space="preserve">
+    <value>Which attendance code do you want to add?</value>
+  </data>
+  <data name="ChatRegisterCausaleHoursQuestion" xml:space="preserve">
+    <value>How many hours do you want to record? (e.g. 08:00 or two)</value>
+  </data>
+  <data name="ChatHoursLabel" xml:space="preserve">
+    <value>Hours</value>
+  </data>
+  <data name="ChatDateQuestion" xml:space="preserve">
+    <value>For which date?</value>
+  </data>
+  <data name="ChatDateLabel" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="ChatInvalidHours" xml:space="preserve">
+    <value>'{0}' is not a valid hours format. Use HH:mm (e.g. 08:00) or a number in words (e.g. eight).</value>
+  </data>
+  <data name="ChatRegisterCausaleEmployeeNotFound" xml:space="preserve">
+    <value>Employee '{0}' not found or name incomplete. No attendance code recorded.</value>
+  </data>
+  <data name="ChatEmploymentNotFoundFor" xml:space="preserve">
+    <value>No employment relationship found for '{0}'.</value>
+  </data>
+  <data name="ChatRegisterCausaleError" xml:space="preserve">
+    <value>Error while recording the attendance code: {0}</value>
+  </data>
+  <data name="ChatRegisterCausaleDone" xml:space="preserve">
+    <value>Attendance code '{0}' of {1} hours recorded for {2} on {3}.</value>
+  </data>
+  <data name="ChatRegisterClockingDisplayName" xml:space="preserve">
+    <value>Clocking</value>
+  </data>
+  <data name="ChatRegisterClockingDescription" xml:space="preserve">
+    <value>records an entry or exit clocking.</value>
+  </data>
+  <data name="ChatRegisterClockingTimeQuestion" xml:space="preserve">
+    <value>At what time? (e.g. 09:00)</value>
+  </data>
+  <data name="ChatTimeLabel" xml:space="preserve">
+    <value>Time</value>
+  </data>
+  <data name="ChatInvalidTime" xml:space="preserve">
+    <value>'{0}' is not a valid time. Use the format HH:mm (e.g. 09:00).</value>
+  </data>
+  <data name="ChatRegisterClockingDirectionQuestion" xml:space="preserve">
+    <value>Entry or exit?</value>
+  </data>
+  <data name="ChatRegisterClockingDirectionLabel" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="ChatRegisterClockingEmployeeNotFound" xml:space="preserve">
+    <value>Employee '{0}' not found or name incomplete. No clocking recorded.</value>
+  </data>
+  <data name="ChatRegisterClockingDone" xml:space="preserve">
+    <value>Clocking ({0}) recorded: {1} at {2} on {3}.</value>
+  </data>
+  <data name="ChatRegisterJustificationDisplayName" xml:space="preserve">
+    <value>Leave</value>
+  </data>
+  <data name="ChatRegisterJustificationDescription" xml:space="preserve">
+    <value>records a leave (holiday, sickness, time off, etc.) for an employee on a date.</value>
+  </data>
+  <data name="ChatRegisterJustificationTypeQuestion" xml:space="preserve">
+    <value>Which leave type? (e.g. Ferie, Malattia, ROL)</value>
+  </data>
+  <data name="ChatRegisterJustificationHoursQuestion" xml:space="preserve">
+    <value>How many hours do you want to justify? (e.g. 08:00 or eight)</value>
+  </data>
+  <data name="ChatRegisterJustificationEmployeeNotFound" xml:space="preserve">
+    <value>Employee '{0}' not found or name incomplete. No leave recorded.</value>
+  </data>
+  <data name="ChatJustificationTypeNotFound" xml:space="preserve">
+    <value>Leave type '{0}' not found.</value>
+  </data>
+  <data name="ChatRegisterJustificationError" xml:space="preserve">
+    <value>Error while recording the leave: {0}</value>
+  </data>
+  <data name="ChatRegisterJustificationDone" xml:space="preserve">
+    <value>Leave '{0}' of {1} hours recorded for {2} on {3}.</value>
+  </data>
+  <data name="ChatTimeSheetPowerAdminDisplayName" xml:space="preserve">
+    <value>HR calendar</value>
+  </data>
+  <data name="ChatTimeSheetPowerAdminDescription" xml:space="preserve">
+    <value>opens the HR calendar (power admin timesheet). Optionally filters by employee and/or year/month period.</value>
+  </data>
+  <data name="ChatTimeSheetPowerAdminEmployeeQuestion" xml:space="preserve">
+    <value>Which employee? (leave empty for no filter)</value>
+  </data>
+  <data name="ChatYearQuestion" xml:space="preserve">
+    <value>Which year?</value>
+  </data>
+  <data name="ChatYearLabel" xml:space="preserve">
+    <value>Year</value>
+  </data>
+  <data name="ChatMonthQuestion" xml:space="preserve">
+    <value>Which month?</value>
+  </data>
+  <data name="ChatEmployeeNotFound" xml:space="preserve">
+    <value>Employee '{0}' not found.</value>
+  </data>
+  <data name="ChatTimeSheetPowerAdminFilterEmployee" xml:space="preserve">
+    <value>employee {0} {1}</value>
+  </data>
+  <data name="ChatTimeSheetPowerAdminFilterYear" xml:space="preserve">
+    <value>year {0}</value>
+  </data>
+  <data name="ChatTimeSheetPowerAdminFilterMonth" xml:space="preserve">
+    <value>month {0}</value>
+  </data>
+  <data name="ChatTimeSheetPowerAdminOpenFiltered" xml:space="preserve">
+    <value>Opening HR calendar ({0}).</value>
+  </data>
+  <data name="ChatTimeSheetPowerAdminOpen" xml:space="preserve">
+    <value>Opening HR calendar.</value>
+  </data>
+</root>

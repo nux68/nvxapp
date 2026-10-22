@@ -12,21 +12,21 @@
         <ion-segment [value]="currSection_segment_main" (ionChange)="segment_main_segmentChanged($event)">
           <!-- BUTTON Anagrafica -->
           <ion-segment-button value="{{SEGMENT_MAIN_ANAGRAFICA}}">
-            <ion-label>Anagrafica</ion-label>
+            <ion-label>{{ 'attendance.pages.userDepartmentEdit.segPersonalData' | transloco }}</ion-label>
           </ion-segment-button>
           <!-- BUTTON Varie -->
           <ion-segment-button value="{{SEGMENT_MAIN_VARIE}}">
-            <ion-label>Varie</ion-label>
+            <ion-label>{{ 'attendance.pages.userDepartmentEdit.segOther' | transloco }}</ion-label>
           </ion-segment-button>
           <!-- BUTTON Competenze -->
           <ion-segment-button value="{{SEGMENT_MAIN_COMPETENZE}}">
-            <ion-label>Competenze</ion-label>
+            <ion-label>{{ 'attendance.pages.userDepartmentEdit.segSkills' | transloco }}</ion-label>
           </ion-segment-button>
           <!-- BUTTON Rapporto lavoro (Dinamico) -->
           @if (_editModel && _editModel.dip_RapportoLavoro) {
             @for (item_main of _editModel.dip_RapportoLavoro; track item_main.id; let idxRapp = $index) {
               <ion-segment-button value="{{SEGMENT_MAIN_RAPP_LAV}}{{item_main.id}}">
-                <ion-label>Rapporto Lavoro (ID {{ item_main.id }})</ion-label>
+                <ion-label>{{ 'attendance.pages.userDepartmentEdit.segEmployment' | transloco: { id: item_main.id } }}</ion-label>
               </ion-segment-button>
             }
           }
@@ -39,20 +39,20 @@
             <div>
               <br />
               <ion-item class="nvx-item-4-title">
-                <ion-label>Info </ion-label>
+                <ion-label>{{ 'attendance.pages.userDepartmentEdit.info' | transloco }} </ion-label>
               </ion-item>
               <ion-item>
-                <ion-label position="floating">UserName</ion-label>
+                <ion-label position="floating">{{ 'attendance.pages.userDepartmentEdit.userName' | transloco }}</ion-label>
                 <ion-input type="text" formControlName="descrizione" [readonly]="_editModel && _editModel.idUserCompany > 0"></ion-input>
               </ion-item>
               @if (_editForm.get('descrizione')?.hasError('required') && _editForm.get('descrizione')?.touched) {
                 <ion-note color="danger">
-                  UserName è obbligatorio.
+                  {{ 'common.validation.userNameRequired' | transloco }}
                 </ion-note>
               }
               @if (_editForm.get('descrizione')?.hasError('maxlength') && _editForm.get('descrizione')?.touched) {
                 <ion-note color="danger">
-                  UserName non può superare i 20 caratteri.
+                  {{ 'common.validation.userNameMaxLength' | transloco: { max: 20 } }}
                 </ion-note>
               }
               @if (modifiedDescription) {
@@ -62,46 +62,46 @@
               }
               @if (_editModel && _editModel.idUserCompany === 0) {
                 <ion-item>
-                  <ion-label position="floating">Email</ion-label>
+                  <ion-label position="floating">{{ 'attendance.pages.userDepartmentEdit.email' | transloco }}</ion-label>
                   <ion-input type="email" formControlName="mail"></ion-input>
                 </ion-item>
                 @if (_editForm.get('mail')?.hasError('required') && _editForm.get('mail')?.touched) {
                   <ion-note color="danger">
-                    L'email è obbligatoria.
+                    {{ 'common.validation.emailRequired' | transloco }}
                   </ion-note>
                 }
                 @if (_editForm.get('mail')?.hasError('email') && _editForm.get('mail')?.touched) {
                   <ion-note color="danger">
-                    Inserisci un'email valida.
+                    {{ 'common.validation.emailInvalid' | transloco }}
                   </ion-note>
                 }
                 <ion-item>
-                  <ion-label position="floating">Password</ion-label>
+                  <ion-label position="floating">{{ 'attendance.pages.userDepartmentEdit.password' | transloco }}</ion-label>
                   <ion-input type="password" formControlName="pw"></ion-input>
                 </ion-item>
                 @if (_editForm.get('pw')?.hasError('required') && _editForm.get('pw')?.touched) {
                   <ion-note color="danger">
-                    La password è obbligatoria.
+                    {{ 'common.validation.passwordRequired' | transloco }}
                   </ion-note>
                 }
                 <ion-item>
-                  <ion-label position="floating">Conferma Password</ion-label>
+                  <ion-label position="floating">{{ 'attendance.pages.userDepartmentEdit.confirmPassword' | transloco }}</ion-label>
                   <ion-input type="password" formControlName="confirmPassword"></ion-input>
                 </ion-item>
                 @if (_editForm.get('confirmPassword')?.hasError('required') && _editForm.get('confirmPassword')?.touched) {
                   <ion-note color="danger">
-                    La conferma della password è obbligatoria.
+                    {{ 'common.validation.confirmPasswordRequired' | transloco }}
                   </ion-note>
                 }
                 @if (_editForm.hasError('notMatching') && _editForm.get('confirmPassword')?.touched) {
                   <ion-note color="danger">
-                    Le password non corrispondono.
+                    {{ 'common.validation.passwordMismatch' | transloco }}
                   </ion-note>
                 }
               }
               <ion-item>
-                <ion-label position="floating">Ruolo</ion-label>
-                <ion-select formControlName="roles" aria-label="Ruoli" [multiple]="true">
+                <ion-label position="floating">{{ 'attendance.pages.userDepartmentEdit.role' | transloco }}</ion-label>
+                <ion-select formControlName="roles" [attr.aria-label]="'attendance.pages.userDepartmentEdit.rolesAria' | transloco" [multiple]="true">
                   @for (item_role of getRoles(); track item_role) {
                     <ion-select-option value="{{item_role}}">{{ item_role }}</ion-select-option>
                   }
@@ -109,41 +109,41 @@
               </ion-item>
               @if (_editForm.get('roles')?.hasError('minArrayLength') && _editForm.get('roles')?.touched) {
                 <ion-note color="danger">
-                  Il ruolo è obbligatorio.
+                  {{ 'common.validation.roleRequired' | transloco }}
                 </ion-note>
               }
               <ion-item>
-                <ion-label position="floating">Cognome</ion-label>
+                <ion-label position="floating">{{ 'attendance.pages.userDepartmentEdit.surname' | transloco }}</ion-label>
                 <ion-input type="text" formControlName="cognome"></ion-input>
               </ion-item>
               @if (_editForm.get('cognome')?.hasError('required') && _editForm.get('cognome')?.touched) {
                 <ion-note color="danger">
-                  cognome è obbligatorio.
+                  {{ 'attendance.pages.userDepartmentEdit.surnameRequired' | transloco }}
                 </ion-note>
               }
               @if (_editForm.get('cognome')?.hasError('maxlength') && _editForm.get('cognome')?.touched) {
                 <ion-note color="danger">
-                  cognome non può superare i 20 caratteri.
+                  {{ 'attendance.pages.userDepartmentEdit.surnameMaxLength' | transloco: { max: 20 } }}
                 </ion-note>
               }
               <ion-item>
-                <ion-label position="floating">Nome</ion-label>
+                <ion-label position="floating">{{ 'attendance.pages.userDepartmentEdit.name' | transloco }}</ion-label>
                 <ion-input type="text" formControlName="nome"></ion-input>
               </ion-item>
               @if (_editForm.get('nome')?.hasError('required') && _editForm.get('nome')?.touched) {
                 <ion-note color="danger">
-                  nome è obbligatorio.
+                  {{ 'attendance.pages.userDepartmentEdit.nameRequired' | transloco }}
                 </ion-note>
               }
               @if (_editForm.get('nome')?.hasError('maxlength') && _editForm.get('nome')?.touched) {
                 <ion-note color="danger">
-                  nome non può superare i 20 caratteri.
+                  {{ 'attendance.pages.userDepartmentEdit.nameMaxLength' | transloco: { max: 20 } }}
                 </ion-note>
               }
               <ion-item>
-                <ion-toggle formControlName="disabled" justify="start">Disabilitato</ion-toggle>
+                <ion-toggle formControlName="disabled" justify="start">{{ 'attendance.pages.userDepartmentEdit.disabled' | transloco }}</ion-toggle>
               </ion-item>
-              <ion-note class="nvx-nota-disabled">Le righe disabilitate non compaiono nelle liste, salvo "mostra disabilitati".</ion-note>
+              <ion-note class="nvx-nota-disabled">{{ 'attendance.pages.userDepartmentEdit.disabledNote' | transloco }}</ion-note>
               <br />
             </div>
           }
@@ -158,10 +158,10 @@
             <div>
               <br />
               <ion-item class="nvx-item-4-title">
-                <ion-label>Competenze</ion-label>
+                <ion-label>{{ 'attendance.pages.userDepartmentEdit.segSkills' | transloco }}</ion-label>
               </ion-item>
               <ion-note class="nvx-nota-contratto">
-                Le competenze determinano le attività che il dipendente può svolgere. Senza competenze viene assegnata quella di default.
+                {{ 'attendance.pages.userDepartmentEdit.skillsNote' | transloco }}
               </ion-note>
               <ion-grid>
                 @for (item of getAll_Dip_Competenza(); track item.idPar_Competenza; let indexRow4Color = $index) {
@@ -199,7 +199,7 @@
                 } @empty {
                   <ion-row>
                     <ion-col>
-                      <ion-note>Nessuna competenza assegnata.</ion-note>
+                      <ion-note>{{ 'attendance.pages.userDepartmentEdit.noSkills' | transloco }}</ion-note>
                     </ion-col>
                   </ion-row>
                 }
@@ -213,16 +213,16 @@
                 <div>
                   <ion-segment [value]="currSection_segment_dip_rapp[item_main.id]" (ionChange)="segment_dip_rapp_segmentChanged($event, item_main.id)">
                     <ion-segment-button value="{{SEGMENT_MAIN_RAPP_LAV}}{{item_main.id}}_{{SEGMENT_DIPRAPP_GENERALE}}">
-                      <ion-label>Generale</ion-label>
+                      <ion-label>{{ 'attendance.pages.userDepartmentEdit.segGeneral' | transloco }}</ion-label>
                     </ion-segment-button>
                     <ion-segment-button value="{{SEGMENT_MAIN_RAPP_LAV}}{{item_main.id}}_{{SEGMENT_DIPRAPP_PROF_HH}}">
-                      <ion-label>Profili orari</ion-label>
+                      <ion-label>{{ 'attendance.pages.userDepartmentEdit.segWorkSchedules' | transloco }}</ion-label>
                     </ion-segment-button>
                     <ion-segment-button value="{{SEGMENT_MAIN_RAPP_LAV}}{{item_main.id}}_{{SEGMENT_DIPRAPP_CONTATORI}}">
-                      <ion-label>Contatori</ion-label>
+                      <ion-label>{{ 'attendance.pages.userDepartmentEdit.segCounters' | transloco }}</ion-label>
                     </ion-segment-button>
                     <ion-segment-button value="{{SEGMENT_MAIN_RAPP_LAV}}{{item_main.id}}_{{SEGMENT_DIPRAPP_VARIE}}">
-                      <ion-label>Varie</ion-label>
+                      <ion-label>{{ 'attendance.pages.userDepartmentEdit.segOther' | transloco }}</ion-label>
                     </ion-segment-button>
                   </ion-segment>
                   <!-- CONTENUTO: Rapporto lavoro Generale -->
@@ -230,10 +230,10 @@
                     <div>
                       <br />
                       <ion-item class="nvx-item-4-title">
-                        <ion-label>Generale</ion-label>
+                        <ion-label>{{ 'attendance.pages.userDepartmentEdit.segGeneral' | transloco }}</ion-label>
                       </ion-item>
                       <ion-item>
-                        <ion-label position="floating">Data assunzione</ion-label>
+                        <ion-label position="floating">{{ 'attendance.pages.userDepartmentEdit.hireDate' | transloco }}</ion-label>
                         <ion-datetime-button class="datetime-button-with-label" datetime="data-ass-{{item_main.id}}"></ion-datetime-button>
                         <ion-modal [keepContentsMounted]="true">
                           <ng-template>
@@ -243,14 +243,14 @@
                               [firstDayOfWeek]="1"
                               [showDefaultButtons]="true"
                               doneText="OK"
-                              cancelText="Annulla"
+                              [cancelText]="'common.buttons.cancel' | transloco"
                               (ionChange)="onDataRapportoChange(item_main, 'dataAss', $event)">
                             </ion-datetime>
                           </ng-template>
                         </ion-modal>
                       </ion-item>
                       <ion-item class="nvx-field">
-                        <ion-label position="floating">Data licenziamento</ion-label>
+                        <ion-label position="floating">{{ 'attendance.pages.userDepartmentEdit.dismissalDate' | transloco }}</ion-label>
                         @if (item_main.dataLic) {
                           <ion-datetime-button class="datetime-button-with-label" datetime="data-lic-{{item_main.id}}"></ion-datetime-button>
                           <ion-modal [keepContentsMounted]="true">
@@ -261,7 +261,7 @@
                                 [firstDayOfWeek]="1"
                                 [showDefaultButtons]="true"
                                 doneText="OK"
-                                cancelText="Annulla"
+                                [cancelText]="'common.buttons.cancel' | transloco"
                                 (ionChange)="onDataRapportoChange(item_main, 'dataLic', $event)">
                               </ion-datetime>
                             </ng-template>
@@ -271,48 +271,48 @@
                           </ion-button>
                         } @else {
                           <ion-button class="nvx-data-imposta" size="small" fill="outline" shape="round" (click)="item_main.dataLic = oggiIso()">
-                            Imposta
+                            {{ 'attendance.pages.userDepartmentEdit.setDate' | transloco }}
                           </ion-button>
                         }
                       </ion-item>
                       @if (item_main.dataAss && item_main.dataLic && item_main.dataLic < item_main.dataAss) {
                         <ion-note color="danger">
-                          La data di licenziamento è precedente alla data di assunzione.
+                          {{ 'attendance.pages.userDepartmentEdit.dismissalBeforeHire' | transloco }}
                         </ion-note>
                       }
                       <br />
                       <ion-item class="nvx-item-4-title">
-                        <ion-label>Contratto</ion-label>
+                        <ion-label>{{ 'attendance.pages.userDepartmentEdit.contract' | transloco }}</ion-label>
                       </ion-item>
                       <ion-item>
-                        <ion-label position="stacked">Tipo contratto</ion-label>
+                        <ion-label position="stacked">{{ 'attendance.pages.userDepartmentEdit.contractType' | transloco }}</ion-label>
                         <ion-select [value]="item_main.tipoContratto" interface="popover"
                           (ionChange)="item_main.tipoContratto = $event.detail.value">
-                          <ion-select-option [value]="tipoContrattoEnum.FullTime">Full-time</ion-select-option>
-                          <ion-select-option [value]="tipoContrattoEnum.PartTime">Part-time</ion-select-option>
+                          <ion-select-option [value]="tipoContrattoEnum.FullTime">{{ 'attendance.pages.userDepartmentEdit.fullTime' | transloco }}</ion-select-option>
+                          <ion-select-option [value]="tipoContrattoEnum.PartTime">{{ 'attendance.pages.userDepartmentEdit.partTime' | transloco }}</ion-select-option>
                         </ion-select>
                       </ion-item>
                       @if (item_main.tipoContratto === tipoContrattoEnum.PartTime) {
                         <ion-item>
-                          <ion-label position="stacked">Ore settimanali contrattuali</ion-label>
+                          <ion-label position="stacked">{{ 'attendance.pages.userDepartmentEdit.weeklyHours' | transloco }}</ion-label>
                           <ion-input type="number" min="0" max="168" step="0.5" [value]="item_main.oreSettimanaliContratto"
                             (ionInput)="item_main.oreSettimanaliContratto = $event.detail.value ? +$event.detail.value : null"></ion-input>
                         </ion-item>
                         <ion-note class="nvx-nota-contratto">
-                          Base del limite del lavoro supplementare; se vuoto si usano le ore teoriche della settimana.
+                          {{ 'attendance.pages.userDepartmentEdit.weeklyHoursNote' | transloco }}
                         </ion-note>
                       }
                       <ion-item>
-                        <ion-label position="stacked">CCNL</ion-label>
+                        <ion-label position="stacked">{{ 'attendance.pages.userDepartmentEdit.ccnl' | transloco }}</ion-label>
                         <ion-input type="text" maxlength="50" [value]="item_main.ccnl"
                           (ionInput)="item_main.ccnl = $event.detail.value || null"></ion-input>
                       </ion-item>
                       <ion-item>
-                        <ion-label position="stacked">Straordinario e supplementare</ion-label>
+                        <ion-label position="stacked">{{ 'attendance.pages.userDepartmentEdit.overtimeAndAdditional' | transloco }}</ion-label>
                         <ion-select [value]="item_main.destinazioneEccedenze" interface="popover"
                           (ionChange)="item_main.destinazioneEccedenze = $event.detail.value">
-                          <ion-select-option [value]="destinazioneEccedenzeEnum.Pagamento">Pagamento in busta paga</ion-select-option>
-                          <ion-select-option [value]="destinazioneEccedenzeEnum.BancaOre">Accredito in banca ore</ion-select-option>
+                          <ion-select-option [value]="destinazioneEccedenzeEnum.Pagamento">{{ 'attendance.pages.userDepartmentEdit.payInPayslip' | transloco }}</ion-select-option>
+                          <ion-select-option [value]="destinazioneEccedenzeEnum.BancaOre">{{ 'attendance.pages.userDepartmentEdit.hoursBank' | transloco }}</ion-select-option>
                         </ion-select>
                       </ion-item>
                     </div>
@@ -322,7 +322,7 @@
                     <div>
                       <br />
                       <ion-item class="nvx-item-4-title">
-                        <ion-label>Profili orari </ion-label>
+                        <ion-label>{{ 'attendance.pages.userDepartmentEdit.segWorkSchedules' | transloco }} </ion-label>
                       </ion-item>
                       <ion-grid >
                         @for (item of getAll_Dip_ProfiloOrario() | genericFilter: 'descrizione' : searchText; track item; let indexRow4Color = $index) {
@@ -393,7 +393,7 @@
                   <div>
                     <br />
                     <ion-item class="nvx-item-4-title">
-                      <ion-label>contenuto varie </ion-label>
+                      <ion-label>{{ 'attendance.pages.userDepartmentEdit.otherContent' | transloco }} </ion-label>
                     </ion-item>
                   </div>
                 }
@@ -403,7 +403,7 @@
                     <br />
                     <!-- Selettore anno -->
                     <ion-item>
-                      <ion-label position="floating">Anno</ion-label>
+                      <ion-label position="floating">{{ 'attendance.pages.userDepartmentEdit.year' | transloco }}</ion-label>
                       <ion-select [(ngModel)]="annoSelezionato"
                         (ionChange)="onAnnoChange(item_main.id, $event.detail.value)"
                         [ngModelOptions]="{standalone: true}"
@@ -420,12 +420,12 @@
                         <!-- Colonna destra: Riporto anno precedente (sensibile all'anno) -->
                         <ion-col size="12" size-md="6">
                           <ion-item class="nvx-item-4-title">
-                            <ion-label>Riporto anno precedente</ion-label>
+                            <ion-label>{{ 'attendance.pages.userDepartmentEdit.carryOver' | transloco }}</ion-label>
                             <ion-button slot="end" size="small" fill="outline" shape="round"
                               [disabled]="!riportoDaAnnoPrecedenteAbilitato"
                               (click)="riportoDaAnnoPrecedente(item_main.id)">
                               <ion-icon slot="start" name="download-outline"></ion-icon>
-                              Leggi dal {{ annoSelezionato - 1 }}
+                              {{ 'attendance.pages.userDepartmentEdit.readFromYear' | transloco: { year: annoSelezionato - 1 } }}
                             </ion-button>
                           </ion-item>
                           @for (just of justContatori; track just) {
@@ -449,7 +449,7 @@
                         <!-- Colonna sinistra: Maturazione mensile (NON sensibile all'anno) -->
                         <ion-col size="12" size-md="6">
                           <ion-item class="nvx-item-4-title">
-                            <ion-label>Maturazione mensile</ion-label>
+                            <ion-label>{{ 'attendance.pages.userDepartmentEdit.monthlyAccrual' | transloco }}</ion-label>
                           </ion-item>
                           @for (just of justContatori; track just) {
                             @if (currentMaturazioni[just.id]) {
@@ -474,29 +474,29 @@
                     <br />
                     <!-- Vista mensile contatori -->
                     <ion-item class="nvx-item-4-title">
-                      <ion-label>Dettaglio mensile</ion-label>
+                      <ion-label>{{ 'attendance.pages.userDepartmentEdit.monthlyDetail' | transloco }}</ion-label>
                     </ion-item>
                     @if (contatoriLoading) {
                       <ion-spinner></ion-spinner>
                     }
                     @if (!contatoriLoading && contatoriMesi.length > 0 && contatoriRighe.length === 0) {
-                      <ion-note>Nessun mese dell'anno rientra nel rapporto di lavoro.</ion-note>
+                      <ion-note>{{ 'attendance.pages.userDepartmentEdit.noMonthInEmployment' | transloco }}</ion-note>
                     }
                     @if (!contatoriLoading && contatoriRighe.length > 0) {
                       <ion-grid class="nvx-contatori-grid">
                         <!-- Intestazione — nascosta su XS -->
                         <ion-row class="nvx-row-header ion-hide-sm-down">
-                          <ion-col size-sm="1"><strong>Mese</strong></ion-col>
-                          <ion-col size-sm="2"><strong>Giustificativo</strong></ion-col>
-                          <ion-col size-sm="1" class="ion-text-center"><small>Prec.<br/>Mat.</small></ion-col>
-                          <ion-col size-sm="1" class="ion-text-center"><small>Prec.<br/>God.</small></ion-col>
-                          <ion-col size-sm="1" class="ion-text-center"><small>Prec.<br/>Saldo</small></ion-col>
-                          <ion-col size-sm="1" class="ion-text-center"><small>Corr.<br/>Mat.</small></ion-col>
-                          <ion-col size-sm="1" class="ion-text-center"><small>Corr.<br/>God.</small></ion-col>
-                          <ion-col size-sm="1" class="ion-text-center"><small>Corr.<br/>Saldo</small></ion-col>
-                          <ion-col size-sm="1" class="ion-text-center"><small>Fine mese<br/>Mat.</small></ion-col>
-                          <ion-col size-sm="1" class="ion-text-center"><small>Fine mese<br/>God.</small></ion-col>
-                          <ion-col size-sm="1" class="ion-text-center"><small>Fine mese<br/>Saldo</small></ion-col>
+                          <ion-col size-sm="1"><strong>{{ 'attendance.pages.userDepartmentEdit.colMonth' | transloco }}</strong></ion-col>
+                          <ion-col size-sm="2"><strong>{{ 'attendance.pages.userDepartmentEdit.colJustification' | transloco }}</strong></ion-col>
+                          <ion-col size-sm="1" class="ion-text-center"><small>{{ 'attendance.pages.userDepartmentEdit.colPrev' | transloco }}<br/>{{ 'attendance.pages.userDepartmentEdit.colAccrued' | transloco }}</small></ion-col>
+                          <ion-col size-sm="1" class="ion-text-center"><small>{{ 'attendance.pages.userDepartmentEdit.colPrev' | transloco }}<br/>{{ 'attendance.pages.userDepartmentEdit.colUsed' | transloco }}</small></ion-col>
+                          <ion-col size-sm="1" class="ion-text-center"><small>{{ 'attendance.pages.userDepartmentEdit.colPrev' | transloco }}<br/>{{ 'attendance.pages.userDepartmentEdit.colBalance' | transloco }}</small></ion-col>
+                          <ion-col size-sm="1" class="ion-text-center"><small>{{ 'attendance.pages.userDepartmentEdit.colCurr' | transloco }}<br/>{{ 'attendance.pages.userDepartmentEdit.colAccrued' | transloco }}</small></ion-col>
+                          <ion-col size-sm="1" class="ion-text-center"><small>{{ 'attendance.pages.userDepartmentEdit.colCurr' | transloco }}<br/>{{ 'attendance.pages.userDepartmentEdit.colUsed' | transloco }}</small></ion-col>
+                          <ion-col size-sm="1" class="ion-text-center"><small>{{ 'attendance.pages.userDepartmentEdit.colCurr' | transloco }}<br/>{{ 'attendance.pages.userDepartmentEdit.colBalance' | transloco }}</small></ion-col>
+                          <ion-col size-sm="1" class="ion-text-center"><small>{{ 'attendance.pages.userDepartmentEdit.colEndOfMonth' | transloco }}<br/>{{ 'attendance.pages.userDepartmentEdit.colAccrued' | transloco }}</small></ion-col>
+                          <ion-col size-sm="1" class="ion-text-center"><small>{{ 'attendance.pages.userDepartmentEdit.colEndOfMonth' | transloco }}<br/>{{ 'attendance.pages.userDepartmentEdit.colUsed' | transloco }}</small></ion-col>
+                          <ion-col size-sm="1" class="ion-text-center"><small>{{ 'attendance.pages.userDepartmentEdit.colEndOfMonth' | transloco }}<br/>{{ 'attendance.pages.userDepartmentEdit.colBalance' | transloco }}</small></ion-col>
                         </ion-row>
                         <!-- Righe dati -->
                         @for (riga of contatoriRighe; track riga) {
@@ -518,36 +518,36 @@
                             <ion-col size="10" size-sm="2">{{ riga.just.codice }}</ion-col>
                             <!-- Periodo Precedente  XS: offset(2)+4+3+3=12 ✓  SM: 1+1+1 -->
                             <ion-col size="4" offset="2" size-sm="1" offset-sm="0" class="ion-text-center">
-                              <small class="ion-hide-sm-up" style="display:block">Prec.Mat.</small>{{ riga.risultato?.periodoPrecedente?.maturato ?? '-' }}
+                              <small class="ion-hide-sm-up" style="display:block">{{ 'attendance.pages.userDepartmentEdit.colPrev' | transloco }}{{ 'attendance.pages.userDepartmentEdit.colAccrued' | transloco }}</small>{{ riga.risultato?.periodoPrecedente?.maturato ?? '-' }}
                             </ion-col>
                             <ion-col size="3" size-sm="1" class="ion-text-center">
-                              <small class="ion-hide-sm-up" style="display:block">Prec.God.</small>{{ riga.risultato?.periodoPrecedente?.goduto ?? '-' }}
+                              <small class="ion-hide-sm-up" style="display:block">{{ 'attendance.pages.userDepartmentEdit.colPrev' | transloco }}{{ 'attendance.pages.userDepartmentEdit.colUsed' | transloco }}</small>{{ riga.risultato?.periodoPrecedente?.goduto ?? '-' }}
                             </ion-col>
                             <ion-col size="3" size-sm="1" class="ion-text-center"
                               [style.color]="isSaldoNegativo(riga.risultato?.periodoPrecedente?.saldo) ? 'var(--ion-color-danger)' : ''">
-                              <small class="ion-hide-sm-up" style="display:block">Prec.Saldo</small>{{ riga.risultato?.periodoPrecedente?.saldo ?? '-' }}
+                              <small class="ion-hide-sm-up" style="display:block">{{ 'attendance.pages.userDepartmentEdit.colPrev' | transloco }}{{ 'attendance.pages.userDepartmentEdit.colBalance' | transloco }}</small>{{ riga.risultato?.periodoPrecedente?.saldo ?? '-' }}
                             </ion-col>
                             <!-- Periodo Corrente  XS: offset(2)+4+3+3=12 ✓  SM: 1+1+1 -->
                             <ion-col size="4" offset="2" size-sm="1" offset-sm="0" class="ion-text-center">
-                              <small class="ion-hide-sm-up" style="display:block">Corr.Mat.</small>{{ riga.risultato?.periodoCorrente?.maturato ?? '-' }}
+                              <small class="ion-hide-sm-up" style="display:block">{{ 'attendance.pages.userDepartmentEdit.colCurr' | transloco }}{{ 'attendance.pages.userDepartmentEdit.colAccrued' | transloco }}</small>{{ riga.risultato?.periodoCorrente?.maturato ?? '-' }}
                             </ion-col>
                             <ion-col size="3" size-sm="1" class="ion-text-center">
-                              <small class="ion-hide-sm-up" style="display:block">Corr.God.</small>{{ riga.risultato?.periodoCorrente?.goduto ?? '-' }}
+                              <small class="ion-hide-sm-up" style="display:block">{{ 'attendance.pages.userDepartmentEdit.colCurr' | transloco }}{{ 'attendance.pages.userDepartmentEdit.colUsed' | transloco }}</small>{{ riga.risultato?.periodoCorrente?.goduto ?? '-' }}
                             </ion-col>
                             <ion-col size="3" size-sm="1" class="ion-text-center"
                               [style.color]="isSaldoNegativo(riga.risultato?.periodoCorrente?.saldo) ? 'var(--ion-color-danger)' : ''">
-                              <small class="ion-hide-sm-up" style="display:block">Corr.Saldo</small>{{ riga.risultato?.periodoCorrente?.saldo ?? '-' }}
+                              <small class="ion-hide-sm-up" style="display:block">{{ 'attendance.pages.userDepartmentEdit.colCurr' | transloco }}{{ 'attendance.pages.userDepartmentEdit.colBalance' | transloco }}</small>{{ riga.risultato?.periodoCorrente?.saldo ?? '-' }}
                             </ion-col>
                             <!-- Progressivo a fine mese (precedente + corrente)  XS: offset(2)+4+3+3=12 ✓  SM: 1+1+1 -->
                             <ion-col size="4" offset="2" size-sm="1" offset-sm="0" class="ion-text-center">
-                              <small class="ion-hide-sm-up" style="display:block">Fine Mat.</small>{{ riga.risultato?.periodoFineMese?.maturato ?? '-' }}
+                              <small class="ion-hide-sm-up" style="display:block">{{ 'attendance.pages.userDepartmentEdit.colEndShort' | transloco }} {{ 'attendance.pages.userDepartmentEdit.colAccrued' | transloco }}</small>{{ riga.risultato?.periodoFineMese?.maturato ?? '-' }}
                             </ion-col>
                             <ion-col size="3" size-sm="1" class="ion-text-center">
-                              <small class="ion-hide-sm-up" style="display:block">Fine God.</small>{{ riga.risultato?.periodoFineMese?.goduto ?? '-' }}
+                              <small class="ion-hide-sm-up" style="display:block">{{ 'attendance.pages.userDepartmentEdit.colEndShort' | transloco }} {{ 'attendance.pages.userDepartmentEdit.colUsed' | transloco }}</small>{{ riga.risultato?.periodoFineMese?.goduto ?? '-' }}
                             </ion-col>
                             <ion-col size="3" size-sm="1" class="ion-text-center"
                               [style.color]="isSaldoNegativo(riga.risultato?.periodoFineMese?.saldo) ? 'var(--ion-color-danger)' : ''">
-                              <small class="ion-hide-sm-up" style="display:block">Fine Saldo</small>{{ riga.risultato?.periodoFineMese?.saldo ?? '-' }}
+                              <small class="ion-hide-sm-up" style="display:block">{{ 'attendance.pages.userDepartmentEdit.colEndShort' | transloco }} {{ 'attendance.pages.userDepartmentEdit.colBalance' | transloco }}</small>{{ riga.risultato?.periodoFineMese?.saldo ?? '-' }}
                             </ion-col>
                           </ion-row>
                         }

@@ -18,6 +18,7 @@ import { SharedParameterGestionePresenzeService, ParTable } from '../../../share
 import { ParProfiloOrarioGGService } from '../../../ClientServer-Service/GestionePresenze/Par_ProfiloOrarioGG/par-profilo-orario-gg.service';
 import { Par_CausaliModel } from '../../../ClientServer-Service/GestionePresenze/Par_Causali/Models/par-causali-model';
 import { Par_GiustificativiModel } from '../../../ClientServer-Service/GestionePresenze/Par_Giustificativi/Models/par-giustificativi-model';
+import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
   selector: 'app-profilo-orario-edit-page',
@@ -42,16 +43,16 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
   public straoTipoConteggioEnum = StraoTipoConteggio;
   public timeRoundIntervalEnum = TimeRoundInterval;
 
-  /** Causali delle ore in piu' (scheda Straordinario): quelle non obbligatorie ricadono sulla causale base. */
+  /** Causali delle ore in piu' (scheda Straordinario): quelle non obbligatorie ricadono sulla causale base. etichetta = chiave di traduzione */
   public causaliEccedenze: { campo: string, etichetta: string, obbligatoria: boolean }[] = [
-    { campo: 'idCausale_Lavoro_Strao',         etichetta: 'Straordinario (diurno)',          obbligatoria: true },
-    { campo: 'idCausale_Lavoro_StraoNott',     etichetta: 'Straordinario notturno',          obbligatoria: false },
-    { campo: 'idCausale_Lavoro_StraoFest',     etichetta: 'Straordinario festivo',           obbligatoria: false },
-    { campo: 'idCausale_Lavoro_StraoFestNott', etichetta: 'Straordinario festivo notturno',  obbligatoria: false },
-    { campo: 'idCausale_Lavoro_Suppl',         etichetta: 'Supplementare (entro il limite)', obbligatoria: true },
-    { campo: 'idCausale_Lavoro_SupplEcc',      etichetta: 'Supplementare oltre il limite',   obbligatoria: false },
-    { campo: 'idCausale_Lavoro_EccOrd',        etichetta: 'Ore eccedenti non straordinarie (full-time)', obbligatoria: false },
-    { campo: 'idCausale_BancaOre',             etichetta: 'Accredito banca ore',             obbligatoria: false },
+    { campo: 'idCausale_Lavoro_Strao',         etichetta: 'attendance.pages.profiloOrarioEdit.causaleStrao',          obbligatoria: true },
+    { campo: 'idCausale_Lavoro_StraoNott',     etichetta: 'attendance.pages.profiloOrarioEdit.causaleStraoNott',          obbligatoria: false },
+    { campo: 'idCausale_Lavoro_StraoFest',     etichetta: 'attendance.pages.profiloOrarioEdit.causaleStraoFest',           obbligatoria: false },
+    { campo: 'idCausale_Lavoro_StraoFestNott', etichetta: 'attendance.pages.profiloOrarioEdit.causaleStraoFestNott',  obbligatoria: false },
+    { campo: 'idCausale_Lavoro_Suppl',         etichetta: 'attendance.pages.profiloOrarioEdit.causaleSuppl', obbligatoria: true },
+    { campo: 'idCausale_Lavoro_SupplEcc',      etichetta: 'attendance.pages.profiloOrarioEdit.causaleSupplEcc',   obbligatoria: false },
+    { campo: 'idCausale_Lavoro_EccOrd',        etichetta: 'attendance.pages.profiloOrarioEdit.causaleEccOrd', obbligatoria: false },
+    { campo: 'idCausale_BancaOre',             etichetta: 'attendance.pages.profiloOrarioEdit.causaleBancaOre',             obbligatoria: false },
   ];
   public orarioTimbratureTipoEnum = OrarioTimbratureTipo;
   
@@ -65,7 +66,8 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
               private collectionDialogService: CollectionDialogService,
               private refresherService: RefresherService,
               private modalCtrl: ModalController,
-              public sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService
+              public sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
+              private transloco: TranslocoService
   ) {
     super(navCtrl, userInterfaceService, fb);
     this.btnEdit = this.userInterfaceService.Btn_Modifica;
@@ -78,7 +80,7 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
     this.btnAdd.event = this.handleButtonAddClick;
   }
 
-  get Title(): string {     return "Profilo Orario"; }
+  get Title(): string {     return this.transloco.translate('attendance.pages.profiloOrarioEdit.title'); }
   get EditForm(): FormGroup {
     return this.fb.group({
       codice: [null, [Validators.required, Validators.maxLength(10)]],
@@ -268,7 +270,7 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
   }
   
   handleButtonDeleteClick = async (giorno: any) => {
-    const result = await this.collectionDialogService.ConfirmCancelDialog('Confermi la cancellazione dell  Orario');
+    const result = await this.collectionDialogService.ConfirmCancelDialog(this.transloco.translate('attendance.pages.profiloOrarioEdit.confirmDeleteOrario'));
     if (result) {
       this.daysArrange(this._editForm.get('numGiorniCiclo')?.value, (giorno * -1) )
     }

@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { TranslocoService } from '@jsverse/transloco';
 import { Routes } from '@angular/router';
 import { MainMenuItem } from './main-menu.service';
 import { ShowcaseContenutiRidefiniti } from './showcase.model';
@@ -11,95 +12,106 @@ import { SITE_NAME } from './site-name';
 })
 export class ShowcaseAttendanceTrackingService {
 
-  constructor() { }
+  // transloco facoltativo: RouteService crea il servizio con new (fuori dalla DI) solo per le rotte
+  constructor(private transloco?: TranslocoService) { }
 
   public get Pages(): MainMenuItem[] { return []; }
   public getRoutes(): Routes { return []; }
 
+  // testi tradotti (chiavi attendance.showcase.*): calcolati una volta, il cambio lingua ricarica la pagina
+  private contenuti?: ShowcaseContenutiRidefiniti;
+
   public get Contenuti(): ShowcaseContenutiRidefiniti {
+    return this.contenuti ??= this.creaContenuti();
+  }
+
+  private creaContenuti(): ShowcaseContenutiRidefiniti {
+    const t = (key: string, params?: Record<string, unknown>) =>
+      this.transloco?.translate('attendance.showcase.' + key, params) ?? 'attendance.showcase.' + key;
+    const site = { siteName: SITE_NAME };
     return {
       brand: {
         nome: SITE_NAME,
         icon: 'calendar-clear-outline',
-        slogan: 'Presenze, richieste e note spese della tua azienda, in cloud.'
+        slogan: t('brand.slogan')
       },
       home: {
-        etichetta: 'Gestione presenze in cloud',
-        titolo: 'Le presenze dei tuoi dipendenti, senza fogli e senza rincorse',
-        sottotitolo: 'Timbrature, ferie, permessi, straordinari e note spese in un’unica app: i dipendenti chiedono, i responsabili approvano, a fine mese il cartellino è pronto per le paghe.',
-        ctaPrimaria: 'Prova gratis',
-        ctaSecondaria: 'Scopri le funzionalità',
+        etichetta: t('home.etichetta'),
+        titolo: t('home.titolo'),
+        sottotitolo: t('home.sottotitolo'),
+        ctaPrimaria: t('home.ctaPrimaria'),
+        ctaSecondaria: t('home.ctaSecondaria'),
         punti: [
-          { icon: 'finger-print-outline', title: 'Timbratura da ovunque', text: 'Entrata e uscita dallo smartphone o dal computer; le correzioni passano da una richiesta.' },
-          { icon: 'checkmark-done-outline', title: 'Richieste e approvazioni', text: 'Ferie, permessi e giustificativi arrivano al responsabile del reparto, che approva o rifiuta con un clic.' },
-          { icon: 'calendar-number-outline', title: 'Cartellino sempre aggiornato', text: 'Ore lavorate, assenze e straordinari calcolati ogni giorno secondo il profilo orario di ognuno.' },
-          { icon: 'receipt-outline', title: 'Note spese', text: 'Rimborsi con scontrini e fatture allegati, approvati insieme alla nota.' }
+          { icon: 'finger-print-outline', title: t('home.punti.timbratura.title'), text: t('home.punti.timbratura.text') },
+          { icon: 'checkmark-done-outline', title: t('home.punti.richieste.title'), text: t('home.punti.richieste.text') },
+          { icon: 'calendar-number-outline', title: t('home.punti.cartellino.title'), text: t('home.punti.cartellino.text') },
+          { icon: 'receipt-outline', title: t('home.punti.noteSpese.title'), text: t('home.punti.noteSpese.text') }
         ],
-        passiTitolo: 'Operativi in tre passi',
+        passiTitolo: t('home.passiTitolo'),
         passi: [
-          { icon: 'person-add-outline', title: 'Registra l’azienda', text: 'La gestione presenze è attiva da subito, con causali e parametri già pronti.' },
-          { icon: 'git-network-outline', title: 'Organizza', text: 'Sedi, reparti, orari e approvatori: ogni richiesta arriva alla persona giusta.' },
-          { icon: 'cloud-upload-outline', title: 'Chiudi il mese', text: 'Quadratura e approvazione dei cartellini, poi l’export delle causali per le paghe.' }
+          { icon: 'person-add-outline', title: t('home.passi.registra.title'), text: t('home.passi.registra.text') },
+          { icon: 'git-network-outline', title: t('home.passi.organizza.title'), text: t('home.passi.organizza.text') },
+          { icon: 'cloud-upload-outline', title: t('home.passi.chiudi.title'), text: t('home.passi.chiudi.text') }
         ],
-        chiusuraTitolo: 'Basta fogli presenze',
-        chiusuraTesto: 'Registra la tua azienda e prova la gestione presenze con i tuoi dipendenti.'
+        chiusuraTitolo: t('home.chiusuraTitolo'),
+        chiusuraTesto: t('home.chiusuraTesto')
       },
       features: {
-        titolo: 'Funzionalità',
-        sottotitolo: 'Tutto quello che serve per gestire presenze e assenze, dalla timbratura all’export per le paghe.',
+        titolo: t('features.titolo'),
+        sottotitolo: t('features.sottotitolo'),
         sezioni: [
-          { icon: 'mic-outline', title: 'Comandi vocali e chat', text: 'Parla o scrivi all’assistente: timbra, chiedi un giustificativo o apri la pagina che ti serve, senza cercarla nel menu.' },
-          { icon: 'finger-print-outline', title: 'Timbrature', text: 'Timbratura di entrata e uscita e richiesta di correzione delle timbrature dimenticate o errate.' },
-          { icon: 'document-text-outline', title: 'Giustificativi', text: 'Ferie, permessi, malattia e le altre causali, chieste dal dipendente e approvate dal responsabile.' },
-          { icon: 'time-outline', title: 'Straordinari e banca ore', text: 'Straordinario autorizzato con giustificativo e ore in più accreditate in banca ore nei cartellini approvati.' },
-          { icon: 'people-circle-outline', title: 'Reparti e approvatori', text: 'Per ogni reparto chi amministra e chi approva le richieste, con la modalità di approvazione scelta dall’azienda.' },
-          { icon: 'calendar-outline', title: 'Calendario e piano ferie', text: 'Il calendario di ogni dipendente, il calendario HR e il piano ferie di tutta l’azienda.' },
-          { icon: 'pulse-outline', title: 'Personale presente', text: 'Chi è al lavoro, chi è assente e perché, in tempo reale.' },
-          { icon: 'speedometer-outline', title: 'Profili orari', text: 'Orari, festività e sedi: il cartellino si calcola sulle regole di ciascuno.' },
-          { icon: 'checkbox-outline', title: 'Quadratura mensile', text: 'Controllo dei cartellini del mese, anomalie in evidenza e approvazione in blocco.' },
-          { icon: 'download-outline', title: 'Export per le paghe', text: 'Export delle causali con modelli configurabili, pronto per il programma paghe.' },
-          { icon: 'receipt-outline', title: 'Note spese', text: 'Rimborsi con più spese e allegati; l’approvazione della nota approva tutte le spese.' },
-          { icon: 'briefcase-outline', title: 'Commesse e attività', text: 'Clienti, commesse e attività per sapere su cosa si lavora, con le statistiche.' },
-          { icon: 'options-outline', title: 'Menu su misura', text: 'L’amministratore sceglie quali pagine vedono gli amministratori e i dipendenti.' }
+          { icon: 'mic-outline', title: t('features.sezioni.vocale.title'), text: t('features.sezioni.vocale.text') },
+          { icon: 'finger-print-outline', title: t('features.sezioni.timbrature.title'), text: t('features.sezioni.timbrature.text') },
+          { icon: 'document-text-outline', title: t('features.sezioni.giustificativi.title'), text: t('features.sezioni.giustificativi.text') },
+          { icon: 'time-outline', title: t('features.sezioni.straordinari.title'), text: t('features.sezioni.straordinari.text') },
+          { icon: 'people-circle-outline', title: t('features.sezioni.reparti.title'), text: t('features.sezioni.reparti.text') },
+          { icon: 'calendar-outline', title: t('features.sezioni.calendario.title'), text: t('features.sezioni.calendario.text') },
+          { icon: 'pulse-outline', title: t('features.sezioni.presenti.title'), text: t('features.sezioni.presenti.text') },
+          { icon: 'speedometer-outline', title: t('features.sezioni.profili.title'), text: t('features.sezioni.profili.text') },
+          { icon: 'checkbox-outline', title: t('features.sezioni.quadratura.title'), text: t('features.sezioni.quadratura.text') },
+          { icon: 'download-outline', title: t('features.sezioni.export.title'), text: t('features.sezioni.export.text') },
+          { icon: 'receipt-outline', title: t('features.sezioni.noteSpese.title'), text: t('features.sezioni.noteSpese.text') },
+          { icon: 'briefcase-outline', title: t('features.sezioni.commesse.title'), text: t('features.sezioni.commesse.text') },
+          { icon: 'options-outline', title: t('features.sezioni.menu.title'), text: t('features.sezioni.menu.text') }
         ]
       },
       pricing: {
-        titolo: 'Prezzi',
-        sottotitolo: 'Paghi per i dipendenti che gestisci: tutte le funzioni sono sempre incluse.',
+        titolo: t('pricing.titolo'),
+        sottotitolo: t('pricing.sottotitolo'),
         piani: [
-          { nome: 'Prova', prezzo: '0 €', periodo: 'per 30 giorni', descrizione: 'Per provare con i tuoi dipendenti.', caratteristiche: ['Tutte le funzioni', 'Fino a 10 dipendenti', 'Causali e parametri pronti'], cta: 'Inizia la prova' },
-          { nome: 'Azienda', prezzo: '2 €', periodo: 'per dipendente al mese', descrizione: 'Per piccole e medie imprese.', caratteristiche: ['Tutte le funzioni', 'Timbratura da smartphone', 'Export per le paghe', 'Assistenza via email e telefono'], cta: 'Scegli Azienda', evidenza: true },
-          { nome: 'Studio', prezzo: 'Su misura', periodo: '', descrizione: 'Per consulenti del lavoro e studi paghe.', caratteristiche: ['Più aziende clienti', 'Accesso per conto del cliente', 'Modelli di export dedicati', 'Assistenza prioritaria'], cta: 'Contattaci', url: '/contact' }
+          { nome: t('pricing.piani.prova.nome'), prezzo: '0 €', periodo: t('pricing.piani.prova.periodo'), descrizione: t('pricing.piani.prova.descrizione'), caratteristiche: [t('pricing.caratteristiche.tutteLeFunzioni'), t('pricing.caratteristiche.fino10Dipendenti'), t('pricing.caratteristiche.causaliPronte')], cta: t('pricing.piani.prova.cta') },
+          { nome: t('pricing.piani.azienda.nome'), prezzo: '2 €', periodo: t('pricing.piani.azienda.periodo'), descrizione: t('pricing.piani.azienda.descrizione'), caratteristiche: [t('pricing.caratteristiche.tutteLeFunzioni'), t('pricing.caratteristiche.timbraturaSmartphone'), t('pricing.caratteristiche.exportPaghe'), t('pricing.caratteristiche.assistenzaEmailTelefono')], cta: t('pricing.piani.azienda.cta'), evidenza: true },
+          { nome: t('pricing.piani.studio.nome'), prezzo: t('pricing.piani.studio.prezzo'), periodo: '', descrizione: t('pricing.piani.studio.descrizione'), caratteristiche: [t('pricing.caratteristiche.piuAziende'), t('pricing.caratteristiche.accessoPerCliente'), t('pricing.caratteristiche.modelliExport'), t('pricing.caratteristiche.assistenzaPrioritaria')], cta: t('pricing.piani.studio.cta'), url: '/contact' }
         ],
-        nota: 'Prezzi IVA esclusa. Nessun vincolo: disdici quando vuoi.',
+        nota: t('pricing.nota'),
         domande: [
-          { domanda: 'I dipendenti devono installare qualcosa?', risposta: 'No: timbrano e fanno le richieste dal browser dello smartphone o del computer.' },
-          { domanda: 'Posso usarlo con il mio programma paghe?', risposta: 'Sì: l’export delle causali si configura con modelli adatti al programma paghe che usi.' },
-          { domanda: 'Chi approva le richieste?', risposta: 'Gli approvatori del reparto del dipendente; l’amministratore può approvare per tutti.' },
-          { domanda: 'Sono un consulente del lavoro: posso gestire più aziende?', risposta: 'Sì, con il piano Studio gestisci le aziende clienti ed entri per loro conto quando serve.' }
+          { domanda: t('pricing.domande.installare.domanda'), risposta: t('pricing.domande.installare.risposta') },
+          { domanda: t('pricing.domande.paghe.domanda'), risposta: t('pricing.domande.paghe.risposta') },
+          { domanda: t('pricing.domande.approvazione.domanda'), risposta: t('pricing.domande.approvazione.risposta') },
+          { domanda: t('pricing.domande.consulente.domanda'), risposta: t('pricing.domande.consulente.risposta') }
         ]
       },
       about: {
-        titolo: 'Chi siamo',
-        sottotitolo: 'Lavoriamo da anni accanto a consulenti del lavoro, uffici del personale e aziende.',
+        titolo: t('about.titolo'),
+        sottotitolo: t('about.sottotitolo'),
         paragrafi: [
-          'Conosciamo da vicino il lavoro di chi chiude le presenze a fine mese: fogli da ricontrollare, richieste via email, causali da ricopiare nel programma paghe.',
-          `${SITE_NAME} nasce per togliere questo lavoro: i dipendenti chiedono, i responsabili approvano e i dati arrivano alle paghe già controllati.`
+          t('about.paragrafo1'),
+          t('about.paragrafo2', site)
         ],
         valori: [
-          { icon: 'happy-outline', title: 'Semplice per i dipendenti', text: 'Timbrare e chiedere un permesso richiede pochi secondi.' },
-          { icon: 'shield-checkmark-outline', title: 'Preciso per l’ufficio del personale', text: 'Regole orarie, causali e approvazioni sempre tracciate.' },
-          { icon: 'chatbubbles-outline', title: 'Vicino ai consulenti', text: 'Export e modelli pensati con chi elabora le paghe.' }
+          { icon: 'happy-outline', title: t('about.valori.semplice.title'), text: t('about.valori.semplice.text') },
+          { icon: 'shield-checkmark-outline', title: t('about.valori.preciso.title'), text: t('about.valori.preciso.text') },
+          { icon: 'chatbubbles-outline', title: t('about.valori.vicino.title'), text: t('about.valori.vicino.text') }
         ]
       },
       register: {
-        titolo: 'Registra la tua azienda',
-        sottotitolo: 'Crea l’account della tua azienda: la gestione presenze è subito attiva, con causali e parametri pronti.',
-        vantaggi: ['Gratis per 30 giorni', 'Gestione presenze già attiva', 'Nessuna carta di credito'],
-        condizioni: 'Accetto le condizioni del servizio e l’informativa sulla privacy',
-        inviata: 'Ti abbiamo inviato un’email con il link per attivare l’account: aprilo e la gestione presenze sarà subito pronta.',
-        confermaTitolo: 'Attivazione account',
-        esito: 'La tua azienda è pronta con la gestione presenze attiva. Questi sono gli utenti creati: accedi con la password che hai scelto.'
+        titolo: t('register.titolo'),
+        sottotitolo: t('register.sottotitolo'),
+        vantaggi: [t('register.vantaggi.gratis'), t('register.vantaggi.attiva'), t('register.vantaggi.nessunaCarta')],
+        condizioni: t('register.condizioni'),
+        inviata: t('register.inviata'),
+        confermaTitolo: t('register.confermaTitolo'),
+        esito: t('register.esito')
       }
     };
   }

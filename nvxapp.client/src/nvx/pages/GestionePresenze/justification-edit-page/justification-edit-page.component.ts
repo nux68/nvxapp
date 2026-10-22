@@ -15,6 +15,7 @@ import { SharedParameterGestionePresenzeService, ParTable } from '../../../share
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
 import { Title } from '@angular/platform-browser';
 import { Par_CausaliModel } from '../../../ClientServer-Service/GestionePresenze/Par_Causali/Models/par-causali-model';
+import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
   selector: 'app-justification-edit-page',
@@ -36,13 +37,14 @@ export class JustificationEditPageComponent extends BasePageConfirmCancelCompone
     private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
     private stringHelperService: StringHelperService,
     private parGiustificativiService: ParGiustificativiService,
-    private refresherService: RefresherService)
+    private refresherService: RefresherService,
+    private transloco: TranslocoService)
   {
     super(navCtrl, userInterfaceService, fb);
   }
 
 
-  get Title(): string { return "Giustificativi"; }
+  get Title(): string { return this.transloco.translate('attendance.pages.justificationEdit.title'); }
   get EditForm(): FormGroup {
     return this.fb.group({
 

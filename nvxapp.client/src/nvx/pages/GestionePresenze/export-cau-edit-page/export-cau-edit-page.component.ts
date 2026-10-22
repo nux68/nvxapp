@@ -14,6 +14,7 @@ import { EditParExportCauCausaliComponentComponent } from '../../../shared/compo
 import { ParExportCauCausaliService } from '../../../ClientServer-Service/GestionePresenze/Par_ExportCau_Causali/par-export-cau-causali.service';
 import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
 import { ParTable } from '../../../shared/shared-parameter-gestione-presenze.service';
+import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
   selector: 'app-export-cau-edit-page',
@@ -45,6 +46,7 @@ export class ExportCauEditPageComponent extends BasePageConfirmCancelComponent<P
     private modalCtrl: ModalController,
     private collectionDialogService: CollectionDialogService,
     public fabMenuService: FabMenuService,
+    private transloco: TranslocoService,
   ) {
     super(navCtrl, userInterfaceService, fb);
 
@@ -84,7 +86,7 @@ export class ExportCauEditPageComponent extends BasePageConfirmCancelComponent<P
 
 
 
-  get Title(): string {return "Modelli export";}
+  get Title(): string { return this.transloco.translate('attendance.pages.exportCauEdit.title'); }
 
   get EditForm(): FormGroup {
     return this.fb.group({
@@ -167,7 +169,7 @@ export class ExportCauEditPageComponent extends BasePageConfirmCancelComponent<P
 
   handleButtonDeleteClick = async (item: Par_ExportCau_CausaliModel) => {
 
-    const result = await this.collectionDialogService.ConfirmCancelDialog('Confermi la cancellazione della causale in export');
+    const result = await this.collectionDialogService.ConfirmCancelDialog(this.transloco.translate('attendance.pages.exportCauEdit.confermaCancellazione'));
     if (result) {
 
       var idx = this.par_ExportCau_Causali.findIndex(p => p.id === item.id);

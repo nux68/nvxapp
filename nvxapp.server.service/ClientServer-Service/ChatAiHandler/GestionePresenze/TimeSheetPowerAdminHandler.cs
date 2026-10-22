@@ -1,3 +1,4 @@
+using nvxapp.server.data.Localization;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_AnagraficaService;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Commands;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Models;
@@ -20,14 +21,15 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
             _intentDefinition = new IntentDefinition
             {
                 Name         = "OpenTimeSheetPowerAdmin",
-                DisplayName  = "Calendario HR",
+                DisplayName  = AttendanceTrackingMessages.Get("ChatTimeSheetPowerAdminDisplayName"),
                 Usable4Role = new List<string> { "CompanyPowerAdmin" },
-                Description  = "apre il Calendario HR (timesheet power admin). Facoltativamente filtra per dipendente e/o periodo anno/mese.",
+                Description  = AttendanceTrackingMessages.Get("ChatTimeSheetPowerAdminDescription"),
                 IsNavigation = true,
                 Keywords     = new()
                 {
                     "calendario hr", "timesheet hr", "timesheet power admin",
-                    "calendario admin", "presenze hr", "foglio presenze hr"
+                    "calendario admin", "presenze hr", "foglio presenze hr",
+                    "hr calendar", "hr timesheet", "admin calendar", "hr attendance", "hr attendance sheet"
                 },
                 Slots =
                 [
@@ -37,8 +39,8 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
                         Type               = "string",
                         Required           = false,
                         PromptDescription  = "nome e/o cognome del dipendente (facoltativo)",
-                        Question           = "Per quale dipendente? (lascia vuoto per non filtrare)",
-                        Label              = "Dipendente",
+                        Question           = AttendanceTrackingMessages.Get("ChatTimeSheetPowerAdminEmployeeQuestion"),
+                        Label              = AttendanceTrackingMessages.Get("ChatEmployeeLabel"),
                         Validator          = v => DipendenteLookupHelper.ValidateEmployeeSlot(v, _dip_AnagraficaService),
                         HasRelevantContent = msg => msg.Any(char.IsLetter)
                     },
@@ -48,8 +50,8 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
                         Type               = "int",
                         Required           = false,
                         PromptDescription  = "anno numerico (es. 2025)",
-                        Question           = "Per quale anno?",
-                        Label              = "Anno",
+                        Question           = AttendanceTrackingMessages.Get("ChatYearQuestion"),
+                        Label              = AttendanceTrackingMessages.Get("ChatYearLabel"),
                         HasRelevantContent = msg => msg.Any(char.IsDigit)
                     },
                     new()
@@ -58,15 +60,17 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
                         Type               = "int (1-12)",
                         Required           = false,
                         PromptDescription  = "mese numerico 1-12 oppure nome del mese in italiano",
-                        Question           = "Per quale mese?",
-                        Label              = "Mese",
+                        Question           = AttendanceTrackingMessages.Get("ChatMonthQuestion"),
+                        Label              = AttendanceTrackingMessages.Get("ChatMonthLabel"),
                         HasRelevantContent = msg =>
                         {
                             if (msg.Any(char.IsDigit)) return true;
                             var mesi = new[]
                             {
                                 "gennaio","febbraio","marzo","aprile","maggio","giugno",
-                                "luglio","agosto","settembre","ottobre","novembre","dicembre"
+                                "luglio","agosto","settembre","ottobre","novembre","dicembre",
+                                "january","february","march","april","may","june",
+                                "july","august","september","october","november","december"
                             };
                             return mesi.Any(m => msg.Contains(m, StringComparison.OrdinalIgnoreCase));
                         }
@@ -88,10 +92,10 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
             {
                 var dip = DipendenteLookupHelper.GetDipendente(employeeName, _dip_AnagraficaService);
                 if (dip == null)
-                    return CommandResult.Fail($"Dipendente '{employeeName}' non trovato.");
+                    return CommandResult.Fail(AttendanceTrackingMessages.Get("ChatEmployeeNotFound", employeeName));
 
                 state["userId"] = dip.IdAspNetUsers;
-                descrizione.Add($"dipendente {dip.Cognome} {dip.Nome}");
+                descrizione.Add(AttendanceTrackingMessages.Get("ChatTimeSheetPowerAdminFilterEmployee", dip.Cognome, dip.Nome));
             }
 
             // --- Anno ---
@@ -99,7 +103,7 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
             if (!string.IsNullOrWhiteSpace(yearStr) && int.TryParse(yearStr, out var year))
             {
                 state["year"] = year;
-                descrizione.Add($"anno {year}");
+                descrizione.Add(AttendanceTrackingMessages.Get("ChatTimeSheetPowerAdminFilterYear", year));
             }
 
             // --- Mese ---
@@ -110,7 +114,7 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
                 if (month > 0)
                 {
                     state["month"] = month;
-                    descrizione.Add($"mese {month}");
+                    descrizione.Add(AttendanceTrackingMessages.Get("ChatTimeSheetPowerAdminFilterMonth", month));
                 }
             }
 
@@ -121,8 +125,8 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
             };
 
             var msg = descrizione.Count > 0
-                ? $"Apertura Calendario HR ({string.Join(", ", descrizione)})."
-                : "Apertura Calendario HR.";
+                ? AttendanceTrackingMessages.Get("ChatTimeSheetPowerAdminOpenFiltered", string.Join(", ", descrizione))
+                : AttendanceTrackingMessages.Get("ChatTimeSheetPowerAdminOpen");
 
             return await Task.FromResult(CommandResult.Ok(msg, payload));
         }
@@ -132,15 +136,18 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
             if (int.TryParse(value, out var n) && n >= 1 && n <= 12)
                 return n;
 
+            // nomi italiani e inglesi: i-esimo mese = (i % 12) + 1
             var mesi = new[]
             {
                 "gennaio","febbraio","marzo","aprile","maggio","giugno",
-                "luglio","agosto","settembre","ottobre","novembre","dicembre"
+                "luglio","agosto","settembre","ottobre","novembre","dicembre",
+                "january","february","march","april","may","june",
+                "july","august","september","october","november","december"
             };
 
             for (int i = 0; i < mesi.Length; i++)
                 if (mesi[i].Equals(value.Trim(), StringComparison.OrdinalIgnoreCase))
-                    return i + 1;
+                    return (i % 12) + 1;
 
             return 0;
         }

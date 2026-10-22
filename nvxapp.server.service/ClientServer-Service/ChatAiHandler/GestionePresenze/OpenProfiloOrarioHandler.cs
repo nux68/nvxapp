@@ -1,3 +1,4 @@
+using nvxapp.server.data.Localization;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_ProfiloOrarioService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_ProfiloOrarioService.Models;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Commands;
@@ -18,14 +19,17 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
             _par_ProfiloOrarioService = par_ProfiloOrarioService;
         }
 
-        private static readonly IntentDefinition _intentDefinition = new()
+        // Definizione creata per istanza (handler Scoped): i testi sono nella lingua della richiesta.
+        // Keywords: unione italiano + inglese, qualunque sia la lingua dell'interfaccia.
+        private readonly IntentDefinition _intentDefinition = new()
         {
             Name         = "OpenProfiloOrario",
-            DisplayName  = "Apri profilo orario",
+            DisplayName  = AttendanceTrackingMessages.Get("ChatOpenProfiloOrarioDisplayName"),
             Usable4Role = new List<string> { "CompanyPowerAdmin" },
-            Description  = "apre la pagina di modifica di un profilo orario specifico.",
+            Description  = AttendanceTrackingMessages.Get("ChatOpenProfiloOrarioDescription"),
             IsNavigation = true,
-            Keywords     = new() { "apri profilo orario", "modifica profilo orario", "profilo orario", "apri il profilo orario", "modifica il profilo orario" },
+            Keywords     = new() { "apri profilo orario", "modifica profilo orario", "profilo orario", "apri il profilo orario", "modifica il profilo orario",
+                                   "open schedule profile", "edit schedule profile", "schedule profile" },
             Slots        =
             [
                 new()
@@ -34,8 +38,8 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
                     Type               = "string",
                     Required           = true,
                     PromptDescription  = "nome o codice del profilo orario da aprire",
-                    Question           = "Quale profilo orario vuoi aprire?",
-                    Label              = "Profilo orario",
+                    Question           = AttendanceTrackingMessages.Get("ChatOpenProfiloOrarioQuestion"),
+                    Label              = AttendanceTrackingMessages.Get("ChatOpenProfiloOrarioLabel"),
                     HasRelevantContent = msg => msg.Length > 0
                 }
             ]
@@ -48,13 +52,13 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
             slots.TryGetValue("nome", out var nome);
 
             if (string.IsNullOrWhiteSpace(nome))
-                return CommandResult.Fail("Nome profilo orario non specificato.");
+                return CommandResult.Fail(AttendanceTrackingMessages.Get("ChatOpenProfiloOrarioNameMissing"));
 
             var result = await _par_ProfiloOrarioService.GetAll(
                 new GenericRequest<Par_ProfiloOrario_GetAllInModel>(new Par_ProfiloOrario_GetAllInModel()), false);
 
             if (!result.Success || result.Data?.Par_ProfiloOrario == null)
-                return CommandResult.Fail("Impossibile caricare l'elenco profili orario.");
+                return CommandResult.Fail(AttendanceTrackingMessages.Get("ChatOpenProfiloOrarioLoadError"));
 
             var nomeTrimmed = nome.Trim();
 
@@ -70,7 +74,7 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
                     (p.Codice?.Contains(nomeTrimmed,      StringComparison.OrdinalIgnoreCase) ?? false));
 
             if (profilo == null)
-                return CommandResult.Fail($"Profilo orario '{nome}' non trovato.");
+                return CommandResult.Fail(AttendanceTrackingMessages.Get("ChatOpenProfiloOrarioNotFound", nome));
 
             var payload = new NavigatePayload
             {
@@ -79,7 +83,7 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
             };
 
             return CommandResult.Ok(
-                $"Apertura profilo orario '{profilo.Descrizione}' (id: {profilo.Id}).",
+                AttendanceTrackingMessages.Get("ChatOpenProfiloOrarioOpening", profilo.Descrizione, profilo.Id),
                 payload);
         }
     }

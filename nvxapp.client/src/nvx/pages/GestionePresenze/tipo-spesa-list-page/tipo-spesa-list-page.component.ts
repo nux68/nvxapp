@@ -11,6 +11,7 @@ import { SharedParameterGestionePresenzeService } from '../../../shared/shared-p
 import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
 import { map, catchError } from 'rxjs';
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
+import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
   selector: 'app-tipo-spesa-list-page',
@@ -24,10 +25,7 @@ export class TipoSpesaListPageComponent {
   public title!: string;
   public searchText!: string;
   public par_TipoSpesaList: Par_TipoSpesaModel[] | null = null;
-  public readonly columns: NvxListColumn<Par_TipoSpesaModel>[] = [
-    { key: 'codice', title: 'Codice', width: '140px', mobile: 'subtitle' },
-    { key: 'descrizione', title: 'Descrizione', mobile: 'title' },
-  ];
+  public readonly columns: NvxListColumn<Par_TipoSpesaModel>[];
   public actions: NvxListAction<Par_TipoSpesaModel>[] = [];
   public readonly sortList = (a: Par_TipoSpesaModel, b: Par_TipoSpesaModel) => (a.descrizione ?? '').localeCompare(b.descrizione ?? '');
   public btnEdit: ButtonItem;
@@ -40,9 +38,14 @@ export class TipoSpesaListPageComponent {
               private userInterfaceService: UserInterfaceService,
               private refresherService: RefresherService,
               private collectionDialogService: CollectionDialogService,
-              private userNavigationService: UserNavigationService) {
+              private userNavigationService: UserNavigationService,
+              private transloco: TranslocoService) {
 
-    this.title = 'Tipi spesa';
+    this.title = this.transloco.translate('attendance.pages.tipoSpesaList.title');
+    this.columns = [
+      { key: 'codice', title: this.transloco.translate('attendance.pages.tipoSpesaList.colCodice'), width: '140px', mobile: 'subtitle' },
+      { key: 'descrizione', title: this.transloco.translate('attendance.pages.tipoSpesaList.colDescrizione'), mobile: 'title' },
+    ];
     this.btnEdit = userInterfaceService.Btn_Modifica;
     this.btnEdit.event = this.handleButtonEditClick;
 
@@ -65,7 +68,7 @@ export class TipoSpesaListPageComponent {
     this.loadData();
 
     this.fabMenuService.fabMenuItem = [
-      new FabMenuItem('Nuovo tipo spesa', 'add-circle-outline', () => {
+      new FabMenuItem(this.transloco.translate('attendance.pages.tipoSpesaList.nuovo'), 'add-circle-outline', () => {
         this.navCtrl.navigateForward('/tipospesaedit', {
           state: { id: 0 }
         });
@@ -81,7 +84,7 @@ export class TipoSpesaListPageComponent {
 
   handleButtonDeleteClick = async (item: any) => {
 
-    const result = await this.collectionDialogService.ConfirmCancelDialog('Confermi la cancellazione del tipo di spesa?');
+    const result = await this.collectionDialogService.ConfirmCancelDialog(this.transloco.translate('attendance.pages.tipoSpesaList.confermaCancellazione'));
     if (result) {
 
       const request: GenericRequest<Par_TipoSpesa_DeleteInModel> = new GenericRequest<Par_TipoSpesa_DeleteInModel>(Par_TipoSpesa_DeleteInModel);

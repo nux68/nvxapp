@@ -1,4 +1,5 @@
 import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { TranslocoService } from '@jsverse/transloco';
 import { Par_ProfiloOrarioModel } from '../../../../ClientServer-Service/GestionePresenze/Par_ProfiloOrario/Models/par-profilo-orario-model';
 import { Par_ProfiloOrarioGGModel } from '../../../../ClientServer-Service/GestionePresenze/Par_ProfiloOrarioGG/Models/par-profilo-orario-gg-model';
 import { BaseDialogConfirmCancelComponent } from '../../../../pages/_BASE/base-dialog-confirm-cancel/base-dialog-confirm-cancel.component';
@@ -30,6 +31,7 @@ export class EditParProfiloOrarioDettaglioOrarioDialogComponent extends BaseDial
     protected override userInterfaceService: UserInterfaceService,
     protected override fb: FormBuilder,
     protected override modalCtrl: ModalController,
+    private transloco: TranslocoService,
     public sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService
   ) {
     super(userInterfaceService, fb, modalCtrl);
@@ -42,7 +44,7 @@ export class EditParProfiloOrarioDettaglioOrarioDialogComponent extends BaseDial
     this._par_OrarioModelList = this.sharedParameterGestionePresenzeService.Par_Orario;
   }
 
-  get Title(): string { return "Orario"; }
+  get Title(): string { return this.transloco.translate('attendance.components.editParProfiloOrarioDettaglioOrarioDialog.title'); }
 
   get EditForm(): FormGroup {
     return this.fb.group({

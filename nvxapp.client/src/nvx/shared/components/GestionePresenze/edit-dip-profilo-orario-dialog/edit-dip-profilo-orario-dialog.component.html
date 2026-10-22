@@ -14,9 +14,9 @@
 
 
         <ion-item>
-          <ion-label position="stacked">Profilo orario</ion-label>
+          <ion-label position="stacked">{{ 'attendance.components.editDipProfiloOrarioDialog.profiloOrario' | transloco }}</ion-label>
           <ion-select formControlName="idPar_ProfiloOrario"
-            placeholder="Seleziona un profilo orario"
+            placeholder="{{ 'attendance.components.editDipProfiloOrarioDialog.selezionaProfilo' | transloco }}"
             interface="modal" (ionChange)="onProfiloOrarioChange($event)">
             @for (profilo of sharedParameterGestionePresenzeService.Par_ProfiloOrario; track profilo) {
               <ion-select-option [value]="profilo.id">
@@ -27,7 +27,7 @@
         </ion-item>
 
         <ion-item>
-          <ion-label position="floating">Dal</ion-label>
+          <ion-label position="floating">{{ 'attendance.components.editDipProfiloOrarioDialog.dal' | transloco }}</ion-label>
           <ion-datetime-button class="datetime-button-with-label" datetime="dalle-limite-sx-modal"></ion-datetime-button>
           <ion-modal [keepContentsMounted]="true">
             <ng-template>
@@ -37,14 +37,14 @@
                 [firstDayOfWeek]="1"
                 [showDefaultButtons]="true"
                 doneText="OK"
-                cancelText="Annulla" (ionChange)="updateDateTimeDalle($event)">
+                [cancelText]="'common.buttons.cancel' | transloco" (ionChange)="updateDateTimeDalle($event)">
               </ion-datetime>
             </ng-template>
           </ion-modal>
         </ion-item>
 
         <ion-item>
-          <ion-label position="floating">Al</ion-label>
+          <ion-label position="floating">{{ 'attendance.components.editDipProfiloOrarioDialog.al' | transloco }}</ion-label>
           <ion-datetime-button class="datetime-button-with-label" datetime="alle-limite-sx-modal"></ion-datetime-button>
           <ion-modal [keepContentsMounted]="true">
             <ng-template>
@@ -54,7 +54,7 @@
                 [firstDayOfWeek]="1"
                 [showDefaultButtons]="true"
                 doneText="OK"
-                cancelText="Annulla">
+                [cancelText]="'common.buttons.cancel' | transloco">
               </ion-datetime>
             </ng-template>
           </ion-modal>
@@ -63,7 +63,7 @@
 
         @if (curr_Par_ProfiloOrario && curr_Par_ProfiloOrario.tipoProfilo!==0) {
           <ion-item>
-            <ion-label position="floating">Num. Giorno partenza ciclo ( {{_editForm.get('numGiornoPartenzaCiclo')?.value}} / {{getDayProf()}} )</ion-label>
+            <ion-label position="floating">{{ 'attendance.components.editDipProfiloOrarioDialog.numGiornoPartenza' | transloco: { giorno: _editForm.get('numGiornoPartenzaCiclo')?.value, totale: getDayProf() } }}</ion-label>
             <ion-range aria-label="Range with ticks" formControlName="numGiornoPartenzaCiclo" [ticks]="true" [snaps]="true" [min]="1" [max]="getDayProf()"></ion-range>
           </ion-item>
         }

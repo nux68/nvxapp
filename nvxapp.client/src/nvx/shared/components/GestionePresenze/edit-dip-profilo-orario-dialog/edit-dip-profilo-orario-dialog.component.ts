@@ -1,4 +1,5 @@
 import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { TranslocoService } from '@jsverse/transloco';
 import { ButtonItem, UserInterfaceService } from '../../../../Utility/infrastructure/user-interface.service';
 import { ModalController } from '@ionic/angular';
 import { Dip_ProfiloOrarioModel } from '../../../../ClientServer-Service/GestionePresenze/Dip_ProfiloOrario/Models/dip-profilo-orario-model';
@@ -28,6 +29,7 @@ export class EditDipProfiloOrarioDialogComponent extends BaseDialogConfirmCancel
               protected override userInterfaceService: UserInterfaceService,
               protected override fb: FormBuilder,
               protected override modalCtrl: ModalController,
+    private transloco: TranslocoService,
               public sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService
               )
   {
@@ -46,7 +48,7 @@ export class EditDipProfiloOrarioDialogComponent extends BaseDialogConfirmCancel
     super.ionViewWillEnter();
   }
 
-  get Title(): string { return "Profilo orario"; }
+  get Title(): string { return this.transloco.translate('attendance.components.editDipProfiloOrarioDialog.title'); }
 
   get EditForm(): FormGroup {
     return this.fb.group({

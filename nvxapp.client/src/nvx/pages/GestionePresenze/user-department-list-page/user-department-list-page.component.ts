@@ -20,6 +20,7 @@ import { Az_SediRepartoUser_GetAll_Period_InModel, Az_SediRepartoUserModel } fro
 import { AzSediRepartoUserServiceService } from '../../../ClientServer-Service/GestionePresenze/Az_SediRepartoUser/az-sedi-reparto-user-service.service';
 import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
 import { MainMenuService } from '../../../Utility/infrastructure/main-menu.service';
+import { TranslocoService } from '@jsverse/transloco';
 @Component({
   selector: 'app-user-department-list-page',
   templateUrl: './user-department-list-page.component.html',
@@ -33,9 +34,9 @@ export class UserDepartmentListPageComponent {
   public userCompanyList: UserCompanyListModel[] | null = null;
   // su mobile cognome e nome vanno nella stessa riga sotto la descrizione
   public readonly columns: NvxListColumn<UserCompanyListModel>[] = [
-    { key: 'descrizione', title: 'Utente' },
-    { key: 'cognome', title: 'Cognome', mobile: 'hidden' },
-    { key: 'nome', title: 'Nome', mobile: 'hidden' },
+    { key: 'descrizione', title: this.transloco.translate('attendance.pages.userDepartmentList.columnUser') },
+    { key: 'cognome', title: this.transloco.translate('attendance.pages.userDepartmentList.columnSurname'), mobile: 'hidden' },
+    { key: 'nome', title: this.transloco.translate('attendance.pages.userDepartmentList.columnName'), mobile: 'hidden' },
     { key: 'cognomeNome', value: x => [x.cognome, x.nome].filter(v => v).join(' '), mobile: 'subtitle', desktop: false, searchable: false },
   ];
   public actions: NvxListAction<UserCompanyListModel>[] = [];
@@ -54,10 +55,11 @@ export class UserDepartmentListPageComponent {
               private parameterService: ParameterService,
               private mainMenuService: MainMenuService,
               private userInterfaceService: UserInterfaceService,
-              private userNavigationService: UserNavigationService)
+              private userNavigationService: UserNavigationService,
+              private transloco: TranslocoService)
   {
 
-    this.title = 'Utenti';
+    this.title = this.transloco.translate('attendance.pages.userDepartmentList.title');
     this.btnImpersona = userInterfaceService.Btn_Impersona;
     this.btnImpersona.event = this.handleButtonImpersonaClick;
     this.btnEdit = userInterfaceService.Btn_Modifica;
@@ -141,7 +143,7 @@ export class UserDepartmentListPageComponent {
 
 
     this.fabMenuService.fabMenuItem = [
-      new FabMenuItem('Elemento 1', 'add-circle-outline', () => {
+      new FabMenuItem(this.transloco.translate('attendance.pages.userDepartmentList.fabAdd'), 'add-circle-outline', () => {
         this.navCtrl.navigateForward('/' + pageName, {
           state: { id: 0 }
         });

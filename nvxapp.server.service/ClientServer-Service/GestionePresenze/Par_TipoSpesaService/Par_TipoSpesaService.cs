@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using nvxapp.server.data.Localization;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
@@ -107,7 +108,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_TipoSp
                 int usato = _dip_GG_NotaSpesaRepository.FindAll(x => x.IdPar_TipoSpesa == model.Data.Id).Count();
                 if (usato > 0)
                 {
-                    retVal.Messages.Add(new Message($"Tipo di spesa usato in {usato} spese: non si puo' cancellare.", MessageType.Exception));
+                    retVal.Messages.Add(new Message(AttendanceTrackingMessages.Get("ExpenseTypeInUse", usato), MessageType.Exception));
                     return retVal;
                 }
 

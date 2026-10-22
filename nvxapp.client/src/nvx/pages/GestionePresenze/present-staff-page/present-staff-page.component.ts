@@ -11,6 +11,7 @@ import { PresentStaff_DaySlot, PresentStaff_GetInModel } from '../../../ClientSe
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { TimeSheetService } from '../../../Utility/GestionePresenze/time-sheet.service';
 import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
+import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
   selector: 'app-present-staff-page',
@@ -35,7 +36,8 @@ export class PresentStaffPageComponent extends BasePageConfirmCancelComponent<Pr
               private presentStaffService: PresentStaffService,
               public timeSheetService: TimeSheetService,
               private sharedParams: SharedParameterGestionePresenzeService,
-              protected override fb: FormBuilder)
+              protected override fb: FormBuilder,
+              private transloco: TranslocoService)
   {
     super(navCtrl, userInterfaceService, fb);
   }
@@ -53,7 +55,7 @@ export class PresentStaffPageComponent extends BasePageConfirmCancelComponent<Pr
     this._destroy$.complete();
   }
 
-  get Title(): string { return 'Personale presente'; }
+  get Title(): string { return this.transloco.translate('attendance.pages.presentStaff.title'); }
 
   LoadData = (): Observable<PresentStaffFormData | null> => {
     return new Observable<PresentStaffFormData | null>((subscriber) => {

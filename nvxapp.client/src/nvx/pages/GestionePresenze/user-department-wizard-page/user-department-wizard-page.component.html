@@ -11,7 +11,7 @@
         <!-- Indicatore step -->
         <div style="text-align:center; margin-bottom:16px;">
           <ion-text color="medium">
-            Step {{ currentStep + 1 }} di {{ totalSteps }}
+            {{ 'attendance.pages.userDepartmentWizard.step' | transloco: { current: currentStep + 1, total: totalSteps } }}
           </ion-text>
         </div>
         <form [formGroup]="_editForm">
@@ -19,42 +19,42 @@
           @if (currentStep === 0) {
             <div>
               <ion-item class="nvx-item-4-title">
-                <ion-label>Info Utente</ion-label>
+                <ion-label>{{ 'attendance.pages.userDepartmentWizard.userInfo' | transloco }}</ion-label>
               </ion-item>
               <!-- UserName -->
               <ion-item>
-                <ion-label position="floating">UserName</ion-label>
+                <ion-label position="floating">{{ 'attendance.pages.userDepartmentWizard.userName' | transloco }}</ion-label>
                 <ion-input type="text" formControlName="descrizione" [readonly]="isFromServer"></ion-input>
               </ion-item>
               @if (_editForm.get('descrizione')?.hasError('required') && _editForm.get('descrizione')?.touched) {
                 <ion-note color="danger">
-                  UserName è obbligatorio.
+                  {{ 'common.validation.userNameRequired' | transloco }}
                 </ion-note>
               }
               @if (_editForm.get('descrizione')?.hasError('maxlength') && _editForm.get('descrizione')?.touched) {
                 <ion-note color="danger">
-                  UserName non può superare i 50 caratteri.
+                  {{ 'common.validation.userNameMaxLength' | transloco: { max: 50 } }}
                 </ion-note>
               }
               <!-- Email -->
               <ion-item>
-                <ion-label position="floating">Email</ion-label>
+                <ion-label position="floating">{{ 'attendance.pages.userDepartmentWizard.email' | transloco }}</ion-label>
                 <ion-input type="email" formControlName="mail"></ion-input>
               </ion-item>
               @if (_editForm.get('mail')?.hasError('required') && _editForm.get('mail')?.touched) {
                 <ion-note color="danger">
-                  L'email è obbligatoria.
+                  {{ 'common.validation.emailRequired' | transloco }}
                 </ion-note>
               }
               @if (_editForm.get('mail')?.hasError('email') && _editForm.get('mail')?.touched) {
                 <ion-note color="danger">
-                  Inserisci un'email valida.
+                  {{ 'common.validation.emailInvalid' | transloco }}
                 </ion-note>
               }
               <!-- Ruolo -->
               <ion-item>
-                <ion-label position="floating">Ruolo</ion-label>
-                <ion-select formControlName="roles" aria-label="Ruoli" [multiple]="true">
+                <ion-label position="floating">{{ 'attendance.pages.userDepartmentWizard.role' | transloco }}</ion-label>
+                <ion-select formControlName="roles" [attr.aria-label]="'attendance.pages.userDepartmentWizard.rolesAria' | transloco" [multiple]="true">
                   @for (item_role of getRoles(); track item_role) {
                     <ion-select-option value="{{item_role}}">{{ item_role }}</ion-select-option>
                   }
@@ -62,37 +62,37 @@
               </ion-item>
               @if (_editForm.get('roles')?.hasError('minArrayLength') && _editForm.get('roles')?.touched) {
                 <ion-note color="danger">
-                  Il ruolo è obbligatorio.
+                  {{ 'common.validation.roleRequired' | transloco }}
                 </ion-note>
               }
               <!-- Cognome -->
               <ion-item>
-                <ion-label position="floating">Cognome</ion-label>
+                <ion-label position="floating">{{ 'attendance.pages.userDepartmentWizard.surname' | transloco }}</ion-label>
                 <ion-input type="text" formControlName="cognome"></ion-input>
               </ion-item>
               @if (_editForm.get('cognome')?.hasError('required') && _editForm.get('cognome')?.touched) {
                 <ion-note color="danger">
-                  Cognome è obbligatorio.
+                  {{ 'attendance.pages.userDepartmentWizard.surnameRequired' | transloco }}
                 </ion-note>
               }
               @if (_editForm.get('cognome')?.hasError('maxlength') && _editForm.get('cognome')?.touched) {
                 <ion-note color="danger">
-                  Cognome non può superare i 50 caratteri.
+                  {{ 'attendance.pages.userDepartmentWizard.surnameMaxLength' | transloco: { max: 50 } }}
                 </ion-note>
               }
               <!-- Nome -->
               <ion-item>
-                <ion-label position="floating">Nome</ion-label>
+                <ion-label position="floating">{{ 'attendance.pages.userDepartmentWizard.name' | transloco }}</ion-label>
                 <ion-input type="text" formControlName="nome"></ion-input>
               </ion-item>
               @if (_editForm.get('nome')?.hasError('required') && _editForm.get('nome')?.touched) {
                 <ion-note color="danger">
-                  Nome è obbligatorio.
+                  {{ 'attendance.pages.userDepartmentWizard.nameRequired' | transloco }}
                 </ion-note>
               }
               @if (_editForm.get('nome')?.hasError('maxlength') && _editForm.get('nome')?.touched) {
                 <ion-note color="danger">
-                  Nome non può superare i 50 caratteri.
+                  {{ 'attendance.pages.userDepartmentWizard.nameMaxLength' | transloco: { max: 50 } }}
                 </ion-note>
               }
             </div>
@@ -101,10 +101,10 @@
           @if (currentStep === 1) {
             <div>
               <ion-item class="nvx-item-4-title">
-                <ion-label>Rapporto di Lavoro</ion-label>
+                <ion-label>{{ 'attendance.pages.userDepartmentWizard.employment' | transloco }}</ion-label>
               </ion-item>
               <ion-item>
-                <ion-label position="floating">Profilo Orario</ion-label>
+                <ion-label position="floating">{{ 'attendance.pages.userDepartmentWizard.scheduleProfile' | transloco }}</ion-label>
                 <ion-select [(ngModel)]="selectedProfiloOrarioId"
                   (ionChange)="onProfiloOrarioChange()"
                   [ngModelOptions]="{standalone: true}"
@@ -119,7 +119,7 @@
               </ion-item>
               <!-- Data inizio validità -->
               <ion-item>
-                <ion-label position="floating">Dal</ion-label>
+                <ion-label position="floating">{{ 'attendance.pages.userDepartmentWizard.from' | transloco }}</ion-label>
                 <ion-datetime-button datetime="wizard-dal"></ion-datetime-button>
                 <ion-modal [keepContentsMounted]="true">
                   <ng-template>
@@ -128,7 +128,7 @@
                       [firstDayOfWeek]="1"
                       [showDefaultButtons]="true"
                       doneText="OK"
-                      cancelText="Annulla"
+                      [cancelText]="'common.buttons.cancel' | transloco"
                       [(ngModel)]="profiloDal"
                       (ionChange)="onDalChange($event)"
                       [ngModelOptions]="{standalone: true}">
@@ -138,7 +138,7 @@
               </ion-item>
               <!-- Data fine validità -->
               <ion-item>
-                <ion-label position="floating">Al</ion-label>
+                <ion-label position="floating">{{ 'attendance.pages.userDepartmentWizard.to' | transloco }}</ion-label>
                 <ion-datetime-button datetime="wizard-al"></ion-datetime-button>
                 <ion-modal [keepContentsMounted]="true">
                   <ng-template>
@@ -147,7 +147,7 @@
                       [firstDayOfWeek]="1"
                       [showDefaultButtons]="true"
                       doneText="OK"
-                      cancelText="Annulla"
+                      [cancelText]="'common.buttons.cancel' | transloco"
                       [(ngModel)]="profiloAl"
                       (ionChange)="onAlChange($event)"
                       [ngModelOptions]="{standalone: true}">

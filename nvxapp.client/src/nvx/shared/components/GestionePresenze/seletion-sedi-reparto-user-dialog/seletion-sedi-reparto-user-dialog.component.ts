@@ -1,4 +1,5 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { TranslocoService } from '@jsverse/transloco';
 import { ButtonItem, UserInterfaceService } from '../../../../Utility/infrastructure/user-interface.service';
 import { ModalController, NavController } from '@ionic/angular';
 
@@ -24,10 +25,11 @@ export class SeletionSediRepartoUserDialogComponent {
   };
 
   constructor(protected userInterfaceService: UserInterfaceService,
-              private modalCtrl: ModalController
+              private modalCtrl: ModalController,
+              private transloco: TranslocoService
               )
   {
-    this.title = 'Seleziona';
+    this.title = this.transloco.translate('attendance.components.seletionSediRepartoUserDialog.title');
 
     this.buttonbar = userInterfaceService.Btn_ConfermaAnnulla;
     this.buttonbar[0].event = this._handleButtonConfirmClick;

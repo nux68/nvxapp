@@ -9,6 +9,7 @@ import { StringHelperService } from '../../../Utility/infrastructure/string-help
 import { Par_GiustificativiModel } from '../../../ClientServer-Service/GestionePresenze/Par_Giustificativi/Models/par-giustificativi-model';
 import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
+import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
   selector: 'app-request-justification-user-page',
@@ -48,9 +49,10 @@ export class RequestJustificationUserPageComponent implements OnInit {
               private dipGGRichiestaService: DipGGRichiestaService,
               private stringHelperService: StringHelperService,
               private userInterfaceService: UserInterfaceService,
-              private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService)
+              private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
+              private transloco: TranslocoService)
   {
-    this.title = 'Richiesta ferie e permessi';
+    this.title = this.transloco.translate('attendance.pages.requestJustificationUser.title');
 
     this.btnInvia = userInterfaceService.Btn_Invia;
     this.btnInvia.event = this._handleButtonConfirmClick;

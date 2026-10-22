@@ -13,8 +13,8 @@
 
         <!-- Combo per selezione orario -->
         <ion-item>
-          <ion-label position="stacked">Orario</ion-label>
-          <ion-select formControlName="idPar_Orario" placeholder="Seleziona l'orario">
+          <ion-label position="stacked">{{ 'attendance.components.editParProfiloOrarioDettaglioOrarioDialog.orario' | transloco }}</ion-label>
+          <ion-select formControlName="idPar_Orario" placeholder="{{ 'attendance.components.editParProfiloOrarioDettaglioOrarioDialog.selezionaOrario' | transloco }}">
             @for (orario of _par_OrarioModelList; track orario) {
               <ion-select-option [value]="orario.id">
                 {{ orario.descrizione }}
@@ -24,7 +24,7 @@
         </ion-item>
         @if (_editForm.get('_editForm.dPar_Orario')?.hasError('required') && _editForm.get('_editForm.dPar_Orario')?.touched) {
           <ion-note color="danger">
-            Orario è obbligatorio.
+            {{ 'attendance.components.editParProfiloOrarioDettaglioOrarioDialog.orarioObbligatorio' | transloco }}
           </ion-note>
         }
 

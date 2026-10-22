@@ -24,8 +24,8 @@
     <br />
 
     <ion-item>
-      <ion-label position="stacked" style="margin-bottom:13px;">Giustificativo</ion-label>
-      <ion-select [(ngModel)]="justificationType" interface="popover" placeholder="Seleziona" (ionChange)="onGiustificativoChange()">
+      <ion-label position="stacked" style="margin-bottom:13px;">{{ 'attendance.pages.requestJustificationUser.giustificativo' | transloco }}</ion-label>
+      <ion-select [(ngModel)]="justificationType" interface="popover" [placeholder]="'attendance.pages.requestJustificationUser.seleziona' | transloco" (ionChange)="onGiustificativoChange()">
         @for (giustificativo of giustificativi; track giustificativo) {
           <ion-select-option [value]="giustificativo.codice">
             {{giustificativo.descrizione}}
@@ -43,7 +43,7 @@
     </div>
   </div>-->
   <ion-item>
-    <ion-label position="stacked" style="margin-bottom:13px;">Data inizio</ion-label>
+    <ion-label position="stacked" style="margin-bottom:13px;">{{ 'attendance.pages.requestJustificationUser.dataInizio' | transloco }}</ion-label>
     <ion-datetime-button datetime="startDatetime"></ion-datetime-button>
   </ion-item>
 
@@ -56,19 +56,18 @@
 </div>-->
 
 <ion-item>
-  <ion-label position="stacked" style="margin-bottom:13px;">Data fine</ion-label>
+  <ion-label position="stacked" style="margin-bottom:13px;">{{ 'attendance.pages.requestJustificationUser.dataFine' | transloco }}</ion-label>
   <ion-datetime-button datetime="endDatetime"></ion-datetime-button>
 </ion-item>
 
 
 @if (autorizzazione) {
   <ion-note class="nota-autorizzazione">
-    Ore in più che chiedi di farti riconoscere in ciascun giorno del periodo (anche sabato, domenica e festivi).
-    Le ore lavorate oltre l'autorizzazione approvata non vengono riconosciute.
+    {{ 'attendance.pages.requestJustificationUser.notaAutorizzazione' | transloco }}
   </ion-note>
 } @else {
   <div class="form-section toggle-section">
-    <span>Giorno intero</span>
+    <span>{{ 'attendance.pages.requestJustificationUser.giornoIntero' | transloco }}</span>
     <ion-toggle [(ngModel)]="fullDay" (ionChange)="toggleFullDay()"></ion-toggle>
   </div>
 }
@@ -76,11 +75,11 @@
 <!-- La sezione ore sarà visibile solo se fullDay è false -->
 @if (!fullDay) {
   <div class="form-section">
-    <div class="form-label">Ore</div>
+    <div class="form-label">{{ 'attendance.pages.requestJustificationUser.ore' | transloco }}</div>
     <div class="time-input">
       <!-- Hours control -->
       <div class="time-control-group">
-        <div class="time-label">Ore</div>
+        <div class="time-label">{{ 'attendance.pages.requestJustificationUser.ore' | transloco }}</div>
         <div class="time-controls">
           <button class="time-button decrease" (click)="decreaseHours()">
             <ion-icon name="remove"></ion-icon>
@@ -93,7 +92,7 @@
       </div>
       <!-- Minutes control -->
       <div class="time-control-group">
-        <div class="time-label">Min</div>
+        <div class="time-label">{{ 'attendance.pages.requestJustificationUser.min' | transloco }}</div>
         <div class="time-controls">
           <button class="time-button decrease" (click)="decreaseMinutes()">
             <ion-icon name="remove"></ion-icon>
@@ -106,7 +105,7 @@
       </div>
       <!-- Total time display -->
       <div class="time-total">
-        <div class="time-total-label">Totale</div>
+        <div class="time-total-label">{{ 'attendance.pages.requestJustificationUser.totale' | transloco }}</div>
         <div class="time-total-value">{{hoursFormatted || '00:00'}}</div>
       </div>
     </div>
@@ -131,9 +130,9 @@
 </div>-->
 
 <div class="form-section notes-section">
-  <div class="form-label">Note</div>
+  <div class="form-label">{{ 'attendance.pages.requestJustificationUser.note' | transloco }}</div>
   <div class="form-input">
-    <ion-textarea [(ngModel)]="notes" placeholder="Inserisci note..." rows="4"></ion-textarea>
+    <ion-textarea [(ngModel)]="notes" [placeholder]="'attendance.pages.requestJustificationUser.notePlaceholder' | transloco" rows="4"></ion-textarea>
   </div>
 </div>
 
@@ -145,10 +144,9 @@
       presentation="date"
       [firstDayOfWeek]="1"
       [showDefaultButtons]="true"
-      doneText="Fatto"
-      cancelText="Annulla"
-      (ionChange)="updateStartDate($event)"
-      locale="it-IT">
+      [doneText]="'attendance.pages.requestJustificationUser.fatto' | transloco"
+      [cancelText]="'common.buttons.cancel' | transloco"
+      (ionChange)="updateStartDate($event)">
     </ion-datetime>
   </ng-template>
 </ion-modal>
@@ -160,10 +158,9 @@
       presentation="date"
       [firstDayOfWeek]="1"
       [showDefaultButtons]="true"
-      doneText="Fatto"
-      cancelText="Annulla"
-      (ionChange)="updateEndDate($event)"
-      locale="it-IT">
+      [doneText]="'attendance.pages.requestJustificationUser.fatto' | transloco"
+      [cancelText]="'common.buttons.cancel' | transloco"
+      (ionChange)="updateEndDate($event)">
     </ion-datetime>
   </ng-template>
 </ion-modal>

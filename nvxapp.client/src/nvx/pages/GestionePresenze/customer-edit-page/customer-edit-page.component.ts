@@ -12,6 +12,7 @@ import { Az_ClienteGetInModel, Az_ClienteModel, Az_ClientePutInModel } from '../
 import { AzClienteService } from '../../../ClientServer-Service/GestionePresenze/Az_Cliente/az-cliente.service';
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
 import { ParTable } from '../../../shared/shared-parameter-gestione-presenze.service';
+import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
   selector: 'app-customer-edit-page',
@@ -27,11 +28,12 @@ export class CustomerEditPageComponent extends BasePageConfirmCancelComponent<Az
     protected override fb: FormBuilder,
     private stringHelperService: StringHelperService,
     private azClienteService: AzClienteService,
-    private refresherService: RefresherService) {
+    private refresherService: RefresherService,
+    private transloco: TranslocoService) {
     super(navCtrl, userInterfaceService, fb);
   }
 
-  get Title(): string { return "Customer"; }
+  get Title(): string { return this.transloco.translate('attendance.pages.customerEdit.title'); }
   get EditForm(): FormGroup {
     return this.fb.group({
       descrizione: [null, [Validators.required, Validators.maxLength(100)]],

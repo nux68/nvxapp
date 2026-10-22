@@ -34,6 +34,7 @@ import { EditDipGGTimbraturaDialogComponent } from '../../../shared/components/G
 import { DipGGGiustificativiService } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Giustificativi/dip-gg-giustificativi.service';
 import { EditDipGGGiustificativiDialogComponent } from '../../../shared/components/GestionePresenze/edit-dip-gg-giustificativi-dialog/edit-dip-gg-giustificativi-dialog.component';
 import { JobNotifierService } from '../../../Utility/infrastructure/job-notifier.service';
+import { TranslocoService } from '@jsverse/transloco';
 
 
 interface DayData {
@@ -101,9 +102,10 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
               private longJobNotifier: LongJobNotifierService,
               private jobNotifierService: JobNotifierService,
               public timeSheetEngineService: TimeSheetEngineService,
-              private platform: Platform
+              private platform: Platform,
+              private transloco: TranslocoService
   ) {
-    this.title = 'Calendario HR';
+    this.title = this.transloco.translate('attendance.pages.timeSheetPowerAdmin.title');
     this.currentMonth = { year: 0, month: 0, days: {}, dip_GG_Richiesta: [], daySlot: [], contatori_Anno_Mese:[] };
   }
   
@@ -349,14 +351,14 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
 
   public actionSheetButtonsRequest = [
     {
-      text: 'Approva richiesta',
+      text: this.transloco.translate('attendance.pages.timeSheetPowerAdmin.approveRequest'),
       role: actionSheet_Action.richieste_PREFIX + "_" + actionSheet_Action.approva,
       data: {
         action: actionSheet_Action.richieste_PREFIX + "_" + actionSheet_Action.approva,
       },
     },
     {
-      text: 'Rifiuta richiesta',
+      text: this.transloco.translate('attendance.pages.timeSheetPowerAdmin.rejectRequest'),
       role: actionSheet_Action.richieste_PREFIX + "_" + actionSheet_Action.rifiuta,
       data: {
         action: actionSheet_Action.richieste_PREFIX + "_" + actionSheet_Action.rifiuta,
@@ -367,21 +369,21 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
   
   public actionSheetButtonsCausali = [
     {
-      text: 'Modifica causale',
+      text: this.transloco.translate('attendance.pages.timeSheetPowerAdmin.editReasonCode'),
       role: actionSheet_Action.Causali_PREFIX + "_" + actionSheet_Action.modificacausale,
       data: {
         action: actionSheet_Action.Causali_PREFIX + "_" + actionSheet_Action.modificacausale,
       },
     },
     {
-      text: 'Cancella causale',
+      text: this.transloco.translate('attendance.pages.timeSheetPowerAdmin.deleteReasonCode'),
       role: actionSheet_Action.Causali_PREFIX + "_" + actionSheet_Action.cancellacausale,
       data: {
         action: actionSheet_Action.Causali_PREFIX + "_" + actionSheet_Action.cancellacausale,
       },
     },
     {
-      text: 'Aggiungi causale',
+      text: this.transloco.translate('attendance.pages.timeSheetPowerAdmin.addReasonCode'),
       role: actionSheet_Action.Causali_PREFIX + "_" + actionSheet_Action.aggiungicausale,
       data: {
         action: actionSheet_Action.Causali_PREFIX + "_" + actionSheet_Action.aggiungicausale,
@@ -392,21 +394,21 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
 
   public actionSheetButtonsTimbrature = [
     {
-      text: 'Modifica timbratura',
+      text: this.transloco.translate('attendance.pages.timeSheetPowerAdmin.editClocking'),
       role: actionSheet_Action.Timbrature_PREFIX + "_" + actionSheet_Action.modificatimbratura,
       data: {
         action: actionSheet_Action.Timbrature_PREFIX + "_" + actionSheet_Action.modificatimbratura,
       },
     },
     {
-      text: 'Cancella timbratura',
+      text: this.transloco.translate('attendance.pages.timeSheetPowerAdmin.deleteClocking'),
       role: actionSheet_Action.Timbrature_PREFIX + "_" + actionSheet_Action.cancellatimbratura,
       data: {
         action: actionSheet_Action.Timbrature_PREFIX + "_" + actionSheet_Action.cancellatimbratura,
       },
     },
     {
-      text: 'Aggiungi timbratura',
+      text: this.transloco.translate('attendance.pages.timeSheetPowerAdmin.addClocking'),
       role: actionSheet_Action.Timbrature_PREFIX + "_" + actionSheet_Action.aggiungitimbratura,
       data: {
         action: actionSheet_Action.Timbrature_PREFIX + "_" + actionSheet_Action.aggiungitimbratura,
@@ -418,21 +420,21 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
 
   public actionSheetButtonsGiustificativi = [
     {
-      text: 'Modifica giustificativo',
+      text: this.transloco.translate('attendance.pages.timeSheetPowerAdmin.editJustification'),
       role: actionSheet_Action.Giustificativi_PREFIX + "_" + actionSheet_Action.modificagiustificativi,
       data: {
         action: actionSheet_Action.Giustificativi_PREFIX + "_" + actionSheet_Action.modificagiustificativi,
       },
     },
     {
-      text: 'Cancella giustificativo',
+      text: this.transloco.translate('attendance.pages.timeSheetPowerAdmin.deleteJustification'),
       role: actionSheet_Action.Giustificativi_PREFIX + "_" + actionSheet_Action.cancellagiustificativi,
       data: {
         action: actionSheet_Action.Giustificativi_PREFIX + "_" + actionSheet_Action.cancellagiustificativi,
       },
     },
     {
-      text: 'Aggiungi giustificativo',
+      text: this.transloco.translate('attendance.pages.timeSheetPowerAdmin.addJustification'),
       role: actionSheet_Action.Giustificativi_PREFIX + "_" + actionSheet_Action.aggiungigiustificativi,
       data: {
         action: actionSheet_Action.Giustificativi_PREFIX + "_" + actionSheet_Action.aggiungigiustificativi,
@@ -492,7 +494,7 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
       },
     },
     {
-      text: 'Calcola tutto il mese',
+      text: this.transloco.translate('attendance.pages.timeSheetPowerAdmin.calcWholeMonth'),
       role: actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Calcola_Day_All,
       data: {
         action: actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Calcola_Day_All,
@@ -528,7 +530,7 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
 
       
       this.actionSheetOpenSelectObj = giustificativo;
-      this.actionSheetHeader = `Giustificativo : ${parGiustificativiToLongTextPipe.transform(giustificativo.idPar_Giustificativi)} ${this.dateTimeUtilService.DateTo_ggmmyyyy(giustificativo.data)}`;
+      this.actionSheetHeader = this.transloco.translate('attendance.pages.timeSheetPowerAdmin.justificationHeader', { name: parGiustificativiToLongTextPipe.transform(giustificativo.idPar_Giustificativi), date: this.dateTimeUtilService.DateTo_ggmmyyyy(giustificativo.data) });
       this.actionSheetSubHeader = null;
 
     }
@@ -551,7 +553,7 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
       const tipoTimbraturaToLongTextPipe = new TipoTimbraturaToLongTextPipe();
       
       this.actionSheetOpenSelectObj = timbratura;
-      this.actionSheetHeader = `Timbratura : ${tipoTimbraturaToLongTextPipe.transform(timbratura.timbraturaTipo)} ${this.dateTimeUtilService.DateTo_ggmmyyyy_hhmm(timbratura.timbratura)}`;
+      this.actionSheetHeader = this.transloco.translate('attendance.pages.timeSheetPowerAdmin.clockingHeader', { type: tipoTimbraturaToLongTextPipe.transform(timbratura.timbraturaTipo), date: this.dateTimeUtilService.DateTo_ggmmyyyy_hhmm(timbratura.timbratura) });
       this.actionSheetSubHeader = null;
 
 
@@ -564,12 +566,12 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
 
       const causale = obj as Dip_GG_CausaliModel;
       this.actionSheetOpenSelectObj = causale;
-      this.actionSheetHeader = `Giorno : ${this.dateTimeUtilService.DateTo_ggmmyyyy(new Date(causale.data))}`;
+      this.actionSheetHeader = this.transloco.translate('attendance.pages.timeSheetPowerAdmin.reasonCodeHeader', { date: this.dateTimeUtilService.DateTo_ggmmyyyy(new Date(causale.data)) });
       this.actionSheetSubHeader = null;
 
       const dynamicButtons = JSON.parse(JSON.stringify(this.actionSheetButtonsCausali));
-      dynamicButtons.find((b: any) => b.role === actionSheet_Action.Causali_PREFIX + "_" + actionSheet_Action.cancellacausale).text = `Cancella causale  :${parCausaliToShortTextPipe.transform(causale.idPar_Causali)}   ${this.dateTimeUtilService.DateTo_ggmmyyyy(new Date(causale.data))}  ${causale.valore.slice(0, 5)}`;
-      dynamicButtons.find((b: any) => b.role === actionSheet_Action.Causali_PREFIX + "_" + actionSheet_Action.modificacausale).text = `Modifica causale  :${parCausaliToShortTextPipe.transform(causale.idPar_Causali)}   ${this.dateTimeUtilService.DateTo_ggmmyyyy(new Date(causale.data))}  ${causale.valore.slice(0, 5)}`;
+      dynamicButtons.find((b: any) => b.role === actionSheet_Action.Causali_PREFIX + "_" + actionSheet_Action.cancellacausale).text = this.transloco.translate('attendance.pages.timeSheetPowerAdmin.deleteReasonCodeDetail', { code: parCausaliToShortTextPipe.transform(causale.idPar_Causali), date: this.dateTimeUtilService.DateTo_ggmmyyyy(new Date(causale.data)), value: causale.valore.slice(0, 5) });
+      dynamicButtons.find((b: any) => b.role === actionSheet_Action.Causali_PREFIX + "_" + actionSheet_Action.modificacausale).text = this.transloco.translate('attendance.pages.timeSheetPowerAdmin.editReasonCodeDetail', { code: parCausaliToShortTextPipe.transform(causale.idPar_Causali), date: this.dateTimeUtilService.DateTo_ggmmyyyy(new Date(causale.data)), value: causale.valore.slice(0, 5) });
 
       
 
@@ -580,7 +582,7 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
       
       const currDay = obj as DayData;
       this.actionSheetOpenSelectObj = currDay;
-      this.actionSheetHeader = "Giorno " + this.datePipe.transform(currDay.date, 'dd EEE');
+      this.actionSheetHeader = this.transloco.translate('attendance.pages.timeSheetPowerAdmin.dayHeader', { day: this.datePipe.transform(currDay.date, 'dd EEE') });
 
       //this.actionSheetButtons = this.actionSheetButtonsDay;
 
@@ -592,13 +594,13 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
       const dayTextExt = this.datePipe.transform(currDay.date, 'dd EEE');
 
       // Aggiorna dinamicamente il testo dei pulsanti
-      dynamicButtons.find((b: any) => b.role === actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Calcola_Day_X).text = `Calcola ${dayTextExt}`;
-      dynamicButtons.find((b: any) => b.role === actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Calcola_Day_To).text = `Calcola dal 01 al ${dayText}`;
+      dynamicButtons.find((b: any) => b.role === actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Calcola_Day_X).text = this.transloco.translate('attendance.pages.timeSheetPowerAdmin.calcDay', { day: dayTextExt });
+      dynamicButtons.find((b: any) => b.role === actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Calcola_Day_To).text = this.transloco.translate('attendance.pages.timeSheetPowerAdmin.calcToDay', { day: dayText });
       const lastDayText = this.datePipe.transform(new Date(this.currYear, this.currMonth + 1, 0), 'dd');
-      dynamicButtons.find((b: any) => b.role === actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Calcola_Day_From).text = `Calcola dal ${dayText} al ${lastDayText}`;
-      dynamicButtons.find((b: any) => b.role === actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Day_Add_Causale).text = `Aggiungi causale al giorno ${dayTextExt}`;
-      dynamicButtons.find((b: any) => b.role === actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Day_Add_Timbratura).text = `Aggiungi timbratura al giorno ${dayTextExt}`;
-      dynamicButtons.find((b: any) => b.role === actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Day_Add_Giustificativo).text = `Aggiungi giustificativo al giorno ${dayTextExt}`;
+      dynamicButtons.find((b: any) => b.role === actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Calcola_Day_From).text = this.transloco.translate('attendance.pages.timeSheetPowerAdmin.calcFromDay', { day: dayText, lastDay: lastDayText });
+      dynamicButtons.find((b: any) => b.role === actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Day_Add_Causale).text = this.transloco.translate('attendance.pages.timeSheetPowerAdmin.addReasonCodeToDay', { day: dayTextExt });
+      dynamicButtons.find((b: any) => b.role === actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Day_Add_Timbratura).text = this.transloco.translate('attendance.pages.timeSheetPowerAdmin.addClockingToDay', { day: dayTextExt });
+      dynamicButtons.find((b: any) => b.role === actionSheet_Action.Calcola_Day_PREFIX + "_" + actionSheet_Action.Day_Add_Giustificativo).text = this.transloco.translate('attendance.pages.timeSheetPowerAdmin.addJustificationToDay', { day: dayTextExt });
      
       
 
@@ -618,11 +620,11 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
         b.role === 'cancel' || b.role?.includes('cancella') || b.role?.includes(actionSheet_Action.rifiuta));
       if (!ammessi.some((b: any) => b.role !== 'cancel')) {
         this.collectionDialogService.ConfirmCancelDialog(
-          `${this.datePipe.transform(giorno, 'dd-MM-yyyy')}: ${this.timeSheetService.fuoriRapportoTesto(fuori).toLowerCase()}, giorno fuori dal rapporto di lavoro. Non sono ammessi movimenti.`);
+          this.transloco.translate('attendance.pages.timeSheetPowerAdmin.outOfEmploymentNoMovements', { date: this.datePipe.transform(giorno, 'dd-MM-yyyy'), status: this.timeSheetService.fuoriRapportoTesto(fuori).toLowerCase() }));
         return;
       }
       this.actionSheetButtons = ammessi;
-      this.actionSheetSubHeader = 'Giorno fuori dal rapporto di lavoro: si può solo cancellare';
+      this.actionSheetSubHeader = this.transloco.translate('attendance.pages.timeSheetPowerAdmin.outOfEmploymentDeleteOnly');
     }
 
     this.isActionSheetOpen = true;
@@ -705,7 +707,7 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
 
       var idDip_RapportoLavoro = this.timeSheetService.get_IdDip_RapportoLavoro(this.currentMonth, this.currUserId, selectedDay.date);
       if (idDip_RapportoLavoro == 0) {
-        this.collectionDialogService.ConfirmCancelDialog(`Nessu rapporto di lavoro attivo per il ${this.datePipe.transform(selectedDay.date, "dd-MM-yyyy")}`);
+        this.collectionDialogService.ConfirmCancelDialog(this.transloco.translate('attendance.pages.timeSheetPowerAdmin.noActiveEmployment', { date: this.datePipe.transform(selectedDay.date, "dd-MM-yyyy") }));
       }
       else {
 
@@ -782,7 +784,7 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
         request.data.idDip_RapportoLavoro = this.timeSheetService.get_IdDip_RapportoLavoro(this.currentMonth,this.currUserId, new Date(request.data.data));
 
         if (request.data.idDip_RapportoLavoro == 0) {
-          this.collectionDialogService.ConfirmCancelDialog(`Nessu rapporto di lavoro attivo per il ${request.data.data}`);
+          this.collectionDialogService.ConfirmCancelDialog(this.transloco.translate('attendance.pages.timeSheetPowerAdmin.noActiveEmployment', { date: request.data.data }));
         }
         else {
           this.dipGGCausaliService.Dip_GG_Causali_Get(request).subscribe(res => {
@@ -954,7 +956,7 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
 
   handleButtonCancellaCausaleClick = async (item: any) => {
 
-    const result = await this.collectionDialogService.ConfirmCancelDialog('Confermi la cancellazione della causale');
+    const result = await this.collectionDialogService.ConfirmCancelDialog(this.transloco.translate('attendance.pages.timeSheetPowerAdmin.confirmDeleteReasonCode'));
     if (result) {
 
       const request: GenericRequest<Dip_GG_Causali_DeleteInModel> = new GenericRequest<Dip_GG_Causali_DeleteInModel>(Dip_GG_Causali_DeleteInModel);
@@ -997,7 +999,7 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
 
   handleButtonCancellaTimbraturaClick = async (item: any) => {
 
-    const result = await this.collectionDialogService.ConfirmCancelDialog('Confermi la cancellazione della timbratura');
+    const result = await this.collectionDialogService.ConfirmCancelDialog(this.transloco.translate('attendance.pages.timeSheetPowerAdmin.confirmDeleteClocking'));
     if (result) {
 
       const request: GenericRequest<Dip_GG_Timbratura_DeleteInModel> = new GenericRequest<Dip_GG_Timbratura_DeleteInModel>(Dip_GG_Timbratura_DeleteInModel);
@@ -1039,7 +1041,7 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
 
   handleButtonCancellaGiustificativoClick = async (item: any) => {
 
-    const result = await this.collectionDialogService.ConfirmCancelDialog('Confermi la cancellazione del gistificativo');
+    const result = await this.collectionDialogService.ConfirmCancelDialog(this.transloco.translate('attendance.pages.timeSheetPowerAdmin.confirmDeleteJustification'));
     if (result) {
 
       const request: GenericRequest<Dip_GG_Giustificativi_DeleteInModel> = new GenericRequest<Dip_GG_Giustificativi_DeleteInModel>(Dip_GG_Giustificativi_DeleteInModel);

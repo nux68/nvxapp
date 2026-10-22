@@ -1,3 +1,4 @@
+using nvxapp.server.data.Localization;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_AnagraficaService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_AnagraficaService.Models;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Models;
@@ -19,7 +20,7 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
             if (string.IsNullOrWhiteSpace(v) || !v.Any(char.IsLetter))
                 return SlotValidationResult.Failed(
                     SlotValidationError.InvalidFormat,
-                    $"'{v}' non sembra un nome valido. Inserire nome e/o cognome del dipendente.",
+                    AttendanceTrackingMessages.Get("ChatEmployeeInvalidName", v),
                     "employeeName");
 
             var req = new GenericRequest<Dip_Anagrafica_GetAll_InModel>();
@@ -28,14 +29,14 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
             if (!res.Success || res.Data == null)
                 return SlotValidationResult.Failed(
                     SlotValidationError.BusinessRuleViolation,
-                    "Errore nella lettura dei dipendenti.",
+                    AttendanceTrackingMessages.Get("ChatEmployeesReadError"),
                     "employeeName");
 
             var all = res.Data.Dip_Anagrafica;
             if (all.Count == 0)
                 return SlotValidationResult.Failed(
                     SlotValidationError.BusinessRuleViolation,
-                    "Nessun dipendente disponibile.",
+                    AttendanceTrackingMessages.Get("ChatNoEmployeesAvailable"),
                     "employeeName");
 
             var token = v.Trim().ToLowerInvariant();
@@ -70,13 +71,13 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
             if (found.Count == 0)
                 return SlotValidationResult.Failed(
                     SlotValidationError.EntityNotFound,
-                    $"Nessun dipendente trovato per '{v}'. Riprova con nome e/o cognome.",
+                    AttendanceTrackingMessages.Get("ChatEmployeeNotFoundRetry", v),
                     "employeeName");
 
             if (found.Count == 1)
             {
                 var canonical = $"{found[0].Cognome} {found[0].Nome}".Trim();
-                var info = !exactMatch ? $"Dipendente agganciato: {canonical}" : null;
+                var info = !exactMatch ? AttendanceTrackingMessages.Get("ChatEmployeeMatched", canonical) : null;
                 info = "";
                 return SlotValidationResult.Ok(canonical, info);
             }
@@ -88,7 +89,7 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
 
             return SlotValidationResult.Failed(
                 SlotValidationError.AmbiguousEntity,
-                $"Trovati {found.Count} dipendenti per '{v}'. Seleziona:",
+                AttendanceTrackingMessages.Get("ChatEmployeesAmbiguous", found.Count, v),
                 "employeeName",
                 suggestions);
         }

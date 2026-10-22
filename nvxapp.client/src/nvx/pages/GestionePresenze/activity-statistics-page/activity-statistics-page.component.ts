@@ -16,6 +16,7 @@ import {
   ActivityStatistics_RowModel,
   ActivityStatistics_TotaleAttivitaModel
 } from '../../../ClientServer-Service/GestionePresenze/ActivityStatisticsService/Models/activity-statistics-model';
+import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
   selector: 'app-activity-statistics-page',
@@ -89,9 +90,9 @@ export class ActivityStatisticsPageComponent extends BasePageConfirmCancelCompon
   }
 
   statoLabel(stato: GG_ResultStato): string {
-    if (stato & GG_ResultStato.Err)  return 'Errore';
-    if (stato & GG_ResultStato.Init) return 'Non elaborata';
-    return 'Warning';
+    if (stato & GG_ResultStato.Err)  return this.transloco.translate('attendance.pages.activityStatistics.statoErrore');
+    if (stato & GG_ResultStato.Init) return this.transloco.translate('attendance.pages.activityStatistics.statoNonElaborata');
+    return this.transloco.translate('attendance.pages.activityStatistics.statoWarning');
   }
 
   private _selectionChanged$ = new Subject<void>();
@@ -100,7 +101,8 @@ export class ActivityStatisticsPageComponent extends BasePageConfirmCancelCompon
   constructor(protected override navCtrl: NavController,
               protected override userInterfaceService: UserInterfaceService,
               private activityStatisticsService: ActivityStatisticsService,
-              protected override fb: FormBuilder)
+              protected override fb: FormBuilder,
+              private transloco: TranslocoService)
   {
     super(navCtrl, userInterfaceService, fb);
   }
@@ -118,7 +120,7 @@ export class ActivityStatisticsPageComponent extends BasePageConfirmCancelCompon
     this._destroy$.complete();
   }
 
-  get Title(): string { return 'Statistiche attività'; }
+  get Title(): string { return this.transloco.translate('attendance.pages.activityStatistics.title'); }
 
   LoadData = (): Observable<ActivityStatisticsFormData | null> => {
     return new Observable<ActivityStatisticsFormData | null>((subscriber) => {

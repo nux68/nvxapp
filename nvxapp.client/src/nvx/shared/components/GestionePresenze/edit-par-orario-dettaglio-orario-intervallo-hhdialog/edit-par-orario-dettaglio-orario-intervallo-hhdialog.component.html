@@ -32,13 +32,13 @@
 
       <ion-segment (ionChange)="segmentChanged($event)" [value]="currSection">
         <ion-segment-button value="sez0" content-id="sez0">
-          <ion-label>Varie</ion-label>
+          <ion-label>{{ 'attendance.components.editParOrarioDettaglioOrarioIntervalloHhdialog.varie' | transloco }}</ion-label>
         </ion-segment-button>
         <ion-segment-button value="sez1" content-id="sez1">
-          <ion-label>Orario Inizio</ion-label>
+          <ion-label>{{ 'attendance.components.editParOrarioDettaglioOrarioIntervalloHhdialog.orarioInizio' | transloco }}</ion-label>
         </ion-segment-button>
         <ion-segment-button value="sez2" content-id="sez2">
-          <ion-label>Orario Fine</ion-label>
+          <ion-label>{{ 'attendance.components.editParOrarioDettaglioOrarioIntervalloHhdialog.orarioFine' | transloco }}</ion-label>
         </ion-segment-button>
       </ion-segment>
 
@@ -49,8 +49,8 @@
           <ion-row class="ion-align-items-center">
             <ion-col size="12" size-md="6">
               <ion-item>
-                <ion-label position="stacked">Causale HH Lav</ion-label>
-                <ion-select formControlName="idCausale_HH_Lav" placeholder="Seleziona la causale">
+                <ion-label position="stacked">{{ 'attendance.components.editParOrarioDettaglioOrarioIntervalloHhdialog.causaleHHLav' | transloco }}</ion-label>
+                <ion-select formControlName="idCausale_HH_Lav" placeholder="{{ 'attendance.components.editParOrarioDettaglioOrarioIntervalloHhdialog.selezionaCausale' | transloco }}">
                   @for (causali of par_CausaliModelList; track causali) {
                     <ion-select-option [value]="causali.id">
                       {{ causali.descrizione }}
@@ -60,7 +60,7 @@
               </ion-item>
               @if (_editForm.get('idCausale_HH_Lav')?.hasError('required') && _editForm.get('idCausale_HH_Lav')?.touched) {
                 <ion-note color="danger">
-                  La causale è obbligatoria.
+                  {{ 'attendance.components.editParOrarioDettaglioOrarioIntervalloHhdialog.causaleObbligatoria' | transloco }}
                 </ion-note>
               }
             </ion-col>
@@ -99,7 +99,7 @@
           <!-- Dalle Limite SX -->
           <ion-col>
             <ion-item>
-              <ion-label position="floating">Limite SX</ion-label>
+              <ion-label position="floating">{{ 'attendance.components.editParOrarioDettaglioOrarioIntervalloHhdialog.limiteSX' | transloco }}</ion-label>
               <ion-datetime-button class="datetime-button-with-label" datetime="dalle-limite-sx-modal"></ion-datetime-button>
               <ion-modal [keepContentsMounted]="true">
                 <ng-template>
@@ -108,7 +108,7 @@
                     presentation="time"
                     [showDefaultButtons]="true"
                     doneText="OK"
-                    cancelText="Annulla">
+                    [cancelText]="'common.buttons.cancel' | transloco">
                   </ion-datetime>
                 </ng-template>
               </ion-modal>
@@ -118,7 +118,7 @@
           <!-- Dalle -->
           <ion-col>
             <ion-item>
-              <ion-label position="floating">Dalle</ion-label>
+              <ion-label position="floating">{{ 'attendance.components.editParOrarioDettaglioOrarioIntervalloHhdialog.dalle' | transloco }}</ion-label>
               <ion-datetime-button class="datetime-button-with-label" datetime="dalle-modal"></ion-datetime-button>
               <ion-modal [keepContentsMounted]="true">
                 <ng-template>
@@ -127,7 +127,7 @@
                     presentation="time"
                     [showDefaultButtons]="true"
                     doneText="OK"
-                    cancelText="Annulla" (ionChange)="updateDateTimeDalle($event)">
+                    [cancelText]="'common.buttons.cancel' | transloco" (ionChange)="updateDateTimeDalle($event)">
                   </ion-datetime>
                 </ng-template>
               </ion-modal>
@@ -137,7 +137,7 @@
           <!-- Dalle Limite DX -->
           <ion-col>
             <ion-item>
-              <ion-label position="floating">Limite DX</ion-label>
+              <ion-label position="floating">{{ 'attendance.components.editParOrarioDettaglioOrarioIntervalloHhdialog.limiteDX' | transloco }}</ion-label>
               <ion-datetime-button class="datetime-button-with-label" datetime="dalle-limite-dx-modal"></ion-datetime-button>
               <ion-modal [keepContentsMounted]="true">
                 <ng-template>
@@ -146,7 +146,7 @@
                     presentation="time"
                     [showDefaultButtons]="true"
                     doneText="OK"
-                    cancelText="Annulla">
+                    [cancelText]="'common.buttons.cancel' | transloco">
                   </ion-datetime>
                 </ng-template>
               </ion-modal>
@@ -158,7 +158,7 @@
         <ion-row class="ion-align-items-center">
           <ion-col>
             <ion-item>
-              <ion-label position="floating">Tipo arrotondamento</ion-label>
+              <ion-label position="floating">{{ 'attendance.components.editParOrarioDettaglioOrarioIntervalloHhdialog.tipoArrotondamento' | transloco }}</ion-label>
               <ion-select formControlName="dalle_Arrotondamento" interface="popover">
                 <ion-select-option [value]="timeRoundIntervalEnum.Min1">1 Min</ion-select-option>
                 <ion-select-option [value]="timeRoundIntervalEnum.Min5">5 Min</ion-select-option>
@@ -169,14 +169,14 @@
             </ion-item>
             @if (_editForm.get('dalle_Arrotondamento')?.hasError('required') && _editForm.get('dalle_Arrotondamento')?.touched) {
               <ion-note color="danger">
-                Il tipo arrotondamento è obbligatorio.
+                {{ 'attendance.components.editParOrarioDettaglioOrarioIntervalloHhdialog.tipoArrotondamentoObbligatorio' | transloco }}
               </ion-note>
             }
           </ion-col>
 
           <ion-col>
             <ion-item>
-              <ion-label position="floating">Segno arrotondamento</ion-label>
+              <ion-label position="floating">{{ 'attendance.components.editParOrarioDettaglioOrarioIntervalloHhdialog.segnoArrotondamento' | transloco }}</ion-label>
               <ion-select formControlName="dalle_Arrotondamento_Verso" interface="popover">
                 <ion-select-option [value]="roundDirectionEnum.Up">+</ion-select-option>
                 <ion-select-option [value]="roundDirectionEnum.Down">-</ion-select-option>
@@ -184,7 +184,7 @@
             </ion-item>
             @if (_editForm.get('dalle_Arrotondamento_Verso')?.hasError('required') && _editForm.get('dalle_Arrotondamento_Verso')?.touched) {
               <ion-note color="danger">
-                Il segno arrotondamento è obbligatorio.
+                {{ 'attendance.components.editParOrarioDettaglioOrarioIntervalloHhdialog.segnoArrotondamentoObbligatorio' | transloco }}
               </ion-note>
             }
           </ion-col>
@@ -194,7 +194,7 @@
         <ion-row class="ion-align-items-center">
           <ion-col>
             <ion-item>
-              <ion-toggle formControlName="dalle_Use_4_Match">Usa x Match</ion-toggle>
+              <ion-toggle formControlName="dalle_Use_4_Match">{{ 'attendance.components.editParOrarioDettaglioOrarioIntervalloHhdialog.usaPerMatch' | transloco }}</ion-toggle>
             </ion-item>
           </ion-col>
         </ion-row>
@@ -211,7 +211,7 @@
           <!-- Alle Limite SX -->
           <ion-col>
             <ion-item>
-              <ion-label position="floating">Limite SX</ion-label>
+              <ion-label position="floating">{{ 'attendance.components.editParOrarioDettaglioOrarioIntervalloHhdialog.limiteSX' | transloco }}</ion-label>
               <ion-datetime-button class="datetime-button-with-label" datetime="alle-limite-sx-modal"></ion-datetime-button>
               <ion-modal [keepContentsMounted]="true">
                 <ng-template>
@@ -220,7 +220,7 @@
                     presentation="time"
                     [showDefaultButtons]="true"
                     doneText="OK"
-                    cancelText="Annulla">
+                    [cancelText]="'common.buttons.cancel' | transloco">
                   </ion-datetime>
                 </ng-template>
               </ion-modal>
@@ -230,7 +230,7 @@
           <!-- alle -->
           <ion-col>
             <ion-item>
-              <ion-label position="floating">Alle</ion-label>
+              <ion-label position="floating">{{ 'attendance.components.editParOrarioDettaglioOrarioIntervalloHhdialog.alle' | transloco }}</ion-label>
               <ion-datetime-button class="datetime-button-with-label" datetime="alle-modal"></ion-datetime-button>
               <ion-modal [keepContentsMounted]="true">
                 <ng-template>
@@ -239,7 +239,7 @@
                     presentation="time"
                     [showDefaultButtons]="true"
                     doneText="OK"
-                    cancelText="Annulla" (ionChange)="updateDateTimeAlle($event)">
+                    [cancelText]="'common.buttons.cancel' | transloco" (ionChange)="updateDateTimeAlle($event)">
                   </ion-datetime>
                 </ng-template>
               </ion-modal>
@@ -249,7 +249,7 @@
           <!-- alle Limite DX -->
           <ion-col>
             <ion-item>
-              <ion-label position="floating">Limite DX</ion-label>
+              <ion-label position="floating">{{ 'attendance.components.editParOrarioDettaglioOrarioIntervalloHhdialog.limiteDX' | transloco }}</ion-label>
               <ion-datetime-button class="datetime-button-with-label" datetime="alle-limite-dx-modal"></ion-datetime-button>
               <ion-modal [keepContentsMounted]="true">
                 <ng-template>
@@ -258,7 +258,7 @@
                     presentation="time"
                     [showDefaultButtons]="true"
                     doneText="OK"
-                    cancelText="Annulla">
+                    [cancelText]="'common.buttons.cancel' | transloco">
                   </ion-datetime>
                 </ng-template>
               </ion-modal>
@@ -270,7 +270,7 @@
         <ion-row class="ion-align-items-center">
           <ion-col>
             <ion-item>
-              <ion-label position="floating">Tipo arrotondamento</ion-label>
+              <ion-label position="floating">{{ 'attendance.components.editParOrarioDettaglioOrarioIntervalloHhdialog.tipoArrotondamento' | transloco }}</ion-label>
               <ion-select formControlName="alle_Arrotondamento" interface="popover">
                 <ion-select-option [value]="timeRoundIntervalEnum.Min1">1 Min</ion-select-option>
                 <ion-select-option [value]="timeRoundIntervalEnum.Min5">5 Min</ion-select-option>
@@ -281,14 +281,14 @@
             </ion-item>
             @if (_editForm.get('alle_Arrotondamento')?.hasError('required') && _editForm.get('alle_Arrotondamento')?.touched) {
               <ion-note color="danger">
-                Il tipo arrotondamento è obbligatorio.
+                {{ 'attendance.components.editParOrarioDettaglioOrarioIntervalloHhdialog.tipoArrotondamentoObbligatorio' | transloco }}
               </ion-note>
             }
           </ion-col>
 
           <ion-col>
             <ion-item>
-              <ion-label position="floating">Segno arrotondamento</ion-label>
+              <ion-label position="floating">{{ 'attendance.components.editParOrarioDettaglioOrarioIntervalloHhdialog.segnoArrotondamento' | transloco }}</ion-label>
               <ion-select formControlName="alle_Arrotondamento_Verso" interface="popover">
                 <ion-select-option [value]="roundDirectionEnum.Up">+</ion-select-option>
                 <ion-select-option [value]="roundDirectionEnum.Down">-</ion-select-option>
@@ -296,7 +296,7 @@
             </ion-item>
             @if (_editForm.get('alle_Arrotondamento_Verso')?.hasError('required') && _editForm.get('alle_Arrotondamento_Verso')?.touched) {
               <ion-note color="danger">
-                Il segno arrotondamento è obbligatorio.
+                {{ 'attendance.components.editParOrarioDettaglioOrarioIntervalloHhdialog.segnoArrotondamentoObbligatorio' | transloco }}
               </ion-note>
             }
           </ion-col>
@@ -306,7 +306,7 @@
         <ion-row class="ion-align-items-center">
           <ion-col>
             <ion-item>
-              <ion-toggle formControlName="alle_Use_4_Match">Usa x Match</ion-toggle>
+              <ion-toggle formControlName="alle_Use_4_Match">{{ 'attendance.components.editParOrarioDettaglioOrarioIntervalloHhdialog.usaPerMatch' | transloco }}</ion-toggle>
             </ion-item>
           </ion-col>
         </ion-row>

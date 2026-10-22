@@ -18,6 +18,7 @@ import { StatoRichiestaShortTextPipe } from '../../../shared/pipe/GestionePresen
 import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
 import { TimeSheetService } from '../../../Utility/GestionePresenze/time-sheet.service';
 import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
+import { TranslocoService } from '@jsverse/transloco';
 
 
 
@@ -34,15 +35,7 @@ export class RequestListAdminPageComponent {
   public title!: string;
   public searchText!: string;
   public dip_GG_RichiestaList: Dip_GG_RichiestaModel[] | null = null;
-  public readonly columns: NvxListColumn<Dip_GG_RichiestaModel>[] = [
-    { key: 'cognome', title: 'Cognome', value: x => this.cognome(x) },
-    { key: 'nome', title: 'Nome', value: x => this.nome(x) },
-    { key: 'data', title: 'Dal' },
-    { key: 'dataA', title: 'Al', value: x => this.getDataA(x) },
-    { key: 'richiestaTipo', title: 'Tipo', value: x => this.tipoRichiestaToLongText.transform(x.richiestaTipo) },
-    { key: 'dati', title: 'Dettaglio', value: x => this.getDati(x), sortable: false },
-    { key: 'stato', title: 'Stato', value: x => this.timeSheetService.get_StatoRichiesta_Approval_text(x) },
-  ];
+  public readonly columns: NvxListColumn<Dip_GG_RichiestaModel>[];
   public actions: NvxListAction<Dip_GG_RichiestaModel>[] = [];
   private readonly tipoRichiestaToLongText = new TipoRichiestaToLongTextPipe();
   public btnApprova: ButtonItem;
@@ -65,9 +58,19 @@ export class RequestListAdminPageComponent {
     //private monthNavigatorService: MonthNavigatorService,
     private userInterfaceService: UserInterfaceService,
     private dipGGTimbraturaUtilityService: TimeSheetUtilityService,
-    private userNavigationService: UserNavigationService) {
+    private userNavigationService: UserNavigationService,
+    private transloco: TranslocoService) {
 
-    this.title = 'Richieste';
+    this.title = this.transloco.translate('attendance.pages.requestListAdmin.title');
+    this.columns = [
+      { key: 'cognome', title: this.transloco.translate('attendance.pages.requestListAdmin.colCognome'), value: x => this.cognome(x) },
+      { key: 'nome', title: this.transloco.translate('attendance.pages.requestListAdmin.colNome'), value: x => this.nome(x) },
+      { key: 'data', title: this.transloco.translate('attendance.pages.requestListAdmin.colDal') },
+      { key: 'dataA', title: this.transloco.translate('attendance.pages.requestListAdmin.colAl'), value: x => this.getDataA(x) },
+      { key: 'richiestaTipo', title: this.transloco.translate('attendance.pages.requestListAdmin.colTipo'), value: x => this.tipoRichiestaToLongText.transform(x.richiestaTipo) },
+      { key: 'dati', title: this.transloco.translate('attendance.pages.requestListAdmin.colDettaglio'), value: x => this.getDati(x), sortable: false },
+      { key: 'stato', title: this.transloco.translate('attendance.pages.requestListAdmin.colStato'), value: x => this.timeSheetService.get_StatoRichiesta_Approval_text(x) },
+    ];
     this.btnApprova = userInterfaceService.Btn_Approva;
     this.btnApprova.event = this.handleButtonApprovaClick;
 
@@ -110,7 +113,7 @@ export class RequestListAdminPageComponent {
 
   handleButtonApprovaClick = async (item: any) => {
 
-    const result = await this.collectionDialogService.ConfirmCancelDialog('Confermi l\' approvazione della richiesta?');
+    const result = await this.collectionDialogService.ConfirmCancelDialog(this.transloco.translate('attendance.pages.requestListAdmin.confermaApprovazione'));
     if (result) {
       this.sendStato(item, StatoRichiesta.Approvata);
     }
@@ -119,7 +122,7 @@ export class RequestListAdminPageComponent {
   }
   handleButtonRifiutaClick = async (item: any) => {
     
-    const result = await this.collectionDialogService.ConfirmCancelDialog('Confermi il rifiuto della richiesta?');
+    const result = await this.collectionDialogService.ConfirmCancelDialog(this.transloco.translate('attendance.pages.requestListAdmin.confermaRifiuto'));
     if (result) {
       this.sendStato(item, StatoRichiesta.Rifiutata);
     }

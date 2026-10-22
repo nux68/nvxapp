@@ -1,3 +1,4 @@
+using nvxapp.server.data.Localization;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -122,7 +123,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.My_templat
                 }
                 else
                 {
-                    retVal.AddMessage($"Elemento con Id {model.Data.Id} non trovato.", MessageType.Warning);
+                    retVal.AddMessage(AttendanceTrackingMessages.Get("ItemWithIdNotFound", model.Data.Id), MessageType.Warning);
                 }
                 await Task.Delay(DelayAsyncMethod);
                 return retVal;

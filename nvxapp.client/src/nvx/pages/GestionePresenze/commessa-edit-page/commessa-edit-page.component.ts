@@ -25,6 +25,7 @@ import { Az_SubCommessaSediRepartoModel4EditModel } from '../../../ClientServer-
 import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
 import { AzSubCommessaService } from '../../../ClientServer-Service/GestionePresenze/Az_SubCommessa/az-subcommessa.service';
 import { Az_SubCommessa_GetCompatibili_InModel, Az_SubCommessa_GetCompatibili_OutModel } from '../../../ClientServer-Service/GestionePresenze/Az_SubCommessa/Models/az-subcommessa-model';
+import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
   selector: 'app-commessa-edit-page',
@@ -68,7 +69,8 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
     private modalCtrl: ModalController,
     private azSubCommessaService: AzSubCommessaService,
     private toastCtrl: ToastController,
-    private collectionDialogService: CollectionDialogService) {
+    private collectionDialogService: CollectionDialogService,
+    private transloco: TranslocoService) {
     super(navCtrl, userInterfaceService, fb);
 
     this.btnDeleteReparto = userInterfaceService.Btn_Cancella;
@@ -106,7 +108,7 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
     this.fabMenuService.fabMenuItem = [];
   }
 
-  get Title(): string { return 'Commessa'; }
+  get Title(): string { return this.transloco.translate('attendance.pages.commessaEdit.title'); }
 
   LoadData = (): Observable<Az_CommessaGetOutModel | null> => {
     const state = history.state;
@@ -334,7 +336,7 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
 
   async Az_SubCommessaAdd() {
 
-    const result = await this.collectionDialogService.ConfirmCancelDialog('Confermi l\'inserimento di una nuova sub commessa');
+    const result = await this.collectionDialogService.ConfirmCancelDialog(this.transloco.translate('attendance.pages.commessaEdit.confirmAddSubCommessa'));
 
     if (result) {
 
@@ -349,7 +351,7 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
       // Crea la nuova subcommessa con valori di default
       const nuovaSub: any = {
         id: newId,
-        descrizione: 'Nuova sub commessa',
+        descrizione: this.transloco.translate('attendance.pages.commessaEdit.nuovaSubCommessa'),
         data: this.stringHelperService.Date_To_S_ddmmyyyy(now),
         dataA: this.stringHelperService.Date_To_S_ddmmyyyy(new Date(now.getFullYear(), 11, 31)),
         default: false,
@@ -380,7 +382,7 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
 
     if (this.idxCurrCommessa !== -1) {
 
-      const result = await this.collectionDialogService.ConfirmCancelDialog('Confermi la cancellazione sub commessa');
+      const result = await this.collectionDialogService.ConfirmCancelDialog(this.transloco.translate('attendance.pages.commessaEdit.confirmDeleteSubCommessa'));
       if (result) {
 
         if (!this._editModel.az_SubCommessa[this.idxCurrCommessa].default) {
@@ -486,7 +488,7 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
       utenti.forEach(x => x.checked = false);
 
       if (reparti.length > 0 || utenti.length > 0)
-        this.Toast(`Non più compatibili con le attività rimaste, scollegati: ${reparti.length} reparti, ${utenti.length} utenti`);
+        this.Toast(this.transloco.translate('attendance.pages.commessaEdit.toastScollegati', { reparti: reparti.length, utenti: utenti.length }));
     } catch (error) {
       console.error('Errore durante la chiamata API:', error);
     }
@@ -540,7 +542,7 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
   Az_SubCommessaUser_HandleButtonDelete = async  (item: any) => {
     
 
-    const result = await this.collectionDialogService.ConfirmCancelDialog('Vuoi scollegare l\'utente?');
+    const result = await this.collectionDialogService.ConfirmCancelDialog(this.transloco.translate('attendance.pages.commessaEdit.confirmUnlinkUser'));
     if (result) {
       this.Az_SubCommessaUser_SetCheck(item.idAspNetUsers, false);
     }
@@ -628,7 +630,7 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
 
   Az_SediReparto_HandleButtonDelete = async (item: any) => {
 
-    const result = await this.collectionDialogService.ConfirmCancelDialog('Vuoi scollegare il reparto?');
+    const result = await this.collectionDialogService.ConfirmCancelDialog(this.transloco.translate('attendance.pages.commessaEdit.confirmUnlinkReparto'));
     if (result)
     {
       this.Az_SediReparto_SetCheck(item.idAz_SediReparto, false);
@@ -716,7 +718,7 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
 
   Az_SubCommessaAttivita_HandleButtonDelete = async (item: any) => {
 
-    const result = await this.collectionDialogService.ConfirmCancelDialog('Vuoi scollegare l\'attività? I reparti e gli utenti non più compatibili verranno scollegati.');
+    const result = await this.collectionDialogService.ConfirmCancelDialog(this.transloco.translate('attendance.pages.commessaEdit.confirmUnlinkAttivita'));
     if (result) {
       const idPar_Attivita_Prima = this.getIdPar_Attivita_Collegate();
       this.Az_SubCommessaAttivita_SetCheck(item.idPar_Attivita, false);

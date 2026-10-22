@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using nvxapp.server.data.Localization;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
@@ -80,7 +81,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Not
                 var retVal = new Dip_GG_NotaSpesa_Get4Richiesta_OutModel();
 
                 var richiesta = _dip_GG_RichiestaRepository.FindAll(x => x.Id == model.Data.IdDip_GG_Richiesta).FirstOrDefault()
-                                ?? throw new Exception("Richiesta non trovata.");
+                                ?? throw new UserMessageException(AttendanceTrackingMessages.Get("RequestNotFound"));
                 await VerificaAccesso(richiesta.IdDip_RapportoLavoro);
 
                 var spese = _dip_GG_NotaSpesaRepository.FindAll(x => x.IdDip_GG_Richiesta == richiesta.Id).OrderBy(x => x.Data).ThenBy(x => x.Id).ToList();
@@ -103,7 +104,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Not
                 if (!await HaRuolo("CompanyPowerAdmin"))
                 {
                     if (!await HaRuolo("CompanyAdmin"))
-                        throw new Exception("Esame delle note spese riservato agli amministratori dell'azienda.");
+                        throw new UserMessageException(AttendanceTrackingMessages.Get("ExpenseReviewAdminsOnly"));
                     var dipendentiAmministrati = DipendentiAmministrati(this.CurrentUserId);
                     usersId = usersId.Where(u => dipendentiAmministrati.Contains(u)).ToList();
                 }
@@ -139,7 +140,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Not
                 var retVal = new Dip_GG_NotaSpesa_Allegato_Get_OutModel();
 
                 var allegato = _dip_GG_NotaSpesa_AllegatoRepository.FindAll(x => x.Id == model.Data.Id).FirstOrDefault()
-                               ?? throw new Exception("Allegato non trovato.");
+                               ?? throw new UserMessageException(AttendanceTrackingMessages.Get("AttachmentNotFound"));
                 var spesa = _dip_GG_NotaSpesaRepository.FindAll(x => x.Id == allegato.IdDip_GG_NotaSpesa).First();
                 await VerificaAccesso(spesa.IdDip_RapportoLavoro);
 
@@ -160,7 +161,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Not
             var anagrafica = _dip_AnagraficaRepository.FindAll(a => a.IdAspNetUsers == this.CurrentUserId).FirstOrDefault();
             bool proprio = anagrafica != null && _dip_RapportoLavoroRepository.FindAll(r => r.Id == idDip_RapportoLavoro && r.IdDip_Anagrafica == anagrafica.Id).Any();
             if (!proprio)
-                throw new Exception("Nota spese non accessibile.");
+                throw new UserMessageException(AttendanceTrackingMessages.Get("ExpenseReportNotAccessible"));
         }
 
         // dipendenti dei reparti in cui l'utente e' amministratore (come i reparti di Get4Admin)
@@ -224,42 +225,42 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Not
         public static string? ValidaNotaSpesa(Dip_GG_Richiesta_Body_NotaSpesa? nota, ICollection<int> tipiSpesaAzienda)
         {
             if (nota?.Spese == null || nota.Spese.Count == 0)
-                return "La nota spese non contiene spese.";
+                return AttendanceTrackingMessages.Get("ExpenseReportEmpty");
             if ((nota.Descrizione ?? string.Empty).Length > 200)
-                return "La descrizione della nota spese supera i 200 caratteri.";
+                return AttendanceTrackingMessages.Get("ExpenseReportDescriptionTooLong");
 
             long totaleAllegati = 0;
             foreach (var spesa in nota.Spese)
             {
                 if (spesa.Importo <= 0 || spesa.Importo > 99999999)
-                    return $"Importo non valido nella spesa del {spesa.Data:dd/MM/yyyy}.";
+                    return AttendanceTrackingMessages.Get("ExpenseInvalidAmount", spesa.Data);
                 if (!tipiSpesaAzienda.Contains(spesa.IdPar_TipoSpesa))
-                    return $"Tipo di spesa non valido nella spesa del {spesa.Data:dd/MM/yyyy}.";
+                    return AttendanceTrackingMessages.Get("ExpenseInvalidType", spesa.Data);
                 if ((spesa.Descrizione ?? string.Empty).Length > 200)
-                    return $"La descrizione della spesa del {spesa.Data:dd/MM/yyyy} supera i 200 caratteri.";
+                    return AttendanceTrackingMessages.Get("ExpenseDescriptionTooLong", spesa.Data);
 
                 var allegati = spesa.Allegati ?? new List<Dip_GG_Richiesta_Body_NotaSpesa_Allegato>();
                 if (allegati.Count > AllegatiMaxPerSpesa)
-                    return $"Al massimo {AllegatiMaxPerSpesa} allegati per spesa.";
+                    return AttendanceTrackingMessages.Get("ExpenseTooManyAttachments", AllegatiMaxPerSpesa);
                 foreach (var allegato in allegati)
                 {
                     // allegato gia' salvato (modifica della nota): si tiene com'e', lo controlla chi aggiorna
                     if (allegato.Id != null && allegato.Id > 0)
                         continue;
                     if (!AllegatoTipiAmmessi.Contains((allegato.ContentType ?? string.Empty).ToLowerInvariant()))
-                        return $"Allegato '{allegato.NomeFile}': sono ammessi solo PDF e immagini.";
+                        return AttendanceTrackingMessages.Get("AttachmentTypeNotAllowed", allegato.NomeFile);
                     byte[] contenuto;
                     try { contenuto = Convert.FromBase64String(allegato.Contenuto ?? string.Empty); }
-                    catch { return $"Allegato '{allegato.NomeFile}' non leggibile."; }
+                    catch { return AttendanceTrackingMessages.Get("AttachmentUnreadable", allegato.NomeFile); }
                     if (contenuto.Length == 0)
-                        return $"Allegato '{allegato.NomeFile}' vuoto.";
+                        return AttendanceTrackingMessages.Get("AttachmentEmpty", allegato.NomeFile);
                     if (contenuto.Length > AllegatoMaxByte)
-                        return $"Allegato '{allegato.NomeFile}' oltre i {AllegatoMaxByte / (1024 * 1024)} MB.";
+                        return AttendanceTrackingMessages.Get("AttachmentTooLarge", allegato.NomeFile, AllegatoMaxByte / (1024 * 1024));
                     totaleAllegati += contenuto.Length;
                 }
             }
             if (totaleAllegati > AllegatiMaxByteRichiesta)
-                return $"Allegati della nota spese oltre i {AllegatiMaxByteRichiesta / (1024 * 1024)} MB complessivi.";
+                return AttendanceTrackingMessages.Get("ExpenseReportAttachmentsTooLarge", AllegatiMaxByteRichiesta / (1024 * 1024));
 
             return null;
         }

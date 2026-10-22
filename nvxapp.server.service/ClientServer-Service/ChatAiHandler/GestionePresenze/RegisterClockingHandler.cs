@@ -1,3 +1,4 @@
+using nvxapp.server.data.Localization;
 using nvxapp.server.data.Entities.Tenant;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_AnagraficaService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_AnagraficaService.Models;
@@ -38,12 +39,13 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
             {
                 Name = "RegisterClocking",
                 Usable4Role = new List<string> { "CompanyPowerAdmin" },
-                DisplayName = "Timbratura",
-                Description = @"registra una timbratura di entrata o uscita.",
+                DisplayName = AttendanceTrackingMessages.Get("ChatRegisterClockingDisplayName"),
+                Description = AttendanceTrackingMessages.Get("ChatRegisterClockingDescription"),
                 Keywords = new() { "timbratura", "timbra","timbrare" ,
                                        "entrata","entra", "entrato", 
                                        "uscita", "esce", "uscito",
-                                       "orario", "clocking"
+                                       "orario", "clocking",
+                                       "clock in", "clock out", "punch in", "punch out", "check in", "check out"
                                     },
                 Slots = BuildSlots(
                 EmployeeNameSlot,
@@ -53,8 +55,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                     Type = "HH:mm",
                     Required = true,
                     PromptDescription =TimePromptDescription,
-                    Question = "A che orario? (es. 09:00)",
-                    Label = "Orario",
+                    Question = AttendanceTrackingMessages.Get("ChatRegisterClockingTimeQuestion"),
+                    Label = AttendanceTrackingMessages.Get("ChatTimeLabel"),
                     Validator = v =>
                     {
                         // 1. Controllo formato base HH:mm tramite TimeOnly.TryParse
@@ -64,7 +66,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                         // 2. Se non è valido, restituisco un errore dettagliato
                         return SlotValidationResult.Failed(
                             SlotValidationError.InvalidFormat,
-                            $"'{v}' non è un orario valido. Usa il formato HH:mm (es. 09:00).",
+                            AttendanceTrackingMessages.Get("ChatInvalidTime", v),
                             "time"
                         );
                     },
@@ -75,7 +77,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                         {
                             "uno","due","tre","quattro","cinque","sei","sette","otto","nove","dieci",
                             "undici","dodici","tredici","quattordici","quindici","sedici","diciassette",
-                            "diciotto","diciannove","venti","ventuno","ventidue","ventitre"
+                            "diciotto","diciannove","venti","ventuno","ventidue","ventitre",
+                            "one","two","three","four","five","six","seven","eight","nine","ten",
+                            "eleven","twelve","noon","midnight"
                         };
                         var retVal = numericWords.Any(w => msg.Contains(w, StringComparison.OrdinalIgnoreCase));
                         return retVal;
@@ -90,8 +94,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                     
                     PromptDescription=DatePromptDescription,
 
-                    Question = "Per quale data?",
-                    Label = "Data",
+                    Question = AttendanceTrackingMessages.Get("ChatDateQuestion"),
+                    Label = AttendanceTrackingMessages.Get("ChatDateLabel"),
                     Validator = v =>
                     {
                         // Prova formato ISO
@@ -105,16 +109,13 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
 
                         return SlotValidationResult.Failed(
                             SlotValidationError.InvalidFormat,
-                            $"'{v}' non è una data valida. Usa il formato gg/mm/aaaa.",
+                            AttendanceTrackingMessages.Get("ChatInvalidDate", v),
                             "date"
                         );
                     },
                     HasRelevantContent = msg =>
                     {
-                        var Words = new[]
-                        {
-                            "oggi","domani","ieri"
-                        };
+                        var Words = ChatSlotWords.RelativeDays;
                         var retVal = Words.Any(w => msg.Contains(w, StringComparison.OrdinalIgnoreCase));
                         return retVal;
                     }
@@ -126,8 +127,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                     Required = false,
                     Default = "IN",
                     PromptDescription = "valore IN oppure OUT. Se dice 'entrata/entra/inizia/inizio' restituisci IN, se dice 'uscita/esce/fine/finisce' restituisci OUT.",
-                    Question = "Entrata o uscita?",
-                    Label = "Tipo",
+                    Question = AttendanceTrackingMessages.Get("ChatRegisterClockingDirectionQuestion"),
+                    Label = AttendanceTrackingMessages.Get("ChatRegisterClockingDirectionLabel"),
                     //Validator = v =>
                     //{
                     //        return null;
@@ -138,7 +139,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                         {
                             "IN","OUT",
                             "entrata","entra","entrato","entr",
-                            "uscita","esce","uscito","usc"
+                            "uscita","esce","uscito","usc",
+                            "entry","enter","exit","leave","clock in","clock out"
                         };
                         var retVal = Words.Any(w => msg.Contains(w, StringComparison.OrdinalIgnoreCase));
                         return retVal;
@@ -157,7 +159,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
             var time = slots.GetValueOrDefault("time", "-");
             var date = slots.GetValueOrDefault("date", DateTime.Today.ToString("dd/MM/yyyy"));
             var direction = slots.GetValueOrDefault("direction", "IN");
-            var directionLabel = direction.Equals("OUT", StringComparison.OrdinalIgnoreCase) ? "uscita" : "entrata";
+            var directionLabel = direction.Equals("OUT", StringComparison.OrdinalIgnoreCase)
+                ? AttendanceTrackingMessages.Get("ChatClockingDirectionOut")
+                : AttendanceTrackingMessages.Get("ChatClockingDirectionIn");
 
 
             if (!string.IsNullOrEmpty(employeeName))
@@ -165,14 +169,14 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                 Dip_AnagraficaModel? Dip_Anagrafica = Get_Dip_Anagrafica(employeeName);
                 if (Dip_Anagrafica == null)
                     return Task.FromResult(CommandResult.Fail(
-                        $"Dipendente '{employeeName}' non trovato o nome non completo. Nessuna timbratura registrata."));
+                        AttendanceTrackingMessages.Get("ChatRegisterClockingEmployeeNotFound", employeeName)));
 
                 // Costruisce il DateTime di timbratura combinando date + time dagli slot.
                     // date può essere "oggi" (default) oppure "yyyy-MM-dd"; time è sempre "HH:mm".
                     var dateSlot = slots.GetValueOrDefault("date", "oggi");
                     var timeSlot = slots.GetValueOrDefault("time", "00:00");
 
-                    DateTime competenzaDate = dateSlot.Equals("oggi", StringComparison.OrdinalIgnoreCase)
+                    DateTime competenzaDate = ChatSlotWords.IsToday(dateSlot)
                         ? DateTime.Today
                         : (DateOnly.TryParse(dateSlot, out var parsedDate)
                             ? parsedDate.ToDateTime(TimeOnly.MinValue)
@@ -217,7 +221,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
 
 
             return Task.FromResult(CommandResult.Ok(
-                $"Timbratura di {directionLabel} registrata: {employeeName} alle {time} del {date}."));
+                AttendanceTrackingMessages.Get("ChatRegisterClockingDone", directionLabel, employeeName, time, date)));
         }
 
     }

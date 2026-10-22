@@ -29,7 +29,7 @@
         <ion-row>
           <ion-col>
             <ion-item>
-              <ion-label position="floating">Dal</ion-label>
+              <ion-label position="floating">{{ 'attendance.pages.exportCausali.dal' | transloco }}</ion-label>
               <ion-datetime-button class="datetime-button-with-label" datetime="dalle-limite-sx-modal"></ion-datetime-button>
               <ion-modal [keepContentsMounted]="true">
                 <ng-template>
@@ -39,7 +39,7 @@
                     [firstDayOfWeek]="1"
                     [showDefaultButtons]="true"
                     doneText="OK"
-                    cancelText="Annulla">
+                    [cancelText]="'common.buttons.cancel' | transloco">
                   </ion-datetime>
                 </ng-template>
               </ion-modal>
@@ -47,7 +47,7 @@
           </ion-col>
           <ion-col>
             <ion-item>
-              <ion-label position="floating">Al</ion-label>
+              <ion-label position="floating">{{ 'attendance.pages.exportCausali.al' | transloco }}</ion-label>
               <ion-datetime-button class="datetime-button-with-label" datetime="alle-limite-sx-modal"></ion-datetime-button>
               <ion-modal [keepContentsMounted]="true">
                 <ng-template>
@@ -57,7 +57,7 @@
                     [firstDayOfWeek]="1"
                     [showDefaultButtons]="true"
                     doneText="OK"
-                    cancelText="Annulla">
+                    [cancelText]="'common.buttons.cancel' | transloco">
                   </ion-datetime>
                 </ng-template>
               </ion-modal>
@@ -70,8 +70,8 @@
         <ion-row class="ion-align-items-center">
           <ion-col size="12" size-md="6">
             <ion-item>
-              <ion-label position="stacked">Tipo export</ion-label>
-              <ion-select formControlName="idPar_ExportCau" placeholder="Seleziona il modello">
+              <ion-label position="stacked">{{ 'attendance.pages.exportCausali.tipoExport' | transloco }}</ion-label>
+              <ion-select formControlName="idPar_ExportCau" [placeholder]="'attendance.pages.exportCausali.modelloPlaceholder' | transloco">
                 @for (par_Export of par_ExportCauList; track par_Export) {
                   <ion-select-option [value]="par_Export.id">
                     {{ par_Export.descrizione }}
@@ -81,7 +81,7 @@
             </ion-item>
             @if (_editForm.get('idPar_ExportCau')?.hasError('required') && _editForm.get('idPar_ExportCau')?.touched) {
               <ion-note color="danger">
-                Il modello è obbligatorio
+                {{ 'attendance.pages.exportCausali.modelloRequired' | transloco }}
               </ion-note>
             }
           </ion-col>

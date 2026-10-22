@@ -1,3 +1,4 @@
+using nvxapp.server.data.Localization;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_AnagraficaService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_AnagraficaService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_EngineService;
@@ -32,13 +33,15 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
             _intentDefinition = new IntentDefinition
             {
                 Name        = "CalcolaGiorno",
-                DisplayName = "Calcola presenze",
+                DisplayName = AttendanceTrackingMessages.Get("ChatCalcolaGiornoDisplayName"),
                 Usable4Role = new List<string> { "CompanyPowerAdmin" },
-                Description = "esegue il calcolo del foglio presenze per un dipendente in un intervallo di date (default: oggi).",
+                Description = AttendanceTrackingMessages.Get("ChatCalcolaGiornoDescription"),
                 Keywords    = new()
                 {
                     "calcola", "ricalcola", "calcola presenze", "ricalcola presenze",
-                    "calcola giorno", "ricalcola giorno", "calcola timesheet"
+                    "calcola giorno", "ricalcola giorno", "calcola timesheet",
+                    "calculate", "recalculate", "calculate attendance", "recalculate attendance",
+                    "calculate day", "recalculate day", "calculate timesheet"
                 },
                 Slots = BuildSlots(
                     EmployeeNameSlot,
@@ -49,8 +52,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                         Required           = false,
                         Default            = "",
                         PromptDescription  = "mese da calcolare nel formato MM/yyyy (es. 07/2025) oppure nome del mese con anno opzionale (es. luglio, luglio 2025)",
-                        Question           = "Vuoi calcolare un intero mese? (es. luglio 2025 oppure 07/2025 — lascia vuoto per usare le date)",
-                        Label              = "Mese",
+                        Question           = AttendanceTrackingMessages.Get("ChatCalcolaGiornoMonthQuestion"),
+                        Label              = AttendanceTrackingMessages.Get("ChatMonthLabel"),
                         HasRelevantContent = msg => MonthSlotHelper.TryParse(msg.Trim(), out _)
                     },
                     new()
@@ -60,21 +63,21 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                         Required           = false,
                         Default            = "oggi",
                         PromptDescription  = datePromptDescription,
-                        Question           = "Da quale data vuoi calcolare? (lascia vuoto per oggi)",
-                        Label              = "Dal",
+                        Question           = AttendanceTrackingMessages.Get("ChatCalcolaGiornoFromQuestion"),
+                        Label              = AttendanceTrackingMessages.Get("ChatFromLabel"),
                         Validator          = v =>
                         {
-                            if (string.IsNullOrWhiteSpace(v) || v.Equals("oggi", StringComparison.OrdinalIgnoreCase)) return null;
+                            if (string.IsNullOrWhiteSpace(v) || ChatSlotWords.IsToday(v)) return null;
                             if (DateOnly.TryParseExact(v, "yyyy-MM-dd", out _)) return null;
                             if (DateOnly.TryParseExact(v, "dd/MM/yyyy",  out _)) return null;
                             return SlotValidationResult.Failed(
                                 SlotValidationError.InvalidFormat,
-                                $"'{v}' non è una data valida. Usa il formato gg/mm/aaaa.",
+                                AttendanceTrackingMessages.Get("ChatInvalidDate", v),
                                 "dal");
                         },
                         HasRelevantContent = msg =>
                         {
-                            var words = new[] { "oggi", "domani", "ieri" };
+                            var words = ChatSlotWords.RelativeDays;
                             return words.Any(w => msg.Contains(w, StringComparison.OrdinalIgnoreCase));
                         }
                     },
@@ -85,21 +88,21 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                         Required           = false,
                         Default            = "oggi",
                         PromptDescription  = datePromptDescription,
-                        Question           = "Fino a quale data? (lascia vuoto per oggi)",
-                        Label              = "Al",
+                        Question           = AttendanceTrackingMessages.Get("ChatCalcolaGiornoToQuestion"),
+                        Label              = AttendanceTrackingMessages.Get("ChatToLabel"),
                         Validator          = v =>
                         {
-                            if (string.IsNullOrWhiteSpace(v) || v.Equals("oggi", StringComparison.OrdinalIgnoreCase)) return null;
+                            if (string.IsNullOrWhiteSpace(v) || ChatSlotWords.IsToday(v)) return null;
                             if (DateOnly.TryParseExact(v, "yyyy-MM-dd", out _)) return null;
                             if (DateOnly.TryParseExact(v, "dd/MM/yyyy",  out _)) return null;
                             return SlotValidationResult.Failed(
                                 SlotValidationError.InvalidFormat,
-                                $"'{v}' non è una data valida. Usa il formato gg/mm/aaaa.",
+                                AttendanceTrackingMessages.Get("ChatInvalidDate", v),
                                 "al");
                         },
                         HasRelevantContent = msg =>
                         {
-                            var words = new[] { "oggi", "domani", "ieri" };
+                            var words = ChatSlotWords.RelativeDays;
                             return words.Any(w => msg.Contains(w, StringComparison.OrdinalIgnoreCase));
                         }
                     }
@@ -120,15 +123,15 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
             Dip_AnagraficaModel? dipendente = Get_Dip_Anagrafica(employeeName);
             if (dipendente == null)
                 return CommandResult.Fail(
-                    $"Dipendente '{employeeName}' non trovato o nome non completo. Nessun calcolo eseguito.");
+                    AttendanceTrackingMessages.Get("ChatCalcolaGiornoEmployeeNotFound", employeeName));
 
             if (string.IsNullOrWhiteSpace(dipendente.IdAspNetUsers))
                 return CommandResult.Fail(
-                    $"Impossibile determinare l'utente di sistema per '{employeeName}'.");
+                    AttendanceTrackingMessages.Get("ChatCalcolaGiornoNoSystemUser", employeeName));
 
             // --- Risolvi date ---
             DateTime ParseDate(string slot) =>
-                slot.Equals("oggi", StringComparison.OrdinalIgnoreCase)
+                ChatSlotWords.IsToday(slot)
                     ? DateTime.Today
                     : DateOnly.TryParseExact(slot, "yyyy-MM-dd", out var d1) ? d1.ToDateTime(TimeOnly.MinValue)
                     : DateOnly.TryParseExact(slot, "dd/MM/yyyy",  out var d2) ? d2.ToDateTime(TimeOnly.MinValue)
@@ -149,8 +152,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
 
                 // Se "al" non è stato indicato esplicitamente (rimasto al default "oggi")
                 // ma "dal" è un giorno specifico, il range collassa su quel singolo giorno.
-                var alEffettivo = alSlot.Equals("oggi", StringComparison.OrdinalIgnoreCase) &&
-                                  !dalSlot.Equals("oggi", StringComparison.OrdinalIgnoreCase)
+                var alEffettivo = ChatSlotWords.IsToday(alSlot) &&
+                                  !ChatSlotWords.IsToday(dalSlot)
                     ? dalSlot
                     : alSlot;
 
@@ -182,14 +185,14 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
 
             if (!result.Success)
                 return CommandResult.Fail(
-                    $"Errore durante il calcolo: {string.Join(", ", result.Messages.Select(m => m.Text))}");
+                    AttendanceTrackingMessages.Get("ChatCalcolaGiornoError", string.Join(", ", result.Messages.Select(m => m.Text))));
 
             var dalLabel = dal.ToString("dd/MM/yyyy");
             var alLabel  = al.ToString("dd/MM/yyyy");
             var periodo  = dalLabel == alLabel ? dalLabel : $"{dalLabel} - {alLabel}";
 
             return CommandResult.Ok(
-                $"Calcolo presenze completato per {employeeName} ({periodo}).");
+                AttendanceTrackingMessages.Get("ChatCalcolaGiornoDone", employeeName, periodo));
         }
     }
 }

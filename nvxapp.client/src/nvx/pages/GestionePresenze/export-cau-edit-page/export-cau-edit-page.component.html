@@ -12,47 +12,47 @@
         <form [formGroup]="_editForm">
           <ion-segment (ionChange)="segmentChanged($event)" [value]="currSection">
             <ion-segment-button value="{{SEGMENT_sez1}}" content-id="SEGMENT_sez1">
-              <ion-label>Generale</ion-label>
+              <ion-label>{{ 'attendance.pages.exportCauEdit.generale' | transloco }}</ion-label>
             </ion-segment-button>
             <ion-segment-button value="{{SEGMENT_sez2}}" content-id="SEGMENT_sez2">
-              <ion-label>Causali</ion-label>
+              <ion-label>{{ 'attendance.pages.exportCauEdit.causali' | transloco }}</ion-label>
             </ion-segment-button>
           </ion-segment>
           <div [hidden]="currSection!==SEGMENT_sez1">
             <br />
             <ion-item class="nvx-item-4-title">
-              <ion-label>Generale </ion-label>
+              <ion-label>{{ 'attendance.pages.exportCauEdit.generale' | transloco }} </ion-label>
             </ion-item>
             <ion-item>
-              <ion-label position="floating">Descrizione</ion-label>
+              <ion-label position="floating">{{ 'attendance.pages.exportCauEdit.descrizione' | transloco }}</ion-label>
               <ion-input type="text" formControlName="descrizione"></ion-input>
             </ion-item>
             @if (_editForm.get('descrizione')?.hasError('required') && _editForm.get('descrizione')?.touched) {
               <ion-note color="danger">
-                Descrizione è obbligatorio.
+                {{ 'attendance.pages.exportCauEdit.descrizioneObbligatoria' | transloco }}
               </ion-note>
             }
             @if (_editForm.get('descrizione')?.hasError('maxlength') && _editForm.get('descrizione')?.touched) {
               <ion-note color="danger">
-                Descrizione non può superare i 20 caratteri.
+                {{ 'attendance.pages.exportCauEdit.descrizioneMaxLength' | transloco }}
               </ion-note>
             }
             <ion-item>
-              <ion-label position="floating">Codice</ion-label>
+              <ion-label position="floating">{{ 'attendance.pages.exportCauEdit.codice' | transloco }}</ion-label>
               <ion-input type="text" formControlName="codice"></ion-input>
             </ion-item>
             @if (_editForm.get('codice')?.hasError('required') && _editForm.get('codice')?.touched) {
               <ion-note color="danger">
-                codice è obbligatorio.
+                {{ 'attendance.pages.exportCauEdit.codiceObbligatorio' | transloco }}
               </ion-note>
             }
             @if (_editForm.get('codice')?.hasError('maxlength') && _editForm.get('codice')?.touched) {
               <ion-note color="danger">
-                codice non può superare i 5 caratteri.
+                {{ 'attendance.pages.exportCauEdit.codiceMaxLength' | transloco }}
               </ion-note>
             }
             <ion-item>
-              <ion-label position="floating">Tipo file</ion-label>
+              <ion-label position="floating">{{ 'attendance.pages.exportCauEdit.tipoFile' | transloco }}</ion-label>
               <ion-select formControlName="tipoFile" interface="popover">
                 <ion-select-option [value]="par_Export_TipoFile.CSV">CSV</ion-select-option>
                 <ion-select-option [value]="par_Export_TipoFile.TXT">TXT</ion-select-option>
@@ -60,14 +60,14 @@
             </ion-item>
             @if (_editForm.get('tipoFile')?.hasError('required') && _editForm.get('tipoFile')?.touched) {
               <ion-note color="danger">
-                Il tipo file è obbligatorio.
+                {{ 'attendance.pages.exportCauEdit.tipoFileObbligatorio' | transloco }}
               </ion-note>
             }
           </div>
           <div [hidden]="currSection!==SEGMENT_sez2">
             <br />
             <ion-item class="nvx-item-4-title">
-              <ion-label>Causali </ion-label>
+              <ion-label>{{ 'attendance.pages.exportCauEdit.causali' | transloco }} </ion-label>
             </ion-item>
             @if (par_ExportCau_Causali) {
               <ion-grid>

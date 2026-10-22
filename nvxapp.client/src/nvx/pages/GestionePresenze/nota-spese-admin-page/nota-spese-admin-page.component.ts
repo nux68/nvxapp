@@ -11,6 +11,7 @@ import { TimeSheetService } from '../../../Utility/GestionePresenze/time-sheet.s
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
 import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
+import { TranslocoService } from '@jsverse/transloco';
 
 
 /** gruppo di spese con il suo totale (per dipendente o per tipo di spesa) */
@@ -36,7 +37,7 @@ interface GruppoSpese {
 })
 export class NotaSpeseAdminPageComponent implements OnDestroy {
 
-  public readonly title = 'Esame spese';
+  public readonly title: string;
 
   public year = new Date().getFullYear();
   public month = new Date().getMonth() + 1;
@@ -72,7 +73,9 @@ export class NotaSpeseAdminPageComponent implements OnDestroy {
               private collectionDialogService: CollectionDialogService,
               private parTipoSpesaService: ParTipoSpesaService,
               private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
-              userInterfaceService: UserInterfaceService) {
+              userInterfaceService: UserInterfaceService,
+              private transloco: TranslocoService) {
+    this.title = this.transloco.translate('attendance.pages.notaSpeseAdmin.title');
     this.btnApprova = userInterfaceService.Btn_Approva;
     this.btnApprova.event = () => this.decidi(true);
     this.btnRifiuta = userInterfaceService.Btn_Rifiuta;
@@ -223,8 +226,8 @@ export class NotaSpeseAdminPageComponent implements OnDestroy {
   public async decidi(approva: boolean): Promise<void> {
     if (!this.dettaglioRichiesta)
       return;
-    const cosa = this.dettaglioRevoca ? 'della revoca della nota spese' : 'della nota spese';
-    const conferma = await this.collectionDialogService.ConfirmCancelDialog(approva ? `Confermi l'approvazione ${cosa}?` : `Confermi il rifiuto ${cosa}?`);
+    const chiave = (approva ? 'confermaApprovazione' : 'confermaRifiuto') + (this.dettaglioRevoca ? 'Revoca' : '');
+    const conferma = await this.collectionDialogService.ConfirmCancelDialog(this.transloco.translate('attendance.pages.notaSpeseAdmin.' + chiave));
     if (!conferma)
       return;
 
@@ -243,9 +246,9 @@ export class NotaSpeseAdminPageComponent implements OnDestroy {
   /** colore dello stato della nota, tenendo conto della revoca */
   public statoNota(richiesta: Dip_GG_RichiestaModel): { testo: string | null, colore: string } {
     if (richiesta.revocaStato === StatoRichiesta.Approvata)
-      return { testo: 'Revocata', colore: 'dark' };
+      return { testo: this.transloco.translate('attendance.pages.notaSpeseAdmin.revocata'), colore: 'dark' };
     if (this.dettaglioRevoca)
-      return { testo: 'Revoca richiesta', colore: 'warning' };
+      return { testo: this.transloco.translate('attendance.pages.notaSpeseAdmin.revocaRichiesta'), colore: 'warning' };
     return { testo: null, colore: this.coloreStato(richiesta.richiestaStato) };
   }
 }

@@ -1,0 +1,1382 @@
+{
+  "attendance": {
+    "pages": {
+      "presentStaff": {
+        "title": "Personale presente"
+      },
+      "timeSheetPowerAdmin": {
+        "title": "Calendario HR",
+        "selectUser": "Seleziona un utente per visualizzare i dati",
+        "colDay": "Giorno",
+        "colClockings": "Timbrature",
+        "colJustifications": "Giustificativi",
+        "hoursTheoretical": "HH Teo",
+        "hoursWorked": "HH Lav",
+        "colExtra": "In più",
+        "colReasonCodes": "Causali",
+        "noClockings": "Nessuna timbratura",
+        "noJustifications": "Nessun giustificativo",
+        "noReasonCodes": "Nessuna causale",
+        "pendingReconciliation": "in attesa di quadratura",
+        "approveRequest": "Approva richiesta",
+        "rejectRequest": "Rifiuta richiesta",
+        "editReasonCode": "Modifica causale",
+        "deleteReasonCode": "Cancella causale",
+        "addReasonCode": "Aggiungi causale",
+        "editClocking": "Modifica timbratura",
+        "deleteClocking": "Cancella timbratura",
+        "addClocking": "Aggiungi timbratura",
+        "editJustification": "Modifica giustificativo",
+        "deleteJustification": "Cancella giustificativo",
+        "addJustification": "Aggiungi giustificativo",
+        "calcWholeMonth": "Calcola tutto il mese",
+        "justificationHeader": "Giustificativo : {{name}} {{date}}",
+        "clockingHeader": "Timbratura : {{type}} {{date}}",
+        "reasonCodeHeader": "Giorno : {{date}}",
+        "deleteReasonCodeDetail": "Cancella causale  :{{code}}   {{date}}  {{value}}",
+        "editReasonCodeDetail": "Modifica causale  :{{code}}   {{date}}  {{value}}",
+        "dayHeader": "Giorno {{day}}",
+        "calcDay": "Calcola {{day}}",
+        "calcToDay": "Calcola dal 01 al {{day}}",
+        "calcFromDay": "Calcola dal {{day}} al {{lastDay}}",
+        "addReasonCodeToDay": "Aggiungi causale al giorno {{day}}",
+        "addClockingToDay": "Aggiungi timbratura al giorno {{day}}",
+        "addJustificationToDay": "Aggiungi giustificativo al giorno {{day}}",
+        "outOfEmploymentNoMovements": "{{date}}: {{status}}, giorno fuori dal rapporto di lavoro. Non sono ammessi movimenti.",
+        "outOfEmploymentDeleteOnly": "Giorno fuori dal rapporto di lavoro: si può solo cancellare",
+        "noActiveEmployment": "Nessu rapporto di lavoro attivo per il {{date}}",
+        "confirmDeleteReasonCode": "Confermi la cancellazione della causale",
+        "confirmDeleteClocking": "Confermi la cancellazione della timbratura",
+        "confirmDeleteJustification": "Confermi la cancellazione del gistificativo"
+      },
+      "userDepartmentEdit": {
+        "title": "User Department Edit",
+        "segPersonalData": "Anagrafica",
+        "segOther": "Varie",
+        "segSkills": "Competenze",
+        "segEmployment": "Rapporto Lavoro (ID {{id}})",
+        "segGeneral": "Generale",
+        "segWorkSchedules": "Profili orari",
+        "segCounters": "Contatori",
+        "info": "Info",
+        "userName": "UserName",
+        "email": "Email",
+        "password": "Password",
+        "confirmPassword": "Conferma Password",
+        "role": "Ruolo",
+        "rolesAria": "Ruoli",
+        "surname": "Cognome",
+        "surnameRequired": "cognome è obbligatorio.",
+        "surnameMaxLength": "cognome non può superare i {{max}} caratteri.",
+        "name": "Nome",
+        "nameRequired": "nome è obbligatorio.",
+        "nameMaxLength": "nome non può superare i {{max}} caratteri.",
+        "disabled": "Disabilitato",
+        "disabledNote": "Le righe disabilitate non compaiono nelle liste, salvo \"mostra disabilitati\".",
+        "skillsNote": "Le competenze determinano le attività che il dipendente può svolgere. Senza competenze viene assegnata quella di default.",
+        "noSkills": "Nessuna competenza assegnata.",
+        "hireDate": "Data assunzione",
+        "dismissalDate": "Data licenziamento",
+        "setDate": "Imposta",
+        "dismissalBeforeHire": "La data di licenziamento è precedente alla data di assunzione.",
+        "contract": "Contratto",
+        "contractType": "Tipo contratto",
+        "fullTime": "Full-time",
+        "partTime": "Part-time",
+        "weeklyHours": "Ore settimanali contrattuali",
+        "weeklyHoursNote": "Base del limite del lavoro supplementare; se vuoto si usano le ore teoriche della settimana.",
+        "ccnl": "CCNL",
+        "overtimeAndAdditional": "Straordinario e supplementare",
+        "payInPayslip": "Pagamento in busta paga",
+        "hoursBank": "Accredito in banca ore",
+        "otherContent": "contenuto varie",
+        "year": "Anno",
+        "carryOver": "Riporto anno precedente",
+        "readFromYear": "Leggi dal {{year}}",
+        "monthlyAccrual": "Maturazione mensile",
+        "monthlyDetail": "Dettaglio mensile",
+        "noMonthInEmployment": "Nessun mese dell'anno rientra nel rapporto di lavoro.",
+        "colMonth": "Mese",
+        "colJustification": "Giustificativo",
+        "colPrev": "Prec.",
+        "colCurr": "Corr.",
+        "colEndOfMonth": "Fine mese",
+        "colEndShort": "Fine",
+        "colAccrued": "Mat.",
+        "colUsed": "God.",
+        "colBalance": "Saldo",
+        "confirmDeleteWorkSchedule": "Confermi la cancellazione del profilo orario",
+        "confirmDeleteSkill": "Confermi la cancellazione della competenza",
+        "replaceCarryOverConfirm": "Sostituire il riporto del {{year}} con i saldi di fine dicembre {{prevYear}}?"
+      },
+      "commessaEdit": {
+        "title": "Commessa",
+        "done": "Fatto",
+        "tabCommessa": "Commessa",
+        "tabSubCommesse": "Sub commesse",
+        "infoCommessa": "Info commessa",
+        "descrizione": "Descrizione",
+        "descrizioneRequired": "Descrizione è obbligatorio.",
+        "descrizioneMaxLength": "Descrizione non può superare i {{max}} caratteri.",
+        "cliente": "Cliente",
+        "selezionaCliente": "Seleziona cliente",
+        "clienteRequired": "Cliente è obbligatorio.",
+        "subCommessa": "Sub commessa",
+        "selezionaSubCommessa": "Seleziona la Sub Commessa",
+        "tabSubCommessa": "Sub Commessa",
+        "tabAttivita": "Attività",
+        "tabReparti": "Reparti",
+        "tabUtenti": "Utenti",
+        "infoSubCommessa": "Info sub commessa",
+        "descrizioneSubCommessa": "Descrizione subcommessa",
+        "dataInizio": "Data inizio",
+        "dataFine": "Data fine",
+        "attivitaCollegate": "Attività collegate alla commessa",
+        "colDescr": "Descr",
+        "repartiCollegati": "Reparti collegati alla commessa",
+        "repartiNote": "Si possono collegare solo i reparti in cui si svolge almeno una delle attività della sub commessa.",
+        "nonCompatibile": "Non compatibile",
+        "utentiCollegati": "Utenti collegati alla commessa",
+        "utentiNote": "Si possono collegare solo gli utenti con almeno una delle competenze richieste dalle attività della sub commessa.",
+        "confirmAddSubCommessa": "Confermi l'inserimento di una nuova sub commessa",
+        "nuovaSubCommessa": "Nuova sub commessa",
+        "confirmDeleteSubCommessa": "Confermi la cancellazione sub commessa",
+        "toastScollegati": "Non più compatibili con le attività rimaste, scollegati: {{reparti}} reparti, {{utenti}} utenti",
+        "confirmUnlinkUser": "Vuoi scollegare l'utente?",
+        "confirmUnlinkReparto": "Vuoi scollegare il reparto?",
+        "confirmUnlinkAttivita": "Vuoi scollegare l'attività? I reparti e gli utenti non più compatibili verranno scollegati."
+      },
+      "profiloOrarioEdit": {
+        "title": "Profilo Orario",
+        "confirmDeleteOrario": "Confermi la cancellazione dell  Orario",
+        "tabGenerale": "Generale",
+        "tabGiorni": "Giorni",
+        "tabStraordinario": "Straordinario",
+        "info": "Info",
+        "descrizione": "Descrizione",
+        "descrizioneRequired": "Descrizione è obbligatorio.",
+        "descrizioneMaxLength": "Descrizione non può superare i {{max}} caratteri.",
+        "codice": "Codice",
+        "codiceRequired": "codice è obbligatorio.",
+        "codiceMaxLength": "codice non può superare i {{max}} caratteri.",
+        "tipoProfilo": "Tipo Profilo",
+        "tipoSettimanale": "Settimanale",
+        "tipoTurno": "Turno",
+        "tipoProfiloRequired": "Il numero di tipoProfilo è obbligatorio.",
+        "numGiorniCicloValue": "Num. Giorni Ciclo ( {{value}} / {{max}} )",
+        "numGiorniCicloAria": "Num. Giorni Ciclo",
+        "numGiorniCicloRequired": "Num. Giorni Ciclo è obbligatorio.",
+        "orarioFestivo": "Orario festivo",
+        "selezionaOrario": "Seleziona l'orario",
+        "orarioRequired": "Orario è obbligatorio.",
+        "giustAssenzaIngiust": "Giustificativo assenza ingiustificata",
+        "selezionaGiustificativo": "Seleziona il giustificativo",
+        "giustificativoRequired": "Il giustificativo è obbligatorio.",
+        "oreInPiu": "Ore in più",
+        "eccedenzeAttive": "Calcola straordinario e supplementare",
+        "eccedenzeNote": "Le ore oltre il teorico (più o meno i giustificativi) diventano lavoro supplementare (part-time, fino alla soglia full-time) o straordinario (oltre la soglia). Se disattivato restano solo segnalate nel cartellino.",
+        "periodoConteggio": "Periodo di conteggio",
+        "conteggioGiornaliero": "Giornaliero",
+        "conteggioSettimanale": "Settimanale (lun-dom)",
+        "conteggioMensile": "Mensile",
+        "sogliaGiornalieraFT": "Soglia giornaliera full-time",
+        "sogliaSettimanaleFT": "Soglia settimanale full-time (ore)",
+        "supplLimitePerc": "Limite supplementare (% ore settimanali contrattuali)",
+        "eccArrotondamento": "Ore in più riconosciute a blocchi di",
+        "minuto1": "1 minuto",
+        "minuti": "{{n}} minuti",
+        "eccFranchigiaMin": "Franchigia giornaliera (minuti non riconosciuti)",
+        "assenzeContanoSoglia": "Ferie e permessi contano per la soglia",
+        "domenicaFestiva": "Domenica festiva",
+        "straoSoloAutorizzato": "Ore in più solo se autorizzate",
+        "straoSoloAutorizzatoNote": "Si riconoscono al massimo le ore autorizzate nel giorno con un giustificativo di autorizzazione approvato (es. AUTS, richiesto dal dipendente o inserito dall'HR). Le ore oltre restano visibili come \"non autorizzate\", senza causale.",
+        "notturnoDalle": "Notturno dalle",
+        "notturnoAlle": "alle",
+        "causali": "Causali",
+        "causaliNote": "Le causali facoltative, se vuote, usano la causale base dello straordinario o del supplementare.",
+        "selezionaCausale": "Seleziona la causale",
+        "causaleBase": "(causale base)",
+        "causaleRequired": "La causale è obbligatoria.",
+        "causaleStrao": "Straordinario (diurno)",
+        "causaleStraoNott": "Straordinario notturno",
+        "causaleStraoFest": "Straordinario festivo",
+        "causaleStraoFestNott": "Straordinario festivo notturno",
+        "causaleSuppl": "Supplementare (entro il limite)",
+        "causaleSupplEcc": "Supplementare oltre il limite",
+        "causaleEccOrd": "Ore eccedenti non straordinarie (full-time)",
+        "causaleBancaOre": "Accredito banca ore",
+        "giorniProfilo": "Giorni del profilo",
+        "giorno": "Giorno {{n}}",
+        "riposo": "Riposo",
+        "hhTeo": "HH Teo."
+      },
+      "departmentEdit": {
+        "title": "Reparti",
+        "tabGenerale": "Generale",
+        "tabAmministratori": "Administratori",
+        "tabAttivita": "Attività",
+        "tabUtenti": "Utenti",
+        "infoReparto": "Info reparto",
+        "descrizioneReparto": "Descrizione reparto",
+        "amministratoriTitle": "Amministratori reparto e approvatori richieste",
+        "colAdmin": "Admin",
+        "colCognome": "Cognome",
+        "colNome": "Nome",
+        "colApprovaRichieste": "Approva richieste",
+        "colOrdine": "Ordine",
+        "attivitaReparto": "Attività di reparto",
+        "colAbil": "Abil",
+        "colDescr": "Descr",
+        "utentiReparto": "Utenti che lavorano nel reparto",
+        "utentiNote": "Sono proposti solo gli utenti con almeno una delle competenze richieste dalle attività di reparto. Togliendo un'attività, gli utenti che non hanno più attività compatibili vengono scollegati.",
+        "nonCompatibile": "Non compatibile",
+        "colUser": "User",
+        "nessunUtenteCompatibile": "Nessun utente compatibile con le attività selezionate.",
+        "toastScollegati": "Scollegati dal reparto, non hanno le competenze per le attività rimaste: {{nomi}}"
+      },
+      "requestListUser": {
+        "title": "Richieste",
+        "columnDal": "Dal",
+        "columnAl": "Al",
+        "columnTipo": "Tipo",
+        "columnDettaglio": "Dettaglio",
+        "columnStato": "Stato",
+        "confirmDelete": "Confermi la cancellazione della richiesta?"
+      },
+      "companyCfg": {
+        "title": "Company cfg",
+        "tabApprovazioni": "Approvazioni",
+        "tabVarie": "Varie",
+        "modalitaApprovazione": "Modalità approvazione richieste",
+        "tipoApprovazione": "Tipo Approvazione",
+        "varie": "Varie",
+        "approvazioneSingolo": "Singolo amministratore",
+        "approvazioneTutti": "Tutti gli amministratori",
+        "approvazioneGerarchica": "Tutti gli amministratori gerarchicamente"
+      },
+      "timeSheetUser": {
+        "title": "Calendario",
+        "deleteRequest": "Cancella richiesta",
+        "deleteRevocation": "Cancella revoca",
+        "headerJustification": "Giustificativo : {{type}} {{date}}",
+        "headerClocking": "Timbratura : {{type}} {{date}}"
+      },
+      "timeSheetAdmin": {
+        "title": "Calendario",
+        "approveRequest": "Approva richiesta",
+        "rejectRequest": "Rifiuta richiesta",
+        "headerJustification": "Giustificativo : {{type}} {{date}}",
+        "headerClocking": "Timbratura : {{type}} {{date}}",
+        "outsideEmployment": "Giorno fuori dal rapporto di lavoro: la richiesta si può solo rifiutare"
+      },
+      "userDepartmentWizard": {
+        "title": "Nuovo Utente",
+        "step": "Step {{current}} di {{total}}",
+        "userInfo": "Info Utente",
+        "userName": "UserName",
+        "email": "Email",
+        "role": "Ruolo",
+        "rolesAria": "Ruoli",
+        "surname": "Cognome",
+        "surnameRequired": "Cognome è obbligatorio.",
+        "surnameMaxLength": "Cognome non può superare i {{max}} caratteri.",
+        "name": "Nome",
+        "nameRequired": "Nome è obbligatorio.",
+        "nameMaxLength": "Nome non può superare i {{max}} caratteri.",
+        "employment": "Rapporto di Lavoro",
+        "scheduleProfile": "Profilo Orario",
+        "from": "Dal",
+        "to": "Al",
+        "next": "Avanti",
+        "back": "Indietro"
+      },
+      "orariEdit": {
+        "title": "Orario",
+        "tabGeneral": "Generale",
+        "tabTimeRanges": "Intervalli orari",
+        "tabHoursBank": "Monte Ore",
+        "sectionHoursBank": "Monte ore",
+        "description": "Descrizione",
+        "descriptionRequired": "Descrizione è obbligatorio.",
+        "descriptionMaxLength": "Descrizione non può superare i 20 caratteri.",
+        "code": "Codice",
+        "codeRequired": "codice è obbligatorio.",
+        "codeMaxLength": "codice non può superare i 5 caratteri.",
+        "clockingType": "Tipo timbrature",
+        "typeTimeRange": "Intervallo Orario",
+        "typeHoursBank": "Monte Ore",
+        "typeHoursBankValue": "Monte Ore Valore",
+        "clockingTypeRequired": "Il tipo timbrature è obbligatorio.",
+        "pairsNumber": "Numero Coppie",
+        "pairsZero": "0 - riposo",
+        "pairsRequired": "Il numero di coppie è obbligatorio.",
+        "noPairsNote": "Nessuna coppia: giorno non lavorativo (0 ore teoriche).",
+        "colPair": "Coppia",
+        "colFromLimitLeft": "Dalle Limite SX",
+        "colFrom": "DALLE",
+        "colFromLimitRight": "Dalle Limite DX",
+        "colToLimitLeft": "Alle Limite SX",
+        "colTo": "ALLE",
+        "colToLimitRight": "Alle Limite DX",
+        "hoursBankPayCode": "Causale monte ore",
+        "none": "Nessuna",
+        "theoreticalHours": "Ore Teoriche"
+      },
+      "vacationPlan": {
+        "title": "Piano ferie",
+        "employee": "Dipendente",
+        "approveRequest": "Approva richiesta",
+        "rejectRequest": "Rifiuta richiesta",
+        "headerJustification": "Giustificativo : {{type}} {{date}}"
+      },
+      "festivitaEdit": {
+        "title": "Festività",
+        "section": "Festività",
+        "description": "Descrizione",
+        "descriptionRequired": "Descrizione è obbligatoria.",
+        "descriptionMaxLength": "Descrizione non può superare i {{max}} caratteri.",
+        "type": "Tipo",
+        "typeRecurring": "Ogni anno, stesso giorno",
+        "typeSingle": "Solo nella data indicata",
+        "typeEasterMonday": "Lunedì dell'Angelo (calcolato)",
+        "dayYearIgnored": "Giorno (l'anno non conta)",
+        "date": "Data",
+        "note": "Nei giorni festivi vale l'orario festivo del profilo orario e le ore lavorate oltre il teorico sono straordinario festivo."
+      },
+      "festivitaList": {
+        "title": "Calendario festività",
+        "columnHoliday": "Festività",
+        "columnWhen": "Quando",
+        "easterMonday": "lunedì dopo Pasqua",
+        "everyYear": "{{date}} ogni anno",
+        "deleteConfirm": "Confermi la cancellazione della festività"
+      },
+      "requestJustificationUser": {
+        "title": "Richiesta ferie e permessi",
+        "giustificativo": "Giustificativo",
+        "seleziona": "Seleziona",
+        "dataInizio": "Data inizio",
+        "dataFine": "Data fine",
+        "notaAutorizzazione": "Ore in più che chiedi di farti riconoscere in ciascun giorno del periodo (anche sabato, domenica e festivi). Le ore lavorate oltre l'autorizzazione approvata non vengono riconosciute.",
+        "giornoIntero": "Giorno intero",
+        "ore": "Ore",
+        "min": "Min",
+        "totale": "Totale",
+        "note": "Note",
+        "notePlaceholder": "Inserisci note...",
+        "fatto": "Fatto"
+      },
+      "notaSpeseAdmin": {
+        "title": "Esame spese",
+        "tipoSpesa": "Tipo di spesa",
+        "tutti": "Tutti",
+        "stato": "Stato",
+        "filtroValide": "In attesa e approvate",
+        "filtroAttesa": "In attesa di approvazione",
+        "filtroApprovate": "Approvate",
+        "filtroRespinte": "Rifiutate o annullate",
+        "filtroTutte": "Tutte",
+        "perDipendente": "Per dipendente",
+        "perTipoSpesa": "Per tipo di spesa",
+        "nessunaSpesa": "Nessuna spesa nel periodo per la selezione fatta.",
+        "spesa": "spesa",
+        "spese": "spese",
+        "totaleMinuscolo": "totale",
+        "apriDettaglio": "Apri il dettaglio della nota spese",
+        "notaSpese": "Nota spese",
+        "nessunAllegato": "Nessun allegato",
+        "totale": "Totale",
+        "azioneRevoca": "{{azione}} revoca",
+        "confermaApprovazione": "Confermi l'approvazione della nota spese?",
+        "confermaApprovazioneRevoca": "Confermi l'approvazione della revoca della nota spese?",
+        "confermaRifiuto": "Confermi il rifiuto della nota spese?",
+        "confermaRifiutoRevoca": "Confermi il rifiuto della revoca della nota spese?",
+        "revocata": "Revocata",
+        "revocaRichiesta": "Revoca richiesta"
+      },
+      "activityStatistics": {
+        "title": "Statistiche attività",
+        "perDipendente": "Per dipendente",
+        "totaliAttivita": "Totali attività",
+        "giornateEscluse": "Giornate escluse",
+        "attivita": "Attività",
+        "commessaSubCommessa": "Commessa / Sub-commessa",
+        "cliente": "Cliente",
+        "ore": "Ore",
+        "oreTotali": "Ore totali",
+        "dipendente": "Dipendente",
+        "data": "Data",
+        "stato": "Stato",
+        "nessunDato": "Nessun dato disponibile",
+        "totaleComplessivo": "Totale complessivo",
+        "nessunaGiornataEsclusa": "Nessuna giornata esclusa",
+        "statoErrore": "Errore",
+        "statoNonElaborata": "Non elaborata",
+        "statoWarning": "Warning"
+      },
+      "exportCauEdit": {
+        "title": "Modelli export",
+        "generale": "Generale",
+        "causali": "Causali",
+        "descrizione": "Descrizione",
+        "codice": "Codice",
+        "tipoFile": "Tipo file",
+        "descrizioneObbligatoria": "Descrizione è obbligatorio.",
+        "descrizioneMaxLength": "Descrizione non può superare i 20 caratteri.",
+        "codiceObbligatorio": "codice è obbligatorio.",
+        "codiceMaxLength": "codice non può superare i 5 caratteri.",
+        "tipoFileObbligatorio": "Il tipo file è obbligatorio.",
+        "confermaCancellazione": "Confermi la cancellazione della causale in export"
+      },
+      "notaSpesaRequestUser": {
+        "title": "Richiesta rimborso spese",
+        "titleModifica": "Modifica nota spese",
+        "salva": "Salva",
+        "descrizioneNota": "Descrizione della nota spese",
+        "descrizioneNotaPlaceholder": "Es. Trasferta cliente Milano",
+        "spese": "Spese",
+        "spesaN": "Spesa {{n}}",
+        "togli": "Togli",
+        "data": "Data",
+        "tipoSpesa": "Tipo di spesa",
+        "scegli": "Scegli",
+        "importo": "Importo (€)",
+        "descrizione": "Descrizione",
+        "descrizionePlaceholder": "Es. pranzo con il cliente, treno A/R",
+        "allega": "Allega scontrino / fattura",
+        "aggiungiSpesa": "Aggiungi spesa",
+        "totale": "Totale",
+        "nota": "Allegati ammessi: PDF e immagini, fino a 5 MB ciascuno e 15 MB in tutto. La richiesta segue l'approvazione standard: approvata la nota, sono approvate tutte le spese. Finché non è approvata la puoi modificare; salvando una modifica torna in attesa di approvazione.",
+        "erroreTipoFile": "\"{{nome}}\": sono ammessi solo PDF e immagini.",
+        "erroreDimensioneFile": "\"{{nome}}\" supera i {{mb}} MB.",
+        "erroreMaxAllegati": "Al massimo {{max}} allegati per spesa.",
+        "erroreDimensioneTotale": "Gli allegati della nota spese superano i {{mb}} MB complessivi.",
+        "erroreNessunaSpesa": "Aggiungi almeno una spesa.",
+        "erroreData": "Spesa {{n}}: indica la data.",
+        "erroreTipoSpesa": "Spesa {{n}}: scegli il tipo di spesa.",
+        "erroreImporto": "Spesa {{n}}: indica un importo maggiore di zero."
+      },
+      "requestListAdmin": {
+        "title": "Richieste",
+        "colCognome": "Cognome",
+        "colNome": "Nome",
+        "colDal": "Dal",
+        "colAl": "Al",
+        "colTipo": "Tipo",
+        "colDettaglio": "Dettaglio",
+        "colStato": "Stato",
+        "confermaApprovazione": "Confermi l' approvazione della richiesta?",
+        "confermaRifiuto": "Confermi il rifiuto della richiesta?"
+      },
+      "notaSpeseUser": {
+        "title": "Le mie note spese",
+        "nessunaNota": "Non hai ancora inviato note spese.",
+        "notaSpese": "Nota spese",
+        "spesa": "spesa",
+        "spese": "spese",
+        "chiediRevoca": "Chiedi revoca",
+        "annullaNota": "Annulla nota",
+        "nuovaNota": "Nuova nota spese",
+        "revocata": "Revocata",
+        "revocaInAttesa": "Revoca in attesa",
+        "confermaRevoca": "La nota spese è già approvata: confermi la richiesta di revoca?",
+        "confermaAnnullamento": "Confermi l'annullamento della nota spese?"
+      },
+      "tipoSpesaList": {
+        "title": "Tipi spesa",
+        "colCodice": "Codice",
+        "colDescrizione": "Descrizione",
+        "nuovo": "Nuovo tipo spesa",
+        "confermaCancellazione": "Confermi la cancellazione del tipo di spesa?"
+      },
+      "tipoSpesaEdit": {
+        "title": "Tipo spesa",
+        "info": "Info",
+        "codice": "Codice",
+        "descrizione": "Descrizione",
+        "codiceObbligatorio": "Codice è obbligatorio.",
+        "codiceMaxLength": "Codice non può superare i 10 caratteri.",
+        "descrizioneObbligatoria": "Descrizione è obbligatorio.",
+        "descrizioneMaxLength": "Descrizione non può superare i 50 caratteri."
+      },
+      "activityEdit": {
+        "title": "Attività",
+        "segGenerale": "Generale",
+        "segCompetenze": "Competenze",
+        "infoAttivita": "Info attività",
+        "descrizione": "Descrizione",
+        "descrizioneInvalid": "La descrizione è obbligatoria (max 50 caratteri).",
+        "backgroundColor": "Colore sfondo",
+        "textColor": "Colore testto",
+        "competenzeTitle": "Competenze necessarie per sfolgere l' attività",
+        "diDescr": "di : \"{{descr}}\"",
+        "colAbil": "Abil",
+        "colDescr": "Descr"
+      },
+      "azSediEdit": {
+        "title": "Sede",
+        "segGenerale": "Generale",
+        "segAttivita": "Attività",
+        "infoSede": "Info sede",
+        "descrizione": "Descrizione",
+        "attivitaTitle": "Attività svolte nella sede",
+        "diDescr": "di : \"{{descr}}\"",
+        "colAbil": "Abil",
+        "colDescr": "Descr"
+      },
+      "companyAttendanceWizard": {
+        "title": "Caricamento Dati Aziendali",
+        "stepOf": "Step {{step}} di {{total}}",
+        "infoAzienda": "Info Azienda",
+        "descrizione": "Descrizione",
+        "step2": "Step 2",
+        "secondaPagina": "Seconda pagina - da implementare",
+        "next": "Avanti",
+        "back": "Indietro",
+        "usersWarning": "Attenzione per accedere a questa utenza verrano creati i seguenti user    ->   {{admin}} / {{powerAdmin}}"
+      },
+      "customerEdit": {
+        "title": "Cliente",
+        "anagrafica": "Anagrafica",
+        "ragioneSociale": "Ragione sociale",
+        "ragioneSocialeRequired": "La ragione sociale è obbligatoria.",
+        "ragioneSocialeMaxLength": "La ragione sociale non può superare i {{max}} caratteri.",
+        "referente": "Referente",
+        "datiFiscali": "Dati fiscali",
+        "partitaIva": "Partita IVA",
+        "partitaIvaPattern": "La partita IVA è composta da 11 cifre.",
+        "codiceFiscale": "Codice fiscale",
+        "codiceFiscalePattern": "Il codice fiscale è di 16 caratteri (persona) o 11 cifre (società).",
+        "sede": "Sede",
+        "indirizzo": "Indirizzo",
+        "cap": "CAP",
+        "citta": "Città",
+        "provincia": "Provincia",
+        "nazione": "Nazione",
+        "provinciaPattern": "La provincia è la sigla di 2 lettere (es. MI).",
+        "nazionePattern": "La nazione è il codice di 2 lettere (es. IT).",
+        "contatti": "Contatti",
+        "telefono": "Telefono",
+        "email": "Email",
+        "pec": "PEC",
+        "pecInvalid": "Inserisci una PEC valida.",
+        "fatturazioneElettronica": "Fatturazione elettronica",
+        "codiceDestinatario": "Codice destinatario (SDI)",
+        "codiceDestinatarioPattern": "Il codice destinatario è di 7 caratteri (6 per la Pubblica Amministrazione).",
+        "note": "Note"
+      },
+      "departmentList": {
+        "title": "Reparti",
+        "columnReparto": "Reparto",
+        "fabAdd": "Elemento 1",
+        "confirmDelete": "Confermi la cancellazione del reparto"
+      },
+      "exportCausali": {
+        "title": "Export causali",
+        "dal": "Dal",
+        "al": "Al",
+        "tipoExport": "Tipo export",
+        "modelloPlaceholder": "Seleziona il modello",
+        "modelloRequired": "Il modello è obbligatorio",
+        "confirmExport": "Confermi l'export delle causali? "
+      },
+      "justificationEdit": {
+        "title": "Giustificativi",
+        "info": "Info",
+        "descrizione": "Descrizione",
+        "descrizioneRequired": "Descrizione è obbligatorio.",
+        "descrizioneMaxLength": "Descrizione non può superare i {{max}} caratteri.",
+        "codice": "Codice",
+        "codiceRequired": "codice è obbligatorio.",
+        "codiceMaxLength": "codice non può superare i {{max}} caratteri.",
+        "backgroundColor": "Colore sfondo",
+        "textColor": "Colore testto",
+        "segno": "Segno",
+        "segnoNeutral": "Non agisce",
+        "segnoRequired": "Il tipo segno è obbligatorio.",
+        "causale": "Causale",
+        "causalePlaceholder": "Seleziona la causale",
+        "causaleRequired": "La causale è obbligatoria.",
+        "visualizzaInPianoFerie": "Visualizza nel piano ferie",
+        "tipoContatore": "Tipo contatore",
+        "noContatore": "Nessun contatore",
+        "contatore": "Contatore",
+        "contatoreConAvviso": "Contatore con avviso",
+        "contatoreConBlocco": "Contatore con blocco",
+        "tipoContatoreRequired": "Il tipo contatore è obbligatorio.",
+        "bancaOre": "Recupero banca ore",
+        "autorizzaStraordinario": "Autorizza ore in più",
+        "autorizzaStraordinarioNote": "Autorizzazione allo straordinario: le ore del giustificativo approvato sono il massimo di ore in più riconosciute nel giorno (profili con \"Ore in più solo se autorizzate\"). Non cambia le ore dovute e non scrive causali: lascia vuota la causale e il segno neutro. Il calcolo non approva mai in automatico queste richieste.",
+        "bancaOreNote": "Il maturato del contatore sono le ore in più accreditate in banca ore nei cartellini approvati."
+      },
+      "quadraturaMensile": {
+        "title": "Quadratura mensile",
+        "vuoto": "Nessun dipendente con rapporto di lavoro nel mese selezionato.",
+        "selezionaDaApprovare": "Seleziona da approvare",
+        "approvaN": "Approva ({{n}})",
+        "notaApprova": "Si approvano solo i cartellini chiusi: un mese in corso resta provvisorio.",
+        "colDipendente": "Dipendente",
+        "colStato": "Stato",
+        "colLavorate": "Lavorate",
+        "colInPiu": "In più",
+        "colSuppl": "Suppl.",
+        "colStrao": "Strao",
+        "colEccedenti": "Eccedenti",
+        "colNonRic": "Non ric.",
+        "mLav": "Lav.",
+        "mEcced": "Ecced.",
+        "provv": "provv.",
+        "nonAutoriz": "non autoriz.",
+        "daAutorizzare": "da autorizzare",
+        "bancaOre": "banca ore",
+        "ricalcolare": "Ricalcolare il mese dal Calendario HR.",
+        "partTime": "Part-time",
+        "fullTime": "Full-time",
+        "statoNonCalcolato": "Non calcolato",
+        "statoApprovato": "Approvato",
+        "statoDaApprovare": "Da approvare",
+        "statoProvvisorio": "Provvisorio",
+        "confirmApprova": "Approvi {{n}} cartellini? I giorni del mese non saranno più modificabili."
+      },
+      "requestClockingUser": {
+        "title": "Richiedi timbratura",
+        "commessaAttivita": "Commessa Attivita",
+        "attivitaPlaceholder": "Seleziona l attivita",
+        "attivitaRequired": "L attivita è obbligatoria."
+      },
+      "timeClockUser": {
+        "title": "Terminale di timbratura",
+        "ultimaTimbratura": "Ultima timbratura: {{value}}",
+        "commessaAttivita": "Commessa Attivita",
+        "attivitaPlaceholder": "Seleziona l attivita",
+        "attivitaRequired": "L attivita è obbligatoria."
+      },
+      "userDepartmentList": {
+        "title": "Utenti",
+        "columnUser": "Utente",
+        "columnSurname": "Cognome",
+        "columnName": "Nome",
+        "fabAdd": "Elemento 1",
+        "showDisabled": "Mostra disabilitati"
+      },
+      "justificationList": {
+        "title": "Giustificativi",
+        "confirmDelete": "Confermi la cancellazione del giustificativo",
+        "columnCode": "Codice",
+        "columnDescription": "Descrizione",
+        "columnCounter": "Contatore"
+      },
+      "exportCauList": {
+        "title": "Modelli export",
+        "confirmDelete": "Confermi la cancellazione della tabella",
+        "columnCode": "Codice",
+        "columnDescription": "Descrizione",
+        "columnFileType": "Tipo file"
+      },
+      "profiloOrarioList": {
+        "title": "Profili Orari",
+        "confirmDelete": "Confermi la cancellazione dell Profilo Orario",
+        "columnCode": "Codice",
+        "columnDescription": "Descrizione"
+      },
+      "orariList": {
+        "title": "Orari",
+        "confirmDelete": "Confermi la cancellazione dell orario",
+        "columnCode": "Codice",
+        "columnDescription": "Descrizione"
+      },
+      "commessaList": {
+        "title": "Commesse",
+        "confirmDelete": "Confermi la cancellazione della commessa?",
+        "fabAdd": "Nuova Commessa",
+        "columnJob": "Commessa"
+      },
+      "causaliList": {
+        "title": "Causali",
+        "confirmDelete": "Confermi la cancellazione della causale",
+        "fabAdd": "Nuova Causale",
+        "columnCode": "Codice",
+        "columnDescription": "Descrizione"
+      },
+      "azSediList": {
+        "title": "Sedi",
+        "confirmDelete": "Confermi la cancellazione della sede?",
+        "fabAdd": "Nuova Sede",
+        "columnSite": "Sede"
+      },
+      "customerList": {
+        "title": "Clienti",
+        "confirmDelete": "Confermi la cancellazione del cliente?",
+        "fabAdd": "Nuovo",
+        "columnCustomer": "Cliente"
+      },
+      "activityList": {
+        "title": "Attività",
+        "confirmDelete": "Confermi la cancellazione dell'attività",
+        "fabAdd": "Nuova Attività",
+        "columnActivity": "Attività"
+      },
+      "competenceList": {
+        "title": "Competenze",
+        "confirmDelete": "Confermi la cancellazione della competenza?",
+        "fabAdd": "Nuova Competenza",
+        "columnCompetence": "Competenza"
+      },
+      "mytemplate1List": {
+        "title": "MyTemplate1",
+        "confirmDelete": "Confermi la cancellazione?",
+        "fabAdd": "Nuovo",
+        "columnDescription": "Descrizione"
+      },
+      "causaliEdit": {
+        "title": "Causale",
+        "info": "Info",
+        "description": "Descrizione",
+        "descriptionRequired": "Descrizione è obbligatorio.",
+        "descriptionMaxLength": "Descrizione non può superare i {{max}} caratteri.",
+        "code": "Codice",
+        "codeRequired": "Codice è obbligatorio.",
+        "codeMaxLength": "Codice non può superare i {{max}} caratteri."
+      },
+      "competenceEdit": {
+        "title": "Competenze",
+        "info": "Info",
+        "description": "Descrizione",
+        "descriptionRequired": "Descrizione è obbligatorio.",
+        "descriptionMaxLength": "Descrizione non può superare i {{max}} caratteri."
+      },
+      "mytemplate1Edit": {
+        "title": "MyTemplate1",
+        "info": "Info",
+        "description": "Descrizione",
+        "descriptionRequired": "Descrizione è obbligatorio.",
+        "descriptionMaxLength": "Descrizione non può superare i {{max}} caratteri."
+      },
+      "selection": {
+        "title": "xxx"
+      }
+    },
+    "components": {
+      "cartellinoQuadratura": {
+        "riepilogoMese": "Riepilogo del mese",
+        "sintesiLavorate": "lavorate {{lav}} su {{teo}}",
+        "sintesiInPiu": "in più {{min}}",
+        "sintesiQualificate": "qualificate {{min}}",
+        "nessunCalcolo": "nessun calcolo per il mese",
+        "partTime": "Part-time",
+        "fullTime": "Full-time",
+        "straoNonAttivo": "calcolo straordinario non attivo nel profilo orario",
+        "nessunGiorno": "nessun giorno",
+        "settimane": "Settimane",
+        "settimanaInAttesa": "in attesa di quadratura: +{{min}}",
+        "settimanaInPiu": "in più {{ecc}}, qualificate {{qual}}",
+        "noteHR": "Note HR:",
+        "approvatoIl": "Approvato il",
+        "riconosciuteLabel": "Ore in più riconosciute (h:mm, vuoto = tutte)",
+        "riconosciutePlaceholder": "tutte",
+        "applicaRicalcola": "Applica e ricalcola",
+        "riconosciTutte": "Riconosci tutte",
+        "rifiutaTutte": "Rifiuta tutte",
+        "riapri": "Riapri",
+        "stato": {
+          "approvato": "Approvato",
+          "daApprovare": "Chiuso, in attesa di approvazione",
+          "provvisorio": "Provvisorio, periodo in corso"
+        },
+        "conteggio": {
+          "settimanale": "conteggio settimanale",
+          "mensile": "conteggio mensile",
+          "giornaliero": "conteggio giornaliero"
+        },
+        "destinazione": {
+          "bancaOre": "Accreditate in banca ore",
+          "pagamento": "In pagamento"
+        },
+        "voci": {
+          "oreTeoriche": "Ore teoriche previste",
+          "notaPartTime": "part-time {{ore}}h/settimana",
+          "oreLavorate": "Ore lavorate effettive",
+          "notaTimbratureNette": "timbrature nette",
+          "diCuiOrdinarie": "di cui ordinarie",
+          "notaPagaBase": "retribuite con paga base",
+          "assenze": "Permessi, ferie, assenze",
+          "notaSottratti": "sottratti dal teorico",
+          "oreInPiu": "Ore in più",
+          "notaOltreTeorico": "oltre il teorico, dopo arrotondamenti",
+          "inAttesaQuadratura": "in attesa di quadratura",
+          "notaPeriodoInCorso": "periodo di conteggio in corso",
+          "compensate": "compensate",
+          "notaCompensate": "recuperano ore mancanti nello stesso periodo",
+          "supplementare": "Lavoro supplementare",
+          "notaSupplementare": "entro il limite del contratto",
+          "supplementareOltre": "Supplementare oltre il limite",
+          "straordinario": "Lavoro straordinario",
+          "notaStraordinario": "oltre la soglia full-time",
+          "straoNotturno": "Straordinario notturno",
+          "straoFestivo": "Straordinario festivo",
+          "straoFestivoNotturno": "Straordinario festivo notturno",
+          "eccedentiNonStrao": "Ore eccedenti non straordinarie",
+          "notaEccedenti": "oltre il teorico ma entro la soglia",
+          "nonAutorizzate": "Ore in più non autorizzate",
+          "notaNonAutorizzate": "oltre l'autorizzazione approvata: non riconosciute",
+          "inAttesaAutorizzazione": "in attesa di autorizzazione",
+          "notaInAttesaAutorizzazione": "richieste ancora da approvare",
+          "nonRiconosciute": "Non riconosciute",
+          "notaNonRiconosciute": "escluse dall'HR",
+          "saldo": "Saldo del periodo",
+          "notaSaldo": "lavorato meno lavorabile, fino a ieri"
+        },
+        "festivo": "(festivo)",
+        "domandaApprova": "Approvi il cartellino di {{periodo}}? I giorni del mese non saranno più modificabili.",
+        "domandaRiapri": "Riapri il cartellino di {{periodo}}? I giorni tornano modificabili e ricalcolabili."
+      },
+      "dipSelectorModal": {
+        "selezionaDipendente": "Seleziona dipendente",
+        "selezionaDipendenti": "Seleziona dipendenti",
+        "cercaPlaceholder": "Cerca per cognome, nome...",
+        "selezionaTutti": "Seleziona tutti",
+        "deselezionaTutti": "Deseleziona tutti",
+        "selezionati": "{{count}} selezionati",
+        "nessunDipendente": "Nessun dipendente trovato"
+      },
+      "editDipGgCausaliDialog": {
+        "title": "Causale",
+        "causale": "Causale",
+        "selezionaCausale": "Seleziona la causale",
+        "causaleObbligatoria": "La causale obbligatorio.",
+        "valore": "Valore"
+      },
+      "editDipGgGiustificativiDialog": {
+        "title": "Giustificativo",
+        "giustificativo": "Giustificatico",
+        "selezionaGiustificativo": "Seleziona il giustificativo",
+        "giustificativoObbligatorio": "Il giustificativo obbligatorio.",
+        "valore": "Valore"
+      },
+      "editDipGgTimbraturaDialog": {
+        "title": "Timbratura",
+        "giornoCompetenza": "Giorno Competenza",
+        "timbratura": "Timbratura",
+        "timbraturaOriginale": "Timbratura Originale",
+        "timbraturaArrotondata": "Timbratura Arrotondata",
+        "commessaAttivita": "Commessa Attivita",
+        "selezionaAttivita": "Seleziona l attivita",
+        "attivitaObbligatoria": "L attivita è obbligatoria."
+      },
+      "editDipProfiloOrarioDialog": {
+        "title": "Profilo orario",
+        "profiloOrario": "Profilo orario",
+        "selezionaProfilo": "Seleziona un profilo orario",
+        "dal": "Dal",
+        "al": "Al",
+        "numGiornoPartenza": "Num. Giorno partenza ciclo ( {{giorno}} / {{totale}} )"
+      },
+      "editParExportCauCausaliComponent": {
+        "title": "Causale export",
+        "codice": "Codice",
+        "codiceObbligatorio": "codice è obbligatorio.",
+        "codiceMaxLength": "codice non può superare i {{max}} caratteri.",
+        "causale": "Causale",
+        "selezionaCausale": "Seleziona la causale",
+        "causaleObbligatoria": "La causale è obbligatoria.",
+        "tipoElaborazione": "Tipo elaborazione",
+        "giornaliera": "Gionaliera",
+        "mensile": "Mensile",
+        "tipoElaborazioneObbligatorio": "Il tipo elaborazione è obbligatorio.",
+        "unita": "Unità",
+        "ore": "Ore",
+        "giorni": "Giorni",
+        "importo": "Importo",
+        "tipoUnitaObbligatorio": "Il tipo unità è obbligatorio."
+      },
+      "editParOrarioDettaglioOrarioIntervalloHhdialog": {
+        "title": "Intervallo orari",
+        "varie": "Varie",
+        "orarioInizio": "Orario Inizio",
+        "orarioFine": "Orario Fine",
+        "causaleHHLav": "Causale HH Lav",
+        "selezionaCausale": "Seleziona la causale",
+        "causaleObbligatoria": "La causale è obbligatoria.",
+        "limiteSX": "Limite SX",
+        "limiteDX": "Limite DX",
+        "dalle": "Dalle",
+        "alle": "Alle",
+        "tipoArrotondamento": "Tipo arrotondamento",
+        "tipoArrotondamentoObbligatorio": "Il tipo arrotondamento è obbligatorio.",
+        "segnoArrotondamento": "Segno arrotondamento",
+        "segnoArrotondamentoObbligatorio": "Il segno arrotondamento è obbligatorio.",
+        "usaPerMatch": "Usa x Match"
+      },
+      "editParProfiloOrarioDettaglioOrarioDialog": {
+        "title": "Orario",
+        "orario": "Orario",
+        "selezionaOrario": "Seleziona l'orario",
+        "orarioObbligatorio": "Orario è obbligatorio."
+      },
+      "timeSheetEngineCaller": {
+        "title": "Calcola",
+        "tipoCalcolo": "Tipo calcolo",
+        "selezione": "Selezione",
+        "dal": "Dal",
+        "al": "Al",
+        "approvaRichiesteTimbrature": "Approva Richieste Timbrature",
+        "approvaRichiesteGiustificativo": "Approva Richieste Giustificativo",
+        "generaTimbratureMancanti": "Genera Timbrature Mancanti",
+        "generaGiustificativiAssenza": "Genera Giustificativi Assenza"
+      },
+      "seletionParAttivitaDialog": {
+        "title": "Seleziona Attività",
+        "descrizione": "Descrizione",
+        "tutteCollegate": "Tutte le attività sono già collegate."
+      },
+      "seletionParCompetenzaDialog": {
+        "title": "Seleziona Competenze",
+        "descrizione": "Descrizione",
+        "tutteAssegnate": "Tutte le competenze sono già assegnate."
+      },
+      "seletionSediRepartoDialog": {
+        "title": "Seleziona",
+        "nota": "Sono proposti solo i reparti in cui si svolge almeno una delle attività della sub commessa."
+      },
+      "seletionSediRepartoUserDialog": {
+        "title": "Seleziona",
+        "nota": "Sono proposti solo i dipendenti con almeno una delle competenze richieste dalle attività della sub commessa."
+      },
+      "userAttendanceWizardDialog": {
+        "title": "Nuovo dipendente",
+        "step": "Step {{n}} di {{totale}} - {{titolo}}",
+        "steps": {
+          "utente": "Utente",
+          "rapporto": "Rapporto di lavoro",
+          "profilo": "Profilo orario",
+          "competenze": "Competenze",
+          "maturazione": "Maturazione contatori"
+        },
+        "avanti": "Avanti",
+        "indietro": "Indietro",
+        "datiUtente": "Dati utente",
+        "cognome": "Cognome",
+        "cognomeObbligatorio": "Il cognome è obbligatorio.",
+        "nome": "Nome",
+        "nomeObbligatorio": "Il nome è obbligatorio.",
+        "userNameObbligatorio": "Lo UserName è obbligatorio.",
+        "userNameGiaUsato": "Questo UserName è già usato da un altro utente.",
+        "emailGiaUsata": "Questa email è già usata da un altro utente.",
+        "ruolo": "Ruolo",
+        "ruoli": "Ruoli",
+        "rapportoLavoro": "Rapporto di lavoro",
+        "dataAssunzione": "Data assunzione",
+        "dataAssunzioneObbligatoria": "La data di assunzione è obbligatoria.",
+        "tipoContratto": "Tipo contratto",
+        "fullTime": "Full-time",
+        "partTime": "Part-time",
+        "oreSettimanali": "Ore settimanali contrattuali",
+        "notaOreSettimanali": "Base del limite del lavoro supplementare; se vuoto si usano le ore teoriche della settimana.",
+        "straordinarioSupplementare": "Straordinario e supplementare",
+        "pagamento": "Pagamento in busta paga",
+        "bancaOre": "Accredito in banca ore",
+        "profiloOrario": "Profilo orario",
+        "selezionaProfilo": "Seleziona il profilo orario",
+        "profiloObbligatorio": "Il profilo orario è obbligatorio.",
+        "giornoPartenza": "Giorno di partenza del ciclo",
+        "giornoPartenzaMin": "Il giorno di partenza deve essere almeno 1.",
+        "notaProfilo": "Il profilo vale dalla data di assunzione.",
+        "competenze": "Competenze",
+        "notaCompetenze": "Le competenze determinano le attività che il dipendente può svolgere. Senza competenze viene assegnata quella di default.",
+        "maturazioneMensile": "Maturazione mensile",
+        "formatoOreNonValido": "Formato ore non valido (HHH:MM).",
+        "nessunGiustificativoContatore": "Nessun giustificativo con contatore configurato.",
+        "erroreSalvataggio": "Salvataggio non riuscito.",
+        "creazioneUtenteNonRiuscita": "Creazione utente non riuscita.",
+        "datiDipendenteNonDisponibili": "Utente creato, ma i dati del dipendente non sono disponibili: completarli dalla sua scheda.",
+        "salvataggioDipendenteNonRiuscito": "Utente creato, ma il salvataggio dei dati del dipendente non è riuscito: completarli dalla sua scheda."
+      },
+      "sediRepartoUserNavigation": {
+        "anno": "Anno",
+        "mese": "Mese",
+        "mesePrecedente": "Mese precedente",
+        "meseSuccessivo": "Mese successivo",
+        "sede": "Sede",
+        "selezionaSede": "Seleziona una sede",
+        "reparto": "Reparto",
+        "selezionaReparti": "Seleziona uno o più reparti",
+        "dipendente": "Dipendente",
+        "dipendenti": "Dipendenti",
+        "utentePrecedente": "Utente precedente",
+        "utenteSuccessivo": "Utente successivo",
+        "selezionaDipendente": "Seleziona dipendente",
+        "selezionaDipendenti": "Seleziona dipendenti",
+        "dipendentiSelezionati": "{{count}} dipendenti selezionati"
+      },
+      "sediRepartoUserSelection": {
+        "anno": "Anno",
+        "mese": "Mese",
+        "mesePrecedente": "Mese precedente",
+        "meseSuccessivo": "Mese successivo",
+        "sede": "Sede",
+        "selezionaSede": "Seleziona una sede",
+        "reparto": "Reparto",
+        "selezionaReparti": "Seleziona uno o più reparti",
+        "dipendente": "Dipendente",
+        "dipendenti": "Dipendenti",
+        "utentePrecedente": "Utente precedente",
+        "utenteSuccessivo": "Utente successivo",
+        "selezionaDipendente": "Seleziona dipendente",
+        "selezionaDipendenti": "Seleziona dipendenti",
+        "dipendentiSelezionati": "{{count}} dipendenti selezionati"
+      }
+    },
+    "pipes": {
+      "statoRichiestaLongText": {
+        "diretta": "Diretta",
+        "immessa": "Immessa",
+        "cancellata": "Cancellata",
+        "rifiutata": "Rifiutata",
+        "approvazioneInCorso": "Approvazione In Corso",
+        "parzialmenteApprovata": "Parzialmente Approvata",
+        "approvata": "Approvata"
+      },
+      "statoRichiestaShortText": {
+        "diretta": "Dir.",
+        "immessa": "Imm.",
+        "cancellata": "Canc.",
+        "rifiutata": "Rif.",
+        "approvazioneInCorso": "In Appr.",
+        "parzialmenteApprovata": "Parz. Appr",
+        "approvata": "Appr."
+      },
+      "tipoContatoreToLongText": {
+        "noContatore": "Nessun contatore",
+        "contatore": "Contatore",
+        "contatoreConAvviso": "Contatore con avviso",
+        "contatoreConBlocco": "Contatore con blocco"
+      },
+      "tipoRichiestaToLongText": {
+        "timbratura": "Timbratura",
+        "giustificativo": "Giustificativo",
+        "notaSpesa": "Nota spese"
+      },
+      "tipoRichiestaToShortText": {
+        "timbratura": "Timbr.",
+        "giustificativo": "Giust.",
+        "notaSpesa": "Spesa"
+      },
+      "tipoTimbraturaToLongText": {
+        "entrata": "Entrata",
+        "uscita": "Uscita",
+        "senzaVerso": "SenzaVerso",
+        "attivita": "Attivita"
+      },
+      "tipoTimbraturaToShortText": {
+        "entrata": "E",
+        "uscita": "U",
+        "senzaVerso": "S",
+        "attivita": "A"
+      }
+    },
+    "menu": {
+      "richieste": "Richieste",
+      "calendarioHR": "Calendario HR",
+      "quadraturaMensile": "Quadratura mensile",
+      "exportCausali": "Export causali",
+      "statisticheAttivita": "Statistiche attività",
+      "personalePresente": "Personale presente",
+      "pianoFerie": "Piano ferie",
+      "calendario": "Calendario",
+      "utenti": "Utenti",
+      "parametri": "Parametri",
+      "giustificativi": "Giustificativi",
+      "causali": "Causali",
+      "configurazione": "Configurazione",
+      "orari": "Orari",
+      "profiliOrari": "Profili Orari",
+      "festivita": "Festività",
+      "modelliExport": "Modelli Export",
+      "tipiSpesa": "Tipi spesa",
+      "notaSpese": "Nota spese",
+      "esameSpese": "Esame spese",
+      "gestioneCommesse": "Gestione Commesse",
+      "commesse": "Commesse",
+      "clienti": "Clienti",
+      "reparti": "Reparti",
+      "sedi": "Sedi",
+      "attivita": "Attività",
+      "competenze": "Competenze",
+      "presenze": "Presenze",
+      "timbratura": "Timbratura",
+      "richiestaGiustificativo": "Richiesta giustificativo",
+      "richiestaTimbratura": "Richiesta timbratura",
+      "richiestaRimborso": "Richiesta rimborso",
+      "mieNoteSpese": "Le mie note spese"
+    },
+    "showcase": {
+      "brand": {
+        "slogan": "Presenze, richieste e note spese della tua azienda, in cloud."
+      },
+      "home": {
+        "etichetta": "Gestione presenze in cloud",
+        "titolo": "Le presenze dei tuoi dipendenti, senza fogli e senza rincorse",
+        "sottotitolo": "Timbrature, ferie, permessi, straordinari e note spese in un’unica app: i dipendenti chiedono, i responsabili approvano, a fine mese il cartellino è pronto per le paghe.",
+        "ctaPrimaria": "Prova gratis",
+        "ctaSecondaria": "Scopri le funzionalità",
+        "punti": {
+          "timbratura": {
+            "title": "Timbratura da ovunque",
+            "text": "Entrata e uscita dallo smartphone o dal computer; le correzioni passano da una richiesta."
+          },
+          "richieste": {
+            "title": "Richieste e approvazioni",
+            "text": "Ferie, permessi e giustificativi arrivano al responsabile del reparto, che approva o rifiuta con un clic."
+          },
+          "cartellino": {
+            "title": "Cartellino sempre aggiornato",
+            "text": "Ore lavorate, assenze e straordinari calcolati ogni giorno secondo il profilo orario di ognuno."
+          },
+          "noteSpese": {
+            "title": "Note spese",
+            "text": "Rimborsi con scontrini e fatture allegati, approvati insieme alla nota."
+          }
+        },
+        "passiTitolo": "Operativi in tre passi",
+        "passi": {
+          "registra": {
+            "title": "Registra l’azienda",
+            "text": "La gestione presenze è attiva da subito, con causali e parametri già pronti."
+          },
+          "organizza": {
+            "title": "Organizza",
+            "text": "Sedi, reparti, orari e approvatori: ogni richiesta arriva alla persona giusta."
+          },
+          "chiudi": {
+            "title": "Chiudi il mese",
+            "text": "Quadratura e approvazione dei cartellini, poi l’export delle causali per le paghe."
+          }
+        },
+        "chiusuraTitolo": "Basta fogli presenze",
+        "chiusuraTesto": "Registra la tua azienda e prova la gestione presenze con i tuoi dipendenti."
+      },
+      "features": {
+        "titolo": "Funzionalità",
+        "sottotitolo": "Tutto quello che serve per gestire presenze e assenze, dalla timbratura all’export per le paghe.",
+        "sezioni": {
+          "vocale": {
+            "title": "Comandi vocali e chat",
+            "text": "Parla o scrivi all’assistente: timbra, chiedi un giustificativo o apri la pagina che ti serve, senza cercarla nel menu."
+          },
+          "timbrature": {
+            "title": "Timbrature",
+            "text": "Timbratura di entrata e uscita e richiesta di correzione delle timbrature dimenticate o errate."
+          },
+          "giustificativi": {
+            "title": "Giustificativi",
+            "text": "Ferie, permessi, malattia e le altre causali, chieste dal dipendente e approvate dal responsabile."
+          },
+          "straordinari": {
+            "title": "Straordinari e banca ore",
+            "text": "Straordinario autorizzato con giustificativo e ore in più accreditate in banca ore nei cartellini approvati."
+          },
+          "reparti": {
+            "title": "Reparti e approvatori",
+            "text": "Per ogni reparto chi amministra e chi approva le richieste, con la modalità di approvazione scelta dall’azienda."
+          },
+          "calendario": {
+            "title": "Calendario e piano ferie",
+            "text": "Il calendario di ogni dipendente, il calendario HR e il piano ferie di tutta l’azienda."
+          },
+          "presenti": {
+            "title": "Personale presente",
+            "text": "Chi è al lavoro, chi è assente e perché, in tempo reale."
+          },
+          "profili": {
+            "title": "Profili orari",
+            "text": "Orari, festività e sedi: il cartellino si calcola sulle regole di ciascuno."
+          },
+          "quadratura": {
+            "title": "Quadratura mensile",
+            "text": "Controllo dei cartellini del mese, anomalie in evidenza e approvazione in blocco."
+          },
+          "export": {
+            "title": "Export per le paghe",
+            "text": "Export delle causali con modelli configurabili, pronto per il programma paghe."
+          },
+          "noteSpese": {
+            "title": "Note spese",
+            "text": "Rimborsi con più spese e allegati; l’approvazione della nota approva tutte le spese."
+          },
+          "commesse": {
+            "title": "Commesse e attività",
+            "text": "Clienti, commesse e attività per sapere su cosa si lavora, con le statistiche."
+          },
+          "menu": {
+            "title": "Menu su misura",
+            "text": "L’amministratore sceglie quali pagine vedono gli amministratori e i dipendenti."
+          }
+        }
+      },
+      "pricing": {
+        "titolo": "Prezzi",
+        "sottotitolo": "Paghi per i dipendenti che gestisci: tutte le funzioni sono sempre incluse.",
+        "piani": {
+          "prova": {
+            "nome": "Prova",
+            "periodo": "per 30 giorni",
+            "descrizione": "Per provare con i tuoi dipendenti.",
+            "cta": "Inizia la prova"
+          },
+          "azienda": {
+            "nome": "Azienda",
+            "periodo": "per dipendente al mese",
+            "descrizione": "Per piccole e medie imprese.",
+            "cta": "Scegli Azienda"
+          },
+          "studio": {
+            "nome": "Studio",
+            "prezzo": "Su misura",
+            "descrizione": "Per consulenti del lavoro e studi paghe.",
+            "cta": "Contattaci"
+          }
+        },
+        "caratteristiche": {
+          "tutteLeFunzioni": "Tutte le funzioni",
+          "fino10Dipendenti": "Fino a 10 dipendenti",
+          "causaliPronte": "Causali e parametri pronti",
+          "timbraturaSmartphone": "Timbratura da smartphone",
+          "exportPaghe": "Export per le paghe",
+          "assistenzaEmailTelefono": "Assistenza via email e telefono",
+          "piuAziende": "Più aziende clienti",
+          "accessoPerCliente": "Accesso per conto del cliente",
+          "modelliExport": "Modelli di export dedicati",
+          "assistenzaPrioritaria": "Assistenza prioritaria"
+        },
+        "nota": "Prezzi IVA esclusa. Nessun vincolo: disdici quando vuoi.",
+        "domande": {
+          "installare": {
+            "domanda": "I dipendenti devono installare qualcosa?",
+            "risposta": "No: timbrano e fanno le richieste dal browser dello smartphone o del computer."
+          },
+          "paghe": {
+            "domanda": "Posso usarlo con il mio programma paghe?",
+            "risposta": "Sì: l’export delle causali si configura con modelli adatti al programma paghe che usi."
+          },
+          "approvazione": {
+            "domanda": "Chi approva le richieste?",
+            "risposta": "Gli approvatori del reparto del dipendente; l’amministratore può approvare per tutti."
+          },
+          "consulente": {
+            "domanda": "Sono un consulente del lavoro: posso gestire più aziende?",
+            "risposta": "Sì, con il piano Studio gestisci le aziende clienti ed entri per loro conto quando serve."
+          }
+        }
+      },
+      "about": {
+        "titolo": "Chi siamo",
+        "sottotitolo": "Lavoriamo da anni accanto a consulenti del lavoro, uffici del personale e aziende.",
+        "paragrafo1": "Conosciamo da vicino il lavoro di chi chiude le presenze a fine mese: fogli da ricontrollare, richieste via email, causali da ricopiare nel programma paghe.",
+        "paragrafo2": "{{siteName}} nasce per togliere questo lavoro: i dipendenti chiedono, i responsabili approvano e i dati arrivano alle paghe già controllati.",
+        "valori": {
+          "semplice": {
+            "title": "Semplice per i dipendenti",
+            "text": "Timbrare e chiedere un permesso richiede pochi secondi."
+          },
+          "preciso": {
+            "title": "Preciso per l’ufficio del personale",
+            "text": "Regole orarie, causali e approvazioni sempre tracciate."
+          },
+          "vicino": {
+            "title": "Vicino ai consulenti",
+            "text": "Export e modelli pensati con chi elabora le paghe."
+          }
+        }
+      },
+      "register": {
+        "titolo": "Registra la tua azienda",
+        "sottotitolo": "Crea l’account della tua azienda: la gestione presenze è subito attiva, con causali e parametri pronti.",
+        "vantaggi": {
+          "gratis": "Gratis per 30 giorni",
+          "attiva": "Gestione presenze già attiva",
+          "nessunaCarta": "Nessuna carta di credito"
+        },
+        "condizioni": "Accetto le condizioni del servizio e l’informativa sulla privacy",
+        "inviata": "Ti abbiamo inviato un’email con il link per attivare l’account: aprilo e la gestione presenze sarà subito pronta.",
+        "confermaTitolo": "Attivazione account",
+        "esito": "La tua azienda è pronta con la gestione presenze attiva. Questi sono gli utenti creati: accedi con la password che hai scelto."
+      }
+    },
+    "services": {
+      "timeSheet": {
+        "richiestaDalAl": "Richiesta dal {{dal}} al {{al}}",
+        "fuoriRapporto": {
+          "prima": "Non assunto",
+          "dopo": "Cessato",
+          "tra": "Fuori rapporto"
+        },
+        "eccedenza": {
+          "suppl": "Suppl.",
+          "supplOltre": "Suppl. oltre",
+          "strao": "Strao",
+          "straoNott": "Strao nott.",
+          "straoFest": "Strao fest.",
+          "straoFestNott": "Strao fest. nott.",
+          "eccedenti": "Eccedenti",
+          "nonRic": "Non ric.",
+          "inAttesaAutorizzazione": "in attesa di autorizzazione {{ore}}",
+          "nonAutorizzate": "non autorizzate {{ore}}",
+          "compensate": "compensate {{ore}}",
+          "bancaOre": "(banca ore)",
+          "oreMancanti": "Ore mancanti rispetto al lavorabile",
+          "oreInPiuProvvisorie": "Ore in più provvisorie: si qualificano a fine periodo di conteggio",
+          "oreInPiu": "Ore in più"
+        },
+        "statoConRevoca": "({{stato}}) Revoca {{revoca}}",
+        "giustificativo": "Giustificativo",
+        "contatori": "Contatori",
+        "contatoriInfo": {
+          "mesePrecMaturato": "Mese prec. maturato",
+          "mesePrecGoduto": "Mese prec. goduto",
+          "mesePrecSaldo": "Mese prec. saldo",
+          "meseCorrMaturato": "Mese corr. maturato",
+          "meseCorrGoduto": "Mese corr. goduto",
+          "meseCorrSaldo": "Mese corr. saldo",
+          "mesiSuccMaturato": "Mesi succ. maturato",
+          "mesiSuccGoduto": "Mesi succ. goduto",
+          "mesiSuccSaldo": "Mesi succ. saldo"
+        },
+        "popup": {
+          "timbratura": "Timbratura",
+          "originale": "Originale",
+          "arrotondata": "Arrotondata",
+          "giornoCompetenza": "Giorno competenza",
+          "statoRichiesta": "Stato richiesta",
+          "attivita": "Attività",
+          "oreTeoriche": "Ore teoriche",
+          "oreLavorate": "Ore lavorate",
+          "timbrature": "Timbrature",
+          "giustificativi": "Giustificativi",
+          "causali": "Causali"
+        },
+        "giornata": {
+          "statoGiornata": "Stato giornata",
+          "nessunDato": "Nessun dato disponibile",
+          "stato": {
+            "init": "⬜ Non ancora elaborata",
+            "ok": "✅ Giornata corretta",
+            "locked": "🔒 Giornata bloccata",
+            "warning": "⚠️ Presenza di avvertimenti",
+            "err": "❌ Presenza di errori"
+          },
+          "err": {
+            "timbratureMancanti": "Timbrature mancanti rispetto all'orario atteso",
+            "oreInferiori": "Ore lavorate inferiori alle ore previste"
+          },
+          "oreSuperiori": "Ore lavorate superiori alle ore previste (vedi colonna \"In più\")",
+          "erroreN": "Errore {{n}}",
+          "avvertimentoN": "Avvertimento {{n}}",
+          "statoSconosciuto": "Stato sconosciuto",
+          "dettaglioGiorno": "Dettaglio giorno",
+          "statoValore": "Stato: {{stato}}",
+          "nessunRisultato": "Nessun risultato calcolato"
+        }
+      }
+    }
+  }
+}

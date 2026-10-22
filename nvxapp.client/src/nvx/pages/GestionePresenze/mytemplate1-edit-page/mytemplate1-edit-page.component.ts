@@ -1,3 +1,4 @@
+import { TranslocoService } from '@jsverse/transloco';
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
 import { UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
@@ -27,11 +28,12 @@ export class MyTemplate1EditPageComponent extends BasePageConfirmCancelComponent
     private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
     private stringHelperService: StringHelperService,
     private myTemplate1Service: MyTemplate1Service,
-    private refresherService: RefresherService) {
+    private refresherService: RefresherService,
+    private transloco: TranslocoService) {
     super(navCtrl, userInterfaceService, fb);
   }
 
-  get Title(): string { return "MyTemplate1"; }
+  get Title(): string { return this.transloco.translate('attendance.pages.mytemplate1Edit.title'); }
   get EditForm(): FormGroup {
     return this.fb.group({
       descrizione: [null, [Validators.required, Validators.maxLength(50)]],

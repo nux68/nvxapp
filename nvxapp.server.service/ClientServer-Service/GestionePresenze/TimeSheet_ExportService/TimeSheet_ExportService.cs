@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using nvxapp.server.data.Localization;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
@@ -129,7 +130,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                     if (string.IsNullOrEmpty(userId))
                     {
                         Log.Information("Could not find user ID. Unable to send SignalR notifications for job {JobId}.", jobId);
-                        outModel.Messages.Add(new Message("User not identified; cannot start job.", MessageType.Error));
+                        outModel.Messages.Add(new Message(AttendanceTrackingMessages.Get("JobUserNotIdentified"), MessageType.Error));
                     }
                     else
                     {
@@ -152,7 +153,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                                                                 Payload = model.Data.TimeSheet_Export,
                                                                                 Category = LongJobCategory.FileGeneration,
                                                                                 ProgressPercentage = 0,
-                                                                                Message = new Message { Text = "Export presenze avviato...", MsgType = MessageType.Information }
+                                                                                Message = new Message { Text = AttendanceTrackingMessages.Get("ExportStarted"), MsgType = MessageType.Information }
                                                                             }
                                                                          );
 
@@ -201,15 +202,15 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                             Log.Information("Export file created for job {JobId}: {FileName}", jobId, fileName);
                                         }
                                         else if (exportCau == null)
-                                            motivoSenzaFile = "tracciato di export non trovato.";
+                                            motivoSenzaFile = AttendanceTrackingMessages.Get("ExportLayoutNotFound");
                                         else
-                                            motivoSenzaFile = $"il tracciato \"{exportCau.Descrizione}\" non ha causali associate: aggiungile nella pagina del tracciato di export.";
+                                            motivoSenzaFile = AttendanceTrackingMessages.Get("ExportLayoutWithoutCausali", exportCau.Descrizione);
                                     }
                                     else
-                                        motivoSenzaFile = "tracciato di export non trovato.";
+                                        motivoSenzaFile = AttendanceTrackingMessages.Get("ExportLayoutNotFound");
                                 }
                                 else
-                                    motivoSenzaFile = "dati delle presenze non disponibili.";
+                                    motivoSenzaFile = AttendanceTrackingMessages.Get("ExportAttendanceDataUnavailable");
 
                                 if (motivoSenzaFile != null)
                                     Log.Warning("Export job {JobId}: nessun file generato, {Motivo}", jobId, motivoSenzaFile);
@@ -226,8 +227,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                                                                     DownloadUrl = downloadUrl,
                                                                                     ProgressPercentage = 100,
                                                                                     Message = motivoSenzaFile == null
-                                                                                        ? new Message { Text = "Export completato, clicca per scaricare", MsgType = MessageType.Information }
-                                                                                        : new Message { Text = $"Nessun file generato: {motivoSenzaFile}", MsgType = MessageType.Warning },
+                                                                                        ? new Message { Text = AttendanceTrackingMessages.Get("ExportCompletedClickToDownload"), MsgType = MessageType.Information }
+                                                                                        : new Message { Text = AttendanceTrackingMessages.Get("ExportNoFileGenerated", motivoSenzaFile), MsgType = MessageType.Warning },
                                                                                     IsFinished = true
                                                                                 }
                                                                             );
@@ -245,7 +246,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                                                                 Payload = model.Data.TimeSheet_Export,
                                                                                 ProgressPercentage = 100,
                                                                                 Category = LongJobCategory.FileGeneration,
-                                                                                Message = new Message { Text = $"Export presenze fallito: {ex.Message}", MsgType = MessageType.Exception },
+                                                                                Message = new Message { Text = AttendanceTrackingMessages.Get("ExportFailed", ex.Message), MsgType = MessageType.Exception },
                                                                                 IsFinished = true
                                                                             }
                                                                             );
@@ -342,7 +343,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                         Payload = exportPayload,
                         Category = LongJobCategory.FileGeneration,
                         ProgressPercentage = progress,
-                        Message = new Message { Text = $"Elaborazione {processedUsers}/{totalUsers}...", MsgType = MessageType.Information }
+                        Message = new Message { Text = AttendanceTrackingMessages.Get("ExportProcessingProgress", processedUsers, totalUsers), MsgType = MessageType.Information }
                     });
             }
 

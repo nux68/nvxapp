@@ -1,3 +1,4 @@
+import { TranslocoService } from '@jsverse/transloco';
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
@@ -25,7 +26,7 @@ export class MyTemplate1ListPageComponent {
   public searchText!: string;
   public myTemplate1List: My_Template1Model[] | null = null;
   public readonly columns: NvxListColumn<My_Template1Model>[] = [
-    { key: 'descrizione', title: 'Descrizione' },
+    { key: 'descrizione', title: this.transloco.translate('attendance.pages.mytemplate1List.columnDescription') },
   ];
   public actions: NvxListAction<My_Template1Model>[] = [];
   public readonly sortList = (a: My_Template1Model, b: My_Template1Model) => (a.descrizione ?? '').localeCompare(b.descrizione ?? '');
@@ -36,8 +37,9 @@ export class MyTemplate1ListPageComponent {
               public fabMenuService: FabMenuService,
               private myTemplate1Service: MyTemplate1Service,
               private userInterfaceService: UserInterfaceService,
-              private collectionDialogService: CollectionDialogService) {
-    this.title = 'MyTemplate1';
+              private collectionDialogService: CollectionDialogService,
+              private transloco: TranslocoService) {
+    this.title = this.transloco.translate('attendance.pages.mytemplate1List.title');
     this.btnEdit = userInterfaceService.Btn_Modifica;
     this.btnEdit.event = this.handleButtonEditClick;
 
@@ -57,7 +59,7 @@ export class MyTemplate1ListPageComponent {
   ionViewWillEnter() {
     this.loadData();
     this.fabMenuService.fabMenuItem = [
-      new FabMenuItem('Nuovo', 'add-circle-outline', () => {
+      new FabMenuItem(this.transloco.translate('attendance.pages.mytemplate1List.fabAdd'), 'add-circle-outline', () => {
         this.navCtrl.navigateForward('/mytemplate1edit', {
           state: { id: 0 }
         });
@@ -77,7 +79,7 @@ export class MyTemplate1ListPageComponent {
   }
 
   handleButtonDeleteClick = async (item: any) => {
-    const result = await this.collectionDialogService.ConfirmCancelDialog('Confermi la cancellazione?');
+    const result = await this.collectionDialogService.ConfirmCancelDialog(this.transloco.translate('attendance.pages.mytemplate1List.confirmDelete'));
     if (result) {
       let request: GenericRequest<My_template1_DeleteInModel> = new GenericRequest<My_template1_DeleteInModel>(My_template1_DeleteInModel);
       request.data.id = item.id;

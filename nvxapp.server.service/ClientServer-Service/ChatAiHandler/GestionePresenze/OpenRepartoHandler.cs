@@ -1,3 +1,4 @@
+using nvxapp.server.data.Localization;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRepartoService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRepartoService.Models;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Commands;
@@ -18,14 +19,17 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
             _az_SediRepartoService = az_SediRepartoService;
         }
 
-        private static readonly IntentDefinition _intentDefinition = new()
+        // Definizione creata per istanza (handler Scoped): i testi sono nella lingua della richiesta.
+        // Keywords: unione italiano + inglese, qualunque sia la lingua dell'interfaccia.
+        private readonly IntentDefinition _intentDefinition = new()
         {
             Name         = "OpenReparto",
-            DisplayName  = "Apri reparto",
+            DisplayName  = AttendanceTrackingMessages.Get("ChatOpenRepartoDisplayName"),
             Usable4Role = new List<string> { "CompanyPowerAdmin" },
-            Description  = "apre la pagina di modifica di un reparto specifico.",
+            Description  = AttendanceTrackingMessages.Get("ChatOpenRepartoDescription"),
             IsNavigation = true,
-            Keywords     = new() { "reparto", "apri reparto", "modifica reparto", "apri il reparto" },
+            Keywords     = new() { "reparto", "apri reparto", "modifica reparto", "apri il reparto",
+                                   "department", "open department", "edit department" },
             Slots        =
             [
                 new()
@@ -34,8 +38,8 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
                     Type               = "string",
                     Required           = true,
                     PromptDescription  = "nome del reparto da aprire",
-                    Question           = "Quale reparto vuoi aprire?",
-                    Label              = "Reparto",
+                    Question           = AttendanceTrackingMessages.Get("ChatOpenRepartoQuestion"),
+                    Label              = AttendanceTrackingMessages.Get("ChatOpenRepartoLabel"),
                     HasRelevantContent = msg => msg.Length > 0
                 }
             ]
@@ -48,13 +52,13 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
             slots.TryGetValue("nome", out var nome);
 
             if (string.IsNullOrWhiteSpace(nome))
-                return CommandResult.Fail("Nome reparto non specificato.");
+                return CommandResult.Fail(AttendanceTrackingMessages.Get("ChatOpenRepartoNameMissing"));
 
             var result = await _az_SediRepartoService.GetAll(
                 new GenericRequest<Az_SediReparto_GetAll_InModel>(new Az_SediReparto_GetAll_InModel()), false);
 
             if (!result.Success || result.Data?.Az_SediReparto == null)
-                return CommandResult.Fail("Impossibile caricare l'elenco reparti.");
+                return CommandResult.Fail(AttendanceTrackingMessages.Get("ChatOpenRepartoLoadError"));
 
             var nomeTrimmed = nome.Trim();
             var record = result.Data.Az_SediReparto.FirstOrDefault(r =>
@@ -65,7 +69,7 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
                     r.Descrizione?.Contains(nomeTrimmed, StringComparison.OrdinalIgnoreCase) ?? false);
 
             if (record == null)
-                return CommandResult.Fail($"Reparto '{nome}' non trovato.");
+                return CommandResult.Fail(AttendanceTrackingMessages.Get("ChatOpenRepartoNotFound", nome));
 
             var payload = new NavigatePayload
             {
@@ -73,7 +77,7 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
                 State = new Dictionary<string, object> { ["id"] = record.Id }
             };
 
-            return CommandResult.Ok($"Apertura reparto '{record.Descrizione}' (id: {record.Id}).", payload);
+            return CommandResult.Ok(AttendanceTrackingMessages.Get("ChatOpenRepartoOpening", record.Descrizione, record.Id), payload);
         }
     }
 }

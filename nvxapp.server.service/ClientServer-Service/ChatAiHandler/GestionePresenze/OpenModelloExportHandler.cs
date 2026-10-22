@@ -1,3 +1,4 @@
+using nvxapp.server.data.Localization;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_ExportCauService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_ExportCauService.Models;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Commands;
@@ -18,14 +19,17 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
             _par_ExportCauService = par_ExportCauService;
         }
 
-        private static readonly IntentDefinition _intentDefinition = new()
+        // Definizione creata per istanza (handler Scoped): i testi sono nella lingua della richiesta.
+        // Keywords: unione italiano + inglese, qualunque sia la lingua dell'interfaccia.
+        private readonly IntentDefinition _intentDefinition = new()
         {
             Name         = "OpenModelloExport",
-            DisplayName  = "Apri modello export",
+            DisplayName  = AttendanceTrackingMessages.Get("ChatOpenModelloExportDisplayName"),
             Usable4Role = new List<string> { "CompanyPowerAdmin" },
-            Description  = "apre la pagina di modifica di un modello di export specifico.",
+            Description  = AttendanceTrackingMessages.Get("ChatOpenModelloExportDescription"),
             IsNavigation = true,
-            Keywords     = new() { "modello export", "apri modello export", "modifica modello export", "export causali" },
+            Keywords     = new() { "modello export", "apri modello export", "modifica modello export", "export causali",
+                                   "export template", "open export template", "edit export template", "export layout" },
             Slots        =
             [
                 new()
@@ -34,8 +38,8 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
                     Type               = "string",
                     Required           = true,
                     PromptDescription  = "nome o codice del modello di export da aprire",
-                    Question           = "Quale modello di export vuoi aprire?",
-                    Label              = "Modello export",
+                    Question           = AttendanceTrackingMessages.Get("ChatOpenModelloExportQuestion"),
+                    Label              = AttendanceTrackingMessages.Get("ChatOpenModelloExportLabel"),
                     HasRelevantContent = msg => msg.Length > 0
                 }
             ]
@@ -48,13 +52,13 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
             slots.TryGetValue("nome", out var nome);
 
             if (string.IsNullOrWhiteSpace(nome))
-                return CommandResult.Fail("Nome modello export non specificato.");
+                return CommandResult.Fail(AttendanceTrackingMessages.Get("ChatOpenModelloExportNameMissing"));
 
             var result = await _par_ExportCauService.GetAll(
                 new GenericRequest<Par_ExportCau_GetAll_InModel>(new Par_ExportCau_GetAll_InModel()), false);
 
             if (!result.Success || result.Data?.Par_ExportCau == null)
-                return CommandResult.Fail("Impossibile caricare l'elenco modelli export.");
+                return CommandResult.Fail(AttendanceTrackingMessages.Get("ChatOpenModelloExportLoadError"));
 
             var nomeTrimmed = nome.Trim();
             var record = result.Data.Par_ExportCau.FirstOrDefault(r =>
@@ -67,7 +71,7 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
                     (r.Codice?.Contains(nomeTrimmed,      StringComparison.OrdinalIgnoreCase) ?? false));
 
             if (record == null)
-                return CommandResult.Fail($"Modello export '{nome}' non trovato.");
+                return CommandResult.Fail(AttendanceTrackingMessages.Get("ChatOpenModelloExportNotFound", nome));
 
             var payload = new NavigatePayload
             {
@@ -75,7 +79,7 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
                 State = new Dictionary<string, object> { ["id"] = record.Id }
             };
 
-            return CommandResult.Ok($"Apertura modello export '{record.Descrizione}' (id: {record.Id}).", payload);
+            return CommandResult.Ok(AttendanceTrackingMessages.Get("ChatOpenModelloExportOpening", record.Descrizione, record.Id), payload);
         }
     }
 }

@@ -1,4 +1,5 @@
 import { Component, ChangeDetectionStrategy, Input } from '@angular/core';
+import { TranslocoService } from '@jsverse/transloco';
 import { ButtonItem, UserInterfaceService } from '../../../../Utility/infrastructure/user-interface.service';
 import { ModalController } from '@ionic/angular';
 import { Par_CompetenzaModel } from '../../../../ClientServer-Service/GestionePresenze/Par_Competenza/Models/par-competenza-model';
@@ -30,10 +31,11 @@ export class SeletionParCompetenzaDialogComponent {
 
   constructor(protected userInterfaceService: UserInterfaceService,
               private modalCtrl: ModalController,
+              private transloco: TranslocoService,
               private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
               )
   {
-    this.title = 'Seleziona Competenze';
+    this.title = this.transloco.translate('attendance.components.seletionParCompetenzaDialog.title');
     this.buttonbar = userInterfaceService.Btn_ConfermaAnnulla;
     this.buttonbar[0].event = this._handleButtonConfirmClick;
     this.buttonbar[1].event = this._handleButtonCancelClick;

@@ -17,6 +17,7 @@ import { Dip_GG_ResultModel } from '../../../ClientServer-Service/GestionePresen
 import { FabMenuService, FabMenuItem } from '../../../Utility/infrastructure/fab-menu.service';
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
 import { Subscription } from 'rxjs';
+import { TranslocoService } from '@jsverse/transloco';
 
 
 
@@ -63,9 +64,10 @@ export class TimeSheetAdminPageComponent implements OnInit, OnDestroy {
               private dipGGRichiestaService: DipGGRichiestaService,
               public dateTimeUtilService: DateTimeUtilService,
               private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
-              private platform: Platform
+              private platform: Platform,
+              private transloco: TranslocoService
   ) {
-    this.title = 'Calendario';
+    this.title = this.transloco.translate('attendance.pages.timeSheetAdmin.title');
     this.weeks = [];
     // Inizializza con una struttura valida ma vuota
     this.currentMonth = { year: 0, month: 0, days: {}, dip_GG_Richiesta: [], daySlot: [], contatori_Anno_Mese :[]};
@@ -247,14 +249,14 @@ export class TimeSheetAdminPageComponent implements OnInit, OnDestroy {
   isActionSheetOpen = false;
   private readonly actionSheetButtonsTutti = [
     {
-      text: 'Approva richiesta',
+      text: this.transloco.translate('attendance.pages.timeSheetAdmin.approveRequest'),
       role: 'approva',
       data: {
         action: 'approva',
       },
     },
     {
-      text: 'Rifiuta richiesta',
+      text: this.transloco.translate('attendance.pages.timeSheetAdmin.rejectRequest'),
       role: 'rifiuta',
       data: {
         action: 'rifiuta',
@@ -279,7 +281,7 @@ export class TimeSheetAdminPageComponent implements OnInit, OnDestroy {
       //const dataDa = this.dateTimeUtilService.DateTo_ggmmyyyy(giustificativo.data);
       
 
-      this.actionSheetHeader = `Giustificativo : ${parGiustificativiToLongTextPipe.transform(giustificativo.idPar_Giustificativi)} ${this.dateTimeUtilService.DateTo_ggmmyyyy(giustificativo.data)}`;
+      this.actionSheetHeader = this.transloco.translate('attendance.pages.timeSheetAdmin.headerJustification', { type: parGiustificativiToLongTextPipe.transform(giustificativo.idPar_Giustificativi), date: this.dateTimeUtilService.DateTo_ggmmyyyy(giustificativo.data) });
       this.actionSheetSubHeader = null;
 
     } else if ('timbraturaTipo' in obj) {
@@ -288,7 +290,7 @@ export class TimeSheetAdminPageComponent implements OnInit, OnDestroy {
 
       const timbratura = obj as Dip_GG_TimbraturaModel;
       this.actionSheetOpenSelectObj = timbratura;
-      this.actionSheetHeader = `Timbratura : ${tipoTimbraturaToLongTextPipe.transform(timbratura.timbraturaTipo)} ${this.dateTimeUtilService.DateTo_ggmmyyyy_hhmm(timbratura.timbratura)}`;
+      this.actionSheetHeader = this.transloco.translate('attendance.pages.timeSheetAdmin.headerClocking', { type: tipoTimbraturaToLongTextPipe.transform(timbratura.timbraturaTipo), date: this.dateTimeUtilService.DateTo_ggmmyyyy_hhmm(timbratura.timbratura) });
       this.actionSheetSubHeader = null;
     }
 
@@ -298,7 +300,7 @@ export class TimeSheetAdminPageComponent implements OnInit, OnDestroy {
       ? this.actionSheetButtonsTutti.filter(b => b.role === 'rifiuta')
       : this.actionSheetButtonsTutti;
     if (fuori)
-      this.actionSheetSubHeader = 'Giorno fuori dal rapporto di lavoro: la richiesta si può solo rifiutare';
+      this.actionSheetSubHeader = this.transloco.translate('attendance.pages.timeSheetAdmin.outsideEmployment');
 
     this.isActionSheetOpen = true;
   }

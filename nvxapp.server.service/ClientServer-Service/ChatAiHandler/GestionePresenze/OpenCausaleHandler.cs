@@ -1,3 +1,4 @@
+using nvxapp.server.data.Localization;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_CausaliService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_CausaliService.Models;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Commands;
@@ -18,14 +19,17 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
             _par_CausaliService = par_CausaliService;
         }
 
-        private static readonly IntentDefinition _intentDefinition = new()
+        // Definizione creata per istanza (handler Scoped): i testi sono nella lingua della richiesta.
+        // Keywords: unione italiano + inglese, qualunque sia la lingua dell'interfaccia.
+        private readonly IntentDefinition _intentDefinition = new()
         {
             Name         = "OpenCausale",
-            DisplayName  = "Apri causale",
+            DisplayName  = AttendanceTrackingMessages.Get("ChatOpenCausaleDisplayName"),
             Usable4Role = new List<string> { "CompanyPowerAdmin" },
-            Description  = "apre la pagina di modifica di una causale specifica.",
+            Description  = AttendanceTrackingMessages.Get("ChatOpenCausaleDescription"),
             IsNavigation = true,
-            Keywords     = new() { "modifica causale", "apri causale", "apri la causale", "modifica la causale", "causale" },
+            Keywords     = new() { "modifica causale", "apri causale", "apri la causale", "modifica la causale", "causale",
+                                   "edit attendance code", "open attendance code", "attendance code", "pay code" },
             Slots       =
             [
                 new()
@@ -34,8 +38,8 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
                     Type              = "string",
                     Required          = true,
                     PromptDescription = "nome o codice della causale da aprire",
-                    Question          = "Quale causale vuoi aprire?",
-                    Label             = "Causale",
+                    Question          = AttendanceTrackingMessages.Get("ChatOpenCausaleQuestion"),
+                    Label             = AttendanceTrackingMessages.Get("ChatOpenCausaleLabel"),
                     HasRelevantContent = msg => msg.Length > 0
                 }
             ]
@@ -48,14 +52,14 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
             slots.TryGetValue("nome", out var nome);
 
             if (string.IsNullOrWhiteSpace(nome))
-                return CommandResult.Fail("Nome causale non specificato.");
+                return CommandResult.Fail(AttendanceTrackingMessages.Get("ChatOpenCausaleNameMissing"));
 
             // Carica tutte le causali e cerca per descrizione o codice (case-insensitive)
             var result = await _par_CausaliService.GetAll(
                 new GenericRequest<Par_CausaliInModel>(new Par_CausaliInModel()), false);
 
             if (!result.Success || result.Data?.Par_Causali == null)
-                return CommandResult.Fail("Impossibile caricare l'elenco causali.");
+                return CommandResult.Fail(AttendanceTrackingMessages.Get("ChatCausaliLoadError"));
 
             var nomeTrimmed = nome.Trim();
             var causale = result.Data.Par_Causali.FirstOrDefault(c =>
@@ -69,7 +73,7 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
                     (c.Codice?.Contains(nomeTrimmed, StringComparison.OrdinalIgnoreCase) ?? false));
 
             if (causale == null)
-                return CommandResult.Fail($"Causale '{nome}' non trovata.");
+                return CommandResult.Fail(AttendanceTrackingMessages.Get("ChatCausaleNotFound", nome));
 
             var payload = new NavigatePayload
             {
@@ -77,7 +81,7 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
                 State = new Dictionary<string, object> { ["id"] = causale.Id }
             };
 
-            return CommandResult.Ok($"Apertura causale '{causale.Descrizione}' (id: {causale.Id}).", payload);
+            return CommandResult.Ok(AttendanceTrackingMessages.Get("ChatOpenCausaleOpening", causale.Descrizione, causale.Id), payload);
         }
     }
 }

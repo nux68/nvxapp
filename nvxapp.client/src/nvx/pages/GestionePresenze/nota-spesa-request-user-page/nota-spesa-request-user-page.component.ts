@@ -10,6 +10,7 @@ import { Dip_GG_NotaSpesa_AllegatoModel, Dip_GG_NotaSpesa_Get4Richiesta_InModel,
 import { DipGGNotaSpesaService } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_NotaSpesa/dip-gg-nota-spesa.service';
 import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
+import { TranslocoService } from '@jsverse/transloco';
 
 
 /** spesa in compilazione, con gli allegati letti dal dispositivo (in modifica anche quelli gia' salvati, con id) */
@@ -39,7 +40,7 @@ export class NotaSpesaRequestUserPageComponent {
   /** nota spese in modifica (id della richiesta), null per una nuova */
   public idRichiesta: number | null = null;
   public get title(): string {
-    return this.idRichiesta ? 'Modifica nota spese' : 'Richiesta rimborso spese';
+    return this.transloco.translate(this.idRichiesta ? 'attendance.pages.notaSpesaRequestUser.titleModifica' : 'attendance.pages.notaSpesaRequestUser.title');
   }
   public readonly accept = NOTA_SPESA_ALLEGATO_TIPI.join(',');
 
@@ -56,10 +57,11 @@ export class NotaSpesaRequestUserPageComponent {
               private parTipoSpesaService: ParTipoSpesaService,
               private collectionDialogService: CollectionDialogService,
               private refresherService: RefresherService,
-              userInterfaceService: UserInterfaceService) {
+              userInterfaceService: UserInterfaceService,
+              private transloco: TranslocoService) {
 
     const btnInvia = userInterfaceService.Btn_Conferma;
-    btnInvia.text = 'Invia';
+    btnInvia.text = this.transloco.translate('common.buttons.send');
     btnInvia.event = () => this.invia();
     const btnAnnulla = userInterfaceService.Btn_Annulla;
     btnAnnulla.event = () => this.navCtrl.back();
@@ -70,7 +72,7 @@ export class NotaSpesaRequestUserPageComponent {
     this.descrizione = '';
     this.spese = [];
     this.idRichiesta = history.state?.idRichiesta ?? null;
-    this.buttonbar[0].text = this.idRichiesta ? 'Salva' : 'Invia';
+    this.buttonbar[0].text = this.transloco.translate(this.idRichiesta ? 'attendance.pages.notaSpesaRequestUser.salva' : 'common.buttons.send');
     if (this.idRichiesta)
       this.caricaNota(this.idRichiesta);
     else
@@ -144,19 +146,19 @@ export class NotaSpesaRequestUserPageComponent {
     for (const file of files) {
       const tipo = (file.type || '').toLowerCase();
       if (!NOTA_SPESA_ALLEGATO_TIPI.includes(tipo)) {
-        await this.avviso(`"${file.name}": sono ammessi solo PDF e immagini.`);
+        await this.avviso(this.transloco.translate('attendance.pages.notaSpesaRequestUser.erroreTipoFile', { nome: file.name }));
         continue;
       }
       if (file.size > NOTA_SPESA_ALLEGATO_MAX_BYTE) {
-        await this.avviso(`"${file.name}" supera i ${NOTA_SPESA_ALLEGATO_MAX_BYTE / (1024 * 1024)} MB.`);
+        await this.avviso(this.transloco.translate('attendance.pages.notaSpesaRequestUser.erroreDimensioneFile', { nome: file.name, mb: NOTA_SPESA_ALLEGATO_MAX_BYTE / (1024 * 1024) }));
         continue;
       }
       if (spesa.allegati.length >= NOTA_SPESA_ALLEGATI_MAX_PER_SPESA) {
-        await this.avviso(`Al massimo ${NOTA_SPESA_ALLEGATI_MAX_PER_SPESA} allegati per spesa.`);
+        await this.avviso(this.transloco.translate('attendance.pages.notaSpesaRequestUser.erroreMaxAllegati', { max: NOTA_SPESA_ALLEGATI_MAX_PER_SPESA }));
         break;
       }
       if (this.byteAllegati + file.size > NOTA_SPESA_ALLEGATI_MAX_BYTE_RICHIESTA) {
-        await this.avviso(`Gli allegati della nota spese superano i ${NOTA_SPESA_ALLEGATI_MAX_BYTE_RICHIESTA / (1024 * 1024)} MB complessivi.`);
+        await this.avviso(this.transloco.translate('attendance.pages.notaSpesaRequestUser.erroreDimensioneTotale', { mb: NOTA_SPESA_ALLEGATI_MAX_BYTE_RICHIESTA / (1024 * 1024) }));
         break;
       }
       spesa.allegati.push({ nomeFile: file.name, contentType: tipo, contenuto: await this.base64(file), dimensione: file.size });
@@ -188,12 +190,12 @@ export class NotaSpesaRequestUserPageComponent {
   /** controlli prima dell'invio (il server li ripete) */
   private errore(): string | null {
     if (this.spese.length === 0)
-      return 'Aggiungi almeno una spesa.';
+      return this.transloco.translate('attendance.pages.notaSpesaRequestUser.erroreNessunaSpesa');
     for (const [i, s] of this.spese.entries()) {
-      const n = `Spesa ${i + 1}`;
-      if (!s.data) return `${n}: indica la data.`;
-      if (!s.idPar_TipoSpesa) return `${n}: scegli il tipo di spesa.`;
-      if (!(Number(s.importo) > 0)) return `${n}: indica un importo maggiore di zero.`;
+      const n = i + 1;
+      if (!s.data) return this.transloco.translate('attendance.pages.notaSpesaRequestUser.erroreData', { n });
+      if (!s.idPar_TipoSpesa) return this.transloco.translate('attendance.pages.notaSpesaRequestUser.erroreTipoSpesa', { n });
+      if (!(Number(s.importo) > 0)) return this.transloco.translate('attendance.pages.notaSpesaRequestUser.erroreImporto', { n });
     }
     return null;
   }

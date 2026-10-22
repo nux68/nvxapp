@@ -12,70 +12,70 @@
 
       <br />
       <ion-item class="nvx-item-4-title">
-        <ion-label>Info </ion-label>
+        <ion-label>{{ 'attendance.pages.justificationEdit.info' | transloco }} </ion-label>
       </ion-item>
 
 
       <form [formGroup]="_editForm">
 
         <ion-item>
-          <ion-label position="floating">Descrizione</ion-label>
+          <ion-label position="floating">{{ 'attendance.pages.justificationEdit.descrizione' | transloco }}</ion-label>
           <ion-input type="text" formControlName="descrizione"></ion-input>
         </ion-item>
         @if (_editForm.get('descrizione')?.hasError('required') && _editForm.get('descrizione')?.touched) {
           <ion-note color="danger">
-            Descrizione è obbligatorio.
+            {{ 'attendance.pages.justificationEdit.descrizioneRequired' | transloco }}
           </ion-note>
         }
         @if (_editForm.get('descrizione')?.hasError('maxlength') && _editForm.get('descrizione')?.touched) {
           <ion-note color="danger">
-            Descrizione non può superare i 20 caratteri.
+            {{ 'attendance.pages.justificationEdit.descrizioneMaxLength' | transloco: { max: 20 } }}
           </ion-note>
         }
 
 
         <ion-item>
-          <ion-label position="floating">Codice</ion-label>
+          <ion-label position="floating">{{ 'attendance.pages.justificationEdit.codice' | transloco }}</ion-label>
           <ion-input type="text" formControlName="codice"></ion-input>
         </ion-item>
         @if (_editForm.get('codice')?.hasError('required') && _editForm.get('codice')?.touched) {
           <ion-note color="danger">
-            codice è obbligatorio.
+            {{ 'attendance.pages.justificationEdit.codiceRequired' | transloco }}
           </ion-note>
         }
         @if (_editForm.get('codice')?.hasError('maxlength') && _editForm.get('codice')?.touched) {
           <ion-note color="danger">
-            codice non può superare i 5 caratteri.
+            {{ 'attendance.pages.justificationEdit.codiceMaxLength' | transloco: { max: 5 } }}
           </ion-note>
         }
 
         <ion-item>
-          <ion-label>Colore sfondo</ion-label>
+          <ion-label>{{ 'attendance.pages.justificationEdit.backgroundColor' | transloco }}</ion-label>
           <input type="color" formControlName="backgroundColor">
         </ion-item>
         <ion-item>
-          <ion-label>Colore testto</ion-label>
+          <ion-label>{{ 'attendance.pages.justificationEdit.textColor' | transloco }}</ion-label>
           <input type="color" formControlName="textColor">
         </ion-item>
 
 
         <ion-item>
-          <ion-label position="floating">Segno</ion-label>
+          <ion-label position="floating">{{ 'attendance.pages.justificationEdit.segno' | transloco }}</ion-label>
           <ion-select formControlName="segno" interface="popover">
             <ion-select-option [value]="signWithNeutral.Down">-</ion-select-option>
-            <ion-select-option [value]="signWithNeutral.Neutral">Non agisce</ion-select-option>
+            <ion-select-option [value]="signWithNeutral.Neutral">{{ 'attendance.pages.justificationEdit.segnoNeutral' | transloco }}</ion-select-option>
             <ion-select-option [value]="signWithNeutral.Up">+</ion-select-option>
           </ion-select>
         </ion-item>
         @if (_editForm.get('segno')?.hasError('required') && _editForm.get('segno')?.touched) {
           <ion-note color="danger">
-            Il tipo segno è obbligatorio.
+            {{ 'attendance.pages.justificationEdit.segnoRequired' | transloco }}
           </ion-note>
         }
 
         <ion-item>
-          <ion-label position="stacked">Causale </ion-label>
-          <ion-select formControlName="idCausale" placeholder="Seleziona la causale">
+          <ion-label position="stacked">{{ 'attendance.pages.justificationEdit.causale' | transloco }} </ion-label>
+          <ion-select formControlName="idCausale" [placeholder]="'attendance.pages.justificationEdit.causalePlaceholder' | transloco">
             @for (causali of par_CausaliModelList; track causali) {
               <ion-select-option [value]="causali.id">
                 {{ causali.descrizione }}
@@ -85,46 +85,44 @@
         </ion-item>
         @if (_editForm.get('idCausale')?.hasError('required') && _editForm.get('idCausale')?.touched) {
           <ion-note color="danger">
-            La causale è obbligatoria.
+            {{ 'attendance.pages.justificationEdit.causaleRequired' | transloco }}
           </ion-note>
         }
 
         <ion-item>
-          <ion-label>Visualizza nel piano ferie</ion-label>
+          <ion-label>{{ 'attendance.pages.justificationEdit.visualizzaInPianoFerie' | transloco }}</ion-label>
           <ion-toggle formControlName="visualizzaInPianoFerie" slot="end"></ion-toggle>
         </ion-item>
 
         <ion-item>
-          <ion-label position="floating">Tipo contatore</ion-label>
+          <ion-label position="floating">{{ 'attendance.pages.justificationEdit.tipoContatore' | transloco }}</ion-label>
           <ion-select formControlName="tipoContatore" interface="popover">
-            <ion-select-option [value]="tipoContatore.NoContatore">Nessun contatore</ion-select-option>
-            <ion-select-option [value]="tipoContatore.Contatore">Contatore</ion-select-option>
-            <ion-select-option [value]="tipoContatore.ContatoreConAvviso">Contatore con avviso</ion-select-option>
-            <ion-select-option [value]="tipoContatore.ContatoreConBlocco">Contatore con blocco</ion-select-option>
+            <ion-select-option [value]="tipoContatore.NoContatore">{{ 'attendance.pages.justificationEdit.noContatore' | transloco }}</ion-select-option>
+            <ion-select-option [value]="tipoContatore.Contatore">{{ 'attendance.pages.justificationEdit.contatore' | transloco }}</ion-select-option>
+            <ion-select-option [value]="tipoContatore.ContatoreConAvviso">{{ 'attendance.pages.justificationEdit.contatoreConAvviso' | transloco }}</ion-select-option>
+            <ion-select-option [value]="tipoContatore.ContatoreConBlocco">{{ 'attendance.pages.justificationEdit.contatoreConBlocco' | transloco }}</ion-select-option>
           </ion-select>
         </ion-item>
         @if (_editForm.get('tipoContatore')?.hasError('required') && _editForm.get('tipoContatore')?.touched) {
           <ion-note color="danger">
-            Il tipo contatore è obbligatorio.
+            {{ 'attendance.pages.justificationEdit.tipoContatoreRequired' | transloco }}
           </ion-note>
         }
 
         <ion-item>
-          <ion-toggle formControlName="bancaOre" justify="space-between">Recupero banca ore</ion-toggle>
+          <ion-toggle formControlName="bancaOre" justify="space-between">{{ 'attendance.pages.justificationEdit.bancaOre' | transloco }}</ion-toggle>
         </ion-item>
         <ion-item>
-          <ion-toggle formControlName="autorizzaStraordinario" justify="space-between">Autorizza ore in più</ion-toggle>
+          <ion-toggle formControlName="autorizzaStraordinario" justify="space-between">{{ 'attendance.pages.justificationEdit.autorizzaStraordinario' | transloco }}</ion-toggle>
         </ion-item>
         @if (_editForm.get('autorizzaStraordinario')?.value) {
           <ion-note>
-            Autorizzazione allo straordinario: le ore del giustificativo approvato sono il massimo di ore in più riconosciute nel giorno
-            (profili con "Ore in più solo se autorizzate"). Non cambia le ore dovute e non scrive causali: lascia vuota la causale e il segno neutro.
-            Il calcolo non approva mai in automatico queste richieste.
+            {{ 'attendance.pages.justificationEdit.autorizzaStraordinarioNote' | transloco }}
           </ion-note>
         }
         @if (_editForm.get('bancaOre')?.value) {
           <ion-note>
-            Il maturato del contatore sono le ore in più accreditate in banca ore nei cartellini approvati.
+            {{ 'attendance.pages.justificationEdit.bancaOreNote' | transloco }}
           </ion-note>
         }
 

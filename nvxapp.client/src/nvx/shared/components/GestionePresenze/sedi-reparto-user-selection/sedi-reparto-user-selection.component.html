@@ -4,9 +4,9 @@
     <ion-row class="ion-align-items-end">
       <ion-col size-xs="12" size-sm="3">
         <ion-item>
-          <ion-label position="stacked">Anno</ion-label>
+          <ion-label position="stacked">{{ 'attendance.components.sediRepartoUserSelection.anno' | transloco }}</ion-label>
           <ion-select [(ngModel)]="selectedYear" (ionChange)="onYearOrMonthChange()"
-            interface="popover" placeholder="Anno"
+            interface="popover" placeholder="{{ 'attendance.components.sediRepartoUserSelection.anno' | transloco }}"
             [disabled]="yearList.length === 0">
             @for (year of yearList; track year) {
               <ion-select-option [value]="year">{{ year }}</ion-select-option>
@@ -18,19 +18,19 @@
         <!-- Adjusted size for better fit -->
         <div class="month-navigation-container">
           <ion-item class="month-select-item">
-            <ion-label position="stacked">Mese</ion-label>
+            <ion-label position="stacked">{{ 'attendance.components.sediRepartoUserSelection.mese' | transloco }}</ion-label>
             <ion-select [(ngModel)]="selectedMonth" (ionChange)="onYearOrMonthChange()"
-              interface="popover" placeholder="Mese"
+              interface="popover" placeholder="{{ 'attendance.components.sediRepartoUserSelection.mese' | transloco }}"
               [disabled]="monthList.length === 0 || !selectedYear">
               @for (month of monthList; track month) {
                 <ion-select-option [value]="month.value">{{ month.name }}</ion-select-option>
               }
             </ion-select>
           </ion-item>
-          <ion-button (click)="navigateToPreviousMonth()" [disabled]="!selectedYear || !selectedMonth" shape="round" color="primary" aria-label="Mese precedente">
+          <ion-button (click)="navigateToPreviousMonth()" [disabled]="!selectedYear || !selectedMonth" shape="round" color="primary" [attr.aria-label]="'attendance.components.sediRepartoUserSelection.mesePrecedente' | transloco">
             <ion-icon name="chevron-back-outline" slot="icon-only"></ion-icon>
           </ion-button>
-          <ion-button (click)="navigateToNextMonth()" [disabled]="!selectedYear || !selectedMonth" shape="round" color="primary" aria-label="Mese successivo">
+          <ion-button (click)="navigateToNextMonth()" [disabled]="!selectedYear || !selectedMonth" shape="round" color="primary" [attr.aria-label]="'attendance.components.sediRepartoUserSelection.meseSuccessivo' | transloco">
             <ion-icon name="chevron-forward-outline" slot="icon-only"></ion-icon>
           </ion-button>
         </div>
@@ -45,10 +45,10 @@
     @if (showSediSelect) {
       <ion-col size-xs="12" [ngClass]="columSize_4Sede()">
         <ion-item>
-          <ion-label position="stacked">Sede</ion-label>
+          <ion-label position="stacked">{{ 'attendance.components.sediRepartoUserSelection.sede' | transloco }}</ion-label>
           <ion-select [(ngModel)]="selectedSediId"
             (ionChange)="onSediChange()"
-            placeholder="Seleziona una sede"
+            placeholder="{{ 'attendance.components.sediRepartoUserSelection.selezionaSede' | transloco }}"
             interface="modal">
             @for (sede of az_SediList; track sede) {
               <ion-select-option [value]="sede.id">
@@ -64,10 +64,10 @@
     @if (showRepartoSelect) {
       <ion-col size-xs="12" [ngClass]="columSize_4Reparto()">
         <ion-item>
-          <ion-label position="stacked">Reparto</ion-label>
+          <ion-label position="stacked">{{ 'attendance.components.sediRepartoUserSelection.reparto' | transloco }}</ion-label>
           <ion-select [(ngModel)]="selectedRepartoId"
             (ionChange)="onRepartoChange()"
-            placeholder="Seleziona uno o più reparti"
+            placeholder="{{ 'attendance.components.sediRepartoUserSelection.selezionaReparti' | transloco }}"
             interface="modal"
             [disabled]="(showSediSelect && !selectedSediId) || filteredReparti.length === 0"
             [multiple]="!singleSelectReparti">
@@ -89,7 +89,7 @@
             button
             [disabled]="(!selectedRepartoId || selectedRepartoId.length === 0) || az_SediRepartoUserList.length === 0"
             (click)="openDipSelectorModal()">
-            <ion-label position="stacked">{{ singleSelectUser ? 'Dipendente' : 'Dipendenti' }}</ion-label>
+            <ion-label position="stacked">{{ (singleSelectUser ? 'attendance.components.sediRepartoUserSelection.dipendente' : 'attendance.components.sediRepartoUserSelection.dipendenti') | transloco }}</ion-label>
             <ion-text class="nvx-user-label"
               [appHoverPopup]="get_SelectedUsersPopupData()"
               [appHoverPopupEnabled]="!singleSelectUser && selectedUserId && selectedUserId.length > 0">
@@ -99,10 +99,10 @@
           </ion-item>
           @if (az_SediRepartoUserList.length > 1 && singleSelectUser) {
             <div class="user-navigation-buttons">
-              <ion-button (click)="navigateToPreviousUser()" [disabled]="!canNavigatePrevious" shape="round" color="primary" aria-label="Utente precedente">
+              <ion-button (click)="navigateToPreviousUser()" [disabled]="!canNavigatePrevious" shape="round" color="primary" [attr.aria-label]="'attendance.components.sediRepartoUserSelection.utentePrecedente' | transloco">
                 <ion-icon name="chevron-back-outline" slot="icon-only"></ion-icon>
               </ion-button>
-              <ion-button (click)="navigateToNextUser()" [disabled]="!canNavigateNext" shape="round" color="primary" aria-label="Utente successivo">
+              <ion-button (click)="navigateToNextUser()" [disabled]="!canNavigateNext" shape="round" color="primary" [attr.aria-label]="'attendance.components.sediRepartoUserSelection.utenteSuccessivo' | transloco">
                 <ion-icon name="chevron-forward-outline" slot="icon-only"></ion-icon>
               </ion-button>
             </div>

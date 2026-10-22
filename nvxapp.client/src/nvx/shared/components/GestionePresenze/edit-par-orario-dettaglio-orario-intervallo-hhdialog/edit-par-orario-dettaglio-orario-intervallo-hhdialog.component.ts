@@ -1,4 +1,5 @@
 import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { TranslocoService } from '@jsverse/transloco';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
 import { Par_ProfiloOrarioGGModel } from '../../../../ClientServer-Service/GestionePresenze/Par_ProfiloOrarioGG/Models/par-profilo-orario-gg-model';
@@ -38,6 +39,7 @@ export class EditParOrarioDettaglioOrarioIntervalloHHDialogComponent extends Bas
     protected override userInterfaceService: UserInterfaceService,
     protected override fb: FormBuilder,
     protected override modalCtrl: ModalController,
+    private transloco: TranslocoService,
     private stringHelperService: StringHelperService,
     public sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService
   ) {
@@ -48,7 +50,7 @@ export class EditParOrarioDettaglioOrarioIntervalloHHDialogComponent extends Bas
     super.ionViewWillEnter();
   }
 
-  get Title(): string { return "Intervallo orari"; }
+  get Title(): string { return this.transloco.translate('attendance.components.editParOrarioDettaglioOrarioIntervalloHhdialog.title'); }
 
   get EditForm(): FormGroup {
     return this.fb.group({

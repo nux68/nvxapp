@@ -1,3 +1,4 @@
+import { TranslocoService } from '@jsverse/transloco';
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
 import { UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
@@ -28,11 +29,12 @@ export class CompetenceEditPageComponent extends BasePageConfirmCancelComponent<
     private parameterService: ParameterService,
     private stringHelperService: StringHelperService,
     private azCompetenzaService: ParCompetenzaService,
-    private refresherService: RefresherService) {
+    private refresherService: RefresherService,
+    private transloco: TranslocoService) {
     super(navCtrl, userInterfaceService, fb);
   }
 
-  get Title(): string { return 'Competenze'; }
+  get Title(): string { return this.transloco.translate('attendance.pages.competenceEdit.title'); }
   get EditForm(): FormGroup {
     return this.fb.group({
       descrizione: [null, [Validators.required, Validators.maxLength(50)]],

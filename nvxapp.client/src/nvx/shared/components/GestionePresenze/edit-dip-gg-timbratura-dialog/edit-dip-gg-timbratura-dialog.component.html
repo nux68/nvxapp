@@ -19,7 +19,7 @@
         <ion-card-content>
           <ion-grid>
             <ion-item>
-              <ion-label position="floating">Giorno Competenza</ion-label>
+              <ion-label position="floating">{{ 'attendance.components.editDipGgTimbraturaDialog.giornoCompetenza' | transloco }}</ion-label>
               <ion-datetime-button class="datetime-button-with-label" datetime="giornoCompetenza-modal"></ion-datetime-button>
               <ion-modal [keepContentsMounted]="true">
                 <ng-template>
@@ -28,7 +28,7 @@
                     presentation="date"
                     [showDefaultButtons]="true"
                     doneText="OK"
-                    cancelText="Annulla">
+                    [cancelText]="'common.buttons.cancel' | transloco">
                   </ion-datetime>
                 </ng-template>
               </ion-modal>
@@ -37,7 +37,7 @@
             <ion-row class="ion-no-padding nvx-timbrature-row">
               <ion-col class="ion-no-padding" size="12" [sizeSm]="mostraOriginale ? 6 : 12">
                 <ion-item>
-                  <ion-label position="floating">Timbratura</ion-label>
+                  <ion-label position="floating">{{ 'attendance.components.editDipGgTimbraturaDialog.timbratura' | transloco }}</ion-label>
                   <ion-datetime-button class="datetime-button-with-label" datetime="timbratura-modal"></ion-datetime-button>
                   <ion-modal [keepContentsMounted]="true">
                     <ng-template>
@@ -46,7 +46,7 @@
                         presentation="date-time"
                         [showDefaultButtons]="true"
                         doneText="OK"
-                        cancelText="Annulla">
+                        [cancelText]="'common.buttons.cancel' | transloco">
                       </ion-datetime>
                     </ng-template>
                   </ion-modal>
@@ -55,7 +55,7 @@
               @if (mostraOriginale) {
                 <ion-col class="ion-no-padding" size="12" sizeSm="6">
                   <ion-item>
-                    <ion-label position="floating">Timbratura Originale</ion-label>
+                    <ion-label position="floating">{{ 'attendance.components.editDipGgTimbraturaDialog.timbraturaOriginale' | transloco }}</ion-label>
                     <ion-datetime-button [disabled]="true" class="datetime-button-with-label" datetime="timbraturaOriginale-modal"></ion-datetime-button>
                     <ion-modal [keepContentsMounted]="true">
                       <ng-template>
@@ -64,7 +64,7 @@
                           presentation="date-time"
                           [showDefaultButtons]="true"
                           doneText="OK"
-                          cancelText="Annulla">
+                          [cancelText]="'common.buttons.cancel' | transloco">
                         </ion-datetime>
                       </ng-template>
                     </ion-modal>
@@ -74,7 +74,7 @@
             </ion-row>
             @if (_editModel.timbraturaTipo === TipoTimbratura.Entrata || _editModel.timbraturaTipo === TipoTimbratura.Uscita) {
               <ion-item>
-                <ion-label position="floating">Timbratura Arrotondata</ion-label>
+                <ion-label position="floating">{{ 'attendance.components.editDipGgTimbraturaDialog.timbraturaArrotondata' | transloco }}</ion-label>
                 <ion-datetime-button [disabled]="true" class="datetime-button-with-label" datetime="timbraturaArrotondata-modal"></ion-datetime-button>
                 <ion-modal [keepContentsMounted]="true">
                   <ng-template>
@@ -83,15 +83,15 @@
                       presentation="date-time"
                       [showDefaultButtons]="true"
                       doneText="OK"
-                      cancelText="Annulla">
+                      [cancelText]="'common.buttons.cancel' | transloco">
                     </ion-datetime>
                   </ng-template>
                 </ion-modal>
               </ion-item>
             }
             <ion-item>
-              <ion-label position="stacked">Commessa Attivita</ion-label>
-              <ion-select formControlName="idAz_SubCommessaAttivita" placeholder="Seleziona l attivita">
+              <ion-label position="stacked">{{ 'attendance.components.editDipGgTimbraturaDialog.commessaAttivita' | transloco }}</ion-label>
+              <ion-select formControlName="idAz_SubCommessaAttivita" placeholder="{{ 'attendance.components.editDipGgTimbraturaDialog.selezionaAttivita' | transloco }}">
                 @for (attivita of az_SubCommessaAttivita_4FullList; track attivita) {
                   <ion-select-option [value]="attivita.subCommessaAttivita_Id">
                     {{ attivita.cliente_Descrizione }} {{ attivita.commessa_Decrizione }} {{ attivita.subCommessa_Decrizione }} {{ attivita.subCommessaAttivita_Par_Attivita_Descrizione }}
@@ -101,7 +101,7 @@
             </ion-item>
             @if (_editForm.get('idAz_SubCommessaAttivita')?.hasError('required') && _editForm.get('idAz_SubCommessaAttivita')?.touched) {
               <ion-note color="danger">
-                L attivita è obbligatoria.
+                {{ 'attendance.components.editDipGgTimbraturaDialog.attivitaObbligatoria' | transloco }}
               </ion-note>
             }
           </ion-grid>

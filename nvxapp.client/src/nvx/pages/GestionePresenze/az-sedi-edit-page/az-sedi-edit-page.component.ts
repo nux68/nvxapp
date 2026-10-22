@@ -13,6 +13,7 @@ import { AzSediService } from '../../../ClientServer-Service/GestionePresenze/Az
 import { Az_SediModel, Az_SediGetInModel, Az_SediPutInModel, Az_SediGetOutModel } from '../../../ClientServer-Service/GestionePresenze/Az_Sedi/Models/az-sedi-model';
 import { Par_AttivitaModel } from '../../../ClientServer-Service/GestionePresenze/Par_Attivita/Models/par-attivita-model';
 import { CheckObjOn_Id_Number } from '../../../ClientServer-Service/ModelsBase/check-obj';
+import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
   selector: 'app-az-sedi-edit-page',
@@ -33,7 +34,8 @@ export class AzSediEditPageComponent extends BasePageConfirmCancelComponent<Az_S
     private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
     private stringHelperService: StringHelperService,
     private azSediService: AzSediService,
-    private refresherService: RefresherService) {
+    private refresherService: RefresherService,
+    private transloco: TranslocoService) {
     super(navCtrl, userInterfaceService, fb);
   }
 
@@ -43,7 +45,7 @@ export class AzSediEditPageComponent extends BasePageConfirmCancelComponent<Az_S
     this._par_Attivita = this.sharedParameterGestionePresenzeService.Par_Attivita;
   }
 
-  get Title(): string { return 'Sede'; }
+  get Title(): string { return this.transloco.translate('attendance.pages.azSediEdit.title'); }
   get EditForm(): FormGroup {
     return this.fb.group({
       //SUB FORM PER OGGETTi DI OGGETTI
@@ -142,7 +144,7 @@ export class AzSediEditPageComponent extends BasePageConfirmCancelComponent<Az_S
   public getSedeDescr(): string {
 
     if (this?._editModel?.az_Sedi?.descrizione) {
-      return ' di : "' + this._editModel.az_Sedi.descrizione + '"';
+      return ' ' + this.transloco.translate('attendance.pages.azSediEdit.diDescr', { descr: this._editModel.az_Sedi.descrizione });
     }
     else
       return '';

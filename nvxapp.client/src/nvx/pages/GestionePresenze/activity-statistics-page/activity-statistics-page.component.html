@@ -28,19 +28,19 @@
     <!-- Segment tabs -->
     <ion-segment [(ngModel)]="selectedSegment" class="nvx-segment">
       <ion-segment-button value="dipendente">
-        <ion-label>Per dipendente</ion-label>
+        <ion-label>{{ 'attendance.pages.activityStatistics.perDipendente' | transloco }}</ion-label>
         @if (righePerDipendente.length > 0) {
           <ion-badge color="primary">{{ righePerDipendente.length }}</ion-badge>
         }
       </ion-segment-button>
       <ion-segment-button value="attivita">
-        <ion-label>Totali attività</ion-label>
+        <ion-label>{{ 'attendance.pages.activityStatistics.totaliAttivita' | transloco }}</ion-label>
         @if (totaliPerAttivita.length > 0) {
           <ion-badge color="secondary">{{ totaliPerAttivita.length }}</ion-badge>
         }
       </ion-segment-button>
       <ion-segment-button value="escluse">
-        <ion-label>Giornate escluse</ion-label>
+        <ion-label>{{ 'attendance.pages.activityStatistics.giornateEscluse' | transloco }}</ion-label>
         @if (giornateEscluse.length > 0) {
           <ion-badge color="warning">{{ giornateEscluse.length }}</ion-badge>
         }
@@ -54,10 +54,10 @@
             <ion-grid>
               <!-- Header -->
               <ion-row class="nvx-header-row">
-                <ion-col size="3"><ion-label>Attività</ion-label></ion-col>
-                <ion-col size="3"><ion-label>Commessa / Sub-commessa</ion-label></ion-col>
-                <ion-col size="3"><ion-label>Cliente</ion-label></ion-col>
-                <ion-col size="3" class="ion-text-end"><ion-label>Ore</ion-label></ion-col>
+                <ion-col size="3"><ion-label>{{ 'attendance.pages.activityStatistics.attivita' | transloco }}</ion-label></ion-col>
+                <ion-col size="3"><ion-label>{{ 'attendance.pages.activityStatistics.commessaSubCommessa' | transloco }}</ion-label></ion-col>
+                <ion-col size="3"><ion-label>{{ 'attendance.pages.activityStatistics.cliente' | transloco }}</ion-label></ion-col>
+                <ion-col size="3" class="ion-text-end"><ion-label>{{ 'attendance.pages.activityStatistics.ore' | transloco }}</ion-label></ion-col>
               </ion-row>
               <!-- Gruppo per dipendente -->
               @for (gruppo of righePerDipendente_Raggruppate; track gruppo.userId) {
@@ -101,7 +101,7 @@
           } @else {
             <ion-item lines="none">
               <ion-icon name="information-circle-outline" color="medium" slot="start"></ion-icon>
-              <ion-label color="medium">Nessun dato disponibile</ion-label>
+              <ion-label color="medium">{{ 'attendance.pages.activityStatistics.nessunDato' | transloco }}</ion-label>
             </ion-item>
           }
         </ion-card-content>
@@ -115,10 +115,10 @@
             <ion-grid>
               <!-- Header -->
               <ion-row class="nvx-header-row">
-                <ion-col size="3"><ion-label>Attività</ion-label></ion-col>
-                <ion-col size="3"><ion-label>Commessa / Sub-commessa</ion-label></ion-col>
-                <ion-col size="3"><ion-label>Cliente</ion-label></ion-col>
-                <ion-col size="3" class="ion-text-end"><ion-label>Ore totali</ion-label></ion-col>
+                <ion-col size="3"><ion-label>{{ 'attendance.pages.activityStatistics.attivita' | transloco }}</ion-label></ion-col>
+                <ion-col size="3"><ion-label>{{ 'attendance.pages.activityStatistics.commessaSubCommessa' | transloco }}</ion-label></ion-col>
+                <ion-col size="3"><ion-label>{{ 'attendance.pages.activityStatistics.cliente' | transloco }}</ion-label></ion-col>
+                <ion-col size="3" class="ion-text-end"><ion-label>{{ 'attendance.pages.activityStatistics.oreTotali' | transloco }}</ion-label></ion-col>
               </ion-row>
               <!-- Righe -->
               @for (t of totaliPerAttivita; track t; let i = $index) {
@@ -147,7 +147,7 @@
               }
               <!-- Riga totale generale -->
               <ion-row class="nvx-total-row">
-                <ion-col size="9"><strong>Totale complessivo</strong></ion-col>
+                <ion-col size="9"><strong>{{ 'attendance.pages.activityStatistics.totaleComplessivo' | transloco }}</strong></ion-col>
                 <ion-col size="3" class="ion-text-end">
                   <ion-chip color="primary" class="nvx-chip-ore">
                     <ion-icon name="time-outline"></ion-icon>
@@ -159,7 +159,7 @@
           } @else {
             <ion-item lines="none">
               <ion-icon name="information-circle-outline" color="medium" slot="start"></ion-icon>
-              <ion-label color="medium">Nessun dato disponibile</ion-label>
+              <ion-label color="medium">{{ 'attendance.pages.activityStatistics.nessunDato' | transloco }}</ion-label>
             </ion-item>
           }
         </ion-card-content>
@@ -173,9 +173,9 @@
             <ion-grid>
               <!-- Header -->
               <ion-row class="nvx-header-row">
-                <ion-col size="4"><ion-label>Dipendente</ion-label></ion-col>
-                <ion-col size="4"><ion-label>Data</ion-label></ion-col>
-                <ion-col size="4"><ion-label>Stato</ion-label></ion-col>
+                <ion-col size="4"><ion-label>{{ 'attendance.pages.activityStatistics.dipendente' | transloco }}</ion-label></ion-col>
+                <ion-col size="4"><ion-label>{{ 'attendance.pages.activityStatistics.data' | transloco }}</ion-label></ion-col>
+                <ion-col size="4"><ion-label>{{ 'attendance.pages.activityStatistics.stato' | transloco }}</ion-label></ion-col>
               </ion-row>
               <!-- Righe -->
               @for (e of giornateEscluse; track e; let i = $index) {
@@ -202,7 +202,7 @@
           } @else {
             <ion-item lines="none">
               <ion-icon name="checkmark-circle-outline" color="success" slot="start"></ion-icon>
-              <ion-label color="success">Nessuna giornata esclusa</ion-label>
+              <ion-label color="success">{{ 'attendance.pages.activityStatistics.nessunaGiornataEsclusa' | transloco }}</ion-label>
             </ion-item>
           }
         </ion-card-content>

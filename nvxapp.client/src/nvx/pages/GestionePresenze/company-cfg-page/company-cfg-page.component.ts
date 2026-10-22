@@ -11,9 +11,11 @@ import { AzCfgService } from '../../../ClientServer-Service/GestionePresenze/Az_
 import { Az_Cfg_Get_InModel, Az_Cfg_Put_InModel, Az_CfgModel, TipoApprovazione } from '../../../ClientServer-Service/GestionePresenze/Az_Cfg/Models/az-cfg-model';
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
 import { ParTable } from '../../../shared/shared-parameter-gestione-presenze.service';
+import { TranslocoService } from '@jsverse/transloco';
 
 interface TipoApprovazioneOption {
   value: TipoApprovazione;
+  /** chiave di traduzione */
   label: string;
 }
 
@@ -29,9 +31,9 @@ export class CompanyCfgPageComponent extends BasePageConfirmCancelComponent<Az_C
   public currSection: string = "first";
   modifiedDescription: string | null = null;
   tipoApprovazioneOptions: TipoApprovazioneOption[] = [
-    { value: TipoApprovazione.SigleAdmin, label: 'Singolo amministratore' },
-    { value: TipoApprovazione.AllAdmin, label: 'Tutti gli amministratori' },
-    { value: TipoApprovazione.AllAdminHierarchy, label: 'Tutti gli amministratori gerarchicamente' }
+    { value: TipoApprovazione.SigleAdmin, label: 'attendance.pages.companyCfg.approvazioneSingolo' },
+    { value: TipoApprovazione.AllAdmin, label: 'attendance.pages.companyCfg.approvazioneTutti' },
+    { value: TipoApprovazione.AllAdminHierarchy, label: 'attendance.pages.companyCfg.approvazioneGerarchica' }
   ];
 
   constructor(protected override navCtrl: NavController,
@@ -39,7 +41,8 @@ export class CompanyCfgPageComponent extends BasePageConfirmCancelComponent<Az_C
     protected override fb: FormBuilder,
     private stringHelperService: StringHelperService,
     private azCfgService: AzCfgService,
-    private refresherService: RefresherService) {
+    private refresherService: RefresherService,
+    private transloco: TranslocoService) {
 
     super(navCtrl, userInterfaceService, fb);
 
@@ -47,10 +50,10 @@ export class CompanyCfgPageComponent extends BasePageConfirmCancelComponent<Az_C
 
   getTipoApprovazioneLabel(value: TipoApprovazione): string {
     const option = this.tipoApprovazioneOptions.find(opt => opt.value === value);
-    return option ? option.label : '';
+    return option ? this.transloco.translate(option.label) : '';
   }
 
-  get Title(): string { return "Company cfg"; }
+  get Title(): string { return this.transloco.translate('attendance.pages.companyCfg.title'); }
   get EditForm(): FormGroup {
     return this.
       fb.group({

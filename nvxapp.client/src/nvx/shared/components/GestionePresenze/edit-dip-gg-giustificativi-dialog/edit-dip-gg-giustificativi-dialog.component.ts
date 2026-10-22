@@ -1,4 +1,5 @@
 import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { TranslocoService } from '@jsverse/transloco';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
 import { BaseDialogConfirmCancelComponent } from '../../../../pages/_BASE/base-dialog-confirm-cancel/base-dialog-confirm-cancel.component';
@@ -34,6 +35,7 @@ export class EditDipGGGiustificativiDialogComponent extends BaseDialogConfirmCan
     protected override userInterfaceService: UserInterfaceService,
     protected override fb: FormBuilder,
     protected override modalCtrl: ModalController,
+    private transloco: TranslocoService,
     private stringHelperService: StringHelperService,
     public sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService
   ) {
@@ -46,7 +48,7 @@ export class EditDipGGGiustificativiDialogComponent extends BaseDialogConfirmCan
     this._par_GiustificativiList = this.sharedParameterGestionePresenzeService.Par_Giustificativi;
   }
 
-  get Title(): string { return "Giustificativo"; }
+  get Title(): string { return this.transloco.translate('attendance.components.editDipGgGiustificativiDialog.title'); }
 
   get EditForm(): FormGroup {
     return this.fb.group({

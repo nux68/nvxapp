@@ -1,3 +1,4 @@
+using nvxapp.server.data.Localization;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_CommessaService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_CommessaService.Models;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Commands;
@@ -18,14 +19,17 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
             _az_CommessaService = az_CommessaService;
         }
 
-        private static readonly IntentDefinition _intentDefinition = new()
+        // Definizione creata per istanza (handler Scoped): i testi sono nella lingua della richiesta.
+        // Keywords: unione italiano + inglese, qualunque sia la lingua dell'interfaccia.
+        private readonly IntentDefinition _intentDefinition = new()
         {
             Name         = "OpenCommessa",
-            DisplayName  = "Apri commessa",
+            DisplayName  = AttendanceTrackingMessages.Get("ChatOpenCommessaDisplayName"),
             Usable4Role = new List<string> { "CompanyPowerAdmin" },
-            Description  = "apre la pagina di modifica di una commessa specifica.",
+            Description  = AttendanceTrackingMessages.Get("ChatOpenCommessaDescription"),
             IsNavigation = true,
-            Keywords     = new() { "commessa", "apri commessa", "modifica commessa", "apri la commessa" },
+            Keywords     = new() { "commessa", "apri commessa", "modifica commessa", "apri la commessa",
+                                   "project", "job order", "open project", "edit project", "open job order" },
             Slots        =
             [
                 new()
@@ -34,8 +38,8 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
                     Type               = "string",
                     Required           = true,
                     PromptDescription  = "nome della commessa da aprire",
-                    Question           = "Quale commessa vuoi aprire?",
-                    Label              = "Commessa",
+                    Question           = AttendanceTrackingMessages.Get("ChatOpenCommessaQuestion"),
+                    Label              = AttendanceTrackingMessages.Get("ChatOpenCommessaLabel"),
                     HasRelevantContent = msg => msg.Length > 0
                 }
             ]
@@ -48,13 +52,13 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
             slots.TryGetValue("nome", out var nome);
 
             if (string.IsNullOrWhiteSpace(nome))
-                return CommandResult.Fail("Nome commessa non specificato.");
+                return CommandResult.Fail(AttendanceTrackingMessages.Get("ChatOpenCommessaNameMissing"));
 
             var result = await _az_CommessaService.GetAll(
                 new GenericRequest<Az_Commessa_GetAll_InModel>(new Az_Commessa_GetAll_InModel()), false);
 
             if (!result.Success || result.Data?.Az_Commessa == null)
-                return CommandResult.Fail("Impossibile caricare l'elenco commesse.");
+                return CommandResult.Fail(AttendanceTrackingMessages.Get("ChatOpenCommessaLoadError"));
 
             var nomeTrimmed = nome.Trim();
             var record = result.Data.Az_Commessa.FirstOrDefault(r =>
@@ -65,7 +69,7 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
                     r.Descrizione?.Contains(nomeTrimmed, StringComparison.OrdinalIgnoreCase) ?? false);
 
             if (record == null)
-                return CommandResult.Fail($"Commessa '{nome}' non trovata.");
+                return CommandResult.Fail(AttendanceTrackingMessages.Get("ChatOpenCommessaNotFound", nome));
 
             var payload = new NavigatePayload
             {
@@ -73,7 +77,7 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
                 State = new Dictionary<string, object> { ["id"] = record.Id }
             };
 
-            return CommandResult.Ok($"Apertura commessa '{record.Descrizione}' (id: {record.Id}).", payload);
+            return CommandResult.Ok(AttendanceTrackingMessages.Get("ChatOpenCommessaOpening", record.Descrizione, record.Id), payload);
         }
     }
 }

@@ -3,32 +3,32 @@
     <!-- intestazione: stato del periodo -->
     <div class="cq-testa" (click)="aperto = !aperto">
       <ion-icon [name]="aperto ? 'chevron-down' : 'chevron-forward'"></ion-icon>
-      <span class="cq-titolo">Riepilogo del mese</span>
+      <span class="cq-titolo">{{ 'attendance.components.cartellinoQuadratura.riepilogoMese' | transloco }}</span>
       @if (dati.dip_Periodo) {
         <ion-chip [color]="statoColore" class="cq-stato">
           <ion-icon [name]="statoIcona"></ion-icon>
           <ion-label>{{ statoTesto }}</ion-label>
         </ion-chip>
         <span class="cq-sintesi">
-          lavorate {{ hhmm(dati.dip_Periodo.min_Lav) }} su {{ hhmm(dati.dip_Periodo.min_Teo) }}
+          {{ 'attendance.components.cartellinoQuadratura.sintesiLavorate' | transloco: { lav: hhmm(dati.dip_Periodo.min_Lav), teo: hhmm(dati.dip_Periodo.min_Teo) } }}
           @if (dati.dip_Periodo.min_Ecc > 0) {
-            · in più {{ hhmm(dati.dip_Periodo.min_Ecc) }}
+            · {{ 'attendance.components.cartellinoQuadratura.sintesiInPiu' | transloco: { min: hhmm(dati.dip_Periodo.min_Ecc) } }}
           }
           @if (totaleQualificate() > 0) {
-            · qualificate {{ hhmm(totaleQualificate()) }}
+            · {{ 'attendance.components.cartellinoQuadratura.sintesiQualificate' | transloco: { min: hhmm(totaleQualificate()) } }}
           }
         </span>
       } @else {
-        <span class="cq-sintesi">nessun calcolo per il mese</span>
+        <span class="cq-sintesi">{{ 'attendance.components.cartellinoQuadratura.nessunCalcolo' | transloco }}</span>
       }
     </div>
 
     @if (aperto && dati.dip_Periodo) {
       <div class="cq-corpo">
         <div class="cq-info">
-          {{ partTime ? 'Part-time' : 'Full-time' }} · {{ conteggioTesto }}
+          {{ (partTime ? 'attendance.components.cartellinoQuadratura.partTime' : 'attendance.components.cartellinoQuadratura.fullTime') | transloco }} · {{ conteggioTesto }}
           @if (!dati.eccedenzeAttive) {
-            · calcolo straordinario non attivo nel profilo orario
+            · {{ 'attendance.components.cartellinoQuadratura.straoNonAttivo' | transloco }}
           }
           · {{ destinazioneTesto }}
         </div>
@@ -51,7 +51,7 @@
                     [class.cq-positivo]="voce.evidenza === 'positivo' && voce.minuti > 0"
                     [class.cq-negativo]="voce.evidenza === 'negativo' && voce.minuti !== 0"
                     [class.cq-provvisorio]="voce.evidenza === 'provvisorio'">
-                {{ hhmm(voce.minuti, voce.etichetta === 'Saldo del periodo') }}
+                {{ hhmm(voce.minuti, !!voce.saldo) }}
               </span>
               <span class="cq-nota">{{ voce.nota }}</span>
             </div>
@@ -62,7 +62,7 @@
                     <ion-label>{{ g.testo }} +{{ hhmm(g.minuti) }}</ion-label>
                   </ion-chip>
                 } @empty {
-                  <span class="cq-nota">nessun giorno</span>
+                  <span class="cq-nota">{{ 'attendance.components.cartellinoQuadratura.nessunGiorno' | transloco }}</span>
                 }
               </div>
             }
@@ -72,16 +72,16 @@
         <!-- settimane: utile con il conteggio settimanale -->
         @if (dati.settimane.length > 0 && conteggioSettimanale) {
           <div class="cq-settimane">
-            <div class="cq-sottotitolo">Settimane</div>
+            <div class="cq-sottotitolo">{{ 'attendance.components.cartellinoQuadratura.settimane' | transloco }}</div>
             @for (s of dati.settimane; track s.dal) {
               <div class="cq-riga cq-livello1">
                 <span class="cq-etichetta">{{ s.dal | date:'dd/MM' }} - {{ s.al | date:'dd/MM' }}</span>
                 <span class="cq-valore">{{ hhmm(s.min_Lav) }} / {{ hhmm(s.min_Teo) }}</span>
                 <span class="cq-nota">
                   @if (s.provvisoria) {
-                    in attesa di quadratura: +{{ hhmm(s.min_Ecc) }}
+                    {{ 'attendance.components.cartellinoQuadratura.settimanaInAttesa' | transloco: { min: hhmm(s.min_Ecc) } }}
                   } @else if (s.min_Ecc > 0) {
-                    in più {{ hhmm(s.min_Ecc) }}, qualificate {{ hhmm(s.min_Qualificate) }}
+                    {{ 'attendance.components.cartellinoQuadratura.settimanaInPiu' | transloco: { ecc: hhmm(s.min_Ecc), qual: hhmm(s.min_Qualificate) } }}
                   }
                 </span>
               </div>
@@ -90,10 +90,10 @@
         }
 
         @if (dati.dip_Periodo.note) {
-          <div class="cq-info">Note HR: {{ dati.dip_Periodo.note }}</div>
+          <div class="cq-info">{{ 'attendance.components.cartellinoQuadratura.noteHR' | transloco }} {{ dati.dip_Periodo.note }}</div>
         }
         @if (stato === PeriodoStato.Approvato && dati.dip_Periodo.dataApprovazione) {
-          <div class="cq-info">Approvato il {{ dati.dip_Periodo.dataApprovazione | date:'dd/MM/yyyy HH:mm' }}</div>
+          <div class="cq-info">{{ 'attendance.components.cartellinoQuadratura.approvatoIl' | transloco }} {{ dati.dip_Periodo.dataApprovazione | date:'dd/MM/yyyy HH:mm' }}</div>
         }
 
         <!-- azioni HR -->
@@ -101,28 +101,28 @@
           <div class="cq-azioni">
             @if (stato !== PeriodoStato.Approvato) {
               <ion-item class="cq-riconosciute" lines="none">
-                <ion-label position="stacked">Ore in più riconosciute (h:mm, vuoto = tutte)</ion-label>
-                <ion-input type="text" [value]="riconosciuteTesto" placeholder="tutte"
+                <ion-label position="stacked">{{ 'attendance.components.cartellinoQuadratura.riconosciuteLabel' | transloco }}</ion-label>
+                <ion-input type="text" [value]="riconosciuteTesto" placeholder="{{ 'attendance.components.cartellinoQuadratura.riconosciutePlaceholder' | transloco }}"
                   (ionInput)="riconosciuteTesto = $event.detail.value ?? ''"></ion-input>
               </ion-item>
               <ion-button size="small" fill="outline" shape="round" (click)="salvaRiconosciute(riconosciuteTesto)">
-                <ion-icon name="save-outline"></ion-icon>&nbsp;Applica e ricalcola
+                <ion-icon name="save-outline"></ion-icon>&nbsp;{{ 'attendance.components.cartellinoQuadratura.applicaRicalcola' | transloco }}
               </ion-button>
               <ion-button size="small" fill="outline" shape="round" color="medium" (click)="salvaRiconosciute(null)">
-                Riconosci tutte
+                {{ 'attendance.components.cartellinoQuadratura.riconosciTutte' | transloco }}
               </ion-button>
               <ion-button size="small" fill="outline" shape="round" color="danger" (click)="salvaRiconosciute('0')">
-                Rifiuta tutte
+                {{ 'attendance.components.cartellinoQuadratura.rifiutaTutte' | transloco }}
               </ion-button>
             }
             @if (stato === PeriodoStato.DaApprovare) {
               <ion-button size="small" shape="round" color="success" (click)="cambiaStato(PeriodoStato.Approvato)">
-                <ion-icon name="checkmark-circle-outline"></ion-icon>&nbsp;Approva
+                <ion-icon name="checkmark-circle-outline"></ion-icon>&nbsp;{{ 'common.buttons.approve' | transloco }}
               </ion-button>
             }
             @if (stato === PeriodoStato.Approvato) {
               <ion-button size="small" fill="outline" shape="round" color="warning" (click)="cambiaStato(PeriodoStato.DaApprovare)">
-                <ion-icon name="lock-open-outline"></ion-icon>&nbsp;Riapri
+                <ion-icon name="lock-open-outline"></ion-icon>&nbsp;{{ 'attendance.components.cartellinoQuadratura.riapri' | transloco }}
               </ion-button>
             }
           </div>

@@ -1,3 +1,4 @@
+import { TranslocoService } from '@jsverse/transloco';
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
@@ -28,8 +29,8 @@ export class CausaliListPageComponent {
     return this.sharedParameterGestionePresenzeService.Par_Causali;
   }
   public readonly columns: NvxListColumn<Par_CausaliModel>[] = [
-    { key: 'codice', title: 'Codice', width: '140px', mobile: 'subtitle' },
-    { key: 'descrizione', title: 'Descrizione', mobile: 'title' }
+    { key: 'codice', title: this.transloco.translate('attendance.pages.causaliList.columnCode'), width: '140px', mobile: 'subtitle' },
+    { key: 'descrizione', title: this.transloco.translate('attendance.pages.causaliList.columnDescription'), mobile: 'title' }
   ];
   public actions: NvxListAction<Par_CausaliModel>[] = [];
   public readonly sortList = (a: Par_CausaliModel, b: Par_CausaliModel) => (a.descrizione ?? '').localeCompare(b.descrizione ?? '');
@@ -43,9 +44,10 @@ export class CausaliListPageComponent {
               private userInterfaceService: UserInterfaceService,
               private refresherService: RefresherService,
               private collectionDialogService: CollectionDialogService,
-              private userNavigationService: UserNavigationService) {
+              private userNavigationService: UserNavigationService,
+              private transloco: TranslocoService) {
 
-    this.title = 'Causali';
+    this.title = this.transloco.translate('attendance.pages.causaliList.title');
     this.btnEdit = userInterfaceService.Btn_Modifica;
     this.btnEdit.event = this.handleButtonEditClick;
 
@@ -60,7 +62,7 @@ export class CausaliListPageComponent {
 
 
     this.fabMenuService.fabMenuItem = [
-      new FabMenuItem('Nuova Causale', 'add-circle-outline', () => {
+      new FabMenuItem(this.transloco.translate('attendance.pages.causaliList.fabAdd'), 'add-circle-outline', () => {
         this.navCtrl.navigateForward('/causaliedit', {
           state: { id: 0 }
         });
@@ -76,7 +78,7 @@ export class CausaliListPageComponent {
 
   handleButtonDeleteClick = async (item: any) => {
 
-    const result = await this.collectionDialogService.ConfirmCancelDialog('Confermi la cancellazione della causale');
+    const result = await this.collectionDialogService.ConfirmCancelDialog(this.transloco.translate('attendance.pages.causaliList.confirmDelete'));
     if (result) {
 
       const request: GenericRequest<Par_Causali_DeleteInModel> = new GenericRequest<Par_Causali_DeleteInModel>(Par_Causali_DeleteInModel);

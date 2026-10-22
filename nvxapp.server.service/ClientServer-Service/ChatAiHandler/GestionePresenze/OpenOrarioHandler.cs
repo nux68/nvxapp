@@ -1,3 +1,4 @@
+using nvxapp.server.data.Localization;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_OrarioService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_OrarioService.Models;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Commands;
@@ -18,14 +19,17 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
             _par_OrarioService = par_OrarioService;
         }
 
-        private static readonly IntentDefinition _intentDefinition = new()
+        // Definizione creata per istanza (handler Scoped): i testi sono nella lingua della richiesta.
+        // Keywords: unione italiano + inglese, qualunque sia la lingua dell'interfaccia.
+        private readonly IntentDefinition _intentDefinition = new()
         {
             Name         = "OpenOrario",
-            DisplayName  = "Apri orario",
+            DisplayName  = AttendanceTrackingMessages.Get("ChatOpenOrarioDisplayName"),
             Usable4Role = new List<string> { "CompanyPowerAdmin" },
-            Description  = "apre la pagina di modifica di un orario specifico.",
+            Description  = AttendanceTrackingMessages.Get("ChatOpenOrarioDescription"),
             IsNavigation = true,
-            Keywords     = new() { "apri orario", "modifica orario", "apri l'orario", "modifica l'orario", "orario" },
+            Keywords     = new() { "apri orario", "modifica orario", "apri l'orario", "modifica l'orario", "orario",
+                                   "open work schedule", "edit work schedule", "work schedule", "working hours" },
             Slots        =
             [
                 new()
@@ -34,8 +38,8 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
                     Type               = "string",
                     Required           = true,
                     PromptDescription  = "nome o codice dell'orario da aprire",
-                    Question           = "Quale orario vuoi aprire?",
-                    Label              = "Orario",
+                    Question           = AttendanceTrackingMessages.Get("ChatOpenOrarioQuestion"),
+                    Label              = AttendanceTrackingMessages.Get("ChatOpenOrarioLabel"),
                     HasRelevantContent = msg => msg.Length > 0
                 }
             ]
@@ -48,13 +52,13 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
             slots.TryGetValue("nome", out var nome);
 
             if (string.IsNullOrWhiteSpace(nome))
-                return CommandResult.Fail("Nome orario non specificato.");
+                return CommandResult.Fail(AttendanceTrackingMessages.Get("ChatOpenOrarioNameMissing"));
 
             var result = await _par_OrarioService.GetAll(
                 new GenericRequest<Par_Orario_GetAllInModel>(new Par_Orario_GetAllInModel()), false);
 
             if (!result.Success || result.Data?.Par_Orario == null)
-                return CommandResult.Fail("Impossibile caricare l'elenco orari.");
+                return CommandResult.Fail(AttendanceTrackingMessages.Get("ChatOpenOrarioLoadError"));
 
             var nomeTrimmed = nome.Trim();
 
@@ -70,7 +74,7 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
                     (o.Codice?.Contains(nomeTrimmed,      StringComparison.OrdinalIgnoreCase) ?? false));
 
             if (orario == null)
-                return CommandResult.Fail($"Orario '{nome}' non trovato.");
+                return CommandResult.Fail(AttendanceTrackingMessages.Get("ChatOpenOrarioNotFound", nome));
 
             var payload = new NavigatePayload
             {
@@ -79,7 +83,7 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
             };
 
             return CommandResult.Ok(
-                $"Apertura orario '{orario.Descrizione}' (id: {orario.Id}).",
+                AttendanceTrackingMessages.Get("ChatOpenOrarioOpening", orario.Descrizione, orario.Id),
                 payload);
         }
     }

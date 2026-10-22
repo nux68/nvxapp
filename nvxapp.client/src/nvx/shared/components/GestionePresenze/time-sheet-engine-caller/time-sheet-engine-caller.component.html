@@ -11,10 +11,10 @@
 
     <ion-segment (ionChange)="segmentChanged($event)" [value]="currSection">
       <ion-segment-button value="sez1" content-id="sez1">
-        <ion-label>Tipo calcolo</ion-label>
+        <ion-label>{{ 'attendance.components.timeSheetEngineCaller.tipoCalcolo' | transloco }}</ion-label>
       </ion-segment-button>
       <ion-segment-button value="sez2" content-id="sez2">
-        <ion-label>Selezione</ion-label>
+        <ion-label>{{ 'attendance.components.timeSheetEngineCaller.selezione' | transloco }}</ion-label>
       </ion-segment-button>
     </ion-segment>
 
@@ -26,7 +26,7 @@
           <ion-row>
             <ion-col>
               <ion-item>
-                <ion-label position="floating">Dal</ion-label>
+                <ion-label position="floating">{{ 'attendance.components.timeSheetEngineCaller.dal' | transloco }}</ion-label>
                 <ion-datetime-button class="datetime-button-with-label" datetime="dalle-limite-sx-modal"></ion-datetime-button>
                 <ion-modal [keepContentsMounted]="true">
                   <ng-template>
@@ -36,7 +36,7 @@
                                   [firstDayOfWeek]="1"
                                   [showDefaultButtons]="true"
                                   doneText="OK"
-                                  cancelText="Annulla">
+                                  [cancelText]="'common.buttons.cancel' | transloco">
                     </ion-datetime>
                   </ng-template>
                 </ion-modal>
@@ -44,7 +44,7 @@
             </ion-col>
             <ion-col>
               <ion-item>
-                <ion-label position="floating">Al</ion-label>
+                <ion-label position="floating">{{ 'attendance.components.timeSheetEngineCaller.al' | transloco }}</ion-label>
                 <ion-datetime-button class="datetime-button-with-label" datetime="alle-limite-sx-modal"></ion-datetime-button>
                 <ion-modal [keepContentsMounted]="true">
                   <ng-template>
@@ -54,7 +54,7 @@
                                   [firstDayOfWeek]="1"
                                   [showDefaultButtons]="true"
                                   doneText="OK"
-                                  cancelText="Annulla">
+                                  [cancelText]="'common.buttons.cancel' | transloco">
                     </ion-datetime>
                   </ng-template>
                 </ion-modal>
@@ -64,16 +64,16 @@
 
 
           <ion-item>
-            <ion-toggle formControlName="approva_Richieste_Timbrature">Approva Richieste Timbrature</ion-toggle>
+            <ion-toggle formControlName="approva_Richieste_Timbrature">{{ 'attendance.components.timeSheetEngineCaller.approvaRichiesteTimbrature' | transloco }}</ion-toggle>
           </ion-item>
           <ion-item>
-            <ion-toggle formControlName="approva_Richieste_Giustificativo">Approva Richieste Giustificativo</ion-toggle>
+            <ion-toggle formControlName="approva_Richieste_Giustificativo">{{ 'attendance.components.timeSheetEngineCaller.approvaRichiesteGiustificativo' | transloco }}</ion-toggle>
           </ion-item>
           <ion-item>
-            <ion-toggle formControlName="genera_Timbrature_Mancanti">Genera Timbrature Mancanti</ion-toggle>
+            <ion-toggle formControlName="genera_Timbrature_Mancanti">{{ 'attendance.components.timeSheetEngineCaller.generaTimbratureMancanti' | transloco }}</ion-toggle>
           </ion-item>
           <ion-item>
-            <ion-toggle formControlName="genera_Giustificativo_Assenza">Genera Giustificativi Assenza</ion-toggle>
+            <ion-toggle formControlName="genera_Giustificativo_Assenza">{{ 'attendance.components.timeSheetEngineCaller.generaGiustificativiAssenza' | transloco }}</ion-toggle>
           </ion-item>
 
         </ion-card-content>

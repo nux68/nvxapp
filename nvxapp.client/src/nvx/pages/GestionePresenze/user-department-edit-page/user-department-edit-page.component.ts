@@ -31,6 +31,8 @@ import { Dip_CompetenzaModel } from '../../../ClientServer-Service/GestionePrese
 import { SeletionParCompetenzaDialogComponent, SeletionParCompetenzaDialogResult } from '../../../shared/components/GestionePresenze/seletion-par-competenza-dialog/seletion-par-competenza-dialog.component';
 import { Subject } from 'rxjs';
 import { debounceTime, takeUntil } from 'rxjs/operators';
+import { TranslocoService } from '@jsverse/transloco';
+import { LanguageService } from '../../../Utility/infrastructure/language.service';
 
 @Component({
   selector: 'app-user-department-edit-page',
@@ -70,8 +72,11 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
   /** Trigger debounced per ricalcolare i contatori dopo la modifica di un riporto. */
   private _riportoChangedSubject = new Subject<void>();
   private _destroy$ = new Subject<void>();
-  public readonly nomiMesi = ['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno',
-                               'Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'];
+  /** Nomi dei mesi nella lingua dell'interfaccia, con l'iniziale maiuscola. */
+  public readonly nomiMesi = Array.from({ length: 12 }, (_, i) => {
+    const nome = new Intl.DateTimeFormat(this.languageService.locale, { month: 'long' }).format(new Date(2000, i, 1));
+    return nome.charAt(0).toUpperCase() + nome.slice(1);
+  });
 
 
   public btnEdit_Dip_ProfiloOrario: ButtonItem;
@@ -99,7 +104,9 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
     private contatoriService: ContatoriService,
     private dbUtilService: DbUtilService,
     private collectionDialogService: CollectionDialogService,
-    private cdr: ChangeDetectorRef) {
+    private cdr: ChangeDetectorRef,
+    private transloco: TranslocoService,
+    private languageService: LanguageService) {
 
     super(navCtrl, userInterfaceService, fb);
 
@@ -206,7 +213,7 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
   }
 
 
-  get Title(): string { return "User Department Edit"; }
+  get Title(): string { return this.transloco.translate('attendance.pages.userDepartmentEdit.title'); }
   get EditForm(): FormGroup {
     return this.fb.group({
       descrizione: [null, [Validators.required, Validators.maxLength(50)]],
@@ -347,7 +354,7 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
 
     const index = this._editModel.dip_ProfiloOrario.findIndex(p => p.id === item.id);
 
-    const result = await this.collectionDialogService.ConfirmCancelDialog('Confermi la cancellazione del profilo orario');
+    const result = await this.collectionDialogService.ConfirmCancelDialog(this.transloco.translate('attendance.pages.userDepartmentEdit.confirmDeleteWorkSchedule'));
     if (result) {
 
       if (index > -1) {
@@ -417,7 +424,7 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
 
   handleButton_Dip_Competenza_DeleteClick = async (item: Dip_CompetenzaModel) => {
 
-    const result = await this.collectionDialogService.ConfirmCancelDialog('Confermi la cancellazione della competenza');
+    const result = await this.collectionDialogService.ConfirmCancelDialog(this.transloco.translate('attendance.pages.userDepartmentEdit.confirmDeleteSkill'));
     if (result) {
       const index = this._editModel.dip_Competenza.findIndex(p => p.idPar_Competenza === item.idPar_Competenza);
       if (index > -1) {
@@ -632,7 +639,7 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
    */
   async riportoDaAnnoPrecedente(rappLavId: number): Promise<void> {
     const conferma = await this.collectionDialogService.ConfirmCancelDialog(
-      `Sostituire il riporto del ${this.annoSelezionato} con i saldi di fine dicembre ${this.annoSelezionato - 1}?`);
+      this.transloco.translate('attendance.pages.userDepartmentEdit.replaceCarryOverConfirm', { year: this.annoSelezionato, prevYear: this.annoSelezionato - 1 }));
     if (!conferma) return;
 
     const req = new GenericRequest<Contatori_Anno_InModel>(Contatori_Anno_InModel);

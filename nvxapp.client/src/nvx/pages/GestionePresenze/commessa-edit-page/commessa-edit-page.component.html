@@ -13,10 +13,9 @@
         presentation="date"
         [firstDayOfWeek]="1"
         [showDefaultButtons]="true"
-        doneText="Fatto"
-        cancelText="Annulla"
-        (ionChange)="updateStartDate($event)"
-        locale="it-IT">
+        [doneText]="'attendance.pages.commessaEdit.done' | transloco"
+        [cancelText]="'common.buttons.cancel' | transloco"
+        (ionChange)="updateStartDate($event)">
       </ion-datetime>
     </ng-template>
   </ion-modal>
@@ -28,10 +27,9 @@
         presentation="date"
         [firstDayOfWeek]="1"
         [showDefaultButtons]="true"
-        doneText="Fatto"
-        cancelText="Annulla"
-        (ionChange)="updateEndDate($event)"
-        locale="it-IT">
+        [doneText]="'attendance.pages.commessaEdit.done' | transloco"
+        [cancelText]="'common.buttons.cancel' | transloco"
+        (ionChange)="updateEndDate($event)">
       </ion-datetime>
     </ng-template>
   </ion-modal>
@@ -42,10 +40,10 @@
         <form [formGroup]="_editForm">
           <ion-segment (ionChange)="segmentChanged($event)" [value]="currSection">
             <ion-segment-button value="sez_1" content-id="sez_1">
-              <ion-label>Commessa</ion-label>
+              <ion-label>{{ 'attendance.pages.commessaEdit.tabCommessa' | transloco }}</ion-label>
             </ion-segment-button>
             <ion-segment-button value="sez_2" content-id="sez_2">
-              <ion-label>Sub commesse</ion-label>
+              <ion-label>{{ 'attendance.pages.commessaEdit.tabSubCommesse' | transloco }}</ion-label>
             </ion-segment-button>
           </ion-segment>
           <div [hidden]="currSection!=='sez_1'">
@@ -53,27 +51,27 @@
             <div formGroupName="az_Commessa">
               <br />
               <ion-item class="nvx-item-4-title">
-                <ion-label>Info commessa</ion-label>
+                <ion-label>{{ 'attendance.pages.commessaEdit.infoCommessa' | transloco }}</ion-label>
               </ion-item>
               <ion-item>
-                <ion-label position="floating">Descrizione</ion-label>
+                <ion-label position="floating">{{ 'attendance.pages.commessaEdit.descrizione' | transloco }}</ion-label>
                 <ion-input type="text" formControlName="descrizione"></ion-input>
               </ion-item>
               <!--SUB FORM PER OGGETTi DI OGGETTI  ATTENZIONE A az_Commessa.descrizione  PRENDERE IL formGroupName-->
               @if (_editForm.get('az_Commessa.descrizione')?.hasError('required') && _editForm.get('az_Commessa.descrizione')?.touched) {
                 <ion-note color="danger">
-                  Descrizione è obbligatorio.
+                  {{ 'attendance.pages.commessaEdit.descrizioneRequired' | transloco }}
                 </ion-note>
               }
               @if (_editForm.get('az_Commessa.descrizione')?.hasError('maxlength') && _editForm.get('az_Commessa.descrizione')?.touched) {
                 <ion-note color="danger">
-                  Descrizione non può superare i 50 caratteri.
+                  {{ 'attendance.pages.commessaEdit.descrizioneMaxLength' | transloco: { max: 50 } }}
                 </ion-note>
               }
               <!-- Combo per selezione cliente -->
               <ion-item>
-                <ion-label position="stacked">Cliente</ion-label>
-                <ion-select formControlName="idAz_Cliente" placeholder="Seleziona cliente">
+                <ion-label position="stacked">{{ 'attendance.pages.commessaEdit.cliente' | transloco }}</ion-label>
+                <ion-select formControlName="idAz_Cliente" [placeholder]="'attendance.pages.commessaEdit.selezionaCliente' | transloco">
                   @for (cliente of _az_ClienteModelList; track cliente) {
                     <ion-select-option [value]="cliente.id">
                       {{ cliente.descrizione }}
@@ -83,7 +81,7 @@
               </ion-item>
               @if (_editForm.get('az_Commessa.idAz_Cliente')?.hasError('required') && _editForm.get('az_Commessa.idAz_Cliente')?.touched) {
                 <ion-note color="danger">
-                  Cliente è obbligatorio.
+                  {{ 'attendance.pages.commessaEdit.clienteRequired' | transloco }}
                 </ion-note>
               }
             </div>
@@ -91,8 +89,8 @@
           <div [hidden]="currSection!=='sez_2'">
             <br />
             <ion-item>
-              <ion-label position="stacked">Sub commessa</ion-label>
-              <ion-select formControlName="tmp_az_SubCommessa" interface="modal" placeholder="Seleziona la Sub Commessa" (ionChange)="onSubCommessaChange($event)">
+              <ion-label position="stacked">{{ 'attendance.pages.commessaEdit.subCommessa' | transloco }}</ion-label>
+              <ion-select formControlName="tmp_az_SubCommessa" interface="modal" [placeholder]="'attendance.pages.commessaEdit.selezionaSubCommessa' | transloco" (ionChange)="onSubCommessaChange($event)">
                 @for (az_SubCommessa of _editModel.az_SubCommessa; track az_SubCommessa) {
                   <ion-select-option [value]="az_SubCommessa.id">
                     {{ az_SubCommessa.descrizione }}
@@ -102,39 +100,39 @@
             </ion-item>
             <ion-segment (ionChange)="segmentChanged_sub($event)" [value]="currSection_sub">
               <ion-segment-button value="sez_1_sub_4" content-id="sez_1_sub_4">
-                <ion-label>Sub Commessa</ion-label>
+                <ion-label>{{ 'attendance.pages.commessaEdit.tabSubCommessa' | transloco }}</ion-label>
               </ion-segment-button>
               <ion-segment-button value="sez_1_sub_1" content-id="sez_1_sub_1">
-                <ion-label>Attività</ion-label>
+                <ion-label>{{ 'attendance.pages.commessaEdit.tabAttivita' | transloco }}</ion-label>
               </ion-segment-button>
               <ion-segment-button value="sez_1_sub_2" content-id="sez_1_sub_2">
-                <ion-label>Reparti</ion-label>
+                <ion-label>{{ 'attendance.pages.commessaEdit.tabReparti' | transloco }}</ion-label>
               </ion-segment-button>
               <ion-segment-button value="sez_1_sub_3" content-id="sez_1_sub_3">
-                <ion-label>Utenti</ion-label>
+                <ion-label>{{ 'attendance.pages.commessaEdit.tabUtenti' | transloco }}</ion-label>
               </ion-segment-button>
             </ion-segment>
             <div [hidden]="currSection_sub!=='sez_1_sub_4'">
               <br />
               <ion-item class="nvx-item-4-title">
-                <ion-label>Info sub commessa</ion-label>
+                <ion-label>{{ 'attendance.pages.commessaEdit.infoSubCommessa' | transloco }}</ion-label>
               </ion-item>
               <!-- Sezione editabile per la sub-commessa selezionata -->
               @if (idxCurrCommessa !== -1) {
                 <div>
                   <ion-item>
-                    <ion-label position="stacked">Descrizione subcommessa</ion-label>
+                    <ion-label position="stacked">{{ 'attendance.pages.commessaEdit.descrizioneSubCommessa' | transloco }}</ion-label>
                     <ion-input type="text"
                       [value]="_editModel.az_SubCommessa[idxCurrCommessa]?.descrizione || ''"
                       (ionInput)="updateSubCommessaDescrizione($event)">
                     </ion-input>
                   </ion-item>
                   <ion-item>
-                    <ion-label position="stacked" style="margin-bottom:13px;">Data inizio</ion-label>
+                    <ion-label position="stacked" style="margin-bottom:13px;">{{ 'attendance.pages.commessaEdit.dataInizio' | transloco }}</ion-label>
                     <ion-datetime-button datetime="startDatetime"></ion-datetime-button>
                   </ion-item>
                   <ion-item>
-                    <ion-label position="stacked" style="margin-bottom:13px;">Data fine</ion-label>
+                    <ion-label position="stacked" style="margin-bottom:13px;">{{ 'attendance.pages.commessaEdit.dataFine' | transloco }}</ion-label>
                     <ion-datetime-button datetime="endDatetime"></ion-datetime-button>
                   </ion-item>
                 </div>
@@ -143,7 +141,7 @@
             <div [hidden]="currSection_sub!=='sez_1_sub_1'">
               <br />
               <ion-item class="nvx-item-4-title">
-                <ion-label>Attività collegate alla commessa</ion-label>
+                <ion-label>{{ 'attendance.pages.commessaEdit.attivitaCollegate' | transloco }}</ion-label>
               </ion-item>
               <!--mobile-->
               @for (item of Az_SubCommessaAttivita_Get() | genericFilter: 'descrizione' : searchText; track item) {
@@ -168,7 +166,7 @@
             }
             <ion-grid class="ion-hide-sm-down">
               <ion-row>
-                <ion-col size="10">Descr</ion-col>
+                <ion-col size="10">{{ 'attendance.pages.commessaEdit.colDescr' | transloco }}</ion-col>
               </ion-row>
               @for (item of Az_SubCommessaAttivita_Get() | genericFilter: 'descrizione' : searchText; track item) {
                 <ion-row class="nvx-ion-row-4table">
@@ -192,9 +190,9 @@
           <div [hidden]="currSection_sub!=='sez_1_sub_2'">
             <br />
             <ion-item class="nvx-item-4-title">
-              <ion-label>Reparti collegati alla commessa</ion-label>
+              <ion-label>{{ 'attendance.pages.commessaEdit.repartiCollegati' | transloco }}</ion-label>
             </ion-item>
-            <ion-note>Si possono collegare solo i reparti in cui si svolge almeno una delle attività della sub commessa.</ion-note>
+            <ion-note>{{ 'attendance.pages.commessaEdit.repartiNote' | transloco }}</ion-note>
             <!--mobile-->
             @for (item of Az_SediReparto_Get() | genericFilter: 'descrizione' : searchText; track item) {
               <ion-item-sliding class="ion-hide-sm-up">
@@ -203,7 +201,7 @@
                     {{ item.idAz_SediReparto | azSediRepartoToLongText }}
                   </ion-label>
                   @if (!isRepartoCompatibile(item.idAz_SediReparto)) {
-                    <ion-note color="warning">&nbsp;Non compatibile</ion-note>
+                    <ion-note color="warning">&nbsp;{{ 'attendance.pages.commessaEdit.nonCompatibile' | transloco }}</ion-note>
                   }
                 </ion-item>
                 <!--<ion-item-options side="end">
@@ -228,7 +226,7 @@
                     {{ item.idAz_SediReparto | azSediRepartoToLongText }}
                   </ion-label>
                   @if (!isRepartoCompatibile(item.idAz_SediReparto)) {
-                    <ion-note color="warning">&nbsp;Non compatibile</ion-note>
+                    <ion-note color="warning">&nbsp;{{ 'attendance.pages.commessaEdit.nonCompatibile' | transloco }}</ion-note>
                   }
                 </ion-col>
                 <ion-col size="2">
@@ -246,9 +244,9 @@
         <div [hidden]="currSection_sub!=='sez_1_sub_3'">
           <br />
           <ion-item class="nvx-item-4-title">
-            <ion-label>Utenti collegati alla commessa</ion-label>
+            <ion-label>{{ 'attendance.pages.commessaEdit.utentiCollegati' | transloco }}</ion-label>
           </ion-item>
-          <ion-note>Si possono collegare solo gli utenti con almeno una delle competenze richieste dalle attività della sub commessa.</ion-note>
+          <ion-note>{{ 'attendance.pages.commessaEdit.utentiNote' | transloco }}</ion-note>
           <!--mobile-->
           @for (item of Az_SubCommessaUser_Get() | genericFilter: 'descrizione' : searchText; track item) {
             <ion-item-sliding class="ion-hide-sm-up">
@@ -257,7 +255,7 @@
                   {{ item.idAspNetUsers | idAspNetUsersToCognome }}  {{ item.idAspNetUsers | idAspNetUsersToNome }}
                 </ion-label>
                 @if (!isUserCompatibile(item.idAspNetUsers)) {
-                  <ion-note color="warning">&nbsp;Non compatibile</ion-note>
+                  <ion-note color="warning">&nbsp;{{ 'attendance.pages.commessaEdit.nonCompatibile' | transloco }}</ion-note>
                 }
               </ion-item>
               <!--<ion-item-options side="end">
@@ -287,7 +285,7 @@
                   {{ item.idAspNetUsers | idAspNetUsersToNome }}
                 </ion-label>
                 @if (!isUserCompatibile(item.idAspNetUsers)) {
-                  <ion-note color="warning">&nbsp;Non compatibile</ion-note>
+                  <ion-note color="warning">&nbsp;{{ 'attendance.pages.commessaEdit.nonCompatibile' | transloco }}</ion-note>
                 }
               </ion-col>
               <ion-col size="2">

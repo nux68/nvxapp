@@ -1,3 +1,4 @@
+using nvxapp.server.data.Localization;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_ClienteService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_ClienteService.Models;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Commands;
@@ -18,14 +19,17 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
             _az_ClienteService = az_ClienteService;
         }
 
-        private static readonly IntentDefinition _intentDefinition = new()
+        // Definizione creata per istanza (handler Scoped): i testi sono nella lingua della richiesta.
+        // Keywords: unione italiano + inglese, qualunque sia la lingua dell'interfaccia.
+        private readonly IntentDefinition _intentDefinition = new()
         {
             Name         = "OpenCliente",
-            DisplayName  = "Apri cliente",
+            DisplayName  = AttendanceTrackingMessages.Get("ChatOpenClienteDisplayName"),
             Usable4Role = new List<string> { "CompanyPowerAdmin" },
-            Description  = "apre la pagina di modifica di un cliente specifico.",
+            Description  = AttendanceTrackingMessages.Get("ChatOpenClienteDescription"),
             IsNavigation = true,
-            Keywords     = new() { "cliente", "apri cliente", "modifica cliente", "apri il cliente" },
+            Keywords     = new() { "cliente", "apri cliente", "modifica cliente", "apri il cliente",
+                                   "customer", "client", "open customer", "edit customer", "open client" },
             Slots        =
             [
                 new()
@@ -34,8 +38,8 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
                     Type               = "string",
                     Required           = true,
                     PromptDescription  = "nome del cliente da aprire",
-                    Question           = "Quale cliente vuoi aprire?",
-                    Label              = "Cliente",
+                    Question           = AttendanceTrackingMessages.Get("ChatOpenClienteQuestion"),
+                    Label              = AttendanceTrackingMessages.Get("ChatOpenClienteLabel"),
                     HasRelevantContent = msg => msg.Length > 0
                 }
             ]
@@ -48,13 +52,13 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
             slots.TryGetValue("nome", out var nome);
 
             if (string.IsNullOrWhiteSpace(nome))
-                return CommandResult.Fail("Nome cliente non specificato.");
+                return CommandResult.Fail(AttendanceTrackingMessages.Get("ChatOpenClienteNameMissing"));
 
             var result = await _az_ClienteService.GetAll(
                 new GenericRequest<Az_Cliente_GetAll_InModel>(new Az_Cliente_GetAll_InModel()), false);
 
             if (!result.Success || result.Data?.Az_Cliente == null)
-                return CommandResult.Fail("Impossibile caricare l'elenco clienti.");
+                return CommandResult.Fail(AttendanceTrackingMessages.Get("ChatOpenClienteLoadError"));
 
             var nomeTrimmed = nome.Trim();
             var record = result.Data.Az_Cliente.FirstOrDefault(r =>
@@ -65,7 +69,7 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
                     r.Descrizione?.Contains(nomeTrimmed, StringComparison.OrdinalIgnoreCase) ?? false);
 
             if (record == null)
-                return CommandResult.Fail($"Cliente '{nome}' non trovato.");
+                return CommandResult.Fail(AttendanceTrackingMessages.Get("ChatOpenClienteNotFound", nome));
 
             var payload = new NavigatePayload
             {
@@ -73,7 +77,7 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
                 State = new Dictionary<string, object> { ["id"] = record.Id }
             };
 
-            return CommandResult.Ok($"Apertura cliente '{record.Descrizione}' (id: {record.Id}).", payload);
+            return CommandResult.Ok(AttendanceTrackingMessages.Get("ChatOpenClienteOpening", record.Descrizione, record.Id), payload);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using nvxapp.server.data.Localization;
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Entities.Tenant;
@@ -142,7 +143,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                 }
                 else
                 {
-                    throw new Exception("Anagrafica non trovata");
+                    throw new UserMessageException(AttendanceTrackingMessages.Get("EmployeeRecordNotFound"));
                 }
             }
 
@@ -190,7 +191,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                 }
                 else
                 {
-                    throw new Exception("Rapporto lavoro non trovato");
+                    throw new UserMessageException(AttendanceTrackingMessages.Get("EmploymentNotFound"));
                 }
             }
 
@@ -346,13 +347,13 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
             user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro = await _dip_RapportoLavoroRepository.FindAll(x => x.Id == IdDipRapp).FirstOrDefaultAsync();
             if (user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro == null)
             {
-                throw new Exception("Rapporto lavoro non trovato");
+                throw new UserMessageException(AttendanceTrackingMessages.Get("EmploymentNotFound"));
             }
 
             user_DATA_COMB_DipAna_DipRapp.dip_Anagrafica = await _dip_AnagraficaRepository.FindAll(x => x.Id == user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.IdDip_Anagrafica).FirstOrDefaultAsync();
             if (user_DATA_COMB_DipAna_DipRapp.dip_Anagrafica == null)
             {
-                throw new Exception("Anagrafica non trovata");
+                throw new UserMessageException(AttendanceTrackingMessages.Get("EmployeeRecordNotFound"));
             }
 
 
@@ -379,7 +380,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                 }
                 else
                 {
-                    throw new Exception("Az_Anagrafica non trovata");
+                    throw new UserMessageException(AttendanceTrackingMessages.Get("CompanyRecordNotFound"));
                 }
             }
 
@@ -397,7 +398,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                 }
                 else
                 {
-                    throw new Exception("Az_Cfg non trovata");
+                    throw new UserMessageException(AttendanceTrackingMessages.Get("CompanyCfgNotFound"));
                 }
             }
 
@@ -417,7 +418,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                 }
                 else
                 {
-                    throw new Exception("Sede non trovata");
+                    throw new UserMessageException(AttendanceTrackingMessages.Get("SiteNotFound"));
                 }
             }
 
@@ -437,7 +438,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                 }
                 else
                 {
-                    throw new Exception("Sede non trovata");
+                    throw new UserMessageException(AttendanceTrackingMessages.Get("SiteNotFound"));
                 }
             }
 
@@ -647,14 +648,14 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
         {
             var rapporto = _dip_RapportoLavoroRepository.FindAll(r => r.Id == IdDip_RapportoLavoro).FirstOrDefault();
             if (rapporto == null)
-                return "Rapporto di lavoro non trovato.";
+                return AttendanceTrackingMessages.Get("EmploymentRelationshipNotFound");
 
             for (var giorno = Dal.Date; giorno <= Al.Date; giorno = giorno.AddDays(1))
             {
                 if (rapporto.DataAss != null && giorno < rapporto.DataAss.Value.Date)
-                    return $"Il {giorno:dd/MM/yyyy} è prima dell'assunzione ({rapporto.DataAss.Value:dd/MM/yyyy}): non si possono inserire movimenti.";
+                    return AttendanceTrackingMessages.Get("DayBeforeHiring", giorno, rapporto.DataAss.Value);
                 if (rapporto.DataLic != null && giorno > rapporto.DataLic.Value.Date)
-                    return $"Il {giorno:dd/MM/yyyy} è dopo la cessazione ({rapporto.DataLic.Value:dd/MM/yyyy}): non si possono inserire movimenti.";
+                    return AttendanceTrackingMessages.Get("DayAfterTermination", giorno, rapporto.DataLic.Value);
             }
 
             var approvati = _dip_PeriodoRepository.FindAll(p => p.IdDip_RapportoLavoro == IdDip_RapportoLavoro && p.Stato == PeriodoStato.Approvato)
@@ -663,7 +664,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
             for (var giorno = Dal.Date; giorno <= Al.Date; giorno = giorno.AddDays(1))
             {
                 if (approvati.Any(p => p.Anno == giorno.Year && p.Mese == giorno.Month))
-                    return $"Il cartellino di {giorno:MM/yyyy} è approvato: per inserire o modificare movimenti l'HR deve riaprirlo.";
+                    return AttendanceTrackingMessages.Get("TimesheetMonthApproved", giorno);
             }
             return null;
         }
@@ -747,7 +748,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
 
             return consentite.Contains(IdAz_SubCommessaAttivita)
                 ? null
-                : "L'attività selezionata non è tra quelle consentite al dipendente: sceglierne una delle sub commesse a cui è collegato.";
+                : AttendanceTrackingMessages.Get("ActivityNotAllowed");
         }
 
         private bool EsisteAttivita(int IdAz_SubCommessaAttivita)

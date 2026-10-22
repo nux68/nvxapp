@@ -1,4 +1,5 @@
 import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { TranslocoService } from '@jsverse/transloco';
 import { BaseDialogConfirmCancelComponent } from '../../../../pages/_BASE/base-dialog-confirm-cancel/base-dialog-confirm-cancel.component';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ModalController } from '@ionic/angular';
@@ -25,12 +26,13 @@ export class TimeSheetEngineCallerComponent extends BaseDialogConfirmCancelCompo
     protected override userInterfaceService: UserInterfaceService,
     protected override fb: FormBuilder,
     protected override modalCtrl: ModalController,
+    private transloco: TranslocoService,
     public sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService
   ) {
     super(userInterfaceService, fb, modalCtrl);
   }
 
-  get Title(): string { return "Calcola"; }
+  get Title(): string { return this.transloco.translate('attendance.components.timeSheetEngineCaller.title'); }
 
   LoadData = (): Observable<TimeSheetEngineCallerData | null> => {
 

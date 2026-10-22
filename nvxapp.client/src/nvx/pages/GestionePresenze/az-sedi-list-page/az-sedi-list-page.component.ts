@@ -1,3 +1,4 @@
+import { TranslocoService } from '@jsverse/transloco';
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
@@ -21,14 +22,14 @@ import { ParTable, SharedParameterGestionePresenzeService } from '../../../share
 })
 export class AzSediListPageComponent {
 
-  public title = 'Sedi';
+  public title: string;
   public searchText!: string;
   /** dalla cache caricata al login: si aggiorna da sola dopo salvataggi e cancellazioni (refresh mirato) */
   public get azSediList(): Az_SediModel[] | null {
     return this.sharedParameterGestionePresenzeService.Az_Sedi;
   }
   public readonly columns: NvxListColumn<Az_SediModel>[] = [
-    { key: 'descrizione', title: 'Sede', mobile: 'title' }
+    { key: 'descrizione', title: this.transloco.translate('attendance.pages.azSediList.columnSite'), mobile: 'title' }
   ];
   public actions: NvxListAction<Az_SediModel>[] = [];
   // prima le voci di default, poi per descrizione
@@ -44,7 +45,10 @@ export class AzSediListPageComponent {
               private userInterfaceService: UserInterfaceService,
               private userNavigationService: UserNavigationService,
               private collectionDialogService: CollectionDialogService,
-              private refresherService: RefresherService) {
+              private refresherService: RefresherService,
+              private transloco: TranslocoService) {
+
+    this.title = this.transloco.translate('attendance.pages.azSediList.title');
 
     this.btnEdit = userInterfaceService.Btn_Modifica;
     this.btnEdit.event = this.handleButtonEditClick;
@@ -57,7 +61,7 @@ export class AzSediListPageComponent {
 
   ionViewWillEnter() {
     this.fabMenuService.fabMenuItem = [
-      new FabMenuItem('Nuova Sede', 'add-circle-outline', () => {
+      new FabMenuItem(this.transloco.translate('attendance.pages.azSediList.fabAdd'), 'add-circle-outline', () => {
         this.navCtrl.navigateForward('/azsediedit', {
           state: { id: 0 }
         });
@@ -79,7 +83,7 @@ export class AzSediListPageComponent {
   
   handleButtonDeleteClick = async (item: any) => {
 
-    const result = await this.collectionDialogService.ConfirmCancelDialog('Confermi la cancellazione della sede?');
+    const result = await this.collectionDialogService.ConfirmCancelDialog(this.transloco.translate('attendance.pages.azSediList.confirmDelete'));
     if (result) {
 
         let request: GenericRequest<Az_SediDeleteInModel> = new GenericRequest<Az_SediDeleteInModel>(Az_SediDeleteInModel);

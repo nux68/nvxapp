@@ -1,6 +1,9 @@
 import { Pipe, PipeTransform } from '@angular/core';
+import { translate } from '@jsverse/transloco';
 import { TipoTimbratura } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Timbratura/Models/dip-gg-timbratura-model';
 
+// translate() globale (non TranslocoService iniettato): la pipe viene creata anche con new fuori dalla DI;
+// i testi sono calcolati una volta, il cambio lingua ricarica la pagina
 @Pipe({
   name: 'tipoTimbraturaToShortText',
   standalone: true
@@ -14,13 +17,13 @@ export class TipoTimbraturaToShortTextPipe implements PipeTransform {
 
     switch (value) {
       case TipoTimbratura.Entrata:
-        return 'E';
+        return translate('attendance.pipes.tipoTimbraturaToShortText.entrata');
       case TipoTimbratura.Uscita:
-        return 'U';
+        return translate('attendance.pipes.tipoTimbraturaToShortText.uscita');
       case TipoTimbratura.SenzaVerso:
-        return 'S';
+        return translate('attendance.pipes.tipoTimbraturaToShortText.senzaVerso');
       case TipoTimbratura.Attivita:
-        return 'A';
+        return translate('attendance.pipes.tipoTimbraturaToShortText.attivita');
       default:
         return '';
     }

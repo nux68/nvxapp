@@ -1,3 +1,4 @@
+using nvxapp.server.data.Localization;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -135,7 +136,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Attivi
                         if (model.Data.Par_Competenza.Where(x => x.Checked == true).ToList().Count == 0)
                         {
                             //TODO GESTIRE COMUNICAZIONE SERVER CON ERRORI != EXCEPTION
-                            retVal.Messages.Add(new Message("L'attivita di default deve avere almeno una competenza", MessageType.Exception));
+                            retVal.Messages.Add(new Message(AttendanceTrackingMessages.Get("DefaultActivityNeedsCompetence"), MessageType.Exception));
                             return retVal;
                         }
                     }
@@ -175,7 +176,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Attivi
                 }
                 else
                 {
-                    retVal.AddMessage($"Attività con Id {model.Data.Id} non trovata.", MessageType.Warning);
+                    retVal.AddMessage(AttendanceTrackingMessages.Get("ActivityWithIdNotFound", model.Data.Id), MessageType.Warning);
                 }
                 await Task.Delay(DelayAsyncMethod);
                 return retVal;

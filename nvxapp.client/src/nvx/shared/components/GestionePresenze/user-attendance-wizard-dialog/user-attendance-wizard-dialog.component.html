@@ -15,7 +15,7 @@
         [firstDayOfWeek]="1"
         [showDefaultButtons]="true"
         doneText="OK"
-        cancelText="Annulla"
+        [cancelText]="'common.buttons.cancel' | transloco"
         (ionChange)="onDataAssChange($event)">
       </ion-datetime>
     </ng-template>
@@ -27,7 +27,7 @@
       <!-- Indicatore step -->
       <div class="nvx-wizard-step">
         <ion-text color="medium">
-          Step {{ currentStep + 1 }} di {{ titoliStep.length }} - {{ titoliStep[currentStep] }}
+          {{ 'attendance.components.userAttendanceWizardDialog.step' | transloco: { n: currentStep + 1, totale: titoliStep.length, titolo: titoliStep[currentStep] } }}
         </ion-text>
         <ion-progress-bar [value]="(currentStep + 1) / titoliStep.length"></ion-progress-bar>
       </div>
@@ -43,26 +43,26 @@
       @if (currentStep === 0) {
         <form [formGroup]="formUtente">
           <ion-item class="nvx-item-4-title">
-            <ion-label>Dati utente</ion-label>
+            <ion-label>{{ 'attendance.components.userAttendanceWizardDialog.datiUtente' | transloco }}</ion-label>
           </ion-item>
           <ion-grid class="ion-no-padding">
             <ion-row>
               <ion-col size="12" size-md="6">
               <ion-item>
-                <ion-label position="floating">Cognome</ion-label>
+                <ion-label position="floating">{{ 'attendance.components.userAttendanceWizardDialog.cognome' | transloco }}</ion-label>
                 <ion-input type="text" formControlName="cognome" maxlength="50"></ion-input>
               </ion-item>
               @if (formUtente.get('cognome')?.hasError('required') && formUtente.get('cognome')?.touched) {
-                <ion-note color="danger">Il cognome è obbligatorio.</ion-note>
+                <ion-note color="danger">{{ 'attendance.components.userAttendanceWizardDialog.cognomeObbligatorio' | transloco }}</ion-note>
               }
               </ion-col>
               <ion-col size="12" size-md="6">
               <ion-item>
-                <ion-label position="floating">Nome</ion-label>
+                <ion-label position="floating">{{ 'attendance.components.userAttendanceWizardDialog.nome' | transloco }}</ion-label>
                 <ion-input type="text" formControlName="nome" maxlength="50"></ion-input>
               </ion-item>
               @if (formUtente.get('nome')?.hasError('required') && formUtente.get('nome')?.touched) {
-                <ion-note color="danger">Il nome è obbligatorio.</ion-note>
+                <ion-note color="danger">{{ 'attendance.components.userAttendanceWizardDialog.nomeObbligatorio' | transloco }}</ion-note>
               }
               </ion-col>
             </ion-row>
@@ -75,10 +75,10 @@
                 <ion-input type="text" formControlName="descrizione" maxlength="50"></ion-input>
               </ion-item>
               @if (formUtente.get('descrizione')?.hasError('required') && formUtente.get('descrizione')?.touched) {
-                <ion-note color="danger">Lo UserName è obbligatorio.</ion-note>
+                <ion-note color="danger">{{ 'attendance.components.userAttendanceWizardDialog.userNameObbligatorio' | transloco }}</ion-note>
               }
               @if (formUtente.get('descrizione')?.hasError('giaUsato')) {
-                <ion-note color="danger">Questo UserName è già usato da un altro utente.</ion-note>
+                <ion-note color="danger">{{ 'attendance.components.userAttendanceWizardDialog.userNameGiaUsato' | transloco }}</ion-note>
               }
               </ion-col>
               <ion-col size="12" size-md="6">
@@ -87,7 +87,7 @@
                 <ion-input type="password" formControlName="pw"></ion-input>
               </ion-item>
               @if (formUtente.get('pw')?.hasError('required') && formUtente.get('pw')?.touched) {
-                <ion-note color="danger">La password è obbligatoria.</ion-note>
+                <ion-note color="danger">{{ 'common.validation.passwordRequired' | transloco }}</ion-note>
               }
               </ion-col>
             </ion-row>
@@ -97,24 +97,24 @@
             <ion-input type="email" formControlName="mail"></ion-input>
           </ion-item>
           @if (formUtente.get('mail')?.hasError('required') && formUtente.get('mail')?.touched) {
-            <ion-note color="danger">L'email è obbligatoria.</ion-note>
+            <ion-note color="danger">{{ 'common.validation.emailRequired' | transloco }}</ion-note>
           }
           @if (formUtente.get('mail')?.hasError('email') && formUtente.get('mail')?.touched) {
-            <ion-note color="danger">Inserisci un'email valida.</ion-note>
+            <ion-note color="danger">{{ 'common.validation.emailInvalid' | transloco }}</ion-note>
           }
           @if (formUtente.get('mail')?.hasError('giaUsato')) {
-            <ion-note color="danger">Questa email è già usata da un altro utente.</ion-note>
+            <ion-note color="danger">{{ 'attendance.components.userAttendanceWizardDialog.emailGiaUsata' | transloco }}</ion-note>
           }
           <ion-item>
-            <ion-label position="floating">Ruolo</ion-label>
-            <ion-select formControlName="roles" aria-label="Ruoli" [multiple]="true">
+            <ion-label position="floating">{{ 'attendance.components.userAttendanceWizardDialog.ruolo' | transloco }}</ion-label>
+            <ion-select formControlName="roles" [attr.aria-label]="'attendance.components.userAttendanceWizardDialog.ruoli' | transloco" [multiple]="true">
               @for (item_role of getRoles(); track item_role) {
                 <ion-select-option value="{{item_role}}">{{ item_role }}</ion-select-option>
               }
             </ion-select>
           </ion-item>
           @if (formUtente.get('roles')?.hasError('minArrayLength') && formUtente.get('roles')?.touched) {
-            <ion-note color="danger">Il ruolo è obbligatorio.</ion-note>
+            <ion-note color="danger">{{ 'common.validation.roleRequired' | transloco }}</ion-note>
           }
         </form>
       }
@@ -123,23 +123,23 @@
       @if (currentStep === 1) {
         <form [formGroup]="formRapporto">
           <ion-item class="nvx-item-4-title">
-            <ion-label>Rapporto di lavoro</ion-label>
+            <ion-label>{{ 'attendance.components.userAttendanceWizardDialog.rapportoLavoro' | transloco }}</ion-label>
           </ion-item>
           <ion-item>
-            <ion-label position="stacked">Data assunzione</ion-label>
+            <ion-label position="stacked">{{ 'attendance.components.userAttendanceWizardDialog.dataAssunzione' | transloco }}</ion-label>
             <ion-datetime-button class="datetime-button-with-label" datetime="wizard-data-ass"></ion-datetime-button>
           </ion-item>
           @if (formRapporto.get('dataAss')?.hasError('required') && formRapporto.get('dataAss')?.touched) {
-            <ion-note color="danger">La data di assunzione è obbligatoria.</ion-note>
+            <ion-note color="danger">{{ 'attendance.components.userAttendanceWizardDialog.dataAssunzioneObbligatoria' | transloco }}</ion-note>
           }
           <ion-grid class="ion-no-padding">
             <ion-row>
               <ion-col size="12" size-md="6">
               <ion-item>
-                <ion-label position="stacked">Tipo contratto</ion-label>
+                <ion-label position="stacked">{{ 'attendance.components.userAttendanceWizardDialog.tipoContratto' | transloco }}</ion-label>
                 <ion-select formControlName="tipoContratto" interface="popover">
-                  <ion-select-option [value]="tipoContrattoEnum.FullTime">Full-time</ion-select-option>
-                  <ion-select-option [value]="tipoContrattoEnum.PartTime">Part-time</ion-select-option>
+                  <ion-select-option [value]="tipoContrattoEnum.FullTime">{{ 'attendance.components.userAttendanceWizardDialog.fullTime' | transloco }}</ion-select-option>
+                  <ion-select-option [value]="tipoContrattoEnum.PartTime">{{ 'attendance.components.userAttendanceWizardDialog.partTime' | transloco }}</ion-select-option>
                 </ion-select>
               </ion-item>
               </ion-col>
@@ -153,18 +153,18 @@
           </ion-grid>
           @if (formRapporto.get('tipoContratto')?.value === tipoContrattoEnum.PartTime) {
             <ion-item>
-              <ion-label position="stacked">Ore settimanali contrattuali</ion-label>
+              <ion-label position="stacked">{{ 'attendance.components.userAttendanceWizardDialog.oreSettimanali' | transloco }}</ion-label>
               <ion-input type="number" min="0" max="168" step="0.5" formControlName="oreSettimanaliContratto"></ion-input>
             </ion-item>
             <ion-note class="nvx-wizard-nota">
-              Base del limite del lavoro supplementare; se vuoto si usano le ore teoriche della settimana.
+              {{ 'attendance.components.userAttendanceWizardDialog.notaOreSettimanali' | transloco }}
             </ion-note>
           }
           <ion-item>
-            <ion-label position="stacked">Straordinario e supplementare</ion-label>
+            <ion-label position="stacked">{{ 'attendance.components.userAttendanceWizardDialog.straordinarioSupplementare' | transloco }}</ion-label>
             <ion-select formControlName="destinazioneEccedenze" interface="popover">
-              <ion-select-option [value]="destinazioneEccedenzeEnum.Pagamento">Pagamento in busta paga</ion-select-option>
-              <ion-select-option [value]="destinazioneEccedenzeEnum.BancaOre">Accredito in banca ore</ion-select-option>
+              <ion-select-option [value]="destinazioneEccedenzeEnum.Pagamento">{{ 'attendance.components.userAttendanceWizardDialog.pagamento' | transloco }}</ion-select-option>
+              <ion-select-option [value]="destinazioneEccedenzeEnum.BancaOre">{{ 'attendance.components.userAttendanceWizardDialog.bancaOre' | transloco }}</ion-select-option>
             </ion-select>
           </ion-item>
         </form>
@@ -174,28 +174,28 @@
       @if (currentStep === 2) {
         <form [formGroup]="formProfilo">
           <ion-item class="nvx-item-4-title">
-            <ion-label>Profilo orario</ion-label>
+            <ion-label>{{ 'attendance.components.userAttendanceWizardDialog.profiloOrario' | transloco }}</ion-label>
           </ion-item>
           <ion-item>
-            <ion-label position="stacked">Profilo orario</ion-label>
-            <ion-select formControlName="idPar_ProfiloOrario" interface="popover" placeholder="Seleziona il profilo orario">
+            <ion-label position="stacked">{{ 'attendance.components.userAttendanceWizardDialog.profiloOrario' | transloco }}</ion-label>
+            <ion-select formControlName="idPar_ProfiloOrario" interface="popover" placeholder="{{ 'attendance.components.userAttendanceWizardDialog.selezionaProfilo' | transloco }}">
               @for (profilo of par_ProfiloOrario; track profilo.id) {
                 <ion-select-option [value]="profilo.id">{{ profilo.codice }} - {{ profilo.descrizione }}</ion-select-option>
               }
             </ion-select>
           </ion-item>
           @if (formProfilo.get('idPar_ProfiloOrario')?.hasError('required') && formProfilo.get('idPar_ProfiloOrario')?.touched) {
-            <ion-note color="danger">Il profilo orario è obbligatorio.</ion-note>
+            <ion-note color="danger">{{ 'attendance.components.userAttendanceWizardDialog.profiloObbligatorio' | transloco }}</ion-note>
           }
           <ion-item>
-            <ion-label position="stacked">Giorno di partenza del ciclo</ion-label>
+            <ion-label position="stacked">{{ 'attendance.components.userAttendanceWizardDialog.giornoPartenza' | transloco }}</ion-label>
             <ion-input type="number" min="1" formControlName="numGiornoPartenzaCiclo"></ion-input>
           </ion-item>
           @if (formProfilo.get('numGiornoPartenzaCiclo')?.invalid && formProfilo.get('numGiornoPartenzaCiclo')?.touched) {
-            <ion-note color="danger">Il giorno di partenza deve essere almeno 1.</ion-note>
+            <ion-note color="danger">{{ 'attendance.components.userAttendanceWizardDialog.giornoPartenzaMin' | transloco }}</ion-note>
           }
           <ion-note class="nvx-wizard-nota">
-            Il profilo vale dalla data di assunzione.
+            {{ 'attendance.components.userAttendanceWizardDialog.notaProfilo' | transloco }}
           </ion-note>
         </form>
       }
@@ -203,10 +203,10 @@
       <!-- ═══ STEP 4: Competenze ═══ -->
       @if (currentStep === 3) {
         <ion-item class="nvx-item-4-title">
-          <ion-label>Competenze</ion-label>
+          <ion-label>{{ 'attendance.components.userAttendanceWizardDialog.competenze' | transloco }}</ion-label>
         </ion-item>
         <ion-note class="nvx-wizard-nota">
-          Le competenze determinano le attività che il dipendente può svolgere. Senza competenze viene assegnata quella di default.
+          {{ 'attendance.components.userAttendanceWizardDialog.notaCompetenze' | transloco }}
         </ion-note>
         @for (competenza of par_Competenza; track competenza.id) {
           <ion-item>
@@ -219,7 +219,7 @@
       <!-- ═══ STEP 5: Maturazione contatori ═══ -->
       @if (currentStep === 4) {
         <ion-item class="nvx-item-4-title">
-          <ion-label>Maturazione mensile</ion-label>
+          <ion-label>{{ 'attendance.components.userAttendanceWizardDialog.maturazioneMensile' | transloco }}</ion-label>
         </ion-item>
         @for (just of giustificativiContatore; track just.id) {
           <ion-item>
@@ -234,10 +234,10 @@
             </ion-input>
           </ion-item>
           @if (!isOreValide(maturazioni[just.id])) {
-            <ion-note color="danger">Formato ore non valido (HHH:MM).</ion-note>
+            <ion-note color="danger">{{ 'attendance.components.userAttendanceWizardDialog.formatoOreNonValido' | transloco }}</ion-note>
           }
         } @empty {
-          <ion-note>Nessun giustificativo con contatore configurato.</ion-note>
+          <ion-note>{{ 'attendance.components.userAttendanceWizardDialog.nessunGiustificativoContatore' | transloco }}</ion-note>
         }
       }
 

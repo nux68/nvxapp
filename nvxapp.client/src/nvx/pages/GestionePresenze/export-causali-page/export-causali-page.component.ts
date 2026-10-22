@@ -14,6 +14,7 @@ import { TimeSheetExportService } from '../../../ClientServer-Service/GestionePr
 import { MyMokeLongJobInModel } from '../../../ClientServer-Service/Infrastructure/MyMokeLongJob/Models/my-moke-long-job-model';
 import { TimeSheet_ExportInModel } from '../../../ClientServer-Service/GestionePresenze/TimeSheet_ExportService/Models/time-sheet-export-model';
 import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
+import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
   selector: 'app-export-causali-page',
@@ -35,7 +36,8 @@ export class ExportCausaliPageComponent extends BasePageConfirmCancelComponent<E
               protected override fb: FormBuilder,
               private collectionDialogService: CollectionDialogService,
               private timeSheetExportService: TimeSheetExportService,
-              public sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService
+              public sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
+              private transloco: TranslocoService
              )
   {
     super(navCtrl, userInterfaceService, fb);
@@ -51,7 +53,7 @@ export class ExportCausaliPageComponent extends BasePageConfirmCancelComponent<E
     });
   }
 
-  get Title(): string { return "Export causali"; }
+  get Title(): string { return this.transloco.translate('attendance.pages.exportCausali.title'); }
 
   LoadData = (): Observable<ExportCausaliFormData | null> => {
 
@@ -100,7 +102,7 @@ export class ExportCausaliPageComponent extends BasePageConfirmCancelComponent<E
   }
   handleButtontaskClick = async (item: any) => {
 
-    const result = await this.collectionDialogService.ConfirmCancelDialog('Confermi l\'export delle causali? ');
+    const result = await this.collectionDialogService.ConfirmCancelDialog(this.transloco.translate('attendance.pages.exportCausali.confirmExport'));
     if (result) {
 
       let request: GenericRequest<TimeSheet_ExportInModel> = new GenericRequest<TimeSheet_ExportInModel>(TimeSheet_ExportInModel);

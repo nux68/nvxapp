@@ -1,3 +1,4 @@
+using nvxapp.server.data.Localization;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_AnagraficaService;
 using nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePresenze;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_AnagraficaService.Models;
@@ -28,8 +29,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                 Type = "string",
                 Required = true,
                 PromptDescription = "(string, obbligatorio)",
-                Question = "Per quale dipendente?",
-                Label = "Dipendente",
+                Question = AttendanceTrackingMessages.Get("ChatEmployeeQuestion"),
+                Label = AttendanceTrackingMessages.Get("ChatEmployeeLabel"),
                 Validator = v => DipendenteLookupHelper.ValidateEmployeeSlot(v, _dip_AnagraficaService)
             };
         }

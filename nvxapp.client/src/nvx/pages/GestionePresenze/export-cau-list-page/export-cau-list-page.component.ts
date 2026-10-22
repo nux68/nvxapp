@@ -1,3 +1,4 @@
+import { TranslocoService } from '@jsverse/transloco';
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { ParOrarioService } from '../../../ClientServer-Service/GestionePresenze/Par_Orario/par-orario.service';
@@ -29,9 +30,9 @@ export class ExportCauListPageComponent {
     return this.sharedParameterGestionePresenzeService.Par_ExportCau;
   }
   public readonly columns: NvxListColumn<Par_ExportCauModel>[] = [
-    { key: 'codice', title: 'Codice', width: '140px', mobile: 'subtitle' },
-    { key: 'descrizione', title: 'Descrizione', mobile: 'title' },
-    { key: 'tipoFile', title: 'Tipo file', width: '160px', mobile: 'note' }
+    { key: 'codice', title: this.transloco.translate('attendance.pages.exportCauList.columnCode'), width: '140px', mobile: 'subtitle' },
+    { key: 'descrizione', title: this.transloco.translate('attendance.pages.exportCauList.columnDescription'), mobile: 'title' },
+    { key: 'tipoFile', title: this.transloco.translate('attendance.pages.exportCauList.columnFileType'), width: '160px', mobile: 'note' }
   ];
   public actions: NvxListAction<Par_ExportCauModel>[] = [];
   public readonly sortList = (a: Par_ExportCauModel, b: Par_ExportCauModel) => (a.descrizione ?? '').localeCompare(b.descrizione ?? '');
@@ -45,9 +46,10 @@ export class ExportCauListPageComponent {
     private parExportCauService: ParExportCauService,
     private collectionDialogService: CollectionDialogService,
     private refresherService: RefresherService,
-    private userInterfaceService: UserInterfaceService
+    private userInterfaceService: UserInterfaceService,
+    private transloco: TranslocoService
   ) {
-    this.title = 'Modelli export';
+    this.title = this.transloco.translate('attendance.pages.exportCauList.title');
     this.btnEdit = this.userInterfaceService.Btn_Modifica;
     this.btnEdit.event = this.handleButtonEditClick;
 
@@ -88,7 +90,7 @@ export class ExportCauListPageComponent {
 
   handleButtonDeleteClick = async (item: any) => {
 
-    const result = await this.collectionDialogService.ConfirmCancelDialog('Confermi la cancellazione della tabella');
+    const result = await this.collectionDialogService.ConfirmCancelDialog(this.transloco.translate('attendance.pages.exportCauList.confirmDelete'));
     if (result) {
 
       const request: GenericRequest<Par_ExportCau_Delete_InModel> = new GenericRequest<Par_ExportCau_Delete_InModel>(Par_ExportCau_Delete_InModel);

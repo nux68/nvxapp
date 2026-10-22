@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
+import { TranslocoService } from '@jsverse/transloco';
 import { DatePipe } from '@angular/common';
 import { GenericRequest } from '../../../../ClientServer-Service/ModelsBase/generic-request';
 import { DipPeriodoService } from '../../../../ClientServer-Service/GestionePresenze/Dip_Periodo/dip-periodo.service';
@@ -15,6 +16,7 @@ interface VoceRiepilogo {
   livello?: number;                                  // 1 = "di cui"
   dettaglio?: (g: Dip_Periodo_Giorno) => number;
   evidenza?: 'positivo' | 'negativo' | 'provvisorio';
+  saldo?: boolean;                                   // saldo del periodo: mostrato con il segno
 }
 
 /*
@@ -49,7 +51,12 @@ export class CartellinoQuadraturaComponent implements OnChanges {
 
   constructor(private dipPeriodoService: DipPeriodoService,
               private collectionDialogService: CollectionDialogService,
-              private datePipe: DatePipe) { }
+              private datePipe: DatePipe,
+              private transloco: TranslocoService) { }
+
+  private t(key: string, params?: Record<string, unknown>): string {
+    return this.transloco.translate('attendance.components.cartellinoQuadratura.' + key, params);
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (this.year && this.month)
@@ -76,9 +83,9 @@ export class CartellinoQuadraturaComponent implements OnChanges {
 
   get statoTesto(): string {
     switch (this.stato) {
-      case PeriodoStato.Approvato: return 'Approvato';
-      case PeriodoStato.DaApprovare: return 'Chiuso, in attesa di approvazione';
-      default: return 'Provvisorio, periodo in corso';
+      case PeriodoStato.Approvato: return this.t('stato.approvato');
+      case PeriodoStato.DaApprovare: return this.t('stato.daApprovare');
+      default: return this.t('stato.provvisorio');
     }
   }
 
@@ -100,9 +107,9 @@ export class CartellinoQuadraturaComponent implements OnChanges {
 
   get conteggioTesto(): string {
     switch (this.dati?.tipoConteggio) {
-      case StraoTipoConteggio.Settimanale: return 'conteggio settimanale';
-      case StraoTipoConteggio.Mensile: return 'conteggio mensile';
-      default: return 'conteggio giornaliero';
+      case StraoTipoConteggio.Settimanale: return this.t('conteggio.settimanale');
+      case StraoTipoConteggio.Mensile: return this.t('conteggio.mensile');
+      default: return this.t('conteggio.giornaliero');
     }
   }
 
@@ -115,7 +122,7 @@ export class CartellinoQuadraturaComponent implements OnChanges {
   }
 
   get destinazioneTesto(): string {
-    return this.dati?.destinazioneEccedenze === DestinazioneEccedenze.BancaOre ? 'Accreditate in banca ore' : 'In pagamento';
+    return this.dati?.destinazioneEccedenze === DestinazioneEccedenze.BancaOre ? this.t('destinazione.bancaOre') : this.t('destinazione.pagamento');
   }
 
   private costruisciVoci() {
@@ -126,40 +133,40 @@ export class CartellinoQuadraturaComponent implements OnChanges {
     }
 
     const voci: VoceRiepilogo[] = [
-      { etichetta: 'Ore teoriche previste', minuti: p.min_Teo, nota: this.partTime && this.dati.oreSettimanaliContratto ? `part-time ${this.dati.oreSettimanaliContratto}h/settimana` : undefined },
-      { etichetta: 'Ore lavorate effettive', minuti: p.min_Lav, nota: 'timbrature nette' },
-      { etichetta: 'di cui ordinarie', minuti: p.min_Ord, livello: 1, nota: 'retribuite con paga base' },
-      { etichetta: 'Permessi, ferie, assenze', minuti: p.min_Assenze, nota: 'sottratti dal teorico' },
-      { etichetta: 'Ore in più', minuti: p.min_Ecc, nota: 'oltre il teorico, dopo arrotondamenti', dettaglio: g => g.min_Ecc, evidenza: 'positivo' },
+      { etichetta: this.t('voci.oreTeoriche'), minuti: p.min_Teo, nota: this.partTime && this.dati.oreSettimanaliContratto ? this.t('voci.notaPartTime', { ore: this.dati.oreSettimanaliContratto }) : undefined },
+      { etichetta: this.t('voci.oreLavorate'), minuti: p.min_Lav, nota: this.t('voci.notaTimbratureNette') },
+      { etichetta: this.t('voci.diCuiOrdinarie'), minuti: p.min_Ord, livello: 1, nota: this.t('voci.notaPagaBase') },
+      { etichetta: this.t('voci.assenze'), minuti: p.min_Assenze, nota: this.t('voci.notaSottratti') },
+      { etichetta: this.t('voci.oreInPiu'), minuti: p.min_Ecc, nota: this.t('voci.notaOltreTeorico'), dettaglio: g => g.min_Ecc, evidenza: 'positivo' },
     ];
 
     if (p.min_Provvisorie > 0)
-      voci.push({ etichetta: 'in attesa di quadratura', minuti: p.min_Provvisorie, livello: 1, nota: 'periodo di conteggio in corso', dettaglio: g => g.eccProvvisoria ? g.min_Ecc : 0, evidenza: 'provvisorio' });
+      voci.push({ etichetta: this.t('voci.inAttesaQuadratura'), minuti: p.min_Provvisorie, livello: 1, nota: this.t('voci.notaPeriodoInCorso'), dettaglio: g => g.eccProvvisoria ? g.min_Ecc : 0, evidenza: 'provvisorio' });
     if (p.min_Compensate > 0)
-      voci.push({ etichetta: 'compensate', minuti: p.min_Compensate, livello: 1, nota: 'recuperano ore mancanti nello stesso periodo' });
+      voci.push({ etichetta: this.t('voci.compensate'), minuti: p.min_Compensate, livello: 1, nota: this.t('voci.notaCompensate') });
     if (this.partTime || p.min_Suppl + p.min_SupplEcc > 0) {
-      voci.push({ etichetta: 'Lavoro supplementare', minuti: p.min_Suppl, livello: 1, nota: 'entro il limite del contratto', dettaglio: g => g.min_Suppl });
+      voci.push({ etichetta: this.t('voci.supplementare'), minuti: p.min_Suppl, livello: 1, nota: this.t('voci.notaSupplementare'), dettaglio: g => g.min_Suppl });
       if (p.min_SupplEcc > 0)
-        voci.push({ etichetta: 'Supplementare oltre il limite', minuti: p.min_SupplEcc, livello: 1, dettaglio: g => g.min_SupplEcc });
+        voci.push({ etichetta: this.t('voci.supplementareOltre'), minuti: p.min_SupplEcc, livello: 1, dettaglio: g => g.min_SupplEcc });
     }
-    voci.push({ etichetta: 'Lavoro straordinario', minuti: p.min_Strao, livello: 1, nota: 'oltre la soglia full-time', dettaglio: g => g.min_Strao });
+    voci.push({ etichetta: this.t('voci.straordinario'), minuti: p.min_Strao, livello: 1, nota: this.t('voci.notaStraordinario'), dettaglio: g => g.min_Strao });
     if (p.min_StraoNott > 0)
-      voci.push({ etichetta: 'Straordinario notturno', minuti: p.min_StraoNott, livello: 1, dettaglio: g => g.min_StraoNott });
+      voci.push({ etichetta: this.t('voci.straoNotturno'), minuti: p.min_StraoNott, livello: 1, dettaglio: g => g.min_StraoNott });
     if (p.min_StraoFest > 0)
-      voci.push({ etichetta: 'Straordinario festivo', minuti: p.min_StraoFest, livello: 1, dettaglio: g => g.min_StraoFest });
+      voci.push({ etichetta: this.t('voci.straoFestivo'), minuti: p.min_StraoFest, livello: 1, dettaglio: g => g.min_StraoFest });
     if (p.min_StraoFestNott > 0)
-      voci.push({ etichetta: 'Straordinario festivo notturno', minuti: p.min_StraoFestNott, livello: 1, dettaglio: g => g.min_StraoFestNott });
+      voci.push({ etichetta: this.t('voci.straoFestivoNotturno'), minuti: p.min_StraoFestNott, livello: 1, dettaglio: g => g.min_StraoFestNott });
     if (p.min_EccOrd > 0)
-      voci.push({ etichetta: 'Ore eccedenti non straordinarie', minuti: p.min_EccOrd, livello: 1, nota: 'oltre il teorico ma entro la soglia', dettaglio: g => g.min_EccOrd });
+      voci.push({ etichetta: this.t('voci.eccedentiNonStrao'), minuti: p.min_EccOrd, livello: 1, nota: this.t('voci.notaEccedenti'), dettaglio: g => g.min_EccOrd });
     if (p.min_NonAutorizzate > 0) {
-      voci.push({ etichetta: 'Ore in più non autorizzate', minuti: p.min_NonAutorizzate, nota: 'oltre l\'autorizzazione approvata: non riconosciute', dettaglio: g => g.min_NonAutorizzate, evidenza: 'negativo' });
+      voci.push({ etichetta: this.t('voci.nonAutorizzate'), minuti: p.min_NonAutorizzate, nota: this.t('voci.notaNonAutorizzate'), dettaglio: g => g.min_NonAutorizzate, evidenza: 'negativo' });
       if (p.min_DaAutorizzare > 0)
-        voci.push({ etichetta: 'in attesa di autorizzazione', minuti: p.min_DaAutorizzare, livello: 1, nota: 'richieste ancora da approvare', dettaglio: g => g.min_DaAutorizzare, evidenza: 'provvisorio' });
+        voci.push({ etichetta: this.t('voci.inAttesaAutorizzazione'), minuti: p.min_DaAutorizzare, livello: 1, nota: this.t('voci.notaInAttesaAutorizzazione'), dettaglio: g => g.min_DaAutorizzare, evidenza: 'provvisorio' });
     }
     if (p.min_NonRiconosciute > 0)
-      voci.push({ etichetta: 'Non riconosciute', minuti: p.min_NonRiconosciute, livello: 1, nota: 'escluse dall\'HR', dettaglio: g => g.min_NonRiconosciute, evidenza: 'negativo' });
+      voci.push({ etichetta: this.t('voci.nonRiconosciute'), minuti: p.min_NonRiconosciute, livello: 1, nota: this.t('voci.notaNonRiconosciute'), dettaglio: g => g.min_NonRiconosciute, evidenza: 'negativo' });
 
-    voci.push({ etichetta: 'Saldo del periodo', minuti: this.dati.min_Saldo, nota: 'lavorato meno lavorabile, fino a ieri', evidenza: this.dati.min_Saldo < 0 ? 'negativo' : 'positivo' });
+    voci.push({ etichetta: this.t('voci.saldo'), saldo: true, minuti: this.dati.min_Saldo, nota: this.t('voci.notaSaldo'), evidenza: this.dati.min_Saldo < 0 ? 'negativo' : 'positivo' });
 
     this.voci = voci;
   }
@@ -178,7 +185,7 @@ export class CartellinoQuadraturaComponent implements OnChanges {
     return this.dati.giorni
       .filter(g => f(g) > 0)
       .map(g => ({
-        testo: (this.datePipe.transform(g.data, 'EEE dd/MM') ?? '') + (g.festivo ? ' (festivo)' : ''),
+        testo: (this.datePipe.transform(g.data, 'EEE dd/MM') ?? '') + (g.festivo ? ' ' + this.t('festivo') : ''),
         minuti: f(g),
         provvisoria: g.eccProvvisoria
       }));
@@ -196,9 +203,10 @@ export class CartellinoQuadraturaComponent implements OnChanges {
     const p = this.dati?.dip_Periodo;
     if (!p) return;
 
+    const periodo = `${String(p.mese).padStart(2, '0')}/${p.anno}`;
     const domanda = stato === PeriodoStato.Approvato
-      ? `Approvi il cartellino di ${String(p.mese).padStart(2, '0')}/${p.anno}? I giorni del mese non saranno più modificabili.`
-      : `Riapri il cartellino di ${String(p.mese).padStart(2, '0')}/${p.anno}? I giorni tornano modificabili e ricalcolabili.`;
+      ? this.t('domandaApprova', { periodo })
+      : this.t('domandaRiapri', { periodo });
     if (!await this.collectionDialogService.ConfirmCancelDialog(domanda))
       return;
 

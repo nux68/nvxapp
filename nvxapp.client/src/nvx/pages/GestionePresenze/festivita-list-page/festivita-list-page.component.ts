@@ -7,6 +7,7 @@ import { NvxListAction, NvxListColumn } from '../../../shared/components/infrast
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
 import { ParFestivitaService } from '../../../ClientServer-Service/GestionePresenze/Par_Festivita/par-festivita.service';
+import { TranslocoService } from '@jsverse/transloco';
 import { Par_Festivita_DeleteInModel, Par_Festivita_GetAllInModel, Par_FestivitaModel, TipoFestivita } from '../../../ClientServer-Service/GestionePresenze/Par_Festivita/Models/par-festivita-model';
 
 @Component({
@@ -18,13 +19,10 @@ import { Par_Festivita_DeleteInModel, Par_Festivita_GetAllInModel, Par_Festivita
 })
 export class FestivitaListPageComponent {
 
-  public title = 'Calendario festività';
+  public title: string;
   public searchText!: string;
   public par_FestivitaList: Par_FestivitaModel[] | null = null;
-  public readonly columns: NvxListColumn<Par_FestivitaModel>[] = [
-    { key: 'descrizione', title: 'Festività' },
-    { key: 'quando', title: 'Quando', value: x => this.quando(x), sortValue: x => this.chiaveOrdine(x) },
-  ];
+  public readonly columns: NvxListColumn<Par_FestivitaModel>[];
   public actions: NvxListAction<Par_FestivitaModel>[] = [];
   public readonly sortList = (a: Par_FestivitaModel, b: Par_FestivitaModel) => this.chiaveOrdine(a).localeCompare(this.chiaveOrdine(b));
   public btnEdit: ButtonItem;
@@ -34,7 +32,14 @@ export class FestivitaListPageComponent {
               public fabMenuService: FabMenuService,
               private parFestivitaService: ParFestivitaService,
               private userInterfaceService: UserInterfaceService,
-              private collectionDialogService: CollectionDialogService) {
+              private collectionDialogService: CollectionDialogService,
+              private transloco: TranslocoService) {
+
+    this.title = this.transloco.translate('attendance.pages.festivitaList.title');
+    this.columns = [
+      { key: 'descrizione', title: this.transloco.translate('attendance.pages.festivitaList.columnHoliday') },
+      { key: 'quando', title: this.transloco.translate('attendance.pages.festivitaList.columnWhen'), value: x => this.quando(x), sortValue: x => this.chiaveOrdine(x) },
+    ];
 
     this.btnEdit = userInterfaceService.Btn_Modifica;
     this.btnEdit.event = this.handleButtonEditClick;
@@ -67,7 +72,7 @@ export class FestivitaListPageComponent {
   }
 
   handleButtonDeleteClick = async (item: Par_FestivitaModel) => {
-    const result = await this.collectionDialogService.ConfirmCancelDialog('Confermi la cancellazione della festività');
+    const result = await this.collectionDialogService.ConfirmCancelDialog(this.transloco.translate('attendance.pages.festivitaList.deleteConfirm'));
     if (result) {
       const request = new GenericRequest<Par_Festivita_DeleteInModel>(Par_Festivita_DeleteInModel);
       request.data.id = item.id;
@@ -95,12 +100,12 @@ export class FestivitaListPageComponent {
   /** Testo della data: giorno e mese per le ricorrenti, data intera per le singole, "Pasqua + 1" per Pasquetta. */
   quando(item: Par_FestivitaModel): string {
     if (item.tipoFestivita === TipoFestivita.Pasquetta)
-      return 'lunedì dopo Pasqua';
+      return this.transloco.translate('attendance.pages.festivitaList.easterMonday');
     if (!item.data)
       return '';
     const [anno, mese, giorno] = item.data.substring(0, 10).split('-');
     return item.tipoFestivita === TipoFestivita.DataRicorrente
-      ? `${giorno}/${mese} ogni anno`
+      ? this.transloco.translate('attendance.pages.festivitaList.everyYear', { date: `${giorno}/${mese}` })
       : `${giorno}/${mese}/${anno}`;
   }
 

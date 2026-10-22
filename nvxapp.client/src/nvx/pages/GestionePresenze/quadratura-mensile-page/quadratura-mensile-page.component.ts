@@ -8,6 +8,7 @@ import { DestinazioneEccedenze, TipoContratto } from '../../../ClientServer-Serv
 import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
 import { LongJobNotifierService } from '../../../Utility/infrastructure/long-job-notifier.service';
 import { GestionePresenze_JobType } from '../../../Utility/GestionePresenze/GestionePresenze_JobType';
+import { TranslocoService } from '@jsverse/transloco';
 
 /*
  Quadratura mensile: per i dipendenti selezionati, totali del cartellino del mese (ore in piu',
@@ -23,7 +24,7 @@ import { GestionePresenze_JobType } from '../../../Utility/GestionePresenze/Gest
 })
 export class QuadraturaMensilePageComponent implements OnDestroy {
 
-  public title = 'Quadratura mensile';
+  public title: string;
   public currYear: number;
   public currMonth: number;     // 1-12
   public usersId: string[] = [];
@@ -39,7 +40,10 @@ export class QuadraturaMensilePageComponent implements OnDestroy {
               private dipPeriodoService: DipPeriodoService,
               private collectionDialogService: CollectionDialogService,
               private longJobNotifier: LongJobNotifierService,
-              private platform: Platform) { }
+              private platform: Platform,
+              private transloco: TranslocoService) {
+    this.title = this.transloco.translate('attendance.pages.quadraturaMensile.title');
+  }
 
   public get isMobile(): boolean {
     return this.platform.width() < 576;
@@ -95,16 +99,16 @@ export class QuadraturaMensilePageComponent implements OnDestroy {
   }
 
   contratto(r: Dip_Periodo_Riga): string {
-    return (r.tipoContratto === TipoContratto.PartTime ? 'Part-time' : 'Full-time') +
-           (r.destinazioneEccedenze === DestinazioneEccedenze.BancaOre ? ' · banca ore' : '');
+    return (r.tipoContratto === TipoContratto.PartTime ? this.transloco.translate('attendance.pages.quadraturaMensile.partTime') : this.transloco.translate('attendance.pages.quadraturaMensile.fullTime')) +
+           (r.destinazioneEccedenze === DestinazioneEccedenze.BancaOre ? ' · ' + this.transloco.translate('attendance.pages.quadraturaMensile.bancaOre') : '');
   }
 
   statoTesto(p: Dip_PeriodoModel | null): string {
-    if (!p) return 'Non calcolato';
+    if (!p) return this.transloco.translate('attendance.pages.quadraturaMensile.statoNonCalcolato');
     switch (p.stato) {
-      case PeriodoStato.Approvato: return 'Approvato';
-      case PeriodoStato.DaApprovare: return 'Da approvare';
-      default: return 'Provvisorio';
+      case PeriodoStato.Approvato: return this.transloco.translate('attendance.pages.quadraturaMensile.statoApprovato');
+      case PeriodoStato.DaApprovare: return this.transloco.translate('attendance.pages.quadraturaMensile.statoDaApprovare');
+      default: return this.transloco.translate('attendance.pages.quadraturaMensile.statoProvvisorio');
     }
   }
 
@@ -145,7 +149,7 @@ export class QuadraturaMensilePageComponent implements OnDestroy {
 
   async approvaSelezionati() {
     if (this.selezionati.size === 0) return;
-    if (!await this.collectionDialogService.ConfirmCancelDialog(`Approvi ${this.selezionati.size} cartellini? I giorni del mese non saranno più modificabili.`))
+    if (!await this.collectionDialogService.ConfirmCancelDialog(this.transloco.translate('attendance.pages.quadraturaMensile.confirmApprova', { n: this.selezionati.size })))
       return;
 
     const request = new GenericRequest<Dip_Periodo_SetStato_InModel>(Dip_Periodo_SetStato_InModel);

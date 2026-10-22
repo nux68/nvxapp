@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using nvxapp.server.data.Localization;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
@@ -254,7 +255,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                     if (string.IsNullOrEmpty(userId))
                     {
                         Log.Information("Could not find user ID. Unable to send SignalR notifications for job {JobId}.", jobId);
-                        outModel.Messages.Add(new Message("User not identified; cannot start job.", MessageType.Error));
+                        outModel.Messages.Add(new Message(AttendanceTrackingMessages.Get("JobUserNotIdentified"), MessageType.Error));
                     }
                     else
                     {
@@ -274,7 +275,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                                                                 JobType = GestionePresenze_JobType.TimeSheet_Engine_Calculate,
                                                                                 Payload = model.Data.TimeSheet_Calculate,
                                                                                 ProgressPercentage = 0,
-                                                                                Message = new Message { Text = "Calcolo presenze avviato...", MsgType = MessageType.Information }
+                                                                                Message = new Message { Text = AttendanceTrackingMessages.Get("TimesheetCalcStarted"), MsgType = MessageType.Information }
                                                                             }
                                                                          );
 
@@ -302,7 +303,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                                                                         JobType = GestionePresenze_JobType.TimeSheet_Engine_Calculate,
                                                                                         Payload = model.Data.TimeSheet_Calculate,
                                                                                         ProgressPercentage = progress,
-                                                                                        Message = new Message { Text = $"Calcolo presenze step {idxUser + 1} of {model.Data.TimeSheet_Calculate.SelectedUserId.Count}", MsgType = MessageType.Information }
+                                                                                        Message = new Message { Text = AttendanceTrackingMessages.Get("TimesheetCalcStep", idxUser + 1, model.Data.TimeSheet_Calculate.SelectedUserId.Count), MsgType = MessageType.Information }
                                                                                     }
                                                                                     );
 
@@ -348,7 +349,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                                                                     JobType = GestionePresenze_JobType.TimeSheet_Engine_Calculate,
                                                                                     Payload = model.Data.TimeSheet_Calculate,
                                                                                     ProgressPercentage = 100,
-                                                                                    Message = new Message { Text = "Calcolo presenze completato", MsgType = MessageType.Information },
+                                                                                    Message = new Message { Text = AttendanceTrackingMessages.Get("TimesheetCalcCompleted"), MsgType = MessageType.Information },
                                                                                     IsFinished = true
                                                                                 }
                                                                                );
@@ -367,7 +368,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                                                                 JobType = GestionePresenze_JobType.TimeSheet_Engine_Calculate,
                                                                                 Payload = model.Data.TimeSheet_Calculate,
                                                                                 ProgressPercentage = 100,
-                                                                                Message = new Message { Text = $"Calcolo presenze fallito: {ex.Message}", MsgType = MessageType.Exception },
+                                                                                Message = new Message { Text = AttendanceTrackingMessages.Get("TimesheetCalcFailed", ex.Message), MsgType = MessageType.Exception },
                                                                                 IsFinished = true
                                                                             }
                                                                             );

@@ -15,6 +15,7 @@ import { RefresherService } from '../../../Utility/GestionePresenze/refresher.se
 import { Par_CompetenzaModel } from '../../../ClientServer-Service/GestionePresenze/Par_Competenza/Models/par-competenza-model';
 import { SharedParameterGestionePresenzeService, ParTable } from '../../../shared/shared-parameter-gestione-presenze.service';
 import { CheckObjOn_Id_Number } from '../../../ClientServer-Service/ModelsBase/check-obj';
+import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
   selector: 'app-activity-edit-page',
@@ -31,7 +32,8 @@ export class ActivityEditPageComponent extends BasePageConfirmCancelComponent<Pa
     private parameterService: ParameterService,
     private stringHelperService: StringHelperService,
     private azAttivitaService: ParAttivitaService,
-    private refresherService: RefresherService) {
+    private refresherService: RefresherService,
+    private transloco: TranslocoService) {
     super(navCtrl, userInterfaceService, fb);
   }
 
@@ -41,7 +43,7 @@ export class ActivityEditPageComponent extends BasePageConfirmCancelComponent<Pa
     this._par_Competenza = this.sharedParameterGestionePresenzeService.Par_Competenza;
   }
 
-  get Title(): string { return 'Attività'; }
+  get Title(): string { return this.transloco.translate('attendance.pages.activityEdit.title'); }
   get EditForm(): FormGroup {
     return this.fb.group({
 
@@ -152,7 +154,7 @@ export class ActivityEditPageComponent extends BasePageConfirmCancelComponent<Pa
   public getAttivitaDescr(): string {
 
     if (this?._editModel?.par_Attivita?.descrizione) {
-      return  ' di : "'+ this._editModel.par_Attivita.descrizione+ '"';
+      return ' ' + this.transloco.translate('attendance.pages.activityEdit.diDescr', { descr: this._editModel.par_Attivita.descrizione });
     }
     else
       return '';

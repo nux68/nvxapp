@@ -16,29 +16,29 @@
       </app-sedi-reparto-user-navigation>
 
       @if (righe.length === 0) {
-        <div class="qm-vuoto">Nessun dipendente con rapporto di lavoro nel mese selezionato.</div>
+        <div class="qm-vuoto">{{ 'attendance.pages.quadraturaMensile.vuoto' | transloco }}</div>
       } @else {
         <div class="qm-azioni">
           <ion-button size="small" fill="outline" shape="round" (click)="selezionaTutti()">
-            <ion-icon name="checkbox-outline"></ion-icon>&nbsp;Seleziona da approvare
+            <ion-icon name="checkbox-outline"></ion-icon>&nbsp;{{ 'attendance.pages.quadraturaMensile.selezionaDaApprovare' | transloco }}
           </ion-button>
           <ion-button size="small" shape="round" color="success" [disabled]="selezionati.size === 0" (click)="approvaSelezionati()">
-            <ion-icon name="checkmark-circle-outline"></ion-icon>&nbsp;Approva ({{ selezionati.size }})
+            <ion-icon name="checkmark-circle-outline"></ion-icon>&nbsp;{{ 'attendance.pages.quadraturaMensile.approvaN' | transloco: { n: selezionati.size } }}
           </ion-button>
-          <span class="qm-nota">Si approvano solo i cartellini chiusi: un mese in corso resta provvisorio.</span>
+          <span class="qm-nota">{{ 'attendance.pages.quadraturaMensile.notaApprova' | transloco }}</span>
         </div>
 
         <ion-grid class="ion-no-padding">
           @if (!isMobile) {
             <ion-row class="qm-testata">
-              <ion-col size="3">Dipendente</ion-col>
-              <ion-col size="2">Stato</ion-col>
-              <ion-col size="1" class="qm-num">Lavorate</ion-col>
-              <ion-col size="1" class="qm-num">In più</ion-col>
-              <ion-col size="1" class="qm-num">Suppl.</ion-col>
-              <ion-col size="1" class="qm-num">Strao</ion-col>
-              <ion-col size="1" class="qm-num">Eccedenti</ion-col>
-              <ion-col size="1" class="qm-num">Non ric.</ion-col>
+              <ion-col size="3">{{ 'attendance.pages.quadraturaMensile.colDipendente' | transloco }}</ion-col>
+              <ion-col size="2">{{ 'attendance.pages.quadraturaMensile.colStato' | transloco }}</ion-col>
+              <ion-col size="1" class="qm-num">{{ 'attendance.pages.quadraturaMensile.colLavorate' | transloco }}</ion-col>
+              <ion-col size="1" class="qm-num">{{ 'attendance.pages.quadraturaMensile.colInPiu' | transloco }}</ion-col>
+              <ion-col size="1" class="qm-num">{{ 'attendance.pages.quadraturaMensile.colSuppl' | transloco }}</ion-col>
+              <ion-col size="1" class="qm-num">{{ 'attendance.pages.quadraturaMensile.colStrao' | transloco }}</ion-col>
+              <ion-col size="1" class="qm-num">{{ 'attendance.pages.quadraturaMensile.colEccedenti' | transloco }}</ion-col>
+              <ion-col size="1" class="qm-num">{{ 'attendance.pages.quadraturaMensile.colNonRic' | transloco }}</ion-col>
               <ion-col size="1"></ion-col>
             </ion-row>
           }
@@ -58,43 +58,43 @@
               </ion-col>
               @if (r.dip_Periodo; as p) {
                 <ion-col size="4" size-sm="1" class="qm-num">
-                  @if (isMobile) { <span class="qm-nota">Lav. </span> }
+                  @if (isMobile) { <span class="qm-nota">{{ 'attendance.pages.quadraturaMensile.mLav' | transloco }} </span> }
                   {{ hhmm(p.min_Lav) }}<span class="qm-nota">/{{ hhmm(p.min_Teo) }}</span>
                 </ion-col>
                 <ion-col size="4" size-sm="1" class="qm-num">
-                  @if (isMobile) { <span class="qm-nota">In più </span> }
+                  @if (isMobile) { <span class="qm-nota">{{ 'attendance.pages.quadraturaMensile.colInPiu' | transloco }} </span> }
                   {{ hhmm(p.min_Ecc) }}
                   @if (p.min_Provvisorie > 0) {
-                    <div class="qm-nota">provv. {{ hhmm(p.min_Provvisorie) }}</div>
+                    <div class="qm-nota">{{ 'attendance.pages.quadraturaMensile.provv' | transloco }} {{ hhmm(p.min_Provvisorie) }}</div>
                   }
                 </ion-col>
                 <ion-col size="4" size-sm="1" class="qm-num">
-                  @if (isMobile) { <span class="qm-nota">Suppl. </span> }
+                  @if (isMobile) { <span class="qm-nota">{{ 'attendance.pages.quadraturaMensile.colSuppl' | transloco }} </span> }
                   {{ hhmm(supplementare(p)) }}
                 </ion-col>
                 <ion-col size="4" size-sm="1" class="qm-num">
-                  @if (isMobile) { <span class="qm-nota">Strao </span> }
+                  @if (isMobile) { <span class="qm-nota">{{ 'attendance.pages.quadraturaMensile.colStrao' | transloco }} </span> }
                   {{ hhmm(straordinario(p)) }}
                 </ion-col>
                 <ion-col size="4" size-sm="1" class="qm-num">
-                  @if (isMobile) { <span class="qm-nota">Ecced. </span> }
+                  @if (isMobile) { <span class="qm-nota">{{ 'attendance.pages.quadraturaMensile.mEcced' | transloco }} </span> }
                   {{ hhmm(p.min_EccOrd) }}
                 </ion-col>
                 <ion-col size="4" size-sm="1" class="qm-num">
-                  @if (isMobile) { <span class="qm-nota">Non ric. </span> }
+                  @if (isMobile) { <span class="qm-nota">{{ 'attendance.pages.quadraturaMensile.colNonRic' | transloco }} </span> }
                   {{ hhmm(p.min_NonRiconosciute) }}
                   @if (p.min_NonAutorizzate > 0) {
-                    <div class="qm-nota">non autoriz. {{ hhmm(p.min_NonAutorizzate) }}</div>
+                    <div class="qm-nota">{{ 'attendance.pages.quadraturaMensile.nonAutoriz' | transloco }} {{ hhmm(p.min_NonAutorizzate) }}</div>
                   }
                   @if (p.min_DaAutorizzare > 0) {
-                    <div class="qm-nota">da autorizzare {{ hhmm(p.min_DaAutorizzare) }}</div>
+                    <div class="qm-nota">{{ 'attendance.pages.quadraturaMensile.daAutorizzare' | transloco }} {{ hhmm(p.min_DaAutorizzare) }}</div>
                   }
                   @if (p.min_BancaOre > 0) {
-                    <div class="qm-nota">banca ore {{ hhmm(p.min_BancaOre) }}</div>
+                    <div class="qm-nota">{{ 'attendance.pages.quadraturaMensile.bancaOre' | transloco }} {{ hhmm(p.min_BancaOre) }}</div>
                   }
                 </ion-col>
               } @else {
-                <ion-col size="12" size-sm="6" class="qm-nota">Ricalcolare il mese dal Calendario HR.</ion-col>
+                <ion-col size="12" size-sm="6" class="qm-nota">{{ 'attendance.pages.quadraturaMensile.ricalcolare' | transloco }}</ion-col>
               }
               <ion-col size="12" size-sm="1">
                 <ion-button size="small" fill="clear" (click)="apriCalendario(r)">

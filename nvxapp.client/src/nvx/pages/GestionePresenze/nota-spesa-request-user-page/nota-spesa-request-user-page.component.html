@@ -9,22 +9,22 @@
     <ion-card-content>
 
       <ion-item class="nvx-field">
-        <ion-label position="stacked">Descrizione della nota spese</ion-label>
-        <ion-input [(ngModel)]="descrizione" maxlength="200" placeholder="Es. Trasferta cliente Milano"></ion-input>
+        <ion-label position="stacked">{{ 'attendance.pages.notaSpesaRequestUser.descrizioneNota' | transloco }}</ion-label>
+        <ion-input [(ngModel)]="descrizione" maxlength="200" [placeholder]="'attendance.pages.notaSpesaRequestUser.descrizioneNotaPlaceholder' | transloco"></ion-input>
       </ion-item>
 
       <ion-item class="nvx-item-4-title">
-        <ion-label>Spese</ion-label>
+        <ion-label>{{ 'attendance.pages.notaSpesaRequestUser.spese' | transloco }}</ion-label>
       </ion-item>
 
       @for (spesa of spese; track spesa; let i = $index) {
         <div class="ns-spesa">
           <div class="ns-spesa-titolo">
-            <strong>Spesa {{ i + 1 }}</strong>
+            <strong>{{ 'attendance.pages.notaSpesaRequestUser.spesaN' | transloco: { n: i + 1 } }}</strong>
             @if (spese.length > 1) {
               <ion-button fill="clear" size="small" color="danger" (click)="togliSpesa(i)">
                 <ion-icon slot="start" name="trash-outline"></ion-icon>
-                Togli
+                {{ 'attendance.pages.notaSpesaRequestUser.togli' | transloco }}
               </ion-button>
             }
           </div>
@@ -33,14 +33,14 @@
             <ion-row>
               <ion-col size="6" size-md="3">
                 <ion-item class="nvx-field">
-                  <ion-label position="stacked">Data</ion-label>
+                  <ion-label position="stacked">{{ 'attendance.pages.notaSpesaRequestUser.data' | transloco }}</ion-label>
                   <ion-input type="date" [(ngModel)]="spesa.data"></ion-input>
                 </ion-item>
               </ion-col>
               <ion-col size="6" size-md="4">
                 <ion-item class="nvx-field">
-                  <ion-label position="stacked">Tipo di spesa</ion-label>
-                  <ion-select [(ngModel)]="spesa.idPar_TipoSpesa" interface="popover" placeholder="Scegli">
+                  <ion-label position="stacked">{{ 'attendance.pages.notaSpesaRequestUser.tipoSpesa' | transloco }}</ion-label>
+                  <ion-select [(ngModel)]="spesa.idPar_TipoSpesa" interface="popover" [placeholder]="'attendance.pages.notaSpesaRequestUser.scegli' | transloco">
                     @for (tipo of tipiSpesa; track tipo.id) {
                       <ion-select-option [value]="tipo.id">{{ tipo.descrizione }}</ion-select-option>
                     }
@@ -49,14 +49,14 @@
               </ion-col>
               <ion-col size="12" size-md="5">
                 <ion-item class="nvx-field">
-                  <ion-label position="stacked">Importo (€)</ion-label>
+                  <ion-label position="stacked">{{ 'attendance.pages.notaSpesaRequestUser.importo' | transloco }}</ion-label>
                   <ion-input type="number" inputmode="decimal" min="0" step="0.01" [(ngModel)]="spesa.importo" placeholder="0,00"></ion-input>
                 </ion-item>
               </ion-col>
               <ion-col size="12">
                 <ion-item class="nvx-field">
-                  <ion-label position="stacked">Descrizione</ion-label>
-                  <ion-input [(ngModel)]="spesa.descrizione" maxlength="200" placeholder="Es. pranzo con il cliente, treno A/R"></ion-input>
+                  <ion-label position="stacked">{{ 'attendance.pages.notaSpesaRequestUser.descrizione' | transloco }}</ion-label>
+                  <ion-input [(ngModel)]="spesa.descrizione" maxlength="200" [placeholder]="'attendance.pages.notaSpesaRequestUser.descrizionePlaceholder' | transloco"></ion-input>
                 </ion-item>
               </ion-col>
             </ion-row>
@@ -72,7 +72,7 @@
             }
             <ion-button fill="outline" size="small" shape="round" (click)="fileInput.click()">
               <ion-icon slot="start" name="attach-outline"></ion-icon>
-              Allega scontrino / fattura
+              {{ 'attendance.pages.notaSpesaRequestUser.allega' | transloco }}
             </ion-button>
             <input #fileInput type="file" hidden multiple [accept]="accept" (change)="allega(spesa, $event)" />
           </div>
@@ -81,17 +81,15 @@
 
       <ion-button fill="clear" (click)="aggiungiSpesa()">
         <ion-icon slot="start" name="add-circle-outline"></ion-icon>
-        Aggiungi spesa
+        {{ 'attendance.pages.notaSpesaRequestUser.aggiungiSpesa' | transloco }}
       </ion-button>
 
       <div class="ns-totale">
-        Totale <strong>€ {{ totale.toFixed(2).replace('.', ',') }}</strong>
+        {{ 'attendance.pages.notaSpesaRequestUser.totale' | transloco }} <strong>€ {{ totale.toFixed(2).replace('.', ',') }}</strong>
       </div>
 
       <ion-note class="ns-nota">
-        Allegati ammessi: PDF e immagini, fino a 5 MB ciascuno e 15 MB in tutto.
-        La richiesta segue l'approvazione standard: approvata la nota, sono approvate tutte le spese.
-        Finché non è approvata la puoi modificare; salvando una modifica torna in attesa di approvazione.
+        {{ 'attendance.pages.notaSpesaRequestUser.nota' | transloco }}
       </ion-note>
 
       @if (invio) {

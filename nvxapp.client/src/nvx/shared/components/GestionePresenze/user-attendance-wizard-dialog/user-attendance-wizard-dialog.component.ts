@@ -1,4 +1,5 @@
 import { Component, ChangeDetectionStrategy, ElementRef, OnInit } from '@angular/core';
+import { TranslocoService } from '@jsverse/transloco';
 import { CommonModule } from '@angular/common';
 import { AbstractControl, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { IonCard, IonCardContent, IonCheckbox, IonCol, IonContent, IonDatetime, IonDatetimeButton, IonGrid, IonHeader, IonInput, IonItem, IonLabel, IonModal, IonNote, IonProgressBar, IonRow, IonSelect, IonSelectOption, IonSpinner, IonText, IonTitle, IonToolbar, ModalController } from '@ionic/angular';
@@ -44,7 +45,7 @@ import { SharedParameterGestionePresenzeService, ParTable } from '../../../share
 })
 export class UserAttendanceWizardDialogComponent implements OnInit {
 
-  public readonly titoliStep = ['Utente', 'Rapporto di lavoro', 'Profilo orario', 'Competenze', 'Maturazione contatori'];
+  public readonly titoliStep: string[];
   public readonly tipoContrattoEnum = TipoContratto;
   public readonly destinazioneEccedenzeEnum = DestinazioneEccedenze;
 
@@ -82,10 +83,13 @@ export class UserAttendanceWizardDialogComponent implements OnInit {
               private dipAnagraficaService: DipAnagraficaService,
               private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
               private refresherService: RefresherService,
-              private elementRef: ElementRef<HTMLElement>) {
+              private elementRef: ElementRef<HTMLElement>,
+              private transloco: TranslocoService) {
 
-    this.btnNext = new ButtonItem('Avanti', 'arrow-forward-outline', 'primary', false, this.handleNext);
-    this.btnBack = new ButtonItem('Indietro', 'arrow-back-outline', 'medium', false, this.handleBack);
+    this.titoliStep = ['utente', 'rapporto', 'profilo', 'competenze', 'maturazione'].map(s => this.t('steps.' + s));
+
+    this.btnNext = new ButtonItem(this.t('avanti'), 'arrow-forward-outline', 'primary', false, this.handleNext);
+    this.btnBack = new ButtonItem(this.t('indietro'), 'arrow-back-outline', 'medium', false, this.handleBack);
     this.btnConfirm = this.userInterfaceService.Btn_Conferma;
     this.btnConfirm.event = this.handleConfirm;
     this.btnCancel = this.userInterfaceService.Btn_Annulla;
@@ -131,7 +135,11 @@ export class UserAttendanceWizardDialogComponent implements OnInit {
     this.updateButtonbar();
   }
 
-  get Title(): string { return 'Nuovo dipendente'; }
+  get Title(): string { return this.t('title'); }
+
+  private t(key: string): string {
+    return this.transloco.translate('attendance.components.userAttendanceWizardDialog.' + key);
+  }
 
   // all'apertura il componente e' gia' dentro ion-modal (in ngOnInit puo' non esserlo ancora)
   ionViewWillEnter() {
@@ -312,7 +320,7 @@ export class UserAttendanceWizardDialogComponent implements OnInit {
       }
     } catch (error) {
       console.error('Errore durante la chiamata API:', error);
-      this.erroreSalvataggio = 'Salvataggio non riuscito.';
+      this.erroreSalvataggio = this.t('erroreSalvataggio');
     } finally {
       this.saving = false;
       this.updateButtonbar();
@@ -328,7 +336,7 @@ export class UserAttendanceWizardDialogComponent implements OnInit {
     const res = await firstValueFrom(this.accountService.UserCompanyPut(request));
     const idAspNetUsers = res?.success ? res.data?.userCompanyEdit?.idAspNetUsers : null;
     if (!idAspNetUsers) {
-      this.erroreSalvataggio = res?.messages?.map(m => m.text).join(' ') || 'Creazione utente non riuscita.';
+      this.erroreSalvataggio = res?.messages?.map(m => m.text).join(' ') || this.t('creazioneUtenteNonRiuscita');
       return null;
     }
     return idAspNetUsers;
@@ -342,7 +350,7 @@ export class UserAttendanceWizardDialogComponent implements OnInit {
     const dip = resGet?.data?.dip_Anagrafica;
     const rapporto = dip?.dip_RapportoLavoro?.[0];
     if (!dip || !rapporto) {
-      this.erroreSalvataggio = 'Utente creato, ma i dati del dipendente non sono disponibili: completarli dalla sua scheda.';
+      this.erroreSalvataggio = this.t('datiDipendenteNonDisponibili');
       return false;
     }
 
@@ -401,7 +409,7 @@ export class UserAttendanceWizardDialogComponent implements OnInit {
     const resPut = await firstValueFrom(this.dipAnagraficaService.Dip_AnagraficaPut(reqPut));
     if (!resPut?.success) {
       this.erroreSalvataggio = resPut?.messages?.map(m => m.text).join(' ') ||
-        'Utente creato, ma il salvataggio dei dati del dipendente non è riuscito: completarli dalla sua scheda.';
+        this.t('salvataggioDipendenteNonRiuscito');
       return false;
     }
     return true;

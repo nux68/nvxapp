@@ -24,8 +24,8 @@
           @if (originalId===0) {
             <ion-row class="ion-align-items-center">
               <ion-item>
-                <ion-label position="stacked">Causale</ion-label>
-                <ion-select formControlName="idPar_Causali" placeholder="Seleziona la causale">
+                <ion-label position="stacked">{{ 'attendance.components.editDipGgCausaliDialog.causale' | transloco }}</ion-label>
+                <ion-select formControlName="idPar_Causali" placeholder="{{ 'attendance.components.editDipGgCausaliDialog.selezionaCausale' | transloco }}">
                   @for (causale of _par_CausaliList; track causale) {
                     <ion-select-option [value]="causale.id">
                       {{ causale.descrizione }}
@@ -35,7 +35,7 @@
               </ion-item>
               @if (_editForm.get('_editForm.idPar_Causali')?.hasError('required') && _editForm.get('_editForm.idPar_Causali')?.touched) {
                 <ion-note color="danger">
-                  La causale obbligatorio.
+                  {{ 'attendance.components.editDipGgCausaliDialog.causaleObbligatoria' | transloco }}
                 </ion-note>
               }
             </ion-row>
@@ -47,7 +47,7 @@
             <!-- Valore -->
 
             <ion-item>
-              <ion-label position="floating">Valore</ion-label>
+              <ion-label position="floating">{{ 'attendance.components.editDipGgCausaliDialog.valore' | transloco }}</ion-label>
               <ion-datetime-button class="datetime-button-with-label" datetime="valore-modal"></ion-datetime-button>
               <ion-modal [keepContentsMounted]="true">
                 <ng-template>
@@ -56,7 +56,7 @@
                     presentation="time"
                     [showDefaultButtons]="true"
                     doneText="OK"
-                    cancelText="Annulla">
+                    [cancelText]="'common.buttons.cancel' | transloco">
                   </ion-datetime>
                 </ng-template>
               </ion-modal>

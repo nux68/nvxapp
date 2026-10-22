@@ -1,3 +1,4 @@
+import { TranslocoService } from '@jsverse/transloco';
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
@@ -21,14 +22,14 @@ import { ParTable, SharedParameterGestionePresenzeService } from '../../../share
   standalone: false
 })
 export class CompetenceListPageComponent {
-  public title = 'Competenze';
+  public title: string;
   public searchText!: string;
   /** dalla cache caricata al login: si aggiorna da sola dopo salvataggi e cancellazioni (refresh mirato) */
   public get par_CompetenzaList(): Par_CompetenzaModel[] | null {
     return this.sharedParameterGestionePresenzeService.Par_Competenza;
   }
   public readonly columns: NvxListColumn<Par_CompetenzaModel>[] = [
-    { key: 'descrizione', title: 'Competenza', mobile: 'title' }
+    { key: 'descrizione', title: this.transloco.translate('attendance.pages.competenceList.columnCompetence'), mobile: 'title' }
   ];
   public actions: NvxListAction<Par_CompetenzaModel>[] = [];
   // prima le voci di default, poi per descrizione
@@ -45,8 +46,10 @@ export class CompetenceListPageComponent {
     private parCompetenzaService: ParCompetenzaService,
     private userInterfaceService: UserInterfaceService,
     private userNavigationService: UserNavigationService,
-    private collectionDialogService: CollectionDialogService
+    private collectionDialogService: CollectionDialogService,
+    private transloco: TranslocoService
   ) {
+    this.title = this.transloco.translate('attendance.pages.competenceList.title');
     this.btnEdit = userInterfaceService.Btn_Modifica;
     this.btnEdit.event = this.handleButtonEditClick;
 
@@ -60,7 +63,7 @@ export class CompetenceListPageComponent {
   ionViewWillEnter() {
 
     this.fabMenuService.fabMenuItem = [
-      new FabMenuItem('Nuova Competenza', 'add-circle-outline', () => {
+      new FabMenuItem(this.transloco.translate('attendance.pages.competenceList.fabAdd'), 'add-circle-outline', () => {
         this.navCtrl.navigateForward('/competenceedit', { state: { id: 0 } });
       }),
     ];
@@ -77,7 +80,7 @@ export class CompetenceListPageComponent {
 
   handleButtonDeleteClick = async (item: any) => {
 
-    const result = await this.collectionDialogService.ConfirmCancelDialog('Confermi la cancellazione della competenza?');
+    const result = await this.collectionDialogService.ConfirmCancelDialog(this.transloco.translate('attendance.pages.competenceList.confirmDelete'));
     if (result) {
 
         let request: GenericRequest<Par_CompetenzaDeleteInModel> = new GenericRequest<Par_CompetenzaDeleteInModel>(Par_CompetenzaDeleteInModel);

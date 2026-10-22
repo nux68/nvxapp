@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using nvxapp.server.data.Localization;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
@@ -223,7 +224,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
 
                         var erroreNota = Dip_GG_NotaSpesaService.Dip_GG_NotaSpesaService.ValidaNotaSpesa(notaSpesa, tipiSpesa);
                         if (erroreNota == null && notaSpesa!.Spese!.Any(s => s.Id != null || (s.Allegati ?? new()).Any(a => a.Id != null)))
-                            erroreNota = "Una nuova nota spese non puo' riferirsi a spese o allegati gia' salvati.";
+                            erroreNota = AttendanceTrackingMessages.Get("NewExpenseReportWithSavedItems");
                         if (erroreNota != null)
                         {
                             retVal.Messages.Add(new Message(erroreNota, MessageType.Exception));
@@ -318,7 +319,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                                 var orePerGiorno = OreGiustificativoPerGiorno(dip_GG_Richiesta, user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.Id);
                                 if (orePerGiorno.Count == 0)
                                 {
-                                    retVal.Messages.Add(new Message("Il periodo richiesto non contiene giorni lavorativi.", MessageType.Exception));
+                                    retVal.Messages.Add(new Message(AttendanceTrackingMessages.Get("RequestedPeriodNoWorkingDays"), MessageType.Exception));
                                     return retVal;
                                 }
 
@@ -371,7 +372,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                         else
                         {
                             //TODO GESTIRE COMUNICAZIONE SERVER CON ERRORI != EXCEPTION
-                            retVal.Messages.Add(new Message("Nessun amministratore abilitato all'approvazione", MessageType.Exception));
+                            retVal.Messages.Add(new Message(AttendanceTrackingMessages.Get("NoApproverEnabled"), MessageType.Exception));
                         }
 
                     }
@@ -402,19 +403,19 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
 
                 var richiesta = _dip_GG_RichiestaRepository.FindAll(x => x.Id == model.Data.IdDip_GG_Richiesta).FirstOrDefault();
                 if (richiesta == null || richiesta.RichiestaTipo != TipoRichiesta.NotaSpesa)
-                    throw new Exception("Nota spese non trovata.");
+                    throw new UserMessageException(AttendanceTrackingMessages.Get("ExpenseReportNotFound"));
 
                 // solo il dipendente che l'ha inviata
                 var utente = await _gestionePresenzeUserUtility.Get_DipAna_DipRapp(this.CurrentUserId, false);
                 bool propria = utente?.dip_Anagrafica != null &&
                                _dip_RapportoLavoroRepository.FindAll(r => r.Id == richiesta.IdDip_RapportoLavoro && r.IdDip_Anagrafica == utente.dip_Anagrafica.Id).Any();
                 if (!propria)
-                    throw new Exception("Si possono modificare solo le proprie note spese.");
+                    throw new UserMessageException(AttendanceTrackingMessages.Get("ExpenseReportOnlyOwn"));
 
                 var modificabile = new[] { StatoRichiesta.Immessa, StatoRichiesta.ApprovazioneInCorso, StatoRichiesta.ParzialmenteApprovata };
                 if (!modificabile.Contains(richiesta.RichiestaStato) || richiesta.RevocaStato != null)
                 {
-                    retVal.Messages.Add(new Message("La nota spese non si puo' piu' modificare: e' gia' approvata, rifiutata o annullata.", MessageType.Exception));
+                    retVal.Messages.Add(new Message(AttendanceTrackingMessages.Get("ExpenseReportNotEditable"), MessageType.Exception));
                     return retVal;
                 }
 
@@ -438,10 +439,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                     foreach (var spesa in notaSpesa!.Spese!)
                     {
                         if (spesa.Id != null && !idSpeseSalvate.Contains(spesa.Id.Value))
-                            errore = "Spesa non appartenente alla nota spese.";
+                            errore = AttendanceTrackingMessages.Get("ExpenseNotInReport");
                         foreach (var a in (spesa.Allegati ?? new()).Where(a => a.Id != null))
                             if (spesa.Id == null || !allegatiSalvati.Any(x => x.Id == a.Id && x.IdDip_GG_NotaSpesa == spesa.Id))
-                                errore = "Allegato non appartenente alla spesa.";
+                                errore = AttendanceTrackingMessages.Get("AttachmentNotInExpense");
                     }
                 }
                 if (errore == null)
@@ -452,7 +453,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                     long byteNuovi = notaSpesa.Spese!.SelectMany(s => s.Allegati ?? new()).Where(a => a.Id == null)
                                                      .Sum(a => (long)(((a.Contenuto ?? string.Empty).Length * 3) / 4));
                     if (byteTenuti + byteNuovi > Dip_GG_NotaSpesaService.Dip_GG_NotaSpesaService.AllegatiMaxByteRichiesta)
-                        errore = $"Allegati della nota spese oltre i {Dip_GG_NotaSpesaService.Dip_GG_NotaSpesaService.AllegatiMaxByteRichiesta / (1024 * 1024)} MB complessivi.";
+                        errore = AttendanceTrackingMessages.Get("ExpenseReportAttachmentsTooLarge", Dip_GG_NotaSpesaService.Dip_GG_NotaSpesaService.AllegatiMaxByteRichiesta / (1024 * 1024));
                 }
                 if (errore == null)
                 {
@@ -1331,17 +1332,17 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                                  + ContatoriService.ContatoriService.ParseTimeSpanDisplay(risultato.PeriodoCorrente.Saldo);
             TimeSpan saldoFuturo = saldoAdOggi + ContatoriService.ContatoriService.ParseTimeSpanDisplay(risultato.PeriodoSuccessivo.Saldo);
 
-            string nomeJust = parJust.Descrizione ?? parJust.Codice ?? "Giustificativo";
+            string nomeJust = parJust.Descrizione ?? parJust.Codice ?? AttendanceTrackingMessages.Get("JustificationFallbackName");
 
             if (parJust.TipoContatore == TipoContatore.ContatoreConBlocco && saldoFuturo < oreRichieste)
                 return new ValidazioneContatori(
                     Bloccante: true,
-                    Messaggio: $"Saldo insufficiente per '{nomeJust}': disponibile {ContatoriService.ContatoriService.FormatTimeSpanDisplay(saldoFuturo)}, richiesto {ContatoriService.ContatoriService.FormatTimeSpanDisplay(oreRichieste)}.");
+                    Messaggio: AttendanceTrackingMessages.Get("BalanceInsufficient", nomeJust, ContatoriService.ContatoriService.FormatTimeSpanDisplay(saldoFuturo), ContatoriService.ContatoriService.FormatTimeSpanDisplay(oreRichieste)));
 
             if (saldoAdOggi < oreRichieste)
                 return new ValidazioneContatori(
                     Bloccante: false,
-                    Messaggio: $"Attenzione: il saldo attuale di '{nomeJust}' è {ContatoriService.ContatoriService.FormatTimeSpanDisplay(saldoAdOggi)}, ma il saldo futuro ({ContatoriService.ContatoriService.FormatTimeSpanDisplay(saldoFuturo)}) copre la richiesta.");
+                    Messaggio: AttendanceTrackingMessages.Get("BalanceWarningFutureCovers", nomeJust, ContatoriService.ContatoriService.FormatTimeSpanDisplay(saldoAdOggi), ContatoriService.ContatoriService.FormatTimeSpanDisplay(saldoFuturo)));
 
             return new ValidazioneContatori(false, null);
         }
