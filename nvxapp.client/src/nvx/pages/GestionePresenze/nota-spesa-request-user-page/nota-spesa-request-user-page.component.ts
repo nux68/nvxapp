@@ -1,6 +1,8 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NavController } from '@ionic/angular';
-import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
+import { Observable, map, of } from 'rxjs';
+import { UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { DipGGRichiestaService } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/dip-gg-richiesta.service';
 import { Dip_GG_Richiesta_Body_NotaSpesa, Dip_GG_Richiesta_Body_NotaSpesa_Allegato, Dip_GG_Richiesta_Body_NotaSpesa_Spesa, Dip_GG_Richiesta_NotaSpesaUpdate_InModel, Dip_GG_Richiesta_Send_InModel, StatoRichiesta, TipoRichiesta } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/Models/dip-gg-richiesta-model';
@@ -10,23 +12,19 @@ import { Dip_GG_NotaSpesa_AllegatoModel, Dip_GG_NotaSpesa_Get4Richiesta_InModel,
 import { DipGGNotaSpesaService } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_NotaSpesa/dip-gg-nota-spesa.service';
 import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
+import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
 import { TranslocoService } from '@jsverse/transloco';
 
 
-/** spesa in compilazione, con gli allegati letti dal dispositivo (in modifica anche quelli gia' salvati, con id) */
-class SpesaInCompilazione {
-  id: number | null = null;
-  data: string = '';
-  idPar_TipoSpesa: number | null = null;
-  importo: number | null = null;
-  descrizione: string = '';
-  allegati: (Dip_GG_Richiesta_Body_NotaSpesa_Allegato & { dimensione: number })[] = [];
-}
+/** allegato in compilazione: letto dal dispositivo (con contenuto) o gia' salvato (in modifica, con id) */
+type AllegatoInCompilazione = Dip_GG_Richiesta_Body_NotaSpesa_Allegato & { dimensione: number };
 
 /*
  Richiesta di rimborso spese (utente): una nota spese contiene piu' spese, ognuna con data, tipo,
  importo, descrizione e i documenti (scontrini, fatture, ricevute...). Si invia come richiesta
  di tipo NotaSpesa e segue il ciclo standard di approvazione.
+ Form: descrizione della nota e "spese" (FormArray, una riga per spesa; gli allegati sono il valore
+ del controllo "allegati" della riga).
 */
 @Component({
   selector: 'app-nota-spesa-request-user-page',
@@ -35,77 +33,157 @@ class SpesaInCompilazione {
   changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
-export class NotaSpesaRequestUserPageComponent {
+export class NotaSpesaRequestUserPageComponent extends BasePageConfirmCancelComponent<Dip_GG_Richiesta_Body_NotaSpesa> {
 
   /** nota spese in modifica (id della richiesta), null per una nuova */
   public idRichiesta: number | null = null;
-  public get title(): string {
-    return this.transloco.translate(this.idRichiesta ? 'attendance.pages.notaSpesaRequestUser.titleModifica' : 'attendance.pages.notaSpesaRequestUser.title');
-  }
   public readonly accept = NOTA_SPESA_ALLEGATO_TIPI.join(',');
 
-  public descrizione = '';
-  public spese: SpesaInCompilazione[] = [];
   public tipiSpesa: Par_TipoSpesaModel[] = [];
   public invio = false;
 
-  public buttonbar: ButtonItem[] = [];
-
-  constructor(private navCtrl: NavController,
+  constructor(protected override navCtrl: NavController,
+              protected override userInterfaceService: UserInterfaceService,
+              protected override fb: FormBuilder,
               private dipGGRichiestaService: DipGGRichiestaService,
               private dipGGNotaSpesaService: DipGGNotaSpesaService,
               private parTipoSpesaService: ParTipoSpesaService,
               private collectionDialogService: CollectionDialogService,
               private refresherService: RefresherService,
-              userInterfaceService: UserInterfaceService,
               private transloco: TranslocoService) {
 
-    const btnInvia = userInterfaceService.Btn_Conferma;
-    btnInvia.text = this.transloco.translate('common.buttons.send');
-    btnInvia.event = () => this.invia();
-    const btnAnnulla = userInterfaceService.Btn_Annulla;
-    btnAnnulla.event = () => this.navCtrl.back();
-    this.buttonbar = [btnInvia, btnAnnulla];
+    super(navCtrl, userInterfaceService, fb);
   }
 
-  ionViewWillEnter() {
-    this.descrizione = '';
-    this.spese = [];
+  get Title(): string {
+    return this.transloco.translate(this.idRichiesta ? 'attendance.pages.notaSpesaRequestUser.titleModifica' : 'attendance.pages.notaSpesaRequestUser.title');
+  }
+
+  get EditForm(): FormGroup {
+    return this.fb.group({
+      descrizione: ['', [Validators.maxLength(200)]],
+      spese: this.fb.array([], [Validators.required]),
+    });
+  }
+
+  public get speseArray(): FormArray {
+    return this._editForm.get('spese') as FormArray;
+  }
+
+  public get spese(): FormGroup[] {
+    return this.speseArray.controls as FormGroup[];
+  }
+
+  private nuovaSpesa(spesa: Partial<Dip_GG_Richiesta_Body_NotaSpesa_Spesa> = {}, allegati: AllegatoInCompilazione[] = []): FormGroup {
+    return this.fb.group({
+      id: [spesa.id ?? null],
+      data: [spesa.data ?? '', [Validators.required]],
+      idPar_TipoSpesa: [spesa.idPar_TipoSpesa || null, [Validators.required]],
+      importo: [spesa.importo ?? null, [Validators.required, Validators.min(0.01)]],
+      descrizione: [spesa.descrizione ?? '', [Validators.maxLength(200)]],
+      allegati: this.fb.control<AllegatoInCompilazione[]>(allegati),
+    });
+  }
+
+  LoadData = (): Observable<Dip_GG_Richiesta_Body_NotaSpesa> => {
+    this.speseArray.clear();
     this.idRichiesta = history.state?.idRichiesta ?? null;
-    this.buttonbar[0].text = this.transloco.translate(this.idRichiesta ? 'attendance.pages.notaSpesaRequestUser.salva' : 'common.buttons.send');
-    if (this.idRichiesta)
-      this.caricaNota(this.idRichiesta);
-    else
-      this.aggiungiSpesa();
+    this.btnConfirm.text = this.transloco.translate(this.idRichiesta ? 'attendance.pages.notaSpesaRequestUser.salva' : 'common.buttons.send');
     this.parTipoSpesaService.GetAll(new GenericRequest<Par_TipoSpesaInModel>(Par_TipoSpesaInModel)).subscribe(res => {
       this.tipiSpesa = res.data?.par_TipoSpesa ?? [];
     });
+
+    if (!this.idRichiesta) {
+      this.aggiungiSpesa();
+      return of(this.modello(''));
+    }
+
+    // modifica: spese e allegati gia' salvati (gli allegati restano sul server, qui solo nome e dimensione)
+    const request = new GenericRequest<Dip_GG_NotaSpesa_Get4Richiesta_InModel>(Dip_GG_NotaSpesa_Get4Richiesta_InModel);
+    request.data.idDip_GG_Richiesta = this.idRichiesta;
+    return this.dipGGNotaSpesaService.Get4Richiesta(request).pipe(map(res => {
+      const spese = res.data?.dip_GG_NotaSpesa ?? [];
+      for (const s of spese) {
+        this.speseArray.push(this.nuovaSpesa(
+          { id: s.id, data: String(s.data).substring(0, 10), idPar_TipoSpesa: s.idPar_TipoSpesa, importo: s.importo, descrizione: s.descrizione ?? '' },
+          s.allegati.map(a => ({ id: a.id, nomeFile: a.nomeFile, contentType: a.contentType, contenuto: '', dimensione: a.dimensione }))));
+      }
+      if (spese.length === 0)
+        this.aggiungiSpesa();
+      return this.modello(spese[0]?.richiestaDescrizione ?? '');
+    }));
+  };
+
+  /** modello con le spese gia' nel form (il patch del form non aggiunge righe al FormArray) */
+  private modello(descrizione: string): Dip_GG_Richiesta_Body_NotaSpesa {
+    const model = new Dip_GG_Richiesta_Body_NotaSpesa();
+    model.descrizione = descrizione;
+    model.spese = this.speseArray.value;
+    return model;
   }
 
-  /** modifica: spese e allegati gia' salvati (gli allegati restano sul server, qui solo nome e dimensione) */
-  private caricaNota(idRichiesta: number): void {
-    const request = new GenericRequest<Dip_GG_NotaSpesa_Get4Richiesta_InModel>(Dip_GG_NotaSpesa_Get4Richiesta_InModel);
-    request.data.idDip_GG_Richiesta = idRichiesta;
-    this.dipGGNotaSpesaService.Get4Richiesta(request).subscribe(res => {
-      const spese = res.data?.dip_GG_NotaSpesa ?? [];
-      this.descrizione = spese[0]?.richiestaDescrizione ?? '';
-      this.spese = spese.map(s => {
-        const spesa = new SpesaInCompilazione();
-        spesa.id = s.id;
-        spesa.data = String(s.data).substring(0, 10);
-        spesa.idPar_TipoSpesa = s.idPar_TipoSpesa;
-        spesa.importo = s.importo;
-        spesa.descrizione = s.descrizione ?? '';
-        spesa.allegati = s.allegati.map(a => ({ id: a.id, nomeFile: a.nomeFile, contentType: a.contentType, contenuto: '', dimensione: a.dimensione }));
-        return spesa;
-      });
-      if (this.spese.length === 0)
-        this.aggiungiSpesa();
+  SaveData = (editModel: Dip_GG_Richiesta_Body_NotaSpesa): Observable<boolean> => {
+    const righe: (Dip_GG_Richiesta_Body_NotaSpesa_Spesa & { allegati: AllegatoInCompilazione[] })[] = this.speseArray.value;
+
+    const body = new Dip_GG_Richiesta_Body_NotaSpesa();
+    body.descrizione = (editModel.descrizione ?? '').trim();
+    body.spese = righe.map(s => {
+      const spesa = new Dip_GG_Richiesta_Body_NotaSpesa_Spesa();
+      spesa.id = s.id;
+      spesa.data = s.data;
+      spesa.idPar_TipoSpesa = s.idPar_TipoSpesa;
+      spesa.importo = Math.round(Number(s.importo) * 100) / 100;
+      spesa.descrizione = (s.descrizione ?? '').trim();
+      // gli allegati gia' salvati si mandano solo con l'id (restano sul server)
+      spesa.allegati = s.allegati.map(a => a.id
+        ? { id: a.id, nomeFile: a.nomeFile, contentType: a.contentType, contenuto: '' }
+        : { nomeFile: a.nomeFile, contentType: a.contentType, contenuto: a.contenuto });
+      return spesa;
     });
+
+    this.invio = true;
+    this.btnConfirm.disabled = true;
+    const fine = (success: boolean) => {
+      this.invio = false;
+      this.btnConfirm.disabled = !this._editForm.valid;
+      if (success)
+        this.refresherService.Dip_GG_Richiesta_triggerRefresh();
+      return success;
+    };
+
+    // modifica di una nota gia' inviata
+    if (this.idRichiesta) {
+      const update = new GenericRequest<Dip_GG_Richiesta_NotaSpesaUpdate_InModel>(Dip_GG_Richiesta_NotaSpesaUpdate_InModel);
+      update.data.idDip_GG_Richiesta = this.idRichiesta;
+      update.data.dati = JSON.stringify(body);
+      return this.dipGGRichiestaService.NotaSpesaUpdate(update).pipe(map(res => fine(res.success)));
+    }
+
+    const date = righe.map(s => s.data).sort();
+    const request = new GenericRequest<Dip_GG_Richiesta_Send_InModel>(Dip_GG_Richiesta_Send_InModel);
+    request.data.dip_GG_Richiesta.id = 0;
+    request.data.dip_GG_Richiesta.idDip_RapportoLavoro = 0;
+    request.data.dip_GG_Richiesta.richiestaStato = StatoRichiesta.Immessa;
+    request.data.dip_GG_Richiesta.richiestaTipo = TipoRichiesta.NotaSpesa;
+    // il server ricalcola il periodo dalle spese
+    request.data.dip_GG_Richiesta.data = this.ddmmyyyy(date[0]);
+    request.data.dip_GG_Richiesta.dataA = this.ddmmyyyy(date[date.length - 1]);
+    request.data.dip_GG_Richiesta.dati = JSON.stringify(body);
+    return this.dipGGRichiestaService.Send(request).pipe(map(res => fine(res.success)));
+  };
+
+  // modifica: si torna da dove si e' venuti; nuova nota: all'elenco delle proprie note spese
+  override AfterSave(saved: boolean): void {
+    if (!saved)
+      return;
+    if (this.idRichiesta)
+      this.navCtrl.back();
+    else
+      this.navCtrl.navigateRoot('/notaspeseuser');
   }
 
   /** allegato gia' salvato: si apre dal server */
-  public apriAllegato(allegato: Dip_GG_Richiesta_Body_NotaSpesa_Allegato & { dimensione: number }): void {
+  public apriAllegato(allegato: AllegatoInCompilazione): void {
     if (!allegato.id)
       return;
     const a = new Dip_GG_NotaSpesa_AllegatoModel();
@@ -116,22 +194,35 @@ export class NotaSpesaRequestUserPageComponent {
   }
 
   public aggiungiSpesa(): void {
-    const spesa = new SpesaInCompilazione();
     // la nuova spesa riparte dalla data dell'ultima (trasferte di piu' giorni), altrimenti oggi
-    spesa.data = this.spese.length > 0 ? this.spese[this.spese.length - 1].data : this.oggi();
-    this.spese.push(spesa);
+    const ultima = this.spese[this.spese.length - 1];
+    this.speseArray.push(this.nuovaSpesa({ data: ultima ? ultima.get('data')?.value : this.oggi() }));
   }
 
   public togliSpesa(index: number): void {
-    this.spese.splice(index, 1);
+    this.speseArray.removeAt(index);
+  }
+
+  public allegati(spesa: FormGroup): AllegatoInCompilazione[] {
+    return spesa.get('allegati')?.value ?? [];
+  }
+
+  /** errore di un campo della riga, dopo che e' stato toccato */
+  public errore(spesa: FormGroup, campo: string): boolean {
+    const ctrl = spesa.get(campo);
+    return !!ctrl && ctrl.invalid && (ctrl.dirty || ctrl.touched);
   }
 
   public get totale(): number {
-    return this.spese.reduce((t, s) => t + (Number(s.importo) || 0), 0);
+    return this.spese.reduce((t, s) => t + (Number(s.get('importo')?.value) || 0), 0);
   }
 
   private get byteAllegati(): number {
-    return this.spese.reduce((t, s) => t + s.allegati.reduce((a, x) => a + x.dimensione, 0), 0);
+    return this.spese.reduce((t, s) => t + this.byteDi(this.allegati(s)), 0);
+  }
+
+  private byteDi(allegati: AllegatoInCompilazione[]): number {
+    return allegati.reduce((a, x) => a + x.dimensione, 0);
   }
 
   public dimensione(byte: number): string {
@@ -139,10 +230,13 @@ export class NotaSpesaRequestUserPageComponent {
   }
 
   /** file scelti dal dispositivo (o scattati con la fotocamera sul telefono) */
-  public async allega(spesa: SpesaInCompilazione, event: Event): Promise<void> {
+  public async allega(spesa: FormGroup, event: Event): Promise<void> {
     const input = event.target as HTMLInputElement;
     const files = Array.from(input.files ?? []);
     input.value = '';
+    const allegati = [...this.allegati(spesa)];
+    // allegati delle altre spese della nota (il limite e' sull'intera richiesta)
+    const byteAltreSpese = this.byteAllegati - this.byteDi(allegati);
     for (const file of files) {
       const tipo = (file.type || '').toLowerCase();
       if (!NOTA_SPESA_ALLEGATO_TIPI.includes(tipo)) {
@@ -153,20 +247,21 @@ export class NotaSpesaRequestUserPageComponent {
         await this.avviso(this.transloco.translate('attendance.pages.notaSpesaRequestUser.erroreDimensioneFile', { nome: file.name, mb: NOTA_SPESA_ALLEGATO_MAX_BYTE / (1024 * 1024) }));
         continue;
       }
-      if (spesa.allegati.length >= NOTA_SPESA_ALLEGATI_MAX_PER_SPESA) {
+      if (allegati.length >= NOTA_SPESA_ALLEGATI_MAX_PER_SPESA) {
         await this.avviso(this.transloco.translate('attendance.pages.notaSpesaRequestUser.erroreMaxAllegati', { max: NOTA_SPESA_ALLEGATI_MAX_PER_SPESA }));
         break;
       }
-      if (this.byteAllegati + file.size > NOTA_SPESA_ALLEGATI_MAX_BYTE_RICHIESTA) {
+      if (byteAltreSpese + this.byteDi(allegati) + file.size > NOTA_SPESA_ALLEGATI_MAX_BYTE_RICHIESTA) {
         await this.avviso(this.transloco.translate('attendance.pages.notaSpesaRequestUser.erroreDimensioneTotale', { mb: NOTA_SPESA_ALLEGATI_MAX_BYTE_RICHIESTA / (1024 * 1024) }));
         break;
       }
-      spesa.allegati.push({ nomeFile: file.name, contentType: tipo, contenuto: await this.base64(file), dimensione: file.size });
+      allegati.push({ nomeFile: file.name, contentType: tipo, contenuto: await this.base64(file), dimensione: file.size });
     }
+    spesa.get('allegati')?.setValue(allegati);
   }
 
-  public togliAllegato(spesa: SpesaInCompilazione, index: number): void {
-    spesa.allegati.splice(index, 1);
+  public togliAllegato(spesa: FormGroup, index: number): void {
+    spesa.get('allegati')?.setValue(this.allegati(spesa).filter((_, i) => i !== index));
   }
 
   private base64(file: File): Promise<string> {
@@ -185,85 +280,6 @@ export class NotaSpesaRequestUserPageComponent {
 
   private avviso(messaggio: string): Promise<any> {
     return this.collectionDialogService.ConfirmCancelDialog(messaggio);
-  }
-
-  /** controlli prima dell'invio (il server li ripete) */
-  private errore(): string | null {
-    if (this.spese.length === 0)
-      return this.transloco.translate('attendance.pages.notaSpesaRequestUser.erroreNessunaSpesa');
-    for (const [i, s] of this.spese.entries()) {
-      const n = i + 1;
-      if (!s.data) return this.transloco.translate('attendance.pages.notaSpesaRequestUser.erroreData', { n });
-      if (!s.idPar_TipoSpesa) return this.transloco.translate('attendance.pages.notaSpesaRequestUser.erroreTipoSpesa', { n });
-      if (!(Number(s.importo) > 0)) return this.transloco.translate('attendance.pages.notaSpesaRequestUser.erroreImporto', { n });
-    }
-    return null;
-  }
-
-  public async invia(): Promise<void> {
-    const errore = this.errore();
-    if (errore) {
-      await this.avviso(errore);
-      return;
-    }
-
-    const body = new Dip_GG_Richiesta_Body_NotaSpesa();
-    body.descrizione = this.descrizione.trim();
-    body.spese = this.spese.map(s => {
-      const spesa = new Dip_GG_Richiesta_Body_NotaSpesa_Spesa();
-      spesa.id = s.id;
-      spesa.data = s.data;
-      spesa.idPar_TipoSpesa = s.idPar_TipoSpesa!;
-      spesa.importo = Math.round(Number(s.importo) * 100) / 100;
-      spesa.descrizione = s.descrizione.trim();
-      // gli allegati gia' salvati si mandano solo con l'id (restano sul server)
-      spesa.allegati = s.allegati.map(a => a.id
-        ? { id: a.id, nomeFile: a.nomeFile, contentType: a.contentType, contenuto: '' }
-        : { nomeFile: a.nomeFile, contentType: a.contentType, contenuto: a.contenuto });
-      return spesa;
-    });
-
-    // modifica di una nota gia' inviata
-    if (this.idRichiesta) {
-      const update = new GenericRequest<Dip_GG_Richiesta_NotaSpesaUpdate_InModel>(Dip_GG_Richiesta_NotaSpesaUpdate_InModel);
-      update.data.idDip_GG_Richiesta = this.idRichiesta;
-      update.data.dati = JSON.stringify(body);
-      this.invio = true;
-      this.dipGGRichiestaService.NotaSpesaUpdate(update).subscribe({
-        next: res => {
-          this.invio = false;
-          if (res.success) {
-            this.refresherService.Dip_GG_Richiesta_triggerRefresh();
-            this.navCtrl.back();
-          }
-        },
-        error: () => { this.invio = false; }
-      });
-      return;
-    }
-
-    const date = this.spese.map(s => s.data).sort();
-    const request = new GenericRequest<Dip_GG_Richiesta_Send_InModel>(Dip_GG_Richiesta_Send_InModel);
-    request.data.dip_GG_Richiesta.id = 0;
-    request.data.dip_GG_Richiesta.idDip_RapportoLavoro = 0;
-    request.data.dip_GG_Richiesta.richiestaStato = StatoRichiesta.Immessa;
-    request.data.dip_GG_Richiesta.richiestaTipo = TipoRichiesta.NotaSpesa;
-    // il server ricalcola il periodo dalle spese
-    request.data.dip_GG_Richiesta.data = this.ddmmyyyy(date[0]);
-    request.data.dip_GG_Richiesta.dataA = this.ddmmyyyy(date[date.length - 1]);
-    request.data.dip_GG_Richiesta.dati = JSON.stringify(body);
-
-    this.invio = true;
-    this.dipGGRichiestaService.Send(request).subscribe({
-      next: res => {
-        this.invio = false;
-        if (res.success) {
-          this.refresherService.Dip_GG_Richiesta_triggerRefresh();
-          this.navCtrl.navigateRoot('/notaspeseuser');
-        }
-      },
-      error: () => { this.invio = false; }
-    });
   }
 
   private ddmmyyyy(iso: string): string {

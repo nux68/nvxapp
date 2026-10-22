@@ -1,0 +1,65 @@
+// dettaglio della nota spese: testata (dipendente, periodo, stato), spese con allegati, totale
+.ns-dett-testata {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+
+  div {
+    display: flex;
+    flex-direction: column;
+  }
+
+  small {
+    color: var(--ion-color-medium);
+  }
+}
+
+.ns-dett-spesa {
+  display: grid;
+  grid-template-columns: 90px 150px 1fr auto;
+  gap: 4px 12px;
+  align-items: center;
+  padding: 8px 0;
+  border-top: 1px solid var(--ion-color-step-150, rgba(127, 127, 127, 0.2));
+
+  .ns-data, .ns-chi, .ns-senza-allegati {
+    color: var(--ion-color-medium);
+    font-size: 0.9em;
+  }
+
+  .ns-importo {
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .ns-allegati, .ns-senza-allegati {
+    grid-column: 1 / -1;
+  }
+
+  @media (max-width: 575px) {
+    grid-template-columns: 1fr auto;
+
+    .ns-descr {
+      grid-column: 1 / -1;
+    }
+  }
+}
+
+.ns-dett-totale {
+  text-align: right;
+  padding: 10px 0;
+  border-top: 2px solid var(--ion-color-step-200, rgba(127, 127, 127, 0.3));
+}
+
+.ns-allegati ion-chip {
+  cursor: pointer;
+
+  ion-label {
+    max-width: 220px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}

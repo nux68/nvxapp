@@ -2,15 +2,12 @@ import { Component, ChangeDetectionStrategy, OnDestroy } from '@angular/core';
 import { Subject, debounceTime, takeUntil } from 'rxjs';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { DipGGNotaSpesaService } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_NotaSpesa/dip-gg-nota-spesa.service';
-import { Dip_GG_NotaSpesa_AllegatoModel, Dip_GG_NotaSpesa_Get4Richiesta_InModel, Dip_GG_NotaSpesa_Search_InModel, Dip_GG_NotaSpesaModel } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_NotaSpesa/Models/dip-gg-nota-spesa-model';
+import { Dip_GG_NotaSpesa_AllegatoModel, Dip_GG_NotaSpesa_Search_InModel, Dip_GG_NotaSpesaModel } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_NotaSpesa/Models/dip-gg-nota-spesa-model';
 import { ParTipoSpesaService } from '../../../ClientServer-Service/GestionePresenze/Par_TipoSpesa/par-tipo-spesa.service';
 import { Par_TipoSpesaInModel, Par_TipoSpesaModel } from '../../../ClientServer-Service/GestionePresenze/Par_TipoSpesa/Models/par-tipo-spesa-model';
-import { Dip_GG_Richiesta_SetState_InModel, Dip_GG_RichiestaModel, riepilogoNotaSpesa, StatoRichiesta } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/Models/dip-gg-richiesta-model';
-import { DipGGRichiestaService } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/dip-gg-richiesta.service';
-import { TimeSheetService } from '../../../Utility/GestionePresenze/time-sheet.service';
-import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
-import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
+import { StatoRichiesta } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/Models/dip-gg-richiesta-model';
 import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
+import { NotaSpesaDettaglioDialogService } from '../../../shared/components/GestionePresenze/nota-spesa-dettaglio-dialog/nota-spesa-dettaglio-dialog.service';
 import { TranslocoService } from '@jsverse/transloco';
 
 
@@ -25,8 +22,10 @@ interface GruppoSpese {
 /*
  Esame delle note spese (CompanyPowerAdmin): spese del mese per reparto e dipendenti scelti,
  filtrabili per tipo di spesa e stato, raggruppate per dipendente o per tipo di spesa con i totali.
- Con un clic su una spesa si apre il dettaglio della nota spese che la contiene, da cui si puo'
- approvare o rifiutare la nota (ciclo standard delle richieste, come dalla pagina "Richieste").
+ Ogni spesa e' una riga essenziale (data, dipendente o tipo, stato, importo) che si espande con un clic
+ per vedere descrizione e allegati; dalla riga espansa si apre il dettaglio della nota spese che la
+ contiene (NotaSpesaDettaglioDialogComponent), da cui si puo' approvare o rifiutare la nota
+ (ciclo standard delle richieste, come dalla pagina "Richieste").
 */
 @Component({
   selector: 'app-nota-spese-admin-page',
@@ -53,35 +52,18 @@ export class NotaSpeseAdminPageComponent implements OnDestroy {
   public gruppi: GruppoSpese[] = [];
   public totale = 0;
 
-  /** dialog di dettaglio: nota spese (richiesta) con tutte le sue spese */
-  public dettaglioAperto = false;
-  public dettaglioRichiesta: Dip_GG_RichiestaModel | null = null;
-  public dettaglioSpese: Dip_GG_NotaSpesaModel[] = [];
-  public dettaglioIdAspNetUsers = '';
-
-  /** pulsanti di approvazione, rifiuto e chiusura: quelli standard, come nella lista richieste admin */
-  public btnApprova: ButtonItem;
-  public btnRifiuta: ButtonItem;
-  public btnAnnulla: ButtonItem;
+  /** spese con la riga espansa (id della spesa) */
+  public espanse = new Set<number>();
 
   private readonly _ricerca$ = new Subject<void>();
   private readonly _destroy$ = new Subject<void>();
 
   constructor(private dipGGNotaSpesaService: DipGGNotaSpesaService,
-              private dipGGRichiestaService: DipGGRichiestaService,
-              private timeSheetService: TimeSheetService,
-              private collectionDialogService: CollectionDialogService,
               private parTipoSpesaService: ParTipoSpesaService,
               private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
-              userInterfaceService: UserInterfaceService,
+              private notaSpesaDettaglioDialogService: NotaSpesaDettaglioDialogService,
               private transloco: TranslocoService) {
     this.title = this.transloco.translate('attendance.pages.notaSpeseAdmin.title');
-    this.btnApprova = userInterfaceService.Btn_Approva;
-    this.btnApprova.event = () => this.decidi(true);
-    this.btnRifiuta = userInterfaceService.Btn_Rifiuta;
-    this.btnRifiuta.event = () => this.decidi(false);
-    this.btnAnnulla = userInterfaceService.Btn_Annulla;
-    this.btnAnnulla.event = () => this.chiudiDettaglio();
     this._ricerca$.pipe(debounceTime(300), takeUntil(this._destroy$)).subscribe(() => this.cerca());
   }
 
@@ -175,80 +157,37 @@ export class NotaSpeseAdminPageComponent implements OnDestroy {
     return '€ ' + (valore ?? 0).toFixed(2).replace('.', ',');
   }
 
+  // ------------------------------------------------------------------ righe espandibili
+
+  public espansa(spesa: Dip_GG_NotaSpesaModel): boolean {
+    return this.espanse.has(spesa.id);
+  }
+
+  public espandi(spesa: Dip_GG_NotaSpesaModel): void {
+    if (!this.espanse.delete(spesa.id))
+      this.espanse.add(spesa.id);
+  }
+
+  /** tutte le righe espanse o tutte chiuse */
+  public get tutteEspanse(): boolean {
+    return (this.spese?.length ?? 0) > 0 && this.spese!.every(s => this.espanse.has(s.id));
+  }
+
+  public espandiTutte(): void {
+    this.espanse = this.tutteEspanse ? new Set<number>() : new Set((this.spese ?? []).map(s => s.id));
+  }
+
   public apriAllegato(allegato: Dip_GG_NotaSpesa_AllegatoModel, event?: Event): void {
-    event?.stopPropagation();   // il clic sull'allegato non apre il dettaglio della riga
+    event?.stopPropagation();   // il clic sull'allegato non chiude la riga
     this.dipGGNotaSpesaService.ApriAllegato(allegato);
   }
 
-  // ------------------------------------------------------------------ dettaglio della nota spese
-
-  public apriDettaglio(spesa: Dip_GG_NotaSpesaModel): void {
+  /** dettaglio della nota spese che contiene la spesa, con approvazione e rifiuto */
+  public async apriDettaglio(spesa: Dip_GG_NotaSpesaModel, event?: Event): Promise<void> {
+    event?.stopPropagation();
     if (!spesa.idDip_GG_Richiesta)
       return;
-    this.dettaglioIdAspNetUsers = spesa.idAspNetUsers;
-    this.dettaglioRichiesta = null;
-    this.dettaglioSpese = [];
-    this.dettaglioAperto = true;
-    const request = new GenericRequest<Dip_GG_NotaSpesa_Get4Richiesta_InModel>(Dip_GG_NotaSpesa_Get4Richiesta_InModel);
-    request.data.idDip_GG_Richiesta = spesa.idDip_GG_Richiesta;
-    this.dipGGNotaSpesaService.Get4Richiesta(request).subscribe(res => {
-      this.dettaglioRichiesta = res.data?.dip_GG_Richiesta ?? null;
-      this.dettaglioSpese = res.data?.dip_GG_NotaSpesa ?? [];
-    });
-  }
-
-  public chiudiDettaglio(): void {
-    this.dettaglioAperto = false;
-  }
-
-  public get dettaglioRiepilogo() {
-    return riepilogoNotaSpesa(this.dettaglioRichiesta?.dati);
-  }
-
-  public get dettaglioTotale(): number {
-    return this.dettaglioSpese.reduce((t, s) => t + s.importo, 0);
-  }
-
-  /** revoca chiesta dal dipendente su una nota gia' approvata: i pulsanti decidono sulla revoca */
-  public get dettaglioRevoca(): boolean {
-    return this.dettaglioRichiesta?.revocaStato === StatoRichiesta.Immessa || this.dettaglioRichiesta?.revocaStato === StatoRichiesta.ApprovazioneInCorso;
-  }
-
-  public get puoApprovare(): boolean {
-    return !!this.dettaglioRichiesta && this.timeSheetService.Dip_GG_Richiesta_Admin_Can_Approve(this.dettaglioRichiesta);
-  }
-
-  public get puoRifiutare(): boolean {
-    return !!this.dettaglioRichiesta && this.timeSheetService.Dip_GG_Richiesta_Admin_Can_Reject(this.dettaglioRichiesta);
-  }
-
-  /** approva o rifiuta la nota spese (o la sua revoca), con conferma */
-  public async decidi(approva: boolean): Promise<void> {
-    if (!this.dettaglioRichiesta)
-      return;
-    const chiave = (approva ? 'confermaApprovazione' : 'confermaRifiuto') + (this.dettaglioRevoca ? 'Revoca' : '');
-    const conferma = await this.collectionDialogService.ConfirmCancelDialog(this.transloco.translate('attendance.pages.notaSpeseAdmin.' + chiave));
-    if (!conferma)
-      return;
-
-    const request = new GenericRequest<Dip_GG_Richiesta_SetState_InModel>(Dip_GG_Richiesta_SetState_InModel);
-    request.data.fromHR = true;
-    request.data.richiestaStato = approva ? StatoRichiesta.Approvata : StatoRichiesta.Rifiutata;
-    request.data.idDip_GG_Richiesta = [this.dettaglioRichiesta.id];
-    this.dipGGRichiestaService.SetState(request).subscribe(res => {
-      if (res.success) {
-        this.dettaglioAperto = false;
-        this._ricerca$.next();
-      }
-    });
-  }
-
-  /** colore dello stato della nota, tenendo conto della revoca */
-  public statoNota(richiesta: Dip_GG_RichiestaModel): { testo: string | null, colore: string } {
-    if (richiesta.revocaStato === StatoRichiesta.Approvata)
-      return { testo: this.transloco.translate('attendance.pages.notaSpeseAdmin.revocata'), colore: 'dark' };
-    if (this.dettaglioRevoca)
-      return { testo: this.transloco.translate('attendance.pages.notaSpeseAdmin.revocaRichiesta'), colore: 'warning' };
-    return { testo: null, colore: this.coloreStato(richiesta.richiestaStato) };
+    if (await this.notaSpesaDettaglioDialogService.Apri(spesa.idDip_GG_Richiesta, this.dipendente(spesa.idAspNetUsers), true))
+      this._ricerca$.next();
   }
 }

@@ -17,6 +17,7 @@ import { Dip_GG_ResultModel } from '../../../ClientServer-Service/GestionePresen
 import { FabMenuService, FabMenuItem } from '../../../Utility/infrastructure/fab-menu.service';
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
 import { Subscription } from 'rxjs';
+import { NotaSpesaDettaglioDialogService } from '../../../shared/components/GestionePresenze/nota-spesa-dettaglio-dialog/nota-spesa-dettaglio-dialog.service';
 import { TranslocoService } from '@jsverse/transloco';
 
 
@@ -55,6 +56,8 @@ export class TimeSheetAdminPageComponent implements OnInit, OnDestroy {
   /** Pezzi delle richieste su più giorni (inizio/mezzo/fine) e richiesta evidenziata al passaggio del mouse (come in usertimesheet). */
   public segmenti = new Map<SegmentoItem, SegmentoRichiesta>();
   public richiestaEvidenziata: number | null = null;
+  /** Note spese del mese per giorno: compaiono solo nel giorno iniziale, con il totale. */
+  public noteSpese = new Map<number, Dip_GG_RichiestaModel[]>();
 
   constructor(private navCtrl: NavController,
               private refresherService: RefresherService,
@@ -65,6 +68,7 @@ export class TimeSheetAdminPageComponent implements OnInit, OnDestroy {
               public dateTimeUtilService: DateTimeUtilService,
               private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
               private platform: Platform,
+              private notaSpesaDettaglioDialogService: NotaSpesaDettaglioDialogService,
               private transloco: TranslocoService
   ) {
     this.title = this.transloco.translate('attendance.pages.timeSheetAdmin.title');
@@ -139,6 +143,7 @@ export class TimeSheetAdminPageComponent implements OnInit, OnDestroy {
       this.currentMonth = monthData; // monthData è già del tipo corretto MonthData
       this.buildCalendarWeeks();     // Costruisce la UI dopo aver ricevuto i dati
       this.segmenti = this.timeSheetService.segmentiDelMese(this.currentMonth);
+      this.noteSpese = this.timeSheetService.noteSpeseDelMese(this.currentMonth);
     });
   }
 
@@ -267,10 +272,29 @@ export class TimeSheetAdminPageComponent implements OnInit, OnDestroy {
   public actionSheetButtons = this.actionSheetButtonsTutti;
 
   private actionSheetOpenSelectObj: Dip_GG_GiustificativiModel | Dip_GG_TimbraturaModel;
+  private actionSheetNotaSpese: Dip_GG_RichiestaModel | null = null;
   public actionSheetHeader = '';
   public actionSheetSubHeader = '';
 
+  /** Nota spese del giorno iniziale: il menu apre il dettaglio, da cui si approva o si rifiuta. */
+  actionSheetOpenNotaSpese(richiesta: Dip_GG_RichiestaModel) {
+    this.actionSheetNotaSpese = richiesta;
+    this.actionSheetHeader = this.transloco.translate('attendance.pages.timeSheetAdmin.headerNotaSpese', { date: richiesta.data, total: this.timeSheetService.notaSpeseTotaleTesto(richiesta) });
+    this.actionSheetSubHeader = null;
+    this.actionSheetButtons = [
+      {
+        text: this.transloco.translate('attendance.pages.timeSheetAdmin.notaSpeseDettaglio'),
+        role: 'dettaglio',
+        data: {
+          action: 'dettaglio',
+        },
+      },
+    ];
+    this.isActionSheetOpen = true;
+  }
+
   actionSheetOpen(obj: any) {
+    this.actionSheetNotaSpese = null;
     if ('idPar_Giustificativi' in obj) {
 
       const parGiustificativiToLongTextPipe = new ParGiustificativiToLongTextPipe(this.sharedParameterGestionePresenzeService);
@@ -308,6 +332,12 @@ export class TimeSheetAdminPageComponent implements OnInit, OnDestroy {
   actionSheetExecute(event: any) {
     this.isActionSheetOpen = false;
 
+    // dettaglio della nota spese con approva / rifiuta (il mese si rilegge dal RefresherService)
+    if (event?.detail?.data?.action === 'dettaglio' && this.actionSheetNotaSpese != null) {
+      this.notaSpesaDettaglioDialogService.Apri(this.actionSheetNotaSpese.id, this.dipendenteCorrente, true);
+      return;
+    }
+
     if (event?.detail?.data?.action === 'approva' || event?.detail?.data?.action === 'rifiuta') {
       let IdDip_GG_Richiesta: number[] = [];
       if ('idPar_Giustificativi' in this.actionSheetOpenSelectObj) {
@@ -339,6 +369,12 @@ export class TimeSheetAdminPageComponent implements OnInit, OnDestroy {
 
 
 
+  }
+
+  /** Cognome e nome del dipendente scelto. */
+  private get dipendenteCorrente(): string {
+    const a = (this.sharedParameterGestionePresenzeService.Dip_Anagrafica ?? []).find(x => x.idAspNetUsers === this.currUserId);
+    return a ? `${a.cognome ?? ''} ${a.nome ?? ''}`.trim() : '';
   }
 
   public get isMobile(): boolean {

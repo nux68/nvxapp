@@ -41,8 +41,9 @@ export class MainMenuAttendanceTrackingService implements iMainMenuService {
       { menuType: MenuType.MenuItem, zorder: 207000, group: 1, title: 'attendance.menu.modelliExport', roles: ['CompanyPowerAdmin'], component: "ExportCauListPageComponent", url: '/exportcaulist', icon: 'hammer' },
       { menuType: MenuType.MenuItem, zorder: 207500, group: 1, title: 'attendance.menu.tipiSpesa', roles: ['CompanyPowerAdmin'], component: "TipoSpesaListPageComponent", url: '/tipospesalist', icon: 'pricetags' },
 
-      { menuType: MenuType.MenuHeader, zorder: 300000, group: 3, title: 'attendance.menu.notaSpese', roles: ['CompanyPowerAdmin', 'CompanyAdmin'], component: '', url: '', icon: '' },
-      { menuType: MenuType.MenuItem, zorder: 301000, group: 3, title: 'attendance.menu.esameSpese', roles: ['CompanyPowerAdmin', 'CompanyAdmin'], component: "NotaSpeseAdminPageComponent", url: '/notaspeseadmin', icon: 'receipt' },
+      // Nota spese: subito dopo la sezione Generale (le sezioni seguono lo zorder dell'intestazione)
+      { menuType: MenuType.MenuHeader, zorder: 100000, group: 3, title: 'attendance.menu.notaSpese', roles: ['CompanyPowerAdmin', 'CompanyAdmin'], component: '', url: '', icon: '' },
+      { menuType: MenuType.MenuItem, zorder: 101000, group: 3, title: 'attendance.menu.esameSpese', roles: ['CompanyPowerAdmin', 'CompanyAdmin'], component: "NotaSpeseAdminPageComponent", url: '/notaspeseadmin', icon: 'receipt' },
 
 
       { menuType: MenuType.MenuHeader, zorder: 205000, group: 2, title: 'attendance.menu.gestioneCommesse', roles: ['CompanyPowerAdmin'], component: '', url: '', icon: '' },

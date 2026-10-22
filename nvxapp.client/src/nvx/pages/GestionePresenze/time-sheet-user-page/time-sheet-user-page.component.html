@@ -63,6 +63,21 @@
                       </div>
                     }
                     <div class="day-content">
+                      <!-- note spese: solo nel giorno iniziale, con il totale; il menu apre il dettaglio -->
+                      @if (day.isCurrentMonth && noteSpese.get(day.day); as noteDelGiorno) {
+                        <div class="note-spese">
+                          @for (ns of noteDelGiorno; track ns.id) {
+                            <ion-chip class="nvx-nota-spese-chip"
+                              [title]="'attendance.pages.timeSheetUser.notaSpeseDettaglio' | transloco"
+                              [ngStyle]="{ 'padding': isMobile ? '5px' : null }"
+                              (click)="actionSheetOpenNotaSpese(ns)">
+                              <ion-icon name="wallet-outline"></ion-icon>
+                              {{ timeSheetService.notaSpeseTotaleTesto(ns) }}
+                              <ion-icon [name]="timeSheetService.get_StatoRichiesta_icon(ns)"></ion-icon>
+                            </ion-chip>
+                          }
+                        </div>
+                      }
                       @if (day.dip_GG_Giustificativi && day.dip_GG_Giustificativi.length > 0) {
                         <div class="justifications">
                           @if (day.dip_GG_Giustificativi?.length > 0) {

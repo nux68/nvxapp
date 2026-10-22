@@ -21,6 +21,7 @@ import { Subscription } from 'rxjs';
 import { JobNotifierService } from '../../../Utility/infrastructure/job-notifier.service';
 import { GestionePresenze_JobType } from '../../../Utility/GestionePresenze/GestionePresenze_JobType';
 import { ModalController, NavController, Platform } from '@ionic/angular';
+import { NotaSpesaDettaglioDialogService } from '../../../shared/components/GestionePresenze/nota-spesa-dettaglio-dialog/nota-spesa-dettaglio-dialog.service';
 import { TranslocoService } from '@jsverse/transloco';
 
 
@@ -46,6 +47,8 @@ export class TimeSheetUserPageComponent implements OnInit, OnDestroy {
   /** Pezzi delle richieste su più giorni (inizio/mezzo/fine) e richiesta evidenziata al passaggio del mouse. */
   public segmenti = new Map<SegmentoItem, SegmentoRichiesta>();
   public richiestaEvidenziata: number | null = null;
+  /** Note spese del mese per giorno: compaiono solo nel giorno iniziale, con il totale. */
+  public noteSpese = new Map<number, Dip_GG_RichiestaModel[]>();
   // Usa le interfacce importate nella definizione di 'weeks'
   weeks: Array<Array<{
     day: number,
@@ -73,6 +76,7 @@ export class TimeSheetUserPageComponent implements OnInit, OnDestroy {
               private jobNotifierService: JobNotifierService, /* RICVEVE LE NOTIFICHE  */
               private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
               private platform: Platform,
+              private notaSpesaDettaglioDialogService: NotaSpesaDettaglioDialogService,
               private transloco: TranslocoService
   ) {
     this.title = this.transloco.translate('attendance.pages.timeSheetUser.title');
@@ -165,6 +169,7 @@ export class TimeSheetUserPageComponent implements OnInit, OnDestroy {
       this.currentMonth = monthData; // monthData è già del tipo corretto MonthData
       this.buildCalendarWeeks();     // Costruisce la UI dopo aver ricevuto i dati
       this.segmenti = this.timeSheetService.segmentiDelMese(this.currentMonth);
+      this.noteSpese = this.timeSheetService.noteSpeseDelMese(this.currentMonth);
       this.refreshCartellino++;
     });
   }
@@ -282,6 +287,19 @@ export class TimeSheetUserPageComponent implements OnInit, OnDestroy {
 
   public getActionSheetButtons(): any {
 
+    // nota spese: si apre il dettaglio (spese e allegati)
+    if (this.actionSheetNotaSpese != null) {
+      return [
+        {
+          text: this.transloco.translate('attendance.pages.timeSheetUser.notaSpeseDettaglio'),
+          role: 'dettaglio',
+          data: {
+            action: 'dettaglio',
+          },
+        },
+      ];
+    }
+
     let text = this.transloco.translate('attendance.pages.timeSheetUser.deleteRequest');
     if (this.actionSheet_Dip_GG_Richiesta != null) {
       if (this.actionSheet_Dip_GG_Richiesta.revocaStato == null)
@@ -308,6 +326,7 @@ export class TimeSheetUserPageComponent implements OnInit, OnDestroy {
   }
 
   private actionSheet_Dip_GG_Richiesta: Dip_GG_RichiestaModel | null;
+  private actionSheetNotaSpese: Dip_GG_RichiestaModel | null = null;
   private actionSheetOpenSelectObj: Dip_GG_GiustificativiModel | Dip_GG_TimbraturaModel;
   public actionSheetHeader = '';
   public actionSheetSubHeader = '';
@@ -333,7 +352,17 @@ export class TimeSheetUserPageComponent implements OnInit, OnDestroy {
 
   
 
+  /** Nota spese del giorno iniziale: il menu apre il dettaglio. */
+  actionSheetOpenNotaSpese(richiesta: Dip_GG_RichiestaModel) {
+    this.actionSheetNotaSpese = richiesta;
+    this.actionSheet_Dip_GG_Richiesta = richiesta;
+    this.actionSheetHeader = this.transloco.translate('attendance.pages.timeSheetUser.headerNotaSpese', { date: richiesta.data, total: this.timeSheetService.notaSpeseTotaleTesto(richiesta) });
+    this.actionSheetSubHeader = null;
+    this.isActionSheetOpen = true;
+  }
+
   actionSheetOpen(obj: any) {
+    this.actionSheetNotaSpese = null;
     if ('idPar_Giustificativi' in obj) {
 
       const parGiustificativiToLongTextPipe = new ParGiustificativiToLongTextPipe(this.sharedParameterGestionePresenzeService);
@@ -362,6 +391,12 @@ export class TimeSheetUserPageComponent implements OnInit, OnDestroy {
 
   actionSheetExecute(event: any) {
     this.isActionSheetOpen = false;
+
+    // dettaglio della nota spese (il dipendente la vede soltanto: approva e rifiuta l'HR)
+    if (event?.detail?.data?.action === 'dettaglio' && this.actionSheetNotaSpese != null) {
+      this.notaSpesaDettaglioDialogService.Apri(this.actionSheetNotaSpese.id);
+      return;
+    }
 
     if (event?.detail?.data?.action === 'delete') {
 

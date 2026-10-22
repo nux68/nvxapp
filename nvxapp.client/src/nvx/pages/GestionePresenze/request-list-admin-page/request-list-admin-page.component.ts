@@ -18,6 +18,7 @@ import { StatoRichiestaShortTextPipe } from '../../../shared/pipe/GestionePresen
 import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
 import { TimeSheetService } from '../../../Utility/GestionePresenze/time-sheet.service';
 import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
+import { NotaSpesaDettaglioDialogService } from '../../../shared/components/GestionePresenze/nota-spesa-dettaglio-dialog/nota-spesa-dettaglio-dialog.service';
 import { TranslocoService } from '@jsverse/transloco';
 
 
@@ -40,6 +41,7 @@ export class RequestListAdminPageComponent {
   private readonly tipoRichiestaToLongText = new TipoRichiestaToLongTextPipe();
   public btnApprova: ButtonItem;
   public btnRifiuta: ButtonItem;
+  public btnDettaglioNotaSpese: ButtonItem;
   public currRappLavSel: number[] = [];
   public currYear: number
   public currMonth: number
@@ -59,6 +61,7 @@ export class RequestListAdminPageComponent {
     private userInterfaceService: UserInterfaceService,
     private dipGGTimbraturaUtilityService: TimeSheetUtilityService,
     private userNavigationService: UserNavigationService,
+    private notaSpesaDettaglioDialogService: NotaSpesaDettaglioDialogService,
     private transloco: TranslocoService) {
 
     this.title = this.transloco.translate('attendance.pages.requestListAdmin.title');
@@ -77,9 +80,13 @@ export class RequestListAdminPageComponent {
     this.btnRifiuta = userInterfaceService.Btn_Rifiuta;
     this.btnRifiuta.event = this.handleButtonRifiutaClick;
 
+    // nota spese: si decide dal dettaglio (spese e allegati), come nell'esame spese
+    this.btnDettaglioNotaSpese = new ButtonItem(this.transloco.translate('attendance.pages.requestListAdmin.dettaglioNotaSpese'), 'receipt-outline', 'primary', false, this.handleButtonDettaglioNotaSpeseClick);
+
     this.actions = [
-      { button: this.btnApprova, visible: item => this.timeSheetService.Dip_GG_Richiesta_Admin_Can_Approve(item) },
-      { button: this.btnRifiuta, visible: item => this.timeSheetService.Dip_GG_Richiesta_Admin_Can_Reject(item) },
+      { button: this.btnApprova, visible: item => item.richiestaTipo !== TipoRichiesta.NotaSpesa && this.timeSheetService.Dip_GG_Richiesta_Admin_Can_Approve(item) },
+      { button: this.btnRifiuta, visible: item => item.richiestaTipo !== TipoRichiesta.NotaSpesa && this.timeSheetService.Dip_GG_Richiesta_Admin_Can_Reject(item) },
+      { button: this.btnDettaglioNotaSpese, visible: item => item.richiestaTipo === TipoRichiesta.NotaSpesa },
     ];
 
     
@@ -126,6 +133,11 @@ export class RequestListAdminPageComponent {
     if (result) {
       this.sendStato(item, StatoRichiesta.Rifiutata);
     }
+  }
+
+  handleButtonDettaglioNotaSpeseClick = async (item: Dip_GG_RichiestaModel) => {
+    if (await this.notaSpesaDettaglioDialogService.Apri(item.id, `${this.cognome(item)} ${this.nome(item)}`.trim(), true))
+      this.loadData();
   }
 
   Filter(CurrFilter: any) {

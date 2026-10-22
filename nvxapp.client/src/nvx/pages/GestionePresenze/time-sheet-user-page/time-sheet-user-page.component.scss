@@ -237,3 +237,23 @@ ion-menu-button {
   color: var(--ion-color-danger);
   font-weight: normal;
 }
+
+// nota spese nel giorno iniziale: totale e stato, al clic il menu con il dettaglio
+.note-spese {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.nvx-nota-spese-chip {
+  --background: var(--ion-color-tertiary);
+  --color: var(--ion-color-tertiary-contrast);
+  font-size: 0.8em;
+  margin-top: 0;
+  margin-bottom: 0;
+  cursor: pointer;
+
+  ion-icon {
+    color: var(--ion-color-tertiary-contrast);
+  }
+}

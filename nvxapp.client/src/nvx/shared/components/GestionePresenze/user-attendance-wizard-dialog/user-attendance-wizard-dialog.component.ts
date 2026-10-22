@@ -5,7 +5,7 @@ import { AbstractControl, FormBuilder, FormGroup, FormsModule, ReactiveFormsModu
 import { IonCard, IonCardContent, IonCheckbox, IonCol, IonContent, IonDatetime, IonDatetimeButton, IonGrid, IonHeader, IonInput, IonItem, IonLabel, IonModal, IonNote, IonProgressBar, IonRow, IonSelect, IonSelectOption, IonSpinner, IonText, IonTitle, IonToolbar, ModalController } from '@ionic/angular';
 import { SharedComponentInfrastructureModule } from '../../../shared-component-infrastructure.module';
 import { RefresherService } from '../../../../Utility/GestionePresenze/refresher.service';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, from, Observable, of } from 'rxjs';
 import { ButtonItem, UserInterfaceService } from '../../../../Utility/infrastructure/user-interface.service';
 import { GenericRequest } from '../../../../ClientServer-Service/ModelsBase/generic-request';
 import { AccountService } from '../../../../ClientServer-Service/Infrastructure/Account/account.service';
@@ -23,6 +23,15 @@ import { Par_GiustificativiModel, TipoContatore } from '../../../../ClientServer
 import { Par_ProfiloOrarioModel } from '../../../../ClientServer-Service/GestionePresenze/Par_ProfiloOrario/Models/par-profilo-orario-model';
 import { Par_CompetenzaModel } from '../../../../ClientServer-Service/GestionePresenze/Par_Competenza/Models/par-competenza-model';
 import { SharedParameterGestionePresenzeService, ParTable } from '../../../shared-parameter-gestione-presenze.service';
+import { BaseDialogConfirmCancelComponent } from '../../../../pages/_BASE/base-dialog-confirm-cancel/base-dialog-confirm-cancel.component';
+
+/** valori del wizard: un gruppo del form per gli step 1-3; dopo il salvataggio l'utente creato */
+export class UserAttendanceWizardModel {
+  utente: any = null;
+  rapporto: any = null;
+  profilo: any = null;
+  idAspNetUsers: string | null = null;
+}
 
 /**
  * Inserimento di un nuovo dipendente a step:
@@ -34,6 +43,7 @@ import { SharedParameterGestionePresenzeService, ParTable } from '../../../share
  * L'utente viene creato solo alla conferma dell'ultimo step: annullando non resta nulla di salvato.
  * Sostituisce il dialog di inserimento utente di Infrastructure (vedi MainMenuAttendanceTrackingService.RedefineDialog):
  * e' standalone, cosi' la pagina di Infrastructure che lo apre non deve importare moduli della gestione presenze.
+ * Form (_editForm della classe base): gruppi "utente", "rapporto" e "profilo", uno per step; si valida solo quello corrente.
  */
 @Component({
   selector: 'app-user-attendance-wizard-dialog',
@@ -43,7 +53,7 @@ import { SharedParameterGestionePresenzeService, ParTable } from '../../../share
   standalone: true,
   imports: [CommonModule, FormsModule, ReactiveFormsModule, IonCard, IonCardContent, IonCheckbox, IonCol, IonContent, IonDatetime, IonDatetimeButton, IonGrid, IonHeader, IonInput, IonItem, IonLabel, IonModal, IonNote, IonProgressBar, IonRow, IonSelect, IonSelectOption, IonSpinner, IonText, IonTitle, IonToolbar, SharedComponentInfrastructureModule]
 })
-export class UserAttendanceWizardDialogComponent implements OnInit {
+export class UserAttendanceWizardDialogComponent extends BaseDialogConfirmCancelComponent<UserAttendanceWizardModel> implements OnInit {
 
   public readonly titoliStep: string[];
   public readonly tipoContrattoEnum = TipoContratto;
@@ -55,16 +65,13 @@ export class UserAttendanceWizardDialogComponent implements OnInit {
   public checking: boolean = false;
   public erroreSalvataggio: string | null = null;
 
-  public buttonbar: ButtonItem[] = [];
   private btnNext: ButtonItem;
   private btnBack: ButtonItem;
-  private btnConfirm: ButtonItem;
-  private btnCancel: ButtonItem;
 
-  // un form per step: si valida solo quello corrente
-  public formUtente: FormGroup;
-  public formRapporto: FormGroup;
-  public formProfilo: FormGroup;
+  // un gruppo del form per step: si valida solo quello corrente
+  public get formUtente(): FormGroup { return this._editForm?.get('utente') as FormGroup; }
+  public get formRapporto(): FormGroup { return this._editForm?.get('rapporto') as FormGroup; }
+  public get formProfilo(): FormGroup { return this._editForm?.get('profilo') as FormGroup; }
 
   /** Competenze selezionate (step 4). */
   public competenzeSelezionate: number[] = [];
@@ -75,9 +82,9 @@ export class UserAttendanceWizardDialogComponent implements OnInit {
   public par_Competenza: Par_CompetenzaModel[] = [];
   public giustificativiContatore: Par_GiustificativiModel[] = [];
 
-  constructor(private userInterfaceService: UserInterfaceService,
-              private fb: FormBuilder,
-              private modalCtrl: ModalController,
+  constructor(protected override userInterfaceService: UserInterfaceService,
+              protected override fb: FormBuilder,
+              protected override modalCtrl: ModalController,
               private parameterService: ParameterService,
               private accountService: AccountService,
               private dipAnagraficaService: DipAnagraficaService,
@@ -86,44 +93,47 @@ export class UserAttendanceWizardDialogComponent implements OnInit {
               private elementRef: ElementRef<HTMLElement>,
               private transloco: TranslocoService) {
 
+    super(userInterfaceService, fb, modalCtrl);
+
     this.titoliStep = ['utente', 'rapporto', 'profilo', 'competenze', 'maturazione'].map(s => this.t('steps.' + s));
 
     this.btnNext = new ButtonItem(this.t('avanti'), 'arrow-forward-outline', 'primary', false, this.handleNext);
     this.btnBack = new ButtonItem(this.t('indietro'), 'arrow-back-outline', 'medium', false, this.handleBack);
-    this.btnConfirm = this.userInterfaceService.Btn_Conferma;
+    // conferma: salvataggio in piu' chiamate (utente, poi dati presenze); annulla: quello della classe base
     this.btnConfirm.event = this.handleConfirm;
-    this.btnCancel = this.userInterfaceService.Btn_Annulla;
-    this.btnCancel.event = this.handleCancel;
   }
 
-  ngOnInit() {
-    this.ingrandisciDialog();
-
+  get EditForm(): FormGroup {
     const userRole = this.parameterService.Roles.find(role => role.code === RoleCode.User);
-
-    this.formUtente = this.fb.group({
-      cognome: [null, [Validators.required, Validators.maxLength(50)]],
-      nome: [null, [Validators.required, Validators.maxLength(50)]],
-      descrizione: [null, [Validators.required, Validators.maxLength(50)]],
-      pw: [null, [Validators.required]],
-      mail: [null, [Validators.required, Validators.email]],
-      roles: [userRole ? [userRole.name] : [], [minArrayLength(1)]],
-    });
-
-    this.formRapporto = this.fb.group({
-      dataAss: [oggiIso(), [Validators.required]],
-      tipoContratto: [TipoContratto.FullTime],
-      oreSettimanaliContratto: [null, [Validators.min(0), Validators.max(168)]],
-      ccnl: [null, [Validators.maxLength(50)]],
-      destinazioneEccedenze: [DestinazioneEccedenze.Pagamento],
-    });
-
     this.par_ProfiloOrario = this.sharedParameterGestionePresenzeService.Par_ProfiloOrario ?? [];
     const profiloDefault = this.par_ProfiloOrario.find(p => p.codice === 'DAY7H8') ?? this.par_ProfiloOrario[0];
-    this.formProfilo = this.fb.group({
-      idPar_ProfiloOrario: [profiloDefault?.id ?? null, [Validators.required]],
-      numGiornoPartenzaCiclo: [1, [Validators.required, Validators.min(1)]],
+
+    return this.fb.group({
+      utente: this.fb.group({
+        cognome: [null, [Validators.required, Validators.maxLength(50)]],
+        nome: [null, [Validators.required, Validators.maxLength(50)]],
+        descrizione: [null, [Validators.required, Validators.maxLength(50)]],
+        pw: [null, [Validators.required]],
+        mail: [null, [Validators.required, Validators.email]],
+        roles: [userRole ? [userRole.name] : [], [minArrayLength(1)]],
+      }),
+      rapporto: this.fb.group({
+        dataAss: [oggiIso(), [Validators.required]],
+        tipoContratto: [TipoContratto.FullTime],
+        oreSettimanaliContratto: [null, [Validators.min(0), Validators.max(168)]],
+        ccnl: [null, [Validators.maxLength(50)]],
+        destinazioneEccedenze: [DestinazioneEccedenze.Pagamento],
+      }),
+      profilo: this.fb.group({
+        idPar_ProfiloOrario: [profiloDefault?.id ?? null, [Validators.required]],
+        numGiornoPartenzaCiclo: [1, [Validators.required, Validators.min(1)]],
+      }),
     });
+  }
+
+  override ngOnInit() {
+    super.ngOnInit();
+    this.ingrandisciDialog();
 
     this.par_Competenza = this.sharedParameterGestionePresenzeService.Par_Competenza ?? [];
     this.competenzeSelezionate = this.par_Competenza.filter(c => c.default).map(c => c.id);
@@ -142,9 +152,20 @@ export class UserAttendanceWizardDialogComponent implements OnInit {
   }
 
   // all'apertura il componente e' gia' dentro ion-modal (in ngOnInit puo' non esserlo ancora)
-  ionViewWillEnter() {
+  override ionViewWillEnter() {
+    super.ionViewWillEnter();
     this.ingrandisciDialog();
   }
+
+  // nuovo dipendente: i valori sono quelli proposti dal form
+  LoadData = (): Observable<UserAttendanceWizardModel> => {
+    return of(Object.assign(new UserAttendanceWizardModel(), this._editForm.value));
+  };
+
+  /** crea l'utente e salva i dati delle presenze; restituisce il modello con l'utente creato (null se non riuscito) */
+  SaveData = (editModel: UserAttendanceWizardModel): Observable<UserAttendanceWizardModel | null> => {
+    return from(this.salva(editModel));
+  };
 
   /** Dialog piu' grande del normale da tablet in su (su mobile resta a tutto schermo). */
   private ingrandisciDialog(): void {
@@ -275,13 +296,9 @@ export class UserAttendanceWizardDialogComponent implements OnInit {
     }
   };
 
-  private handleCancel = () => {
-    this.modalCtrl.dismiss(null, 'cancel');
-  };
-
   private updateButtonbar(): void {
     const ultimo = this.currentStep === this.titoliStep.length - 1;
-    this.btnConfirm.disabled = this.saving;
+    this.btnConfirm.disabled = this.saving || !this._editForm.valid;
     this.btnNext.disabled = this.saving || this.checking;
     this.btnBack.disabled = this.saving || this.checking;
 
@@ -303,6 +320,14 @@ export class UserAttendanceWizardDialogComponent implements OnInit {
       }
     }
 
+    this.SaveData(Object.assign(new UserAttendanceWizardModel(), this._editForm.value)).subscribe(res => {
+      // inserimento completato: la lista utenti deve solo rileggersi
+      if (res?.idAspNetUsers)
+        this.modalCtrl.dismiss({ idAspNetUsers: res.idAspNetUsers, inserimentoCompletato: true }, 'confirm');
+    });
+  };
+
+  private async salva(editModel: UserAttendanceWizardModel): Promise<UserAttendanceWizardModel | null> {
     this.saving = true;
     this.erroreSalvataggio = null;
     this.updateButtonbar();
@@ -311,21 +336,23 @@ export class UserAttendanceWizardDialogComponent implements OnInit {
       if (!idAspNetUsers) {
         // errore sui dati utente (es. username o email già usati): si torna al primo step
         this.currentStep = 0;
-        return;
+        return null;
       }
       if (await this.SalvaDatiPresenze(idAspNetUsers)) {
         this.refresherService.SharedParameterGestionePresenze_triggerRefresh(ParTable.Dip_Anagrafica);
-        // inserimento completato: la lista utenti deve solo rileggersi
-        this.modalCtrl.dismiss({ idAspNetUsers, inserimentoCompletato: true }, 'confirm');
+        editModel.idAspNetUsers = idAspNetUsers;
+        return editModel;
       }
+      return null;
     } catch (error) {
       console.error('Errore durante la chiamata API:', error);
       this.erroreSalvataggio = this.t('erroreSalvataggio');
+      return null;
     } finally {
       this.saving = false;
       this.updateButtonbar();
     }
-  };
+  }
 
   /** Crea l'utente nell'azienda: il server prepara anagrafica, rapporto e profilo di default. */
   private async CreaUtente(): Promise<string | null> {

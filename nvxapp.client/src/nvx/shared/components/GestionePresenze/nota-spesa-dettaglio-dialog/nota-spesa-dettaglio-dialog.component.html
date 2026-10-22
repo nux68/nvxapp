@@ -1,0 +1,51 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{ riepilogo.descrizione || ('attendance.components.notaSpesaDettaglioDialog.notaSpese' | transloco) }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  @if (!richiesta) {
+    <ion-spinner></ion-spinner>
+  } @else {
+    <div class="ns-dett-testata">
+      <div>
+        @if (dipendente) {
+          <strong>{{ dipendente }}</strong>
+        }
+        <small>
+          {{ richiesta.data }}@if (richiesta.dataA !== richiesta.data) { – {{ richiesta.dataA }} }
+          · {{ spese.length }} {{ (spese.length === 1 ? 'attendance.components.notaSpesaDettaglioDialog.spesa' : 'attendance.components.notaSpesaDettaglioDialog.spese') | transloco }}
+        </small>
+      </div>
+      <ion-badge [color]="stato.colore">
+        {{ stato.testo ?? (richiesta.richiestaStato | statoRichiestaLongText) }}
+      </ion-badge>
+    </div>
+
+    @for (s of spese; track s.id) {
+      <div class="ns-dett-spesa">
+        <span class="ns-data">{{ s.data | date:'dd/MM/yyyy' }}</span>
+        <span class="ns-chi">{{ tipo(s.idPar_TipoSpesa) }}</span>
+        <span class="ns-descr">{{ s.descrizione }}</span>
+        <span class="ns-importo">{{ euro(s.importo) }}</span>
+        @if (s.allegati.length > 0) {
+          <div class="ns-allegati">
+            @for (a of s.allegati; track a.id) {
+              <ion-chip (click)="apriAllegato(a)">
+                <ion-icon [name]="a.contentType === 'application/pdf' ? 'document-text-outline' : 'image-outline'"></ion-icon>
+                <ion-label>{{ a.nomeFile }}</ion-label>
+              </ion-chip>
+            }
+          </div>
+        } @else {
+          <small class="ns-senza-allegati">{{ 'attendance.components.notaSpesaDettaglioDialog.nessunAllegato' | transloco }}</small>
+        }
+      </div>
+    }
+
+    <div class="ns-dett-totale">{{ 'attendance.components.notaSpesaDettaglioDialog.totale' | transloco }} <strong>{{ euro(totale) }}</strong></div>
+  }
+</ion-content>
+
+<app-page-buttonbar [buttonbar]="buttonbar"></app-page-buttonbar>

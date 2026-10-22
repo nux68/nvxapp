@@ -259,7 +259,9 @@
         "deleteRequest": "Delete request",
         "deleteRevocation": "Delete revocation",
         "headerJustification": "Absence justification: {{type}} {{date}}",
-        "headerClocking": "Clocking: {{type}} {{date}}"
+        "headerClocking": "Clocking: {{type}} {{date}}",
+        "headerNotaSpese": "Expense report: {{date}} {{total}}",
+        "notaSpeseDettaglio": "Expense report details"
       },
       "timeSheetAdmin": {
         "title": "Calendar",
@@ -267,7 +269,9 @@
         "rejectRequest": "Reject request",
         "headerJustification": "Absence justification: {{type}} {{date}}",
         "headerClocking": "Clocking: {{type}} {{date}}",
-        "outsideEmployment": "Day outside the employment period: the request can only be rejected"
+        "outsideEmployment": "Day outside the employment period: the request can only be rejected",
+        "headerNotaSpese": "Expense report: {{date}} {{total}}",
+        "notaSpeseDettaglio": "Expense report details (approve / reject)"
       },
       "userDepartmentWizard": {
         "title": "New User",
@@ -383,16 +387,10 @@
         "spese": "expenses",
         "totaleMinuscolo": "total",
         "apriDettaglio": "Open the expense report details",
-        "notaSpese": "Expense report",
-        "nessunAllegato": "No attachments",
-        "totale": "Total",
-        "azioneRevoca": "{{azione}} revocation",
-        "confermaApprovazione": "Do you confirm approval of the expense report?",
-        "confermaApprovazioneRevoca": "Do you confirm approval of the expense report revocation?",
-        "confermaRifiuto": "Do you confirm rejection of the expense report?",
-        "confermaRifiutoRevoca": "Do you confirm rejection of the expense report revocation?",
-        "revocata": "Revoked",
-        "revocaRichiesta": "Revocation requested"
+        "dettaglioNota": "Expense report details",
+        "espandiTutte": "Expand all",
+        "comprimiTutte": "Collapse all",
+        "nessunAllegato": "No attachments"
       },
       "activityStatistics": {
         "title": "Activity statistics",
@@ -466,7 +464,8 @@
         "colDettaglio": "Details",
         "colStato": "Status",
         "confermaApprovazione": "Do you confirm approval of the request?",
-        "confermaRifiuto": "Do you confirm rejection of the request?"
+        "confermaRifiuto": "Do you confirm rejection of the request?",
+        "dettaglioNotaSpese": "Details"
       },
       "notaSpeseUser": {
         "title": "My expense reports",
@@ -941,6 +940,20 @@
       "seletionSediRepartoUserDialog": {
         "title": "Select",
         "nota": "Only employees with at least one of the skills required by the sub-order's activities are shown."
+      },
+      "notaSpesaDettaglioDialog": {
+        "notaSpese": "Expense report",
+        "spesa": "expense",
+        "spese": "expenses",
+        "nessunAllegato": "No attachments",
+        "totale": "Total",
+        "azioneRevoca": "{{azione}} revocation",
+        "confermaApprovazione": "Do you confirm approval of the expense report?",
+        "confermaApprovazioneRevoca": "Do you confirm approval of the expense report revocation?",
+        "confermaRifiuto": "Do you confirm rejection of the expense report?",
+        "confermaRifiutoRevoca": "Do you confirm rejection of the expense report revocation?",
+        "revocata": "Revoked",
+        "revocaRichiesta": "Revocation requested"
       },
       "userAttendanceWizardDialog": {
         "title": "New employee",

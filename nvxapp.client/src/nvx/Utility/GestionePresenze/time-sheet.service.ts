@@ -5,7 +5,7 @@ import { catchError, Observable, of, switchMap, throwError } from 'rxjs';
 import { map } from 'rxjs/operators'; // Import map operator if you plan real sorting/processing
 import { Dip_GG_Timbratura_GetAll_InModel, Dip_GG_TimbraturaModel, TipoTimbratura } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Timbratura/Models/dip-gg-timbratura-model';
 import { HoverPopupData } from '../../shared/components/infrastructure/hover-popup/hover-popup.component';
-import { Dip_GG_Richiesta_GetAll4User_InModel, Dip_GG_RichiestaModel, StatoRichiesta } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/Models/dip-gg-richiesta-model';
+import { Dip_GG_Richiesta_GetAll4User_InModel, Dip_GG_RichiestaModel, riepilogoNotaSpesa, StatoRichiesta, TipoRichiesta } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/Models/dip-gg-richiesta-model';
 import { Dip_GG_Giustificativi_GetAll_InModel, Dip_GG_GiustificativiModel } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Giustificativi/Models/dip-gg-giustificativi-model';
 import { DipGGGiustificativiService } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Giustificativi/dip-gg-giustificativi.service';
 import { DipGGTimbraturaService } from '../../ClientServer-Service/GestionePresenze/Dip_GG_Timbratura/dip-gg-timbratura.service';
@@ -225,6 +225,28 @@ export class TimeSheetService {
     const inizio = this.giornoIso(new Date(month.year, month.month, 1));
     const fine = this.giornoIso(new Date(month.year, month.month + 1, 0));
     return this.segmentiRichieste(tutti, month.dip_GG_Richiesta, inizio, fine);
+  }
+
+  /**
+   * Note spese del mese del cartellino per giorno (1-31): ognuna compare solo nel giorno iniziale.
+   * Le note annullate dal dipendente non si mostrano.
+   */
+  noteSpeseDelMese(month: MonthData): Map<number, Dip_GG_RichiestaModel[]> {
+    const retVal = new Map<number, Dip_GG_RichiestaModel[]>();
+    for (const r of month?.dip_GG_Richiesta ?? []) {
+      if (r.richiestaTipo !== TipoRichiesta.NotaSpesa || r.richiestaStato === StatoRichiesta.Cancellata || !r.data)
+        continue;
+      const [aaaa, mm, gg] = this.ddmmyyyyToIso(r.data).split('-').map(Number);
+      if (aaaa !== month.year || mm !== month.month + 1)
+        continue;
+      retVal.set(gg, [...(retVal.get(gg) ?? []), r]);
+    }
+    return retVal;
+  }
+
+  /** Totale della nota spese (dal riepilogo della richiesta), es. "€ 123,45". */
+  notaSpeseTotaleTesto(richiesta: Dip_GG_RichiestaModel | null | undefined): string {
+    return '€ ' + (riepilogoNotaSpesa(richiesta?.dati).totale ?? 0).toFixed(2).replace('.', ',');
   }
 
   /** "Richiesta dal … al …" per i tooltip dei giustificativi di una richiesta su più giorni. */

@@ -1,5 +1,5 @@
 <!-- request-justification-user-page.component.html -->
-<app-page-toolbar [title]="title"
+<app-page-toolbar [title]="Title"
   [showFilter]="false"
   [showBreadcrumbs]="true">
 </app-page-toolbar>
@@ -8,6 +8,8 @@
 
   <ion-card>
     <ion-card-content>
+
+    <form [formGroup]="_editForm">
 
       <!-- Rest of the content remains the same -->
       <!--<div class="form-section">
@@ -25,7 +27,7 @@
 
     <ion-item>
       <ion-label position="stacked" style="margin-bottom:13px;">{{ 'attendance.pages.requestJustificationUser.giustificativo' | transloco }}</ion-label>
-      <ion-select [(ngModel)]="justificationType" interface="popover" [placeholder]="'attendance.pages.requestJustificationUser.seleziona' | transloco" (ionChange)="onGiustificativoChange()">
+      <ion-select formControlName="justificationType" interface="popover" [placeholder]="'attendance.pages.requestJustificationUser.seleziona' | transloco" (ionChange)="onGiustificativoChange($event.detail.value)">
         @for (giustificativo of giustificativi; track giustificativo) {
           <ion-select-option [value]="giustificativo.codice">
             {{giustificativo.descrizione}}
@@ -68,7 +70,7 @@
 } @else {
   <div class="form-section toggle-section">
     <span>{{ 'attendance.pages.requestJustificationUser.giornoIntero' | transloco }}</span>
-    <ion-toggle [(ngModel)]="fullDay" (ionChange)="toggleFullDay()"></ion-toggle>
+    <ion-toggle formControlName="fullDay" (ionChange)="toggleFullDay($event.detail.checked)"></ion-toggle>
   </div>
 }
 
@@ -132,7 +134,7 @@
 <div class="form-section notes-section">
   <div class="form-label">{{ 'attendance.pages.requestJustificationUser.note' | transloco }}</div>
   <div class="form-input">
-    <ion-textarea [(ngModel)]="notes" [placeholder]="'attendance.pages.requestJustificationUser.notePlaceholder' | transloco" rows="4"></ion-textarea>
+    <ion-textarea formControlName="notes" [placeholder]="'attendance.pages.requestJustificationUser.notePlaceholder' | transloco" rows="4"></ion-textarea>
   </div>
 </div>
 
@@ -140,7 +142,7 @@
 <ion-modal [keepContentsMounted]="true">
   <ng-template>
     <ion-datetime id="startDatetime"
-      [(ngModel)]="startDate"
+      formControlName="startDate"
       presentation="date"
       [firstDayOfWeek]="1"
       [showDefaultButtons]="true"
@@ -154,7 +156,7 @@
 <ion-modal [keepContentsMounted]="true">
   <ng-template>
     <ion-datetime id="endDatetime"
-      [(ngModel)]="endDate"
+      formControlName="endDate"
       presentation="date"
       [firstDayOfWeek]="1"
       [showDefaultButtons]="true"
@@ -166,6 +168,8 @@
 </ion-modal>
 
 
+
+</form>
 
 </ion-card-content>
 </ion-card>

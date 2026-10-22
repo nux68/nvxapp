@@ -57,7 +57,13 @@
         <ion-note>{{ 'attendance.pages.notaSpeseAdmin.nessunaSpesa' | transloco }}</ion-note>
       } @else {
         <div class="ns-totale-generale">
-          {{ spese.length }} {{ (spese.length === 1 ? 'attendance.pages.notaSpeseAdmin.spesa' : 'attendance.pages.notaSpeseAdmin.spese') | transloco }} · {{ 'attendance.pages.notaSpeseAdmin.totaleMinuscolo' | transloco }} <strong>{{ euro(totale) }}</strong>
+          <ion-button fill="clear" size="small" (click)="espandiTutte()">
+            <ion-icon slot="start" [name]="tutteEspanse ? 'contract-outline' : 'expand-outline'"></ion-icon>
+            {{ (tutteEspanse ? 'attendance.pages.notaSpeseAdmin.comprimiTutte' : 'attendance.pages.notaSpeseAdmin.espandiTutte') | transloco }}
+          </ion-button>
+          <span>
+            {{ spese.length }} {{ (spese.length === 1 ? 'attendance.pages.notaSpeseAdmin.spesa' : 'attendance.pages.notaSpeseAdmin.spese') | transloco }} · {{ 'attendance.pages.notaSpeseAdmin.totaleMinuscolo' | transloco }} <strong>{{ euro(totale) }}</strong>
+          </span>
         </div>
 
         @for (g of gruppi; track g.chiave) {
@@ -66,24 +72,40 @@
               <strong>{{ g.titolo }}</strong>
               <span>{{ euro(g.totale) }}</span>
             </div>
+            <!-- riga essenziale; con un clic si espande (descrizione, allegati, dettaglio della nota) -->
             @for (s of g.spese; track s.id) {
-              <div class="ns-riga" (click)="apriDettaglio(s)" [title]="'attendance.pages.notaSpeseAdmin.apriDettaglio' | transloco">
+              <div class="ns-riga" [class.ns-riga-espansa]="espansa(s)" (click)="espandi(s)">
+                <ion-icon class="ns-freccia" [name]="espansa(s) ? 'chevron-down-outline' : 'chevron-forward-outline'"></ion-icon>
                 <span class="ns-data">{{ s.data | date:'dd/MM/yyyy' }}</span>
-                <span class="ns-chi">{{ raggruppa === 'dipendente' ? tipo(s.idPar_TipoSpesa) : dipendente(s.idAspNetUsers) }}</span>
-                <span class="ns-descr">
-                  {{ s.descrizione }}
-                  @if (s.richiestaDescrizione) { <small>· {{ s.richiestaDescrizione }}</small> }
+                <span class="ns-chi">
+                  {{ raggruppa === 'dipendente' ? tipo(s.idPar_TipoSpesa) : dipendente(s.idAspNetUsers) }}
+                  @if (s.allegati.length > 0) {
+                    <ion-icon name="attach-outline" class="ns-graffetta"></ion-icon>
+                  }
                 </span>
                 <ion-badge [color]="coloreStato(s.richiestaStato)">{{ s.richiestaStato | statoRichiestaLongText }}</ion-badge>
                 <span class="ns-importo">{{ euro(s.importo) }}</span>
-                @if (s.allegati.length > 0) {
-                  <div class="ns-allegati">
-                    @for (a of s.allegati; track a.id) {
-                      <ion-chip (click)="apriAllegato(a, $event)">
-                        <ion-icon [name]="a.contentType === 'application/pdf' ? 'document-text-outline' : 'image-outline'"></ion-icon>
-                        <ion-label>{{ a.nomeFile }}</ion-label>
-                      </ion-chip>
-                    }
+
+                @if (espansa(s)) {
+                  <div class="ns-espansione">
+                    <div class="ns-descr">
+                      {{ s.descrizione }}
+                      @if (s.richiestaDescrizione) { <small>· {{ s.richiestaDescrizione }}</small> }
+                    </div>
+                    <div class="ns-allegati">
+                      @for (a of s.allegati; track a.id) {
+                        <ion-chip (click)="apriAllegato(a, $event)">
+                          <ion-icon [name]="a.contentType === 'application/pdf' ? 'document-text-outline' : 'image-outline'"></ion-icon>
+                          <ion-label>{{ a.nomeFile }}</ion-label>
+                        </ion-chip>
+                      } @empty {
+                        <small class="ns-senza-allegati">{{ 'attendance.pages.notaSpeseAdmin.nessunAllegato' | transloco }}</small>
+                      }
+                    </div>
+                    <ion-button size="small" fill="outline" shape="round" (click)="apriDettaglio(s, $event)" [title]="'attendance.pages.notaSpeseAdmin.apriDettaglio' | transloco">
+                      <ion-icon slot="start" name="receipt-outline"></ion-icon>
+                      {{ 'attendance.pages.notaSpeseAdmin.dettaglioNota' | transloco }}
+                    </ion-button>
                   </div>
                 }
               </div>
@@ -94,86 +116,5 @@
 
     </ion-card-content>
   </ion-card>
-
-  <!-- dettaglio della nota spese, con approvazione e rifiuto -->
-  <ion-modal [isOpen]="dettaglioAperto" (didDismiss)="chiudiDettaglio()" class="ns-modal">
-    <ng-template>
-      <ion-header>
-        <ion-toolbar>
-          <ion-title>{{ dettaglioRiepilogo.descrizione || ('attendance.pages.notaSpeseAdmin.notaSpese' | transloco) }}</ion-title>
-          <ion-buttons slot="end">
-            <ion-button (click)="chiudiDettaglio()" [attr.aria-label]="'common.buttons.close' | transloco">
-              <ion-icon slot="icon-only" name="close"></ion-icon>
-            </ion-button>
-          </ion-buttons>
-        </ion-toolbar>
-      </ion-header>
-
-      <ion-content class="ion-padding">
-        @if (!dettaglioRichiesta) {
-          <ion-spinner></ion-spinner>
-        } @else {
-          <div class="ns-dett-testata">
-            <div>
-              <strong>{{ dipendente(dettaglioIdAspNetUsers) }}</strong>
-              <small>
-                {{ dettaglioRichiesta.data }}@if (dettaglioRichiesta.dataA !== dettaglioRichiesta.data) { – {{ dettaglioRichiesta.dataA }} }
-                · {{ dettaglioSpese.length }} {{ (dettaglioSpese.length === 1 ? 'attendance.pages.notaSpeseAdmin.spesa' : 'attendance.pages.notaSpeseAdmin.spese') | transloco }}
-              </small>
-            </div>
-            <ion-badge [color]="statoNota(dettaglioRichiesta).colore">
-              {{ statoNota(dettaglioRichiesta).testo ?? (dettaglioRichiesta.richiestaStato | statoRichiestaLongText) }}
-            </ion-badge>
-          </div>
-
-          @for (s of dettaglioSpese; track s.id) {
-            <div class="ns-dett-spesa">
-              <span class="ns-data">{{ s.data | date:'dd/MM/yyyy' }}</span>
-              <span class="ns-chi">{{ tipo(s.idPar_TipoSpesa) }}</span>
-              <span class="ns-descr">{{ s.descrizione }}</span>
-              <span class="ns-importo">{{ euro(s.importo) }}</span>
-              @if (s.allegati.length > 0) {
-                <div class="ns-allegati">
-                  @for (a of s.allegati; track a.id) {
-                    <ion-chip (click)="apriAllegato(a, $event)">
-                      <ion-icon [name]="a.contentType === 'application/pdf' ? 'document-text-outline' : 'image-outline'"></ion-icon>
-                      <ion-label>{{ a.nomeFile }}</ion-label>
-                    </ion-chip>
-                  }
-                </div>
-              } @else {
-                <small class="ns-senza-allegati">{{ 'attendance.pages.notaSpeseAdmin.nessunAllegato' | transloco }}</small>
-              }
-            </div>
-          }
-
-          <div class="ns-dett-totale">{{ 'attendance.pages.notaSpeseAdmin.totale' | transloco }} <strong>{{ euro(dettaglioTotale) }}</strong></div>
-        }
-      </ion-content>
-
-      <ion-footer>
-        <ion-toolbar>
-          <div class="ns-dett-pulsanti">
-            @if (puoApprovare) {
-              <ion-button size="small" fill="outline" shape="round" (click)="btnApprova.event(dettaglioRichiesta)" color="{{btnApprova.color}}">
-                <ion-icon name="{{btnApprova.image}}"></ion-icon>
-                &nbsp;{{ dettaglioRevoca ? ('attendance.pages.notaSpeseAdmin.azioneRevoca' | transloco: { azione: btnApprova.text }) : btnApprova.text }}
-              </ion-button>
-            }
-            @if (puoRifiutare) {
-              <ion-button size="small" fill="outline" shape="round" (click)="btnRifiuta.event(dettaglioRichiesta)" color="{{btnRifiuta.color}}">
-                <ion-icon name="{{btnRifiuta.image}}"></ion-icon>
-                &nbsp;{{ dettaglioRevoca ? ('attendance.pages.notaSpeseAdmin.azioneRevoca' | transloco: { azione: btnRifiuta.text }) : btnRifiuta.text }}
-              </ion-button>
-            }
-            <ion-button size="small" fill="outline" shape="round" (click)="btnAnnulla.event(dettaglioRichiesta)" color="{{btnAnnulla.color}}">
-              <ion-icon name="{{btnAnnulla.image}}"></ion-icon>
-              &nbsp;{{btnAnnulla.text}}
-            </ion-button>
-          </div>
-        </ion-toolbar>
-      </ion-footer>
-    </ng-template>
-  </ion-modal>
 
 </ion-content>

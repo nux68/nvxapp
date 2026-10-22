@@ -259,7 +259,9 @@
         "deleteRequest": "Cancella richiesta",
         "deleteRevocation": "Cancella revoca",
         "headerJustification": "Giustificativo : {{type}} {{date}}",
-        "headerClocking": "Timbratura : {{type}} {{date}}"
+        "headerClocking": "Timbratura : {{type}} {{date}}",
+        "headerNotaSpese": "Nota spese : {{date}} {{total}}",
+        "notaSpeseDettaglio": "Dettaglio nota spese"
       },
       "timeSheetAdmin": {
         "title": "Calendario",
@@ -267,7 +269,9 @@
         "rejectRequest": "Rifiuta richiesta",
         "headerJustification": "Giustificativo : {{type}} {{date}}",
         "headerClocking": "Timbratura : {{type}} {{date}}",
-        "outsideEmployment": "Giorno fuori dal rapporto di lavoro: la richiesta si può solo rifiutare"
+        "outsideEmployment": "Giorno fuori dal rapporto di lavoro: la richiesta si può solo rifiutare",
+        "headerNotaSpese": "Nota spese : {{date}} {{total}}",
+        "notaSpeseDettaglio": "Dettaglio nota spese (approva / rifiuta)"
       },
       "userDepartmentWizard": {
         "title": "Nuovo Utente",
@@ -383,16 +387,10 @@
         "spese": "spese",
         "totaleMinuscolo": "totale",
         "apriDettaglio": "Apri il dettaglio della nota spese",
-        "notaSpese": "Nota spese",
-        "nessunAllegato": "Nessun allegato",
-        "totale": "Totale",
-        "azioneRevoca": "{{azione}} revoca",
-        "confermaApprovazione": "Confermi l'approvazione della nota spese?",
-        "confermaApprovazioneRevoca": "Confermi l'approvazione della revoca della nota spese?",
-        "confermaRifiuto": "Confermi il rifiuto della nota spese?",
-        "confermaRifiutoRevoca": "Confermi il rifiuto della revoca della nota spese?",
-        "revocata": "Revocata",
-        "revocaRichiesta": "Revoca richiesta"
+        "dettaglioNota": "Dettaglio nota spese",
+        "espandiTutte": "Espandi tutte",
+        "comprimiTutte": "Comprimi tutte",
+        "nessunAllegato": "Nessun allegato"
       },
       "activityStatistics": {
         "title": "Statistiche attività",
@@ -466,7 +464,8 @@
         "colDettaglio": "Dettaglio",
         "colStato": "Stato",
         "confermaApprovazione": "Confermi l' approvazione della richiesta?",
-        "confermaRifiuto": "Confermi il rifiuto della richiesta?"
+        "confermaRifiuto": "Confermi il rifiuto della richiesta?",
+        "dettaglioNotaSpese": "Dettaglio"
       },
       "notaSpeseUser": {
         "title": "Le mie note spese",
@@ -941,6 +940,20 @@
       "seletionSediRepartoUserDialog": {
         "title": "Seleziona",
         "nota": "Sono proposti solo i dipendenti con almeno una delle competenze richieste dalle attività della sub commessa."
+      },
+      "notaSpesaDettaglioDialog": {
+        "notaSpese": "Nota spese",
+        "spesa": "spesa",
+        "spese": "spese",
+        "nessunAllegato": "Nessun allegato",
+        "totale": "Totale",
+        "azioneRevoca": "{{azione}} revoca",
+        "confermaApprovazione": "Confermi l'approvazione della nota spese?",
+        "confermaApprovazioneRevoca": "Confermi l'approvazione della revoca della nota spese?",
+        "confermaRifiuto": "Confermi il rifiuto della nota spese?",
+        "confermaRifiutoRevoca": "Confermi il rifiuto della revoca della nota spese?",
+        "revocata": "Revocata",
+        "revocaRichiesta": "Revoca richiesta"
       },
       "userAttendanceWizardDialog": {
         "title": "Nuovo dipendente",

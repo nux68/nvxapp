@@ -1,4 +1,4 @@
-<app-page-toolbar [title]="title"
+<app-page-toolbar [title]="Title"
   [showFilter]="false"
   [showBreadcrumbs]="true">
 </app-page-toolbar>
@@ -8,76 +8,92 @@
   <ion-card>
     <ion-card-content>
 
-      <ion-item class="nvx-field">
-        <ion-label position="stacked">{{ 'attendance.pages.notaSpesaRequestUser.descrizioneNota' | transloco }}</ion-label>
-        <ion-input [(ngModel)]="descrizione" maxlength="200" [placeholder]="'attendance.pages.notaSpesaRequestUser.descrizioneNotaPlaceholder' | transloco"></ion-input>
-      </ion-item>
+      <form [formGroup]="_editForm">
 
-      <ion-item class="nvx-item-4-title">
-        <ion-label>{{ 'attendance.pages.notaSpesaRequestUser.spese' | transloco }}</ion-label>
-      </ion-item>
+        <ion-item class="nvx-field">
+          <ion-label position="stacked">{{ 'attendance.pages.notaSpesaRequestUser.descrizioneNota' | transloco }}</ion-label>
+          <ion-input formControlName="descrizione" maxlength="200" [placeholder]="'attendance.pages.notaSpesaRequestUser.descrizioneNotaPlaceholder' | transloco"></ion-input>
+        </ion-item>
 
-      @for (spesa of spese; track spesa; let i = $index) {
-        <div class="ns-spesa">
-          <div class="ns-spesa-titolo">
-            <strong>{{ 'attendance.pages.notaSpesaRequestUser.spesaN' | transloco: { n: i + 1 } }}</strong>
-            @if (spese.length > 1) {
-              <ion-button fill="clear" size="small" color="danger" (click)="togliSpesa(i)">
-                <ion-icon slot="start" name="trash-outline"></ion-icon>
-                {{ 'attendance.pages.notaSpesaRequestUser.togli' | transloco }}
-              </ion-button>
-            }
-          </div>
+        <ion-item class="nvx-item-4-title">
+          <ion-label>{{ 'attendance.pages.notaSpesaRequestUser.spese' | transloco }}</ion-label>
+        </ion-item>
 
-          <ion-grid class="ion-no-padding">
-            <ion-row>
-              <ion-col size="6" size-md="3">
-                <ion-item class="nvx-field">
-                  <ion-label position="stacked">{{ 'attendance.pages.notaSpesaRequestUser.data' | transloco }}</ion-label>
-                  <ion-input type="date" [(ngModel)]="spesa.data"></ion-input>
-                </ion-item>
-              </ion-col>
-              <ion-col size="6" size-md="4">
-                <ion-item class="nvx-field">
-                  <ion-label position="stacked">{{ 'attendance.pages.notaSpesaRequestUser.tipoSpesa' | transloco }}</ion-label>
-                  <ion-select [(ngModel)]="spesa.idPar_TipoSpesa" interface="popover" [placeholder]="'attendance.pages.notaSpesaRequestUser.scegli' | transloco">
-                    @for (tipo of tipiSpesa; track tipo.id) {
-                      <ion-select-option [value]="tipo.id">{{ tipo.descrizione }}</ion-select-option>
-                    }
-                  </ion-select>
-                </ion-item>
-              </ion-col>
-              <ion-col size="12" size-md="5">
-                <ion-item class="nvx-field">
-                  <ion-label position="stacked">{{ 'attendance.pages.notaSpesaRequestUser.importo' | transloco }}</ion-label>
-                  <ion-input type="number" inputmode="decimal" min="0" step="0.01" [(ngModel)]="spesa.importo" placeholder="0,00"></ion-input>
-                </ion-item>
-              </ion-col>
-              <ion-col size="12">
-                <ion-item class="nvx-field">
-                  <ion-label position="stacked">{{ 'attendance.pages.notaSpesaRequestUser.descrizione' | transloco }}</ion-label>
-                  <ion-input [(ngModel)]="spesa.descrizione" maxlength="200" [placeholder]="'attendance.pages.notaSpesaRequestUser.descrizionePlaceholder' | transloco"></ion-input>
-                </ion-item>
-              </ion-col>
-            </ion-row>
-          </ion-grid>
+        <div formArrayName="spese">
+          @for (spesa of spese; track spesa; let i = $index) {
+            <div class="ns-spesa" [formGroupName]="i">
+              <div class="ns-spesa-titolo">
+                <strong>{{ 'attendance.pages.notaSpesaRequestUser.spesaN' | transloco: { n: i + 1 } }}</strong>
+                @if (spese.length > 1) {
+                  <ion-button fill="clear" size="small" color="danger" (click)="togliSpesa(i)">
+                    <ion-icon slot="start" name="trash-outline"></ion-icon>
+                    {{ 'attendance.pages.notaSpesaRequestUser.togli' | transloco }}
+                  </ion-button>
+                }
+              </div>
 
-          <div class="ns-allegati">
-            @for (allegato of spesa.allegati; track allegato; let j = $index) {
-              <ion-chip>
-                <ion-icon [name]="allegato.contentType === 'application/pdf' ? 'document-text-outline' : 'image-outline'"></ion-icon>
-                <ion-label [class.ns-apribile]="allegato.id" (click)="apriAllegato(allegato)">{{ allegato.nomeFile }} · {{ dimensione(allegato.dimensione) }}</ion-label>
-                <ion-icon name="close-circle" (click)="togliAllegato(spesa, j)"></ion-icon>
-              </ion-chip>
-            }
-            <ion-button fill="outline" size="small" shape="round" (click)="fileInput.click()">
-              <ion-icon slot="start" name="attach-outline"></ion-icon>
-              {{ 'attendance.pages.notaSpesaRequestUser.allega' | transloco }}
-            </ion-button>
-            <input #fileInput type="file" hidden multiple [accept]="accept" (change)="allega(spesa, $event)" />
-          </div>
+              <ion-grid class="ion-no-padding">
+                <ion-row>
+                  <ion-col size="6" size-md="3">
+                    <ion-item class="nvx-field">
+                      <ion-label position="stacked">{{ 'attendance.pages.notaSpesaRequestUser.data' | transloco }}</ion-label>
+                      <ion-input type="date" formControlName="data"></ion-input>
+                    </ion-item>
+                  </ion-col>
+                  <ion-col size="6" size-md="4">
+                    <ion-item class="nvx-field">
+                      <ion-label position="stacked">{{ 'attendance.pages.notaSpesaRequestUser.tipoSpesa' | transloco }}</ion-label>
+                      <ion-select formControlName="idPar_TipoSpesa" interface="popover" [placeholder]="'attendance.pages.notaSpesaRequestUser.scegli' | transloco">
+                        @for (tipo of tipiSpesa; track tipo.id) {
+                          <ion-select-option [value]="tipo.id">{{ tipo.descrizione }}</ion-select-option>
+                        }
+                      </ion-select>
+                    </ion-item>
+                  </ion-col>
+                  <ion-col size="12" size-md="5">
+                    <ion-item class="nvx-field">
+                      <ion-label position="stacked">{{ 'attendance.pages.notaSpesaRequestUser.importo' | transloco }}</ion-label>
+                      <ion-input type="number" inputmode="decimal" min="0" step="0.01" formControlName="importo" placeholder="0,00"></ion-input>
+                    </ion-item>
+                  </ion-col>
+                  <ion-col size="12">
+                    <ion-item class="nvx-field">
+                      <ion-label position="stacked">{{ 'attendance.pages.notaSpesaRequestUser.descrizione' | transloco }}</ion-label>
+                      <ion-input formControlName="descrizione" maxlength="200" [placeholder]="'attendance.pages.notaSpesaRequestUser.descrizionePlaceholder' | transloco"></ion-input>
+                    </ion-item>
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
+
+              @if (errore(spesa, 'data')) {
+                <ion-note color="danger">{{ 'attendance.pages.notaSpesaRequestUser.erroreData' | transloco: { n: i + 1 } }}</ion-note>
+              }
+              @if (errore(spesa, 'idPar_TipoSpesa')) {
+                <ion-note color="danger">{{ 'attendance.pages.notaSpesaRequestUser.erroreTipoSpesa' | transloco: { n: i + 1 } }}</ion-note>
+              }
+              @if (errore(spesa, 'importo')) {
+                <ion-note color="danger">{{ 'attendance.pages.notaSpesaRequestUser.erroreImporto' | transloco: { n: i + 1 } }}</ion-note>
+              }
+
+              <div class="ns-allegati">
+                @for (allegato of allegati(spesa); track allegato; let j = $index) {
+                  <ion-chip>
+                    <ion-icon [name]="allegato.contentType === 'application/pdf' ? 'document-text-outline' : 'image-outline'"></ion-icon>
+                    <ion-label [class.ns-apribile]="allegato.id" (click)="apriAllegato(allegato)">{{ allegato.nomeFile }} · {{ dimensione(allegato.dimensione) }}</ion-label>
+                    <ion-icon name="close-circle" (click)="togliAllegato(spesa, j)"></ion-icon>
+                  </ion-chip>
+                }
+                <ion-button fill="outline" size="small" shape="round" (click)="fileInput.click()">
+                  <ion-icon slot="start" name="attach-outline"></ion-icon>
+                  {{ 'attendance.pages.notaSpesaRequestUser.allega' | transloco }}
+                </ion-button>
+                <input #fileInput type="file" hidden multiple [accept]="accept" (change)="allega(spesa, $event)" />
+              </div>
+            </div>
+          }
         </div>
-      }
+
+      </form>
 
       <ion-button fill="clear" (click)="aggiungiSpesa()">
         <ion-icon slot="start" name="add-circle-outline"></ion-icon>
