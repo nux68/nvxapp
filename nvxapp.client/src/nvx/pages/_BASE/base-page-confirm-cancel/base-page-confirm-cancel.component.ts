@@ -11,6 +11,11 @@ export abstract class BasePageConfirmCancelComponent<T> implements OnInit {
 
   public buttonbar: ButtonItem[] = [];
 
+  // pulsanti standard: la pagina puo' cambiarne testo/icona/azione o mostrare una buttonbar diversa
+  // (es. dopo l'invio); l'abilitazione segue sempre la validita' del form sul pulsante di conferma
+  protected btnConfirm: ButtonItem;
+  protected btnCancel: ButtonItem;
+
   public _editModel: T | null = null;
   public _editForm: FormGroup;
 
@@ -19,16 +24,18 @@ export abstract class BasePageConfirmCancelComponent<T> implements OnInit {
               protected fb: FormBuilder) {
 
     this.buttonbar = userInterfaceService.Btn_ConfermaAnnulla;
-    this.buttonbar[0].event = this._handleButtonConfirmClick;
-    this.buttonbar[1].event = this._handleButtonCancelClick;
-   
+    this.btnConfirm = this.buttonbar[0];
+    this.btnCancel = this.buttonbar[1];
+    this.btnConfirm.event = this._handleButtonConfirmClick;
+    this.btnCancel.event = this._handleButtonCancelClick;
+
   }
-   
+
   ngOnInit() {
     this._editForm = this.EditForm;
 
     this._editForm.statusChanges.subscribe(() => {
-      this.buttonbar[0].disabled = !this._editForm.valid;
+      this.btnConfirm.disabled = !this._editForm.valid;
     });
 
   }
@@ -70,13 +77,18 @@ export abstract class BasePageConfirmCancelComponent<T> implements OnInit {
 
 
       this.SaveData(this._editModel).subscribe(res => {
-        this.navCtrl.back();
+        this.AfterSave(res);
       });
     }
 
   }
 
   ButtonCancelClickEv = (param: object) => {
+    this.navCtrl.back();
+  }
+
+  // ridefinire per non tornare indietro dopo il salvataggio (es. restare sulla pagina e mostrare l'esito)
+  AfterSave(saved: boolean): void {
     this.navCtrl.back();
   }
 

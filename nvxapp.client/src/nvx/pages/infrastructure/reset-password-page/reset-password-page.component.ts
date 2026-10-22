@@ -1,13 +1,15 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { NavController } from '@ionic/angular';
+import { Observable, map, of } from 'rxjs';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { PasswordRecoveryService } from '../../../ClientServer-Service/Infrastructure/PasswordRecovery/password-recovery.service';
 import { PasswordRecoveryResetInModel } from '../../../ClientServer-Service/Infrastructure/PasswordRecovery/Models/password-recovery-model';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { ShowcaseService } from '../../../Utility/infrastructure/showcase.service';
 import { ShowcaseContenuti } from '../../../Utility/infrastructure/showcase.model';
+import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
 import { TranslocoService } from '@jsverse/transloco';
 
 /*
@@ -20,59 +22,89 @@ import { TranslocoService } from '@jsverse/transloco';
   changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
-export class ResetPasswordPageComponent implements OnInit {
-
-  public readonly title: string;
+export class ResetPasswordPageComponent extends BasePageConfirmCancelComponent<PasswordRecoveryResetInModel> {
 
   // stesso limite del server (PasswordRecoveryService)
   public readonly passwordMinLength = 8;
 
-  public form: FormGroup;
   public errori: string[] = [];
   public linkValido = true;
   // password cambiata: utente per il login
   public userNameCambiato: string | null = null;
 
-  public buttonbar: ButtonItem[] = [];
-  private btnSalva: ButtonItem;
   private btnAccedi: ButtonItem;
   private btnRichiedi: ButtonItem;
 
-  private userId = '';
-  private token = '';
-
-  constructor(private passwordRecoveryService: PasswordRecoveryService,
+  constructor(protected override navCtrl: NavController,
+              protected override userInterfaceService: UserInterfaceService,
+              protected override fb: FormBuilder,
+              private passwordRecoveryService: PasswordRecoveryService,
               public showcaseService: ShowcaseService,
-              userInterfaceService: UserInterfaceService,
-              private fb: FormBuilder,
               private route: ActivatedRoute,
-              private navCtrl: NavController,
               private transloco: TranslocoService) {
-    this.title = this.transloco.translate('pages.resetPassword.title');
-    this.btnSalva = new ButtonItem(this.transloco.translate('pages.resetPassword.savePassword'), 'checkmark-outline', 'primary', true, () => this.salva());
+
+    super(navCtrl, userInterfaceService, fb);
+
+    this.btnConfirm.text = this.transloco.translate('pages.resetPassword.savePassword');
+    this.btnConfirm.image = 'checkmark-outline';
+    this.btnConfirm.disabled = true;
     this.btnAccedi = userInterfaceService.Btn_LogIn;
     this.btnAccedi.text = this.transloco.translate('pages.resetPassword.signIn');
     this.btnAccedi.event = () => this.navCtrl.navigateRoot('/login', { state: { userName: this.userNameCambiato ?? '' } });
     this.btnRichiedi = new ButtonItem(this.transloco.translate('pages.resetPassword.newLink'), 'mail-outline', 'primary', false, () => this.navCtrl.navigateRoot('/forgot-password'));
+  }
 
-    this.form = this.fb.group({
+  get Title(): string { return this.transloco.translate('pages.resetPassword.title'); }
+
+  get EditForm(): FormGroup {
+    return this.fb.group({
       pw: ['', [Validators.required, Validators.minLength(this.passwordMinLength)]],
       conferma: ['', [Validators.required]]
     }, { validators: ResetPasswordPageComponent.passwordUguali });
   }
 
-  ngOnInit() {
-    this.form.statusChanges.subscribe(() => {
-      this.btnSalva.disabled = !this.form.valid;
-    });
+  override ButtonCancelClickEv = (param: object) => {
+    this.navCtrl.navigateRoot('/login');
   }
 
-  ionViewWillEnter() {
-    this.userId = this.route.snapshot.queryParamMap.get('user') ?? '';
-    this.token = this.route.snapshot.queryParamMap.get('token') ?? '';
-    this.linkValido = this.userId.length > 0 && this.token.length > 0;
+  LoadData = (): Observable<PasswordRecoveryResetInModel> => {
+    const model = new PasswordRecoveryResetInModel();
+    model.userId = this.route.snapshot.queryParamMap.get('user') ?? '';
+    model.token = this.route.snapshot.queryParamMap.get('token') ?? '';
+    this.linkValido = model.userId.length > 0 && model.token.length > 0;
     this.errori = this.linkValido ? [] : [this.transloco.translate('pages.resetPassword.invalidLink')];
-    this.buttonbar = this.linkValido ? [this.btnSalva] : [this.btnRichiedi];
+    this.buttonbar = this.linkValido ? [this.btnConfirm, this.btnCancel] : [this.btnRichiedi];
+    return of(model);
+  };
+
+  SaveData = (editModel: PasswordRecoveryResetInModel): Observable<boolean> => {
+    this.errori = [];
+    const request = new GenericRequest<PasswordRecoveryResetInModel>(PasswordRecoveryResetInModel);
+    request.data.userId = editModel.userId;
+    request.data.token = editModel.token;
+    request.data.pw = editModel.pw;
+
+    this.btnConfirm.disabled = true;
+    return this.passwordRecoveryService.PasswordRecoveryReset(request).pipe(map(res => {
+      this.btnConfirm.disabled = !this._editForm.valid;
+      if (!res.success)
+        return false; // errore inatteso: lo mostra l'interceptor
+      // link scaduto o gia' usato, password non accettata: messaggi del server
+      const messaggi = res.data?.messages ?? [];
+      if (messaggi.length > 0) {
+        this.errori = messaggi.map(m => m.text);
+        this.buttonbar = [this.btnConfirm, this.btnRichiedi];
+        return false;
+      }
+      this.userNameCambiato = res.data.userName;
+      return true;
+    }));
+  };
+
+  // password cambiata: si resta sulla pagina con l'esito e il pulsante per il login
+  override AfterSave(saved: boolean): void {
+    if (saved)
+      this.buttonbar = [this.btnAccedi];
   }
 
   public get c(): ShowcaseContenuti['passwordRecovery'] {
@@ -80,42 +112,12 @@ export class ResetPasswordPageComponent implements OnInit {
   }
 
   public erroreCampo(campo: string): boolean {
-    const ctrl = this.form.controls[campo];
+    const ctrl = this._editForm.controls[campo];
     return ctrl.invalid && (ctrl.dirty || ctrl.touched);
   }
 
   public get passwordDiverse(): boolean {
-    return this.form.hasError('passwordDiverse') && this.form.controls['conferma'].dirty;
-  }
-
-  private salva(): void {
-    if (!this.form.valid)
-      return;
-
-    this.errori = [];
-    const request = new GenericRequest<PasswordRecoveryResetInModel>(PasswordRecoveryResetInModel);
-    request.data.userId = this.userId;
-    request.data.token = this.token;
-    request.data.pw = this.form.controls['pw'].value;
-
-    this.btnSalva.disabled = true;
-    this.passwordRecoveryService.PasswordRecoveryReset(request).subscribe({
-      next: res => {
-        this.btnSalva.disabled = !this.form.valid;
-        if (!res.success)
-          return; // errore inatteso: lo mostra l'interceptor
-        // link scaduto o gia' usato, password non accettata: messaggi del server
-        const messaggi = res.data?.messages ?? [];
-        if (messaggi.length > 0) {
-          this.errori = messaggi.map(m => m.text);
-          this.buttonbar = [this.btnSalva, this.btnRichiedi];
-          return;
-        }
-        this.userNameCambiato = res.data.userName;
-        this.buttonbar = [this.btnAccedi];
-      },
-      error: () => this.btnSalva.disabled = !this.form.valid
-    });
+    return this._editForm.hasError('passwordDiverse') && this._editForm.controls['conferma'].dirty;
   }
 
   private static passwordUguali(group: AbstractControl): ValidationErrors | null {

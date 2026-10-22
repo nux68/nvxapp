@@ -11,6 +11,9 @@ This document provides guidelines for contributing to the nvxapp project. Follow
 ### Frontend Development
 
 - **Component Structure**: Edit page components must inherit from `BasePageConfirmCancelComponent` to ensure a consistent user experience and behavior for confirmation and cancellation actions.
+  The rule applies to every page with a data-entry form, not only to the edit pages of a table: registration, login, password recovery, contact form, request pages, utilities (e.g. company move).
+  Dialogs (modals) with a form inherit from `BaseDialogConfirmCancelComponent`. Only pages without data entry (e.g. e-mail confirmation, logout, read-only lists and calendars) are exempt.
+  Pages whose behavior differs from "save and go back" use the extension points of the base class instead of their own buttons (see PATTERN_AND_CONVENTIONS.md, "Pagine con form che non sono di modifica").
 - **UI Consistency**: List pages should use the `app-generic-list` component to maintain a uniform look and feel across the application
 
 

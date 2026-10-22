@@ -152,6 +152,8 @@ export class ParCausaliService {
 </app-page-toolbar>
 ```
 2) La pagine di inserimento dati, per esporre i bottoni Conferma/Annulla dovranno utilizzare il componente `app-page-buttonbar`
+   e la loro classe deve ereditare da `BasePageConfirmCancelComponent` (i dialog con form da `BaseDialogConfirmCancelComponent`),
+   anche quando non sono pagine di modifica di una tabella (registrazione, login, richieste, utility): vedi PATTERN_AND_CONVENTIONS.md
 
 ```linguaggio
 <app-page-buttonbar [buttonbar]="buttonbar"></app-page-buttonbar>

@@ -1,25 +1,23 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { NavController, ToastController } from '@ionic/angular';
-import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
+import { Observable, from, map, of, switchMap } from 'rxjs';
+import { UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
 import { CompanyMoveService } from '../../../ClientServer-Service/Infrastructure/CompanyMove/company-move.service';
 import { CompanyMoveCompanyModel, CompanyMoveDealerModel, CompanyMoveFinancialAdvisorModel, CompanyMovePutInModel, CompanyMoveTreeInModel } from '../../../ClientServer-Service/Infrastructure/CompanyMove/Models/company-move-model';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
+import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
 import { TranslocoService } from '@jsverse/transloco';
 
-
-/** scelta centro -> studio (-> azienda) con i figli filtrati sul padre */
-class Selezione {
-  idDealer: number | null = null;
-  idFinancialAdvisor: number | null = null;
-  idCompany: number | null = null;
-}
 
 /*
  Pagina "Sposta azienda" (SuperUser): cambia lo studio (FinancialAdvisor) a cui appartiene un'azienda.
  Riquadro "Azienda": centro -> studio -> azienda per trovarla; scegliendo un livello si filtrano quelli sotto,
  scegliendo direttamente un figlio si impostano i padri. Riquadro "Destinazione": centro -> studio.
  La gerarchia completa arriva con una sola chiamata; i filtri sono fatti qui.
+ Campi del form: origineIdDealer / origineIdFinancialAdvisor / idCompany (azienda da spostare),
+ destinazioneIdDealer / idFinancialAdvisor (dove spostarla); idCompany e idFinancialAdvisor sono quelli inviati.
  Dopo lo spostamento si resta sulla pagina (con l'azienda gia' nella nuova posizione) per poterne spostare altre.
 */
 @Component({
@@ -29,120 +27,174 @@ class Selezione {
   changeDetection: ChangeDetectionStrategy.Eager,
   standalone: false
 })
-export class CompanyMovePageComponent {
-
-  public readonly title: string;
+export class CompanyMovePageComponent extends BasePageConfirmCancelComponent<CompanyMovePutInModel> {
 
   public dealers: CompanyMoveDealerModel[] = [];
   public financialAdvisors: CompanyMoveFinancialAdvisorModel[] = [];
   public companies: CompanyMoveCompanyModel[] = [];
   public caricamento = false;
 
-  public readonly origine = new Selezione();
-  public readonly destinazione = new Selezione();
-
   // elenchi filtrati per i combo (ricalcolati solo quando cambia una scelta)
   public origineStudi: CompanyMoveFinancialAdvisorModel[] = [];
   public origineAziende: CompanyMoveCompanyModel[] = [];
   public destinazioneStudi: CompanyMoveFinancialAdvisorModel[] = [];
 
-  public buttonbar: ButtonItem[] = [];
-  private btnConferma: ButtonItem;
-
-  constructor(private navCtrl: NavController,
+  constructor(protected override navCtrl: NavController,
+              protected override userInterfaceService: UserInterfaceService,
+              protected override fb: FormBuilder,
               private toastCtrl: ToastController,
               private companyMoveService: CompanyMoveService,
               private collectionDialogService: CollectionDialogService,
-              private transloco: TranslocoService,
-              userInterfaceService: UserInterfaceService) {
+              private transloco: TranslocoService) {
 
-    this.title = this.transloco.translate('pages.companyMove.title');
-    this.btnConferma = userInterfaceService.Btn_Conferma;
-    this.btnConferma.event = () => this.conferma();
-    const btnAnnulla = userInterfaceService.Btn_Annulla;
-    btnAnnulla.event = () => this.navCtrl.back();
-    this.buttonbar = [this.btnConferma, btnAnnulla];
-    this.aggiorna();
+    super(navCtrl, userInterfaceService, fb);
+    this.btnConfirm.disabled = true;
   }
 
-  ionViewWillEnter() {
-    this.carica();
+  get Title(): string { return this.transloco.translate('pages.companyMove.title'); }
+
+  get EditForm(): FormGroup {
+    return this.fb.group({
+      origineIdDealer: [null],
+      origineIdFinancialAdvisor: [null],
+      idCompany: [null, [Validators.required]],
+      destinazioneIdDealer: [null],
+      idFinancialAdvisor: [null, [Validators.required]],
+    }, { validators: this.destinazioneDiversa });
   }
 
-  public carica(): void {
+  /** la destinazione non puo' essere lo studio in cui l'azienda e' gia' */
+  private destinazioneDiversa = (group: AbstractControl): ValidationErrors | null => {
+    const company = this.azienda(group.get('idCompany')?.value);
+    return company && company.idFinancialAdvisor === group.get('idFinancialAdvisor')?.value ? { stessoStudio: true } : null;
+  };
+
+  LoadData = (): Observable<CompanyMovePutInModel> => {
     this.caricamento = true;
-    this.companyMoveService.CompanyMoveTree(new GenericRequest<CompanyMoveTreeInModel>(CompanyMoveTreeInModel)).subscribe({
-      next: res => {
-        if (res.success && res.data) {
-          this.dealers = res.data.dealers;
-          this.financialAdvisors = res.data.financialAdvisors;
-          this.companies = res.data.companies;
-        }
-        this.caricamento = false;
-        this.aggiorna();
-      },
-      error: () => { this.caricamento = false; }
-    });
+    return this.companyMoveService.CompanyMoveTree(new GenericRequest<CompanyMoveTreeInModel>(CompanyMoveTreeInModel)).pipe(map(res => {
+      if (res.success && res.data) {
+        this.dealers = res.data.dealers;
+        this.financialAdvisors = res.data.financialAdvisors;
+        this.companies = res.data.companies;
+      }
+      this.caricamento = false;
+      this.aggiorna();
+      // rientrando restano le scelte gia' fatte
+      return Object.assign(new CompanyMovePutInModel(), this._editForm.value);
+    }));
+  };
+
+  // con un errore il messaggio del server compare da solo (http-background-error-dialog) e le scelte restano
+  SaveData = (editModel: CompanyMovePutInModel): Observable<boolean> => {
+    const company = this.aziendaScelta;
+    if (!company || editModel.idFinancialAdvisor == null || this.stessoStudio)
+      return of(false);
+
+    const conferma = this.collectionDialogService.ConfirmCancelDialog(
+      this.transloco.translate('pages.companyMove.confirmMove', {
+        company: company.descrizione,
+        from: this.percorso(company.idFinancialAdvisor),
+        to: this.percorso(editModel.idFinancialAdvisor)
+      }));
+
+    return from(conferma).pipe(switchMap(ok => {
+      if (!ok)
+        return of(false);
+
+      const request = new GenericRequest<CompanyMovePutInModel>(CompanyMovePutInModel);
+      request.data.idCompany = company.idCompany;
+      request.data.idFinancialAdvisor = editModel.idFinancialAdvisor;
+      return this.companyMoveService.CompanyMovePut(request).pipe(map(res => {
+        if (!res.success || !res.data?.company)
+          return false;
+        company.idFinancialAdvisor = res.data.company.idFinancialAdvisor;
+        return true;
+      }));
+    }));
+  };
+
+  // spostata: si resta sulla pagina per spostarne altre, con l'azienda gia' nella nuova posizione
+  override AfterSave(saved: boolean): void {
+    const company = this.aziendaScelta;
+    if (!saved || !company)
+      return;
+    this.onOrigineAzienda(company.idCompany);
+    this._editForm.patchValue({ destinazioneIdDealer: null, idFinancialAdvisor: null });
+    this.aggiorna();
+    this.toastCtrl.create({ message: this.transloco.translate('pages.companyMove.moved', { company: company.descrizione }), duration: 3000, position: 'bottom' })
+      .then(t => t.present());
+  }
+
+  private v(campo: string): number | null {
+    return this._editForm.get(campo)?.value ?? null;
   }
 
   // ---------- azienda da spostare ----------
 
   public onOrigineDealer(id: number | null): void {
-    this.origine.idDealer = id;
-    if (this.studio(this.origine.idFinancialAdvisor)?.idDealer !== id && id != null)
-      this.origine.idFinancialAdvisor = null;
-    if (id != null && this.dealerDiAzienda(this.origine.idCompany) !== id)
-      this.origine.idCompany = null;
+    const valori: any = { origineIdDealer: id };
+    if (this.studio(this.v('origineIdFinancialAdvisor'))?.idDealer !== id && id != null)
+      valori.origineIdFinancialAdvisor = null;
+    if (id != null && this.dealerDiAzienda(this.v('idCompany')) !== id)
+      valori.idCompany = null;
+    this._editForm.patchValue(valori);
     this.aggiorna();
   }
 
   public onOrigineStudio(id: number | null): void {
-    this.origine.idFinancialAdvisor = id;
+    const valori: any = { origineIdFinancialAdvisor: id };
     if (id != null) {
-      this.origine.idDealer = this.studio(id)?.idDealer ?? this.origine.idDealer;
-      if (this.azienda(this.origine.idCompany)?.idFinancialAdvisor !== id)
-        this.origine.idCompany = null;
+      valori.origineIdDealer = this.studio(id)?.idDealer ?? this.v('origineIdDealer');
+      if (this.azienda(this.v('idCompany'))?.idFinancialAdvisor !== id)
+        valori.idCompany = null;
     }
+    this._editForm.patchValue(valori);
     this.aggiorna();
   }
 
   public onOrigineAzienda(id: number | null): void {
-    this.origine.idCompany = id;
+    const valori: any = { idCompany: id };
     const company = this.azienda(id);
     if (company) {
       // la posizione attuale dell'azienda
-      this.origine.idFinancialAdvisor = company.idFinancialAdvisor;
-      this.origine.idDealer = this.studio(company.idFinancialAdvisor)?.idDealer ?? null;
+      valori.origineIdFinancialAdvisor = company.idFinancialAdvisor;
+      valori.origineIdDealer = this.studio(company.idFinancialAdvisor)?.idDealer ?? null;
     }
+    this._editForm.patchValue(valori);
     this.aggiorna();
   }
 
   // ---------- destinazione ----------
 
   public onDestinazioneDealer(id: number | null): void {
-    this.destinazione.idDealer = id;
-    if (id != null && this.studio(this.destinazione.idFinancialAdvisor)?.idDealer !== id)
-      this.destinazione.idFinancialAdvisor = null;
+    const valori: any = { destinazioneIdDealer: id };
+    if (id != null && this.studio(this.v('idFinancialAdvisor'))?.idDealer !== id)
+      valori.idFinancialAdvisor = null;
+    this._editForm.patchValue(valori);
     this.aggiorna();
   }
 
   public onDestinazioneStudio(id: number | null): void {
-    this.destinazione.idFinancialAdvisor = id;
+    const valori: any = { idFinancialAdvisor: id };
     if (id != null)
-      this.destinazione.idDealer = this.studio(id)?.idDealer ?? this.destinazione.idDealer;
+      valori.destinazioneIdDealer = this.studio(id)?.idDealer ?? this.v('destinazioneIdDealer');
+    this._editForm.patchValue(valori);
     this.aggiorna();
   }
 
   // ---------- testi e controlli ----------
 
   public get aziendaScelta(): CompanyMoveCompanyModel | undefined {
-    return this.azienda(this.origine.idCompany);
+    return this.azienda(this.v('idCompany'));
+  }
+
+  public get idDestinazione(): number | null {
+    return this.v('idFinancialAdvisor');
   }
 
   /** la destinazione e' lo studio in cui l'azienda e' gia' */
   public get stessoStudio(): boolean {
-    const company = this.aziendaScelta;
-    return !!company && company.idFinancialAdvisor === this.destinazione.idFinancialAdvisor;
+    return this._editForm.hasError('stessoStudio');
   }
 
   public percorso(idFinancialAdvisor: number | null | undefined): string {
@@ -153,14 +205,17 @@ export class CompanyMovePageComponent {
   }
 
   private aggiorna(): void {
-    this.origineStudi = this.financialAdvisors.filter(f => this.origine.idDealer == null || f.idDealer === this.origine.idDealer);
+    const origineIdDealer = this.v('origineIdDealer');
+    const origineIdFinancialAdvisor = this.v('origineIdFinancialAdvisor');
+    const destinazioneIdDealer = this.v('destinazioneIdDealer');
+    this.origineStudi = this.financialAdvisors.filter(f => origineIdDealer == null || f.idDealer === origineIdDealer);
     this.origineAziende = this.companies.filter(c =>
-      this.origine.idFinancialAdvisor != null ? c.idFinancialAdvisor === this.origine.idFinancialAdvisor
-        : this.origine.idDealer != null ? this.studio(c.idFinancialAdvisor)?.idDealer === this.origine.idDealer
+      origineIdFinancialAdvisor != null ? c.idFinancialAdvisor === origineIdFinancialAdvisor
+        : origineIdDealer != null ? this.studio(c.idFinancialAdvisor)?.idDealer === origineIdDealer
           : true);
-    this.destinazioneStudi = this.financialAdvisors.filter(f => this.destinazione.idDealer == null || f.idDealer === this.destinazione.idDealer);
-
-    this.btnConferma.disabled = !this.aziendaScelta || this.destinazione.idFinancialAdvisor == null || this.stessoStudio;
+    this.destinazioneStudi = this.financialAdvisors.filter(f => destinazioneIdDealer == null || f.idDealer === destinazioneIdDealer);
+    // la posizione dell'azienda puo' essere cambiata: si ricontrolla la destinazione
+    this._editForm.updateValueAndValidity();
   }
 
   private studio(id: number | null | undefined): CompanyMoveFinancialAdvisorModel | undefined {
@@ -174,39 +229,5 @@ export class CompanyMovePageComponent {
   private dealerDiAzienda(idCompany: number | null): number | undefined {
     const company = this.azienda(idCompany);
     return company ? this.studio(company.idFinancialAdvisor)?.idDealer : undefined;
-  }
-
-  // ---------- salvataggio ----------
-
-  public async conferma(): Promise<void> {
-    const company = this.aziendaScelta;
-    const idDest = this.destinazione.idFinancialAdvisor;
-    if (!company || idDest == null || this.stessoStudio)
-      return;
-
-    const ok = await this.collectionDialogService.ConfirmCancelDialog(
-      this.transloco.translate('pages.companyMove.confirmMove', {
-        company: company.descrizione,
-        from: this.percorso(company.idFinancialAdvisor),
-        to: this.percorso(idDest)
-      }));
-    if (!ok)
-      return;
-
-    const request = new GenericRequest<CompanyMovePutInModel>(CompanyMovePutInModel);
-    request.data.idCompany = company.idCompany;
-    request.data.idFinancialAdvisor = idDest;
-    // con un errore il messaggio del server compare da solo (http-background-error-dialog) e le scelte restano
-    this.companyMoveService.CompanyMovePut(request).subscribe(res => {
-      if (res.success && res.data?.company) {
-        company.idFinancialAdvisor = res.data.company.idFinancialAdvisor;
-        this.onOrigineAzienda(company.idCompany);   // l'azienda ora e' nella nuova posizione
-        this.destinazione.idDealer = null;
-        this.destinazione.idFinancialAdvisor = null;
-        this.aggiorna();
-        this.toastCtrl.create({ message: this.transloco.translate('pages.companyMove.moved', { company: company.descrizione }), duration: 3000, position: 'bottom' })
-          .then(t => t.present());
-      }
-    });
   }
 }

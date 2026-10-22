@@ -1,9 +1,11 @@
-<app-page-toolbar [title]="title"
+<app-page-toolbar [title]="Title"
                   [showFilter]="false"
                   [showBreadcrumbs]="true">
 </app-page-toolbar>
 
 <ion-content [fullscreen]="true">
+
+  <form [formGroup]="_editForm">
 
   @if (caricamento) {
     <div class="nvx-move-spinner"><ion-spinner></ion-spinner></div>
@@ -18,7 +20,7 @@
 
       <ion-item>
         <ion-select [label]="'pages.companyMove.dealer' | transloco" labelPlacement="floating" interface="popover"
-                    [value]="origine.idDealer" (ionChange)="onOrigineDealer($event.detail.value)">
+                    formControlName="origineIdDealer" (ionChange)="onOrigineDealer($event.detail.value)">
           <ion-select-option [value]="null">{{ 'pages.companyMove.allDealers' | transloco }}</ion-select-option>
           @for (d of dealers; track d.idDealer) {
             <ion-select-option [value]="d.idDealer">{{ d.descrizione }}</ion-select-option>
@@ -28,7 +30,7 @@
 
       <ion-item>
         <ion-select [label]="'pages.companyMove.financialAdvisor' | transloco" labelPlacement="floating" interface="popover"
-                    [value]="origine.idFinancialAdvisor" (ionChange)="onOrigineStudio($event.detail.value)">
+                    formControlName="origineIdFinancialAdvisor" (ionChange)="onOrigineStudio($event.detail.value)">
           <ion-select-option [value]="null">{{ 'pages.companyMove.allFinancialAdvisors' | transloco }}</ion-select-option>
           @for (f of origineStudi; track f.idFinancialAdvisor) {
             <ion-select-option [value]="f.idFinancialAdvisor">{{ f.descrizione }}</ion-select-option>
@@ -38,7 +40,7 @@
 
       <ion-item>
         <ion-select [label]="'pages.companyMove.company' | transloco" labelPlacement="floating" interface="popover"
-                    [value]="origine.idCompany" (ionChange)="onOrigineAzienda($event.detail.value)">
+                    formControlName="idCompany" (ionChange)="onOrigineAzienda($event.detail.value)">
           @for (c of origineAziende; track c.idCompany) {
             <ion-select-option [value]="c.idCompany">{{ c.descrizione }}</ion-select-option>
           }
@@ -60,7 +62,7 @@
 
       <ion-item>
         <ion-select [label]="'pages.companyMove.dealer' | transloco" labelPlacement="floating" interface="popover"
-                    [value]="destinazione.idDealer" (ionChange)="onDestinazioneDealer($event.detail.value)">
+                    formControlName="destinazioneIdDealer" (ionChange)="onDestinazioneDealer($event.detail.value)">
           <ion-select-option [value]="null">{{ 'pages.companyMove.allDealers' | transloco }}</ion-select-option>
           @for (d of dealers; track d.idDealer) {
             <ion-select-option [value]="d.idDealer">{{ d.descrizione }}</ion-select-option>
@@ -70,7 +72,7 @@
 
       <ion-item>
         <ion-select [label]="'pages.companyMove.financialAdvisor' | transloco" labelPlacement="floating" interface="popover"
-                    [value]="destinazione.idFinancialAdvisor" (ionChange)="onDestinazioneStudio($event.detail.value)">
+                    formControlName="idFinancialAdvisor" (ionChange)="onDestinazioneStudio($event.detail.value)">
           @for (f of destinazioneStudi; track f.idFinancialAdvisor) {
             <ion-select-option [value]="f.idFinancialAdvisor">{{ f.descrizione }}</ion-select-option>
           }
@@ -80,11 +82,13 @@
       @if (stessoStudio) {
         <ion-note color="warning" class="nvx-move-nota">{{ 'pages.companyMove.alreadyInFinancialAdvisor' | transloco }}</ion-note>
       }
-      @else if (aziendaScelta && destinazione.idFinancialAdvisor != null) {
-        <ion-note class="nvx-move-nota">{{ 'pages.companyMove.newPosition' | transloco: { path: percorso(destinazione.idFinancialAdvisor) } }}</ion-note>
+      @else if (aziendaScelta && idDestinazione !== null) {
+        <ion-note class="nvx-move-nota">{{ 'pages.companyMove.newPosition' | transloco: { path: percorso(idDestinazione) } }}</ion-note>
       }
     </ion-card-content>
   </ion-card>
+
+  </form>
 
 </ion-content>
 

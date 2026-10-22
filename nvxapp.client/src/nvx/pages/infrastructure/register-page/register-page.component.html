@@ -1,4 +1,4 @@
-<app-page-toolbar [title]="title"
+<app-page-toolbar [title]="Title"
   [showFilter]="false"
   [showBreadcrumbs]="false">
 </app-page-toolbar>
@@ -32,7 +32,7 @@
           </div>
         </div>
       } @else {
-        <form class="nvx-sc-form" [formGroup]="form">
+        <form class="nvx-sc-form" [formGroup]="_editForm">
           <ion-item lines="full">
             <ion-input [label]="'pages.register.companyName' | transloco" labelPlacement="floating" formControlName="ragioneSociale" [maxlength]="ragioneSocialeMaxLength"></ion-input>
           </ion-item>

@@ -1,4 +1,4 @@
-<app-page-toolbar [title]="title"
+<app-page-toolbar [title]="Title"
   [showFilter]="false"
   [showBreadcrumbs]="false">
 </app-page-toolbar>
@@ -31,26 +31,22 @@
         </div>
       </div>
 
-      <div class="nvx-sc-form">
+      <form class="nvx-sc-form" [formGroup]="_editForm">
         <ion-item lines="full">
-          <ion-input [label]="'showcase.contactPage.fullName' | transloco" labelPlacement="floating" [(ngModel)]="nome"></ion-input>
+          <ion-input [label]="'showcase.contactPage.fullName' | transloco" labelPlacement="floating" formControlName="nome"></ion-input>
         </ion-item>
         <ion-item lines="full">
-          <ion-input [label]="'showcase.contactPage.email' | transloco" labelPlacement="floating" type="email" [(ngModel)]="email"></ion-input>
+          <ion-input [label]="'showcase.contactPage.email' | transloco" labelPlacement="floating" type="email" formControlName="email"></ion-input>
         </ion-item>
         <ion-item lines="full">
-          <ion-textarea [label]="'showcase.contactPage.message' | transloco" labelPlacement="floating" [autoGrow]="true" rows="4" [(ngModel)]="messaggio"></ion-textarea>
+          <ion-textarea [label]="'showcase.contactPage.message' | transloco" labelPlacement="floating" [autoGrow]="true" rows="4" formControlName="messaggio"></ion-textarea>
         </ion-item>
         <p class="nvx-sc-note">{{ c.testoModulo }}</p>
-        <div class="nvx-sc-cta">
-          <ion-button shape="round" [disabled]="!valido" (click)="invia()">
-            <ion-icon slot="start" name="send-outline"></ion-icon>
-            {{ 'common.buttons.send' | transloco }}
-          </ion-button>
-        </div>
-      </div>
+      </form>
     </section>
 
   </div>
   <app-showcase-footer></app-showcase-footer>
 </ion-content>
+
+<app-page-buttonbar [buttonbar]="buttonbar"></app-page-buttonbar>
