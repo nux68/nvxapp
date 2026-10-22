@@ -1,5 +1,7 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
+import { ReactiveFormsModule } from '@angular/forms';
+import { TranslocoTestingModule } from '@jsverse/transloco';
 import { IonCard, IonCardContent, IonContent, IonItem, IonLabel, IonNote, IonSelect, IonSelectOption, IonSpinner, provideIonicAngular } from '@ionic/angular';
 
 import { CompanyMovePageComponent } from './company-move-page.component';
@@ -12,7 +14,7 @@ describe('CompanyMovePageComponent', () => {
     TestBed.configureTestingModule({
       declarations: [ CompanyMovePageComponent ],
       providers: [provideIonicAngular(), provideHttpClient()],
-      imports: [IonCard, IonCardContent, IonContent, IonItem, IonLabel, IonNote, IonSelect, IonSelectOption, IonSpinner]
+      imports: [ReactiveFormsModule, TranslocoTestingModule.forRoot({ langs: {} }), IonCard, IonCardContent, IonContent, IonItem, IonLabel, IonNote, IonSelect, IonSelectOption, IonSpinner]
     }).compileComponents();
 
     fixture = TestBed.createComponent(CompanyMovePageComponent);
@@ -41,8 +43,8 @@ describe('CompanyMovePageComponent', () => {
 
   it('scegliendo l\'azienda si impostano studio e centro', () => {
     component.onOrigineAzienda(100);
-    expect(component.origine.idFinancialAdvisor).toBe(10);
-    expect(component.origine.idDealer).toBe(1);
+    expect(component._editForm.value.origineIdFinancialAdvisor).toBe(10);
+    expect(component._editForm.value.origineIdDealer).toBe(1);
   });
 
   it('non si conferma verso lo stesso studio', () => {
@@ -52,6 +54,6 @@ describe('CompanyMovePageComponent', () => {
     expect(component.buttonbar[0].disabled).toBeTrue();
     component.onDestinazioneStudio(20);
     expect(component.buttonbar[0].disabled).toBeFalse();
-    expect(component.destinazione.idDealer).toBe(2);
+    expect(component._editForm.value.destinazioneIdDealer).toBe(2);
   });
 });

@@ -11,6 +11,11 @@ export abstract class BaseDialogConfirmCancelComponent<T> implements OnInit {
 
   public buttonbar: ButtonItem[] = [];
 
+  // pulsanti standard: il dialog puo' cambiarne testo/icona/azione o mostrare una buttonbar diversa
+  // (es. wizard a step); l'abilitazione segue sempre la validita' del form sul pulsante di conferma
+  protected btnConfirm: ButtonItem;
+  protected btnCancel: ButtonItem;
+
   public _editModel: T | null = null;
   public _editForm: FormGroup;
 
@@ -19,16 +24,18 @@ export abstract class BaseDialogConfirmCancelComponent<T> implements OnInit {
               protected modalCtrl: ModalController) {
 
     this.buttonbar = userInterfaceService.Btn_ConfermaAnnulla;
-    this.buttonbar[0].event = this._handleButtonConfirmClick;
-    this.buttonbar[1].event = this._handleButtonCancelClick;
-   
+    this.btnConfirm = this.buttonbar[0];
+    this.btnCancel = this.buttonbar[1];
+    this.btnConfirm.event = this._handleButtonConfirmClick;
+    this.btnCancel.event = this._handleButtonCancelClick;
+
   }
-   
+
   ngOnInit() {
     this._editForm = this.EditForm;
 
     this._editForm.statusChanges.subscribe(() => {
-      this.buttonbar[0].disabled = !this._editForm.valid;
+      this.btnConfirm.disabled = !this._editForm.valid;
     });
 
   }

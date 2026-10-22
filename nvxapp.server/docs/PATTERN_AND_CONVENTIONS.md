@@ -304,6 +304,49 @@ export class MyTableAI_AEditPageComponent extends BasePageConfirmCancelComponent
 }
 ```
 
+### Pagine con form che non sono di modifica
+
+Ogni pagina con un form (registrazione, login, recupero password, modulo di contatto, invio di richieste,
+utility come lo spostamento di un'azienda) eredita da `BasePageConfirmCancelComponent`, anche se dopo la
+conferma non deve tornare indietro. I dialog con un form ereditano da `BaseDialogConfirmCancelComponent`.
+Sono escluse solo le pagine senza inserimento di dati (conferma email, logout, elenchi, calendari).
+
+Punti di estensione della classe base (non servono bottoni propri ne' `ngOnInit` per abilitarli):
+
+| Cosa | Come |
+|---|---|
+| Testo/icona dei pulsanti | `this.btnConfirm.text = ...`, `this.btnConfirm.image = ...` (anche `btnCancel`) nel costruttore |
+| Annulla diverso da "indietro" | `override ButtonCancelClickEv = (param: object) => { this.navCtrl.navigateRoot('/home'); }` |
+| Dopo il salvataggio non si torna indietro | `override AfterSave(saved: boolean): void { ... }` (default `navCtrl.back()`) |
+| Errori del server da mostrare nella pagina | `SaveData` restituisce `false` e valorizza i messaggi; `AfterSave(false)` resta sulla pagina |
+| Buttonbar che cambia (es. dopo l'invio) | si riassegna `this.buttonbar = [...]`: l'abilitazione segue sempre il form su `btnConfirm` |
+| Nessun dato da caricare | `LoadData = () => of(new Model())` (o i valori gia' scritti: `of(Object.assign(new Model(), this._editForm.value))`) |
+
+```typescript
+export class RegisterPageComponent extends BasePageConfirmCancelComponent<CompanyRegisterInModel> {
+
+    constructor(protected override navCtrl: NavController,
+                protected override userInterfaceService: UserInterfaceService,
+                protected override fb: FormBuilder,
+                private registrationService: RegistrationService) {
+        super(navCtrl, userInterfaceService, fb);
+        this.btnConfirm.text = 'Registrati';
+    }
+
+    override ButtonCancelClickEv = (param: object) => { this.navCtrl.navigateRoot('/home'); }
+
+    LoadData = (): Observable<CompanyRegisterInModel> => of(new CompanyRegisterInModel());
+
+    SaveData = (editModel: CompanyRegisterInModel): Observable<boolean> =>
+        this.registrationService.CompanyRegister(request).pipe(map(res => res.success && res.data.messages.length === 0));
+
+    // inviata la richiesta si resta sulla pagina con l'esito
+    override AfterSave(saved: boolean): void {
+        if (saved) this.buttonbar = [this.btnHome];
+    }
+}
+```
+
 ## ?? Security Pattern
 
 ### Authorization Pattern

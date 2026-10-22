@@ -1,4 +1,4 @@
-<app-page-toolbar [title]="title"
+<app-page-toolbar [title]="Title"
   [showFilter]="false"
   [showBreadcrumbs]="false">
 </app-page-toolbar>
@@ -13,10 +13,10 @@
           <h1>{{ siteName }}</h1>
           <p>{{ 'pages.login.subtitle' | transloco }}</p>
         </div>
-        <form [formGroup]="loginForm">
+        <form [formGroup]="_editForm">
           <ion-item>
             <ion-label position="floating">{{ 'pages.login.userName' | transloco }}</ion-label>
-            <ion-input type="email" formControlName="email"></ion-input>
+            <ion-input type="email" formControlName="userName"></ion-input>
           </ion-item>
           <ion-item>
             <ion-label position="floating">{{ 'pages.login.password' | transloco }}</ion-label>
