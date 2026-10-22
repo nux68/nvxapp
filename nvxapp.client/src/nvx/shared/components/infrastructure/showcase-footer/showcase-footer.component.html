@@ -1,7 +1,7 @@
 <footer class="nvx-sc-footer">
   <nav>
     @for (v of voci; track v.url) {
-      <a (click)="vai(v.url)">{{ v.title }}</a>
+      <a (click)="vai(v.url)">{{ v.title | transloco }}</a>
     }
   </nav>
   <div>© {{ anno }} {{ showcaseService.Contenuti.brand.nome }} · {{ showcaseService.Contenuti.brand.slogan }}</div>

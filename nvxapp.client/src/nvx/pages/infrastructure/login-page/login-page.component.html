@@ -11,15 +11,15 @@
         <div class="nvx-login-brand">
           <div class="nvx-login-icon"><ion-icon name="calendar-clear-outline"></ion-icon></div>
           <h1>{{ siteName }}</h1>
-          <p>Accedi con il tuo account</p>
+          <p>{{ 'pages.login.subtitle' | transloco }}</p>
         </div>
         <form [formGroup]="loginForm">
           <ion-item>
-            <ion-label position="floating">User Name</ion-label>
+            <ion-label position="floating">{{ 'pages.login.userName' | transloco }}</ion-label>
             <ion-input type="email" formControlName="email"></ion-input>
           </ion-item>
           <ion-item>
-            <ion-label position="floating">Password</ion-label>
+            <ion-label position="floating">{{ 'pages.login.password' | transloco }}</ion-label>
             <ion-input type="password" formControlName="password"></ion-input>
           </ion-item>
           @if (loginError) {
@@ -30,7 +30,7 @@
         </form>
         <!-- recupero dell'accesso (pagina dello showcase) -->
         <div class="nvx-login-forgot">
-          <a (click)="passwordDimenticata()">Password dimenticata?</a>
+          <a (click)="passwordDimenticata()">{{ 'pages.login.forgotPassword' | transloco }}</a>
         </div>
       </ion-card-content>
     </ion-card>

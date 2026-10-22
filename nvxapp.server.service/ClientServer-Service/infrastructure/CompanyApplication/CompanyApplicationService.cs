@@ -12,6 +12,7 @@ using nvxapp.server.service.ClientServer_Service.Infrastructure.Initializer.Comp
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.ServerModels;
+using nvxapp.server.data.Localization;
 
 namespace nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyApplication
 {
@@ -53,7 +54,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyAppli
                 CompanyApplicationListOutModel retVal = new CompanyApplicationListOutModel();
 
                 var company = await _companyRepository.FindByIdAsync(model.Data.IdCompany)
-                              ?? throw new Exception($"Azienda {model.Data.IdCompany} non trovata.");
+                              ?? throw new UserMessageException(InfrastructureMessages.Get("CompanyNotFoundWithId", model.Data.IdCompany));
 
                 retVal.CompanyApplication = Applications(company.Id);
 
@@ -69,10 +70,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyAppli
 
                 var application = model.Data.ApplicationType;
                 if (!Enum.IsDefined(application))
-                    throw new Exception($"Applicativo {(int)application} non valido.");
+                    throw new UserMessageException(InfrastructureMessages.Get("ApplicationInvalid", (int)application));
 
                 var company = await _companyRepository.FindByIdAsync(model.Data.IdCompany)
-                              ?? throw new Exception($"Azienda {model.Data.IdCompany} non trovata.");
+                              ?? throw new UserMessageException(InfrastructureMessages.Get("CompanyNotFoundWithId", model.Data.IdCompany));
 
                 var row = _companyApplicationRepository.FindAll(x => x.IdCompany == company.Id && x.ApplicationType == application).FirstOrDefault();
 

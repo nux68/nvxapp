@@ -7,6 +7,7 @@ import { CompanyRegisterInModel } from '../../../ClientServer-Service/Infrastruc
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { ShowcaseService } from '../../../Utility/infrastructure/showcase.service';
 import { ShowcaseContenuti } from '../../../Utility/infrastructure/showcase.model';
+import { TranslocoService } from '@jsverse/transloco';
 
 /*
  Showcase: registrazione di una nuova azienda (prima del login). Il server salva la richiesta e invia
@@ -22,7 +23,7 @@ import { ShowcaseContenuti } from '../../../Utility/infrastructure/showcase.mode
 })
 export class RegisterPageComponent implements OnInit {
 
-  public readonly title = 'Registrazione';
+  public readonly title: string;
 
   // stessi limiti del server (RegistrationService)
   public readonly passwordMinLength = 8;
@@ -43,12 +44,14 @@ export class RegisterPageComponent implements OnInit {
               public showcaseService: ShowcaseService,
               userInterfaceService: UserInterfaceService,
               private fb: FormBuilder,
-              private navCtrl: NavController) {
+              private navCtrl: NavController,
+              private transloco: TranslocoService) {
 
-    this.btnRegistrati = new ButtonItem('Registrati', 'person-add-outline', 'primary', true, () => this.registra());
+    this.title = this.transloco.translate('pages.register.title');
+    this.btnRegistrati = new ButtonItem(this.transloco.translate('pages.register.signUp'), 'person-add-outline', 'primary', true, () => this.registra());
     this.btnAnnulla = userInterfaceService.Btn_Annulla;
     this.btnAnnulla.event = () => this.navCtrl.navigateRoot('/home');
-    this.btnHome = new ButtonItem('Home', 'home-outline', 'primary', false, () => this.navCtrl.navigateRoot('/home'));
+    this.btnHome = new ButtonItem(this.transloco.translate('pages.register.home'), 'home-outline', 'primary', false, () => this.navCtrl.navigateRoot('/home'));
     this.buttonbar = [this.btnRegistrati, this.btnAnnulla];
 
     this.form = this.fb.group({

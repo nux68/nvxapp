@@ -383,3 +383,10 @@ ion-fab.nvx-fab {
     animation-duration: 0.01s;
   }
 }
+
+// pulsante della lingua: sigla al posto dell'icona
+.nvx-fab-language span {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}

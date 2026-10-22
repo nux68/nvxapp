@@ -18,15 +18,18 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.infrastructur
             _routeRegistry = routeRegistry;
         }
 
-        private static readonly IntentDefinition _intentDefinition = new()
+        // Definizione creata per istanza (handler Scoped): i testi sono nella lingua della richiesta.
+        // Keywords e nomi pagina: unione italiano + inglese, qualunque sia la lingua dell'interfaccia.
+        private readonly IntentDefinition _intentDefinition = new()
         {
             Name        = "Navigate",
-            DisplayName = "Vai a",
+            DisplayName = ChatAIMessages.Get("NavigateDisplayName"),
             Usable4Role = new List<string> { "*" },
-            Description = "naviga a una pagina o sezione dell'applicazione.",
+            Description = ChatAIMessages.Get("NavigateDescription"),
             IsNavigation = true,
             ExecutionStrategy = ExecutionStrategy.ContinueOnError,
-            Keywords    = new() { "vai", "apri", "mostra", "naviga", "portami", "visualizza", "pagina" },
+            Keywords    = new() { "vai", "apri", "mostra", "naviga", "portami", "visualizza", "pagina",
+                                  "go to", "open", "show", "navigate", "take me", "view", "page" },
             Slots       =
             [
                 new()
@@ -40,9 +43,13 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.infrastructur
                         "richieste admin, calendario hr, calendario admin, utenti reparto, " +
                         "export causali, statistiche attività, personale presente, piano ferie, " +
                         "giustificativi, causali, configurazione, orari, profili orari, modelli export, " +
-                        "commesse, clienti, reparti, sedi, attività, competenze",
-                    Question          = "A quale pagina vuoi andare?",
-                    Label             = "Pagina"
+                        "commesse, clienti, reparti, sedi, attività, competenze, " +
+                        "utenti, centri, studi, aziende, utenti centro, utenti studio, utenti azienda. " +
+                        "Pagine in inglese (se l'utente scrive in inglese restituisci il nome inglese): " +
+                        "home, dashboard, impersonate, login, logout, user, users, dealers, financial advisors, " +
+                        "companies, dealer users, financial advisor users, company users",
+                    Question          = ChatAIMessages.Get("NavigatePageQuestion"),
+                    Label             = ChatAIMessages.Get("NavigatePageLabel")
                 },
                 new()
                 {
@@ -50,8 +57,8 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.infrastructur
                     Type              = "string",
                     Required          = false,
                     PromptDescription = "parametri aggiuntivi (es. dipendente, data, tab) separati da virgola",
-                    Question          = "Hai parametri aggiuntivi? (opzionale)",
-                    Label             = "Parametri"
+                    Question          = ChatAIMessages.Get("NavigateParamsQuestion"),
+                    Label             = ChatAIMessages.Get("NavigateParamsLabel")
                 }
             ]
         };
@@ -84,7 +91,7 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.infrastructur
                 Params = navParams
             };
 
-            return Task.FromResult(CommandResult.Ok($"Navigazione verso '{route}'.", payload));
+            return Task.FromResult(CommandResult.Ok(ChatAIMessages.Get("NavigateResult", route), payload));
         }
     }
 }

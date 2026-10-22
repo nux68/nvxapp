@@ -10,6 +10,7 @@ import { map, catchError, Observable } from 'rxjs';
 import { StringHelperService } from '../../../Utility/infrastructure/string-helper.service';
 import { ParameterService } from '../../../ClientServer-Service/Infrastructure/Parameter/parameter.service';
 import { AuthService } from '../../../Utility/infrastructure/auth.service';
+import { TranslocoService } from '@jsverse/transloco';
 
 import { CompanyEditModel, CompanyGetInModel, CompanyPutInModel } from '../../../ClientServer-Service/Infrastructure/Account/Models/company-model';
 
@@ -30,13 +31,14 @@ export class CompanyWizardPageComponentComponent  extends BasePageConfirmCancelC
     private parameterService: ParameterService,
     private stringHelperService: StringHelperService,
     private authService: AuthService,
-    private accountService: AccountService) {
+    private accountService: AccountService,
+    private transloco: TranslocoService) {
 
     super(navCtrl, userInterfaceService, fb);
 
   }
 
-  get Title(): string { return "Company WizardPage"; }
+  get Title(): string { return this.transloco.translate('pages.companyWizard.title'); }
   get EditForm(): FormGroup {
     return this.fb.group({
 
@@ -89,7 +91,8 @@ export class CompanyWizardPageComponentComponent  extends BasePageConfirmCancelC
     const descrizione = this._editForm.get('descrizione')?.value;
 
     if (descrizione) {
-      this.modifiedDescription = "Attenzione per accedere a questa utenza verrano creati i seguenti user    ->   " + this.stringHelperService.removeSpecialCharacters(descrizione) + "_Admin" + " / " + this.stringHelperService.removeSpecialCharacters(descrizione) + "_PowerAdmin";
+      const userBase = this.stringHelperService.removeSpecialCharacters(descrizione);
+      this.modifiedDescription = this.transloco.translate('pages.companyWizard.usersWarning', { admin: userBase + "_Admin", powerAdmin: userBase + "_PowerAdmin" });
     } else {
       this.modifiedDescription = null;
     }

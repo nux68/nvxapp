@@ -1,5 +1,6 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { ModalController, NavController } from '@ionic/angular';
+import { TranslocoService } from '@jsverse/transloco';
 import { AccountService } from '../../../ClientServer-Service/Infrastructure/Account/account.service';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { UserNavigationService, UserDataAdditionalModel } from '../../../Utility/infrastructure/user-navigation.service';
@@ -30,9 +31,9 @@ export class UserCompanyListPageComponent {
   public userCompanyList: UserCompanyListModel[] | null = null;
   // su mobile cognome e nome vanno nella stessa riga sotto la descrizione
   public readonly columns: NvxListColumn<UserCompanyListModel>[] = [
-    { key: 'descrizione', title: 'Utente' },
-    { key: 'cognome', title: 'Cognome', mobile: 'hidden' },
-    { key: 'nome', title: 'Nome', mobile: 'hidden' },
+    { key: 'descrizione', title: this.transloco.translate('pages.userCompanyList.columnUser') },
+    { key: 'cognome', title: this.transloco.translate('pages.userCompanyList.columnSurname'), mobile: 'hidden' },
+    { key: 'nome', title: this.transloco.translate('pages.userCompanyList.columnName'), mobile: 'hidden' },
     { key: 'cognomeNome', title: '', value: x => [x.cognome, x.nome].filter(v => v).join(' '), mobile: 'subtitle', desktop: false, searchable: false },
   ];
   public readonly actions: NvxListAction<UserCompanyListModel>[];
@@ -49,12 +50,13 @@ export class UserCompanyListPageComponent {
               private mainMenuService: MainMenuService,
     private userInterfaceService: UserInterfaceService,
               private userNavigationService: UserNavigationService,
-              private modalCtrl: ModalController
+              private modalCtrl: ModalController,
+              private transloco: TranslocoService
             
             ) 
 {
 
-    this.title = 'Users';
+    this.title = this.transloco.translate('pages.userCompanyList.title');
 
     this.btnImpersona = userInterfaceService.Btn_Impersona;
     this.btnImpersona.event = this.handleButtonImpersonaClick;
@@ -77,7 +79,7 @@ export class UserCompanyListPageComponent {
 
     this.fabMenuService.fabMenuItem = [
 
-      new FabMenuItem('Elemento 1', 'add-circle-outline', () => {
+      new FabMenuItem(this.transloco.translate('pages.userCompanyList.fabAdd'), 'add-circle-outline', () => {
         // this.navCtrl.navigateForward('/' + pageName, {
         //   state: { id: 0 }
         // });

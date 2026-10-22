@@ -3,6 +3,7 @@ import { UserCronologyModel, UserNavigationService } from '../../../Utility/infr
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NavController } from '@ionic/angular';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
+import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
   selector: 'app-user-impersonate-page',
@@ -25,9 +26,10 @@ export class UserImpersonatePageComponent {
   constructor(public userNavigationService: UserNavigationService,
               private navCtrl: NavController,
               protected userInterfaceService: UserInterfaceService,
-              private fb: FormBuilder,) {
+              private fb: FormBuilder,
+              private transloco: TranslocoService) {
 
-    this.title = 'UserImpersonate';
+    this.title = this.transloco.translate('pages.userImpersonate.title');
 
     this.buttonbarGoTo = userInterfaceService.Btn_Impersona;
     this.buttonbarGoTo.event = this._handleUserGoBackClick;

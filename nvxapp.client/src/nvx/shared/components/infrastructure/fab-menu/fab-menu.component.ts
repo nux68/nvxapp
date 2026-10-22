@@ -6,7 +6,9 @@ import { GenericRequest } from '../../../../ClientServer-Service/ModelsBase/gene
 import { ChatAIInModel } from '../../../../ClientServer-Service/Infrastructure/ChatAI/Models/chat-AI-model';
 import { FabMenuService } from '../../../../Utility/infrastructure/fab-menu.service';
 import { ThemeService } from '../../../../Utility/infrastructure/theme.service';
+import { LanguageService } from '../../../../Utility/infrastructure/language.service';
 import { IonFab } from '@ionic/angular';
+import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
   selector: 'app-fab-menu',
@@ -64,8 +66,10 @@ export class FabMenuComponent implements OnInit, AfterViewInit {
     private cdRef:         ChangeDetectorRef,
     public  fabMenuService: FabMenuService,
     public  themeService:  ThemeService,
+    public  languageService: LanguageService,
     private toastCtrl:     ToastController,
-    private navCtrl:       NavController
+    private navCtrl:       NavController,
+    private transloco:     TranslocoService
   ) {
     this.fabMenuService.fabMenuItem$.subscribe(() => {
       if (this.fab) this.fab.close();
@@ -211,8 +215,11 @@ export class FabMenuComponent implements OnInit, AfterViewInit {
                 position: 'bottom'
               }).then(t => t.present());
             } else if (responseType === 'confirmation') {
-              // Modal chiusa + vocale: auto-conferma senza aprire la modal
-              setTimeout(() => this.sendSuggestion('Sì'), 600);
+              // Modal chiusa + vocale: auto-conferma senza aprire la modal.
+              // Usa il primo chip del server (conferma, gia' nella lingua dell'utente: "Sì"/"Yes");
+              // il server accetta comunque le parole di conferma italiane e inglesi.
+              const confirmText = res.data?.suggestions?.[0] ?? 'Sì';
+              setTimeout(() => this.sendSuggestion(confirmText), 600);
             } else {
               // question: la conversazione richiede input manuale → apri la modal
               this.openModal('vocal');
@@ -226,7 +233,7 @@ export class FabMenuComponent implements OnInit, AfterViewInit {
       },
       error: () => {
         this.isChatLoading = false;
-        this.pushMessage('Assistant', 'Errore di comunicazione con il server.', 'error');
+        this.pushMessage('Assistant', this.transloco.translate('components.fabMenu.serverError'), 'error');
         this.currentSessionId = null;
         this.cdRef.detectChanges();
         this.scrollToBottom();

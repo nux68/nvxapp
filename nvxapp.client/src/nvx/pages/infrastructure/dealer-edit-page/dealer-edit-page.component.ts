@@ -7,6 +7,7 @@ import { Observable, map, catchError, of } from 'rxjs';
 import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { StringHelperService } from '../../../Utility/infrastructure/string-helper.service';
+import { TranslocoService } from '@jsverse/transloco';
 
 import { AccountService } from '../../../ClientServer-Service/Infrastructure/Account/account.service';
 import { DealerEditModel, DealerGetInModel, DealerPutInModel } from '../../../ClientServer-Service/Infrastructure/Account/Models/dealer-model';
@@ -26,14 +27,15 @@ export class DealerEditPageComponent extends BasePageConfirmCancelComponent<Deal
               protected override userInterfaceService: UserInterfaceService,
               protected override fb: FormBuilder,
               private stringHelperService: StringHelperService,
-              private accountService: AccountService) {
+              private accountService: AccountService,
+              private transloco: TranslocoService) {
 
     super(navCtrl, userInterfaceService, fb);
 
   }
     
 
-  get Title(): string { return "Dealer"; }
+  get Title(): string { return this.transloco.translate('pages.dealerEdit.title'); }
   get EditForm(): FormGroup {
     return this.
       fb.group({
@@ -93,7 +95,8 @@ export class DealerEditPageComponent extends BasePageConfirmCancelComponent<Deal
     const descrizione = this._editForm.get('descrizione')?.value;
 
     if (descrizione) {
-      this.modifiedDescription = "Attenzione per accedere a questa utenza verrano creati i seguenti user    ->   " + this.stringHelperService.removeSpecialCharacters(descrizione) + "_Admin" + " / " + this.stringHelperService.removeSpecialCharacters(descrizione) + "_PowerAdmin";
+      const userBase = this.stringHelperService.removeSpecialCharacters(descrizione);
+      this.modifiedDescription = this.transloco.translate('pages.dealerEdit.usersWarning', { admin: userBase + "_Admin", powerAdmin: userBase + "_PowerAdmin" });
     } else {
       this.modifiedDescription = null;
     }

@@ -4,6 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using nvxapp.server.data.Infrastructure.Tenancy;
+using nvxapp.server.data.Localization;
+
 namespace nvxapp.server.service.Helpers
 {
     public enum HttpErrors
@@ -30,6 +33,15 @@ namespace nvxapp.server.service.Helpers
 
 
 
+
+        /// <summary>
+        /// errore previsto, con un messaggio per l'utente (gia' nella sua lingua): UserMessageException
+        /// o applicativo non attivo per l'azienda. Le altre eccezioni sono errori tecnici.
+        /// </summary>
+        public static bool IsUserMessage(this Exception e)
+        {
+            return e is UserMessageException || e is ApplicationNotActiveException;
+        }
 
         public static string ToErrorString(this HttpErrors error)
         {

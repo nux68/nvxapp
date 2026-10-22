@@ -33,6 +33,27 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.infrastructur
             ["azienda power admin"]  = "/companypoweradmin",
             ["azienda admin"]        = "/companyadmin",
             ["utenti azienda"]       = "/usercompanylist",
+
+            // nomi inglesi delle stesse pagine (l'utente puo' usare entrambe le lingue)
+            ["users"]                        = "/userlist",
+            ["user list"]                    = "/userlist",
+            ["dealers"]                      = "/dealerlist",
+            ["dealer list"]                  = "/dealerlist",
+            ["centers"]                      = "/dealerlist",
+            ["centres"]                      = "/dealerlist",
+            ["dealer power admin"]           = "/dealerpoweradmin",
+            ["dealer admin"]                 = "/dealeradmin",
+            ["dealer users"]                 = "/userdealerlist",
+            ["financial advisors"]           = "/financialadvisorlist",
+            ["financial advisor list"]       = "/financialadvisorlist",
+            ["financial advisor power admin"] = "/financialadvisorpoweradmin",
+            ["financial advisor admin"]      = "/financialadvisoradmin",
+            ["financial advisor users"]      = "/userfinancialadvisorlist",
+            ["companies"]                    = "/companylist",
+            ["company list"]                 = "/companylist",
+            ["company power admin"]          = "/companypoweradmin",
+            ["company admin"]                = "/companyadmin",
+            ["company users"]                = "/usercompanylist",
         };
 
         public IReadOnlyDictionary<string, string> Routes => _routes;

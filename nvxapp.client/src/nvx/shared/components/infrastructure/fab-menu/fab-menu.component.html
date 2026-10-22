@@ -10,9 +10,9 @@
             <ion-buttons slot="start">
               <ion-icon class="nvx-chat-header-icon" [name]="modalType === 'vocal' ? 'mic-outline' : 'sparkles-outline'"></ion-icon>
             </ion-buttons>
-            <ion-title>{{ modalType === 'vocal' ? 'Assistente vocale' : 'Assistente' }}</ion-title>
+            <ion-title>{{ (modalType === 'vocal' ? 'components.fabMenu.titleVocal' : 'components.fabMenu.title') | transloco }}</ion-title>
             <ion-buttons slot="end">
-              <ion-button (click)="cancelChat()" aria-label="Chiudi">
+              <ion-button (click)="cancelChat()" [attr.aria-label]="'common.buttons.close' | transloco">
                 <ion-icon slot="icon-only" name="close-outline"></ion-icon>
               </ion-button>
             </ion-buttons>
@@ -29,12 +29,12 @@
                 <div class="nvx-chat-empty-icon">
                   <ion-icon name="sparkles-outline"></ion-icon>
                 </div>
-                <h2>Come posso aiutarti?</h2>
+                <h2>{{ 'components.fabMenu.emptyTitle' | transloco }}</h2>
                 <p>
                   @if (modalType === 'vocal') {
-                    Attiva il microfono e dimmi cosa vuoi fare.
+                    {{ 'components.fabMenu.emptyVocal' | transloco }}
                   } @else {
-                    Scrivi una domanda o un comando, ad esempio di aprire una pagina.
+                    {{ 'components.fabMenu.emptyText' | transloco }}
                   }
                 </p>
               </div>
@@ -63,7 +63,7 @@
             @if (isChatLoading) {
               <div class="nvx-msg-row nvx-msg-assistant">
                 <div class="nvx-avatar"><ion-icon name="sparkles-outline"></ion-icon></div>
-                <div class="nvx-typing" aria-label="L'assistente sta scrivendo"><span></span><span></span><span></span></div>
+                <div class="nvx-typing" [attr.aria-label]="'components.fabMenu.typing' | transloco"><span></span><span></span><span></span></div>
               </div>
             }
 
@@ -89,7 +89,7 @@
             @if (modalType === 'text') {
               <div class="nvx-composer">
                 <ion-textarea class="chat-input" [(ngModel)]="newMessage"
-                  placeholder="Scrivi un messaggio..."
+                  [placeholder]="'components.fabMenu.messagePlaceholder' | transloco"
                   rows="1"
                   auto-grow="true"
                   (keydown.enter)="sendMessage()">
@@ -97,7 +97,7 @@
                 <ion-button class="nvx-send" shape="round"
                   (click)="sendMessage()"
                   [disabled]="isChatLoading || !newMessage.trim()"
-                  aria-label="Invia">
+                  [attr.aria-label]="'common.buttons.send' | transloco">
                   <ion-icon slot="icon-only" name="arrow-up"></ion-icon>
                 </ion-button>
               </div>
@@ -107,12 +107,12 @@
             @if (modalType === 'vocal') {
               <div class="nvx-composer nvx-composer-vocal">
                 <span class="nvx-vocal-label">
-                  {{ speechService.VoiceCommandActive ? 'Comandi vocali attivi' : 'Comandi vocali disattivati' }}
+                  {{ (speechService.VoiceCommandActive ? 'components.fabMenu.voiceActive' : 'components.fabMenu.voiceInactive') | transloco }}
                 </span>
                 <ion-button class="nvx-send" shape="round"
                   (click)="toggleVoiceCommand()"
                   [color]="speechService.VoiceCommandActive ? 'success' : 'medium'"
-                  aria-label="Microfono">
+                  [attr.aria-label]="'components.fabMenu.microphone' | transloco">
                   <ion-icon [name]="speechService.VoiceCommandActive ? 'mic' : 'mic-off'" slot="icon-only"></ion-icon>
                 </ion-button>
               </div>
@@ -145,6 +145,11 @@
       <ion-fab-button (click)="themeService.toggle()">
         <ion-icon [name]="themeService.isDark ? 'sunny-outline' : 'moon-outline'"></ion-icon>
       </ion-fab-button>
+      <!-- lingua: il pulsante indica la lingua verso cui si passa (il cambio ricarica la pagina) -->
+      <ion-fab-button class="nvx-fab-language" (click)="languageService.toggle()"
+        [attr.aria-label]="'common.language.switchTo' | transloco: { language: languageService.label(languageService.next) }">
+        <span>{{ languageService.label(languageService.next) }}</span>
+      </ion-fab-button>
     </ion-fab-list>
 
     <ion-fab-list side="start">
@@ -164,13 +169,13 @@
         <ion-icon name="mic-off-outline"></ion-icon>
       </div>
       <div class="nvx-voice-notice-text">
-        <strong>Comandi vocali disattivati</strong>
-        <span>Dopo un periodo di inattivit&agrave; il microfono si &egrave; spento.</span>
+        <strong>{{ 'components.fabMenu.voiceInactive' | transloco }}</strong>
+        <span>{{ 'components.fabMenu.voiceOffMessage' | transloco }}</span>
       </div>
       <ion-button class="nvx-voice-notice-action" fill="clear" size="small" (click)="reactivateVoiceCommand()">
-        Riattiva
+        {{ 'components.fabMenu.reactivate' | transloco }}
       </ion-button>
-      <ion-button class="nvx-voice-notice-close" fill="clear" size="small" (click)="hideVoiceOffNotice()" aria-label="Chiudi">
+      <ion-button class="nvx-voice-notice-close" fill="clear" size="small" (click)="hideVoiceOffNotice()" [attr.aria-label]="'common.buttons.close' | transloco">
         <ion-icon slot="icon-only" name="close-outline"></ion-icon>
       </ion-button>
     </div>

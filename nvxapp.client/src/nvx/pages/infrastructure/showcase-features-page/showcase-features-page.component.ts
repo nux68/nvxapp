@@ -1,4 +1,5 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { TranslocoService } from '@jsverse/transloco';
 import { NavController } from '@ionic/angular';
 import { ShowcaseService } from '../../../Utility/infrastructure/showcase.service';
 import { ShowcaseContenuti } from '../../../Utility/infrastructure/showcase.model';
@@ -12,10 +13,13 @@ import { ShowcaseContenuti } from '../../../Utility/infrastructure/showcase.mode
 })
 export class ShowcaseFeaturesPageComponent {
 
-  public readonly title = 'Funzionalità';
+  public readonly title: string;
 
   constructor(public showcaseService: ShowcaseService,
-              private navCtrl: NavController) { }
+              private navCtrl: NavController,
+              private transloco: TranslocoService) {
+    this.title = this.transloco.translate('showcase.menu.features');
+  }
 
   public get c(): ShowcaseContenuti['features'] {
     return this.showcaseService.Contenuti.features;

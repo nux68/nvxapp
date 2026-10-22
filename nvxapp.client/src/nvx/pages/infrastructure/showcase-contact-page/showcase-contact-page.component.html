@@ -15,37 +15,37 @@
       <div class="nvx-sc-info">
         <div class="nvx-sc-info-row">
           <div class="nvx-sc-card-icon"><ion-icon name="mail-outline"></ion-icon></div>
-          <div><strong>Email</strong><a [href]="'mailto:' + c.email">{{ c.email }}</a></div>
+          <div><strong>{{ 'showcase.contactPage.email' | transloco }}</strong><a [href]="'mailto:' + c.email">{{ c.email }}</a></div>
         </div>
         <div class="nvx-sc-info-row">
           <div class="nvx-sc-card-icon"><ion-icon name="call-outline"></ion-icon></div>
-          <div><strong>Telefono</strong><span>{{ c.telefono }}</span></div>
+          <div><strong>{{ 'showcase.contactPage.phone' | transloco }}</strong><span>{{ c.telefono }}</span></div>
         </div>
         <div class="nvx-sc-info-row">
           <div class="nvx-sc-card-icon"><ion-icon name="location-outline"></ion-icon></div>
-          <div><strong>Indirizzo</strong><span>{{ c.indirizzo }}</span></div>
+          <div><strong>{{ 'showcase.contactPage.address' | transloco }}</strong><span>{{ c.indirizzo }}</span></div>
         </div>
         <div class="nvx-sc-info-row">
           <div class="nvx-sc-card-icon"><ion-icon name="time-outline"></ion-icon></div>
-          <div><strong>Orari</strong><span>{{ c.orari }}</span></div>
+          <div><strong>{{ 'showcase.contactPage.hours' | transloco }}</strong><span>{{ c.orari }}</span></div>
         </div>
       </div>
 
       <div class="nvx-sc-form">
         <ion-item lines="full">
-          <ion-input label="Nome e cognome" labelPlacement="floating" [(ngModel)]="nome"></ion-input>
+          <ion-input [label]="'showcase.contactPage.fullName' | transloco" labelPlacement="floating" [(ngModel)]="nome"></ion-input>
         </ion-item>
         <ion-item lines="full">
-          <ion-input label="Email" labelPlacement="floating" type="email" [(ngModel)]="email"></ion-input>
+          <ion-input [label]="'showcase.contactPage.email' | transloco" labelPlacement="floating" type="email" [(ngModel)]="email"></ion-input>
         </ion-item>
         <ion-item lines="full">
-          <ion-textarea label="Messaggio" labelPlacement="floating" [autoGrow]="true" rows="4" [(ngModel)]="messaggio"></ion-textarea>
+          <ion-textarea [label]="'showcase.contactPage.message' | transloco" labelPlacement="floating" [autoGrow]="true" rows="4" [(ngModel)]="messaggio"></ion-textarea>
         </ion-item>
         <p class="nvx-sc-note">{{ c.testoModulo }}</p>
         <div class="nvx-sc-cta">
           <ion-button shape="round" [disabled]="!valido" (click)="invia()">
             <ion-icon slot="start" name="send-outline"></ion-icon>
-            Invia
+            {{ 'common.buttons.send' | transloco }}
           </ion-button>
         </div>
       </div>

@@ -17,7 +17,7 @@
             @for (group of groupedShowcaseMenu; track group.menuHeader.title) {
               <ion-accordion value="{{group.menuHeader.title}}" toggleIcon="chevron-down" toggleIconSlot="end">
                 <ion-item slot="header">
-                  <ion-label>{{ group.menuHeader.title }}</ion-label>
+                  <ion-label>{{ group.menuHeader.title | transloco }}</ion-label>
                 </ion-item>
                 <div class="ion-padding" slot="content" style="padding:0px;">
                   <ion-list id="nvx-list">
@@ -25,7 +25,7 @@
                       <ion-menu-toggle auto-hide="false">
                         <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
                           <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-outline'"></ion-icon>
-                          <ion-label>{{ p.title }}</ion-label>
+                          <ion-label>{{ p.title | transloco }}</ion-label>
                         </ion-item>
                       </ion-menu-toggle>
                     }
@@ -42,7 +42,7 @@
               @if (group.menuItem.length > 0) {
                 <ion-accordion value="{{group.menuHeader.title}}" toggleIcon="chevron-down" toggleIconSlot="end">
                   <ion-item slot="header">
-                    <ion-label>{{ group.menuHeader.title }}</ion-label>
+                    <ion-label>{{ group.menuHeader.title | transloco }}</ion-label>
                   </ion-item>
 
                   <div class="ion-padding" slot="content" style="padding:0px;">
@@ -54,13 +54,13 @@
                             <ion-menu-toggle auto-hide="false">
                               <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
                                 <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-outline'"></ion-icon>
-                                <ion-label>{{ p.title }}</ion-label>
+                                <ion-label>{{ p.title | transloco }}</ion-label>
                               </ion-item>
                             </ion-menu-toggle>
                           }
                         }
                         @if (p.menuType === 2) {
-                          <ion-note>{{ p.title }}</ion-note>
+                          <ion-note>{{ p.title | transloco }}</ion-note>
                         }
                       }
                     </ion-list>
@@ -77,7 +77,7 @@
               @if (group.menuItem.length > 0) {
                 <ion-accordion value="{{group.menuHeader.title}}" toggleIcon="chevron-down" toggleIconSlot="end">
                   <ion-item slot="header">
-                    <ion-label>{{ group.menuHeader.title }}</ion-label>
+                    <ion-label>{{ group.menuHeader.title | transloco }}</ion-label>
                   </ion-item>
                   <div class="ion-padding" slot="content" style="padding:0px;">
                     <ion-list id="nvx-list">
@@ -87,13 +87,13 @@
                             <ion-menu-toggle auto-hide="false">
                               <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
                                 <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-outline'"></ion-icon>
-                                <ion-label>{{ p.title }}</ion-label>
+                                <ion-label>{{ p.title | transloco }}</ion-label>
                               </ion-item>
                             </ion-menu-toggle>
                           }
                         }
                         @if (p.menuType === 2) {
-                          <ion-note>{{ p.title }}</ion-note>
+                          <ion-note>{{ p.title | transloco }}</ion-note>
                         }
                       }
                     </ion-list>
@@ -109,7 +109,7 @@
               @if (group.menuItem.length > 0) {
                 <ion-accordion value="{{group.menuHeader.title}}" toggleIcon="chevron-down" toggleIconSlot="end">
                   <ion-item slot="header">
-                    <ion-label>{{ group.menuHeader.title }}</ion-label>
+                    <ion-label>{{ group.menuHeader.title | transloco }}</ion-label>
                   </ion-item>
                   <div class="ion-padding" slot="content" style="padding:0px;">
                     <ion-list id="nvx-list">
@@ -119,13 +119,13 @@
                             <ion-menu-toggle auto-hide="false">
                               <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
                                 <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-outline'"></ion-icon>
-                                <ion-label>{{ p.title }}</ion-label>
+                                <ion-label>{{ p.title | transloco }}</ion-label>
                               </ion-item>
                             </ion-menu-toggle>
                           }
                         }
                         @if (p.menuType === 2) {
-                          <ion-note>{{ p.title }}</ion-note>
+                          <ion-note>{{ p.title | transloco }}</ion-note>
                         }
                       }
                     </ion-list>
@@ -141,7 +141,7 @@
               @if (group.menuItem.length > 0) {
                 <ion-accordion value="{{group.menuHeader.title}}" toggleIcon="chevron-down" toggleIconSlot="end">
                   <ion-item slot="header">
-                    <ion-label>{{ group.menuHeader.title }}</ion-label>
+                    <ion-label>{{ group.menuHeader.title | transloco }}</ion-label>
                   </ion-item>
                   <div class="ion-padding" slot="content" style="padding:0px;">
                     <ion-list id="nvx-list">
@@ -151,13 +151,13 @@
                             <ion-menu-toggle auto-hide="false">
                               <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
                                 <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-outline'"></ion-icon>
-                                <ion-label>{{ p.title }}</ion-label>
+                                <ion-label>{{ p.title | transloco }}</ion-label>
                               </ion-item>
                             </ion-menu-toggle>
                           }
                         }
                         @if (p.menuType === 2) {
-                          <ion-note>{{ p.title }}</ion-note>
+                          <ion-note>{{ p.title | transloco }}</ion-note>
                         }
                       }
                     </ion-list>
@@ -173,7 +173,7 @@
               @if (group.menuItem.length > 0) {
                 <ion-accordion value="{{group.menuHeader.title}}" toggleIcon="chevron-down" toggleIconSlot="end">
                   <ion-item slot="header">
-                    <ion-label>{{ group.menuHeader.title }}</ion-label>
+                    <ion-label>{{ group.menuHeader.title | transloco }}</ion-label>
                   </ion-item>
                   <div class="ion-padding" slot="content" style="padding:0px;">
                     <ion-list id="nvx-list">
@@ -183,13 +183,13 @@
                             <ion-menu-toggle auto-hide="false">
                               <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
                                 <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-outline'"></ion-icon>
-                                <ion-label>{{ p.title }}</ion-label>
+                                <ion-label>{{ p.title | transloco }}</ion-label>
                               </ion-item>
                             </ion-menu-toggle>
                           }
                         }
                         @if (p.menuType === 2) {
-                          <ion-note>{{ p.title }}</ion-note>
+                          <ion-note>{{ p.title | transloco }}</ion-note>
                         }
                       }
                     </ion-list>
@@ -205,7 +205,7 @@
               @if (group.menuItem.length > 0) {
                 <ion-accordion value="{{group.menuHeader.title}}" toggleIcon="chevron-down" toggleIconSlot="end">
                   <ion-item slot="header">
-                    <ion-label>{{ group.menuHeader.title }}</ion-label>
+                    <ion-label>{{ group.menuHeader.title | transloco }}</ion-label>
                   </ion-item>
                   <div class="ion-padding" slot="content" style="padding:0px;">
                     <ion-list id="nvx-list">
@@ -215,13 +215,13 @@
                             <ion-menu-toggle auto-hide="false">
                               <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
                                 <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-outline'"></ion-icon>
-                                <ion-label>{{ p.title }}</ion-label>
+                                <ion-label>{{ p.title | transloco }}</ion-label>
                               </ion-item>
                             </ion-menu-toggle>
                           }
                         }
                         @if (p.menuType === 2) {
-                          <ion-note>{{ p.title }}</ion-note>
+                          <ion-note>{{ p.title | transloco }}</ion-note>
                         }
                       }
                     </ion-list>

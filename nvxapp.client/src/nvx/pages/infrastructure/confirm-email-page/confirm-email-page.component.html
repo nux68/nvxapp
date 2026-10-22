@@ -15,7 +15,7 @@
         @if (inCorso) {
           <div class="ion-padding ion-text-center">
             <ion-spinner name="crescent"></ion-spinner>
-            <p class="nvx-sc-muted">Attivazione in corso…</p>
+            <p class="nvx-sc-muted">{{ 'pages.confirmEmail.inProgress' | transloco }}</p>
           </div>
         } @else if (utentiCreati) {
           <!-- azienda creata: utenti per il primo accesso -->

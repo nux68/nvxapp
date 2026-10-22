@@ -3,6 +3,7 @@ import { NvxHttpInterceptorService } from '../../../../http/http-interceptor';
 import { ButtonItem, UserInterfaceService } from '../../../../Utility/infrastructure/user-interface.service';
 import { MessageType } from '../../../../ClientServer-Service/ModelsBase/message';
 import { NavController } from '@ionic/angular';
+import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
   selector: 'app-http-background-error-dialog',
@@ -20,7 +21,8 @@ export class HttpBackgroundErrorDialogComponent  implements OnInit {
 
   constructor(protected navCtrl: NavController,
               protected userInterfaceService: UserInterfaceService,
-              public nvxHttpInterceptorService: NvxHttpInterceptorService)
+              public nvxHttpInterceptorService: NvxHttpInterceptorService,
+              private transloco: TranslocoService)
   {
     this.buttonbar.push(userInterfaceService.Btn_Chiudi);
     this.buttonbar[0].event = this._handleButtonConfirmClick;
@@ -66,15 +68,15 @@ export class HttpBackgroundErrorDialogComponent  implements OnInit {
   getDescription(msgType: MessageType): string {
     switch (msgType) {
       case MessageType.Exception:
-        return 'Errore Critico';
+        return this.transloco.translate('components.httpBackgroundErrorDialog.severityException');
       case MessageType.Error:
-        return 'Errore';
+        return this.transloco.translate('components.httpBackgroundErrorDialog.severityError');
       case MessageType.Warning:
-        return 'Avviso';
+        return this.transloco.translate('components.httpBackgroundErrorDialog.severityWarning');
       case MessageType.Information:
-        return 'Informazione';
+        return this.transloco.translate('components.httpBackgroundErrorDialog.severityInformation');
       default:
-        return 'Sconosciuto';
+        return this.transloco.translate('components.httpBackgroundErrorDialog.severityUnknown');
     }
   }
 

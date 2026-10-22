@@ -127,7 +127,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                     return new ChatAIOutModel
                     {
                         SessionId = freshSession.SessionId,
-                        Responce = "La sessione precedente è scaduta. Puoi iniziare con un nuovo comando.",
+                        Responce = ChatAIMessages.Get("SessionExpired"),
                         ResponseType = "result",
                         Suggestions = BuildIntentSuggestions()
                     };
@@ -144,7 +144,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                     return new ChatAIOutModel
                     {
                         SessionId = resetSession.SessionId,
-                        Responce = "Operazione annullata. Puoi iniziare con un nuovo comando.",
+                        Responce = ChatAIMessages.Get("ResetDone"),
                         ResponseType = "result",
                         Suggestions = BuildIntentSuggestions()
                     };
@@ -187,7 +187,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                     if (allIntentsHaveKeywords && !anyKeywordMatch)
                     {
                         DeleteSession(session.SessionId);
-                        return BuildErrorResponse(session, "Non ho capito la richiesta. Puoi ripetere?", BuildIntentSuggestions());
+                        return BuildErrorResponse(session, ChatAIMessages.Get("NotUnderstood"), BuildIntentSuggestions());
                     }
 
                     var compatibleIntent = GetMatchingIntentNames(userMessage, _intentCatalog.Intents);
@@ -208,7 +208,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                     if (plan == null || plan.Actions.Count == 0)
                     {
                         DeleteSession(session.SessionId);
-                        return BuildErrorResponse(session, "LLM: non ho capito la richiesta. Puoi ripetere?", BuildIntentSuggestions());
+                        return BuildErrorResponse(session, ChatAIMessages.Get("LlmNotUnderstood"), BuildIntentSuggestions());
                     }
 
 
@@ -237,7 +237,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                     if (session.ActionQueue.Count == 0)
                     {
                         DeleteSession(session.SessionId);
-                        return BuildErrorResponse(session, "Non ho capito la richiesta. Puoi ripetere?", BuildIntentSuggestions());
+                        return BuildErrorResponse(session, ChatAIMessages.Get("NotUnderstood"), BuildIntentSuggestions());
                     }
 
                     session.CurrentActionIndex = 0;
@@ -282,7 +282,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 if (current == null)
                 {
                     DeleteSession(session.SessionId);
-                    return BuildErrorResponse(session, "Errore interno nel piano di esecuzione.", BuildIntentSuggestions());
+                    return BuildErrorResponse(session, ChatAIMessages.Get("PlanInternalError"), BuildIntentSuggestions());
                 }
 
                 // Valida i valori degli slot dell'azione corrente
@@ -406,9 +406,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
 
         private async Task<ChatAIOutModel> HandleConfirmation(ChatSession session, string userMessage)
         {
-            var lower = userMessage.Trim().ToLower();
-            bool confirmed = lower is "sì" or "si" or "confermo" or "ok" or "yes";
-            bool cancelled = lower is "no" or "annulla" or "cancel";
+            // parole accettate in italiano e in inglese, qualunque sia la lingua dell'interfaccia
+            bool confirmed = ChatAIKeywords.IsExactMatch(userMessage, ChatAIKeywords.Confirm);
+            bool cancelled = !confirmed && ChatAIKeywords.IsExactMatch(userMessage, ChatAIKeywords.Cancel);
 
             session.AddToHistory("user", userMessage);
 
@@ -449,43 +449,29 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 return new ChatAIOutModel
                 {
                     SessionId = freshSession.SessionId,
-                    Responce = "Operazione annullata.",
+                    Responce = ChatAIMessages.Get("OperationCancelled"),
                     ResponseType = "result",
                     Suggestions = BuildIntentSuggestions()
                 };
             }
 
             // Non è né sì né no — chiedi chiarimento
-            var clarification = "Rispondere con 'sì' per confermare o 'no' per annullare.";
+            var clarification = ChatAIMessages.Get("ConfirmClarification");
             session.State = SessionState.Collecting;
             session.AddToHistory("assistant", clarification);
-            return BuildQuestionResponse(session, clarification, new List<string> { "Sì", "No" });
+            return BuildQuestionResponse(session, clarification, BuildYesNoSuggestions());
         }
 
         // ---------------------------------------------------------------------------
         // Reset — riconosce comandi di interruzione esplicita
         // ---------------------------------------------------------------------------
 
-        private static readonly string[] _resetKeywords =
-        [
-            "annulla", "reset", "ricomincia", "riparti", "nuovo", "stop",
-            "esci", "basta", "restart", "cancella", "abbandona", "interrompi"
-        ];
+        // Parole chiave (italiano + inglese) in ChatAIKeywords.Reset / ChatAIKeywords.Help
+        private static bool IsResetCommand(string text) =>
+            ChatAIKeywords.ContainsAny(text, ChatAIKeywords.Reset);
 
-        private static bool IsResetCommand(string text)
-        {
-            var t = text.Trim().ToLower();
-            return _resetKeywords.Any(k => t.Contains(k));
-        }
-
-        private static readonly string[] _helpKeywords =
-            ["aiuto", "help", "comandi", "menu", "cosa sai fare", "cosa puoi fare"];
-
-        private static bool IsHelpCommand(string text)
-        {
-            var t = text.Trim().ToLower();
-            return _helpKeywords.Any(k => t.Contains(k));
-        }
+        private static bool IsHelpCommand(string text) =>
+            ChatAIKeywords.ContainsAny(text, ChatAIKeywords.Help);
 
         // ---------------------------------------------------------------------------
         // Chiamata LLM — primo turno: estrae il piano multi-azione
@@ -967,13 +953,13 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             var slotDef = FindSlotDefinition(intentName, slotName);
             var question = !string.IsNullOrEmpty(slotDef?.Question)
                 ? slotDef.Question
-                : $"Puoi specificare '{slotName}'?";
+                : ChatAIMessages.Get("SlotQuestionDefault", slotName);
 
             // Costruisce il contesto: titolo operazione (opzionale) + slot già raccolti
             var contextParts = new List<string>();
 
             if (!string.IsNullOrEmpty(actionTitle))
-                contextParts.Add($"Operazione '{actionTitle}'");
+                contextParts.Add(ChatAIMessages.Get("OperationTitle", actionTitle));
 
             if (action != null && action.Slots.Count > 0)
             {
@@ -1016,7 +1002,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             {
                 Log.Error(ex, "[ChatAI] ExecuteCommandAsync fallita. Intent={Intent} Slots={Slots}",
                     action.Intent, System.Text.Json.JsonSerializer.Serialize(action.Slots));
-                return CommandResult.Fail("Errore durante l'esecuzione del comando. Riprova.");
+                return CommandResult.Fail(ChatAIMessages.Get("CommandExecutionError"));
             }
         }
 
@@ -1024,7 +1010,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         private async Task<CommandResult> ExecuteCommandAsync(ChatSession session)
         {
             var current = session.CurrentAction;
-            if (current == null) return CommandResult.Fail("Nessuna azione corrente.");
+            if (current == null) return CommandResult.Fail(ChatAIMessages.Get("NoCurrentAction"));
             return await ExecuteCommandAsync(current);
         }
 
@@ -1095,7 +1081,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         private string BuildPlanConfirmationSummary(ChatSession session)
         {
             var sb = new StringBuilder();
-            sb.AppendLine("Riepilogo operazioni:");
+            sb.AppendLine(ChatAIMessages.Get("PlanSummaryTitle"));
             sb.AppendLine();
 
             int idx = 1;
@@ -1131,7 +1117,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 idx++;
             }
 
-            sb.AppendLine("Confermi? (sì / no)");
+            sb.AppendLine(ChatAIMessages.Get("PlanConfirmQuestion"));
             return sb.ToString();
         }
 
@@ -1173,8 +1159,14 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 SessionId = session.SessionId,
                 Responce = message,
                 ResponseType = "confirmation",
-                Suggestions = new List<string> { "Sì", "No" }
+                Suggestions = BuildYesNoSuggestions()
             };
+
+        // Chip di conferma nella lingua dell'utente: il testo viene rimandato al server,
+        // che riconosce si/yes/ok/no... in entrambe le lingue (ChatAIKeywords).
+        // Il primo chip e' sempre la conferma (il client lo usa per l'auto-conferma vocale).
+        private static List<string> BuildYesNoSuggestions() =>
+            new() { ChatAIMessages.Get("SuggestionYes"), ChatAIMessages.Get("SuggestionNo") };
 
         private ChatAIOutModel BuildErrorResponse(ChatSession session, string message,
             List<string>? suggestions = null) =>

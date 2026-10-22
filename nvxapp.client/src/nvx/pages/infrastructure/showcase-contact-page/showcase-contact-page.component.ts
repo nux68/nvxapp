@@ -1,4 +1,5 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { TranslocoService } from '@jsverse/transloco';
 import { ShowcaseService } from '../../../Utility/infrastructure/showcase.service';
 import { ShowcaseContenuti } from '../../../Utility/infrastructure/showcase.model';
 
@@ -12,13 +13,16 @@ import { ShowcaseContenuti } from '../../../Utility/infrastructure/showcase.mode
 })
 export class ShowcaseContactPageComponent {
 
-  public readonly title = 'Contatti';
+  public readonly title: string;
 
   public nome = '';
   public email = '';
   public messaggio = '';
 
-  constructor(public showcaseService: ShowcaseService) { }
+  constructor(public showcaseService: ShowcaseService,
+              private transloco: TranslocoService) {
+    this.title = this.transloco.translate('showcase.menu.contact');
+  }
 
   public get c(): ShowcaseContenuti['contact'] {
     return this.showcaseService.Contenuti.contact;
@@ -31,7 +35,7 @@ export class ShowcaseContactPageComponent {
   public invia(): void {
     if (!this.valido)
       return;
-    const oggetto = `Richiesta informazioni da ${this.nome.trim()}`;
+    const oggetto = this.transloco.translate('showcase.contactPage.mailSubject', { name: this.nome.trim() });
     const testo = `${this.messaggio.trim()}\n\n${this.nome.trim()} - ${this.email.trim()}`;
     window.location.href = `mailto:${this.c.email}?subject=${encodeURIComponent(oggetto)}&body=${encodeURIComponent(testo)}`;
   }

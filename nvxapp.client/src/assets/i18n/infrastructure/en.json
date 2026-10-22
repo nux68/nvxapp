@@ -1,0 +1,525 @@
+{
+  "common": {
+    "buttons": {
+      "confirm": "Confirm",
+      "cancel": "Cancel",
+      "edit": "Edit",
+      "impersonate": "Impersonate",
+      "close": "Close",
+      "login": "Login",
+      "logout": "Logout",
+      "send": "Send",
+      "clock": "Clock",
+      "approve": "Approve",
+      "reject": "Reject",
+      "delete": "Delete",
+      "execute": "Run",
+      "add": "Add"
+    },
+    "dialog": {
+      "confirmTitle": "Confirm Operation",
+      "confirmMessage": "Are you sure you want to proceed?"
+    },
+    "language": {
+      "switchTo": "Switch to: {{language}}"
+    },
+    "validation": {
+      "passwordMismatch": "Passwords do not match.",
+      "passwordRequired": "Password is required.",
+      "confirmPasswordRequired": "Password confirmation is required.",
+      "emailRequired": "Email is required.",
+      "emailInvalid": "Enter a valid email.",
+      "userNameRequired": "UserName is required.",
+      "userNameMaxLength": "UserName cannot exceed {{max}} characters.",
+      "roleRequired": "Role is required.",
+      "descriptionRequired": "Description is required.",
+      "descriptionMaxLength": "Description cannot exceed {{max}} characters."
+    }
+  },
+  "menu": {
+    "superUser": "SuperUser",
+    "superUserPage": "SuperUser Page",
+    "dealers": "Dealers",
+    "users": "Users",
+    "companyMove": "Move company",
+    "admin": "Admin",
+    "powerAdmin": "PowerAdmin",
+    "dealer": "Dealer",
+    "dealerPowerAdmin": "Dealer Power Admin",
+    "dealerAdmin": "Dealer Admin",
+    "dealerUsers": "Dealer users",
+    "financialAdvisors": "Financial Advisors",
+    "financialAdvisor": "Financial Advisor",
+    "financialAdvisorPowerAdmin": "Financial Advisor Power Admin",
+    "financialAdvisorAdmin": "Financial Advisor Admin",
+    "financialAdvisorUsers": "Financial Advisor users",
+    "companies": "Companies",
+    "general": "General",
+    "companyPowerAdmin": "Company Power Admin",
+    "companyAdmin": "Company Admin",
+    "menuRestriction": "User menus",
+    "access": "Access",
+    "impersonate": "Impersonate",
+    "dashboard": "Dashboard",
+    "login": "Login",
+    "logout": "Logout",
+    "userData": "User Data"
+  },
+  "showcase": {
+    "menu": {
+      "discover": "Discover",
+      "home": "Home",
+      "features": "Features",
+      "pricing": "Pricing",
+      "about": "About us",
+      "contact": "Contact",
+      "reservedArea": "Members area",
+      "signIn": "Sign in",
+      "register": "Sign up",
+      "forgotPassword": "Forgot password"
+    },
+    "brand": {
+      "slogan": "The cloud platform that helps your company work better."
+    },
+    "home": {
+      "etichetta": "Cloud business software",
+      "titolo": "All your company’s work, in one place",
+      "sottotitolo": "{{siteName}} brings users, processes and data together in an easy-to-use platform, available on computers, tablets and smartphones.",
+      "ctaPrimaria": "Try it free",
+      "ctaSecondaria": "Explore the features",
+      "punti": {
+        "disponibile": {
+          "title": "Always available",
+          "text": "Nothing to install: sign in from your browser wherever you are, with data always up to date."
+        },
+        "sicuro": {
+          "title": "Secure",
+          "text": "Each company’s data is kept separate and every user sees only what they need."
+        },
+        "team": {
+          "title": "Built for teams",
+          "text": "Roles and permissions for administrators and staff, with a tailored menu for each."
+        },
+        "assistente": {
+          "title": "Built-in assistant",
+          "text": "Ask the assistant what to do: it guides you through pages and features."
+        }
+      },
+      "passiTitolo": "Get started in three steps",
+      "passi": {
+        "registrati": {
+          "title": "Sign up",
+          "text": "Create your company in a minute, no credit card required."
+        },
+        "configura": {
+          "title": "Set up",
+          "text": "Add your staff and choose what each of them can see."
+        },
+        "lavora": {
+          "title": "Work",
+          "text": "Use the platform every day, from any device."
+        }
+      },
+      "chiusuraTitolo": "Ready to start?",
+      "chiusuraTesto": "Register your company and try the platform with your staff."
+    },
+    "features": {
+      "titolo": "Features",
+      "sottotitolo": "The core tools to organise your company, ready from your first sign-in.",
+      "sezioni": {
+        "aziende": {
+          "title": "Company management",
+          "text": "Company and user records, with administrators and staff."
+        },
+        "ruoli": {
+          "title": "Roles and access",
+          "text": "Each role sees only its own pages; the administrator decides which menu items to show."
+        },
+        "struttura": {
+          "title": "Firms and dealers",
+          "text": "A multi-level structure: dealers, professional firms and client companies."
+        },
+        "impersonate": {
+          "title": "Sign in on behalf of",
+          "text": "Support staff can sign in on behalf of a user and switch back with one click."
+        },
+        "notifiche": {
+          "title": "Real-time notifications",
+          "text": "Alerts and progress of long-running jobs, without reloading the page."
+        },
+        "dispositivi": {
+          "title": "On every device",
+          "text": "One interface for computers, tablets and smartphones, with light and dark themes."
+        }
+      }
+    },
+    "pricing": {
+      "titolo": "Pricing",
+      "sottotitolo": "Simple plans with no commitment: start free and grow when you need to.",
+      "periodoMese": "per month",
+      "caratteristiche": {
+        "tutteLeFunzioni": "All features",
+        "assistenzaEmail": "Email support"
+      },
+      "piani": {
+        "prova": {
+          "nome": "Trial",
+          "periodo": "for 30 days",
+          "descrizione": "To get to know the platform.",
+          "utenti": "Up to 5 users",
+          "cta": "Start the trial"
+        },
+        "standard": {
+          "descrizione": "For small companies.",
+          "utenti": "Up to 25 users",
+          "assistenza": "Email and phone support",
+          "cta": "Choose Standard"
+        },
+        "professional": {
+          "descrizione": "For larger companies and firms.",
+          "utenti": "Unlimited users",
+          "assistenza": "Priority support",
+          "aziende": "Multiple companies managed",
+          "cta": "Choose Professional"
+        }
+      },
+      "nota": "Prices exclude VAT. You can change plan or cancel at any time.",
+      "domande": {
+        "carta": {
+          "domanda": "Do I need a credit card for the trial?",
+          "risposta": "No: the trial is free with no commitment."
+        },
+        "utenti": {
+          "domanda": "Can I add users later?",
+          "risposta": "Yes, at any time; if you exceed your plan’s limits we will suggest the right one."
+        },
+        "dati": {
+          "domanda": "Where is my data stored?",
+          "risposta": "In European data centres, kept separate for each company and backed up daily."
+        }
+      }
+    },
+    "about": {
+      "titolo": "About us",
+      "sottotitolo": "A team that has been building business software for years, alongside companies and professionals.",
+      "paragrafo1": "We believe business software should be simple: a few clear pages that do their job well.",
+      "paragrafo2": "That is why we develop {{siteName}} together with the people who use it every day, adding features based on real needs.",
+      "valori": {
+        "semplicita": {
+          "title": "Simplicity",
+          "text": "Every feature must be clear the first time you use it."
+        },
+        "affidabilita": {
+          "title": "Reliability",
+          "text": "Customer data is safe and always available."
+        },
+        "vicinanza": {
+          "title": "Closeness",
+          "text": "We answer questions and listen to suggestions."
+        }
+      }
+    },
+    "contact": {
+      "titolo": "Contact",
+      "sottotitolo": "Got questions or want a demo? Write to us and we will reply within one working day.",
+      "orari": "Monday - Friday, 9:00 - 18:00",
+      "testoModulo": "Fill in the form: your email program will open with the message ready to send."
+    },
+    "register": {
+      "titolo": "Register your company",
+      "sottotitolo": "Create your company account and start using the platform right away.",
+      "vantaggi": {
+        "gratis": "Free for 30 days",
+        "nessunaCarta": "No credit card",
+        "attiva": "Up and running in a minute"
+      },
+      "condizioni": "I accept the terms of service and the privacy policy",
+      "inviata": "We have sent you an email with a link to activate your account: open it to complete your registration.",
+      "confermaTitolo": "Account activation",
+      "esito": "Your company is ready. These are the users created: sign in with the password you chose."
+    },
+    "passwordRecovery": {
+      "titolo": "Forgot password",
+      "sottotitolo": "Enter your username: we will send a link to choose a new one to the user’s email.",
+      "inviata": "If the username exists, a link to reset the password has been sent to the associated email.",
+      "resetTitolo": "New password",
+      "resetSottotitolo": "Choose the new password for your user.",
+      "resetFatto": "Your password has been changed: sign in with the new one."
+    },
+    "aboutPage": {
+      "bandTitle": "Let's talk",
+      "bandText": "Tell us how you work: we will show you how the platform can help.",
+      "contactUs": "Contact us"
+    },
+    "featuresPage": {
+      "seePrices": "See pricing"
+    },
+    "pricingPage": {
+      "faqTitle": "Frequently asked questions"
+    },
+    "contactPage": {
+      "email": "Email",
+      "phone": "Phone",
+      "address": "Address",
+      "hours": "Opening hours",
+      "fullName": "Full name",
+      "message": "Message",
+      "mailSubject": "Information request from {{name}}"
+    }
+  },
+  "pages": {
+    "login": {
+      "title": "Login",
+      "subtitle": "Sign in with your account",
+      "userName": "User Name",
+      "password": "Password",
+      "forgotPassword": "Forgot your password?"
+    },
+    "logout": {
+      "title": "Logout",
+      "question": "Do you want to leave the application?"
+    },
+    "register": {
+      "title": "Registration",
+      "checkMail": "Check your inbox",
+      "sentToPrefix": "Email sent to",
+      "sentToSuffix": ". The link is valid for {{hours}} hours; if you can't find it, check your spam folder too.",
+      "companyName": "Company name",
+      "companyNameError": "At least 3 letters or digits, at most {{max}} characters.",
+      "userPrefixHint": "Login users will start with «{{name}}_»",
+      "email": "Email",
+      "emailInvalid": "Invalid email address.",
+      "password": "Password",
+      "passwordMinLength": "At least {{min}} characters.",
+      "confirmPassword": "Confirm password",
+      "passwordMismatch": "Passwords do not match.",
+      "signUp": "Sign up",
+      "home": "Home"
+    },
+    "forgotPassword": {
+      "title": "Forgot password",
+      "checkMail": "Check your inbox",
+      "linkValidity": "The link is valid for {{hours}} hours and can be used only once; if you can't find the email, check your spam folder too.",
+      "userName": "Username",
+      "sendLink": "Send link",
+      "signIn": "Sign in"
+    },
+    "resetPassword": {
+      "title": "New password",
+      "newPassword": "New password",
+      "passwordMinLength": "At least {{min}} characters.",
+      "confirmPassword": "Confirm password",
+      "passwordMismatch": "Passwords do not match.",
+      "savePassword": "Save password",
+      "signIn": "Sign in",
+      "newLink": "New link",
+      "invalidLink": "Invalid link: please request password recovery again."
+    },
+    "confirmEmail": {
+      "title": "Activation",
+      "inProgress": "Activating…",
+      "signIn": "Sign in",
+      "signUp": "Sign up",
+      "invalidLink": "Invalid confirmation link: please sign up again."
+    },
+    "dashboard": {
+      "title": "Dashboard",
+      "greeting": "Hi, {{name}}",
+      "subtitle": "What would you like to do today?",
+      "askAssistant": "Ask the assistant…",
+      "hint": "or choose an item from the menu"
+    },
+    "userImpersonate": {
+      "title": "Impersonate user"
+    },
+    "companyEdit": {
+      "title": "Edit company",
+      "info": "Info",
+      "description": "Description",
+      "usersWarning": "Warning: to access this account the following users will be created    ->   {{admin}} / {{powerAdmin}}",
+      "email": "Email",
+      "password": "Password",
+      "confirmPassword": "Confirm Password",
+      "disabled": "Disabled",
+      "disabledNote": "Disabled rows do not appear in lists, unless \"Also show disabled\" is selected.",
+      "applications": "Applications",
+      "applicationsNote": "On save, the ticked applications are activated (and, in multi-tenant mode, their schema is created if missing). Unticking blocks access, but the data is kept."
+    },
+    "companyWizard": {
+      "title": "Company wizard",
+      "info": "Info",
+      "description": "Description",
+      "usersWarning": "Warning: to access this account the following users will be created    ->   {{admin}} / {{powerAdmin}}"
+    },
+    "dealerEdit": {
+      "title": "Dealer",
+      "info": "Info",
+      "description": "Description",
+      "usersWarning": "Warning: to access this account the following users will be created    ->   {{admin}} / {{powerAdmin}}",
+      "email": "Email",
+      "password": "Password",
+      "confirmPassword": "Confirm Password",
+      "disabled": "Disabled",
+      "disabledNote": "Disabled rows do not appear in lists, unless \"Also show disabled\" is selected."
+    },
+    "financialAdvisorEdit": {
+      "title": "Financial Advisor",
+      "info": "Info",
+      "description": "Description",
+      "usersWarning": "Warning: to access this account the following users will be created    ->   {{admin}} / {{powerAdmin}}",
+      "email": "Email",
+      "password": "Password",
+      "confirmPassword": "Confirm Password",
+      "disabled": "Disabled",
+      "disabledNote": "Disabled rows do not appear in lists, unless \"Also show disabled\" is selected."
+    },
+    "companyList": {
+      "title": "Companies",
+      "columnCompany": "Company",
+      "showDisabled": "Show disabled"
+    },
+    "dealerList": {
+      "title": "Dealers",
+      "columnDealer": "Dealer",
+      "showDisabled": "Show disabled"
+    },
+    "financialAdvisorList": {
+      "title": "Financial Advisors",
+      "columnFinancialAdvisor": "Financial Advisor",
+      "showDisabled": "Show disabled"
+    },
+    "companyMove": {
+      "title": "Move company",
+      "companyToMove": "Company to move",
+      "dealer": "Dealer",
+      "financialAdvisor": "Financial Advisor",
+      "company": "Company",
+      "allDealers": "All dealers",
+      "allFinancialAdvisors": "All financial advisors",
+      "currentPosition": "Current position: {{path}}",
+      "moveUnder": "Move under",
+      "alreadyInFinancialAdvisor": "The company already belongs to this financial advisor.",
+      "newPosition": "New position: {{path}}",
+      "confirmMove": "Move the company \"{{company}}\" from {{from}} to {{to}}? Users of the previous financial advisor will no longer see the company.",
+      "moved": "Company \"{{company}}\" moved."
+    },
+    "companyMenuRestriction": {
+      "title": "User menu",
+      "roleAdmin": "Admin",
+      "roleUser": "User",
+      "note": "Menu items visible to the company's Admin and User users. They can only be removed: the switch is shown only where the item is available for that role. Removed pages cannot be reached even by typing the address. Items added in the future are visible until they are removed.",
+      "noItems": "No configurable menu items.",
+      "notApplicable": "Item not available for this role"
+    },
+    "userCompanyEdit": {
+      "title": "Company user",
+      "confirmPassword": "Confirm Password",
+      "role": "Role",
+      "rolesAriaLabel": "Roles",
+      "disabled": "Disabled",
+      "disabledNote": "Disabled rows do not appear in lists unless \"Show disabled too\" is enabled."
+    },
+    "userCompanyWizard": {
+      "title": "Company user wizard",
+      "confirmPassword": "Confirm Password",
+      "role": "Role",
+      "rolesAriaLabel": "Roles"
+    },
+    "userDealerEdit": {
+      "title": "Dealer user",
+      "confirmPassword": "Confirm Password",
+      "role": "Role",
+      "disabled": "Disabled",
+      "disabledNote": "Disabled rows do not appear in lists unless \"Show disabled too\" is enabled."
+    },
+    "userEdit": {
+      "title": "User",
+      "confirmPassword": "Confirm Password",
+      "role": "Role"
+    },
+    "userFinancialAdvisorEdit": {
+      "title": "Financial Advisor user",
+      "confirmPassword": "Confirm Password",
+      "role": "Role",
+      "disabled": "Disabled",
+      "disabledNote": "Disabled rows do not appear in lists unless \"Show disabled too\" is enabled."
+    },
+    "userCompanyList": {
+      "title": "Users",
+      "columnUser": "User",
+      "fabAdd": "Item 1",
+      "columnSurname": "Surname",
+      "columnName": "Name",
+      "showDisabled": "Show disabled"
+    },
+    "userDealerList": {
+      "title": "Dealer users",
+      "columnUser": "User",
+      "fabAdd": "Item 1",
+      "showDisabled": "Show disabled"
+    },
+    "userList": {
+      "title": "Users",
+      "columnUser": "User",
+      "fabAdd": "Item 1"
+    },
+    "userFinancialAdvisorList": {
+      "title": "Financial Advisor users",
+      "columnUser": "User",
+      "fabAdd": "Item 1",
+      "showDisabled": "Show disabled"
+    }
+  },
+  "components": {
+    "addCompany": {
+      "title": "New company",
+      "description": "Description",
+      "email": "Email",
+      "password": "Password",
+      "confirmPassword": "Confirm Password"
+    },
+    "addUserCompany": {
+      "title": "New user",
+      "userName": "UserName",
+      "email": "Email",
+      "password": "Password",
+      "confirmPassword": "Confirm Password",
+      "role": "Role",
+      "roles": "Roles"
+    },
+    "fabMenu": {
+      "title": "Assistant",
+      "titleVocal": "Voice assistant",
+      "emptyTitle": "How can I help you?",
+      "emptyVocal": "Turn on the microphone and tell me what you want to do.",
+      "emptyText": "Type a question or a command, for example to open a page.",
+      "typing": "The assistant is typing",
+      "messagePlaceholder": "Type a message...",
+      "voiceActive": "Voice commands on",
+      "voiceInactive": "Voice commands off",
+      "microphone": "Microphone",
+      "voiceOffMessage": "The microphone turned off after a period of inactivity.",
+      "reactivate": "Turn back on",
+      "serverError": "Error communicating with the server."
+    },
+    "httpBackgroundErrorDialog": {
+      "title": "An error occurred",
+      "severityException": "Critical error",
+      "severityError": "Error",
+      "severityWarning": "Warning",
+      "severityInformation": "Information",
+      "severityUnknown": "Unknown"
+    },
+    "nvxList": {
+      "empty": "No items",
+      "actions": "Actions"
+    },
+    "pageToolbar": {
+      "searchPlaceholder": "Search"
+    },
+    "parameterLoader": {
+      "title": "Loading...",
+      "message": "Please wait for the process to complete..."
+    }
+  }
+}

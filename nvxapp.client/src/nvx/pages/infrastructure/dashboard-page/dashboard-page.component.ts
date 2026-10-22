@@ -2,6 +2,7 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
 import { FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { NavController } from '@ionic/angular';
+import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
   selector: 'app-dashboard-page',
@@ -16,9 +17,10 @@ export class DashboardPageComponent {
 
   constructor(public userNavigationService: UserNavigationService,
               private fabMenuService: FabMenuService,
-              public navCtrl: NavController
+              public navCtrl: NavController,
+              private transloco: TranslocoService
   ) {
-    this.title = 'Dashboard';
+    this.title = this.transloco.translate('pages.dashboard.title');
   }
 
   ionViewWillEnter() {

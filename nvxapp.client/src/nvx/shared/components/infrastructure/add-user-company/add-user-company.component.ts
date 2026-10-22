@@ -10,6 +10,7 @@ import { GenericRequest } from '../../../../ClientServer-Service/ModelsBase/gene
 import { BaseDialogConfirmCancelComponent } from '../../../../pages/_BASE/base-dialog-confirm-cancel/base-dialog-confirm-cancel.component';
 import { UserInterfaceService } from '../../../../Utility/infrastructure/user-interface.service';
 import { AccountService } from '../../../../ClientServer-Service/Infrastructure/Account/account.service';
+import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
   selector: 'app-add-user-company',
@@ -28,7 +29,8 @@ export class AddUserCompanyComponent  extends BaseDialogConfirmCancelComponent<U
       protected override fb: FormBuilder,
       protected override modalCtrl: ModalController,
        private parameterService: ParameterService,
-       private accountService: AccountService
+       private accountService: AccountService,
+       private transloco: TranslocoService
       ) 
   {
     super(userInterfaceService, fb, modalCtrl);
@@ -51,7 +53,7 @@ export class AddUserCompanyComponent  extends BaseDialogConfirmCancelComponent<U
   }
 
 
-  get Title(): string { return "Inserimento nuovo utente"; }
+  get Title(): string { return this.transloco.translate('components.addUserCompany.title'); }
 
   LoadData = (): Observable<UserCompanyEditModel | null> => {
     // Aggiunge campi per la nuova registrazione (mail, pw, confirmPassword)

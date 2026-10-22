@@ -16,6 +16,7 @@ using nvxapp.server.service.ServerModels;
 using Serilog;
 using System.Net;
 using System.Text;
+using nvxapp.server.data.Localization;
 
 namespace nvxapp.server.service.ClientServer_Service.Infrastructure.PasswordRecovery
 {
@@ -61,13 +62,13 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.PasswordReco
                 string userName = model.Data?.UserName?.Trim() ?? string.Empty;
                 if (userName.Length == 0)
                 {
-                    retVal.AddMessage("Indica il nome utente.", MessageType.Error);
+                    retVal.AddMessage(InfrastructureMessages.Get("PasswordRecoveryUserNameRequired"), MessageType.Error);
                     return retVal;
                 }
                 if (!_emailService.Configured)
                 {
                     Log.Warning("Recupero password non disponibile: invio email non configurato.");
-                    retVal.AddMessage("Recupero della password non disponibile al momento.", MessageType.Error);
+                    retVal.AddMessage(InfrastructureMessages.Get("PasswordRecoveryUnavailable"), MessageType.Error);
                     return retVal;
                 }
 
@@ -108,7 +109,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.PasswordReco
                 string pw = data.Pw ?? string.Empty;
                 if (pw.Length < PasswordMinLength)
                 {
-                    retVal.AddMessage($"La password deve avere almeno {PasswordMinLength} caratteri.", MessageType.Error);
+                    retVal.AddMessage(InfrastructureMessages.Get("PasswordTooShort", PasswordMinLength), MessageType.Error);
                     return retVal;
                 }
 
@@ -122,7 +123,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.PasswordReco
 
                 if (user == null || string.IsNullOrEmpty(token))
                 {
-                    retVal.AddMessage("Link non valido: chiedi di nuovo il recupero della password.", MessageType.Error);
+                    retVal.AddMessage(InfrastructureMessages.Get("PasswordRecoveryLinkInvalid"), MessageType.Error);
                     return retVal;
                 }
 
@@ -132,7 +133,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.PasswordReco
                     // token scaduto, gia' usato o password non accettata
                     bool tokenNonValido = result.Errors.Any(e => e.Code == "InvalidToken");
                     retVal.AddMessage(tokenNonValido
-                        ? $"Il link non e' piu' valido (vale {ScadenzaOre} ore e una sola volta): chiedi di nuovo il recupero della password."
+                        ? InfrastructureMessages.Get("PasswordRecoveryLinkExpired", ScadenzaOre)
                         : string.Join(" ", result.Errors.Select(e => e.Description)), MessageType.Error);
                     return retVal;
                 }
@@ -148,20 +149,24 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.PasswordReco
         {
             string sito = SiteName.Value;
             string linkHtml = WebUtility.HtmlEncode(link);
-            string subject = $"{sito}: reimposta la password di {userName}";
+            string subject = InfrastructureMessages.Get("PasswordRecoveryEmailSubject", sito, userName);
             string html = $@"<div style=""font-family:Arial,Helvetica,sans-serif;font-size:15px;color:#222;max-width:560px"">
   <h2 style=""margin:0 0 16px 0"">{WebUtility.HtmlEncode(sito)}</h2>
-  <p>E' stato chiesto di reimpostare la password dell'utente <b>{WebUtility.HtmlEncode(userName)}</b>.</p>
-  <p>Per sceglierne una nuova apri questo link entro {ScadenzaOre} ore:</p>
-  <p style=""margin:24px 0""><a href=""{linkHtml}"" style=""background:#ff7a00;color:#fff;padding:12px 22px;border-radius:22px;text-decoration:none;font-weight:bold"">Reimposta la password</a></p>
-  <p style=""color:#666;font-size:13px"">Se il pulsante non funziona, copia questo indirizzo nel browser:<br>{linkHtml}</p>
-  <p style=""color:#666;font-size:13px"">Se non l'hai chiesto tu, ignora questa email: la password attuale resta valida.</p>
+  <p>{Html("PasswordRecoveryEmailIntro", $"<b>{WebUtility.HtmlEncode(userName)}</b>")}</p>
+  <p>{Html("PasswordRecoveryEmailOpenLink", ScadenzaOre)}</p>
+  <p style=""margin:24px 0""><a href=""{linkHtml}"" style=""background:#ff7a00;color:#fff;padding:12px 22px;border-radius:22px;text-decoration:none;font-weight:bold"">{Html("PasswordRecoveryEmailButton")}</a></p>
+  <p style=""color:#666;font-size:13px"">{Html("EmailButtonFallback")}<br>{linkHtml}</p>
+  <p style=""color:#666;font-size:13px"">{Html("PasswordRecoveryEmailIgnore")}</p>
 </div>";
-            string text = $"{sito}\n\nE' stato chiesto di reimpostare la password dell'utente {userName}.\n" +
-                          $"Per sceglierne una nuova apri questo link entro {ScadenzaOre} ore:\n{link}\n\n" +
-                          "Se non l'hai chiesto tu, ignora questa email: la password attuale resta valida.";
+            string text = $"{sito}\n\n{InfrastructureMessages.Get("PasswordRecoveryEmailIntro", userName)}\n" +
+                          $"{InfrastructureMessages.Get("PasswordRecoveryEmailOpenLink", ScadenzaOre)}\n{link}\n\n" +
+                          InfrastructureMessages.Get("PasswordRecoveryEmailIgnore");
             await _emailService.SendAsync(mail, subject, html, text);
         }
+
+        // testo della chiave per l'HTML dell'email: si codifica il testo, i parametri arrivano gia' pronti per l'HTML
+        private static string Html(string key, params object?[] htmlArgs)
+            => string.Format(System.Globalization.CultureInfo.CurrentCulture, WebUtility.HtmlEncode(InfrastructureMessages.Get(key)), htmlArgs);
     }
 
     public interface IPasswordRecoveryService : IServiceBase

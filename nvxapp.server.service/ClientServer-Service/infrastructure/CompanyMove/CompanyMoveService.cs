@@ -10,6 +10,7 @@ using nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyMove.Mode
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.ServerModels;
+using nvxapp.server.data.Localization;
 
 namespace nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyMove
 {
@@ -80,12 +81,12 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyMove
                 var retVal = new CompanyMovePutOutModel();
 
                 var company = await _companyRepository.FindByIdAsync(model.Data.IdCompany)
-                              ?? throw new Exception("Azienda non trovata.");
+                              ?? throw new UserMessageException(InfrastructureMessages.Get("CompanyNotFound"));
                 var financialAdvisor = await _financialAdvisorRepository.FindByIdAsync(model.Data.IdFinancialAdvisor)
-                                       ?? throw new Exception("Studio di destinazione non trovato.");
+                                       ?? throw new UserMessageException(InfrastructureMessages.Get("CompanyMoveTargetNotFound"));
 
                 if (company.IdFinancialAdvisor == financialAdvisor.Id)
-                    throw new Exception("L'azienda appartiene gia' allo studio scelto.");
+                    throw new UserMessageException(InfrastructureMessages.Get("CompanyMoveAlreadyInTarget"));
 
                 company.IdFinancialAdvisor = financialAdvisor.Id;
                 await _companyRepository.UpdateAsync(company);
@@ -100,9 +101,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyMove
         private async Task VerificaSuperUser()
         {
             var user = await _userManager.FindByIdAsync(this.UserIdFirstConnection)
-                       ?? throw new Exception("Utente non trovato.");
+                       ?? throw new UserMessageException(InfrastructureMessages.Get("UserNotFound"));
             if (!await _userManager.IsInRoleAsync(user, RuoloSuperUser))
-                throw new Exception("Operazione riservata al SuperUser.");
+                throw new UserMessageException(InfrastructureMessages.Get("OperationReservedToSuperUser"));
         }
     }
 

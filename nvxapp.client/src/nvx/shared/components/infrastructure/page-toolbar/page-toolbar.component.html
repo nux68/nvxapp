@@ -64,7 +64,7 @@
         <ion-searchbar
           [debounce]="250"
           (ionInput)="filter($event)"
-          placeholder="Search">
+          [placeholder]="'components.pageToolbar.searchPlaceholder' | transloco">
         </ion-searchbar>
       }
     </ion-toolbar>

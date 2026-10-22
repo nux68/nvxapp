@@ -8,6 +8,7 @@ import { NavController } from '@ionic/angular';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { NvxListAction, NvxListColumn } from '../../../shared/components/infrastructure/nvx-list/nvx-list.component';
+import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
   selector: 'app-dealer-list-page',
@@ -21,7 +22,7 @@ export class DealerListPageComponent {
   public title!: string;
   public searchText!: string;
   public dealerList: DealerListModel[] | null = null;
-  public readonly columns: NvxListColumn<DealerListModel>[] = [{ key: 'descrizione', title: 'Centro' }];
+  public readonly columns: NvxListColumn<DealerListModel>[];
   public readonly actions: NvxListAction<DealerListModel>[];
   public readonly isDisabled = (item: DealerListModel) => item.disabled;
   public readonly sortByDescrizione = (a: DealerListModel, b: DealerListModel) => a.descrizione.localeCompare(b.descrizione);
@@ -32,8 +33,10 @@ export class DealerListPageComponent {
               private accountService: AccountService,
               public fabMenuService: FabMenuService,
               private userInterfaceService: UserInterfaceService,
-              private userNavigationService: UserNavigationService) {
-    this.title = 'Dealers';
+              private userNavigationService: UserNavigationService,
+              private transloco: TranslocoService) {
+    this.title = this.transloco.translate('pages.dealerList.title');
+    this.columns = [{ key: 'descrizione', title: this.transloco.translate('pages.dealerList.columnDealer') }];
     console.log('NavController instance:', this.navCtrl);
 
     this.btnEdit = userInterfaceService.Btn_Modifica;

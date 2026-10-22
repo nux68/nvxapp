@@ -7,6 +7,7 @@ import { AuthService } from '../Utility/infrastructure/auth.service';
 import { NavController } from '@ionic/angular';
 import { UserNavigationService } from '../Utility/infrastructure/user-navigation.service';
 import { GenericResult } from '../ClientServer-Service/ModelsBase/generic-result';
+import { LanguageService } from '../Utility/infrastructure/language.service';
 
 
 @Injectable()
@@ -17,6 +18,7 @@ export class NvxHttpInterceptor implements HttpInterceptor {
               private userNavigationService:UserNavigationService,
               private nvxHttpInterceptorService: NvxHttpInterceptorService,
               private navCtrl: NavController,
+              private languageService: LanguageService,
              )
   {
   }
@@ -29,7 +31,9 @@ export class NvxHttpInterceptor implements HttpInterceptor {
     const authReq = req.clone({
       setHeaders: {
         //UserName: this.authService.UserName != null ? this.authService.UserName : ``,  //`NVX` //SookaUser
-        Authorization: `Bearer ${this.authService.Token}`
+        Authorization: `Bearer ${this.authService.Token}`,
+        // lingua dell'interfaccia: il server risponde con i messaggi in questa lingua
+        'Accept-Language': this.languageService.current
       }
     });
 

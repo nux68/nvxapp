@@ -1,4 +1,4 @@
-<app-page-toolbar [title]="title"
+<app-page-toolbar [title]="title | transloco"
                   [showFilter]="false"
                   [showBreadcrumbs]="true">
 </app-page-toolbar>
@@ -9,9 +9,7 @@
     <ion-card-content>
 
       <ion-note class="nvx-menu-nota">
-        Voci di menu visibili agli utenti Admin e Utente dell'azienda. Si possono solo togliere:
-        l'interruttore c'è solo dove la voce è prevista per quel ruolo. Le pagine tolte non sono raggiungibili
-        neppure scrivendo l'indirizzo. Le voci aggiunte in futuro sono visibili finché non vengono tolte.
+        {{ 'pages.companyMenuRestriction.note' | transloco }}
       </ion-note>
 
       @if (caricamento) {
@@ -19,36 +17,36 @@
       }
 
       @if (!caricamento && sezioni.length === 0) {
-        <ion-note>Nessuna voce di menu configurabile.</ion-note>
+        <ion-note>{{ 'pages.companyMenuRestriction.noItems' | transloco }}</ion-note>
       }
 
       @for (sezione of sezioni; track sezione.titolo) {
         <ion-item class="nvx-item-4-title">
-          <ion-label>{{ sezione.titolo || 'Menu' }}</ion-label>
+          <ion-label>{{ (sezione.titolo || 'Menu') | transloco }}</ion-label>
         </ion-item>
 
         <ion-grid class="nvx-menu-grid">
           <ion-row class="nvx-menu-header">
             <ion-col size="6" size-md="8"></ion-col>
             @for (r of ruoli; track r.role) {
-              <ion-col size="3" size-md="2" class="ion-text-center">{{ r.label }}</ion-col>
+              <ion-col size="3" size-md="2" class="ion-text-center">{{ r.label | transloco }}</ion-col>
             }
           </ion-row>
           @for (voce of sezione.voci; track voce.url) {
             <ion-row class="nvx-ion-row-4table nvx-row-hover ion-align-items-center">
               <ion-col size="6" size-md="8" class="nvx-menu-voce">
                 <ion-icon [name]="voce.icon"></ion-icon>
-                <span>{{ voce.title }}</span>
+                <span>{{ voce.title | transloco }}</span>
               </ion-col>
               @for (r of ruoli; track r.role) {
                 <ion-col size="3" size-md="2" class="ion-text-center">
                   @if (voce.ruoli.includes(r.role)) {
                     <ion-toggle [checked]="visibile(voce, r.role)"
                                 (ionChange)="cambia(voce, r.role, $event.detail.checked)"
-                                [attr.aria-label]="voce.title + ' - ' + r.label">
+                                [attr.aria-label]="(voce.title | transloco) + ' - ' + (r.label | transloco)">
                     </ion-toggle>
                   } @else {
-                    <span class="nvx-menu-nd" title="Voce non prevista per questo ruolo">—</span>
+                    <span class="nvx-menu-nd" [title]="'pages.companyMenuRestriction.notApplicable' | transloco">—</span>
                   }
                 </ion-col>
               }

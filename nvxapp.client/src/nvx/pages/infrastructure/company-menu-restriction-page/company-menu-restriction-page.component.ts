@@ -24,12 +24,13 @@ import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic
 })
 export class CompanyMenuRestrictionPageComponent {
 
-  public readonly title = 'Menu utenti';
+  /** chiave di traduzione del titolo (tradotto nel template) */
+  public readonly title = 'pages.companyMenuRestriction.title';
 
-  /** ruoli configurabili, con l'etichetta della colonna */
+  /** ruoli configurabili, con la chiave di traduzione dell'etichetta della colonna */
   public readonly ruoli = [
-    { role: 'CompanyAdmin', label: 'Admin' },
-    { role: 'User', label: 'Utente' },
+    { role: 'CompanyAdmin', label: 'pages.companyMenuRestriction.roleAdmin' },
+    { role: 'User', label: 'pages.companyMenuRestriction.roleUser' },
   ];
 
   public sezioni: { titolo: string, voci: VoceMenuConfigurabile[] }[] = [];

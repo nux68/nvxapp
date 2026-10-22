@@ -5,6 +5,7 @@ import { CollectionDialogService } from '../../../shared/components/infrastructu
 import { CompanyMoveService } from '../../../ClientServer-Service/Infrastructure/CompanyMove/company-move.service';
 import { CompanyMoveCompanyModel, CompanyMoveDealerModel, CompanyMoveFinancialAdvisorModel, CompanyMovePutInModel, CompanyMoveTreeInModel } from '../../../ClientServer-Service/Infrastructure/CompanyMove/Models/company-move-model';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
+import { TranslocoService } from '@jsverse/transloco';
 
 
 /** scelta centro -> studio (-> azienda) con i figli filtrati sul padre */
@@ -30,7 +31,7 @@ class Selezione {
 })
 export class CompanyMovePageComponent {
 
-  public readonly title = 'Sposta azienda';
+  public readonly title: string;
 
   public dealers: CompanyMoveDealerModel[] = [];
   public financialAdvisors: CompanyMoveFinancialAdvisorModel[] = [];
@@ -52,8 +53,10 @@ export class CompanyMovePageComponent {
               private toastCtrl: ToastController,
               private companyMoveService: CompanyMoveService,
               private collectionDialogService: CollectionDialogService,
+              private transloco: TranslocoService,
               userInterfaceService: UserInterfaceService) {
 
+    this.title = this.transloco.translate('pages.companyMove.title');
     this.btnConferma = userInterfaceService.Btn_Conferma;
     this.btnConferma.event = () => this.conferma();
     const btnAnnulla = userInterfaceService.Btn_Annulla;
@@ -182,8 +185,11 @@ export class CompanyMovePageComponent {
       return;
 
     const ok = await this.collectionDialogService.ConfirmCancelDialog(
-      `Spostare l'azienda "${company.descrizione}" da ${this.percorso(company.idFinancialAdvisor)} a ${this.percorso(idDest)}? ` +
-      `Gli utenti del vecchio studio non vedranno piu' l'azienda.`);
+      this.transloco.translate('pages.companyMove.confirmMove', {
+        company: company.descrizione,
+        from: this.percorso(company.idFinancialAdvisor),
+        to: this.percorso(idDest)
+      }));
     if (!ok)
       return;
 
@@ -198,7 +204,7 @@ export class CompanyMovePageComponent {
         this.destinazione.idDealer = null;
         this.destinazione.idFinancialAdvisor = null;
         this.aggiorna();
-        this.toastCtrl.create({ message: `Azienda "${company.descrizione}" spostata.`, duration: 3000, position: 'bottom' })
+        this.toastCtrl.create({ message: this.transloco.translate('pages.companyMove.moved', { company: company.descrizione }), duration: 3000, position: 'bottom' })
           .then(t => t.present());
       }
     });

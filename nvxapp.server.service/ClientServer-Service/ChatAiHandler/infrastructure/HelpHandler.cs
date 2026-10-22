@@ -8,13 +8,15 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.infrastructur
     {
         private readonly IServiceProvider _serviceProvider;
 
-        private static readonly IntentDefinition _intentDefinition = new()
+        // Definizione creata per istanza (handler Scoped): i testi sono nella lingua della richiesta.
+        // Keywords: unione italiano + inglese, qualunque sia la lingua dell'interfaccia.
+        private readonly IntentDefinition _intentDefinition = new()
         {
             Name        = "Help",
-            DisplayName = "Aiuto",
+            DisplayName = ChatAIMessages.Get("HelpDisplayName"),
             Usable4Role = new List<string> { "*" },
-            Description = "fornisce la lista dei comandi disponibili.",
-            Keywords    = new() { "aiuto", "help", "comandi", "cosa sai fare", "menu" }
+            Description = ChatAIMessages.Get("HelpDescription"),
+            Keywords    = new() { "aiuto", "help", "comandi", "cosa sai fare", "menu", "commands", "what can you do" }
         };
 
         public HelpHandler(IServiceProvider serviceProvider)
@@ -31,7 +33,7 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.infrastructur
                            as IEnumerable<ICommandHandler> ?? Enumerable.Empty<ICommandHandler>();
 
             var sb = new System.Text.StringBuilder();
-            sb.AppendLine("Ecco i comandi disponibili:");
+            sb.AppendLine(ChatAIMessages.Get("HelpCommandsTitle"));
 
             foreach (var handler in handlers)
             {
