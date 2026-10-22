@@ -8,6 +8,8 @@ import { LanguageService } from '../../../../Utility/infrastructure/language.ser
  Senza, Ionic userebbe la lingua del browser invece di quella scelta nell'applicazione.
 */
 @Directive({
+  // selettore sull'elemento di proposito: deve agganciarsi a ogni ion-datetime senza modificarne i template
+  // eslint-disable-next-line @angular-eslint/directive-selector
   selector: 'ion-datetime:not([locale])',
   standalone: true,
 })
