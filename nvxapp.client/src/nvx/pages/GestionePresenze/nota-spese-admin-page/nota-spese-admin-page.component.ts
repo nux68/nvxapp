@@ -11,19 +11,22 @@ import { NotaSpesaDettaglioDialogService } from '../../../shared/components/Gest
 import { TranslocoService } from '@jsverse/transloco';
 
 
-/** gruppo di spese con il suo totale (per dipendente o per tipo di spesa) */
+/** gruppo di spese con il suo totale: una nota spese di un dipendente, o un tipo di spesa */
 interface GruppoSpese {
   chiave: string;
   titolo: string;
   spese: Dip_GG_NotaSpesaModel[];
   totale: number;
+  /** solo per la nota spese: periodo (date delle spese, "YYYY-MM-DD"), descrizione, stato e dipendente */
+  nota?: { idDip_GG_Richiesta: number | null, idAspNetUsers: string, dal: string, al: string, descrizione: string, stato: StatoRichiesta };
 }
 
 /*
  Esame delle note spese (CompanyPowerAdmin): spese del mese per reparto e dipendenti scelti,
- filtrabili per tipo di spesa e stato, raggruppate per dipendente o per tipo di spesa con i totali.
- Ogni spesa e' una riga essenziale (data, dipendente o tipo, stato, importo) che si espande con un clic
- per vedere descrizione e allegati; dalla riga espansa si apre il dettaglio della nota spese che la
+ filtrabili per tipo di spesa e stato, raggruppate per nota spese (dipendente) o per tipo di spesa con i totali.
+ Ogni gruppo e' una sola riga che si espande con un clic: la nota spese con dipendente, data, descrizione,
+ stato, numero di spese e totale (o il tipo di spesa con numero di spese e totale); dentro, ogni spesa e' una riga essenziale (data, dipendente o tipo,
+ stato, importo) che a sua volta si espande per vedere descrizione e allegati; dalla riga espansa si apre il dettaglio della nota spese che la
  contiene (NotaSpesaDettaglioDialogComponent), da cui si puo' approvare o rifiutare la nota
  (ciclo standard delle richieste, come dalla pagina "Richieste").
 */
@@ -52,7 +55,8 @@ export class NotaSpeseAdminPageComponent implements OnDestroy {
   public gruppi: GruppoSpese[] = [];
   public totale = 0;
 
-  /** spese con la riga espansa (id della spesa) */
+  /** gruppi espansi (chiave del gruppo) e spese con la riga espansa (id della spesa) */
+  public gruppiEspansi = new Set<string>();
   public espanse = new Set<number>();
 
   private readonly _ricerca$ = new Subject<void>();
@@ -121,17 +125,31 @@ export class NotaSpeseAdminPageComponent implements OnDestroy {
     const spese = this.spese ?? [];
     const gruppi = new Map<string, GruppoSpese>();
     for (const s of spese) {
-      const chiave = this.raggruppa === 'dipendente' ? s.idAspNetUsers : String(s.idPar_TipoSpesa);
+      // per dipendente: una riga per nota spese (le spese della stessa richiesta)
+      const chiave = this.raggruppa === 'dipendente' ? 'R' + (s.idDip_GG_Richiesta ?? 'S' + s.id) : String(s.idPar_TipoSpesa);
       let g = gruppi.get(chiave);
       if (!g) {
         g = { chiave, titolo: this.raggruppa === 'dipendente' ? this.dipendente(s.idAspNetUsers) : this.tipo(s.idPar_TipoSpesa), spese: [], totale: 0 };
+        if (this.raggruppa === 'dipendente')
+          g.nota = { idDip_GG_Richiesta: s.idDip_GG_Richiesta, idAspNetUsers: s.idAspNetUsers, dal: this.giorno(s.data), al: this.giorno(s.data), descrizione: s.richiestaDescrizione ?? '', stato: s.richiestaStato };
         gruppi.set(chiave, g);
       }
       g.spese.push(s);
       g.totale += s.importo;
+      if (g.nota) {
+        const giorno = this.giorno(s.data);
+        if (giorno < g.nota.dal) g.nota.dal = giorno;
+        if (giorno > g.nota.al) g.nota.al = giorno;
+      }
     }
-    this.gruppi = [...gruppi.values()].sort((a, b) => a.titolo.localeCompare(b.titolo));
+    // note spese per dipendente e data; tipi di spesa per descrizione
+    this.gruppi = [...gruppi.values()].sort((a, b) => a.titolo.localeCompare(b.titolo) || (a.nota?.dal ?? '').localeCompare(b.nota?.dal ?? ''));
     this.totale = spese.reduce((t, s) => t + s.importo, 0);
+  }
+
+  /** "YYYY-MM-DD" della data di una spesa */
+  private giorno(data: string): string {
+    return String(data ?? '').substring(0, 10);
   }
 
   public dipendente(idAspNetUsers: string): string {
@@ -159,6 +177,15 @@ export class NotaSpeseAdminPageComponent implements OnDestroy {
 
   // ------------------------------------------------------------------ righe espandibili
 
+  public gruppoEspanso(gruppo: GruppoSpese): boolean {
+    return this.gruppiEspansi.has(gruppo.chiave);
+  }
+
+  public espandiGruppo(gruppo: GruppoSpese): void {
+    if (!this.gruppiEspansi.delete(gruppo.chiave))
+      this.gruppiEspansi.add(gruppo.chiave);
+  }
+
   public espansa(spesa: Dip_GG_NotaSpesaModel): boolean {
     return this.espanse.has(spesa.id);
   }
@@ -168,13 +195,18 @@ export class NotaSpeseAdminPageComponent implements OnDestroy {
       this.espanse.add(spesa.id);
   }
 
-  /** tutte le righe espanse o tutte chiuse */
+  /** tutti i gruppi espansi o tutti chiusi (chiudendo si chiudono anche le spese) */
   public get tutteEspanse(): boolean {
-    return (this.spese?.length ?? 0) > 0 && this.spese!.every(s => this.espanse.has(s.id));
+    return this.gruppi.length > 0 && this.gruppi.every(g => this.gruppiEspansi.has(g.chiave));
   }
 
   public espandiTutte(): void {
-    this.espanse = this.tutteEspanse ? new Set<number>() : new Set((this.spese ?? []).map(s => s.id));
+    if (this.tutteEspanse) {
+      this.gruppiEspansi = new Set<string>();
+      this.espanse = new Set<number>();
+    }
+    else
+      this.gruppiEspansi = new Set(this.gruppi.map(g => g.chiave));
   }
 
   public apriAllegato(allegato: Dip_GG_NotaSpesa_AllegatoModel, event?: Event): void {
@@ -182,12 +214,12 @@ export class NotaSpeseAdminPageComponent implements OnDestroy {
     this.dipGGNotaSpesaService.ApriAllegato(allegato);
   }
 
-  /** dettaglio della nota spese che contiene la spesa, con approvazione e rifiuto */
-  public async apriDettaglio(spesa: Dip_GG_NotaSpesaModel, event?: Event): Promise<void> {
-    event?.stopPropagation();
-    if (!spesa.idDip_GG_Richiesta)
+  /** dettaglio della nota spese (dalla riga della nota o da una sua spesa), con approvazione e rifiuto */
+  public async apriDettaglio(nota: { idDip_GG_Richiesta: number | null, idAspNetUsers: string }, event?: Event): Promise<void> {
+    event?.stopPropagation();   // il clic sul pulsante non espande / chiude la riga
+    if (!nota.idDip_GG_Richiesta)
       return;
-    if (await this.notaSpesaDettaglioDialogService.Apri(spesa.idDip_GG_Richiesta, this.dipendente(spesa.idAspNetUsers), true))
+    if (await this.notaSpesaDettaglioDialogService.Apri(nota.idDip_GG_Richiesta, this.dipendente(nota.idAspNetUsers), true))
       this._ricerca$.next();
   }
 }

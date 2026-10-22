@@ -18,11 +18,59 @@
   margin-top: 12px;
 }
 
+// riga del gruppo: freccia, nota spese (dipendente, data, descrizione) o tipo, stato, numero di spese, totale, dettaglio
 .ns-gruppo-titolo {
-  display: flex;
-  justify-content: space-between;
-  padding: 6px 4px;
+  cursor: pointer;
+  display: grid;
+  grid-template-columns: 20px 1fr auto auto 100px 40px;
+  gap: 4px 12px;
+  align-items: center;
+  padding: 8px 4px;
   border-bottom: 2px solid var(--ion-color-step-200, rgba(127, 127, 127, 0.3));
+
+  &:hover {
+    background: var(--ion-color-step-50, rgba(127, 127, 127, 0.06));
+  }
+
+  .ns-freccia, .ns-gruppo-numero {
+    color: var(--ion-color-medium);
+  }
+
+  .ns-gruppo-numero, .ns-gruppo-data, small {
+    font-size: 0.9em;
+  }
+
+  .ns-gruppo-data {
+    margin-left: 8px;
+    color: var(--ion-color-medium);
+  }
+
+  small {
+    color: var(--ion-color-medium);
+  }
+
+  // mobile: nominativo e totale sulla prima riga, stato e numero di spese sotto
+  @media (max-width: 767px) {
+    grid-template-columns: 20px 1fr auto 40px;
+    grid-template-areas: "freccia nome importo azione" ". stato numero numero";
+
+    .ns-freccia { grid-area: freccia; }
+    .ns-gruppo-nome { grid-area: nome; }
+    .ns-importo { grid-area: importo; }
+    .ns-gruppo-azione { grid-area: azione; }
+    .ns-gruppo-stato { grid-area: stato; }
+    .ns-gruppo-numero { grid-area: numero; text-align: right; }
+  }
+
+  .ns-importo {
+    text-align: right;
+    white-space: nowrap;
+  }
+}
+
+// spese del gruppo espanso: rientrate sotto la riga del gruppo
+.ns-gruppo-espanso ~ .ns-riga {
+  padding-left: 24px;
 }
 
 // riga essenziale della spesa: si espande con un clic

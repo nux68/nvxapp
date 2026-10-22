@@ -68,12 +68,37 @@
 
         @for (g of gruppi; track g.chiave) {
           <div class="ns-gruppo">
-            <div class="ns-gruppo-titolo">
-              <strong>{{ g.titolo }}</strong>
-              <span>{{ euro(g.totale) }}</span>
+            <!-- il gruppo e' una sola riga (nota spese: dipendente, data, stato; o tipo di spesa): con un clic mostra le sue spese -->
+            <div class="ns-gruppo-titolo" [class.ns-gruppo-espanso]="gruppoEspanso(g)" (click)="espandiGruppo(g)">
+              <ion-icon class="ns-freccia" [name]="gruppoEspanso(g) ? 'chevron-down-outline' : 'chevron-forward-outline'"></ion-icon>
+              <span class="ns-gruppo-nome">
+                <strong>{{ g.titolo }}</strong>
+                @if (g.nota; as nota) {
+                  <span class="ns-gruppo-data">
+                    {{ nota.dal | date:'dd/MM/yyyy' }}@if (nota.al !== nota.dal) { – {{ nota.al | date:'dd/MM/yyyy' }} }
+                  </span>
+                  @if (nota.descrizione) { <small>· {{ nota.descrizione }}</small> }
+                }
+              </span>
+              <span class="ns-gruppo-stato">
+                @if (g.nota; as nota) {
+                  <ion-badge [color]="coloreStato(nota.stato)">{{ nota.stato | statoRichiestaLongText }}</ion-badge>
+                }
+              </span>
+              <span class="ns-gruppo-numero">{{ g.spese.length }} {{ (g.spese.length === 1 ? 'attendance.pages.notaSpeseAdmin.spesa' : 'attendance.pages.notaSpeseAdmin.spese') | transloco }}</span>
+              <span class="ns-importo">{{ euro(g.totale) }}</span>
+              <span class="ns-gruppo-azione">
+                @if (g.nota; as nota) {
+                  @if (nota.idDip_GG_Richiesta) {
+                    <ion-button fill="clear" size="small" (click)="apriDettaglio(nota, $event)" [title]="'attendance.pages.notaSpeseAdmin.apriDettaglio' | transloco">
+                      <ion-icon slot="icon-only" name="receipt-outline"></ion-icon>
+                    </ion-button>
+                  }
+                }
+              </span>
             </div>
-            <!-- riga essenziale; con un clic si espande (descrizione, allegati, dettaglio della nota) -->
-            @for (s of g.spese; track s.id) {
+            <!-- riga essenziale della spesa; con un clic si espande (descrizione, allegati, dettaglio della nota) -->
+            @for (s of gruppoEspanso(g) ? g.spese : []; track s.id) {
               <div class="ns-riga" [class.ns-riga-espansa]="espansa(s)" (click)="espandi(s)">
                 <ion-icon class="ns-freccia" [name]="espansa(s) ? 'chevron-down-outline' : 'chevron-forward-outline'"></ion-icon>
                 <span class="ns-data">{{ s.data | date:'dd/MM/yyyy' }}</span>
@@ -102,10 +127,13 @@
                         <small class="ns-senza-allegati">{{ 'attendance.pages.notaSpeseAdmin.nessunAllegato' | transloco }}</small>
                       }
                     </div>
-                    <ion-button size="small" fill="outline" shape="round" (click)="apriDettaglio(s, $event)" [title]="'attendance.pages.notaSpeseAdmin.apriDettaglio' | transloco">
-                      <ion-icon slot="start" name="receipt-outline"></ion-icon>
-                      {{ 'attendance.pages.notaSpeseAdmin.dettaglioNota' | transloco }}
-                    </ion-button>
+                    <!-- nel raggruppamento per nota il dettaglio e' sulla riga della nota -->
+                    @if (!g.nota) {
+                      <ion-button size="small" fill="outline" shape="round" (click)="apriDettaglio(s, $event)" [title]="'attendance.pages.notaSpeseAdmin.apriDettaglio' | transloco">
+                        <ion-icon slot="start" name="receipt-outline"></ion-icon>
+                        {{ 'attendance.pages.notaSpeseAdmin.dettaglioNota' | transloco }}
+                      </ion-button>
+                    }
                   </div>
                 }
               </div>
