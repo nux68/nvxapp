@@ -87,5 +87,10 @@ Sviluppo Frontend (Client)
 	2. Il file da modificare è nvxapp.client\src\nvx\utility\GestionePresenze\main-menu-attendance-tracking.service.ts.
 
 
+### Gestione lingua
+
+1.	E' stata aggiunta la gestione delle lingua ( al momento Italino e Inglese ):
+	1. Fare in modo che ogni nuova etichetta aggiuta sul client e server venga gestita con approccio multi lingua
+	
 
 	- [Home](./CONTRIBUTING.md)
