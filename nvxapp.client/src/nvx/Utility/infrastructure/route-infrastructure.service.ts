@@ -17,7 +17,7 @@ import { RoleGuard4SuperUser } from '../../pages/RoleGuard/infrastructure/role-g
 import { RoleGuard4User } from '../../pages/RoleGuard/infrastructure/role-guard-4-user';
 import { RoleGuard4UserCompanyList } from '../../pages/RoleGuard/infrastructure/role-guard-4-user-company-list';
 import { RoleGuard4UserImpersonate } from '../../pages/RoleGuard/infrastructure/role-guard-4-user-impersonate';
-import { authenticatedGuard } from '../../pages/RoleGuard/infrastructure/showcase-guard';
+import { authenticatedGuard, paginaIngresso } from '../../pages/RoleGuard/infrastructure/showcase-guard';
 
 @Injectable({
   providedIn: 'root'
@@ -28,7 +28,8 @@ export class RouteInfrastructureService {
 
   public getRoutes(): Routes {
     return [
-      { path: '', redirectTo: '/home', pathMatch: 'full' },
+      // ingresso nel sito: al login se su questo browser e' gia' stato fatto un login, altrimenti alla home
+      { path: '', redirectTo: paginaIngresso, pathMatch: 'full' },
       // 'home' e le altre pagine pubbliche sono dello showcase (ShowcaseService); dopo il login si parte dalla dashboard
       { path: 'dashboard', loadChildren: () => import('../../pages/infrastructure/dashboard-page/dashboard-page.module').then(m => m.DashboardPageModule), canActivate: [authenticatedGuard] },
       { path: 'login', loadChildren: () => import('../../pages/infrastructure/login-page/login-page.module').then(m => m.LoginPageModule) },
