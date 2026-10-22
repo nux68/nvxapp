@@ -39,7 +39,8 @@ export class AppComponent implements OnInit {
   public groupedUserMenu: GroupMainMenuItem[] = [];
   // menu dello showcase, mostrato al posto degli altri prima del login
   public groupedShowcaseMenu: GroupMainMenuItem[] = [];
-  // sezione dello showcase aperta all'inizio: la prima
+  // sezione dello showcase aperta all'inizio: la prima, oppure quella del login ("Area riservata")
+  // se entrando nel sito si va al login (AuthService.IngressoAlLogin, vedi paginaIngresso)
   public showcaseMenuAperto = '';
   // sezione aperta del menu: una stringa, non un array (ion-accordion-group non e' "multiple": con un array
   // la sezione non si apriva quando il valore cambiava dopo il login)
@@ -80,7 +81,10 @@ export class AppComponent implements OnInit {
 
     this.loadPages();
     this.groupedShowcaseMenu = this.groupMenu(this.showcaseService.Pages);
-    this.showcaseMenuAperto = this.groupedShowcaseMenu[0]?.menuHeader.title ?? '';
+    const sezioneLogin = this.authService.IngressoAlLogin
+      ? this.groupedShowcaseMenu.find(g => g.menuItem.some(p => p.url === '/login'))
+      : undefined;
+    this.showcaseMenuAperto = (sezioneLogin ?? this.groupedShowcaseMenu[0])?.menuHeader.title ?? '';
 
   }
 

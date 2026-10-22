@@ -78,6 +78,11 @@ export class AuthService {
     try { return localStorage.getItem(AuthService.LoginEffettuatoKey) === '1'; } catch { return false; }
   }
 
+  /** Entrando nel sito si va al login (con aperta la sezione del menu che lo contiene): non collegato, ma con un login gia' fatto. */
+  public get IngressoAlLogin(): boolean {
+    return this.Token == null && this.LoginEffettuato;
+  }
+
   private segnaLoginEffettuato(): void {
     try { localStorage.setItem(AuthService.LoginEffettuatoKey, '1'); } catch { }
   }
