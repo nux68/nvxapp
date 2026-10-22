@@ -1,5 +1,6 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { NavController } from '@ionic/angular';
+import { TranslocoService } from '@jsverse/transloco';
 import { AccountService } from '../../../ClientServer-Service/Infrastructure/Account/account.service';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
@@ -22,7 +23,7 @@ export class UserListPageComponent {
   public title!: string;
   public searchText!: string;
   public userList: UserListModel[] | null = null;
-  public readonly columns: NvxListColumn<UserListModel>[] = [{ key: 'descrizione', title: 'Utente' }];
+  public readonly columns: NvxListColumn<UserListModel>[] = [{ key: 'descrizione', title: this.transloco.translate('pages.userList.columnUser') }];
   public readonly actions: NvxListAction<UserListModel>[];
   public readonly isHighlighted = (item: UserListModel) => this.isPowerAdmin(item);
   public readonly iconOf = (item: UserListModel) => this.isPowerAdmin(item) ? 'person-add-outline' : 'person-outline';
@@ -33,9 +34,10 @@ export class UserListPageComponent {
     public fabMenuService: FabMenuService,
     private parameterService: ParameterService,
     private userInterfaceService: UserInterfaceService,
-    private userNavigationService: UserNavigationService) {
+    private userNavigationService: UserNavigationService,
+    private transloco: TranslocoService) {
 
-    this.title = 'Users';
+    this.title = this.transloco.translate('pages.userList.title');
     this.btnEdit = userInterfaceService.Btn_Modifica;
     this.btnEdit.event = this.handleButtonEditClick;
 
@@ -52,7 +54,7 @@ export class UserListPageComponent {
 
     this.fabMenuService.fabMenuItem = [
 
-      new FabMenuItem('Elemento 1', 'add-circle-outline', () => {
+      new FabMenuItem(this.transloco.translate('pages.userList.fabAdd'), 'add-circle-outline', () => {
         this.navCtrl.navigateForward('/useredit', {
           state: { id: '' }
         });

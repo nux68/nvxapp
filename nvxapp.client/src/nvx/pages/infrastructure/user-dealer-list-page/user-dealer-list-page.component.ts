@@ -1,5 +1,6 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { NavController } from '@ionic/angular';
+import { TranslocoService } from '@jsverse/transloco';
 import { AccountService } from '../../../ClientServer-Service/Infrastructure/Account/account.service';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { UserNavigationService, UserDataAdditionalModel } from '../../../Utility/infrastructure/user-navigation.service';
@@ -25,7 +26,7 @@ export class UserDealerListPageComponent {
   public title!: string;
   public searchText!: string;
   public userDealerList: UserDealerListModel[] | null = null;
-  public readonly columns: NvxListColumn<UserDealerListModel>[] = [{ key: 'descrizione', title: 'Utente' }];
+  public readonly columns: NvxListColumn<UserDealerListModel>[] = [{ key: 'descrizione', title: this.transloco.translate('pages.userDealerList.columnUser') }];
   public readonly actions: NvxListAction<UserDealerListModel>[];
   public readonly isDisabled = (item: UserDealerListModel) => item.disabled;
   public readonly isHighlighted = (item: UserDealerListModel) => this.isPowerAdmin(item);
@@ -37,9 +38,10 @@ export class UserDealerListPageComponent {
     public fabMenuService: FabMenuService,
     private parameterService: ParameterService,
     private userInterfaceService: UserInterfaceService,
-    private userNavigationService: UserNavigationService) {
+    private userNavigationService: UserNavigationService,
+    private transloco: TranslocoService) {
 
-    this.title = 'Users Dealer';
+    this.title = this.transloco.translate('pages.userDealerList.title');
 
     
     this.btnEdit = userInterfaceService.Btn_Modifica;
@@ -58,7 +60,7 @@ export class UserDealerListPageComponent {
 
     this.fabMenuService.fabMenuItem = [
 
-      new FabMenuItem('Elemento 1', 'add-circle-outline', () => {
+      new FabMenuItem(this.transloco.translate('pages.userDealerList.fabAdd'), 'add-circle-outline', () => {
         this.navCtrl.navigateForward('/userdealeredit', {
           state: { id: 0 }
         });

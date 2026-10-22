@@ -7,6 +7,7 @@ import { CompanyRegisterConfirmInModel, CompanyRegisterUserModel } from '../../.
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { ShowcaseService } from '../../../Utility/infrastructure/showcase.service';
 import { ShowcaseContenuti } from '../../../Utility/infrastructure/showcase.model';
+import { TranslocoService } from '@jsverse/transloco';
 
 /*
  Showcase: conferma della registrazione dal link ricevuto per email (/confirm-email?token=...).
@@ -21,7 +22,7 @@ import { ShowcaseContenuti } from '../../../Utility/infrastructure/showcase.mode
 })
 export class ConfirmEmailPageComponent {
 
-  public readonly title = 'Attivazione';
+  public readonly title: string;
 
   public inCorso = false;
   public errori: string[] = [];
@@ -36,11 +37,13 @@ export class ConfirmEmailPageComponent {
               public showcaseService: ShowcaseService,
               userInterfaceService: UserInterfaceService,
               private route: ActivatedRoute,
-              private navCtrl: NavController) {
+              private navCtrl: NavController,
+              private transloco: TranslocoService) {
+    this.title = this.transloco.translate('pages.confirmEmail.title');
     this.btnAccedi = userInterfaceService.Btn_LogIn;
-    this.btnAccedi.text = 'Accedi';
+    this.btnAccedi.text = this.transloco.translate('pages.confirmEmail.signIn');
     this.btnAccedi.event = () => this.accedi();
-    this.btnRegistrati = new ButtonItem('Registrati', 'person-add-outline', 'primary', false, () => this.navCtrl.navigateRoot('/register'));
+    this.btnRegistrati = new ButtonItem(this.transloco.translate('pages.confirmEmail.signUp'), 'person-add-outline', 'primary', false, () => this.navCtrl.navigateRoot('/register'));
   }
 
   ionViewWillEnter() {
@@ -56,7 +59,7 @@ export class ConfirmEmailPageComponent {
     this.utentiCreati = null;
     this.buttonbar = [];
     if (!token) {
-      this.errori = ['Link di conferma non valido: registrati di nuovo.'];
+      this.errori = [this.transloco.translate('pages.confirmEmail.invalidLink')];
       this.buttonbar = [this.btnRegistrati];
       return;
     }

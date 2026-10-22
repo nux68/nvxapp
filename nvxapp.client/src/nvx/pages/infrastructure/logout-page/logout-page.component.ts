@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NavController } from '@ionic/angular';
 import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
+import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
   selector: 'app-logout-page',
@@ -22,9 +23,10 @@ export class LogoutPageComponent  implements OnInit {
               private fb: FormBuilder,
               protected userInterfaceService: UserInterfaceService,
               private navCtrl: NavController,
-              private userNavigationService: UserNavigationService
+              private userNavigationService: UserNavigationService,
+              private transloco: TranslocoService
   ) {
-    this.title = 'Logout';
+    this.title = this.transloco.translate('pages.logout.title');
 
     this.buttonbar = userInterfaceService.Btn_LogOutAnnulla;
     this.buttonbar[0].event = this._handleButtonConfirmClick;

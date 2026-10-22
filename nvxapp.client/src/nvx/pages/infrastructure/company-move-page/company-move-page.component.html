@@ -13,13 +13,13 @@
   <ion-card>
     <ion-card-content>
       <ion-item class="nvx-item-4-title" lines="none">
-        <ion-label>Azienda da spostare</ion-label>
+        <ion-label>{{ 'pages.companyMove.companyToMove' | transloco }}</ion-label>
       </ion-item>
 
       <ion-item>
-        <ion-select label="Centro" labelPlacement="floating" interface="popover"
+        <ion-select [label]="'pages.companyMove.dealer' | transloco" labelPlacement="floating" interface="popover"
                     [value]="origine.idDealer" (ionChange)="onOrigineDealer($event.detail.value)">
-          <ion-select-option [value]="null">Tutti i centri</ion-select-option>
+          <ion-select-option [value]="null">{{ 'pages.companyMove.allDealers' | transloco }}</ion-select-option>
           @for (d of dealers; track d.idDealer) {
             <ion-select-option [value]="d.idDealer">{{ d.descrizione }}</ion-select-option>
           }
@@ -27,9 +27,9 @@
       </ion-item>
 
       <ion-item>
-        <ion-select label="Studio" labelPlacement="floating" interface="popover"
+        <ion-select [label]="'pages.companyMove.financialAdvisor' | transloco" labelPlacement="floating" interface="popover"
                     [value]="origine.idFinancialAdvisor" (ionChange)="onOrigineStudio($event.detail.value)">
-          <ion-select-option [value]="null">Tutti gli studi</ion-select-option>
+          <ion-select-option [value]="null">{{ 'pages.companyMove.allFinancialAdvisors' | transloco }}</ion-select-option>
           @for (f of origineStudi; track f.idFinancialAdvisor) {
             <ion-select-option [value]="f.idFinancialAdvisor">{{ f.descrizione }}</ion-select-option>
           }
@@ -37,7 +37,7 @@
       </ion-item>
 
       <ion-item>
-        <ion-select label="Azienda" labelPlacement="floating" interface="popover"
+        <ion-select [label]="'pages.companyMove.company' | transloco" labelPlacement="floating" interface="popover"
                     [value]="origine.idCompany" (ionChange)="onOrigineAzienda($event.detail.value)">
           @for (c of origineAziende; track c.idCompany) {
             <ion-select-option [value]="c.idCompany">{{ c.descrizione }}</ion-select-option>
@@ -46,7 +46,7 @@
       </ion-item>
 
       @if (aziendaScelta; as company) {
-        <ion-note class="nvx-move-nota">Posizione attuale: {{ percorso(company.idFinancialAdvisor) }}</ion-note>
+        <ion-note class="nvx-move-nota">{{ 'pages.companyMove.currentPosition' | transloco: { path: percorso(company.idFinancialAdvisor) } }}</ion-note>
       }
     </ion-card-content>
   </ion-card>
@@ -55,13 +55,13 @@
   <ion-card>
     <ion-card-content>
       <ion-item class="nvx-item-4-title" lines="none">
-        <ion-label>Sposta sotto</ion-label>
+        <ion-label>{{ 'pages.companyMove.moveUnder' | transloco }}</ion-label>
       </ion-item>
 
       <ion-item>
-        <ion-select label="Centro" labelPlacement="floating" interface="popover"
+        <ion-select [label]="'pages.companyMove.dealer' | transloco" labelPlacement="floating" interface="popover"
                     [value]="destinazione.idDealer" (ionChange)="onDestinazioneDealer($event.detail.value)">
-          <ion-select-option [value]="null">Tutti i centri</ion-select-option>
+          <ion-select-option [value]="null">{{ 'pages.companyMove.allDealers' | transloco }}</ion-select-option>
           @for (d of dealers; track d.idDealer) {
             <ion-select-option [value]="d.idDealer">{{ d.descrizione }}</ion-select-option>
           }
@@ -69,7 +69,7 @@
       </ion-item>
 
       <ion-item>
-        <ion-select label="Studio" labelPlacement="floating" interface="popover"
+        <ion-select [label]="'pages.companyMove.financialAdvisor' | transloco" labelPlacement="floating" interface="popover"
                     [value]="destinazione.idFinancialAdvisor" (ionChange)="onDestinazioneStudio($event.detail.value)">
           @for (f of destinazioneStudi; track f.idFinancialAdvisor) {
             <ion-select-option [value]="f.idFinancialAdvisor">{{ f.descrizione }}</ion-select-option>
@@ -78,10 +78,10 @@
       </ion-item>
 
       @if (stessoStudio) {
-        <ion-note color="warning" class="nvx-move-nota">L'azienda appartiene già a questo studio.</ion-note>
+        <ion-note color="warning" class="nvx-move-nota">{{ 'pages.companyMove.alreadyInFinancialAdvisor' | transloco }}</ion-note>
       }
       @else if (aziendaScelta && destinazione.idFinancialAdvisor != null) {
-        <ion-note class="nvx-move-nota">Nuova posizione: {{ percorso(destinazione.idFinancialAdvisor) }}</ion-note>
+        <ion-note class="nvx-move-nota">{{ 'pages.companyMove.newPosition' | transloco: { path: percorso(destinazione.idFinancialAdvisor) } }}</ion-note>
       }
     </ion-card-content>
   </ion-card>

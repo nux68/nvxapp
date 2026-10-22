@@ -5,12 +5,12 @@
 
       <ion-header>
         <ion-toolbar>
-          <ion-title>Caricamento in corso...</ion-title>
+          <ion-title>{{ 'components.parameterLoader.title' | transloco }}</ion-title>
         </ion-toolbar>
       </ion-header>
 
       <ion-content class="ion-padding">
-        <p>Attendere il completamento del processo...</p>
+        <p>{{ 'components.parameterLoader.message' | transloco }}</p>
         <ion-progress-bar [value]="progress / 100"></ion-progress-bar>
         <p>{{ progress }}%</p>
       </ion-content>

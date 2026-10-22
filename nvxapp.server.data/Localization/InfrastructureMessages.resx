@@ -1,0 +1,204 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="UnexpectedError" xml:space="preserve">
+    <value>Si è verificato un errore imprevisto. Se il problema continua, comunica questo codice all'assistenza: {0}.</value>
+    <comment>errore tecnico: il dettaglio e' nel log, {0} = codice della chiamata (GUID)</comment>
+  </data>
+  <data name="LoginWrongPassword" xml:space="preserve">
+    <value>Password errata</value>
+    <comment>login</comment>
+  </data>
+  <data name="LoginUserNotFound" xml:space="preserve">
+    <value>Nome utente non trovato</value>
+    <comment>login</comment>
+  </data>
+  <data name="LoginUserNameInvalid" xml:space="preserve">
+    <value>Nome utente non valito</value>
+    <comment>login (testo italiano invariato, refuso compreso)</comment>
+  </data>
+  <data name="PasswordTooShort" xml:space="preserve">
+    <value>La password deve avere almeno {0} caratteri.</value>
+    <comment>{0} = lunghezza minima</comment>
+  </data>
+  <data name="RegistrationCompanyNameLength" xml:space="preserve">
+    <value>La ragione sociale deve avere da {0} a {1} lettere o cifre.</value>
+    <comment>{0} = minimo, {1} = massimo</comment>
+  </data>
+  <data name="RegistrationInvalidEmail" xml:space="preserve">
+    <value>Indirizzo email non valido.</value>
+  </data>
+  <data name="RegistrationTermsNotAccepted" xml:space="preserve">
+    <value>Per registrarti devi accettare le condizioni del servizio.</value>
+  </data>
+  <data name="RegistrationUnavailable" xml:space="preserve">
+    <value>Registrazione non disponibile al momento.</value>
+  </data>
+  <data name="RegistrationNameNotAvailable" xml:space="preserve">
+    <value>Il nome '{0}' non e' disponibile: scegli un'altra ragione sociale.</value>
+    <comment>{0} = ragione sociale</comment>
+  </data>
+  <data name="RegistrationCompanyAlreadyExists" xml:space="preserve">
+    <value>Esiste gia' un'azienda registrata come '{0}'.</value>
+    <comment>{0} = ragione sociale</comment>
+  </data>
+  <data name="RegistrationTooManyPending" xml:space="preserve">
+    <value>Troppe registrazioni in attesa per questo indirizzo email: conferma quelle ricevute o riprova piu' tardi.</value>
+  </data>
+  <data name="RegistrationConfirmEmailSendFailed" xml:space="preserve">
+    <value>Non e' stato possibile inviare l'email di conferma: controlla l'indirizzo o riprova piu' tardi.</value>
+  </data>
+  <data name="RegistrationConfirmLinkInvalid" xml:space="preserve">
+    <value>Link di conferma non valido: registrati di nuovo.</value>
+  </data>
+  <data name="RegistrationConfirmLinkExpired" xml:space="preserve">
+    <value>Il link di conferma e' scaduto (vale {0} ore): registrati di nuovo.</value>
+    <comment>{0} = ore di validita'</comment>
+  </data>
+  <data name="RegistrationFailed" xml:space="preserve">
+    <value>Registrazione non riuscita, riprova piu' tardi.</value>
+  </data>
+  <data name="RegistrationConfirmEmailSubject" xml:space="preserve">
+    <value>{0}: conferma la registrazione di {1}</value>
+    <comment>oggetto email; {0} = sito, {1} = ragione sociale</comment>
+  </data>
+  <data name="RegistrationConfirmEmailIntro" xml:space="preserve">
+    <value>Hai chiesto di registrare l'azienda {0}.</value>
+    <comment>email; {0} = ragione sociale</comment>
+  </data>
+  <data name="RegistrationConfirmEmailOpenLink" xml:space="preserve">
+    <value>Per attivarla apri questo link entro {0} ore:</value>
+    <comment>email; {0} = ore</comment>
+  </data>
+  <data name="RegistrationConfirmEmailButton" xml:space="preserve">
+    <value>Attiva l'account</value>
+    <comment>email, pulsante</comment>
+  </data>
+  <data name="RegistrationConfirmEmailIgnore" xml:space="preserve">
+    <value>Se non hai chiesto tu la registrazione, ignora questa email: senza conferma non viene creato niente.</value>
+    <comment>email</comment>
+  </data>
+  <data name="EmailButtonFallback" xml:space="preserve">
+    <value>Se il pulsante non funziona, copia questo indirizzo nel browser:</value>
+    <comment>email</comment>
+  </data>
+  <data name="RegistrationSummaryEmailSubject" xml:space="preserve">
+    <value>{0}: l'azienda {1} e' attiva</value>
+    <comment>oggetto email; {0} = sito, {1} = ragione sociale</comment>
+  </data>
+  <data name="RegistrationSummaryEmailIntro" xml:space="preserve">
+    <value>L'azienda {0} e' attiva. Questi sono gli utenti creati:</value>
+    <comment>email; {0} = ragione sociale</comment>
+  </data>
+  <data name="RegistrationSummaryEmailPassword" xml:space="preserve">
+    <value>Per tutti vale la password che hai scelto alla registrazione.</value>
+    <comment>email</comment>
+  </data>
+  <data name="RegistrationSummaryEmailButton" xml:space="preserve">
+    <value>Accedi</value>
+    <comment>email, pulsante</comment>
+  </data>
+  <data name="RegistrationSummaryEmailKeep" xml:space="preserve">
+    <value>Conserva questa email: contiene i nomi degli utenti per accedere.</value>
+    <comment>email</comment>
+  </data>
+  <data name="RegistrationSummaryEmailLoginFrom" xml:space="preserve">
+    <value>Accedi da: {0}</value>
+    <comment>email testo; {0} = link</comment>
+  </data>
+  <data name="PasswordRecoveryUserNameRequired" xml:space="preserve">
+    <value>Indica il nome utente.</value>
+  </data>
+  <data name="PasswordRecoveryUnavailable" xml:space="preserve">
+    <value>Recupero della password non disponibile al momento.</value>
+  </data>
+  <data name="PasswordRecoveryLinkInvalid" xml:space="preserve">
+    <value>Link non valido: chiedi di nuovo il recupero della password.</value>
+  </data>
+  <data name="PasswordRecoveryLinkExpired" xml:space="preserve">
+    <value>Il link non e' piu' valido (vale {0} ore e una sola volta): chiedi di nuovo il recupero della password.</value>
+    <comment>{0} = ore</comment>
+  </data>
+  <data name="PasswordRecoveryEmailSubject" xml:space="preserve">
+    <value>{0}: reimposta la password di {1}</value>
+    <comment>oggetto email; {0} = sito, {1} = nome utente</comment>
+  </data>
+  <data name="PasswordRecoveryEmailIntro" xml:space="preserve">
+    <value>E' stato chiesto di reimpostare la password dell'utente {0}.</value>
+    <comment>email; {0} = nome utente</comment>
+  </data>
+  <data name="PasswordRecoveryEmailOpenLink" xml:space="preserve">
+    <value>Per sceglierne una nuova apri questo link entro {0} ore:</value>
+    <comment>email; {0} = ore</comment>
+  </data>
+  <data name="PasswordRecoveryEmailButton" xml:space="preserve">
+    <value>Reimposta la password</value>
+    <comment>email, pulsante</comment>
+  </data>
+  <data name="PasswordRecoveryEmailIgnore" xml:space="preserve">
+    <value>Se non l'hai chiesto tu, ignora questa email: la password attuale resta valida.</value>
+    <comment>email</comment>
+  </data>
+  <data name="CompanyNotFoundWithId" xml:space="preserve">
+    <value>Azienda {0} non trovata.</value>
+    <comment>{0} = id azienda</comment>
+  </data>
+  <data name="CompanyNotFound" xml:space="preserve">
+    <value>Azienda non trovata.</value>
+  </data>
+  <data name="ApplicationInvalid" xml:space="preserve">
+    <value>Applicativo {0} non valido.</value>
+    <comment>{0} = codice applicativo</comment>
+  </data>
+  <data name="MenuRestrictionRoleNotConfigurable" xml:space="preserve">
+    <value>Ruolo '{0}' non configurabile.</value>
+    <comment>{0} = ruolo</comment>
+  </data>
+  <data name="MenuRestrictionMenuItemInvalid" xml:space="preserve">
+    <value>Voce di menu '{0}' non valida.</value>
+    <comment>{0} = url della voce</comment>
+  </data>
+  <data name="NoCompanySelected" xml:space="preserve">
+    <value>Nessuna azienda selezionata.</value>
+  </data>
+  <data name="UserNotFound" xml:space="preserve">
+    <value>Utente non trovato.</value>
+  </data>
+  <data name="MenuRestrictionReservedToCompanyPowerAdmin" xml:space="preserve">
+    <value>Configurazione del menu riservata al CompanyPowerAdmin.</value>
+  </data>
+  <data name="CompanyMoveTargetNotFound" xml:space="preserve">
+    <value>Studio di destinazione non trovato.</value>
+  </data>
+  <data name="CompanyMoveAlreadyInTarget" xml:space="preserve">
+    <value>L'azienda appartiene gia' allo studio scelto.</value>
+  </data>
+  <data name="OperationReservedToSuperUser" xml:space="preserve">
+    <value>Operazione riservata al SuperUser.</value>
+  </data>
+  <data name="MyTableEmpty" xml:space="preserve">
+    <value>La tabella MyTable è vuota</value>
+  </data>
+  <data name="FileNotFound" xml:space="preserve">
+    <value>File non trovato.</value>
+  </data>
+  <data name="ApplicationNoCompanySelected" xml:space="preserve">
+    <value>Nessuna azienda selezionata per l'operazione corrente: impossibile accedere ai dati dell'applicativo {0}.</value>
+    <comment>{0} = applicativo</comment>
+  </data>
+  <data name="ApplicationNotActiveForCompany" xml:space="preserve">
+    <value>L'applicativo {0} non e' attivo per l'azienda {1}.</value>
+    <comment>{0} = applicativo, {1} = id azienda</comment>
+  </data>
+</root>

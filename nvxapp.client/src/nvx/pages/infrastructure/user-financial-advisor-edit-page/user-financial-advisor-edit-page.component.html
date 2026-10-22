@@ -24,12 +24,12 @@
         </ion-item>
         @if (_editForm.get('descrizione')?.hasError('required') && _editForm.get('descrizione')?.touched) {
           <ion-note color="danger">
-            UserName è obbligatorio.
+            {{ 'common.validation.userNameRequired' | transloco }}
           </ion-note>
         }
         @if (_editForm.get('descrizione')?.hasError('maxlength') && _editForm.get('descrizione')?.touched) {
           <ion-note color="danger">
-            UserName non può superare i 20 caratteri.
+            {{ 'common.validation.userNameMaxLength' | transloco: { max: 20 } }}
           </ion-note>
         }
         <!-- Etichetta gialla che appare solo se il valore è stato modificato -->
@@ -46,12 +46,12 @@
           </ion-item>
           @if (_editForm.get('mail')?.hasError('required') && _editForm.get('mail')?.touched) {
             <ion-note color="danger">
-              L'email è obbligatoria.
+              {{ 'common.validation.emailRequired' | transloco }}
             </ion-note>
           }
           @if (_editForm.get('mail')?.hasError('email') && _editForm.get('mail')?.touched) {
             <ion-note color="danger">
-              Inserisci un'email valida.
+              {{ 'common.validation.emailInvalid' | transloco }}
             </ion-note>
           }
           <ion-item>
@@ -60,27 +60,27 @@
           </ion-item>
           @if (_editForm.get('pw')?.hasError('required') && _editForm.get('pw')?.touched) {
             <ion-note color="danger">
-              La password è obbligatoria.
+              {{ 'common.validation.passwordRequired' | transloco }}
             </ion-note>
           }
           <ion-item>
-            <ion-label position="floating">Conferma Password</ion-label>
+            <ion-label position="floating">{{ 'pages.userFinancialAdvisorEdit.confirmPassword' | transloco }}</ion-label>
             <ion-input type="password" formControlName="confirmPassword"></ion-input>
           </ion-item>
           @if (_editForm.get('confirmPassword')?.hasError('required') && _editForm.get('confirmPassword')?.touched) {
             <ion-note color="danger">
-              La conferma della password è obbligatoria.
+              {{ 'common.validation.confirmPasswordRequired' | transloco }}
             </ion-note>
           }
           @if (_editForm.hasError('notMatching') && _editForm.get('confirmPassword')?.touched) {
             <ion-note color="danger">
-              Le password non corrispondono.
+              {{ 'common.validation.passwordMismatch' | transloco }}
             </ion-note>
           }
         }
 
         <ion-item>
-          <ion-label position="floating">Ruolo</ion-label>
+          <ion-label position="floating">{{ 'pages.userFinancialAdvisorEdit.role' | transloco }}</ion-label>
           <ion-select formControlName="roleId" [disabled]="_editModel && _editModel.idUserFinancialAdvisor > 0">
             @for (role of getRoler(); track role) {
               <ion-select-option [value]="role.id">
@@ -93,15 +93,15 @@
         <!-- Mostra un errore se il ruolo non è selezionato -->
         @if (_editForm.get('roleId')?.hasError('required') && _editForm.get('roleId')?.touched) {
           <ion-note color="danger">
-            Il ruolo è obbligatorio.
+            {{ 'common.validation.roleRequired' | transloco }}
           </ion-note>
         }
 
 
         <ion-item>
-          <ion-toggle formControlName="disabled" justify="start">Disabilitato</ion-toggle>
+          <ion-toggle formControlName="disabled" justify="start">{{ 'pages.userFinancialAdvisorEdit.disabled' | transloco }}</ion-toggle>
         </ion-item>
-        <ion-note class="nvx-nota-disabled">Le righe disabilitate non compaiono nelle liste, salvo "Mostra anche i disabilitati".</ion-note>
+        <ion-note class="nvx-nota-disabled">{{ 'pages.userFinancialAdvisorEdit.disabledNote' | transloco }}</ion-note>
       </form>
 
       <br />

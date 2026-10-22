@@ -1,4 +1,5 @@
 import { Injectable, TemplateRef } from '@angular/core';
+import { TranslocoService } from '@jsverse/transloco';
 import { GenericDialogService } from './generic-dialog.service';
 import { ButtonItem, UserInterfaceService } from '../../../../Utility/infrastructure/user-interface.service';
 
@@ -8,11 +9,12 @@ import { ButtonItem, UserInterfaceService } from '../../../../Utility/infrastruc
 export class CollectionDialogService {
 
   constructor(private genericDialogService: GenericDialogService,
-              private userInterfaceService: UserInterfaceService)
+              private userInterfaceService: UserInterfaceService,
+              private transloco: TranslocoService)
   {
   }
 
-  public async ConfirmCancelDialog(message: string| TemplateRef<any> = 'Sei sicuro di voler procedere?'):Promise<any> {
+  public async ConfirmCancelDialog(message: string| TemplateRef<any> = this.transloco.translate('common.dialog.confirmMessage')):Promise<any> {
 
     let TMP_buttonbar: ButtonItem[] = [];
 
@@ -25,7 +27,7 @@ export class CollectionDialogService {
     TMP_buttonbar.push(btn_annulla);
 
     const result = await this.genericDialogService.show({
-      title: 'Conferma Operazione',
+      title: this.transloco.translate('common.dialog.confirmTitle'),
       message: message,
       buttons: TMP_buttonbar
     });

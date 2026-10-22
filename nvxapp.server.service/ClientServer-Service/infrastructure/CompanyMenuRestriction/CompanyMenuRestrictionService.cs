@@ -10,6 +10,7 @@ using nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyMenuRestr
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.ServerModels;
+using nvxapp.server.data.Localization;
 
 namespace nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyMenuRestriction
 {
@@ -69,9 +70,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyMenuR
                 foreach (var r in richieste)
                 {
                     if (!RuoliConfigurabili.Contains(r.Role))
-                        throw new Exception($"Ruolo '{r.Role}' non configurabile.");
+                        throw new UserMessageException(InfrastructureMessages.Get("MenuRestrictionRoleNotConfigurable", r.Role));
                     if (!r.Url.StartsWith("/") || r.Url.Length > 200)
-                        throw new Exception($"Voce di menu '{r.Url}' non valida.");
+                        throw new UserMessageException(InfrastructureMessages.Get("MenuRestrictionMenuItemInvalid", r.Url));
                 }
 
                 // sostituisce l'elenco: toglie le esclusioni non piu' richieste, aggiunge le nuove
@@ -97,12 +98,12 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyMenuR
         private async Task<int> AziendaDelConfiguratore()
         {
             if (!int.TryParse(this.CurrentCompany, out int idCompany))
-                throw new Exception("Nessuna azienda selezionata.");
+                throw new UserMessageException(InfrastructureMessages.Get("NoCompanySelected"));
 
             var user = await _userManager.FindByIdAsync(this.CurrentUserId)
-                       ?? throw new Exception("Utente non trovato.");
+                       ?? throw new UserMessageException(InfrastructureMessages.Get("UserNotFound"));
             if (!await _userManager.IsInRoleAsync(user, RuoloConfiguratore))
-                throw new Exception("Configurazione del menu riservata al CompanyPowerAdmin.");
+                throw new UserMessageException(InfrastructureMessages.Get("MenuRestrictionReservedToCompanyPowerAdmin"));
 
             return idCompany;
         }

@@ -23,52 +23,52 @@ export class MainMenuInfrastructureService implements iMainMenuService{
   public get Pages4SuperUser(): MainMenuItem[] {
     return [
       //{ menuType: MenuType.MenuHeader, zorder: 0, title: 'TITOLO MENU', component: '', url: '', icon: '' },
-      { menuType: MenuType.MenuHeader, zorder:   0, group: 0, title: 'SuperUser', component: '', url: '', icon: '' },
-      { menuType: MenuType.MenuItem,   zorder: 100, group: 0, title: 'SuperUser Page', component: "SuperUserPageComponent", url: '/superuser', icon: 'triangle' },
-      { menuType: MenuType.MenuItem,   zorder: 200, group: 0, title: 'Centri', component: "DealerListPageComponent", url: '/dealerlist', icon: 'list-circle' },
-      { menuType: MenuType.MenuItem, zorder: 300, group: 0, title: 'Utenti', component: "UserListPageComponent", url: '/userlist', icon: 'people' },
-      { menuType: MenuType.MenuItem, zorder: 400, group: 0, title: 'Sposta azienda', component: "CompanyMovePageComponent", url: '/companymove', icon: 'swap-horizontal' }
+      { menuType: MenuType.MenuHeader, zorder:   0, group: 0, title: 'menu.superUser', component: '', url: '', icon: '' },
+      { menuType: MenuType.MenuItem,   zorder: 100, group: 0, title: 'menu.superUserPage', component: "SuperUserPageComponent", url: '/superuser', icon: 'triangle' },
+      { menuType: MenuType.MenuItem,   zorder: 200, group: 0, title: 'menu.dealers', component: "DealerListPageComponent", url: '/dealerlist', icon: 'list-circle' },
+      { menuType: MenuType.MenuItem, zorder: 300, group: 0, title: 'menu.users', component: "UserListPageComponent", url: '/userlist', icon: 'people' },
+      { menuType: MenuType.MenuItem, zorder: 400, group: 0, title: 'menu.companyMove', component: "CompanyMovePageComponent", url: '/companymove', icon: 'swap-horizontal' }
     ];
   }
 
   public get Pages4Admin(): MainMenuItem[] {
     return [
-      { menuType: MenuType.MenuHeader, zorder: 0, group: 0, title: 'Admin', component: '', url: '', icon: '' },
-      { menuType: MenuType.MenuItem, zorder: 100, group: 0, title: 'PowerAdmin', component: "PowerAdminPageComponent", url: '/poweradmin', icon: 'square' },
-      { menuType: MenuType.MenuItem, zorder: 200, group: 0, title: 'Admin', component: "AdminPageComponent", url: '/admin', icon: 'square' },
-      { menuType: MenuType.MenuItem, zorder: 300, group: 0, title: 'Utenti', component: "UserListPageComponent", url: '/userlist', icon: 'people' },
-      { menuType: MenuType.MenuItem, zorder: 400, group: 0, title: 'Centri', component: "DealerListPageComponent", url: '/dealerlist', icon: 'list-circle' }
+      { menuType: MenuType.MenuHeader, zorder: 0, group: 0, title: 'menu.admin', component: '', url: '', icon: '' },
+      { menuType: MenuType.MenuItem, zorder: 100, group: 0, title: 'menu.powerAdmin', component: "PowerAdminPageComponent", url: '/poweradmin', icon: 'square' },
+      { menuType: MenuType.MenuItem, zorder: 200, group: 0, title: 'menu.admin', component: "AdminPageComponent", url: '/admin', icon: 'square' },
+      { menuType: MenuType.MenuItem, zorder: 300, group: 0, title: 'menu.users', component: "UserListPageComponent", url: '/userlist', icon: 'people' },
+      { menuType: MenuType.MenuItem, zorder: 400, group: 0, title: 'menu.dealers', component: "DealerListPageComponent", url: '/dealerlist', icon: 'list-circle' }
     ];
   }
 
   public get Pages4DealerAdmin(): MainMenuItem[] {
     return [
-      { menuType: MenuType.MenuHeader, zorder: 0, group: 0, title: 'Centro'            , component: '', url: '', icon: '' },
-      { menuType: MenuType.MenuItem, zorder: 100, group: 0, title: 'Centro Power Admin', component: "DealerPowerAdminPageComponent", url: '/dealerpoweradmin', icon: 'ellipse' },
-      { menuType: MenuType.MenuItem, zorder: 200, group: 0, title: 'Centro Admin'      , component: "DealerAdminPageComponent", url: '/dealeradmin', icon: 'ellipse' },
-      { menuType: MenuType.MenuItem, zorder: 300, group: 0, title: 'Utenti Centro'     , component: "UserDealerListPageComponent", url: '/userdealerlist', icon: 'list-circle' },
-      { menuType: MenuType.MenuItem, zorder: 400, group: 0, title: 'Studi'             , component: "FinancialAdvisorListPageComponent", url: '/financialadvisorlist', icon: 'list-circle' }
+      { menuType: MenuType.MenuHeader, zorder: 0, group: 0, title: 'menu.dealer'            , component: '', url: '', icon: '' },
+      { menuType: MenuType.MenuItem, zorder: 100, group: 0, title: 'menu.dealerPowerAdmin', component: "DealerPowerAdminPageComponent", url: '/dealerpoweradmin', icon: 'ellipse' },
+      { menuType: MenuType.MenuItem, zorder: 200, group: 0, title: 'menu.dealerAdmin'      , component: "DealerAdminPageComponent", url: '/dealeradmin', icon: 'ellipse' },
+      { menuType: MenuType.MenuItem, zorder: 300, group: 0, title: 'menu.dealerUsers'     , component: "UserDealerListPageComponent", url: '/userdealerlist', icon: 'list-circle' },
+      { menuType: MenuType.MenuItem, zorder: 400, group: 0, title: 'menu.financialAdvisors'             , component: "FinancialAdvisorListPageComponent", url: '/financialadvisorlist', icon: 'list-circle' }
     ];
   }
 
   public get Pages4FinancialAdvisorAdmin(): MainMenuItem[] {
     return [
-      { menuType: MenuType.MenuHeader, zorder:   0, group: 0, title: 'Studio'            , component: '', url: '', icon: '' },
-      { menuType: MenuType.MenuItem  , zorder: 100, group: 0, title: 'Studio Power Admin', component: "FinancialAdvisorPowerAdminPageComponent", url: '/financialadvisorpoweradmin', icon: 'ellipse' },
-      { menuType: MenuType.MenuItem  , zorder: 200, group: 0, title: 'Studio Admin'      , component: "FinancialAdvisorAdminPageComponent", url: '/financialadvisoradmin', icon: 'ellipse' },
-      { menuType: MenuType.MenuItem  , zorder: 300, group: 0, title: 'Utenti Studio'     , component: "UserFinancialAdvisorListPageComponent", url: '/userfinancialadvisorlist', icon: 'list-circle' },
-      { menuType: MenuType.MenuItem  , zorder: 400, group: 0, title: 'Aziende'           , component: "CompanyListPageComponent", url: '/companylist', icon: 'list-circle' }
+      { menuType: MenuType.MenuHeader, zorder:   0, group: 0, title: 'menu.financialAdvisor'            , component: '', url: '', icon: '' },
+      { menuType: MenuType.MenuItem  , zorder: 100, group: 0, title: 'menu.financialAdvisorPowerAdmin', component: "FinancialAdvisorPowerAdminPageComponent", url: '/financialadvisorpoweradmin', icon: 'ellipse' },
+      { menuType: MenuType.MenuItem  , zorder: 200, group: 0, title: 'menu.financialAdvisorAdmin'      , component: "FinancialAdvisorAdminPageComponent", url: '/financialadvisoradmin', icon: 'ellipse' },
+      { menuType: MenuType.MenuItem  , zorder: 300, group: 0, title: 'menu.financialAdvisorUsers'     , component: "UserFinancialAdvisorListPageComponent", url: '/userfinancialadvisorlist', icon: 'list-circle' },
+      { menuType: MenuType.MenuItem  , zorder: 400, group: 0, title: 'menu.companies'           , component: "CompanyListPageComponent", url: '/companylist', icon: 'list-circle' }
     ];
   }
 
   public get Pages4CompanyAdmin(): MainMenuItem[] {
     return [
-      { menuType: MenuType.MenuHeader, zorder:    0,  group: 0, title: 'Generale'                                           , component: '', url: '', icon: '' },
-      { menuType: MenuType.MenuItem,   zorder:  100,  group: 0, title: 'Azienda Power Admin', roles: ['CompanyPowerAdmin']  , component: "CompanyPowerAdminPageComponent", url: '/companypoweradmin', icon: 'ellipse' },
-      { menuType: MenuType.MenuItem,   zorder:  200,  group: 0, title: 'Azienda Admin'      , roles: ['CompanyAdmin']       , component: "CompanyAdminPageComponent", url: '/companyadmin', icon: 'ellipse' },
-      { menuType: MenuType.MenuItem  , zorder: 3000,  group: 0, title: 'Utenti'             , roles: ['CompanyPowerAdmin']  , component: "UserCompanyListPageComponent", url: '/usercompanylist', icon: 'people' },
+      { menuType: MenuType.MenuHeader, zorder:    0,  group: 0, title: 'menu.general'                                           , component: '', url: '', icon: '' },
+      { menuType: MenuType.MenuItem,   zorder:  100,  group: 0, title: 'menu.companyPowerAdmin', roles: ['CompanyPowerAdmin']  , component: "CompanyPowerAdminPageComponent", url: '/companypoweradmin', icon: 'ellipse' },
+      { menuType: MenuType.MenuItem,   zorder:  200,  group: 0, title: 'menu.companyAdmin'      , roles: ['CompanyAdmin']       , component: "CompanyAdminPageComponent", url: '/companyadmin', icon: 'ellipse' },
+      { menuType: MenuType.MenuItem  , zorder: 3000,  group: 0, title: 'menu.users'             , roles: ['CompanyPowerAdmin']  , component: "UserCompanyListPageComponent", url: '/usercompanylist', icon: 'people' },
       // nella sezione Parametri (gruppo 1, intestazione dichiarata dal menu presenze), dopo le altre voci
-      { menuType: MenuType.MenuItem  , zorder: 208000, group: 1, title: 'Menu utenti'      , roles: ['CompanyPowerAdmin']  , component: "CompanyMenuRestrictionPageComponent", url: '/companymenurestriction', icon: 'options' }
+      { menuType: MenuType.MenuItem  , zorder: 208000, group: 1, title: 'menu.menuRestriction'      , roles: ['CompanyPowerAdmin']  , component: "CompanyMenuRestrictionPageComponent", url: '/companymenurestriction', icon: 'options' }
     ];
   }
 
@@ -78,12 +78,12 @@ export class MainMenuInfrastructureService implements iMainMenuService{
     //const roles = ['SuperUser', 'PowerAdmin', 'Admin', 'DealerPowerAdmin', 'DealerAdmin', 'FinancialAdvisorPowerAdmin', 'FinancialAdvisorAdmin', 'CompanyPowerAdmin', 'CompanyAdmin', 'User'];
 
     return [
-      { menuType: MenuType.MenuHeader, zorder: 0,   group: 0, title: 'Accesso', component: '', url: '', icon: '' },
-      { menuType: MenuType.MenuItem,   zorder: 100, group: 0, title: 'Impersonate', component: "UserImpersonatePageComponent", url: '/userimpersonate', icon: 'people-circle', nonConfigurabile: true },
-      { menuType: MenuType.MenuItem,   zorder: 200, group: 0, title: 'Dashboard', component: "DashboardPageComponent", url: '/dashboard', icon: 'home', nonConfigurabile: true },
-      { menuType: MenuType.MenuItem,   zorder: 300, group: 0, title: 'Login', component: "LoginPageComponent", url: '/login', icon: 'enter', nonConfigurabile: true },
-      { menuType: MenuType.MenuItem,   zorder: 400, group: 0, title: 'Logout', component: "LogoutPageComponent", url: '/logout', icon: 'exit', nonConfigurabile: true },
-      { menuType: MenuType.MenuItem,   zorder: 500, group: 0, title: 'User Data', component: "UserPageComponent", url: '/user', icon: 'person', nonConfigurabile: true }
+      { menuType: MenuType.MenuHeader, zorder: 0,   group: 0, title: 'menu.access', component: '', url: '', icon: '' },
+      { menuType: MenuType.MenuItem,   zorder: 100, group: 0, title: 'menu.impersonate', component: "UserImpersonatePageComponent", url: '/userimpersonate', icon: 'people-circle', nonConfigurabile: true },
+      { menuType: MenuType.MenuItem,   zorder: 200, group: 0, title: 'menu.dashboard', component: "DashboardPageComponent", url: '/dashboard', icon: 'home', nonConfigurabile: true },
+      { menuType: MenuType.MenuItem,   zorder: 300, group: 0, title: 'menu.login', component: "LoginPageComponent", url: '/login', icon: 'enter', nonConfigurabile: true },
+      { menuType: MenuType.MenuItem,   zorder: 400, group: 0, title: 'menu.logout', component: "LogoutPageComponent", url: '/logout', icon: 'exit', nonConfigurabile: true },
+      { menuType: MenuType.MenuItem,   zorder: 500, group: 0, title: 'menu.userData', component: "UserPageComponent", url: '/user', icon: 'person', nonConfigurabile: true }
     ];
   }
 

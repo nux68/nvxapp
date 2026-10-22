@@ -7,6 +7,7 @@ import { PasswordRecoveryRequestInModel } from '../../../ClientServer-Service/In
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { ShowcaseService } from '../../../Utility/infrastructure/showcase.service';
 import { ShowcaseContenuti } from '../../../Utility/infrastructure/showcase.model';
+import { TranslocoService } from '@jsverse/transloco';
 
 /*
  Showcase: password dimenticata (prima del login). Dal nome utente il server invia all'email
@@ -21,7 +22,7 @@ import { ShowcaseContenuti } from '../../../Utility/infrastructure/showcase.mode
 })
 export class ForgotPasswordPageComponent implements OnInit {
 
-  public readonly title = 'Password dimenticata';
+  public readonly title: string;
 
   public form: FormGroup;
   public errori: string[] = [];
@@ -38,12 +39,14 @@ export class ForgotPasswordPageComponent implements OnInit {
               public showcaseService: ShowcaseService,
               userInterfaceService: UserInterfaceService,
               private fb: FormBuilder,
-              private navCtrl: NavController) {
-    this.btnInvia = new ButtonItem('Invia link', 'mail-outline', 'primary', true, () => this.invia());
+              private navCtrl: NavController,
+              private transloco: TranslocoService) {
+    this.title = this.transloco.translate('pages.forgotPassword.title');
+    this.btnInvia = new ButtonItem(this.transloco.translate('pages.forgotPassword.sendLink'), 'mail-outline', 'primary', true, () => this.invia());
     this.btnAnnulla = userInterfaceService.Btn_Annulla;
     this.btnAnnulla.event = () => this.navCtrl.navigateRoot('/login');
     this.btnLogin = userInterfaceService.Btn_LogIn;
-    this.btnLogin.text = 'Accedi';
+    this.btnLogin.text = this.transloco.translate('pages.forgotPassword.signIn');
     this.btnLogin.event = () => this.navCtrl.navigateRoot('/login');
     this.buttonbar = [this.btnInvia, this.btnAnnulla];
 

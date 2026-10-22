@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { ShowcaseFooterComponent } from './components/infrastructure/showcase-footer/showcase-footer.component';
 
 
@@ -7,8 +8,9 @@ import { ShowcaseFooterComponent } from './components/infrastructure/showcase-fo
 @NgModule({
   imports: [
     CommonModule,
+    TranslocoPipe,
   ],
   declarations: [ShowcaseFooterComponent],
-  exports: [ShowcaseFooterComponent]
+  exports: [ShowcaseFooterComponent, TranslocoPipe]
 })
 export class SharedShowcaseModule { }

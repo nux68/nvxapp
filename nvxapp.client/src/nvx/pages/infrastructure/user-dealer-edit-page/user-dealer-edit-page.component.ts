@@ -2,6 +2,7 @@ import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
 import { UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { NavController } from '@ionic/angular';
+import { TranslocoService } from '@jsverse/transloco';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AccountService } from '../../../ClientServer-Service/Infrastructure/Account/account.service';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
@@ -31,14 +32,15 @@ export class UserDealerEditPageComponent extends BasePageConfirmCancelComponent<
     protected override fb: FormBuilder,
     private parameterService: ParameterService,
     private stringHelperService: StringHelperService,
-    private accountService: AccountService) {
+    private accountService: AccountService,
+    private transloco: TranslocoService) {
 
     super(navCtrl, userInterfaceService, fb);
 
   }
 
 
-  get Title(): string { return "UserDealerEditPage"; }
+  get Title(): string { return this.transloco.translate('pages.userDealerEdit.title'); }
   get EditForm(): FormGroup {
     return this.fb.group({
 

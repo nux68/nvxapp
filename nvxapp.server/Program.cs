@@ -1,4 +1,6 @@
 using Hangfire;
+using Microsoft.AspNetCore.Localization;
+using System.Globalization;
 using nvxapp.server.data.Infrastructure.Tenancy;
 using nvxapp.server.Utility;
 
@@ -139,6 +141,17 @@ else if (app.Environment.IsProduction())
 if (useHttps == true)
     app.UseHttpsRedirection();
 
+
+// lingua dei messaggi per l'utente (UICulture) dall'header Accept-Language mandato dal client
+// (o ?ui-culture= per SignalR); la formattazione di date e numeri (Culture) resta quella della macchina
+var serverCulture = CultureInfo.CurrentCulture;
+app.UseRequestLocalization(new RequestLocalizationOptions
+{
+    DefaultRequestCulture = new RequestCulture(serverCulture, new CultureInfo("it")),
+    SupportedCultures = new[] { serverCulture },
+    SupportedUICultures = new[] { new CultureInfo("it"), new CultureInfo("en") },
+    FallBackToParentUICultures = true,
+});
 
 app.UseAuthentication();
 app.UseAuthorization();

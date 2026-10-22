@@ -18,6 +18,7 @@ using nvxapp.server.data.Repositories.Tenant;
 using nvxapp.server.data.Repositories.Public;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using nvxapp.server.data.Localization;
 
 
 namespace nvxapp.server.service.Service.Infrastructure.MyTableService
@@ -55,7 +56,7 @@ namespace nvxapp.server.service.Service.Infrastructure.MyTableService
                 //retVal.MyTable.Clear();
 
                 if (retVal.MyTable.Count == 0)
-                    retVal.Messages.Add(new Message("La tabella MyTable è vuota", MessageType.Information));
+                    retVal.Messages.Add(new Message(InfrastructureMessages.Get("MyTableEmpty"), MessageType.Information));
 
 
 

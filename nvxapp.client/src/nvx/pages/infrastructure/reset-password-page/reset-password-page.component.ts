@@ -8,6 +8,7 @@ import { PasswordRecoveryResetInModel } from '../../../ClientServer-Service/Infr
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { ShowcaseService } from '../../../Utility/infrastructure/showcase.service';
 import { ShowcaseContenuti } from '../../../Utility/infrastructure/showcase.model';
+import { TranslocoService } from '@jsverse/transloco';
 
 /*
  Showcase: nuova password dal link ricevuto per email (/reset-password?user=...&token=...).
@@ -21,7 +22,7 @@ import { ShowcaseContenuti } from '../../../Utility/infrastructure/showcase.mode
 })
 export class ResetPasswordPageComponent implements OnInit {
 
-  public readonly title = 'Nuova password';
+  public readonly title: string;
 
   // stesso limite del server (PasswordRecoveryService)
   public readonly passwordMinLength = 8;
@@ -45,12 +46,14 @@ export class ResetPasswordPageComponent implements OnInit {
               userInterfaceService: UserInterfaceService,
               private fb: FormBuilder,
               private route: ActivatedRoute,
-              private navCtrl: NavController) {
-    this.btnSalva = new ButtonItem('Salva password', 'checkmark-outline', 'primary', true, () => this.salva());
+              private navCtrl: NavController,
+              private transloco: TranslocoService) {
+    this.title = this.transloco.translate('pages.resetPassword.title');
+    this.btnSalva = new ButtonItem(this.transloco.translate('pages.resetPassword.savePassword'), 'checkmark-outline', 'primary', true, () => this.salva());
     this.btnAccedi = userInterfaceService.Btn_LogIn;
-    this.btnAccedi.text = 'Accedi';
+    this.btnAccedi.text = this.transloco.translate('pages.resetPassword.signIn');
     this.btnAccedi.event = () => this.navCtrl.navigateRoot('/login', { state: { userName: this.userNameCambiato ?? '' } });
-    this.btnRichiedi = new ButtonItem('Nuovo link', 'mail-outline', 'primary', false, () => this.navCtrl.navigateRoot('/forgot-password'));
+    this.btnRichiedi = new ButtonItem(this.transloco.translate('pages.resetPassword.newLink'), 'mail-outline', 'primary', false, () => this.navCtrl.navigateRoot('/forgot-password'));
 
     this.form = this.fb.group({
       pw: ['', [Validators.required, Validators.minLength(this.passwordMinLength)]],
@@ -68,7 +71,7 @@ export class ResetPasswordPageComponent implements OnInit {
     this.userId = this.route.snapshot.queryParamMap.get('user') ?? '';
     this.token = this.route.snapshot.queryParamMap.get('token') ?? '';
     this.linkValido = this.userId.length > 0 && this.token.length > 0;
-    this.errori = this.linkValido ? [] : ['Link non valido: chiedi di nuovo il recupero della password.'];
+    this.errori = this.linkValido ? [] : [this.transloco.translate('pages.resetPassword.invalidLink')];
     this.buttonbar = this.linkValido ? [this.btnSalva] : [this.btnRichiedi];
   }
 

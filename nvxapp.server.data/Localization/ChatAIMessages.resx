@@ -1,0 +1,97 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="SessionExpired" xml:space="preserve">
+    <value>La sessione precedente è scaduta. Puoi iniziare con un nuovo comando.</value>
+  </data>
+  <data name="ResetDone" xml:space="preserve">
+    <value>Operazione annullata. Puoi iniziare con un nuovo comando.</value>
+  </data>
+  <data name="NotUnderstood" xml:space="preserve">
+    <value>Non ho capito la richiesta. Puoi ripetere?</value>
+  </data>
+  <data name="LlmNotUnderstood" xml:space="preserve">
+    <value>LLM: non ho capito la richiesta. Puoi ripetere?</value>
+  </data>
+  <data name="PlanInternalError" xml:space="preserve">
+    <value>Errore interno nel piano di esecuzione.</value>
+  </data>
+  <data name="OperationCancelled" xml:space="preserve">
+    <value>Operazione annullata.</value>
+  </data>
+  <data name="ConfirmClarification" xml:space="preserve">
+    <value>Rispondere con 'sì' per confermare o 'no' per annullare.</value>
+  </data>
+  <data name="SuggestionYes" xml:space="preserve">
+    <value>Sì</value>
+    <comment>chip di conferma; il testo viene rimandato al server, che accetta si/yes/ok/confermo... in entrambe le lingue</comment>
+  </data>
+  <data name="SuggestionNo" xml:space="preserve">
+    <value>No</value>
+    <comment>chip di annullamento; il testo viene rimandato al server</comment>
+  </data>
+  <data name="SlotQuestionDefault" xml:space="preserve">
+    <value>Puoi specificare '{0}'?</value>
+    <comment>{0} = nome dello slot</comment>
+  </data>
+  <data name="OperationTitle" xml:space="preserve">
+    <value>Operazione '{0}'</value>
+    <comment>{0} = nome dell'operazione</comment>
+  </data>
+  <data name="CommandExecutionError" xml:space="preserve">
+    <value>Errore durante l'esecuzione del comando. Riprova.</value>
+  </data>
+  <data name="NoCurrentAction" xml:space="preserve">
+    <value>Nessuna azione corrente.</value>
+  </data>
+  <data name="PlanSummaryTitle" xml:space="preserve">
+    <value>Riepilogo operazioni:</value>
+  </data>
+  <data name="PlanConfirmQuestion" xml:space="preserve">
+    <value>Confermi? (sì / no)</value>
+  </data>
+  <data name="HelpDisplayName" xml:space="preserve">
+    <value>Aiuto</value>
+    <comment>anche chip: il testo viene rimandato al server e deve contenere una keyword di help</comment>
+  </data>
+  <data name="HelpDescription" xml:space="preserve">
+    <value>fornisce la lista dei comandi disponibili.</value>
+  </data>
+  <data name="HelpCommandsTitle" xml:space="preserve">
+    <value>Ecco i comandi disponibili:</value>
+  </data>
+  <data name="NavigateDisplayName" xml:space="preserve">
+    <value>Vai a</value>
+    <comment>anche chip: il testo viene rimandato al server e deve contenere una keyword di navigazione</comment>
+  </data>
+  <data name="NavigateDescription" xml:space="preserve">
+    <value>naviga a una pagina o sezione dell'applicazione.</value>
+  </data>
+  <data name="NavigatePageQuestion" xml:space="preserve">
+    <value>A quale pagina vuoi andare?</value>
+  </data>
+  <data name="NavigatePageLabel" xml:space="preserve">
+    <value>Pagina</value>
+  </data>
+  <data name="NavigateParamsQuestion" xml:space="preserve">
+    <value>Hai parametri aggiuntivi? (opzionale)</value>
+  </data>
+  <data name="NavigateParamsLabel" xml:space="preserve">
+    <value>Parametri</value>
+  </data>
+  <data name="NavigateResult" xml:space="preserve">
+    <value>Navigazione verso '{0}'.</value>
+    <comment>{0} = route</comment>
+  </data>
+</root>

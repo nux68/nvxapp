@@ -23,6 +23,7 @@ using nvxapp.server.service.ServerModels;
 using System.Data;
 using System.Linq;
 using static nvxapp.server.data.Entities.AspNetUsersDataUtil;
+using nvxapp.server.data.Localization;
 
 
 namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
@@ -118,7 +119,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                         var result = await _signInManager.CheckPasswordSignInAsync(applicationUser, model.Data.Password ?? string.Empty, false);
                         if (!result.Succeeded)
                         {
-                            retVal.AddMessage("Password errata", MessageType.Error);
+                            retVal.AddMessage(InfrastructureMessages.Get("LoginWrongPassword"), MessageType.Error);
 
                             //throw new Exception("Password errata");
                         }
@@ -141,13 +142,13 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                     else
                     {
                         //throw new Exception("Nome utente non trovato");
-                        retVal.AddMessage("Nome utente non trovato", MessageType.Error);
+                        retVal.AddMessage(InfrastructureMessages.Get("LoginUserNotFound"), MessageType.Error);
                     }
                 }
                 else
                 {
                     //throw new Exception("Nome utente non valito");
-                    retVal.AddMessage("Nome utente non valito", MessageType.Error);
+                    retVal.AddMessage(InfrastructureMessages.Get("LoginUserNameInvalid"), MessageType.Error);
                 }
 
 

@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { LanguageService } from './language.service';
 import { Subject, BehaviorSubject, Observable } from 'rxjs';
 
 
@@ -58,11 +59,11 @@ export class SpeechService {
   }
   
 
-  constructor() {
+  constructor(private languageService: LanguageService) {
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (SpeechRecognition) {
       this.recognition = new SpeechRecognition();
-      this.recognition.lang = 'it-IT';
+      this.recognition.lang = this.languageService.speechLanguage; // lingua dell'interfaccia
       this.recognition.continuous = true; // Continua ad ascoltare
       this.recognition.interimResults = false; // Mostra risultati parziali
 

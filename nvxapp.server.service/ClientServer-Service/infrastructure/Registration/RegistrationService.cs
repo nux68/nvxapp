@@ -19,6 +19,7 @@ using Serilog;
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
+using nvxapp.server.data.Localization;
 
 namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Registration
 {
@@ -98,20 +99,20 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Registration
 
                 // dati della richiesta
                 if (descrizione.Length < RagioneSocialeMinLength || descrizione.Length > RagioneSocialeMaxLength)
-                    retVal.AddMessage($"La ragione sociale deve avere da {RagioneSocialeMinLength} a {RagioneSocialeMaxLength} lettere o cifre.", MessageType.Error);
+                    retVal.AddMessage(InfrastructureMessages.Get("RegistrationCompanyNameLength", RagioneSocialeMinLength, RagioneSocialeMaxLength), MessageType.Error);
                 if (!MailValida(mail))
-                    retVal.AddMessage("Indirizzo email non valido.", MessageType.Error);
+                    retVal.AddMessage(InfrastructureMessages.Get("RegistrationInvalidEmail"), MessageType.Error);
                 if (pw.Length < PasswordMinLength)
-                    retVal.AddMessage($"La password deve avere almeno {PasswordMinLength} caratteri.", MessageType.Error);
+                    retVal.AddMessage(InfrastructureMessages.Get("PasswordTooShort", PasswordMinLength), MessageType.Error);
                 if (!data.AccettaCondizioni)
-                    retVal.AddMessage("Per registrarti devi accettare le condizioni del servizio.", MessageType.Error);
+                    retVal.AddMessage(InfrastructureMessages.Get("RegistrationTermsNotAccepted"), MessageType.Error);
                 if (retVal.Messages.Any())
                     return retVal;
 
                 if (!_emailService.Configured || StudioDemo() == 0)
                 {
                     Log.Warning("Registrazione non disponibile: invio email non configurato o ramo DEMO mancante.");
-                    retVal.AddMessage("Registrazione non disponibile al momento.", MessageType.Error);
+                    retVal.AddMessage(InfrastructureMessages.Get("RegistrationUnavailable"), MessageType.Error);
                     return retVal;
                 }
 
@@ -127,12 +128,12 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Registration
                 var stessoNome = RichiesteInAttesa().Where(x => x.Descrizione.ToUpper() == descrizione.ToUpper()).ToList();
                 if (stessoNome.Any(x => !string.Equals(x.Mail, mail, StringComparison.OrdinalIgnoreCase)))
                 {
-                    retVal.AddMessage($"Il nome '{descrizione}' non e' disponibile: scegli un'altra ragione sociale.", MessageType.Error);
+                    retVal.AddMessage(InfrastructureMessages.Get("RegistrationNameNotAvailable", descrizione), MessageType.Error);
                     return retVal;
                 }
                 if (RichiesteInAttesa().Count(x => x.Mail.ToUpper() == mail.ToUpper()) >= RichiesteMaxPerMail + stessoNome.Count)
                 {
-                    retVal.AddMessage("Troppe registrazioni in attesa per questo indirizzo email: conferma quelle ricevute o riprova piu' tardi.", MessageType.Error);
+                    retVal.AddMessage(InfrastructureMessages.Get("RegistrationTooManyPending"), MessageType.Error);
                     return retVal;
                 }
 
@@ -158,7 +159,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Registration
                 {
                     Log.Error(e, "Registrazione: invio dell'email di conferma a {mail} non riuscito.", mail);
                     await _companyRegistrationRequestRepository.DeleteAsync(richiesta);
-                    retVal.AddMessage("Non e' stato possibile inviare l'email di conferma: controlla l'indirizzo o riprova piu' tardi.", MessageType.Error);
+                    retVal.AddMessage(InfrastructureMessages.Get("RegistrationConfirmEmailSendFailed"), MessageType.Error);
                     return retVal;
                 }
 
@@ -180,7 +181,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Registration
                 var richiesta = string.IsNullOrEmpty(token) ? null : _companyRegistrationRequestRepository.FindByTokenHash(HashToken(token));
                 if (richiesta == null)
                 {
-                    retVal.AddMessage("Link di conferma non valido: registrati di nuovo.", MessageType.Error);
+                    retVal.AddMessage(InfrastructureMessages.Get("RegistrationConfirmLinkInvalid"), MessageType.Error);
                     return retVal;
                 }
 
@@ -194,7 +195,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Registration
                 if (richiesta.ExpiresAt < DateTime.Now)
                 {
                     await _companyRegistrationRequestRepository.DeleteAsync(richiesta);
-                    retVal.AddMessage($"Il link di conferma e' scaduto (vale {ScadenzaOre} ore): registrati di nuovo.", MessageType.Error);
+                    retVal.AddMessage(InfrastructureMessages.Get("RegistrationConfirmLinkExpired", ScadenzaOre), MessageType.Error);
                     return retVal;
                 }
 
@@ -203,7 +204,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Registration
                 int idFinancialAdvisor = StudioDemo();
                 if (nomeOccupato != null || idFinancialAdvisor == 0)
                 {
-                    retVal.AddMessage(nomeOccupato ?? "Registrazione non disponibile al momento.", MessageType.Error);
+                    retVal.AddMessage(nomeOccupato ?? InfrastructureMessages.Get("RegistrationUnavailable"), MessageType.Error);
                     return retVal;
                 }
 
@@ -228,7 +229,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Registration
 
                 if (!resPut.Success || resPut.Data == null || resPut.Data.CompanyEdit.IdCompany == 0)
                 {
-                    retVal.AddMessage("Registrazione non riuscita, riprova piu' tardi.", MessageType.Error);
+                    retVal.AddMessage(InfrastructureMessages.Get("RegistrationFailed"), MessageType.Error);
                     return retVal;
                 }
                 int idCompany = resPut.Data.CompanyEdit.IdCompany;
@@ -293,11 +294,11 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Registration
         {
             string descrizioneNorm = descrizione.ToUpper();
             if (_companyRepository.FindAll(x => x.Descrizione != null && x.Descrizione.ToUpper() == descrizioneNorm).Any())
-                return $"Esiste gia' un'azienda registrata come '{descrizione}'.";
+                return InfrastructureMessages.Get("RegistrationCompanyAlreadyExists", descrizione);
 
             foreach (var suffisso in SuffissiUtenti)
                 if (await _userManager.FindByNameAsync(descrizione + suffisso) != null)
-                    return $"Il nome '{descrizione}' non e' disponibile: scegli un'altra ragione sociale.";
+                    return InfrastructureMessages.Get("RegistrationNameNotAvailable", descrizione);
 
             return null;
         }
@@ -315,18 +316,18 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Registration
         {
             string sito = SiteName.Value;
             string linkHtml = WebUtility.HtmlEncode(link);
-            string subject = $"{sito}: conferma la registrazione di {descrizione}";
+            string subject = InfrastructureMessages.Get("RegistrationConfirmEmailSubject", sito, descrizione);
             string html = $@"<div style=""font-family:Arial,Helvetica,sans-serif;font-size:15px;color:#222;max-width:560px"">
   <h2 style=""margin:0 0 16px 0"">{WebUtility.HtmlEncode(sito)}</h2>
-  <p>Hai chiesto di registrare l'azienda <b>{WebUtility.HtmlEncode(descrizione)}</b>.</p>
-  <p>Per attivarla apri questo link entro {ScadenzaOre} ore:</p>
-  <p style=""margin:24px 0""><a href=""{linkHtml}"" style=""background:#ff7a00;color:#fff;padding:12px 22px;border-radius:22px;text-decoration:none;font-weight:bold"">Attiva l'account</a></p>
-  <p style=""color:#666;font-size:13px"">Se il pulsante non funziona, copia questo indirizzo nel browser:<br>{linkHtml}</p>
-  <p style=""color:#666;font-size:13px"">Se non hai chiesto tu la registrazione, ignora questa email: senza conferma non viene creato niente.</p>
+  <p>{Html("RegistrationConfirmEmailIntro", $"<b>{WebUtility.HtmlEncode(descrizione)}</b>")}</p>
+  <p>{Html("RegistrationConfirmEmailOpenLink", ScadenzaOre)}</p>
+  <p style=""margin:24px 0""><a href=""{linkHtml}"" style=""background:#ff7a00;color:#fff;padding:12px 22px;border-radius:22px;text-decoration:none;font-weight:bold"">{Html("RegistrationConfirmEmailButton")}</a></p>
+  <p style=""color:#666;font-size:13px"">{Html("EmailButtonFallback")}<br>{linkHtml}</p>
+  <p style=""color:#666;font-size:13px"">{Html("RegistrationConfirmEmailIgnore")}</p>
 </div>";
-            string text = $"{sito}\n\nHai chiesto di registrare l'azienda {descrizione}.\n" +
-                          $"Per attivarla apri questo link entro {ScadenzaOre} ore:\n{link}\n\n" +
-                          "Se non hai chiesto tu la registrazione, ignora questa email: senza conferma non viene creato niente.";
+            string text = $"{sito}\n\n{InfrastructureMessages.Get("RegistrationConfirmEmailIntro", descrizione)}\n" +
+                          $"{InfrastructureMessages.Get("RegistrationConfirmEmailOpenLink", ScadenzaOre)}\n{link}\n\n" +
+                          InfrastructureMessages.Get("RegistrationConfirmEmailIgnore");
             await _emailService.SendAsync(mail, subject, html, text);
         }
 
@@ -342,19 +343,23 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Registration
                 $@"<td style=""padding:8px 12px;border-bottom:1px solid #eee;color:#666"">{WebUtility.HtmlEncode(string.Join(", ", u.Roles))}</td></tr>"));
             string righeTesto = string.Join("\n", users.Select(u => $"  - {u.UserName} ({string.Join(", ", u.Roles)})"));
 
-            string subject = $"{sito}: l'azienda {descrizione} e' attiva";
+            string subject = InfrastructureMessages.Get("RegistrationSummaryEmailSubject", sito, descrizione);
             string html = $@"<div style=""font-family:Arial,Helvetica,sans-serif;font-size:15px;color:#222;max-width:560px"">
   <h2 style=""margin:0 0 16px 0"">{WebUtility.HtmlEncode(sito)}</h2>
-  <p>L'azienda <b>{WebUtility.HtmlEncode(descrizione)}</b> e' attiva. Questi sono gli utenti creati:</p>
+  <p>{Html("RegistrationSummaryEmailIntro", $"<b>{WebUtility.HtmlEncode(descrizione)}</b>")}</p>
   <table style=""border-collapse:collapse;margin:16px 0"">{righeHtml}</table>
-  <p>Per tutti vale la password che hai scelto alla registrazione.</p>
-  <p style=""margin:24px 0""><a href=""{linkHtml}"" style=""background:#ff7a00;color:#fff;padding:12px 22px;border-radius:22px;text-decoration:none;font-weight:bold"">Accedi</a></p>
-  <p style=""color:#666;font-size:13px"">Conserva questa email: contiene i nomi degli utenti per accedere.</p>
+  <p>{Html("RegistrationSummaryEmailPassword")}</p>
+  <p style=""margin:24px 0""><a href=""{linkHtml}"" style=""background:#ff7a00;color:#fff;padding:12px 22px;border-radius:22px;text-decoration:none;font-weight:bold"">{Html("RegistrationSummaryEmailButton")}</a></p>
+  <p style=""color:#666;font-size:13px"">{Html("RegistrationSummaryEmailKeep")}</p>
 </div>";
-            string text = $"{sito}\n\nL'azienda {descrizione} e' attiva. Questi sono gli utenti creati:\n{righeTesto}\n\n" +
-                          $"Per tutti vale la password che hai scelto alla registrazione.\nAccedi da: {linkLogin}";
+            string text = $"{sito}\n\n{InfrastructureMessages.Get("RegistrationSummaryEmailIntro", descrizione)}\n{righeTesto}\n\n" +
+                          $"{InfrastructureMessages.Get("RegistrationSummaryEmailPassword")}\n{InfrastructureMessages.Get("RegistrationSummaryEmailLoginFrom", linkLogin)}";
             await _emailService.SendAsync(mail, subject, html, text);
         }
+
+        // testo della chiave per l'HTML delle email: si codifica il testo, i parametri arrivano gia' pronti per l'HTML
+        private static string Html(string key, params object?[] htmlArgs)
+            => string.Format(System.Globalization.CultureInfo.CurrentCulture, WebUtility.HtmlEncode(InfrastructureMessages.Get(key)), htmlArgs);
 
         // indirizzo della pagina di conferma
         private string LinkConferma(string token)

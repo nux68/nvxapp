@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using nvxapp.server.data.Localization;
 
 namespace nvxapp.server.data.Infrastructure.Tenancy
 {
@@ -48,11 +49,11 @@ namespace nvxapp.server.data.Infrastructure.Tenancy
         {
             var idCompany = CurrentCompany()
                 ?? throw new ApplicationNotActiveException(
-                    $"Nessuna azienda selezionata per l'operazione corrente: impossibile accedere ai dati dell'applicativo {application}.");
+                    InfrastructureMessages.Get("ApplicationNoCompanySelected", application));
 
             if (!ActiveApplications(idCompany).Contains(application))
                 throw new ApplicationNotActiveException(
-                    $"L'applicativo {application} non e' attivo per l'azienda {idCompany}.");
+                    InfrastructureMessages.Get("ApplicationNotActiveForCompany", application, idCompany));
 
             return _tenancySettings.MultiTenant
                 ? TenantSchemaName.For(idCompany, application)

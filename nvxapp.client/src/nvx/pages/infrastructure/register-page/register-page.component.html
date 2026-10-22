@@ -26,38 +26,38 @@
         <div class="nvx-sc-form">
           <div class="ion-padding">
             <div class="nvx-sc-card-icon"><ion-icon name="mail-unread-outline"></ion-icon></div>
-            <h2>Controlla la posta</h2>
+            <h2>{{ 'pages.register.checkMail' | transloco }}</h2>
             <p>{{ c.inviata }}</p>
-            <p class="nvx-sc-muted">Email inviata a <strong>{{ mailInviata }}</strong>. Il link vale {{ scadenzaOre }} ore; se non la trovi guarda anche nella posta indesiderata.</p>
+            <p class="nvx-sc-muted">{{ 'pages.register.sentToPrefix' | transloco }} <strong>{{ mailInviata }}</strong>{{ 'pages.register.sentToSuffix' | transloco: { hours: scadenzaOre } }}</p>
           </div>
         </div>
       } @else {
         <form class="nvx-sc-form" [formGroup]="form">
           <ion-item lines="full">
-            <ion-input label="Ragione sociale" labelPlacement="floating" formControlName="ragioneSociale" [maxlength]="ragioneSocialeMaxLength"></ion-input>
+            <ion-input [label]="'pages.register.companyName' | transloco" labelPlacement="floating" formControlName="ragioneSociale" [maxlength]="ragioneSocialeMaxLength"></ion-input>
           </ion-item>
           @if (erroreCampo('ragioneSociale')) {
-            <ion-note color="danger" class="nvx-nota-disabled">Almeno 3 lettere o cifre, al massimo {{ ragioneSocialeMaxLength }} caratteri.</ion-note>
+            <ion-note color="danger" class="nvx-nota-disabled">{{ 'pages.register.companyNameError' | transloco: { max: ragioneSocialeMaxLength } }}</ion-note>
           } @else if (nomeAzienda) {
-            <ion-note class="nvx-nota-disabled">Gli utenti di accesso inizieranno con «{{ nomeAzienda }}_»</ion-note>
+            <ion-note class="nvx-nota-disabled">{{ 'pages.register.userPrefixHint' | transloco: { name: nomeAzienda } }}</ion-note>
           }
           <ion-item lines="full">
-            <ion-input label="Email" labelPlacement="floating" type="email" formControlName="mail"></ion-input>
+            <ion-input [label]="'pages.register.email' | transloco" labelPlacement="floating" type="email" formControlName="mail"></ion-input>
           </ion-item>
           @if (erroreCampo('mail')) {
-            <ion-note color="danger" class="nvx-nota-disabled">Indirizzo email non valido.</ion-note>
+            <ion-note color="danger" class="nvx-nota-disabled">{{ 'pages.register.emailInvalid' | transloco }}</ion-note>
           }
           <ion-item lines="full">
-            <ion-input label="Password" labelPlacement="floating" type="password" formControlName="pw"></ion-input>
+            <ion-input [label]="'pages.register.password' | transloco" labelPlacement="floating" type="password" formControlName="pw"></ion-input>
           </ion-item>
           @if (erroreCampo('pw')) {
-            <ion-note color="danger" class="nvx-nota-disabled">Almeno {{ passwordMinLength }} caratteri.</ion-note>
+            <ion-note color="danger" class="nvx-nota-disabled">{{ 'pages.register.passwordMinLength' | transloco: { min: passwordMinLength } }}</ion-note>
           }
           <ion-item lines="full">
-            <ion-input label="Conferma password" labelPlacement="floating" type="password" formControlName="conferma"></ion-input>
+            <ion-input [label]="'pages.register.confirmPassword' | transloco" labelPlacement="floating" type="password" formControlName="conferma"></ion-input>
           </ion-item>
           @if (passwordDiverse) {
-            <ion-note color="danger" class="nvx-nota-disabled">Le password non coincidono.</ion-note>
+            <ion-note color="danger" class="nvx-nota-disabled">{{ 'pages.register.passwordMismatch' | transloco }}</ion-note>
           }
           <ion-item lines="none">
             <ion-checkbox formControlName="accettaCondizioni" labelPlacement="end" justify="start">

@@ -6,6 +6,7 @@ using nvxapp.server.data.Interfaces;
 using Serilog;
 using System.Linq.Expressions;
 using System.Reflection;
+using nvxapp.server.data.Localization;
 
 namespace nvxapp.server.data.Infrastructure
 {
@@ -61,7 +62,7 @@ namespace nvxapp.server.data.Infrastructure
                 var validationResults = validator.Validate(entity).ToList();
 
                 if (validationResults.Any())
-                    throw new Exception(validationResults.ToStringMessage());
+                    throw new UserMessageException(validationResults.ToStringMessage());
             }
 
             //// update the "ChangeDate" property if exists
@@ -135,7 +136,7 @@ namespace nvxapp.server.data.Infrastructure
                 var validationResults = validator.Validate(entity).ToList();
 
                 if (validationResults.Any())
-                    throw new Exception(validationResults.ToStringMessage());
+                    throw new UserMessageException(validationResults.ToStringMessage());
             }
 
             //// update the "ChangeDate" property if exists
@@ -155,7 +156,7 @@ namespace nvxapp.server.data.Infrastructure
                 var validationResults = validator.CanBeEliminated(entity).ToList();
 
                 if (validationResults.Any())
-                    throw new Exception(validationResults.ToStringMessage());
+                    throw new UserMessageException(validationResults.ToStringMessage());
             }
 
             DbContext.Set<T>().Remove(entity);

@@ -8,6 +8,7 @@ import { FinancialAdvisorListInModel, FinancialAdvisorListModel } from '../../..
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { NvxListAction, NvxListColumn } from '../../../shared/components/infrastructure/nvx-list/nvx-list.component';
 import { FabMenuService, FabMenuItem } from '../../../Utility/infrastructure/fab-menu.service';
+import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
   selector: 'app-financial-advisor-list-page',
@@ -21,7 +22,7 @@ export class FinancialAdvisorListPageComponent {
   public title!: string;
   public searchText!: string;
   public financialAdvisorList: FinancialAdvisorListModel[] | null = null;
-  public readonly columns: NvxListColumn<FinancialAdvisorListModel>[] = [{ key: 'descrizione', title: 'Studio' }];
+  public readonly columns: NvxListColumn<FinancialAdvisorListModel>[];
   public readonly actions: NvxListAction<FinancialAdvisorListModel>[];
   public readonly isDisabled = (item: FinancialAdvisorListModel) => item.disabled;
   public readonly sortByDescrizione = (a: FinancialAdvisorListModel, b: FinancialAdvisorListModel) => a.descrizione.localeCompare(b.descrizione);
@@ -32,9 +33,11 @@ export class FinancialAdvisorListPageComponent {
     private accountService: AccountService,
     private userInterfaceService: UserInterfaceService,
     public fabMenuService: FabMenuService,
-    private userNavigationService: UserNavigationService) {
+    private userNavigationService: UserNavigationService,
+    private transloco: TranslocoService) {
 
-    this.title = 'Financial Advisors';
+    this.title = this.transloco.translate('pages.financialAdvisorList.title');
+    this.columns = [{ key: 'descrizione', title: this.transloco.translate('pages.financialAdvisorList.columnFinancialAdvisor') }];
 
     this.btnEdit = userInterfaceService.Btn_Modifica;
     this.btnEdit.event = this.handleButtonEditClick;

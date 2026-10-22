@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { TranslocoService } from '@jsverse/transloco';
 import { Routes } from '@angular/router';
 import { MainMenuItem, MenuType } from './main-menu.service';
 import { ShowcaseContenuti } from './showcase.model';
@@ -14,20 +15,21 @@ import { SITE_NAME } from './site-name';
 })
 export class ShowcaseInfrastructureService {
 
-  constructor() { }
+  // transloco facoltativo: RouteService crea il servizio con new (fuori dalla DI) solo per le rotte
+  constructor(private transloco?: TranslocoService) { }
 
   public get Pages(): MainMenuItem[] {
     return [
-      { menuType: MenuType.MenuHeader, zorder:   0, group: 0, title: 'Scopri'          , component: '', url: '', icon: '' },
-      { menuType: MenuType.MenuItem,   zorder: 100, group: 0, title: 'Home'            , component: "ShowcaseHomePageComponent", url: '/home', icon: 'home' },
-      { menuType: MenuType.MenuItem,   zorder: 200, group: 0, title: 'Funzionalità'    , component: "ShowcaseFeaturesPageComponent", url: '/features', icon: 'apps' },
-      { menuType: MenuType.MenuItem,   zorder: 300, group: 0, title: 'Prezzi'          , component: "ShowcasePricingPageComponent", url: '/pricing', icon: 'pricetags' },
-      { menuType: MenuType.MenuItem,   zorder: 400, group: 0, title: 'Chi siamo'       , component: "ShowcaseAboutPageComponent", url: '/about', icon: 'people' },
-      { menuType: MenuType.MenuItem,   zorder: 500, group: 0, title: 'Contatti'        , component: "ShowcaseContactPageComponent", url: '/contact', icon: 'mail' },
-      { menuType: MenuType.MenuHeader, zorder:   0, group: 1, title: 'Area riservata'  , component: '', url: '', icon: '' },
-      { menuType: MenuType.MenuItem,   zorder: 100, group: 1, title: 'Accedi'          , component: "LoginPageComponent", url: '/login', icon: 'log-in' },
-      { menuType: MenuType.MenuItem,   zorder: 200, group: 1, title: 'Registrati'      , component: "RegisterPageComponent", url: '/register', icon: 'person-add' },
-      { menuType: MenuType.MenuItem,   zorder: 300, group: 1, title: 'Password dimenticata', component: "ForgotPasswordPageComponent", url: '/forgot-password', icon: 'key' }
+      { menuType: MenuType.MenuHeader, zorder:   0, group: 0, title: 'showcase.menu.discover'          , component: '', url: '', icon: '' },
+      { menuType: MenuType.MenuItem,   zorder: 100, group: 0, title: 'showcase.menu.home'            , component: "ShowcaseHomePageComponent", url: '/home', icon: 'home' },
+      { menuType: MenuType.MenuItem,   zorder: 200, group: 0, title: 'showcase.menu.features'    , component: "ShowcaseFeaturesPageComponent", url: '/features', icon: 'apps' },
+      { menuType: MenuType.MenuItem,   zorder: 300, group: 0, title: 'showcase.menu.pricing'          , component: "ShowcasePricingPageComponent", url: '/pricing', icon: 'pricetags' },
+      { menuType: MenuType.MenuItem,   zorder: 400, group: 0, title: 'showcase.menu.about'       , component: "ShowcaseAboutPageComponent", url: '/about', icon: 'people' },
+      { menuType: MenuType.MenuItem,   zorder: 500, group: 0, title: 'showcase.menu.contact'        , component: "ShowcaseContactPageComponent", url: '/contact', icon: 'mail' },
+      { menuType: MenuType.MenuHeader, zorder:   0, group: 1, title: 'showcase.menu.reservedArea'  , component: '', url: '', icon: '' },
+      { menuType: MenuType.MenuItem,   zorder: 100, group: 1, title: 'showcase.menu.signIn'          , component: "LoginPageComponent", url: '/login', icon: 'log-in' },
+      { menuType: MenuType.MenuItem,   zorder: 200, group: 1, title: 'showcase.menu.register'      , component: "RegisterPageComponent", url: '/register', icon: 'person-add' },
+      { menuType: MenuType.MenuItem,   zorder: 300, group: 1, title: 'showcase.menu.forgotPassword', component: "ForgotPasswordPageComponent", url: '/forgot-password', icon: 'key' }
     ];
   }
 
@@ -48,99 +50,108 @@ export class ShowcaseInfrastructureService {
     ];
   }
 
+  // testi tradotti (chiavi showcase.*): calcolati una volta, il cambio lingua ricarica la pagina
+  private contenuti?: ShowcaseContenuti;
+
   public get Contenuti(): ShowcaseContenuti {
+    return this.contenuti ??= this.creaContenuti();
+  }
+
+  private creaContenuti(): ShowcaseContenuti {
+    const t = (key: string, params?: Record<string, unknown>) => this.transloco?.translate('showcase.' + key, params) ?? 'showcase.' + key;
+    const site = { siteName: SITE_NAME };
     return {
       brand: {
         nome: SITE_NAME,
         icon: 'calendar-clear-outline',
-        slogan: 'La piattaforma in cloud per far lavorare meglio la tua azienda.'
+        slogan: t('brand.slogan')
       },
       home: {
-        etichetta: 'Gestionale in cloud',
-        titolo: 'Tutto il lavoro della tua azienda, in un unico posto',
-        sottotitolo: `${SITE_NAME} riunisce utenti, processi e dati in una piattaforma semplice da usare, accessibile da computer, tablet e smartphone.`,
-        ctaPrimaria: 'Prova gratis',
-        ctaSecondaria: 'Scopri le funzionalità',
+        etichetta: t('home.etichetta'),
+        titolo: t('home.titolo'),
+        sottotitolo: t('home.sottotitolo', site),
+        ctaPrimaria: t('home.ctaPrimaria'),
+        ctaSecondaria: t('home.ctaSecondaria'),
         punti: [
-          { icon: 'cloud-done-outline', title: 'Sempre disponibile', text: 'Nessuna installazione: accedi dal browser, ovunque ti trovi, con i dati sempre aggiornati.' },
-          { icon: 'shield-checkmark-outline', title: 'Sicuro', text: 'Ogni azienda ha i suoi dati separati e ogni utente vede solo quello che gli serve.' },
-          { icon: 'people-outline', title: 'Pensato per i team', text: 'Ruoli e permessi per amministratori e collaboratori, con un menu su misura per ciascuno.' },
-          { icon: 'sparkles-outline', title: 'Assistente integrato', text: "Chiedi all'assistente cosa fare: ti guida tra le pagine e le funzioni." }
+          { icon: 'cloud-done-outline', title: t('home.punti.disponibile.title'), text: t('home.punti.disponibile.text') },
+          { icon: 'shield-checkmark-outline', title: t('home.punti.sicuro.title'), text: t('home.punti.sicuro.text') },
+          { icon: 'people-outline', title: t('home.punti.team.title'), text: t('home.punti.team.text') },
+          { icon: 'sparkles-outline', title: t('home.punti.assistente.title'), text: t('home.punti.assistente.text') }
         ],
-        passiTitolo: 'Si parte in tre passi',
+        passiTitolo: t('home.passiTitolo'),
         passi: [
-          { icon: 'person-add-outline', title: 'Registrati', text: 'Crea la tua azienda in un minuto, senza carta di credito.' },
-          { icon: 'options-outline', title: 'Configura', text: 'Aggiungi i collaboratori e scegli cosa può vedere ciascuno.' },
-          { icon: 'rocket-outline', title: 'Lavora', text: 'Usa la piattaforma ogni giorno, da qualsiasi dispositivo.' }
+          { icon: 'person-add-outline', title: t('home.passi.registrati.title'), text: t('home.passi.registrati.text') },
+          { icon: 'options-outline', title: t('home.passi.configura.title'), text: t('home.passi.configura.text') },
+          { icon: 'rocket-outline', title: t('home.passi.lavora.title'), text: t('home.passi.lavora.text') }
         ],
-        chiusuraTitolo: 'Pronto a iniziare?',
-        chiusuraTesto: 'Registra la tua azienda e prova la piattaforma con i tuoi collaboratori.'
+        chiusuraTitolo: t('home.chiusuraTitolo'),
+        chiusuraTesto: t('home.chiusuraTesto')
       },
       features: {
-        titolo: 'Funzionalità',
-        sottotitolo: 'Gli strumenti di base per organizzare la tua azienda, pronti fin dal primo accesso.',
+        titolo: t('features.titolo'),
+        sottotitolo: t('features.sottotitolo'),
         sezioni: [
-          { icon: 'business-outline', title: 'Gestione aziende', text: 'Anagrafica dell’azienda e dei suoi utenti, con amministratori e collaboratori.' },
-          { icon: 'key-outline', title: 'Ruoli e accessi', text: 'Ogni ruolo vede solo le sue pagine; l’amministratore decide quali voci di menu mostrare.' },
-          { icon: 'git-network-outline', title: 'Studi e centri', text: 'Una struttura a più livelli: centri, studi professionali e aziende clienti.' },
-          { icon: 'swap-horizontal-outline', title: 'Accesso per conto di', text: 'Chi assiste i clienti può entrare per conto di un utente e tornare indietro con un clic.' },
-          { icon: 'notifications-outline', title: 'Notifiche in tempo reale', text: 'Avvisi e avanzamento delle elaborazioni lunghe, senza ricaricare la pagina.' },
-          { icon: 'phone-portrait-outline', title: 'Su ogni dispositivo', text: 'Interfaccia unica per computer, tablet e smartphone, con tema chiaro e scuro.' }
+          { icon: 'business-outline', title: t('features.sezioni.aziende.title'), text: t('features.sezioni.aziende.text') },
+          { icon: 'key-outline', title: t('features.sezioni.ruoli.title'), text: t('features.sezioni.ruoli.text') },
+          { icon: 'git-network-outline', title: t('features.sezioni.struttura.title'), text: t('features.sezioni.struttura.text') },
+          { icon: 'swap-horizontal-outline', title: t('features.sezioni.impersonate.title'), text: t('features.sezioni.impersonate.text') },
+          { icon: 'notifications-outline', title: t('features.sezioni.notifiche.title'), text: t('features.sezioni.notifiche.text') },
+          { icon: 'phone-portrait-outline', title: t('features.sezioni.dispositivi.title'), text: t('features.sezioni.dispositivi.text') }
         ]
       },
       pricing: {
-        titolo: 'Prezzi',
-        sottotitolo: 'Piani semplici, senza vincoli: inizi gratis e cresci quando ti serve.',
+        titolo: t('pricing.titolo'),
+        sottotitolo: t('pricing.sottotitolo'),
         piani: [
-          { nome: 'Prova', prezzo: '0 €', periodo: 'per 30 giorni', descrizione: 'Per conoscere la piattaforma.', caratteristiche: ['Tutte le funzioni', 'Fino a 5 utenti', 'Assistenza via email'], cta: 'Inizia la prova' },
-          { nome: 'Standard', prezzo: '29 €', periodo: 'al mese', descrizione: 'Per le piccole aziende.', caratteristiche: ['Tutte le funzioni', 'Fino a 25 utenti', 'Assistenza via email e telefono'], cta: 'Scegli Standard', evidenza: true },
-          { nome: 'Professional', prezzo: '79 €', periodo: 'al mese', descrizione: 'Per aziende e studi strutturati.', caratteristiche: ['Tutte le funzioni', 'Utenti illimitati', 'Assistenza prioritaria', 'Più aziende gestite'], cta: 'Scegli Professional' }
+          { nome: t('pricing.piani.prova.nome'), prezzo: '0 €', periodo: t('pricing.piani.prova.periodo'), descrizione: t('pricing.piani.prova.descrizione'), caratteristiche: [t('pricing.caratteristiche.tutteLeFunzioni'), t('pricing.piani.prova.utenti'), t('pricing.caratteristiche.assistenzaEmail')], cta: t('pricing.piani.prova.cta') },
+          { nome: 'Standard', prezzo: '29 €', periodo: t('pricing.periodoMese'), descrizione: t('pricing.piani.standard.descrizione'), caratteristiche: [t('pricing.caratteristiche.tutteLeFunzioni'), t('pricing.piani.standard.utenti'), t('pricing.piani.standard.assistenza')], cta: t('pricing.piani.standard.cta'), evidenza: true },
+          { nome: 'Professional', prezzo: '79 €', periodo: t('pricing.periodoMese'), descrizione: t('pricing.piani.professional.descrizione'), caratteristiche: [t('pricing.caratteristiche.tutteLeFunzioni'), t('pricing.piani.professional.utenti'), t('pricing.piani.professional.assistenza'), t('pricing.piani.professional.aziende')], cta: t('pricing.piani.professional.cta') }
         ],
-        nota: 'Prezzi IVA esclusa. Puoi cambiare piano o disdire in qualsiasi momento.',
+        nota: t('pricing.nota'),
         domande: [
-          { domanda: 'Serve una carta di credito per la prova?', risposta: 'No: la prova è gratuita e senza impegno.' },
-          { domanda: 'Posso aggiungere utenti in seguito?', risposta: 'Sì, in qualsiasi momento; se superi i limiti del piano ti proponiamo quello adatto.' },
-          { domanda: 'Dove sono conservati i miei dati?', risposta: 'In data center europei, separati per ogni azienda e salvati ogni giorno.' }
+          { domanda: t('pricing.domande.carta.domanda'), risposta: t('pricing.domande.carta.risposta') },
+          { domanda: t('pricing.domande.utenti.domanda'), risposta: t('pricing.domande.utenti.risposta') },
+          { domanda: t('pricing.domande.dati.domanda'), risposta: t('pricing.domande.dati.risposta') }
         ]
       },
       about: {
-        titolo: 'Chi siamo',
-        sottotitolo: 'Un team che costruisce software gestionale da anni, accanto ad aziende e professionisti.',
+        titolo: t('about.titolo'),
+        sottotitolo: t('about.sottotitolo'),
         paragrafi: [
-          'Crediamo che il software gestionale debba essere semplice: poche pagine chiare, che fanno bene il loro lavoro.',
-          `Per questo sviluppiamo ${SITE_NAME} insieme a chi lo usa ogni giorno, aggiungendo funzioni a partire dalle esigenze reali.`
+          t('about.paragrafo1'),
+          t('about.paragrafo2', site)
         ],
         valori: [
-          { icon: 'happy-outline', title: 'Semplicità', text: 'Ogni funzione deve essere chiara al primo utilizzo.' },
-          { icon: 'lock-closed-outline', title: 'Affidabilità', text: 'I dati dei clienti sono al sicuro e sempre disponibili.' },
-          { icon: 'chatbubbles-outline', title: 'Vicinanza', text: 'Rispondiamo alle domande e ascoltiamo i suggerimenti.' }
+          { icon: 'happy-outline', title: t('about.valori.semplicita.title'), text: t('about.valori.semplicita.text') },
+          { icon: 'lock-closed-outline', title: t('about.valori.affidabilita.title'), text: t('about.valori.affidabilita.text') },
+          { icon: 'chatbubbles-outline', title: t('about.valori.vicinanza.title'), text: t('about.valori.vicinanza.text') }
         ]
       },
       contact: {
-        titolo: 'Contatti',
-        sottotitolo: 'Hai domande o vuoi una dimostrazione? Scrivici, ti rispondiamo entro un giorno lavorativo.',
+        titolo: t('contact.titolo'),
+        sottotitolo: t('contact.sottotitolo'),
         email: `info@${SITE_NAME.toLowerCase()}.it`,
         telefono: '+39 000 000 0000',
         indirizzo: 'Via Esempio 1, 00100 Roma',
-        orari: 'Lunedì - venerdì, 9:00 - 18:00',
-        testoModulo: 'Compila il modulo: si aprirà il tuo programma di posta con il messaggio pronto da inviare.'
+        orari: t('contact.orari'),
+        testoModulo: t('contact.testoModulo')
       },
       register: {
-        titolo: 'Registra la tua azienda',
-        sottotitolo: 'Crea l’account della tua azienda e inizia subito a usare la piattaforma.',
-        vantaggi: ['Gratis per 30 giorni', 'Nessuna carta di credito', 'Attiva in un minuto'],
-        condizioni: 'Accetto le condizioni del servizio e l’informativa sulla privacy',
-        inviata: 'Ti abbiamo inviato un’email con il link per attivare l’account: aprilo per completare la registrazione.',
-        confermaTitolo: 'Attivazione account',
-        esito: 'La tua azienda è pronta. Questi sono gli utenti creati: accedi con la password che hai scelto.'
+        titolo: t('register.titolo'),
+        sottotitolo: t('register.sottotitolo'),
+        vantaggi: [t('register.vantaggi.gratis'), t('register.vantaggi.nessunaCarta'), t('register.vantaggi.attiva')],
+        condizioni: t('register.condizioni'),
+        inviata: t('register.inviata'),
+        confermaTitolo: t('register.confermaTitolo'),
+        esito: t('register.esito')
       },
       passwordRecovery: {
-        titolo: 'Password dimenticata',
-        sottotitolo: 'Indica il tuo nome utente: ti invieremo all’email dell’utente il link per sceglierne una nuova.',
-        inviata: 'Se il nome utente esiste, all’email associata è stato inviato il link per reimpostare la password.',
-        resetTitolo: 'Nuova password',
-        resetSottotitolo: 'Scegli la nuova password per il tuo utente.',
-        resetFatto: 'La password è stata cambiata: accedi con quella nuova.'
+        titolo: t('passwordRecovery.titolo'),
+        sottotitolo: t('passwordRecovery.sottotitolo'),
+        inviata: t('passwordRecovery.inviata'),
+        resetTitolo: t('passwordRecovery.resetTitolo'),
+        resetSottotitolo: t('passwordRecovery.resetSottotitolo'),
+        resetFatto: t('passwordRecovery.resetFatto')
       }
     };
   }

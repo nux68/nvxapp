@@ -12,16 +12,16 @@
     </div>
 
     @if (userName) {
-      <h1>Ciao, {{ userName }}</h1>
-      <p class="nvx-home-sub">Cosa vuoi fare oggi?</p>
+      <h1>{{ 'pages.dashboard.greeting' | transloco: { name: userName } }}</h1>
+      <p class="nvx-home-sub">{{ 'pages.dashboard.subtitle' | transloco }}</p>
 
       <button type="button" class="nvx-ask" (click)="openChat()">
         <ion-icon name="sparkles-outline" class="nvx-ask-icon"></ion-icon>
-        <span>Chiedi all'assistente…</span>
+        <span>{{ 'pages.dashboard.askAssistant' | transloco }}</span>
         <span class="nvx-ask-send"><ion-icon name="arrow-up"></ion-icon></span>
       </button>
 
-      <p class="nvx-home-hint">oppure scegli una voce dal menu</p>
+      <p class="nvx-home-hint">{{ 'pages.dashboard.hint' | transloco }}</p>
     }
   </div>
 

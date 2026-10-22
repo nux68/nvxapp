@@ -32,7 +32,7 @@
 
     @if (c.domande.length > 0) {
       <section class="nvx-sc-section">
-        <h2 class="nvx-sc-section-title">Domande frequenti</h2>
+        <h2 class="nvx-sc-section-title">{{ 'showcase.pricingPage.faqTitle' | transloco }}</h2>
         <ion-accordion-group class="nvx-sc-faq">
           @for (d of c.domande; track d.domanda) {
             <ion-accordion [value]="d.domanda" toggleIcon="chevron-down" toggleIconSlot="end">

@@ -1,4 +1,5 @@
 import { Injectable, Signal, signal } from '@angular/core';
+import { TranslocoService } from '@jsverse/transloco';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +11,7 @@ export class UserInterfaceService {
   private readonly _isMobile = signal(this.mobileQuery.matches);
   public readonly isMobileSignal: Signal<boolean> = this._isMobile.asReadonly();
 
-  constructor() {
+  constructor(private transloco: TranslocoService) {
     this.mobileQuery.addEventListener('change', e => this._isMobile.set(e.matches));
   }
 
@@ -20,7 +21,7 @@ export class UserInterfaceService {
 
   get Btn_Conferma(): ButtonItem {
     return new ButtonItem(
-      'Conferma',
+      this.transloco.translate('common.buttons.confirm'),
       'checkmark-circle-outline',
       'primary',
       false,
@@ -30,7 +31,7 @@ export class UserInterfaceService {
 
   get Btn_Annulla(): ButtonItem {
     return new ButtonItem(
-      'Annulla',
+      this.transloco.translate('common.buttons.cancel'),
       'close-circle-outline',
       'medium',
       false,
@@ -54,7 +55,7 @@ export class UserInterfaceService {
 
   get Btn_Modifica(): ButtonItem {
     return new ButtonItem(
-      'Modifica',
+      this.transloco.translate('common.buttons.edit'),
       'create-outline',
       'medium',
       false,
@@ -64,7 +65,7 @@ export class UserInterfaceService {
 
   get Btn_Impersona(): ButtonItem {
     return new ButtonItem(
-      'Impersona',
+      this.transloco.translate('common.buttons.impersonate'),
       'person-outline',
       'primary',
       false,
@@ -74,7 +75,7 @@ export class UserInterfaceService {
 
   get Btn_Chiudi(): ButtonItem {
     return new ButtonItem(
-      'Chiudi',
+      this.transloco.translate('common.buttons.close'),
       'close-outline',
       'medium',
       false,
@@ -86,7 +87,7 @@ export class UserInterfaceService {
 
   get Btn_LogIn(): ButtonItem {
     return new ButtonItem(
-      'Login',
+      this.transloco.translate('common.buttons.login'),
       'log-in-outline',
       'primary',
       false,
@@ -95,7 +96,7 @@ export class UserInterfaceService {
   }
   get Btn_LogOut(): ButtonItem {
     return new ButtonItem(
-      'Logout',
+      this.transloco.translate('common.buttons.logout'),
       'log-out-outline',
       'primary',
       false,
@@ -133,7 +134,7 @@ export class UserInterfaceService {
 
   get Btn_Invia(): ButtonItem {
     return new ButtonItem(
-      'Invia',
+      this.transloco.translate('common.buttons.send'),
       'save',
       'primary',
       false,
@@ -142,7 +143,7 @@ export class UserInterfaceService {
   }
   get Btn_Clock(): ButtonItem {
     return new ButtonItem(
-      'Clock',
+      this.transloco.translate('common.buttons.clock'),
       'time-outline',
       'primary',
       false,
@@ -154,7 +155,7 @@ export class UserInterfaceService {
 
   get Btn_Approva(): ButtonItem {
     return new ButtonItem(
-      'Approva',
+      this.transloco.translate('common.buttons.approve'),
       'checkmark-outline',
       'primary',
       false,
@@ -164,7 +165,7 @@ export class UserInterfaceService {
 
   get Btn_Rifiuta(): ButtonItem {
     return new ButtonItem(
-      'Rifiuta',
+      this.transloco.translate('common.buttons.reject'),
       'close-outline',
       'danger',
       false,
@@ -174,7 +175,7 @@ export class UserInterfaceService {
 
   get Btn_Cancella(): ButtonItem {
     return new ButtonItem(
-      'Cancella',
+      this.transloco.translate('common.buttons.delete'),
       'trash-outline',
       'danger',
       false,
@@ -184,7 +185,7 @@ export class UserInterfaceService {
 
   get Btn_Esegui(): ButtonItem {
     return new ButtonItem(
-      'Esegui',
+      this.transloco.translate('common.buttons.execute'),
       'flash-outline',
       'secondary',
       false,
@@ -194,7 +195,7 @@ export class UserInterfaceService {
 
   get Btn_Aggiungi(): ButtonItem {
     return new ButtonItem(
-      'Aggiungi',
+      this.transloco.translate('common.buttons.add'),
       'add-circle-outline',
       'primary',
       false,

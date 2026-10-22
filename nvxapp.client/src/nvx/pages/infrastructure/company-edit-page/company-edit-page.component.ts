@@ -10,6 +10,7 @@ import { CompanyEditModel, CompanyGetInModel, CompanyPutInModel } from '../../..
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { StringHelperService } from '../../../Utility/infrastructure/string-helper.service';
 import { AuthService } from '../../../Utility/infrastructure/auth.service';
+import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
   selector: 'app-company-edit-page',
@@ -27,14 +28,15 @@ export class CompanyEditPageComponent extends BasePageConfirmCancelComponent<Com
     protected override fb: FormBuilder,
     private stringHelperService: StringHelperService,
     private authService: AuthService,
-    private accountService: AccountService) {
+    private accountService: AccountService,
+    private transloco: TranslocoService) {
 
     super(navCtrl, userInterfaceService, fb);
 
   }
 
 
-  get Title(): string { return "CompanyEditPage"; }
+  get Title(): string { return this.transloco.translate('pages.companyEdit.title'); }
   get EditForm(): FormGroup {
     return this.fb.group({
 
@@ -102,7 +104,8 @@ export class CompanyEditPageComponent extends BasePageConfirmCancelComponent<Com
     const descrizione = this._editForm.get('descrizione')?.value;
 
     if (descrizione) {
-      this.modifiedDescription = "Attenzione per accedere a questa utenza verrano creati i seguenti user    ->   " + this.stringHelperService.removeSpecialCharacters(descrizione) + "_Admin" + " / " + this.stringHelperService.removeSpecialCharacters(descrizione) + "_PowerAdmin";
+      const userBase = this.stringHelperService.removeSpecialCharacters(descrizione);
+      this.modifiedDescription = this.transloco.translate('pages.companyEdit.usersWarning', { admin: userBase + "_Admin", powerAdmin: userBase + "_PowerAdmin" });
     } else {
       this.modifiedDescription = null;
     }

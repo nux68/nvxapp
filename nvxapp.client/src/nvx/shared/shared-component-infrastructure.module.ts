@@ -5,6 +5,7 @@ import { GenericFilterPipe } from './pipe/infrastructure/generic-filter.pipe';
 import { BreadcrumbsImpersonateComponent } from './components/infrastructure/breadcrumbs-impersonate/breadcrumbs-impersonate.component';
 import { PageToolbarComponent } from './components/infrastructure/page-toolbar/page-toolbar.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { PageButtonbarComponent } from './components/infrastructure/page-buttonbar/page-buttonbar.component';
 import { GenericDialogComponent } from './components/infrastructure/generic-dialog/generic-dialog.component';
 import { HoverPopupComponent } from './components/infrastructure/hover-popup/hover-popup.component';
@@ -23,9 +24,10 @@ import { NvxListCellDirective, NvxListComponent, NvxListMobileDirective } from '
     IonBreadcrumb, IonBreadcrumbs, IonButton, IonButtons, IonCard, IonCardContent, IonCol, IonContent, IonFooter, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonItemOption, IonItemOptions, IonLabel, IonMenuButton, IonNote, IonProgressBar, IonRow, IonSearchbar, IonSelect, IonSelectOption, IonTitle, IonToolbar,
     GenericFilterPipe,
     HoverPopupComponent, HoverPopupDirective,
-    NvxListComponent, NvxListCellDirective, NvxListMobileDirective
+    NvxListComponent, NvxListCellDirective, NvxListMobileDirective,
+    TranslocoPipe
   ],
   declarations: [BreadcrumbsImpersonateComponent, PageToolbarComponent, SlideButtonCancellaModificaComponent, PageButtonbarComponent, GenericDialogComponent, AddUserCompanyComponent, AddCompanyComponent/*, FabMenuComponent*/],
-  exports: [BreadcrumbsImpersonateComponent, GenericFilterPipe, PageToolbarComponent, SlideButtonCancellaModificaComponent, PageButtonbarComponent, HoverPopupComponent, HoverPopupDirective, AddUserCompanyComponent, AddCompanyComponent, NvxListComponent, NvxListCellDirective, NvxListMobileDirective/*, FabMenuComponent*/]
+  exports: [BreadcrumbsImpersonateComponent, GenericFilterPipe, PageToolbarComponent, SlideButtonCancellaModificaComponent, PageButtonbarComponent, HoverPopupComponent, HoverPopupDirective, AddUserCompanyComponent, AddCompanyComponent, NvxListComponent, NvxListCellDirective, NvxListMobileDirective, TranslocoPipe/*, FabMenuComponent*/]
 })
 export class SharedComponentInfrastructureModule { }

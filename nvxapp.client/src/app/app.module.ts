@@ -1,4 +1,4 @@
-import { NgModule, LOCALE_ID, importProvidersFrom } from '@angular/core';
+import { NgModule, importProvidersFrom } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
 import { provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
@@ -17,11 +17,8 @@ import { FormsModule } from '@angular/forms';
 import { HttpBackgroundErrorDialogComponent } from '../nvx/shared/components/infrastructure/http-background-error-dialog/http-background-error-dialog.component';
 import { ParameterLoaderComponent } from '../nvx/shared/components/infrastructure/parameter-loader/parameter-loader.component';
 //import { GenericFilterPipe } from '../nvx/pipe/generic-filter.pipe';
-import localeIt from '@angular/common/locales/it';
-import { registerLocaleData } from '@angular/common';
-
-// Registra i dati di localizzazione italiana
-registerLocaleData(localeIt); // Questa riga è essenziale!
+import { TranslocoPipe } from '@jsverse/transloco';
+import { provideNvxI18n } from '../nvx/Utility/infrastructure/i18n.providers';
 
 @NgModule({
   declarations: [AppComponent,
@@ -35,11 +32,12 @@ registerLocaleData(localeIt); // Questa riga è essenziale!
             BrowserModule,
             IonAccordion, IonAccordionGroup, IonApp, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonChip, IonContent, IonFab, IonFabButton, IonFabList, IonFooter, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonMenu, IonMenuToggle, IonModal, IonNote, IonProgressBar, IonRouterLink, IonRouterOutlet, IonSpinner, IonSplitPane, IonTextarea, IonTitle, IonToolbar,
             AppRoutingModule,
-            FormsModule
+            FormsModule,
+            TranslocoPipe
   ],
   providers: [
               provideIonicAngular({ mode: 'md' }), // stesso aspetto su desktop, Android e iOS
-              { provide: LOCALE_ID, useValue: 'it' },
+              provideNvxI18n(), // multilingua: traduzioni, LOCALE_ID e lingua scelta (LanguageService)
               provideHttpClient(withXhr(), withInterceptorsFromDi()),
               { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
               { provide: HTTP_INTERCEPTORS, useClass: NvxHttpInterceptor, multi: true },

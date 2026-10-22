@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Infrastructure.Tenancy;
+using nvxapp.server.data.Localization;
 using nvxapp.server.data.Interfaces;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
@@ -97,10 +98,15 @@ namespace nvxapp.server.Base
 
                 var _class = this.GetType().Name;
                 //var _err = _class + " - " + e.ToErrorString() + " - " + e.StackTrace;
-                // per avere un errore piu' leggibile dall'utente e usare throwexception piu facilmente
                 var _err = _class + " - " + e.ToErrorString();
 
-                Log.Error(e, "END Call(ExecuteAction ERR): {a1}, GUID: {a2}, result: {a3}", function.Method.Name, callGUID, _err);
+                // errore previsto (UserMessageException): il messaggio, gia' nella lingua dell'utente, arriva al client com'e'.
+                // errore tecnico: al client un messaggio generico con il codice della chiamata, il dettaglio solo nel log
+                bool isUserMessage = e.IsUserMessage();
+                if (isUserMessage)
+                    Log.Warning("END Call(ExecuteAction USER MESSAGE): {a1}, GUID: {a2}, result: {a3}", function.Method.Name, callGUID, _err);
+                else
+                    Log.Error(e, "END Call(ExecuteAction ERR): {a1}, GUID: {a2}, result: {a3}", function.Method.Name, callGUID, _err);
 
                 /* 
                    se è un sotto processo
@@ -109,7 +115,9 @@ namespace nvxapp.server.Base
                 if (isSubProcess)
                     throw;
 
-                return ErrorResponse<T>(_err);
+                return ErrorResponse<T>(isUserMessage
+                    ? e.Message
+                    : InfrastructureMessages.Get("UnexpectedError", callGUID.ToString("N")[..8]));
             }
 
         }

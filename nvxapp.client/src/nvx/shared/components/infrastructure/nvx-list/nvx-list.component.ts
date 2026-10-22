@@ -2,6 +2,7 @@ import { Component, ChangeDetectionStrategy, Directive, TemplateRef, computed, c
 import { NgTemplateOutlet } from '@angular/common';
 import { IonButton, IonCheckbox, IonIcon, IonItem, IonItemOption, IonItemOptions, IonItemSliding, IonLabel, IonList, IonNote } from '@ionic/angular';
 import { ButtonItem, UserInterfaceService } from '../../../../Utility/infrastructure/user-interface.service';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 
 /** Colonna della lista: in tabella (desktop) e' una colonna, nella riga mobile titolo / sottotitolo / nota. */
 export interface NvxListColumn<T = any> {
@@ -59,7 +60,7 @@ const MOBILE_OPTION_CLASS: Record<string, string> = {
   styleUrls: ['./nvx-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
   standalone: true,
-  imports: [NgTemplateOutlet, IonButton, IonCheckbox, IonIcon, IonItem, IonItemOption, IonItemOptions, IonItemSliding, IonLabel, IonList, IonNote]
+  imports: [NgTemplateOutlet, IonButton, IonCheckbox, IonIcon, IonItem, IonItemOption, IonItemOptions, IonItemSliding, IonLabel, IonList, IonNote, TranslocoPipe]
 })
 export class NvxListComponent<T = any> {
 
@@ -77,7 +78,7 @@ export class NvxListComponent<T = any> {
   readonly rowDisabled = input<((item: T) => boolean) | null>(null);
   /** se valorizzato compare la casella "mostra disabilitati" e le righe disabilitate sono nascoste finche' non si spunta */
   readonly disabledToggleLabel = input<string | null>(null);
-  readonly emptyText = input<string>('Nessun elemento');
+  readonly emptyText = input<string>(inject(TranslocoService).translate('components.nvxList.empty'));
 
   readonly showDisabled = signal(false);
   readonly sortKey = signal<string | null>(null);

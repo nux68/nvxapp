@@ -1,5 +1,6 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { NavController } from '@ionic/angular';
+import { TranslocoService } from '@jsverse/transloco';
 import { AccountService } from '../../../ClientServer-Service/Infrastructure/Account/account.service';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { UserNavigationService, UserDataAdditionalModel } from '../../../Utility/infrastructure/user-navigation.service';
@@ -25,7 +26,7 @@ export class UserFinancialAdvisorListPageComponent {
   public title!: string;
   public searchText!: string;
   public userFinancialAdvisorList: UserFinancialAdvisorListModel[] | null = null;
-  public readonly columns: NvxListColumn<UserFinancialAdvisorListModel>[] = [{ key: 'descrizione', title: 'Utente' }];
+  public readonly columns: NvxListColumn<UserFinancialAdvisorListModel>[] = [{ key: 'descrizione', title: this.transloco.translate('pages.userFinancialAdvisorList.columnUser') }];
   public readonly actions: NvxListAction<UserFinancialAdvisorListModel>[];
   public readonly isDisabled = (item: UserFinancialAdvisorListModel) => item.disabled;
   public readonly isHighlighted = (item: UserFinancialAdvisorListModel) => this.isPowerAdmin(item);
@@ -37,9 +38,10 @@ export class UserFinancialAdvisorListPageComponent {
     public fabMenuService: FabMenuService,
     private parameterService: ParameterService,
     private userInterfaceService: UserInterfaceService,
-    private userNavigationService: UserNavigationService) {
+    private userNavigationService: UserNavigationService,
+    private transloco: TranslocoService) {
 
-    this.title = 'Users Financial Advisor';
+    this.title = this.transloco.translate('pages.userFinancialAdvisorList.title');
 
     this.btnEdit = userInterfaceService.Btn_Modifica;
     this.btnEdit.event = this.handleButtonEditClick;
@@ -57,7 +59,7 @@ export class UserFinancialAdvisorListPageComponent {
 
     this.fabMenuService.fabMenuItem = [
 
-      new FabMenuItem('Elemento 1', 'add-circle-outline', () => {
+      new FabMenuItem(this.transloco.translate('pages.userFinancialAdvisorList.fabAdd'), 'add-circle-outline', () => {
         this.navCtrl.navigateForward('/userfinancialadvisoredit', {
           state: { id: 0 }
         });

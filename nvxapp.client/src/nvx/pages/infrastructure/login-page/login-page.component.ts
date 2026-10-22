@@ -13,6 +13,7 @@ import { environment } from '../../../../environments/environment';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { SHOWCASE_AFTER_LOGIN } from '../../RoleGuard/infrastructure/showcase-guard';
 import { SITE_NAME } from '../../../Utility/infrastructure/site-name';
+import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
   selector: 'app-login-page',
@@ -36,9 +37,10 @@ export class LoginPageComponent  implements OnInit {
               private fb: FormBuilder,
               private navCtrl: NavController,
               private authService: AuthService,
-              private signalrService: SignalrService
+              private signalrService: SignalrService,
+              private transloco: TranslocoService
   ) {
-    this.title = 'Login';
+    this.title = this.transloco.translate('pages.login.title');
 
     this.buttonbar = userInterfaceService.Btn_LogInAnnulla;
     this.buttonbar[0].event = this._handleButtonConfirmClick;

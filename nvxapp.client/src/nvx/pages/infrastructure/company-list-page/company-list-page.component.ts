@@ -10,6 +10,7 @@ import { NvxListAction, NvxListColumn } from '../../../shared/components/infrast
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { MainMenuService } from '../../../Utility/infrastructure/main-menu.service';
 import { AddCompanyComponent } from '../../../shared/components/infrastructure/add-company/add-company.component';
+import { TranslocoService } from '@jsverse/transloco';
 
 
 @Component({
@@ -24,7 +25,7 @@ export class CompanyListPageComponent {
   public title!: string;
   public searchText!: string;
   public companyList: CompanyListModel[] | null = null;
-  public readonly columns: NvxListColumn<CompanyListModel>[] = [{ key: 'descrizione', title: 'Azienda' }];
+  public readonly columns: NvxListColumn<CompanyListModel>[];
   public readonly actions: NvxListAction<CompanyListModel>[];
   public readonly isDisabled = (item: CompanyListModel) => item.disabled;
   public readonly sortByDescrizione = (a: CompanyListModel, b: CompanyListModel) => a.descrizione.localeCompare(b.descrizione);
@@ -37,9 +38,11 @@ export class CompanyListPageComponent {
               private userInterfaceService: UserInterfaceService,
               private userNavigationService: UserNavigationService,
               private mainMenuService: MainMenuService,
-              private modalCtrl: ModalController) {
+              private modalCtrl: ModalController,
+              private transloco: TranslocoService) {
 
-    this.title = 'Companies';
+    this.title = this.transloco.translate('pages.companyList.title');
+    this.columns = [{ key: 'descrizione', title: this.transloco.translate('pages.companyList.columnCompany') }];
     this.btnImpersona = userInterfaceService.Btn_Impersona;
     this.btnImpersona.event = this.handleButtonImpersonaClick;
     this.btnEdit = userInterfaceService.Btn_Modifica;

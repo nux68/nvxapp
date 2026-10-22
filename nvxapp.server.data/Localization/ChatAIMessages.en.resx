@@ -1,0 +1,90 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="SessionExpired" xml:space="preserve">
+    <value>The previous session has expired. You can start with a new command.</value>
+  </data>
+  <data name="ResetDone" xml:space="preserve">
+    <value>Operation cancelled. You can start with a new command.</value>
+  </data>
+  <data name="NotUnderstood" xml:space="preserve">
+    <value>I did not understand the request. Could you repeat it?</value>
+  </data>
+  <data name="LlmNotUnderstood" xml:space="preserve">
+    <value>LLM: I did not understand the request. Could you repeat it?</value>
+  </data>
+  <data name="PlanInternalError" xml:space="preserve">
+    <value>Internal error in the execution plan.</value>
+  </data>
+  <data name="OperationCancelled" xml:space="preserve">
+    <value>Operation cancelled.</value>
+  </data>
+  <data name="ConfirmClarification" xml:space="preserve">
+    <value>Reply 'yes' to confirm or 'no' to cancel.</value>
+  </data>
+  <data name="SuggestionYes" xml:space="preserve">
+    <value>Yes</value>
+  </data>
+  <data name="SuggestionNo" xml:space="preserve">
+    <value>No</value>
+  </data>
+  <data name="SlotQuestionDefault" xml:space="preserve">
+    <value>Could you specify '{0}'?</value>
+  </data>
+  <data name="OperationTitle" xml:space="preserve">
+    <value>Operation '{0}'</value>
+  </data>
+  <data name="CommandExecutionError" xml:space="preserve">
+    <value>Error while executing the command. Please try again.</value>
+  </data>
+  <data name="NoCurrentAction" xml:space="preserve">
+    <value>No current action.</value>
+  </data>
+  <data name="PlanSummaryTitle" xml:space="preserve">
+    <value>Operations summary:</value>
+  </data>
+  <data name="PlanConfirmQuestion" xml:space="preserve">
+    <value>Do you confirm? (yes / no)</value>
+  </data>
+  <data name="HelpDisplayName" xml:space="preserve">
+    <value>Help</value>
+  </data>
+  <data name="HelpDescription" xml:space="preserve">
+    <value>lists the available commands.</value>
+  </data>
+  <data name="HelpCommandsTitle" xml:space="preserve">
+    <value>Here are the available commands:</value>
+  </data>
+  <data name="NavigateDisplayName" xml:space="preserve">
+    <value>Go to</value>
+  </data>
+  <data name="NavigateDescription" xml:space="preserve">
+    <value>navigates to a page or section of the application.</value>
+  </data>
+  <data name="NavigatePageQuestion" xml:space="preserve">
+    <value>Which page do you want to go to?</value>
+  </data>
+  <data name="NavigatePageLabel" xml:space="preserve">
+    <value>Page</value>
+  </data>
+  <data name="NavigateParamsQuestion" xml:space="preserve">
+    <value>Any additional parameters? (optional)</value>
+  </data>
+  <data name="NavigateParamsLabel" xml:space="preserve">
+    <value>Parameters</value>
+  </data>
+  <data name="NavigateResult" xml:space="preserve">
+    <value>Navigating to '{0}'.</value>
+  </data>
+</root>

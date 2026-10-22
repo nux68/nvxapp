@@ -508,8 +508,24 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
             //sb.AppendLine("Un valore mancante in \"missingRequired\" è la risposta corretta — non un errore.");
             sb.AppendLine("");
 
+            BuildSystemPrompt_Append_Lingua(sb);
+
             //BuildSystemPrompt_Append_Data_Oggi(sb);
 
+        }
+
+        // Lingua dell'utente: CultureInfo.CurrentUICulture della richiesta ("it" o "en").
+        // Il prompt resta in italiano; il modello deve capire testi in italiano e in inglese.
+        public static void BuildSystemPrompt_Append_Lingua(StringBuilder sb)
+        {
+            sb.AppendLine("LINGUA:");
+            sb.AppendLine($"La lingua dell'interfaccia dell'utente è: {ChatAIMessages.CurrentLanguageName} (codice \"{ChatAIMessages.CurrentLanguage}\").");
+            sb.AppendLine("L'utente può scrivere in italiano o in inglese: interpreta la richiesta in entrambe le lingue.");
+            sb.AppendLine("Esempi: 'vai alla pagina aziende' e 'go to the companies page' indicano lo stesso intent con lo stesso slot.");
+            sb.AppendLine("I nomi degli intent, i nomi degli slot e le chiavi JSON restano SEMPRE quelli indicati (non tradurli).");
+            sb.AppendLine("Gli eventuali testi liberi nei valori vanno scritti nella lingua dell'utente; i valori vanno estratti come scritti dall'utente.");
+            sb.AppendLine("Le date, in qualunque lingua, si normalizzano SEMPRE nel formato dd/MM/yyyy (giorno/mese/anno, anche in inglese: es. '18 May 2026' -> '18/05/2026').");
+            sb.AppendLine("");
         }
 
         public static void OLD_BuildSystemPrompt_Append_Intent_Definition(StringBuilder sb, IReadOnlyList<IntentDefinition> intents, string? intentName)
@@ -563,6 +579,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
             sb.AppendLine("   Data nel formato dd/MM/yyyy.");
             sb.AppendLine("   Accetta anche date scritte come '18/05/2026', '18-05-2026', '18 maggio 2026'.");
             sb.AppendLine("   o anche date scritte come 'primo maggio 2026', 'due maggio 2026', '3 maggio 2026'.");
+            sb.AppendLine("   In inglese: '18 May 2026', 'May 18th 2026', 'the first of May 2026' (il giorno viene prima del mese anche in '18/05/2026').");
             sb.AppendLine("   Normalizza sempre in formato dd/MM/yyyy");
 
 
@@ -576,7 +593,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
             sb.AppendLine();
             sb.AppendLine("   IMPORTANTE:");
             sb.AppendLine("   Quando l’utente usa date relative come 'oggi', 'domani', 'ieri' usa la data di oggi come riferimento a fai le dovute considerazioni trasformando il risultato in formato dd/MM/yyyy");
+            sb.AppendLine("   Vale anche in inglese: 'today', 'tomorrow', 'yesterday'.");
             sb.AppendLine("   Il nome del mese puo essere fornito in forma letterale 'gennaio', 'febbraio', 'marzo',");
+            sb.AppendLine("   oppure in inglese 'January', 'February', 'March',");
             sb.AppendLine("   devi sempre convertirle in una data assoluta nel formato dd/MM/yyyy.");
             //sb.AppendLine($"Usa come riferimento la data indicata sopra. Oggi è {DateTime.Today:dd/MM/yyyy}");
         }
@@ -589,6 +608,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
                             Accetta anche varianti come '9', '9.00', '9:0' e normalizzale.
                             Se l'utente dice 'dieci' restituisci '10:00'.
                             Se l'utente dice 'dieci e mezza' restituisci '10:30'.
+                            In inglese: 'at 9' o '9 am' restituisci '09:00', '2 pm' restituisci '14:00', 'half past ten' restituisci '10:30'.
                             Non dedurre la risposta dagli esempi, al massimo puoi trasformare un
                             un numero espresso in forma letterale trasformandolo un cifra numerica come nell' esempio fornito");
         }
