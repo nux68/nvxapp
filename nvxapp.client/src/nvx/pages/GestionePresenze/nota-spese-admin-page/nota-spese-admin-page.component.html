@@ -89,9 +89,11 @@
               <span class="ns-importo">{{ euro(g.totale) }}</span>
               <span class="ns-gruppo-azione">
                 @if (g.nota; as nota) {
+                  <!-- stesso pulsante della vista "Per tipo spesa" -->
                   @if (nota.idDip_GG_Richiesta) {
-                    <ion-button fill="clear" size="small" (click)="apriDettaglio(nota, $event)" [title]="'attendance.pages.notaSpeseAdmin.apriDettaglio' | transloco">
-                      <ion-icon slot="icon-only" name="receipt-outline"></ion-icon>
+                    <ion-button size="small" fill="outline" shape="round" (click)="apriDettaglio(nota, $event)" [title]="'attendance.pages.notaSpeseAdmin.apriDettaglio' | transloco">
+                      <ion-icon slot="start" name="receipt-outline"></ion-icon>
+                      {{ 'attendance.pages.notaSpeseAdmin.dettaglioNota' | transloco }}
                     </ion-button>
                   }
                 }
