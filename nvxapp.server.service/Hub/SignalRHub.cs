@@ -17,6 +17,13 @@ namespace nvxapp.server.service.HubAI
 {
     public class SignalRHub : Hub
     {
+        /*
+         Gruppo delle connessioni dell'utente che ha fatto il login (claim "useridfirstconnection"): resta lo stesso
+         anche mentre impersona qualcun altro, mentre Clients.User segue l'utente del token (l'impersonato).
+         Le notifiche per "chi ha avviato l'operazione" (job, export) vanno a questo gruppo.
+        */
+        public static string UserGroup(string userIdFirstConnection) => $"UserGroup-{userIdFirstConnection}";
+
         protected readonly JwtParameter _jwtParameter;
         protected readonly IMyTableService _myTableService;
         protected readonly ICompanyApplicationRepository _companyApplicationRepository;
@@ -41,7 +48,7 @@ namespace nvxapp.server.service.HubAI
             Console.WriteLine($"Connessione stabilita ID: {userIdFirstConnection} ");
 
             //aggiunge al gruppo
-            await Groups.AddToGroupAsync(Context.ConnectionId, $"UserGroup-{userIdFirstConnection}");
+            await Groups.AddToGroupAsync(Context.ConnectionId, UserGroup(userIdFirstConnection ?? string.Empty));
 
 
             await base.OnConnectedAsync();
@@ -52,7 +59,7 @@ namespace nvxapp.server.service.HubAI
             var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var userIdFirstConnection = Context.User?.FindFirst("useridfirstconnection")?.Value;
 
-            await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"UserGroup-{userIdFirstConnection}");
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, UserGroup(userIdFirstConnection ?? string.Empty));
             await base.OnDisconnectedAsync(exception);
         }
 
