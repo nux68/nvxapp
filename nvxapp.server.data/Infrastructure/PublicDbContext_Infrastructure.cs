@@ -19,6 +19,13 @@ namespace nvxapp.server.data.Infrastructure
         public DbSet<Company> Company { get; set; }
         public DbSet<UserCompany> UserCompany { get; set; }
 
+        // ticket di assistenza
+        public DbSet<TicketType> TicketType { get; set; }
+        public DbSet<TicketTypeLevel> TicketTypeLevel { get; set; }
+        public DbSet<Ticket> Ticket { get; set; }
+        public DbSet<TicketCronology> TicketCronology { get; set; }
+        public DbSet<TicketAttach> TicketAttach { get; set; }
+
 
         private void Define_Table_DbContext_Infrastructure(ModelBuilder modelBuilder)
         {
@@ -29,6 +36,7 @@ namespace nvxapp.server.data.Infrastructure
             Gen_CompanyApplication(modelBuilder);
             Gen_CompanyMenuRestriction(modelBuilder);
             Gen_CompanyRegistrationRequest(modelBuilder);
+            Gen_Ticket(modelBuilder);
         }
 
         private void Gen_InitDB(ModelBuilder modelBuilder)
@@ -76,6 +84,78 @@ namespace nvxapp.server.data.Infrastructure
                 // il link si cerca per hash del token
                 entity.HasIndex(e => e.TokenHash).IsUnique();
                 entity.HasIndex(e => e.Descrizione);
+            });
+        }
+
+        // ticket di assistenza: relazioni solo tra le tabelle dei ticket. Verso Company, Dealer, FinancialAdvisor
+        // e AspNetUsers ci sono solo gli id (nessuna relazione): i contesti degli applicativi mappano Company
+        // e scoprirebbero le tabelle, e la cronologia deve restare anche se l'azienda o l'utente spariscono
+        private void Gen_Ticket(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<TicketType>(entity =>
+            {
+                entity.ToTable("TicketType", Schema);
+                entity.HasKey(e => e.Id);
+                entity.HasIndex(e => e.Codice).IsUnique();
+            });
+
+            modelBuilder.Entity<TicketTypeLevel>(entity =>
+            {
+                entity.ToTable("TicketTypeLevel", Schema);
+                entity.HasKey(e => e.Id);
+
+                // un livello abilitato una sola volta per tipo
+                entity.HasIndex(e => new { e.IdTicketType, e.Level }).IsUnique();
+
+                entity.HasOne(e => e.TicketTypeNavigation)
+                      .WithMany(t => t.TicketTypeLevel)
+                      .HasForeignKey(e => e.IdTicketType)
+                      .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<Ticket>(entity =>
+            {
+                entity.ToTable("Ticket", Schema);
+                entity.HasKey(e => e.Id);
+
+                // filtri degli elenchi: chi ha aperto, in carico, ticket dei nodi figli
+                entity.HasIndex(e => e.IdAspNetUsersOpener);
+                entity.HasIndex(e => new { e.CurrentLevel, e.State });
+                entity.HasIndex(e => e.CurrentIdAspNetUsers);
+                entity.HasIndex(e => e.IdDealer);
+                entity.HasIndex(e => e.IdFinancialAdvisor);
+                entity.HasIndex(e => e.IdCompany);
+
+                // un tipo in uso non si cancella: si disattiva
+                entity.HasOne(e => e.TicketTypeNavigation)
+                      .WithMany()
+                      .HasForeignKey(e => e.IdTicketType)
+                      .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<TicketCronology>(entity =>
+            {
+                entity.ToTable("TicketCronology", Schema);
+                entity.HasKey(e => e.Id);
+
+                // assegnati in passato (sola lettura per l'Admin)
+                entity.HasIndex(e => e.UserId);
+
+                entity.HasOne(e => e.TicketNavigation)
+                      .WithMany(t => t.TicketCronology)
+                      .HasForeignKey(e => e.IdTicket)
+                      .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<TicketAttach>(entity =>
+            {
+                entity.ToTable("TicketAttach", Schema);
+                entity.HasKey(e => e.Id);
+
+                entity.HasOne(e => e.TicketCronologyNavigation)
+                      .WithMany(c => c.TicketAttach)
+                      .HasForeignKey(e => e.IdTicketCronology)
+                      .OnDelete(DeleteBehavior.Cascade);
             });
         }
 

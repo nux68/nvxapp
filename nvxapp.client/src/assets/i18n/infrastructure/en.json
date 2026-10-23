@@ -14,7 +14,18 @@
       "reject": "Reject",
       "delete": "Delete",
       "execute": "Run",
-      "add": "Add"
+      "add": "Add",
+      "open": "Open",
+      "assign": "Assign",
+      "forward": "Forward",
+      "requestInfo": "Ask for information",
+      "reply": "Reply",
+      "note": "Note",
+      "resolve": "Resolve",
+      "reopen": "Reopen",
+      "reclassify": "Change type",
+      "backToList": "Back to list",
+      "closeTicket": "Close ticket"
     },
     "dialog": {
       "confirmTitle": "Confirm Operation",
@@ -63,7 +74,9 @@
     "dashboard": "Dashboard",
     "login": "Login",
     "logout": "Logout",
-    "userData": "User Data"
+    "userData": "User Data",
+    "tickets": "Support",
+    "ticketTypes": "Request types"
   },
   "showcase": {
     "menu": {
@@ -468,6 +481,79 @@
       "columnUser": "User",
       "fabAdd": "Item 1",
       "showDisabled": "Show disabled"
+    },
+    "ticketList": {
+      "title": "Support",
+      "view0": "Assigned to me",
+      "view1": "Opened by me",
+      "view2": "Others",
+      "stateFilter": "State",
+      "allStates": "All",
+      "columnSubject": "Subject",
+      "columnType": "Type",
+      "columnState": "State",
+      "columnLevel": "Level",
+      "columnOpener": "Opened by",
+      "columnModified": "Last change",
+      "newTicket": "New ticket",
+      "empty": "No tickets"
+    },
+    "ticketNew": {
+      "title": "New ticket",
+      "send": "Send",
+      "noRole": "No request types are available for your roles.",
+      "openerRole": "Open as",
+      "openerRoleNote": "The role decides who receives the request.",
+      "openAs0": "SuperUser (assigned to a DEV user)",
+      "openAs2": "Dealer",
+      "openAs3": "Financial Advisor",
+      "openAs4": "Company administrator (to your financial advisor)",
+      "openAs5": "Employee (to the company manager)",
+      "ticketType": "Request type",
+      "ticketTypeRequired": "The request type is required.",
+      "assignee": "Assign to",
+      "assigneeRequired": "Select the user to assign the ticket to.",
+      "subject": "Subject",
+      "subjectRequired": "The subject is required.",
+      "text": "Description",
+      "textRequired": "The description is required."
+    },
+    "ticketDetail": {
+      "title": "Ticket #{{id}}",
+      "currentLevel": "Currently at",
+      "openedBy": "Opened by {{user}} ({{level}})",
+      "cronology": "History",
+      "newType": "New type: {{type}}",
+      "download": "Download {{name}}",
+      "authorAi": "AI assistant"
+    },
+    "ticketTypeList": {
+      "title": "Request types",
+      "columnCode": "Code",
+      "columnDescription": "Description",
+      "columnApplication": "Application",
+      "columnLevels": "Enabled levels",
+      "columnAi": "AI",
+      "yes": "Yes",
+      "no": "No",
+      "newType": "New type",
+      "showDisabled": "Show inactive too"
+    },
+    "ticketTypeEdit": {
+      "title": "Request type",
+      "info": "Info",
+      "code": "Code",
+      "codeRequired": "The code is required.",
+      "description": "Description",
+      "application": "Application",
+      "levels": "Enabled levels",
+      "levelsNote": "The ticket is opened, moves up and is visible only in the enabled levels: it moves to the first enabled level above the current one.",
+      "levelsRequired": "Enable at least two levels: one that opens the ticket and one that receives it.",
+      "order": "Order",
+      "aiResolution": "Automatic AI resolution",
+      "aiResolutionNote": "At every step up (except DEV → SuperUser) an automatic answer is attempted. For now this is only a placeholder: the ticket always moves to the upper level.",
+      "active": "Active",
+      "activeNote": "An inactive type can no longer be selected, but stays on existing tickets."
     }
   },
   "components": {
@@ -520,6 +606,82 @@
     "parameterLoader": {
       "title": "Loading...",
       "message": "Please wait for the process to complete..."
+    },
+    "ticketAttach": {
+      "add": "Attach files",
+      "remove": "Remove",
+      "tooMany": "You can attach at most {{max}} files.",
+      "empty": "The file {{name}} is empty.",
+      "extension": "The file type of {{name}} is not allowed.",
+      "tooLarge": "The file {{name}} exceeds {{max}} MB.",
+      "totalTooLarge": "The attachments exceed {{max}} MB in total."
+    },
+    "ticketActionDialog": {
+      "assignee": "Assign to",
+      "assigneeRequired": "Select the user.",
+      "forwardTo": "The ticket will move to: {{level}}.",
+      "infoTarget": "Ask",
+      "infoTargetRequired": "Select who to ask.",
+      "opener": "Who opened the ticket ({{user}})",
+      "infoToLevel": "Send to the level instead of the user",
+      "infoToLevelNote": "The request goes to the managers of the level.",
+      "infoToUserNote": "The request goes to {{user}}, who was handling the ticket.",
+      "ticketType": "New request type",
+      "ticketTypeRequired": "Select the type.",
+      "text": "Text",
+      "textRequired": "The text is required.",
+      "noteRequired": "Write a text or attach at least one file.",
+      "closeNote": "The ticket will be closed for good and cannot be reopened. To go back to the list without closing it, use Cancel and then \"Back to list\"."
+    }
+  },
+  "ticket": {
+    "level": {
+      "0": "SuperUser",
+      "1": "DEV",
+      "2": "Dealer",
+      "3": "Financial Advisor",
+      "4": "Company",
+      "5": "User"
+    },
+    "state": {
+      "0": "Open",
+      "1": "In progress",
+      "2": "Waiting for information",
+      "3": "Resolved",
+      "4": "Closed"
+    },
+    "action": {
+      "0": "Opened",
+      "1": "Assigned",
+      "2": "Forwarded",
+      "3": "Information requested",
+      "4": "Reply",
+      "5": "Note",
+      "6": "Resolved",
+      "7": "Resolved by the AI assistant",
+      "8": "Reopened",
+      "9": "Closed",
+      "10": "Type changed",
+      "11": "Company moved"
+    },
+    "actionButton": {
+      "1": "Assign",
+      "2": "Forward to the upper level",
+      "3": "Ask for information",
+      "4": "Reply",
+      "5": "Add a note",
+      "6": "Resolve",
+      "8": "Reopen",
+      "9": "Close the ticket",
+      "10": "Change request type"
+    },
+    "application": {
+      "1": "Moke",
+      "2": "Attendance",
+      "general": "General"
+    },
+    "notification": {
+      "message": "Ticket #{{id}} \"{{oggetto}}\": {{action}}"
     }
   }
 }

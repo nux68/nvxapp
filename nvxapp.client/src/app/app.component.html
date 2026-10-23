@@ -26,6 +26,9 @@
                         <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
                           <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-outline'"></ion-icon>
                           <ion-label>{{ p.title | transloco }}</ion-label>
+                          @if (menuBadge(p.component) > 0) {
+                            <ion-badge slot="end" color="danger">{{ menuBadge(p.component) }}</ion-badge>
+                          }
                         </ion-item>
                       </ion-menu-toggle>
                     }
@@ -55,6 +58,9 @@
                               <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
                                 <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-outline'"></ion-icon>
                                 <ion-label>{{ p.title | transloco }}</ion-label>
+                                @if (menuBadge(p.component) > 0) {
+                                  <ion-badge slot="end" color="danger">{{ menuBadge(p.component) }}</ion-badge>
+                                }
                               </ion-item>
                             </ion-menu-toggle>
                           }
@@ -88,6 +94,9 @@
                               <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
                                 <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-outline'"></ion-icon>
                                 <ion-label>{{ p.title | transloco }}</ion-label>
+                                @if (menuBadge(p.component) > 0) {
+                                  <ion-badge slot="end" color="danger">{{ menuBadge(p.component) }}</ion-badge>
+                                }
                               </ion-item>
                             </ion-menu-toggle>
                           }
@@ -120,6 +129,9 @@
                               <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
                                 <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-outline'"></ion-icon>
                                 <ion-label>{{ p.title | transloco }}</ion-label>
+                                @if (menuBadge(p.component) > 0) {
+                                  <ion-badge slot="end" color="danger">{{ menuBadge(p.component) }}</ion-badge>
+                                }
                               </ion-item>
                             </ion-menu-toggle>
                           }
@@ -152,6 +164,9 @@
                               <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
                                 <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-outline'"></ion-icon>
                                 <ion-label>{{ p.title | transloco }}</ion-label>
+                                @if (menuBadge(p.component) > 0) {
+                                  <ion-badge slot="end" color="danger">{{ menuBadge(p.component) }}</ion-badge>
+                                }
                               </ion-item>
                             </ion-menu-toggle>
                           }
@@ -184,6 +199,9 @@
                               <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
                                 <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-outline'"></ion-icon>
                                 <ion-label>{{ p.title | transloco }}</ion-label>
+                                @if (menuBadge(p.component) > 0) {
+                                  <ion-badge slot="end" color="danger">{{ menuBadge(p.component) }}</ion-badge>
+                                }
                               </ion-item>
                             </ion-menu-toggle>
                           }
@@ -216,6 +234,9 @@
                               <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
                                 <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-outline'"></ion-icon>
                                 <ion-label>{{ p.title | transloco }}</ion-label>
+                                @if (menuBadge(p.component) > 0) {
+                                  <ion-badge slot="end" color="danger">{{ menuBadge(p.component) }}</ion-badge>
+                                }
                               </ion-item>
                             </ion-menu-toggle>
                           }

@@ -102,7 +102,7 @@ Tutte le tabelle in `public` (`PublicDbContext_Infrastructure`), entità in `nvx
 
 **Livelli abilitati: TicketTypeLevel.** Tabella figlia (`IdTicketType`, `Level`), una riga per ogni livello in cui il tipo è abilitato, univoca per coppia tipo/livello. `Level` è un enum con i sei livelli: SuperUser, DEV, Dealer, FinancialAdvisor, Company, User. Le regole sono al §4.
 
-**Descrizione multilingua.** Essendo un valore da tabella, non può stare nei file di traduzione. Proposta: tabella figlia **TicketTypeText** (`IdTicketType`, `Language` — "it", "en" —, `Descrizione`), univoca per coppia tipo/lingua. Se manca la lingua dell'utente si usa l'italiano. In alternativa, più semplice ma meno estendibile: due colonne `Descrizione` / `DescrizioneEn`.
+**Descrizione.** Una sola, nel campo `Descrizione` di `TicketType` (max 100), mostrata uguale in tutte le lingue: come gli altri dati delle tabelle (aziende, studi, centri), che non vengono tradotti. Nell'applicazione non c'è una traduzione automatica: i file it/en riguardano solo le etichette dell'interfaccia.
 
 ### 3.2 Ticket (la richiesta)
 
@@ -118,7 +118,7 @@ Tutte le tabelle in `public` (`PublicDbContext_Infrastructure`), entità in `nvx
 | IdDealer, IdFinancialAdvisor, IdCompany | **percorso di origine**, salvato all'apertura e valorizzato fino al livello di chi apre (un Dealer valorizza solo `IdDealer`; per i ticket del SuperUser restano tutti vuoti). Serve a individuare il nodo corrente e a filtrare "i ticket dei figli" con un semplice filtro (es. tutti i ticket con `IdFinancialAdvisor` = il mio) |
 | CurrentRoleId | livello corrente (copia dell'ultima riga di cronologia) |
 | CurrentIdAspNetUsers | assegnatario corrente, null se in attesa al livello |
-| LastIdTicketCronology | ultimo passaggio, per il controllo di concorrenza |
+| Version | cresce a ogni passaggio, per il controllo di concorrenza |
 
 I campi "Current…" sono una copia dell'ultima riga di `TicketCronology`, aggiornata nella stessa transazione: evitano di cercare ogni volta l'ultima riga per costruire gli elenchi.
 
@@ -131,7 +131,7 @@ I campi "Current…" sono una copia dell'ultima riga di `TicketCronology`, aggio
 | RoleId | livello di visibilità dopo questo passaggio (come da specifica) |
 | UserId | **assegnatario**: utente che ha in carico il ticket; null = in attesa al livello (visibile ai PowerAdmin del nodo) |
 | IdAspNetUsersAuthor | **autore** del passaggio: chi ha eseguito l'azione e scritto il testo. Null per i passaggi eseguiti dall'AI |
-| Action | enum: Apertura, Assegnazione, Inoltro, RichiestaInfo, RispostaInfo, Nota, Risoluzione, **RisoluzioneAI**, Riapertura, Chiusura, Riclassificazione |
+| Action | enum: Apertura, Assegnazione, Inoltro, RichiestaInfo, RispostaInfo, Nota, Risoluzione, **RisoluzioneAI**, Riapertura, Chiusura, Riclassificazione, Spostamento (azienda passata a un altro studio, §9) |
 | ReturnRoleId, ReturnUserId | **dove tornare**: valorizzati sulle righe RichiestaInfo e Risoluzione con il livello e l'utente che hanno chiesto o risolto. La risposta (o la riapertura) riporta lì il ticket |
 | State | stato del ticket dopo il passaggio |
 | Text | testo del passaggio (facoltativo per alcune azioni) |
@@ -155,18 +155,18 @@ Il contenuto si legge **solo** dall'endpoint di download, mai negli elenchi né 
 
 Inserimento iniziale nella migration (o in `PopolateDB`, come per gli utenti di base). Proposta:
 
-| Applicativo | Codice | Descrizione (it / en) | Livelli abilitati |
+| Applicativo | Codice | Descrizione | Livelli abilitati |
 |---|---|---|---|
-| Generale | ACCESSO | Accesso e credenziali / Access and credentials | Company, User |
-| Generale | UTENTI | Gestione utenti / User management | FinancialAdvisor, Company, User |
-| Generale | CONTRATTO | Contratto e fatturazione / Contract and billing | Dealer, FinancialAdvisor, Company |
-| Generale | BUG | Malfunzionamento / Malfunction | tutti |
-| Generale | NUOVA | Richiesta nuova funzionalità / Feature request | tutti |
-| Generale | SVILUPPO | Attività di sviluppo / Development task | SuperUser, DEV |
-| AttendanceTracking | TIMBRATURE | Timbrature / Clockings | Company, User |
-| AttendanceTracking | GIUSTIFICATIVI | Giustificativi e causali / Absences and reasons | Company, User |
-| AttendanceTracking | NOTESPESE | Note spese / Expense reports | FinancialAdvisor, Company, User |
-| AttendanceTracking | BUGPRESENZE | Malfunzionamento Presenze / Attendance malfunction | tutti |
+| Generale | ACCESSO | Accesso e credenziali | Company, User |
+| Generale | UTENTI | Gestione utenti | FinancialAdvisor, Company, User |
+| Generale | CONTRATTO | Contratto e fatturazione | Dealer, FinancialAdvisor, Company |
+| Generale | BUG | Malfunzionamento | tutti |
+| Generale | NUOVA | Richiesta nuova funzionalità | tutti |
+| Generale | SVILUPPO | Attività di sviluppo | SuperUser, DEV |
+| AttendanceTracking | TIMBRATURE | Timbrature | Company, User |
+| AttendanceTracking | GIUSTIFICATIVI | Giustificativi e causali | Company, User |
+| AttendanceTracking | NOTESPESE | Note spese | FinancialAdvisor, Company, User |
+| AttendanceTracking | BUGPRESENZE | Malfunzionamento Presenze | tutti |
 
 Tutti i tipi iniziali hanno `AiResolution` = false: il SuperUser la attiva dalla pagina dei tipi quando servirà.
 
@@ -253,7 +253,7 @@ Per i ticket del SuperUser, il livello DEV può chiedere solo al SuperUser, perc
 
 **Visibilità.** Mentre aspetta la risposta, il ticket compare nella vista "In carico a me" del destinatario. Il livello che ha chiesto lo vede in sola lettura, con l'indicazione "In attesa di informazioni da …".
 
-**Concorrenza:** ogni azione invia l'Id dell'ultimo passaggio visto (`LastIdTicketCronology`); se nel frattempo il ticket è cambiato, il server rifiuta l'azione con un messaggio e il client ricarica il dettaglio.
+**Concorrenza:** ogni azione invia la versione del ticket vista (`Version`); se nel frattempo il ticket è cambiato, il server rifiuta l'azione con un messaggio e il client ricarica il dettaglio.
 
 ---
 
@@ -325,12 +325,12 @@ Nota sull'impersonificazione: i gruppi dell'hub usano `UserIdFirstConnection` (u
 
 | Pagina | Chi | Note |
 |---|---|---|
-| Elenco ticket | livelli 1–5, SuperUser | tre viste (§6), filtri per stato e tipo, `app-generic-list` |
+| Elenco ticket | livelli 1–5, SuperUser | tre viste (§6), filtri per stato e tipo, `nvx-list`. Voce di menu nella seconda sezione del menu di ogni ruolo (Generale per l'azienda, Centro, Studio, Admin, SuperUser); il dipendente senza menu di ruolo la trova nella seconda sezione del menu utente se c'è (es. Presenze), altrimenti in Accesso. Accanto alla voce, il numero dei ticket in carico |
 | Nuovo ticket | livelli 2–5, SuperUser | per il SuperUser al posto del ruolo di apertura c'è l'assegnatario obbligatorio (PowerAdmin o Admin, §2.2). Deriva da `BasePageConfirmCancelComponent`: ruolo di apertura (solo se l'utente ne ha più di uno, §2.1), tipo, oggetto, testo, allegati. Cambiando ruolo si aggiorna l'elenco dei tipi |
-| Dettaglio ticket | chi può vederlo | cronologia (passaggi con testo e allegati) + pulsanti delle azioni consentite in quel momento |
+| Dettaglio ticket | chi può vederlo | cronologia (passaggi con testo e allegati) + pulsanti delle azioni consentite in quel momento + "Torna all'elenco" (sempre presente, non tocca il ticket), distinto da "Chiudi ticket" (chiusura definitiva, con avviso nel dialog) |
 | Dialog azione | — | deriva da `BaseDialogConfirmCancelComponent`: testo + allegati (+ utente per l'assegnazione, + tipo per la riclassificazione, + destinatario per la richiesta di informazioni: chi ha aperto o un livello intermedio, con l'opzione "all'utente che l'aveva in carico" / "al livello") |
 | Elenco tipi di richiesta | SuperUser | nel menu SuperUser (`Pages4SuperUser`), `RoleGuard4SuperUser` |
-| Modifica tipo di richiesta | SuperUser | deriva da `BasePageConfirmCancelComponent`: applicativo, codice, descrizioni it/en, livelli abilitati (una casella per ognuno dei sei livelli, almeno due selezionati), risoluzione automatica AI (casella), ordine, attivo |
+| Modifica tipo di richiesta | SuperUser | deriva da `BasePageConfirmCancelComponent`: applicativo, codice, descrizione, livelli abilitati (una casella per ognuno dei sei livelli, almeno due selezionati), risoluzione automatica AI (casella), ordine, attivo |
 
 Da verificare: i pulsanti necessari (Assegna, Inoltra, Risolvi, Riapri, Chiudi, Richiedi informazioni) esistono già nella collezione di `UserInterfaceService`? Quelli mancanti vanno aggiunti lì.
 
@@ -341,22 +341,22 @@ Tutte le etichette nuove vanno nei file di traduzione `assets/i18n/infrastructur
 ## 11. Dove andranno le modifiche (tutto in Infrastructure)
 
 **nvxapp.server.data**
-- `Entities/Public`: `TicketType`, `TicketTypeText`, `TicketTypeLevel`, `Ticket`, `TicketCronology`, `TicketAttach` + enum di stato e azione
+- `Entities/Public`: `TicketType`, `TicketTypeLevel`, `Ticket`, `TicketCronology`, `TicketAttach` + enum di stato e azione
 - `Infrastructure/PublicDbContext_Infrastructure.cs`: DbSet e configurazione (indici, chiavi esterne senza cascade)
 - `Repositories/Public`: un repository per entità (interfaccia nello stesso file)
 - `Migrations/Public`: nuova migration con i tipi iniziali
 - `Localization/InfrastructureMessages*.resx`: messaggi
 
 **nvxapp.server.service**
-- `ClientServer-Service/infrastructure/Ticket`: `TicketService` (da `ServiceBase`) + `Models`
-- `ClientServer-Service/infrastructure/Ticket`: `TicketAiResolver`, il metodo di risoluzione automatica predisposto che restituisce sempre "non risolto" (§4.1)
+- `ClientServer-Service/infrastructure/SupportTicket` (non `Ticket`: il namespace andrebbe in conflitto con l'entità): `TicketService`, `TicketTypeService`, `TicketRules`, `TicketNotifier` + `Models`
+- `ClientServer-Service/infrastructure/SupportTicket`: `TicketAiResolverService`, il metodo di risoluzione automatica predisposto che restituisce sempre "non risolto" (§4.1)
 - `ClientServer-Service/infrastructure/TicketType`: `TicketTypeService` + `Models`
 - `Mappers/Public`: profili AutoMapper
 - `ClientServer-Service/infrastructure/CompanyMove`: riallineamento dei ticket
 - notifiche: un notifier sul modello di `JobNotifier`
 
 **nvxapp.server**
-- `Controllers/Infrastructure/TicketController.cs` (solo POST): elenco, dettaglio, tipi disponibili, apertura, assegnazione, inoltro, richiesta informazioni, risposta, nota, risoluzione, riapertura, chiusura, riclassificazione, utenti assegnabili, download allegato
+- `Controllers/Infrastructure/TicketController.cs` (solo POST): `TicketList`, `TicketCount`, `TicketGet` (con le azioni consentite, gli assegnatari e i destinatari), `TicketOpenInfo`, `TicketOpen`, `TicketExecute` (un solo endpoint per tutti i passaggi: assegnazione, inoltro, richiesta informazioni, risposta, nota, risoluzione, riapertura, chiusura, riclassificazione), `TicketAttachGet`
 - `Controllers/Infrastructure/TicketTypeController.cs`: elenco, dettaglio, salvataggio
 
 **nvxapp.client**

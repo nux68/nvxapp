@@ -1,0 +1,102 @@
+<app-page-toolbar [title]="Title"
+  [showFilter]="ShowFilter"
+  [showBreadcrumbs]="false">
+</app-page-toolbar>
+
+<ion-content [fullscreen]="true">
+
+  <ion-card>
+    <ion-card-content>
+
+      <form [formGroup]="_editForm">
+
+        @if (action === TicketAction.Assegnazione) {
+          <ion-item>
+            <ion-select formControlName="idAspNetUsers" [label]="'components.ticketActionDialog.assignee' | transloco" labelPlacement="floating">
+              @for (u of actions.assegnatario; track u.idAspNetUsers) {
+                <ion-select-option [value]="u.idAspNetUsers">{{ u.userName }}</ion-select-option>
+              }
+            </ion-select>
+          </ion-item>
+          @if (_editForm.get('idAspNetUsers')?.hasError('required') && _editForm.get('idAspNetUsers')?.touched) {
+            <ion-note color="danger">{{ 'components.ticketActionDialog.assigneeRequired' | transloco }}</ion-note>
+          }
+        }
+
+        @if (action === TicketAction.Chiusura) {
+          <ion-note color="danger" class="ticket-dialog-info">{{ 'components.ticketActionDialog.closeNote' | transloco }}</ion-note>
+        }
+
+        @if (action === TicketAction.Inoltro && actions.inoltraLevel !== null) {
+          <ion-note class="ticket-dialog-info">
+            {{ 'components.ticketActionDialog.forwardTo' | transloco: { level: ('ticket.level.' + actions.inoltraLevel | transloco) } }}
+          </ion-note>
+        }
+
+        @if (action === TicketAction.RichiestaInfo) {
+          <ion-item>
+            <ion-select formControlName="infoTarget" [label]="'components.ticketActionDialog.infoTarget' | transloco" labelPlacement="floating">
+              @for (t of actions.infoTarget; track targetKey(t)) {
+                <ion-select-option [value]="targetKey(t)">
+                  @if (t.isOpener) {
+                    {{ 'components.ticketActionDialog.opener' | transloco: { user: t.userName } }}
+                  } @else {
+                    {{ ('ticket.level.' + t.level) | transloco }}
+                  }
+                </ion-select-option>
+              }
+            </ion-select>
+          </ion-item>
+          @if (_editForm.get('infoTarget')?.hasError('required') && _editForm.get('infoTarget')?.touched) {
+            <ion-note color="danger">{{ 'components.ticketActionDialog.infoTargetRequired' | transloco }}</ion-note>
+          }
+          @if (selectedTarget && !selectedTarget.isOpener) {
+            @if (selectedTarget.idAspNetUsers) {
+              <ion-item>
+                <ion-toggle formControlName="infoToLevel" justify="start">
+                  {{ 'components.ticketActionDialog.infoToLevel' | transloco }}
+                </ion-toggle>
+              </ion-item>
+              <ion-note class="ticket-dialog-info">
+                {{ (_editForm.get('infoToLevel')?.value ? 'components.ticketActionDialog.infoToLevelNote' : 'components.ticketActionDialog.infoToUserNote') | transloco: { user: selectedTarget.userName } }}
+              </ion-note>
+            } @else {
+              <ion-note class="ticket-dialog-info">{{ 'components.ticketActionDialog.infoToLevelNote' | transloco }}</ion-note>
+            }
+          }
+        }
+
+        @if (action === TicketAction.Riclassificazione) {
+          <ion-item>
+            <ion-select formControlName="idTicketType" [label]="'components.ticketActionDialog.ticketType' | transloco" labelPlacement="floating">
+              @for (t of actions.ticketType; track t.id) {
+                <ion-select-option [value]="t.id">{{ t.descrizione }}</ion-select-option>
+              }
+            </ion-select>
+          </ion-item>
+          @if (_editForm.get('idTicketType')?.hasError('required') && _editForm.get('idTicketType')?.touched) {
+            <ion-note color="danger">{{ 'components.ticketActionDialog.ticketTypeRequired' | transloco }}</ion-note>
+          }
+        }
+
+        <ion-item>
+          <ion-textarea formControlName="text" [label]="'components.ticketActionDialog.text' | transloco" labelPlacement="floating"
+                        [autoGrow]="true" [rows]="5" [counter]="true" maxlength="4000"></ion-textarea>
+        </ion-item>
+        @if (_editForm.get('text')?.hasError('required') && _editForm.get('text')?.touched) {
+          <ion-note color="danger">{{ 'components.ticketActionDialog.textRequired' | transloco }}</ion-note>
+        }
+        @if (attachRequired) {
+          <ion-note color="danger">{{ 'components.ticketActionDialog.noteRequired' | transloco }}</ion-note>
+        }
+
+      </form>
+
+      <app-ticket-attach [attach]="attach" (attachChange)="attach = $event"></app-ticket-attach>
+
+    </ion-card-content>
+  </ion-card>
+
+</ion-content>
+
+<app-page-buttonbar [buttonbar]="buttonbar"></app-page-buttonbar>

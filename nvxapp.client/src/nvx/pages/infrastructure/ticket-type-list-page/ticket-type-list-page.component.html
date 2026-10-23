@@ -1,0 +1,25 @@
+<app-page-toolbar [title]="title"
+  [showFilter]="true"
+  [showBreadcrumbs]="true"
+  (ev_Filter)="Filter($event)">
+</app-page-toolbar>
+
+<ion-content [fullscreen]="true" class="nvx-wide">
+
+  <ion-card>
+    <ion-card-content>
+      <nvx-list
+        [items]="ticketTypeList"
+        [columns]="columns"
+        [actions]="actions"
+        trackKey="id"
+        icon="pricetags-outline"
+        [searchText]="searchText"
+        [sort]="sortByOrdine"
+        [rowDisabled]="isDisabled"
+        [disabledToggleLabel]="'pages.ticketTypeList.showDisabled' | transloco">
+      </nvx-list>
+    </ion-card-content>
+  </ion-card>
+
+</ion-content>

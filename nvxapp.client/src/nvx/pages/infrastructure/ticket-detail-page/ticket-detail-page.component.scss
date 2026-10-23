@@ -1,0 +1,27 @@
+.ticket-info {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.ticket-opener {
+  margin-top: 8px;
+  color: var(--ion-color-medium);
+}
+
+.ticket-text {
+  white-space: pre-wrap;
+  margin-top: 8px;
+}
+
+.ticket-attach-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.ticket-row-state {
+  font-size: 0.8em;
+}

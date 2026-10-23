@@ -14,7 +14,18 @@
       "reject": "Rifiuta",
       "delete": "Cancella",
       "execute": "Esegui",
-      "add": "Aggiungi"
+      "add": "Aggiungi",
+      "open": "Apri",
+      "assign": "Assegna",
+      "forward": "Inoltra",
+      "requestInfo": "Chiedi informazioni",
+      "reply": "Rispondi",
+      "note": "Nota",
+      "resolve": "Risolvi",
+      "reopen": "Riapri",
+      "reclassify": "Cambia tipo",
+      "backToList": "Torna all'elenco",
+      "closeTicket": "Chiudi ticket"
     },
     "dialog": {
       "confirmTitle": "Conferma Operazione",
@@ -63,7 +74,9 @@
     "dashboard": "Dashboard",
     "login": "Login",
     "logout": "Logout",
-    "userData": "User Data"
+    "userData": "User Data",
+    "tickets": "Assistenza",
+    "ticketTypes": "Tipi di richiesta"
   },
   "showcase": {
     "menu": {
@@ -468,6 +481,79 @@
       "columnUser": "Utente",
       "fabAdd": "Elemento 1",
       "showDisabled": "Mostra disabilitati"
+    },
+    "ticketList": {
+      "title": "Assistenza",
+      "view0": "In carico a me",
+      "view1": "Aperti da me",
+      "view2": "Altri",
+      "stateFilter": "Stato",
+      "allStates": "Tutti",
+      "columnSubject": "Oggetto",
+      "columnType": "Tipo",
+      "columnState": "Stato",
+      "columnLevel": "Livello",
+      "columnOpener": "Aperto da",
+      "columnModified": "Ultima modifica",
+      "newTicket": "Nuovo ticket",
+      "empty": "Nessun ticket"
+    },
+    "ticketNew": {
+      "title": "Nuovo ticket",
+      "send": "Invia",
+      "noRole": "Con i tuoi ruoli non ci sono tipi di richiesta disponibili.",
+      "openerRole": "Apri come",
+      "openerRoleNote": "Il ruolo decide a chi arriva la richiesta.",
+      "openAs0": "SuperUser (assegnato a un utente DEV)",
+      "openAs2": "Centro",
+      "openAs3": "Studio",
+      "openAs4": "Amministratore aziendale (al tuo studio)",
+      "openAs5": "Dipendente (al responsabile dell'azienda)",
+      "ticketType": "Tipo di richiesta",
+      "ticketTypeRequired": "Il tipo di richiesta è obbligatorio.",
+      "assignee": "Assegna a",
+      "assigneeRequired": "Scegli l'utente a cui assegnare il ticket.",
+      "subject": "Oggetto",
+      "subjectRequired": "L'oggetto è obbligatorio.",
+      "text": "Descrizione",
+      "textRequired": "La descrizione è obbligatoria."
+    },
+    "ticketDetail": {
+      "title": "Ticket #{{id}}",
+      "currentLevel": "Si trova a",
+      "openedBy": "Aperto da {{user}} ({{level}})",
+      "cronology": "Cronologia",
+      "newType": "Nuovo tipo: {{type}}",
+      "download": "Scarica {{name}}",
+      "authorAi": "Assistente AI"
+    },
+    "ticketTypeList": {
+      "title": "Tipi di richiesta",
+      "columnCode": "Codice",
+      "columnDescription": "Descrizione",
+      "columnApplication": "Applicativo",
+      "columnLevels": "Livelli abilitati",
+      "columnAi": "AI",
+      "yes": "Sì",
+      "no": "No",
+      "newType": "Nuovo tipo",
+      "showDisabled": "Mostra anche i disattivati"
+    },
+    "ticketTypeEdit": {
+      "title": "Tipo di richiesta",
+      "info": "Info",
+      "code": "Codice",
+      "codeRequired": "Il codice è obbligatorio.",
+      "description": "Descrizione",
+      "application": "Applicativo",
+      "levels": "Livelli abilitati",
+      "levelsNote": "Il ticket si apre, sale e si vede solo nei livelli abilitati: sale al primo livello abilitato sopra quello corrente.",
+      "levelsRequired": "Abilita almeno due livelli: uno che apre il ticket e uno che lo riceve.",
+      "order": "Ordine",
+      "aiResolution": "Risoluzione automatica AI",
+      "aiResolutionNote": "A ogni passaggio verso l'alto (escluso DEV → SuperUser) si tenta una risposta automatica. Per ora è solo una predisposizione: il ticket passa sempre al livello superiore.",
+      "active": "Attivo",
+      "activeNote": "Un tipo disattivato non si può più scegliere, ma resta sui ticket esistenti."
     }
   },
   "components": {
@@ -520,6 +606,82 @@
     "parameterLoader": {
       "title": "Caricamento in corso...",
       "message": "Attendere il completamento del processo..."
+    },
+    "ticketAttach": {
+      "add": "Allega file",
+      "remove": "Rimuovi",
+      "tooMany": "Puoi allegare al massimo {{max}} file.",
+      "empty": "Il file {{name}} è vuoto.",
+      "extension": "Il tipo del file {{name}} non è ammesso.",
+      "tooLarge": "Il file {{name}} supera i {{max}} MB.",
+      "totalTooLarge": "Gli allegati superano in totale i {{max}} MB."
+    },
+    "ticketActionDialog": {
+      "assignee": "Assegna a",
+      "assigneeRequired": "Scegli l'utente.",
+      "forwardTo": "Il ticket passerà al livello: {{level}}.",
+      "infoTarget": "Chiedi a",
+      "infoTargetRequired": "Scegli a chi chiedere.",
+      "opener": "Chi ha aperto il ticket ({{user}})",
+      "infoToLevel": "Invia al livello invece che all'utente",
+      "infoToLevelNote": "La richiesta arriva ai responsabili del livello.",
+      "infoToUserNote": "La richiesta arriva a {{user}}, che aveva in carico il ticket.",
+      "ticketType": "Nuovo tipo di richiesta",
+      "ticketTypeRequired": "Scegli il tipo.",
+      "text": "Testo",
+      "textRequired": "Il testo è obbligatorio.",
+      "noteRequired": "Scrivi un testo o allega almeno un file.",
+      "closeNote": "Il ticket verrà chiuso definitivamente e non potrà più essere riaperto. Per tornare all'elenco senza chiuderlo usa Annulla e poi \"Torna all'elenco\"."
+    }
+  },
+  "ticket": {
+    "level": {
+      "0": "SuperUser",
+      "1": "DEV",
+      "2": "Centro",
+      "3": "Studio",
+      "4": "Azienda",
+      "5": "Utente"
+    },
+    "state": {
+      "0": "Aperto",
+      "1": "In carico",
+      "2": "In attesa di informazioni",
+      "3": "Risolto",
+      "4": "Chiuso"
+    },
+    "action": {
+      "0": "Apertura",
+      "1": "Assegnazione",
+      "2": "Inoltro",
+      "3": "Richiesta di informazioni",
+      "4": "Risposta",
+      "5": "Nota",
+      "6": "Risoluzione",
+      "7": "Risolto dall'assistente AI",
+      "8": "Riapertura",
+      "9": "Chiusura",
+      "10": "Cambio tipo",
+      "11": "Spostamento dell'azienda"
+    },
+    "actionButton": {
+      "1": "Assegna",
+      "2": "Inoltra al livello superiore",
+      "3": "Chiedi informazioni",
+      "4": "Rispondi",
+      "5": "Aggiungi una nota",
+      "6": "Risolvi",
+      "8": "Riapri",
+      "9": "Chiudi il ticket",
+      "10": "Cambia tipo di richiesta"
+    },
+    "application": {
+      "1": "Moke",
+      "2": "Presenze",
+      "general": "Generale"
+    },
+    "notification": {
+      "message": "Ticket #{{id}} \"{{oggetto}}\": {{action}}"
     }
   }
 }

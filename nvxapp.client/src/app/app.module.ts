@@ -3,7 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
 import { provideHttpClient, withInterceptorsFromDi, withXhr } from '@angular/common/http';
 
-import { IonAccordion, IonAccordionGroup, IonApp, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonChip, IonContent, IonFab, IonFabButton, IonFabList, IonFooter, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonMenu, IonMenuToggle, IonModal, IonNote, IonProgressBar, IonRouterLink, IonRouterOutlet, IonSpinner, IonSplitPane, IonTextarea, IonTitle, IonToolbar, IonicRouteStrategy, provideIonicAngular } from '@ionic/angular';
+import { IonAccordion, IonAccordionGroup, IonApp, IonBadge, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonChip, IonContent, IonFab, IonFabButton, IonFabList, IonFooter, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonMenu, IonMenuToggle, IonModal, IonNote, IonProgressBar, IonRouterLink, IonRouterOutlet, IonSpinner, IonSplitPane, IonTextarea, IonTitle, IonToolbar, IonicRouteStrategy, provideIonicAngular } from '@ionic/angular';
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
@@ -30,7 +30,7 @@ import { provideNvxI18n } from '../nvx/Utility/infrastructure/i18n.providers';
   ],
   imports: [
             BrowserModule,
-            IonAccordion, IonAccordionGroup, IonApp, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonChip, IonContent, IonFab, IonFabButton, IonFabList, IonFooter, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonMenu, IonMenuToggle, IonModal, IonNote, IonProgressBar, IonRouterLink, IonRouterOutlet, IonSpinner, IonSplitPane, IonTextarea, IonTitle, IonToolbar,
+            IonAccordion, IonAccordionGroup, IonApp, IonBadge, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonChip, IonContent, IonFab, IonFabButton, IonFabList, IonFooter, IonHeader, IonIcon, IonItem, IonLabel, IonList, IonMenu, IonMenuToggle, IonModal, IonNote, IonProgressBar, IonRouterLink, IonRouterOutlet, IonSpinner, IonSplitPane, IonTextarea, IonTitle, IonToolbar,
             AppRoutingModule,
             FormsModule,
             TranslocoPipe

@@ -7,6 +7,8 @@ using nvxapp.server.Base;
 using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyMove.Models;
+using nvxapp.server.service.ClientServer_Service.Infrastructure.SupportTicket;
+using nvxapp.server.service.ClientServer_Service.Infrastructure.SupportTicket.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.ServerModels;
@@ -19,6 +21,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyMove
      Basta aggiornare Company.IdFinancialAdvisor: il centro (Dealer) segue lo studio, gli utenti,
      gli applicativi, le restrizioni di menu e gli schemi tenant dipendono solo dall'azienda.
      Gli utenti del vecchio studio perdono l'accesso da soli (l'elenco aziende dello studio filtra su IdFinancialAdvisor).
+     I ticket di assistenza non chiusi dell'azienda vengono riallineati al nuovo studio (TicketService.TicketCompanyMove).
      Il controllo usa l'utente che ha fatto il login (UserIdFirstConnection), non quello impersonato.
     */
     public class CompanyMoveService : ServiceBase, ICompanyMoveService
@@ -28,6 +31,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyMove
         private readonly IDealerRepository _dealerRepository;
         private readonly IFinancialAdvisorRepository _financialAdvisorRepository;
         private readonly ICompanyRepository _companyRepository;
+        private readonly ITicketService _ticketService;
 
         public CompanyMoveService(IMapper mapper,
                                   UserManager<ApplicationUser> userManager,
@@ -38,11 +42,13 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyMove
 
                                   IDealerRepository dealerRepository,
                                   IFinancialAdvisorRepository financialAdvisorRepository,
-                                  ICompanyRepository companyRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
+                                  ICompanyRepository companyRepository,
+                                  ITicketService ticketService) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _dealerRepository = dealerRepository;
             _financialAdvisorRepository = financialAdvisorRepository;
             _companyRepository = companyRepository;
+            _ticketService = ticketService;
         }
 
         public virtual async Task<GenericResult<CompanyMoveTreeOutModel>> CompanyMoveTree(GenericRequest<CompanyMoveTreeInModel> model, Boolean isSubProcess)
@@ -90,6 +96,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyMove
 
                 company.IdFinancialAdvisor = financialAdvisor.Id;
                 await _companyRepository.UpdateAsync(company);
+
+                // i ticket aperti dell'azienda seguono il nuovo studio
+                await _ticketService.TicketCompanyMove(new GenericRequest<TicketCompanyMoveInModel>(new TicketCompanyMoveInModel { IdCompany = company.Id }), true);
 
                 retVal.Company = new CompanyMoveCompanyModel { IdCompany = company.Id, IdFinancialAdvisor = company.IdFinancialAdvisor, Descrizione = company.Descrizione };
 

@@ -10,6 +10,7 @@ import { MainMenuItem, MainMenuService, MenuType } from '../nvx/Utility/infrastr
 import { MainMenuInfrastructureService } from '../nvx/Utility/infrastructure/main-menu-infrastructure.service';
 import { LongJobNotifierService } from '../nvx/Utility/infrastructure/long-job-notifier.service';
 import { JobNotifierService } from '../nvx/Utility/infrastructure/job-notifier.service';
+import { TicketNotifierService } from '../nvx/Utility/infrastructure/ticket-notifier.service';
 import { ThemeService } from '../nvx/Utility/infrastructure/theme.service';
 import { ShowcaseService } from '../nvx/Utility/infrastructure/showcase.service';
 import { SITE_NAME } from '../nvx/Utility/infrastructure/site-name';
@@ -70,6 +71,7 @@ export class AppComponent implements OnInit {
               private mainMenuInfrastructureService: MainMenuInfrastructureService,
               private longJobNotifierService: LongJobNotifierService,
               private jobNotifierService: JobNotifierService,
+              public ticketNotifierService: TicketNotifierService,
               private themeService: ThemeService, // applica il tema chiaro/scuro salvato fin dall'avvio
               public showcaseService: ShowcaseService,
               titleService: Title
@@ -129,6 +131,11 @@ export class AppComponent implements OnInit {
 
           });
 
+          // ticket di assistenza: avviso, contatore del menu e pagine aperte
+          this.signalrService.on('TicketNotifier').subscribe((data) => {
+            this.ticketNotifierService.ticketNotifier(data);
+          });
+
         }
 
       });
@@ -143,6 +150,9 @@ export class AppComponent implements OnInit {
       this.groupedAdminMenu = this.getGroupedAdmin();
       this.groupedSuperUserMenu = this.getGroupedSuperUser();
       this.groupedUserMenu = this.getGroupedUser();
+
+      // ticket in carico dell'utente (anche dopo un'impersonificazione)
+      this.ticketNotifierService.refreshCount();
 
       // dopo il login (e dopo un'impersonificazione) si apre la prima sezione con voci, esclusa "Accesso".
       // Si imposta dopo che le sezioni nuove sono state disegnate: ion-accordion-group apre solo gli accordion
@@ -178,6 +188,11 @@ export class AppComponent implements OnInit {
       if (gruppo) return gruppo.menuHeader.title;
     }
     return accesso;
+  }
+
+  // numero mostrato accanto alla voce di menu (ticket di assistenza in carico all'utente), 0 = nessuno
+  public menuBadge(component: string): number {
+    return component === 'TicketListPageComponent' ? this.ticketNotifierService.inCarico() : 0;
   }
 
   public showPage4SuperUser(component: string): boolean {
@@ -245,6 +260,17 @@ export class AppComponent implements OnInit {
 
       case 'DashboardPageComponent':
         return this.authService.Token != null;
+        break;
+
+      // ticket di assistenza: qui solo per chi non ha un menu di ruolo (es. il dipendente),
+      // gli altri trovano la voce nella sezione del proprio ruolo
+      case 'TicketListPageComponent':
+        return this.authService.Token != null &&
+               !this.authService.IsSuperUser &&
+               !this.authService.IsInGroupAdmin &&
+               !this.authService.IsInGroupDealerAdmin &&
+               !this.authService.IsInGroupFinancialAdvisorAdmin &&
+               !this.authService.IsInGroupCompanyAdmin;
         break;
 
       case 'LoginPageComponent':

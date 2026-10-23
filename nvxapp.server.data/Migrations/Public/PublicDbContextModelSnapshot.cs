@@ -490,6 +490,291 @@ namespace nvxapp.server.data.Migrations.Public
                     b.ToTable("FinancialAdvisor", "public");
                 });
 
+            modelBuilder.Entity("nvxapp.server.data.Entities.Public.Ticket", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("CurrentIdAspNetUsers")
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
+                    b.Property<int>("CurrentLevel")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("CurrentRoleId")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
+                    b.Property<string>("IdAspNetUsersOpener")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
+                    b.Property<int?>("IdCompany")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("IdDealer")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("IdFinancialAdvisor")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("IdTicketType")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Oggetto")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int>("OpenerLevel")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("OpenerRoleId")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
+                    b.Property<int>("State")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.Property<int>("Version")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CurrentIdAspNetUsers");
+
+                    b.HasIndex("IdAspNetUsersOpener");
+
+                    b.HasIndex("IdCompany");
+
+                    b.HasIndex("IdDealer");
+
+                    b.HasIndex("IdFinancialAdvisor");
+
+                    b.HasIndex("IdTicketType");
+
+                    b.HasIndex("CurrentLevel", "State");
+
+                    b.ToTable("Ticket", "public");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Public.TicketAttach", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<byte[]>("File")
+                        .IsRequired()
+                        .HasColumnType("bytea");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<int>("IdTicketCronology")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<long>("Size")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdTicketCronology");
+
+                    b.ToTable("TicketAttach", "public");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Public.TicketCronology", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("Action")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("IdAspNetUsersAuthor")
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
+                    b.Property<int>("IdTicket")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("IdTicketType")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Level")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int?>("ReturnLevel")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ReturnRoleId")
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
+                    b.Property<string>("ReturnUserId")
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
+                    b.Property<string>("RoleId")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
+                    b.Property<int>("State")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Text")
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.Property<string>("UserId")
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdTicket");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("TicketCronology", "public");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Public.TicketType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Active")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("AiResolution")
+                        .HasColumnType("boolean");
+
+                    b.Property<int?>("ApplicationType")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("Codice")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Descrizione")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("Ordine")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Codice")
+                        .IsUnique();
+
+                    b.ToTable("TicketType", "public");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Public.TicketTypeLevel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("IdTicketType")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Level")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdTicketType", "Level")
+                        .IsUnique();
+
+                    b.ToTable("TicketTypeLevel", "public");
+                });
+
             modelBuilder.Entity("nvxapp.server.data.Entities.Public.UserCompany", b =>
                 {
                     b.Property<int>("Id")
@@ -708,6 +993,50 @@ namespace nvxapp.server.data.Migrations.Public
                     b.Navigation("DealerNavigation");
                 });
 
+            modelBuilder.Entity("nvxapp.server.data.Entities.Public.Ticket", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Public.TicketType", "TicketTypeNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdTicketType")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("TicketTypeNavigation");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Public.TicketAttach", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Public.TicketCronology", "TicketCronologyNavigation")
+                        .WithMany("TicketAttach")
+                        .HasForeignKey("IdTicketCronology")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TicketCronologyNavigation");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Public.TicketCronology", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Public.Ticket", "TicketNavigation")
+                        .WithMany("TicketCronology")
+                        .HasForeignKey("IdTicket")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TicketNavigation");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Public.TicketTypeLevel", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Public.TicketType", "TicketTypeNavigation")
+                        .WithMany("TicketTypeLevel")
+                        .HasForeignKey("IdTicketType")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TicketTypeNavigation");
+                });
+
             modelBuilder.Entity("nvxapp.server.data.Entities.Public.UserCompany", b =>
                 {
                     b.HasOne("nvxapp.server.data.Entities.Public.ApplicationUser", "AspNetUsersNavigation")
@@ -793,6 +1122,21 @@ namespace nvxapp.server.data.Migrations.Public
                     b.Navigation("Company");
 
                     b.Navigation("UserFinancialAdvisor");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Public.Ticket", b =>
+                {
+                    b.Navigation("TicketCronology");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Public.TicketCronology", b =>
+                {
+                    b.Navigation("TicketAttach");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Public.TicketType", b =>
+                {
+                    b.Navigation("TicketTypeLevel");
                 });
 #pragma warning restore 612, 618
         }

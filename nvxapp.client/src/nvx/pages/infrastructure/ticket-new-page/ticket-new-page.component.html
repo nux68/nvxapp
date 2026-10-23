@@ -1,0 +1,78 @@
+<app-page-toolbar [title]="Title"
+  [showFilter]="ShowFilter"
+  [showBreadcrumbs]="true">
+</app-page-toolbar>
+
+<ion-content [fullscreen]="true">
+
+  <ion-card>
+    <ion-card-content>
+
+      @if (_editModel && openerRole.length === 0) {
+        <ion-note color="medium" class="ticket-new-note">{{ 'pages.ticketNew.noRole' | transloco }}</ion-note>
+      }
+
+      <form [formGroup]="_editForm">
+
+        <!-- ruolo di apertura: solo se l'utente ne ha piu' di uno -->
+        @if (openerRole.length > 1) {
+          <ion-item>
+            <ion-select formControlName="openerLevel" [label]="'pages.ticketNew.openerRole' | transloco" labelPlacement="floating">
+              @for (r of openerRole; track r.level) {
+                <ion-select-option [value]="r.level">{{ ('pages.ticketNew.openAs' + r.level) | transloco }}</ion-select-option>
+              }
+            </ion-select>
+          </ion-item>
+          <ion-note class="ticket-new-note">{{ 'pages.ticketNew.openerRoleNote' | transloco }}</ion-note>
+        }
+
+        <ion-item>
+          <ion-select formControlName="idTicketType" [label]="'pages.ticketNew.ticketType' | transloco" labelPlacement="floating">
+            @for (t of currentTypes; track t.id) {
+              <ion-select-option [value]="t.id">{{ t.descrizione }}</ion-select-option>
+            }
+          </ion-select>
+        </ion-item>
+        @if (_editForm.get('idTicketType')?.hasError('required') && _editForm.get('idTicketType')?.touched) {
+          <ion-note color="danger">{{ 'pages.ticketNew.ticketTypeRequired' | transloco }}</ion-note>
+        }
+
+        <!-- SuperUser: il ticket va direttamente a un PowerAdmin o Admin -->
+        @if (currentLevel === TicketLevel.SuperUser) {
+          <ion-item>
+            <ion-select formControlName="idAspNetUsersAssignee" [label]="'pages.ticketNew.assignee' | transloco" labelPlacement="floating">
+              @for (u of assegnatario; track u.idAspNetUsers) {
+                <ion-select-option [value]="u.idAspNetUsers">{{ u.userName }}</ion-select-option>
+              }
+            </ion-select>
+          </ion-item>
+          @if (_editForm.get('idAspNetUsersAssignee')?.hasError('required') && _editForm.get('idAspNetUsersAssignee')?.touched) {
+            <ion-note color="danger">{{ 'pages.ticketNew.assigneeRequired' | transloco }}</ion-note>
+          }
+        }
+
+        <ion-item>
+          <ion-input type="text" formControlName="oggetto" [label]="'pages.ticketNew.subject' | transloco" labelPlacement="floating" maxlength="200"></ion-input>
+        </ion-item>
+        @if (_editForm.get('oggetto')?.hasError('required') && _editForm.get('oggetto')?.touched) {
+          <ion-note color="danger">{{ 'pages.ticketNew.subjectRequired' | transloco }}</ion-note>
+        }
+
+        <ion-item>
+          <ion-textarea formControlName="text" [label]="'pages.ticketNew.text' | transloco" labelPlacement="floating"
+                        [autoGrow]="true" [rows]="6" [counter]="true" maxlength="4000"></ion-textarea>
+        </ion-item>
+        @if (_editForm.get('text')?.hasError('required') && _editForm.get('text')?.touched) {
+          <ion-note color="danger">{{ 'pages.ticketNew.textRequired' | transloco }}</ion-note>
+        }
+
+      </form>
+
+      <app-ticket-attach [attach]="attach" (attachChange)="attach = $event"></app-ticket-attach>
+
+    </ion-card-content>
+  </ion-card>
+
+</ion-content>
+
+<app-page-buttonbar [buttonbar]="buttonbar"></app-page-buttonbar>
