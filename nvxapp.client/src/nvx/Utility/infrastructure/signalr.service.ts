@@ -23,8 +23,13 @@ export class SignalrService {
   private hubConnection!: signalR.HubConnection;
   private eventSubjects: Map<string, Subject<any>> = new Map();
 
+  // utente del token con cui e' aperta la connessione (claim "sub"): le notifiche mirate (Clients.User) vanno a lui
+  private connectedUserId: string | null = null;
+
   constructor(private authService: AuthService,
-              private ngZone: NgZone) { }
+              private ngZone: NgZone) {
+    this.authService.Token$.subscribe(token => this.onTokenChanged(token));
+  }
 
   public startConnection() {
     if (this.hubConnection && (this.hubConnection.state === signalR.HubConnectionState.Connected ||
@@ -120,6 +125,37 @@ export class SignalrService {
 
     this.hubConnection.invoke(eventName, token,data)
       .catch(err => console.error(`? Errore invio evento ${eventName}:`, err));
+  }
+
+  /*
+   Il token cambia a ogni risposta del server, ma cambia utente solo con l'impersonificazione (o tornando indietro).
+   L'hub conosce l'utente dal token usato all'apertura della connessione: se l'utente cambia si riapre la connessione,
+   altrimenti le notifiche mirate all'utente impersonato (ticket, job) arriverebbero ancora a quello del login.
+  */
+  private onTokenChanged(token: string | null): void {
+    const userId = this.userIdOf(token);
+    // al logout il token si svuota: si tiene l'ultimo utente, cosi' un nuovo login con un altro utente riapre la connessione
+    if (userId == null)
+      return;
+
+    const cambiato = this.connectedUserId != null && userId !== this.connectedUserId;
+    this.connectedUserId = userId;
+
+    if (cambiato && this.hubConnection && this.hubConnection.state !== signalR.HubConnectionState.Disconnected)
+      this.restartConnection();
+  }
+
+  // id dell'utente (claim "sub") letto dal payload del JWT, senza verificarlo: serve solo a capire se e' cambiato
+  private userIdOf(token: string | null): string | null {
+    try {
+      const payload = token?.split('.')[1];
+      if (!payload) return null;
+      const json = atob(payload.replace(/-/g, '+').replace(/_/g, '/'));
+      return JSON.parse(json).sub ?? null;
+    }
+    catch {
+      return null;
+    }
   }
 
 }
