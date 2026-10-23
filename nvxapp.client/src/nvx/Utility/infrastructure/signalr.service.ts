@@ -23,12 +23,19 @@ export class SignalrService {
   private hubConnection!: signalR.HubConnection;
   private eventSubjects: Map<string, Subject<any>> = new Map();
 
+  // utente del token con cui e' aperta la connessione (claim "sub"): le notifiche mirate (Clients.User) vanno a lui
+  private connectedUserId: string | null = null;
+
   constructor(private authService: AuthService,
-              private ngZone: NgZone) { }
+              private ngZone: NgZone) {
+    this.authService.Token$.subscribe(token => this.onTokenChanged(token));
+  }
 
   public startConnection() {
-    if (this.hubConnection && this.hubConnection.state === signalR.HubConnectionState.Connected) {
-      return; // Connessione già attiva
+    if (this.hubConnection && (this.hubConnection.state === signalR.HubConnectionState.Connected ||
+                               this.hubConnection.state === signalR.HubConnectionState.Connecting ||
+                               this.hubConnection.state === signalR.HubConnectionState.Reconnecting)) {
+      return; // Connessione già attiva (o in corso): non se ne apre una seconda
     }
     
 
@@ -46,6 +53,10 @@ export class SignalrService {
       .configureLogging(signalR.LogLevel.Warning)  // Trace genera log per ogni frame WebSocket (inclusi ping) causando change-detection inattesi
       .withAutomaticReconnect()
       .build();
+
+    // ogni connessione e' un oggetto nuovo (dopo disconnessione, nuovo login o aggiornamento del token):
+    // gli eventi gia' sottoscritti con on() vanno riattaccati, altrimenti le notifiche non arrivano piu'
+    this.eventSubjects.forEach((_, eventName) => this.attachHandler(eventName));
 
     setTimeout(() => {
 
@@ -88,16 +99,23 @@ export class SignalrService {
   on(eventName: string) {
     if (!this.eventSubjects.has(eventName)) {
       this.eventSubjects.set(eventName, new Subject<any>());
-      this.hubConnection.on(eventName, (data: any) => {
-        // Esegui il callback dentro NgZone: SignalR gira fuori dalla zona Angular
-        // e senza questo ogni messaggio causa una change-detection spuria che può
-        // far ripartire la pagina corrente dall'inizio.
-        this.ngZone.run(() => {
-          this.eventSubjects.get(eventName)?.next(data);
-        });
-      });
+      this.attachHandler(eventName);
     }
     return this.eventSubjects.get(eventName)!.asObservable();
+  }
+
+  // collega l'evento alla connessione corrente (una sola volta per connessione)
+  private attachHandler(eventName: string) {
+    if (!this.hubConnection) return; // si collega quando la connessione viene creata
+    this.hubConnection.off(eventName);
+    this.hubConnection.on(eventName, (data: any) => {
+      // Esegui il callback dentro NgZone: SignalR gira fuori dalla zona Angular
+      // e senza questo ogni messaggio causa una change-detection spuria che può
+      // far ripartire la pagina corrente dall'inizio.
+      this.ngZone.run(() => {
+        this.eventSubjects.get(eventName)?.next(data);
+      });
+    });
   }
 
   // ?? Metodo per inviare un messaggio/evento generico
@@ -107,6 +125,37 @@ export class SignalrService {
 
     this.hubConnection.invoke(eventName, token,data)
       .catch(err => console.error(`? Errore invio evento ${eventName}:`, err));
+  }
+
+  /*
+   Il token cambia a ogni risposta del server, ma cambia utente solo con l'impersonificazione (o tornando indietro).
+   L'hub conosce l'utente dal token usato all'apertura della connessione: se l'utente cambia si riapre la connessione,
+   altrimenti le notifiche mirate all'utente impersonato (ticket, job) arriverebbero ancora a quello del login.
+  */
+  private onTokenChanged(token: string | null): void {
+    const userId = this.userIdOf(token);
+    // al logout il token si svuota: si tiene l'ultimo utente, cosi' un nuovo login con un altro utente riapre la connessione
+    if (userId == null)
+      return;
+
+    const cambiato = this.connectedUserId != null && userId !== this.connectedUserId;
+    this.connectedUserId = userId;
+
+    if (cambiato && this.hubConnection && this.hubConnection.state !== signalR.HubConnectionState.Disconnected)
+      this.restartConnection();
+  }
+
+  // id dell'utente (claim "sub") letto dal payload del JWT, senza verificarlo: serve solo a capire se e' cambiato
+  private userIdOf(token: string | null): string | null {
+    try {
+      const payload = token?.split('.')[1];
+      if (!payload) return null;
+      const json = atob(payload.replace(/-/g, '+').replace(/_/g, '/'));
+      return JSON.parse(json).sub ?? null;
+    }
+    catch {
+      return null;
+    }
   }
 
 }
