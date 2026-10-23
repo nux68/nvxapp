@@ -241,7 +241,8 @@
         "columnTipo": "Type",
         "columnDettaglio": "Details",
         "columnStato": "Status",
-        "confirmDelete": "Do you confirm deleting the request?"
+        "confirmDelete": "Do you confirm deleting the request?",
+        "dettaglioNotaSpese": "Details"
       },
       "companyCfg": {
         "title": "Company settings",

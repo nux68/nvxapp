@@ -241,7 +241,8 @@
         "columnTipo": "Tipo",
         "columnDettaglio": "Dettaglio",
         "columnStato": "Stato",
-        "confirmDelete": "Confermi la cancellazione della richiesta?"
+        "confirmDelete": "Confermi la cancellazione della richiesta?",
+        "dettaglioNotaSpese": "Dettaglio"
       },
       "companyCfg": {
         "title": "Company cfg",

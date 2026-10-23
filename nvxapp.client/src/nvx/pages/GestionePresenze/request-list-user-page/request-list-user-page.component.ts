@@ -17,6 +17,7 @@ import { TimeSheetService } from '../../../Utility/GestionePresenze/time-sheet.s
 import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
 import { TipoRichiestaToLongTextPipe } from '../../../shared/pipe/GestionePresenze/tipo-richiesta-to-long-text.pipe';
 import { TranslocoService } from '@jsverse/transloco';
+import { NotaSpesaDettaglioDialogService } from '../../../shared/components/GestionePresenze/nota-spesa-dettaglio-dialog/nota-spesa-dettaglio-dialog.service';
 
 
 
@@ -42,6 +43,7 @@ export class RequestListUserPageComponent {
   public actions: NvxListAction<Dip_GG_RichiestaModel>[] = [];
   private readonly tipoRichiestaToLongText = new TipoRichiestaToLongTextPipe();
   public btnDelete: ButtonItem;
+  public btnDettaglioNotaSpese: ButtonItem;
   public StatoRichiesta = StatoRichiesta;
 
   constructor(private navCtrl: NavController,
@@ -53,13 +55,24 @@ export class RequestListUserPageComponent {
     private collectionDialogService: CollectionDialogService,
     private dipGGTimbraturaUtilityService: TimeSheetUtilityService,
     private userNavigationService: UserNavigationService,
+    private notaSpesaDettaglioDialogService: NotaSpesaDettaglioDialogService,
     private transloco: TranslocoService) {
 
     this.title = this.transloco.translate('attendance.pages.requestListUser.title');
     this.btnDelete = userInterfaceService.Btn_Cancella;
     this.btnDelete.event = this.handleButtonDeleteClick;
 
-    this.actions = [{ button: this.btnDelete, visible: item => this.timeSheetService.Dip_GG_Richiesta_User_Can_Delete(item) }];
+    // nota spese: si apre il dettaglio (spese e allegati), come nel cartellino; il dipendente la vede soltanto
+    this.btnDettaglioNotaSpese = new ButtonItem(this.transloco.translate('attendance.pages.requestListUser.dettaglioNotaSpese'), 'receipt-outline', 'primary', false, this.handleButtonDettaglioNotaSpeseClick);
+
+    this.actions = [
+      { button: this.btnDettaglioNotaSpese, visible: item => item.richiestaTipo === TipoRichiesta.NotaSpesa },
+      { button: this.btnDelete, visible: item => this.timeSheetService.Dip_GG_Richiesta_User_Can_Delete(item) },
+    ];
+  }
+
+  handleButtonDettaglioNotaSpeseClick = (item: Dip_GG_RichiestaModel) => {
+    this.notaSpesaDettaglioDialogService.Apri(item.id);
   }
 
   ionViewWillEnter() {
