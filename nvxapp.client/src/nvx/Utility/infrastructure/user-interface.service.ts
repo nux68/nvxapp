@@ -269,13 +269,15 @@ export class UserInterfaceService {
   }
 
   get Btn_RichiediInfo(): ButtonItem {
-    return new ButtonItem(
+    const button = new ButtonItem(
       this.transloco.translate('common.buttons.requestInfo'),
       'help-circle-outline',
       'medium',
       false,
       () => { console.log('Btn_RichiediInfo cliccato'); }
     );
+    button.fill = 'outline';   // azione secondaria: bordo grigio come Btn_Elenco
+    return button;
   }
 
   get Btn_Rispondi(): ButtonItem {
@@ -289,13 +291,15 @@ export class UserInterfaceService {
   }
 
   get Btn_Nota(): ButtonItem {
-    return new ButtonItem(
+    const button = new ButtonItem(
       this.transloco.translate('common.buttons.note'),
       'document-text-outline',
       'medium',
       false,
       () => { console.log('Btn_Nota cliccato'); }
     );
+    button.fill = 'outline';   // azione secondaria: bordo grigio come Btn_Elenco
+    return button;
   }
 
   get Btn_Risolvi(): ButtonItem {
@@ -319,13 +323,15 @@ export class UserInterfaceService {
   }
 
   get Btn_Riclassifica(): ButtonItem {
-    return new ButtonItem(
+    const button = new ButtonItem(
       this.transloco.translate('common.buttons.reclassify'),
       'pricetags-outline',
       'medium',
       false,
       () => { console.log('Btn_Riclassifica cliccato'); }
     );
+    button.fill = 'outline';   // azione secondaria: bordo grigio come Btn_Elenco
+    return button;
   }
 
   //trash-outline
