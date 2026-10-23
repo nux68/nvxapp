@@ -203,6 +203,17 @@ export class UserInterfaceService {
     );
   }
 
+  // dettaglio di un elemento in un dialog (es. la nota spese dalle liste e dai calendari delle presenze)
+  get Btn_Dettaglio(): ButtonItem {
+    return new ButtonItem(
+      this.transloco.translate('common.buttons.detail'),
+      'receipt-outline',
+      'primary',
+      false,
+      () => { console.log('Btn_Dettaglio cliccato'); }
+    );
+  }
+
   get Btn_Apri(): ButtonItem {
     return new ButtonItem(
       this.transloco.translate('common.buttons.open'),

@@ -25,7 +25,8 @@
       "reopen": "Reopen",
       "reclassify": "Change type",
       "backToList": "Back to list",
-      "closeTicket": "Close ticket"
+      "closeTicket": "Close ticket",
+      "detail": "Details"
     },
     "dialog": {
       "confirmTitle": "Confirm Operation",

@@ -25,7 +25,8 @@
       "reopen": "Riapri",
       "reclassify": "Cambia tipo",
       "backToList": "Torna all'elenco",
-      "closeTicket": "Chiudi ticket"
+      "closeTicket": "Chiudi ticket",
+      "detail": "Dettaglio"
     },
     "dialog": {
       "confirmTitle": "Conferma Operazione",
