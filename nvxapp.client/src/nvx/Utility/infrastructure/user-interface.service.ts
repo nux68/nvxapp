@@ -261,13 +261,15 @@ export class UserInterfaceService {
   }
 
   get Btn_Inoltra(): ButtonItem {
-    return new ButtonItem(
+    const button = new ButtonItem(
       this.transloco.translate('common.buttons.forward'),
       'arrow-up-circle-outline',
       'warning',
       false,
       () => { console.log('Btn_Inoltra cliccato'); }
     );
+    button.fill = 'outline';   // stesso stile a bordo delle altre azioni secondarie (il colore resta)
+    return button;
   }
 
   get Btn_RichiediInfo(): ButtonItem {
