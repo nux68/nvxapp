@@ -1,0 +1,27 @@
+<div class="ticket-attach">
+
+  <input #fileInput type="file" multiple [accept]="accept" (change)="onFiles($event)" hidden />
+
+  <ion-button size="small" fill="outline" shape="round" color="primary" (click)="fileInput.click()">
+    <ion-icon slot="start" name="attach-outline"></ion-icon>
+    {{ 'components.ticketAttach.add' | transloco }}
+  </ion-button>
+
+  @if (error) {
+    <ion-note color="danger" class="ticket-attach-error">{{ error }}</ion-note>
+  }
+
+  @for (item of attach; track $index; let i = $index) {
+    <ion-item lines="none" class="ticket-attach-item">
+      <ion-icon slot="start" name="document-attach-outline"></ion-icon>
+      <ion-label>
+        {{ item.fileName }}
+        <p>{{ sizeText(item.size) }}</p>
+      </ion-label>
+      <ion-button slot="end" fill="clear" color="danger" (click)="remove(i)" [attr.aria-label]="'components.ticketAttach.remove' | transloco">
+        <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+      </ion-button>
+    </ion-item>
+  }
+
+</div>

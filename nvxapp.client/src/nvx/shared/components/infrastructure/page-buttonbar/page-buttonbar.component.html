@@ -2,10 +2,10 @@
   <ion-toolbar>
     <ion-buttons class="center-buttons">
 
-      <!-- azione principale (colore primary) a pillola piena, le altre "fantasma" -->
+      <!-- azione principale (colore primary) a pillola piena, le altre "fantasma", salvo uno stile indicato dal pulsante -->
       @for (item of buttonbar; track item) {
         <ion-button size="default" shape="round" (click)="item.event({})" color="{{item.color}}" [disabled]="item.disabled"
-          [fill]="item.color === 'primary' ? 'solid' : 'clear'">
+          [fill]="item.fill ?? (item.color === 'primary' ? 'solid' : 'clear')">
           <ion-icon slot="start" name="{{item.image}}"></ion-icon>
           {{item.text}}
         </ion-button>

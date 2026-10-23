@@ -203,12 +203,129 @@ export class UserInterfaceService {
     );
   }
 
+  get Btn_Apri(): ButtonItem {
+    return new ButtonItem(
+      this.transloco.translate('common.buttons.open'),
+      'open-outline',
+      'primary',
+      false,
+      () => { console.log('Btn_Apri cliccato'); }
+    );
+  }
+
+  // ritorno all'elenco da una pagina di dettaglio (distinto da Btn_Chiudi e Btn_ChiudiTicket): bordo grigio come Modifica
+  get Btn_Elenco(): ButtonItem {
+    const button = new ButtonItem(
+      this.transloco.translate('common.buttons.backToList'),
+      'list-outline',
+      'medium',
+      false,
+      () => { console.log('Btn_Elenco cliccato'); }
+    );
+    button.fill = 'outline';
+    return button;
+  }
+
+  // azioni sui ticket di assistenza
+  get Btn_ChiudiTicket(): ButtonItem {
+    return new ButtonItem(
+      this.transloco.translate('common.buttons.closeTicket'),
+      'lock-closed-outline',
+      'danger',
+      false,
+      () => { console.log('Btn_ChiudiTicket cliccato'); }
+    );
+  }
+
+  get Btn_Assegna(): ButtonItem {
+    return new ButtonItem(
+      this.transloco.translate('common.buttons.assign'),
+      'person-add-outline',
+      'primary',
+      false,
+      () => { console.log('Btn_Assegna cliccato'); }
+    );
+  }
+
+  get Btn_Inoltra(): ButtonItem {
+    return new ButtonItem(
+      this.transloco.translate('common.buttons.forward'),
+      'arrow-up-circle-outline',
+      'warning',
+      false,
+      () => { console.log('Btn_Inoltra cliccato'); }
+    );
+  }
+
+  get Btn_RichiediInfo(): ButtonItem {
+    return new ButtonItem(
+      this.transloco.translate('common.buttons.requestInfo'),
+      'help-circle-outline',
+      'medium',
+      false,
+      () => { console.log('Btn_RichiediInfo cliccato'); }
+    );
+  }
+
+  get Btn_Rispondi(): ButtonItem {
+    return new ButtonItem(
+      this.transloco.translate('common.buttons.reply'),
+      'arrow-undo-outline',
+      'primary',
+      false,
+      () => { console.log('Btn_Rispondi cliccato'); }
+    );
+  }
+
+  get Btn_Nota(): ButtonItem {
+    return new ButtonItem(
+      this.transloco.translate('common.buttons.note'),
+      'document-text-outline',
+      'medium',
+      false,
+      () => { console.log('Btn_Nota cliccato'); }
+    );
+  }
+
+  get Btn_Risolvi(): ButtonItem {
+    return new ButtonItem(
+      this.transloco.translate('common.buttons.resolve'),
+      'checkmark-done-outline',
+      'primary',
+      false,
+      () => { console.log('Btn_Risolvi cliccato'); }
+    );
+  }
+
+  get Btn_Riapri(): ButtonItem {
+    return new ButtonItem(
+      this.transloco.translate('common.buttons.reopen'),
+      'refresh-outline',
+      'warning',
+      false,
+      () => { console.log('Btn_Riapri cliccato'); }
+    );
+  }
+
+  get Btn_Riclassifica(): ButtonItem {
+    return new ButtonItem(
+      this.transloco.translate('common.buttons.reclassify'),
+      'pricetags-outline',
+      'medium',
+      false,
+      () => { console.log('Btn_Riclassifica cliccato'); }
+    );
+  }
+
   //trash-outline
 
 }
 
 
 export class ButtonItem {
+
+  // stile nella buttonbar; null = di default (pieno se primary, altrimenti senza bordo)
+  public fill: 'solid' | 'outline' | 'clear' | null = null;
 
   constructor(
     public text: string | null = null,

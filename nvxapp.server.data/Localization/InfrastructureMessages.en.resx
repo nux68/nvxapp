@@ -168,4 +168,64 @@
   <data name="ApplicationNotActiveForCompany" xml:space="preserve">
     <value>Application {0} is not active for company {1}.</value>
   </data>
+  <data name="TicketNotFound" xml:space="preserve">
+    <value>Ticket not found.</value>
+  </data>
+  <data name="TicketViewNotValid" xml:space="preserve">
+    <value>Invalid ticket list view.</value>
+  </data>
+  <data name="TicketOpenerRoleNotAvailable" xml:space="preserve">
+    <value>You cannot open a ticket with the selected role.</value>
+  </data>
+  <data name="TicketTypeNotAvailable" xml:space="preserve">
+    <value>The request type is not available.</value>
+  </data>
+  <data name="TicketTextRequired" xml:space="preserve">
+    <value>The text is required.</value>
+  </data>
+  <data name="TicketTextTooLong" xml:space="preserve">
+    <value>The text cannot exceed {0} characters (subject: 200).</value>
+  </data>
+  <data name="TicketAssigneeNotValid" xml:space="preserve">
+    <value>Select a PowerAdmin or Admin user to assign the ticket to.</value>
+  </data>
+  <data name="TicketNoUpperLevel" xml:space="preserve">
+    <value>There is no enabled upper level for this request type.</value>
+  </data>
+  <data name="TicketChanged" xml:space="preserve">
+    <value>The ticket was changed by another user: reload the page and try again.</value>
+  </data>
+  <data name="TicketActionNotAllowed" xml:space="preserve">
+    <value>Operation not allowed on the ticket at this time.</value>
+  </data>
+  <data name="TicketInfoTargetNotValid" xml:space="preserve">
+    <value>The recipient of the information request is not valid.</value>
+  </data>
+  <data name="TicketReclassifyNotAllowed" xml:space="preserve">
+    <value>The selected request type cannot be used for this ticket.</value>
+  </data>
+  <data name="TicketAttachTooMany" xml:space="preserve">
+    <value>You can attach at most {0} files at a time.</value>
+  </data>
+  <data name="TicketAttachEmpty" xml:space="preserve">
+    <value>The file {0} is empty.</value>
+  </data>
+  <data name="TicketAttachTooLarge" xml:space="preserve">
+    <value>The file {0} exceeds {1} MB.</value>
+  </data>
+  <data name="TicketAttachExtensionNotAllowed" xml:space="preserve">
+    <value>The file type of {0} is not allowed.</value>
+  </data>
+  <data name="TicketAttachTotalTooLarge" xml:space="preserve">
+    <value>The attachments exceed {0} MB in total.</value>
+  </data>
+  <data name="TicketTypeDataNotValid" xml:space="preserve">
+    <value>Invalid request type data: code (max 20) and description (max 100) are required.</value>
+  </data>
+  <data name="TicketTypeLevelsTooFew" xml:space="preserve">
+    <value>Enable at least two levels: one that opens the ticket and one that receives it.</value>
+  </data>
+  <data name="TicketTypeCodeDuplicate" xml:space="preserve">
+    <value>A request type with code {0} already exists.</value>
+  </data>
 </root>

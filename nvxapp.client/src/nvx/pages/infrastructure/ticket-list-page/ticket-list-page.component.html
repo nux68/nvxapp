@@ -1,0 +1,45 @@
+<app-page-toolbar [title]="title"
+  [showFilter]="true"
+  [showBreadcrumbs]="true"
+  (ev_Filter)="Filter($event)">
+</app-page-toolbar>
+
+<ion-content [fullscreen]="true" class="nvx-wide">
+
+  <ion-card>
+    <ion-card-content>
+
+      <ion-segment [value]="view" (ionChange)="viewChanged($event.detail.value)" [scrollable]="true">
+        @for (v of views; track v) {
+          <ion-segment-button [value]="v">
+            <ion-label>{{ ('pages.ticketList.view' + v) | transloco }}</ion-label>
+          </ion-segment-button>
+        }
+      </ion-segment>
+
+      <ion-item lines="none">
+        <ion-select [value]="state" (ionChange)="stateChanged($event.detail.value)"
+                    [label]="'pages.ticketList.stateFilter' | transloco" labelPlacement="start" interface="popover">
+          <ion-select-option [value]="null">{{ 'pages.ticketList.allStates' | transloco }}</ion-select-option>
+          @for (s of states; track s) {
+            <ion-select-option [value]="s">{{ ('ticket.state.' + s) | transloco }}</ion-select-option>
+          }
+        </ion-select>
+      </ion-item>
+
+      <nvx-list
+        [items]="ticketList"
+        [columns]="columns"
+        [actions]="actions"
+        trackKey="id"
+        icon="help-buoy-outline"
+        [highlight]="highlight"
+        [searchText]="searchText"
+        [sort]="sortByModified"
+        [emptyText]="'pages.ticketList.empty' | transloco">
+      </nvx-list>
+
+    </ion-card-content>
+  </ion-card>
+
+</ion-content>

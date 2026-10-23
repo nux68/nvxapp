@@ -74,6 +74,13 @@ export class RouteInfrastructureService {
       { path: 'usercompanyedit', loadChildren: () => import('../../pages/infrastructure/user-company-edit-page/user-company-edit-page.module').then(m => m.UserCompanyEditPageModule), canActivate: [RoleGuard4UserCompanyList] },
       { path: 'usercompanywizard', loadChildren: () => import('../../pages/infrastructure/user-company-wizard-page/user-company-wizard-page.module').then(m => m.UserCompanyWizardPageModule), canActivate: [RoleGuard4UserCompanyList] },
 
+      // ticket di assistenza: per tutti gli utenti collegati (visibilita' e permessi li decide il server)
+      { path: 'ticketlist', loadChildren: () => import('../../pages/infrastructure/ticket-list-page/ticket-list-page.module').then(m => m.TicketListPageModule), canActivate: [authenticatedGuard] },
+      { path: 'ticketnew', loadChildren: () => import('../../pages/infrastructure/ticket-new-page/ticket-new-page.module').then(m => m.TicketNewPageModule), canActivate: [authenticatedGuard] },
+      { path: 'ticketdetail', loadChildren: () => import('../../pages/infrastructure/ticket-detail-page/ticket-detail-page.module').then(m => m.TicketDetailPageModule), canActivate: [authenticatedGuard] },
+      { path: 'tickettypelist', loadChildren: () => import('../../pages/infrastructure/ticket-type-list-page/ticket-type-list-page.module').then(m => m.TicketTypeListPageModule), canActivate: [RoleGuard4SuperUser] },
+      { path: 'tickettypeedit', loadChildren: () => import('../../pages/infrastructure/ticket-type-edit-page/ticket-type-edit-page.module').then(m => m.TicketTypeEditPageModule), canActivate: [RoleGuard4SuperUser] },
+
 
     ];
   }

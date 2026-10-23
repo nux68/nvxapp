@@ -201,4 +201,84 @@
     <value>L'applicativo {0} non e' attivo per l'azienda {1}.</value>
     <comment>{0} = applicativo, {1} = id azienda</comment>
   </data>
+  <data name="TicketNotFound" xml:space="preserve">
+    <value>Ticket non trovato.</value>
+    <comment>ticket</comment>
+  </data>
+  <data name="TicketViewNotValid" xml:space="preserve">
+    <value>Vista dell'elenco ticket non valida.</value>
+    <comment>ticket</comment>
+  </data>
+  <data name="TicketOpenerRoleNotAvailable" xml:space="preserve">
+    <value>Non puoi aprire un ticket con il ruolo indicato.</value>
+    <comment>ticket</comment>
+  </data>
+  <data name="TicketTypeNotAvailable" xml:space="preserve">
+    <value>Il tipo di richiesta non è disponibile.</value>
+    <comment>ticket</comment>
+  </data>
+  <data name="TicketTextRequired" xml:space="preserve">
+    <value>Il testo è obbligatorio.</value>
+    <comment>ticket</comment>
+  </data>
+  <data name="TicketTextTooLong" xml:space="preserve">
+    <value>Il testo non può superare i {0} caratteri (oggetto: 200).</value>
+    <comment>ticket, {0} = lunghezza massima</comment>
+  </data>
+  <data name="TicketAssigneeNotValid" xml:space="preserve">
+    <value>Indica un utente PowerAdmin o Admin a cui assegnare il ticket.</value>
+    <comment>ticket del SuperUser</comment>
+  </data>
+  <data name="TicketNoUpperLevel" xml:space="preserve">
+    <value>Non c'è un livello superiore abilitato per questo tipo di richiesta.</value>
+    <comment>ticket</comment>
+  </data>
+  <data name="TicketChanged" xml:space="preserve">
+    <value>Il ticket è stato modificato da un altro utente: ricarica la pagina e riprova.</value>
+    <comment>ticket, controllo di versione</comment>
+  </data>
+  <data name="TicketActionNotAllowed" xml:space="preserve">
+    <value>Operazione non consentita sul ticket in questo momento.</value>
+    <comment>ticket</comment>
+  </data>
+  <data name="TicketInfoTargetNotValid" xml:space="preserve">
+    <value>Il destinatario della richiesta di informazioni non è valido.</value>
+    <comment>ticket</comment>
+  </data>
+  <data name="TicketReclassifyNotAllowed" xml:space="preserve">
+    <value>Il tipo di richiesta scelto non è utilizzabile per questo ticket.</value>
+    <comment>ticket</comment>
+  </data>
+  <data name="TicketAttachTooMany" xml:space="preserve">
+    <value>Puoi allegare al massimo {0} file per volta.</value>
+    <comment>ticket, {0} = numero massimo</comment>
+  </data>
+  <data name="TicketAttachEmpty" xml:space="preserve">
+    <value>Il file {0} è vuoto.</value>
+    <comment>ticket, {0} = nome del file</comment>
+  </data>
+  <data name="TicketAttachTooLarge" xml:space="preserve">
+    <value>Il file {0} supera i {1} MB.</value>
+    <comment>ticket, {0} = nome del file, {1} = MB</comment>
+  </data>
+  <data name="TicketAttachExtensionNotAllowed" xml:space="preserve">
+    <value>Il tipo del file {0} non è ammesso.</value>
+    <comment>ticket, {0} = nome del file</comment>
+  </data>
+  <data name="TicketAttachTotalTooLarge" xml:space="preserve">
+    <value>Gli allegati superano in totale i {0} MB.</value>
+    <comment>ticket, {0} = MB</comment>
+  </data>
+  <data name="TicketTypeDataNotValid" xml:space="preserve">
+    <value>Dati del tipo di richiesta non validi: codice (max 20) e descrizione (max 100) sono obbligatori.</value>
+    <comment>tipi di richiesta</comment>
+  </data>
+  <data name="TicketTypeLevelsTooFew" xml:space="preserve">
+    <value>Abilita almeno due livelli: uno che apre il ticket e uno che lo riceve.</value>
+    <comment>tipi di richiesta</comment>
+  </data>
+  <data name="TicketTypeCodeDuplicate" xml:space="preserve">
+    <value>Esiste già un tipo di richiesta con codice {0}.</value>
+    <comment>tipi di richiesta, {0} = codice</comment>
+  </data>
 </root>

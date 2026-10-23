@@ -1,0 +1,80 @@
+<app-page-toolbar [title]="title"
+  [showFilter]="false"
+  [showBreadcrumbs]="true">
+</app-page-toolbar>
+
+<ion-content [fullscreen]="true">
+
+  @if (ticket) {
+    <ion-card>
+      <ion-card-header>
+        <ion-card-subtitle>{{ ticket.tipoDescrizione }}</ion-card-subtitle>
+        <ion-card-title>{{ ticket.oggetto }}</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+
+        <div class="ticket-info">
+          <ion-chip [color]="stateColor(ticket.state)">{{ ('ticket.state.' + ticket.state) | transloco }}</ion-chip>
+          <span>
+            {{ 'pages.ticketDetail.currentLevel' | transloco }}:
+            <strong>{{ ('ticket.level.' + ticket.currentLevel) | transloco }}</strong>
+            @if (ticket.currentUserName) { - {{ ticket.currentUserName }} }
+          </span>
+        </div>
+
+        <p class="ticket-opener">
+          {{ 'pages.ticketDetail.openedBy' | transloco: { user: ticket.openerUserName, level: ('ticket.level.' + ticket.openerLevel | transloco) } }}
+          - {{ ticket.creationDate | date: 'short' }}
+        </p>
+
+        <p class="ticket-text">{{ ticket.text }}</p>
+
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card>
+      <ion-card-header>
+        <ion-card-subtitle>{{ 'pages.ticketDetail.cronology' | transloco }}</ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list lines="full">
+          @for (row of ticket.ticketCronology; track row.id) {
+            <ion-item>
+              <ion-label class="ion-text-wrap">
+                <h3>
+                  <strong>{{ ('ticket.action.' + row.action) | transloco }}</strong>
+                  @if (row.action !== TicketAction.Apertura) {
+                    → {{ target(row) }}
+                  }
+                </h3>
+                <p>{{ author(row) }} - {{ row.creationDate | date: 'short' }}</p>
+                @if (row.action === TicketAction.Riclassificazione && row.tipoDescrizione) {
+                  <p>{{ 'pages.ticketDetail.newType' | transloco: { type: row.tipoDescrizione } }}</p>
+                }
+                @if (row.text && row.action !== TicketAction.Apertura) {
+                  <p class="ticket-text">{{ row.text }}</p>
+                }
+                @if (row.ticketAttach.length > 0) {
+                  <div class="ticket-attach-list">
+                    @for (a of row.ticketAttach; track a.id) {
+                      <ion-chip (click)="download(a)" [attr.aria-label]="'pages.ticketDetail.download' | transloco: { name: a.fileName }">
+                        <ion-icon name="download-outline"></ion-icon>
+                        <ion-label>{{ a.fileName }}</ion-label>
+                      </ion-chip>
+                    }
+                  </div>
+                }
+              </ion-label>
+              <ion-note slot="end">
+                <ion-chip [color]="stateColor(row.state)" class="ticket-row-state">{{ ('ticket.state.' + row.state) | transloco }}</ion-chip>
+              </ion-note>
+            </ion-item>
+          }
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+  }
+
+</ion-content>
+
+<app-page-buttonbar [buttonbar]="buttonbar"></app-page-buttonbar>
