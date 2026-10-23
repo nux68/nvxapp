@@ -19,6 +19,7 @@ import { RefresherService } from '../../../Utility/GestionePresenze/refresher.se
 import { Subscription } from 'rxjs';
 import { NotaSpesaDettaglioDialogService } from '../../../shared/components/GestionePresenze/nota-spesa-dettaglio-dialog/nota-spesa-dettaglio-dialog.service';
 import { TranslocoService } from '@jsverse/transloco';
+import { UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 
 
 
@@ -69,6 +70,7 @@ export class TimeSheetAdminPageComponent implements OnInit, OnDestroy {
               private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
               private platform: Platform,
               private notaSpesaDettaglioDialogService: NotaSpesaDettaglioDialogService,
+              private userInterfaceService: UserInterfaceService,
               private transloco: TranslocoService
   ) {
     this.title = this.transloco.translate('attendance.pages.timeSheetAdmin.title');
@@ -283,7 +285,8 @@ export class TimeSheetAdminPageComponent implements OnInit, OnDestroy {
     this.actionSheetSubHeader = null;
     this.actionSheetButtons = [
       {
-        text: this.transloco.translate('attendance.pages.timeSheetAdmin.notaSpeseDettaglio'),
+        // pulsante Dettaglio della collezione (UserInterfaceService)
+          text: this.userInterfaceService.Btn_Dettaglio.text,
         role: 'dettaglio',
         data: {
           action: 'dettaglio',

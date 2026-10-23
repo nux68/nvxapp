@@ -241,8 +241,7 @@
         "columnTipo": "Type",
         "columnDettaglio": "Details",
         "columnStato": "Status",
-        "confirmDelete": "Do you confirm deleting the request?",
-        "dettaglioNotaSpese": "Details"
+        "confirmDelete": "Do you confirm deleting the request?"
       },
       "companyCfg": {
         "title": "Company settings",
@@ -388,7 +387,6 @@
         "spese": "expenses",
         "totaleMinuscolo": "total",
         "apriDettaglio": "Open the expense report details",
-        "dettaglioNota": "Expense report details",
         "espandiTutte": "Expand all",
         "comprimiTutte": "Collapse all",
         "nessunAllegato": "No attachments"
@@ -465,8 +463,7 @@
         "colDettaglio": "Details",
         "colStato": "Status",
         "confermaApprovazione": "Do you confirm approval of the request?",
-        "confermaRifiuto": "Do you confirm rejection of the request?",
-        "dettaglioNotaSpese": "Details"
+        "confermaRifiuto": "Do you confirm rejection of the request?"
       },
       "notaSpeseUser": {
         "title": "My expense reports",

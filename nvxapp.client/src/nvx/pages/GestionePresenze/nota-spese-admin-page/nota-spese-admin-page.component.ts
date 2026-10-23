@@ -9,6 +9,7 @@ import { StatoRichiesta } from '../../../ClientServer-Service/GestionePresenze/D
 import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
 import { NotaSpesaDettaglioDialogService } from '../../../shared/components/GestionePresenze/nota-spesa-dettaglio-dialog/nota-spesa-dettaglio-dialog.service';
 import { TranslocoService } from '@jsverse/transloco';
+import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 
 
 /** gruppo di spese con il suo totale: una nota spese di un dipendente, o un tipo di spesa */
@@ -26,8 +27,9 @@ interface GruppoSpese {
  filtrabili per tipo di spesa e stato, raggruppate per nota spese (dipendente) o per tipo di spesa con i totali.
  Ogni gruppo e' una sola riga che si espande con un clic: la nota spese con dipendente, data, descrizione,
  stato, numero di spese e totale (o il tipo di spesa con numero di spese e totale); dentro, ogni spesa e' una riga essenziale (data, dipendente o tipo,
- stato, importo) che a sua volta si espande per vedere descrizione e allegati; dalla riga espansa si apre il dettaglio della nota spese che la
- contiene (NotaSpesaDettaglioDialogComponent), da cui si puo' approvare o rifiutare la nota
+ stato, importo) che a sua volta si espande per vedere descrizione e allegati. Il pulsante Dettaglio, a destra dell'importo, apre la
+ nota spese (NotaSpesaDettaglioDialogComponent), da cui si puo' approvare o rifiutare la nota: sulla riga della nota (raggruppamento
+ per dipendente) e su ogni spesa del raggruppamento per tipo (non sulla riga del tipo, che contiene spese di piu' note)
  (ciclo standard delle richieste, come dalla pagina "Richieste").
 */
 @Component({
@@ -59,6 +61,9 @@ export class NotaSpeseAdminPageComponent implements OnDestroy {
   public gruppiEspansi = new Set<string>();
   public espanse = new Set<number>();
 
+  /** pulsante della collezione (UserInterfaceService) per aprire il dettaglio della nota spese */
+  public readonly btnDettaglio: ButtonItem;
+
   private readonly _ricerca$ = new Subject<void>();
   private readonly _destroy$ = new Subject<void>();
 
@@ -66,8 +71,10 @@ export class NotaSpeseAdminPageComponent implements OnDestroy {
               private parTipoSpesaService: ParTipoSpesaService,
               private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
               private notaSpesaDettaglioDialogService: NotaSpesaDettaglioDialogService,
+              private userInterfaceService: UserInterfaceService,
               private transloco: TranslocoService) {
     this.title = this.transloco.translate('attendance.pages.notaSpeseAdmin.title');
+    this.btnDettaglio = this.userInterfaceService.Btn_Dettaglio;
     this._ricerca$.pipe(debounceTime(300), takeUntil(this._destroy$)).subscribe(() => this.cerca());
   }
 

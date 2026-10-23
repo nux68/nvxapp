@@ -241,8 +241,7 @@
         "columnTipo": "Tipo",
         "columnDettaglio": "Dettaglio",
         "columnStato": "Stato",
-        "confirmDelete": "Confermi la cancellazione della richiesta?",
-        "dettaglioNotaSpese": "Dettaglio"
+        "confirmDelete": "Confermi la cancellazione della richiesta?"
       },
       "companyCfg": {
         "title": "Company cfg",
@@ -388,7 +387,6 @@
         "spese": "spese",
         "totaleMinuscolo": "totale",
         "apriDettaglio": "Apri il dettaglio della nota spese",
-        "dettaglioNota": "Dettaglio nota spese",
         "espandiTutte": "Espandi tutte",
         "comprimiTutte": "Comprimi tutte",
         "nessunAllegato": "Nessun allegato"
@@ -465,8 +463,7 @@
         "colDettaglio": "Dettaglio",
         "colStato": "Stato",
         "confermaApprovazione": "Confermi l' approvazione della richiesta?",
-        "confermaRifiuto": "Confermi il rifiuto della richiesta?",
-        "dettaglioNotaSpese": "Dettaglio"
+        "confermaRifiuto": "Confermi il rifiuto della richiesta?"
       },
       "notaSpeseUser": {
         "title": "Le mie note spese",

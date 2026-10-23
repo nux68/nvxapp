@@ -23,6 +23,7 @@ import { GestionePresenze_JobType } from '../../../Utility/GestionePresenze/Gest
 import { ModalController, NavController, Platform } from '@ionic/angular';
 import { NotaSpesaDettaglioDialogService } from '../../../shared/components/GestionePresenze/nota-spesa-dettaglio-dialog/nota-spesa-dettaglio-dialog.service';
 import { TranslocoService } from '@jsverse/transloco';
+import { UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 
 
 @Component({
@@ -77,6 +78,7 @@ export class TimeSheetUserPageComponent implements OnInit, OnDestroy {
               private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
               private platform: Platform,
               private notaSpesaDettaglioDialogService: NotaSpesaDettaglioDialogService,
+              private userInterfaceService: UserInterfaceService,
               private transloco: TranslocoService
   ) {
     this.title = this.transloco.translate('attendance.pages.timeSheetUser.title');
@@ -291,7 +293,8 @@ export class TimeSheetUserPageComponent implements OnInit, OnDestroy {
     if (this.actionSheetNotaSpese != null) {
       return [
         {
-          text: this.transloco.translate('attendance.pages.timeSheetUser.notaSpeseDettaglio'),
+          // pulsante Dettaglio della collezione (UserInterfaceService)
+          text: this.userInterfaceService.Btn_Dettaglio.text,
           role: 'dettaglio',
           data: {
             action: 'dettaglio',

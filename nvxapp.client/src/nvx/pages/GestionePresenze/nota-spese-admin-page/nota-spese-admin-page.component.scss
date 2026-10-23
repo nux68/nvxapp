@@ -78,7 +78,8 @@
 .ns-riga {
   cursor: pointer;
   display: grid;
-  grid-template-columns: 20px 90px 1fr auto 100px;
+  // l'ultima colonna e' il dettaglio della nota (solo nel raggruppamento per tipo di spesa)
+  grid-template-columns: 20px 90px 1fr auto 100px auto;
   gap: 4px 12px;
   align-items: center;
   padding: 6px 4px;
@@ -113,16 +114,17 @@
     white-space: nowrap;
   }
 
-  // mobile: chi e importo sulla prima riga, data e stato sotto
+  // mobile: chi e importo sulla prima riga, data, stato e dettaglio sotto
   @media (max-width: 767px) {
-    grid-template-columns: 20px 1fr auto;
-    grid-template-areas: "freccia chi importo" ". data stato" ". esp esp";
+    grid-template-columns: 20px 1fr auto auto;
+    grid-template-areas: "freccia chi chi importo" ". data stato azione" ". esp esp esp";
 
     .ns-freccia { grid-area: freccia; }
     .ns-chi { grid-area: chi; }
     .ns-importo { grid-area: importo; }
     .ns-data { grid-area: data; }
-    ion-badge { grid-area: stato; justify-self: end; }
+    .ns-riga-stato { grid-area: stato; justify-self: end; }
+    .ns-riga-azione { grid-area: azione; }
     .ns-espansione { grid-area: esp; }
   }
 }
@@ -131,7 +133,7 @@
   background: var(--ion-color-step-50, rgba(127, 127, 127, 0.06));
 }
 
-// parte espansa: descrizione, allegati e dettaglio della nota
+// parte espansa: descrizione e allegati
 .ns-espansione {
   grid-column: 2 / -1;
   display: flex;

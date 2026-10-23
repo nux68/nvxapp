@@ -80,13 +80,15 @@ export class RequestListAdminPageComponent {
     this.btnRifiuta = userInterfaceService.Btn_Rifiuta;
     this.btnRifiuta.event = this.handleButtonRifiutaClick;
 
-    // nota spese: si decide dal dettaglio (spese e allegati), come nell'esame spese
-    this.btnDettaglioNotaSpese = new ButtonItem(this.transloco.translate('attendance.pages.requestListAdmin.dettaglioNotaSpese'), 'receipt-outline', 'primary', false, this.handleButtonDettaglioNotaSpeseClick);
+    // nota spese: approva e rifiuta come le altre richieste; il dettaglio (spese e allegati) e' solo in lettura
+    this.btnDettaglioNotaSpese = userInterfaceService.Btn_Dettaglio;
+    this.btnDettaglioNotaSpese.event = this.handleButtonDettaglioNotaSpeseClick;
 
+    // dettaglio a sinistra di approva e rifiuta
     this.actions = [
-      { button: this.btnApprova, visible: item => item.richiestaTipo !== TipoRichiesta.NotaSpesa && this.timeSheetService.Dip_GG_Richiesta_Admin_Can_Approve(item) },
-      { button: this.btnRifiuta, visible: item => item.richiestaTipo !== TipoRichiesta.NotaSpesa && this.timeSheetService.Dip_GG_Richiesta_Admin_Can_Reject(item) },
       { button: this.btnDettaglioNotaSpese, visible: item => item.richiestaTipo === TipoRichiesta.NotaSpesa },
+      { button: this.btnApprova, visible: item => this.timeSheetService.Dip_GG_Richiesta_Admin_Can_Approve(item) },
+      { button: this.btnRifiuta, visible: item => this.timeSheetService.Dip_GG_Richiesta_Admin_Can_Reject(item) },
     ];
 
     
@@ -135,9 +137,9 @@ export class RequestListAdminPageComponent {
     }
   }
 
-  handleButtonDettaglioNotaSpeseClick = async (item: Dip_GG_RichiestaModel) => {
-    if (await this.notaSpesaDettaglioDialogService.Apri(item.id, `${this.cognome(item)} ${this.nome(item)}`.trim(), true))
-      this.loadData();
+  // dettaglio in sola lettura: si approva e si rifiuta dalla riga
+  handleButtonDettaglioNotaSpeseClick = (item: Dip_GG_RichiestaModel) => {
+    this.notaSpesaDettaglioDialogService.Apri(item.id, `${this.cognome(item)} ${this.nome(item)}`.trim());
   }
 
   Filter(CurrFilter: any) {

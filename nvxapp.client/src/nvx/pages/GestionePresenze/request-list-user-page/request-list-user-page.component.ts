@@ -63,7 +63,8 @@ export class RequestListUserPageComponent {
     this.btnDelete.event = this.handleButtonDeleteClick;
 
     // nota spese: si apre il dettaglio (spese e allegati), come nel cartellino; il dipendente la vede soltanto
-    this.btnDettaglioNotaSpese = new ButtonItem(this.transloco.translate('attendance.pages.requestListUser.dettaglioNotaSpese'), 'receipt-outline', 'primary', false, this.handleButtonDettaglioNotaSpeseClick);
+    this.btnDettaglioNotaSpese = userInterfaceService.Btn_Dettaglio;
+    this.btnDettaglioNotaSpese.event = this.handleButtonDettaglioNotaSpeseClick;
 
     this.actions = [
       { button: this.btnDettaglioNotaSpese, visible: item => item.richiestaTipo === TipoRichiesta.NotaSpesa },

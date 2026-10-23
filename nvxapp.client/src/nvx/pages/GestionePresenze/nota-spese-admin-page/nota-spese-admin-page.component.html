@@ -89,11 +89,11 @@
               <span class="ns-importo">{{ euro(g.totale) }}</span>
               <span class="ns-gruppo-azione">
                 @if (g.nota; as nota) {
-                  <!-- stesso pulsante della vista "Per tipo spesa" -->
+                  <!-- pulsante Dettaglio della collezione, come nella vista "Per tipo spesa" -->
                   @if (nota.idDip_GG_Richiesta) {
-                    <ion-button size="small" fill="outline" shape="round" (click)="apriDettaglio(nota, $event)" [title]="'attendance.pages.notaSpeseAdmin.apriDettaglio' | transloco">
-                      <ion-icon slot="start" name="receipt-outline"></ion-icon>
-                      {{ 'attendance.pages.notaSpeseAdmin.dettaglioNota' | transloco }}
+                    <ion-button size="small" fill="outline" shape="round" [color]="btnDettaglio.color" (click)="apriDettaglio(nota, $event)" [title]="'attendance.pages.notaSpeseAdmin.apriDettaglio' | transloco">
+                      <ion-icon slot="start" [name]="btnDettaglio.image"></ion-icon>
+                      {{ btnDettaglio.text }}
                     </ion-button>
                   }
                 }
@@ -110,8 +110,23 @@
                     <ion-icon name="attach-outline" class="ns-graffetta"></ion-icon>
                   }
                 </span>
-                <ion-badge [color]="coloreStato(s.richiestaStato)">{{ s.richiestaStato | statoRichiestaLongText }}</ion-badge>
+                <!-- per dipendente lo stato e' sulla riga della nota (uguale per tutte le sue spese) -->
+                <span class="ns-riga-stato">
+                  @if (!g.nota) {
+                    <ion-badge [color]="coloreStato(s.richiestaStato)">{{ s.richiestaStato | statoRichiestaLongText }}</ion-badge>
+                  }
+                </span>
                 <span class="ns-importo">{{ euro(s.importo) }}</span>
+                <!-- per tipo di spesa: dettaglio della nota di ogni spesa, a destra dell'importo
+                     (nel raggruppamento per nota il dettaglio e' sulla riga della nota) -->
+                <span class="ns-riga-azione">
+                  @if (!g.nota) {
+                    <ion-button size="small" fill="outline" shape="round" [color]="btnDettaglio.color" (click)="apriDettaglio(s, $event)" [title]="'attendance.pages.notaSpeseAdmin.apriDettaglio' | transloco">
+                      <ion-icon slot="start" [name]="btnDettaglio.image"></ion-icon>
+                      {{ btnDettaglio.text }}
+                    </ion-button>
+                  }
+                </span>
 
                 @if (espansa(s)) {
                   <div class="ns-espansione">
@@ -129,13 +144,6 @@
                         <small class="ns-senza-allegati">{{ 'attendance.pages.notaSpeseAdmin.nessunAllegato' | transloco }}</small>
                       }
                     </div>
-                    <!-- nel raggruppamento per nota il dettaglio e' sulla riga della nota -->
-                    @if (!g.nota) {
-                      <ion-button size="small" fill="outline" shape="round" (click)="apriDettaglio(s, $event)" [title]="'attendance.pages.notaSpeseAdmin.apriDettaglio' | transloco">
-                        <ion-icon slot="start" name="receipt-outline"></ion-icon>
-                        {{ 'attendance.pages.notaSpeseAdmin.dettaglioNota' | transloco }}
-                      </ion-button>
-                    }
                   </div>
                 }
               </div>
