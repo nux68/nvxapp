@@ -29,9 +29,9 @@ namespace nvxapp.server.service.ClientServer_Service.infrastructure.Notification
             Log.Information("Sending SignalR update for JobId {JobId} to User {UserId}. Progress: {Progress}%, Message: {Message}",
                             update.JobId, userId, update.ProgressPercentage, update?.Message?.Text);
 
-            // Send the update to the specific user who initiated the job.
-            // The client must be listening for the "ReceiveJobProgress" event.
-            await _hubContext.Clients.User(userId).SendAsync("LongJobProgress", update);
+            // all'utente che ha avviato il job (utente del login, UserIdFirstConnection): il gruppo lo raggiunge
+            // anche mentre impersona qualcun altro (vedi SignalRHub.UserGroup). Il client ascolta "LongJobProgress".
+            await _hubContext.Clients.Group(SignalRHub.UserGroup(userId)).SendAsync("LongJobProgress", update);
         }
     }
 

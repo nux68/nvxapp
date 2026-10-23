@@ -32,7 +32,8 @@ namespace nvxapp.server.service.ClientServer_Service.infrastructure.Notification
             Log.Information("Sending SignalR update for User {UserId}. Message: {Message}",  userId,  update?.Message?.Text);
 
             
-            await _hubContext.Clients.User(userId).SendAsync("JobNotifierAsync", update);
+            // alle sessioni in cui l'utente ha fatto il login, anche mentre impersona qualcun altro (vedi SignalRHub.UserGroup)
+            await _hubContext.Clients.Group(SignalRHub.UserGroup(userId)).SendAsync("JobNotifierAsync", update);
         }
 
     }
