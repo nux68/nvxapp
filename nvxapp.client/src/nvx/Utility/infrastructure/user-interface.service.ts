@@ -239,13 +239,15 @@ export class UserInterfaceService {
 
   // azioni sui ticket di assistenza
   get Btn_ChiudiTicket(): ButtonItem {
-    return new ButtonItem(
+    const button = new ButtonItem(
       this.transloco.translate('common.buttons.closeTicket'),
       'lock-closed-outline',
       'danger',
       false,
       () => { console.log('Btn_ChiudiTicket cliccato'); }
     );
+    button.fill = 'outline';   // stesso stile a bordo delle altre azioni secondarie (il colore resta)
+    return button;
   }
 
   get Btn_Assegna(): ButtonItem {
@@ -313,13 +315,15 @@ export class UserInterfaceService {
   }
 
   get Btn_Riapri(): ButtonItem {
-    return new ButtonItem(
+    const button = new ButtonItem(
       this.transloco.translate('common.buttons.reopen'),
       'refresh-outline',
       'warning',
       false,
       () => { console.log('Btn_Riapri cliccato'); }
     );
+    button.fill = 'outline';   // stesso stile a bordo delle altre azioni secondarie (il colore resta)
+    return button;
   }
 
   get Btn_Riclassifica(): ButtonItem {
