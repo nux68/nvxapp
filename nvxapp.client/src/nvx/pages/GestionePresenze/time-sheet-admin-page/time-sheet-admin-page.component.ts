@@ -44,6 +44,7 @@ export class TimeSheetAdminPageComponent implements OnInit, OnDestroy {
 
   private Dip_GG_Richiesta_refreshSub: Subscription;
   private commandExecutedSub: Subscription;
+  private loadMonthSub: Subscription | null = null;
 
   currentMonth: MonthData; // Usa l'interfaccia importata
   // Usa le interfacce importate nella definizione di 'weeks'
@@ -188,6 +189,7 @@ export class TimeSheetAdminPageComponent implements OnInit, OnDestroy {
       this.Dip_GG_Richiesta_refreshSub.unsubscribe();
     }
     this.commandExecutedSub?.unsubscribe();
+    this.loadMonthSub?.unsubscribe();
 
   }
 
@@ -195,10 +197,16 @@ export class TimeSheetAdminPageComponent implements OnInit, OnDestroy {
 
   loadMonth() {
 
+    // senza dipendente il server risponderebbe per l'utente collegato (l'admin): mese vuoto
+    if (!this.currUserId)
+      return;
+
     console.log(`UserPageComponent: Loading data for: ${this.currYear}-${this.currMonth + 1} via CalendarDataService`);
 
-    // Chiama il metodo del servizio dati
-    this.timeSheetService.getMonthData(this.currYear, this.currMonth, this.currUserId,false).subscribe(monthData => {
+    // periodo e dipendente arrivano con eventi separati e ravvicinati: la lettura precedente ancora in corso
+    // si annulla, altrimenti la sua risposta (arrivata dopo) sovrascriverebbe il mese giusto
+    this.loadMonthSub?.unsubscribe();
+    this.loadMonthSub = this.timeSheetService.getMonthData(this.currYear, this.currMonth, this.currUserId,false).subscribe(monthData => {
       this.currentMonth = monthData; // monthData è già del tipo corretto MonthData
       this.buildCalendarWeeks();     // Costruisce la UI dopo aver ricevuto i dati
       this.segmenti = this.timeSheetService.segmentiDelMese(this.currentMonth);
@@ -300,7 +308,7 @@ export class TimeSheetAdminPageComponent implements OnInit, OnDestroy {
     }
   }
   onCurrentUserChanged(userId: string[] | undefined): void {
-    this.currUserId = userId[0];
+    this.currUserId = userId?.[0];
     this.loadMonth();
   }
   // Metodi per gestire altri eventi dall'app-sedi-reparto-user-navigation

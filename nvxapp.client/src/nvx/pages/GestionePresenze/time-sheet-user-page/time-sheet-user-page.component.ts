@@ -67,6 +67,10 @@ export class TimeSheetUserPageComponent implements OnInit, OnDestroy {
   // aggiornamento del mese quando un altro utente ricalcola il cartellino (notifica JobNotifierAsync)
   private jobSub: Subscription | null = null;
   public refreshCartellino = 0;  // fa rileggere il riepilogo del mese
+  // Ionic tiene la pagina in memoria e la riusa (es. dopo un'impersonificazione): mentre e' nascosta non si ricarica
+  // (l'utente del token puo' essere un altro) e al rientro il mese si rilegge con l'utente attuale
+  private visibile = false;
+  private daRicaricare = false;
 
   
 
@@ -99,12 +103,19 @@ export class TimeSheetUserPageComponent implements OnInit, OnDestroy {
 
   ionViewWillEnter() {
 
+    this.visibile = true;
+    if (this.daRicaricare) {
+      this.daRicaricare = false;
+      if (this.currYear !== undefined && this.currMonth !== undefined)
+        this.loadMonth();
+    }
 
     // ricalcolo fatto da altri (es. l'HR approva o rifiuta una richiesta): il server lo notifica al dipendente
     // e il mese si ricarica se e' quello visualizzato. Una sola sottoscrizione: Ionic tiene la pagina in memoria
     if (!this.jobSub) {
       this.jobSub = this.jobNotifierService.jobFinished$.subscribe(jobUpdate => {
-        if (jobUpdate.jobType === GestionePresenze_JobType.TimeSheet_Engine_Calculate &&
+        if (this.visibile &&
+            jobUpdate.jobType === GestionePresenze_JobType.TimeSheet_Engine_Calculate &&
             jobUpdate.payload?.year == this.currYear &&
             jobUpdate.payload?.month == (this.currMonth + 1))
           this.loadMonth();
@@ -141,6 +152,8 @@ export class TimeSheetUserPageComponent implements OnInit, OnDestroy {
 
   ionViewWillLeave() {
     this.fabMenuService.fabMenuItem = [];
+    this.visibile = false;
+    this.daRicaricare = true;
   }
 
   exportPdf() {
@@ -158,13 +171,15 @@ export class TimeSheetUserPageComponent implements OnInit, OnDestroy {
 
     // Registrazione all'observable per ricevere notifiche di ref
     this.Dip_GG_Richiesta_refreshSub = this.refresherService.Dip_GG_Richiesta_refresh$.subscribe(() => {
-      this.loadMonth();
+      if (this.visibile)
+        this.loadMonth();
     });
 
     // comando dell'assistente (chat o voce) eseguito: il mese si rilegge subito, senza aspettare
     // la notifica SignalR di fine ricalcolo (che aggiorna poi anche le ore)
     this.commandExecutedSub = this.fabMenuService.commandExecuted$.subscribe(() => {
-      this.loadMonth();
+      if (this.visibile)
+        this.loadMonth();
     });
 
   }
@@ -175,6 +190,7 @@ export class TimeSheetUserPageComponent implements OnInit, OnDestroy {
       this.Dip_GG_Richiesta_refreshSub.unsubscribe();
     }
     this.commandExecutedSub?.unsubscribe();
+    this.jobSub?.unsubscribe();
 
   }
 
