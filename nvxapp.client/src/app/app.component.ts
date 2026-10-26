@@ -190,9 +190,9 @@ export class AppComponent implements OnInit {
     return accesso;
   }
 
-  // numero mostrato accanto alla voce di menu (ticket di assistenza in carico all'utente), 0 = nessuno
-  public menuBadge(component: string): number {
-    return component === 'TicketListPageComponent' ? this.ticketNotifierService.inCarico() : 0;
+  // numero mostrato accanto alla voce di menu (ticket di assistenza in carico all'utente o badge della voce), 0 = nessuno
+  public menuBadge(p: MainMenuItem): number {
+    return p.component === 'TicketListPageComponent' ? this.ticketNotifierService.inCarico() : (p.badge?.() ?? 0);
   }
 
   public showPage4SuperUser(component: string): boolean {

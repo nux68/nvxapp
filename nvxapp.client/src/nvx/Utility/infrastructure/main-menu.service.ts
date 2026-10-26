@@ -279,6 +279,7 @@ export class MainMenuItem {
   icon: string;
   roles?: string[]; // aggiunta proprietà opzionale per i ruoli
   nonConfigurabile?: boolean; // voce di sistema: il CompanyPowerAdmin non puo' nasconderla (pagina "Menu utenti")
+  badge?: () => number; // numero mostrato accanto alla voce (es. un signal degli applicativi), 0 = nessuno
 
   constructor(menuType: MenuType, zorder: number, group: number,title: string, component: string, url: string, icon: string, roles?: string[]) {
     this.menuType = menuType;
