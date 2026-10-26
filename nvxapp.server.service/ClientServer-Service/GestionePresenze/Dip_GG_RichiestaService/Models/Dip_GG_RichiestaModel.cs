@@ -177,6 +177,22 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
     }
 
 
+    // contatori del menu "Richieste"
+    public class Dip_GG_Richiesta_Count_InModel
+    {
+        // true = calcola anche le richieste da approvare (menu amministratore)
+        public Boolean Admin { get; set; }
+    }
+
+    public class Dip_GG_Richiesta_Count_OutModel : ModelResult
+    {
+        // richieste dell'azienda che l'utente puo' approvare (o rifiutare) adesso
+        public int DaApprovare { get; set; }
+        // richieste dell'utente in attesa di approvazione
+        public int InAttesa { get; set; }
+    }
+
+
     public class Dip_GG_Richiesta_DeleteInModel
     {
         public Boolean ExcludeRicalc { get; set; }

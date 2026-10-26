@@ -113,6 +113,23 @@ export class Dip_GG_Richiesta_GetAll4User_OutModel extends ModelResult {
 }
 
 
+// contatori del menu "Richieste"
+export class Dip_GG_Richiesta_Count_InModel {
+  // true = calcola anche le richieste da approvare (menu amministratore)
+  public admin: boolean = false;
+}
+export class Dip_GG_Richiesta_Count_OutModel extends ModelResult {
+  // richieste dell'azienda che l'utente puo' approvare adesso
+  public daApprovare: number = 0;
+  // richieste dell'utente in attesa di approvazione
+  public inAttesa: number = 0;
+}
+
+// notifica push (evento SignalR "RichiestaNotifier")
+export class RichiestaNotifierData {
+  public idDip_GG_Richiesta: number[] = [];
+}
+
 export class Dip_GG_Richiesta_GetAll4Admin_InModel {
   public year: number;
   public month: number;

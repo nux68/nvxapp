@@ -17,6 +17,8 @@ import { TimeSheetService } from '../../../Utility/GestionePresenze/time-sheet.s
 import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
 import { TipoRichiestaToLongTextPipe } from '../../../shared/pipe/GestionePresenze/tipo-richiesta-to-long-text.pipe';
 import { TranslocoService } from '@jsverse/transloco';
+import { Subscription } from 'rxjs';
+import { RichiestaNotifierService } from '../../../Utility/GestionePresenze/richiesta-notifier.service';
 import { NotaSpesaDettaglioDialogService } from '../../../shared/components/GestionePresenze/nota-spesa-dettaglio-dialog/nota-spesa-dettaglio-dialog.service';
 
 
@@ -45,6 +47,8 @@ export class RequestListUserPageComponent {
   public btnDelete: ButtonItem;
   public btnDettaglioNotaSpese: ButtonItem;
   public StatoRichiesta = StatoRichiesta;
+  // richieste cambiate da altri (notifica SignalR): la lista si ricarica
+  private changedSub?: Subscription;
 
   constructor(private navCtrl: NavController,
     private dipGGRichiestaService: DipGGRichiestaService,
@@ -56,6 +60,7 @@ export class RequestListUserPageComponent {
     private dipGGTimbraturaUtilityService: TimeSheetUtilityService,
     private userNavigationService: UserNavigationService,
     private notaSpesaDettaglioDialogService: NotaSpesaDettaglioDialogService,
+    private richiestaNotifierService: RichiestaNotifierService,
     private transloco: TranslocoService) {
 
     this.title = this.transloco.translate('attendance.pages.requestListUser.title');
@@ -79,6 +84,9 @@ export class RequestListUserPageComponent {
   ionViewWillEnter() {
 
     this.loadData();
+    this.richiestaNotifierService.refreshCount();
+    this.changedSub?.unsubscribe();
+    this.changedSub = this.richiestaNotifierService.changed$.subscribe(() => this.loadData());
  
 
     //this.fabMenuService.fabMenuItem = [
@@ -105,6 +113,7 @@ export class RequestListUserPageComponent {
 
   ionViewWillLeave() {
     //this.fabMenuService.fabMenuItem = [];
+    this.changedSub?.unsubscribe();
   }
 
 

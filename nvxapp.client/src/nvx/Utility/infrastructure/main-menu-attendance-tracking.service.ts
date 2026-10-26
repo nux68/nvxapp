@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { iMainMenuService, MainMenuItem, MenuType, WorkingMode } from './main-menu.service';
+import { RichiestaNotifierService } from '../GestionePresenze/richiesta-notifier.service';
 
 @Injectable({
   providedIn: 'root'
@@ -7,7 +8,8 @@ import { iMainMenuService, MainMenuItem, MenuType, WorkingMode } from './main-me
 // i titoli delle voci sono chiavi di traduzione (attendance.menu.*), tradotte nel template con la pipe transloco
 export class MainMenuAttendanceTrackingService implements iMainMenuService {
 
-  constructor() { }
+  // badge delle voci "Richieste": da approvare (amministratore) e in attesa (dipendente)
+  constructor(private richiestaNotifierService: RichiestaNotifierService) { }
 
   public get Pages4SuperUser(): MainMenuItem[] { return []; }
   public get Pages4Admin(): MainMenuItem[] { return []; }
@@ -16,7 +18,7 @@ export class MainMenuAttendanceTrackingService implements iMainMenuService {
   public get Pages4CompanyAdmin(): MainMenuItem[] {
 
     return [
-      { menuType: MenuType.MenuItem, zorder: 2100, group: 0, title: 'attendance.menu.richieste', roles: ['CompanyPowerAdmin', 'CompanyAdmin'], component: "JustificationListPageComponent", url: '/requestlistadmin', icon: 'create' },
+      { menuType: MenuType.MenuItem, zorder: 2100, group: 0, title: 'attendance.menu.richieste', roles: ['CompanyPowerAdmin', 'CompanyAdmin'], component: "JustificationListPageComponent", url: '/requestlistadmin', icon: 'create', badge: this.richiestaNotifierService.daApprovare },
       { menuType: MenuType.MenuItem, zorder: 2200, group: 0, title: 'attendance.menu.calendarioHR', roles: ['CompanyPowerAdmin'], component: "TimeSheetPowerAdminPageComponent", url: '/poweradmintimesheet', icon: 'calendar-number' },
       { menuType: MenuType.MenuItem, zorder: 2250, group: 0, title: 'attendance.menu.quadraturaMensile', roles: ['CompanyPowerAdmin'], component: "QuadraturaMensilePageComponent", url: '/quadraturamensile', icon: 'checkmark-done-circle' },
 
@@ -65,7 +67,7 @@ export class MainMenuAttendanceTrackingService implements iMainMenuService {
     return [
       { menuType: MenuType.MenuHeader, zorder: 1000, group: 1, title: 'attendance.menu.presenze', roles: ['User'], component: '', url: '', icon: '' },
       { menuType: MenuType.MenuItem, zorder: 2000, group: 1, title: 'attendance.menu.timbratura', component: "TimeClockUserPageComponent", url: '/timeclockuser', icon: 'finger-print' },
-      { menuType: MenuType.MenuItem, zorder: 3000, group: 1, title: 'attendance.menu.richieste', component: "RequestListUserPageComponent", url: '/requestlistuser', icon: 'create' },
+      { menuType: MenuType.MenuItem, zorder: 3000, group: 1, title: 'attendance.menu.richieste', component: "RequestListUserPageComponent", url: '/requestlistuser', icon: 'create', badge: this.richiestaNotifierService.inAttesa },
       { menuType: MenuType.MenuItem, zorder: 4000, group: 1, title: 'attendance.menu.calendario', component: "TimeSheetUserPageComponent", url: '/usertimesheet', icon: 'calendar-number' },
       { menuType: MenuType.MenuItem, zorder: 5000, group: 1, title: 'attendance.menu.richiestaGiustificativo', component: "RequestJustificationUserPageComponent", url: '/requestjustificationuser', icon: 'document-text' },
       { menuType: MenuType.MenuItem, zorder: 6000, group: 1, title: 'attendance.menu.richiestaTimbratura', component: "RequestClockingUserPageComponent", url: '/requestclockinguser', icon: 'time' },

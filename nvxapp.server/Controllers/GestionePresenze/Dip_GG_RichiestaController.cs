@@ -48,6 +48,15 @@ namespace nvxapp.server.Controllers
 
         [Authorize]
         [HttpPost]
+        [Route("RichiestaCount")]
+        public async Task<GenericResult<Dip_GG_Richiesta_Count_OutModel>> RichiestaCount(GenericRequest<Dip_GG_Richiesta_Count_InModel> inModel)
+        {
+            // contatori del menu "Richieste" (da approvare e in attesa)
+            return await _dip_GG_RichiestaService.RichiestaCount(inModel, false);
+        }
+
+        [Authorize]
+        [HttpPost]
         [Route("Send")]
         public async Task<GenericResult<Dip_GG_Richiesta_Send_OutModel>> Send(GenericRequest<Dip_GG_Richiesta_Send_InModel> inModel)
         {

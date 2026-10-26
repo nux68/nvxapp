@@ -20,6 +20,8 @@ import { TimeSheetService } from '../../../Utility/GestionePresenze/time-sheet.s
 import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
 import { NotaSpesaDettaglioDialogService } from '../../../shared/components/GestionePresenze/nota-spesa-dettaglio-dialog/nota-spesa-dettaglio-dialog.service';
 import { TranslocoService } from '@jsverse/transloco';
+import { Subscription } from 'rxjs';
+import { RichiestaNotifierService } from '../../../Utility/GestionePresenze/richiesta-notifier.service';
 
 
 
@@ -46,6 +48,8 @@ export class RequestListAdminPageComponent {
   public currYear: number
   public currMonth: number
   public StatoRichiesta = StatoRichiesta;
+  // richieste cambiate da altri (notifica SignalR): la lista si ricarica
+  private changedSub?: Subscription;
 
   //public tipoRichiestaToLongTextPipe: TipoRichiestaToLongTextPipe,
   
@@ -62,6 +66,7 @@ export class RequestListAdminPageComponent {
     private dipGGTimbraturaUtilityService: TimeSheetUtilityService,
     private userNavigationService: UserNavigationService,
     private notaSpesaDettaglioDialogService: NotaSpesaDettaglioDialogService,
+    private richiestaNotifierService: RichiestaNotifierService,
     private transloco: TranslocoService) {
 
     this.title = this.transloco.translate('attendance.pages.requestListAdmin.title');
@@ -99,6 +104,9 @@ export class RequestListAdminPageComponent {
   ionViewWillEnter() {
 
     this.loadData();
+    this.richiestaNotifierService.refreshCount();
+    this.changedSub?.unsubscribe();
+    this.changedSub = this.richiestaNotifierService.changed$.subscribe(() => this.loadData());
 
     //this.fabMenuService.fabMenuItem = [
 
@@ -116,6 +124,7 @@ export class RequestListAdminPageComponent {
 
   ionViewWillLeave() {
     //this.fabMenuService.fabMenuItem = [];
+    this.changedSub?.unsubscribe();
   }
 
 

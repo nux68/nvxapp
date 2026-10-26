@@ -6,6 +6,8 @@ import { GenericRequest } from '../../ModelsBase/generic-request';
 import { GenericResult } from '../../ModelsBase/generic-result';
 import { map, Observable } from 'rxjs';
 import {
+  Dip_GG_Richiesta_Count_InModel,
+  Dip_GG_Richiesta_Count_OutModel,
   Dip_GG_Richiesta_GetAll4Admin_InModel,
   Dip_GG_Richiesta_GetAll4Admin_OutModel,
   Dip_GG_Richiesta_GetAll4User_InModel,
@@ -51,6 +53,11 @@ export class DipGGRichiestaService {
         )
       );
 
+  }
+
+  /** contatori del menu "Richieste" (da approvare e in attesa) */
+  RichiestaCount(model: GenericRequest<Dip_GG_Richiesta_Count_InModel>): Observable<GenericResult<Dip_GG_Richiesta_Count_OutModel>> {
+    return this.http.post<GenericResult<Dip_GG_Richiesta_Count_OutModel>>(environment.remoteData.apiUri + 'Dip_GG_Richiesta/RichiestaCount', model);
   }
 
   Send(model: GenericRequest<Dip_GG_Richiesta_Send_InModel>): Observable<GenericResult<Dip_GG_Richiesta_Send_OutModel>> {

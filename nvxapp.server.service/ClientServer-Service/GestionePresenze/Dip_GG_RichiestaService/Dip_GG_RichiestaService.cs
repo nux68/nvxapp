@@ -27,6 +27,7 @@ using nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.ServerModels;
+using Serilog;
 
 /*  chi chiama cosa
 
@@ -78,6 +79,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
         private readonly IAz_SediRepartoUserRepository _az_SediRepartoUserRepository;
         private readonly ITimeSheet_EngineService_OnlyCalculate _timeSheet_EngineService;
         private readonly IGestionePresenzeOreTeoriche _gestionePresenzeOreTeoriche;
+        private readonly IRichiestaNotifier _richiestaNotifier;
 
         public Dip_GG_RichiestaService(IMapper mapper,
                                   UserManager<ApplicationUser> userManager,
@@ -102,7 +104,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                                   IDip_GG_GiustificativiRepository dip_GG_GiustificativiRepository,
                                   IPar_GiustificativiRepository par_GiustificativiRepository,
                                   IContatoriService contatoriService,
-                                  IGestionePresenzeOreTeoriche gestionePresenzeOreTeoriche) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
+                                  IGestionePresenzeOreTeoriche gestionePresenzeOreTeoriche,
+                                  IRichiestaNotifier richiestaNotifier) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _accountService = accountService;
             _az_CfgService = az_CfgService;
@@ -121,6 +124,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
             _par_GiustificativiRepository = par_GiustificativiRepository;
             _contatoriService = contatoriService;
             _gestionePresenzeOreTeoriche = gestionePresenzeOreTeoriche;
+            _richiestaNotifier = richiestaNotifier;
 
         }
 
@@ -192,6 +196,128 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                 return retVal;
             }, isSubProcess);
         }
+
+        // stati di una fase (richiesta o revoca) ancora da decidere
+        private static readonly List<StatoRichiesta> StatiInApprovazione = new List<StatoRichiesta>
+        {
+            StatoRichiesta.Immessa, StatoRichiesta.ApprovazioneInCorso, StatoRichiesta.ParzialmenteApprovata
+        };
+
+        /// <summary>
+        /// Contatori del menu "Richieste":
+        ///  - InAttesa: richieste dell'utente con la fase corrente (revoca se presente, altrimenti richiesta) ancora da decidere
+        ///  - DaApprovare (solo con Admin): richieste dell'azienda che l'utente puo' approvare adesso. Con un solo
+        ///    approvatore (SigleAdmin) quelle immesse; con l'approvazione multilivello solo quelle in cui l'utente e'
+        ///    tra gli approvatori e non ha ancora dato la sua approvazione (in gerarchia: dopo l'approvatore precedente)
+        /// </summary>
+        public virtual async Task<GenericResult<Dip_GG_Richiesta_Count_OutModel>> RichiestaCount(GenericRequest<Dip_GG_Richiesta_Count_InModel> model, Boolean isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                var retVal = new Dip_GG_Richiesta_Count_OutModel();
+
+                User_DATA_COMB_DipAna_DipRapp user_DATA_COMB_DipAna_DipRapp = await _gestionePresenzeUserUtility.Get_DipAna_DipRapp(this.CurrentUserId, true);
+                if (user_DATA_COMB_DipAna_DipRapp != null && user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro != null)
+                {
+                    int idDip_RapportoLavoro = user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.Id;
+                    retVal.InAttesa = QueryInApprovazione(new List<int> { idDip_RapportoLavoro })
+                                          .AsEnumerable()
+                                          .Count(x => StatiInApprovazione.Contains(x.RevocaStato ?? x.RichiestaStato));
+                }
+
+                if (model.Data.Admin)
+                {
+                    var resAz_Cfg = await _az_CfgService.Az_CfgGet(new GenericRequest<Az_Cfg_Get_InModel>(), true);
+                    var res = await _accountService.UserCompanyList(new GenericRequest<UserCompanyListInModel>(), true);
+                    if (resAz_Cfg.Success && resAz_Cfg.Data != null && resAz_Cfg.Data.Az_Cfg != null && res.Success && res.Data != null)
+                    {
+                        var approvazioneTipo = resAz_Cfg.Data.Az_Cfg.ApprovazioneTipo;
+
+                        List<string?> idAspNetUsers = res.Data.UserCompanyList.Select(x => x.IdAspNetUsers).ToList();
+                        List<int> idDip_Anagrafica = _dip_AnagraficaRepository.FindAll(x => idAspNetUsers.Contains(x.IdAspNetUsers)).Select(x => x.Id).ToList();
+                        List<int> idDip_RapportoLavoro = _dip_RapportoLavoroRepository.FindAll(x => idDip_Anagrafica.Contains(x.IdDip_Anagrafica)).Select(x => x.Id).ToList();
+
+                        foreach (var item in QueryInApprovazione(idDip_RapportoLavoro).ToList())
+                        {
+                            StatoRichiesta stato = item.RevocaStato ?? item.RichiestaStato;
+
+                            if (approvazioneTipo == TipoApprovazione.SigleAdmin)
+                            {
+                                if (stato == StatoRichiesta.Immessa)
+                                    retVal.DaApprovare++;
+                                continue;
+                            }
+
+                            if (!StatiInApprovazione.Contains(stato))
+                                continue;
+
+                            var lista = Approvatori(item.RevocaStato != null ? item.RevocaApprovazioneData : item.RichiestaApprovazioneData);
+                            int idxReq = lista.FindIndex(x => x.IdAspNetUsers == this.CurrentUserId);
+                            if (idxReq < 0 || lista[idxReq].RichiestaStato != StatoRichiesta.Immessa)
+                                continue;
+
+                            if (approvazioneTipo == TipoApprovazione.AllAdminHierarchy && idxReq > 0 && lista[idxReq - 1].RichiestaStato != StatoRichiesta.Approvata)
+                                continue;
+
+                            retVal.DaApprovare++;
+                        }
+                    }
+                }
+
+                return retVal;
+            }, isSubProcess);
+        }
+
+        // richieste dei rapporti di lavoro con la richiesta o la revoca ancora da decidere
+        private IQueryable<Dip_GG_Richiesta> QueryInApprovazione(List<int> idDip_RapportoLavoro)
+        {
+            return _dip_GG_RichiestaRepository.FindAll(x => idDip_RapportoLavoro.Contains(x.IdDip_RapportoLavoro) &&
+                                                            (StatiInApprovazione.Contains(x.RichiestaStato) ||
+                                                             (x.RevocaStato != null && StatiInApprovazione.Contains(x.RevocaStato.Value))));
+        }
+
+        private static List<Dip_GG_Richiesta_Stato_Cronology> Approvatori(string? json)
+        {
+            return !string.IsNullOrEmpty(json)
+                ? JsonConvert.DeserializeObject<List<Dip_GG_Richiesta_Stato_Cronology>>(json) ?? new List<Dip_GG_Richiesta_Stato_Cronology>()
+                : new List<Dip_GG_Richiesta_Stato_Cronology>();
+        }
+
+        // avvisa (SignalR) chi vede le richieste: il dipendente, gli approvatori e gli amministratori dell'azienda
+        private async Task NotifyRichieste(List<int> idDip_GG_Richiesta)
+        {
+            try
+            {
+                var richieste = _dip_GG_RichiestaRepository.FindAll(x => idDip_GG_Richiesta.Contains(x.Id)).ToList();
+                if (richieste.Count == 0)
+                    return;
+
+                var recipients = new List<string>();
+
+                var idDip_RapportoLavoro = richieste.Select(x => x.IdDip_RapportoLavoro).Distinct().ToList();
+                var idDip_Anagrafica = _dip_RapportoLavoroRepository.FindAll(x => idDip_RapportoLavoro.Contains(x.Id)).Select(x => x.IdDip_Anagrafica).ToList();
+                recipients.AddRange(_dip_AnagraficaRepository.FindAll(x => idDip_Anagrafica.Contains(x.Id)).Select(x => x.IdAspNetUsers).ToList());
+
+                foreach (var item in richieste)
+                {
+                    recipients.AddRange(Approvatori(item.RichiestaApprovazioneData).Select(x => x.IdAspNetUsers));
+                    recipients.AddRange(Approvatori(item.RevocaApprovazioneData).Select(x => x.IdAspNetUsers));
+                }
+
+                var reqAdmin = new GenericRequest<UserCompanyListInModel>();
+                reqAdmin.Data.FilteredRoles = new List<string> { "CompanyAdmin", "CompanyPowerAdmin" };
+                var resAdmin = await _accountService.UserCompanyList(reqAdmin, true);
+                if (resAdmin.Success && resAdmin.Data != null)
+                    recipients.AddRange(resAdmin.Data.UserCompanyList.Select(x => x.IdAspNetUsers ?? string.Empty));
+
+                await _richiestaNotifier.RichiestaNotifierAsync(recipients, new RichiestaNotifierData { IdDip_GG_Richiesta = idDip_GG_Richiesta });
+            }
+            catch (Exception ex)
+            {
+                Log.Warning(ex, "Richieste {IdDip_GG_Richiesta}: notifica non inviata", idDip_GG_Richiesta);
+            }
+        }
+
         public virtual async Task<GenericResult<Dip_GG_Richiesta_Send_OutModel>> Send(GenericRequest<Dip_GG_Richiesta_Send_InModel> model, Boolean isSubProcess)
         {
             return await ExecuteAction(model, async () =>
@@ -368,6 +494,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                             if(!model.Data.ExcludeRicalc && dip_GG_Richiesta.RichiestaTipo != TipoRichiesta.NotaSpesa)
                                 await CalculateGiorno(dip_GG_Richiesta.IdDip_RapportoLavoro, dip_GG_Richiesta.Data);
 
+                            if (!isSubProcess)
+                                await NotifyRichieste(new List<int> { dip_GG_Richiesta.Id });
+
                         }
                         else
                         {
@@ -543,6 +672,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                 richiesta = await _dip_GG_RichiestaRepository.UpsertAsync(richiesta);
 
                 retVal.Dip_GG_Richiesta = _mapper.Map<Dip_GG_RichiestaModel>(richiesta);
+
+                if (!isSubProcess)
+                    await NotifyRichieste(new List<int> { richiesta.Id });
+
                 return retVal;
             }, isSubProcess);
         }
@@ -811,6 +944,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                         if(!model.Data.ExcludeRicalc)
                                 await CalculateGiorno(curr_richiesta.IdDip_RapportoLavoro, curr_richiesta.Data);
                     }
+
+                    // il motore del cartellino (subprocess) approva giorno per giorno: si avvisa solo per le azioni dal client
+                    if (!isSubProcess)
+                        await NotifyRichieste(richieste.Select(x => x.Id).ToList());
                 }
 
 
@@ -1379,6 +1516,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
     {
         public Task<GenericResult<Dip_GG_Richiesta_GetAll4User_OutModel>> GetAll4User(GenericRequest<Dip_GG_Richiesta_GetAll4User_InModel> model, Boolean isSubProcess);
         public Task<GenericResult<Dip_GG_Richiesta_GetAll4Admin_OutModel>> GetAll4Admin(GenericRequest<Dip_GG_Richiesta_GetAll4Admin_InModel> model, Boolean isSubProcess);
+        public Task<GenericResult<Dip_GG_Richiesta_Count_OutModel>> RichiestaCount(GenericRequest<Dip_GG_Richiesta_Count_InModel> model, Boolean isSubProcess);
         public Task<GenericResult<Dip_GG_Richiesta_Send_OutModel>> Send(GenericRequest<Dip_GG_Richiesta_Send_InModel> model, Boolean isSubProcess);
         public Task<GenericResult<Dip_GG_Richiesta_SetState_OutModel>> SetState(GenericRequest<Dip_GG_Richiesta_SetState_InModel> model, Boolean isSubProcess);
         public Task<GenericResult<Dip_GG_Richiesta_NotaSpesaUpdate_OutModel>> NotaSpesaUpdate(GenericRequest<Dip_GG_Richiesta_NotaSpesaUpdate_InModel> model, Boolean isSubProcess);
