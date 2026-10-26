@@ -35,10 +35,10 @@
                     <!-- FileGeneration finished: dismiss + download button -->
                     @if (job.category === LongJobCategory.FileGeneration && job.isFinished) {
                       <ion-item lines="none" class="job-item">
-                        <ion-button size="small" fill="clear" (click)="dismissJob(job.jobId)" color="danger" slot="start">
+                        <ion-button size="small" fill="clear" (click)="dismissJob(job.jobId)" color="medium" slot="start">
                           <ion-icon name="close-circle-outline"></ion-icon>
                         </ion-button>
-                        <ion-button size="small" fill="outline" shape="round" (click)="onJobLabelClick(job)" color="success">
+                        <ion-button size="small" fill="outline" shape="round" (click)="onJobLabelClick(job)" color="primary">
                           &nbsp;{{ job.message?.text }}
                         </ion-button>
                       </ion-item>
