@@ -251,9 +251,13 @@ export class VacationPlanPageComponent extends BasePageConfirmCancelComponent<Va
 
   CanOpenMenuActionGiustificativi(vacationPlan_DaySlot: VacationPlan_DaySlot,just: Dip_GG_GiustificativiModel): boolean {
 
+    // il menu ha solo Approva / Rifiuta: serve una richiesta ancora da decidere. Un giustificativo senza richiesta
+    // (inserito direttamente dall'HR / poweradmin) e' gia' valido e non ha nulla da approvare
+    if (just.idDip_GG_Richiesta == null)
+      return false;
+
     let retval = this.timeSheetService.Dip_GG_Richiesta_Admin_Can_Approve(this.get_Dip_GG_Richiesta(vacationPlan_DaySlot,just.idDip_GG_Richiesta)) ||
-      this.timeSheetService.Dip_GG_Richiesta_Admin_Can_Reject(this.get_Dip_GG_Richiesta(vacationPlan_DaySlot,just.idDip_GG_Richiesta)) ||
-      just.idDip_GG_Richiesta == null;;
+      this.timeSheetService.Dip_GG_Richiesta_Admin_Can_Reject(this.get_Dip_GG_Richiesta(vacationPlan_DaySlot,just.idDip_GG_Richiesta));
 
     return retval;
 
