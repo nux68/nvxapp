@@ -340,6 +340,43 @@ export class UserInterfaceService {
     return button;
   }
 
+  // esportazione dei dati: generica, in PDF, in Excel
+  get Btn_Export(): ButtonItem {
+    const button = new ButtonItem(
+      this.transloco.translate('common.buttons.export'),
+      'download-outline',
+      'medium',
+      false,
+      () => { console.log('Btn_Export cliccato'); }
+    );
+    button.fill = 'outline';   // azione secondaria: bordo grigio come Btn_Elenco
+    return button;
+  }
+
+  get Btn_Pdf(): ButtonItem {
+    const button = new ButtonItem(
+      this.transloco.translate('common.buttons.pdf'),
+      'document-outline',
+      'danger',
+      false,
+      () => { console.log('Btn_Pdf cliccato'); }
+    );
+    button.fill = 'outline';   // stesso stile a bordo delle altre azioni secondarie (rosso come i file PDF)
+    return button;
+  }
+
+  get Btn_Excel(): ButtonItem {
+    const button = new ButtonItem(
+      this.transloco.translate('common.buttons.excel'),
+      'grid-outline',
+      'success',
+      false,
+      () => { console.log('Btn_Excel cliccato'); }
+    );
+    button.fill = 'outline';   // stesso stile a bordo delle altre azioni secondarie (verde come Excel)
+    return button;
+  }
+
   //trash-outline
 
 }
