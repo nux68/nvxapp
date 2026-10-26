@@ -24,6 +24,8 @@ import { ModalController, NavController, Platform } from '@ionic/angular';
 import { NotaSpesaDettaglioDialogService } from '../../../shared/components/GestionePresenze/nota-spesa-dettaglio-dialog/nota-spesa-dettaglio-dialog.service';
 import { TranslocoService } from '@jsverse/transloco';
 import { UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
+import { TimeSheetExportService } from '../../../ClientServer-Service/GestionePresenze/TimeSheet_ExportService/time-sheet-export.service';
+import { TimeSheet_ExportPdf_4User_InModel } from '../../../ClientServer-Service/GestionePresenze/TimeSheet_ExportService/Models/time-sheet-export-model';
 
 
 @Component({
@@ -81,7 +83,8 @@ export class TimeSheetUserPageComponent implements OnInit, OnDestroy {
               private platform: Platform,
               private notaSpesaDettaglioDialogService: NotaSpesaDettaglioDialogService,
               private userInterfaceService: UserInterfaceService,
-              private transloco: TranslocoService
+              private transloco: TranslocoService,
+              private timeSheetExportService: TimeSheetExportService
   ) {
     this.title = this.transloco.translate('attendance.pages.timeSheetUser.title');
     this.weeks = [];
@@ -123,6 +126,11 @@ export class TimeSheetUserPageComponent implements OnInit, OnDestroy {
         });
       }),
 
+      // cartellino del mese visualizzato in PDF (job in background, si scarica dalla notifica di fine job)
+      new FabMenuItem(this.userInterfaceService.Btn_Pdf.text, this.userInterfaceService.Btn_Pdf.image, () => {
+        this.exportPdf();
+      }),
+
     ];
 
     if (environment.signalR.useSignalR) {
@@ -133,6 +141,17 @@ export class TimeSheetUserPageComponent implements OnInit, OnDestroy {
 
   ionViewWillLeave() {
     this.fabMenuService.fabMenuItem = [];
+  }
+
+  exportPdf() {
+    if (this.currYear === undefined || this.currMonth === undefined)
+      return;
+
+    const request = new GenericRequest<TimeSheet_ExportPdf_4User_InModel>(TimeSheet_ExportPdf_4User_InModel);
+    request.data.timeSheet_ExportPdf.year = this.currYear;
+    request.data.timeSheet_ExportPdf.month = this.currMonth + 1;   // currMonth e' 0-11
+
+    this.timeSheetExportService.ExportPdf_4User(request).subscribe();
   }
 
   ngOnInit() {

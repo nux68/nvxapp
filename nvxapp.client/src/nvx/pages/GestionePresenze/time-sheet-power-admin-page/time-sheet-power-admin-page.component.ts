@@ -35,6 +35,11 @@ import { DipGGGiustificativiService } from '../../../ClientServer-Service/Gestio
 import { EditDipGGGiustificativiDialogComponent } from '../../../shared/components/GestionePresenze/edit-dip-gg-giustificativi-dialog/edit-dip-gg-giustificativi-dialog.component';
 import { JobNotifierService } from '../../../Utility/infrastructure/job-notifier.service';
 import { TranslocoService } from '@jsverse/transloco';
+import { UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
+import { DipSelectorModalComponent, DipSelectorResult } from '../../../shared/components/GestionePresenze/dip-selector-modal/dip-selector-modal.component';
+import { Az_SediRepartoUserModel } from '../../../ClientServer-Service/GestionePresenze/Az_SediRepartoUser/Models/az-reparto-user-model';
+import { TimeSheetExportService } from '../../../ClientServer-Service/GestionePresenze/TimeSheet_ExportService/time-sheet-export.service';
+import { TimeSheet_ExportPdf_4Admin_InModel } from '../../../ClientServer-Service/GestionePresenze/TimeSheet_ExportService/Models/time-sheet-export-model';
 
 
 interface DayData {
@@ -63,6 +68,8 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
   public currMonth: number;
   public currUserId: string | undefined;
   public repartoIds: number[];
+  // dipendenti della sede/reparto selezionati: tra questi si scelgono quelli da stampare
+  private allUsersId: string[] = [];
 
   public title: string;
 
@@ -103,7 +110,9 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
               private jobNotifierService: JobNotifierService,
               public timeSheetEngineService: TimeSheetEngineService,
               private platform: Platform,
-              private transloco: TranslocoService
+              private transloco: TranslocoService,
+              private userInterfaceService: UserInterfaceService,
+              private timeSheetExportService: TimeSheetExportService
   ) {
     this.title = this.transloco.translate('attendance.pages.timeSheetPowerAdmin.title');
     this.currentMonth = { year: 0, month: 0, days: {}, dip_GG_Richiesta: [], daySlot: [], contatori_Anno_Mese:[] };
@@ -171,13 +180,44 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
         });
       }),
 
+      // cartellini del mese in PDF: prima si scelgono i dipendenti, poi parte il job
+      new FabMenuItem(this.userInterfaceService.Btn_Pdf.text, this.userInterfaceService.Btn_Pdf.image, () => {
+        this.exportPdf();
+      }),
+
     ];
   }
 
- 
+
 
   ionViewWillLeave() {
     this.fabMenuService.fabMenuItem = [];
+  }
+
+  async exportPdf() {
+    if (this.currYear === undefined || this.currMonth === undefined || this.allUsersId.length === 0)
+      return;
+
+    const modal = await this.modalCtrl.create({
+      component: DipSelectorModalComponent,
+      componentProps: {
+        mode: 'multi',
+        userList: this.allUsersId.map(id => ({ idAspNetUsers: id }) as Az_SediRepartoUserModel),
+        preselected: this.currUserId ? [this.currUserId] : []
+      }
+    });
+    await modal.present();
+
+    const { data, role } = await modal.onWillDismiss<DipSelectorResult>();
+    if (role !== 'confirm' || !data || data.selected.length === 0)
+      return;
+
+    const request = new GenericRequest<TimeSheet_ExportPdf_4Admin_InModel>(TimeSheet_ExportPdf_4Admin_InModel);
+    request.data.timeSheet_ExportPdf.year = this.currYear;
+    request.data.timeSheet_ExportPdf.month = this.currMonth + 1;   // currMonth e' 0-11
+    request.data.timeSheet_ExportPdf.selectedUserId = data.selected;
+
+    this.timeSheetExportService.ExportPdf_4Admin(request).subscribe();
   }
 
 
@@ -326,6 +366,7 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
     this.repartoIds = repartoIds;
   }
   onAllUsersInSelectionChanged(userIds: string[] | undefined): void {
+    this.allUsersId = userIds ?? [];
   }
   //////
 

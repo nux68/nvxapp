@@ -119,6 +119,7 @@ export class DipSelectorModalComponent implements OnInit {
 
   public selectAll(): void {
     this.filteredUsers.forEach(u => this.selectedIds.add(u.idAspNetUsers));
+    if (this.buttonbar[0]) this.buttonbar[0].disabled = this.confirmDisabled;
   }
 
   public clearAll(): void {

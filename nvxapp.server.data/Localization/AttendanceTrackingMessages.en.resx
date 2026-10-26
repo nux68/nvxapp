@@ -603,4 +603,190 @@
   <data name="ChatTimeSheetPowerAdminOpen" xml:space="preserve">
     <value>Opening HR calendar.</value>
   </data>
+  <data name="ExportPdfInvalidPeriod" xml:space="preserve">
+    <value>Invalid month: {0}/{1}</value>
+  </data>
+  <data name="ExportPdfStarted" xml:space="preserve">
+    <value>Timesheet PDF creation started...</value>
+  </data>
+  <data name="ExportPdfWriting" xml:space="preserve">
+    <value>Writing the PDF...</value>
+  </data>
+  <data name="CartellinoPdf_Titolo" xml:space="preserve">
+    <value>Attendance timesheet</value>
+  </data>
+  <data name="CartellinoPdf_Azienda" xml:space="preserve">
+    <value>Company</value>
+  </data>
+  <data name="CartellinoPdf_Dipendente" xml:space="preserve">
+    <value>Employee</value>
+  </data>
+  <data name="CartellinoPdf_Mese" xml:space="preserve">
+    <value>Month</value>
+  </data>
+  <data name="CartellinoPdf_Stato" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="CartellinoPdf_StatoApprovato" xml:space="preserve">
+    <value>Approved</value>
+  </data>
+  <data name="CartellinoPdf_StatoDaApprovare" xml:space="preserve">
+    <value>Closed, awaiting approval</value>
+  </data>
+  <data name="CartellinoPdf_StatoProvvisorio" xml:space="preserve">
+    <value>Provisional, period in progress</value>
+  </data>
+  <data name="CartellinoPdf_ColGiorno" xml:space="preserve">
+    <value>Day</value>
+  </data>
+  <data name="CartellinoPdf_ColTimbrature" xml:space="preserve">
+    <value>Clockings</value>
+  </data>
+  <data name="CartellinoPdf_ColGiustificativi" xml:space="preserve">
+    <value>Justifications</value>
+  </data>
+  <data name="CartellinoPdf_ColTeoriche" xml:space="preserve">
+    <value>Expected</value>
+  </data>
+  <data name="CartellinoPdf_ColLavorate" xml:space="preserve">
+    <value>Worked</value>
+  </data>
+  <data name="CartellinoPdf_ColInPiu" xml:space="preserve">
+    <value>Extra / missing</value>
+  </data>
+  <data name="CartellinoPdf_Totali" xml:space="preserve">
+    <value>Totals</value>
+  </data>
+  <data name="CartellinoPdf_Entrata" xml:space="preserve">
+    <value>In</value>
+  </data>
+  <data name="CartellinoPdf_Uscita" xml:space="preserve">
+    <value>Out</value>
+  </data>
+  <data name="CartellinoPdf_SenzaVerso" xml:space="preserve">
+    <value>?</value>
+  </data>
+  <data name="CartellinoPdf_LegendaInAttesa" xml:space="preserve">
+    <value>{0} request awaiting approval</value>
+  </data>
+  <data name="CartellinoPdf_LegendaProvvisorie" xml:space="preserve">
+    <value>{0} provisional extra hours, counting period in progress</value>
+  </data>
+  <data name="CartellinoPdf_Riepilogo" xml:space="preserve">
+    <value>Monthly summary</value>
+  </data>
+  <data name="CartellinoPdf_NessunCalcolo" xml:space="preserve">
+    <value>No calculation for the month</value>
+  </data>
+  <data name="CartellinoPdf_NoteHR" xml:space="preserve">
+    <value>HR notes:</value>
+  </data>
+  <data name="CartellinoPdf_GeneratoIl" xml:space="preserve">
+    <value>Generated on {0}</value>
+  </data>
+  <data name="CartellinoPdf_Pagina" xml:space="preserve">
+    <value>Page</value>
+  </data>
+  <data name="CartellinoPdf_Voce_OreTeoriche" xml:space="preserve">
+    <value>Expected theoretical hours</value>
+  </data>
+  <data name="CartellinoPdf_Voce_NotaPartTime" xml:space="preserve">
+    <value>part-time {0}h/week</value>
+  </data>
+  <data name="CartellinoPdf_Voce_OreLavorate" xml:space="preserve">
+    <value>Actual hours worked</value>
+  </data>
+  <data name="CartellinoPdf_Voce_NotaTimbratureNette" xml:space="preserve">
+    <value>net clockings</value>
+  </data>
+  <data name="CartellinoPdf_Voce_DiCuiOrdinarie" xml:space="preserve">
+    <value>of which ordinary</value>
+  </data>
+  <data name="CartellinoPdf_Voce_NotaPagaBase" xml:space="preserve">
+    <value>paid at the base rate</value>
+  </data>
+  <data name="CartellinoPdf_Voce_Assenze" xml:space="preserve">
+    <value>Leave, holidays, absences</value>
+  </data>
+  <data name="CartellinoPdf_Voce_NotaSottratti" xml:space="preserve">
+    <value>deducted from theoretical hours</value>
+  </data>
+  <data name="CartellinoPdf_Voce_OreInPiu" xml:space="preserve">
+    <value>Extra hours</value>
+  </data>
+  <data name="CartellinoPdf_Voce_NotaOltreTeorico" xml:space="preserve">
+    <value>above theoretical hours, after rounding</value>
+  </data>
+  <data name="CartellinoPdf_Voce_InAttesaQuadratura" xml:space="preserve">
+    <value>awaiting reconciliation</value>
+  </data>
+  <data name="CartellinoPdf_Voce_NotaPeriodoInCorso" xml:space="preserve">
+    <value>counting period in progress</value>
+  </data>
+  <data name="CartellinoPdf_Voce_Compensate" xml:space="preserve">
+    <value>offset</value>
+  </data>
+  <data name="CartellinoPdf_Voce_NotaCompensate" xml:space="preserve">
+    <value>make up missing hours in the same period</value>
+  </data>
+  <data name="CartellinoPdf_Voce_Supplementare" xml:space="preserve">
+    <value>Additional hours</value>
+  </data>
+  <data name="CartellinoPdf_Voce_NotaSupplementare" xml:space="preserve">
+    <value>within the contract limit</value>
+  </data>
+  <data name="CartellinoPdf_Voce_SupplementareOltre" xml:space="preserve">
+    <value>Additional hours over the limit</value>
+  </data>
+  <data name="CartellinoPdf_Voce_Straordinario" xml:space="preserve">
+    <value>Overtime</value>
+  </data>
+  <data name="CartellinoPdf_Voce_NotaStraordinario" xml:space="preserve">
+    <value>above the full-time threshold</value>
+  </data>
+  <data name="CartellinoPdf_Voce_StraoNotturno" xml:space="preserve">
+    <value>Night overtime</value>
+  </data>
+  <data name="CartellinoPdf_Voce_StraoFestivo" xml:space="preserve">
+    <value>Holiday overtime</value>
+  </data>
+  <data name="CartellinoPdf_Voce_StraoFestivoNotturno" xml:space="preserve">
+    <value>Holiday night overtime</value>
+  </data>
+  <data name="CartellinoPdf_Voce_EccedentiNonStrao" xml:space="preserve">
+    <value>Excess hours not counted as overtime</value>
+  </data>
+  <data name="CartellinoPdf_Voce_NotaEccedenti" xml:space="preserve">
+    <value>above theoretical hours but within the threshold</value>
+  </data>
+  <data name="CartellinoPdf_Voce_NonAutorizzate" xml:space="preserve">
+    <value>Unauthorised extra hours</value>
+  </data>
+  <data name="CartellinoPdf_Voce_NotaNonAutorizzate" xml:space="preserve">
+    <value>beyond the approved authorisation: not recognised</value>
+  </data>
+  <data name="CartellinoPdf_Voce_InAttesaAutorizzazione" xml:space="preserve">
+    <value>awaiting authorisation</value>
+  </data>
+  <data name="CartellinoPdf_Voce_NotaInAttesaAutorizzazione" xml:space="preserve">
+    <value>requests still to be approved</value>
+  </data>
+  <data name="CartellinoPdf_Voce_NonRiconosciute" xml:space="preserve">
+    <value>Not recognised</value>
+  </data>
+  <data name="CartellinoPdf_Voce_NotaNonRiconosciute" xml:space="preserve">
+    <value>excluded by HR</value>
+  </data>
+  <data name="CartellinoPdf_Voce_Saldo" xml:space="preserve">
+    <value>Period balance</value>
+  </data>
+  <data name="CartellinoPdf_Voce_NotaSaldo" xml:space="preserve">
+    <value>worked minus workable, up to yesterday</value>
+  </data>
+  <data name="ExportPdfAdminsOnly" xml:space="preserve">
+    <value>Only administrators can print employee timesheets.</value>
+  </data>
+  <data name="ExportPdfNoEmployees" xml:space="preserve">
+    <value>No selected employee among those you can print.</value>
+  </data>
 </root>

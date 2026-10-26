@@ -10,6 +10,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
     {
         public const string TimeSheet_Engine_Calculate = "TimeSheet_Engine.Calculate";
         public const string TimeSheet_Engine_Export = "TimeSheet_Engine.Export";
+        public const string TimeSheet_Engine_ExportPdf_4User = "TimeSheet_Engine.ExportPdf_4User";
+        public const string TimeSheet_Engine_ExportPdf_4Admin = "TimeSheet_Engine.ExportPdf_4Admin";
         public const string blabla = "blabla";
     }
 }
