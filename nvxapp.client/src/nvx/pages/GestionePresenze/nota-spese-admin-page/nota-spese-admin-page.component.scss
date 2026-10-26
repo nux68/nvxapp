@@ -164,3 +164,90 @@
     }
   }
 }
+
+// schede Dati / Grafico del raggruppamento per tipo di spesa
+.ns-vista {
+  max-width: 320px;
+  margin: 12px 4px 0;
+}
+
+// grafico: torta monocromatica (fette bordate con il colore primario sul fondo) e legenda numerata
+.ns-grafico {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 24px;
+  margin: 12px 4px;
+}
+
+.ns-torta {
+  width: 280px;
+  max-width: 100%;
+  flex-shrink: 0;
+
+  .ns-fetta {
+    path, circle {
+      fill: var(--ion-background-color, #fff);
+      stroke: var(--ion-color-primary);
+      stroke-width: 1.5;
+      stroke-linejoin: round;
+      transition: fill 0.15s;
+    }
+
+    text {
+      fill: var(--ion-color-primary);
+      font-size: 12px;
+      font-weight: 600;
+      text-anchor: middle;
+      dominant-baseline: central;
+      pointer-events: none;
+    }
+  }
+
+  // fetta evidenziata (mouse sulla fetta o sulla sua riga della legenda)
+  .ns-fetta-evidenza {
+    path, circle {
+      fill: rgba(var(--ion-color-primary-rgb), 0.15);
+      stroke-width: 2.5;
+    }
+  }
+}
+
+.ns-legenda {
+  flex: 1 1 260px;
+
+  .ns-legenda-riga {
+    display: grid;
+    grid-template-columns: 24px 1fr auto 100px;
+    gap: 12px;
+    align-items: center;
+    padding: 6px 4px;
+    border-bottom: 1px solid var(--ion-color-step-100, rgba(127, 127, 127, 0.15));
+  }
+
+  .ns-fetta-evidenza {
+    background: var(--ion-color-step-50, rgba(127, 127, 127, 0.06));
+  }
+
+  .ns-legenda-numero {
+    color: var(--ion-color-primary);
+    font-weight: 600;
+    text-align: center;
+  }
+
+  .ns-legenda-nome {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .ns-legenda-quota {
+    color: var(--ion-color-medium);
+    font-size: 0.9em;
+  }
+
+  .ns-importo {
+    text-align: right;
+    white-space: nowrap;
+  }
+}

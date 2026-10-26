@@ -382,6 +382,8 @@
         "filtroTutte": "All",
         "perDipendente": "By employee",
         "perTipoSpesa": "By expense type",
+        "dati": "Data",
+        "grafico": "Chart",
         "nessunaSpesa": "No expenses in the period for the current selection.",
         "spesa": "expense",
         "spese": "expenses",

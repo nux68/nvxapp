@@ -56,17 +56,62 @@
       } @else if (spese.length === 0) {
         <ion-note>{{ 'attendance.pages.notaSpeseAdmin.nessunaSpesa' | transloco }}</ion-note>
       } @else {
+        <!-- per tipo di spesa: schede Dati (gruppi espandibili) e Grafico (torta dei totali per tipo) -->
+        @if (raggruppa === 'tipo') {
+          <ion-segment class="ns-vista" [(ngModel)]="vistaTipo">
+            <ion-segment-button value="dati"><ion-label>{{ 'attendance.pages.notaSpeseAdmin.dati' | transloco }}</ion-label></ion-segment-button>
+            <ion-segment-button value="grafico"><ion-label>{{ 'attendance.pages.notaSpeseAdmin.grafico' | transloco }}</ion-label></ion-segment-button>
+          </ion-segment>
+        }
+
         <div class="ns-totale-generale">
-          <ion-button fill="clear" size="small" (click)="espandiTutte()">
-            <ion-icon slot="start" [name]="tutteEspanse ? 'contract-outline' : 'expand-outline'"></ion-icon>
-            {{ (tutteEspanse ? 'attendance.pages.notaSpeseAdmin.comprimiTutte' : 'attendance.pages.notaSpeseAdmin.espandiTutte') | transloco }}
-          </ion-button>
+          @if (mostraGrafico) {
+            <span></span>
+          } @else {
+            <ion-button fill="clear" size="small" (click)="espandiTutte()">
+              <ion-icon slot="start" [name]="tutteEspanse ? 'contract-outline' : 'expand-outline'"></ion-icon>
+              {{ (tutteEspanse ? 'attendance.pages.notaSpeseAdmin.comprimiTutte' : 'attendance.pages.notaSpeseAdmin.espandiTutte') | transloco }}
+            </ion-button>
+          }
           <span>
             {{ spese.length }} {{ (spese.length === 1 ? 'attendance.pages.notaSpeseAdmin.spesa' : 'attendance.pages.notaSpeseAdmin.spese') | transloco }} · {{ 'attendance.pages.notaSpeseAdmin.totaleMinuscolo' | transloco }} <strong>{{ euro(totale) }}</strong>
           </span>
         </div>
 
-        @for (g of gruppi; track g.chiave) {
+        @if (mostraGrafico) {
+          <!-- torta monocromatica: fette disegnate con il colore primario sul fondo, numerate come nella legenda -->
+          <div class="ns-grafico">
+            <svg class="ns-torta" viewBox="-110 -110 220 220" role="img" [attr.aria-label]="'attendance.pages.notaSpeseAdmin.grafico' | transloco">
+              @for (f of fette; track f.chiave; let i = $index) {
+                <g class="ns-fetta" [class.ns-fetta-evidenza]="fettaEvidenza === f.chiave"
+                   (mouseenter)="fettaEvidenza = f.chiave" (mouseleave)="fettaEvidenza = null">
+                  <title>{{ f.titolo }} · {{ euro(f.totale) }} ({{ percentuale(f.quota) }})</title>
+                  @if (f.path) {
+                    <path [attr.d]="f.path"></path>
+                  } @else {
+                    <circle r="100"></circle>
+                  }
+                  @if (f.quota >= 0.04) {
+                    <text [attr.x]="f.etichettaX" [attr.y]="f.etichettaY">{{ i + 1 }}</text>
+                  }
+                </g>
+              }
+            </svg>
+            <div class="ns-legenda">
+              @for (f of fette; track f.chiave; let i = $index) {
+                <div class="ns-legenda-riga" [class.ns-fetta-evidenza]="fettaEvidenza === f.chiave"
+                     (mouseenter)="fettaEvidenza = f.chiave" (mouseleave)="fettaEvidenza = null">
+                  <span class="ns-legenda-numero">{{ i + 1 }}</span>
+                  <span class="ns-legenda-nome">{{ f.titolo }}</span>
+                  <span class="ns-legenda-quota">{{ percentuale(f.quota) }}</span>
+                  <span class="ns-importo">{{ euro(f.totale) }}</span>
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        @for (g of mostraGrafico ? [] : gruppi; track g.chiave) {
           <div class="ns-gruppo">
             <!-- il gruppo e' una sola riga (nota spese: dipendente, data, stato; o tipo di spesa): con un clic mostra le sue spese -->
             <div class="ns-gruppo-titolo" [class.ns-gruppo-espanso]="gruppoEspanso(g)" (click)="espandiGruppo(g)">

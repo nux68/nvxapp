@@ -22,6 +22,17 @@ interface GruppoSpese {
   nota?: { idDip_GG_Richiesta: number | null, idAspNetUsers: string, dal: string, al: string, descrizione: string, stato: StatoRichiesta };
 }
 
+/** fetta della torta per tipo di spesa: quota sul totale, tracciato SVG (null = unica fetta, cerchio intero) e posizione del numero */
+interface FettaTorta {
+  chiave: string;
+  titolo: string;
+  totale: number;
+  quota: number;
+  path: string | null;
+  etichettaX: number;
+  etichettaY: number;
+}
+
 /*
  Esame delle note spese (CompanyPowerAdmin): spese del mese per reparto e dipendenti scelti,
  filtrabili per tipo di spesa e stato, raggruppate per nota spese (dipendente) o per tipo di spesa con i totali.
@@ -31,6 +42,7 @@ interface GruppoSpese {
  nota spese (NotaSpesaDettaglioDialogComponent), da cui si puo' approvare o rifiutare la nota: sulla riga della nota (raggruppamento
  per dipendente) e su ogni spesa del raggruppamento per tipo (non sulla riga del tipo, che contiene spese di piu' note)
  (ciclo standard delle richieste, come dalla pagina "Richieste").
+ Nel raggruppamento per tipo di spesa le schede Dati / Grafico alternano i gruppi e una torta monocromatica dei totali per tipo.
 */
 @Component({
   selector: 'app-nota-spese-admin-page',
@@ -52,10 +64,15 @@ export class NotaSpeseAdminPageComponent implements OnDestroy {
   // predefinito: in attesa e approvate (le note rifiutate o annullate restano, ma non entrano nei totali)
   public filtroStato: 'valide' | 'attesa' | 'approvate' | 'respinte' | 'tutte' = 'valide';
   public raggruppa: 'dipendente' | 'tipo' = 'dipendente';
+  /** scheda del raggruppamento per tipo di spesa: gruppi espandibili o grafico a torta */
+  public vistaTipo: 'dati' | 'grafico' = 'dati';
 
   public spese: Dip_GG_NotaSpesaModel[] | null = null;
   public gruppi: GruppoSpese[] = [];
   public totale = 0;
+  /** fette della torta per tipo di spesa (dai gruppi), dalla piu' grande; fetta evidenziata al passaggio del mouse */
+  public fette: FettaTorta[] = [];
+  public fettaEvidenza: string | null = null;
 
   /** gruppi espansi (chiave del gruppo) e spese con la riga espansa (id della spesa) */
   public gruppiEspansi = new Set<string>();
@@ -152,6 +169,35 @@ export class NotaSpeseAdminPageComponent implements OnDestroy {
     // note spese per dipendente e data; tipi di spesa per descrizione
     this.gruppi = [...gruppi.values()].sort((a, b) => a.titolo.localeCompare(b.titolo) || (a.nota?.dal ?? '').localeCompare(b.nota?.dal ?? ''));
     this.totale = spese.reduce((t, s) => t + s.importo, 0);
+    this.fette = this.raggruppa === 'tipo' ? this.calcolaFette(this.gruppi) : [];
+  }
+
+  public get mostraGrafico(): boolean {
+    return this.raggruppa === 'tipo' && this.vistaTipo === 'grafico';
+  }
+
+  /** fette della torta (raggio 100, centro 0,0) dalle ore 12 in senso orario; solo i tipi con totale positivo */
+  private calcolaFette(gruppi: GruppoSpese[]): FettaTorta[] {
+    const positivi = gruppi.filter(g => g.totale > 0).sort((a, b) => b.totale - a.totale);
+    const somma = positivi.reduce((t, g) => t + g.totale, 0);
+    const punto = (angolo: number, raggio: number) => [Math.cos(angolo) * raggio, Math.sin(angolo) * raggio];
+    let inizio = -Math.PI / 2;
+    return positivi.map(g => {
+      const quota = g.totale / somma;
+      const fine = inizio + quota * 2 * Math.PI;
+      const [x1, y1] = punto(inizio, 100);
+      const [x2, y2] = punto(fine, 100);
+      // numero a meta' fetta; con una sola fetta (cerchio intero) al centro
+      const [ex, ey] = punto((inizio + fine) / 2, positivi.length === 1 ? 0 : 65);
+      const path = positivi.length === 1 ? null
+        : `M 0 0 L ${x1.toFixed(2)} ${y1.toFixed(2)} A 100 100 0 ${quota > 0.5 ? 1 : 0} 1 ${x2.toFixed(2)} ${y2.toFixed(2)} Z`;
+      inizio = fine;
+      return { chiave: g.chiave, titolo: g.titolo, totale: g.totale, quota, path, etichettaX: ex, etichettaY: ey };
+    });
+  }
+
+  public percentuale(quota: number): string {
+    return (quota * 100).toFixed(1).replace('.', ',') + '%';
   }
 
   /** "YYYY-MM-DD" della data di una spesa */
