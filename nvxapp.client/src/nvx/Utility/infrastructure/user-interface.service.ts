@@ -208,7 +208,7 @@ export class UserInterfaceService {
     return new ButtonItem(
       this.transloco.translate('common.buttons.detail'),
       'receipt-outline',
-      'primary',
+      'medium',
       false,
       () => { console.log('Btn_Dettaglio cliccato'); }
     );
