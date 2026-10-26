@@ -354,6 +354,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                                                                 }
                                                                                );
 
+                                    // chi ha aperto il cartellino dei dipendenti ricalcolati lo ricarica
+                                    await NotificaCartellini(scope, IdCompany, model.Data.TimeSheet_Calculate, userId);
 
                                 }
 
@@ -388,6 +390,52 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                 return retVal;
             }, isSubProcess);
         }
+
+        /*
+         Fine ricalcolo: notifica (JobNotifierAsync) ai dipendenti ricalcolati e agli amministratori dell'azienda
+         (CompanyPowerAdmin e CompanyAdmin attivi), cosi' i cartellini aperti si ricaricano: il dipendente vede
+         la richiesta approvata o rifiutata dall'HR e l'HR vede la richiesta fatta o cancellata dal dipendente.
+         Chi ha avviato il ricalcolo e' escluso: riceve gia' la fine del job (LongJobProgress).
+         Un errore di invio non tocca il ricalcolo, gia' salvato.
+        */
+        private static async Task NotificaCartellini(IServiceScope scope, int idCompany, TimeSheet_CalculateModel calcolo, string chiHaAvviato)
+        {
+            try
+            {
+                var jobNotifier = scope.ServiceProvider.GetRequiredService<IJobNotifier>();
+                var userCompanyRepository = scope.ServiceProvider.GetRequiredService<IUserCompanyRepository>();
+                var aspNetRolesRepository = scope.ServiceProvider.GetRequiredService<IAspNetRolesRepository>();
+                var aspNetUserRolesRepository = scope.ServiceProvider.GetRequiredService<IAspNetUserRolesRepository>();
+
+                var ruoliAdmin = aspNetRolesRepository.FindAll(r => r.Code == RoleCode.CompanyPowerAdmin || r.Code == RoleCode.CompanyAdmin)
+                                                      .Select(r => r.Id)
+                                                      .ToList();
+                var utentiAzienda = userCompanyRepository.FindAll(u => u.IdCompany == idCompany && !u.Disabled)
+                                                         .Select(u => u.IdAspNetUsers)
+                                                         .ToList();
+                var amministratori = aspNetUserRolesRepository.FindAll(r => ruoliAdmin.Contains(r.RoleId) && utentiAzienda.Contains(r.UserId))
+                                                              .Select(r => r.UserId)
+                                                              .ToList();
+
+                var destinatari = calcolo.SelectedUserId.Concat(amministratori)
+                                         .Where(x => !string.IsNullOrEmpty(x) && x != chiHaAvviato)
+                                         .Distinct();
+
+                foreach (var destinatario in destinatari)
+                {
+                    await jobNotifier.JobNotifierAsync(destinatario, new JobNotifierData
+                    {
+                        JobType = GestionePresenze_JobType.TimeSheet_Engine_Calculate,
+                        Payload = calcolo,
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Warning(ex, "Ricalcolo cartellino: notifica di aggiornamento non inviata");
+            }
+        }
+
         public virtual async Task<GenericResult<OrariSchema_4User_OutModel>> Get_OrariSchema_4User(GenericRequest<OrariSchema_4User_InModel> model, bool isSubProcess)
         {
             return await ExecuteAction(model, async () =>

@@ -17,6 +17,8 @@ import { Dip_GG_ResultModel } from '../../../ClientServer-Service/GestionePresen
 import { FabMenuService, FabMenuItem } from '../../../Utility/infrastructure/fab-menu.service';
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
 import { Subscription } from 'rxjs';
+import { JobNotifierService } from '../../../Utility/infrastructure/job-notifier.service';
+import { GestionePresenze_JobType } from '../../../Utility/GestionePresenze/GestionePresenze_JobType';
 import { NotaSpesaDettaglioDialogService } from '../../../shared/components/GestionePresenze/nota-spesa-dettaglio-dialog/nota-spesa-dettaglio-dialog.service';
 import { TranslocoService } from '@jsverse/transloco';
 import { UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
@@ -51,6 +53,8 @@ export class TimeSheetAdminPageComponent implements OnInit, OnDestroy {
 
 
   public currYear: number
+  // aggiornamento del mese quando un altro utente ricalcola il cartellino (notifica JobNotifierAsync)
+  private jobSub: Subscription | null = null;
   public currMonth: number
   public currUserId: string | undefined;
 
@@ -71,6 +75,7 @@ export class TimeSheetAdminPageComponent implements OnInit, OnDestroy {
               private platform: Platform,
               private notaSpesaDettaglioDialogService: NotaSpesaDettaglioDialogService,
               private userInterfaceService: UserInterfaceService,
+              private jobNotifierService: JobNotifierService,
               private transloco: TranslocoService
   ) {
     this.title = this.transloco.translate('attendance.pages.timeSheetAdmin.title');
@@ -87,6 +92,19 @@ export class TimeSheetAdminPageComponent implements OnInit, OnDestroy {
     // Al primo ingresso il dipendente non c'e' ancora: il mese lo carica la sua selezione.
     if (this.currUserId)
       this.loadMonth();
+
+    // ricalcolo fatto da altri (es. il dipendente fa o cancella una richiesta): si ricarica il mese
+    // se e' quello del dipendente visualizzato. Una sola sottoscrizione: Ionic tiene la pagina in memoria
+    if (!this.jobSub) {
+      this.jobSub = this.jobNotifierService.jobFinished$.subscribe(jobUpdate => {
+        if (jobUpdate.jobType === GestionePresenze_JobType.TimeSheet_Engine_Calculate &&
+            this.currUserId &&
+            jobUpdate.payload?.selectedUserId?.includes(this.currUserId) &&
+            jobUpdate.payload?.year == this.currYear &&
+            jobUpdate.payload?.month == (this.currMonth + 1))
+          this.loadMonth();
+      });
+    }
 
     this.fabMenuService.fabMenuItem = [
 

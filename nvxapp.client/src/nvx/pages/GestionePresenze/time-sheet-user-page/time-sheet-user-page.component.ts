@@ -62,6 +62,8 @@ export class TimeSheetUserPageComponent implements OnInit, OnDestroy {
   
   public currYear: number
   public currMonth: number
+  // aggiornamento del mese quando un altro utente ricalcola il cartellino (notifica JobNotifierAsync)
+  private jobSub: Subscription | null = null;
   public refreshCartellino = 0;  // fa rileggere il riepilogo del mese
 
   
@@ -95,20 +97,16 @@ export class TimeSheetUserPageComponent implements OnInit, OnDestroy {
   ionViewWillEnter() {
 
 
-    //this.jobNotifierService.jobFinished$.subscribe(jobUpdate => {
-    //  console.log('Job finished:', jobUpdate);
-
-    //  if (jobUpdate.jobType === GestionePresenze_JobType.TimeSheet_Engine_Calculate) {
-
-    //    if (jobUpdate.payload.year == this.currYear &&
-    //      jobUpdate.payload.month == (this.currentMonth.month + 1) &&
-    //      jobUpdate.payload.selectedUserId.includes(this.currUserId))
-
-    //      this.loadMonth();
-    //  }
-
-
-    //});
+    // ricalcolo fatto da altri (es. l'HR approva o rifiuta una richiesta): il server lo notifica al dipendente
+    // e il mese si ricarica se e' quello visualizzato. Una sola sottoscrizione: Ionic tiene la pagina in memoria
+    if (!this.jobSub) {
+      this.jobSub = this.jobNotifierService.jobFinished$.subscribe(jobUpdate => {
+        if (jobUpdate.jobType === GestionePresenze_JobType.TimeSheet_Engine_Calculate &&
+            jobUpdate.payload?.year == this.currYear &&
+            jobUpdate.payload?.month == (this.currMonth + 1))
+          this.loadMonth();
+      });
+    }
 
 
     this.fabMenuService.fabMenuItem = [
