@@ -15,6 +15,7 @@ using nvxapp.server.service.Helpers;
 using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.ServerModels;
 using Serilog;
+using Serilog.Events;
 using System.Security.Claims;
 
 namespace nvxapp.server.Base
@@ -33,11 +34,8 @@ namespace nvxapp.server.Base
         // es.hangfire
         public TokenProperty? tokenProperty { get; set; } = null;
 
-#if DEBUG
-        public const int DelayAsyncMethod = 10;
-#else
-        public const int DelayAsyncMethod = 1;
-#endif
+        // Task.Delay(0) termina subito: con valori > 0 ogni chiamata (anche annidata) attendeva ~15 ms (risoluzione del timer di Windows)
+        public const int DelayAsyncMethod = 0;
 
 
 
@@ -69,15 +67,19 @@ namespace nvxapp.server.Base
 
                 await Initialize();
 
-                Log.Information("Call: {a1}, GUID: {a2}, param: {a3}", function.Method.Name, callGUID, JsonConvert.SerializeObject(p1));
+                // la serializzazione si fa solo se il livello di log e' attivo: con le chiamate annidate
+                // e i risultati grandi (es. cartellino) costerebbe parecchio anche senza scrivere nulla
+                if (Log.IsEnabled(LogEventLevel.Information))
+                    Log.Information("Call: {a1}, GUID: {a2}, param: {a3}", function.Method.Name, callGUID, JsonConvert.SerializeObject(p1));
 
 
                 // execute method
                 var data = await function();
 
 
-                Log.Verbose("END Call: {a1}, GUID: {a2}, result: {a3}", function.Method.Name, callGUID,
-                JsonConvert.SerializeObject(data, new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore }));
+                if (Log.IsEnabled(LogEventLevel.Verbose))
+                    Log.Verbose("END Call: {a1}, GUID: {a2}, result: {a3}", function.Method.Name, callGUID,
+                    JsonConvert.SerializeObject(data, new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore }));
 
 
                 if (isSubProcess == false)
@@ -87,6 +89,10 @@ namespace nvxapp.server.Base
                         getAllMessages((iGenericResult4Server)data);
                     }
                 }
+
+                // il token rinnovato serve solo al client: un sotto processo non lo genera (lettura utente + firma JWT)
+                if (isSubProcess)
+                    return new GenericResult<T>(data, null);
 
                 return await OkResponse(data);
 
@@ -132,9 +138,8 @@ namespace nvxapp.server.Base
             //// get the data user and the loggedInUser role
             //LoggedInUser = await UserManager.GetLoggeInUser(authUser);
 
-            //eliminare
-            // Nessun 'await' qui
-            await Task.Delay(1);
+            // niente Task.Delay: su Windows anche Delay(1) attende ~15 ms, a ogni chiamata (anche annidata)
+            await Task.CompletedTask;
 
         }
 
