@@ -758,7 +758,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
 
         public async Task<List<Dip_AnagraficaModel>> GetAnagraficheByUsersId(List<string> usersId)
         {
-            await Task.Delay(1);
+            await Task.CompletedTask;
 
             var dipana = _dip_AnagraficaRepository.FindAll(a => usersId.Contains(a.IdAspNetUsers)).ToList();
 

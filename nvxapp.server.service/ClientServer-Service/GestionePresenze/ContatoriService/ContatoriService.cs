@@ -78,59 +78,78 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ContatoriS
             {
                 var retVal = new Contatori_Calcolo_OutModel();
 
-                int idRapporto = model.Data.IdDip_RapportoLavoro;
-                int anno       = model.Data.Anno;
-                int mese       = model.Data.Mese; // 1-12
+                var mesi = CalcolaMesi(model.Data.IdDip_RapportoLavoro, model.Data.Anno, new[] { model.Data.Mese },
+                                       model.Data.RiportiOverride, model.Data.MaturazioneOverride);
+                retVal.Risultati.AddRange(mesi[model.Data.Mese]);
 
-                // ?? 1. Giustificativi marcati come contatore ??????????????????????
-                var tuttiJust = _par_GiustificativiRepository
-                    .FindAll(j => j.TipoContatore != TipoContatore.NoContatore)
-                    .ToList();
+                await Task.Delay(DelayAsyncMethod);
+                return retVal;
 
-                if (!tuttiJust.Any())
-                    return retVal;
+            }, isSubProcess);
+        }
 
-                // ?? 2. Piani di maturazione per questo rapporto ???????????????????
-                var idJust = tuttiJust.Select(j => j.Id).ToHashSet();
+        /// <summary>
+        /// Contatori dei mesi richiesti: i dati dell'anno si leggono una sola volta e i mesi si calcolano in memoria
+        /// (CalcolaContatori_Anno prima rifaceva tutte le letture per ognuno dei 12 mesi).
+        /// </summary>
+        private Dictionary<int, List<Contatori_Giustificativo_Result>> CalcolaMesi(
+            int idRapporto, int anno, IEnumerable<int> mesiRichiesti,
+            List<Contatori_Riporto_Model>? riportiOverride, List<Contatori_Maturazione_Model>? maturazioneOverride)
+        {
+            var retVal = mesiRichiesti.Distinct().ToDictionary(m => m, m => new List<Contatori_Giustificativo_Result>());
 
-                var pianiDb = _maturazioneRepository
-                    .FindAll(m => m.IdDip_RapportoLavoro == idRapporto && idJust.Contains(m.IdPar_Giustificativi))
-                    .ToList();
+            // ?? 1. Giustificativi marcati come contatore ??????????????????????
+            var tuttiJust = _par_GiustificativiRepository
+                .FindAll(j => j.TipoContatore != TipoContatore.NoContatore)
+                .ToList();
 
-                // ?? 3. Riporti (mese 0) fino all'anno richiesto ??????????????????
-                // il riporto non si eredita: vale solo quello inserito (a mano o letto dall'anno precedente)
-                var riportiDb = _riportoRepository
-                    .FindAll(r => r.IdDip_RapportoLavoro == idRapporto &&
-                                  r.Anno                 == anno       &&
-                                  idJust.Contains(r.IdPar_Giustificativi))
-                    .ToList();
+            if (!tuttiJust.Any())
+                return retVal;
 
-                // ?? Override runtime: sostituisce DB con i valori non ancora salvati ????
-                var riportiOverride    = model.Data.RiportiOverride;
-                var maturazioneOverride = model.Data.MaturazioneOverride;
+            // ?? 2. Piani di maturazione per questo rapporto ???????????????????
+            var idJust = tuttiJust.Select(j => j.Id).ToHashSet();
 
-                // ?? 4. Giustificativi del rapporto fino all'anno richiesto ????????
-                var giustAnno = _giustificativiRepository
-                    .FindAll(g => g.IdDip_RapportoLavoro == idRapporto &&
-                                  g.Data.Year            == anno       &&
-                                  idJust.Contains(g.IdPar_Giustificativi))
-                    .ToList();
+            var pianiDb = _maturazioneRepository
+                .FindAll(m => m.IdDip_RapportoLavoro == idRapporto && idJust.Contains(m.IdPar_Giustificativi))
+                .ToList();
 
-                // le date di assunzione e licenziamento delimitano i mesi in cui si matura
-                var rapporto = _dip_RapportoLavoroRepository.FindAll(r => r.Id == idRapporto).FirstOrDefault();
+            // ?? 3. Riporti (mese 0) fino all'anno richiesto ??????????????????
+            // il riporto non si eredita: vale solo quello inserito (a mano o letto dall'anno precedente)
+            var riportiDb = _riportoRepository
+                .FindAll(r => r.IdDip_RapportoLavoro == idRapporto &&
+                              r.Anno                 == anno       &&
+                              idJust.Contains(r.IdPar_Giustificativi))
+                .ToList();
+
+            // ?? 4. Giustificativi del rapporto fino all'anno richiesto ????????
+            // intervallo sulle date (non Data.Year) cosi' la query puo' usare l'indice
+            var inizioAnno = new DateTime(anno, 1, 1);
+            var inizioAnnoSucc = inizioAnno.AddYears(1);
+            var giustAnno = _giustificativiRepository
+                .FindAll(g => g.IdDip_RapportoLavoro == idRapporto &&
+                              g.Data >= inizioAnno &&
+                              g.Data <  inizioAnnoSucc &&
+                              idJust.Contains(g.IdPar_Giustificativi))
+                .ToList();
+
+            // le date di assunzione e licenziamento delimitano i mesi in cui si matura
+            var rapporto = _dip_RapportoLavoroRepository.FindAll(r => r.Id == idRapporto).FirstOrDefault();
+
+            // banca ore: si matura solo con le ore accreditate nei cartellini approvati dell'anno
+            var bancaOreMesi = _dip_PeriodoRepository
+                .FindAll(p => p.IdDip_RapportoLavoro == idRapporto && p.Anno == anno && p.Stato == PeriodoStato.Approvato)
+                .Select(p => new { p.Mese, p.Min_BancaOre })
+                .ToList();
+            TimeSpan BancaOre(Func<int, bool> filtroMese)
+                => TimeSpan.FromMinutes(bancaOreMesi.Where(p => filtroMese(p.Mese)).Sum(p => p.Min_BancaOre));
+
+            // ?? 5. Calcolo per ciascun giustificativo ?????????????????????????
+            foreach (var mese in retVal.Keys)
+            {
                 int mesiPrecedenti = ContaMesiMaturati(rapporto, anno, 1, mese - 1);
                 int mesiCorrente   = ContaMesiMaturati(rapporto, anno, mese, mese);
                 int mesiSuccessivi = ContaMesiMaturati(rapporto, anno, mese + 1, 12);
 
-                // banca ore: si matura solo con le ore accreditate nei cartellini approvati dell'anno
-                var bancaOreMesi = _dip_PeriodoRepository
-                    .FindAll(p => p.IdDip_RapportoLavoro == idRapporto && p.Anno == anno && p.Stato == PeriodoStato.Approvato)
-                    .Select(p => new { p.Mese, p.Min_BancaOre })
-                    .ToList();
-                TimeSpan BancaOre(Func<int, bool> filtroMese)
-                    => TimeSpan.FromMinutes(bancaOreMesi.Where(p => filtroMese(p.Mese)).Sum(p => p.Min_BancaOre));
-
-                // ?? 5. Calcolo per ciascun giustificativo ?????????????????????????
                 foreach (var just in tuttiJust)
                 {
                     // Maturazione: override ha precedenza sul DB
@@ -172,7 +191,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ContatoriS
                         maturatoSuccessivo = BancaOre(m => m > mese);
                     }
 
-                    retVal.Risultati.Add(new Contatori_Giustificativo_Result
+                    retVal[mese].Add(new Contatori_Giustificativo_Result
                     {
                         IdPar_Giustificativi = just.Id,
                         Descrizione          = just.Descrizione ?? string.Empty,
@@ -206,11 +225,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ContatoriS
                         }
                     });
                 }
+            }
 
-                await Task.Delay(DelayAsyncMethod);
-                return retVal;
-
-            }, isSubProcess);
+            return retVal;
         }
 
         // ?? Helpers ??????????????????????????????????????????????????????????
@@ -416,26 +433,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ContatoriS
             {
                 var retVal = new Contatori_Anno_OutModel();
 
-                for (int mese = 1; mese <= 12; mese++)
-                {
-                    var reqMese = new GenericRequest<Contatori_Calcolo_InModel>();
-                    reqMese.Data.IdDip_RapportoLavoro = model.Data.IdDip_RapportoLavoro;
-                    reqMese.Data.Anno                 = model.Data.Anno;
-                    reqMese.Data.Mese                 = mese;
-                    // propaga gli override runtime (possono essere null: nessun problema)
-                    reqMese.Data.RiportiOverride      = model.Data.RiportiOverride;
-                    reqMese.Data.MaturazioneOverride   = model.Data.MaturazioneOverride;
-
-                    var resMese = await CalcolaContatori(reqMese, true);
-
-                    retVal.Mesi.Add(new Contatori_Anno_MeseResult
-                    {
-                        Mese      = mese,
-                        Risultati = resMese.Success && resMese.Data != null
-                                        ? resMese.Data.Risultati
-                                        : new List<Contatori_Giustificativo_Result>()
-                    });
-                }
+                var mesi = CalcolaMesi(model.Data.IdDip_RapportoLavoro, model.Data.Anno, Enumerable.Range(1, 12),
+                                       model.Data.RiportiOverride, model.Data.MaturazioneOverride);
+                foreach (var (mese, risultati) in mesi)
+                    retVal.Mesi.Add(new Contatori_Anno_MeseResult { Mese = mese, Risultati = risultati });
 
                 await Task.Delay(DelayAsyncMethod);
                 return retVal;
