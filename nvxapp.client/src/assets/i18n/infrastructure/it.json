@@ -26,7 +26,10 @@
       "reclassify": "Cambia tipo",
       "backToList": "Torna all'elenco",
       "closeTicket": "Chiudi ticket",
-      "detail": "Dettaglio"
+      "detail": "Dettaglio",
+      "export": "Esporta",
+      "pdf": "PDF",
+      "excel": "Excel"
     },
     "dialog": {
       "confirmTitle": "Conferma Operazione",
