@@ -11,7 +11,7 @@
 | ✅ Risolti | 1 URL API relative · 2 cultura e fuso (versione minima) · 3 percorso log · 4 chiavi DataProtection · 5 reverse proxy · 6 Dockerfile · 7 segreti in variabili d'ambiente · 7b chiavi AI ed email senza file `.key` · 8 `.dockerignore` · 9 `docker-compose` con profili per ambiente · 13 Swagger e CORS |
 | ➖ Non necessari sul VPS | 10 migrazioni all'avvio · 11 SignalR con più repliche · 12 cartella export: servono solo con più istanze dell'app |
 
-Legenda: ✅ risolto · ⏳ da fare · ➖ non necessario con un'istanza sola (da riprendere se si scala) · 🔍 da valutare. Dettagli di ogni intervento nella sezione 7, segreti nella sezione 8, server di destinazione nella sezione 9, comandi di docker compose nella sezione 10.
+Legenda: ✅ risolto · ⏳ da fare · ➖ non necessario con un'istanza sola (da riprendere se si scala) · 🔍 da valutare. Dettagli di ogni intervento nella sezione 7, segreti nella sezione 8, server di destinazione nella sezione 9, come far partire l'app (PC e VPS) nella sezione 10.
 
 ## 1. Situazione attuale
 
@@ -181,7 +181,7 @@ Qualsiasi altra chiave di configurazione si può sovrascrivere allo stesso modo 
 - Da PowerShell aperto come amministratore: `powershell -ExecutionPolicy Bypass -File <script>`. Lo script fa `iisreset`; poi chiudere e riaprire Visual Studio. Va rilanciato solo per cambiare un valore o su un'altra macchina.
 - Controllo: `(Get-ChildItem Env:NVXAPP_*).Name` in una nuova finestra.
 
-**Docker**: le variabili di sistema di Windows non arrivano nei container. Si usa il file `.env` accanto al compose (escluso da git, copia di `.env.example`): il compose ne prende i valori e li passa all'app con i nomi `NVXAPP_*`. La connessione DB la compone il compose da `POSTGRES_PASSWORD` (host `postgres`), RabbitMQ usa `RABBITMQ_PASSWORD` (host `rabbitmq`); chiave JWT, email e AI hanno gli stessi nomi della tabella. Comandi nella sezione 10.
+**Docker**: le variabili di sistema di Windows non arrivano nei container. Si usa il file `.env` accanto al compose (escluso da git, copia di `.env.example`): il compose ne prende i valori e li passa all'app con i nomi `NVXAPP_*`. La connessione DB la compone il compose da `POSTGRES_PASSWORD` (host `postgres`), RabbitMQ usa `RABBITMQ_PASSWORD` (host `rabbitmq`); chiave JWT, email e AI hanno gli stessi nomi della tabella. Come far partire l'app nella sezione 10.
 
 **Linux senza Docker**: `EnvironmentFile=/etc/nvxapp/nvxapp.env` nel servizio systemd (file con `chmod 600`).
 
@@ -262,25 +262,87 @@ Rilascio: snapshot o dump del DB → carica la nuova immagine → `docker compos
 - Se attivare il backup automatico Contabo.
 - Postgres e RabbitMQ di produzione con password nuove, diverse da quelle di sviluppo (quelle vecchie sono nella storia di git, punto 7).
 
-## 10. Uso di docker compose
+## 10. Come far partire l'app con Docker
 
-File nella cartella della solution: `Dockerfile`, `.dockerignore`, `docker-compose.yml`, `docker-compose.local.yml`, `docker-compose.prod.yml`, `docker/Caddyfile`, `.env.example`. Tutti i comandi si lanciano da quella cartella.
+File nella cartella della solution (`C:\REPO\ANGULAR-2025\Merge\nvxapp`): `Dockerfile`, `.dockerignore`, `docker-compose.yml`, `docker-compose.local.yml`, `docker-compose.prod.yml`, `docker/Caddyfile`, `.env.example`. Tutti i comandi si lanciano da quella cartella (sul server da `/opt/nvxapp`).
 
-**Prima volta**: copiare `.env.example` in `.env` e compilarlo (password con `openssl rand -hex 32`). `COMPOSE_FILE` sceglie il profilo:
-- PC Windows: `COMPOSE_FILE=docker-compose.yml;docker-compose.local.yml`
-- server Linux: `COMPOSE_FILE=docker-compose.yml:docker-compose.prod.yml`
+### 10.1 Sul PC (Docker Desktop)
+
+1. **Avviare Docker Desktop** e aspettare che sia pronto.
+2. **Creare il file `.env`** (solo la prima volta), in PowerShell nella cartella della solution:
+   ```powershell
+   Copy-Item .env.example .env
+   notepad .env
+   ```
+   Compilare `POSTGRES_PASSWORD`, `RABBITMQ_PASSWORD` e `NVXAPP_JwtParameter__Key` con valori casuali, generabili con:
+   ```powershell
+   -join ((1..32) | ForEach-Object { '{0:x2}' -f (Get-Random -Maximum 256) })
+   ```
+   Facoltativi: `NVXAPP_Email__Password` e la chiave AI (senza, email e chat AI non funzionano). `COMPOSE_FILE` è già impostato sul profilo locale.
+3. **Avviare**:
+   ```powershell
+   docker compose up -d --build
+   ```
+   La prima volta servono circa 5 minuti (scarica le immagini e compila Angular e .NET); le volte successive molto meno.
+4. **Aprire** http://localhost:8080. Al primo avvio il database è nuovo, con gli utenti iniziali (es. `SuperUser`).
+5. **Dopo una modifica al codice**: di nuovo `docker compose up -d --build` (ricrea solo l'app; i dati restano).
+6. **Fermare**: `docker compose down`. I dati restano nei volumi e al prossimo `up` si ritrovano. `docker compose down -v` invece **cancella** anche il database.
+
+Database e code di Docker sono separati da quelli di sviluppo usati da Visual Studio: le due cose possono girare insieme.
+
+### 10.2 Sul VPS (primo rilascio)
+
+Prerequisiti: VPS preparato come nella sezione 9.3 (Docker installato, `ufw`, cartella `/opt/nvxapp`) e, per l'HTTPS, il dominio con il record A verso l'IP del VPS.
+
+1. **Sul PC: costruire e salvare l'immagine** (il tag identifica la versione, serve per il rollback):
+   ```powershell
+   docker build -t nvxapp:2026-10-27 .
+   docker save -o nvxapp-2026-10-27.tar nvxapp:2026-10-27
+   ```
+   Usare `-o`: in PowerShell 5.1 una pipe o un `>` rovinano i file binari.
+2. **Copiare sul VPS** immagine e file del compose:
+   ```powershell
+   scp nvxapp-2026-10-27.tar docker-compose.yml docker-compose.prod.yml .env.example utente@IP_VPS:/opt/nvxapp/
+   scp docker/Caddyfile utente@IP_VPS:/opt/nvxapp/docker/
+   ```
+3. **Sul VPS: caricare l'immagine**:
+   ```bash
+   cd /opt/nvxapp
+   docker load -i nvxapp-2026-10-27.tar
+   ```
+4. **Creare il `.env`** (solo la prima volta): `cp .env.example .env && chmod 600 .env && nano .env`, poi:
+   - `COMPOSE_FILE=docker-compose.yml:docker-compose.prod.yml` (riga del server, separatore `:`), commentando quella del PC;
+   - `NVXAPP_TAG=2026-10-27`;
+   - password e chiave JWT **nuove**, diverse da quelle di sviluppo (`openssl rand -hex 32`);
+   - chiave Brevo e chiave AI;
+   - `APP_DOMAIN=app.miodominio.it`, `APP_PUBLIC_URL=https://app.miodominio.it`, `ACME_EMAIL=` un indirizzo reale.
+5. **Avviare e controllare il log**:
+   ```bash
+   docker compose up -d
+   docker compose logs -f nvxapp
+   ```
+   Il primo avvio crea il database ed esegue le migrazioni; Caddy ottiene il certificato in pochi secondi.
+6. **Aprire** `https://app.miodominio.it` e **cambiare subito le password degli utenti iniziali**: quelle predefinite sono note.
+
+**Senza dominio, per una prima prova**: `APP_DOMAIN=:80` e `APP_PUBLIC_URL=http://IP_VPS` (`ACME_EMAIL` va comunque compilato). L'app risponde su `http://IP_VPS`, senza HTTPS: solo per prova, perché password e token viaggiano in chiaro.
+
+### 10.3 Rilasci successivi sul VPS
+
+1. Backup: snapshot Contabo e/o dump del DB (tabella sotto).
+2. Sul PC: `docker build` e `docker save` con un nuovo tag, poi `scp` del `.tar` (i file del compose solo se sono cambiati).
+3. Sul VPS: `docker load -i ...`, aggiornare `NVXAPP_TAG` nel `.env`, `docker compose up -d`: ricrea solo l'app, le migrazioni partono all'avvio.
+4. **Rollback**: rimettere il tag precedente in `NVXAPP_TAG` e `docker compose up -d`; se la nuova versione aveva cambiato lo schema del DB, ripristinare anche il dump.
+
+### 10.4 Comandi utili
 
 | Cosa | Comando |
 |---|---|
-| Avviare (PC: ricostruendo l'immagine dal codice corrente) | `docker compose up -d --build` |
-| Avviare o aggiornare (server, immagine già caricata) | `docker compose up -d` |
 | Stato dei servizi | `docker compose ps` |
 | Log dell'app | `docker compose logs -f nvxapp` |
-| Fermare (i dati restano nei volumi) | `docker compose down` |
-| Fermare e **cancellare** i dati (database compreso) | `docker compose down -v` |
-| Dump del database | `docker compose exec -T postgres pg_dump -U postgres -Fc nvxapp > nvxapp.dump` |
-| Costruire l'immagine per il server | `docker build -t nvxapp:<tag> .` |
-
-**Profilo locale**: app su `http://localhost:8080` (al primo avvio utenti iniziali, es. SuperUser), console RabbitMQ su `http://localhost:15672` (utente `rabbit`), Postgres su `localhost:5434` (utente `postgres`). Database e code sono separati da quelli di sviluppo in Visual Studio. Senza `NVXAPP_Email__Password` e la chiave AI nel `.env`, email e chat AI non funzionano; il resto sì.
-
-**Server**: vedi sezione 9 (preparazione, trasferimento dell'immagine, backup).
+| Riavviare solo l'app | `docker compose restart nvxapp` |
+| Fermare (i dati restano) | `docker compose down` |
+| Fermare e **cancellare** i dati | `docker compose down -v` |
+| Dump del database | `docker compose exec -T postgres pg_dump -U postgres -Fc -f /tmp/nvxapp.dump nvxapp` e poi `docker compose cp postgres:/tmp/nvxapp.dump .` |
+| Ripristino di un dump | `docker compose cp nvxapp.dump postgres:/tmp/` e poi `docker compose exec -T postgres pg_restore -U postgres -d nvxapp --clean --if-exists /tmp/nvxapp.dump` (con l'app ferma: `docker compose stop nvxapp`) |
+| Console RabbitMQ (solo PC) | http://localhost:15672, utente `rabbit` |
+| Postgres da pgAdmin (solo PC) | `localhost:5434`, utente `postgres` |
