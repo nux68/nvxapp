@@ -1,6 +1,7 @@
 ﻿using Hangfire;
 using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -160,6 +161,13 @@ namespace nvxapp.server.Utility
             .AddRoles<ApplicationRole>()
             .AddEntityFrameworkStores<PublicDbContext>()
             .AddDefaultTokenProviders();
+
+            // chiavi DataProtection su DB (public."DataProtectionKeys"): senza, restano in memoria o nel profilo utente
+            // e a ogni riavvio/riciclo/pubblicazione/redeploy i link di conferma email e reset password gia' inviati non valgono piu'.
+            // ApplicationName fisso: di default dipende dalla cartella dell'app, che cambia tra IIS, Docker e sviluppo
+            builder.Services.AddDataProtection()
+                .SetApplicationName("nvxapp")
+                .PersistKeysToDbContext<PublicDbContext>();
 
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddScoped<SignInManager<ApplicationUser>>();

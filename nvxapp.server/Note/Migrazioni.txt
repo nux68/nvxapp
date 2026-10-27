@@ -72,8 +72,9 @@ dotnet ef migrations add <Nome> --context MokeDbContext -o Migrations/Moke --pro
 dotnet ef migrations add <Nome> --context AttendanceTrackingDbContext -o Migrations/AttendanceTracking --project nvxapp.server.data --startup-project nvxapp.server
 
 storico migrazioni create
-  Public: InitPublic (unica: contiene anche i dati iniziali, vedi Migrations/Public/PopolateDB.cs
+  Public: InitPublic (contiene anche i dati iniziali, vedi Migrations/Public/PopolateDB.cs
           e i tipi di richiesta dei ticket, Migrations/Public/PopolateTicketType.cs)
+          AddDataProtectionKeys (tabella public."DataProtectionKeys": chiavi DataProtection dei token di Identity)
   Moke:   InitMoke
   AttendanceTracking: AttendanceTracking_Init   (tabelle del modulo presenze; ramo AttendanceTracking)
 
