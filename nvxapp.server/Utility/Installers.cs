@@ -18,6 +18,7 @@ using nvxapp.server.service.RabbitMQ;
 using nvxapp.server.service.RabbitMQ.Listener;
 using nvxapp.server.service.ServerModels;
 using Serilog;
+using System.Globalization;
 using Serilog.Core;
 using Serilog.Events;
 using Serilog.Sinks.PostgreSQL;
@@ -325,6 +326,41 @@ namespace nvxapp.server.Utility
             Log.Logger = loggerConfiguration.CreateLogger();
 
             return builder.Services;
+        }
+        public static CultureInfo InstallCultureAndTimeZone(this WebApplicationBuilder builder)
+        {
+            // Cultura (formato di date e numeri) e fuso orario da configurazione (RunTime:Culture, RunTime:TimeZone)
+            // invece che dalla macchina: un container Linux parte con cultura invariante e UTC.
+            // Vuoti = impostazioni della macchina, come prima.
+            CultureInfo culture = CultureInfo.CurrentCulture;
+            string? cultureName = builder.Configuration["RunTime:Culture"];
+            if (!string.IsNullOrWhiteSpace(cultureName))
+            {
+                culture = CultureInfo.GetCultureInfo(cultureName);
+                // Default*: vale anche per i thread fuori dalle richieste HTTP (job in background, RabbitMQ, export)
+                CultureInfo.DefaultThreadCurrentCulture = culture;
+                CultureInfo.CurrentCulture = culture;
+            }
+
+            string? timeZoneId = builder.Configuration["RunTime:TimeZone"];
+            if (!string.IsNullOrWhiteSpace(timeZoneId))
+            {
+                // DateTime.Now usa il fuso del processo. Su Linux lo decide la variabile TZ (come TZ=Europe/Rome nel container);
+                // su Windows e' quello della macchina e non si puo' cambiare: si segnala solo la differenza
+                if (!OperatingSystem.IsWindows())
+                {
+                    Environment.SetEnvironmentVariable("TZ", timeZoneId);
+                    TimeZoneInfo.ClearCachedData();
+                }
+
+                if (!TimeZoneInfo.TryFindSystemTimeZoneById(timeZoneId, out TimeZoneInfo? configuredTimeZone))
+                    Log.Warning("RunTime:TimeZone '{TimeZone}' non trovato: si usa il fuso della macchina ({Local})", timeZoneId, TimeZoneInfo.Local.Id);
+                else if (!TimeZoneInfo.Local.HasSameRules(configuredTimeZone))
+                    Log.Warning("Il fuso della macchina ({Local}) e' diverso da RunTime:TimeZone ({TimeZone}): DateTime.Now usa quello della macchina", TimeZoneInfo.Local.Id, timeZoneId);
+            }
+
+            Log.Information("Cultura {Culture}, fuso orario {TimeZone}", culture.Name, TimeZoneInfo.Local.Id);
+            return culture;
         }
         public static IServiceCollection InstallAuthentication(this WebApplicationBuilder builder, Boolean useSignalR)
         {

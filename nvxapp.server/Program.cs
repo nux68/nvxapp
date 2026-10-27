@@ -46,6 +46,8 @@ Installers.InstallEntityContex(builder);
 Installers.InstallRepositories(builder);
 Installers.InstallMappers(builder);
 Installers.InstallLog(builder);
+// cultura e fuso orario da configurazione (RunTime:Culture, RunTime:TimeZone), non dalla macchina
+CultureInfo serverCulture = Installers.InstallCultureAndTimeZone(builder);
 Installers.InstallAuthentication(builder, useSignalR);
 
 //if(useSignalR)
@@ -143,8 +145,7 @@ if (useHttps == true)
 
 
 // lingua dei messaggi per l'utente (UICulture) dall'header Accept-Language mandato dal client
-// (o ?ui-culture= per SignalR); la formattazione di date e numeri (Culture) resta quella della macchina
-var serverCulture = CultureInfo.CurrentCulture;
+// (o ?ui-culture= per SignalR); la formattazione di date e numeri (Culture) e' quella di RunTime:Culture
 app.UseRequestLocalization(new RequestLocalizationOptions
 {
     DefaultRequestCulture = new RequestCulture(serverCulture, new CultureInfo("it")),
