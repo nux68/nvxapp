@@ -1,6 +1,16 @@
 # Analisi: distribuzione della solution su Docker
 
-> Analisi del 26/10/2026, branch `AttendanceTracking_Dev`. Nessuna modifica al codice: solo valutazione.
+> Analisi del 26/10/2026, branch `AttendanceTracking_Dev`. Interventi in corso dal 27/10/2026 su `Infrastructure_Dev`.
+
+**Stato al 27/10/2026: 8 punti su 14 risolti.**
+
+| Stato | Punti |
+|---|---|
+| ✅ Risolti | 1 URL API relative · 2 cultura e fuso (versione minima) · 3 percorso log · 4 chiavi DataProtection · 5 reverse proxy · 7 segreti in variabili d'ambiente · 7b chiavi AI ed email senza file `.key` · 13 Swagger e CORS |
+| ⏳ Da fare | 6 Dockerfile · 8 `.dockerignore` · 9 `docker-compose` con profili per ambiente |
+| 🔍 Da valutare | 10 migrazioni all'avvio · 11 SignalR con più repliche · 12 cartella export |
+
+Legenda: ✅ risolto · ⏳ da fare · 🔍 da valutare. Dettagli di ogni intervento nella sezione 7, segreti nella sezione 8.
 
 ## 1. Situazione attuale
 
@@ -38,31 +48,31 @@
 
 ### 3.1 Bloccanti o quasi
 
-| # | Problema | Dove | Intervento |
-|---|---|---|---|
-| 1 | L'URL delle API è scritto nella build del client: `apiUri: 'http://192.168.0.227:8146/api/'` | `nvxapp.client/src/environments/environment.prod.ts` | Usare URL relative (`/api/`, e `/` per SignalR): frontend e API hanno la stessa origine. Una sola build vale per tutti gli ambienti ed è il prerequisito per avere più profili. |
-| 2 | Fuso orario e cultura: nei container Linux il default è UTC con cultura invariante. Nel `.service` ci sono circa 28 usi di `DateTime.Now` / timezone. `Program.cs` lascia date e numeri alla cultura della macchina. | `Program.cs`, servizi | `TZ=Europe/Rome` più un'immagine con ICU e `tzdata` (Debian, non Alpine o chiseled), oppure cultura e fuso impostati da configurazione. |
-| 3 | Il log su file scrive su `Logs\\nvxapp.log`: su Linux crea un file che si chiama letteralmente `Logs\nvxapp.log`. | `nvxapp.server/Utility/Installers.cs:247` | Usare `Path.Combine("Logs", "nvxapp.log")`, oppure solo log su console o DB. |
-| 4 | Le chiavi DataProtection (che firmano i token di conferma email e reset password di Identity) restano nel filesystem del container: si perdono a ogni redeploy e i link già inviati smettono di funzionare. | Configurazione servizi | Salvarle su un volume o su DB (`PersistKeysToFileSystem` / `PersistKeysToDbContext`). |
-| 5 | HTTPS dietro reverse proxy: manca `UseForwardedHeaders()`, quindi l'app crede di girare in http e i link generati e i redirect escono sbagliati. | `Program.cs` | Terminare TLS su nginx, Traefik o Caddy, lasciare `RunTime:UseHttps=false` nel container, aggiungere `UseForwardedHeaders()` e impostare `App:PublicUrl`. |
+| # | Stato | Problema | Dove | Intervento |
+|---|---|---|---|---|
+| 1 | ✅ | L'URL delle API è scritto nella build del client: `apiUri: 'http://192.168.0.227:8146/api/'` | `nvxapp.client/src/environments/environment.prod.ts` | Usare URL relative (`/api/`, e `/` per SignalR): frontend e API hanno la stessa origine. Una sola build vale per tutti gli ambienti ed è il prerequisito per avere più profili. |
+| 2 | ✅ (minima) | Fuso orario e cultura: nei container Linux il default è UTC con cultura invariante. Nel `.service` ci sono circa 28 usi di `DateTime.Now` / timezone. `Program.cs` lascia date e numeri alla cultura della macchina. | `Program.cs`, servizi | `TZ=Europe/Rome` più un'immagine con ICU e `tzdata` (Debian, non Alpine o chiseled), oppure cultura e fuso impostati da configurazione. |
+| 3 | ✅ | Il log su file scrive su `Logs\\nvxapp.log`: su Linux crea un file che si chiama letteralmente `Logs\nvxapp.log`. | `nvxapp.server/Utility/Installers.cs:247` | Usare `Path.Combine("Logs", "nvxapp.log")`, oppure solo log su console o DB. |
+| 4 | ✅ | Le chiavi DataProtection (che firmano i token di conferma email e reset password di Identity) restano nel filesystem del container: si perdono a ogni redeploy e i link già inviati smettono di funzionare. | Configurazione servizi | Salvarle su un volume o su DB (`PersistKeysToFileSystem` / `PersistKeysToDbContext`). |
+| 5 | ✅ | HTTPS dietro reverse proxy: manca `UseForwardedHeaders()`, quindi l'app crede di girare in http e i link generati e i redirect escono sbagliati. | `Program.cs` | Terminare TLS su nginx, Traefik o Caddy, lasciare `RunTime:UseHttps=false` nel container, aggiungere `UseForwardedHeaders()` e impostare `App:PublicUrl`. |
 
 ### 3.2 Necessari
 
-| # | Intervento |
-|---|---|
-| 6 | **Dockerfile multi-stage**: uno stage Node per `ng build`, uno stage SDK per `dotnet publish -c Release -p:AngularBuilt=true` (così salta il target MSBuild) e uno stage `aspnet` di runtime. Il target `CleanWwwrootDebug` usa PowerShell ma scatta solo in Debug: nessun problema. |
-| 7 | **Segreti fuori dagli appsettings** (password Postgres, chiave JWT, password RabbitMQ): passarli come variabili d'ambiente (`ConnectionStrings__nvxappDbContext`, `JwtParameter__Key`, …) o come Docker secrets. I file `groq.key`, `openrouter.key` e `brevo.key`, letti da `ContentRootPath`, vanno montati come secret o volume, oppure letti da variabile d'ambiente come fa già `Email__Password`. |
-| 8 | **`.dockerignore`**: escludere `node_modules`, `bin`, `obj`, `.angular`, i file `.key` e `Logs`. |
-| 9 | **`docker-compose.yml`** con app, postgres (con volume), rabbitmq e, se serve, il reverse proxy. |
+| # | Stato | Intervento |
+|---|---|---|
+| 6 | ⏳ Da fare | **Dockerfile multi-stage**: uno stage Node per `ng build`, uno stage SDK per `dotnet publish -c Release -p:AngularBuilt=true` (così salta il target MSBuild) e uno stage `aspnet` di runtime. Il target `CleanWwwrootDebug` usa PowerShell ma scatta solo in Debug: nessun problema. |
+| 7 | ✅ | **Segreti fuori dagli appsettings** (password Postgres, chiave JWT, password RabbitMQ): passarli come variabili d'ambiente (`ConnectionStrings__nvxappDbContext`, `JwtParameter__Key`, …) o come Docker secrets. I file `groq.key`, `openrouter.key` e `brevo.key`, letti da `ContentRootPath`, vanno montati come secret o volume, oppure letti da variabile d'ambiente come fa già `Email__Password`. |
+| 8 | ⏳ Da fare | **`.dockerignore`**: escludere `node_modules`, `bin`, `obj`, `.angular`, i file `.key` e `Logs`. |
+| 9 | ⏳ Da fare | **`docker-compose.yml`** con app, postgres (con volume), rabbitmq e, se serve, il reverse proxy. |
 
 ### 3.3 Da valutare
 
-| # | Tema | Nota |
-|---|---|---|
-| 10 | Migrazioni all'avvio | `DatabaseInitializer` migra a ogni avvio. Con una sola istanza va bene; con più repliche c'è il rischio di migrazioni concorrenti, quindi meglio un job separato o un lock. `DbParameter:MultiTenant` si fissa al primo avvio su DB vuoto: ogni profilo deve averlo coerente con il proprio database. |
-| 11 | SignalR con più repliche | Servono sticky session o un backplane (Redis). Con una sola istanza non serve nulla. |
-| 12 | Cartella export | È in `Path.GetTempPath()/nvxapp_exports`: va bene per file temporanei, ma con più repliche il download può arrivare a un'istanza diversa da quella che ha creato il file. |
-| 13 | Sicurezza | Swagger esposto in produzione su `/docs` e CORS che accetta qualsiasi origine (`SetIsOriginAllowed(origin => true)`). Con stessa origine dietro proxy il CORS si può restringere. |
+| # | Stato | Tema | Nota |
+|---|---|---|---|
+| 10 | 🔍 Da valutare | Migrazioni all'avvio | `DatabaseInitializer` migra a ogni avvio. Con una sola istanza va bene; con più repliche c'è il rischio di migrazioni concorrenti, quindi meglio un job separato o un lock. `DbParameter:MultiTenant` si fissa al primo avvio su DB vuoto: ogni profilo deve averlo coerente con il proprio database. |
+| 11 | 🔍 Da valutare | SignalR con più repliche | Servono sticky session o un backplane (Redis). Con una sola istanza non serve nulla. |
+| 12 | 🔍 Da valutare | Cartella export | È in `Path.GetTempPath()/nvxapp_exports`: va bene per file temporanei, ma con più repliche il download può arrivare a un'istanza diversa da quella che ha creato il file. |
+| 13 | ✅ | Sicurezza | Swagger esposto in produzione su `/docs` e CORS che accetta qualsiasi origine (`SetIsOriginAllowed(origin => true)`). Con stessa origine dietro proxy il CORS si può restringere. |
 
 **Stima indicativa**: i punti 1–9 richiedono circa 2–4 giorni, test compresi. I punti 10–13 dipendono da quanto si vuole scalare.
 
@@ -110,37 +120,37 @@ Molti punti sono utili anche con il deploy IIS attuale e rendono la migrazione f
 
 ### 5.1 Da fare subito
 
-| # | Intervento | Beneficio indipendente da Docker | Sforzo | Rischio |
-|---|---|---|---|---|
-| 1 | URL API relative in `environment.prod.ts` | Oggi IP e porta sono scritti nella build: se cambia server, porta o dominio, o si passa a https, va ricompilato Angular. Con URL relative una build vale ovunque. | 10 min | Basso. Va verificato che nessuno serva Angular separatamente dalle API in produzione. |
-| 3 | Percorso dei log con `Path.Combine` | Elimina un bug latente: il percorso oggi funziona solo su Windows. | 5 min | Nullo |
-| 4 | Chiavi DataProtection persistenti | Anche su IIS, se l'app pool non carica il profilo utente, le chiavi restano in memoria: a ogni riciclo i link di conferma email e reset password già inviati non funzionano più. | 30 min | Basso |
-| 7 | Segreti sovrascrivibili da variabili d'ambiente e tolti da `appsettings.json` (password DB, chiave JWT, password RabbitMQ) | Oggi la chiave JWT e la password RabbitMQ sono nel repository. È un punto del piano sicurezza. | 1–2 h | Medio: chi avvia l'app deve avere le variabili impostate (IIS, Visual Studio). |
-| 7b | File `.key` leggibili anche da variabile d'ambiente (`AI__GroqKey`, …), come già `Email__Password` | Gestione dei segreti uniforme. | 30 min | Basso |
-| 13 | Swagger disattivabile in produzione da configurazione e CORS ristretto | Hardening: oggi `/docs` è pubblico e il CORS accetta qualsiasi origine. Anche questo è nel piano sicurezza. | 1 h | Basso/medio: va verificata l'app PWA o mobile, se chiama da un'altra origine. |
+| # | Stato | Intervento | Beneficio indipendente da Docker | Sforzo | Rischio |
+|---|---|---|---|---|---|
+| 1 | ✅ | URL API relative in `environment.prod.ts` | Oggi IP e porta sono scritti nella build: se cambia server, porta o dominio, o si passa a https, va ricompilato Angular. Con URL relative una build vale ovunque. | 10 min | Basso. Va verificato che nessuno serva Angular separatamente dalle API in produzione. |
+| 3 | ✅ | Percorso dei log con `Path.Combine` | Elimina un bug latente: il percorso oggi funziona solo su Windows. | 5 min | Nullo |
+| 4 | ✅ | Chiavi DataProtection persistenti | Anche su IIS, se l'app pool non carica il profilo utente, le chiavi restano in memoria: a ogni riciclo i link di conferma email e reset password già inviati non funzionano più. | 30 min | Basso |
+| 7 | ✅ | Segreti sovrascrivibili da variabili d'ambiente e tolti da `appsettings.json` (password DB, chiave JWT, password RabbitMQ) | Oggi la chiave JWT e la password RabbitMQ sono nel repository. È un punto del piano sicurezza. | 1–2 h | Medio: chi avvia l'app deve avere le variabili impostate (IIS, Visual Studio). |
+| 7b | ✅ | File `.key` leggibili anche da variabile d'ambiente (`AI__GroqKey`, …), come già `Email__Password` | Gestione dei segreti uniforme. | 30 min | Basso |
+| 13 | ✅ | Swagger disattivabile in produzione da configurazione e CORS ristretto | Hardening: oggi `/docs` è pubblico e il CORS accetta qualsiasi origine. Anche questo è nel piano sicurezza. | 1 h | Basso/medio: va verificata l'app PWA o mobile, se chiama da un'altra origine. |
 
 ### 5.2 Utili, da valutare
 
-| # | Intervento | Nota |
-|---|---|---|
-| 2 | Cultura e fuso orario espliciti (`it-IT` / `Europe/Rome` da configurazione) | Rende l'app indipendente dalle impostazioni del server, cosa preziosa per un'app di rilevazione presenze. La versione minima (cultura da config in `Program.cs`) costa poco. Rivedere i ~28 `DateTime.Now` è un lavoro a parte, da fare solo con test. |
-| 5 | `UseForwardedHeaders` | Serve solo con un proxy davanti (nginx, IIS reverse proxy, Cloudflare). Non fa danni. |
-| 12 | Cartella export configurabile | Permette di indicare un disco o una cartella dedicata invece di `%TEMP%`. |
-| 10 | Flag per disattivare la migrazione automatica all'avvio | Permette di controllare quando si migra in produzione. |
+| # | Stato | Intervento | Nota |
+|---|---|---|---|
+| 2 | ✅ (minima) | Cultura e fuso orario espliciti (`it-IT` / `Europe/Rome` da configurazione) | Rende l'app indipendente dalle impostazioni del server, cosa preziosa per un'app di rilevazione presenze. La versione minima (cultura da config in `Program.cs`) costa poco. Rivedere i ~28 `DateTime.Now` è un lavoro a parte, da fare solo con test. |
+| 5 | ✅ | `UseForwardedHeaders` | Serve solo con un proxy davanti (nginx, IIS reverse proxy, Cloudflare). Non fa danni. |
+| 12 | 🔍 Da valutare | Cartella export configurabile | Permette di indicare un disco o una cartella dedicata invece di `%TEMP%`. |
+| 10 | 🔍 Da valutare | Flag per disattivare la migrazione automatica all'avvio | Permette di controllare quando si migra in produzione. |
 
 ### 5.3 Senza effetti sull'app attuale
 
-- Dockerfile, `.dockerignore`, `docker-compose` con override per test e produzione (punti 6, 8, 9): file in più che non toccano il funzionamento attuale. Utili subito anche solo per avere un ambiente di test con Postgres e RabbitMQ in un comando.
+- ⏳ Dockerfile, `.dockerignore`, `docker-compose` con override per test e produzione (punti 6, 8, 9): file in più che non toccano il funzionamento attuale. Utili subito anche solo per avere un ambiente di test con Postgres e RabbitMQ in un comando.
 
 ### 5.4 Solo se si scala su più istanze
 
-- Backplane SignalR e migrazioni come job separato (punti 10 e 11 nella forma completa).
+- 🔍 Backplane SignalR e migrazioni come job separato (punti 10 e 11 nella forma completa).
 
 ## 6. Proposta operativa
 
-1. **Primo blocco** (circa mezza giornata, rischio basso): punti 1, 3, 4, 7b, 13 e versione minima del 2.
-2. **Secondo blocco**: punto 7 (segreti in variabili d'ambiente), da fare separatamente perché cambia come si avvia l'app su IIS e in Visual Studio.
-3. **Terzo blocco**: Dockerfile, `.dockerignore`, compose con override per test e produzione, verifica dell'avvio su Linux.
+1. ✅ **Primo blocco** (circa mezza giornata, rischio basso): punti 1, 3, 4, 7b, 13 e versione minima del 2. Completato, insieme al punto 5.
+2. ✅ **Secondo blocco**: punto 7 (segreti in variabili d'ambiente), da fare separatamente perché cambia come si avvia l'app su IIS e in Visual Studio.
+3. ⏳ **Terzo blocco**: Dockerfile, `.dockerignore`, compose con override per test e produzione, verifica dell'avvio su Linux.
 
 Seguendo il flusso dei branch, gli interventi infrastrutturali (3, 4, 7, 13) vanno fatti su **Infrastructure_Dev** e poi mergiati verso AttendanceTracking.
 
