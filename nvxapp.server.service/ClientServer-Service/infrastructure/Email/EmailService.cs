@@ -1,7 +1,6 @@
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
 using MimeKit;
 
 namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Email
@@ -11,21 +10,16 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Email
      Parametri nella sezione "Email" di appsettings:
         Host, Port, User, FromAddress, FromName,
         Security: StartTls (predefinito) | SslOnConnect | None (es. server di prova locale come Mailpit)
-     Password (chiave SMTP di Brevo): dal file brevo.key nella root del sito (ContentRootPath, come
-     openrouter.key e groq.key, escluso da git); senza il file vale Email:Password (es. variabile
-     d'ambiente Email__Password).
+     Password (chiave SMTP di Brevo): Email:Password, segreto non in appsettings ma nella variabile
+     d'ambiente NVXAPP_Email__Password.
     */
     public class EmailService : IEmailService
     {
-        private const string PasswordFileName = "brevo.key";
-
         private readonly IConfiguration _configuration;
-        private readonly IHostEnvironment _env;
 
-        public EmailService(IConfiguration configuration, IHostEnvironment env)
+        public EmailService(IConfiguration configuration)
         {
             _configuration = configuration;
-            _env = env;
         }
 
         public bool Configured => !string.IsNullOrWhiteSpace(_configuration["Email:Host"])
@@ -56,23 +50,14 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Email
             using var client = new SmtpClient();
             await client.ConnectAsync(host, port > 0 ? port : 587, security);
             if (user.Length > 0)
-                await client.AuthenticateAsync(user, Password());
+            {
+                string password = _configuration["Email:Password"]?.Trim() ?? string.Empty;
+                if (password.Length == 0)
+                    throw new Exception("Password SMTP non configurata: impostare la variabile d'ambiente NVXAPP_Email__Password.");
+                await client.AuthenticateAsync(user, password);
+            }
             await client.SendAsync(message);
             await client.DisconnectAsync(true);
-        }
-
-        // password SMTP: file brevo.key nella root del sito, altrimenti Email:Password
-        // (il file deve contenere solo la chiave, gli spazi e i ritorni a capo si ignorano)
-        private string Password()
-        {
-            var path = Path.Combine(_env.ContentRootPath, PasswordFileName);
-            if (File.Exists(path))
-            {
-                var key = File.ReadAllText(path).Trim();
-                if (key.Length > 0)
-                    return key;
-            }
-            return _configuration["Email:Password"] ?? string.Empty;
         }
     }
 

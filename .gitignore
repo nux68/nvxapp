@@ -23,3 +23,5 @@ nvxapp.client/www/
 nvxapp.server/groq.key
 nvxapp.server/openrouter.key
 nvxapp.server/brevo.key
+# script con i segreti scritti dentro (es. nvxapp.server/docs/imposta-variabili-nvxapp.segreti.ps1)
+*.segreti.ps1

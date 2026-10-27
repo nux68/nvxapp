@@ -518,7 +518,33 @@ namespace nvxapp.server.Utility
                        .AddEnvironmentVariables();
             }
 
+            // Segreti (connessione DB, chiave JWT, password RabbitMQ e SMTP, API key AI): NON negli appsettings ma in
+            // variabili d'ambiente con prefisso NVXAPP_ e "__" al posto di ":" (es. NVXAPP_JwtParameter__Key -> JwtParameter:Key).
+            // Aggiunte per ultime: vincono sugli appsettings. Il prefisso evita che le leggano altre applicazioni .NET
+            // della macchina. Impostazione: nvxapp.server/docs/imposta-variabili-nvxapp.ps1 (vedi ANALISI_DOCKER.md, punto 7)
+            builder.Configuration.AddEnvironmentVariables("NVXAPP_");
+
+            CheckRequiredSecrets(builder.Configuration);
+
             return builder.Services;
+        }
+
+        // segreti senza i quali l'app non puo' partire: si ferma subito con il nome della variabile da impostare
+        private static void CheckRequiredSecrets(IConfiguration configuration)
+        {
+            var missing = new List<string>();
+            if (string.IsNullOrWhiteSpace(configuration.GetConnectionString("nvxappDbContext")))
+                missing.Add("NVXAPP_ConnectionStrings__nvxappDbContext");
+
+            // HMAC-SHA256: la chiave deve essere di almeno 32 byte, altrimenti la creazione del token fallisce
+            string jwtKey = configuration["JwtParameter:Key"] ?? string.Empty;
+            if (Encoding.UTF8.GetByteCount(jwtKey) < 32)
+                missing.Add("NVXAPP_JwtParameter__Key (almeno 32 caratteri)");
+
+            if (missing.Count > 0)
+                throw new InvalidOperationException(
+                    "Segreti non configurati, impostare le variabili d'ambiente: " + string.Join(", ", missing) +
+                    ". Vedi nvxapp.server/docs/ANALISI_DOCKER.md, punto 7.");
         }
 
     }
