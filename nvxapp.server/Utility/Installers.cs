@@ -3,6 +3,7 @@ using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using NetCore.AutoRegisterDi;
@@ -361,6 +362,45 @@ namespace nvxapp.server.Utility
 
             Log.Information("Cultura {Culture}, fuso orario {TimeZone}", culture.Name, TimeZoneInfo.Local.Id);
             return culture;
+        }
+        public static bool InstallForwardedHeaders(this WebApplicationBuilder builder)
+        {
+            // Dietro un reverse proxy (nginx, Traefik, Caddy in Docker) che termina HTTPS: X-Forwarded-For e X-Forwarded-Proto
+            // danno all'app l'IP reale del client e lo schema (https) originale.
+            // Disattivato di default (ReverseProxy:Enabled): in debug e su IIS in-process non serve e non cambia nulla.
+            bool enabled = false;
+            bool.TryParse(builder.Configuration["ReverseProxy:Enabled"], out enabled);
+            if (!enabled)
+                return false;
+
+            string[] knownProxies = builder.Configuration.GetSection("ReverseProxy:KnownProxies").Get<string[]>() ?? [];
+            string[] knownNetworks = builder.Configuration.GetSection("ReverseProxy:KnownNetworks").Get<string[]>() ?? [];
+
+            builder.Services.Configure<ForwardedHeadersOptions>(options =>
+            {
+                options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+
+                // di default si accettano gli header solo da localhost: il proxy in un'altra macchina/container va dichiarato
+                foreach (string proxy in knownProxies)
+                    options.KnownProxies.Add(IPAddress.Parse(proxy));
+                foreach (string network in knownNetworks)
+                    options.KnownIPNetworks.Add(System.Net.IPNetwork.Parse(network));
+
+                if (knownProxies.Length == 0 && knownNetworks.Length == 0)
+                {
+                    // nessun proxy dichiarato: ci si fida di chiunque. Va bene solo se la porta dell'app NON e' raggiungibile
+                    // se non dal proxy (es. rete interna di docker compose), altrimenti un client puo' falsificare IP e schema
+                    options.KnownProxies.Clear();
+                    options.KnownIPNetworks.Clear();
+                }
+            });
+
+            if (knownProxies.Length == 0 && knownNetworks.Length == 0)
+                Log.Warning("ReverseProxy attivo senza KnownProxies/KnownNetworks: X-Forwarded-* accettati da qualsiasi indirizzo");
+            else
+                Log.Information("ReverseProxy attivo, proxy fidati: {Proxies} {Networks}", knownProxies, knownNetworks);
+
+            return true;
         }
         public static IServiceCollection InstallAuthentication(this WebApplicationBuilder builder, Boolean useSignalR)
         {

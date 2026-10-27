@@ -49,6 +49,8 @@ Installers.InstallLog(builder);
 // cultura e fuso orario da configurazione (RunTime:Culture, RunTime:TimeZone), non dalla macchina
 CultureInfo serverCulture = Installers.InstallCultureAndTimeZone(builder);
 Installers.InstallAuthentication(builder, useSignalR);
+// dietro un reverse proxy (Docker): IP e schema originali da X-Forwarded-*; disattivato di default (ReverseProxy:Enabled)
+Boolean useReverseProxy = Installers.InstallForwardedHeaders(builder);
 
 //if(useSignalR)
 builder.Services.AddSignalR();
@@ -89,6 +91,11 @@ nvxapp.server.Base.ServiceBase.InitScopeFactory(app.Services.GetRequiredService<
 Boolean configuredMultiTenant = false;
 bool.TryParse(builder.Configuration["DbParameter:MultiTenant"], out configuredMultiTenant);
 await DatabaseInitializer.InitializeAsync(app.Services, configuredMultiTenant);
+
+
+// primo middleware: tutti quelli successivi (CORS, https, autenticazione, log) vedono IP e schema originali
+if (useReverseProxy)
+    app.UseForwardedHeaders();
 
 
 
