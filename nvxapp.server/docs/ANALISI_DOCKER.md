@@ -148,11 +148,7 @@ Seguendo il flusso dei branch, gli interventi infrastrutturali (3, 4, 7, 13) van
 
 | # | Punto | Stato | Data | Branch | Note |
 |---|---|---|---|---|---|
-<<<<<<< HEAD
 | 1 | URL API relative nel client | ✅ Risolto | 27/10/2026 | `Infrastructure_Dev`, mergiato fino ad `AttendanceTracking` | In `nvxapp.client/src/environments/environment.prod.ts`: `apiUri: '/api/'` e `signalrUri: '/'`. Tutti i servizi concatenano il percorso a queste basi, così chiamate HTTP, download (`page-toolbar`) e hub SignalR (`/chathub`) usano l'origine della pagina. `environment.ts` (sviluppo con `ng serve` su `https://localhost:7146`) è invariato. Capacitor è presente solo come configurazione del template Ionic, senza piattaforme native: se un giorno si crea l'app nativa servirà di nuovo un indirizzo assoluto. Verificato con build Angular di produzione: nel bundle `apiUri` vale `/api/` e l'IP non compare più. |
-=======
-| 1 | URL API relative nel client | ✅ Risolto | 27/10/2026 | `Infrastructure_Dev` (non committato) | In `nvxapp.client/src/environments/environment.prod.ts`: `apiUri: '/api/'` e `signalrUri: '/'`. Tutti i servizi concatenano il percorso a queste basi, così chiamate HTTP, download (`page-toolbar`) e hub SignalR (`/chathub`) usano l'origine della pagina. `environment.ts` (sviluppo con `ng serve` su `https://localhost:7146`) è invariato. Capacitor è presente solo come configurazione del template Ionic, senza piattaforme native: se un giorno si crea l'app nativa servirà di nuovo un indirizzo assoluto. |
->>>>>>> Infrastructure_Dev
 | 2 | Cultura e fuso orario | Da fare | | | |
 | 3 | Percorso log con `Path.Combine` | Da fare | | | |
 | 4 | Chiavi DataProtection persistenti | Da fare | | | |
