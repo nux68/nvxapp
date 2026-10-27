@@ -13,13 +13,18 @@ namespace nvxapp.server.data.Infrastructure
     {
         public static string ConnectionString()
         {
+            // la connessione (con la password) e' un segreto: variabile d'ambiente NVXAPP_ConnectionStrings__nvxappDbContext,
+            // come a runtime (vedi Installers.InstallSettings)
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json")
+                .AddEnvironmentVariables("NVXAPP_")
                 .Build();
 
-            return configuration.GetConnectionString("nvxappDbContext")
-                   ?? throw new InvalidOperationException("Connection string 'nvxappDbContext' non trovata in appsettings.json.");
+            string? connectionString = configuration.GetConnectionString("nvxappDbContext");
+            if (string.IsNullOrWhiteSpace(connectionString))
+                throw new InvalidOperationException("Connection string 'nvxappDbContext' non configurata: impostare la variabile d'ambiente NVXAPP_ConnectionStrings__nvxappDbContext.");
+            return connectionString;
         }
     }
 
