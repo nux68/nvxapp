@@ -34,12 +34,12 @@ services:
         condition: service_healthy
     environment:
       # segreti e valori per ambiente dal file di ambiente (sezione 8 di ANALISI_DOCKER.md)
-      NVXAPP_ConnectionStrings__nvxappDbContext: "Server=postgres;Port=5432;Database=${POSTGRES_DB:-nvxapp};User Id=postgres;Password=${POSTGRES_PASSWORD:?impostare POSTGRES_PASSWORD nel file di ambiente (PC: DockerLocale.env con --env-file; server: .env)};"
-      NVXAPP_JwtParameter__Key: ${NVXAPP_JwtParameter__Key:?impostare NVXAPP_JwtParameter__Key nel file di ambiente (PC: DockerLocale.env con --env-file; server: .env), almeno 32 caratteri}
+      NVXAPP_ConnectionStrings__nvxappDbContext: "Server=postgres;Port=5432;Database=${POSTGRES_DB:-nvxapp};User Id=postgres;Password=${POSTGRES_PASSWORD:?impostare POSTGRES_PASSWORD nel file di ambiente (sul PC DockerLocale.env con --env-file, sul server .env)};"
+      NVXAPP_JwtParameter__Key: ${NVXAPP_JwtParameter__Key:?impostare NVXAPP_JwtParameter__Key nel file di ambiente (sul PC DockerLocale.env con --env-file, sul server .env), almeno 32 caratteri}
       NVXAPP_RabbitQm__Connection__HostName: rabbitmq
       NVXAPP_RabbitQm__Connection__Port: "5672"
       NVXAPP_RabbitQm__Connection__UserName: rabbit
-      NVXAPP_RabbitQm__Connection__Password: ${RABBITMQ_PASSWORD:?impostare RABBITMQ_PASSWORD nel file di ambiente (PC: DockerLocale.env con --env-file; server: .env)}
+      NVXAPP_RabbitQm__Connection__Password: ${RABBITMQ_PASSWORD:?impostare RABBITMQ_PASSWORD nel file di ambiente (sul PC DockerLocale.env con --env-file, sul server .env)}
       NVXAPP_Email__Password: ${NVXAPP_Email__Password:-}
       NVXAPP_AI__AI_groq__ApiKey: ${NVXAPP_AI__AI_groq__ApiKey:-}
       NVXAPP_AI__AI_openrouter__ApiKey: ${NVXAPP_AI__AI_openrouter__ApiKey:-}
@@ -56,7 +56,7 @@ services:
     image: postgres:15
     restart: unless-stopped
     environment:
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?impostare POSTGRES_PASSWORD nel file di ambiente (PC: DockerLocale.env con --env-file; server: .env)}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?impostare POSTGRES_PASSWORD nel file di ambiente (sul PC DockerLocale.env con --env-file, sul server .env)}
       POSTGRES_DB: ${POSTGRES_DB:-nvxapp}
     volumes:
       - pg_data:/var/lib/postgresql/data
@@ -74,7 +74,7 @@ services:
     restart: unless-stopped
     environment:
       RABBITMQ_DEFAULT_USER: rabbit
-      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:?impostare RABBITMQ_PASSWORD nel file di ambiente (PC: DockerLocale.env con --env-file; server: .env)}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:?impostare RABBITMQ_PASSWORD nel file di ambiente (sul PC DockerLocale.env con --env-file, sul server .env)}
     volumes:
       - rabbit_data:/var/lib/rabbitmq
     healthcheck:
