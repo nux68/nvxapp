@@ -35,8 +35,6 @@ builder.Services.AddSwaggerGen();
 
 //Boolean useSignalR
 
-// Aggiungi i servizi CORS
-Installers.InstallCors(builder, useSignalR);
 
 
 Installers.InstallConfiguration(builder);
@@ -48,6 +46,8 @@ Installers.InstallMappers(builder);
 Installers.InstallLog(builder);
 // cultura e fuso orario da configurazione (RunTime:Culture, RunTime:TimeZone), non dalla macchina
 CultureInfo serverCulture = Installers.InstallCultureAndTimeZone(builder);
+// CORS: origini consentite da configurazione (Cors:AllowedOrigins); vuoto = solo stessa origine
+Boolean useCors = Installers.InstallCors(builder);
 Installers.InstallAuthentication(builder, useSignalR);
 // dietro un reverse proxy (Docker): IP e schema originali da X-Forwarded-*; disattivato di default (ReverseProxy:Enabled)
 Boolean useReverseProxy = Installers.InstallForwardedHeaders(builder);
@@ -101,48 +101,26 @@ if (useReverseProxy)
 
 
 
-if (useSignalR == false)
-{
-    //Usa la policy CORS globale
-    app.UseCors("AllowAllOrigins");
-}
-else
-{
-    //SIGNALR (V2)
-    app.UseDynamicCors(); // Usa il middleware personalizzato
-}
+// CORS (API e hub SignalR): solo per le origini di Cors:AllowedOrigins
+if (useCors)
+    app.UseCors(Installers.CorsPolicyName);
 
 
 
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+// Swagger / OpenAPI: solo con Swagger:Enabled (sviluppo). In produzione le API non vanno documentate
+// pubblicamente; se serve su un server di test: Swagger__Enabled=true (e Swagger__RoutePrefix)
+Boolean useSwagger = false;
+bool.TryParse(builder.Configuration["Swagger:Enabled"], out useSwagger);
+if (useSwagger)
 {
     app.MapOpenApi();
-
-    // Configura l'uso di Swagger
     app.UseSwagger();
-    app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1"); });
-
-    //////////////// Avvia automaticamente la pagina Swagger nel browser predefinito
-    /////DISABLED HTTPS (disabilitato)
-    var urlSw = "";
-    if (useHttps)
-        urlSw = "https://localhost:" + runTimePort.ToString() + "/swagger/index.html";
-    else
-        urlSw = "http://localhost:" + runTimePort.ToString() + "/swagger/index.html";
-
-    //Process.Start(new ProcessStartInfo(urlSw) { UseShellExecute = true });
-
-}
-else if (app.Environment.IsProduction())
-{
-    // Configura l'uso di Swagger solo in produzione
-    app.UseSwagger();
+    string swaggerRoutePrefix = builder.Configuration["Swagger:RoutePrefix"] ?? "swagger";
     app.UseSwaggerUI(c =>
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
-        c.RoutePrefix = "docs"; // Configura un percorso diverso da "swagger" per maggiore sicurezza
+        c.RoutePrefix = swaggerRoutePrefix;
     });
 }
 

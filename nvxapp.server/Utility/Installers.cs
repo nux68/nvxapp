@@ -447,69 +447,43 @@ namespace nvxapp.server.Utility
 
             return builder.Services;
         }
-        public static IServiceCollection InstallCors(this WebApplicationBuilder builder, Boolean useSignalR)
+        public const string CorsPolicyName = "ConfiguredOrigins";
+
+        public static bool InstallCors(this WebApplicationBuilder builder)
         {
+            // Origini a cui il browser permette di chiamare le API e l'hub SignalR da un altro indirizzo (Cors:AllowedOrigins).
+            // Vuoto = nessuna (produzione: il client e' servito dal server stesso, stessa origine, CORS non serve).
+            // "*" = qualsiasi origine (sviluppo con ng serve su un'altra porta).
+            // AllowCredentials: il client SignalR la richiede; con le credenziali non si puo' usare AllowAnyOrigin
+            string[] allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
+            if (allowedOrigins.Length == 0)
+            {
+                Log.Information("CORS disattivato: API e SignalR accettano chiamate solo dalla stessa origine");
+                return false;
+            }
+
+            bool anyOrigin = allowedOrigins.Contains("*");
             builder.Services.AddCors(options =>
             {
-
-                if (useSignalR == false)
+                options.AddPolicy(CorsPolicyName, policy =>
                 {
-                    options.AddPolicy("AllowAllOrigins", policy =>
-                    {
-                        policy.AllowAnyOrigin() // Permette qualsiasi origine
-                              .AllowAnyMethod() // Permette qualsiasi metodo (GET, POST, PUT, DELETE, ecc.)
-                              .AllowAnyHeader(); // Permette qualsiasi intestazione
-                    });
-                }
-                else
-                {
-                    //SIGNALR (V2)
-                    builder.Services.AddCors(options =>
-                    {
-                        options.AddPolicy("DynamicOrigins", policy =>
-                        {
-                            policy.AllowAnyMethod()
-                                  .AllowAnyHeader()
-                                  .AllowCredentials()
-                                  .SetIsOriginAllowed(origin => true); // Consente tutte le origini
-                        });
-                    });
-                }
+                    if (anyOrigin)
+                        policy.SetIsOriginAllowed(origin => true);
+                    else
+                        policy.WithOrigins(allowedOrigins);
 
-
-
-
-
+                    policy.AllowAnyMethod()
+                          .AllowAnyHeader()
+                          .AllowCredentials();
+                });
             });
 
-            return builder.Services;
-        }
-        //SIGNALR (V2)
-        public static void UseDynamicCors(this WebApplication app)
-        {
-            app.Use(async (context, next) =>
-            {
-                var origin = context.Request.Headers["Origin"];
-                if (!string.IsNullOrEmpty(origin))
-                {
-                    // Aggiungi l'intestazione Access-Control-Allow-Origin
-                    context.Response.Headers.Append("Access-Control-Allow-Origin", origin);
-                    context.Response.Headers.Append("Access-Control-Allow-Credentials", "true");
-                    context.Response.Headers.Append("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS"); // Metodi consentiti
-                    context.Response.Headers.Append("Access-Control-Allow-Headers", "Content-Type, Authorization, x-requested-with, x-signalr-user-agent"); // Intestazioni consentite
-                }
+            if (anyOrigin)
+                Log.Warning("CORS aperto a qualsiasi origine (Cors:AllowedOrigins = \"*\"): solo per lo sviluppo");
+            else
+                Log.Information("CORS: origini consentite {Origins}", allowedOrigins);
 
-                if (context.Request.Method == "OPTIONS")
-                {
-                    // Intestazioni preflight
-                    context.Response.Headers.Append("Access-Control-Allow-Headers", "Content-Type, Authorization, x-requested-with, x-signalr-user-agent");
-                    context.Response.StatusCode = (int)HttpStatusCode.OK;
-                    await context.Response.CompleteAsync();
-                    return;
-                }
-
-                await next();
-            });
+            return true;
         }
         public static IServiceCollection InstallSettings(this WebApplicationBuilder builder)
         {
