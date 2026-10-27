@@ -4,15 +4,14 @@
 >
 > **Server di destinazione**: Contabo Cloud VPS Core 4 con Ubuntu 24.04, un'unica istanza dell'app (sezione 9).
 
-**Stato al 27/10/2026: 10 punti su 14 risolti, 1 da fare, 3 non necessari sul VPS.**
+**Stato al 27/10/2026: 11 punti su 14 risolti, 3 non necessari sul VPS. Docker pronto: manca solo la preparazione del VPS (sezione 9).**
 
 | Stato | Punti |
 |---|---|
-| ✅ Risolti | 1 URL API relative · 2 cultura e fuso (versione minima) · 3 percorso log · 4 chiavi DataProtection · 5 reverse proxy · 6 Dockerfile · 7 segreti in variabili d'ambiente · 7b chiavi AI ed email senza file `.key` · 8 `.dockerignore` · 13 Swagger e CORS |
-| ⏳ Da fare | 9 `docker-compose` con profili per ambiente |
+| ✅ Risolti | 1 URL API relative · 2 cultura e fuso (versione minima) · 3 percorso log · 4 chiavi DataProtection · 5 reverse proxy · 6 Dockerfile · 7 segreti in variabili d'ambiente · 7b chiavi AI ed email senza file `.key` · 8 `.dockerignore` · 9 `docker-compose` con profili per ambiente · 13 Swagger e CORS |
 | ➖ Non necessari sul VPS | 10 migrazioni all'avvio · 11 SignalR con più repliche · 12 cartella export: servono solo con più istanze dell'app |
 
-Legenda: ✅ risolto · ⏳ da fare · ➖ non necessario con un'istanza sola (da riprendere se si scala) · 🔍 da valutare. Dettagli di ogni intervento nella sezione 7, segreti nella sezione 8, server di destinazione nella sezione 9.
+Legenda: ✅ risolto · ⏳ da fare · ➖ non necessario con un'istanza sola (da riprendere se si scala) · 🔍 da valutare. Dettagli di ogni intervento nella sezione 7, segreti nella sezione 8, server di destinazione nella sezione 9, comandi di docker compose nella sezione 10.
 
 ## 1. Situazione attuale
 
@@ -65,7 +64,7 @@ Legenda: ✅ risolto · ⏳ da fare · ➖ non necessario con un'istanza sola (d
 | 6 | ✅ | **Dockerfile multi-stage**: uno stage Node per `ng build`, uno stage SDK per `dotnet publish -c Release -p:AngularBuilt=true` (così salta il target MSBuild) e uno stage `aspnet` di runtime. Il target `CleanWwwrootDebug` usa PowerShell ma scatta solo in Debug: nessun problema. |
 | 7 | ✅ | **Segreti fuori dagli appsettings** (password Postgres, chiave JWT, password RabbitMQ): passarli come variabili d'ambiente (`ConnectionStrings__nvxappDbContext`, `JwtParameter__Key`, …) o come Docker secrets. I file `groq.key`, `openrouter.key` e `brevo.key`, letti da `ContentRootPath`, vanno montati come secret o volume, oppure letti da variabile d'ambiente come fa già `Email__Password`. |
 | 8 | ✅ | **`.dockerignore`**: escludere `node_modules`, `bin`, `obj`, `.angular`, i file `.key` e `Logs`. |
-| 9 | ⏳ Da fare | **`docker-compose.yml`** con app, postgres (con volume), rabbitmq e, se serve, il reverse proxy. |
+| 9 | ✅ | **`docker-compose.yml`** con app, postgres (con volume), rabbitmq e, se serve, il reverse proxy. |
 
 ### 3.3 Da valutare
 
@@ -127,7 +126,7 @@ Molti punti sono utili anche con il deploy IIS attuale e rendono la migrazione f
 
 ### 5.3 Senza effetti sull'app attuale
 
-- ✅ Dockerfile e `.dockerignore` (punti 6 e 8). ⏳ `docker-compose` con override per test e produzione (punto 9). Sono file in più che non toccano il funzionamento attuale. Utili subito anche solo per avere un ambiente di test con Postgres e RabbitMQ in un comando.
+- ✅ Dockerfile, `.dockerignore` e `docker-compose` con override per PC e server (punti 6, 8 e 9). Sono file in più che non toccano il funzionamento attuale. Utili subito anche solo per avere un ambiente di test con Postgres e RabbitMQ in un comando.
 
 ### 5.4 Solo se si scala su più istanze
 
@@ -137,7 +136,7 @@ Molti punti sono utili anche con il deploy IIS attuale e rendono la migrazione f
 
 1. ✅ **Primo blocco** (circa mezza giornata, rischio basso): punti 1, 3, 4, 7b, 13 e versione minima del 2. Completato, insieme al punto 5.
 2. ✅ **Secondo blocco**: punto 7 (segreti in variabili d'ambiente), da fare separatamente perché cambia come si avvia l'app su IIS e in Visual Studio.
-3. ⏳ **Terzo blocco**: ✅ Dockerfile e `.dockerignore` con verifica dell'avvio su Linux; ⏳ compose con override per test e produzione.
+3. ✅ **Terzo blocco**: Dockerfile, `.dockerignore` e compose con override per PC e server, verificati su Linux (Docker Desktop).
 4. ⏳ **Quarto blocco**: preparazione del VPS Contabo e primo rilascio (sezione 9).
 
 Seguendo il flusso dei branch, gli interventi infrastrutturali (3, 4, 7, 13) vanno fatti su **Infrastructure_Dev** e poi mergiati verso AttendanceTracking.
@@ -155,7 +154,7 @@ Seguendo il flusso dei branch, gli interventi infrastrutturali (3, 4, 7, 13) van
 | 7 | Segreti in variabili d'ambiente | ✅ Risolto | 27/10/2026 | `Infrastructure_Dev`, mergiato fino ad `AttendanceTracking` | Connessione DB, chiave JWT e password RabbitMQ tolte da `appsettings.json`, `appsettings.Development.json` e `appsettings.Development.DEV1.json`: valori `""` con commento che indica la variabile. In `InstallSettings` le variabili con prefisso `NVXAPP_` (`__` al posto di `:`) sono aggiunte per ultime e vincono sugli appsettings; il prefisso evita che le leggano altre app .NET della macchina. All'avvio `CheckRequiredSecrets` ferma l'app se mancano connessione DB o chiave JWT (almeno 32 byte, requisito di HMAC-SHA256), indicando la variabile. Anche la factory di design-time di `dotnet ef` legge `NVXAPP_ConnectionStrings__nvxappDbContext`. Elenco e modalità d'uso nella sezione 8. Verificato su server di prova: senza variabili l'app si ferma con il messaggio; con le variabili login 200 e API protetta 401 senza token / 200 con token. **I valori tolti restano nella storia di git e su origin: vanno cambiati** (chiave JWT, password DB e RabbitMQ). |
 | 7b | Chiavi AI e password SMTP senza file `.key` | ✅ Risolto | 27/10/2026 | `Infrastructure_Dev`, mergiato fino ad `AttendanceTracking` | `ChatAIService` non legge più `groq.key` e `openrouter.key`: le chiavi sono `AI:AI_groq:ApiKey` e `AI:AI_openrouter:ApiKey` (variabili `NVXAPP_AI__AI_groq__ApiKey`, `NVXAPP_AI__AI_openrouter__ApiKey`). È obbligatoria **solo quella del provider in uso** (`AI:UseLLM`): prima mancava un file qualsiasi e la chat si bloccava. `EmailService` non legge più `brevo.key`: password solo da `Email:Password` (`NVXAPP_Email__Password`), con errore esplicito se manca. Rimosse dagli appsettings le chiavi mai lette `OpenRouterKey` e `AI_local:Key` e il segnaposto `TUO_BREVO_KEY`. Verificato: senza la chiave Groq la chat risponde 500 con "impostare la variabile d'ambiente NVXAPP_AI__AI_groq__ApiKey". I file `.key` in `nvxapp.server/` e in `C:\inetpub\wwwroot\nvxapp\` non servono più e si possono eliminare, dopo aver conservato le chiavi altrove. |
 | 8 | `.dockerignore` | ✅ Risolto | 27/10/2026 | `Infrastructure_Dev`, mergiato fino ad `AttendanceTracking` | Fatto insieme al punto 6, perché senza la build non funziona: le cartelle `obj` di Windows contengono percorsi locali che rompono `dotnet restore`. Esclude `.git`, `.vs`, `.claude`, `*.user`, `node_modules`, `bin`, `obj`, `.angular`, `dist`, `www`, `wwwroot`, i segreti (`*.key`, `*.segreti.ps1`, `.env`, `.env.*` tranne `.env.example`), `Logs` e `nvxapp.server/Note`. Il contesto inviato a Docker passa da oltre 400 MB a circa 5 MB e nell'immagine non finisce nessun file `.key`. |
-| 9 | `docker-compose` con override per ambiente | Da fare | | | |
+| 9 | `docker-compose` con override per ambiente | ✅ Risolto | 27/10/2026 | `Infrastructure_Dev`, mergiato fino ad `AttendanceTracking` | File nella cartella della solution. **`docker-compose.yml`** (base): app, `postgres:15` e `rabbitmq:3-management` con volumi (`pg_data`, `rabbit_data`, `nvxapp_logs`), healthcheck (l'app parte solo con DB e RabbitMQ pronti), `restart: unless-stopped`, log Docker limitati a 5 × 10 MB, nessuna porta pubblicata. La stringa di connessione la compone il compose da `POSTGRES_PASSWORD`; host `postgres` e `rabbitmq`. **`docker-compose.local.yml`** (PC): costruisce l'immagine, pubblica solo su `127.0.0.1` app (8080), console RabbitMQ (15672) e Postgres (5434, perché 5432 e 5433 sono già usate). **`docker-compose.prod.yml`** (VPS): Caddy su 80/443 con `docker/Caddyfile` (HTTPS automatico, compressione, WebSocket), `ReverseProxy:Enabled=true`, `App:PublicUrl` obbligatorio, `mem_limit` (app 2 GB, Postgres 3 GB con `shared_buffers=1GB`, RabbitMQ 1 GB, Caddy 256 MB). **`.env.example`** in git, `.env` escluso da git (`.gitignore`) e dal contesto di build: il profilo si sceglie con `COMPOSE_FILE` nel `.env`, poi basta `docker compose up -d`; i segreti obbligatori mancanti fermano compose con un messaggio. **Verificato** su Docker Desktop: profilo locale = avvio ordinato dopo i healthcheck, client e login 200, API 401/200, connessione RabbitMQ, console RabbitMQ, dati e chiave DataProtection conservati dopo `down`/`up`; profilo server (porte 8081/8443, dominio `localhost` con certificato interno di Caddy) = HTTPS con HTTP/2 e compressione zstd, redirect http → https, login 200, WebSocket SignalR attraverso Caddy (101), solo Caddy con porte pubblicate, limiti di memoria applicati. **Non verificato**: certificato Let's Encrypt vero e separatore `:` di `COMPOSE_FILE` su Linux, da provare sul VPS. |
 | 10 | Migrazioni all'avvio | ➖ Non necessario sul VPS | 27/10/2026 | | Un'istanza sola: la migrazione all'avvio va bene. Prima di ogni rilascio, backup del DB (sezione 9). |
 | 11 | SignalR con più repliche | ➖ Non necessario sul VPS | 27/10/2026 | | Un'istanza sola: nessun backplane né sticky session. |
 | 12 | Cartella export configurabile | ➖ Non necessario sul VPS | 27/10/2026 | | Un'istanza sola: i file temporanei nel container vanno bene; si perdono al riavvio, ma sono temporanei. |
@@ -182,7 +181,7 @@ Qualsiasi altra chiave di configurazione si può sovrascrivere allo stesso modo 
 - Da PowerShell aperto come amministratore: `powershell -ExecutionPolicy Bypass -File <script>`. Lo script fa `iisreset`; poi chiudere e riaprire Visual Studio. Va rilanciato solo per cambiare un valore o su un'altra macchina.
 - Controllo: `(Get-ChildItem Env:NVXAPP_*).Name` in una nuova finestra.
 
-**Docker**: le variabili di sistema di Windows non arrivano nei container. Si usa un file `.env` accanto al compose, escluso da git, letto con `env_file`, con gli stessi nomi; nel repository solo un `.env.example` con i segnaposto (punti 6–9). In Docker gli host di DB e RabbitMQ sono i nomi dei servizi del compose, non `localhost`.
+**Docker**: le variabili di sistema di Windows non arrivano nei container. Si usa il file `.env` accanto al compose (escluso da git, copia di `.env.example`): il compose ne prende i valori e li passa all'app con i nomi `NVXAPP_*`. La connessione DB la compone il compose da `POSTGRES_PASSWORD` (host `postgres`), RabbitMQ usa `RABBITMQ_PASSWORD` (host `rabbitmq`); chiave JWT, email e AI hanno gli stessi nomi della tabella. Comandi nella sezione 10.
 
 **Linux senza Docker**: `EnvironmentFile=/etc/nvxapp/nvxapp.env` nel servizio systemd (file con `chmod 600`).
 
@@ -244,7 +243,7 @@ Rilascio: snapshot o dump del DB → carica la nuova immagine → `docker compos
 2. `ufw`: aperte solo 22, 80 e 443. Più `fail2ban` e `unattended-upgrades` per gli aggiornamenti di sicurezza.
 3. Docker Engine e plugin compose dal repository ufficiale di Docker (non il pacchetto `docker.io` di Ubuntu).
 4. Fuso del sistema `Europe/Rome` (`timedatectl`), comodo per leggere i log. L'app non ne dipende: usa `RunTime:TimeZone` (punto 2).
-5. Cartella `/opt/nvxapp` con `docker-compose.yml`, `docker-compose.prod.yml`, `Caddyfile` e `.env` (`chmod 600`, mai in git).
+5. Cartella `/opt/nvxapp` con `docker-compose.yml`, `docker-compose.prod.yml`, `docker/Caddyfile` e `.env` (`chmod 600`, mai in git) con `COMPOSE_FILE=docker-compose.yml:docker-compose.prod.yml`.
 6. Dominio: record A verso l'IP del VPS **prima** del primo avvio di Caddy, altrimenti il certificato non viene emesso.
 
 ### 9.4 Backup
@@ -262,3 +261,26 @@ Rilascio: snapshot o dump del DB → carica la nuova immagine → `docker compos
 - Dove copiare i backup fuori dal VPS.
 - Se attivare il backup automatico Contabo.
 - Postgres e RabbitMQ di produzione con password nuove, diverse da quelle di sviluppo (quelle vecchie sono nella storia di git, punto 7).
+
+## 10. Uso di docker compose
+
+File nella cartella della solution: `Dockerfile`, `.dockerignore`, `docker-compose.yml`, `docker-compose.local.yml`, `docker-compose.prod.yml`, `docker/Caddyfile`, `.env.example`. Tutti i comandi si lanciano da quella cartella.
+
+**Prima volta**: copiare `.env.example` in `.env` e compilarlo (password con `openssl rand -hex 32`). `COMPOSE_FILE` sceglie il profilo:
+- PC Windows: `COMPOSE_FILE=docker-compose.yml;docker-compose.local.yml`
+- server Linux: `COMPOSE_FILE=docker-compose.yml:docker-compose.prod.yml`
+
+| Cosa | Comando |
+|---|---|
+| Avviare (PC: ricostruendo l'immagine dal codice corrente) | `docker compose up -d --build` |
+| Avviare o aggiornare (server, immagine già caricata) | `docker compose up -d` |
+| Stato dei servizi | `docker compose ps` |
+| Log dell'app | `docker compose logs -f nvxapp` |
+| Fermare (i dati restano nei volumi) | `docker compose down` |
+| Fermare e **cancellare** i dati (database compreso) | `docker compose down -v` |
+| Dump del database | `docker compose exec -T postgres pg_dump -U postgres -Fc nvxapp > nvxapp.dump` |
+| Costruire l'immagine per il server | `docker build -t nvxapp:<tag> .` |
+
+**Profilo locale**: app su `http://localhost:8080` (al primo avvio utenti iniziali, es. SuperUser), console RabbitMQ su `http://localhost:15672` (utente `rabbit`), Postgres su `localhost:5434` (utente `postgres`). Database e code sono separati da quelli di sviluppo in Visual Studio. Senza `NVXAPP_Email__Password` e la chiave AI nel `.env`, email e chat AI non funzionano; il resto sì.
+
+**Server**: vedi sezione 9 (preparazione, trasferimento dell'immagine, backup).

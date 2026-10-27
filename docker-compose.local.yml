@@ -1,0 +1,25 @@
+# Override per il PC di sviluppo (Docker Desktop), insieme a docker-compose.yml.
+# Nel .env: COMPOSE_FILE=docker-compose.yml;docker-compose.local.yml
+#   docker compose up -d --build     costruisce l'immagine dal codice corrente e avvia
+#   app:                http://localhost:8080
+#   console RabbitMQ:   http://localhost:15672 (utente rabbit)
+#   PostgreSQL:         localhost:5434 (utente postgres), es. da pgAdmin
+# Tutte le porte sono pubblicate solo su 127.0.0.1: dagli altri PC della rete non si raggiungono.
+
+services:
+  nvxapp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "127.0.0.1:${APP_PORT:-8080}:8080"
+    environment:
+      NVXAPP_App__PublicUrl: ${APP_PUBLIC_URL:-http://localhost:8080}
+
+  postgres:
+    ports:
+      - "127.0.0.1:${PG_PORT:-5434}:5432"
+
+  rabbitmq:
+    ports:
+      - "127.0.0.1:${RABBITMQ_UI_PORT:-15672}:15672"
