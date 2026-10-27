@@ -16,6 +16,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- chiavi DataProtection (token di conferma email / reset password) salvate in public."DataProtectionKeys" -->
+    <PackageReference Include="Microsoft.AspNetCore.DataProtection.EntityFrameworkCore" Version="10.0.12" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.12" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="10.0.12" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.12">

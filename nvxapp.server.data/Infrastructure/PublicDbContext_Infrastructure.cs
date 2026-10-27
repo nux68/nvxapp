@@ -1,12 +1,17 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using nvxapp.server.data.Entities.Public;
 
 namespace nvxapp.server.data.Infrastructure
 {
-    public partial class PublicDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, string>
+    public partial class PublicDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, string>, IDataProtectionKeyContext
     {
+        // chiavi DataProtection: firmano i token di Identity (link di conferma email e reset password).
+        // Su DB sopravvivono a riavvii, ricicli dell'app pool, pubblicazioni e redeploy dei container.
+        public DbSet<DataProtectionKey> DataProtectionKeys { get; set; }
+
         public DbSet<AppSetting> AppSetting { get; set; }
         public DbSet<CompanyApplication> CompanyApplication { get; set; }
         public DbSet<CompanyMenuRestriction> CompanyMenuRestriction { get; set; }
@@ -31,6 +36,7 @@ namespace nvxapp.server.data.Infrastructure
         {
             //1
             Gen_InitDB(modelBuilder);
+            Gen_DataProtectionKeys(modelBuilder);
             Gen_DealerAndCompany_Init(modelBuilder);
             Gen_AppSetting(modelBuilder);
             Gen_CompanyApplication(modelBuilder);
@@ -48,6 +54,10 @@ namespace nvxapp.server.data.Infrastructure
             modelBuilder.Entity<IdentityUserLogin<string>>(entity => { entity.ToTable("AspNetUserLogins", Schema); });
             modelBuilder.Entity<IdentityRoleClaim<string>>(entity => { entity.ToTable("AspNetRoleClaims", Schema); });
             modelBuilder.Entity<IdentityUserToken<string>>(entity => { entity.ToTable("AspNetUserTokens", Schema); });
+        }
+        private void Gen_DataProtectionKeys(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<DataProtectionKey>(entity => { entity.ToTable("DataProtectionKeys", Schema); });
         }
         private void Gen_AppSetting(ModelBuilder modelBuilder)
         {
