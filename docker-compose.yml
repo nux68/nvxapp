@@ -3,8 +3,12 @@
 # File base, comune a tutti gli ambienti. Si usa sempre insieme a un override:
 #   docker-compose.local.yml  PC di sviluppo: costruisce l'immagine, app su http://localhost:8080
 #   docker-compose.prod.yml   VPS: Caddy davanti con HTTPS, limiti di memoria
-# Quale usare lo dice COMPOSE_FILE nel file .env (copia di .env.example, mai in git); poi basta:
-#   docker compose up -d        avvia (o aggiorna) tutto
+# Quale usare lo dice COMPOSE_FILE nel file di ambiente (copia di .env.example, mai in git):
+#   PC:     DockerLocale.env, da indicare a ogni comando (lo fa da solo il profilo di pubblicazione DockerLocale)
+#             docker compose --env-file DockerLocale.env up -d --build
+#   server: DockerVps.env copiato sul server come .env, letto in automatico
+#             docker compose up -d
+# Altri comandi (sul PC sempre con --env-file DockerLocale.env):
 #   docker compose down         ferma tutto (i dati restano nei volumi)
 #   docker compose logs -f nvxapp
 #
@@ -29,13 +33,13 @@ services:
       rabbitmq:
         condition: service_healthy
     environment:
-      # segreti e valori per ambiente dal file .env (sezione 8 di ANALISI_DOCKER.md)
-      NVXAPP_ConnectionStrings__nvxappDbContext: "Server=postgres;Port=5432;Database=${POSTGRES_DB:-nvxapp};User Id=postgres;Password=${POSTGRES_PASSWORD:?impostare POSTGRES_PASSWORD nel file .env};"
-      NVXAPP_JwtParameter__Key: ${NVXAPP_JwtParameter__Key:?impostare NVXAPP_JwtParameter__Key nel file .env (almeno 32 caratteri)}
+      # segreti e valori per ambiente dal file di ambiente (sezione 8 di ANALISI_DOCKER.md)
+      NVXAPP_ConnectionStrings__nvxappDbContext: "Server=postgres;Port=5432;Database=${POSTGRES_DB:-nvxapp};User Id=postgres;Password=${POSTGRES_PASSWORD:?impostare POSTGRES_PASSWORD nel file di ambiente (PC: DockerLocale.env con --env-file; server: .env)};"
+      NVXAPP_JwtParameter__Key: ${NVXAPP_JwtParameter__Key:?impostare NVXAPP_JwtParameter__Key nel file di ambiente (PC: DockerLocale.env con --env-file; server: .env), almeno 32 caratteri}
       NVXAPP_RabbitQm__Connection__HostName: rabbitmq
       NVXAPP_RabbitQm__Connection__Port: "5672"
       NVXAPP_RabbitQm__Connection__UserName: rabbit
-      NVXAPP_RabbitQm__Connection__Password: ${RABBITMQ_PASSWORD:?impostare RABBITMQ_PASSWORD nel file .env}
+      NVXAPP_RabbitQm__Connection__Password: ${RABBITMQ_PASSWORD:?impostare RABBITMQ_PASSWORD nel file di ambiente (PC: DockerLocale.env con --env-file; server: .env)}
       NVXAPP_Email__Password: ${NVXAPP_Email__Password:-}
       NVXAPP_AI__AI_groq__ApiKey: ${NVXAPP_AI__AI_groq__ApiKey:-}
       NVXAPP_AI__AI_openrouter__ApiKey: ${NVXAPP_AI__AI_openrouter__ApiKey:-}
@@ -52,7 +56,7 @@ services:
     image: postgres:15
     restart: unless-stopped
     environment:
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?impostare POSTGRES_PASSWORD nel file .env}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?impostare POSTGRES_PASSWORD nel file di ambiente (PC: DockerLocale.env con --env-file; server: .env)}
       POSTGRES_DB: ${POSTGRES_DB:-nvxapp}
     volumes:
       - pg_data:/var/lib/postgresql/data
@@ -70,7 +74,7 @@ services:
     restart: unless-stopped
     environment:
       RABBITMQ_DEFAULT_USER: rabbit
-      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:?impostare RABBITMQ_PASSWORD nel file .env}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:?impostare RABBITMQ_PASSWORD nel file di ambiente (PC: DockerLocale.env con --env-file; server: .env)}
     volumes:
       - rabbit_data:/var/lib/rabbitmq
     healthcheck:

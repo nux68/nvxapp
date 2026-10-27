@@ -26,7 +26,8 @@ nvxapp.server/brevo.key
 # script con i segreti scritti dentro (es. nvxapp.server/docs/imposta-variabili-nvxapp.segreti.ps1)
 *.segreti.ps1
 
-# file .env di docker compose (contiene segreti); in git solo .env.example
+# file di ambiente di docker compose (DockerLocale.env, DockerVps.env, .env: contengono segreti); in git solo .env.example
 .env
 .env.*
+*.env
 !.env.example
