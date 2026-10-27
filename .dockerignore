@@ -22,6 +22,7 @@ nvxapp.server/wwwroot
 **/*.segreti.ps1
 **/.env
 **/.env.*
+**/*.env
 !**/.env.example
 
 # log e note locali
