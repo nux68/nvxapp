@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep *)",
+      "Bash(awk -F: '{print $1}')",
+      "WebFetch(domain:www.koyeb.com)",
+      "WebFetch(domain:neon.com)",
+      "WebFetch(domain:azure.microsoft.com)",
+      "WebFetch(domain:contabo.com)"
+    ]
+  },
+   "worktree": {
+      "bgIsolation": "none"
+    }
+}
