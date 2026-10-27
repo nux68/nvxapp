@@ -4,12 +4,12 @@
 >
 > **Server di destinazione**: Contabo Cloud VPS Core 4 con Ubuntu 24.04, un'unica istanza dell'app (sezione 9).
 
-**Stato al 27/10/2026: 8 punti su 14 risolti, 3 da fare, 3 non necessari sul VPS.**
+**Stato al 27/10/2026: 10 punti su 14 risolti, 1 da fare, 3 non necessari sul VPS.**
 
 | Stato | Punti |
 |---|---|
-| ✅ Risolti | 1 URL API relative · 2 cultura e fuso (versione minima) · 3 percorso log · 4 chiavi DataProtection · 5 reverse proxy · 7 segreti in variabili d'ambiente · 7b chiavi AI ed email senza file `.key` · 13 Swagger e CORS |
-| ⏳ Da fare | 6 Dockerfile · 8 `.dockerignore` · 9 `docker-compose` con profili per ambiente |
+| ✅ Risolti | 1 URL API relative · 2 cultura e fuso (versione minima) · 3 percorso log · 4 chiavi DataProtection · 5 reverse proxy · 6 Dockerfile · 7 segreti in variabili d'ambiente · 7b chiavi AI ed email senza file `.key` · 8 `.dockerignore` · 13 Swagger e CORS |
+| ⏳ Da fare | 9 `docker-compose` con profili per ambiente |
 | ➖ Non necessari sul VPS | 10 migrazioni all'avvio · 11 SignalR con più repliche · 12 cartella export: servono solo con più istanze dell'app |
 
 Legenda: ✅ risolto · ⏳ da fare · ➖ non necessario con un'istanza sola (da riprendere se si scala) · 🔍 da valutare. Dettagli di ogni intervento nella sezione 7, segreti nella sezione 8, server di destinazione nella sezione 9.
@@ -62,9 +62,9 @@ Legenda: ✅ risolto · ⏳ da fare · ➖ non necessario con un'istanza sola (d
 
 | # | Stato | Intervento |
 |---|---|---|
-| 6 | ⏳ Da fare | **Dockerfile multi-stage**: uno stage Node per `ng build`, uno stage SDK per `dotnet publish -c Release -p:AngularBuilt=true` (così salta il target MSBuild) e uno stage `aspnet` di runtime. Il target `CleanWwwrootDebug` usa PowerShell ma scatta solo in Debug: nessun problema. |
+| 6 | ✅ | **Dockerfile multi-stage**: uno stage Node per `ng build`, uno stage SDK per `dotnet publish -c Release -p:AngularBuilt=true` (così salta il target MSBuild) e uno stage `aspnet` di runtime. Il target `CleanWwwrootDebug` usa PowerShell ma scatta solo in Debug: nessun problema. |
 | 7 | ✅ | **Segreti fuori dagli appsettings** (password Postgres, chiave JWT, password RabbitMQ): passarli come variabili d'ambiente (`ConnectionStrings__nvxappDbContext`, `JwtParameter__Key`, …) o come Docker secrets. I file `groq.key`, `openrouter.key` e `brevo.key`, letti da `ContentRootPath`, vanno montati come secret o volume, oppure letti da variabile d'ambiente come fa già `Email__Password`. |
-| 8 | ⏳ Da fare | **`.dockerignore`**: escludere `node_modules`, `bin`, `obj`, `.angular`, i file `.key` e `Logs`. |
+| 8 | ✅ | **`.dockerignore`**: escludere `node_modules`, `bin`, `obj`, `.angular`, i file `.key` e `Logs`. |
 | 9 | ⏳ Da fare | **`docker-compose.yml`** con app, postgres (con volume), rabbitmq e, se serve, il reverse proxy. |
 
 ### 3.3 Da valutare
@@ -91,30 +91,15 @@ Si possono avere. L'approccio consigliato è **una sola immagine**, con la confi
 | Visual Studio | Profili `.pubxml` di tipo *Container Registry* accanto a `IISProfile`, oppure `dotnet publish /t:PublishContainer` con `ContainerImageTag` diversi. Il profilo IIS attuale può restare. |
 | Angular | Le configurazioni di `angular.json` (`production`, `development`, `ci`) restano. Con le URL relative del punto 1 non servono build diverse per ambiente. |
 
-### Schema di Dockerfile di partenza
+### Dockerfile
 
-```dockerfile
-FROM node:22 AS web
-WORKDIR /src/nvxapp.client
-COPY nvxapp.client/package*.json ./
-RUN npm ci
-COPY nvxapp.client/ ./
-RUN npx ng build
+Il `Dockerfile` è nella cartella della solution (punto 6, dettagli nella sezione 7), insieme al `.dockerignore` (punto 8). Si costruisce da quella cartella:
 
-FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
-WORKDIR /src
-COPY . .
-COPY --from=web /src/nvxapp.client/www nvxapp.server/wwwroot
-RUN dotnet publish nvxapp.server/nvxapp.server.csproj -c Release -p:AngularBuilt=true -o /app
-
-FROM mcr.microsoft.com/dotnet/aspnet:10.0
-ENV TZ=Europe/Rome RunTime__Port=8080 RunTime__UseHttps=false
-RUN apt-get update && apt-get install -y tzdata && rm -rf /var/lib/apt/lists/*
-WORKDIR /app
-COPY --from=build /app .
-EXPOSE 8080
-ENTRYPOINT ["dotnet", "nvxapp.server.dll"]
 ```
+docker build -t nvxapp:<tag> .
+```
+
+L'immagine non contiene configurazione d'ambiente né segreti: è la stessa per test e produzione, e quello che cambia si passa all'avvio con le variabili `NVXAPP_*` (sezione 8).
 
 ## 5. Interventi che migliorano l'applicazione anche senza Docker
 
@@ -142,7 +127,7 @@ Molti punti sono utili anche con il deploy IIS attuale e rendono la migrazione f
 
 ### 5.3 Senza effetti sull'app attuale
 
-- ⏳ Dockerfile, `.dockerignore`, `docker-compose` con override per test e produzione (punti 6, 8, 9): file in più che non toccano il funzionamento attuale. Utili subito anche solo per avere un ambiente di test con Postgres e RabbitMQ in un comando.
+- ✅ Dockerfile e `.dockerignore` (punti 6 e 8). ⏳ `docker-compose` con override per test e produzione (punto 9). Sono file in più che non toccano il funzionamento attuale. Utili subito anche solo per avere un ambiente di test con Postgres e RabbitMQ in un comando.
 
 ### 5.4 Solo se si scala su più istanze
 
@@ -152,7 +137,7 @@ Molti punti sono utili anche con il deploy IIS attuale e rendono la migrazione f
 
 1. ✅ **Primo blocco** (circa mezza giornata, rischio basso): punti 1, 3, 4, 7b, 13 e versione minima del 2. Completato, insieme al punto 5.
 2. ✅ **Secondo blocco**: punto 7 (segreti in variabili d'ambiente), da fare separatamente perché cambia come si avvia l'app su IIS e in Visual Studio.
-3. ⏳ **Terzo blocco**: Dockerfile, `.dockerignore`, compose con override per test e produzione, verifica dell'avvio su Linux.
+3. ⏳ **Terzo blocco**: ✅ Dockerfile e `.dockerignore` con verifica dell'avvio su Linux; ⏳ compose con override per test e produzione.
 4. ⏳ **Quarto blocco**: preparazione del VPS Contabo e primo rilascio (sezione 9).
 
 Seguendo il flusso dei branch, gli interventi infrastrutturali (3, 4, 7, 13) vanno fatti su **Infrastructure_Dev** e poi mergiati verso AttendanceTracking.
@@ -166,10 +151,10 @@ Seguendo il flusso dei branch, gli interventi infrastrutturali (3, 4, 7, 13) van
 | 3 | Percorso log con `Path.Combine` | ✅ Risolto | 27/10/2026 | `Infrastructure_Dev`, mergiato fino ad `AttendanceTracking` | In `nvxapp.server/Utility/Installers.cs` (`InstallLog`) il file di log è `Path.Combine(builder.Environment.ContentRootPath, "Logs", "nvxapp.log")` al posto di `"Logs\\nvxapp.log"`: corretto su Windows e Linux e indipendente dalla cartella corrente del processo. Su IIS e in Visual Studio la cartella resta la stessa di prima (`<cartella app>/Logs`). In Docker basta montare un volume su `/app/Logs`. |
 | 4 | Chiavi DataProtection persistenti | ✅ Risolto | 27/10/2026 | `Infrastructure_Dev`, mergiato fino ad `AttendanceTracking` | Chiavi salvate su DB nella nuova tabella `public."DataProtectionKeys"` (`PublicDbContext` implementa `IDataProtectionKeyContext`, pacchetto `Microsoft.AspNetCore.DataProtection.EntityFrameworkCore` 10.0.12, migrazione `AddDataProtectionKeys`). In `Installers.cs` (`InstallEntityContex`): `AddDataProtection().SetApplicationName("nvxapp").PersistKeysToDbContext<PublicDbContext>()`. `ApplicationName` fisso perché di default dipende dalla cartella dell'app (IIS, Docker e sviluppo sono diverse). Scelto il DB invece di una cartella perché il profilo IIS (`SkipExtraFilesOnServer=false`) cancella a ogni pubblicazione i file non presenti nel pacchetto. Su DB funziona anche in Docker senza volumi e con più istanze. Verificato su un database di prova: al primo avvio la migrazione crea la tabella e salva la chiave; al riavvio la chiave viene riletta (nessuna nuova chiave). **Nota:** al primo avvio i link di conferma email / reset password inviati prima dell'aggiornamento non valgono più (cambia la chiave). Le chiavi sono salvate in chiaro nel DB (avviso `XmlKeyManager[35]` al primo avvio): accettabile con un DB protetto, cifrabile in futuro con `ProtectKeysWithCertificate`. |
 | 5 | `UseForwardedHeaders` | ✅ Risolto (disattivato di default) | 27/10/2026 | `Infrastructure_Dev`, mergiato fino ad `AttendanceTracking` | Nuova sezione `ReverseProxy` in `appsettings.json` (`Enabled: false`, `KnownProxies`, `KnownNetworks`). `Installers.InstallForwardedHeaders` configura `X-Forwarded-For` e `X-Forwarded-Proto`; in `Program.cs` `app.UseForwardedHeaders()` è il primo middleware, ma solo con `ReverseProxy:Enabled=true`. **Spento non cambia nulla in debug né su IIS in-process**: il codice non viene eseguito. Con proxy dichiarati si accettano gli header solo da loro (più localhost); con liste vuote da chiunque, con avviso nel log: va bene solo se la porta dell'app è raggiungibile unicamente dal proxy (rete interna di docker compose). In Docker: `ReverseProxy__Enabled=true`. Verificato con `UseHttpsRedirection` e `X-Forwarded-Proto: https`: spento = 307 verso https (header ignorato); acceso = nessun redirect; acceso senza header = 307. **Valore oggi limitato**: il server non usa schema, host o IP della richiesta (i link delle email usano `App:PublicUrl` o l'header `Origin`); serve a IP reale nei log, a `UseHttpsRedirection` e a usi futuri dietro proxy. |
-| 6 | Dockerfile multi-stage | Da fare | | | |
+| 6 | Dockerfile multi-stage | ✅ Risolto | 27/10/2026 | `Infrastructure_Dev`, mergiato fino ad `AttendanceTracking` | `Dockerfile` nella cartella della solution, tre stage. **web** (`node:22-bookworm-slim`): `npm ci` e `ng build --configuration production` → `nvxapp.client/www`. **build** (`dotnet/sdk:10.0`): restore dei soli `.csproj` (resta in cache finché i pacchetti non cambiano), client copiato in `nvxapp.server/wwwroot`, `dotnet publish -c Release -p:AngularBuilt=true` (salta il target `BuildAngular` del csproj). **final** (`dotnet/aspnet:10.0`, Ubuntu 24.04): immagine completa con ICU e `tzdata`, più `libgssapi-krb5-2` (Npgsql la cerca alla prima connessione: senza, scrive `Cannot load library libgssapi_krb5.so.2`); gira con l'utente non root `app`; cartella `/app/Logs` scrivibile, da montare come volume. Variabili fisse: `ASPNETCORE_ENVIRONMENT=Production`, `NVXAPP_RunTime__Port=8080`, `NVXAPP_RunTime__UseHttps=false`, `TZ=Europe/Rome`; `ASPNETCORE_HTTP_PORTS` svuotata perché la porta la apre l'app. Nessun segreto nell'immagine: tutto il resto all'avvio con le variabili `NVXAPP_*`. Immagine di circa **285 MB**; prima build circa 4 minuti, le successive riusano la cache. **Verificato** con Docker Desktop (linux/amd64, come il VPS) su una rete con Postgres 15 e RabbitMQ in container: primo avvio su DB vuoto con migrazioni e modalità multi-tenant salvata; log `Cultura it-IT, fuso orario Europe/Rome` e ora del container in CET; client Angular servito (`/`, `/login`, `/reset-password` → 200); login 200; API protetta 401 senza token e 200 con token; negoziazione SignalR riuscita; connessione a RabbitMQ attiva; Swagger spento (`swagger.json` 404); log su file in `/app/Logs`. Secondo avvio sullo stesso DB: nessuna migrazione e chiave DataProtection riletta. PDF (AttendanceTracking): già indipendenti dai font installati, perché `PdfFontResolver` usa i font Segoe WP inclusi in PDFsharp. |
 | 7 | Segreti in variabili d'ambiente | ✅ Risolto | 27/10/2026 | `Infrastructure_Dev`, mergiato fino ad `AttendanceTracking` | Connessione DB, chiave JWT e password RabbitMQ tolte da `appsettings.json`, `appsettings.Development.json` e `appsettings.Development.DEV1.json`: valori `""` con commento che indica la variabile. In `InstallSettings` le variabili con prefisso `NVXAPP_` (`__` al posto di `:`) sono aggiunte per ultime e vincono sugli appsettings; il prefisso evita che le leggano altre app .NET della macchina. All'avvio `CheckRequiredSecrets` ferma l'app se mancano connessione DB o chiave JWT (almeno 32 byte, requisito di HMAC-SHA256), indicando la variabile. Anche la factory di design-time di `dotnet ef` legge `NVXAPP_ConnectionStrings__nvxappDbContext`. Elenco e modalità d'uso nella sezione 8. Verificato su server di prova: senza variabili l'app si ferma con il messaggio; con le variabili login 200 e API protetta 401 senza token / 200 con token. **I valori tolti restano nella storia di git e su origin: vanno cambiati** (chiave JWT, password DB e RabbitMQ). |
 | 7b | Chiavi AI e password SMTP senza file `.key` | ✅ Risolto | 27/10/2026 | `Infrastructure_Dev`, mergiato fino ad `AttendanceTracking` | `ChatAIService` non legge più `groq.key` e `openrouter.key`: le chiavi sono `AI:AI_groq:ApiKey` e `AI:AI_openrouter:ApiKey` (variabili `NVXAPP_AI__AI_groq__ApiKey`, `NVXAPP_AI__AI_openrouter__ApiKey`). È obbligatoria **solo quella del provider in uso** (`AI:UseLLM`): prima mancava un file qualsiasi e la chat si bloccava. `EmailService` non legge più `brevo.key`: password solo da `Email:Password` (`NVXAPP_Email__Password`), con errore esplicito se manca. Rimosse dagli appsettings le chiavi mai lette `OpenRouterKey` e `AI_local:Key` e il segnaposto `TUO_BREVO_KEY`. Verificato: senza la chiave Groq la chat risponde 500 con "impostare la variabile d'ambiente NVXAPP_AI__AI_groq__ApiKey". I file `.key` in `nvxapp.server/` e in `C:\inetpub\wwwroot\nvxapp\` non servono più e si possono eliminare, dopo aver conservato le chiavi altrove. |
-| 8 | `.dockerignore` | Da fare | | | |
+| 8 | `.dockerignore` | ✅ Risolto | 27/10/2026 | `Infrastructure_Dev`, mergiato fino ad `AttendanceTracking` | Fatto insieme al punto 6, perché senza la build non funziona: le cartelle `obj` di Windows contengono percorsi locali che rompono `dotnet restore`. Esclude `.git`, `.vs`, `.claude`, `*.user`, `node_modules`, `bin`, `obj`, `.angular`, `dist`, `www`, `wwwroot`, i segreti (`*.key`, `*.segreti.ps1`, `.env`, `.env.*` tranne `.env.example`), `Logs` e `nvxapp.server/Note`. Il contesto inviato a Docker passa da oltre 400 MB a circa 5 MB e nell'immagine non finisce nessun file `.key`. |
 | 9 | `docker-compose` con override per ambiente | Da fare | | | |
 | 10 | Migrazioni all'avvio | ➖ Non necessario sul VPS | 27/10/2026 | | Un'istanza sola: la migrazione all'avvio va bene. Prima di ogni rilascio, backup del DB (sezione 9). |
 | 11 | SignalR con più repliche | ➖ Non necessario sul VPS | 27/10/2026 | | Un'istanza sola: nessun backplane né sticky session. |
@@ -247,7 +232,7 @@ Il build Angular più `dotnet publish` richiede parecchia RAM e tempo: meglio **
 
 | Modo | Come | Nota |
 |---|---|---|
-| Senza registry (consigliato per iniziare) | `docker save nvxapp:<tag> \| gzip` → `scp` → `docker load` sul VPS | Nessun servizio esterno; tag con data o versione per il rollback. |
+| Senza registry (consigliato per iniziare) | `docker build -t nvxapp:<tag> .` nella cartella della solution, poi `docker save nvxapp:<tag> \| gzip` → `scp` → `docker load` sul VPS | Nessun servizio esterno; tag con data o versione per il rollback. |
 | Registry privato | GitHub Container Registry o Docker Hub privato: `docker push` dal PC, `docker compose pull` sul VPS | Più comodo quando i rilasci sono frequenti. |
 | Build sul VPS | `git pull` e `docker compose build` | Possibile ma lento, e serve il codice sul server. |
 

@@ -1,0 +1,29 @@
+# File esclusi dal contesto di build del Dockerfile (punto 8 di nvxapp.server/docs/ANALISI_DOCKER.md).
+# Oltre a velocizzare la build, evitano che nell'immagine finiscano segreti o file compilati su Windows.
+
+# git, Visual Studio, Claude
+.git
+.vs
+.claude
+**/*.user
+
+# dipendenze e output di build: vengono rifatti dentro il container
+# (obj di Windows contiene percorsi locali che rompono dotnet restore)
+**/node_modules
+**/bin
+**/obj
+**/.angular
+**/dist
+nvxapp.client/www
+nvxapp.server/wwwroot
+
+# segreti: nell'immagine non devono mai esserci (si passano come variabili d'ambiente)
+**/*.key
+**/*.segreti.ps1
+**/.env
+**/.env.*
+!**/.env.example
+
+# log e note locali
+**/Logs
+nvxapp.server/Note
