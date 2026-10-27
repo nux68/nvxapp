@@ -150,7 +150,7 @@ Seguendo il flusso dei branch, gli interventi infrastrutturali (3, 4, 7, 13) van
 |---|---|---|---|---|---|
 | 1 | URL API relative nel client | ✅ Risolto | 27/10/2026 | `Infrastructure_Dev`, mergiato fino ad `AttendanceTracking` | In `nvxapp.client/src/environments/environment.prod.ts`: `apiUri: '/api/'` e `signalrUri: '/'`. Tutti i servizi concatenano il percorso a queste basi, così chiamate HTTP, download (`page-toolbar`) e hub SignalR (`/chathub`) usano l'origine della pagina. `environment.ts` (sviluppo con `ng serve` su `https://localhost:7146`) è invariato. Capacitor è presente solo come configurazione del template Ionic, senza piattaforme native: se un giorno si crea l'app nativa servirà di nuovo un indirizzo assoluto. Verificato con build Angular di produzione: nel bundle `apiUri` vale `/api/` e l'IP non compare più. |
 | 2 | Cultura e fuso orario | Da fare | | | |
-| 3 | Percorso log con `Path.Combine` | Da fare | | | |
+| 3 | Percorso log con `Path.Combine` | ✅ Risolto | 27/10/2026 | `Infrastructure_Dev`, mergiato fino ad `AttendanceTracking` | In `nvxapp.server/Utility/Installers.cs` (`InstallLog`) il file di log è `Path.Combine(builder.Environment.ContentRootPath, "Logs", "nvxapp.log")` al posto di `"Logs\\nvxapp.log"`: corretto su Windows e Linux e indipendente dalla cartella corrente del processo. Su IIS e in Visual Studio la cartella resta la stessa di prima (`<cartella app>/Logs`). In Docker basta montare un volume su `/app/Logs`. |
 | 4 | Chiavi DataProtection persistenti | Da fare | | | |
 | 5 | `UseForwardedHeaders` | Da fare | | | |
 | 6 | Dockerfile multi-stage | Da fare | | | |
