@@ -86,8 +86,8 @@ Si possono avere. L'approccio consigliato è **una sola immagine**, con la confi
 | Ambiente .NET | `ASPNETCORE_ENVIRONMENT=Test` / `Production`, che carica `appsettings.Test.json`, `appsettings.Production.json`, …. Il meccanismo esiste già: vedi `appsettings.Development.DEV1.json`. |
 | Valori specifici e segreti | Variabili d'ambiente nel compose, che sovrascrivono gli appsettings. |
 | Compose per ambiente | `docker-compose.yml` di base più `docker-compose.test.yml` e `docker-compose.prod.yml` (`docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d`), oppure i `profiles:` di compose per attivare servizi opzionali (Hangfire, RabbitMQ, Postgres locale). |
-| File `.env` | `.env.test` e `.env.prod` con porta, tag dell'immagine e URL pubblico. |
-| Visual Studio | Profilo **`DockerLocale`** accanto a `IISProfile`: pubblica su Docker Desktop lanciando `docker compose up -d --build` (sezione 10.1). Il profilo IIS resta invariato. |
+| File di ambiente | `DockerLocale.env` (PC) e `DockerVps.env` (server), copie di `.env.example` escluse da git, con profilo, tag dell'immagine, segreti e URL pubblico. Per un altro ambiente basta un altro file, passato con `--env-file`. |
+| Visual Studio | Profilo **`DockerLocale`** accanto a `IISProfile`: pubblica su Docker Desktop lanciando `docker compose --env-file DockerLocale.env up -d --build` (sezione 10.1). Il profilo IIS resta invariato. |
 | Angular | Le configurazioni di `angular.json` (`production`, `development`, `ci`) restano. Con le URL relative del punto 1 non servono build diverse per ambiente. |
 
 ### Dockerfile
@@ -181,7 +181,7 @@ Qualsiasi altra chiave di configurazione si può sovrascrivere allo stesso modo 
 - Da PowerShell aperto come amministratore: `powershell -ExecutionPolicy Bypass -File <script>`. Lo script fa `iisreset`; poi chiudere e riaprire Visual Studio. Va rilanciato solo per cambiare un valore o su un'altra macchina.
 - Controllo: `(Get-ChildItem Env:NVXAPP_*).Name` in una nuova finestra.
 
-**Docker**: le variabili di sistema di Windows non arrivano nei container. Si usa il file `.env` accanto al compose (escluso da git, copia di `.env.example`): il compose ne prende i valori e li passa all'app con i nomi `NVXAPP_*`. La connessione DB la compone il compose da `POSTGRES_PASSWORD` (host `postgres`), RabbitMQ usa `RABBITMQ_PASSWORD` (host `rabbitmq`); chiave JWT, email e AI hanno gli stessi nomi della tabella. Come far partire l'app nella sezione 10.
+**Docker**: le variabili di sistema di Windows non arrivano nei container. Si usa un file di ambiente accanto al compose, copia di `.env.example` ed escluso da git (`*.env`): `DockerLocale.env` sul PC, `DockerVps.env` per il server, dove si copia come `.env`. Il compose ne prende i valori e li passa all'app con i nomi `NVXAPP_*`. La connessione DB la compone il compose da `POSTGRES_PASSWORD` (host `postgres`), RabbitMQ usa `RABBITMQ_PASSWORD` (host `rabbitmq`); chiave JWT, email e AI hanno gli stessi nomi della tabella. Come far partire l'app nella sezione 10.
 
 **Linux senza Docker**: `EnvironmentFile=/etc/nvxapp/nvxapp.env` nel servizio systemd (file con `chmod 600`).
 
@@ -217,7 +217,7 @@ Internet ──443/80──> caddy ──8080──> nvxapp ──> postgres
 | `rabbitmq` | `rabbitmq:3-management` | nessuna | `rabbit_data` |
 
 - **Reverse proxy: Caddy**. Ottiene e rinnova da solo il certificato Let's Encrypt e il `Caddyfile` è di due righe (`dominio { reverse_proxy nvxapp:8080 }`). WebSocket di SignalR inclusi senza configurazione. In alternativa nginx con certbot, più lavoro.
-- **App**: `ASPNETCORE_ENVIRONMENT=Production`, `RunTime__Port=8080`, `RunTime__UseHttps=false`, `NVXAPP_ReverseProxy__Enabled=true` (sicuro perché la porta 8080 la raggiunge solo Caddy), `NVXAPP_App__PublicUrl=https://<dominio>`. Segreti dal file `.env` (sezione 8), con `Host=postgres` e host RabbitMQ `rabbitmq`.
+- **App**: `ASPNETCORE_ENVIRONMENT=Production`, `RunTime__Port=8080`, `RunTime__UseHttps=false`, `NVXAPP_ReverseProxy__Enabled=true` (sicuro perché la porta 8080 la raggiunge solo Caddy), `NVXAPP_App__PublicUrl=https://<dominio>`. Segreti dal `.env` del server, copia di `DockerVps.env` (sezione 8), con `Host=postgres` e host RabbitMQ `rabbitmq`.
 - **Postgres e RabbitMQ senza porte pubblicate**: la console di RabbitMQ e Postgres si raggiungono, quando serve, con un tunnel SSH (`ssh -L 5432:...`) o pubblicando la porta solo su `127.0.0.1`.
 - **Attenzione: le porte pubblicate da Docker scavalcano `ufw`**. Per questo non si pubblica nulla tranne 80 e 443 di Caddy.
 - **Riavvio automatico**: `restart: unless-stopped` su tutti i servizi, così ripartono dopo un riavvio del VPS.
@@ -243,14 +243,14 @@ Rilascio: snapshot o dump del DB → carica la nuova immagine → `docker compos
 2. `ufw`: aperte solo 22, 80 e 443. Più `fail2ban` e `unattended-upgrades` per gli aggiornamenti di sicurezza.
 3. Docker Engine e plugin compose dal repository ufficiale di Docker (non il pacchetto `docker.io` di Ubuntu).
 4. Fuso del sistema `Europe/Rome` (`timedatectl`), comodo per leggere i log. L'app non ne dipende: usa `RunTime:TimeZone` (punto 2).
-5. Cartella `/opt/nvxapp` con `docker-compose.yml`, `docker-compose.prod.yml`, `docker/Caddyfile` e `.env` (`chmod 600`, mai in git) con `COMPOSE_FILE=docker-compose.yml:docker-compose.prod.yml`.
+5. Cartella `/opt/nvxapp` con `docker-compose.yml`, `docker-compose.prod.yml`, `docker/Caddyfile` e `.env` (copia di `DockerVps.env`, `chmod 600`, mai in git) con `COMPOSE_FILE=docker-compose.yml:docker-compose.prod.yml`.
 6. Dominio: record A verso l'IP del VPS **prima** del primo avvio di Caddy, altrimenti il certificato non viene emesso.
 
 ### 9.4 Backup
 
 - **Database**: `pg_dump` giornaliero via cron (`docker compose exec postgres pg_dump ...`) in una cartella del VPS, con rotazione (es. 14 giorni) e **copia fuori dal VPS** (PC, storage esterno). Senza copia esterna, se si perde il VPS si perdono anche i backup.
 - **Chiavi DataProtection**: stanno nel DB (punto 4), quindi sono già nel dump.
-- **File `.env`**: copia sicura fuori dal server (gestore di password), non in git.
+- **File `DockerVps.env`** (il `.env` del server): copia sicura fuori dal server (gestore di password), non in git.
 - **Snapshot Contabo**: prima di ogni rilascio (ne è incluso 1). Il backup automatico a €1,65/mese è un'ulteriore sicurezza, ma non sostituisce il dump: ripristina tutta la macchina, non il singolo database.
 - Prova di ripristino del dump su un database di test almeno una volta, prima di andare in produzione.
 
@@ -266,31 +266,40 @@ Rilascio: snapshot o dump del DB → carica la nuova immagine → `docker compos
 
 File nella cartella della solution (`C:\REPO\ANGULAR-2025\Merge\nvxapp`): `Dockerfile`, `.dockerignore`, `docker-compose.yml`, `docker-compose.local.yml`, `docker-compose.prod.yml`, `docker/Caddyfile`, `.env.example`. Tutti i comandi si lanciano da quella cartella (sul server da `/opt/nvxapp`).
 
+**File di ambiente** (copie di `.env.example`, con segreti, esclusi da git):
+
+| File | Dove | Come viene letto |
+|---|---|---|
+| `DockerLocale.env` | PC, cartella della solution | dal profilo di pubblicazione **DockerLocale**; nei comandi a mano con `docker compose --env-file DockerLocale.env ...` |
+| `DockerVps.env` | PC, cartella della solution (si prepara e si conserva qui) | si copia sul VPS come `/opt/nvxapp/.env`: lì `docker compose` lo legge da solo |
+
+Sul PC, un comando `docker compose` senza `--env-file DockerLocale.env` si ferma con "impostare POSTGRES_PASSWORD nel file di ambiente".
+
 ### 10.1 Sul PC (Docker Desktop)
 
 1. **Avviare Docker Desktop** e aspettare che sia pronto.
-2. **Creare il file `.env`** (solo la prima volta), in PowerShell nella cartella della solution:
+2. **Creare il file `DockerLocale.env`** (solo la prima volta), in PowerShell nella cartella della solution:
    ```powershell
-   Copy-Item .env.example .env
-   notepad .env
+   Copy-Item .env.example DockerLocale.env
+   notepad DockerLocale.env
    ```
    Compilare `POSTGRES_PASSWORD`, `RABBITMQ_PASSWORD` e `NVXAPP_JwtParameter__Key` con valori casuali, generabili con:
    ```powershell
    -join ((1..32) | ForEach-Object { '{0:x2}' -f (Get-Random -Maximum 256) })
    ```
    Facoltativi: `NVXAPP_Email__Password` e la chiave AI (senza, email e chat AI non funzionano). `COMPOSE_FILE` è già impostato sul profilo locale.
-3. **Avviare**:
+3. **Avviare** (oppure da Visual Studio, sotto):
    ```powershell
-   docker compose up -d --build
+   docker compose --env-file DockerLocale.env up -d --build
    ```
    La prima volta servono circa 5 minuti (scarica le immagini e compila Angular e .NET); le volte successive molto meno.
 4. **Aprire** http://localhost:8080. Al primo avvio il database è nuovo, con gli utenti iniziali (es. `SuperUser`).
-5. **Dopo una modifica al codice**: di nuovo `docker compose up -d --build` (ricrea solo l'app; i dati restano), oppure da Visual Studio (sotto).
-6. **Fermare**: `docker compose down`. I dati restano nei volumi e al prossimo `up` si ritrovano. `docker compose down -v` invece **cancella** anche il database.
+5. **Dopo una modifica al codice**: di nuovo `docker compose --env-file DockerLocale.env up -d --build` (ricrea solo l'app; i dati restano), oppure da Visual Studio (sotto).
+6. **Fermare**: `docker compose --env-file DockerLocale.env down`. I dati restano nei volumi e al prossimo `up` si ritrovano. Con `down -v` invece **cancella** anche il database.
 
 Database e code di Docker sono separati da quelli di sviluppo usati da Visual Studio: le due cose possono girare insieme.
 
-**Da Visual Studio**: tasto destro su `nvxapp.server` → **Pubblica** → profilo **DockerLocale** → **Pubblica** (`Properties/PublishProfiles/DockerLocale.pubxml`). Compila in Release senza Angular, poi lancia `docker compose up -d --build` nella cartella della solution e apre http://localhost:8080; l'avanzamento di Docker compare nella finestra Output. Circa 2 minuti se è cambiato solo il server, di più se è cambiato il client. Si ferma con un messaggio chiaro se Docker Desktop non è avviato o se manca il file `.env`. Per fermare l'app resta `docker compose down`.
+**Da Visual Studio**: tasto destro su `nvxapp.server` → **Pubblica** → profilo **DockerLocale** → **Pubblica** (`Properties/PublishProfiles/DockerLocale.pubxml`). Compila in Release senza Angular, poi lancia `docker compose --env-file DockerLocale.env up -d --build` nella cartella della solution e apre http://localhost:8080; l'avanzamento di Docker compare nella finestra Output. Circa 2 minuti se è cambiato solo il server, di più se è cambiato il client. Si ferma con un messaggio chiaro se Docker Desktop non è avviato o se manca il file `DockerLocale.env`. Per fermare l'app resta `docker compose --env-file DockerLocale.env down`.
 
 ### 10.2 Sul VPS (primo rilascio)
 
@@ -304,7 +313,7 @@ Prerequisiti: VPS preparato come nella sezione 9.3 (Docker installato, `ufw`, ca
    Usare `-o`: in PowerShell 5.1 una pipe o un `>` rovinano i file binari.
 2. **Copiare sul VPS** immagine e file del compose:
    ```powershell
-   scp nvxapp-2026-10-27.tar docker-compose.yml docker-compose.prod.yml .env.example utente@IP_VPS:/opt/nvxapp/
+   scp nvxapp-2026-10-27.tar docker-compose.yml docker-compose.prod.yml utente@IP_VPS:/opt/nvxapp/
    scp docker/Caddyfile utente@IP_VPS:/opt/nvxapp/docker/
    ```
 3. **Sul VPS: caricare l'immagine**:
@@ -312,8 +321,13 @@ Prerequisiti: VPS preparato come nella sezione 9.3 (Docker installato, `ufw`, ca
    cd /opt/nvxapp
    docker load -i nvxapp-2026-10-27.tar
    ```
-4. **Creare il `.env`** (solo la prima volta): `cp .env.example .env && chmod 600 .env && nano .env`, poi:
-   - `COMPOSE_FILE=docker-compose.yml:docker-compose.prod.yml` (riga del server, separatore `:`), commentando quella del PC;
+4. **Il `.env` del server** (la prima volta e quando cambia): compilare sul PC `DockerVps.env`, che ha già il profilo del server e password e chiave JWT nuove, poi copiarlo come `.env` e proteggerlo:
+   ```powershell
+   scp DockerVps.env utente@IP_VPS:/opt/nvxapp/.env
+   ssh utente@IP_VPS chmod 600 /opt/nvxapp/.env
+   ```
+   In `DockerVps.env` controllare:
+   - `COMPOSE_FILE=docker-compose.yml:docker-compose.prod.yml` (separatore `:` di Linux);
    - `NVXAPP_TAG=2026-10-27`;
    - password e chiave JWT **nuove**, diverse da quelle di sviluppo (`openssl rand -hex 32`);
    - chiave Brevo e chiave AI;
@@ -332,10 +346,12 @@ Prerequisiti: VPS preparato come nella sezione 9.3 (Docker installato, `ufw`, ca
 
 1. Backup: snapshot Contabo e/o dump del DB (tabella sotto).
 2. Sul PC: `docker build` e `docker save` con un nuovo tag, poi `scp` del `.tar` (i file del compose solo se sono cambiati).
-3. Sul VPS: `docker load -i ...`, aggiornare `NVXAPP_TAG` nel `.env`, `docker compose up -d`: ricrea solo l'app, le migrazioni partono all'avvio.
+3. Sul VPS: `docker load -i ...`, aggiornare `NVXAPP_TAG` nel `.env` (e in `DockerVps.env` sul PC, per tenerli allineati), `docker compose up -d`: ricrea solo l'app, le migrazioni partono all'avvio.
 4. **Rollback**: rimettere il tag precedente in `NVXAPP_TAG` e `docker compose up -d`; se la nuova versione aveva cambiato lo schema del DB, ripristinare anche il dump.
 
 ### 10.4 Comandi utili
+
+Scritti come sul server. **Sul PC** aggiungere `--env-file DockerLocale.env` subito dopo `docker compose` (es. `docker compose --env-file DockerLocale.env ps`).
 
 | Cosa | Comando |
 |---|---|
@@ -347,4 +363,4 @@ Prerequisiti: VPS preparato come nella sezione 9.3 (Docker installato, `ufw`, ca
 | Dump del database | `docker compose exec -T postgres pg_dump -U postgres -Fc -f /tmp/nvxapp.dump nvxapp` e poi `docker compose cp postgres:/tmp/nvxapp.dump .` |
 | Ripristino di un dump | `docker compose cp nvxapp.dump postgres:/tmp/` e poi `docker compose exec -T postgres pg_restore -U postgres -d nvxapp --clean --if-exists /tmp/nvxapp.dump` (con l'app ferma: `docker compose stop nvxapp`) |
 | Console RabbitMQ (solo PC) | http://localhost:15672, utente `rabbit` |
-| Postgres da pgAdmin (solo PC) | `localhost:5434`, utente `postgres` |
+| Postgres da pgAdmin/Navicat (solo PC) | host `127.0.0.1` (non `localhost`: la porta è solo IPv4), porta `5434`, utente `postgres`, password `POSTGRES_PASSWORD` di `DockerLocale.env` |

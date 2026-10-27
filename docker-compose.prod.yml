@@ -1,5 +1,5 @@
 # Override per il server (VPS Contabo, sezione 9 di nvxapp.server/docs/ANALISI_DOCKER.md), insieme a docker-compose.yml.
-# Nel .env: COMPOSE_FILE=docker-compose.yml:docker-compose.prod.yml
+# File di ambiente: DockerVps.env, copiato sul server come .env, con COMPOSE_FILE=docker-compose.yml:docker-compose.prod.yml
 #
 # Da Internet si raggiunge solo Caddy (80 e 443): ottiene e rinnova da solo il certificato HTTPS
 # per APP_DOMAIN (record DNS A gia' puntato sul server) e passa le richieste all'app.
@@ -14,7 +14,7 @@ services:
       # le richieste arrivano da Caddy: IP del client e https dagli header X-Forwarded-*.
       # Liste dei proxy vuote = header accettati da chiunque: va bene perche' la porta 8080 la raggiunge solo Caddy
       NVXAPP_ReverseProxy__Enabled: "true"
-      NVXAPP_App__PublicUrl: ${APP_PUBLIC_URL:?impostare APP_PUBLIC_URL nel file .env (es. https://app.miodominio.it)}
+      NVXAPP_App__PublicUrl: ${APP_PUBLIC_URL:?impostare APP_PUBLIC_URL nel .env del server (es. https://app.miodominio.it)}
     mem_limit: 2g
 
   postgres:
@@ -35,8 +35,8 @@ services:
       - "${HTTPS_PORT:-443}:443"
       - "${HTTPS_PORT:-443}:443/udp"
     environment:
-      APP_DOMAIN: ${APP_DOMAIN:?impostare APP_DOMAIN nel file .env (es. app.miodominio.it)}
-      ACME_EMAIL: ${ACME_EMAIL:?impostare ACME_EMAIL nel file .env (avvisi di Let's Encrypt sui certificati)}
+      APP_DOMAIN: ${APP_DOMAIN:?impostare APP_DOMAIN nel .env del server (es. app.miodominio.it)}
+      ACME_EMAIL: ${ACME_EMAIL:?impostare ACME_EMAIL nel .env del server (avvisi di Let's Encrypt sui certificati)}
     volumes:
       - ./docker/Caddyfile:/etc/caddy/Caddyfile:ro
       - caddy_data:/data

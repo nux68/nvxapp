@@ -1,6 +1,7 @@
 # Override per il PC di sviluppo (Docker Desktop), insieme a docker-compose.yml.
-# Nel .env: COMPOSE_FILE=docker-compose.yml;docker-compose.local.yml
-#   docker compose up -d --build     costruisce l'immagine dal codice corrente e avvia
+# File di ambiente: DockerLocale.env, con COMPOSE_FILE=docker-compose.yml;docker-compose.local.yml
+#   docker compose --env-file DockerLocale.env up -d --build     costruisce l'immagine dal codice corrente e avvia
+#   (lo stesso che fa il profilo di pubblicazione DockerLocale di Visual Studio)
 #   app:                http://localhost:8080
 #   console RabbitMQ:   http://localhost:15672 (utente rabbit)
 #   PostgreSQL:         localhost:5434 (utente postgres), es. da pgAdmin
