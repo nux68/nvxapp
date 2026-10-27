@@ -1,16 +1,18 @@
 # Analisi: distribuzione della solution su Docker
 
 > Analisi del 26/10/2026, branch `AttendanceTracking_Dev`. Interventi in corso dal 27/10/2026 su `Infrastructure_Dev`.
+>
+> **Server di destinazione**: Contabo Cloud VPS Core 4 con Ubuntu 24.04, un'unica istanza dell'app (sezione 9).
 
-**Stato al 27/10/2026: 8 punti su 14 risolti.**
+**Stato al 27/10/2026: 8 punti su 14 risolti, 3 da fare, 3 non necessari sul VPS.**
 
 | Stato | Punti |
 |---|---|
 | ✅ Risolti | 1 URL API relative · 2 cultura e fuso (versione minima) · 3 percorso log · 4 chiavi DataProtection · 5 reverse proxy · 7 segreti in variabili d'ambiente · 7b chiavi AI ed email senza file `.key` · 13 Swagger e CORS |
 | ⏳ Da fare | 6 Dockerfile · 8 `.dockerignore` · 9 `docker-compose` con profili per ambiente |
-| 🔍 Da valutare | 10 migrazioni all'avvio · 11 SignalR con più repliche · 12 cartella export |
+| ➖ Non necessari sul VPS | 10 migrazioni all'avvio · 11 SignalR con più repliche · 12 cartella export: servono solo con più istanze dell'app |
 
-Legenda: ✅ risolto · ⏳ da fare · 🔍 da valutare. Dettagli di ogni intervento nella sezione 7, segreti nella sezione 8.
+Legenda: ✅ risolto · ⏳ da fare · ➖ non necessario con un'istanza sola (da riprendere se si scala) · 🔍 da valutare. Dettagli di ogni intervento nella sezione 7, segreti nella sezione 8, server di destinazione nella sezione 9.
 
 ## 1. Situazione attuale
 
@@ -69,9 +71,9 @@ Legenda: ✅ risolto · ⏳ da fare · 🔍 da valutare. Dettagli di ogni interv
 
 | # | Stato | Tema | Nota |
 |---|---|---|---|
-| 10 | 🔍 Da valutare | Migrazioni all'avvio | `DatabaseInitializer` migra a ogni avvio. Con una sola istanza va bene; con più repliche c'è il rischio di migrazioni concorrenti, quindi meglio un job separato o un lock. `DbParameter:MultiTenant` si fissa al primo avvio su DB vuoto: ogni profilo deve averlo coerente con il proprio database. |
-| 11 | 🔍 Da valutare | SignalR con più repliche | Servono sticky session o un backplane (Redis). Con una sola istanza non serve nulla. |
-| 12 | 🔍 Da valutare | Cartella export | È in `Path.GetTempPath()/nvxapp_exports`: va bene per file temporanei, ma con più repliche il download può arrivare a un'istanza diversa da quella che ha creato il file. |
+| 10 | ➖ Non necessario sul VPS | Migrazioni all'avvio | `DatabaseInitializer` migra a ogni avvio. Con una sola istanza va bene; con più repliche c'è il rischio di migrazioni concorrenti, quindi meglio un job separato o un lock. `DbParameter:MultiTenant` si fissa al primo avvio su DB vuoto: ogni profilo deve averlo coerente con il proprio database. |
+| 11 | ➖ Non necessario sul VPS | SignalR con più repliche | Servono sticky session o un backplane (Redis). Con una sola istanza non serve nulla. |
+| 12 | ➖ Non necessario sul VPS | Cartella export | È in `Path.GetTempPath()/nvxapp_exports`: va bene per file temporanei, ma con più repliche il download può arrivare a un'istanza diversa da quella che ha creato il file. |
 | 13 | ✅ | Sicurezza | Swagger esposto in produzione su `/docs` e CORS che accetta qualsiasi origine (`SetIsOriginAllowed(origin => true)`). Con stessa origine dietro proxy il CORS si può restringere. |
 
 **Stima indicativa**: i punti 1–9 richiedono circa 2–4 giorni, test compresi. I punti 10–13 dipendono da quanto si vuole scalare.
@@ -135,8 +137,8 @@ Molti punti sono utili anche con il deploy IIS attuale e rendono la migrazione f
 |---|---|---|---|
 | 2 | ✅ (minima) | Cultura e fuso orario espliciti (`it-IT` / `Europe/Rome` da configurazione) | Rende l'app indipendente dalle impostazioni del server, cosa preziosa per un'app di rilevazione presenze. La versione minima (cultura da config in `Program.cs`) costa poco. Rivedere i ~28 `DateTime.Now` è un lavoro a parte, da fare solo con test. |
 | 5 | ✅ | `UseForwardedHeaders` | Serve solo con un proxy davanti (nginx, IIS reverse proxy, Cloudflare). Non fa danni. |
-| 12 | 🔍 Da valutare | Cartella export configurabile | Permette di indicare un disco o una cartella dedicata invece di `%TEMP%`. |
-| 10 | 🔍 Da valutare | Flag per disattivare la migrazione automatica all'avvio | Permette di controllare quando si migra in produzione. |
+| 12 | ➖ Non necessario sul VPS | Cartella export configurabile | Permette di indicare un disco o una cartella dedicata invece di `%TEMP%`. |
+| 10 | ➖ Non necessario sul VPS | Flag per disattivare la migrazione automatica all'avvio | Permette di controllare quando si migra in produzione. |
 
 ### 5.3 Senza effetti sull'app attuale
 
@@ -144,13 +146,14 @@ Molti punti sono utili anche con il deploy IIS attuale e rendono la migrazione f
 
 ### 5.4 Solo se si scala su più istanze
 
-- 🔍 Backplane SignalR e migrazioni come job separato (punti 10 e 11 nella forma completa).
+- ➖ Backplane SignalR e migrazioni come job separato (punti 10 e 11 nella forma completa). Non servono sul VPS, dove gira un'istanza sola.
 
 ## 6. Proposta operativa
 
 1. ✅ **Primo blocco** (circa mezza giornata, rischio basso): punti 1, 3, 4, 7b, 13 e versione minima del 2. Completato, insieme al punto 5.
 2. ✅ **Secondo blocco**: punto 7 (segreti in variabili d'ambiente), da fare separatamente perché cambia come si avvia l'app su IIS e in Visual Studio.
 3. ⏳ **Terzo blocco**: Dockerfile, `.dockerignore`, compose con override per test e produzione, verifica dell'avvio su Linux.
+4. ⏳ **Quarto blocco**: preparazione del VPS Contabo e primo rilascio (sezione 9).
 
 Seguendo il flusso dei branch, gli interventi infrastrutturali (3, 4, 7, 13) vanno fatti su **Infrastructure_Dev** e poi mergiati verso AttendanceTracking.
 
@@ -168,9 +171,9 @@ Seguendo il flusso dei branch, gli interventi infrastrutturali (3, 4, 7, 13) van
 | 7b | Chiavi AI e password SMTP senza file `.key` | ✅ Risolto | 27/10/2026 | `Infrastructure_Dev`, mergiato fino ad `AttendanceTracking` | `ChatAIService` non legge più `groq.key` e `openrouter.key`: le chiavi sono `AI:AI_groq:ApiKey` e `AI:AI_openrouter:ApiKey` (variabili `NVXAPP_AI__AI_groq__ApiKey`, `NVXAPP_AI__AI_openrouter__ApiKey`). È obbligatoria **solo quella del provider in uso** (`AI:UseLLM`): prima mancava un file qualsiasi e la chat si bloccava. `EmailService` non legge più `brevo.key`: password solo da `Email:Password` (`NVXAPP_Email__Password`), con errore esplicito se manca. Rimosse dagli appsettings le chiavi mai lette `OpenRouterKey` e `AI_local:Key` e il segnaposto `TUO_BREVO_KEY`. Verificato: senza la chiave Groq la chat risponde 500 con "impostare la variabile d'ambiente NVXAPP_AI__AI_groq__ApiKey". I file `.key` in `nvxapp.server/` e in `C:\inetpub\wwwroot\nvxapp\` non servono più e si possono eliminare, dopo aver conservato le chiavi altrove. |
 | 8 | `.dockerignore` | Da fare | | | |
 | 9 | `docker-compose` con override per ambiente | Da fare | | | |
-| 10 | Migrazioni all'avvio | Da valutare | | | |
-| 11 | SignalR con più repliche | Da valutare | | | |
-| 12 | Cartella export configurabile | Da valutare | | | |
+| 10 | Migrazioni all'avvio | ➖ Non necessario sul VPS | 27/10/2026 | | Un'istanza sola: la migrazione all'avvio va bene. Prima di ogni rilascio, backup del DB (sezione 9). |
+| 11 | SignalR con più repliche | ➖ Non necessario sul VPS | 27/10/2026 | | Un'istanza sola: nessun backplane né sticky session. |
+| 12 | Cartella export configurabile | ➖ Non necessario sul VPS | 27/10/2026 | | Un'istanza sola: i file temporanei nel container vanno bene; si perdono al riavvio, ma sono temporanei. |
 | 13 | Swagger in produzione e CORS | ✅ Risolto | 27/10/2026 | `Infrastructure_Dev`, mergiato fino ad `AttendanceTracking` | **CORS**: rimossi le policy `AllowAllOrigins` / `DynamicOrigins` (quest'ultima mai usata) e il middleware `UseDynamicCors`, che con SignalR attivo rimandava indietro qualsiasi `Origin` con le credenziali. Ora c'è un'unica policy da `Cors:AllowedOrigins` (`Installers.InstallCors`, `app.UseCors(Installers.CorsPolicyName)`). Vuoto = nessun CORS (`appsettings.json`: il client è servito dal server, stessa origine). Elenco = solo quelle origini. `"*"` = qualsiasi, con avviso nel log (`appsettings.Development.json`, per `ng serve`). Sempre `AllowCredentials`, richiesto da SignalR. **Swagger**: non dipende più dal nome dell'ambiente ma da `Swagger:Enabled` e `Swagger:RoutePrefix`: spento in `appsettings.json`, acceso su `/swagger` in sviluppo (ora anche con `Development.DEV1`, dove prima `IsDevelopment()` era falso). **Attenzione:** sul server IIS di test, che usa `appsettings.json`, dopo la prossima pubblicazione `/docs` non risponde più. Se serve: `Swagger__Enabled=true`. Verificato su server di prova: produzione = swagger 404 e nessun `Access-Control-Allow-Origin` per API e `/chathub` da un sito esterno; sviluppo e DEV1 = swagger 200 e CORS come prima; origine dichiarata = passa solo quella. |
 
 ## 8. Segreti: variabili d'ambiente
@@ -197,3 +200,80 @@ Qualsiasi altra chiave di configurazione si può sovrascrivere allo stesso modo 
 **Docker**: le variabili di sistema di Windows non arrivano nei container. Si usa un file `.env` accanto al compose, escluso da git, letto con `env_file`, con gli stessi nomi; nel repository solo un `.env.example` con i segnaposto (punti 6–9). In Docker gli host di DB e RabbitMQ sono i nomi dei servizi del compose, non `localhost`.
 
 **Linux senza Docker**: `EnvironmentFile=/etc/nvxapp/nvxapp.env` nel servizio systemd (file con `chmod 600`).
+
+## 9. Server di destinazione: Contabo Cloud VPS Core 4
+
+Il compose di produzione deve funzionare su questo server ([scheda Contabo](https://contabo.com/en/vps/cloud-vps-core-4?image=ubuntu.332&qty=1&contract=24&storage-type=ssd-storage-cloud-vps-core-4-default)).
+
+| Caratteristica | Valore | Conseguenza |
+|---|---|---|
+| CPU | 4 vCPU x86-64 | Immagini `linux/amd64`: quelle costruite su un PC Windows x64 vanno bene così. |
+| RAM | 8 GB | Bastano per app, Postgres, RabbitMQ e proxy. Non conviene costruire lì l'immagine (vedi sotto). |
+| Disco | 100 GB SSD (+200 GB a €1,50/mese) | Sufficiente; va limitata la crescita dei log Docker. |
+| Rete | 200 Mbit/s, traffico illimitato (fair use), 1 IPv4 | Serve un dominio con un record A verso l'IP per il certificato HTTPS. |
+| Sistema | Ubuntu 24.04 | Docker Engine e plugin compose dal repository ufficiale di Docker. |
+| Regione | Unione Europea | Va bene per il GDPR (dati di presenza dei dipendenti). |
+| Backup | 1 snapshot incluso; backup automatico giornaliero a €1,65/mese | Lo snapshot prima di ogni rilascio, più il dump del DB (vedi sotto). |
+| Contratto | 24 mesi, circa €6/mese | |
+
+### 9.1 Architettura sul VPS
+
+Tutto su una macchina, con **un'istanza sola** dell'app: per questo i punti 10, 11 e 12 non servono.
+
+```
+Internet ──443/80──> caddy ──8080──> nvxapp ──> postgres
+                     (HTTPS)                 └──> rabbitmq
+```
+
+| Servizio | Immagine | Porte pubblicate | Volume |
+|---|---|---|---|
+| `caddy` | `caddy:2` | 80 e 443 | `caddy_data` (certificati) |
+| `nvxapp` | immagine dell'app (punto 6) | nessuna, solo rete interna | `nvxapp_logs` su `/app/Logs` |
+| `postgres` | `postgres:15` (stessa versione dello sviluppo) | nessuna | `pg_data` |
+| `rabbitmq` | `rabbitmq:3-management` | nessuna | `rabbit_data` |
+
+- **Reverse proxy: Caddy**. Ottiene e rinnova da solo il certificato Let's Encrypt e il `Caddyfile` è di due righe (`dominio { reverse_proxy nvxapp:8080 }`). WebSocket di SignalR inclusi senza configurazione. In alternativa nginx con certbot, più lavoro.
+- **App**: `ASPNETCORE_ENVIRONMENT=Production`, `RunTime__Port=8080`, `RunTime__UseHttps=false`, `NVXAPP_ReverseProxy__Enabled=true` (sicuro perché la porta 8080 la raggiunge solo Caddy), `NVXAPP_App__PublicUrl=https://<dominio>`. Segreti dal file `.env` (sezione 8), con `Host=postgres` e host RabbitMQ `rabbitmq`.
+- **Postgres e RabbitMQ senza porte pubblicate**: la console di RabbitMQ e Postgres si raggiungono, quando serve, con un tunnel SSH (`ssh -L 5432:...`) o pubblicando la porta solo su `127.0.0.1`.
+- **Attenzione: le porte pubblicate da Docker scavalcano `ufw`**. Per questo non si pubblica nulla tranne 80 e 443 di Caddy.
+- **Riavvio automatico**: `restart: unless-stopped` su tutti i servizi, così ripartono dopo un riavvio del VPS.
+- **Log di Docker**: `logging: { driver: json-file, options: { max-size: "10m", max-file: "5" } }`, altrimenti riempiono il disco.
+- **Memoria**: `shared_buffers=1GB` per Postgres e un limite di memoria (`mem_limit`) per app e RabbitMQ, così un servizio non toglie memoria agli altri.
+- **Email**: Brevo usa la porta 587, che Contabo non blocca (di solito blocca solo la 25).
+
+### 9.2 Come arriva l'immagine sul VPS
+
+Il build Angular più `dotnet publish` richiede parecchia RAM e tempo: meglio **costruire l'immagine sul PC di sviluppo** (Docker Desktop) e spostarla.
+
+| Modo | Come | Nota |
+|---|---|---|
+| Senza registry (consigliato per iniziare) | `docker save nvxapp:<tag> \| gzip` → `scp` → `docker load` sul VPS | Nessun servizio esterno; tag con data o versione per il rollback. |
+| Registry privato | GitHub Container Registry o Docker Hub privato: `docker push` dal PC, `docker compose pull` sul VPS | Più comodo quando i rilasci sono frequenti. |
+| Build sul VPS | `git pull` e `docker compose build` | Possibile ma lento, e serve il codice sul server. |
+
+Rilascio: snapshot o dump del DB → carica la nuova immagine → `docker compose up -d` (le migrazioni partono all'avvio) → controllo del log. Rollback: si riavvia il tag precedente (e si ripristina il dump se la migrazione ha cambiato lo schema).
+
+### 9.3 Preparazione del VPS (una volta)
+
+1. Accesso SSH con chiave, login root con password disattivato, utente non root nel gruppo `docker`.
+2. `ufw`: aperte solo 22, 80 e 443. Più `fail2ban` e `unattended-upgrades` per gli aggiornamenti di sicurezza.
+3. Docker Engine e plugin compose dal repository ufficiale di Docker (non il pacchetto `docker.io` di Ubuntu).
+4. Fuso del sistema `Europe/Rome` (`timedatectl`), comodo per leggere i log. L'app non ne dipende: usa `RunTime:TimeZone` (punto 2).
+5. Cartella `/opt/nvxapp` con `docker-compose.yml`, `docker-compose.prod.yml`, `Caddyfile` e `.env` (`chmod 600`, mai in git).
+6. Dominio: record A verso l'IP del VPS **prima** del primo avvio di Caddy, altrimenti il certificato non viene emesso.
+
+### 9.4 Backup
+
+- **Database**: `pg_dump` giornaliero via cron (`docker compose exec postgres pg_dump ...`) in una cartella del VPS, con rotazione (es. 14 giorni) e **copia fuori dal VPS** (PC, storage esterno). Senza copia esterna, se si perde il VPS si perdono anche i backup.
+- **Chiavi DataProtection**: stanno nel DB (punto 4), quindi sono già nel dump.
+- **File `.env`**: copia sicura fuori dal server (gestore di password), non in git.
+- **Snapshot Contabo**: prima di ogni rilascio (ne è incluso 1). Il backup automatico a €1,65/mese è un'ulteriore sicurezza, ma non sostituisce il dump: ripristina tutta la macchina, non il singolo database.
+- Prova di ripristino del dump su un database di test almeno una volta, prima di andare in produzione.
+
+### 9.5 Da decidere
+
+- Nome di dominio dell'app.
+- Registry o `docker save`/`scp` per portare le immagini.
+- Dove copiare i backup fuori dal VPS.
+- Se attivare il backup automatico Contabo.
+- Postgres e RabbitMQ di produzione con password nuove, diverse da quelle di sviluppo (quelle vecchie sono nella storia di git, punto 7).
