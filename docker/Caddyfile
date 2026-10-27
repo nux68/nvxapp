@@ -1,0 +1,15 @@
+# Reverse proxy davanti a nvxapp (docker-compose.prod.yml).
+# APP_DOMAIN e ACME_EMAIL arrivano dal file .env.
+# Con un nome di dominio Caddy ottiene e rinnova da solo il certificato Let's Encrypt e reindirizza http -> https.
+# Per una prima prova senza dominio: APP_DOMAIN=:80 (solo http, raggiungibile con l'IP del server).
+
+{
+	email {$ACME_EMAIL}
+}
+
+{$APP_DOMAIN} {
+	# compressione: l'app serve i file del client senza comprimerli
+	encode zstd gzip
+	# inoltra anche le connessioni WebSocket di SignalR (/chathub)
+	reverse_proxy nvxapp:8080
+}

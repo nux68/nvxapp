@@ -1,0 +1,54 @@
+# Override per il server (VPS Contabo, sezione 9 di nvxapp.server/docs/ANALISI_DOCKER.md), insieme a docker-compose.yml.
+# Nel .env: COMPOSE_FILE=docker-compose.yml:docker-compose.prod.yml
+#
+# Da Internet si raggiunge solo Caddy (80 e 443): ottiene e rinnova da solo il certificato HTTPS
+# per APP_DOMAIN (record DNS A gia' puntato sul server) e passa le richieste all'app.
+# App, Postgres e RabbitMQ non pubblicano porte: le porte pubblicate da Docker scavalcano ufw.
+# Console RabbitMQ o Postgres, se servono: tunnel SSH verso il container.
+#
+# L'immagine non si costruisce qui: si carica gia' fatta (docker load o registry) con il tag NVXAPP_TAG.
+
+services:
+  nvxapp:
+    environment:
+      # le richieste arrivano da Caddy: IP del client e https dagli header X-Forwarded-*.
+      # Liste dei proxy vuote = header accettati da chiunque: va bene perche' la porta 8080 la raggiunge solo Caddy
+      NVXAPP_ReverseProxy__Enabled: "true"
+      NVXAPP_App__PublicUrl: ${APP_PUBLIC_URL:?impostare APP_PUBLIC_URL nel file .env (es. https://app.miodominio.it)}
+    mem_limit: 2g
+
+  postgres:
+    # parametri per un server da 8 GB di RAM condiviso con app e RabbitMQ
+    command: ["postgres", "-c", "shared_buffers=1GB", "-c", "effective_cache_size=3GB", "-c", "work_mem=16MB"]
+    mem_limit: 3g
+
+  rabbitmq:
+    mem_limit: 1g
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    depends_on:
+      - nvxapp
+    ports:
+      - "${HTTP_PORT:-80}:80"
+      - "${HTTPS_PORT:-443}:443"
+      - "${HTTPS_PORT:-443}:443/udp"
+    environment:
+      APP_DOMAIN: ${APP_DOMAIN:?impostare APP_DOMAIN nel file .env (es. app.miodominio.it)}
+      ACME_EMAIL: ${ACME_EMAIL:?impostare ACME_EMAIL nel file .env (avvisi di Let's Encrypt sui certificati)}
+    volumes:
+      - ./docker/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    mem_limit: 256m
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+volumes:
+  # certificati HTTPS: se si perdono Caddy li richiede di nuovo (Let's Encrypt ha limiti settimanali)
+  caddy_data:
+  caddy_config:
