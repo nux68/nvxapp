@@ -244,7 +244,10 @@ namespace nvxapp.server.Utility
 
                 if (writeToFile)
                 {
-                    loggerConfiguration = loggerConfiguration.WriteTo.File($"Logs\\nvxapp.log",
+                    // Path.Combine: il separatore "\" funziona solo su Windows (su Linux/Docker creerebbe un file chiamato "Logs\nvxapp.log");
+                    // la cartella parte da ContentRootPath, non dalla cartella corrente del processo
+                    string logFile = Path.Combine(builder.Environment.ContentRootPath, "Logs", "nvxapp.log");
+                    loggerConfiguration = loggerConfiguration.WriteTo.File(logFile,
                                           rollOnFileSizeLimit: true,
                                           fileSizeLimitBytes: 10000000,
                                           retainedFileCountLimit: 200,
