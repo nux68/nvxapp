@@ -87,7 +87,7 @@ Si possono avere. L'approccio consigliato è **una sola immagine**, con la confi
 | Valori specifici e segreti | Variabili d'ambiente nel compose, che sovrascrivono gli appsettings. |
 | Compose per ambiente | `docker-compose.yml` di base più `docker-compose.test.yml` e `docker-compose.prod.yml` (`docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d`), oppure i `profiles:` di compose per attivare servizi opzionali (Hangfire, RabbitMQ, Postgres locale). |
 | File `.env` | `.env.test` e `.env.prod` con porta, tag dell'immagine e URL pubblico. |
-| Visual Studio | Profili `.pubxml` di tipo *Container Registry* accanto a `IISProfile`, oppure `dotnet publish /t:PublishContainer` con `ContainerImageTag` diversi. Il profilo IIS attuale può restare. |
+| Visual Studio | Profilo **`DockerLocale`** accanto a `IISProfile`: pubblica su Docker Desktop lanciando `docker compose up -d --build` (sezione 10.1). Il profilo IIS resta invariato. |
 | Angular | Le configurazioni di `angular.json` (`production`, `development`, `ci`) restano. Con le URL relative del punto 1 non servono build diverse per ambiente. |
 
 ### Dockerfile
@@ -285,10 +285,12 @@ File nella cartella della solution (`C:\REPO\ANGULAR-2025\Merge\nvxapp`): `Docke
    ```
    La prima volta servono circa 5 minuti (scarica le immagini e compila Angular e .NET); le volte successive molto meno.
 4. **Aprire** http://localhost:8080. Al primo avvio il database è nuovo, con gli utenti iniziali (es. `SuperUser`).
-5. **Dopo una modifica al codice**: di nuovo `docker compose up -d --build` (ricrea solo l'app; i dati restano).
+5. **Dopo una modifica al codice**: di nuovo `docker compose up -d --build` (ricrea solo l'app; i dati restano), oppure da Visual Studio (sotto).
 6. **Fermare**: `docker compose down`. I dati restano nei volumi e al prossimo `up` si ritrovano. `docker compose down -v` invece **cancella** anche il database.
 
 Database e code di Docker sono separati da quelli di sviluppo usati da Visual Studio: le due cose possono girare insieme.
+
+**Da Visual Studio**: tasto destro su `nvxapp.server` → **Pubblica** → profilo **DockerLocale** → **Pubblica** (`Properties/PublishProfiles/DockerLocale.pubxml`). Compila in Release senza Angular, poi lancia `docker compose up -d --build` nella cartella della solution e apre http://localhost:8080; l'avanzamento di Docker compare nella finestra Output. Circa 2 minuti se è cambiato solo il server, di più se è cambiato il client. Si ferma con un messaggio chiaro se Docker Desktop non è avviato o se manca il file `.env`. Per fermare l'app resta `docker compose down`.
 
 ### 10.2 Sul VPS (primo rilascio)
 
