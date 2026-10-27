@@ -1,0 +1,49 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{Title}}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+
+  <form [formGroup]="_editForm">
+
+    <ion-card>
+      <ion-card-content>
+
+        <ion-item>
+          <ion-label position="stacked">{{ 'attendance.components.editDipRapportoAutovettureDialog.descrizione' | transloco }}</ion-label>
+          <ion-input type="text" formControlName="descrizione" maxlength="50"
+            [placeholder]="'attendance.components.editDipRapportoAutovettureDialog.descrizionePlaceholder' | transloco"></ion-input>
+        </ion-item>
+        @if (errore('descrizione', 'required')) {
+          <ion-note color="danger">{{ 'attendance.components.editDipRapportoAutovettureDialog.descrizioneObbligatoria' | transloco }}</ion-note>
+        }
+        @if (errore('descrizione', 'maxlength')) {
+          <ion-note color="danger">{{ 'attendance.components.editDipRapportoAutovettureDialog.descrizioneMaxLength' | transloco }}</ion-note>
+        }
+
+        <ion-item>
+          <ion-label position="stacked">{{ 'attendance.components.editDipRapportoAutovettureDialog.targa' | transloco }}</ion-label>
+          <ion-input type="text" formControlName="targa" maxlength="15" class="nvx-targa"></ion-input>
+        </ion-item>
+        @if (errore('targa', 'maxlength')) {
+          <ion-note color="danger">{{ 'attendance.components.editDipRapportoAutovettureDialog.targaMaxLength' | transloco }}</ion-note>
+        }
+
+        <ion-item>
+          <ion-label position="stacked">{{ 'attendance.components.editDipRapportoAutovettureDialog.rimborsoKM' | transloco }}</ion-label>
+          <ion-input type="number" inputmode="decimal" min="0" step="0.0001" formControlName="rimborsoKM" placeholder="0,0000"></ion-input>
+        </ion-item>
+        @if (errore('rimborsoKM', 'required') || errore('rimborsoKM', 'min') || errore('rimborsoKM', 'max')) {
+          <ion-note color="danger">{{ 'attendance.components.editDipRapportoAutovettureDialog.rimborsoKMNonValido' | transloco }}</ion-note>
+        }
+
+      </ion-card-content>
+    </ion-card>
+
+  </form>
+
+</ion-content>
+
+<app-page-buttonbar [buttonbar]="buttonbar"></app-page-buttonbar>

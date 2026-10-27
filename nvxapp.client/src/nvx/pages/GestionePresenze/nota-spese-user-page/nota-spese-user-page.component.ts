@@ -1,10 +1,11 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+﻿import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { DipGGRichiestaService } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/dip-gg-richiesta.service';
 import { Dip_GG_Richiesta_GetAll4User_InModel, Dip_GG_Richiesta_SetState_InModel, Dip_GG_RichiestaModel, notaSpesaModificabile, riepilogoNotaSpesa, StatoRichiesta, TipoRichiesta } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/Models/dip-gg-richiesta-model';
 import { DipGGNotaSpesaService } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_NotaSpesa/dip-gg-nota-spesa.service';
-import { Dip_GG_NotaSpesa_AllegatoModel, Dip_GG_NotaSpesa_Get4Richiesta_InModel, Dip_GG_NotaSpesaModel } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_NotaSpesa/Models/dip-gg-nota-spesa-model';
+import { Dip_GG_NotaSpesa_AllegatoModel, Dip_GG_NotaSpesa_Get4Richiesta_InModel, Dip_GG_NotaSpesaModel, kmTesto } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_NotaSpesa/Models/dip-gg-nota-spesa-model';
+import { autovetturaTesto } from '../../../ClientServer-Service/GestionePresenze/Dip_RapportoAutovetture/Models/dip-rapporto-autovetture-model';
 import { ParTipoSpesaService } from '../../../ClientServer-Service/GestionePresenze/Par_TipoSpesa/par-tipo-spesa.service';
 import { Par_TipoSpesaInModel, Par_TipoSpesaModel } from '../../../ClientServer-Service/GestionePresenze/Par_TipoSpesa/Models/par-tipo-spesa-model';
 import { TimeSheetService } from '../../../Utility/GestionePresenze/time-sheet.service';
@@ -78,6 +79,14 @@ export class NotaSpeseUserPageComponent {
 
   public riepilogo(nota: Dip_GG_RichiestaModel) {
     return riepilogoNotaSpesa(nota.dati);
+  }
+
+  /** rimborso km: "120 km · Fiat Panda (AB123CD)", vuoto per le altre spese */
+  public rimborsoKm(s: Dip_GG_NotaSpesaModel): string {
+    if (!s.km)
+      return '';
+    return this.transloco.translate('attendance.pages.notaSpesaRequestUser.rimborsoKmRiepilogo',
+      { km: kmTesto(s.km), autovettura: autovetturaTesto(s.autovetturaDescrizione, s.autovetturaTarga) });
   }
 
   public euro(valore: number): string {

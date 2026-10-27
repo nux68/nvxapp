@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, ElementRef, Input, OnInit } from '@angular/core';
+﻿import { Component, ChangeDetectionStrategy, ElementRef, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonBadge, IonChip, IonContent, IonHeader, IonIcon, IonLabel, IonSpinner, IonTitle, IonToolbar, ModalController } from '@ionic/angular';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
@@ -6,7 +6,8 @@ import { SharedComponentInfrastructureModule } from '../../../shared-component-i
 import { StatoRichiestaLongTextPipe } from '../../../pipe/GestionePresenze/stato-richiesta-long-text.pipe';
 import { GenericRequest } from '../../../../ClientServer-Service/ModelsBase/generic-request';
 import { DipGGNotaSpesaService } from '../../../../ClientServer-Service/GestionePresenze/Dip_GG_NotaSpesa/dip-gg-nota-spesa.service';
-import { Dip_GG_NotaSpesa_AllegatoModel, Dip_GG_NotaSpesa_Get4Richiesta_InModel, Dip_GG_NotaSpesaModel } from '../../../../ClientServer-Service/GestionePresenze/Dip_GG_NotaSpesa/Models/dip-gg-nota-spesa-model';
+import { Dip_GG_NotaSpesa_AllegatoModel, Dip_GG_NotaSpesa_Get4Richiesta_InModel, Dip_GG_NotaSpesaModel, kmTesto } from '../../../../ClientServer-Service/GestionePresenze/Dip_GG_NotaSpesa/Models/dip-gg-nota-spesa-model';
+import { autovetturaTesto } from '../../../../ClientServer-Service/GestionePresenze/Dip_RapportoAutovetture/Models/dip-rapporto-autovetture-model';
 import { ParTipoSpesaService } from '../../../../ClientServer-Service/GestionePresenze/Par_TipoSpesa/par-tipo-spesa.service';
 import { Par_TipoSpesaInModel, Par_TipoSpesaModel } from '../../../../ClientServer-Service/GestionePresenze/Par_TipoSpesa/Models/par-tipo-spesa-model';
 import { DipGGRichiestaService } from '../../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/dip-gg-richiesta.service';
@@ -150,6 +151,14 @@ export class NotaSpesaDettaglioDialogComponent implements OnInit {
 
   public tipo(id: number): string {
     return this.tipiSpesa.find(t => t.id === id)?.descrizione ?? '';
+  }
+
+  /** rimborso km: "120 km · Fiat Panda (AB123CD)", vuoto per le altre spese */
+  public rimborsoKm(s: Dip_GG_NotaSpesaModel): string {
+    if (!s.km)
+      return '';
+    return this.transloco.translate('attendance.pages.notaSpesaRequestUser.rimborsoKmRiepilogo',
+      { km: kmTesto(s.km), autovettura: autovetturaTesto(s.autovetturaDescrizione, s.autovetturaTarga) });
   }
 
   public euro(valore: number): string {

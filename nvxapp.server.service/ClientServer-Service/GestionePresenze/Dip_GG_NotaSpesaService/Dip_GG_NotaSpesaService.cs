@@ -40,6 +40,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Not
         private readonly IDip_AnagraficaRepository _dip_AnagraficaRepository;
         private readonly IGestionePresenzeUserUtility _gestionePresenzeUserUtility;
         private readonly IAz_SediRepartoUserRepository _az_SediRepartoUserRepository;
+        private readonly IDip_RapportoAutovettureRepository _dip_RapportoAutovettureRepository;
 
         public Dip_GG_NotaSpesaService(IMapper mapper,
                                   UserManager<ApplicationUser> userManager,
@@ -54,7 +55,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Not
                                   IDip_RapportoLavoroRepository dip_RapportoLavoroRepository,
                                   IDip_AnagraficaRepository dip_AnagraficaRepository,
                                   IGestionePresenzeUserUtility gestionePresenzeUserUtility,
-                                  IAz_SediRepartoUserRepository az_SediRepartoUserRepository) : base(mapper , userManager  , aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
+                                  IAz_SediRepartoUserRepository az_SediRepartoUserRepository,
+                                  IDip_RapportoAutovettureRepository dip_RapportoAutovettureRepository) : base(mapper , userManager  , aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _dip_GG_NotaSpesaRepository = dip_GG_NotaSpesaRepository;
             _dip_GG_NotaSpesa_AllegatoRepository = dip_GG_NotaSpesa_AllegatoRepository;
@@ -63,6 +65,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Not
             _dip_AnagraficaRepository = dip_AnagraficaRepository;
             _gestionePresenzeUserUtility = gestionePresenzeUserUtility;
             _az_SediRepartoUserRepository = az_SediRepartoUserRepository;
+            _dip_RapportoAutovettureRepository = dip_RapportoAutovettureRepository;
         }
 
         public virtual async Task<GenericResult<Dip_GG_NotaSpesaOutModel>> GetAll(GenericRequest<Dip_GG_NotaSpesaInModel> model, Boolean isSubProcess)
@@ -192,6 +195,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Not
                           join a in _dip_AnagraficaRepository.FindAll(a => true) on r.IdDip_Anagrafica equals a.Id
                           select new { r.Id, a.IdAspNetUsers }).ToList();
 
+            var idAutovetture = spese.Where(x => x.IdDip_RapportoAutovetture != null).Select(x => x.IdDip_RapportoAutovetture!.Value).Distinct().ToList();
+            var autovetture = _dip_RapportoAutovettureRepository.FindAll(x => idAutovetture.Contains(x.Id)).ToList();
+
             return spese.Select(s => new Dip_GG_NotaSpesaModel
             {
                 Id = s.Id,
@@ -203,6 +209,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Not
                 IdPar_TipoSpesa = s.IdPar_TipoSpesa,
                 Importo = s.Importo,
                 Descrizione = s.Descrizione,
+                Km = s.Km,
+                IdDip_RapportoAutovetture = s.IdDip_RapportoAutovetture,
+                AutovetturaDescrizione = autovetture.FirstOrDefault(a => a.Id == s.IdDip_RapportoAutovetture)?.Descrizione,
+                AutovetturaTarga = autovetture.FirstOrDefault(a => a.Id == s.IdDip_RapportoAutovetture)?.Targa,
                 RichiestaStato = s.RichiestaStato,
                 Allegati = allegati.Where(a => a.IdDip_GG_NotaSpesa == s.Id)
                                    .Select(a => new Dip_GG_NotaSpesa_AllegatoModel { Id = a.Id, NomeFile = a.NomeFile, ContentType = a.ContentType, Dimensione = a.Dimensione })
@@ -216,6 +226,37 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Not
                 return string.Empty;
             try { return JsonConvert.DeserializeObject<Dip_GG_Richiesta_Body_NotaSpesa>(richiesta.Dati)?.Descrizione ?? string.Empty; }
             catch { return string.Empty; }
+        }
+
+        /// <summary>
+        /// Spese di rimborso km: l'importo non si prende dal client, si calcola (km x rimborso per km dell'autovettura,
+        /// che deve essere del rapporto di lavoro della nota). Per gli altri tipi km e autovettura si tolgono.
+        /// Va chiamata prima di ValidaNotaSpesa. Ritorna il messaggio d'errore, null se e' tutto a posto.
+        /// </summary>
+        public static string? CalcolaRimborsiKm(Dip_GG_Richiesta_Body_NotaSpesa? nota, ICollection<int> tipiSpesaKm, ICollection<Dip_RapportoAutovetture> autovettureRapporto)
+        {
+            if (nota?.Spese == null)
+                return null;
+
+            foreach (var spesa in nota.Spese)
+            {
+                if (!tipiSpesaKm.Contains(spesa.IdPar_TipoSpesa))
+                {
+                    spesa.Km = null;
+                    spesa.IdDip_RapportoAutovetture = null;
+                    continue;
+                }
+
+                var autovettura = autovettureRapporto.FirstOrDefault(a => a.Id == spesa.IdDip_RapportoAutovetture);
+                if (autovettura == null)
+                    return AttendanceTrackingMessages.Get("ExpenseMileageCarRequired", spesa.Data);
+                if (spesa.Km == null || spesa.Km <= 0 || spesa.Km > 999999)
+                    return AttendanceTrackingMessages.Get("ExpenseMileageInvalidKm", spesa.Data);
+
+                spesa.Km = Math.Round(spesa.Km.Value, 2);
+                spesa.Importo = Math.Round(spesa.Km.Value * autovettura.RimborsoKM, 2);
+            }
+            return null;
         }
 
         /// <summary>

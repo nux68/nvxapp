@@ -1,4 +1,5 @@
-﻿using nvxapp.server.service.ClientServer_Service.ModelsBase;
+﻿using nvxapp.server.data.Entities.Tenant;
+using nvxapp.server.service.ClientServer_Service.ModelsBase;
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_TipoSpesaService.Models
 {
@@ -8,6 +9,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_TipoSp
         public int IdAz_Anagrafica { get; set; }
         public string? Codice { get; set; }
         public string? Descrizione { get; set; }
+        public TipoSpesaTipo Tipo { get; set; } = TipoSpesaTipo.Generica;
     }
 
     public class Par_TipoSpesaInModel

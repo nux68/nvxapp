@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
+﻿import { ChangeDetectorRef, Component, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { ModalController, NavController } from '@ionic/angular';
@@ -33,6 +33,9 @@ import { Subject } from 'rxjs';
 import { debounceTime, takeUntil } from 'rxjs/operators';
 import { TranslocoService } from '@jsverse/transloco';
 import { LanguageService } from '../../../Utility/infrastructure/language.service';
+import { Dip_RapportoAutovettureModel } from '../../../ClientServer-Service/GestionePresenze/Dip_RapportoAutovetture/Models/dip-rapporto-autovetture-model';
+import { EditDipRapportoAutovettureDialogComponent } from '../../../shared/components/GestionePresenze/edit-dip-rapporto-autovetture-dialog/edit-dip-rapporto-autovetture-dialog.component';
+import { FunzionalitaGestionePresenzeService } from '../../../Utility/GestionePresenze/funzionalita-gestione-presenze.service';
 
 @Component({
   selector: 'app-user-department-edit-page',
@@ -54,6 +57,7 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
   public readonly SEGMENT_DIPRAPP_PROF_HH   = 'DIPRAPP_DETT_PROF_HH';
   public readonly SEGMENT_DIPRAPP_VARIE     = 'DIPRAPP_DETT_VARIE';
   public readonly SEGMENT_DIPRAPP_CONTATORI = 'DIPRAPP_DETT_CONTATORI';
+  public readonly SEGMENT_DIPRAPP_SPESA     = 'DIPRAPP_DETT_SPESA';
 
   // ── Contatori ─────────────────────────────────────────────────────────────
   public annoSelezionato: number = new Date().getFullYear();
@@ -84,6 +88,9 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
 
   public btnDelete_Dip_Competenza: ButtonItem;
 
+  public btnEdit_Dip_RapportoAutovetture: ButtonItem;
+  public btnDelete_Dip_RapportoAutovetture: ButtonItem;
+
 
   public currSection_segment_main: string = this.SEGMENT_MAIN_ANAGRAFICA;
   //public currSection_segment_dip_rapp: string = this.SEGMENT_DIPRAPP_PROF_HH;
@@ -106,7 +113,8 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
     private collectionDialogService: CollectionDialogService,
     private cdr: ChangeDetectorRef,
     private transloco: TranslocoService,
-    private languageService: LanguageService) {
+    private languageService: LanguageService,
+    public funzionalitaGestionePresenzeService: FunzionalitaGestionePresenzeService) {
 
     super(navCtrl, userInterfaceService, fb);
 
@@ -118,6 +126,12 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
 
     this.btnDelete_Dip_Competenza = userInterfaceService.Btn_Cancella;
     this.btnDelete_Dip_Competenza.event = this.handleButton_Dip_Competenza_DeleteClick;
+
+    this.btnEdit_Dip_RapportoAutovetture = userInterfaceService.Btn_Modifica;
+    this.btnEdit_Dip_RapportoAutovetture.event = this.handleButton_Dip_RapportoAutovetture_EditClick;
+
+    this.btnDelete_Dip_RapportoAutovetture = userInterfaceService.Btn_Cancella;
+    this.btnDelete_Dip_RapportoAutovetture.event = this.handleButton_Dip_RapportoAutovetture_DeleteClick;
 
     // Ricalcola i contatori 800ms dopo l'ultima modifica al riporto, passando i valori non ancora salvati
     this._riportoChangedSubject.pipe(
@@ -173,6 +187,14 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
       if (currKey.includes(this.SEGMENT_DIPRAPP_VARIE)) {
 
       } else if (currKey.includes(this.SEGMENT_DIPRAPP_CONTATORI)) {
+
+      } else if (currKey.includes(this.SEGMENT_DIPRAPP_SPESA)) {
+
+        this.fabMenuService.fabMenuItem = [
+          new FabMenuItem('xxx', 'add-circle-outline', () => {
+            this.EditDipRapportoAutovettureDialog_Open(0);
+          }),
+        ];
 
       } else if (currKey.includes(this.SEGMENT_DIPRAPP_PROF_HH)) {
 
@@ -299,6 +321,9 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
     let request: GenericRequest<Dip_Anagrafica_Put_InModel> =
       new GenericRequest<Dip_Anagrafica_Put_InModel>(Dip_Anagrafica_Put_InModel);
     request.data.dip_Anagrafica = editModel;
+    // sezione Spesa non gestita: senza autovetture il server le lascia come sono
+    if (!this.funzionalitaGestionePresenzeService.sezioneSpesaRapporto)
+      request.data.dip_Anagrafica = Object.assign(new Dip_Anagrafica4EditModel(), editModel, { dip_RapportoAutovetture: null });
     request.data.id = editModel.idAspNetUsers;
     return this.dipAnagraficaService.Dip_AnagraficaPut(request).pipe(
       map(() => true),
@@ -461,6 +486,67 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
   }
 
 
+
+  // ── Spesa: autovetture del rapporto (rimborsi km) ─────────────────────────
+
+  getAll_Dip_RapportoAutovetture(): Dip_RapportoAutovettureModel[] {
+    if (!this._editModel?.dip_RapportoAutovetture) return [];
+    const curr_RappLav = this.getCurr_RappLav_Id();
+    return this._editModel.dip_RapportoAutovetture.filter(x => x.idDip_RapportoLavoro == curr_RappLav);
+  }
+
+  handleButton_Dip_RapportoAutovetture_EditClick = (item: Dip_RapportoAutovettureModel) => {
+    this.EditDipRapportoAutovettureDialog_Open(item.id);
+  }
+
+  handleButton_Dip_RapportoAutovetture_DeleteClick = async (item: Dip_RapportoAutovettureModel) => {
+    const result = await this.collectionDialogService.ConfirmCancelDialog(this.transloco.translate('attendance.pages.userDepartmentEdit.confirmDeleteCar'));
+    if (result && this._editModel.dip_RapportoAutovetture) {
+      const index = this._editModel.dip_RapportoAutovetture.findIndex(p => p.id === item.id);
+      if (index > -1)
+        this._editModel.dip_RapportoAutovetture.splice(index, 1);
+    }
+  }
+
+  async EditDipRapportoAutovettureDialog_Open(id: number) {
+    this._editModel.dip_RapportoAutovetture ??= [];
+
+    // si modifica una copia: annullando il dialog la riga resta com'era
+    let autovettura: Dip_RapportoAutovettureModel;
+    if (id === 0) {
+      autovettura = new Dip_RapportoAutovettureModel();
+      autovettura.id = this.dbUtilService.GenerateCounterKey();
+      autovettura.idDip_RapportoLavoro = this.getCurr_RappLav_Id();
+    } else {
+      autovettura = Object.assign(new Dip_RapportoAutovettureModel(), this._editModel.dip_RapportoAutovetture.find(p => p.id === id));
+    }
+
+    const modal = await this.modalCtrl.create({
+      component: EditDipRapportoAutovettureDialogComponent,
+      componentProps: {
+        dip_RapportoAutovetture: autovettura
+      },
+    });
+
+    await modal.present();
+
+    const { data, role } = await modal.onWillDismiss<Dip_RapportoAutovettureModel | null>();
+
+    if (role === 'confirm' && data) {
+      data.rimborsoKM = Number(data.rimborsoKM) || 0;
+      data.targa = data.targa ? String(data.targa).trim().toUpperCase() : null;
+      const index = this._editModel.dip_RapportoAutovetture.findIndex(p => p.id === data.id);
+      if (index > -1) {
+        this._editModel.dip_RapportoAutovetture[index] = data;
+      } else {
+        this._editModel.dip_RapportoAutovetture.push(data);
+      }
+    }
+  }
+
+  rimborsoKMTesto(valore: number): string {
+    return '€ ' + (Number(valore) || 0).toFixed(4).replace('.', ',');
+  }
 
   getCurr_RappLav_Id(): number {
     if (this.currSection_segment_main && this.currSection_segment_main.startsWith(this.SEGMENT_MAIN_RAPP_LAV)) {

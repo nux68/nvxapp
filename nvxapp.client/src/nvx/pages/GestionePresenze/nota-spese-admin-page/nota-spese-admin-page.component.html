@@ -1,4 +1,4 @@
-<app-page-toolbar [title]="title"
+﻿<app-page-toolbar [title]="title"
   [showFilter]="false"
   [showBreadcrumbs]="true">
 </app-page-toolbar>
@@ -178,6 +178,7 @@
                     <div class="ns-descr">
                       {{ s.descrizione }}
                       @if (s.richiestaDescrizione) { <small>· {{ s.richiestaDescrizione }}</small> }
+                      @if (s.km) { <small class="ns-km">{{ rimborsoKm(s) }}</small> }
                     </div>
                     <div class="ns-allegati">
                       @for (a of s.allegati; track a.id) {

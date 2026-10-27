@@ -107,7 +107,13 @@
         "colBalance": "Saldo",
         "confirmDeleteWorkSchedule": "Confermi la cancellazione del profilo orario",
         "confirmDeleteSkill": "Confermi la cancellazione della competenza",
-        "replaceCarryOverConfirm": "Sostituire il riporto del {{year}} con i saldi di fine dicembre {{prevYear}}?"
+        "replaceCarryOverConfirm": "Sostituire il riporto del {{year}} con i saldi di fine dicembre {{prevYear}}?",
+        "segExpense": "Spesa",
+        "cars": "Autovetture",
+        "carsNote": "Autovetture usate dal dipendente per i rimborsi chilometrici: nella nota spese l'importo è km x rimborso per km.",
+        "noCars": "Nessuna autovettura.",
+        "confirmDeleteCar": "Confermi la cancellazione dell'autovettura?",
+        "mileageRateValue": "{{valore}} / km"
       },
       "commessaEdit": {
         "title": "Commessa",
@@ -453,7 +459,11 @@
         "erroreNessunaSpesa": "Aggiungi almeno una spesa.",
         "erroreData": "Spesa {{n}}: indica la data.",
         "erroreTipoSpesa": "Spesa {{n}}: scegli il tipo di spesa.",
-        "erroreImporto": "Spesa {{n}}: indica un importo maggiore di zero."
+        "erroreImporto": "Spesa {{n}}: indica un importo maggiore di zero.",
+        "importoCalcolato": "calcolato",
+        "rimborsoKmIndica": "Indica km e autovettura",
+        "rimborsoKmRiepilogo": "{{km}} km · {{autovettura}}",
+        "erroreRimborsoKm": "Spesa {{n}}: indica km e autovettura."
       },
       "requestListAdmin": {
         "title": "Richieste",
@@ -486,7 +496,8 @@
         "colCodice": "Codice",
         "colDescrizione": "Descrizione",
         "nuovo": "Nuovo tipo spesa",
-        "confermaCancellazione": "Confermi la cancellazione del tipo di spesa?"
+        "confermaCancellazione": "Confermi la cancellazione del tipo di spesa?",
+        "colTipo": "Tipo"
       },
       "tipoSpesaEdit": {
         "title": "Tipo spesa",
@@ -496,7 +507,11 @@
         "codiceObbligatorio": "Codice è obbligatorio.",
         "codiceMaxLength": "Codice non può superare i 10 caratteri.",
         "descrizioneObbligatoria": "Descrizione è obbligatorio.",
-        "descrizioneMaxLength": "Descrizione non può superare i 50 caratteri."
+        "descrizioneMaxLength": "Descrizione non può superare i 50 caratteri.",
+        "tipo": "Tipo",
+        "tipoGenerica": "Generica",
+        "tipoRimborsoKm": "Rimborso KM",
+        "tipoNota": "Rimborso KM: nella nota spese si indicano km e autovettura, l'importo è calcolato con il rimborso per km dell'autovettura del dipendente."
       },
       "activityEdit": {
         "title": "Attività",
@@ -1037,6 +1052,28 @@
         "selezionaDipendente": "Seleziona dipendente",
         "selezionaDipendenti": "Seleziona dipendenti",
         "dipendentiSelezionati": "{{count}} dipendenti selezionati"
+      },
+      "editDipRapportoAutovettureDialog": {
+        "title": "Autovettura",
+        "descrizione": "Descrizione",
+        "descrizionePlaceholder": "Es. Fiat Panda",
+        "descrizioneObbligatoria": "Descrizione è obbligatoria.",
+        "descrizioneMaxLength": "Descrizione non può superare i 50 caratteri.",
+        "targa": "Targa",
+        "targaMaxLength": "Targa non può superare i 15 caratteri.",
+        "rimborsoKM": "Rimborso per km (€)",
+        "rimborsoKMNonValido": "Indica un rimborso per km valido (zero o maggiore)."
+      },
+      "rimborsoKmDialog": {
+        "title": "Rimborso chilometrico",
+        "nessunaAutovettura": "Nel tuo rapporto di lavoro non ci sono autovetture: chiedi all'amministratore di inserirle.",
+        "autovettura": "Autovettura",
+        "scegli": "Scegli",
+        "erroreAutovettura": "Scegli l'autovettura.",
+        "km": "Km percorsi",
+        "erroreKm": "Indica i km (maggiori di zero).",
+        "rimborsoKM": "Rimborso per km: {{tariffa}}",
+        "importo": "Importo"
       }
     },
     "pipes": {

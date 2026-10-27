@@ -1,8 +1,9 @@
-import { Component, ChangeDetectionStrategy, OnDestroy } from '@angular/core';
+﻿import { Component, ChangeDetectionStrategy, OnDestroy } from '@angular/core';
 import { Subject, debounceTime, takeUntil } from 'rxjs';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { DipGGNotaSpesaService } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_NotaSpesa/dip-gg-nota-spesa.service';
-import { Dip_GG_NotaSpesa_AllegatoModel, Dip_GG_NotaSpesa_Search_InModel, Dip_GG_NotaSpesaModel } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_NotaSpesa/Models/dip-gg-nota-spesa-model';
+import { Dip_GG_NotaSpesa_AllegatoModel, Dip_GG_NotaSpesa_Search_InModel, Dip_GG_NotaSpesaModel, kmTesto } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_NotaSpesa/Models/dip-gg-nota-spesa-model';
+import { autovetturaTesto } from '../../../ClientServer-Service/GestionePresenze/Dip_RapportoAutovetture/Models/dip-rapporto-autovetture-model';
 import { ParTipoSpesaService } from '../../../ClientServer-Service/GestionePresenze/Par_TipoSpesa/par-tipo-spesa.service';
 import { Par_TipoSpesaInModel, Par_TipoSpesaModel } from '../../../ClientServer-Service/GestionePresenze/Par_TipoSpesa/Models/par-tipo-spesa-model';
 import { StatoRichiesta } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/Models/dip-gg-richiesta-model';
@@ -222,6 +223,14 @@ export class NotaSpeseAdminPageComponent implements OnDestroy {
       case StatoRichiesta.Cancellata: return 'dark';
       default: return 'medium';
     }
+  }
+
+  /** rimborso km: "120 km · Fiat Panda (AB123CD)", vuoto per le altre spese */
+  public rimborsoKm(s: Dip_GG_NotaSpesaModel): string {
+    if (!s.km)
+      return '';
+    return this.transloco.translate('attendance.pages.notaSpesaRequestUser.rimborsoKmRiepilogo',
+      { km: kmTesto(s.km), autovettura: autovetturaTesto(s.autovetturaDescrizione, s.autovetturaTarga) });
   }
 
   public euro(valore: number): string {

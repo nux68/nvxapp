@@ -1,4 +1,16 @@
-import { ModelResult } from "../../../ModelsBase/model-result";
+﻿import { ModelResult } from "../../../ModelsBase/model-result";
+
+/** comportamento del tipo di spesa: generica (importo libero) o rimborso km (importo = km x rimborso dell'autovettura) */
+export enum TipoSpesaTipo {
+  Generica,
+  RimborsoKm
+}
+
+/** chiavi di traduzione dei valori di TipoSpesaTipo */
+export const TIPO_SPESA_TIPO_TESTO: { [tipo in TipoSpesaTipo]: string } = {
+  [TipoSpesaTipo.Generica]: 'attendance.pages.tipoSpesaEdit.tipoGenerica',
+  [TipoSpesaTipo.RimborsoKm]: 'attendance.pages.tipoSpesaEdit.tipoRimborsoKm',
+};
 
 // tipo di spesa delle note spese (parametro dell'azienda)
 export class Par_TipoSpesaModel {
@@ -6,6 +18,7 @@ export class Par_TipoSpesaModel {
   idAz_Anagrafica: number = 0;
   codice: string = '';
   descrizione: string = '';
+  tipo: TipoSpesaTipo = TipoSpesaTipo.Generica;
 }
 
 export class Par_TipoSpesaInModel {

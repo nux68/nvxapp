@@ -107,7 +107,13 @@
         "colBalance": "Bal.",
         "confirmDeleteWorkSchedule": "Confirm deletion of the work schedule profile",
         "confirmDeleteSkill": "Confirm deletion of the skill",
-        "replaceCarryOverConfirm": "Replace the {{year}} carry-over with the end-of-December {{prevYear}} balances?"
+        "replaceCarryOverConfirm": "Replace the {{year}} carry-over with the end-of-December {{prevYear}} balances?",
+        "segExpense": "Expenses",
+        "cars": "Cars",
+        "carsNote": "Cars used by the employee for mileage allowances: in the expense report the amount is km x mileage rate.",
+        "noCars": "No cars.",
+        "confirmDeleteCar": "Do you confirm deleting the car?",
+        "mileageRateValue": "{{valore}} / km"
       },
       "commessaEdit": {
         "title": "Job order",
@@ -453,7 +459,11 @@
         "erroreNessunaSpesa": "Add at least one expense.",
         "erroreData": "Expense {{n}}: enter the date.",
         "erroreTipoSpesa": "Expense {{n}}: choose the expense type.",
-        "erroreImporto": "Expense {{n}}: enter an amount greater than zero."
+        "erroreImporto": "Expense {{n}}: enter an amount greater than zero.",
+        "importoCalcolato": "calculated",
+        "rimborsoKmIndica": "Enter km and car",
+        "rimborsoKmRiepilogo": "{{km}} km · {{autovettura}}",
+        "erroreRimborsoKm": "Expense {{n}}: enter km and car."
       },
       "requestListAdmin": {
         "title": "Requests",
@@ -486,7 +496,8 @@
         "colCodice": "Code",
         "colDescrizione": "Description",
         "nuovo": "New expense type",
-        "confermaCancellazione": "Do you confirm deletion of the expense type?"
+        "confermaCancellazione": "Do you confirm deletion of the expense type?",
+        "colTipo": "Type"
       },
       "tipoSpesaEdit": {
         "title": "Expense type",
@@ -496,7 +507,11 @@
         "codiceObbligatorio": "Code is required.",
         "codiceMaxLength": "Code cannot exceed 10 characters.",
         "descrizioneObbligatoria": "Description is required.",
-        "descrizioneMaxLength": "Description cannot exceed 50 characters."
+        "descrizioneMaxLength": "Description cannot exceed 50 characters.",
+        "tipo": "Type",
+        "tipoGenerica": "Generic",
+        "tipoRimborsoKm": "Mileage allowance",
+        "tipoNota": "Mileage allowance: in the expense report you enter km and car, the amount is calculated with the employee's car mileage rate."
       },
       "activityEdit": {
         "title": "Activity",
@@ -1037,6 +1052,28 @@
         "selezionaDipendente": "Select employee",
         "selezionaDipendenti": "Select employees",
         "dipendentiSelezionati": "{{count}} employees selected"
+      },
+      "editDipRapportoAutovettureDialog": {
+        "title": "Car",
+        "descrizione": "Description",
+        "descrizionePlaceholder": "E.g. Fiat Panda",
+        "descrizioneObbligatoria": "Description is required.",
+        "descrizioneMaxLength": "Description cannot exceed 50 characters.",
+        "targa": "Licence plate",
+        "targaMaxLength": "Licence plate cannot exceed 15 characters.",
+        "rimborsoKM": "Mileage rate (€ per km)",
+        "rimborsoKMNonValido": "Enter a valid mileage rate (zero or more)."
+      },
+      "rimborsoKmDialog": {
+        "title": "Mileage allowance",
+        "nessunaAutovettura": "There are no cars in your employment: ask your administrator to add them.",
+        "autovettura": "Car",
+        "scegli": "Choose",
+        "erroreAutovettura": "Choose the car.",
+        "km": "Km driven",
+        "erroreKm": "Enter the km (greater than zero).",
+        "rimborsoKM": "Mileage rate: {{tariffa}}",
+        "importo": "Amount"
       }
     },
     "pipes": {

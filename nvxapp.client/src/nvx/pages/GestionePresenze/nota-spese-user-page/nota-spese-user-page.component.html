@@ -1,4 +1,4 @@
-<app-page-toolbar [title]="title"
+﻿<app-page-toolbar [title]="title"
   [showFilter]="false"
   [showBreadcrumbs]="true">
 </app-page-toolbar>
@@ -47,7 +47,10 @@
                 <div class="ns-spesa">
                   <span class="ns-data">{{ spesa.data | date:'dd/MM/yyyy' }}</span>
                   <span class="ns-tipo">{{ tipo(spesa.idPar_TipoSpesa) }}</span>
-                  <span class="ns-descr">{{ spesa.descrizione }}</span>
+                  <span class="ns-descr">
+                    {{ spesa.descrizione }}
+                    @if (spesa.km) { <small class="ns-km">{{ rimborsoKm(spesa) }}</small> }
+                  </span>
                   <span class="ns-importo">{{ euro(spesa.importo) }}</span>
                   <div class="ns-allegati">
                     @for (allegato of spesa.allegati; track allegato.id) {

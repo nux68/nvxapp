@@ -1,4 +1,4 @@
-<app-page-toolbar [title]="Title"
+﻿<app-page-toolbar [title]="Title"
   [showFilter]="false"
   [showBreadcrumbs]="true">
 </app-page-toolbar>
@@ -52,10 +52,23 @@
                   </ion-col>
                   <ion-col size="12" size-md="5">
                     <ion-item class="nvx-field">
-                      <ion-label position="stacked">{{ 'attendance.pages.notaSpesaRequestUser.importo' | transloco }}</ion-label>
+                      <ion-label position="stacked">
+                        {{ 'attendance.pages.notaSpesaRequestUser.importo' | transloco }}
+                        @if (isRimborsoKm(spesa)) { <small>· {{ 'attendance.pages.notaSpesaRequestUser.importoCalcolato' | transloco }}</small> }
+                      </ion-label>
                       <ion-input type="number" inputmode="decimal" min="0" step="0.01" formControlName="importo" placeholder="0,00"></ion-input>
                     </ion-item>
                   </ion-col>
+                  @if (isRimborsoKm(spesa)) {
+                    <ion-col size="12">
+                      <ion-item class="nvx-field ns-rimborso-km" button detail="true" (click)="apriRimborsoKm(spesa)">
+                        <ion-icon slot="start" name="car-outline"></ion-icon>
+                        <ion-label>
+                          {{ rimborsoKmTesto(spesa) || ('attendance.pages.notaSpesaRequestUser.rimborsoKmIndica' | transloco) }}
+                        </ion-label>
+                      </ion-item>
+                    </ion-col>
+                  }
                   <ion-col size="12">
                     <ion-item class="nvx-field">
                       <ion-label position="stacked">{{ 'attendance.pages.notaSpesaRequestUser.descrizione' | transloco }}</ion-label>
@@ -73,6 +86,9 @@
               }
               @if (errore(spesa, 'importo')) {
                 <ion-note color="danger">{{ 'attendance.pages.notaSpesaRequestUser.erroreImporto' | transloco: { n: i + 1 } }}</ion-note>
+              }
+              @if (errore(spesa, 'km') || errore(spesa, 'idDip_RapportoAutovetture')) {
+                <ion-note color="danger">{{ 'attendance.pages.notaSpesaRequestUser.erroreRimborsoKm' | transloco: { n: i + 1 } }}</ion-note>
               }
 
               <div class="ns-allegati">

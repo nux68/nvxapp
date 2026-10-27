@@ -789,4 +789,22 @@
   <data name="ExportPdfNoEmployees" xml:space="preserve">
     <value>No selected employee among those you can print.</value>
   </data>
+  <data name="CarInvalidDescription" xml:space="preserve">
+    <value>Car description is required (maximum 50 characters).</value>
+  </data>
+  <data name="CarInvalidPlate" xml:space="preserve">
+    <value>Licence plate of car {0} is too long (maximum 15 characters).</value>
+  </data>
+  <data name="CarInvalidMileageRate" xml:space="preserve">
+    <value>Invalid mileage rate for car {0}.</value>
+  </data>
+  <data name="CarInUse" xml:space="preserve">
+    <value>Car {0} is used in {1} expenses: it cannot be deleted.</value>
+  </data>
+  <data name="ExpenseMileageCarRequired" xml:space="preserve">
+    <value>Choose the car in the mileage expense of {0:dd/MM/yyyy}.</value>
+  </data>
+  <data name="ExpenseMileageInvalidKm" xml:space="preserve">
+    <value>Invalid km in the mileage expense of {0:dd/MM/yyyy}.</value>
+  </data>
 </root>

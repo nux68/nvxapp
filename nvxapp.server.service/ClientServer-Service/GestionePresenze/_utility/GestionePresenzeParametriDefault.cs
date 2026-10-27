@@ -1,4 +1,4 @@
-using nvxapp.server.data.Entities.Tenant;
+﻿using nvxapp.server.data.Entities.Tenant;
 using nvxapp.server.data.Entities.Tenant.GestionePresenze;
 using nvxapp.server.data.Extensions;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
@@ -231,22 +231,24 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
             }
 
             // Tipi di spesa delle note spese
-            foreach (var (codice, descrizione) in new[]
+            foreach (var (codice, descrizione, tipo) in new[]
             {
-                ("VITTO",  "Vitto"),
-                ("ALLOGG", "Alloggio"),
-                ("TRASP",  "Trasporti (treno, aereo, taxi)"),
-                ("CARB",   "Carburante"),
-                ("PEDAG",  "Pedaggi e parcheggi"),
-                ("RIMBGEN", "Rimborso generico"),
-                ("ALTRO",  "Altro"),
+                ("VITTO",  "Vitto", TipoSpesaTipo.Generica),
+                ("ALLOGG", "Alloggio", TipoSpesaTipo.Generica),
+                ("TRASP",  "Trasporti (treno, aereo, taxi)", TipoSpesaTipo.Generica),
+                ("CARB",   "Carburante", TipoSpesaTipo.Generica),
+                ("PEDAG",  "Pedaggi e parcheggi", TipoSpesaTipo.Generica),
+                ("RIMBKM", "Rimborso chilometrico", TipoSpesaTipo.RimborsoKm),
+                ("RIMBGEN", "Rimborso generico", TipoSpesaTipo.Generica),
+                ("ALTRO",  "Altro", TipoSpesaTipo.Generica),
             })
             {
                 await _par_TipoSpesaRepository.UpsertAsync(new Par_TipoSpesa
                 {
                     IdAz_Anagrafica = IdAz_Anagrafica,
                     Codice = codice,
-                    Descrizione = descrizione
+                    Descrizione = descrizione,
+                    Tipo = tipo
                 });
             }
 

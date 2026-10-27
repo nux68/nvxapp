@@ -3,6 +3,7 @@ using nvxapp.server.service.ClientServer_Service.GestionePresenze.ContatoriServi
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_CompetenzaService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_RichiestaService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_ProfiloOrarioService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_RapportoAutovettureService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_RapportoLavoroService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Rapporto_Giustificativi_MaturazioneService.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
@@ -65,6 +66,12 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
 
         /// <summary>Competenze del dipendente: determinano le attivita' che puo' svolgere.</summary>
         public List<Dip_CompetenzaModel> Dip_Competenza { get; set; } = new List<Dip_CompetenzaModel>();
+
+        /// <summary>
+        /// Autovetture dei rapporti di lavoro (sezione "Spesa", rimborsi km).
+        /// null = sezione non gestita dal client: al salvataggio le autovetture restano come sono.
+        /// </summary>
+        public List<Dip_RapportoAutovettureModel>? Dip_RapportoAutovetture { get; set; }
 
     }
     

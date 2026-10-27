@@ -70,6 +70,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
         private readonly IDip_GG_NotaSpesaRepository _dip_GG_NotaSpesaRepository;
         private readonly IDip_GG_NotaSpesa_AllegatoRepository _dip_GG_NotaSpesa_AllegatoRepository;
         private readonly IPar_TipoSpesaRepository _par_TipoSpesaRepository;
+        private readonly IDip_RapportoAutovettureRepository _dip_RapportoAutovettureRepository;
 
         private readonly IPar_GiustificativiRepository _par_GiustificativiRepository;
         private readonly IContatoriService _contatoriService;
@@ -100,6 +101,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                                   IDip_GG_NotaSpesaRepository dip_GG_NotaSpesaRepository,
                                   IDip_GG_NotaSpesa_AllegatoRepository dip_GG_NotaSpesa_AllegatoRepository,
                                   IPar_TipoSpesaRepository par_TipoSpesaRepository,
+                                  IDip_RapportoAutovettureRepository dip_RapportoAutovettureRepository,
                                   ITimeSheet_EngineService_OnlyCalculate timeSheet_EngineService,
                                   IDip_GG_GiustificativiRepository dip_GG_GiustificativiRepository,
                                   IPar_GiustificativiRepository par_GiustificativiRepository,
@@ -117,6 +119,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
             _dip_GG_NotaSpesaRepository = dip_GG_NotaSpesaRepository;
             _dip_GG_NotaSpesa_AllegatoRepository = dip_GG_NotaSpesa_AllegatoRepository;
             _par_TipoSpesaRepository = par_TipoSpesaRepository;
+            _dip_RapportoAutovettureRepository = dip_RapportoAutovettureRepository;
             _dip_AnagraficaRepository = dip_AnagraficaRepository;
             _dip_RapportoLavoroRepository = dip_RapportoLavoroRepository;
             _az_SediRepartoUserRepository = az_SediRepartoUserRepository;
@@ -348,7 +351,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                         var tipiSpesa = _par_TipoSpesaRepository.FindAll(x => x.IdAz_Anagrafica == (aziendaNota.az_Anagrafica != null ? aziendaNota.az_Anagrafica.Id : 0))
                                                                 .Select(x => x.Id).ToList();
 
-                        var erroreNota = Dip_GG_NotaSpesaService.Dip_GG_NotaSpesaService.ValidaNotaSpesa(notaSpesa, tipiSpesa);
+                        var erroreNota = CalcolaRimborsiKm(notaSpesa, aziendaNota.az_Anagrafica != null ? aziendaNota.az_Anagrafica.Id : 0, dip_GG_Richiesta.IdDip_RapportoLavoro)
+                                         ?? Dip_GG_NotaSpesaService.Dip_GG_NotaSpesaService.ValidaNotaSpesa(notaSpesa, tipiSpesa);
                         if (erroreNota == null && notaSpesa!.Spese!.Any(s => s.Id != null || (s.Allegati ?? new()).Any(a => a.Id != null)))
                             erroreNota = AttendanceTrackingMessages.Get("NewExpenseReportWithSavedItems");
                         if (erroreNota != null)
@@ -556,7 +560,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                 var azienda = await _gestionePresenzeUserUtility.Get_AzAna_AzSedi_AzReparto_Az_Cfg(idCompany, true);
                 var tipiSpesa = _par_TipoSpesaRepository.FindAll(x => x.IdAz_Anagrafica == (azienda.az_Anagrafica != null ? azienda.az_Anagrafica.Id : 0)).Select(x => x.Id).ToList();
 
-                var errore = Dip_GG_NotaSpesaService.Dip_GG_NotaSpesaService.ValidaNotaSpesa(notaSpesa, tipiSpesa);
+                var errore = CalcolaRimborsiKm(notaSpesa, azienda.az_Anagrafica != null ? azienda.az_Anagrafica.Id : 0, richiesta.IdDip_RapportoLavoro)
+                             ?? Dip_GG_NotaSpesaService.Dip_GG_NotaSpesaService.ValidaNotaSpesa(notaSpesa, tipiSpesa);
 
                 // le spese e gli allegati con Id devono essere di questa nota
                 var speseSalvate = _dip_GG_NotaSpesaRepository.FindAll(x => x.IdDip_GG_Richiesta == richiesta.Id).ToList();
@@ -611,6 +616,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                         dettaglio.IdPar_TipoSpesa = spesa.IdPar_TipoSpesa;
                         dettaglio.Importo = Math.Round(spesa.Importo, 2);
                         dettaglio.Descrizione = spesa.Descrizione?.Trim();
+                        dettaglio.Km = spesa.Km;
+                        dettaglio.IdDip_RapportoAutovetture = spesa.IdDip_RapportoAutovetture;
                         dettaglio.RichiestaStato = StatoRichiesta.Immessa;
                         dettaglio = await _dip_GG_NotaSpesaRepository.UpsertAsync(dettaglio);
 
@@ -630,7 +637,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                             Data = spesa.Data.Date,
                             IdPar_TipoSpesa = spesa.IdPar_TipoSpesa,
                             Importo = Math.Round(spesa.Importo, 2),
-                            Descrizione = spesa.Descrizione?.Trim()
+                            Descrizione = spesa.Descrizione?.Trim(),
+                            Km = spesa.Km,
+                            IdDip_RapportoAutovetture = spesa.IdDip_RapportoAutovetture
                         });
                     }
 
@@ -1070,6 +1079,15 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
             return dip_GG_Timbratura;
 
         }
+        // rimborsi km della nota: importo calcolato con le autovetture del rapporto di lavoro della richiesta
+        private string? CalcolaRimborsiKm(Dip_GG_Richiesta_Body_NotaSpesa? notaSpesa, int idAz_Anagrafica, int idDip_RapportoLavoro)
+        {
+            var tipiSpesaKm = _par_TipoSpesaRepository.FindAll(x => x.IdAz_Anagrafica == idAz_Anagrafica && x.Tipo == TipoSpesaTipo.RimborsoKm)
+                                                      .Select(x => x.Id).ToList();
+            var autovetture = _dip_RapportoAutovettureRepository.FindAll(x => x.IdDip_RapportoLavoro == idDip_RapportoLavoro).ToList();
+            return Dip_GG_NotaSpesaService.Dip_GG_NotaSpesaService.CalcolaRimborsiKm(notaSpesa, tipiSpesaKm, autovetture);
+        }
+
         // salva le spese (dettagli) e i loro allegati; nella richiesta resta solo il riepilogo (senza i file)
         private async Task<Dip_GG_Richiesta> Add_Dip_GG_NotaSpesa(Dip_GG_Richiesta dip_GG_Richiesta, Dip_GG_Richiesta_Body_NotaSpesa notaSpesa)
         {
@@ -1083,7 +1101,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                     Data = spesa.Data.Date,
                     IdPar_TipoSpesa = spesa.IdPar_TipoSpesa,
                     Importo = Math.Round(spesa.Importo, 2),
-                    Descrizione = spesa.Descrizione?.Trim()
+                    Descrizione = spesa.Descrizione?.Trim(),
+                    Km = spesa.Km,
+                    IdDip_RapportoAutovetture = spesa.IdDip_RapportoAutovetture
                 });
 
                 foreach (var allegato in spesa.Allegati ?? new List<Dip_GG_Richiesta_Body_NotaSpesa_Allegato>())

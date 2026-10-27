@@ -48,6 +48,7 @@ namespace nvxapp.server.data.Entities.Tenant
         public ICollection<Dip_Rapporto_Giustificativi_Maturazione>? Dip_Rapporto_Giustificativi_Maturazione { get; set; }
         public ICollection<Dip_Contatori_Riporto>? Dip_Contatori_Riporto { get; set; }
         public ICollection<Dip_Periodo>? Dip_Periodo { get; set; }
+        public ICollection<Dip_RapportoAutovetture>? Dip_RapportoAutovetture { get; set; }
     }
 
     public enum TipoContratto

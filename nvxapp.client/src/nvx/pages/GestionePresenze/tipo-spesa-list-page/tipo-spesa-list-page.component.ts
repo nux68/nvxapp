@@ -1,10 +1,10 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+﻿import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { NavController } from '@ionic/angular';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { NvxListAction, NvxListColumn } from '../../../shared/components/infrastructure/nvx-list/nvx-list.component';
 import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
-import { Par_TipoSpesa_DeleteInModel, Par_TipoSpesaInModel, Par_TipoSpesaModel } from '../../../ClientServer-Service/GestionePresenze/Par_TipoSpesa/Models/par-tipo-spesa-model';
+import { Par_TipoSpesa_DeleteInModel, Par_TipoSpesaInModel, Par_TipoSpesaModel, TIPO_SPESA_TIPO_TESTO } from '../../../ClientServer-Service/GestionePresenze/Par_TipoSpesa/Models/par-tipo-spesa-model';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { ParTipoSpesaService } from '../../../ClientServer-Service/GestionePresenze/Par_TipoSpesa/par-tipo-spesa.service';
 import { SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
@@ -45,6 +45,8 @@ export class TipoSpesaListPageComponent {
     this.columns = [
       { key: 'codice', title: this.transloco.translate('attendance.pages.tipoSpesaList.colCodice'), width: '140px', mobile: 'subtitle' },
       { key: 'descrizione', title: this.transloco.translate('attendance.pages.tipoSpesaList.colDescrizione'), mobile: 'title' },
+      { key: 'tipo', title: this.transloco.translate('attendance.pages.tipoSpesaList.colTipo'), width: '180px', mobile: 'note',
+        value: (x: Par_TipoSpesaModel) => this.transloco.translate(TIPO_SPESA_TIPO_TESTO[x.tipo] ?? TIPO_SPESA_TIPO_TESTO[0]) },
     ];
     this.btnEdit = userInterfaceService.Btn_Modifica;
     this.btnEdit.event = this.handleButtonEditClick;

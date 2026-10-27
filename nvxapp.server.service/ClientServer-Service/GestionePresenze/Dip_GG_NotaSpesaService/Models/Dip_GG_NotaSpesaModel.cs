@@ -16,6 +16,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Not
         public int IdPar_TipoSpesa { get; set; }
         public decimal Importo { get; set; }
         public string? Descrizione { get; set; }
+        // rimborso km: km percorsi e autovettura usata
+        public decimal? Km { get; set; }
+        public int? IdDip_RapportoAutovetture { get; set; }
+        public string? AutovetturaDescrizione { get; set; }
+        public string? AutovetturaTarga { get; set; }
         public StatoRichiesta RichiestaStato { get; set; }
         public List<Dip_GG_NotaSpesa_AllegatoModel> Allegati { get; set; } = new List<Dip_GG_NotaSpesa_AllegatoModel>();
     }

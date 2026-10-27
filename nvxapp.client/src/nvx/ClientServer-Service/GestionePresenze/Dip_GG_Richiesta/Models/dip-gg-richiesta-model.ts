@@ -1,4 +1,4 @@
-import { ModelResult } from "../../../ModelsBase/model-result";
+﻿import { ModelResult } from "../../../ModelsBase/model-result";
 import { Dip_GG_GiustificativiModel } from "../../Dip_GG_Giustificativi/Models/dip-gg-giustificativi-model";
 import { Dip_GG_TimbraturaModel } from "../../Dip_GG_Timbratura/Models/dip-gg-timbratura-model";
 
@@ -54,8 +54,10 @@ export class Dip_GG_Richiesta_Body_NotaSpesa_Spesa {
   id?: number | null = null;     // solo in modifica: spesa gia' salvata
   data: string = '';             // "YYYY-MM-DD"
   idPar_TipoSpesa: number = 0;
-  importo: number = 0;
+  importo: number = 0;           // rimborso km: lo ricalcola il server (km x rimborso per km dell'autovettura)
   descrizione: string = '';
+  km?: number | null = null;     // solo rimborso km
+  idDip_RapportoAutovetture?: number | null = null;
   allegati: Dip_GG_Richiesta_Body_NotaSpesa_Allegato[] = [];
 }
 export class Dip_GG_Richiesta_Body_NotaSpesa_Allegato {

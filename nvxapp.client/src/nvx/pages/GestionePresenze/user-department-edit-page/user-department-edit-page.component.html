@@ -1,4 +1,4 @@
-<app-page-toolbar [title]="Title"
+﻿<app-page-toolbar [title]="Title"
   [showFilter]="ShowFilter"
   [showBreadcrumbs]="true">
 </app-page-toolbar>
@@ -221,6 +221,11 @@
                     <ion-segment-button value="{{SEGMENT_MAIN_RAPP_LAV}}{{item_main.id}}_{{SEGMENT_DIPRAPP_CONTATORI}}">
                       <ion-label>{{ 'attendance.pages.userDepartmentEdit.segCounters' | transloco }}</ion-label>
                     </ion-segment-button>
+                    @if (funzionalitaGestionePresenzeService.sezioneSpesaRapporto) {
+                      <ion-segment-button value="{{SEGMENT_MAIN_RAPP_LAV}}{{item_main.id}}_{{SEGMENT_DIPRAPP_SPESA}}">
+                        <ion-label>{{ 'attendance.pages.userDepartmentEdit.segExpense' | transloco }}</ion-label>
+                      </ion-segment-button>
+                    }
                     <ion-segment-button value="{{SEGMENT_MAIN_RAPP_LAV}}{{item_main.id}}_{{SEGMENT_DIPRAPP_VARIE}}">
                       <ion-label>{{ 'attendance.pages.userDepartmentEdit.segOther' | transloco }}</ion-label>
                     </ion-segment-button>
@@ -382,6 +387,71 @@
                               <ion-icon name="{{btnEdit_Dip_ProfiloOrario.image}}"></ion-icon>
                               &nbsp;{{btnEdit_Dip_ProfiloOrario.text}}
                             </ion-button>
+                          </ion-col>
+                        </ion-row>
+                      }
+                    </ion-grid>
+                  </div>
+                }
+                <!-- CONTENUTO: Rapporto lavoro Spesa (autovetture per i rimborsi km) -->
+                @if (funzionalitaGestionePresenzeService.sezioneSpesaRapporto && currSection_segment_dip_rapp[item_main.id] === (SEGMENT_MAIN_RAPP_LAV + item_main.id + '_' + SEGMENT_DIPRAPP_SPESA)) {
+                  <div>
+                    <br />
+                    <ion-item class="nvx-item-4-title">
+                      <ion-label>{{ 'attendance.pages.userDepartmentEdit.cars' | transloco }}</ion-label>
+                    </ion-item>
+                    <ion-note class="nvx-nota-contratto">
+                      {{ 'attendance.pages.userDepartmentEdit.carsNote' | transloco }}
+                    </ion-note>
+                    <ion-grid>
+                      @for (item of getAll_Dip_RapportoAutovetture(); track item.id; let indexRow4Color = $index) {
+                        <ion-row class="nvx-ion-row-4table">
+                          <!--mobile-->
+                          <ion-item-sliding class="ion-hide-sm-up"
+                            [class.nvx-row-odd]="indexRow4Color % 2 !== 0"
+                            [class.nvx-row-even]="indexRow4Color % 2 === 0">
+                            <ion-item>
+                              <ion-icon name="car-outline"></ion-icon>
+                              <ion-label>
+                                {{ item.descrizione }}
+                                <p>{{ item.targa }} · {{ 'attendance.pages.userDepartmentEdit.mileageRateValue' | transloco: { valore: rimborsoKMTesto(item.rimborsoKM) } }}</p>
+                              </ion-label>
+                            </ion-item>
+                            <app-slide-button-cancella-modifica [item]="item"
+                              [btnDelete]="btnDelete_Dip_RapportoAutovetture"
+                              [showDelete]="true"
+                              [btnEdit]="btnEdit_Dip_RapportoAutovetture"
+                              [showEdit]="true">
+                            </app-slide-button-cancella-modifica>
+                          </ion-item-sliding>
+                          <!--deskTop-->
+                          <ion-col size="4" class="ion-hide-sm-down">
+                            <ion-icon name="car-outline"></ion-icon>
+                            <ion-label>{{ item.descrizione }}</ion-label>
+                          </ion-col>
+                          <ion-col size="2" class="ion-hide-sm-down">
+                            <ion-label>{{ item.targa }}</ion-label>
+                          </ion-col>
+                          <ion-col size="2" class="ion-hide-sm-down">
+                            <ion-label>{{ 'attendance.pages.userDepartmentEdit.mileageRateValue' | transloco: { valore: rimborsoKMTesto(item.rimborsoKM) } }}</ion-label>
+                          </ion-col>
+                          <ion-col size="2" class="ion-hide-sm-down">
+                            <ion-button size="small" fill="outline" shape="round" (click)="btnDelete_Dip_RapportoAutovetture.event(item)" color="{{btnDelete_Dip_RapportoAutovetture.color}}">
+                              <ion-icon name="{{btnDelete_Dip_RapportoAutovetture.image}}"></ion-icon>
+                              &nbsp;{{btnDelete_Dip_RapportoAutovetture.text}}
+                            </ion-button>
+                          </ion-col>
+                          <ion-col size="2" class="ion-hide-sm-down">
+                            <ion-button size="small" fill="outline" shape="round" (click)="btnEdit_Dip_RapportoAutovetture.event(item)" color="{{btnEdit_Dip_RapportoAutovetture.color}}">
+                              <ion-icon name="{{btnEdit_Dip_RapportoAutovetture.image}}"></ion-icon>
+                              &nbsp;{{btnEdit_Dip_RapportoAutovetture.text}}
+                            </ion-button>
+                          </ion-col>
+                        </ion-row>
+                      } @empty {
+                        <ion-row>
+                          <ion-col>
+                            <ion-note>{{ 'attendance.pages.userDepartmentEdit.noCars' | transloco }}</ion-note>
                           </ion-col>
                         </ion-row>
                       }

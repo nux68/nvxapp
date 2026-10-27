@@ -1,4 +1,4 @@
-<app-page-toolbar [title]="Title"
+﻿<app-page-toolbar [title]="Title"
   [showBreadcrumbs]="true">
 </app-page-toolbar>
 
@@ -43,6 +43,17 @@
             {{ 'attendance.pages.tipoSpesaEdit.descrizioneMaxLength' | transloco }}
           </ion-note>
         }
+
+
+        <ion-item>
+          <ion-label position="stacked">{{ 'attendance.pages.tipoSpesaEdit.tipo' | transloco }}</ion-label>
+          <ion-select formControlName="tipo" interface="popover">
+            @for (tipo of tipi; track tipo) {
+              <ion-select-option [value]="tipo">{{ tipoTesto[tipo] | transloco }}</ion-select-option>
+            }
+          </ion-select>
+        </ion-item>
+        <ion-note class="nvx-nota-tipo">{{ 'attendance.pages.tipoSpesaEdit.tipoNota' | transloco }}</ion-note>
 
 
       </form>

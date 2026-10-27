@@ -32,6 +32,14 @@ namespace nvxapp.server.data.Entities.Tenant
         [MaxLength(200)]
         public string? Descrizione { get; set; }
 
+        // solo per i tipi di spesa "rimborso km": km percorsi e autovettura usata (l'importo e' calcolato)
+        [Column(TypeName = "numeric(10,2)")]
+        public decimal? Km { get; set; }
+
+        public int? IdDip_RapportoAutovetture { get; set; }
+        [ForeignKey("IdDip_RapportoAutovetture")]
+        public virtual Dip_RapportoAutovetture? Dip_RapportoAutovettureNavigation { get; set; }
+
         public ICollection<Dip_GG_NotaSpesa_Allegato>? Dip_GG_NotaSpesa_Allegato { get; set; }
 
     }

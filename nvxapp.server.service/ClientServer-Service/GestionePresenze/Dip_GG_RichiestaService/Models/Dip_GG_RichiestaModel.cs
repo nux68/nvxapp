@@ -71,8 +71,12 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
         public int? Id { get; set; }
         public DateTime Data { get; set; }
         public int IdPar_TipoSpesa { get; set; }
+        /// <summary>per i tipi "rimborso km" lo ricalcola il server: km x rimborso per km dell'autovettura</summary>
         public decimal Importo { get; set; }
         public string? Descrizione { get; set; }
+        /// <summary>solo per i tipi "rimborso km": km percorsi e autovettura del rapporto di lavoro</summary>
+        public decimal? Km { get; set; }
+        public int? IdDip_RapportoAutovetture { get; set; }
         public List<Dip_GG_Richiesta_Body_NotaSpesa_Allegato>? Allegati { get; set; }
     }
 

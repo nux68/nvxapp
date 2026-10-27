@@ -789,4 +789,22 @@
   <data name="ExportPdfNoEmployees" xml:space="preserve">
     <value>Nessun dipendente selezionato tra quelli che puoi stampare.</value>
   </data>
+  <data name="CarInvalidDescription" xml:space="preserve">
+    <value>Descrizione dell'autovettura obbligatoria (massimo 50 caratteri).</value>
+  </data>
+  <data name="CarInvalidPlate" xml:space="preserve">
+    <value>Targa dell'autovettura {0} troppo lunga (massimo 15 caratteri).</value>
+  </data>
+  <data name="CarInvalidMileageRate" xml:space="preserve">
+    <value>Rimborso per km non valido per l'autovettura {0}.</value>
+  </data>
+  <data name="CarInUse" xml:space="preserve">
+    <value>L'autovettura {0} e' usata in {1} spese: non si puo' cancellare.</value>
+  </data>
+  <data name="ExpenseMileageCarRequired" xml:space="preserve">
+    <value>Scegliere l'autovettura nel rimborso km del {0:dd/MM/yyyy}.</value>
+  </data>
+  <data name="ExpenseMileageInvalidKm" xml:space="preserve">
+    <value>Km non validi nel rimborso km del {0:dd/MM/yyyy}.</value>
+  </data>
 </root>

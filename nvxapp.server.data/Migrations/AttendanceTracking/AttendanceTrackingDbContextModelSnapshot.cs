@@ -834,6 +834,9 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     b.Property<int?>("IdDip_GG_Richiesta")
                         .HasColumnType("integer");
 
+                    b.Property<int?>("IdDip_RapportoAutovetture")
+                        .HasColumnType("integer");
+
                     b.Property<int>("IdDip_RapportoLavoro")
                         .HasColumnType("integer");
 
@@ -841,6 +844,9 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                         .HasColumnType("integer");
 
                     b.Property<decimal>("Importo")
+                        .HasColumnType("numeric(10,2)");
+
+                    b.Property<decimal?>("Km")
                         .HasColumnType("numeric(10,2)");
 
                     b.Property<DateTime?>("ModifiedDate")
@@ -852,6 +858,8 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     b.HasKey("Id");
 
                     b.HasIndex("IdDip_GG_Richiesta");
+
+                    b.HasIndex("IdDip_RapportoAutovetture");
 
                     b.HasIndex("IdDip_RapportoLavoro");
 
@@ -1256,6 +1264,46 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     b.HasIndex("IdPar_ProfiloOrario");
 
                     b.ToTable("Dip_ProfiloOrario");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Dip_RapportoAutovetture", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Descrizione")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<int>("IdDip_RapportoLavoro")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<decimal>("RimborsoKM")
+                        .HasColumnType("numeric(10,4)");
+
+                    b.Property<string>("Targa")
+                        .HasMaxLength(15)
+                        .HasColumnType("character varying(15)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdDip_RapportoLavoro");
+
+                    b.ToTable("Dip_RapportoAutovetture");
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Dip_RapportoLavoro", b =>
@@ -2179,6 +2227,9 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<int>("Tipo")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.HasIndex("IdAz_Anagrafica");
@@ -2470,6 +2521,11 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                         .HasForeignKey("IdDip_GG_Richiesta")
                         .OnDelete(DeleteBehavior.Cascade);
 
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Dip_RapportoAutovetture", "Dip_RapportoAutovettureNavigation")
+                        .WithMany("Dip_GG_NotaSpesa")
+                        .HasForeignKey("IdDip_RapportoAutovetture")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("nvxapp.server.data.Entities.Tenant.Dip_RapportoLavoro", "Dip_RapportoLavoroNavigation")
                         .WithMany("Dip_GG_NotaSpesa")
                         .HasForeignKey("IdDip_RapportoLavoro")
@@ -2483,6 +2539,8 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                         .IsRequired();
 
                     b.Navigation("Dip_GG_RichiestaNavigation");
+
+                    b.Navigation("Dip_RapportoAutovettureNavigation");
 
                     b.Navigation("Dip_RapportoLavoroNavigation");
 
@@ -2575,6 +2633,17 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     b.Navigation("Dip_RapportoLavoroNavigation");
 
                     b.Navigation("Par_ProfiloOrarioNavigation");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Dip_RapportoAutovetture", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.Dip_RapportoLavoro", "Dip_RapportoLavoroNavigation")
+                        .WithMany("Dip_RapportoAutovetture")
+                        .HasForeignKey("IdDip_RapportoLavoro")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Dip_RapportoLavoroNavigation");
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Dip_RapportoLavoro", b =>
@@ -3027,6 +3096,11 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     b.Navigation("Dip_GG_Timbratura");
                 });
 
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Dip_RapportoAutovetture", b =>
+                {
+                    b.Navigation("Dip_GG_NotaSpesa");
+                });
+
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Dip_RapportoLavoro", b =>
                 {
                     b.Navigation("Dip_Contatori_Riporto");
@@ -3046,6 +3120,8 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     b.Navigation("Dip_Periodo");
 
                     b.Navigation("Dip_ProfiloOrario");
+
+                    b.Navigation("Dip_RapportoAutovetture");
 
                     b.Navigation("Dip_Rapporto_Giustificativi_Maturazione");
                 });

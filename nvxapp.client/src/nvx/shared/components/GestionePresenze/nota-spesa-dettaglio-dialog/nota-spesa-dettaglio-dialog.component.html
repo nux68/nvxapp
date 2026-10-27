@@ -1,4 +1,4 @@
-<ion-header>
+﻿<ion-header>
   <ion-toolbar>
     <ion-title>{{ riepilogo.descrizione || ('attendance.components.notaSpesaDettaglioDialog.notaSpese' | transloco) }}</ion-title>
   </ion-toolbar>
@@ -27,7 +27,10 @@
       <div class="ns-dett-spesa">
         <span class="ns-data">{{ s.data | date:'dd/MM/yyyy' }}</span>
         <span class="ns-chi">{{ tipo(s.idPar_TipoSpesa) }}</span>
-        <span class="ns-descr">{{ s.descrizione }}</span>
+        <span class="ns-descr">
+          {{ s.descrizione }}
+          @if (s.km) { <small class="ns-km">{{ rimborsoKm(s) }}</small> }
+        </span>
         <span class="ns-importo">{{ euro(s.importo) }}</span>
         @if (s.allegati.length > 0) {
           <div class="ns-allegati">

@@ -19,6 +19,8 @@ using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Rapporto_G
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Rapporto_Giustificativi_MaturazioneService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_ProfiloOrarioService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_ProfiloOrarioService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_RapportoAutovettureService;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_RapportoAutovettureService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_RapportoLavoroService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_RapportoLavoroService.Models;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Account;
@@ -46,6 +48,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
         private readonly IContatoriService                                       _contatoriService;
         private readonly IDip_Rapporto_Giustificativi_MaturazioneService         _maturazioneService;
         private readonly IDip_CompetenzaService                                  _dip_CompetenzaService;
+        private readonly IDip_RapportoAutovettureService                         _dip_RapportoAutovettureService;
         
         
 
@@ -63,6 +66,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
                                   IContatoriService contatoriService,
                                   IDip_Rapporto_Giustificativi_MaturazioneService maturazioneService,
                                   IDip_CompetenzaService dip_CompetenzaService,
+                                  IDip_RapportoAutovettureService dip_RapportoAutovettureService,
                                   IUserCompanyRepository userCompanyRepository,
                                   IAspNetUserRolesRepository aspNetUserRolesRepository,
                                   IAspNetRolesRepository aspNetRolesRepository,
@@ -83,6 +87,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
             _contatoriService          = contatoriService;
             _maturazioneService        = maturazioneService;
             _dip_CompetenzaService     = dip_CompetenzaService;
+            _dip_RapportoAutovettureService = dip_RapportoAutovettureService;
         }
 
         public virtual async Task<GenericResult<Dip_Anagrafica_GetAll_OutModel>> GetAll(GenericRequest<Dip_Anagrafica_GetAll_InModel> model, Boolean isSubProcess)
@@ -245,6 +250,13 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
                                         var resMat = await _maturazioneService.GetAll(reqMat, true);
                                         if (resMat.Success && resMat.Data != null)
                                             retVal.Dip_Anagrafica.Dip_Maturazione.AddRange(resMat.Data.Maturazioni);
+
+                                        // ── Autovetture (sezione Spesa) ──────────────────────────────
+                                        var reqAuto = new GenericRequest<Dip_RapportoAutovetture_Get_InModel>();
+                                        reqAuto.Data.Id = rappLav.Id;
+                                        var resAuto = await _dip_RapportoAutovettureService.Dip_RapportoAutovettureGet(reqAuto, true);
+                                        if (resAuto.Success && resAuto.Data != null)
+                                            (retVal.Dip_Anagrafica.Dip_RapportoAutovetture ??= new List<Dip_RapportoAutovettureModel>()).AddRange(resAuto.Data.Dip_RapportoAutovetture);
                                     }
                                 
 
@@ -392,6 +404,19 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
                                             var reqMat = new GenericRequest<Dip_Rapporto_Giustificativi_Maturazione_Upsert_InModel>();
                                             reqMat.Data.Maturazione = mat;
                                             await _maturazioneService.Upsert(reqMat, true);
+                                        }
+
+                                        // ── Salvataggio autovetture (solo se la sezione Spesa e' gestita dal client) ──
+                                        if (model.Data.Dip_Anagrafica.Dip_RapportoAutovetture != null)
+                                        {
+                                            var reqAuto = new GenericRequest<Dip_RapportoAutovetture_Put_InModel>();
+                                            reqAuto.Data.Id = itemRapp.Id;
+                                            reqAuto.Data.Dip_RapportoAutovetture = model.Data.Dip_Anagrafica.Dip_RapportoAutovetture
+                                                .Where(a => a.IdDip_RapportoLavoro == itemRapp.Id || (a.IdDip_RapportoLavoro < 0 && model.Data.Dip_Anagrafica.Dip_RapportoLavoro.Any(r => r.Id < 0)))
+                                                .ToList();
+                                            var resAuto = await _dip_RapportoAutovettureService.Dip_RapportoAutovetturePut(reqAuto, true);
+                                            if (resAuto.Success && resAuto.Data != null)
+                                                (retVal.Dip_Anagrafica.Dip_RapportoAutovetture ??= new List<Dip_RapportoAutovettureModel>()).AddRange(resAuto.Data.Dip_RapportoAutovetture);
                                         }
                                     }
                                 } // end foreach itemRapp / end if res_1.Success

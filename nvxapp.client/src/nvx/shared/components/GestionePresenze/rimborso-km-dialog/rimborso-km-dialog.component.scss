@@ -1,0 +1,14 @@
+ion-note {
+  display: block;
+  padding: 2px 16px 6px 16px;
+}
+
+.rk-calcolo {
+  padding: 12px 16px 0 16px;
+  text-align: right;
+
+  small {
+    display: block;
+    color: var(--ion-color-medium);
+  }
+}

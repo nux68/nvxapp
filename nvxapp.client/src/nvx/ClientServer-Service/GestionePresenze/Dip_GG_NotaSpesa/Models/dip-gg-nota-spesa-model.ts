@@ -1,4 +1,4 @@
-import { ModelResult } from "../../../ModelsBase/model-result";
+﻿import { ModelResult } from "../../../ModelsBase/model-result";
 import { Dip_GG_RichiestaModel, StatoRichiesta } from "../../Dip_GG_Richiesta/Models/dip-gg-richiesta-model";
 
 
@@ -19,6 +19,11 @@ export class Dip_GG_NotaSpesaModel {
   idPar_TipoSpesa: number = 0;
   importo: number = 0;
   descrizione: string | null = null;
+  // rimborso km: km percorsi e autovettura usata
+  km: number | null = null;
+  idDip_RapportoAutovetture: number | null = null;
+  autovetturaDescrizione: string | null = null;
+  autovetturaTarga: string | null = null;
   richiestaStato: StatoRichiesta = StatoRichiesta.Immessa;
   allegati: Dip_GG_NotaSpesa_AllegatoModel[] = [];
 }
@@ -58,6 +63,12 @@ export class Dip_GG_NotaSpesa_Allegato_Get_OutModel extends ModelResult {
   nomeFile: string = '';
   contentType: string = '';
   contenuto: string = '';  // base64
+}
+
+/** km di un rimborso chilometrico: senza decimali se interi, con la virgola */
+export function kmTesto(km: number | null | undefined): string {
+  const v = Number(km) || 0;
+  return (Number.isInteger(v) ? v.toFixed(0) : v.toFixed(2)).replace('.', ',');
 }
 
 // limiti degli allegati (uguali a quelli del server, Dip_GG_NotaSpesaService)

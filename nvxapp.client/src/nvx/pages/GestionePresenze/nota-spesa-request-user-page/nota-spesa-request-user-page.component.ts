@@ -1,19 +1,22 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+﻿import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { NavController } from '@ionic/angular';
+import { ModalController, NavController } from '@ionic/angular';
 import { Observable, map, of } from 'rxjs';
 import { UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { DipGGRichiestaService } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/dip-gg-richiesta.service';
 import { Dip_GG_Richiesta_Body_NotaSpesa, Dip_GG_Richiesta_Body_NotaSpesa_Allegato, Dip_GG_Richiesta_Body_NotaSpesa_Spesa, Dip_GG_Richiesta_NotaSpesaUpdate_InModel, Dip_GG_Richiesta_Send_InModel, StatoRichiesta, TipoRichiesta } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/Models/dip-gg-richiesta-model';
 import { ParTipoSpesaService } from '../../../ClientServer-Service/GestionePresenze/Par_TipoSpesa/par-tipo-spesa.service';
-import { Par_TipoSpesaInModel, Par_TipoSpesaModel } from '../../../ClientServer-Service/GestionePresenze/Par_TipoSpesa/Models/par-tipo-spesa-model';
-import { Dip_GG_NotaSpesa_AllegatoModel, Dip_GG_NotaSpesa_Get4Richiesta_InModel, NOTA_SPESA_ALLEGATI_MAX_BYTE_RICHIESTA, NOTA_SPESA_ALLEGATI_MAX_PER_SPESA, NOTA_SPESA_ALLEGATO_MAX_BYTE, NOTA_SPESA_ALLEGATO_TIPI } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_NotaSpesa/Models/dip-gg-nota-spesa-model';
+import { Par_TipoSpesaInModel, Par_TipoSpesaModel, TipoSpesaTipo } from '../../../ClientServer-Service/GestionePresenze/Par_TipoSpesa/Models/par-tipo-spesa-model';
+import { Dip_GG_NotaSpesa_AllegatoModel, Dip_GG_NotaSpesa_Get4Richiesta_InModel, kmTesto, NOTA_SPESA_ALLEGATI_MAX_BYTE_RICHIESTA, NOTA_SPESA_ALLEGATI_MAX_PER_SPESA, NOTA_SPESA_ALLEGATO_MAX_BYTE, NOTA_SPESA_ALLEGATO_TIPI } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_NotaSpesa/Models/dip-gg-nota-spesa-model';
 import { DipGGNotaSpesaService } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_NotaSpesa/dip-gg-nota-spesa.service';
 import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
 import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
 import { TranslocoService } from '@jsverse/transloco';
+import { DipRapportoAutovettureService } from '../../../ClientServer-Service/GestionePresenze/Dip_RapportoAutovetture/dip-rapporto-autovetture.service';
+import { autovetturaTesto, Dip_RapportoAutovetture_GetAll4User_InModel, Dip_RapportoAutovettureModel } from '../../../ClientServer-Service/GestionePresenze/Dip_RapportoAutovetture/Models/dip-rapporto-autovetture-model';
+import { RimborsoKmDialogComponent, RimborsoKmDialogModel } from '../../../shared/components/GestionePresenze/rimborso-km-dialog/rimborso-km-dialog.component';
 
 
 /** allegato in compilazione: letto dal dispositivo (con contenuto) o gia' salvato (in modifica, con id) */
@@ -25,6 +28,8 @@ type AllegatoInCompilazione = Dip_GG_Richiesta_Body_NotaSpesa_Allegato & { dimen
  di tipo NotaSpesa e segue il ciclo standard di approvazione.
  Form: descrizione della nota e "spese" (FormArray, una riga per spesa; gli allegati sono il valore
  del controllo "allegati" della riga).
+ Rimborso km (tipo di spesa RimborsoKm): km e autovettura si indicano nel dialog dedicato, l'importo
+ e' calcolato (km x rimborso per km dell'autovettura) e non si modifica; il server lo ricalcola.
 */
 @Component({
   selector: 'app-nota-spesa-request-user-page',
@@ -40,6 +45,8 @@ export class NotaSpesaRequestUserPageComponent extends BasePageConfirmCancelComp
   public readonly accept = NOTA_SPESA_ALLEGATO_TIPI.join(',');
 
   public tipiSpesa: Par_TipoSpesaModel[] = [];
+  /** autovetture del proprio rapporto di lavoro, per i rimborsi km */
+  public autovetture: Dip_RapportoAutovettureModel[] = [];
   public invio = false;
 
   constructor(protected override navCtrl: NavController,
@@ -50,7 +57,9 @@ export class NotaSpesaRequestUserPageComponent extends BasePageConfirmCancelComp
               private parTipoSpesaService: ParTipoSpesaService,
               private collectionDialogService: CollectionDialogService,
               private refresherService: RefresherService,
-              private transloco: TranslocoService) {
+              private transloco: TranslocoService,
+              private modalCtrl: ModalController,
+              private dipRapportoAutovettureService: DipRapportoAutovettureService) {
 
     super(navCtrl, userInterfaceService, fb);
   }
@@ -75,14 +84,23 @@ export class NotaSpesaRequestUserPageComponent extends BasePageConfirmCancelComp
   }
 
   private nuovaSpesa(spesa: Partial<Dip_GG_Richiesta_Body_NotaSpesa_Spesa> = {}, allegati: AllegatoInCompilazione[] = []): FormGroup {
-    return this.fb.group({
+    const riga = this.fb.group({
       id: [spesa.id ?? null],
       data: [spesa.data ?? '', [Validators.required]],
       idPar_TipoSpesa: [spesa.idPar_TipoSpesa || null, [Validators.required]],
       importo: [spesa.importo ?? null, [Validators.required, Validators.min(0.01)]],
       descrizione: [spesa.descrizione ?? '', [Validators.maxLength(200)]],
+      km: [spesa.km ?? null],
+      idDip_RapportoAutovetture: [spesa.idDip_RapportoAutovetture ?? null],
       allegati: this.fb.control<AllegatoInCompilazione[]>(allegati),
     });
+    // scelto un tipo rimborso km senza km: si chiedono subito km e autovettura
+    riga.get('idPar_TipoSpesa')?.valueChanges.subscribe(() => {
+      this.aggiornaTipo(riga);
+      if (this.isRimborsoKm(riga) && !riga.get('km')?.value)
+        this.apriRimborsoKm(riga);
+    });
+    return riga;
   }
 
   LoadData = (): Observable<Dip_GG_Richiesta_Body_NotaSpesa> => {
@@ -91,6 +109,11 @@ export class NotaSpesaRequestUserPageComponent extends BasePageConfirmCancelComp
     this.btnConfirm.text = this.transloco.translate(this.idRichiesta ? 'attendance.pages.notaSpesaRequestUser.salva' : 'common.buttons.send');
     this.parTipoSpesaService.GetAll(new GenericRequest<Par_TipoSpesaInModel>(Par_TipoSpesaInModel)).subscribe(res => {
       this.tipiSpesa = res.data?.par_TipoSpesa ?? [];
+      this.spese.forEach(s => this.aggiornaTipo(s));
+    });
+    this.dipRapportoAutovettureService.GetAll4User(new GenericRequest<Dip_RapportoAutovetture_GetAll4User_InModel>(Dip_RapportoAutovetture_GetAll4User_InModel)).subscribe(res => {
+      this.autovetture = res.data?.dip_RapportoAutovetture ?? [];
+      this.spese.filter(s => this.isRimborsoKm(s)).forEach(s => this.ricalcolaImporto(s));
     });
 
     if (!this.idRichiesta) {
@@ -105,11 +128,12 @@ export class NotaSpesaRequestUserPageComponent extends BasePageConfirmCancelComp
       const spese = res.data?.dip_GG_NotaSpesa ?? [];
       for (const s of spese) {
         this.speseArray.push(this.nuovaSpesa(
-          { id: s.id, data: String(s.data).substring(0, 10), idPar_TipoSpesa: s.idPar_TipoSpesa, importo: s.importo, descrizione: s.descrizione ?? '' },
+          { id: s.id, data: String(s.data).substring(0, 10), idPar_TipoSpesa: s.idPar_TipoSpesa, importo: s.importo, descrizione: s.descrizione ?? '', km: s.km, idDip_RapportoAutovetture: s.idDip_RapportoAutovetture },
           s.allegati.map(a => ({ id: a.id, nomeFile: a.nomeFile, contentType: a.contentType, contenuto: '', dimensione: a.dimensione }))));
       }
       if (spese.length === 0)
         this.aggiungiSpesa();
+      this.spese.forEach(s => this.aggiornaTipo(s));
       return this.modello(spese[0]?.richiestaDescrizione ?? '');
     }));
   };
@@ -118,12 +142,13 @@ export class NotaSpesaRequestUserPageComponent extends BasePageConfirmCancelComp
   private modello(descrizione: string): Dip_GG_Richiesta_Body_NotaSpesa {
     const model = new Dip_GG_Richiesta_Body_NotaSpesa();
     model.descrizione = descrizione;
-    model.spese = this.speseArray.value;
+    model.spese = this.speseArray.getRawValue();
     return model;
   }
 
   SaveData = (editModel: Dip_GG_Richiesta_Body_NotaSpesa): Observable<boolean> => {
-    const righe: (Dip_GG_Richiesta_Body_NotaSpesa_Spesa & { allegati: AllegatoInCompilazione[] })[] = this.speseArray.value;
+    // getRawValue: l'importo dei rimborsi km e' un controllo disabilitato (calcolato)
+    const righe: (Dip_GG_Richiesta_Body_NotaSpesa_Spesa & { allegati: AllegatoInCompilazione[] })[] = this.speseArray.getRawValue();
 
     const body = new Dip_GG_Richiesta_Body_NotaSpesa();
     body.descrizione = (editModel.descrizione ?? '').trim();
@@ -134,6 +159,8 @@ export class NotaSpesaRequestUserPageComponent extends BasePageConfirmCancelComp
       spesa.idPar_TipoSpesa = s.idPar_TipoSpesa;
       spesa.importo = Math.round(Number(s.importo) * 100) / 100;
       spesa.descrizione = (s.descrizione ?? '').trim();
+      spesa.km = s.km != null && s.km !== ('' as any) ? Number(s.km) : null;
+      spesa.idDip_RapportoAutovetture = s.idDip_RapportoAutovetture ?? null;
       // gli allegati gia' salvati si mandano solo con l'id (restano sul server)
       spesa.allegati = s.allegati.map(a => a.id
         ? { id: a.id, nomeFile: a.nomeFile, contentType: a.contentType, contenuto: '' }
@@ -197,6 +224,84 @@ export class NotaSpesaRequestUserPageComponent extends BasePageConfirmCancelComp
     // la nuova spesa riparte dalla data dell'ultima (trasferte di piu' giorni), altrimenti oggi
     const ultima = this.spese[this.spese.length - 1];
     this.speseArray.push(this.nuovaSpesa({ data: ultima ? ultima.get('data')?.value : this.oggi() }));
+  }
+
+  // ------------------------------------------------------------------ rimborso km
+
+  public isRimborsoKm(spesa: FormGroup): boolean {
+    const id = spesa.get('idPar_TipoSpesa')?.value;
+    return this.tipiSpesa.find(t => t.id === id)?.tipo === TipoSpesaTipo.RimborsoKm;
+  }
+
+  /**
+   * Adegua la riga al tipo di spesa: per il rimborso km l'importo e' calcolato (non modificabile)
+   * e km e autovettura sono obbligatori; per gli altri tipi km e autovettura non servono.
+   * Non fa nulla finche' non sono arrivati i tipi di spesa (non si sa ancora quali sono rimborsi km).
+   */
+  private aggiornaTipo(spesa: FormGroup): void {
+    if (this.tipiSpesa.length === 0)
+      return;
+    const importo = spesa.get('importo')!;
+    const km = spesa.get('km')!;
+    const autovettura = spesa.get('idDip_RapportoAutovetture')!;
+    if (this.isRimborsoKm(spesa)) {
+      importo.disable({ emitEvent: false });
+      km.setValidators([Validators.required, Validators.min(0.01)]);
+      autovettura.setValidators([Validators.required]);
+      this.ricalcolaImporto(spesa);
+    } else {
+      importo.enable({ emitEvent: false });
+      km.clearValidators();
+      autovettura.clearValidators();
+      km.setValue(null, { emitEvent: false });
+      autovettura.setValue(null, { emitEvent: false });
+    }
+    km.updateValueAndValidity({ emitEvent: false });
+    autovettura.updateValueAndValidity({ emitEvent: false });
+    // aggiorna la validita' del form (abilitazione del pulsante di conferma)
+    this._editForm.updateValueAndValidity();
+  }
+
+  /** importo = km x rimborso per km dell'autovettura (finche' le autovetture non sono arrivate resta quello salvato) */
+  private ricalcolaImporto(spesa: FormGroup): void {
+    const auto = this.autovetture.find(a => a.id === spesa.get('idDip_RapportoAutovetture')?.value);
+    if (!auto)
+      return;
+    const km = Number(spesa.get('km')?.value) || 0;
+    spesa.get('importo')?.setValue(RimborsoKmDialogComponent.calcolaImporto(km, auto.rimborsoKM), { emitEvent: false });
+  }
+
+  /** dialog dedicato: autovettura e km della spesa */
+  public async apriRimborsoKm(spesa: FormGroup): Promise<void> {
+    const rimborsoKm = new RimborsoKmDialogModel();
+    rimborsoKm.idDip_RapportoAutovetture = spesa.get('idDip_RapportoAutovetture')?.value ?? null;
+    rimborsoKm.km = spesa.get('km')?.value ?? null;
+
+    const modal = await this.modalCtrl.create({
+      component: RimborsoKmDialogComponent,
+      componentProps: {
+        rimborsoKm: rimborsoKm,
+        autovetture: this.autovetture
+      },
+    });
+    await modal.present();
+
+    const { data, role } = await modal.onWillDismiss<RimborsoKmDialogModel | null>();
+    spesa.get('km')?.markAsTouched();
+    if (role === 'confirm' && data) {
+      spesa.patchValue({ km: Number(data.km) || null, idDip_RapportoAutovetture: data.idDip_RapportoAutovetture });
+      this.ricalcolaImporto(spesa);
+    }
+  }
+
+  /** "120 km · Fiat Panda (AB123CD)", vuoto se km e autovettura non sono ancora indicati */
+  public rimborsoKmTesto(spesa: FormGroup): string {
+    const km = spesa.get('km')?.value;
+    const auto = this.autovetture.find(a => a.id === spesa.get('idDip_RapportoAutovetture')?.value);
+    if (!km || !auto)
+      return '';
+    return this.transloco.translate('attendance.pages.notaSpesaRequestUser.rimborsoKmRiepilogo',
+      { km: kmTesto(km), autovettura: autovetturaTesto(auto.descrizione, auto.targa) });
   }
 
   public togliSpesa(index: number): void {

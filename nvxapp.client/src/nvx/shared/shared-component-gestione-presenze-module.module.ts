@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+﻿import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TipoTimbraturaToLongTextPipe } from './pipe/GestionePresenze/tipo-timbratura-to-long-text.pipe';
 import { TipoTimbraturaToShortTextPipe } from './pipe/GestionePresenze/tipo-timbratura-to-short-text.pipe';
@@ -44,6 +44,8 @@ import { EditParExportCauCausaliComponentComponent } from './components/Gestione
 import { DipSelectorModalComponent } from './components/GestionePresenze/dip-selector-modal/dip-selector-modal.component';
 import { TipoContatoreToLongTextPipe } from './pipe/GestionePresenze/tipo-contatore-to-long-text.pipe';
 import { CartellinoQuadraturaComponent } from './components/GestionePresenze/cartellino-quadratura/cartellino-quadratura.component';
+import { EditDipRapportoAutovettureDialogComponent } from './components/GestionePresenze/edit-dip-rapporto-autovetture-dialog/edit-dip-rapporto-autovetture-dialog.component';
+import { RimborsoKmDialogComponent } from './components/GestionePresenze/rimborso-km-dialog/rimborso-km-dialog.component';
 
 @NgModule({
   declarations: [
@@ -57,6 +59,7 @@ import { CartellinoQuadraturaComponent } from './components/GestionePresenze/car
     EditDipGGCausaliDialogComponent, EditDipGGTimbraturaDialogComponent, DipSelectorModalComponent,
     EditDipGGGiustificativiDialogComponent, EditParExportCauCausaliComponentComponent,
     CartellinoQuadraturaComponent,
+    EditDipRapportoAutovettureDialogComponent, RimborsoKmDialogComponent,
   ],
   imports: [
     SharedComponentInfrastructureModule,
@@ -84,6 +87,7 @@ import { CartellinoQuadraturaComponent } from './components/GestionePresenze/car
     EditParOrarioDettaglioOrarioIntervalloHHDialogComponent, TimeSheetEngineCallerComponent, EditParExportCauCausaliComponentComponent,
     EditDipGGCausaliDialogComponent, EditDipGGTimbraturaDialogComponent, DipSelectorModalComponent,
     EditDipGGGiustificativiDialogComponent, CartellinoQuadraturaComponent,
+    EditDipRapportoAutovettureDialogComponent, RimborsoKmDialogComponent,
     ParOrarioToCodicePipe, ParOrarioToLongTextPipe, ParExportTipoFileToShortTextPipe,
     TipoContatoreToLongTextPipe
   ]

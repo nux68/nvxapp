@@ -1,11 +1,11 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+﻿import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NavController } from '@ionic/angular';
 import { Observable, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
 import { UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
-import { Par_TipoSpesaGetInModel, Par_TipoSpesaModel, Par_TipoSpesaPutInModel } from '../../../ClientServer-Service/GestionePresenze/Par_TipoSpesa/Models/par-tipo-spesa-model';
+import { Par_TipoSpesaGetInModel, Par_TipoSpesaModel, Par_TipoSpesaPutInModel, TIPO_SPESA_TIPO_TESTO, TipoSpesaTipo } from '../../../ClientServer-Service/GestionePresenze/Par_TipoSpesa/Models/par-tipo-spesa-model';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { ParTipoSpesaService } from '../../../ClientServer-Service/GestionePresenze/Par_TipoSpesa/par-tipo-spesa.service';
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
@@ -20,6 +20,9 @@ import { TranslocoService } from '@jsverse/transloco';
   standalone: false
 })
 export class TipoSpesaEditPageComponent extends BasePageConfirmCancelComponent<Par_TipoSpesaModel> {
+
+  public readonly tipi = [TipoSpesaTipo.Generica, TipoSpesaTipo.RimborsoKm];
+  public readonly tipoTesto = TIPO_SPESA_TIPO_TESTO;
 
   constructor(
     protected override navCtrl: NavController,
@@ -39,6 +42,7 @@ export class TipoSpesaEditPageComponent extends BasePageConfirmCancelComponent<P
     return this.fb.group({
       descrizione: [null, [Validators.required, Validators.maxLength(50)]],
       codice: [null, [Validators.required, Validators.maxLength(10)]],
+      tipo: [TipoSpesaTipo.Generica, [Validators.required]],
     });
   }
 

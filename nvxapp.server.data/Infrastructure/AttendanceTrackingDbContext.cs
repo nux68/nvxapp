@@ -46,6 +46,7 @@ namespace nvxapp.server.data.Infrastructure
         public virtual DbSet<Dip_RapportoLavoro> Dip_RapportoLavoro { get; set; }
         public virtual DbSet<Dip_ProfiloOrario> Dip_ProfiloOrario { get; set; }
         public virtual DbSet<Dip_Competenza> Dip_Competenza { get; set; }
+        public virtual DbSet<Dip_RapportoAutovetture> Dip_RapportoAutovetture { get; set; }
 
         public virtual DbSet<Dip_GG_Giustificativi> Dip_GG_Giustificativi { get; set; }
         public virtual DbSet<Dip_GG_Timbratura> Dip_GG_Timbrature { get; set; }
@@ -218,6 +219,20 @@ namespace nvxapp.server.data.Infrastructure
                 .WithMany(t_figlio => t_figlio.Dip_GG_NotaSpesa)
                 .HasForeignKey(key_esterna => key_esterna.IdPar_TipoSpesa)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            // un'autovettura usata da qualche spesa non si puo' cancellare
+            modelBuilder.Entity<Dip_GG_NotaSpesa>()
+                .HasOne(t_padre => t_padre.Dip_RapportoAutovettureNavigation)
+                .WithMany(t_figlio => t_figlio.Dip_GG_NotaSpesa)
+                .HasForeignKey(key_esterna => key_esterna.IdDip_RapportoAutovetture)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            /* Dip_RapportoAutovetture */
+            modelBuilder.Entity<Dip_RapportoAutovetture>()
+                .HasOne(t_padre => t_padre.Dip_RapportoLavoroNavigation)
+                .WithMany(t_figlio => t_figlio.Dip_RapportoAutovetture)
+                .HasForeignKey(key_esterna => key_esterna.IdDip_RapportoLavoro)
+                .OnDelete(DeleteBehavior.Cascade);
 
             /* Dip_GG_NotaSpesa_Allegato */
             modelBuilder.Entity<Dip_GG_NotaSpesa_Allegato>()

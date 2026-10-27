@@ -20,6 +20,15 @@ namespace nvxapp.server.data.Entities.Tenant
         [MaxLength(50)]
         public string? Descrizione { get; set; }
 
+        // comportamento della spesa: generica (importo libero) o rimborso chilometrico (importo = km x rimborso dell'autovettura)
+        public TipoSpesaTipo Tipo { get; set; } = TipoSpesaTipo.Generica;
+
         public ICollection<Dip_GG_NotaSpesa>? Dip_GG_NotaSpesa { get; set; }
+    }
+
+    public enum TipoSpesaTipo
+    {
+        Generica,
+        RimborsoKm
     }
 }

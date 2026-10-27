@@ -1,0 +1,52 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{Title}}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+
+  <form [formGroup]="_editForm">
+
+    <ion-card>
+      <ion-card-content>
+
+        @if (autovetture.length === 0) {
+          <ion-note color="warning">{{ 'attendance.components.rimborsoKmDialog.nessunaAutovettura' | transloco }}</ion-note>
+        }
+
+        <ion-item>
+          <ion-label position="stacked">{{ 'attendance.components.rimborsoKmDialog.autovettura' | transloco }}</ion-label>
+          <ion-select formControlName="idDip_RapportoAutovetture" interface="popover" [placeholder]="'attendance.components.rimborsoKmDialog.scegli' | transloco">
+            @for (a of autovetture; track a.id) {
+              <ion-select-option [value]="a.id">{{ autovetturaTesto(a.descrizione, a.targa) }}</ion-select-option>
+            }
+          </ion-select>
+        </ion-item>
+        @if (errore('idDip_RapportoAutovetture')) {
+          <ion-note color="danger">{{ 'attendance.components.rimborsoKmDialog.erroreAutovettura' | transloco }}</ion-note>
+        }
+
+        <ion-item>
+          <ion-label position="stacked">{{ 'attendance.components.rimborsoKmDialog.km' | transloco }}</ion-label>
+          <ion-input type="number" inputmode="decimal" min="0" step="0.01" formControlName="km" placeholder="0"></ion-input>
+        </ion-item>
+        @if (errore('km')) {
+          <ion-note color="danger">{{ 'attendance.components.rimborsoKmDialog.erroreKm' | transloco }}</ion-note>
+        }
+
+        <div class="rk-calcolo">
+          @if (autovettura) {
+            <small>{{ 'attendance.components.rimborsoKmDialog.rimborsoKM' | transloco: { tariffa: tariffa(autovettura.rimborsoKM) } }}</small>
+          }
+          <div>{{ 'attendance.components.rimborsoKmDialog.importo' | transloco }} <strong>{{ euro(importo) }}</strong></div>
+        </div>
+
+      </ion-card-content>
+    </ion-card>
+
+  </form>
+
+</ion-content>
+
+<app-page-buttonbar [buttonbar]="buttonbar"></app-page-buttonbar>
