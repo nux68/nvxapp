@@ -75,6 +75,7 @@ storico migrazioni create
   Public: InitPublic (contiene anche i dati iniziali, vedi Migrations/Public/PopolateDB.cs
           e i tipi di richiesta dei ticket, Migrations/Public/PopolateTicketType.cs)
           AddDataProtectionKeys (tabella public."DataProtectionKeys": chiavi DataProtection dei token di Identity)
+          RegistrationAdminUserNames (CompanyRegistrationRequest: nomi scelti per gli amministratori)
   Moke:   InitMoke
   AttendanceTracking: AttendanceTracking_Init   (tabelle del modulo presenze; ramo AttendanceTracking)
 

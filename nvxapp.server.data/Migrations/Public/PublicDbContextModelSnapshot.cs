@@ -393,6 +393,11 @@ namespace nvxapp.server.data.Migrations.Public
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("AdminUserName")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
                     b.Property<string>("ChangeUser")
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
@@ -426,6 +431,11 @@ namespace nvxapp.server.data.Migrations.Public
                         .IsRequired()
                         .HasMaxLength(512)
                         .HasColumnType("character varying(512)");
+
+                    b.Property<string>("PowerAdminUserName")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
 
                     b.Property<string>("TokenHash")
                         .IsRequired()
