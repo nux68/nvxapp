@@ -241,6 +241,9 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
       descrizione: [null, [Validators.required, Validators.maxLength(50)]],
       roles: [[], this.minArrayLength(1)],
       disabled: [false],
+      // email: modificabile anche per gli utenti esistenti (obbligatoria solo per i nuovi;
+      // vuota su un utente esistente = non modificata)
+      mail: [null, [Validators.email]],
       cognome: [null, [Validators.required, Validators.maxLength(50)]],
       nome: [null, [Validators.required, Validators.maxLength(50)]],
     });
@@ -271,7 +274,7 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
     } else {
       return new Observable<Dip_Anagrafica4EditModel | null>((subscriber) => {
 
-        this._editForm.addControl('mail', this.fb.control(null, [Validators.required, Validators.email]));
+        this._editForm.controls['mail'].addValidators(Validators.required);
         this._editForm.addControl('pw', this.fb.control(null, [Validators.required]));
         this._editForm.addControl('confirmPassword', this.fb.control(null, [Validators.required]));
         this._editForm.setValidators(matchPasswords);
