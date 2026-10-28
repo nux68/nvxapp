@@ -87,4 +87,7 @@
   <data name="NavigateResult" xml:space="preserve">
     <value>Navigating to '{0}'.</value>
   </data>
+  <data name="AnswerNotProcessed" xml:space="preserve">
+    <value>I couldn't process your answer, please try again.</value>
+  </data>
 </root>

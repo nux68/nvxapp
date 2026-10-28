@@ -117,30 +117,16 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 var userMessage = model.Data.Request;
                 var sessionId = model.Data.SessionId;
 
-                // 1. Cerca la sessione esistente
-                var session = TryGetSession(sessionId);
-
-                // Se il client aveva una sessione ma è scaduta, lo informiamo esplicitamente.
-                if (session == null && !string.IsNullOrEmpty(sessionId))
-                {
-                    var freshSession = CreateSession();
-                    return new ChatAIOutModel
-                    {
-                        SessionId = freshSession.SessionId,
-                        Responce = ChatAIMessages.Get("SessionExpired"),
-                        ResponseType = "result",
-                        Suggestions = BuildIntentSuggestions()
-                    };
-                }
-
-                // Prima richiesta senza sessionId — crea la sessione
-                session ??= CreateSession();
+                // 1. Cerca la sessione esistente (solo se appartiene all'utente corrente).
+                // Senza sessionId (prima richiesta), o con una sessione scaduta o di un altro utente,
+                // il messaggio si elabora come primo turno di una sessione nuova: non va perso.
+                var session = TryGetSession(sessionId) ?? CreateSession();
 
                 // 2. Comando di reset
                 if (IsResetCommand(userMessage))
                 {
                     _sessionStore.Delete(session.SessionId);
-                    var resetSession = _sessionStore.Create();
+                    var resetSession = CreateSession();
                     return new ChatAIOutModel
                     {
                         SessionId = resetSession.SessionId,
@@ -154,7 +140,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 if (IsHelpCommand(userMessage))
                 {
                     _sessionStore.Delete(session.SessionId);
-                    var helpSession = _sessionStore.Create();
+                    var helpSession = CreateSession();
                     return new ChatAIOutModel
                     {
                         SessionId = helpSession.SessionId,
@@ -254,25 +240,33 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
 
                         if (nextMissing != null)
                         {
-                            string? slotValue  = null;
+                            Dictionary<string, string> extractedSlots;
 
                             try
                             {
-                                slotValue = await Call_LLM_OtherTurnAsync(nextMissing, currentAction.Intent, session);
+                                extractedSlots = await Call_LLM_OtherTurnAsync(nextMissing, currentAction, session);
                             }
-                            catch (Exception ex)
+                            catch (Exception)
                             {
-                                //DeleteSession(session.SessionId);
-                                return BuildErrorResponse(session, ex.Message, BuildIntentSuggestions());
+                                // La sessione resta valida: si ripete la domanda invece di chiudere
+                                // il dialogo (una risposta "error" farebbe ripartire il client da zero).
+                                // Il dettaglio dell'errore è già nel log (Call_LLM_OtherTurnAsync).
+                                var retry = ChatAIMessages.Get("AnswerNotProcessed") + "\n" +
+                                    BuildMissingSlotQuestion(nextMissing, currentAction.Intent, currentAction,
+                                        GetDisplayName(currentAction.Intent));
+                                session.AddToHistory("assistant", retry);
+                                return BuildQuestionResponse(session, retry);
                             }
-                            
 
+                            // La risposta può contenere più valori (es. "Rossi, alle 9, in uscita"):
+                            // si uniscono tutti gli slot dell'azione corrente, non solo quello chiesto.
+                            int slotCountBefore = currentAction.Slots.Count;
+                            SafeMergeSlotsForAction(currentAction, extractedSlots, userMessage);
 
-
-                            if (string.IsNullOrEmpty(slotValue))
-                                slotValue = userMessage.Trim();
-
-                            SafeMergeSlotsForAction(currentAction, new Dictionary<string, string> { [nextMissing] = slotValue }, userMessage);
+                            // Il LLM non ha restituito nulla per lo slot chiesto e nessun altro valore
+                            // è stato acquisito: il testo intero è la risposta allo slot chiesto.
+                            if (!extractedSlots.ContainsKey(nextMissing) && currentAction.Slots.Count == slotCountBefore)
+                                SafeMergeSlotsForAction(currentAction, new Dictionary<string, string> { [nextMissing] = userMessage.Trim() }, userMessage);
                         }
                     }
                 }
@@ -316,7 +310,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 {
                     await ExecuteCommandAsync(current);
                     DeleteSession(session.SessionId);
-                    var helpSession = _sessionStore.Create();
+                    var helpSession = CreateSession();
                     return new ChatAIOutModel
                     {
                         SessionId = helpSession.SessionId,
@@ -406,9 +400,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
 
         private async Task<ChatAIOutModel> HandleConfirmation(ChatSession session, string userMessage)
         {
-            // parole accettate in italiano e in inglese, qualunque sia la lingua dell'interfaccia
-            bool confirmed = ChatAIKeywords.IsExactMatch(userMessage, ChatAIKeywords.Confirm);
-            bool cancelled = !confirmed && ChatAIKeywords.IsExactMatch(userMessage, ChatAIKeywords.Cancel);
+            // parole accettate in italiano e in inglese, qualunque sia la lingua dell'interfaccia;
+            // tolleranti alle parole di contorno ("sì grazie", "no lascia stare")
+            bool confirmed = ChatAIKeywords.IsConfirm(userMessage);
+            bool cancelled = !confirmed && ChatAIKeywords.IsCancel(userMessage);
 
             session.AddToHistory("user", userMessage);
 
@@ -417,7 +412,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 session.State = SessionState.Confirmed;
                 var planResult = await ExecutePlanAsync(session);
                 DeleteSession(session.SessionId);
-                var doneSession = _sessionStore.Create();
+                var doneSession = CreateSession();
 
                 bool anySuccess = planResult.Any(r => r.Success);
                 bool anyFail = planResult.Any(r => !r.Success);
@@ -445,7 +440,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             if (cancelled)
             {
                 DeleteSession(session.SessionId);
-                var freshSession = _sessionStore.Create();
+                var freshSession = CreateSession();
                 return new ChatAIOutModel
                 {
                     SessionId = freshSession.SessionId,
@@ -455,9 +450,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 };
             }
 
-            // Non è né sì né no — chiedi chiarimento
+            // Non è né sì né no — chiedi chiarimento restando in attesa di conferma,
+            // così la risposta successiva ("sì") esegue subito il piano
             var clarification = ChatAIMessages.Get("ConfirmClarification");
-            session.State = SessionState.Collecting;
             session.AddToHistory("assistant", clarification);
             return BuildQuestionResponse(session, clarification, BuildYesNoSuggestions());
         }
@@ -466,12 +461,13 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         // Reset — riconosce comandi di interruzione esplicita
         // ---------------------------------------------------------------------------
 
-        // Parole chiave (italiano + inglese) in ChatAIKeywords.Reset / ChatAIKeywords.Help
+        // Frasi (italiano + inglese) in ChatAIKeywords.Reset / ChatAIKeywords.Help, riconosciute
+        // solo a frase intera: "cancella la timbratura di Rossi" è un comando, non un reset.
         private static bool IsResetCommand(string text) =>
-            ChatAIKeywords.ContainsAny(text, ChatAIKeywords.Reset);
+            ChatAIKeywords.IsExactMatch(text, ChatAIKeywords.Reset);
 
         private static bool IsHelpCommand(string text) =>
-            ChatAIKeywords.ContainsAny(text, ChatAIKeywords.Help);
+            ChatAIKeywords.IsExactMatch(text, ChatAIKeywords.Help);
 
         // ---------------------------------------------------------------------------
         // Chiamata LLM — primo turno: estrae il piano multi-azione
@@ -516,19 +512,22 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         }
 
         // ---------------------------------------------------------------------------
-        // Chiamata Ollama — turni successivi: estrae UN singolo slot dal testo.
+        // Chiamata LLM — turni successivi: estrae tutti gli slot dell'azione corrente
+        // presenti nella risposta (quello chiesto ed eventuali altri forniti insieme).
         // Passa la ConversationHistory per permettere al modello di disambiguare
         // risposte contestuali (es. "quello di prima", "stessa data").
         // ---------------------------------------------------------------------------
 
-        private async Task<string?> Call_LLM_OtherTurnAsync(string slotName, string intentName, ChatSession session)
+        private async Task<Dictionary<string, string>> Call_LLM_OtherTurnAsync(string slotName, ActionEntry action, ChatSession session)
         {
+            var intentName = action.Intent;
             try
             {
                 List<string> compatibleIntents = new List<string> { intentName };
 
                 //var messages = BuildChatMessages(_intentCatalog.OLD_BuildSystemPrompt(compatibleIntents), session.History);
-                var messages = BuildChatMessages(_intentCatalog.BuildSystemPromptXS(compatibleIntents), session.History);
+                var systemPrompt = _intentCatalog.BuildSystemPromptXS(compatibleIntents) + BuildOtherTurnContext(slotName, action);
+                var messages = BuildChatMessages(systemPrompt, session.History);
 
                 var requestBody = new OllamaChatRequest
                 {
@@ -558,17 +557,20 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 if (!string.IsNullOrEmpty(raw))
                     session.AddToHistory("assistant", raw);
 
-                if (string.IsNullOrEmpty(raw)) return null;
+                if (string.IsNullOrEmpty(raw)) return new();
 
                 // Il LLM restituisce sempre un ExtractedIntent completo (stesso formato del primo turno).
-                // Deserializza e legge il valore dello slot richiesto.
+                // Si tengono solo gli slot definiti per l'intent corrente e valorizzati.
                 var extracted = DeserializePlanOtherTurn(raw, slotName, intentName);
-                if (extracted?.Slots != null &&
-                    extracted.Slots.TryGetValue(slotName, out var slotValue) &&
-                    !IsNullString(slotValue))
-                    return slotValue;
+                if (extracted?.Slots == null) return new();
 
-                return null;
+                var slotNames = _intentCatalog.Intents
+                    .FirstOrDefault(i => i.Name == intentName)
+                    ?.Slots.Select(s => s.Name).ToHashSet() ?? new HashSet<string>();
+
+                return extracted.Slots
+                    .Where(kv => slotNames.Contains(kv.Key) && !IsNullString(kv.Value))
+                    .ToDictionary(kv => kv.Key, kv => kv.Value);
             }
             catch (Exception ex)
             {
@@ -578,7 +580,26 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             }
         }
 
+        // Contesto aggiunto al system prompt nei turni successivi: lo slot chiesto,
+        // l'invito a estrarre anche gli altri valori forniti e gli slot già noti.
+        private string BuildOtherTurnContext(string slotName, ActionEntry action)
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine();
+            sb.AppendLine("CONTESTO DEL TURNO:");
+            sb.AppendLine($"L'utente sta rispondendo alla domanda sullo slot \"{slotName}\" dell'intent \"{action.Intent}\".");
+            sb.AppendLine($"La risposta può contenere anche i valori di altri slot dello stesso intent: estraili TUTTI, non solo \"{slotName}\".");
+            sb.AppendLine("Per gli slot non presenti nella risposta metti null.");
 
+            if (action.Slots.Count > 0)
+            {
+                sb.AppendLine("Slot già noti:");
+                foreach (var kv in action.Slots)
+                    sb.AppendLine($"- {kv.Key}: {kv.Value}");
+            }
+
+            return sb.ToString();
+        }
 
 
 
@@ -755,11 +776,14 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
 
                     if (plan?.Actions != null)
                     {
-                        // Cerca l'azione con l'intent atteso, oppure la prima che ha lo slot
-                        var match = plan.Actions
+                        // Cerca l'azione con l'intent atteso (preferendo quella che ha lo slot chiesto,
+                        // ma accettando anche quella con soli altri slot), oppure la prima che ha lo slot
+                        var sameIntent = plan.Actions
                             .Where(a => expectedIntent == null ||
                                         a.Intent.Equals(expectedIntent, StringComparison.OrdinalIgnoreCase))
-                            .FirstOrDefault(a => a.Slots.ContainsKey(expectedSlot))
+                            .ToList();
+                        var match = sameIntent.FirstOrDefault(a => a.Slots.ContainsKey(expectedSlot))
+                            ?? (expectedIntent != null ? sameIntent.FirstOrDefault() : null)
                             ?? plan.Actions.FirstOrDefault(a => a.Slots.ContainsKey(expectedSlot));
 
                         if (match != null)
@@ -1159,8 +1183,15 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 SessionId = session.SessionId,
                 Responce = message,
                 ResponseType = "confirmation",
-                Suggestions = BuildYesNoSuggestions()
+                Suggestions = BuildYesNoSuggestions(),
+                AutoConfirm = IsNavigationOnly(session)
             };
+
+        // Vero se il piano contiene solo navigazioni (nessuna scrittura di dati):
+        // solo in questo caso il client vocale può confermare da solo.
+        private bool IsNavigationOnly(ChatSession session) =>
+            session.ActionQueue.All(a =>
+                _intentCatalog.Intents.FirstOrDefault(i => i.Name == a.Intent)?.IsNavigation == true);
 
         // Chip di conferma nella lingua dell'utente: il testo viene rimandato al server,
         // che riconosce si/yes/ok/no... in entrambe le lingue (ChatAIKeywords).
@@ -1193,11 +1224,12 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         // - sessionId è vuoto (primo messaggio del client)
         // - sessione non trovata (mai esistita)
         // - sessione scaduta (> 10 minuti di inattività) → rimossa
+        // - sessione di un altro utente
         private ChatSession? TryGetSession(string sessionId) =>
-            _sessionStore.TryGet(sessionId);
+            _sessionStore.TryGet(sessionId, CurrentUserId);
 
         private ChatSession CreateSession() =>
-            _sessionStore.Create();
+            _sessionStore.Create(CurrentUserId);
 
         private void DeleteSession(string sessionId) =>
             _sessionStore.Delete(sessionId);

@@ -94,4 +94,7 @@
     <value>Navigazione verso '{0}'.</value>
     <comment>{0} = route</comment>
   </data>
+  <data name="AnswerNotProcessed" xml:space="preserve">
+    <value>Non sono riuscito a elaborare la risposta, riprova.</value>
+  </data>
 </root>

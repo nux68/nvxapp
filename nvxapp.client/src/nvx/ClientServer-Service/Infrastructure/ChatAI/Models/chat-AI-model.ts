@@ -32,4 +32,7 @@ export class ChatAIOutModel extends ModelResult {
   public navigate:      NavigatePayload | null = null;
   // Risultati per singola azione del piano
   public actionResults: ActionResultItem[] = [];
+  // Solo con responseType === "confirmation": true se il piano contiene solo navigazioni
+  // (il vocale puo' confermare da solo); con scritture di dati conferma l'utente
+  public autoConfirm:   boolean           = false;
 }
