@@ -227,6 +227,18 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 }
             }
 
+            // 3b. Nome di un comando (il testo dei chip, es. "Vai a"): si avvia quel comando senza il LLM,
+            //     che con il solo nome non ha valori da estrarre e risponderebbe con un piano vuoto.
+            //     Seguono le domande per i valori mancanti, oppure l'esecuzione se non ne servono.
+            var chip = FindIntentByDisplayName(userMessage);
+            if (chip != null)
+            {
+                session.AddToHistory("user", userMessage);
+                session.ActionQueue = new List<ActionEntry> { new() { Intent = chip.Name, State = ActionState.Collecting } };
+                session.State = SessionState.Collecting;
+                return await AdvancePlanAsync(session);
+            }
+
             // 4. Turno del LLM: piano completo aggiornato con il nuovo messaggio
             session.AddToHistory("user", userMessage);
             var previousPlan = ClonePlan(session.ActionQueue);
@@ -509,6 +521,15 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         // Unico punto di accesso alla struttura dello slot — nessun switch sui nomi.
         private SlotDefinition? FindSlotDefinition(string intentName, string slotName) =>
             FindIntent(intentName)?.Slots.FirstOrDefault(s => s.Name == slotName);
+
+        // intent il cui DisplayName (testo del chip) coincide con il messaggio, a meno di maiuscole e punteggiatura
+        private IntentDefinition? FindIntentByDisplayName(string message)
+        {
+            var text = ChatAIKeywords.Normalize(message);
+            return text.Length == 0
+                ? null
+                : _intentCatalog.Intents.FirstOrDefault(i => !string.IsNullOrEmpty(i.DisplayName) && ChatAIKeywords.Normalize(i.DisplayName) == text);
+        }
 
         private IntentDefinition? FindIntent(string intentName) =>
             _intentCatalog.Intents.FirstOrDefault(i => i.Name.Equals(intentName, StringComparison.OrdinalIgnoreCase));
