@@ -11,6 +11,10 @@
   { "frase": "aiuto", "intent": "Help" },
   { "frase": "comandi", "intent": "Help" },
   { "frase": "cosa posso fare in questa pagina?", "intent": "Help", "pagina": "/userlist" },
+  // chip: il testo e' il nome del comando
+  { "frase": "Vai a", "intent": "Navigate" },
+  { "messaggi": ["Vai a", "aziende"], "intent": "Navigate", "slots": { "page": "aziende" } },
+  { "frase": "Tema", "intent": "ChangeTheme" },
   { "frase": "che tempo fa domani?", "intent": "nessuno" },
   { "frase": "raccontami una barzelletta", "intent": "nessuno" }
 ]
