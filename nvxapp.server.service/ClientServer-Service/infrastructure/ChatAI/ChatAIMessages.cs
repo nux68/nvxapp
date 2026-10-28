@@ -75,19 +75,23 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             "commands", "what can you do", "help me", "list commands"
         ];
 
-        /// <summary>testo normalizzato per il confronto: minuscolo, punteggiatura sostituita da spazi, spazi singoli</summary>
+        /// <summary>
+        /// testo normalizzato per il confronto: minuscolo, punteggiatura e apostrofi sostituiti da spazi,
+        /// spazi singoli ("apri l'orario" -> "apri l orario": la parola "orario" resta riconoscibile)
+        /// </summary>
         public static string Normalize(string? text)
         {
             var chars = (text ?? string.Empty).ToLowerInvariant()
-                .Select(c => char.IsLetterOrDigit(c) || c == '\'' ? c : ' ')
+                .Select(c => char.IsLetterOrDigit(c) ? c : ' ')
                 .ToArray();
             return string.Join(' ', new string(chars).Split(' ', StringSplitOptions.RemoveEmptyEntries));
         }
 
+        // le espressioni si confrontano normalizzate come il testo ("don't" -> "don t")
         public static bool IsExactMatch(string? text, string[] keywords)
         {
             var t = Normalize(text);
-            return keywords.Contains(t);
+            return keywords.Any(k => Normalize(k) == t);
         }
 
         /// <summary>conferma tollerante: "sì", ma anche "sì grazie", "ok procedi pure" (non "sì ma alle 10")</summary>
@@ -102,12 +106,13 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         {
             var t = Normalize(text);
             if (t.Length == 0) return false;
+            keywords = keywords.Select(Normalize).ToArray();
             if (keywords.Contains(t)) return true;
 
             var padded = $" {t} ";
             if (!keywords.Any(k => padded.Contains($" {k} "))) return false;
 
-            var vocabulary = keywords.SelectMany(k => k.Split(' ')).Concat(filler).ToHashSet();
+            var vocabulary = keywords.SelectMany(k => k.Split(' ')).Concat(filler.Select(Normalize)).ToHashSet();
             return t.Split(' ').All(vocabulary.Contains);
         }
     }

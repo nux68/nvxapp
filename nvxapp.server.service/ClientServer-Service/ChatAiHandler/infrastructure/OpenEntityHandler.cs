@@ -66,10 +66,11 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.infrastructur
         // entità dal valore dello slot: la chiave, oppure una delle sue parole contenuta nel testo ("la causale")
         private IOpenableEntity? Trova(string? valore)
         {
-            var testo = $" {(valore ?? string.Empty).Trim().ToLowerInvariant()} ";
+            // normalizzato: "l'attività" -> "l attività"
+            var testo = $" {ChatAIKeywords.Normalize(valore)} ";
             return _entities.FirstOrDefault(e => e.Key.Equals(valore?.Trim(), StringComparison.OrdinalIgnoreCase))
                 ?? _entities
-                    .SelectMany(e => e.Words.Select(w => (Entity: e, Word: w.ToLowerInvariant())))
+                    .SelectMany(e => e.Words.Select(w => (Entity: e, Word: ChatAIKeywords.Normalize(w))))
                     .Where(x => testo.Contains($" {x.Word} "))
                     .OrderByDescending(x => x.Word.Length)
                     .Select(x => x.Entity)
