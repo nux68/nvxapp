@@ -74,7 +74,7 @@ record Opzioni(int Pausa, string? Filtro, string? Provider, string Lingua)
     {
         var valori = new Dictionary<string, string?>();
         if (o.Provider != null) valori["AI:UseLLM"] = o.Provider;
-        foreach (var p in new[] { "AI_groq", "AI_openrouter" })
+        foreach (var p in new[] { "AI_groq", "AI_openrouter", "AI_deepseek" })
         {
             var nome = $"NVXAPP_AI__{p}__ApiKey";
             var chiave = Environment.GetEnvironmentVariable(nome)

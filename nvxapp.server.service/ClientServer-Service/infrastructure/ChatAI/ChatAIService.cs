@@ -51,6 +51,11 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         private readonly string _groqMethod;
         private readonly string _groqApiKey;
 
+        private readonly string _deepseekUrl;
+        private readonly string _deepseekModel;
+        private readonly string _deepseekMethod;
+        private readonly string _deepseekApiKey;
+
         private readonly int _maxHistoryTurns;
         private readonly string _useLLM;
 
@@ -103,12 +108,18 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             _groqMethod = configuration["AI:AI_groq:method"] ?? throw new InvalidOperationException("AI_groq:method non configurato");
             _groqApiKey = ApiKey(configuration, "AI_groq");
 
-            // OpenRouter instrada su modelli diversi, non tutti con lo schema: di default solo JSON valido
+            _deepseekUrl = configuration["AI:AI_deepseek:Url"] ?? throw new InvalidOperationException("AI_deepseek:Url non configurato");
+            _deepseekModel = configuration["AI:AI_deepseek:model"] ?? throw new InvalidOperationException("AI_deepseek:model non configurato");
+            _deepseekMethod = configuration["AI:AI_deepseek:method"] ?? throw new InvalidOperationException("AI_deepseek:method non configurato");
+            _deepseekApiKey = ApiKey(configuration, "AI_deepseek");
+
+            // OpenRouter instrada su modelli diversi, non tutti con lo schema: di default solo JSON valido.
+            // DeepSeek non supporta json_schema, solo json_object.
             _responseFormat = configuration[$"AI:{_useLLM}:ResponseFormat"]
-                              ?? (_useLLM == "AI_openrouter" ? "json_object" : "json_schema");
+                              ?? (_useLLM is "AI_openrouter" or "AI_deepseek" ? "json_object" : "json_schema");
             _strictSchema = bool.TryParse(configuration[$"AI:{_useLLM}:StrictSchema"], out var strict) && strict;
 
-            var model = _useLLM switch { "AI_groq" => _groqModel, "AI_openrouter" => _openrouterModel, _ => _ollamaModel };
+            var model = _useLLM switch { "AI_groq" => _groqModel, "AI_openrouter" => _openrouterModel, "AI_deepseek" => _deepseekModel, _ => _ollamaModel };
             _reasoningEffort = configuration[$"AI:{_useLLM}:ReasoningEffort"]
                                ?? (model.Contains("gpt-oss", StringComparison.OrdinalIgnoreCase) ? "low" : null);
             if (_reasoningEffort == "none") _reasoningEffort = null;
@@ -537,11 +548,12 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 }),
                 "AI_openrouter" => await PostToOpenRouterChatAsync(messages, BuildOpenAiResponseFormat(schema)),
                 "AI_groq" => await PostToGroqChatAsync(messages, BuildOpenAiResponseFormat(schema)),
+                "AI_deepseek" => await PostToDeepSeekChatAsync(messages, BuildOpenAiResponseFormat(schema)),
                 _ => throw new InvalidOperationException($"LLM non supportato: {_useLLM}")
             };
         }
 
-        // response_format delle API compatibili OpenAI (Groq, OpenRouter)
+        // response_format delle API compatibili OpenAI (Groq, OpenRouter, DeepSeek)
         private object? BuildOpenAiResponseFormat(object schema) => _responseFormat switch
         {
             "json_schema" => new Dictionary<string, object>
@@ -649,6 +661,32 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             if (result?.Data == null)
                 throw new InvalidOperationException(
                     $"Groq ha risposto con status {result?.StatusCode}: {result?.ReasonPhrase}");
+
+            return result.Data.Choices?.FirstOrDefault()?.Message?.Content ?? string.Empty;
+        }
+
+
+        private async Task<string> PostToDeepSeekChatAsync(List<OllamaChatMessage> messages, object? responseFormat)
+        {
+            var deepseekBody = BuildOpenAiBody(_deepseekModel, messages, responseFormat);
+
+            var headers = new Dictionary<string, string>
+            {
+                ["Authorization"] = $"Bearer {_deepseekApiKey}"
+            };
+
+            var result = await _webApiService.Post<object, DeepSeekChatResponse>(
+                serverUrl: _deepseekUrl,          // es: "https://api.deepseek.com"
+                authentication: null,
+                action: _deepseekMethod,          // es: "/chat/completions"
+                body: deepseekBody,
+                bodyType: WebApiBodyType.raw,
+                headers: headers
+            );
+
+            if (result?.Data == null)
+                throw new InvalidOperationException(
+                    $"DeepSeek ha risposto con status {result?.StatusCode}: {result?.ReasonPhrase}");
 
             return result.Data.Choices?.FirstOrDefault()?.Message?.Content ?? string.Empty;
         }
