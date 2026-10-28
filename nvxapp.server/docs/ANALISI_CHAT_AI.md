@@ -4,7 +4,7 @@
 >
 > **Obiettivo**: dialogo meno macchinoso, più comandi disponibili, linguaggio naturale (chat e voce).
 
-**Stato al 28/10/2026: 40 punti su 41 implementati (manca la parte massiva di C10). Con DeepSeek le 39 frasi di prova riescono tutte; restano le prove nell'app avviata: vedi sezione 10.**
+**Stato al 28/10/2026: 40 punti su 41 implementati (manca la parte massiva di C10). Prove fatte con DeepSeek: 39 frasi su 39 e prove nell'app; resta la voce nel browser (sezione 10).**
 
 Legenda: ✅ svolto · ⏳ da fare · 🔍 da valutare. Lo stato di ogni punto si aggiorna nella checklist (sezione 9); la tabella seguente riassume per area.
 
@@ -237,17 +237,23 @@ Inoltre, per stare nei limiti di token al minuto: parole chiave valide anche com
 
 ## 10. Prove da fare (con il nuovo LLM)
 
-Il 28/10/2026 è stato collegato DeepSeek (`deepseek-chat`, `AI_deepseek`): le frasi di prova riescono tutte. Restano le prove nell'app avviata.
+Il 28/10/2026 è stato collegato DeepSeek (`deepseek-chat`, `AI_deepseek`): le frasi di prova riescono tutte e le prove nell'app sono state fatte (resta la voce).
+
+Prove nell'app: server di prova (porta 5299) sulla copia `nvxapp_chattest` del database di sviluppo, chiamate alle API (login con gli utenti del seed, `UserLoad` per l'azienda, `ChatAI/SendMessage`) ed effetti controllati nel database. Azienda 1 (schema `tenant_1_2`): HR = `CompanyPowerAdmin_1_1_1` (Duck Qui), CompanyAdmin = `CompanyAdmin_1_1_1` (Duck Quo), User = `User_1_1_1_1` (Mouse Topolino).
 
 Sospese inizialmente il 28/10/2026: con Groq gratuito (`gpt-oss-120b`, 8.000 token al minuto) un turno dell'HR con 34 comandi consuma circa 3.500 token, 6–7 mila se serve la seconda chiamata, e le prove si bloccano su "troppe richieste". Si faranno dopo aver collegato un altro LLM.
 
 - [x] Configurare il nuovo provider: DeepSeek (`AI:UseLLM` = `AI_deepseek`, `deepseek-chat`, chiave `NVXAPP_AI__AI_deepseek__ApiKey`), aggiunto in `ChatAIService`
 - [x] Output strutturato con il nuovo modello: DeepSeek accetta solo `json_object` (default per `AI_deepseek`); `ReasoningEffort` non inviato (non è un modello gpt-oss)
 - [x] Frasi di prova su AttendanceTracking_Dev con DeepSeek (`--pausa 2`): **39 su 39 riuscite** il 28/10/2026 (11 Infrastructure + 28 presenze)
-- [ ] Prova nell'app avviata dei comandi che scrivono: registrazioni, approva/rifiuta, elimina/correggi timbratura, giustificativo su periodo, richieste self-service, "timbra adesso"
-- [ ] Prova di "apri entità" su tutte e 10 le anagrafiche, compreso il caso di più elementi con lo stesso nome
-- [ ] Stampa di un report dalla chat e download dalla barra in alto
-- [ ] Ruoli: User vede e modifica solo i propri dati; CompanyAdmin (oggi limitato ai propri dati); HR su tutti
-- [ ] Help contestuale e chip suggeriti nelle diverse pagine
+- [x] Comandi che scrivono, verificati nel database: timbratura (anche "De' Paperoni", il caso segnalato), correggi (orario cambiato, originale conservato) ed elimina timbratura, giustificativo su periodo (richiesta approvata, giorni lavorativi generati), ricalcolo, "timbra adesso", richiesta di timbratura, approva/rifiuta. Correzioni nate dalle prove:
+  - "approva la richiesta di Topolino" approvava anche la sua nota spese senza mostrarla: ora il riepilogo elenca le richieste e c'è il filtro per tipo
+  - "2 ore di ROL" finiva tra le causali: descrizioni di causale e giustificativo chiarite
+  - **da decidere (motore di calcolo, non chat)**: le causali inserite a mano (dalla chat e dal Calendario HR) vengono cancellate dal ricalcolo del giorno, che riscrive le causali dalle timbrature (`TimeSheet_EngineService.ScriviCausali`)
+- [x] "Apri entità" su tutte e 10 le anagrafiche (pagina e id corretti), più elementi con lo stesso nome ("apri la causale ordinarie": chiede quale tra 3) ed elemento inesistente. Corretto l'apostrofo ("apri l'orario riposo")
+- [x] Stampa dalla chat: PDF generato in background (`Report_PianoFerie_2026-11_...pdf`), avanzamento fino a "Export completato, clicca per scaricare" via SignalR
+- [x] Ruoli: User e CompanyAdmin consultano solo i propri dati ("Puoi consultare solo i tuoi dati"), non hanno i comandi HR; HR su tutti. Da migliorare: per un comando non consentito al ruolo la chat risponde "non ho capito" invece di "non disponibile per il tuo ruolo"
+- [x] Help contestuale e chip: su `/presentstaff`, `/requestlistadmin` e `/vacationplan` prima i comandi della pagina
 - [ ] Voce in Chrome/Edge: risposte parlate, domande e conferme a voce a chat chiusa, interruzione parlando ed eco, "tieni premuto per parlare", durata dell'avviso (10 s)
-- [ ] Log "ChatAI frase non capita": verificare che arrivi nei log e usarlo per arricchire esempi e parole chiave
+- [x] Log "ChatAI frase non capita" presente nei log con frase, pagina, ruoli e lingua. Da usare periodicamente per arricchire esempi e parole chiave
+- [x] Sessioni lunghe: con 50 turni di cronologia DeepSeek (modalità JSON) rispondeva vuoto in 10 turni su 12 e la chat non capiva più. Ora `AI:MaxHistoryTurns` = 6 (0 risposte vuote su 14) e, se capita, si ripete la chiamata senza cronologia
