@@ -83,6 +83,29 @@ static class Finti
             }
             return dati;
         }
+
+        // richieste in attesa: una timbratura di Rossi (l'approvazione elenca le richieste nel riepilogo)
+        if (tipo.Name == "Dip_GG_Richiesta_GetAll4Admin_OutModel")
+        {
+            var dati = Activator.CreateInstance(tipo)!;
+            var lista = (IList)tipo.GetProperty("Dip_GG_Richiesta")!.GetValue(dati)!;
+            var modello = lista.GetType().GetGenericArguments()[0];
+            var richiesta = Activator.CreateInstance(modello)!;
+            void Imposta(string nome, object valore)
+            {
+                var p = modello.GetProperty(nome)!;
+                p.SetValue(richiesta, p.PropertyType.IsEnum ? Enum.Parse(p.PropertyType, (string)valore) : valore);
+            }
+            Imposta("Id", 1);
+            Imposta("IdDip_RapportoLavoro", Dipendenti.First(d => d.Cognome == "Rossi").Rapporto);
+            Imposta("RichiestaTipo", "Timbratura");
+            Imposta("RichiestaStato", "Immessa");
+            Imposta("Data", DateTime.Today.AddDays(-1).ToString("dd/MM/yyyy"));
+            Imposta("DataA", DateTime.Today.AddDays(-1).ToString("dd/MM/yyyy"));
+            Imposta("Dati", "{\"hhmm\":\"09:00\",\"idAz_SubCommessaAttivita\":1}");
+            lista.Add(richiesta);
+            return dati;
+        }
         return null;
     }
 }
