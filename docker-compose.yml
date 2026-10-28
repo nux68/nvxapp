@@ -1,7 +1,7 @@
 # nvxapp in Docker: app + PostgreSQL + RabbitMQ (punto 9 di nvxapp.server/docs/ANALISI_DOCKER.md).
 #
 # File base, comune a tutti gli ambienti. Si usa sempre insieme a un override:
-#   docker-compose.local.yml  PC di sviluppo: costruisce l'immagine, app su http://localhost:8080
+#   docker-compose.local.yml  PC di sviluppo: costruisce l'immagine, app su http://localhost:8080 e https://LAN_IP:8443 (Caddy)
 #   docker-compose.prod.yml   VPS: Caddy davanti con HTTPS, limiti di memoria
 # Quale usare lo dice COMPOSE_FILE nel file di ambiente (copia di .env.example, mai in git):
 #   PC:     DockerLocale.env, da indicare a ogni comando (lo fa da solo il profilo di pubblicazione DockerLocale)
