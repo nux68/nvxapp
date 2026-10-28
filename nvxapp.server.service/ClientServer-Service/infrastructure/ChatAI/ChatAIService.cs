@@ -145,7 +145,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         }
 
         // Un turno di dialogo: comandi di controllo, conferma, chiamata al LLM, avanzamento del piano.
-        private async Task<ChatAIOutModel> ProcessMessageAsync(ChatAIInModel input)
+        // internal: lo usa anche il programma di prova delle frasi (tools/ChatAiPhraseTest, InternalsVisibleTo).
+        internal async Task<ChatAIOutModel> ProcessMessageAsync(ChatAIInModel input)
         {
             var userMessage = (input.Request ?? string.Empty).Trim();
 
@@ -234,6 +235,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 // Piano in corso: il testo intero è la risposta alla domanda posta (es. "Rossi")
                 if (!TryAnswerPendingSlot(session, userMessage))
                 {
+                    LogNotUnderstood(session, userMessage);
+
                     if (session.ActionQueue.Count > 0)
                         return BuildCurrentQuestionResponse(session, ChatAIMessages.Get("AnswerNotProcessed"));
 
@@ -1178,12 +1181,41 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 Suggestions = suggestions ?? new()
             };
 
-        // Costruisce la lista di suggerimenti dagli intent disponibili nel catalogo.
-        // Usa il DisplayName dell'intent come testo del chip.
-        private List<string> BuildIntentSuggestions() =>
-            _intentCatalog.Intents
-                .Select(i => !string.IsNullOrEmpty(i.DisplayName) ? i.DisplayName : i.Name)
+        // massimo dei chip con i comandi suggeriti (Help compreso)
+        private const int MaxIntentSuggestions = 6;
+
+        // Chip dei comandi suggeriti (DisplayName, che il LLM riconosce come richiesta): prima quelli
+        // utili nella pagina corrente (IntentDefinition.Pages), poi gli altri, per ultimo l'help che
+        // li elenca tutti. Il catalogo è già filtrato sui ruoli dell'utente.
+        private List<string> BuildIntentSuggestions()
+        {
+            static string Label(IntentDefinition i) => !string.IsNullOrEmpty(i.DisplayName) ? i.DisplayName : i.Name;
+            bool IsHelp(IntentDefinition i) => i.Name.Equals("Help", StringComparison.OrdinalIgnoreCase);
+
+            var route = _chatUserContext.CurrentRoute ?? string.Empty;
+            var intents = _intentCatalog.Intents.Where(i => !IsHelp(i)).ToList();
+            var ofPage = route.Length == 0
+                ? new List<IntentDefinition>()
+                : intents.Where(i => i.Pages.Any(p => route.StartsWith(p, StringComparison.OrdinalIgnoreCase))).ToList();
+
+            var suggestions = ofPage.Concat(intents.Except(ofPage))
+                .Take(MaxIntentSuggestions - 1)
+                .Select(Label)
                 .ToList();
+
+            var help = _intentCatalog.Intents.FirstOrDefault(IsHelp);
+            if (help != null) suggestions.Add(Label(help));
+            return suggestions;
+        }
+
+        // Frasi che la chat non ha capito: elenco da cui ricavare sinonimi, esempi e comandi nuovi.
+        // Testo fisso "ChatAI frase non capita" per filtrarle nei log (file o tabella Serilog).
+        private void LogNotUnderstood(ChatSession session, string userMessage)
+        {
+            var pending = session.ActionQueue.FirstOrDefault()?.Intent ?? string.Empty;
+            Log.Information("[ChatAI] ChatAI frase non capita. Frase={Frase} Pagina={Pagina} Ruoli={Ruoli} PianoInCorso={PianoInCorso} Lingua={Lingua}",
+                userMessage, session.CurrentRoute, string.Join(",", _chatUserContext.Roles), pending, ChatAIMessages.CurrentLanguage);
+        }
 
         // ---------------------------------------------------------------------------
         // Session store

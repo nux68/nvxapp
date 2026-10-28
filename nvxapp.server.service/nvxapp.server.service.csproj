@@ -31,4 +31,9 @@
     <ProjectReference Include="..\nvxapp.server.data\nvxapp.server.data.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <!-- programma di prova delle frasi della chat (tools/ChatAiPhraseTest): usa ChatAIService.ProcessMessageAsync -->
+    <InternalsVisibleTo Include="ChatAiPhraseTest" />
+  </ItemGroup>
+
 </Project>
