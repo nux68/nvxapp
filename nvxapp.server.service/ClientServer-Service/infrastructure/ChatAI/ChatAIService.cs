@@ -59,6 +59,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         private readonly string _responseFormat;
         // AI:<provider>:StrictSchema: schema rispettato in modo rigoroso (solo modelli che lo supportano)
         private readonly bool _strictSchema;
+        // AI:<provider>:ReasoningEffort: ragionamento dei modelli che lo prevedono ("low", "medium", "high";
+        // "none" = non inviato). Default "low" per gpt-oss: meno token (limite al minuto) e risposte più rapide.
+        private readonly string? _reasoningEffort;
 
         public ChatAIService(IMapper mapper,
                              UserManager<ApplicationUser> userManager,
@@ -104,6 +107,11 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             _responseFormat = configuration[$"AI:{_useLLM}:ResponseFormat"]
                               ?? (_useLLM == "AI_openrouter" ? "json_object" : "json_schema");
             _strictSchema = bool.TryParse(configuration[$"AI:{_useLLM}:StrictSchema"], out var strict) && strict;
+
+            var model = _useLLM switch { "AI_groq" => _groqModel, "AI_openrouter" => _openrouterModel, _ => _ollamaModel };
+            _reasoningEffort = configuration[$"AI:{_useLLM}:ReasoningEffort"]
+                               ?? (model.Contains("gpt-oss", StringComparison.OrdinalIgnoreCase) ? "low" : null);
+            if (_reasoningEffort == "none") _reasoningEffort = null;
         }
 
         // ---------------------------------------------------------------------------
@@ -442,7 +450,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         }
 
         // Intent di cui mandare i dettagli al LLM: quelli del piano in corso, delle ultime azioni
-        // e quelli con una parola chiave nell'ultimo messaggio dell'utente (a parole intere).
+        // e quelli con una parola chiave nell'ultimo messaggio dell'utente. Le parole chiave di una
+        // parola valgono anche come inizio di parola ("timbra" -> "timbrami"): così i dettagli arrivano
+        // già alla prima chiamata, senza la seconda (con molti intent conta il limite di token al minuto).
         private HashSet<string> RelevantIntents(ChatSession session)
         {
             var relevant = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -450,9 +460,20 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 relevant.Add(action.Intent);
 
             var lastMessage = session.History.LastOrDefault(t => t.Role == "user")?.Content;
-            var text = $" {ChatAIKeywords.Normalize(lastMessage)} ";
+            var normalized = ChatAIKeywords.Normalize(lastMessage);
+            var text = $" {normalized} ";
+            var words = normalized.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+            bool Matches(string keyword)
+            {
+                var nk = ChatAIKeywords.Normalize(keyword);
+                if (nk.Length == 0) return false;
+                if (nk.Contains(' ')) return text.Contains($" {nk} ");
+                return words.Any(w => w == nk || (nk.Length >= 4 && w.StartsWith(nk, StringComparison.Ordinal)));
+            }
+
             foreach (var intent in _intentCatalog.Intents)
-                if (intent.Keywords.Any(k => ChatAIKeywords.Normalize(k) is { Length: > 0 } nk && text.Contains($" {nk} ")))
+                if (intent.Keywords.Any(Matches))
                     relevant.Add(intent.Name);
 
             return relevant;
@@ -538,7 +559,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         };
 
         // Corpo della richiesta per le API compatibili OpenAI
-        private static Dictionary<string, object> BuildOpenAiBody(string model, List<OllamaChatMessage> messages, object? responseFormat)
+        private Dictionary<string, object> BuildOpenAiBody(string model, List<OllamaChatMessage> messages, object? responseFormat)
         {
             var body = new Dictionary<string, object>
             {
@@ -549,6 +570,15 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             };
             if (responseFormat != null)
                 body["response_format"] = responseFormat;
+
+            // livello di ragionamento: Groq lo vuole come reasoning_effort, OpenRouter come reasoning.effort
+            if (_reasoningEffort != null)
+            {
+                if (_useLLM == "AI_openrouter")
+                    body["reasoning"] = new Dictionary<string, object> { ["effort"] = _reasoningEffort };
+                else
+                    body["reasoning_effort"] = _reasoningEffort;
+            }
             return body;
         }
 
