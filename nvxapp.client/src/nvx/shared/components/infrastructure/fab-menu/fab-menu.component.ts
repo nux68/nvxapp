@@ -164,14 +164,11 @@ export class FabMenuComponent implements OnInit, AfterViewInit {
       next: (res) => {
         this.isChatLoading = false;
 
-        // Salva il sessionId restituito dal server per i turni successivi
+        // Salva il sessionId restituito dal server per i turni successivi.
+        // La sessione continua anche dopo un risultato: il server ricorda le ultime azioni
+        // ("anche per Bianchi") e decide lui quando ripartire (reset, scadenza).
         if (res.data?.sessionId) {
           this.currentSessionId = res.data.sessionId;
-        }
-
-        // Se la sessione è conclusa (result/error) resetta il sessionId
-        if (res.data?.responseType === 'result' || res.data?.responseType === 'error') {
-          this.currentSessionId = null;
         }
 
         // Mostra la risposta dell'assistente solo se non è vuota

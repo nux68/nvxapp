@@ -4,15 +4,15 @@
 >
 > **Obiettivo**: dialogo meno macchinoso, più comandi disponibili, linguaggio naturale (chat e voce).
 
-**Stato al 28/10/2026: 8 punti su 41 svolti (Fase 1 completa, da provare con l'LLM), 1 parziale (M2: più valori in una risposta).**
+**Stato al 28/10/2026: 15 punti su 41 svolti (Fase 1 completa; Fase 2: motore fatto, parti dei comandi presenze in corso).**
 
 Legenda: ✅ svolto · ⏳ da fare · 🔍 da valutare. Lo stato di ogni punto si aggiorna nella checklist (sezione 9); la tabella seguente riassume per area.
 
 | Area | Punti | Stato |
 |---|---|---|
 | 3. Correzioni rapide | Q1–Q8 | ✅ 8/8 |
-| 4. Motore di dialogo | M1–M7 | ⏳ 0/7 (M2 parziale) |
-| 5. Linguaggio naturale | L1–L4 | ⏳ 0/4 |
+| 4. Motore di dialogo | M1–M7 | ⏳ 6/7 (M4 per i comandi presenze) |
+| 5. Linguaggio naturale | L1–L4 | ⏳ 1/4 (L1, L3 motore fatto; L4) |
 | 6. Voce | V1–V4 | ⏳ 0/4 |
 | 7. Nuovi comandi | C1–C14 | ⏳ 0/14 |
 | 8. Costo di aggiunta dei comandi | E1–E4 | ⏳ 0/4 |
@@ -177,22 +177,24 @@ Ordine consigliato: correzioni rapide → motore → interrogazioni e self-servi
 - [x] Q7 `RegisterClockingHandler`: `await` al posto di `.Result`, esito del salvataggio controllato (prima un errore risultava comunque "registrata"), rapporto di lavoro verificato. Il verso resta `SenzaVerso` come nel resto dell'app: lo assegna il motore di calcolo
 - [x] Q8 Sessione legata all'utente (`IChatSessionStore.TryGet/Create` con `userId`). Il messaggio "Dipendente agganciato" non è stato ripristinato: il nome canonico compare già nel riepilogo e nelle domande
 
-### Fase 2 — Motore di dialogo (Infrastructure_Dev)
-- [ ] M1 Tool calling nativo
-- [ ] M2 Stato completo a ogni turno
-  - [x] Più valori in una risposta dal secondo turno (28/10/2026, `ChatAIService.Call_LLM_OtherTurnAsync`; da provare con l'LLM)
-  - [ ] Correzioni di valori già dati ("no, alle 10")
-  - [ ] Cambio di comando a metà dialogo
-  - [ ] Valori per le azioni successive del piano
-- [ ] M3 Parole chiave come suggerimento
-- [ ] M4 Frasi di esempio per comando
-- [ ] M5 Date e orari risolti in C#
-- [ ] M6 Memoria tra comandi
-- [ ] M7 Conferma proporzionata al rischio
-- [ ] L1 "Io/me" e pronomi
-- [ ] L2 Data e giorno della settimana nel prompt comune
-- [ ] L3 Risposte formulate (testo mostrato + testo da pronunciare)
-- [ ] L4 Ricerca dipendente tollerante
+### Fase 2 — Motore di dialogo (Infrastructure_Dev, parti presenze su AttendanceTracking_Dev)
+Passo A (motore, Infrastructure_Dev) provato il 28/10/2026 con Groq `gpt-oss-120b` su 9 dialoghi tipo (programma di prova con comandi finti).
+
+- [x] M1 Output strutturato al posto del tool calling: schema JSON con i nomi degli intent vincolati (`IIntentCatalog.BuildResponseSchema`), supportato da Groq, OpenRouter e Ollama (il tool calling non funziona con phi4 su Ollama). Configurabile per provider: `AI:<provider>:ResponseFormat` = `json_schema` (default Groq e Ollama) / `json_object` (default OpenRouter) / `none`; `AI:<provider>:StrictSchema`
+- [x] M2 Stato completo a ogni turno: un solo tipo di turno (`ChatAIService.ProcessMessageAsync`), il LLM riceve piano in corso e ultime azioni e restituisce il piano completo aggiornato
+  - [x] Più valori in una risposta ("ieri alle 8, in uscita")
+  - [x] Correzioni di valori già dati, anche sul riepilogo ("no, alle 9 e mezza")
+  - [x] Cambio di comando a metà dialogo ("lascia perdere la timbratura, apri la causale ferie")
+  - [x] Più azioni in una frase ("timbra Rossi alle 9 e Bianchi alle 10")
+- [x] M3 Parole chiave come suggerimento: nessun filtro; catalogo a due livelli per contenere i token (tutti gli intent con descrizione ed esempi, slot solo per gli intent pertinenti; seconda chiamata se il LLM sceglie un intent senza dettagli). Prompt base circa 1.000 token + circa 230 per intent con dettagli
+- [ ] M4 Frasi di esempio per comando: `IntentDefinition.Examples` nel prompt; fatte per Help e Navigate, da fare per i comandi presenze (passo B)
+- [x] M5 Date e orari risolti in C# (`SlotNormalizers`, associati al tipo `dd/MM/yyyy` / `HH:mm` dello slot): "lunedì scorso", "il 15 maggio", "l'altro ieri", "otto e un quarto", "10 meno un quarto", "2 pm", "half past ten". Le ore dei giustificativi restano al passo B
+- [x] M6 Memoria tra comandi: le ultime azioni eseguite restano nella sessione ("anche per Bianchi"); la sessione non si chiude più dopo un risultato. "Annulla l'ultima" richiede i comandi di cancellazione (C9)
+- [x] M7 Conferma proporzionata: navigazione e help senza conferma (`IntentDefinition.RequiresConfirmation`, default: conferma tranne per la navigazione); riepilogo modificabile a parole. La doppia conferma servirà con le operazioni massive (C10)
+- [ ] L1 "Io/me": motore fatto (`SlotDefinition.IsPerson`, `ChatSelf.Token` = "@me", `IChatUserContext`); risoluzione nel dipendente dell'utente da fare (passo B)
+- [x] L2 Data, giorno della settimana e ora nel prompt comune (`BuildSystemPrompt_Append_Contesto`)
+- [ ] L3 Testo da pronunciare: motore fatto (`ChatAIOutModel.SpeechText`, `IntentDefinition.SummaryTemplate`); frasi dei comandi presenze da fare (passo B)
+- [ ] L4 Ricerca dipendente tollerante (passo B)
 
 ### Fase 3 — Nuovi comandi (AttendanceTracking_Dev, C13–C14 su Infrastructure_Dev)
 - [ ] C1 Presenti / assenti
