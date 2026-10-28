@@ -177,44 +177,11 @@
   <data name="ActivityNotAllowed" xml:space="preserve">
     <value>The selected activity is not among those allowed for the employee: choose one from the sub-projects the employee is linked to.</value>
   </data>
-  <data name="ChatOpenAttivitaDisplayName" xml:space="preserve">
-    <value>Open activity</value>
-  </data>
-  <data name="ChatOpenAttivitaDescription" xml:space="preserve">
-    <value>opens the edit page of a specific activity.</value>
-  </data>
-  <data name="ChatOpenAttivitaQuestion" xml:space="preserve">
-    <value>Which activity do you want to open?</value>
-  </data>
   <data name="ChatOpenAttivitaLabel" xml:space="preserve">
     <value>Activity</value>
   </data>
-  <data name="ChatOpenAttivitaNameMissing" xml:space="preserve">
-    <value>Activity name not specified.</value>
-  </data>
-  <data name="ChatOpenAttivitaLoadError" xml:space="preserve">
-    <value>Unable to load the activity list.</value>
-  </data>
-  <data name="ChatOpenAttivitaNotFound" xml:space="preserve">
-    <value>Activity '{0}' not found.</value>
-  </data>
-  <data name="ChatOpenAttivitaOpening" xml:space="preserve">
-    <value>Opening activity '{0}' (id: {1}).</value>
-  </data>
-  <data name="ChatOpenCausaleDisplayName" xml:space="preserve">
-    <value>Open attendance code</value>
-  </data>
-  <data name="ChatOpenCausaleDescription" xml:space="preserve">
-    <value>opens the edit page of a specific attendance code.</value>
-  </data>
-  <data name="ChatOpenCausaleQuestion" xml:space="preserve">
-    <value>Which attendance code do you want to open?</value>
-  </data>
   <data name="ChatOpenCausaleLabel" xml:space="preserve">
     <value>Attendance code</value>
-  </data>
-  <data name="ChatOpenCausaleNameMissing" xml:space="preserve">
-    <value>Attendance code name not specified.</value>
   </data>
   <data name="ChatCausaliLoadError" xml:space="preserve">
     <value>Unable to load the attendance code list.</value>
@@ -222,200 +189,32 @@
   <data name="ChatCausaleNotFound" xml:space="preserve">
     <value>Attendance code '{0}' not found.</value>
   </data>
-  <data name="ChatOpenCausaleOpening" xml:space="preserve">
-    <value>Opening attendance code '{0}' (id: {1}).</value>
-  </data>
-  <data name="ChatOpenClienteDisplayName" xml:space="preserve">
-    <value>Open customer</value>
-  </data>
-  <data name="ChatOpenClienteDescription" xml:space="preserve">
-    <value>opens the edit page of a specific customer.</value>
-  </data>
-  <data name="ChatOpenClienteQuestion" xml:space="preserve">
-    <value>Which customer do you want to open?</value>
-  </data>
   <data name="ChatOpenClienteLabel" xml:space="preserve">
     <value>Customer</value>
-  </data>
-  <data name="ChatOpenClienteNameMissing" xml:space="preserve">
-    <value>Customer name not specified.</value>
-  </data>
-  <data name="ChatOpenClienteLoadError" xml:space="preserve">
-    <value>Unable to load the customer list.</value>
-  </data>
-  <data name="ChatOpenClienteNotFound" xml:space="preserve">
-    <value>Customer '{0}' not found.</value>
-  </data>
-  <data name="ChatOpenClienteOpening" xml:space="preserve">
-    <value>Opening customer '{0}' (id: {1}).</value>
-  </data>
-  <data name="ChatOpenCommessaDisplayName" xml:space="preserve">
-    <value>Open project</value>
-  </data>
-  <data name="ChatOpenCommessaDescription" xml:space="preserve">
-    <value>opens the edit page of a specific project (job order).</value>
-  </data>
-  <data name="ChatOpenCommessaQuestion" xml:space="preserve">
-    <value>Which project do you want to open?</value>
   </data>
   <data name="ChatOpenCommessaLabel" xml:space="preserve">
     <value>Project</value>
   </data>
-  <data name="ChatOpenCommessaNameMissing" xml:space="preserve">
-    <value>Project name not specified.</value>
-  </data>
-  <data name="ChatOpenCommessaLoadError" xml:space="preserve">
-    <value>Unable to load the project list.</value>
-  </data>
-  <data name="ChatOpenCommessaNotFound" xml:space="preserve">
-    <value>Project '{0}' not found.</value>
-  </data>
-  <data name="ChatOpenCommessaOpening" xml:space="preserve">
-    <value>Opening project '{0}' (id: {1}).</value>
-  </data>
-  <data name="ChatOpenCompetenzaDisplayName" xml:space="preserve">
-    <value>Open skill</value>
-  </data>
-  <data name="ChatOpenCompetenzaDescription" xml:space="preserve">
-    <value>opens the edit page of a specific skill.</value>
-  </data>
-  <data name="ChatOpenCompetenzaQuestion" xml:space="preserve">
-    <value>Which skill do you want to open?</value>
-  </data>
   <data name="ChatOpenCompetenzaLabel" xml:space="preserve">
     <value>Skill</value>
-  </data>
-  <data name="ChatOpenCompetenzaNameMissing" xml:space="preserve">
-    <value>Skill name not specified.</value>
-  </data>
-  <data name="ChatOpenCompetenzaLoadError" xml:space="preserve">
-    <value>Unable to load the skill list.</value>
-  </data>
-  <data name="ChatOpenCompetenzaNotFound" xml:space="preserve">
-    <value>Skill '{0}' not found.</value>
-  </data>
-  <data name="ChatOpenCompetenzaOpening" xml:space="preserve">
-    <value>Opening skill '{0}' (id: {1}).</value>
-  </data>
-  <data name="ChatOpenGiustificativoDisplayName" xml:space="preserve">
-    <value>Open leave type</value>
-  </data>
-  <data name="ChatOpenGiustificativoDescription" xml:space="preserve">
-    <value>opens the edit page of a specific leave type.</value>
-  </data>
-  <data name="ChatOpenGiustificativoQuestion" xml:space="preserve">
-    <value>Which leave type do you want to open?</value>
   </data>
   <data name="ChatOpenGiustificativoLabel" xml:space="preserve">
     <value>Leave type</value>
   </data>
-  <data name="ChatOpenGiustificativoNameMissing" xml:space="preserve">
-    <value>Leave type name not specified.</value>
-  </data>
   <data name="ChatGiustificativiLoadError" xml:space="preserve">
     <value>Unable to load the leave type list.</value>
-  </data>
-  <data name="ChatOpenGiustificativoNotFound" xml:space="preserve">
-    <value>Leave type '{0}' not found.</value>
-  </data>
-  <data name="ChatOpenGiustificativoOpening" xml:space="preserve">
-    <value>Opening leave type '{0}' (id: {1}).</value>
-  </data>
-  <data name="ChatOpenModelloExportDisplayName" xml:space="preserve">
-    <value>Open export template</value>
-  </data>
-  <data name="ChatOpenModelloExportDescription" xml:space="preserve">
-    <value>opens the edit page of a specific export template.</value>
-  </data>
-  <data name="ChatOpenModelloExportQuestion" xml:space="preserve">
-    <value>Which export template do you want to open?</value>
   </data>
   <data name="ChatOpenModelloExportLabel" xml:space="preserve">
     <value>Export template</value>
   </data>
-  <data name="ChatOpenModelloExportNameMissing" xml:space="preserve">
-    <value>Export template name not specified.</value>
-  </data>
-  <data name="ChatOpenModelloExportLoadError" xml:space="preserve">
-    <value>Unable to load the export template list.</value>
-  </data>
-  <data name="ChatOpenModelloExportNotFound" xml:space="preserve">
-    <value>Export template '{0}' not found.</value>
-  </data>
-  <data name="ChatOpenModelloExportOpening" xml:space="preserve">
-    <value>Opening export template '{0}' (id: {1}).</value>
-  </data>
-  <data name="ChatOpenOrarioDisplayName" xml:space="preserve">
-    <value>Open work schedule</value>
-  </data>
-  <data name="ChatOpenOrarioDescription" xml:space="preserve">
-    <value>opens the edit page of a specific work schedule.</value>
-  </data>
-  <data name="ChatOpenOrarioQuestion" xml:space="preserve">
-    <value>Which work schedule do you want to open?</value>
-  </data>
   <data name="ChatOpenOrarioLabel" xml:space="preserve">
     <value>Work schedule</value>
-  </data>
-  <data name="ChatOpenOrarioNameMissing" xml:space="preserve">
-    <value>Work schedule name not specified.</value>
-  </data>
-  <data name="ChatOpenOrarioLoadError" xml:space="preserve">
-    <value>Unable to load the work schedule list.</value>
-  </data>
-  <data name="ChatOpenOrarioNotFound" xml:space="preserve">
-    <value>Work schedule '{0}' not found.</value>
-  </data>
-  <data name="ChatOpenOrarioOpening" xml:space="preserve">
-    <value>Opening work schedule '{0}' (id: {1}).</value>
-  </data>
-  <data name="ChatOpenProfiloOrarioDisplayName" xml:space="preserve">
-    <value>Open schedule profile</value>
-  </data>
-  <data name="ChatOpenProfiloOrarioDescription" xml:space="preserve">
-    <value>opens the edit page of a specific schedule profile.</value>
-  </data>
-  <data name="ChatOpenProfiloOrarioQuestion" xml:space="preserve">
-    <value>Which schedule profile do you want to open?</value>
   </data>
   <data name="ChatOpenProfiloOrarioLabel" xml:space="preserve">
     <value>Schedule profile</value>
   </data>
-  <data name="ChatOpenProfiloOrarioNameMissing" xml:space="preserve">
-    <value>Schedule profile name not specified.</value>
-  </data>
-  <data name="ChatOpenProfiloOrarioLoadError" xml:space="preserve">
-    <value>Unable to load the schedule profile list.</value>
-  </data>
-  <data name="ChatOpenProfiloOrarioNotFound" xml:space="preserve">
-    <value>Schedule profile '{0}' not found.</value>
-  </data>
-  <data name="ChatOpenProfiloOrarioOpening" xml:space="preserve">
-    <value>Opening schedule profile '{0}' (id: {1}).</value>
-  </data>
-  <data name="ChatOpenRepartoDisplayName" xml:space="preserve">
-    <value>Open department</value>
-  </data>
-  <data name="ChatOpenRepartoDescription" xml:space="preserve">
-    <value>opens the edit page of a specific department.</value>
-  </data>
-  <data name="ChatOpenRepartoQuestion" xml:space="preserve">
-    <value>Which department do you want to open?</value>
-  </data>
   <data name="ChatOpenRepartoLabel" xml:space="preserve">
     <value>Department</value>
-  </data>
-  <data name="ChatOpenRepartoNameMissing" xml:space="preserve">
-    <value>Department name not specified.</value>
-  </data>
-  <data name="ChatOpenRepartoLoadError" xml:space="preserve">
-    <value>Unable to load the department list.</value>
-  </data>
-  <data name="ChatOpenRepartoNotFound" xml:space="preserve">
-    <value>Department '{0}' not found.</value>
-  </data>
-  <data name="ChatOpenRepartoOpening" xml:space="preserve">
-    <value>Opening department '{0}' (id: {1}).</value>
   </data>
   <data name="ChatEmployeeQuestion" xml:space="preserve">
     <value>Which employee?</value>

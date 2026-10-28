@@ -1,0 +1,41 @@
+// Frasi di prova dei comandi presenze (formato: vedi README.md).
+// Anagrafica finta: Rossi Mario, Bianchi Luca, Verdi Giuseppe; utente corrente Pugliese Antonio.
+[
+  // registrazioni (HR)
+  { "frase": "timbra Rossi alle 9 il 15 ottobre", "intent": "RegisterClocking", "slots": { "employeeName": "Rossi Mario", "time": "09:00", "date": "=15 ottobre" } },
+  { "messaggi": ["timbratura per Rossi", "ieri alle 8, in uscita"], "intent": "RegisterClocking", "slots": { "employeeName": "Rossi Mario", "time": "08:00", "date": "=ieri", "direction": "OUT" } },
+  { "frase": "timbrami lunedì scorso alle otto e un quarto", "intent": "RegisterClocking", "slots": { "employeeName": "Pugliese Antonio", "time": "08:15", "date": "=lunedì scorso" } },
+  { "frase": "Rossi è entrato alle 8 e mezza", "intent": "RegisterClocking", "slots": { "employeeName": "Rossi Mario", "time": "08:30" } },
+  { "frase": "timbra Russi alle 8", "intent": "RegisterClocking", "slots": { "employeeName": "Rossi Mario", "time": "08:00" } },
+  { "frase": "Bianchi ieri ha fatto due ore di permesso", "intent": "RegisterJustification", "slots": { "employeeName": "Bianchi Luca", "hours": "02:00", "date": "=ieri" } },
+  { "frase": "aggiungi un'ora e mezza di straordinario a Verdi per lunedì", "intent": "RegisterCausale", "slots": { "employeeName": "Verdi Giuseppe", "hours": "01:30", "date": "=lunedì" } },
+  { "frase": "metti in ferie Verdi dal 3 al 7 novembre", "intent": "RegisterJustificationPeriod", "slots": { "employeeName": "Verdi Giuseppe", "from": "=3 novembre", "to": "=7 novembre" } },
+  { "frase": "ricalcola le presenze di Rossi di ottobre", "intent": "CalcolaGiorno", "slots": { "employeeName": "Rossi Mario" } },
+
+  // correzioni e approvazioni (HR)
+  { "frase": "cancella la timbratura di Rossi delle 12:30", "intent": "DeleteClocking", "slots": { "employeeName": "Rossi Mario", "time": "12:30" } },
+  { "frase": "sposta la timbratura di Bianchi delle 17 alle 18", "intent": "UpdateClocking", "slots": { "employeeName": "Bianchi Luca", "time": "17:00", "newTime": "18:00" } },
+  { "frase": "approva tutte le richieste di Rossi", "intent": "ApproveRequests", "slots": { "employeeName": "Rossi Mario", "decision": "approve" } },
+
+  // consultazioni (HR)
+  { "frase": "chi è presente oggi?", "intent": "WhoIsPresent" },
+  { "frase": "quante ferie restano a Rossi?", "intent": "LeaveBalance", "slots": { "employeeName": "Rossi Mario" } },
+  { "frase": "che timbrature ha Bianchi ieri?", "intent": "ClockingsOfDay", "slots": { "employeeName": "Bianchi Luca", "date": "=ieri" } },
+  { "frase": "ci sono anomalie ieri?", "intent": "ClockingAnomalies" },
+  { "frase": "quali richieste devo approvare?", "intent": "PendingRequests" },
+  { "frase": "chi è in ferie la prossima settimana?", "intent": "VacationPlanQuery", "slots": { "from": "=la prossima settimana" } },
+  { "frase": "stampa il piano ferie di novembre", "intent": "PrintReport", "slots": { "report": "PianoFerie" } },
+
+  // apertura delle anagrafiche (comando unico)
+  { "frase": "apri la causale straordinario", "intent": "OpenEntity", "slots": { "entity": "causale", "name": "straordinario" } },
+  { "frase": "modifica il profilo orario full time", "intent": "OpenEntity", "slots": { "entity": "profilo orario", "name": "full time" } },
+  { "frase": "fammi vedere il reparto produzione", "intent": "OpenEntity", "slots": { "entity": "reparto", "name": "produzione" } },
+  { "frase": "apri il calendario HR di Rossi", "intent": "OpenTimeSheetPowerAdmin" },
+
+  // dipendente (ruolo User)
+  { "frase": "quante ore ho fatto questo mese?", "intent": "HoursWorked", "ruolo": "User" },
+  { "frase": "vorrei 2 ore di permesso venerdì", "intent": "RequestLeave", "ruolo": "User", "slots": { "hours": "02:00", "from": "=venerdì" } },
+  { "frase": "ho dimenticato di timbrare ieri alle 9", "intent": "RequestClocking", "ruolo": "User", "slots": { "time": "09:00", "date": "=ieri" } },
+  { "frase": "timbrami adesso", "intent": "ClockNow", "ruolo": "User" },
+  { "frase": "cosa posso fare in questa pagina?", "intent": "Help", "ruolo": "User", "pagina": "/requestlistuser" }
+]
