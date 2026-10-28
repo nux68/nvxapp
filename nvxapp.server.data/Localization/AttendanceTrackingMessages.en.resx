@@ -1316,4 +1316,18 @@
     <value>exit</value>
     <comment>verso della timbratura nel messaggio di conferma</comment>
   </data>
+  <data name="ChatVacationPlanDisplayName" xml:space="preserve">
+    <value>Vacation plan</value>
+  </data>
+  <data name="ChatVacationPlanDescription" xml:space="preserve">
+    <value>tells who is on holiday or absent (vacation plan justifications) in a period (default: from today for one week).</value>
+  </data>
+  <data name="ChatVacationPlanTitle" xml:space="preserve">
+    <value>Vacation plan {0}:</value>
+    <comment>{0} = periodo</comment>
+  </data>
+  <data name="ChatVacationPlanNone" xml:space="preserve">
+    <value>Nobody on holiday in the period {0}.</value>
+    <comment>{0} = periodo</comment>
+  </data>
 </root>

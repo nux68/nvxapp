@@ -1320,4 +1320,18 @@
     <value>uscita</value>
     <comment>verso della timbratura nel messaggio di conferma</comment>
   </data>
+  <data name="ChatVacationPlanDisplayName" xml:space="preserve">
+    <value>Piano ferie</value>
+  </data>
+  <data name="ChatVacationPlanDescription" xml:space="preserve">
+    <value>dice chi è in ferie o assente (giustificativi del piano ferie) in un periodo (default: da oggi per una settimana).</value>
+  </data>
+  <data name="ChatVacationPlanTitle" xml:space="preserve">
+    <value>Piano ferie {0}:</value>
+    <comment>{0} = periodo</comment>
+  </data>
+  <data name="ChatVacationPlanNone" xml:space="preserve">
+    <value>Nessuno in ferie nel periodo {0}.</value>
+    <comment>{0} = periodo</comment>
+  </data>
 </root>
