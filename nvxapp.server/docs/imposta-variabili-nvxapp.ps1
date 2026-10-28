@@ -27,6 +27,7 @@ $variabili = [ordered]@{
     'NVXAPP_Email__Password'                    = @('chiave SMTP di Brevo (email di conferma e reset password)', 'brevo.key')
     'NVXAPP_AI__AI_groq__ApiKey'                = @('API key di Groq (chat AI con AI:UseLLM = AI_groq)', 'groq.key')
     'NVXAPP_AI__AI_openrouter__ApiKey'          = @('API key di OpenRouter (chat AI con AI:UseLLM = AI_openrouter)', 'openrouter.key')
+    'NVXAPP_AI__AI_deepseek__ApiKey'            = @('API key di DeepSeek (chat AI con AI:UseLLM = AI_deepseek)', $null)
 }
 
 if (-not $Prova) {
