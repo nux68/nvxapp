@@ -267,6 +267,15 @@ ion-button.nvx-send.button-disabled {
   opacity: 0.3;
 }
 
+// "tieni premuto per parlare": niente selezione/menu del browser durante la pressione prolungata
+ion-button.nvx-push-to-talk {
+  margin-inline-end: 8px;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
 // ---------------------------------------------------------------------------
 // FAB: neutro e compatto
 // ---------------------------------------------------------------------------
