@@ -1133,4 +1133,35 @@
     <value>Nessuno in ferie nel periodo {0}.</value>
     <comment>{0} = periodo</comment>
   </data>
+  <data name="ImportSoloAmministratori" xml:space="preserve">
+    <value>Solo gli amministratori dell'azienda possono importare i dipendenti.</value>
+  </data>
+  <data name="ImportFileVuoto" xml:space="preserve">
+    <value>Il file è vuoto.</value>
+  </data>
+  <data name="ImportFileTroppoGrande" xml:space="preserve">
+    <value>Il file è troppo grande: al massimo {0} MB.</value>
+    <comment>{0} = MB</comment>
+  </data>
+  <data name="ImportFileNonLeggibile" xml:space="preserve">
+    <value>Il file non è leggibile: potrebbe essere danneggiato o in un formato diverso da quello dell'estensione.</value>
+  </data>
+  <data name="ImportFormatoVecchio" xml:space="preserve">
+    <value>Formato non supportato: salva il file come .xlsx, .docx o .csv e riprova.</value>
+  </data>
+  <data name="ImportFormatoNonSupportato" xml:space="preserve">
+    <value>Formato del file non supportato: usa un foglio di calcolo (.xlsx, .ods, .csv), un documento (.docx, .odt, .pdf) o un file di testo.</value>
+  </data>
+  <data name="ImportNessunTesto" xml:space="preserve">
+    <value>Nel file non c'è testo leggibile (un PDF ottenuto da una scansione non contiene testo).</value>
+  </data>
+  <data name="ImportRispostaNonValida" xml:space="preserve">
+    <value>L'assistente non ha restituito un elenco valido: riprova.</value>
+  </data>
+  <data name="ImportNessunDipendente" xml:space="preserve">
+    <value>Nel file non sono state trovate persone da importare.</value>
+  </data>
+  <data name="ImportAssistenteOccupato" xml:space="preserve">
+    <value>L'assistente è momentaneamente occupato (limite di richieste del servizio): riprova tra un minuto.</value>
+  </data>
 </root>

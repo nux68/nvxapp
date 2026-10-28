@@ -485,6 +485,9 @@
       "title": "Users",
       "columnUser": "User",
       "fabAdd": "Item 1",
+      "fabAddHeader": "Add users",
+      "fabAddUser": "New user",
+      "fabImport": "Import from file",
       "columnSurname": "Surname",
       "columnName": "Name",
       "showDisabled": "Show disabled"
