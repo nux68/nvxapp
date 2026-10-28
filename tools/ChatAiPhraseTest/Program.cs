@@ -37,7 +37,7 @@ var http = new ServiceCollection().AddHttpClient().BuildServiceProvider().GetReq
 int ok = 0, ko = 0, saltati = 0;
 foreach (var caso in casi)
 {
-    var esito = await Prova.Esegui(caso, config, http);
+    var esito = await Prova.Esegui(caso, config, http, opzioni.Pausa);
     switch (esito.Stato)
     {
         case "ok": ok++; Console.WriteLine($"✓ {caso.Titolo}  →  {esito.Ottenuto}"); break;
@@ -124,7 +124,7 @@ class Caso
 
 static class Prova
 {
-    public static async Task<(string Stato, string Ottenuto)> Esegui(Caso caso, IConfiguration config, IHttpClientFactory http)
+    public static async Task<(string Stato, string Ottenuto)> Esegui(Caso caso, IConfiguration config, IHttpClientFactory http, int pausa)
     {
         var ctx = new ChatUserContext { UserId = Finti.UtenteCorrente, Roles = new List<string> { caso.Ruolo }, CurrentRoute = caso.Pagina };
         var registrate = new List<(string Intent, Dictionary<string, string> Slots)>();
@@ -151,13 +151,18 @@ static class Prova
 
         ChatAIOutModel? risposta = null;
         var sessionId = "";
-        foreach (var turno in caso.Turni)
+        var nonElaborata = ChatAIMessages.Get("AnswerNotProcessed");
+        for (int t = 0; t < caso.Turni.Count; t++)
         {
+            var turno = caso.Turni[t];
+            if (t > 0) await Task.Delay(TimeSpan.FromSeconds(pausa));   // anche tra i turni: limite di richieste del provider
             registrate.Clear();
             risposta = await servizio.ProcessMessageAsync(new ChatAIInModel { Request = turno, SessionId = sessionId, CurrentRoute = caso.Pagina });
 
-            // limite di richieste del provider: si aspetta e si ripete il turno una volta
-            if (risposta.ResponseType == "error" && risposta.Responce.Contains("TooManyRequests"))
+            // limite di richieste del provider ("TooManyRequests"; a meta' dialogo la chat lo mostra come
+            // risposta non elaborata): si aspetta e si ripete il turno una volta
+            if ((risposta.ResponseType == "error" && risposta.Responce.Contains("TooManyRequests")) ||
+                risposta.Responce.StartsWith(nonElaborata))
             {
                 Console.WriteLine("    (limite di richieste del provider: attendo 60 s)");
                 await Task.Delay(TimeSpan.FromSeconds(60));
@@ -166,8 +171,9 @@ static class Prova
             sessionId = risposta.SessionId;
         }
 
-        // piano raccolto: in attesa (domanda o conferma) oppure eseguito subito (registrato)
-        var sessione = store.TryGet(sessionId, ctx.UserId);
+        // piano raccolto: in attesa (domanda o conferma) oppure eseguito subito (registrato).
+        // Il servizio crea le sessioni con l'utente della richiesta HTTP, che nella prova non c'e' (vuoto).
+        var sessione = store.TryGet(sessionId, string.Empty);
         var piano = sessione?.ActionQueue.Count > 0
             ? sessione.ActionQueue.Select(a => (a.Intent, a.Slots)).ToList()
             : registrate.ToList();
