@@ -1,0 +1,25 @@
+# Reverse proxy HTTPS per il PC di sviluppo (docker-compose.local.yml).
+# LAN_IP arriva da DockerLocale.env: l'IP del PC nella rete locale, per aprire l'app da altri PC e dai telefoni.
+# Per un IP privato nessuna autorita' pubblica rilascia certificati: li firma l'autorita' locale di Caddy,
+# creata al primo avvio e salvata nel volume caddy_data. Il suo certificato radice va installato una volta
+# su ogni dispositivo (sezione 10 di nvxapp.server/docs/ANALISI_DOCKER.md), altrimenti il browser avvisa.
+
+{
+	# certificati dall'autorita' locale di Caddy, mai da Let's Encrypt
+	local_certs
+	# nel container non serve installare l'autorita' tra quelle attendibili
+	skip_install_trust
+	# chi apre https://<IP> non manda il nome del server (SNI): si usa il certificato di LAN_IP
+	default_sni {$LAN_IP}
+	servers {
+		# niente HTTP/3: annuncerebbe la porta 443 interna, non quella pubblicata (8443)
+		protocols h1 h2
+	}
+}
+
+https://localhost, https://{$LAN_IP} {
+	# compressione: l'app serve i file del client senza comprimerli
+	encode zstd gzip
+	# inoltra anche le connessioni WebSocket di SignalR (/chathub)
+	reverse_proxy nvxapp:8080
+}

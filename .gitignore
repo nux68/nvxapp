@@ -31,3 +31,5 @@ nvxapp.server/brevo.key
 .env.*
 *.env
 !.env.example
+# certificato radice di Caddy esportato per installarlo sui dispositivi (sezione 10 di ANALISI_DOCKER.md)
+*.crt

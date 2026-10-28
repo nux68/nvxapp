@@ -2,10 +2,11 @@
 # File di ambiente: DockerLocale.env, con COMPOSE_FILE=docker-compose.yml;docker-compose.local.yml
 #   docker compose --env-file DockerLocale.env up -d --build     costruisce l'immagine dal codice corrente e avvia
 #   (lo stesso che fa il profilo di pubblicazione DockerLocale di Visual Studio)
-#   app:                http://localhost:8080
+#   app in https:       https://<LAN_IP>:8443 da tutta la rete locale, https://localhost:8443 dal PC
+#   app in http:        http://localhost:8080 (solo dal PC)
 #   console RabbitMQ:   http://localhost:15672 (utente rabbit)
-#   PostgreSQL:         localhost:5434 (utente postgres), es. da pgAdmin
-# Tutte le porte sono pubblicate solo su 127.0.0.1: dagli altri PC della rete non si raggiungono.
+#   PostgreSQL:         127.0.0.1:5434 (utente postgres), es. da pgAdmin
+# Dagli altri PC della rete si raggiunge solo la porta https di Caddy; le altre sono pubblicate solo su 127.0.0.1.
 
 services:
   nvxapp:
@@ -15,6 +16,9 @@ services:
     ports:
       - "127.0.0.1:${APP_PORT:-8080}:8080"
     environment:
+      # le richieste https arrivano da Caddy: schema e IP del client dagli header X-Forwarded-*.
+      # Liste dei proxy vuote = header accettati da chiunque: va bene perche' la porta 8080 e' solo su 127.0.0.1
+      NVXAPP_ReverseProxy__Enabled: "true"
       NVXAPP_App__PublicUrl: ${APP_PUBLIC_URL:-http://localhost:8080}
 
   postgres:
@@ -24,3 +28,29 @@ services:
   rabbitmq:
     ports:
       - "127.0.0.1:${RABBITMQ_UI_PORT:-15672}:15672"
+
+  # HTTPS con l'autorita' locale di Caddy (docker/Caddyfile.local), raggiungibile da tutta la rete locale
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    depends_on:
+      - nvxapp
+    ports:
+      - "${HTTPS_PORT:-8443}:443"
+    environment:
+      # IP del PC nella rete locale: il certificato vale per questo indirizzo e per localhost
+      LAN_IP: ${LAN_IP:-127.0.0.1}
+    volumes:
+      - ./docker/Caddyfile.local:/etc/caddy/Caddyfile:ro
+      # autorita' locale e certificati: se si perde il volume, il certificato radice va reinstallato sui dispositivi
+      - caddy_data:/data
+      - caddy_config:/config
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+volumes:
+  caddy_data:
+  caddy_config:
