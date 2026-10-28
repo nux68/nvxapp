@@ -46,8 +46,44 @@ export class SpeechService {
     return this._AutoDeactivated$.asObservable();
   }
 
+  // "tieni premuto per parlare": ascolto finche' il pulsante resta premuto, senza attivare l'ascolto continuo
+  private pushToTalk = false;
+  private _PushToTalk$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  public get PushToTalk$(): Observable<boolean> {
+    return this._PushToTalk$.asObservable();
+  }
+  public get isPushToTalk(): boolean {
+    return this.pushToTalk;
+  }
+
+  public startPushToTalk() {
+    if (!this.recognition || this.isVoiceCommandActive || this.pushToTalk) return;
+    this.pushToTalk = true;
+    this._PushToTalk$.next(true);
+    try {
+      this.recognition.start();
+    } catch {
+      this.endPushToTalk();
+    }
+  }
+
+  // rilasciato il pulsante: il browser consegna il testo riconosciuto e chiude (onend)
+  public stopPushToTalk() {
+    if (this.pushToTalk && this.recognition) this.recognition.stop();
+  }
+
+  private endPushToTalk() {
+    this.pushToTalk = false;
+    this._PushToTalk$.next(false);
+  }
+
   // chiusura del riconoscimento decisa dal browser: se era attivo, e' una disattivazione automatica
   private onRecognitionClosed() {
+    // fine di un "tieni premuto per parlare": non e' una disattivazione dei comandi vocali
+    if (this.pushToTalk) {
+      this.endPushToTalk();
+      return;
+    }
     const eraAttivo = this.isVoiceCommandActive;
     this.VoiceCommandActive = false;
     if (eraAttivo)
@@ -69,7 +105,7 @@ export class SpeechService {
 
       this.recognition.onstart = () => {
         console.log("🎤 Riconoscimento attivato.");
-        this.VoiceCommandActive = true;
+        if (!this.pushToTalk) this.VoiceCommandActive = true;
       };
 
       this.recognition.onresult = (event: any) => {

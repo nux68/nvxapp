@@ -1,6 +1,7 @@
 import { AfterViewInit, Component, OnInit, ViewChild, ElementRef, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 import { IonContent, IonModal, NavController, ToastController } from '@ionic/angular';
 import { SpeechService } from '../../../../Utility/infrastructure/speech.service';
+import { SpeechOutputService } from '../../../../Utility/infrastructure/speech-output.service';
 import { ChatAIService } from '../../../../ClientServer-Service/Infrastructure/ChatAI/chat-ai.service';
 import { GenericRequest } from '../../../../ClientServer-Service/ModelsBase/generic-request';
 import { ChatAIInModel, ClientActionPayload } from '../../../../ClientServer-Service/Infrastructure/ChatAI/Models/chat-AI-model';
@@ -31,6 +32,9 @@ export class FabMenuComponent implements OnInit, AfterViewInit {
 
   // SessionId della conversazione corrente — null = nessuna sessione attiva
   private currentSessionId: string | null = null;
+
+  // l'ultimo messaggio e' arrivato a voce: la risposta si pronuncia
+  private lastInputVoice = false;
 
   // -------------------------------------------------------------------------
   // Stato modale
@@ -63,6 +67,7 @@ export class FabMenuComponent implements OnInit, AfterViewInit {
 
   constructor(
     public  speechService: SpeechService,
+    public  speechOutput:  SpeechOutputService,
     private chatAIService: ChatAIService,
     private cdRef:         ChangeDetectorRef,
     public  fabMenuService: FabMenuService,
@@ -87,14 +92,23 @@ export class FabMenuComponent implements OnInit, AfterViewInit {
   ngOnInit() {
     this.speechService.Message$.subscribe(msg => {
       if (msg) {
+        // la voce dell'assistente captata dal microfono non e' un messaggio dell'utente
+        if (this.speechOutput.isEcho(msg)) return;
+        // l'utente parla: la voce dell'assistente si interrompe
+        this.speechOutput.cancel();
         this.sendVoiceMessage(msg);
         this.cdRef.detectChanges();
       }
     });
 
-    this.speechService.VoiceCommandActive$.subscribe(() => {
+    this.speechService.VoiceCommandActive$.subscribe(active => {
+      // comandi vocali spenti: anche la voce dell'assistente tace
+      if (!active && !this.speechService.isPushToTalk) this.speechOutput.cancel();
       this.cdRef.detectChanges();
     });
+
+    this.speechService.PushToTalk$.subscribe(() => this.cdRef.detectChanges());
+    this.speechOutput.Speaking$.subscribe(() => this.cdRef.detectChanges());
 
     // il browser ha chiuso il riconoscimento vocale (inattivita'/errore): avviso con suono
     this.speechService.AutoDeactivated$.subscribe(() => {
@@ -115,9 +129,12 @@ export class FabMenuComponent implements OnInit, AfterViewInit {
   // Invio messaggio testo
   // -------------------------------------------------------------------------
 
-  sendMessage() {
+  sendMessage(byVoice: boolean = false) {
     const text = this.newMessage.trim();
     if (!text) return;
+
+    this.lastInputVoice = byVoice;
+    this.speechOutput.cancel();
 
     this.pushMessage('You', text);
     this.newMessage  = '';
@@ -135,6 +152,8 @@ export class FabMenuComponent implements OnInit, AfterViewInit {
     const text = message.trim();
     if (!text) return;
 
+    this.lastInputVoice = true;
+
     this.pushMessage('You', text);
     this.suggestions = [];
     this.scrollToBottom();
@@ -146,9 +165,10 @@ export class FabMenuComponent implements OnInit, AfterViewInit {
   // Click su un chip suggerito (es. "Sì" / "No")
   // -------------------------------------------------------------------------
 
-  sendSuggestion(suggestion: string) {
+  // byVoice: conferma automatica di un dialogo vocale (la risposta si pronuncia ancora)
+  sendSuggestion(suggestion: string, byVoice: boolean = false) {
     this.newMessage = suggestion;
-    this.sendMessage();
+    this.sendMessage(byVoice);
   }
 
   // -------------------------------------------------------------------------
@@ -207,6 +227,13 @@ export class FabMenuComponent implements OnInit, AfterViewInit {
         }
 
         const responseType = res.data?.responseType ?? '';
+        const autoConfirm = responseType === 'confirmation' && !!res.data?.autoConfirm;
+
+        // risposta vocale (se il messaggio e' arrivato a voce): domanda, riepilogo in forma di frase o risultato.
+        // La conferma automatica della navigazione non si annuncia: segue subito il risultato.
+        if (this.lastInputVoice && !autoConfirm) {
+          this.speechOutput.speak(res.data?.speechText || responce);
+        }
 
         // comando eseguito (anche solo in parte): la pagina corrente rilegge i dati
         if (responseType === 'result' || res.data?.actionResults?.some(r => r.success)) {
@@ -222,15 +249,23 @@ export class FabMenuComponent implements OnInit, AfterViewInit {
                 duration: 3000,
                 position: 'bottom'
               }).then(t => t.present());
-            } else if (responseType === 'confirmation' && res.data?.autoConfirm) {
+            } else if (autoConfirm) {
               // Modal chiusa + vocale + piano di sola navigazione: auto-conferma senza aprire la modal.
               // Usa il primo chip del server (conferma, gia' nella lingua dell'utente: "Sì"/"Yes");
               // il server accetta comunque le parole di conferma italiane e inglesi.
               const confirmText = res.data?.suggestions?.[0] ?? 'Sì';
-              setTimeout(() => this.sendSuggestion(confirmText), 600);
+              setTimeout(() => this.sendSuggestion(confirmText, true), 600);
+            } else if (this.speechOutput.enabled) {
+              // domanda o riepilogo da confermare: l'assistente lo dice e si risponde a voce
+              // ("alle 9", "sì"), senza aprire la modal; il testo resta visibile in un avviso
+              this.toastCtrl.create({
+                message:  responce,
+                duration: 10000,
+                position: 'bottom'
+              }).then(t => t.present());
             } else {
-              // confirmation di un piano che scrive dati: l'utente vede il riepilogo e conferma (anche a voce)
-              // question: la conversazione richiede input manuale → apri la modal
+              // browser senza sintesi vocale o risposte vocali spente: l'utente vede la domanda
+              // o il riepilogo nella modal e risponde (anche a voce)
               this.openModal('vocal');
             }
           }
@@ -318,6 +353,26 @@ export class FabMenuComponent implements OnInit, AfterViewInit {
 
   toggleVoiceCommand() {
     this.speechService.VoiceCommandActive = !this.speechService.VoiceCommandActive;
+  }
+
+  // "tieni premuto per parlare" (alternativa all'ascolto continuo)
+  startPushToTalk(event: Event) {
+    event.preventDefault();
+    this.speechOutput.cancel();
+    this.speechService.startPushToTalk();
+  }
+
+  stopPushToTalk() {
+    this.speechService.stopPushToTalk();
+  }
+
+  // risposte vocali attive / disattivate (scelta salvata nel browser)
+  toggleVoiceReply() {
+    this.speechOutput.enabled = !this.speechOutput.enabled;
+  }
+
+  stopSpeaking() {
+    this.speechOutput.cancel();
   }
 
   // Chiamato dal FAB mic: se voice attivo lo ferma, altrimenti apre la chat vocale (mic da avviare manualmente)
