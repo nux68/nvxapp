@@ -24,6 +24,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
         public List<string> Suggestions { get; set; } = new();     // chip/bottoni opzionali da mostrare al client
         public NavigatePayload? Navigate { get; set; }             // payload di navigazione (ResponseType == "navigate")
         public List<ActionResultItem> ActionResults { get; set; } = new(); // risultati per singola azione del piano
+        // Solo con ResponseType == "confirmation": true se il piano contiene solo navigazioni,
+        // quindi il client vocale può confermare da solo; con scritture di dati la conferma è dell'utente.
+        public bool AutoConfirm { get; set; }
 
         public ChatAIOutModel() { }
     }

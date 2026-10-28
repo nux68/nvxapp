@@ -9,8 +9,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
     // in modo esplicito, indipendentemente dal ciclo di vita Scoped del service.
     public interface IChatSessionStore
     {
-        ChatSession? TryGet(string sessionId, int timeoutMinutes = 10);
-        ChatSession Create();
+        // Ritorna la sessione solo se esiste, non è scaduta e appartiene a userId.
+        ChatSession? TryGet(string sessionId, string userId, int timeoutMinutes = 10);
+        ChatSession Create(string userId);
         void Delete(string sessionId);
     }
 
@@ -21,12 +22,19 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
     {
         private readonly ConcurrentDictionary<string, ChatSession> _sessions = new();
 
-        public ChatSession? TryGet(string sessionId, int timeoutMinutes = 10)
+        public ChatSession? TryGet(string sessionId, string userId, int timeoutMinutes = 10)
         {
             if (string.IsNullOrEmpty(sessionId)) return null;
 
             if (_sessions.TryGetValue(sessionId, out var session))
             {
+                // una sessione di un altro utente non si espone (ne' si rimuove)
+                if (!string.Equals(session.UserId, userId ?? string.Empty, StringComparison.Ordinal))
+                {
+                    Log.Warning("[ChatAI] Sessione di un altro utente ignorata. SessionId={SessionId}", sessionId);
+                    return null;
+                }
+
                 if ((DateTime.UtcNow - session.LastActivity).TotalMinutes < timeoutMinutes)
                     return session;
 
@@ -37,9 +45,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             return null;
         }
 
-        public ChatSession Create()
+        public ChatSession Create(string userId)
         {
-            var session = new ChatSession();
+            var session = new ChatSession { UserId = userId ?? string.Empty };
             _sessions[session.SessionId] = session;
             return session;
         }
