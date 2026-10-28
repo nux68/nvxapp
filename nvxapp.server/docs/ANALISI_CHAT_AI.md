@@ -4,7 +4,7 @@
 >
 > **Obiettivo**: dialogo meno macchinoso, più comandi disponibili, linguaggio naturale (chat e voce).
 
-**Stato al 28/10/2026: 32 punti su 41 svolti (Fasi 1, 2 e 3 complete tranne le operazioni massive di C10; da provare nell'app avviata).**
+**Stato al 28/10/2026: 36 punti su 41 svolti (Fasi 1-4 complete tranne le operazioni massive di C10; da provare nell'app avviata).**
 
 Legenda: ✅ svolto · ⏳ da fare · 🔍 da valutare. Lo stato di ogni punto si aggiorna nella checklist (sezione 9); la tabella seguente riassume per area.
 
@@ -13,7 +13,7 @@ Legenda: ✅ svolto · ⏳ da fare · 🔍 da valutare. Lo stato di ogni punto s
 | 3. Correzioni rapide | Q1–Q8 | ✅ 8/8 |
 | 4. Motore di dialogo | M1–M7 | ✅ 7/7 |
 | 5. Linguaggio naturale | L1–L4 | ✅ 4/4 |
-| 6. Voce | V1–V4 | ⏳ 0/4 |
+| 6. Voce | V1–V4 | ✅ 4/4 |
 | 7. Nuovi comandi | C1–C14 | ⏳ 13/14 (C10: manca la parte massiva) |
 | 8. Costo di aggiunta dei comandi | E1–E4 | ⏳ 0/4 |
 
@@ -218,10 +218,12 @@ Provata il 28/10/2026 con Groq su 18 dialoghi con i comandi reali e servizi simu
 - [x] C14 Help contestuale: il client manda la pagina corrente, l'help elenca prima i comandi della pagina (`IntentDefinition.Pages`) e solo quelli consentiti dai ruoli
 
 ### Fase 4 — Voce (Infrastructure_Dev)
-- [ ] V1 Sintesi vocale delle risposte
-- [ ] V2 Conferma vocale vera
-- [ ] V3 Domande a voce senza aprire la finestra
-- [ ] V4 Interruzione e "tieni premuto per parlare"
+Fatta il 28/10/2026, tutta nel client. Compila (build Angular), ma non è provata nel browser: sintesi e riconoscimento vocale vanno provati in Chrome/Edge (Firefox non ha il riconoscimento).
+
+- [x] V1 Risposte vocali (`SpeechOutputService`, `speechSynthesis` nella lingua dell'interfaccia): si pronuncia `SpeechText` quando il messaggio è arrivato a voce, a frasi (Chrome tronca quelle lunghe); attivabili/disattivabili dall'intestazione della chat (scelta salvata nel browser)
+- [x] V2 Conferma vocale: il riepilogo si pronuncia in forma di frase con "Confermi?" e si risponde a voce; le scritture non si confermano mai da sole (solo la navigazione, `AutoConfirm`)
+- [x] V3 Domande a voce senza aprire la finestra: con la chat chiusa domanda e riepilogo si pronunciano e restano in un avviso a schermo; se il browser non parla o le risposte vocali sono spente si apre la chat come prima
+- [x] V4 Interruzione e "tieni premuto per parlare": parlando si interrompe la voce (l'eco della voce captata dal microfono si scarta confrontando le parole, `isEcho`); pulsante per fermare la voce; pulsante "tieni premuto per parlare" in alternativa all'ascolto continuo (`SpeechService.startPushToTalk`)
 
 ### Fase 5 — Scalabilità (E1 su AttendanceTracking_Dev, il resto su Infrastructure_Dev)
 - [ ] E1 Comando "Apri entità" da metadati

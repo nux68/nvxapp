@@ -610,7 +610,13 @@
       "microphone": "Microfono",
       "voiceOffMessage": "Dopo un periodo di inattività il microfono si è spento.",
       "reactivate": "Riattiva",
-      "serverError": "Errore di comunicazione con il server."
+      "serverError": "Errore di comunicazione con il server.",
+      "pushToTalk": "Tieni premuto per parlare",
+      "pushToTalkHint": "Tieni premuto il pulsante per parlare, oppure accendi il microfono",
+      "listening": "Ti ascolto…",
+      "voiceReplyOn": "Risposte vocali attive",
+      "voiceReplyOff": "Risposte vocali disattivate",
+      "stopSpeaking": "Interrompi la voce"
     },
     "httpBackgroundErrorDialog": {
       "title": "Si è verificato un errore",

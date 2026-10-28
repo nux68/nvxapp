@@ -610,7 +610,13 @@
       "microphone": "Microphone",
       "voiceOffMessage": "The microphone turned off after a period of inactivity.",
       "reactivate": "Turn back on",
-      "serverError": "Error communicating with the server."
+      "serverError": "Error communicating with the server.",
+      "pushToTalk": "Hold to talk",
+      "pushToTalkHint": "Hold the button to talk, or turn on the microphone",
+      "listening": "Listening…",
+      "voiceReplyOn": "Voice replies on",
+      "voiceReplyOff": "Voice replies off",
+      "stopSpeaking": "Stop speaking"
     },
     "httpBackgroundErrorDialog": {
       "title": "An error occurred",

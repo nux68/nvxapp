@@ -12,6 +12,20 @@
             </ion-buttons>
             <ion-title>{{ (modalType === 'vocal' ? 'components.fabMenu.titleVocal' : 'components.fabMenu.title') | transloco }}</ion-title>
             <ion-buttons slot="end">
+              <!-- la voce dell'assistente sta parlando: si puo' interrompere -->
+              @if (speechOutput.isSpeaking) {
+                <ion-button (click)="stopSpeaking()" [attr.aria-label]="'components.fabMenu.stopSpeaking' | transloco">
+                  <ion-icon slot="icon-only" name="stop-circle-outline"></ion-icon>
+                </ion-button>
+              }
+              <!-- risposte vocali attive / disattivate -->
+              @if (speechOutput.supported) {
+                <ion-button (click)="toggleVoiceReply()"
+                  [attr.aria-label]="(speechOutput.enabled ? 'components.fabMenu.voiceReplyOn' : 'components.fabMenu.voiceReplyOff') | transloco"
+                  [title]="(speechOutput.enabled ? 'components.fabMenu.voiceReplyOn' : 'components.fabMenu.voiceReplyOff') | transloco">
+                  <ion-icon slot="icon-only" [name]="speechOutput.enabled ? 'volume-high-outline' : 'volume-mute-outline'"></ion-icon>
+                </ion-button>
+              }
               <ion-button (click)="cancelChat()" [attr.aria-label]="'common.buttons.close' | transloco">
                 <ion-icon slot="icon-only" name="close-outline"></ion-icon>
               </ion-button>
@@ -107,8 +121,27 @@
             @if (modalType === 'vocal') {
               <div class="nvx-composer nvx-composer-vocal">
                 <span class="nvx-vocal-label">
-                  {{ (speechService.VoiceCommandActive ? 'components.fabMenu.voiceActive' : 'components.fabMenu.voiceInactive') | transloco }}
+                  @if (speechService.isPushToTalk) {
+                    {{ 'components.fabMenu.listening' | transloco }}
+                  } @else if (speechService.VoiceCommandActive) {
+                    {{ 'components.fabMenu.voiceActive' | transloco }}
+                  } @else {
+                    {{ 'components.fabMenu.pushToTalkHint' | transloco }}
+                  }
                 </span>
+                <!-- tieni premuto per parlare: solo quando l'ascolto continuo e' spento -->
+                @if (!speechService.VoiceCommandActive) {
+                  <ion-button class="nvx-send nvx-push-to-talk" shape="round"
+                    (pointerdown)="startPushToTalk($event)"
+                    (pointerup)="stopPushToTalk()"
+                    (pointerleave)="stopPushToTalk()"
+                    (pointercancel)="stopPushToTalk()"
+                    (contextmenu)="$event.preventDefault()"
+                    [color]="speechService.isPushToTalk ? 'success' : 'primary'"
+                    [attr.aria-label]="'components.fabMenu.pushToTalk' | transloco">
+                    <ion-icon name="radio-button-on-outline" slot="icon-only"></ion-icon>
+                  </ion-button>
+                }
                 <ion-button class="nvx-send" shape="round"
                   (click)="toggleVoiceCommand()"
                   [color]="speechService.VoiceCommandActive ? 'success' : 'medium'"
