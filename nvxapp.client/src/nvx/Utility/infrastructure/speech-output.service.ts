@@ -123,6 +123,7 @@ export class SpeechOutputService {
   private clean(text: string): string {
     return (text ?? '')
       .replace(/[①-⑳ℹ️•]/g, ' ')
+      .replace(/\*\*/g, '')
       .replace(/\(\s*(sì|si|yes)\s*\/\s*(no)\s*\)/gi, '')
       .replace(/\s*\n+\s*/g, '. ')
       .replace(/\s{2,}/g, ' ')

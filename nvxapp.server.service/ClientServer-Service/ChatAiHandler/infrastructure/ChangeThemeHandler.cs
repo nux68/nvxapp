@@ -25,6 +25,8 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.infrastructur
             Name        = "ChangeTheme",
             DisplayName = ChatAIMessages.Get("ThemeDisplayName"),
             Usable4Role = new List<string> { "*" },
+            Category    = ChatAIMessages.Get("ChatCategorySettings"),
+            CategoryOrder = IntentCategoryOrder.Settings,
             Description = ChatAIMessages.Get("ThemeDescription"),
             // non i valori dello slot ("scuro", "chiaro"): un valore uguale a una parola chiave viene scartato
             Keywords    = new() { "tema", "modalità notte", "theme", "dark mode", "light mode" },

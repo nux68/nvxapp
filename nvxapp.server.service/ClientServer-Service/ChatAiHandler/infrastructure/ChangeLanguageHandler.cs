@@ -21,6 +21,8 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.infrastructur
             Name        = "ChangeLanguage",
             DisplayName = ChatAIMessages.Get("LanguageDisplayName"),
             Usable4Role = new List<string> { "*" },
+            Category    = ChatAIMessages.Get("ChatCategorySettings"),
+            CategoryOrder = IntentCategoryOrder.Settings,
             Description = ChatAIMessages.Get("LanguageDescription"),
             // non i valori dello slot ("italiano", "inglese"): un valore uguale a una parola chiave viene scartato
             Keywords    = new() { "lingua", "language" },
