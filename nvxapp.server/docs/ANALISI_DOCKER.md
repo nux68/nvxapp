@@ -172,6 +172,7 @@ I segreti non stanno negli appsettings (che vanno in git) ma in variabili d'ambi
 | `NVXAPP_Email__Password` | `Email:Password` | Per inviare email (conferma registrazione, reset password) |
 | `NVXAPP_AI__AI_groq__ApiKey` | `AI:AI_groq:ApiKey` | Solo con `AI:UseLLM = AI_groq` |
 | `NVXAPP_AI__AI_openrouter__ApiKey` | `AI:AI_openrouter:ApiKey` | Solo con `AI:UseLLM = AI_openrouter` |
+| `NVXAPP_AI__AI_deepseek__ApiKey` | `AI:AI_deepseek:ApiKey` | Solo con `AI:UseLLM = AI_deepseek` |
 
 Qualsiasi altra chiave di configurazione si può sovrascrivere allo stesso modo (es. `NVXAPP_Swagger__Enabled=true`).
 

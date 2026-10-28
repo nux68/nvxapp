@@ -43,6 +43,7 @@ services:
       NVXAPP_Email__Password: ${NVXAPP_Email__Password:-}
       NVXAPP_AI__AI_groq__ApiKey: ${NVXAPP_AI__AI_groq__ApiKey:-}
       NVXAPP_AI__AI_openrouter__ApiKey: ${NVXAPP_AI__AI_openrouter__ApiKey:-}
+      NVXAPP_AI__AI_deepseek__ApiKey: ${NVXAPP_AI__AI_deepseek__ApiKey:-}
       NVXAPP_App__PublicUrl: ${APP_PUBLIC_URL:-}
       # si decide al primo avvio su database vuoto e non si puo' piu' cambiare (Note/Migrazioni.txt)
       NVXAPP_DbParameter__MultiTenant: ${NVXAPP_DbParameter__MultiTenant:-true}
