@@ -1330,4 +1330,35 @@
     <value>Nobody on holiday in the period {0}.</value>
     <comment>{0} = periodo</comment>
   </data>
+  <data name="ImportSoloAmministratori" xml:space="preserve">
+    <value>Only company administrators can import employees.</value>
+  </data>
+  <data name="ImportFileVuoto" xml:space="preserve">
+    <value>The file is empty.</value>
+  </data>
+  <data name="ImportFileTroppoGrande" xml:space="preserve">
+    <value>The file is too large: {0} MB at most.</value>
+    <comment>{0} = MB</comment>
+  </data>
+  <data name="ImportFileNonLeggibile" xml:space="preserve">
+    <value>The file cannot be read: it may be damaged or in a format other than its extension.</value>
+  </data>
+  <data name="ImportFormatoVecchio" xml:space="preserve">
+    <value>Unsupported format: save the file as .xlsx, .docx or .csv and try again.</value>
+  </data>
+  <data name="ImportFormatoNonSupportato" xml:space="preserve">
+    <value>Unsupported file format: use a spreadsheet (.xlsx, .ods, .csv), a document (.docx, .odt, .pdf) or a text file.</value>
+  </data>
+  <data name="ImportNessunTesto" xml:space="preserve">
+    <value>The file contains no readable text (a PDF from a scan has no text).</value>
+  </data>
+  <data name="ImportRispostaNonValida" xml:space="preserve">
+    <value>The assistant did not return a valid list: try again.</value>
+  </data>
+  <data name="ImportNessunDipendente" xml:space="preserve">
+    <value>No people to import were found in the file.</value>
+  </data>
+  <data name="ImportAssistenteOccupato" xml:space="preserve">
+    <value>The assistant is busy at the moment (service request limit): try again in a minute.</value>
+  </data>
 </root>

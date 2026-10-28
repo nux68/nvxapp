@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
-import { ModalController, NavController } from '@ionic/angular';
+import { ActionSheetController, ModalController, NavController } from '@ionic/angular';
 import { TranslocoService } from '@jsverse/transloco';
 import { AccountService } from '../../../ClientServer-Service/Infrastructure/Account/account.service';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
@@ -51,6 +51,7 @@ export class UserCompanyListPageComponent {
     private userInterfaceService: UserInterfaceService,
               private userNavigationService: UserNavigationService,
               private modalCtrl: ModalController,
+              private actionSheetCtrl: ActionSheetController,
               private transloco: TranslocoService
             
             ) 
@@ -83,7 +84,7 @@ export class UserCompanyListPageComponent {
         // this.navCtrl.navigateForward('/' + pageName, {
         //   state: { id: 0 }
         // });
-        this.openAddUserCompany();
+        this.scegliInserimento();
       }),
 
     ];
@@ -94,6 +95,44 @@ export class UserCompanyListPageComponent {
     this.fabMenuService.fabMenuItem = [];
   }
 
+
+  /**
+   * Pulsante "+": se un applicativo fornisce l'importazione da file (es. gestione presenze) si sceglie da un
+   * action sheet tra inserimento di un utente e importazione; altrimenti si apre subito l'inserimento.
+   */
+  async scegliInserimento() {
+    const importDialog = await this.mainMenuService.RedefineDialog(DialogName.ImportUserCompany, null);
+    if (!importDialog) {
+      this.openAddUserCompany();
+      return;
+    }
+
+    const sheet = await this.actionSheetCtrl.create({
+      header: this.transloco.translate('pages.userCompanyList.fabAddHeader'),
+      buttons: [
+        { text: this.transloco.translate('pages.userCompanyList.fabAddUser'), icon: 'person-add-outline', handler: () => { this.openAddUserCompany(); } },
+        { text: this.transloco.translate('pages.userCompanyList.fabImport'), icon: 'document-attach-outline', handler: () => { this.openImportUserCompany(importDialog); } },
+        { text: this.transloco.translate('common.buttons.cancel'), role: 'cancel' }
+      ]
+    });
+    await sheet.present();
+  }
+
+  async openImportUserCompany(component: any) {
+    const modal = await this.modalCtrl.create({ component: component });
+    await modal.present();
+
+    const { data, role } = await modal.onDidDismiss();
+    if (role === 'confirm' && data && data.inserimentoCompletato)
+      this.rileggiLista();
+  }
+
+  private rileggiLista() {
+    const request: GenericRequest<UserCompanyListInModel> = new GenericRequest<UserCompanyListInModel>(UserCompanyListInModel);
+    this.accountService.UserCompanyList(request).subscribe(res => {
+      this.userCompanyList = res.data.userCompanyList;
+    });
+  }
 
   async openAddUserCompany() {
     // un applicativo puo' sostituire il dialog di inserimento (es. wizard della gestione presenze)
@@ -109,10 +148,7 @@ export class UserCompanyListPageComponent {
 
     // il dialog ha gia' completato l'inserimento: basta rileggere la lista
     if (role === 'confirm' && data && data.inserimentoCompletato) {
-      let request: GenericRequest<UserCompanyListInModel> = new GenericRequest<UserCompanyListInModel>(UserCompanyListInModel);
-      this.accountService.UserCompanyList(request).subscribe(res => {
-        this.userCompanyList = res.data.userCompanyList;
-      });
+      this.rileggiLista();
       return;
     }
 

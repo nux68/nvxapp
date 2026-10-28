@@ -1,0 +1,23 @@
+.nvx-import-nota {
+  display: block;
+  padding: 4px 16px 8px;
+  font-size: 0.85em;
+}
+
+.nvx-import-errore {
+  display: block;
+  padding: 0 16px 12px;
+}
+
+// un dipendente dell'elenco; bordo rosso se ha dati da correggere
+.nvx-import-riga {
+  margin: 12px 0;
+  padding: 4px 0;
+  border: 1px solid var(--ion-color-step-200, #ddd);
+  border-left-width: 4px;
+  border-radius: 6px;
+}
+
+.nvx-import-riga-errore {
+  border-left-color: var(--ion-color-danger);
+}

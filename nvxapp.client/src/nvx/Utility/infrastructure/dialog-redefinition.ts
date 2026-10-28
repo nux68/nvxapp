@@ -41,4 +41,6 @@ export const DIALOG_REDEFINITION = new InjectionToken<DialogRedefinition[]>('DIA
 export const DialogName = {
   /** inserimento di un nuovo utente nell'azienda (lista utenti) */
   AddUserCompany: 'addusercompany',
+  /** importazione degli utenti da file (lista utenti): senza ridefinizione la voce del FAB non c'e' */
+  ImportUserCompany: 'importusercompany',
 } as const;

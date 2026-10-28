@@ -11,19 +11,14 @@ import { GenericRequest } from '../../../../ClientServer-Service/ModelsBase/gene
 import { AccountService } from '../../../../ClientServer-Service/Infrastructure/Account/account.service';
 import { ParameterService } from '../../../../ClientServer-Service/Infrastructure/Parameter/parameter.service';
 import { RoleCode } from '../../../../ClientServer-Service/Infrastructure/Account/Models/user-roles-model';
-import { UserCompanyEditModel, UserCompanyPutInModel } from '../../../../ClientServer-Service/Infrastructure/Account/Models/user-company-model';
 import { UserCheckInModel } from '../../../../ClientServer-Service/Infrastructure/Account/Models/user-check-model';
-import { DipAnagraficaService } from '../../../../ClientServer-Service/GestionePresenze/Dip_Anagrafica/dip-anagrafica.service';
-import { Dip_Anagrafica_Get_InModel, Dip_Anagrafica_Put_InModel } from '../../../../ClientServer-Service/GestionePresenze/Dip_Anagrafica/Models/dip-anagrafica-model';
 import { DestinazioneEccedenze, TipoContratto } from '../../../../ClientServer-Service/GestionePresenze/Dip_RapportoLavoro/Models/dip-rapporto-lavoro-model';
-import { Dip_ProfiloOrarioModel } from '../../../../ClientServer-Service/GestionePresenze/Dip_ProfiloOrario/Models/dip-profilo-orario-model';
-import { Dip_CompetenzaModel } from '../../../../ClientServer-Service/GestionePresenze/Dip_Competenza/Models/dip-competenza-model';
-import { Dip_Rapporto_Giustificativi_MaturazioneModel } from '../../../../ClientServer-Service/GestionePresenze/Dip_Rapporto_Giustificativi_Maturazione/Models/dip-rapporto-giustificativi-maturazione-model';
 import { Par_GiustificativiModel, TipoContatore } from '../../../../ClientServer-Service/GestionePresenze/Par_Giustificativi/Models/par-giustificativi-model';
 import { Par_ProfiloOrarioModel } from '../../../../ClientServer-Service/GestionePresenze/Par_ProfiloOrario/Models/par-profilo-orario-model';
 import { Par_CompetenzaModel } from '../../../../ClientServer-Service/GestionePresenze/Par_Competenza/Models/par-competenza-model';
 import { SharedParameterGestionePresenzeService, ParTable } from '../../../shared-parameter-gestione-presenze.service';
 import { BaseDialogConfirmCancelComponent } from '../../../../pages/_BASE/base-dialog-confirm-cancel/base-dialog-confirm-cancel.component';
+import { NuovoDipendenteService } from '../../../../Utility/GestionePresenze/nuovo-dipendente.service';
 
 /** valori del wizard: un gruppo del form per gli step 1-3; dopo il salvataggio l'utente creato */
 export class UserAttendanceWizardModel {
@@ -87,7 +82,7 @@ export class UserAttendanceWizardDialogComponent extends BaseDialogConfirmCancel
               protected override modalCtrl: ModalController,
               private parameterService: ParameterService,
               private accountService: AccountService,
-              private dipAnagraficaService: DipAnagraficaService,
+              private nuovoDipendenteService: NuovoDipendenteService,
               private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
               private refresherService: RefresherService,
               private elementRef: ElementRef<HTMLElement>,
@@ -106,7 +101,7 @@ export class UserAttendanceWizardDialogComponent extends BaseDialogConfirmCancel
   get EditForm(): FormGroup {
     const userRole = this.parameterService.Roles.find(role => role.code === RoleCode.User);
     this.par_ProfiloOrario = this.sharedParameterGestionePresenzeService.Par_ProfiloOrario ?? [];
-    const profiloDefault = this.par_ProfiloOrario.find(p => p.codice === 'DAY7H8') ?? this.par_ProfiloOrario[0];
+    const proposti = this.nuovoDipendenteService.Default();
 
     return this.fb.group({
       utente: this.fb.group({
@@ -118,15 +113,15 @@ export class UserAttendanceWizardDialogComponent extends BaseDialogConfirmCancel
         roles: [userRole ? [userRole.name] : [], [minArrayLength(1)]],
       }),
       rapporto: this.fb.group({
-        dataAss: [oggiIso(), [Validators.required]],
-        tipoContratto: [TipoContratto.FullTime],
-        oreSettimanaliContratto: [null, [Validators.min(0), Validators.max(168)]],
-        ccnl: [null, [Validators.maxLength(50)]],
-        destinazioneEccedenze: [DestinazioneEccedenze.Pagamento],
+        dataAss: [proposti.rapporto.dataAss, [Validators.required]],
+        tipoContratto: [proposti.rapporto.tipoContratto],
+        oreSettimanaliContratto: [proposti.rapporto.oreSettimanaliContratto, [Validators.min(0), Validators.max(168)]],
+        ccnl: [proposti.rapporto.ccnl, [Validators.maxLength(50)]],
+        destinazioneEccedenze: [proposti.rapporto.destinazioneEccedenze],
       }),
       profilo: this.fb.group({
-        idPar_ProfiloOrario: [profiloDefault?.id ?? null, [Validators.required]],
-        numGiornoPartenzaCiclo: [1, [Validators.required, Validators.min(1)]],
+        idPar_ProfiloOrario: [proposti.profilo.idPar_ProfiloOrario, [Validators.required]],
+        numGiornoPartenzaCiclo: [proposti.profilo.numGiornoPartenzaCiclo, [Validators.required, Validators.min(1)]],
       }),
     });
   }
@@ -136,7 +131,7 @@ export class UserAttendanceWizardDialogComponent extends BaseDialogConfirmCancel
     this.ingrandisciDialog();
 
     this.par_Competenza = this.sharedParameterGestionePresenzeService.Par_Competenza ?? [];
-    this.competenzeSelezionate = this.par_Competenza.filter(c => c.default).map(c => c.id);
+    this.competenzeSelezionate = this.nuovoDipendenteService.Default().competenze;
 
     this.giustificativiContatore = (this.sharedParameterGestionePresenzeService.Par_Giustificativi ?? [])
       .filter(j => j.tipoContatore !== TipoContatore.NoContatore);
@@ -332,123 +327,28 @@ export class UserAttendanceWizardDialogComponent extends BaseDialogConfirmCancel
     this.erroreSalvataggio = null;
     this.updateButtonbar();
     try {
-      const idAspNetUsers = await this.CreaUtente();
-      if (!idAspNetUsers) {
+      const esito = await this.nuovoDipendenteService.Inserisci(this.formUtente.value, {
+        rapporto: this.formRapporto.value,
+        profilo: this.formProfilo.value,
+        competenze: this.competenzeSelezionate,
+        maturazioni: this.maturazioni,
+      });
+      if (!esito.idAspNetUsers) {
         // errore sui dati utente (es. username o email già usati): si torna al primo step
         this.currentStep = 0;
+      }
+      if (!esito.ok) {
+        this.erroreSalvataggio = esito.errore;
         return null;
       }
-      if (await this.SalvaDatiPresenze(idAspNetUsers)) {
-        this.refresherService.SharedParameterGestionePresenze_triggerRefresh(ParTable.Dip_Anagrafica);
-        editModel.idAspNetUsers = idAspNetUsers;
-        return editModel;
-      }
-      return null;
-    } catch (error) {
-      console.error('Errore durante la chiamata API:', error);
-      this.erroreSalvataggio = this.t('erroreSalvataggio');
-      return null;
+      this.refresherService.SharedParameterGestionePresenze_triggerRefresh(ParTable.Dip_Anagrafica);
+      editModel.idAspNetUsers = esito.idAspNetUsers;
+      return editModel;
     } finally {
       this.saving = false;
       this.updateButtonbar();
     }
   }
-
-  /** Crea l'utente nell'azienda: il server prepara anagrafica, rapporto e profilo di default. */
-  private async CreaUtente(): Promise<string | null> {
-    const v = this.formUtente.value;
-    const request = new GenericRequest<UserCompanyPutInModel>(UserCompanyPutInModel);
-    request.data.userCompanyEdit = new UserCompanyEditModel(v.descrizione, 0, '', false, v.mail, v.pw, v.roles);
-
-    const res = await firstValueFrom(this.accountService.UserCompanyPut(request));
-    const idAspNetUsers = res?.success ? res.data?.userCompanyEdit?.idAspNetUsers : null;
-    if (!idAspNetUsers) {
-      this.erroreSalvataggio = res?.messages?.map(m => m.text).join(' ') || this.t('creazioneUtenteNonRiuscita');
-      return null;
-    }
-    return idAspNetUsers;
-  }
-
-  /** Applica ai dati creati dal server quelli inseriti negli step 2-5 e li salva. */
-  private async SalvaDatiPresenze(idAspNetUsers: string): Promise<boolean> {
-    const reqGet = new GenericRequest<Dip_Anagrafica_Get_InModel>(Dip_Anagrafica_Get_InModel);
-    reqGet.data.id = idAspNetUsers;
-    const resGet = await firstValueFrom(this.dipAnagraficaService.Dip_AnagraficaGet(reqGet));
-    const dip = resGet?.data?.dip_Anagrafica;
-    const rapporto = dip?.dip_RapportoLavoro?.[0];
-    if (!dip || !rapporto) {
-      this.erroreSalvataggio = this.t('datiDipendenteNonDisponibili');
-      return false;
-    }
-
-    // step 1
-    dip.cognome = this.formUtente.value.cognome;
-    dip.nome = this.formUtente.value.nome;
-    dip.pw = '';
-
-    // step 2: rapporto di lavoro (la data di licenziamento resta vuota)
-    const r = this.formRapporto.value;
-    rapporto.dataAss = r.dataAss;
-    rapporto.tipoContratto = r.tipoContratto;
-    rapporto.oreSettimanaliContratto = r.tipoContratto === TipoContratto.PartTime && r.oreSettimanaliContratto !== null && r.oreSettimanaliContratto !== ''
-      ? +r.oreSettimanaliContratto : null;
-    rapporto.ccnl = r.ccnl || null;
-    rapporto.destinazioneEccedenze = r.destinazioneEccedenze;
-
-    // step 3: profilo orario dalla data di assunzione (si aggiorna quello di default creato dal server)
-    const p = this.formProfilo.value;
-    let profilo = dip.dip_ProfiloOrario.find(x => x.idDip_RapportoLavoro === rapporto.id);
-    if (!profilo) {
-      profilo = new Dip_ProfiloOrarioModel();
-      profilo.id = -1;
-      profilo.idDip_RapportoLavoro = rapporto.id;
-      profilo.al = '2099-12-31T00:00:00';
-      dip.dip_ProfiloOrario.push(profilo);
-    }
-    profilo.idPar_ProfiloOrario = p.idPar_ProfiloOrario;
-    profilo.numGiornoPartenzaCiclo = +p.numGiornoPartenzaCiclo;
-    profilo.dal = r.dataAss;
-    dip.dip_ProfiloOrario = dip.dip_ProfiloOrario.filter(x => x.idDip_RapportoLavoro !== rapporto.id || x === profilo);
-
-    // step 4: competenze (senza competenze il server assegna quella di default)
-    dip.dip_Competenza = this.competenzeSelezionate.map(idPar_Competenza => {
-      const c = new Dip_CompetenzaModel();
-      c.id = 0;
-      c.idDip_Anagrafica = dip.id;
-      c.idPar_Competenza = idPar_Competenza;
-      return c;
-    });
-
-    // step 5: maturazione mensile, solo i giustificativi valorizzati
-    dip.dip_Maturazione = this.giustificativiContatore
-      .filter(j => this.maturazioni[j.id] && this.maturazioni[j.id] !== '00:00' && this.maturazioni[j.id] !== '0:00')
-      .map(j => {
-        const m = new Dip_Rapporto_Giustificativi_MaturazioneModel();
-        m.idDip_RapportoLavoro = rapporto.id;
-        m.idPar_Giustificativi = j.id;
-        m.oreMaturazione = this.maturazioni[j.id];
-        return m;
-      });
-
-    const reqPut = new GenericRequest<Dip_Anagrafica_Put_InModel>(Dip_Anagrafica_Put_InModel);
-    reqPut.data.dip_Anagrafica = dip;
-    reqPut.data.id = dip.idAspNetUsers;
-    const resPut = await firstValueFrom(this.dipAnagraficaService.Dip_AnagraficaPut(reqPut));
-    if (!resPut?.success) {
-      this.erroreSalvataggio = resPut?.messages?.map(m => m.text).join(' ') ||
-        this.t('salvataggioDipendenteNonRiuscito');
-      return false;
-    }
-    return true;
-  }
-}
-
-/** Oggi nel formato delle date del rapporto ("YYYY-MM-DDT00:00:00", senza fuso orario). */
-function oggiIso(): string {
-  const d = new Date();
-  const mm = String(d.getMonth() + 1).padStart(2, '0');
-  const dd = String(d.getDate()).padStart(2, '0');
-  return `${d.getFullYear()}-${mm}-${dd}T00:00:00`;
 }
 
 function minArrayLength(min: number): ValidatorFn {

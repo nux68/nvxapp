@@ -16,6 +16,8 @@ export class DialogRedefinitionAttendanceTrackingService implements DialogRedefi
     switch (dialogName) {
       case DialogName.AddUserCompany:
         return (await import('../../shared/components/GestionePresenze/user-attendance-wizard-dialog/user-attendance-wizard-dialog.component')).UserAttendanceWizardDialogComponent;
+      case DialogName.ImportUserCompany:
+        return (await import('../../shared/components/GestionePresenze/user-attendance-import-dialog/user-attendance-import-dialog.component')).UserAttendanceImportDialogComponent;
       default:
         return null;
     }
