@@ -1146,7 +1146,7 @@
     <value>Unsupported format: save the file as .xlsx, .docx or .csv and try again.</value>
   </data>
   <data name="ImportFormatoNonSupportato" xml:space="preserve">
-    <value>Unsupported file format: use a spreadsheet (.xlsx, .ods, .csv), a document (.docx, .odt, .pdf) or a text file.</value>
+    <value>Unsupported file format: use a spreadsheet (.xlsx, .ods, .csv), a document (.docx, .odt, .pdf), an image (.jpg, .png) or a text file.</value>
   </data>
   <data name="ImportNessunTesto" xml:space="preserve">
     <value>The file contains no readable text (a PDF from a scan has no text).</value>
@@ -1159,5 +1159,8 @@
   </data>
   <data name="ImportAssistenteOccupato" xml:space="preserve">
     <value>The assistant is busy at the moment (service request limit): try again in a minute.</value>
+  </data>
+  <data name="ImportImmaginiNonDisponibili" xml:space="preserve">
+    <value>Images cannot be read: no vision model is configured for the assistant (AI:VisionLLM and AI:&lt;provider&gt;:VisionModel).</value>
   </data>
 </root>

@@ -18,6 +18,11 @@
           <ion-label>{{ 'attendance.components.userAttendanceImportDialog.sceltaFile' | transloco }}</ion-label>
         </ion-item>
         <ion-note class="nvx-import-nota">{{ 'attendance.components.userAttendanceImportDialog.notaFile' | transloco }}</ion-note>
+        <ion-item>
+          <ion-label position="stacked">{{ 'attendance.components.userAttendanceImportDialog.note' | transloco }}</ion-label>
+          <ion-textarea [(ngModel)]="note" [autoGrow]="true" rows="3" maxlength="1000"
+            [placeholder]="'attendance.components.userAttendanceImportDialog.notePlaceholder' | transloco"></ion-textarea>
+        </ion-item>
         <div class="ion-text-center ion-padding">
           <ion-button (click)="fileInput.click()">
             <ion-icon slot="start" name="document-attach-outline"></ion-icon>
@@ -29,9 +34,11 @@
 
       <!-- ═══ Lettura del file ═══ -->
       @if (fase === 'analisi') {
-        <div class="ion-text-center ion-padding">
-          <ion-spinner></ion-spinner>
-          <p><ion-text color="medium">{{ 'attendance.components.userAttendanceImportDialog.analisi' | transloco: { nome: nomeFile } }}</ion-text></p>
+        <div class="ion-text-center ion-padding nvx-import-attesa" role="status" aria-live="polite">
+          <ion-icon name="hourglass-outline" color="primary" class="nvx-import-clessidra"></ion-icon>
+          <p><ion-text>{{ 'attendance.components.userAttendanceImportDialog.analisi' | transloco: { nome: nomeFile } }}</ion-text></p>
+          <p><ion-text color="medium">{{ 'attendance.components.userAttendanceImportDialog.analisiAttesa' | transloco }}</ion-text></p>
+          <ion-progress-bar type="indeterminate"></ion-progress-bar>
         </div>
       }
 
@@ -120,6 +127,16 @@
                     </ion-col>
                   </ion-row>
                   <ion-row class="ion-align-items-center">
+                    <ion-col size="12" size-md="4">
+                      <ion-item>
+                        <ion-label position="stacked">{{ 'attendance.components.userAttendanceWizardDialog.dataAssunzione' | transloco }}</ion-label>
+                        <ion-input type="date" formControlName="dataAss"
+                          [placeholder]="'attendance.components.userAttendanceImportDialog.dataAssOggi' | transloco"></ion-input>
+                      </ion-item>
+                      @if (!riga.get('dataAss')?.value) {
+                        <ion-note class="nvx-import-nota">{{ 'attendance.components.userAttendanceImportDialog.dataAssOggi' | transloco }}</ion-note>
+                      }
+                    </ion-col>
                     <ion-col size="10" size-md="6">
                       <ion-item>
                         <ion-label position="floating">{{ 'attendance.components.userAttendanceWizardDialog.ruolo' | transloco }}</ion-label>
@@ -133,7 +150,7 @@
                         <ion-note color="danger">{{ 'common.validation.roleRequired' | transloco }}</ion-note>
                       }
                     </ion-col>
-                    <ion-col size="2" size-md="6" class="ion-text-end">
+                    <ion-col size="2" size-md="2" class="ion-text-end">
                       <ion-button fill="clear" color="danger" [disabled]="fase === 'salvataggio'" (click)="togliRiga(i)"
                         [attr.aria-label]="'attendance.components.userAttendanceImportDialog.togli' | transloco">
                         <ion-icon slot="icon-only" name="trash-outline"></ion-icon>

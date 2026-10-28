@@ -977,7 +977,7 @@
       "userAttendanceImportDialog": {
         "title": "Importa dipendenti da file",
         "sceltaFile": "File con le anagrafiche",
-        "notaFile": "Scegli un file con l'elenco dei dipendenti: foglio di calcolo (xlsx, ods, csv), documento (docx, odt, pdf) o testo. L'assistente ne legge cognome, nome, email e username; prima dell'inserimento potrai controllare e correggere i dati.",
+        "notaFile": "Scegli un file con i dipendenti: foglio di calcolo (xlsx, ods, csv), documento (docx, odt, pdf), testo o immagine (es. la foto di una carta d'identità). L'assistente ne legge cognome, nome, email, username e data di assunzione; prima dell'inserimento potrai controllare e correggere i dati.",
         "scegliFile": "Scegli file",
         "analisi": "Lettura di {{nome}} in corso…",
         "fileTroppoGrande": "Il file è troppo grande: al massimo {{mb}} MB.",
@@ -987,7 +987,7 @@
         "notaRevisione": "Controlla i dati letti dal file e correggi quelli segnati in rosso: con dati mancanti, non validi o già usati non si può importare.",
         "testoTroncato": "Il file è lungo: è stata letta solo la prima parte. Per i dipendenti mancanti importa il resto in un altro file.",
         "password": "Password iniziale (per tutti)",
-        "notaDefault": "Gli altri dati prendono i valori proposti dal wizard (assunzione oggi, full time, profilo orario di default, competenze di default): si possono cambiare poi dalla scheda del dipendente.",
+        "notaDefault": "Gli altri dati prendono i valori proposti dal wizard (full time, profilo orario di default, competenze di default); la data di assunzione, se vuota, è oggi ed è anche l'inizio del profilo orario. Si possono cambiare poi dalla scheda del dipendente.",
         "userNameCaratteri": "Solo lettere senza accenti, numeri e i caratteri - . _ @ +",
         "userNameDuplicato": "UserName ripetuto nell'elenco",
         "emailDuplicata": "Email ripetuta nell'elenco",
@@ -997,7 +997,11 @@
         "importa": "Importa",
         "giaUsati": "Alcuni username o email sono già usati da altri utenti: correggili e riprova.",
         "esito": "Dipendenti inseriti: {{inseriti}}; da correggere: {{rimasti}}.",
-        "datiPresenzeNonSalvati": "{{nome}}: utente creato ma dati delle presenze non salvati ({{errore}}), completali dalla scheda del dipendente."
+        "datiPresenzeNonSalvati": "{{nome}}: utente creato ma dati delle presenze non salvati ({{errore}}), completali dalla scheda del dipendente.",
+        "note": "Note per l'assistente (facoltative)",
+        "notePlaceholder": "Es.: assunti tutti dal 1/11/2026; considera solo il foglio \"Produzione\"",
+        "analisiAttesa": "L'assistente sta leggendo il file: può richiedere fino a un minuto.",
+        "dataAssOggi": "Se vuota: oggi"
       },
       "userAttendanceWizardDialog": {
         "title": "Nuovo dipendente",

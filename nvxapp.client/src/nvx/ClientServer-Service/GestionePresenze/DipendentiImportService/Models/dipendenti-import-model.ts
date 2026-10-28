@@ -6,6 +6,8 @@ export class DipendenteImportModel {
   public nome: string = '';
   public userName: string = '';
   public mail: string = '';
+  /** data di assunzione "YYYY-MM-DDT00:00:00", vuota se il file non la riporta */
+  public dataAss: string = '';
   /** username o email gia' usati da un altro utente */
   public userNameExists: boolean = false;
   public mailExists: boolean = false;
@@ -18,6 +20,8 @@ export class DipendentiImport_EstraiInModel {
   public nomeFile: string = '';
   /** contenuto del file in base64 */
   public contenuto: string = '';
+  /** indicazioni dell'amministratore per il LLM (facoltative) */
+  public note: string | null = null;
 }
 
 export class DipendentiImport_EstraiOutModel extends ModelResult {

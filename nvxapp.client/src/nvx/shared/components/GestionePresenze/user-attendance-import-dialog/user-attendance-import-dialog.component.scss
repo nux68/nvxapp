@@ -21,3 +21,28 @@
 .nvx-import-riga-errore {
   border-left-color: var(--ion-color-danger);
 }
+
+// lettura del file: clessidra che gira finche' il LLM non risponde
+.nvx-import-attesa {
+  ion-progress-bar {
+    max-width: 320px;
+    margin: 8px auto 0;
+  }
+}
+
+.nvx-import-clessidra {
+  font-size: 56px;
+  animation: nvx-import-clessidra 2s ease-in-out infinite;
+}
+
+@keyframes nvx-import-clessidra {
+  0%, 40% { transform: rotate(0deg); }
+  50%, 90% { transform: rotate(180deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nvx-import-clessidra {
+    animation: none;
+  }
+}

@@ -24,6 +24,19 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dipendenti
         private static readonly XNamespace OdText = "urn:oasis:names:tc:opendocument:xmlns:text:1.0";
         private static readonly XNamespace OdTable = "urn:oasis:names:tc:opendocument:xmlns:table:1.0";
 
+        /// <summary>tipo dell'immagine (JPEG, PNG, WEBP, GIF: quelli letti dai modelli con visione), null se non e' un'immagine</summary>
+        public static string? MimeImmagine(byte[] dati)
+        {
+            bool Inizia(int offset, params byte[] firma) =>
+                dati.Length >= offset + firma.Length && firma.Select((b, i) => dati[offset + i] == b).All(x => x);
+
+            if (Inizia(0, 0xFF, 0xD8, 0xFF)) return "image/jpeg";
+            if (Inizia(0, 0x89, 0x50, 0x4E, 0x47)) return "image/png";
+            if (Inizia(0, (byte)'G', (byte)'I', (byte)'F', (byte)'8')) return "image/gif";
+            if (Inizia(0, (byte)'R', (byte)'I', (byte)'F', (byte)'F') && Inizia(8, (byte)'W', (byte)'E', (byte)'B', (byte)'P')) return "image/webp";
+            return null;
+        }
+
         public static string Estrai(string nomeFile, byte[] dati)
         {
             var ext = Path.GetExtension(nomeFile ?? string.Empty).ToLowerInvariant();

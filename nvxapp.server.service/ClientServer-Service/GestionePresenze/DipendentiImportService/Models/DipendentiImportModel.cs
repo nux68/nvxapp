@@ -9,6 +9,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dipendenti
         public string Nome { get; set; } = string.Empty;
         public string UserName { get; set; } = string.Empty;
         public string Mail { get; set; } = string.Empty;
+        /// <summary>data di assunzione "YYYY-MM-DDT00:00:00", vuota se il file non la riporta</summary>
+        public string DataAss { get; set; } = string.Empty;
         /// <summary>username o email gia' usati da un altro utente</summary>
         public bool UserNameExists { get; set; }
         public bool MailExists { get; set; }
@@ -19,6 +21,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dipendenti
         public string NomeFile { get; set; } = string.Empty;
         /// <summary>contenuto del file in base64</summary>
         public string Contenuto { get; set; } = string.Empty;
+        /// <summary>indicazioni dell'amministratore per il LLM (facoltative)</summary>
+        public string? Note { get; set; }
     }
 
     public class DipendentiImport_EstraiOutModel : ModelResult

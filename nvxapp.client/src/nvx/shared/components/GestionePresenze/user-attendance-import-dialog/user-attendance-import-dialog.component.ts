@@ -2,7 +2,7 @@ import { Component, ChangeDetectionStrategy, ElementRef, OnInit } from '@angular
 import { TranslocoService } from '@jsverse/transloco';
 import { CommonModule } from '@angular/common';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
-import { IonButton, IonCard, IonCardContent, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonNote, IonProgressBar, IonRow, IonSelect, IonSelectOption, IonSpinner, IonText, IonTitle, IonToolbar, ModalController } from '@ionic/angular';
+import { IonButton, IonCard, IonCardContent, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonNote, IonProgressBar, IonRow, IonSelect, IonSelectOption, IonText, IonTextarea, IonTitle, IonToolbar, ModalController } from '@ionic/angular';
 import { firstValueFrom, Observable, of } from 'rxjs';
 import { SharedComponentInfrastructureModule } from '../../../shared-component-infrastructure.module';
 import { ButtonItem, UserInterfaceService } from '../../../../Utility/infrastructure/user-interface.service';
@@ -22,16 +22,21 @@ type Fase = 'file' | 'analisi' | 'revisione' | 'salvataggio';
 
 /** caratteri ammessi nello username (quelli predefiniti di ASP.NET Identity) */
 const USERNAME_PATTERN = /^[A-Za-z0-9\-._@+]+$/;
+/** lato maggiore delle foto inviate al LLM: bastano per leggere un documento e restano sotto i limiti dei provider */
+const IMMAGINE_MAX_LATO = 2000;
 
 /**
  * Importazione dei dipendenti da un file qualsiasi (lista utenti, FAB "+" > Importa da file):
- *  1 l'utente sceglie il file
+ *  1 l'utente sceglie il file (anche una foto, es. di una carta d'identita') e puo' scrivere delle note
+ *    per il LLM (es. "assunti tutti dal 1/11")
  *  2 il server ne legge il testo e il LLM estrae le persone con i dati del primo step del wizard
- *    (cognome, nome, username, email)
+ *    (cognome, nome, username, email) e la data di assunzione
  *  3 l'elenco si corregge: con dati mancanti, non validi o gia' usati non si puo' importare;
- *    la password iniziale e' unica per tutti, i ruoli sono per dipendente (di default User)
+ *    la password iniziale e' unica per tutti, ruoli e data di assunzione sono per dipendente
+ *    (di default User e oggi)
  *  4 ogni dipendente si inserisce come dal wizard, con i valori di default per gli altri step
- *    (NuovoDipendenteService); quelli non inseriti restano in elenco con l'errore.
+ *    (NuovoDipendenteService): la data di assunzione e' anche l'inizio del profilo orario.
+ *    Quelli non inseriti restano in elenco con l'errore.
  * Standalone, come il wizard: la pagina di Infrastructure lo apre tramite DialogName.ImportUserCompany.
  */
 @Component({
@@ -40,12 +45,14 @@ const USERNAME_PATTERN = /^[A-Za-z0-9\-._@+]+$/;
   styleUrls: ['./user-attendance-import-dialog.component.scss'],
   changeDetection: ChangeDetectionStrategy.Eager,
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, IonButton, IonCard, IonCardContent, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonNote, IonProgressBar, IonRow, IonSelect, IonSelectOption, IonSpinner, IonText, IonTitle, IonToolbar, SharedComponentInfrastructureModule]
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, IonButton, IonCard, IonCardContent, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonNote, IonProgressBar, IonRow, IonSelect, IonSelectOption, IonText, IonTextarea, IonTitle, IonToolbar, SharedComponentInfrastructureModule]
 })
 export class UserAttendanceImportDialogComponent extends BaseDialogConfirmCancelComponent<any> implements OnInit {
 
   public fase: Fase = 'file';
   public nomeFile: string = '';
+  /** indicazioni per il LLM scritte con la scelta del file */
+  public note: string = '';
   public testoTroncato: boolean = false;
   /** errore della lettura del file o dell'ultimo inserimento */
   public errore: string | null = null;
@@ -136,7 +143,8 @@ export class UserAttendanceImportDialogComponent extends BaseDialogConfirmCancel
     if (!file) return;
 
     this.errore = null;
-    if (file.size > DIPENDENTI_IMPORT_MAX_BYTE) {
+    // le foto si riducono prima dell'invio: il limite vale per gli altri file (e lo ricontrolla il server)
+    if (!file.type.startsWith('image/') && file.size > DIPENDENTI_IMPORT_MAX_BYTE) {
       this.errore = this.t('fileTroppoGrande', { mb: DIPENDENTI_IMPORT_MAX_BYTE / (1024 * 1024) });
       return;
     }
@@ -147,7 +155,8 @@ export class UserAttendanceImportDialogComponent extends BaseDialogConfirmCancel
     try {
       const request = new GenericRequest<DipendentiImport_EstraiInModel>(DipendentiImport_EstraiInModel);
       request.data.nomeFile = file.name;
-      request.data.contenuto = await this.base64(file);
+      request.data.contenuto = file.type.startsWith('image/') ? await this.immagineBase64(file) : await this.base64(file);
+      request.data.note = this.note.trim() || null;
 
       const res = await firstValueFrom(this.dipendentiImportService.DipendentiImportEstrai(request));
       const dipendenti = res?.success ? res.data?.dipendenti ?? [] : [];
@@ -178,6 +187,31 @@ export class UserAttendanceImportDialogComponent extends BaseDialogConfirmCancel
     });
   }
 
+  /**
+   * Foto in JPEG ridotta (lato maggiore IMMAGINE_MAX_LATO): pesa meno ed e' un formato letto da tutti i
+   * modelli con visione. Se il browser non sa disegnarla (es. HEIC fuori da Safari) parte cosi' com'e'.
+   */
+  private immagineBase64(file: File): Promise<string> {
+    return new Promise(resolve => {
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+        const scala = Math.min(1, IMMAGINE_MAX_LATO / Math.max(img.naturalWidth, img.naturalHeight));
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.round(img.naturalWidth * scala);
+        canvas.height = Math.round(img.naturalHeight * scala);
+        canvas.getContext('2d')?.drawImage(img, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL('image/jpeg', 0.85).split(',')[1] ?? '');
+      };
+      img.onerror = () => {
+        URL.revokeObjectURL(url);
+        this.base64(file).then(resolve, () => resolve(''));
+      };
+      img.src = url;
+    });
+  }
+
   private caricaElenco(dipendenti: DipendenteImportModel[]): void {
     this.dipendenti.clear();
     this.erroriRiga = [];
@@ -200,6 +234,8 @@ export class UserAttendanceImportDialogComponent extends BaseDialogConfirmCancel
       descrizione: [d?.userName || null, [Validators.required, Validators.maxLength(50), Validators.pattern(USERNAME_PATTERN)]],
       mail: [d?.mail || null, [Validators.required, Validators.email]],
       roles: [userRole ? [userRole.name] : [], [minArrayLength(1)]],
+      // "YYYY-MM-DD" (campo data); vuota = oggi
+      dataAss: [d?.dataAss ? d.dataAss.substring(0, 10) : null],
     });
   }
 
@@ -279,7 +315,9 @@ export class UserAttendanceImportDialogComponent extends BaseDialogConfirmCancel
         const utente: NuovoDipendenteUtente = {
           cognome: v.cognome.trim(), nome: v.nome.trim(), descrizione: v.descrizione.trim(), mail: v.mail.trim(), pw, roles: v.roles
         };
-        const esito = await this.nuovoDipendenteService.Inserisci(utente, altriDati);
+        // data di assunzione della riga (anche inizio del profilo orario), altrimenti oggi
+        const dati = { ...altriDati, rapporto: { ...altriDati.rapporto, dataAss: v.dataAss ? v.dataAss.substring(0, 10) + 'T00:00:00' : altriDati.rapporto.dataAss } };
+        const esito = await this.nuovoDipendenteService.Inserisci(utente, dati);
 
         if (esito.idAspNetUsers) {
           // utente creato: esce dall'elenco anche se i dati delle presenze non si sono salvati (si completano dalla scheda)
