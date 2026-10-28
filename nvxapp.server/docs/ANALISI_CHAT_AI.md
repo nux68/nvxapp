@@ -4,7 +4,7 @@
 >
 > **Obiettivo**: dialogo meno macchinoso, più comandi disponibili, linguaggio naturale (chat e voce).
 
-**Stato al 28/10/2026: 19 punti su 41 svolti (Fase 1 e Fase 2 complete, da provare nell'app avviata).**
+**Stato al 28/10/2026: 32 punti su 41 svolti (Fasi 1, 2 e 3 complete tranne le operazioni massive di C10; da provare nell'app avviata).**
 
 Legenda: ✅ svolto · ⏳ da fare · 🔍 da valutare. Lo stato di ogni punto si aggiorna nella checklist (sezione 9); la tabella seguente riassume per area.
 
@@ -14,7 +14,7 @@ Legenda: ✅ svolto · ⏳ da fare · 🔍 da valutare. Lo stato di ogni punto s
 | 4. Motore di dialogo | M1–M7 | ✅ 7/7 |
 | 5. Linguaggio naturale | L1–L4 | ✅ 4/4 |
 | 6. Voce | V1–V4 | ⏳ 0/4 |
-| 7. Nuovi comandi | C1–C14 | ⏳ 0/14 |
+| 7. Nuovi comandi | C1–C14 | ⏳ 13/14 (C10: manca la parte massiva) |
 | 8. Costo di aggiunta dei comandi | E1–E4 | ⏳ 0/4 |
 
 **Dove si interviene**: il motore (sezioni 3, 4, 5, 6 ed E2–E4) sta in **Infrastructure_Dev**; i comandi delle presenze (C1–C11, E1) in **AttendanceTracking_Dev**, dopo il merge del motore.
@@ -198,20 +198,24 @@ Provata il 28/10/2026 con Groq `gpt-oss-120b`: passo A (motore, Infrastructure_D
 - [x] L4 Ricerca dipendente tollerante (`DipendenteLookupHelper`): se non c'è corrispondenza esatta, confronto fonetico con distanza di modifica ("Russi" -> Rossi, "Bianki" -> Bianchi); il riepilogo mostra "Dipendente agganciato"
 
 ### Fase 3 — Nuovi comandi (AttendanceTracking_Dev, C13–C14 su Infrastructure_Dev)
-- [ ] C1 Presenti / assenti
-- [ ] C2 Ore lavorate
-- [ ] C3 Saldi ferie e permessi
-- [ ] C4 Timbrature
-- [ ] C5 Anomalie
-- [ ] C6 Richieste in attesa
-- [ ] C7 Piano ferie
-- [ ] C8 Approva / rifiuta richieste
-- [ ] C9 Correggi / elimina timbratura
+Provata il 28/10/2026 con Groq su 18 dialoghi con i comandi reali e servizi simulati (letture fino al risultato, scritture fino al riepilogo). Ruoli: i servizi non controllano i ruoli, lo fanno i comandi (`ChatPresenzeHelper.PuoAccedere`: HR su tutti, gli altri solo sui propri dati). Con 34 comandi il catalogo compatto dell'HR è di circa 2.200 token (User: circa 1.300).
+
+- [x] C1 Presenti / assenti (`WhoIsPresent`): dalle timbrature valide del giorno (dispari = in servizio, pari = uscito, nessuna = assente con il giustificativo). Non usa `PresentStaffService`: con le timbrature senza verso il suo `IsPresent` non è affidabile. Filtro per reparto non fatto
+- [x] C2 Ore lavorate (`HoursWorked`): lavorate / previste / straordinari / assenze da `Dip_GG_Result`, mese o giorno
+- [x] C3 Saldi (`LeaveBalance`): `ContatoriService`, periodo "fine mese"
+- [x] C4 Timbrature del giorno (`ClockingsOfDay`), con quelle in attesa segnalate
+- [x] C5 Anomalie (`ClockingAnomalies`): timbrature dispari in un giorno (default ieri)
+- [x] C6 Richieste in attesa (`PendingRequests`), di tutta l'azienda o di un dipendente
+- [x] C7 Piano ferie (`VacationPlanQuery`): giustificativi visibili nel piano ferie in un periodo, giorni consecutivi raggruppati; "la prossima settimana" gestita da `SlotNormalizers`
+- [x] C8 Approva / rifiuta (`ApproveRequests`): solo HR, decisione definitiva (`FromHR`), dipendente obbligatorio (niente approvazioni di tutta l'azienda con una frase)
+- [x] C9 Correggi / elimina timbratura (`UpdateClocking`, `DeleteClocking`): solo HR; la correzione cambia l'orario e conserva l'originale, come dal Calendario HR. Con la memoria copre anche "annulla l'ultima timbratura"
 - [ ] C10 Giustificativo su intervallo e operazioni massive
-- [ ] C11 Self-service ruolo User
-- [ ] C12 Stampe
-- [ ] C13 Comandi Infrastructure (lingua, tema, logout, impersonate)
-- [ ] C14 Help contestuale
+  - [x] Su un periodo (`RegisterJustificationPeriod`): richiesta già approvata dall'HR, come dal Calendario HR
+  - [ ] Operazioni massive (per reparto, con doppia conferma)
+- [x] C11 Self-service (`ClockNow`, `RequestLeave`, `RequestClocking` per User, CompanyAdmin e HR; le letture C2–C4 sui propri dati). CompanyAdmin per ora vede solo i propri dati: il filtro sui dipendenti dei suoi reparti è da fare
+- [x] C12 Stampe (`PrintReport`): PDF in background come dal pulsante Report, download dalla barra in alto; piano ferie, attività, note spese. Quadratura mensile esclusa (richiede i reparti); il cartellino non esiste come report
+- [x] C13 Comandi Infrastructure: Tema e Lingua (azione eseguita dal client), logout e impersonificazione con la navigazione
+- [x] C14 Help contestuale: il client manda la pagina corrente, l'help elenca prima i comandi della pagina (`IntentDefinition.Pages`) e solo quelli consentiti dai ruoli
 
 ### Fase 4 — Voce (Infrastructure_Dev)
 - [ ] V1 Sintesi vocale delle risposte
