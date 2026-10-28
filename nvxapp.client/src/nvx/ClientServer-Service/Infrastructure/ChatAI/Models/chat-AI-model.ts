@@ -3,6 +3,13 @@ import { ModelResult } from "../../../ModelsBase/model-result";
 export class ChatAIInModel {
   public request:   string = '';
   public sessionId: string = '';  // identifica la sessione conversazionale sul server
+  public currentRoute: string = '';  // pagina in cui si trova l'utente (help contestuale)
+}
+
+// Azione eseguita dal client senza navigare (es. cambio tema o lingua)
+export class ClientActionPayload {
+  public action: string = '';  // "theme" | "language"
+  public value:  string = '';  // theme: "dark" | "light" | "toggle"; language: "it" | "en"
 }
 
 // Payload di navigazione restituito quando responseType === "navigate"
@@ -20,6 +27,7 @@ export class ActionResultItem {
   public success:  boolean          = false;
   public message:  string           = '';
   public navigate: NavigatePayload | null = null;
+  public clientAction: ClientActionPayload | null = null;
 }
 
 export class ChatAIOutModel extends ModelResult {
@@ -37,4 +45,6 @@ export class ChatAIOutModel extends ModelResult {
   public autoConfirm:   boolean           = false;
   // Testo breve da pronunciare (risposta vocale); vuoto = usare responce
   public speechText:    string            = '';
+  // Azione da eseguire nel client (es. cambio tema o lingua)
+  public clientAction:  ClientActionPayload | null = null;
 }
