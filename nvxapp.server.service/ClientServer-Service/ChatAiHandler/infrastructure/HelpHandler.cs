@@ -16,7 +16,10 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.infrastructur
             DisplayName = ChatAIMessages.Get("HelpDisplayName"),
             Usable4Role = new List<string> { "*" },
             Description = ChatAIMessages.Get("HelpDescription"),
-            Keywords    = new() { "aiuto", "help", "comandi", "cosa sai fare", "menu", "commands", "what can you do" }
+            Keywords    = new() { "aiuto", "help", "comandi", "cosa sai fare", "menu", "commands", "what can you do" },
+            Examples    = new() { "che cosa posso chiederti?", "non so cosa fare, aiutami", "quali operazioni puoi fare?", "what can I ask you?" },
+            // elenco dei comandi: nessun dato modificato, si mostra subito
+            RequiresConfirmation = false
         };
 
         public HelpHandler(IServiceProvider serviceProvider)

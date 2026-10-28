@@ -30,6 +30,7 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.infrastructur
             ExecutionStrategy = ExecutionStrategy.ContinueOnError,
             Keywords    = new() { "vai", "apri", "mostra", "naviga", "portami", "visualizza", "pagina",
                                   "go to", "open", "show", "navigate", "take me", "view", "page" },
+            Examples    = new() { "portami alla lista delle aziende", "fammi vedere gli utenti", "voglio andare alla home", "take me to the companies page" },
             Slots       =
             [
                 new()

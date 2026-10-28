@@ -1,5 +1,6 @@
 using Newtonsoft.Json;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
+using System.Globalization;
 using System.Text;
 using System.Text.Json.Serialization;
 
@@ -27,6 +28,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
         // Solo con ResponseType == "confirmation": true se il piano contiene solo navigazioni,
         // quindi il client vocale può confermare da solo; con scritture di dati la conferma è dell'utente.
         public bool AutoConfirm { get; set; }
+        // Testo breve da pronunciare (risposta vocale): la domanda senza il contesto, il riepilogo
+        // in forma di frase, i risultati. Vuoto = usare Responce.
+        public string SpeechText { get; set; } = string.Empty;
 
         public ChatAIOutModel() { }
     }
@@ -50,6 +54,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
         // Azione corrente nel piano (null se piano non ancora inizializzato)
         public ActionEntry? CurrentAction =>
             ActionQueue.Count > CurrentActionIndex ? ActionQueue[CurrentActionIndex] : null;
+
+        // Azioni dell'ultimo piano eseguito: restano come contesto per i messaggi successivi
+        // ("anche per Bianchi", "stessa cosa domani").
+        public List<ActionEntry> LastExecuted { get; set; } = new();
 
         // Shim di compatibilità — delegano all'azione corrente
         public string Intent => CurrentAction?.Intent ?? string.Empty;
@@ -141,22 +149,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
     // Risultato estrazione LLM
     // ---------------------------------------------------------------------------
 
-    public class ExtractedIntent
-    {
-        [JsonPropertyName("intent")]
-        public string Intent { get; set; } = string.Empty;
-
-        [JsonPropertyName("slots")]
-        public Dictionary<string, string> Slots { get; set; } = new();
-
-        [JsonPropertyName("missingRequired")]
-        public List<string> MissingRequired { get; set; } = new();
-
-        [JsonPropertyName("confidence")]
-        public double Confidence { get; set; }
-    }
-
-    // Piano multi-azione restituito dal LLM al primo turno
+    // Piano multi-azione restituito dal LLM (letto da ChatAIService.ParsePlan)
     public class ExtractedPlan
     {
         [JsonPropertyName("actions")]
@@ -284,9 +277,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
         [JsonProperty("stream")]
         public bool Stream { get; set; } = false;
 
+        // "json" oppure lo schema JSON della risposta (output strutturato di Ollama)
         [JsonPropertyName("format")]
         [JsonProperty("format")]
-        public string Format { get; set; } = "json";
+        public object Format { get; set; } = "json";
     }
 
     public class OllamaChatMessage
@@ -323,7 +317,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
 
         //string OLD_BuildSystemPrompt(List<string>? currIntentNames);
         //string OLD_BuildPlanSystemPrompt();
-        string BuildSystemPromptXS(List<string> compatibleIntents);
+        string BuildTurnSystemPrompt(ChatSession session, ICollection<string> detailedIntents);
+        object BuildResponseSchema();
         void Fuilter4UserRoles(List<string> userRoles);
     }
 
@@ -483,18 +478,68 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
         //    return sb.ToString();
         //}
 
-        public string BuildSystemPromptXS(List<string> compatibleIntents)
+        // System prompt di ogni turno: regole, contesto (data e ora), catalogo degli intent e stato
+        // della conversazione. Il LLM restituisce ogni volta il piano completo aggiornato.
+        // Catalogo a due livelli per contenere i token: tutti gli intent in forma compatta (nome,
+        // descrizione, esempi: il riconoscimento non dipende dalle parole chiave), slot e parole chiave
+        // solo per detailedIntents (piano in corso, ultime azioni, parole chiave presenti nel messaggio).
+        public string BuildTurnSystemPrompt(ChatSession session, ICollection<string> detailedIntents)
         {
             var sb = new StringBuilder();
 
-            sb.AppendLine("Rispondi SOLO con un oggetto JSON valido");
+            sb.AppendLine("Sei l'assistente di un'applicazione gestionale: trasformi il messaggio dell'utente in un piano di azioni (intent e slot).");
+            sb.AppendLine("Rispondi SOLO con un oggetto JSON valido.");
+            sb.AppendLine();
 
             BuildSystemPromptUtil.BuildSystemPrompt_Append_Intestazione_Comune(sb);
-            BuildSystemPromptUtil.BuildSystemPrompt_Append_Intent_List(sb, _intents, compatibleIntents);
-            BuildSystemPromptUtil.BuildSystemPrompt_Append_Intent_Definition(sb, _intents, compatibleIntents);
+            BuildSystemPromptUtil.BuildSystemPrompt_Append_Contesto(sb, DateTime.Now);
+            BuildSystemPromptUtil.BuildSystemPrompt_Append_Intents(sb, _intents, detailedIntents);
+            BuildSystemPromptUtil.BuildSystemPrompt_Append_Stato(sb, session, _intents);
+            BuildSystemPromptUtil.BuildSystemPrompt_Append_Regole_Piano(sb, _intents.Any(i => i.Slots.Any(s => s.IsPerson)));
             BuildSystemPromptUtil.RetValJsoDefinition(sb);
 
             return sb.ToString();
+        }
+
+        // Schema JSON della risposta (output strutturato): il nome dell'intent è vincolato al catalogo.
+        // Gli slot sono una lista nome/valore per restare compatibili con la modalità strict.
+        public object BuildResponseSchema()
+        {
+            var slotSchema = new Dictionary<string, object>
+            {
+                ["type"] = "object",
+                ["properties"] = new Dictionary<string, object>
+                {
+                    ["name"] = new Dictionary<string, object> { ["type"] = "string" },
+                    ["value"] = new Dictionary<string, object> { ["type"] = "string" }
+                },
+                ["required"] = new[] { "name", "value" },
+                ["additionalProperties"] = false
+            };
+
+            var actionSchema = new Dictionary<string, object>
+            {
+                ["type"] = "object",
+                ["properties"] = new Dictionary<string, object>
+                {
+                    ["intent"] = new Dictionary<string, object> { ["type"] = "string", ["enum"] = _intents.Select(i => i.Name).ToArray() },
+                    ["slots"] = new Dictionary<string, object> { ["type"] = "array", ["items"] = slotSchema },
+                    ["confidence"] = new Dictionary<string, object> { ["type"] = "number" }
+                },
+                ["required"] = new[] { "intent", "slots", "confidence" },
+                ["additionalProperties"] = false
+            };
+
+            return new Dictionary<string, object>
+            {
+                ["type"] = "object",
+                ["properties"] = new Dictionary<string, object>
+                {
+                    ["actions"] = new Dictionary<string, object> { ["type"] = "array", ["items"] = actionSchema }
+                },
+                ["required"] = new[] { "actions" },
+                ["additionalProperties"] = false
+            };
         }
 
     }
@@ -505,8 +550,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
         public static void BuildSystemPrompt_Append_Intestazione_Comune(StringBuilder sb)
         {
             sb.AppendLine("REGOLA FONDAMENTALE:");
-            sb.AppendLine("Estrai SOLO i valori esplicitamente scritti dall'utente, per i quali è possibile una interpretazione usando gli esempi specificati negli slot");
-            sb.AppendLine("Se uno slot obbligatorio non è presente nel testo, inseriscilo in \"missingRequired\" e metti null come valore.");
+            sb.AppendLine("Estrai SOLO i valori esplicitamente scritti dall'utente (nel messaggio o nella conversazione), per i quali è possibile una interpretazione usando le descrizioni degli slot.");
+            sb.AppendLine("Se il valore di uno slot non è noto, non includere lo slot: le domande per i valori mancanti le fa il sistema.");
             //sb.AppendLine("NON inventare valori. NON completare slot mancanti con valori plausibili o di esempio.");
             //sb.AppendLine("Un valore mancante in \"missingRequired\" è la risposta corretta — non un errore.");
             sb.AppendLine("");
@@ -527,8 +572,114 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
             sb.AppendLine("Esempi: 'vai alla pagina aziende' e 'go to the companies page' indicano lo stesso intent con lo stesso slot.");
             sb.AppendLine("I nomi degli intent, i nomi degli slot e le chiavi JSON restano SEMPRE quelli indicati (non tradurli).");
             sb.AppendLine("Gli eventuali testi liberi nei valori vanno scritti nella lingua dell'utente; i valori vanno estratti come scritti dall'utente.");
-            sb.AppendLine("Le date, in qualunque lingua, si normalizzano SEMPRE nel formato dd/MM/yyyy (giorno/mese/anno, anche in inglese: es. '18 May 2026' -> '18/05/2026').");
+            sb.AppendLine("Date e orari si copiano come li ha espressi l'utente (es. 'lunedì scorso', 'il 15 maggio', 'alle 9 e mezza'): la conversione la fa il sistema.");
             sb.AppendLine("");
+        }
+
+        // Data e ora correnti: servono al LLM per capire riferimenti come "stamattina" o "venerdì"
+        // (la conversione delle date resta al sistema, vedi SlotNormalizers).
+        public static void BuildSystemPrompt_Append_Contesto(StringBuilder sb, DateTime now)
+        {
+            var giorno = CultureInfo.GetCultureInfo("it-IT").DateTimeFormat.GetDayName(now.DayOfWeek);
+            sb.AppendLine("CONTESTO:");
+            sb.AppendLine($"Oggi è {giorno} {now:dd/MM/yyyy}, sono le {now:HH:mm}.");
+            sb.AppendLine("");
+        }
+
+        // Catalogo degli intent: per tutti nome, descrizione ed esempi; per quelli in detailedIntents
+        // anche parole chiave (solo indicative) e slot.
+        public static void BuildSystemPrompt_Append_Intents(StringBuilder sb, IReadOnlyList<IntentDefinition> intents,
+            ICollection<string> detailedIntents)
+        {
+            sb.AppendLine("INTENT DISPONIBILI:");
+            sb.AppendLine("Il valore del campo \"intent\" deve essere SEMPRE uno dei nomi seguenti: non tradurlo, non usare la descrizione, non inventare nomi.");
+            sb.AppendLine("L'utente può esprimere la stessa richiesta con parole diverse da quelle degli esempi.");
+            sb.AppendLine("Per gli intent elencati senza slot, se la richiesta corrisponde restituisci comunque l'intent (con slot vuoti): i dettagli arrivano dopo.");
+            sb.AppendLine();
+
+            for (int i = 0; i < intents.Count; i++)
+            {
+                var intent = intents[i];
+                bool detailed = detailedIntents.Contains(intent.Name);
+                sb.AppendLine($"{i + 1}. {intent.Name} — {intent.Description}");
+
+                var examples = detailed ? intent.Examples : intent.Examples.Take(2).ToList();
+                if (examples.Count > 0)
+                    sb.AppendLine($"   Esempi: {string.Join(" | ", examples.Select(e => $"\"{e}\""))}");
+
+                if (!detailed) continue;
+
+                if (intent.Keywords.Count > 0)
+                    sb.AppendLine($"   Parole chiave: {string.Join(", ", intent.Keywords)}");
+
+                if (intent.Slots.Count > 0)
+                {
+                    sb.AppendLine("   Slot:");
+                    foreach (var slot in intent.Slots)
+                    {
+                        var req = slot.Required ? "obbligatorio" : "opzionale";
+                        var def = !string.IsNullOrEmpty(slot.Default) ? $", default {slot.Default}" : "";
+                        var person = slot.IsPerson ? $", persona: \"{ChatSelf.Token}\" se l'utente parla di sé" : "";
+                        var desc = !string.IsNullOrEmpty(slot.PromptDescription) ? $": {slot.PromptDescription.Trim()}" : "";
+                        sb.AppendLine($"   - {slot.Name} ({slot.Type}, {req}{def}{person}){desc}");
+                    }
+                }
+            }
+
+            sb.AppendLine();
+        }
+
+        // Stato della conversazione: piano in corso con i valori già raccolti e ultime azioni eseguite.
+        public static void BuildSystemPrompt_Append_Stato(StringBuilder sb, ChatSession session, IReadOnlyList<IntentDefinition> intents)
+        {
+            sb.AppendLine("STATO DELLA CONVERSAZIONE:");
+
+            if (session.ActionQueue.Count == 0)
+                sb.AppendLine("Nessun piano in corso.");
+            else
+            {
+                sb.AppendLine("Piano in corso (azioni non ancora eseguite):");
+                for (int i = 0; i < session.ActionQueue.Count; i++)
+                {
+                    var action = session.ActionQueue[i];
+                    var missing = intents.FirstOrDefault(d => d.Name == action.Intent)?.Slots
+                        .Where(s => s.Required && !action.Slots.ContainsKey(s.Name))
+                        .Select(s => s.Name).ToList() ?? new();
+                    var line = $"{i + 1}. {DescribeAction(action)}";
+                    if (missing.Count > 0) line += $" — mancano: {string.Join(", ", missing)}";
+                    sb.AppendLine(line);
+                }
+            }
+
+            if (session.LastExecuted.Count > 0)
+            {
+                sb.AppendLine("Ultime azioni eseguite (per richieste come \"anche per Bianchi\" o \"stessa cosa domani\"):");
+                for (int i = 0; i < session.LastExecuted.Count; i++)
+                    sb.AppendLine($"{i + 1}. {DescribeAction(session.LastExecuted[i])}");
+            }
+
+            sb.AppendLine();
+        }
+
+        private static string DescribeAction(ActionEntry action) =>
+            action.Slots.Count == 0
+                ? action.Intent
+                : $"{action.Intent}: {string.Join("; ", action.Slots.Select(kv => $"{kv.Key} = \"{kv.Value}\""))}";
+
+        public static void BuildSystemPrompt_Append_Regole_Piano(StringBuilder sb, bool hasPersonSlots)
+        {
+            sb.AppendLine("COME COSTRUIRE IL PIANO:");
+            sb.AppendLine("- Restituisci SEMPRE il piano COMPLETO aggiornato: le azioni ancora da eseguire, ciascuna con TUTTI i valori noti.");
+            sb.AppendLine("- Se il messaggio risponde a una domanda, completa o corregge il piano in corso: mantieni le stesse azioni con i valori già noti e aggiungi o sostituisci quelli indicati. Il messaggio può contenere più valori insieme: estraili tutti.");
+            sb.AppendLine("- Se il messaggio chiede una cosa diversa dal piano in corso, sostituisci il piano con le nuove azioni.");
+            sb.AppendLine("- Se il messaggio si riferisce alle ultime azioni eseguite (\"anche per Bianchi\", \"stessa cosa domani\"), crea nuove azioni dello stesso intent copiando i loro valori e cambiando solo ciò che l'utente indica.");
+            sb.AppendLine("- Una richiesta può contenere più azioni (\"timbra Rossi alle 9 e Bianchi alle 10\" = due azioni).");
+            sb.AppendLine("- Includi solo gli slot di cui conosci il valore: non inventare valori e non usare i valori degli esempi.");
+            if (hasPersonSlots)
+                sb.AppendLine($"- Se l'utente parla di sé (io, me, mi, mio, mia, \"timbrami\", I, me, my), negli slot persona usa il valore \"{ChatSelf.Token}\".");
+            sb.AppendLine("- Se il messaggio non corrisponde a nessun intent, restituisci \"actions\": [].");
+            sb.AppendLine("- \"confidence\" indica quanto sei sicuro dell'intent (da 0 a 1).");
+            sb.AppendLine();
         }
 
         public static void OLD_BuildSystemPrompt_Append_Intent_Definition(StringBuilder sb, IReadOnlyList<IntentDefinition> intents, string? intentName)
@@ -554,116 +705,28 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
         }
 
 
-        public static void BuildSystemPrompt_Append_Intent_List(StringBuilder sb, IReadOnlyList<IntentDefinition> intents, List<string> compatibleIntents)
-        {
-            sb.AppendLine();
-            sb.AppendLine("IMPORTANTE:");
-            sb.AppendLine("Il valore del campo \"intent\" deve essere SEMPRE uno dei seguenti:");
-
-            // Controllo sul 'null' rimosso, verifichiamo solo se la lista è vuota
-            IReadOnlyList<IntentDefinition> intentsToInclude = compatibleIntents.Count == 0
-                ? intents
-                : intents.Where(i => compatibleIntents.Contains(i.Name, StringComparer.OrdinalIgnoreCase)).ToList();
-
-            foreach (var intent in intentsToInclude)
-            {
-                sb.AppendLine($"- {intent.Name}");
-            }
-
-            sb.AppendLine("Non usare mai la descrizione come nome dell’intent.");
-            sb.AppendLine("Non inventare nuovi nomi.");
-            sb.AppendLine("Non tradurre i nomi degli intent.");
-        }
-
-
+        // Descrizione degli slot data (PromptDescription): il LLM copia l'espressione dell'utente,
+        // la conversione in dd/MM/yyyy la fa SlotNormalizers.Date.
         public static void BuildSystemPrompt_Append_Data_Oggi(StringBuilder sb)
         {
-            sb.AppendLine();
-            sb.AppendLine("   Data nel formato dd/MM/yyyy.");
-            sb.AppendLine("   Accetta anche date scritte come '18/05/2026', '18-05-2026', '18 maggio 2026'.");
-            sb.AppendLine("   o anche date scritte come 'primo maggio 2026', 'due maggio 2026', '3 maggio 2026'.");
-            sb.AppendLine("   In inglese: '18 May 2026', 'May 18th 2026', 'the first of May 2026' (il giorno viene prima del mese anche in '18/05/2026').");
-            sb.AppendLine("   Normalizza sempre in formato dd/MM/yyyy");
-
-
-            //sb.AppendLine(@"Data nel formato dd/MM/yyyy.
-            //                Accetta anche date scritte come '18/05/2026', '18-05-2026', '18 maggio 2026'.
-            //                o anche date scritte come 'primo maggio 2026', 'due maggio 2026', '3 maggio 2026'.
-            //                Normalizza sempre in formato dd/MM/yyyy");
-
-            sb.AppendLine();
-            sb.AppendLine($"   Data di oggi: {DateTime.Today:dd/MM/yyyy}");
-            sb.AppendLine();
-            sb.AppendLine("   IMPORTANTE:");
-            sb.AppendLine("   Quando l’utente usa date relative come 'oggi', 'domani', 'ieri' usa la data di oggi come riferimento a fai le dovute considerazioni trasformando il risultato in formato dd/MM/yyyy");
-            sb.AppendLine("   Vale anche in inglese: 'today', 'tomorrow', 'yesterday'.");
-            sb.AppendLine("   Il nome del mese puo essere fornito in forma letterale 'gennaio', 'febbraio', 'marzo',");
-            sb.AppendLine("   oppure in inglese 'January', 'February', 'March',");
-            sb.AppendLine("   devi sempre convertirle in una data assoluta nel formato dd/MM/yyyy.");
-            //sb.AppendLine($"Usa come riferimento la data indicata sopra. Oggi è {DateTime.Today:dd/MM/yyyy}");
+            sb.Append("data: copia l'espressione usata dall'utente così come l'ha scritta ");
+            sb.Append("(es. 'oggi', 'ieri', 'lunedì scorso', 'il 15', '15 maggio', '15/05/2026', 'yesterday', 'May 15'). ");
+            sb.Append("Non calcolare la data: la converte il sistema.");
         }
 
+        // Descrizione degli slot orario (PromptDescription): il LLM copia l'espressione dell'utente,
+        // la conversione in HH:mm la fa SlotNormalizers.Time.
         public static void BuildSystemPrompt_Append_Orario(StringBuilder sb)
         {
-            sb.AppendLine();
-            sb.AppendLine(@"Orario nel formato HH:mm.
-                            Se l'utente dice 'alle 9' restituisci '09:00'.
-                            Accetta anche varianti come '9', '9.00', '9:0' e normalizzale.
-                            Se l'utente dice 'dieci' restituisci '10:00'.
-                            Se l'utente dice 'dieci e mezza' restituisci '10:30'.
-                            In inglese: 'at 9' o '9 am' restituisci '09:00', '2 pm' restituisci '14:00', 'half past ten' restituisci '10:30'.
-                            Non dedurre la risposta dagli esempi, al massimo puoi trasformare un
-                            un numero espresso in forma letterale trasformandolo un cifra numerica come nell' esempio fornito");
+            sb.Append("orario: copia l'espressione usata dall'utente così come l'ha scritta ");
+            sb.Append("(es. 'alle 9', '9 e mezza', '14:30', 'adesso', '2 pm', 'half past ten'). ");
+            sb.Append("Non convertirla: la converte il sistema.");
         }
 
         public static void RetValJsoDefinition(StringBuilder sb)
         {
-            sb.AppendLine("Rispondi SEMPRE e SOLO con questo JSON (array di azioni):");
-            sb.AppendLine("{");
-            sb.AppendLine("  \"actions\": [");
-            sb.AppendLine("    {");
-            sb.AppendLine("      \"intent\": \"NomeIntent\",");
-            sb.AppendLine("      \"slots\": { \"nomeSlot\": \"valore o null se non presente\" },");
-            sb.AppendLine("      \"confidence\": 0.95");
-            sb.AppendLine("    }");
-            sb.AppendLine("  ]");
-            sb.AppendLine("}");
-        }
-
-        public static void BuildSystemPrompt_Append_Intent_Definition(StringBuilder sb, IReadOnlyList<IntentDefinition> intents, List<string> compatibleIntents)
-        {
-            sb.AppendLine();
-            sb.AppendLine("Definizione delle proprietà e slot degli intent:");
-
-            var _intents = intents.Where(i => compatibleIntents.Contains(i.Name, StringComparer.OrdinalIgnoreCase)).ToList();
-
-            for (int i = 0; i < _intents.Count; i++)
-            {
-                var intent = _intents[i];
-                sb.AppendLine($"{i + 1}. {intent.Name}");
-                sb.AppendLine($"   Descrizione: {intent.Description}");
-
-                if (intent.Keywords.Count > 0)
-                {
-                    sb.Append("   Parole chiave: ");
-                    sb.AppendLine(string.Join(", ", intent.Keywords));
-                }
-
-                if (intent.Slots.Count > 0)
-                {
-                    sb.AppendLine("   Slot:");
-                    foreach (var slot in intent.Slots)
-                    {
-                        var req = slot.Required ? "obbligatorio" : "opzionale";
-                        var def = !string.IsNullOrEmpty(slot.Default) ? $", default {slot.Default}" : "";
-                        var desc = !string.IsNullOrEmpty(slot.PromptDescription) ? $": {slot.PromptDescription}" : "";
-                        sb.AppendLine($"   - {slot.Name} ({slot.Type}, {req}{def}){desc}");
-                    }
-                }
-
-                sb.AppendLine();
-            }
-
+            sb.AppendLine("FORMATO DELLA RISPOSTA (sempre e solo questo JSON):");
+            sb.AppendLine("{\"actions\":[{\"intent\":\"NomeIntent\",\"slots\":[{\"name\":\"nomeSlot\",\"value\":\"valore\"}],\"confidence\":0.95}]}");
         }
 
     }
@@ -698,6 +761,15 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
         // Se null, l'handler usa il comportamento di default (true).
         // Usare per filtrare slot temporali/numerici prima di interrogare il modello.
         public Func<string, bool>? HasRelevantContent { get; set; }
+
+        // Converte l'espressione dell'utente nel valore canonico (null se non riesce: resta il testo
+        // e lo valuta il Validator). Se non è impostato si usa quello del tipo:
+        // SlotNormalizers.ForType ("dd/MM/yyyy" -> data, "HH:mm" -> orario).
+        public Func<string, string?>? Normalizer { get; set; }
+
+        // Slot che indica una persona: se l'utente parla di sé ("timbrami", "le mie ore") il LLM
+        // restituisce ChatSelf.Token e il Validator dell'handler lo risolve nell'utente corrente.
+        public bool IsPerson { get; set; }
     }
 
     public class IntentDefinition
@@ -728,6 +800,19 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
 
         // Strategia di esecuzione in un piano multi-azione.
         public ExecutionStrategy ExecutionStrategy { get; set; } = ExecutionStrategy.StopOnError;
+
+        // Frasi di esempio (italiano e inglese) che l'utente potrebbe dire: aiutano il LLM
+        // a riconoscere l'intent anche con parole diverse dalle Keywords.
+        public List<string> Examples { get; set; } = new();
+
+        // Riepilogo e conferma prima dell'esecuzione. Se non impostato: richiesti, tranne per
+        // gli intent di navigazione (non modificano dati e si eseguono subito).
+        public bool? RequiresConfirmation { get; set; }
+        public bool NeedsConfirmation => RequiresConfirmation ?? !IsNavigation;
+
+        // Frase dell'azione per il testo vocale, con segnaposto {nomeSlot}
+        // (es. "timbratura di {employeeName} alle {time} del {date}"). Vuoto = nome e valori.
+        public string SummaryTemplate { get; set; } = string.Empty;
     }
 
 
