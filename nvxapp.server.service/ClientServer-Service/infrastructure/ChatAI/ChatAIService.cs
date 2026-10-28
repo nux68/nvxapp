@@ -192,12 +192,16 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             // 2b. Comando di help
             if (IsHelpCommand(userMessage))
             {
+                // elenco completo dei comandi del ruolo (prima quelli della pagina), come l'intent Help:
+                // i chip sono solo alcune scorciatoie (MaxIntentSuggestions)
+                var help = await ExecuteCommandAsync(new ActionEntry { Intent = "Help" });
                 _sessionStore.Delete(session.SessionId);
                 var helpSession = CreateSession();
                 return new ChatAIOutModel
                 {
                     SessionId = helpSession.SessionId,
-                    Responce = string.Empty,
+                    Responce = help.Success ? help.Message : string.Empty,
+                    SpeechText = help.Success ? help.Message : string.Empty,
                     ResponseType = "result",
                     Suggestions = BuildIntentSuggestions()
                 };
