@@ -45,6 +45,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                 Description = AttendanceTrackingMessages.Get("ChatRegisterJustificationDescription"),
                 // frasi di esempio per il riconoscimento dell'intent (italiano e inglese)
                 Examples = new() { "metti 4 ore di ferie a Rossi per domani", "Bianchi ieri ha fatto 2 ore di permesso", "Verdi è stato in malattia lunedì, 8 ore", "register 8 hours of holiday for Rossi" },
+                Pages = new() { "/poweradmintimesheet" },
                 SummaryTemplate = AttendanceTrackingMessages.Get("ChatRegisterJustificationSummary"),
                 Keywords    = new()
                 {

@@ -46,6 +46,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                 Description = AttendanceTrackingMessages.Get("ChatRegisterClockingDescription"),
                 // frasi di esempio per il riconoscimento dell'intent (italiano e inglese)
                 Examples = new() { "Rossi è entrato alle 8", "segna l'uscita di Bianchi alle 17:30", "timbrami adesso", "registra l'entrata di Verdi ieri alle 9", "clock in Rossi at 9" },
+                Pages = new() { "/poweradmintimesheet" },
                 SummaryTemplate = AttendanceTrackingMessages.Get("ChatRegisterClockingSummary"),
                 Keywords = new() { "timbratura", "timbra","timbrare" ,
                                        "entrata","entra", "entrato", 

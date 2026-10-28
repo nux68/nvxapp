@@ -29,6 +29,7 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
                 Description  = AttendanceTrackingMessages.Get("ChatTimeSheetPowerAdminDescription"),
                 // frasi di esempio per il riconoscimento dell'intent (italiano e inglese)
                 Examples = new() { "apri il calendario HR di Rossi di ottobre", "fammi vedere il mio calendario presenze", "show the HR calendar for Bianchi" },
+                Pages = new() { "/poweradmintimesheet" },
                 IsNavigation = true,
                 Keywords     = new()
                 {

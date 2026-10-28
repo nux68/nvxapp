@@ -29,6 +29,7 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
             Description  = AttendanceTrackingMessages.Get("ChatOpenCommessaDescription"),
             // frasi di esempio per il riconoscimento dell'intent (italiano e inglese)
             Examples = new() { "apri la commessa 2026-01", "modifica la commessa cantiere Milano" },
+            Pages = new() { "/commessalist", "/commessaedit" },
             IsNavigation = true,
             Keywords     = new() { "commessa", "apri commessa", "modifica commessa", "apri la commessa",
                                    "project", "job order", "open project", "edit project", "open job order" },

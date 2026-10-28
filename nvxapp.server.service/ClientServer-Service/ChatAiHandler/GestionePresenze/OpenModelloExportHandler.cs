@@ -29,6 +29,7 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
             Description  = AttendanceTrackingMessages.Get("ChatOpenModelloExportDescription"),
             // frasi di esempio per il riconoscimento dell'intent (italiano e inglese)
             Examples = new() { "apri il modello di export Zucchetti", "modifica il modello export paghe" },
+            Pages = new() { "/exportcaulist", "/exportcauedit" },
             IsNavigation = true,
             Keywords     = new() { "modello export", "apri modello export", "modifica modello export", "export causali",
                                    "export template", "open export template", "edit export template", "export layout" },

@@ -29,6 +29,7 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
             Description  = AttendanceTrackingMessages.Get("ChatOpenAttivitaDescription"),
             // frasi di esempio per il riconoscimento dell'intent (italiano e inglese)
             Examples = new() { "apri l'attività sviluppo", "modifica l'attività manutenzione" },
+            Pages = new() { "/activitylist", "/activityedit" },
             IsNavigation = true,
             Keywords     = new() { "attività", "attivita", "apri attività", "modifica attività", "apri l'attività",
                                    "activity", "open activity", "edit activity", "open the activity" },

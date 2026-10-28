@@ -29,6 +29,7 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
             Description  = AttendanceTrackingMessages.Get("ChatOpenCompetenzaDescription"),
             // frasi di esempio per il riconoscimento dell'intent (italiano e inglese)
             Examples = new() { "apri la competenza saldatura", "modifica la competenza inglese" },
+            Pages = new() { "/competencelist", "/competenceedit" },
             IsNavigation = true,
             Keywords     = new() { "competenza", "apri competenza", "modifica competenza", "apri la competenza",
                                    "skill", "competence", "open skill", "edit skill" },

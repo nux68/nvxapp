@@ -43,6 +43,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                 Description = AttendanceTrackingMessages.Get("ChatRegisterCausaleDescription"),
                 // frasi di esempio per il riconoscimento dell'intent (italiano e inglese)
                 Examples = new() { "aggiungi 2 ore di straordinario a Rossi per ieri", "Bianchi ha fatto un'ora di reperibilità oggi", "register 3 hours of overtime for Verdi" },
+                Pages = new() { "/poweradmintimesheet" },
                 SummaryTemplate = AttendanceTrackingMessages.Get("ChatRegisterCausaleSummary"),
                 Keywords    = new()
                 {

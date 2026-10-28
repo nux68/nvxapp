@@ -40,6 +40,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                 Description = AttendanceTrackingMessages.Get("ChatCalcolaGiornoDescription"),
                 // frasi di esempio per il riconoscimento dell'intent (italiano e inglese)
                 Examples = new() { "ricalcola le presenze di Rossi di ottobre", "calcola il giorno di ieri per Bianchi", "ricalcola Verdi dal 1 al 15", "recalculate Rossi's attendance for October" },
+                Pages = new() { "/poweradmintimesheet" },
                 SummaryTemplate = AttendanceTrackingMessages.Get("ChatCalcolaGiornoSummary"),
                 Keywords    = new()
                 {

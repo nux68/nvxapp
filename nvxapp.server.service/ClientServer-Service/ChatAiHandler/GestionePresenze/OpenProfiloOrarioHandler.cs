@@ -29,6 +29,7 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
             Description  = AttendanceTrackingMessages.Get("ChatOpenProfiloOrarioDescription"),
             // frasi di esempio per il riconoscimento dell'intent (italiano e inglese)
             Examples = new() { "apri il profilo orario full time", "modifica il profilo orario part time" },
+            Pages = new() { "/profiliorarilist", "/profiliorariedit" },
             IsNavigation = true,
             Keywords     = new() { "apri profilo orario", "modifica profilo orario", "profilo orario", "apri il profilo orario", "modifica il profilo orario",
                                    "open schedule profile", "edit schedule profile", "schedule profile" },

@@ -998,4 +998,326 @@
     <value>ricalcolo delle presenze di {employeeName}</value>
     <comment>frase per la voce: {nomeSlot} = valore dello slot</comment>
   </data>
+  <data name="ChatListMore" xml:space="preserve">
+    <value>e altri {0}</value>
+    <comment>{0} = voci non mostrate</comment>
+  </data>
+  <data name="ChatNobody" xml:space="preserve">
+    <value>nessuno</value>
+  </data>
+  <data name="ChatOnlyOwnData" xml:space="preserve">
+    <value>Puoi consultare solo i tuoi dati.</value>
+  </data>
+  <data name="ChatDataReadError" xml:space="preserve">
+    <value>Impossibile leggere i dati: {0}</value>
+    <comment>{0} = messaggi del servizio</comment>
+  </data>
+  <data name="ChatOnDate" xml:space="preserve">
+    <value>il {0}</value>
+    <comment>{0} = data</comment>
+  </data>
+  <data name="ChatPeriodFromQuestion" xml:space="preserve">
+    <value>Da quale giorno?</value>
+  </data>
+  <data name="ChatPeriodToQuestion" xml:space="preserve">
+    <value>Fino a quale giorno?</value>
+  </data>
+  <data name="ChatPeriodInvalid" xml:space="preserve">
+    <value>La data finale non può precedere quella iniziale. Fino a quale giorno?</value>
+  </data>
+  <data name="ChatWhoIsPresentDisplayName" xml:space="preserve">
+    <value>Chi è presente</value>
+  </data>
+  <data name="ChatWhoIsPresentDescription" xml:space="preserve">
+    <value>dice chi è in servizio, chi è uscito e chi non ha timbrature in un giorno (default: oggi).</value>
+  </data>
+  <data name="ChatPresentTitle" xml:space="preserve">
+    <value>Presenze del {0}:</value>
+    <comment>{0} = data</comment>
+  </data>
+  <data name="ChatPresentLine" xml:space="preserve">
+    <value>In servizio ({0}): {1}</value>
+    <comment>{0} = numero, {1} = elenco</comment>
+  </data>
+  <data name="ChatLeftLine" xml:space="preserve">
+    <value>Usciti ({0}): {1}</value>
+    <comment>{0} = numero, {1} = elenco</comment>
+  </data>
+  <data name="ChatAbsentLine" xml:space="preserve">
+    <value>Senza timbrature ({0}): {1}</value>
+    <comment>{0} = numero, {1} = elenco</comment>
+  </data>
+  <data name="ChatPresentSince" xml:space="preserve">
+    <value>{0} dalle {1}</value>
+    <comment>{0} = dipendente, {1} = orario</comment>
+  </data>
+  <data name="ChatHoursWorkedDisplayName" xml:space="preserve">
+    <value>Ore lavorate</value>
+  </data>
+  <data name="ChatHoursWorkedDescription" xml:space="preserve">
+    <value>dice quante ore ha lavorato un dipendente in un mese o in un giorno (default: io, mese corrente).</value>
+  </data>
+  <data name="ChatHoursWorkedResult" xml:space="preserve">
+    <value>{0}, {1}: {2} ore lavorate su {3} previste.</value>
+    <comment>{0} = dipendente, {1} = periodo, {2} = lavorate, {3} = previste</comment>
+  </data>
+  <data name="ChatHoursWorkedExtra" xml:space="preserve">
+    <value>Straordinari {0}, assenze {1}.</value>
+  </data>
+  <data name="ChatHoursWorkedNoData" xml:space="preserve">
+    <value>Nessun dato calcolato per {0} ({1}).</value>
+    <comment>{0} = dipendente, {1} = periodo</comment>
+  </data>
+  <data name="ChatLeaveBalanceDisplayName" xml:space="preserve">
+    <value>Saldi ferie e permessi</value>
+  </data>
+  <data name="ChatLeaveBalanceDescription" xml:space="preserve">
+    <value>dice i saldi di ferie, permessi e altri giustificativi di un dipendente (default: io).</value>
+  </data>
+  <data name="ChatLeaveBalanceTitle" xml:space="preserve">
+    <value>Saldi di {0} a fine {1}:</value>
+    <comment>{0} = dipendente, {1} = mese</comment>
+  </data>
+  <data name="ChatLeaveBalanceLine" xml:space="preserve">
+    <value>{0}: residuo {1} (maturato {2}, goduto {3})</value>
+  </data>
+  <data name="ChatLeaveBalanceNone" xml:space="preserve">
+    <value>Nessun saldo trovato per {0}.</value>
+  </data>
+  <data name="ChatClockingsOfDayDisplayName" xml:space="preserve">
+    <value>Timbrature del giorno</value>
+  </data>
+  <data name="ChatClockingsOfDayDescription" xml:space="preserve">
+    <value>elenca le timbrature di un dipendente in un giorno (default: io, oggi).</value>
+  </data>
+  <data name="ChatClockingsTitle" xml:space="preserve">
+    <value>Timbrature di {0} del {1}: {2}</value>
+    <comment>{0} = dipendente, {1} = data, {2} = orari</comment>
+  </data>
+  <data name="ChatClockingsNone" xml:space="preserve">
+    <value>{0} non ha timbrature il {1}.</value>
+  </data>
+  <data name="ChatClockingPending" xml:space="preserve">
+    <value>(in attesa)</value>
+  </data>
+  <data name="ChatAnomaliesDisplayName" xml:space="preserve">
+    <value>Anomalie timbrature</value>
+  </data>
+  <data name="ChatAnomaliesDescription" xml:space="preserve">
+    <value>trova i dipendenti con un numero dispari di timbrature in un giorno, cioè manca un'entrata o un'uscita (default: ieri).</value>
+  </data>
+  <data name="ChatAnomaliesTitle" xml:space="preserve">
+    <value>Timbrature dispari il {0} ({1}), manca un'entrata o un'uscita:</value>
+    <comment>{0} = data, {1} = numero</comment>
+  </data>
+  <data name="ChatAnomaliesTodayTitle" xml:space="preserve">
+    <value>Timbrature dispari oggi, {0} ({1}): in servizio o con una timbratura mancante:</value>
+    <comment>{0} = data, {1} = numero</comment>
+  </data>
+  <data name="ChatAnomaliesNone" xml:space="preserve">
+    <value>Nessuna anomalia il {0}: tutti hanno un numero pari di timbrature.</value>
+  </data>
+  <data name="ChatPendingRequestsDisplayName" xml:space="preserve">
+    <value>Richieste da approvare</value>
+  </data>
+  <data name="ChatPendingRequestsDescription" xml:space="preserve">
+    <value>elenca le richieste dei dipendenti in attesa di approvazione (facoltativo: di un dipendente).</value>
+  </data>
+  <data name="ChatPendingTitle" xml:space="preserve">
+    <value>Richieste in attesa ({0}):</value>
+    <comment>{0} = numero</comment>
+  </data>
+  <data name="ChatPendingNone" xml:space="preserve">
+    <value>Nessuna richiesta in attesa di approvazione.</value>
+  </data>
+  <data name="ChatRequestClocking" xml:space="preserve">
+    <value>{0}: timbratura del {1} alle {2}</value>
+    <comment>{0} = dipendente, {1} = data, {2} = orario</comment>
+  </data>
+  <data name="ChatRequestJustification" xml:space="preserve">
+    <value>{0}: {1} dal {2} al {3}, {4}</value>
+    <comment>{0} = dipendente, {1} = giustificativo, {2}/{3} = periodo, {4} = ore</comment>
+  </data>
+  <data name="ChatRequestHours" xml:space="preserve">
+    <value>{0} ore</value>
+  </data>
+  <data name="ChatRequestAllDay" xml:space="preserve">
+    <value>giornata intera</value>
+  </data>
+  <data name="ChatRequestOther" xml:space="preserve">
+    <value>{0}: {1} del {2}</value>
+    <comment>{0} = dipendente, {1} = tipo, {2} = data</comment>
+  </data>
+  <data name="ChatApproveRequestsDisplayName" xml:space="preserve">
+    <value>Approva richieste</value>
+  </data>
+  <data name="ChatApproveRequestsDescription" xml:space="preserve">
+    <value>approva o rifiuta le richieste in attesa di un dipendente (facoltativo: solo quelle di un giorno).</value>
+  </data>
+  <data name="ChatApproveRequestsSummary" xml:space="preserve">
+    <value>richieste in attesa di {employeeName}: {decision}</value>
+    <comment>frase per la voce: {nomeSlot} = valore dello slot</comment>
+  </data>
+  <data name="ChatApproveDecisionQuestion" xml:space="preserve">
+    <value>Approvare o rifiutare?</value>
+  </data>
+  <data name="ChatApproveDecisionLabel" xml:space="preserve">
+    <value>Decisione</value>
+  </data>
+  <data name="ChatApproveNone" xml:space="preserve">
+    <value>Nessuna richiesta in attesa per {0}{1}.</value>
+    <comment>{0} = dipendente, {1} = " il &lt;data&gt;" o vuoto</comment>
+  </data>
+  <data name="ChatApproveDone" xml:space="preserve">
+    <value>{0} richieste di {1} approvate.</value>
+  </data>
+  <data name="ChatRejectDone" xml:space="preserve">
+    <value>{0} richieste di {1} rifiutate.</value>
+  </data>
+  <data name="ChatApproveError" xml:space="preserve">
+    <value>Errore durante l'aggiornamento delle richieste: {0}</value>
+  </data>
+  <data name="ChatDeleteClockingDisplayName" xml:space="preserve">
+    <value>Elimina timbratura</value>
+  </data>
+  <data name="ChatDeleteClockingDescription" xml:space="preserve">
+    <value>elimina una timbratura di un dipendente, indicata da giorno e orario.</value>
+  </data>
+  <data name="ChatDeleteClockingSummary" xml:space="preserve">
+    <value>eliminazione della timbratura di {employeeName} delle {time} del {date}</value>
+    <comment>frase per la voce: {nomeSlot} = valore dello slot</comment>
+  </data>
+  <data name="ChatDeleteClockingDone" xml:space="preserve">
+    <value>Timbratura di {0} delle {1} del {2} eliminata.</value>
+  </data>
+  <data name="ChatDeleteClockingError" xml:space="preserve">
+    <value>Errore durante l'eliminazione della timbratura: {0}</value>
+  </data>
+  <data name="ChatClockingWhichQuestion" xml:space="preserve">
+    <value>Quale timbratura? Indica l'orario (es. 08:00).</value>
+  </data>
+  <data name="ChatClockingNotFound" xml:space="preserve">
+    <value>{0} non ha una timbratura alle {1} del {2}. Timbrature del giorno: {3}.</value>
+  </data>
+  <data name="ChatUpdateClockingDisplayName" xml:space="preserve">
+    <value>Correggi timbratura</value>
+  </data>
+  <data name="ChatUpdateClockingDescription" xml:space="preserve">
+    <value>sposta una timbratura di un dipendente a un altro orario dello stesso giorno.</value>
+  </data>
+  <data name="ChatUpdateClockingSummary" xml:space="preserve">
+    <value>timbratura di {employeeName} del {date} dalle {time} alle {newTime}</value>
+    <comment>frase per la voce: {nomeSlot} = valore dello slot</comment>
+  </data>
+  <data name="ChatUpdateClockingDone" xml:space="preserve">
+    <value>Timbratura di {0} del {1} spostata dalle {2} alle {3}.</value>
+  </data>
+  <data name="ChatUpdateClockingError" xml:space="preserve">
+    <value>Errore durante la correzione della timbratura: {0}</value>
+  </data>
+  <data name="ChatClockingCurrentTimeLabel" xml:space="preserve">
+    <value>Orario attuale</value>
+  </data>
+  <data name="ChatClockingNewTimeLabel" xml:space="preserve">
+    <value>Nuovo orario</value>
+  </data>
+  <data name="ChatClockingNewTimeQuestion" xml:space="preserve">
+    <value>A quale orario la sposto?</value>
+  </data>
+  <data name="ChatJustificationPeriodDisplayName" xml:space="preserve">
+    <value>Giustificativo su più giorni</value>
+  </data>
+  <data name="ChatJustificationPeriodDescription" xml:space="preserve">
+    <value>registra un giustificativo (es. ferie) per un dipendente su un periodo di giorni, a giornata intera o con le ore indicate.</value>
+  </data>
+  <data name="ChatJustificationPeriodSummary" xml:space="preserve">
+    <value>{justification} per {employeeName} dal {from} al {to}</value>
+    <comment>frase per la voce: {nomeSlot} = valore dello slot</comment>
+  </data>
+  <data name="ChatJustificationPeriodDone" xml:space="preserve">
+    <value>{0} per {1} dal {2} al {3} registrato.</value>
+  </data>
+  <data name="ChatClockNowDisplayName" xml:space="preserve">
+    <value>Timbra adesso</value>
+  </data>
+  <data name="ChatClockNowDescription" xml:space="preserve">
+    <value>registra la tua timbratura in questo momento.</value>
+  </data>
+  <data name="ChatClockNowSummary" xml:space="preserve">
+    <value>la tua timbratura di adesso</value>
+  </data>
+  <data name="ChatClockNowDone" xml:space="preserve">
+    <value>Timbratura registrata alle {0}.</value>
+  </data>
+  <data name="ChatClockNowError" xml:space="preserve">
+    <value>Timbratura non registrata: {0}</value>
+  </data>
+  <data name="ChatRequestLeaveDisplayName" xml:space="preserve">
+    <value>Richiesta giustificativo</value>
+  </data>
+  <data name="ChatRequestLeaveDescription" xml:space="preserve">
+    <value>invia una tua richiesta di ferie, permesso o altro giustificativo, da approvare.</value>
+  </data>
+  <data name="ChatRequestLeaveSummary" xml:space="preserve">
+    <value>richiesta di {justification} dal {from}</value>
+    <comment>frase per la voce: {nomeSlot} = valore dello slot</comment>
+  </data>
+  <data name="ChatRequestClockingDisplayName" xml:space="preserve">
+    <value>Richiesta timbratura</value>
+  </data>
+  <data name="ChatRequestClockingDescription" xml:space="preserve">
+    <value>invia una tua richiesta di timbratura (es. una timbratura dimenticata), da approvare.</value>
+  </data>
+  <data name="ChatRequestClockingSummary" xml:space="preserve">
+    <value>richiesta di timbratura alle {time} del {date}</value>
+    <comment>frase per la voce: {nomeSlot} = valore dello slot</comment>
+  </data>
+  <data name="ChatRequestSent" xml:space="preserve">
+    <value>Richiesta inviata ({0}): ora è in attesa di approvazione.</value>
+  </data>
+  <data name="ChatRequestError" xml:space="preserve">
+    <value>Richiesta non inviata: {0}</value>
+  </data>
+  <data name="ChatPrintReportDisplayName" xml:space="preserve">
+    <value>Stampa report</value>
+  </data>
+  <data name="ChatPrintReportDescription" xml:space="preserve">
+    <value>avvia la stampa in PDF di un report per un mese: piano ferie, attività (totali o per dipendente), note spese (per dipendente o per tipo).</value>
+  </data>
+  <data name="ChatPrintReportQuestion" xml:space="preserve">
+    <value>Quale report? (piano ferie, attività, attività per dipendente, note spese, note spese per tipo)</value>
+  </data>
+  <data name="ChatPrintReportLabel" xml:space="preserve">
+    <value>Report</value>
+  </data>
+  <data name="ChatPrintReportStarted" xml:space="preserve">
+    <value>Stampa avviata: {0}, {1}. Quando è pronta la trovi nella barra in alto per scaricarla.</value>
+    <comment>{0} = report, {1} = mese</comment>
+  </data>
+  <data name="ChatPrintReportError" xml:space="preserve">
+    <value>Stampa non avviata: {0}</value>
+  </data>
+  <data name="ChatReportPianoFerie" xml:space="preserve">
+    <value>piano ferie</value>
+  </data>
+  <data name="ChatReportAttivitaTotali" xml:space="preserve">
+    <value>attività totali</value>
+  </data>
+  <data name="ChatReportAttivitaPerDipendente" xml:space="preserve">
+    <value>attività per dipendente</value>
+  </data>
+  <data name="ChatReportNotaSpesePerTipo" xml:space="preserve">
+    <value>note spese per tipo</value>
+  </data>
+  <data name="ChatReportNotaSpesePerDipendente" xml:space="preserve">
+    <value>note spese per dipendente</value>
+  </data>
+  <data name="ChatClockingDirectionIn" xml:space="preserve">
+    <value>entrata</value>
+    <comment>verso della timbratura nel messaggio di conferma</comment>
+  </data>
+  <data name="ChatClockingDirectionOut" xml:space="preserve">
+    <value>uscita</value>
+    <comment>verso della timbratura nel messaggio di conferma</comment>
+  </data>
 </root>

@@ -29,6 +29,7 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
             Description  = AttendanceTrackingMessages.Get("ChatOpenClienteDescription"),
             // frasi di esempio per il riconoscimento dell'intent (italiano e inglese)
             Examples = new() { "apri il cliente Acme", "fammi vedere la scheda del cliente Rossi srl" },
+            Pages = new() { "/customerlist", "/customeredit" },
             IsNavigation = true,
             Keywords     = new() { "cliente", "apri cliente", "modifica cliente", "apri il cliente",
                                    "customer", "client", "open customer", "edit customer", "open client" },
