@@ -1,0 +1,14 @@
+// Frasi di prova dei comandi di Infrastructure (formato: vedi README.md)
+[
+  { "frase": "portami alla lista delle aziende", "intent": "Navigate", "slots": { "page": "aziende" } },
+  { "frase": "take me to the companies page", "intent": "Navigate", "slots": { "page": "companies" } },
+  { "frase": "fai il logout", "intent": "Navigate", "slots": { "page": "logout" } },
+  { "frase": "metti il tema scuro", "intent": "ChangeTheme", "slots": { "mode": "dark" } },
+  { "frase": "passa alla modalità chiara", "intent": "ChangeTheme", "slots": { "mode": "light" } },
+  { "frase": "passa all'inglese", "intent": "ChangeLanguage", "slots": { "language": "en" } },
+  { "frase": "switch to Italian", "intent": "ChangeLanguage", "slots": { "language": "it" } },
+  { "frase": "che cosa posso chiederti?", "intent": "Help" },
+  { "frase": "cosa posso fare in questa pagina?", "intent": "Help", "pagina": "/userlist" },
+  { "frase": "che tempo fa domani?", "intent": "nessuno" },
+  { "frase": "raccontami una barzelletta", "intent": "nessuno" }
+]
