@@ -475,7 +475,11 @@
         "colDettaglio": "Dettaglio",
         "colStato": "Stato",
         "confermaApprovazione": "Confermi l' approvazione della richiesta?",
-        "confermaRifiuto": "Confermi il rifiuto della richiesta?"
+        "confermaRifiuto": "Confermi il rifiuto della richiesta?",
+        "filtro": "Richieste",
+        "filtroDaApprovare": "Da approvare",
+        "filtroTutte": "Tutte",
+        "filtroApprovate": "Approvate"
       },
       "notaSpeseUser": {
         "title": "Le mie note spese",

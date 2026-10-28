@@ -103,10 +103,19 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
     }
 
 
+    // filtro della lista richieste dell'amministratore, sulla fase corrente (revoca se presente, altrimenti richiesta)
+    public enum Dip_GG_Richiesta_Filtro
+    {
+        Tutte = 0,
+        DaApprovare = 1,   // ancora da decidere (immessa, approvazione in corso, parzialmente approvata)
+        Approvate = 2      // approvata o diretta
+    }
+
     public class Dip_GG_Richiesta_GetAll4Admin_InModel
     {
         public int Year { get; set; } = 0;
         public int Month { get; set; } = 0;
+        public Dip_GG_Richiesta_Filtro Filtro { get; set; } = Dip_GG_Richiesta_Filtro.Tutte;
     }
     public class Dip_GG_Richiesta_GetAll4Admin_OutModel : ModelResult
     {

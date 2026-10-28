@@ -132,9 +132,17 @@ export class RichiestaNotifierData {
   public idDip_GG_Richiesta: number[] = [];
 }
 
+// filtro della lista richieste dell'amministratore, sulla fase corrente (revoca se presente, altrimenti richiesta)
+export enum Dip_GG_Richiesta_Filtro {
+  Tutte = 0,
+  DaApprovare = 1,  // ancora da decidere
+  Approvate = 2     // approvata o diretta
+}
+
 export class Dip_GG_Richiesta_GetAll4Admin_InModel {
   public year: number;
   public month: number;
+  public filtro: Dip_GG_Richiesta_Filtro = Dip_GG_Richiesta_Filtro.Tutte;
 
   constructor() { }
 }

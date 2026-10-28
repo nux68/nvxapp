@@ -8,7 +8,7 @@ import { Par_GiustificativiInModel, Par_GiustificativiModel } from '../../../Cli
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { ParGiustificativiService } from '../../../ClientServer-Service/GestionePresenze/Par_Giustificativi/par-giustificativi.service';
 import { DipGGRichiestaService } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/dip-gg-richiesta.service';
-import { Dip_GG_Richiesta_Body_Timbratura, Dip_GG_Richiesta_GetAll4Admin_InModel, Dip_GG_Richiesta_GetAll4User_InModel, Dip_GG_Richiesta_SetState_InModel, Dip_GG_RichiestaModel, StatoRichiesta, TipoRichiesta } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/Models/dip-gg-richiesta-model';
+import { Dip_GG_Richiesta_Body_Timbratura, Dip_GG_Richiesta_Filtro, Dip_GG_Richiesta_GetAll4Admin_InModel, Dip_GG_Richiesta_GetAll4User_InModel, Dip_GG_Richiesta_SetState_InModel, Dip_GG_RichiestaModel, StatoRichiesta, TipoRichiesta } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/Models/dip-gg-richiesta-model';
 import { MonthNavigatorService } from '../../../Utility/infrastructure/month-navigator.service';
 import { TimeSheetUtilityService } from '../../../Utility/GestionePresenze/time-sheet-utility.service';
 import { StatoRichiestaLongTextPipe } from '../../../shared/pipe/GestionePresenze/stato-richiesta-long-text.pipe';
@@ -48,6 +48,13 @@ export class RequestListAdminPageComponent {
   public currYear: number
   public currMonth: number
   public StatoRichiesta = StatoRichiesta;
+  // filtro delle richieste (applicato dal server): per prime si vedono quelle da approvare
+  public filtro: Dip_GG_Richiesta_Filtro = Dip_GG_Richiesta_Filtro.DaApprovare;
+  public readonly filtri: { value: Dip_GG_Richiesta_Filtro, key: string }[] = [
+    { value: Dip_GG_Richiesta_Filtro.DaApprovare, key: 'attendance.pages.requestListAdmin.filtroDaApprovare' },
+    { value: Dip_GG_Richiesta_Filtro.Tutte, key: 'attendance.pages.requestListAdmin.filtroTutte' },
+    { value: Dip_GG_Richiesta_Filtro.Approvate, key: 'attendance.pages.requestListAdmin.filtroApprovate' },
+  ];
   // richieste cambiate da altri (notifica SignalR): la lista si ricarica
   private changedSub?: Subscription;
 
@@ -155,11 +162,15 @@ export class RequestListAdminPageComponent {
     this.searchText = CurrFilter;
   }
 
+  onFiltroChange() {
+    this.loadData();
+  }
+
   private loadData() {
     let request: GenericRequest<Dip_GG_Richiesta_GetAll4Admin_InModel> = new GenericRequest<Dip_GG_Richiesta_GetAll4Admin_InModel>(Dip_GG_Richiesta_GetAll4Admin_InModel);
     request.data.month = this.currMonth;
     request.data.year = this.currYear;
-
+    request.data.filtro = this.filtro;
 
     this.dipGGRichiestaService.GetAll4Admin(request).subscribe(res => {
       this.dip_GG_RichiestaList = res.data.dip_GG_Richiesta;

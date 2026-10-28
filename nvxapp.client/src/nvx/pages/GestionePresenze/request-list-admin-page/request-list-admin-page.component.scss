@@ -26,3 +26,28 @@ ion-menu-button {
 #container a {
   text-decoration: none;
 }
+
+// riga reparti + filtro: le colonne non aggiungono spazio (lo hanno gia' i due blocchi)
+ion-col {
+  padding: 0;
+}
+
+// filtro delle richieste: stesso aspetto dei campi di app-sedi-reparto-user-navigation
+.nvx-filtro-richieste {
+  ion-select {
+    width: 100%;
+  }
+
+  ion-item {
+    --min-height: 54px;
+    --padding-start: 18px;
+    --inner-padding-end: 14px;
+    margin: 6px 0 2px 0 !important;
+  }
+
+  ion-label {
+    font-size: 0.80em !important;
+    margin-top: 8px !important;
+    margin-bottom: 2px !important;
+  }
+}

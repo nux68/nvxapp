@@ -188,6 +188,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
 
                     List<Dip_GG_Richiesta> richiesta = await Get_Dip_GG_Richiesta(idDip_RapportoLavoro, model.Data.Year, model.Data.Month);
 
+                    // filtro sulla fase corrente (revoca se presente, altrimenti richiesta); l'ordine resta quello di Get_Dip_GG_Richiesta
+                    if (model.Data.Filtro == Dip_GG_Richiesta_Filtro.DaApprovare)
+                        richiesta = richiesta.Where(x => InApprovazione(x)).ToList();
+                    else if (model.Data.Filtro == Dip_GG_Richiesta_Filtro.Approvate)
+                        richiesta = richiesta.Where(x => StatiApprovati.Contains(x.RevocaStato ?? x.RichiestaStato)).ToList();
 
                     retVal.Dip_GG_Richiesta = _mapper.Map<List<Dip_GG_RichiestaModel>>(richiesta);
                 }
@@ -199,6 +204,16 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                 return retVal;
             }, isSubProcess);
         }
+
+        // stati di una fase (richiesta o revoca) gia' approvata
+        private static readonly List<StatoRichiesta> StatiApprovati = new List<StatoRichiesta>
+        {
+            StatoRichiesta.Approvata, StatoRichiesta.Diretta
+        };
+
+        // fase corrente (revoca se presente, altrimenti richiesta) ancora da decidere
+        private static bool InApprovazione(Dip_GG_Richiesta richiesta)
+            => StatiInApprovazione.Contains(richiesta.RevocaStato ?? richiesta.RichiestaStato);
 
         // stati di una fase (richiesta o revoca) ancora da decidere
         private static readonly List<StatoRichiesta> StatiInApprovazione = new List<StatoRichiesta>
@@ -1310,7 +1325,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
             }
 
 
-            richiesta = richiesta.OrderByDescending(x => x.Data).ToList();
+            // prima quelle da approvare, poi per data (piu' recenti prima)
+            richiesta = richiesta.OrderByDescending(x => InApprovazione(x)).ThenByDescending(x => x.Data).ToList();
 
             return richiesta;
         }

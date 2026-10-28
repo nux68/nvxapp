@@ -475,7 +475,11 @@
         "colDettaglio": "Details",
         "colStato": "Status",
         "confermaApprovazione": "Do you confirm approval of the request?",
-        "confermaRifiuto": "Do you confirm rejection of the request?"
+        "confermaRifiuto": "Do you confirm rejection of the request?",
+        "filtro": "Requests",
+        "filtroDaApprovare": "To approve",
+        "filtroTutte": "All",
+        "filtroApprovate": "Approved"
       },
       "notaSpeseUser": {
         "title": "My expense reports",

@@ -8,16 +8,33 @@
   <ion-card>
     <ion-card-content>
 
-      <app-sedi-reparto-user-navigation [showPeriodSelect]="false"
-        [showSediSelect]="false"
-        [showRepartoSelect]="true"
-        [showUserSelect]="false"
-        (periodChange)="onPeriodChange($event)"
-        (sediIdChange)="onSedeChanged($event)"
-        (repartoIdChange)="onRepartiChanged($event)"
-        (allUsersIdChange)="onAllUsersInSelectionChanged($event)"
-        (currUserIdChange)="onCurrentUserChanged($event)">
-      </app-sedi-reparto-user-navigation>
+      <!-- meta' a sinistra la scelta dei reparti, meta' a destra il filtro delle richieste (su mobile uno sotto l'altro) -->
+      <ion-row>
+        <ion-col size-xs="12" size-md="6">
+          <app-sedi-reparto-user-navigation [showPeriodSelect]="false"
+            [showSediSelect]="false"
+            [showRepartoSelect]="true"
+            [showUserSelect]="false"
+            (periodChange)="onPeriodChange($event)"
+            (sediIdChange)="onSedeChanged($event)"
+            (repartoIdChange)="onRepartiChanged($event)"
+            (allUsersIdChange)="onAllUsersInSelectionChanged($event)"
+            (currUserIdChange)="onCurrentUserChanged($event)">
+          </app-sedi-reparto-user-navigation>
+        </ion-col>
+        <ion-col size-xs="12" size-md="6">
+          <div class="ion-padding nvx-filtro-richieste">
+            <ion-item>
+              <ion-label position="stacked">{{ 'attendance.pages.requestListAdmin.filtro' | transloco }}</ion-label>
+              <ion-select [(ngModel)]="filtro" (ionChange)="onFiltroChange()" interface="popover">
+                @for (f of filtri; track f.value) {
+                  <ion-select-option [value]="f.value">{{ f.key | transloco }}</ion-select-option>
+                }
+              </ion-select>
+            </ion-item>
+          </div>
+        </ion-col>
+      </ion-row>
 
       <nvx-list
         [items]="richiesteFiltrate"

@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonButton, IonCard, IonCardContent, IonCol, IonContent, IonGrid, IonIcon, IonItem, IonItemOption, IonItemOptions, IonItemSliding, IonLabel, IonNote, IonRow, IonText } from '@ionic/angular';
+import { IonButton, IonCard, IonCardContent, IonCol, IonContent, IonGrid, IonIcon, IonItem, IonItemOption, IonItemOptions, IonItemSliding, IonLabel, IonNote, IonRow, IonSelect, IonSelectOption, IonText } from '@ionic/angular';
 import { RouterModule } from '@angular/router';
 import { SharedComponentInfrastructureModule } from '../../../shared/shared-component-infrastructure.module';
 import { RequestListAdminPageComponent } from './request-list-admin-page.component';
@@ -13,7 +13,7 @@ import { SharedComponentGestionePresenzeModuleModule } from '../../../shared/sha
   imports: [
     CommonModule,
     FormsModule,
-    IonButton, IonCard, IonCardContent, IonCol, IonContent, IonGrid, IonIcon, IonItem, IonItemOption, IonItemOptions, IonItemSliding, IonLabel, IonNote, IonRow, IonText,
+    IonButton, IonCard, IonCardContent, IonCol, IonContent, IonGrid, IonIcon, IonItem, IonItemOption, IonItemOptions, IonItemSliding, IonLabel, IonNote, IonRow, IonSelect, IonSelectOption, IonText,
     RouterModule.forChild([
       {
         path: '',
