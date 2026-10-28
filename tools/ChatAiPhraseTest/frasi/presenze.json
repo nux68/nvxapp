@@ -32,6 +32,13 @@
   { "frase": "fammi vedere il reparto produzione", "intent": "OpenEntity", "slots": { "entity": "reparto", "name": "produzione" } },
   { "frase": "apri il calendario HR di Rossi", "intent": "OpenTimeSheetPowerAdmin" },
 
+  // chip: il testo e' il nome del comando
+  { "frase": "Apri scheda", "intent": "OpenEntity" },
+  { "messaggi": ["Apri scheda", "la causale straordinario"], "intent": "OpenEntity", "slots": { "entity": "causale", "name": "straordinario" } },
+  { "frase": "Timbratura", "intent": "RegisterClocking" },
+  { "frase": "Calendario HR", "intent": "OpenTimeSheetPowerAdmin" },
+  { "frase": "Chi è presente", "intent": "WhoIsPresent" },
+
   // dipendente (ruolo User)
   { "frase": "quante ore ho fatto questo mese?", "intent": "HoursWorked", "ruolo": "User" },
   { "frase": "vorrei 2 ore di permesso venerdì", "intent": "RequestLeave", "ruolo": "User", "slots": { "hours": "02:00", "from": "=venerdì" } },
