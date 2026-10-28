@@ -4,15 +4,15 @@
 >
 > **Obiettivo**: dialogo meno macchinoso, più comandi disponibili, linguaggio naturale (chat e voce).
 
-**Stato al 28/10/2026: 15 punti su 41 svolti (Fase 1 completa; Fase 2: motore fatto, parti dei comandi presenze in corso).**
+**Stato al 28/10/2026: 19 punti su 41 svolti (Fase 1 e Fase 2 complete, da provare nell'app avviata).**
 
 Legenda: ✅ svolto · ⏳ da fare · 🔍 da valutare. Lo stato di ogni punto si aggiorna nella checklist (sezione 9); la tabella seguente riassume per area.
 
 | Area | Punti | Stato |
 |---|---|---|
 | 3. Correzioni rapide | Q1–Q8 | ✅ 8/8 |
-| 4. Motore di dialogo | M1–M7 | ⏳ 6/7 (M4 per i comandi presenze) |
-| 5. Linguaggio naturale | L1–L4 | ⏳ 1/4 (L1, L3 motore fatto; L4) |
+| 4. Motore di dialogo | M1–M7 | ✅ 7/7 |
+| 5. Linguaggio naturale | L1–L4 | ✅ 4/4 |
 | 6. Voce | V1–V4 | ⏳ 0/4 |
 | 7. Nuovi comandi | C1–C14 | ⏳ 0/14 |
 | 8. Costo di aggiunta dei comandi | E1–E4 | ⏳ 0/4 |
@@ -178,7 +178,7 @@ Ordine consigliato: correzioni rapide → motore → interrogazioni e self-servi
 - [x] Q8 Sessione legata all'utente (`IChatSessionStore.TryGet/Create` con `userId`). Il messaggio "Dipendente agganciato" non è stato ripristinato: il nome canonico compare già nel riepilogo e nelle domande
 
 ### Fase 2 — Motore di dialogo (Infrastructure_Dev, parti presenze su AttendanceTracking_Dev)
-Passo A (motore, Infrastructure_Dev) provato il 28/10/2026 con Groq `gpt-oss-120b` su 9 dialoghi tipo (programma di prova con comandi finti).
+Provata il 28/10/2026 con Groq `gpt-oss-120b`: passo A (motore, Infrastructure_Dev) su 9 dialoghi con comandi finti, passo B (comandi presenze, AttendanceTracking_Dev) su 7 dialoghi con i comandi reali e servizi simulati, fino al riepilogo. Con il catalogo reale il prompt è di circa 1.600 token (1.900 con un intent dettagliato, 3.900 con tutti). Manca la prova nell'app avviata.
 
 - [x] M1 Output strutturato al posto del tool calling: schema JSON con i nomi degli intent vincolati (`IIntentCatalog.BuildResponseSchema`), supportato da Groq, OpenRouter e Ollama (il tool calling non funziona con phi4 su Ollama). Configurabile per provider: `AI:<provider>:ResponseFormat` = `json_schema` (default Groq e Ollama) / `json_object` (default OpenRouter) / `none`; `AI:<provider>:StrictSchema`
 - [x] M2 Stato completo a ogni turno: un solo tipo di turno (`ChatAIService.ProcessMessageAsync`), il LLM riceve piano in corso e ultime azioni e restituisce il piano completo aggiornato
@@ -187,14 +187,15 @@ Passo A (motore, Infrastructure_Dev) provato il 28/10/2026 con Groq `gpt-oss-120
   - [x] Cambio di comando a metà dialogo ("lascia perdere la timbratura, apri la causale ferie")
   - [x] Più azioni in una frase ("timbra Rossi alle 9 e Bianchi alle 10")
 - [x] M3 Parole chiave come suggerimento: nessun filtro; catalogo a due livelli per contenere i token (tutti gli intent con descrizione ed esempi, slot solo per gli intent pertinenti; seconda chiamata se il LLM sceglie un intent senza dettagli). Prompt base circa 1.000 token + circa 230 per intent con dettagli
-- [ ] M4 Frasi di esempio per comando: `IntentDefinition.Examples` nel prompt; fatte per Help e Navigate, da fare per i comandi presenze (passo B)
+- [x] M4 Frasi di esempio per comando (`IntentDefinition.Examples`) per tutti i 17 comandi: "Rossi è entrato alle 8 e mezza" o "Bianchi ieri ha fatto due ore di permesso" vengono riconosciuti senza parole chiave
 - [x] M5 Date e orari risolti in C# (`SlotNormalizers`, associati al tipo `dd/MM/yyyy` / `HH:mm` dello slot): "lunedì scorso", "il 15 maggio", "l'altro ieri", "otto e un quarto", "10 meno un quarto", "2 pm", "half past ten". Le ore dei giustificativi restano al passo B
 - [x] M6 Memoria tra comandi: le ultime azioni eseguite restano nella sessione ("anche per Bianchi"); la sessione non si chiude più dopo un risultato. "Annulla l'ultima" richiede i comandi di cancellazione (C9)
 - [x] M7 Conferma proporzionata: navigazione e help senza conferma (`IntentDefinition.RequiresConfirmation`, default: conferma tranne per la navigazione); riepilogo modificabile a parole. La doppia conferma servirà con le operazioni massive (C10)
-- [ ] L1 "Io/me": motore fatto (`SlotDefinition.IsPerson`, `ChatSelf.Token` = "@me", `IChatUserContext`); risoluzione nel dipendente dell'utente da fare (passo B)
+  - [x] Ore dei giustificativi e delle causali convertite dal codice (`HoursSlotHelper.Normalize`): "due ore", "un'ora e mezza", "mezz'ora", "8h", "4 hours"
+- [x] L1 "Io/me": `SlotDefinition.IsPerson`, `ChatSelf.Token` = "@me", `IChatUserContext`; il dipendente è quello collegato all'utente (`Dip_Anagrafica.IdAspNetUsers`), altrimenti si chiede quale ("timbrami adesso", "il mio calendario")
 - [x] L2 Data, giorno della settimana e ora nel prompt comune (`BuildSystemPrompt_Append_Contesto`)
-- [ ] L3 Testo da pronunciare: motore fatto (`ChatAIOutModel.SpeechText`, `IntentDefinition.SummaryTemplate`); frasi dei comandi presenze da fare (passo B)
-- [ ] L4 Ricerca dipendente tollerante (passo B)
+- [x] L3 Testo da pronunciare (`ChatAIOutModel.SpeechText`): domanda senza contesto, riepilogo in forma di frase (`IntentDefinition.SummaryTemplate`, testi in `AttendanceTrackingMessages`), risultati. Lo userà la sintesi vocale (V1)
+- [x] L4 Ricerca dipendente tollerante (`DipendenteLookupHelper`): se non c'è corrispondenza esatta, confronto fonetico con distanza di modifica ("Russi" -> Rossi, "Bianki" -> Bianchi); il riepilogo mostra "Dipendente agganciato"
 
 ### Fase 3 — Nuovi comandi (AttendanceTracking_Dev, C13–C14 su Infrastructure_Dev)
 - [ ] C1 Presenti / assenti
