@@ -35,4 +35,6 @@ export class ChatAIOutModel extends ModelResult {
   // Solo con responseType === "confirmation": true se il piano contiene solo navigazioni
   // (il vocale puo' confermare da solo); con scritture di dati conferma l'utente
   public autoConfirm:   boolean           = false;
+  // Testo breve da pronunciare (risposta vocale); vuoto = usare responce
+  public speechText:    string            = '';
 }

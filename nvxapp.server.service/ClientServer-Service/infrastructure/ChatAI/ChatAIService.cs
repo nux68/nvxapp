@@ -17,10 +17,17 @@ using Serilog;
 using System.Data;
 using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 
 
 namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
 {
+    // Dialogo a turni:
+    //   ogni messaggio (che non sia reset, help, conferma o annullamento) va al LLM insieme al catalogo
+    //   degli intent e allo stato della conversazione; il LLM restituisce il piano completo aggiornato
+    //   (più valori in una risposta, correzioni, cambio di richiesta, riferimenti alle ultime azioni).
+    //   Il server accetta solo i valori giustificati dal testo dell'utente (anti-allucinazione),
+    //   li normalizza (SlotNormalizers), li valida, chiede quelli mancanti e infine conferma ed esegue.
     public class ChatAIService : ServiceBase, IChatAIService
     {
         private readonly iRabbitMqConnection _rabbitMqConnection;
@@ -28,6 +35,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         private readonly ICommandRegistry _commandRegistry;
         private readonly IIntentCatalog _intentCatalog;
         private readonly IChatSessionStore _sessionStore;
+        private readonly IChatUserContext _chatUserContext;
 
         private readonly string _ollamaUrl;
         private readonly string _ollamaModel;
@@ -46,6 +54,12 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         private readonly int _maxHistoryTurns;
         private readonly string _useLLM;
 
+        // Output strutturato del provider in uso (AI:<provider>:ResponseFormat):
+        // "json_schema" (schema con i nomi degli intent), "json_object" (solo JSON valido) o "none".
+        private readonly string _responseFormat;
+        // AI:<provider>:StrictSchema: schema rispettato in modo rigoroso (solo modelli che lo supportano)
+        private readonly bool _strictSchema;
+
         public ChatAIService(IMapper mapper,
                              UserManager<ApplicationUser> userManager,
                              IAspNetUsersRepository aspNetUsersRepository,
@@ -57,7 +71,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                              IWebApiService webApiService,
                              ICommandRegistry commandRegistry,
                              IIntentCatalog intentCatalog,
-                             IChatSessionStore sessionStore
+                             IChatSessionStore sessionStore,
+                             IChatUserContext chatUserContext
                              ) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _rabbitMqConnection = rabbitMqConnection;
@@ -65,6 +80,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             _commandRegistry = commandRegistry;
             _intentCatalog = intentCatalog;
             _sessionStore = sessionStore;
+            _chatUserContext = chatUserContext;
 
             _maxHistoryTurns = int.TryParse(configuration["AI:MaxHistoryTurns"], out var n) && n > 0 ? n : 20;
 
@@ -84,8 +100,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             _groqMethod = configuration["AI:AI_groq:method"] ?? throw new InvalidOperationException("AI_groq:method non configurato");
             _groqApiKey = ApiKey(configuration, "AI_groq");
 
-
-
+            // OpenRouter instrada su modelli diversi, non tutti con lo schema: di default solo JSON valido
+            _responseFormat = configuration[$"AI:{_useLLM}:ResponseFormat"]
+                              ?? (_useLLM == "AI_openrouter" ? "json_object" : "json_schema");
+            _strictSchema = bool.TryParse(configuration[$"AI:{_useLLM}:StrictSchema"], out var strict) && strict;
         }
 
         // ---------------------------------------------------------------------------
@@ -112,349 +130,247 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                     _intentCatalog.Fuilter4UserRoles(new List<string> { "*" });
                 }
 
-                
+                // utente corrente per gli handler (risoluzione di ChatSelf.Token)
+                _chatUserContext.UserId = CurrentUserId;
 
-                var userMessage = model.Data.Request;
-                var sessionId = model.Data.SessionId;
-
-                // 1. Cerca la sessione esistente (solo se appartiene all'utente corrente).
-                // Senza sessionId (prima richiesta), o con una sessione scaduta o di un altro utente,
-                // il messaggio si elabora come primo turno di una sessione nuova: non va perso.
-                var session = TryGetSession(sessionId) ?? CreateSession();
-
-                // 2. Comando di reset
-                if (IsResetCommand(userMessage))
-                {
-                    _sessionStore.Delete(session.SessionId);
-                    var resetSession = CreateSession();
-                    return new ChatAIOutModel
-                    {
-                        SessionId = resetSession.SessionId,
-                        Responce = ChatAIMessages.Get("ResetDone"),
-                        ResponseType = "result",
-                        Suggestions = BuildIntentSuggestions()
-                    };
-                }
-
-                // 2b. Comando di help
-                if (IsHelpCommand(userMessage))
-                {
-                    _sessionStore.Delete(session.SessionId);
-                    var helpSession = CreateSession();
-                    return new ChatAIOutModel
-                    {
-                        SessionId = helpSession.SessionId,
-                        Responce = string.Empty,
-                        ResponseType = "result",
-                        Suggestions = BuildIntentSuggestions()
-                    };
-                }
-
-                // 3. Gestione conferma esplicita ("sì" / "no")
-                if (session.State == SessionState.ReadyToExecute)
-                    return await HandleConfirmation(session, userMessage);
-
-                // 4. Registra il messaggio utente nella history
-                session.AddToHistory("user", userMessage);
-
-                // 5. PRIMO TURNO — piano non ancora costruito
-                bool isFirstTurn = session.ActionQueue.Count == 0;
-
-                if (isFirstTurn)
-                {
-                    // PRE-FILTRO keyword
-                    bool anyKeywordMatch = _intentCatalog.Intents
-                        .Where(i => i.Keywords.Count > 0)
-                        .Any(i => i.Keywords.Any(k =>
-                            userMessage.Contains(k, StringComparison.OrdinalIgnoreCase)));
-
-                    bool allIntentsHaveKeywords = _intentCatalog.Intents.All(i => i.Keywords.Count > 0);
-
-                    if (allIntentsHaveKeywords && !anyKeywordMatch)
-                    {
-                        DeleteSession(session.SessionId);
-                        return BuildErrorResponse(session, ChatAIMessages.Get("NotUnderstood"), BuildIntentSuggestions());
-                    }
-
-                    var compatibleIntent = GetMatchingIntentNames(userMessage, _intentCatalog.Intents);
-
-                    ExtractedPlan? plan = null;
-                    try
-                    {
-                        plan = await Call_LLM_FirstTurnAsync(session, compatibleIntent);
-                    }
-                    catch (Exception ex)
-                    {
-                        DeleteSession(session.SessionId);
-                        return BuildErrorResponse(session, ex.Message, BuildIntentSuggestions());
-                    }
-
-                    // Chiedi al LLM il piano multi-azione
-
-                    if (plan == null || plan.Actions.Count == 0)
-                    {
-                        DeleteSession(session.SessionId);
-                        return BuildErrorResponse(session, ChatAIMessages.Get("LlmNotUnderstood"), BuildIntentSuggestions());
-                    }
-
-
-                    // Valida e normalizza ogni azione del piano
-                    foreach (var extractedAction in plan.Actions)
-                    {
-                        if (extractedAction.Intent.Equals("unknown", StringComparison.OrdinalIgnoreCase)
-                            || extractedAction.Confidence < 0.5)
-                            continue;
-
-                        var knownIntent = _intentCatalog.Intents
-                            .FirstOrDefault(i => i.Name.Equals(extractedAction.Intent, StringComparison.OrdinalIgnoreCase));
-                        if (knownIntent == null) continue;
-
-                        var entry = new ActionEntry
-                        {
-                            Intent = knownIntent.Name,
-                            State = ActionState.Collecting
-                        };
-                        session.ActionQueue.Add(entry);
-
-                        // Merge degli slot estratti per questa azione
-                        SafeMergeSlotsForAction(entry, extractedAction.Slots, userMessage);
-                    }
-
-                    if (session.ActionQueue.Count == 0)
-                    {
-                        DeleteSession(session.SessionId);
-                        return BuildErrorResponse(session, ChatAIMessages.Get("NotUnderstood"), BuildIntentSuggestions());
-                    }
-
-                    session.CurrentActionIndex = 0;
-                }
-                else
-                {
-                    // TURNI SUCCESSIVI — estrai il valore dello slot mancante per l'azione corrente
-                    var currentAction = session.CurrentAction;
-                    if (currentAction != null)
-                    {
-                        string? nextMissing = GetMissingRequiredSlotsForAction(currentAction).FirstOrDefault();
-
-
-
-                        if (nextMissing != null)
-                        {
-                            Dictionary<string, string> extractedSlots;
-
-                            try
-                            {
-                                extractedSlots = await Call_LLM_OtherTurnAsync(nextMissing, currentAction, session);
-                            }
-                            catch (Exception)
-                            {
-                                // La sessione resta valida: si ripete la domanda invece di chiudere
-                                // il dialogo (una risposta "error" farebbe ripartire il client da zero).
-                                // Il dettaglio dell'errore è già nel log (Call_LLM_OtherTurnAsync).
-                                var retry = ChatAIMessages.Get("AnswerNotProcessed") + "\n" +
-                                    BuildMissingSlotQuestion(nextMissing, currentAction.Intent, currentAction,
-                                        GetDisplayName(currentAction.Intent));
-                                session.AddToHistory("assistant", retry);
-                                return BuildQuestionResponse(session, retry);
-                            }
-
-                            // La risposta può contenere più valori (es. "Rossi, alle 9, in uscita"):
-                            // si uniscono tutti gli slot dell'azione corrente, non solo quello chiesto.
-                            int slotCountBefore = currentAction.Slots.Count;
-                            SafeMergeSlotsForAction(currentAction, extractedSlots, userMessage);
-
-                            // Il LLM non ha restituito nulla per lo slot chiesto e nessun altro valore
-                            // è stato acquisito: il testo intero è la risposta allo slot chiesto.
-                            if (!extractedSlots.ContainsKey(nextMissing) && currentAction.Slots.Count == slotCountBefore)
-                                SafeMergeSlotsForAction(currentAction, new Dictionary<string, string> { [nextMissing] = userMessage.Trim() }, userMessage);
-                        }
-                    }
-                }
-
-                // 6. Raccolta slot per l'azione corrente
-                var current = session.CurrentAction;
-                if (current == null)
-                {
-                    DeleteSession(session.SessionId);
-                    return BuildErrorResponse(session, ChatAIMessages.Get("PlanInternalError"), BuildIntentSuggestions());
-                }
-
-                // Valida i valori degli slot dell'azione corrente
-                var formatValidation = ValidateSlotFormatsForAction(current);
-                if (!formatValidation.IsValid)
-                {
-                    current.Slots.Remove(formatValidation.InvalidSlotName);
-                    session.AddToHistory("assistant", formatValidation.MessageToUser);
-                    return BuildQuestionResponse(session, formatValidation.MessageToUser, formatValidation.Suggestions);
-                }
-
-                // Salva l'InfoMessage sull'azione corrente (es. "Dipendente agganciato: Rossi Mario")
-                if (formatValidation.InfoMessage != null)
-                    current.InfoMessage = formatValidation.InfoMessage;
-
-                // Controlla se mancano slot obbligatori per l'azione corrente
-                var missingSlots = GetMissingRequiredSlotsForAction(current);
-                if (missingSlots.Any())
-                {
-                    var actionTitle = GetDisplayName(current.Intent);
-                    var question = BuildMissingSlotQuestion(missingSlots.First(), current.Intent, current, actionTitle);
-                    session.AddToHistory("assistant", question);
-                    return BuildQuestionResponse(session, question);
-                }
-
-                // Azione corrente completamente raccolta — segna come Ready
-                current.State = ActionState.Ready;
-
-                // 7. Intent Help — esegui subito senza conferma
-                if (current.Intent.Equals("Help", StringComparison.OrdinalIgnoreCase))
-                {
-                    await ExecuteCommandAsync(current);
-                    DeleteSession(session.SessionId);
-                    var helpSession = CreateSession();
-                    return new ChatAIOutModel
-                    {
-                        SessionId = helpSession.SessionId,
-                        Responce = string.Empty,
-                        ResponseType = "result",
-                        Suggestions = BuildIntentSuggestions()
-                    };
-                }
-
-                // 8. Avanza all'azione successiva se ci sono ancora slot da raccogliere
-                //    (azioni con slot ancora da raccogliere nel piano)
-                bool hasMoreCollecting = session.ActionQueue
-                    .Skip(session.CurrentActionIndex + 1)
-                    .Any(a => a.State == ActionState.Collecting &&
-                              GetMissingRequiredSlotsForAction(a).Any());
-
-                if (hasMoreCollecting)
-                {
-                    // Valida/normalizza la prossima azione prima di costruire il prompt
-                    var nextAction = session.ActionQueue.ElementAtOrDefault(session.CurrentActionIndex + 1);
-                    if (nextAction != null)
-                    {
-                        var nextValidation = ValidateSlotFormatsForAction(nextAction);
-                        if (nextValidation.InfoMessage != null)
-                            nextAction.InfoMessage = nextValidation.InfoMessage;
-                    }
-
-                    // Avanza all'azione successiva mostrando la domanda con titolo e slot già noti
-                    var nextQuestion = BuildNextActionQuestion(session);
-                    session.CurrentActionIndex++;
-                    session.AddToHistory("assistant", nextQuestion);
-                    return BuildQuestionResponse(session, nextQuestion);
-                }
-
-                // 9. Tutte le azioni pronte → valida le azioni non ancora validate,
-                //    salva l'InfoMessage su ogni ActionEntry e mostra il riepilogo piano completo.
-
-                // Valida le azioni successive (dalla corrente+1 in poi) che non sono ancora Ready.
-                foreach (var pendingAction in session.ActionQueue.Skip(session.CurrentActionIndex + 1)
-                             .Where(a => a.State == ActionState.Collecting))
-                {
-                    var pendingValidation = ValidateSlotFormatsForAction(pendingAction);
-                    if (!pendingValidation.IsValid)
-                    {
-                        pendingAction.Slots.Remove(pendingValidation.InvalidSlotName);
-                        session.AddToHistory("assistant", pendingValidation.MessageToUser);
-                        session.CurrentActionIndex = session.ActionQueue.IndexOf(pendingAction);
-                        return BuildQuestionResponse(session, pendingValidation.MessageToUser, pendingValidation.Suggestions);
-                    }
-
-                    if (pendingValidation.InfoMessage != null)
-                        pendingAction.InfoMessage = pendingValidation.InfoMessage;
-
-                    pendingAction.State = ActionState.Ready;
-                }
-
-                session.State = SessionState.ReadyToExecute;
-                var summary = BuildPlanConfirmationSummary(session);
-                session.AddToHistory("assistant", summary);
-                return BuildConfirmationResponse(session, summary);
+                return await ProcessMessageAsync(model.Data);
 
             }, isSubProcess);
         }
 
-        
-        public List<string> GetMatchingIntentNames(string userMessage, IEnumerable<IntentDefinition> intents)
+        // Un turno di dialogo: comandi di controllo, conferma, chiamata al LLM, avanzamento del piano.
+        private async Task<ChatAIOutModel> ProcessMessageAsync(ChatAIInModel input)
         {
-            // Se il messaggio dell'utente è vuoto o non ci sono intenti, ritorna una lista vuota
-            if (string.IsNullOrWhiteSpace(userMessage) || intents == null)
+            var userMessage = (input.Request ?? string.Empty).Trim();
+
+            // 1. Cerca la sessione esistente (solo se appartiene all'utente corrente).
+            // Senza sessionId (prima richiesta), o con una sessione scaduta o di un altro utente,
+            // il messaggio si elabora in una sessione nuova: non va perso.
+            var session = TryGetSession(input.SessionId) ?? CreateSession();
+
+            // 2. Comando di reset
+            if (IsResetCommand(userMessage))
             {
-                return new List<string>();
-            }
-
-            return intents
-                .Where(i => i.Keywords != null && i.Keywords.Count > 0)
-                .Where(i => i.Keywords.Any(k => userMessage.Contains(k, StringComparison.OrdinalIgnoreCase)))
-                .Select(i => i.Name)
-                .ToList();
-        }
-
-       
-        
-        
-        // ---------------------------------------------------------------------------
-        // Gestione conferma utente — esegue l'intero piano
-        // ---------------------------------------------------------------------------
-
-        private async Task<ChatAIOutModel> HandleConfirmation(ChatSession session, string userMessage)
-        {
-            // parole accettate in italiano e in inglese, qualunque sia la lingua dell'interfaccia;
-            // tolleranti alle parole di contorno ("sì grazie", "no lascia stare")
-            bool confirmed = ChatAIKeywords.IsConfirm(userMessage);
-            bool cancelled = !confirmed && ChatAIKeywords.IsCancel(userMessage);
-
-            session.AddToHistory("user", userMessage);
-
-            if (confirmed)
-            {
-                session.State = SessionState.Confirmed;
-                var planResult = await ExecutePlanAsync(session);
-                DeleteSession(session.SessionId);
-                var doneSession = CreateSession();
-
-                bool anySuccess = planResult.Any(r => r.Success);
-                bool anyFail = planResult.Any(r => !r.Success);
-                string responseType = anyFail ? (anySuccess ? "partial_error" : "error") : "result";
-
-                // Messaggio complessivo
-                var sb = new StringBuilder();
-                foreach (var r in planResult)
-                    sb.AppendLine(r.Message);
-
-                // Payload di navigazione — ultima azione navigate del piano
-                var navItem = planResult.LastOrDefault(r => r.Navigate != null);
-
+                _sessionStore.Delete(session.SessionId);
+                var resetSession = CreateSession();
                 return new ChatAIOutModel
                 {
-                    SessionId = doneSession.SessionId,
-                    Responce = sb.ToString().TrimEnd(),
-                    ResponseType = responseType,
-                    Suggestions = anyFail ? new() : BuildIntentSuggestions(),
-                    Navigate = navItem?.Navigate,
-                    ActionResults = planResult
-                };
-            }
-
-            if (cancelled)
-            {
-                DeleteSession(session.SessionId);
-                var freshSession = CreateSession();
-                return new ChatAIOutModel
-                {
-                    SessionId = freshSession.SessionId,
-                    Responce = ChatAIMessages.Get("OperationCancelled"),
+                    SessionId = resetSession.SessionId,
+                    Responce = ChatAIMessages.Get("ResetDone"),
                     ResponseType = "result",
                     Suggestions = BuildIntentSuggestions()
                 };
             }
 
-            // Non è né sì né no — chiedi chiarimento restando in attesa di conferma,
-            // così la risposta successiva ("sì") esegue subito il piano
-            var clarification = ChatAIMessages.Get("ConfirmClarification");
-            session.AddToHistory("assistant", clarification);
-            return BuildQuestionResponse(session, clarification, BuildYesNoSuggestions());
+            // 2b. Comando di help
+            if (IsHelpCommand(userMessage))
+            {
+                _sessionStore.Delete(session.SessionId);
+                var helpSession = CreateSession();
+                return new ChatAIOutModel
+                {
+                    SessionId = helpSession.SessionId,
+                    Responce = string.Empty,
+                    ResponseType = "result",
+                    Suggestions = BuildIntentSuggestions()
+                };
+            }
+
+            // 3. Piano in attesa di conferma: "sì" esegue, "no" annulla, il resto è una modifica
+            //    del piano ("cambia l'ora in 10") e passa dal LLM come ogni altro messaggio.
+            bool wasReady = session.State == SessionState.ReadyToExecute;
+            if (wasReady)
+            {
+                // parole accettate in italiano e in inglese, qualunque sia la lingua dell'interfaccia;
+                // tolleranti alle parole di contorno ("sì grazie", "no lascia stare")
+                if (ChatAIKeywords.IsConfirm(userMessage))
+                {
+                    session.AddToHistory("user", userMessage);
+                    return await ExecutePlanAndFinishAsync(session);
+                }
+
+                if (ChatAIKeywords.IsCancel(userMessage))
+                {
+                    session.AddToHistory("user", userMessage);
+                    return CancelPlan(session);
+                }
+            }
+
+            // 4. Turno del LLM: piano completo aggiornato con il nuovo messaggio
+            session.AddToHistory("user", userMessage);
+            var previousPlan = ClonePlan(session.ActionQueue);
+
+            ExtractedPlan? plan;
+            try
+            {
+                plan = await Call_LLM_TurnAsync(session);
+            }
+            catch (Exception ex)
+            {
+                // Il dialogo in corso resta valido: si ripete la richiesta invece di chiuderlo.
+                // Il dettaglio dell'errore è già nel log (Call_LLM_TurnAsync).
+                if (wasReady)
+                    return BuildClarificationResponse(session);
+                if (session.ActionQueue.Count > 0)
+                    return BuildCurrentQuestionResponse(session, ChatAIMessages.Get("AnswerNotProcessed"));
+                return BuildErrorResponse(session, ex.Message, BuildIntentSuggestions());
+            }
+
+            var newPlan = BuildPlanFromLlm(plan, session);
+
+            if (newPlan.Count == 0)
+            {
+                // In attesa di conferma un messaggio non interpretabile non cambia il piano
+                if (wasReady)
+                    return BuildClarificationResponse(session);
+
+                // Piano in corso: il testo intero è la risposta alla domanda posta (es. "Rossi")
+                if (!TryAnswerPendingSlot(session, userMessage))
+                {
+                    if (session.ActionQueue.Count > 0)
+                        return BuildCurrentQuestionResponse(session, ChatAIMessages.Get("AnswerNotProcessed"));
+
+                    var notUnderstood = ChatAIMessages.Get("NotUnderstood");
+                    session.AddToHistory("assistant", notUnderstood);
+                    return BuildErrorResponse(session, notUnderstood, BuildIntentSuggestions());
+                }
+            }
+            else
+            {
+                // Modifica richiesta sul riepilogo ma il piano non è cambiato: si chiede di nuovo sì/no
+                if (wasReady && SamePlan(previousPlan, newPlan))
+                    return BuildClarificationResponse(session);
+
+                session.ActionQueue = newPlan;
+            }
+
+            session.State = SessionState.Collecting;
+            return await AdvancePlanAsync(session);
+        }
+
+        // ---------------------------------------------------------------------------
+        // Avanzamento del piano: validazione, domande per i valori mancanti, conferma o esecuzione
+        // ---------------------------------------------------------------------------
+
+        private async Task<ChatAIOutModel> AdvancePlanAsync(ChatSession session)
+        {
+            for (int idx = 0; idx < session.ActionQueue.Count; idx++)
+            {
+                var action = session.ActionQueue[idx];
+                session.CurrentActionIndex = idx;
+
+                // Valida e normalizza i valori dell'azione (es. nome canonico del dipendente)
+                var validation = ValidateSlotFormatsForAction(action);
+                if (!validation.IsValid)
+                {
+                    action.Slots.Remove(validation.InvalidSlotName);
+                    session.AddToHistory("assistant", validation.MessageToUser);
+                    return BuildQuestionResponse(session, validation.MessageToUser, validation.Suggestions);
+                }
+
+                // Messaggio informativo dell'azione (es. "Dipendente agganciato: Rossi Mario")
+                if (validation.InfoMessage != null)
+                    action.InfoMessage = validation.InfoMessage;
+
+                // Valori obbligatori mancanti: si chiede il primo, con il contesto di quelli noti
+                var missing = GetMissingRequiredSlotsForAction(action).FirstOrDefault();
+                if (missing != null)
+                {
+                    var question = BuildMissingSlotQuestion(missing, action.Intent, action, GetDisplayName(action.Intent));
+                    session.AddToHistory("assistant", question);
+                    return BuildQuestionResponse(session, question, speechText: GetSlotQuestion(action.Intent, missing));
+                }
+
+                action.State = ActionState.Ready;
+            }
+
+            // Tutte le azioni sono complete: riepilogo e conferma se almeno una lo richiede
+            // (es. scritture di dati), altrimenti esecuzione immediata (es. navigazione)
+            if (session.ActionQueue.Any(a => FindIntent(a.Intent)?.NeedsConfirmation ?? true))
+            {
+                session.State = SessionState.ReadyToExecute;
+                var summary = BuildPlanConfirmationSummary(session);
+                session.AddToHistory("assistant", summary);
+                return BuildConfirmationResponse(session, summary);
+            }
+
+            return await ExecutePlanAndFinishAsync(session);
+        }
+
+        // Il LLM non ha estratto nulla ma c'è una domanda in sospeso: il testo intero è la risposta
+        // al primo valore mancante (es. "Rossi" alla domanda "Quale dipendente?").
+        private bool TryAnswerPendingSlot(ChatSession session, string userMessage)
+        {
+            var action = session.ActionQueue.FirstOrDefault(a => GetMissingRequiredSlotsForAction(a).Any());
+            if (action == null || string.IsNullOrWhiteSpace(userMessage)) return false;
+
+            var slotName = GetMissingRequiredSlotsForAction(action).First();
+            var slotDef = FindSlotDefinition(action.Intent, slotName);
+            var normalizer = slotDef?.Normalizer ?? SlotNormalizers.ForType(slotDef?.Type);
+
+            action.Slots[slotName] = normalizer?.Invoke(userMessage) ?? userMessage;
+            return true;
+        }
+
+        // ---------------------------------------------------------------------------
+        // Esecuzione del piano e chiusura del turno
+        // ---------------------------------------------------------------------------
+
+        private async Task<ChatAIOutModel> ExecutePlanAndFinishAsync(ChatSession session)
+        {
+            session.State = SessionState.Confirmed;
+            var planResult = await ExecutePlanAsync(session);
+
+            // Le azioni eseguite restano come contesto ("anche per Bianchi"); la sessione continua
+            var done = session.ActionQueue.Where(a => a.State == ActionState.Done).ToList();
+            if (done.Count > 0)
+                session.LastExecuted = ClonePlan(done);
+            session.ActionQueue = new();
+            session.CurrentActionIndex = 0;
+            session.State = SessionState.Collecting;
+
+            bool anySuccess = planResult.Any(r => r.Success);
+            bool anyFail = planResult.Any(r => !r.Success);
+            string responseType = anyFail ? (anySuccess ? "partial_error" : "error") : "result";
+
+            // Messaggio complessivo
+            var sb = new StringBuilder();
+            foreach (var r in planResult)
+                sb.AppendLine(r.Message);
+            var message = sb.ToString().TrimEnd();
+            session.AddToHistory("assistant", message);
+
+            // Payload di navigazione — ultima azione navigate del piano
+            var navItem = planResult.LastOrDefault(r => r.Navigate != null);
+
+            return new ChatAIOutModel
+            {
+                SessionId = session.SessionId,
+                Responce = message,
+                SpeechText = message,
+                ResponseType = responseType,
+                Suggestions = anyFail ? new() : BuildIntentSuggestions(),
+                Navigate = navItem?.Navigate,
+                ActionResults = planResult
+            };
+        }
+
+        private ChatAIOutModel CancelPlan(ChatSession session)
+        {
+            session.ActionQueue = new();
+            session.CurrentActionIndex = 0;
+            session.State = SessionState.Collecting;
+
+            var message = ChatAIMessages.Get("OperationCancelled");
+            session.AddToHistory("assistant", message);
+            return new ChatAIOutModel
+            {
+                SessionId = session.SessionId,
+                Responce = message,
+                SpeechText = message,
+                ResponseType = "result",
+                Suggestions = BuildIntentSuggestions()
+            };
         }
 
         // ---------------------------------------------------------------------------
@@ -470,158 +386,85 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             ChatAIKeywords.IsExactMatch(text, ChatAIKeywords.Help);
 
         // ---------------------------------------------------------------------------
-        // Chiamata LLM — primo turno: estrae il piano multi-azione
+        // Chiamata LLM — un solo tipo di turno: catalogo + stato -> piano completo aggiornato
         // ---------------------------------------------------------------------------
 
-        private async Task<ExtractedPlan?> Call_LLM_FirstTurnAsync(ChatSession session,List<string> compatibleIntents)
+        private async Task<ExtractedPlan?> Call_LLM_TurnAsync(ChatSession session)
         {
             try
             {
-                //var messages = BuildChatMessages(_intentCatalog.OLD_BuildPlanSystemPrompt(), session.History);
-                var messages = BuildChatMessages(_intentCatalog.BuildSystemPromptXS(compatibleIntents), session.History);
+                // Dettagli (slot) solo per gli intent pertinenti: contiene i token del prompt
+                var detailed = RelevantIntents(session);
+                var plan = await Call_LLM_OnceAsync(session, detailed);
 
-                var requestBody = new OllamaChatRequest
+                // Il LLM ha scelto intent con slot di cui non aveva i dettagli: si ripete il turno
+                // una volta con i loro dettagli, così i valori del messaggio vengono estratti subito.
+                var missingDetails = plan?.Actions
+                    .Select(a => FindIntent(a.Intent))
+                    .Where(i => i != null && i.Slots.Count > 0 && !detailed.Contains(i.Name))
+                    .Select(i => i!.Name)
+                    .ToList() ?? new();
+
+                if (missingDetails.Count > 0)
                 {
-                    Model = _ollamaModel,
-                    Messages = messages,
-                    Stream = false,
-                    Format = "json"
-                };
+                    detailed.UnionWith(missingDetails);
+                    plan = await Call_LLM_OnceAsync(session, detailed);
+                }
 
-                string raw;
-                if (_useLLM == "AI_local")
-                    raw = await PostToOllamaChatAsync(_ollamaUrl, requestBody);
-                else if (_useLLM == "AI_openrouter")
-                    raw = await PostToOpenRouterChatAsync(_ollamaUrl, requestBody);
-                else if (_useLLM == "AI_groq")
-                    raw = await PostToGroqChatAsync(_groqUrl, requestBody);
-                else
-                    throw new InvalidOperationException($"LLM non supportato: {_useLLM}");
-
-                if (!string.IsNullOrEmpty(raw))
-                    session.AddToHistory("assistant", raw);
-
-                return DeserializePlanFirstTurn(raw);
+                return plan;
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "[ChatAI] Call_LLM_ExtractPlanAsync fallita. Session={SessionId}", session.SessionId);
-                //return null;
+                Log.Error(ex, "[ChatAI] Call_LLM_TurnAsync fallita. Session={SessionId}", session.SessionId);
                 throw;
             }
         }
 
-        // ---------------------------------------------------------------------------
-        // Chiamata LLM — turni successivi: estrae tutti gli slot dell'azione corrente
-        // presenti nella risposta (quello chiesto ed eventuali altri forniti insieme).
-        // Passa la ConversationHistory per permettere al modello di disambiguare
-        // risposte contestuali (es. "quello di prima", "stessa data").
-        // ---------------------------------------------------------------------------
-
-        private async Task<Dictionary<string, string>> Call_LLM_OtherTurnAsync(string slotName, ActionEntry action, ChatSession session)
+        private async Task<ExtractedPlan?> Call_LLM_OnceAsync(ChatSession session, ICollection<string> detailedIntents)
         {
-            var intentName = action.Intent;
-            try
-            {
-                List<string> compatibleIntents = new List<string> { intentName };
+            var messages = BuildChatMessages(_intentCatalog.BuildTurnSystemPrompt(session, detailedIntents), session.History);
+            var raw = await PostToLlmAsync(messages);
 
-                //var messages = BuildChatMessages(_intentCatalog.OLD_BuildSystemPrompt(compatibleIntents), session.History);
-                var systemPrompt = _intentCatalog.BuildSystemPromptXS(compatibleIntents) + BuildOtherTurnContext(slotName, action);
-                var messages = BuildChatMessages(systemPrompt, session.History);
-
-                var requestBody = new OllamaChatRequest
-                {
-                    Model = _ollamaModel,
-                    Messages = messages,
-                    Stream = false,
-                    Format = "json"
-                };
-
-
-
-
-
-                string raw = string.Empty;
-                if (_useLLM == "AI_local")
-                    raw = await PostToOllamaChatAsync(_ollamaUrl, requestBody);
-                else if (_useLLM == "AI_openrouter")
-                    raw = await PostToOpenRouterChatAsync(_ollamaUrl, requestBody);
-                else if (_useLLM == "AI_groq")
-                    raw = await PostToGroqChatAsync(_groqUrl, requestBody);
-
-                else
-                    throw new InvalidOperationException($"LLM non supportato: {_useLLM}");
-
-                // Memorizza la risposta del modello nella history affinché
-                // i turni successivi possano contestualizzarla.
-                if (!string.IsNullOrEmpty(raw))
-                    session.AddToHistory("assistant", raw);
-
-                if (string.IsNullOrEmpty(raw)) return new();
-
-                // Il LLM restituisce sempre un ExtractedIntent completo (stesso formato del primo turno).
-                // Si tengono solo gli slot definiti per l'intent corrente e valorizzati.
-                var extracted = DeserializePlanOtherTurn(raw, slotName, intentName);
-                if (extracted?.Slots == null) return new();
-
-                var slotNames = _intentCatalog.Intents
-                    .FirstOrDefault(i => i.Name == intentName)
-                    ?.Slots.Select(s => s.Name).ToHashSet() ?? new HashSet<string>();
-
-                return extracted.Slots
-                    .Where(kv => slotNames.Contains(kv.Key) && !IsNullString(kv.Value))
-                    .ToDictionary(kv => kv.Key, kv => kv.Value);
-            }
-            catch (Exception ex)
-            {
-                Log.Error(ex, "[ChatAI] CallOllamaExtractSingleSlotAsync fallita. Session={SessionId} Slot={SlotName}",session.SessionId, slotName);
-                //return null;
-                throw;
-            }
+            Log.Debug("[ChatAI] Risposta LLM. Session={SessionId} Raw={Raw}", session.SessionId, raw);
+            return ParsePlan(raw);
         }
 
-        // Contesto aggiunto al system prompt nei turni successivi: lo slot chiesto,
-        // l'invito a estrarre anche gli altri valori forniti e gli slot già noti.
-        private string BuildOtherTurnContext(string slotName, ActionEntry action)
+        // Intent di cui mandare i dettagli al LLM: quelli del piano in corso, delle ultime azioni
+        // e quelli con una parola chiave nell'ultimo messaggio dell'utente (a parole intere).
+        private HashSet<string> RelevantIntents(ChatSession session)
         {
-            var sb = new StringBuilder();
-            sb.AppendLine();
-            sb.AppendLine("CONTESTO DEL TURNO:");
-            sb.AppendLine($"L'utente sta rispondendo alla domanda sullo slot \"{slotName}\" dell'intent \"{action.Intent}\".");
-            sb.AppendLine($"La risposta può contenere anche i valori di altri slot dello stesso intent: estraili TUTTI, non solo \"{slotName}\".");
-            sb.AppendLine("Per gli slot non presenti nella risposta metti null.");
+            var relevant = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var action in session.ActionQueue.Concat(session.LastExecuted))
+                relevant.Add(action.Intent);
 
-            if (action.Slots.Count > 0)
-            {
-                sb.AppendLine("Slot già noti:");
-                foreach (var kv in action.Slots)
-                    sb.AppendLine($"- {kv.Key}: {kv.Value}");
-            }
+            var lastMessage = session.History.LastOrDefault(t => t.Role == "user")?.Content;
+            var text = $" {ChatAIKeywords.Normalize(lastMessage)} ";
+            foreach (var intent in _intentCatalog.Intents)
+                if (intent.Keywords.Any(k => ChatAIKeywords.Normalize(k) is { Length: > 0 } nk && text.Contains($" {nk} ")))
+                    relevant.Add(intent.Name);
 
-            return sb.ToString();
+            return relevant;
         }
 
-
-
-        // Cerca la SlotDefinition per nome nell'intent corrente della sessione.
+        // Cerca la SlotDefinition per nome nell'intent indicato.
         // Unico punto di accesso alla struttura dello slot — nessun switch sui nomi.
         private SlotDefinition? FindSlotDefinition(string intentName, string slotName) =>
-            _intentCatalog.Intents
-                .FirstOrDefault(i => i.Name == intentName)
-                ?.Slots
-                .FirstOrDefault(s => s.Name == slotName);
+            FindIntent(intentName)?.Slots.FirstOrDefault(s => s.Name == slotName);
+
+        private IntentDefinition? FindIntent(string intentName) =>
+            _intentCatalog.Intents.FirstOrDefault(i => i.Name.Equals(intentName, StringComparison.OrdinalIgnoreCase));
 
         // ---------------------------------------------------------------------------
         // HTTP helper — /api/chat (supporta messages array con history)
         // ---------------------------------------------------------------------------
 
-        // Costruisce la lista messages: [system] + [history completa].
+        // Costruisce la lista messages: [system] + [history].
         // Il messaggio corrente dell'utente è già stato aggiunto alla history
         // in SendMessage prima di questa chiamata — non va passato separatamente.
         private List<OllamaChatMessage> BuildChatMessages( string? systemPrompt , List<ConversationTurn> history )
         {
             var messages = new List<OllamaChatMessage>();
-           
+
 
             if(!string.IsNullOrEmpty(systemPrompt))
             {
@@ -630,11 +473,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
 
             // Limita la history agli ultimi _maxHistoryTurns turni per evitare
             // payload eccessivi e finestre di contesto superate dal modello.
-            var trimmed = history.Count > _maxHistoryTurns
-                ? history.Skip(history.Count - _maxHistoryTurns)
-                : history;
-
-            foreach (var turn in trimmed)
+            foreach (var turn in TrimmedHistory(history))
                 messages.Add(new OllamaChatMessage
                 {
                     Role = turn.Role,
@@ -642,6 +481,63 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 });
 
             return messages;
+        }
+
+        private IEnumerable<ConversationTurn> TrimmedHistory(List<ConversationTurn> history) =>
+            history.Count > _maxHistoryTurns
+                ? history.Skip(history.Count - _maxHistoryTurns)
+                : history;
+
+        // Invia la richiesta al provider configurato (AI:UseLLM) con l'output strutturato richiesto
+        private async Task<string> PostToLlmAsync(List<OllamaChatMessage> messages)
+        {
+            var schema = _intentCatalog.BuildResponseSchema();
+
+            return _useLLM switch
+            {
+                "AI_local" => await PostToOllamaChatAsync(_ollamaUrl, new OllamaChatRequest
+                {
+                    Model = _ollamaModel,
+                    Messages = messages,
+                    Stream = false,
+                    Format = _responseFormat == "json_schema" ? schema : "json"
+                }),
+                "AI_openrouter" => await PostToOpenRouterChatAsync(messages, BuildOpenAiResponseFormat(schema)),
+                "AI_groq" => await PostToGroqChatAsync(messages, BuildOpenAiResponseFormat(schema)),
+                _ => throw new InvalidOperationException($"LLM non supportato: {_useLLM}")
+            };
+        }
+
+        // response_format delle API compatibili OpenAI (Groq, OpenRouter)
+        private object? BuildOpenAiResponseFormat(object schema) => _responseFormat switch
+        {
+            "json_schema" => new Dictionary<string, object>
+            {
+                ["type"] = "json_schema",
+                ["json_schema"] = new Dictionary<string, object>
+                {
+                    ["name"] = "action_plan",
+                    ["strict"] = _strictSchema,
+                    ["schema"] = schema
+                }
+            },
+            "json_object" => new Dictionary<string, object> { ["type"] = "json_object" },
+            _ => null
+        };
+
+        // Corpo della richiesta per le API compatibili OpenAI
+        private static Dictionary<string, object> BuildOpenAiBody(string model, List<OllamaChatMessage> messages, object? responseFormat)
+        {
+            var body = new Dictionary<string, object>
+            {
+                ["model"] = model,
+                ["messages"] = messages.Select(m => new { role = m.Role, content = m.Content }).ToList(),
+                ["stream"] = false,
+                ["temperature"] = 0.2
+            };
+            if (responseFormat != null)
+                body["response_format"] = responseFormat;
+            return body;
         }
 
         private async Task<string> PostToOllamaChatAsync(string baseUrl, OllamaChatRequest requestBody)
@@ -661,22 +557,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             return result.Data.Message?.Content ?? string.Empty;
         }
 
-        private async Task<string> PostToOpenRouterChatAsync(string baseUrl, OllamaChatRequest requestBody)
+        private async Task<string> PostToOpenRouterChatAsync(List<OllamaChatMessage> messages, object? responseFormat)
         {
-
-
-
-            // Converte formato Ollama in formato OpenAI/OpenRouter
-            var openRouterBody = new
-            {
-                model = _openrouterModel, // es: "microsoft/phi-4"
-                messages = requestBody.Messages.Select(m => new
-                {
-                    role = m.Role,
-                    content = m.Content
-                }).ToList(),
-                stream = false
-            };
+            var openRouterBody = BuildOpenAiBody(_openrouterModel, messages, responseFormat);
 
             var headers = new Dictionary<string, string>
             {
@@ -702,19 +585,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         }
 
 
-        private async Task<string> PostToGroqChatAsync(string baseUrl, OllamaChatRequest requestBody)
+        private async Task<string> PostToGroqChatAsync(List<OllamaChatMessage> messages, object? responseFormat)
         {
-            // Converte formato Ollama in formato OpenAI/Groq
-            var groqBody = new
-            {
-                model = _groqModel, // es: "llama3-8b-8192" oppure "llama3-groq-70b"
-                messages = requestBody.Messages.Select(m => new
-                {
-                    role = m.Role,
-                    content = m.Content
-                }).ToList(),
-                stream = false
-            };
+            var groqBody = BuildOpenAiBody(_groqModel, messages, responseFormat);
 
             var headers = new Dictionary<string, string>
             {
@@ -738,15 +611,13 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             return result.Data.Choices?.FirstOrDefault()?.Message?.Content ?? string.Empty;
         }
 
-
-
-
-
         // ---------------------------------------------------------------------------
-        // Deserializzazione sicura
+        // Lettura della risposta del LLM
         // ---------------------------------------------------------------------------
 
-        private ExtractedIntent? DeserializePlanOtherTurn(string raw,string? expectedSlot = null, string? expectedIntent = null)
+        // Accetta gli slot sia come lista nome/valore (schema) sia come oggetto { "nome": "valore" },
+        // e un singolo intent senza "actions". Valori numerici o booleani diventano testo.
+        public static ExtractedPlan? ParsePlan(string? raw)
         {
             try
             {
@@ -754,140 +625,190 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
 
                 var start = raw.IndexOf('{');
                 var end = raw.LastIndexOf('}');
-                if (start == -1 || end == -1) return null;
+                if (start == -1 || end <= start) return null;
 
-                var cleanJson = raw.Substring(start, end - start + 1);
+                using var doc = JsonDocument.Parse(raw.Substring(start, end - start + 1));
+                var root = doc.RootElement;
 
-                // Prova prima il formato standard: { "intent": ..., "slots": {...} }
-                var direct = JsonSerializer.Deserialize<ExtractedIntent>(cleanJson,
-                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                var items = root.TryGetProperty("actions", out var actions) && actions.ValueKind == JsonValueKind.Array
+                    ? actions.EnumerateArray().ToList()
+                    : root.TryGetProperty("intent", out _) ? new List<JsonElement> { root } : new List<JsonElement>();
 
-                if (direct != null && !string.IsNullOrEmpty(direct.Intent))
-                    return direct;
-
-                // Fallback: il LLM ha risposto con il formato piano { "actions": [...] }.
-                // Accade quando la history contiene risposte del primo turno in formato piano
-                // e il modello continua a rispondere nello stesso formato.
-                // Cerca l'azione che corrisponde all'intent atteso ed estrae i suoi slot.
-                if (expectedSlot != null)
+                var plan = new ExtractedPlan();
+                foreach (var item in items)
                 {
-                    var plan = JsonSerializer.Deserialize<ExtractedPlan>(cleanJson,
-                        new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                    if (item.ValueKind != JsonValueKind.Object) continue;
 
-                    if (plan?.Actions != null)
+                    var action = new ExtractedAction
                     {
-                        // Cerca l'azione con l'intent atteso (preferendo quella che ha lo slot chiesto,
-                        // ma accettando anche quella con soli altri slot), oppure la prima che ha lo slot
-                        var sameIntent = plan.Actions
-                            .Where(a => expectedIntent == null ||
-                                        a.Intent.Equals(expectedIntent, StringComparison.OrdinalIgnoreCase))
-                            .ToList();
-                        var match = sameIntent.FirstOrDefault(a => a.Slots.ContainsKey(expectedSlot))
-                            ?? (expectedIntent != null ? sameIntent.FirstOrDefault() : null)
-                            ?? plan.Actions.FirstOrDefault(a => a.Slots.ContainsKey(expectedSlot));
+                        Intent = item.TryGetProperty("intent", out var intent) ? intent.ToString() : string.Empty,
+                        Confidence = item.TryGetProperty("confidence", out var conf) && conf.TryGetDouble(out var c) ? c : 1.0
+                    };
 
-                        if (match != null)
-                            return new ExtractedIntent
-                            {
-                                Intent = match.Intent,
-                                Slots = match.Slots,
-                                Confidence = match.Confidence
-                            };
+                    if (item.TryGetProperty("slots", out var slots))
+                    {
+                        if (slots.ValueKind == JsonValueKind.Array)
+                        {
+                            foreach (var s in slots.EnumerateArray())
+                                if (s.ValueKind == JsonValueKind.Object &&
+                                    s.TryGetProperty("name", out var name) && s.TryGetProperty("value", out var value) &&
+                                    JsonValueToString(value) is { } v)
+                                    action.Slots[name.ToString()] = v;
+                        }
+                        else if (slots.ValueKind == JsonValueKind.Object)
+                        {
+                            foreach (var p in slots.EnumerateObject())
+                                if (JsonValueToString(p.Value) is { } v)
+                                    action.Slots[p.Name] = v;
+                        }
                     }
+
+                    plan.Actions.Add(action);
                 }
 
-                return direct;
+                return plan;
             }
             catch (Exception ex)
             {
-                Log.Warning(ex, "[ChatAI] DeserializePlanOtherTurn: JSON non deserializzabile. Raw={Raw}",
+                Log.Warning(ex, "[ChatAI] ParsePlan: JSON non deserializzabile. Raw={Raw}",
                     raw?.Length > 500 ? raw[..500] + "…" : raw);
                 return null;
             }
         }
 
-        private ExtractedPlan? DeserializePlanFirstTurn(string raw)
+        private static string? JsonValueToString(JsonElement value) => value.ValueKind switch
         {
-            try
-            {
-                if (string.IsNullOrEmpty(raw)) return null;
-
-                var start = raw.IndexOf('{');
-                var end = raw.LastIndexOf('}');
-                if (start == -1 || end == -1) return null;
-
-                var cleanJson = raw.Substring(start, end - start + 1);
-                return JsonSerializer.Deserialize<ExtractedPlan>(cleanJson,
-                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-            }
-            catch (Exception ex)
-            {
-                Log.Warning(ex, "[ChatAI] DeserializePlanFirstTurn: JSON non deserializzabile. Raw={Raw}",
-                    raw?.Length > 500 ? raw[..500] + "…" : raw);
-                return null;
-            }
-        }
+            JsonValueKind.String => value.GetString(),
+            JsonValueKind.Number or JsonValueKind.True or JsonValueKind.False => value.GetRawText(),
+            _ => null
+        };
 
         // ---------------------------------------------------------------------------
-        // Merge sicuro degli slot — opera sull'ActionEntry (non sulla sessione)
+        // Costruzione del piano dalla risposta del LLM, con controllo anti-allucinazione
         // ---------------------------------------------------------------------------
 
-        private void SafeMergeSlotsForAction(ActionEntry action, Dictionary<string, string> newSlots,
-            string? userMessage = null)
+        private List<ActionEntry> BuildPlanFromLlm(ExtractedPlan? plan, ChatSession session)
         {
-            if (newSlots == null) return;
+            var result = new List<ActionEntry>();
+            if (plan == null) return result;
 
-            var intentDef = _intentCatalog.Intents
-                .FirstOrDefault(i => i.Name == action.Intent);
+            // Testo dell'utente nella conversazione recente: i valori devono venire da lì
+            var userText = string.Join("\n", TrimmedHistory(session.History)
+                .Where(t => t.Role == "user").Select(t => t.Content));
+            var known = KnownSlotValues(session);
+            var usedOld = new HashSet<ActionEntry>();
 
-            foreach (var kv in newSlots)
+            foreach (var extracted in plan.Actions)
             {
-                if (IsNullString(kv.Value)) continue;
-                if (action.Slots.ContainsKey(kv.Key)) continue;
-
-                var slotDef = intentDef?.Slots.FirstOrDefault(s => s.Name == kv.Key);
-
-                if (slotDef != null &&
-                    !string.IsNullOrEmpty(slotDef.PromptDescription) &&
-                    kv.Value.Equals(slotDef.PromptDescription, StringComparison.OrdinalIgnoreCase))
+                if (extracted.Intent.Equals("unknown", StringComparison.OrdinalIgnoreCase) || extracted.Confidence < 0.5)
                     continue;
 
-                if (slotDef != null &&
-                    !string.IsNullOrEmpty(slotDef.Type) &&
-                    kv.Value.Equals(slotDef.Type, StringComparison.OrdinalIgnoreCase))
-                    continue;
+                var intentDef = FindIntent(extracted.Intent);
+                if (intentDef == null) continue;
 
-                if (intentDef != null &&
-                    intentDef.Keywords.Any(k => k.Equals(kv.Value, StringComparison.OrdinalIgnoreCase)))
-                    continue;
+                var entry = new ActionEntry { Intent = intentDef.Name, State = ActionState.Collecting };
+                foreach (var kv in extracted.Slots)
+                    AcceptSlot(entry, intentDef, kv.Key, kv.Value, userText, known);
 
-                if (userMessage != null && slotDef != null)
+                // Continuità: l'azione del piano in corso con lo stesso intent conserva i valori già
+                // raccolti che il LLM non ha ripetuto (i valori nuovi o corretti hanno la precedenza)
+                var old = session.ActionQueue.FirstOrDefault(a => a.Intent == intentDef.Name && !usedOld.Contains(a));
+                if (old != null)
                 {
-                    bool valueInText = userMessage.Contains(kv.Value, StringComparison.OrdinalIgnoreCase);
-                    bool isDefaultValue = !string.IsNullOrEmpty(slotDef.Default) &&
-                                           kv.Value.Equals(slotDef.Default, StringComparison.OrdinalIgnoreCase);
-                    bool hasRelevantContent = slotDef.HasRelevantContent != null &&
-                                             slotDef.HasRelevantContent(userMessage);
-
-                    if (!valueInText && !isDefaultValue && !hasRelevantContent)
-                    {
-                        Log.Warning("[ChatAI] Slot scartato (anti-hallucination). Slot={Slot} Valore={Value} Testo={Text}",
-                            kv.Key, kv.Value, userMessage);
-                        continue;
-                    }
+                    usedOld.Add(old);
+                    foreach (var kv in old.Slots)
+                        entry.Slots.TryAdd(kv.Key, kv.Value);
+                    entry.InfoMessage = old.InfoMessage;
                 }
 
-                action.Slots[kv.Key] = kv.Value;
+                result.Add(entry);
             }
+
+            return result;
         }
 
-        // Mantenuto per compatibilità con Call_LLM_ExtractSingleSlotAsync che riceve ChatSession
-        private void SafeMergeSlots(ChatSession session, Dictionary<string, string> newSlots,
-            string? userMessage = null)
+        // Accetta il valore di uno slot solo se è giustificato da ciò che l'utente ha scritto:
+        // presente nel testo, già noto (piano in corso o ultime azioni), default, contenuto pertinente
+        // secondo lo slot, espressione del testo che si normalizza nello stesso valore, oppure "@me"
+        // quando l'utente parla di sé.
+        private void AcceptSlot(ActionEntry entry, IntentDefinition intentDef, string slotName, string value,
+            string userText, Dictionary<string, HashSet<string>> known)
         {
-            var current = session.CurrentAction;
-            if (current == null) return;
-            SafeMergeSlotsForAction(current, newSlots, userMessage);
+            var slotDef = intentDef.Slots.FirstOrDefault(s => s.Name == slotName);
+            if (slotDef == null || IsNullString(value)) return;
+
+            value = value.Trim();
+
+            // placeholder copiati dal prompt (descrizione, tipo, parole chiave)
+            if (value.Equals(slotDef.PromptDescription, StringComparison.OrdinalIgnoreCase) ||
+                value.Equals(slotDef.Type, StringComparison.OrdinalIgnoreCase) ||
+                intentDef.Keywords.Any(k => k.Equals(value, StringComparison.OrdinalIgnoreCase)))
+                return;
+
+            var normalizer = slotDef.Normalizer ?? SlotNormalizers.ForType(slotDef.Type);
+            var normalized = normalizer?.Invoke(value);
+            var stored = normalized ?? value;
+
+            bool isSelf = slotDef.IsPerson && value.Equals(ChatSelf.Token, StringComparison.OrdinalIgnoreCase);
+
+            bool justified =
+                isSelf ? ChatSelf.MentionsSelf(userText)
+                : ContainsAllWords(userText, value)
+                  || (known.TryGetValue(slotName, out var values) && (values.Contains(stored) || values.Contains(value)))
+                  || IsDefaultValue(slotDef, value, normalizer, stored)
+                  || (slotDef.HasRelevantContent?.Invoke(userText) ?? false)
+                  || (normalizer != null && normalized != null && ContainsExpressionFor(userText, normalizer, normalized));
+
+            if (!justified)
+            {
+                Log.Warning("[ChatAI] Slot scartato (anti-hallucination). Slot={Slot} Valore={Value} Testo={Text}",
+                    slotName, value, userText);
+                return;
+            }
+
+            entry.Slots[slotName] = isSelf ? ChatSelf.Token : stored;
+        }
+
+        private static bool IsDefaultValue(SlotDefinition slotDef, string value, Func<string, string?>? normalizer, string stored) =>
+            !string.IsNullOrEmpty(slotDef.Default) &&
+            (value.Equals(slotDef.Default, StringComparison.OrdinalIgnoreCase) ||
+             (normalizer != null && stored == normalizer(slotDef.Default)));
+
+        // tutte le parole del valore compaiono nel testo, in qualunque ordine ("Rossi Mario" in "timbra Mario Rossi")
+        private static bool ContainsAllWords(string text, string value)
+        {
+            var words = ChatAIKeywords.Normalize(text).Split(' ').ToHashSet();
+            var valueWords = ChatAIKeywords.Normalize(value).Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            return valueWords.Length > 0 && valueWords.All(words.Contains);
+        }
+
+        // nel testo c'è un'espressione (fino a 5 parole) che si normalizza nello stesso valore
+        // (es. "lunedì scorso" -> la data restituita dal LLM)
+        private static bool ContainsExpressionFor(string text, Func<string, string?> normalizer, string normalized)
+        {
+            var words = text.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries)
+                .Select(w => w.Trim(',', ';', '!', '?', '"', '(', ')'))
+                .Where(w => w.Length > 0).ToArray();
+
+            for (int len = 1; len <= 5; len++)
+                for (int i = 0; i + len <= words.Length; i++)
+                    if (normalizer(string.Join(' ', words, i, len)) == normalized)
+                        return true;
+            return false;
+        }
+
+        // valori già noti per nome di slot: piano in corso e ultime azioni eseguite
+        private static Dictionary<string, HashSet<string>> KnownSlotValues(ChatSession session)
+        {
+            var known = new Dictionary<string, HashSet<string>>();
+            foreach (var action in session.ActionQueue.Concat(session.LastExecuted))
+                foreach (var kv in action.Slots)
+                {
+                    if (!known.TryGetValue(kv.Key, out var set))
+                        known[kv.Key] = set = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                    set.Add(kv.Value);
+                }
+            return known;
         }
 
         private bool IsNullString(string value) =>
@@ -901,14 +822,28 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             // sono sempre placeholder generati dal LLM, mai dati reali dell'utente.
             (value.Contains('_') && !value.Contains(' '));
 
+        private static List<ActionEntry> ClonePlan(IEnumerable<ActionEntry> actions) =>
+            actions.Select(a => new ActionEntry
+            {
+                Intent = a.Intent,
+                Slots = new Dictionary<string, string>(a.Slots),
+                State = a.State,
+                InfoMessage = a.InfoMessage
+            }).ToList();
+
+        private static bool SamePlan(List<ActionEntry> a, List<ActionEntry> b) =>
+            a.Count == b.Count &&
+            a.Zip(b).All(p => p.First.Intent == p.Second.Intent &&
+                              p.First.Slots.Count == p.Second.Slots.Count &&
+                              p.First.Slots.All(kv => p.Second.Slots.TryGetValue(kv.Key, out var v) && v == kv.Value));
+
         // ---------------------------------------------------------------------------
         // Validazione slot — opera sull'ActionEntry
         // ---------------------------------------------------------------------------
 
         private SlotValidationResult ValidateSlotFormatsForAction(ActionEntry action)
         {
-            var intentDef = _intentCatalog.Intents
-                .FirstOrDefault(i => i.Name == action.Intent);
+            var intentDef = FindIntent(action.Intent);
 
             if (intentDef == null) return SlotValidationResult.Ok();
 
@@ -940,21 +875,13 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             return SlotValidationResult.Ok(action.Slots.GetValueOrDefault("employeeName", string.Empty), pendingInfo);
         }
 
-        // Mantenuto per compatibilità interna con il vecchio flusso (usato da ValidateSlotFormats)
-        private SlotValidationResult ValidateSlotFormats(ChatSession session)
-        {
-            var current = session.CurrentAction;
-            return current != null ? ValidateSlotFormatsForAction(current) : SlotValidationResult.Ok();
-        }
-
         // ---------------------------------------------------------------------------
         // Slot mancanti
         // ---------------------------------------------------------------------------
 
         private List<string> GetMissingRequiredSlotsForAction(ActionEntry action)
         {
-            var intentDef = _intentCatalog.Intents
-                .FirstOrDefault(i => i.Name == action.Intent);
+            var intentDef = FindIntent(action.Intent);
 
             if (intentDef == null) return new();
 
@@ -964,20 +891,19 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 .ToList();
         }
 
-        // Shim per compatibilità con Call_LLM_ExtractSingleSlotAsync
-        private List<string> GetMissingRequiredSlots(ChatSession session)
+        // domanda dello slot senza contesto (per il testo vocale)
+        private string GetSlotQuestion(string intentName, string slotName)
         {
-            var current = session.CurrentAction;
-            return current != null ? GetMissingRequiredSlotsForAction(current) : new();
+            var slotDef = FindSlotDefinition(intentName, slotName);
+            return !string.IsNullOrEmpty(slotDef?.Question)
+                ? slotDef.Question
+                : ChatAIMessages.Get("SlotQuestionDefault", slotName);
         }
 
         private string BuildMissingSlotQuestion(string slotName, string intentName,
             ActionEntry? action = null, string? actionTitle = null)
         {
-            var slotDef = FindSlotDefinition(intentName, slotName);
-            var question = !string.IsNullOrEmpty(slotDef?.Question)
-                ? slotDef.Question
-                : ChatAIMessages.Get("SlotQuestionDefault", slotName);
+            var question = GetSlotQuestion(intentName, slotName);
 
             // Costruisce il contesto: titolo operazione (opzionale) + slot già raccolti
             var contextParts = new List<string>();
@@ -987,7 +913,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
 
             if (action != null && action.Slots.Count > 0)
             {
-                var intentDef = _intentCatalog.Intents.FirstOrDefault(i => i.Name == intentName);
+                var intentDef = FindIntent(intentName);
                 if (intentDef != null)
                 {
                     foreach (var sd in intentDef.Slots)
@@ -1030,14 +956,6 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             }
         }
 
-        // Shim per compatibilità con il blocco Help in SendMessage
-        private async Task<CommandResult> ExecuteCommandAsync(ChatSession session)
-        {
-            var current = session.CurrentAction;
-            if (current == null) return CommandResult.Fail(ChatAIMessages.Get("NoCurrentAction"));
-            return await ExecuteCommandAsync(current);
-        }
-
         // ---------------------------------------------------------------------------
         // Esecuzione piano completo
         // ---------------------------------------------------------------------------
@@ -1048,12 +966,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
 
             foreach (var action in session.ActionQueue)
             {
-                var intentDef = _intentCatalog.Intents
-                    .FirstOrDefault(i => i.Name.Equals(action.Intent, StringComparison.OrdinalIgnoreCase));
+                var intentDef = FindIntent(action.Intent);
 
-                // Esegui validazione/normalizzazione degli slot per ogni azione del piano.
-                // Le azioni successive alla prima non passano per il flusso SendMessage,
-                // quindi il validator (es. risoluzione nome canonico dipendente) va rieseguito qui.
+                // Esegui validazione/normalizzazione degli slot per ogni azione del piano
+                // (es. risoluzione nome canonico dipendente) subito prima dell'esecuzione.
                 var validation = ValidateSlotFormatsForAction(action);
                 if (!validation.IsValid)
                 {
@@ -1111,15 +1027,11 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             int idx = 1;
             foreach (var action in session.ActionQueue)
             {
-                var intentDef = _intentCatalog.Intents.FirstOrDefault(i => i.Name == action.Intent);
+                var intentDef = FindIntent(action.Intent);
                 var label = !string.IsNullOrEmpty(intentDef?.DisplayName) ? intentDef.DisplayName : action.Intent;
 
                 // Titolo numerato + DisplayName
                 sb.AppendLine($"{"①②③④⑤⑥⑦⑧⑨⑩"[Math.Min(idx - 1, 9)]} {label}");
-
-                // Descrizione dell'intent
-                //if (!string.IsNullOrEmpty(intentDef?.Description))
-                //    sb.AppendLine($"   {intentDef.Description}");
 
                 // InfoMessage inline (es. "Dipendente agganciato: Rossi Mario")
                 if (!string.IsNullOrEmpty(action.InfoMessage))
@@ -1145,22 +1057,37 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             return sb.ToString();
         }
 
-        private string GetDisplayName(string intentName)
+        // Riepilogo in forma di frase per il testo vocale: SummaryTemplate dell'intent con i valori,
+        // altrimenti nome dell'operazione e valori. Termina con la domanda di conferma.
+        private string BuildPlanSpeech(ChatSession session)
         {
-            var intentDef = _intentCatalog.Intents.FirstOrDefault(i => i.Name == intentName);
-            return !string.IsNullOrEmpty(intentDef?.DisplayName) ? intentDef.DisplayName : intentName;
+            var sentences = session.ActionQueue.Select(action =>
+            {
+                var intentDef = FindIntent(action.Intent);
+                var label = GetDisplayName(action.Intent);
+
+                if (!string.IsNullOrEmpty(intentDef?.SummaryTemplate))
+                    return Regex.Replace(intentDef.SummaryTemplate, @"\{(\w+)\}", m =>
+                    {
+                        if (action.Slots.TryGetValue(m.Groups[1].Value, out var value)) return value;
+
+                        // valore mancante: il default, normalizzato ("oggi" -> la data)
+                        var slotDef = intentDef.Slots.FirstOrDefault(s => s.Name == m.Groups[1].Value);
+                        if (string.IsNullOrEmpty(slotDef?.Default)) return string.Empty;
+                        var normalizer = slotDef.Normalizer ?? SlotNormalizers.ForType(slotDef.Type);
+                        return normalizer?.Invoke(slotDef.Default) ?? slotDef.Default;
+                    });
+
+                return action.Slots.Count == 0 ? label : $"{label}: {string.Join(", ", action.Slots.Values)}";
+            });
+
+            return string.Join(". ", sentences) + ". " + ChatAIMessages.Get("PlanConfirmQuestion");
         }
 
-        private string BuildNextActionQuestion(ChatSession session)
+        private string GetDisplayName(string intentName)
         {
-            var next = session.ActionQueue.ElementAtOrDefault(session.CurrentActionIndex + 1);
-            if (next == null) return string.Empty;
-
-            var missing = GetMissingRequiredSlotsForAction(next).FirstOrDefault();
-            if (missing == null) return string.Empty;
-
-            var actionTitle = GetDisplayName(next.Intent);
-            return BuildMissingSlotQuestion(missing, next.Intent, next, actionTitle);
+            var intentDef = FindIntent(intentName);
+            return !string.IsNullOrEmpty(intentDef?.DisplayName) ? intentDef.DisplayName : intentName;
         }
 
         // ---------------------------------------------------------------------------
@@ -1168,20 +1095,47 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         // ---------------------------------------------------------------------------
 
         private ChatAIOutModel BuildQuestionResponse(ChatSession session, string message,
-            List<string>? suggestions = null) =>
+            List<string>? suggestions = null, string? speechText = null) =>
             new()
             {
                 SessionId = session.SessionId,
                 Responce = message,
+                SpeechText = speechText ?? message,
                 ResponseType = "question",
                 Suggestions = suggestions ?? new()
             };
+
+        // Ripete la domanda in sospeso (piano in corso) preceduta da un avviso
+        private ChatAIOutModel BuildCurrentQuestionResponse(ChatSession session, string notice)
+        {
+            var action = session.ActionQueue.FirstOrDefault(a => GetMissingRequiredSlotsForAction(a).Any())
+                         ?? session.CurrentAction;
+            var missing = action != null ? GetMissingRequiredSlotsForAction(action).FirstOrDefault() : null;
+
+            var message = missing != null && action != null
+                ? notice + "\n" + BuildMissingSlotQuestion(missing, action.Intent, action, GetDisplayName(action.Intent))
+                : notice;
+            session.AddToHistory("assistant", message);
+            return BuildQuestionResponse(session, message,
+                speechText: missing != null && action != null ? notice + " " + GetSlotQuestion(action.Intent, missing) : notice);
+        }
+
+        // Piano in attesa di conferma e risposta né sì né no: si resta in attesa di conferma,
+        // così la risposta successiva ("sì") esegue subito il piano
+        private ChatAIOutModel BuildClarificationResponse(ChatSession session)
+        {
+            session.State = SessionState.ReadyToExecute;
+            var clarification = ChatAIMessages.Get("ConfirmClarification");
+            session.AddToHistory("assistant", clarification);
+            return BuildQuestionResponse(session, clarification, BuildYesNoSuggestions());
+        }
 
         private ChatAIOutModel BuildConfirmationResponse(ChatSession session, string message) =>
             new()
             {
                 SessionId = session.SessionId,
                 Responce = message,
+                SpeechText = BuildPlanSpeech(session),
                 ResponseType = "confirmation",
                 Suggestions = BuildYesNoSuggestions(),
                 AutoConfirm = IsNavigationOnly(session)
@@ -1190,8 +1144,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         // Vero se il piano contiene solo navigazioni (nessuna scrittura di dati):
         // solo in questo caso il client vocale può confermare da solo.
         private bool IsNavigationOnly(ChatSession session) =>
-            session.ActionQueue.All(a =>
-                _intentCatalog.Intents.FirstOrDefault(i => i.Name == a.Intent)?.IsNavigation == true);
+            session.ActionQueue.All(a => FindIntent(a.Intent)?.IsNavigation == true);
 
         // Chip di conferma nella lingua dell'utente: il testo viene rimandato al server,
         // che riconosce si/yes/ok/no... in entrambe le lingue (ChatAIKeywords).
@@ -1205,12 +1158,13 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             {
                 SessionId = session.SessionId,
                 Responce = message,
+                SpeechText = message,
                 ResponseType = "error",
                 Suggestions = suggestions ?? new()
             };
 
         // Costruisce la lista di suggerimenti dagli intent disponibili nel catalogo.
-        // Usa la Description dell'intent come testo del chip.
+        // Usa il DisplayName dell'intent come testo del chip.
         private List<string> BuildIntentSuggestions() =>
             _intentCatalog.Intents
                 .Select(i => !string.IsNullOrEmpty(i.DisplayName) ? i.DisplayName : i.Name)
