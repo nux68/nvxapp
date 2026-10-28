@@ -561,6 +561,9 @@
   <data name="ChatJustificationTypeNotFound" xml:space="preserve">
     <value>Leave type '{0}' not found.</value>
   </data>
+  <data name="ChatRegisterClockingError" xml:space="preserve">
+    <value>Error while registering the clocking: {0}</value>
+  </data>
   <data name="ChatRegisterJustificationError" xml:space="preserve">
     <value>Error while recording the leave: {0}</value>
   </data>

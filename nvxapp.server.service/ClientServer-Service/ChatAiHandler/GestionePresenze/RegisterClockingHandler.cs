@@ -1,3 +1,4 @@
+using System.Globalization;
 using nvxapp.server.data.Localization;
 using nvxapp.server.data.Entities.Tenant;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_AnagraficaService;
@@ -30,7 +31,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
             var DatePromptDescription = sb_Date.ToString();
 
             var sb_Time = new StringBuilder();
-            BuildSystemPromptUtil.BuildSystemPrompt_Append_Orario(sb_Date);
+            BuildSystemPromptUtil.BuildSystemPrompt_Append_Orario(sb_Time);
             var TimePromptDescription = sb_Time.ToString();
 
 
@@ -113,12 +114,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                             "date"
                         );
                     },
-                    HasRelevantContent = msg =>
-                    {
-                        var Words = ChatSlotWords.RelativeDays;
-                        var retVal = Words.Any(w => msg.Contains(w, StringComparison.OrdinalIgnoreCase));
-                        return retVal;
-                    }
+                    HasRelevantContent = ChatSlotWords.HasDateContent
                 },
                 new()
                 {
@@ -152,77 +148,67 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
 
         public override IntentDefinition IntentDefinition => _intentDefinition;
 
-        public override Task<CommandResult> ExecuteAsync(Dictionary<string, string> slots)
+        public override async Task<CommandResult> ExecuteAsync(Dictionary<string, string> slots)
         {
-
-            var employeeName = slots.GetValueOrDefault("employeeName", "-");
-            var time = slots.GetValueOrDefault("time", "-");
-            var date = slots.GetValueOrDefault("date", DateTime.Today.ToString("dd/MM/yyyy"));
-            var direction = slots.GetValueOrDefault("direction", "IN");
+            var employeeName = slots.GetValueOrDefault("employeeName", "");
+            var timeSlot     = slots.GetValueOrDefault("time", "00:00");
+            var dateSlot     = slots.GetValueOrDefault("date", "oggi");
+            var direction    = slots.GetValueOrDefault("direction", "IN");
             var directionLabel = direction.Equals("OUT", StringComparison.OrdinalIgnoreCase)
                 ? AttendanceTrackingMessages.Get("ChatClockingDirectionOut")
                 : AttendanceTrackingMessages.Get("ChatClockingDirectionIn");
 
+            // --- Risolvi dipendente ---
+            Dip_AnagraficaModel? Dip_Anagrafica = Get_Dip_Anagrafica(employeeName);
+            if (Dip_Anagrafica == null)
+                return CommandResult.Fail(
+                    AttendanceTrackingMessages.Get("ChatRegisterClockingEmployeeNotFound", employeeName));
 
-            if (!string.IsNullOrEmpty(employeeName))
+            if (Dip_Anagrafica.Dip_RapportoLavoro == null || Dip_Anagrafica.Dip_RapportoLavoro.Count == 0)
+                return CommandResult.Fail(
+                    AttendanceTrackingMessages.Get("ChatEmploymentNotFoundFor", employeeName));
+
+            // --- Data e ora della timbratura ---
+            // date: "oggi" (default) oppure dd/MM/yyyy / yyyy-MM-dd; time: sempre HH:mm.
+            DateTime competenzaDate = ChatSlotWords.ParseDateOrToday(dateSlot);
+
+            DateTime timbraturaDateTime = TimeOnly.TryParse(timeSlot, CultureInfo.InvariantCulture, out var parsedTime)
+                ? competenzaDate.Add(parsedTime.ToTimeSpan())
+                : competenzaDate;
+
+            // Come nel resto dell'applicazione la timbratura si registra senza verso:
+            // entrata/uscita le assegna il motore di calcolo accoppiando le timbrature del giorno.
+            // Il verso detto dall'utente resta solo nel messaggio di conferma.
+            Dip_GG_TimbraturaModel Dip_GG_Timbratura = new Dip_GG_TimbraturaModel()
             {
-                Dip_AnagraficaModel? Dip_Anagrafica = Get_Dip_Anagrafica(employeeName);
-                if (Dip_Anagrafica == null)
-                    return Task.FromResult(CommandResult.Fail(
-                        AttendanceTrackingMessages.Get("ChatRegisterClockingEmployeeNotFound", employeeName)));
+                IdDip_RapportoLavoro      = Dip_Anagrafica.Dip_RapportoLavoro[0].Id,
+                Timbratura                = timbraturaDateTime,
+                TimbraturaOriginale       = timbraturaDateTime,
+                GiornoCompetenza          = competenzaDate.Date,
+                TimbraturaTipo            = TipoTimbratura.SenzaVerso,
+                RichiestaStato            = StatoRichiesta.Diretta,
+                IdAz_SubCommessaAttivita  = Dip_Anagrafica.Dip_RapportoLavoro[0].IdAz_SubCommessaAttivita
+            };
 
-                // Costruisce il DateTime di timbratura combinando date + time dagli slot.
-                    // date può essere "oggi" (default) oppure "yyyy-MM-dd"; time è sempre "HH:mm".
-                    var dateSlot = slots.GetValueOrDefault("date", "oggi");
-                    var timeSlot = slots.GetValueOrDefault("time", "00:00");
+            var req_1 = new GenericRequest<Dip_GG_TimbraturaPutInModel>()
+            {
+                Data = new Dip_GG_TimbraturaPutInModel()
+                {
+                    IdDip_RapportoLavoro = Dip_Anagrafica.Dip_RapportoLavoro[0].Id,
+                    Dip_GG_Timbratura    = Dip_GG_Timbratura,
+                    ExcludeRicalc        = false
+                }
+            };
 
-                    DateTime competenzaDate = ChatSlotWords.IsToday(dateSlot)
-                        ? DateTime.Today
-                        : (DateOnly.TryParse(dateSlot, out var parsedDate)
-                            ? parsedDate.ToDateTime(TimeOnly.MinValue)
-                            : DateTime.Today);
+            var result = await _dip_GG_TimbraturaService.Dip_GG_TimbraturaPut(req_1, true);
 
-                    DateTime timbraturaDateTime = TimeOnly.TryParse(timeSlot, out var parsedTime)
-                        ? competenzaDate.Add(parsedTime.ToTimeSpan())
-                        : competenzaDate;
+            if (!result.Success)
+                return CommandResult.Fail(
+                    AttendanceTrackingMessages.Get("ChatRegisterClockingError", string.Join(", ", result.Messages.Select(m => m.Text))));
 
-                    TipoTimbratura tipoTimbratura = direction.Equals("OUT", StringComparison.OrdinalIgnoreCase)
-                        ? TipoTimbratura.Uscita
-                        : TipoTimbratura.Entrata;
-                    tipoTimbratura = TipoTimbratura.SenzaVerso;
-
-                    Dip_GG_TimbraturaModel Dip_GG_Timbratura = new Dip_GG_TimbraturaModel()
-                    {
-                        IdDip_RapportoLavoro      = Dip_Anagrafica.Dip_RapportoLavoro[0].Id,
-                        Timbratura                = timbraturaDateTime,
-                        TimbraturaOriginale       = timbraturaDateTime,
-                        GiornoCompetenza          = competenzaDate.Date,
-                        TimbraturaTipo            = tipoTimbratura,
-                        RichiestaStato            = StatoRichiesta.Diretta,
-                        IdAz_SubCommessaAttivita  = Dip_Anagrafica.Dip_RapportoLavoro[0].IdAz_SubCommessaAttivita
-                    };
-                    
-
-                    var req_1 = new GenericRequest<Dip_GG_TimbraturaPutInModel>()
-                    {
-                        Data = new Dip_GG_TimbraturaPutInModel()
-                        {
-                            IdDip_RapportoLavoro = Dip_Anagrafica.Dip_RapportoLavoro[0].Id,
-                            Dip_GG_Timbratura    = Dip_GG_Timbratura,
-                            ExcludeRicalc        = false
-                        }
-                    };
-                    var c = _dip_GG_TimbraturaService.Dip_GG_TimbraturaPut(req_1, true).Result;
-            }
-
-
-
-
-
-
-            return Task.FromResult(CommandResult.Ok(
-                AttendanceTrackingMessages.Get("ChatRegisterClockingDone", directionLabel, employeeName, time, date)));
+            return CommandResult.Ok(
+                AttendanceTrackingMessages.Get("ChatRegisterClockingDone", directionLabel, employeeName,
+                    timbraturaDateTime.ToString("HH:mm"), competenzaDate.ToString("dd/MM/yyyy")));
         }
-
     }
 }

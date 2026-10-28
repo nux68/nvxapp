@@ -561,6 +561,9 @@
   <data name="ChatJustificationTypeNotFound" xml:space="preserve">
     <value>Tipo di giustificativo '{0}' non trovato.</value>
   </data>
+  <data name="ChatRegisterClockingError" xml:space="preserve">
+    <value>Errore durante la registrazione della timbratura: {0}</value>
+  </data>
   <data name="ChatRegisterJustificationError" xml:space="preserve">
     <value>Errore durante la registrazione del giustificativo: {0}</value>
   </data>

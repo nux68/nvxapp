@@ -75,11 +75,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                                 AttendanceTrackingMessages.Get("ChatInvalidDate", v),
                                 "dal");
                         },
-                        HasRelevantContent = msg =>
-                        {
-                            var words = ChatSlotWords.RelativeDays;
-                            return words.Any(w => msg.Contains(w, StringComparison.OrdinalIgnoreCase));
-                        }
+                        HasRelevantContent = ChatSlotWords.HasDateContent
                     },
                     new()
                     {
@@ -100,11 +96,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                                 AttendanceTrackingMessages.Get("ChatInvalidDate", v),
                                 "al");
                         },
-                        HasRelevantContent = msg =>
-                        {
-                            var words = ChatSlotWords.RelativeDays;
-                            return words.Any(w => msg.Contains(w, StringComparison.OrdinalIgnoreCase));
-                        }
+                        HasRelevantContent = ChatSlotWords.HasDateContent
                     }
                 )
             };

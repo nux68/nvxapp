@@ -92,11 +92,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                                 AttendanceTrackingMessages.Get("ChatInvalidDate", v),
                                 "date");
                         },
-                        HasRelevantContent = msg =>
-                        {
-                            var words = ChatSlotWords.RelativeDays;
-                            return words.Any(w => msg.Contains(w, StringComparison.OrdinalIgnoreCase));
-                        }
+                        HasRelevantContent = ChatSlotWords.HasDateContent
                     }
                 )
             };
@@ -143,11 +139,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                 return CommandResult.Fail(AttendanceTrackingMessages.Get("ChatCausaleNotFound", causaleNome));
 
             // --- Risolvi data ---
-            DateTime competenzaDate = ChatSlotWords.IsToday(dateSlot)
-                ? DateTime.Today
-                : DateOnly.TryParse(dateSlot, out var parsedDate)
-                    ? parsedDate.ToDateTime(TimeOnly.MinValue)
-                    : DateTime.Today;
+            DateTime competenzaDate = ChatSlotWords.ParseDateOrToday(dateSlot);
 
             // --- Risolvi ore ---
             HoursSlotHelper.TryParse(hoursSlot, out var oreSpan);
