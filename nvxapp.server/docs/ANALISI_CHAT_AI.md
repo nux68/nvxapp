@@ -4,7 +4,7 @@
 >
 > **Obiettivo**: dialogo meno macchinoso, più comandi disponibili, linguaggio naturale (chat e voce).
 
-**Stato al 28/10/2026: 36 punti su 41 svolti (Fasi 1-4 complete tranne le operazioni massive di C10; da provare nell'app avviata).**
+**Stato al 28/10/2026: 40 punti su 41 implementati (manca la parte massiva di C10). Le prove con il LLM e nell'app avviata sono sospese in attesa del nuovo LLM: vedi sezione 10.**
 
 Legenda: ✅ svolto · ⏳ da fare · 🔍 da valutare. Lo stato di ogni punto si aggiorna nella checklist (sezione 9); la tabella seguente riassume per area.
 
@@ -15,7 +15,7 @@ Legenda: ✅ svolto · ⏳ da fare · 🔍 da valutare. Lo stato di ogni punto s
 | 5. Linguaggio naturale | L1–L4 | ✅ 4/4 |
 | 6. Voce | V1–V4 | ✅ 4/4 |
 | 7. Nuovi comandi | C1–C14 | ⏳ 13/14 (C10: manca la parte massiva) |
-| 8. Costo di aggiunta dei comandi | E1–E4 | ⏳ 0/4 |
+| 8. Costo di aggiunta dei comandi | E1–E4 | ✅ 4/4 |
 
 **Dove si interviene**: il motore (sezioni 3, 4, 5, 6 ed E2–E4) sta in **Infrastructure_Dev**; i comandi delle presenze (C1–C11, E1) in **AttendanceTracking_Dev**, dopo il merge del motore.
 
@@ -226,7 +226,26 @@ Fatta il 28/10/2026, tutta nel client. Compila (build Angular), ma non è provat
 - [x] V4 Interruzione e "tieni premuto per parlare": parlando si interrompe la voce (l'eco della voce captata dal microfono si scarta confrontando le parole, `isEcho`); pulsante per fermare la voce; pulsante "tieni premuto per parlare" in alternativa all'ascolto continuo (`SpeechService.startPushToTalk`)
 
 ### Fase 5 — Scalabilità (E1 su AttendanceTracking_Dev, il resto su Infrastructure_Dev)
-- [ ] E1 Comando "Apri entità" da metadati
-- [ ] E2 Frasi di test
-- [ ] E3 Log delle frasi non capite
-- [ ] E4 Suggerimenti contestuali
+Fatta il 28/10/2026. Compila su tutti i rami; le prove con il LLM sono sospese (vedi "Prove da fare").
+
+- [x] E1 Comando unico "apri entità" (`OpenEntityHandler`, Infrastructure) guidato da metadati: ogni modulo dichiara le entità apribili implementando `IOpenableEntity` (servizio, parole it/en, ruoli, pagina di modifica). Le 10 anagrafiche presenze (`OpenableEntities.cs`) sostituiscono i 10 comandi `Open*` (9 intent in meno nel prompt); tolte le 67 chiavi di testo dei vecchi comandi. Senza entità registrate il comando non compare
+- [x] E2 Frasi di prova: `tools/ChatAiPhraseTest` (vedi il suo README), fuori dalla solution e da Docker. Usa il motore vero con il LLM configurato, i comandi veri e servizi finti; i comandi non si eseguono, si confrontano intent e valori con l'atteso. Frasi in `frasi/infrastruttura.json` (11, tutte riuscite il 28/10 con Groq) e `frasi/presenze.json` (28, sul ramo presenze, non ancora provate)
+- [x] E3 Log delle frasi non capite: evento "ChatAI frase non capita" con frase, pagina, ruoli, piano in corso e lingua (filtrabile nei log Serilog)
+- [x] E4 Suggerimenti contestuali: i chip mostrano prima i comandi della pagina corrente, al massimo 6, con l'help per ultimo (prima erano tutti i comandi del ruolo)
+
+Inoltre, per stare nei limiti di token al minuto: parole chiave valide anche come inizio di parola (meno seconde chiamate al LLM) e `AI:<provider>:ReasoningEffort` (default "low" per i modelli gpt-oss). Non ancora verificati con il LLM.
+
+## 10. Prove da fare (con il nuovo LLM)
+
+Sospese il 28/10/2026: con Groq gratuito (`gpt-oss-120b`, 8.000 token al minuto) un turno dell'HR con 34 comandi consuma circa 3.500 token, 6–7 mila se serve la seconda chiamata, e le prove si bloccano su "troppe richieste". Si faranno dopo aver collegato un altro LLM.
+
+- [ ] Configurare il nuovo provider (`AI:UseLLM`, modello, chiave `NVXAPP_AI__<provider>__ApiKey`); se non è Groq/OpenRouter/Ollama, aggiungerlo in `ChatAIService.PostToLlmAsync`
+- [ ] Verificare l'output strutturato con il nuovo modello (`AI:<provider>:ResponseFormat` = `json_schema` / `json_object`, `StrictSchema`) e il livello di ragionamento (`ReasoningEffort`, "none" se il modello non lo prevede)
+- [ ] Lanciare `dotnet run --project tools/ChatAiPhraseTest` su AttendanceTracking_Dev: 39 frasi (11 Infrastructure + 28 presenze), tutte da far riuscire; con limiti più alti si può ridurre `--pausa`
+- [ ] Prova nell'app avviata dei comandi che scrivono: registrazioni, approva/rifiuta, elimina/correggi timbratura, giustificativo su periodo, richieste self-service, "timbra adesso"
+- [ ] Prova di "apri entità" su tutte e 10 le anagrafiche, compreso il caso di più elementi con lo stesso nome
+- [ ] Stampa di un report dalla chat e download dalla barra in alto
+- [ ] Ruoli: User vede e modifica solo i propri dati; CompanyAdmin (oggi limitato ai propri dati); HR su tutti
+- [ ] Help contestuale e chip suggeriti nelle diverse pagine
+- [ ] Voce in Chrome/Edge: risposte parlate, domande e conferme a voce a chat chiusa, interruzione parlando ed eco, "tieni premuto per parlare", durata dell'avviso (10 s)
+- [ ] Log "ChatAI frase non capita": verificare che arrivi nei log e usarlo per arricchire esempi e parole chiave
