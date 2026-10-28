@@ -4,7 +4,7 @@
 >
 > **Obiettivo**: dialogo meno macchinoso, più comandi disponibili, linguaggio naturale (chat e voce).
 
-**Stato al 28/10/2026: 40 punti su 41 implementati (manca la parte massiva di C10). Le prove con il LLM e nell'app avviata sono sospese in attesa del nuovo LLM: vedi sezione 10.**
+**Stato al 28/10/2026: 40 punti su 41 implementati (manca la parte massiva di C10). Con DeepSeek le 39 frasi di prova riescono tutte; restano le prove nell'app avviata: vedi sezione 10.**
 
 Legenda: ✅ svolto · ⏳ da fare · 🔍 da valutare. Lo stato di ogni punto si aggiorna nella checklist (sezione 9); la tabella seguente riassume per area.
 
@@ -237,11 +237,13 @@ Inoltre, per stare nei limiti di token al minuto: parole chiave valide anche com
 
 ## 10. Prove da fare (con il nuovo LLM)
 
-Sospese il 28/10/2026: con Groq gratuito (`gpt-oss-120b`, 8.000 token al minuto) un turno dell'HR con 34 comandi consuma circa 3.500 token, 6–7 mila se serve la seconda chiamata, e le prove si bloccano su "troppe richieste". Si faranno dopo aver collegato un altro LLM.
+Il 28/10/2026 è stato collegato DeepSeek (`deepseek-chat`, `AI_deepseek`): le frasi di prova riescono tutte. Restano le prove nell'app avviata.
 
-- [ ] Configurare il nuovo provider (`AI:UseLLM`, modello, chiave `NVXAPP_AI__<provider>__ApiKey`); se non è Groq/OpenRouter/Ollama, aggiungerlo in `ChatAIService.PostToLlmAsync`
-- [ ] Verificare l'output strutturato con il nuovo modello (`AI:<provider>:ResponseFormat` = `json_schema` / `json_object`, `StrictSchema`) e il livello di ragionamento (`ReasoningEffort`, "none" se il modello non lo prevede)
-- [ ] Lanciare `dotnet run --project tools/ChatAiPhraseTest` su AttendanceTracking_Dev: 39 frasi (11 Infrastructure + 28 presenze), tutte da far riuscire; con limiti più alti si può ridurre `--pausa`
+Sospese inizialmente il 28/10/2026: con Groq gratuito (`gpt-oss-120b`, 8.000 token al minuto) un turno dell'HR con 34 comandi consuma circa 3.500 token, 6–7 mila se serve la seconda chiamata, e le prove si bloccano su "troppe richieste". Si faranno dopo aver collegato un altro LLM.
+
+- [x] Configurare il nuovo provider: DeepSeek (`AI:UseLLM` = `AI_deepseek`, `deepseek-chat`, chiave `NVXAPP_AI__AI_deepseek__ApiKey`), aggiunto in `ChatAIService`
+- [x] Output strutturato con il nuovo modello: DeepSeek accetta solo `json_object` (default per `AI_deepseek`); `ReasoningEffort` non inviato (non è un modello gpt-oss)
+- [x] Frasi di prova su AttendanceTracking_Dev con DeepSeek (`--pausa 2`): **39 su 39 riuscite** il 28/10/2026 (11 Infrastructure + 28 presenze)
 - [ ] Prova nell'app avviata dei comandi che scrivono: registrazioni, approva/rifiuta, elimina/correggi timbratura, giustificativo su periodo, richieste self-service, "timbra adesso"
 - [ ] Prova di "apri entità" su tutte e 10 le anagrafiche, compreso il caso di più elementi con lo stesso nome
 - [ ] Stampa di un report dalla chat e download dalla barra in alto
