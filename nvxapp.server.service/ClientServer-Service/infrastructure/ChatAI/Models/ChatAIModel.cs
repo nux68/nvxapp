@@ -15,6 +15,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
     {
         public string Request { get; set; } = string.Empty;
         public string SessionId { get; set; } = string.Empty;  // identifica la sessione conversazionale
+        public string CurrentRoute { get; set; } = string.Empty; // pagina del client in cui si trova l'utente (help contestuale)
     }
 
     public class ChatAIOutModel : ModelResult
@@ -31,6 +32,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
         // Testo breve da pronunciare (risposta vocale): la domanda senza il contesto, il riepilogo
         // in forma di frase, i risultati. Vuoto = usare Responce.
         public string SpeechText { get; set; } = string.Empty;
+        // Azione da eseguire nel client (es. cambio tema o lingua): ultima azione client del piano
+        public ClientActionPayload? ClientAction { get; set; }
 
         public ChatAIOutModel() { }
     }
@@ -64,6 +67,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
         public Dictionary<string, string> Slots => CurrentAction?.Slots ?? new();
 
         public List<ConversationTurn> History { get; set; } = new();
+
+        // Pagina del client al momento dell'ultimo messaggio (contesto per il LLM)
+        public string CurrentRoute { get; set; } = string.Empty;
 
         public void AddToHistory(string role, string content)
         {
@@ -127,6 +133,13 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
         public string? InfoMessage { get; set; }
     }
 
+    // Azione eseguita dal client Angular senza navigare (CommandResult.Data di un handler)
+    public class ClientActionPayload
+    {
+        public string Action { get; set; } = string.Empty;   // "theme" | "language"
+        public string Value { get; set; } = string.Empty;    // theme: "dark" | "light" | "toggle"; language: "it" | "en"
+    }
+
     // Payload di navigazione restituito al client Angular
     public class NavigatePayload
     {
@@ -143,6 +156,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
         public bool Success { get; set; }
         public string Message { get; set; } = string.Empty;
         public NavigatePayload? Navigate { get; set; }
+        public ClientActionPayload? ClientAction { get; set; }
     }
 
     // ---------------------------------------------------------------------------
@@ -492,7 +506,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
             sb.AppendLine();
 
             BuildSystemPromptUtil.BuildSystemPrompt_Append_Intestazione_Comune(sb);
-            BuildSystemPromptUtil.BuildSystemPrompt_Append_Contesto(sb, DateTime.Now);
+            BuildSystemPromptUtil.BuildSystemPrompt_Append_Contesto(sb, DateTime.Now, session.CurrentRoute);
             BuildSystemPromptUtil.BuildSystemPrompt_Append_Intents(sb, _intents, detailedIntents);
             BuildSystemPromptUtil.BuildSystemPrompt_Append_Stato(sb, session, _intents);
             BuildSystemPromptUtil.BuildSystemPrompt_Append_Regole_Piano(sb, _intents.Any(i => i.Slots.Any(s => s.IsPerson)));
@@ -578,11 +592,13 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
 
         // Data e ora correnti: servono al LLM per capire riferimenti come "stamattina" o "venerdì"
         // (la conversione delle date resta al sistema, vedi SlotNormalizers).
-        public static void BuildSystemPrompt_Append_Contesto(StringBuilder sb, DateTime now)
+        public static void BuildSystemPrompt_Append_Contesto(StringBuilder sb, DateTime now, string? currentRoute = null)
         {
             var giorno = CultureInfo.GetCultureInfo("it-IT").DateTimeFormat.GetDayName(now.DayOfWeek);
             sb.AppendLine("CONTESTO:");
             sb.AppendLine($"Oggi è {giorno} {now:dd/MM/yyyy}, sono le {now:HH:mm}.");
+            if (!string.IsNullOrWhiteSpace(currentRoute))
+                sb.AppendLine($"L'utente si trova nella pagina {currentRoute}.");
             sb.AppendLine("");
         }
 
@@ -813,6 +829,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
         // Frase dell'azione per il testo vocale, con segnaposto {nomeSlot}
         // (es. "timbratura di {employeeName} alle {time} del {date}"). Vuoto = nome e valori.
         public string SummaryTemplate { get; set; } = string.Empty;
+
+        // Pagine del client (route, anche solo l'inizio) in cui l'intent è particolarmente utile:
+        // l'help le usa per proporre per primi i comandi della pagina corrente.
+        public List<string> Pages { get; set; } = new();
     }
 
 
