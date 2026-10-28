@@ -45,6 +45,9 @@ export class UserCompanyEditPageComponent extends BasePageConfirmCancelComponent
 
       descrizione: [null, [Validators.required, Validators.maxLength(50)]],
       disabled: [false],
+      // email: modificabile anche per gli utenti esistenti (obbligatoria solo per i nuovi;
+      // vuota su un utente esistente = non modificata)
+      mail: [null, [Validators.email]],
       //roleId: [null, [Validators.required]],
       roles: [[], this.minArrayLength(1)],
 
@@ -76,7 +79,7 @@ export class UserCompanyEditPageComponent extends BasePageConfirmCancelComponent
     else {
       return new Observable<UserCompanyEditModel | null>((subscriber) => {
         //aggiunge campi solo per le new
-        this._editForm.addControl('mail', this.fb.control(null, [Validators.required, Validators.email]));
+        this._editForm.controls['mail'].addValidators(Validators.required);
         this._editForm.addControl('pw', this.fb.control(null, [Validators.required]));
         this._editForm.addControl('confirmPassword', this.fb.control(null, [Validators.required]));
         this._editForm.setValidators(matchPasswords);
