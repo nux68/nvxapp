@@ -27,7 +27,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         {
             var useLLM = Config("UseLLM");
             var responseFormat = _configuration[$"AI:{useLLM}:ResponseFormat"]
-                                 ?? (useLLM == "AI_openrouter" ? "json_object" : "json_schema");
+                                 ?? (useLLM is "AI_openrouter" or "AI_deepseek" ? "json_object" : "json_schema");
             var strictSchema = bool.TryParse(_configuration[$"AI:{useLLM}:StrictSchema"], out var strict) && strict;
 
             var messages = new List<OllamaChatMessage>
@@ -57,7 +57,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 return result.Data.Message?.Content ?? string.Empty;
             }
 
-            if (useLLM != "AI_groq" && useLLM != "AI_openrouter")
+            if (useLLM is not ("AI_groq" or "AI_openrouter" or "AI_deepseek"))
                 throw new InvalidOperationException($"LLM non supportato: {useLLM}");
 
             var body = new Dictionary<string, object>
@@ -97,7 +97,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 headers["X-Title"] = "NvxApp-Dev";
             }
 
-            // Groq e OpenRouter rispondono nello stesso formato (API compatibili OpenAI)
+            // Groq, OpenRouter e DeepSeek rispondono nello stesso formato (API compatibili OpenAI)
             var res = await _webApiService.Post<object, GroqChatResponse>(
                 serverUrl: Config($"{useLLM}:Url"),
                 authentication: null,
