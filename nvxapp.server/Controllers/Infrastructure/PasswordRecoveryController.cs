@@ -37,5 +37,14 @@ namespace nvxapp.server.Controllers.Infrastructure
         {
             return await _passwordRecoveryService.PasswordRecoveryReset(inModel, false);
         }
+
+        // cambio della password conoscendo quella attuale (dal login)
+        [AllowAnonymous]
+        [HttpPost]
+        [Route("PasswordChange")]
+        public async Task<GenericResult<PasswordChangeOutModel>> PasswordChange(GenericRequest<PasswordChangeInModel> inModel)
+        {
+            return await _passwordRecoveryService.PasswordChange(inModel, false);
+        }
     }
 }

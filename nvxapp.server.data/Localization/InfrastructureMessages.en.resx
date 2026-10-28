@@ -108,6 +108,12 @@
   <data name="PasswordRecoveryUserNameRequired" xml:space="preserve">
     <value>Enter the user name.</value>
   </data>
+  <data name="PasswordChangeWrongCredentials" xml:space="preserve">
+    <value>Wrong user name or current password.</value>
+  </data>
+  <data name="PasswordChangeSamePassword" xml:space="preserve">
+    <value>The new password must be different from the current one.</value>
+  </data>
   <data name="PasswordRecoveryUnavailable" xml:space="preserve">
     <value>Password recovery is not available at the moment.</value>
   </data>

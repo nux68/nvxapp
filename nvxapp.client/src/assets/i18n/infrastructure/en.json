@@ -261,7 +261,9 @@
       "inviata": "If the username exists, a link to reset the password has been sent to the associated email.",
       "resetTitolo": "New password",
       "resetSottotitolo": "Choose the new password for your user.",
-      "resetFatto": "Your password has been changed: sign in with the new one."
+      "resetFatto": "Your password has been changed: sign in with the new one.",
+      "changeTitolo": "Change password",
+      "changeSottotitolo": "Enter your username, your current password and the new one."
     },
     "aboutPage": {
       "bandTitle": "Let's talk",
@@ -290,7 +292,8 @@
       "subtitle": "Sign in with your account",
       "userName": "User Name",
       "password": "Password",
-      "forgotPassword": "Forgot your password?"
+      "forgotPassword": "Forgot your password?",
+      "changePassword": "Change password"
     },
     "logout": {
       "title": "Logout",
@@ -323,6 +326,19 @@
       "linkValidity": "The link is valid for {{hours}} hours and can be used only once; if you can't find the email, check your spam folder too.",
       "userName": "Username",
       "sendLink": "Send link",
+      "signIn": "Sign in"
+    },
+    "changePassword": {
+      "title": "Change password",
+      "userName": "Username",
+      "userNameRequired": "Enter the username.",
+      "currentPassword": "Current password",
+      "currentPasswordRequired": "Enter the current password.",
+      "newPassword": "New password",
+      "passwordMinLength": "At least {{min}} characters.",
+      "confirmPassword": "Confirm new password",
+      "passwordMismatch": "Passwords do not match.",
+      "savePassword": "Save password",
       "signIn": "Sign in"
     },
     "resetPassword": {

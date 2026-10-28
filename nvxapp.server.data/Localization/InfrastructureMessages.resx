@@ -131,6 +131,12 @@
   <data name="PasswordRecoveryUserNameRequired" xml:space="preserve">
     <value>Indica il nome utente.</value>
   </data>
+  <data name="PasswordChangeWrongCredentials" xml:space="preserve">
+    <value>Nome utente o password attuale non corretti.</value>
+  </data>
+  <data name="PasswordChangeSamePassword" xml:space="preserve">
+    <value>La nuova password deve essere diversa da quella attuale.</value>
+  </data>
   <data name="PasswordRecoveryUnavailable" xml:space="preserve">
     <value>Recupero della password non disponibile al momento.</value>
   </data>

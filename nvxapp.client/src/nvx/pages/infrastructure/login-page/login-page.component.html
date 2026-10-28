@@ -28,9 +28,11 @@
             </div>
           }
         </form>
-        <!-- recupero dell'accesso (pagina dello showcase) -->
+        <!-- recupero dell'accesso e cambio della password (pagine dello showcase) -->
         <div class="nvx-login-forgot">
           <a (click)="passwordDimenticata()">{{ 'pages.login.forgotPassword' | transloco }}</a>
+          <span class="nvx-login-sep">|</span>
+          <a (click)="cambiaPassword()">{{ 'pages.login.changePassword' | transloco }}</a>
         </div>
       </ion-card-content>
     </ion-card>

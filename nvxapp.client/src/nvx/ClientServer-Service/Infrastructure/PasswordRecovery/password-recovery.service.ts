@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import { GenericRequest } from '../../ModelsBase/generic-request';
 import { GenericResult } from '../../ModelsBase/generic-result';
-import { PasswordRecoveryRequestInModel, PasswordRecoveryRequestOutModel, PasswordRecoveryResetInModel, PasswordRecoveryResetOutModel } from './Models/password-recovery-model';
+import { PasswordChangeInModel, PasswordChangeOutModel, PasswordRecoveryRequestInModel, PasswordRecoveryRequestOutModel, PasswordRecoveryResetInModel, PasswordRecoveryResetOutModel } from './Models/password-recovery-model';
 
 
 // Recupero dell'accesso con password dimenticata (API anonime): link per email, poi nuova password
@@ -21,5 +21,9 @@ export class PasswordRecoveryService {
 
   PasswordRecoveryReset(model: GenericRequest<PasswordRecoveryResetInModel>): Observable<GenericResult<PasswordRecoveryResetOutModel>> {
     return this.http.post<GenericResult<PasswordRecoveryResetOutModel>>(environment.remoteData.apiUri + 'PasswordRecovery/PasswordRecoveryReset', model);
+  }
+
+  PasswordChange(model: GenericRequest<PasswordChangeInModel>): Observable<GenericResult<PasswordChangeOutModel>> {
+    return this.http.post<GenericResult<PasswordChangeOutModel>>(environment.remoteData.apiUri + 'PasswordRecovery/PasswordChange', model);
   }
 }
