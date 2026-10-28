@@ -29,8 +29,9 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.infrastructur
             IsNavigation = true,
             ExecutionStrategy = ExecutionStrategy.ContinueOnError,
             Keywords    = new() { "vai", "apri", "mostra", "naviga", "portami", "visualizza", "pagina",
-                                  "go to", "open", "show", "navigate", "take me", "view", "page" },
-            Examples    = new() { "portami alla lista delle aziende", "fammi vedere gli utenti", "voglio andare alla home", "take me to the companies page" },
+                                  "go to", "open", "show", "navigate", "take me", "view", "page",
+                                  "logout", "log out", "impersona", "impersonate" },
+            Examples    = new() { "portami alla lista delle aziende", "fammi vedere gli utenti", "voglio andare alla home", "fai il logout", "voglio impersonare un utente", "take me to the companies page" },
             Slots       =
             [
                 new()

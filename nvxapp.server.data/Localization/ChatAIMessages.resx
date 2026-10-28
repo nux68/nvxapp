@@ -97,4 +97,65 @@
   <data name="AnswerNotProcessed" xml:space="preserve">
     <value>Non sono riuscito a elaborare la risposta, riprova.</value>
   </data>
+  <data name="ThemeDisplayName" xml:space="preserve">
+    <value>Tema</value>
+  </data>
+  <data name="ThemeDescription" xml:space="preserve">
+    <value>cambia il tema dell'interfaccia (scuro o chiaro).</value>
+  </data>
+  <data name="ThemeModeQuestion" xml:space="preserve">
+    <value>Tema scuro o chiaro?</value>
+  </data>
+  <data name="ThemeModeLabel" xml:space="preserve">
+    <value>Tema</value>
+  </data>
+  <data name="ThemeDone" xml:space="preserve">
+    <value>Tema {0} impostato.</value>
+    <comment>{0} = scuro / chiaro</comment>
+  </data>
+  <data name="ThemeDark" xml:space="preserve">
+    <value>scuro</value>
+  </data>
+  <data name="ThemeLight" xml:space="preserve">
+    <value>chiaro</value>
+  </data>
+  <data name="ThemeToggled" xml:space="preserve">
+    <value>Tema cambiato.</value>
+  </data>
+  <data name="LanguageDisplayName" xml:space="preserve">
+    <value>Lingua</value>
+  </data>
+  <data name="LanguageDescription" xml:space="preserve">
+    <value>cambia la lingua dell'interfaccia (italiano o inglese).</value>
+  </data>
+  <data name="LanguageQuestion" xml:space="preserve">
+    <value>In quale lingua? (italiano o inglese)</value>
+  </data>
+  <data name="LanguageLabel" xml:space="preserve">
+    <value>Lingua</value>
+  </data>
+  <data name="LanguageDone" xml:space="preserve">
+    <value>Lingua impostata: {0}. La pagina viene ricaricata.</value>
+    <comment>{0} = nome della lingua</comment>
+  </data>
+  <data name="LanguageInvalid" xml:space="preserve">
+    <value>Lingua '{0}' non gestita: scegli italiano o inglese.</value>
+    <comment>{0} = lingua indicata dall'utente</comment>
+  </data>
+  <data name="LanguageIt" xml:space="preserve">
+    <value>italiano</value>
+  </data>
+  <data name="LanguageEn" xml:space="preserve">
+    <value>inglese</value>
+  </data>
+  <data name="HelpPageTitle" xml:space="preserve">
+    <value>In questa pagina puoi:</value>
+  </data>
+  <data name="HelpOtherTitle" xml:space="preserve">
+    <value>Altri comandi:</value>
+  </data>
+  <data name="HelpExample" xml:space="preserve">
+    <value>es. "{0}"</value>
+    <comment>{0} = frase di esempio del comando</comment>
+  </data>
 </root>

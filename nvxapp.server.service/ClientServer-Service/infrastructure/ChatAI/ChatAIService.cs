@@ -116,12 +116,16 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             return await ExecuteAction(model, async () =>
             {
 
+                var userRoles = new List<string>();
                 var applicationUser = await _userManager.FindByIdAsync(this.CurrentUserId);
                 if(applicationUser!=null)
                 {
                     var roles = await _userManager.GetRolesAsync(applicationUser);
                     if(roles!=null)
-                        _intentCatalog.Fuilter4UserRoles(roles.ToList());
+                    {
+                        userRoles = roles.ToList();
+                        _intentCatalog.Fuilter4UserRoles(userRoles);
+                    }
                     else
                         _intentCatalog.Fuilter4UserRoles(new List<string> { "*" });
                 }
@@ -130,8 +134,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                     _intentCatalog.Fuilter4UserRoles(new List<string> { "*" });
                 }
 
-                // utente corrente per gli handler (risoluzione di ChatSelf.Token)
+                // utente corrente per gli handler: "@me", limiti per ruolo, help contestuale
                 _chatUserContext.UserId = CurrentUserId;
+                _chatUserContext.Roles = userRoles;
+                _chatUserContext.CurrentRoute = model.Data.CurrentRoute ?? string.Empty;
 
                 return await ProcessMessageAsync(model.Data);
 
@@ -147,6 +153,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             // Senza sessionId (prima richiesta), o con una sessione scaduta o di un altro utente,
             // il messaggio si elabora in una sessione nuova: non va perso.
             var session = TryGetSession(input.SessionId) ?? CreateSession();
+            session.CurrentRoute = input.CurrentRoute ?? string.Empty;
 
             // 2. Comando di reset
             if (IsResetCommand(userMessage))
@@ -342,6 +349,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
 
             // Payload di navigazione — ultima azione navigate del piano
             var navItem = planResult.LastOrDefault(r => r.Navigate != null);
+            var clientItem = planResult.LastOrDefault(r => r.ClientAction != null);
 
             return new ChatAIOutModel
             {
@@ -351,6 +359,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 ResponseType = responseType,
                 Suggestions = anyFail ? new() : BuildIntentSuggestions(),
                 Navigate = navItem?.Navigate,
+                ClientAction = clientItem?.ClientAction,
                 ActionResults = planResult
             };
         }
@@ -739,10 +748,12 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
 
             value = value.Trim();
 
-            // placeholder copiati dal prompt (descrizione, tipo, parole chiave)
+            // placeholder copiati dal prompt (descrizione, tipo, parole chiave). Una parola chiave è
+            // un valore valido se la descrizione dello slot la cita (es. la pagina "logout" per Navigate).
             if (value.Equals(slotDef.PromptDescription, StringComparison.OrdinalIgnoreCase) ||
                 value.Equals(slotDef.Type, StringComparison.OrdinalIgnoreCase) ||
-                intentDef.Keywords.Any(k => k.Equals(value, StringComparison.OrdinalIgnoreCase)))
+                (intentDef.Keywords.Any(k => k.Equals(value, StringComparison.OrdinalIgnoreCase)) &&
+                 !ContainsAllWords(slotDef.PromptDescription, value)))
                 return;
 
             var normalizer = slotDef.Normalizer ?? SlotNormalizers.ForType(slotDef.Type);
@@ -1002,6 +1013,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 // Se l'intent è di navigazione, il CommandResult.Data contiene il NavigatePayload
                 if (intentDef?.IsNavigation == true && cmdResult.Data is NavigatePayload nav)
                     item.Navigate = nav;
+
+                // Azione da eseguire nel client (es. cambio tema o lingua)
+                if (cmdResult.Data is ClientActionPayload clientAction)
+                    item.ClientAction = clientAction;
 
                 results.Add(item);
 

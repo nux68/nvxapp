@@ -3,10 +3,11 @@ import { IonContent, IonModal, NavController, ToastController } from '@ionic/ang
 import { SpeechService } from '../../../../Utility/infrastructure/speech.service';
 import { ChatAIService } from '../../../../ClientServer-Service/Infrastructure/ChatAI/chat-ai.service';
 import { GenericRequest } from '../../../../ClientServer-Service/ModelsBase/generic-request';
-import { ChatAIInModel } from '../../../../ClientServer-Service/Infrastructure/ChatAI/Models/chat-AI-model';
+import { ChatAIInModel, ClientActionPayload } from '../../../../ClientServer-Service/Infrastructure/ChatAI/Models/chat-AI-model';
 import { FabMenuService } from '../../../../Utility/infrastructure/fab-menu.service';
 import { ThemeService } from '../../../../Utility/infrastructure/theme.service';
-import { LanguageService } from '../../../../Utility/infrastructure/language.service';
+import { Language, LanguageService, SUPPORTED_LANGUAGES } from '../../../../Utility/infrastructure/language.service';
+import { Router } from '@angular/router';
 import { IonFab } from '@ionic/angular';
 import { TranslocoService } from '@jsverse/transloco';
 
@@ -69,6 +70,7 @@ export class FabMenuComponent implements OnInit, AfterViewInit {
     public  languageService: LanguageService,
     private toastCtrl:     ToastController,
     private navCtrl:       NavController,
+    private router:        Router,
     private transloco:     TranslocoService
   ) {
     this.fabMenuService.fabMenuItem$.subscribe(() => {
@@ -157,6 +159,7 @@ export class FabMenuComponent implements OnInit, AfterViewInit {
     const request = new GenericRequest<ChatAIInModel>(ChatAIInModel);
     request.data.request   = text;
     request.data.sessionId = this.currentSessionId ?? '';  // stringa vuota = nuova sessione
+    request.data.currentRoute = this.router.url;            // pagina corrente: help contestuale
 
     this.isChatLoading = true;
 
@@ -193,6 +196,14 @@ export class FabMenuComponent implements OnInit, AfterViewInit {
           } else {
             this.navCtrl.navigateForward(navigatePayload.route, navOptions);
           }
+        }
+
+        // Azione da eseguire nel client (cambio tema o lingua)
+        const clientAction = res.data?.clientAction
+          ?? res.data?.actionResults?.find(r => r.clientAction != null)?.clientAction
+          ?? null;
+        if (clientAction) {
+          this.runClientAction(clientAction);
         }
 
         const responseType = res.data?.responseType ?? '';
@@ -282,6 +293,23 @@ export class FabMenuComponent implements OnInit, AfterViewInit {
     this.currentSessionId = null;   // reset sessione alla chiusura del modale
     this.suggestions      = [];
     // i comandi vocali rimangono attivi anche dopo la chiusura del modale
+  }
+
+  // -------------------------------------------------------------------------
+  // Azioni client richieste dalla chat
+  // -------------------------------------------------------------------------
+
+  private runClientAction(action: ClientActionPayload) {
+    if (action.action === 'theme') {
+      // "dark" / "light" impostano il tema richiesto, "toggle" lo alterna
+      const dark = action.value === 'dark' ? true : action.value === 'light' ? false : !this.themeService.isDark;
+      if (dark !== this.themeService.isDark) {
+        this.themeService.toggle();
+      }
+    } else if (action.action === 'language' && (SUPPORTED_LANGUAGES as readonly string[]).includes(action.value)) {
+      // il cambio di lingua ricarica la pagina: si lascia il tempo di leggere la risposta
+      setTimeout(() => this.languageService.setLanguage(action.value as Language), 1500);
+    }
   }
 
   // -------------------------------------------------------------------------
