@@ -58,6 +58,12 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
                         "employeeName");
             }
 
+            // Nome completo (es. scelto da un chip o gia' validato): si confronta per intero, senza
+            // spezzarlo, perche' cognome e nome possono contenere spazi ("De' Paperoni Paperon")
+            var completi = all.Where(d => StessoNome(d, v)).ToList();
+            if (completi.Count == 1)
+                return SlotValidationResult.Ok(NomeCompleto(completi[0]), "");
+
             var token = v.Trim().ToLowerInvariant();
             var parts = token.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
@@ -174,19 +180,25 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
             if (!res.Success || res.Data == null)
                 return null;
 
-            var token = employeeName.Trim().ToLowerInvariant();
-            var parts = token.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-
-            if (parts.Length < 2)
-                return null;
-
-            string cognome = parts[0];
-            string nome    = parts[1];
-
-            return res.Data.Dip_Anagrafica
-                .FirstOrDefault(x =>
-                    (x.Cognome?.ToLowerInvariant() ?? "") == cognome &&
-                    (x.Nome?.ToLowerInvariant()    ?? "") == nome);
+            // nome canonico "Cognome Nome" (quello prodotto dal validator) confrontato per intero:
+            // cognome e nome possono contenere spazi ("De' Paperoni Paperon")
+            return res.Data.Dip_Anagrafica.FirstOrDefault(x => StessoNome(x, employeeName));
         }
+
+        // "Cognome Nome", come lo mostrano riepilogo e chip
+        public static string NomeCompleto(Dip_AnagraficaModel d) => $"{d.Cognome} {d.Nome}".Trim();
+
+        // stesso dipendente: "Cognome Nome" o "Nome Cognome", senza distinguere maiuscole, spazi doppi
+        // e apostrofo tipografico
+        private static bool StessoNome(Dip_AnagraficaModel d, string nome)
+        {
+            var cercato = Normalizza(nome);
+            return cercato.Length > 0 &&
+                   (Normalizza($"{d.Cognome} {d.Nome}") == cercato || Normalizza($"{d.Nome} {d.Cognome}") == cercato);
+        }
+
+        private static string Normalizza(string? testo) =>
+            string.Join(' ', (testo ?? string.Empty).Replace('\u2019', '\'').ToLowerInvariant()
+                .Split(' ', StringSplitOptions.RemoveEmptyEntries));
     }
 }
