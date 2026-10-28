@@ -11,6 +11,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
      dati strutturati da un testo (es. l'importazione dei dipendenti da file).
      Stessa configurazione della chat (sezione AI di appsettings): provider, modello, ApiKey,
      ResponseFormat ("json_schema", "json_object" o "none") e StrictSchema.
+     Con un'immagine (es. foto di un documento) si usa il provider AI:VisionLLM (di default quello di
+     AI:UseLLM: serve perche' non tutti leggono immagini, es. DeepSeek) con il suo modello con visione,
+     AI:<provider>:VisionModel, e si chiede solo JSON valido (json_object): lo schema resta nel prompt.
+     Senza VisionModel le immagini non si possono leggere (LlmVisionUnavailableException).
     */
     public class LlmClient : ILlmClient
     {
@@ -23,31 +27,41 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             _configuration = configuration;
         }
 
-        public async Task<string> CompleteJsonAsync(string systemPrompt, string userMessage, object schema, string schemaName)
+        public async Task<string> CompleteJsonAsync(string systemPrompt, string userMessage, object schema, string schemaName, LlmImage? image = null)
         {
             var useLLM = Config("UseLLM");
+            if (image != null && !string.IsNullOrWhiteSpace(_configuration["AI:VisionLLM"]))
+                useLLM = _configuration["AI:VisionLLM"]!.Trim();
             var responseFormat = _configuration[$"AI:{useLLM}:ResponseFormat"]
                                  ?? (useLLM is "AI_openrouter" or "AI_deepseek" ? "json_object" : "json_schema");
             var strictSchema = bool.TryParse(_configuration[$"AI:{useLLM}:StrictSchema"], out var strict) && strict;
 
-            var messages = new List<OllamaChatMessage>
+            var model = Config($"{useLLM}:model");
+            if (image != null)
             {
-                new() { Role = "system", Content = systemPrompt },
-                new() { Role = "user", Content = userMessage }
-            };
+                model = _configuration[$"AI:{useLLM}:VisionModel"]?.Trim() ?? string.Empty;
+                if (model.Length == 0)
+                    throw new LlmVisionUnavailableException($"{useLLM}: nessun modello con visione configurato (AI:{useLLM}:VisionModel)");
+                if (responseFormat == "json_schema")
+                    responseFormat = "json_object";
+            }
 
             if (useLLM == "AI_local")
             {
-                var result = await _webApiService.Post<OllamaChatRequest, OllamaChatResponse>(
+                var userOllama = new Dictionary<string, object> { ["role"] = "user", ["content"] = userMessage };
+                if (image != null)
+                    userOllama["images"] = new[] { Convert.ToBase64String(image.Data) };
+
+                var result = await _webApiService.Post<object, OllamaChatResponse>(
                     serverUrl: Config("AI_local:Url"),
                     authentication: null,
                     action: Config("AI_local:method"),
-                    body: new OllamaChatRequest
+                    body: new Dictionary<string, object>
                     {
-                        Model = Config("AI_local:model"),
-                        Messages = messages,
-                        Stream = false,
-                        Format = responseFormat == "json_schema" ? schema : "json"
+                        ["model"] = model,
+                        ["messages"] = new object[] { new Dictionary<string, object> { ["role"] = "system", ["content"] = systemPrompt }, userOllama },
+                        ["stream"] = false,
+                        ["format"] = responseFormat == "json_schema" ? schema : "json"
                     },
                     bodyType: WebApiBodyType.raw,
                     headers: new Dictionary<string, string>());
@@ -60,10 +74,27 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             if (useLLM is not ("AI_groq" or "AI_openrouter" or "AI_deepseek"))
                 throw new InvalidOperationException($"LLM non supportato: {useLLM}");
 
+            // con l'immagine il messaggio dell'utente e' una lista di parti: testo e immagine (data URL)
+            object userContent = image == null
+                ? userMessage
+                : new object[]
+                {
+                    new Dictionary<string, object> { ["type"] = "text", ["text"] = userMessage },
+                    new Dictionary<string, object>
+                    {
+                        ["type"] = "image_url",
+                        ["image_url"] = new Dictionary<string, object> { ["url"] = $"data:{image.MimeType};base64,{Convert.ToBase64String(image.Data)}" }
+                    }
+                };
+
             var body = new Dictionary<string, object>
             {
-                ["model"] = Config($"{useLLM}:model"),
-                ["messages"] = messages.Select(m => new { role = m.Role, content = m.Content }).ToList(),
+                ["model"] = model,
+                ["messages"] = new object[]
+                {
+                    new Dictionary<string, object> { ["role"] = "system", ["content"] = systemPrompt },
+                    new Dictionary<string, object> { ["role"] = "user", ["content"] = userContent }
+                },
                 ["stream"] = false,
                 ["temperature"] = 0
             };
@@ -108,6 +139,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
 
             if (res?.StatusCode == HttpStatusCode.TooManyRequests)
                 throw new LlmBusyException($"{useLLM}: limite di richieste o di token superato");
+            // modello con visione non piu' offerto dal provider (i provider ritirano spesso i modelli)
+            if (image != null && res?.StatusCode == HttpStatusCode.NotFound)
+                throw new LlmVisionUnavailableException($"{useLLM}: modello con visione {model} non trovato");
             if (res?.Data == null)
                 throw new InvalidOperationException($"{useLLM} ha risposto con status {res?.StatusCode}: {res?.ReasonPhrase}");
             return res.Data.Choices?.FirstOrDefault()?.Message?.Content ?? string.Empty;
@@ -117,15 +151,27 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             _configuration[$"AI:{key}"] ?? throw new InvalidOperationException($"AI:{key} non configurato");
     }
 
+    /// <summary>immagine da far leggere al LLM (es. "image/jpeg")</summary>
+    public record LlmImage(byte[] Data, string MimeType);
+
     /// <summary>il provider ha rifiutato la richiesta per il limite di richieste o di token al minuto (HTTP 429): si puo' riprovare</summary>
     public class LlmBusyException : InvalidOperationException
     {
         public LlmBusyException(string message) : base(message) { }
     }
 
+    /// <summary>immagine non leggibile: per il provider in uso non e' configurato un modello con visione</summary>
+    public class LlmVisionUnavailableException : InvalidOperationException
+    {
+        public LlmVisionUnavailableException(string message) : base(message) { }
+    }
+
     public interface ILlmClient
     {
-        /// <summary>Invia prompt di sistema e testo al LLM e restituisce la risposta (JSON secondo <paramref name="schema"/>).</summary>
-        Task<string> CompleteJsonAsync(string systemPrompt, string userMessage, object schema, string schemaName);
+        /// <summary>
+        /// Invia prompt di sistema e testo (ed eventualmente un'immagine) al LLM e restituisce la risposta
+        /// (JSON secondo <paramref name="schema"/>).
+        /// </summary>
+        Task<string> CompleteJsonAsync(string systemPrompt, string userMessage, object schema, string schemaName, LlmImage? image = null);
     }
 }
