@@ -120,4 +120,9 @@ export class LoginPageComponent extends BasePageConfirmCancelComponent<LoginInMo
     this.navCtrl.navigateRoot('/forgot-password', { state: { userName: this._editForm.controls['userName'].value ?? '' } });
   }
 
+  // cambio della password conoscendo quella attuale: nome utente gia' scritto, se c'e'
+  cambiaPassword() {
+    this.navCtrl.navigateRoot('/change-password', { state: { userName: this._editForm.controls['userName'].value ?? '' } });
+  }
+
 }

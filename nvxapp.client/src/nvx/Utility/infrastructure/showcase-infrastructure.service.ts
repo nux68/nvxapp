@@ -47,6 +47,8 @@ export class ShowcaseInfrastructureService {
       // recupero dell'accesso: richiesta del link e nuova password dal link dell'email
       { path: 'forgot-password', loadChildren: () => import('../../pages/infrastructure/forgot-password-page/forgot-password-page.module').then(m => m.ForgotPasswordPageModule) },
       { path: 'reset-password', loadChildren: () => import('../../pages/infrastructure/reset-password-page/reset-password-page.module').then(m => m.ResetPasswordPageModule) },
+      // cambio della password conoscendo quella attuale (dal login, non e' una voce di menu)
+      { path: 'change-password', loadChildren: () => import('../../pages/infrastructure/change-password-page/change-password-page.module').then(m => m.ChangePasswordPageModule) },
     ];
   }
 
@@ -151,7 +153,9 @@ export class ShowcaseInfrastructureService {
         inviata: t('passwordRecovery.inviata'),
         resetTitolo: t('passwordRecovery.resetTitolo'),
         resetSottotitolo: t('passwordRecovery.resetSottotitolo'),
-        resetFatto: t('passwordRecovery.resetFatto')
+        resetFatto: t('passwordRecovery.resetFatto'),
+        changeTitolo: t('passwordRecovery.changeTitolo'),
+        changeSottotitolo: t('passwordRecovery.changeSottotitolo')
       }
     };
   }

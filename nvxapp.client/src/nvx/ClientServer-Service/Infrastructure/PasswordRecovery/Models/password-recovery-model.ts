@@ -22,3 +22,15 @@ export class PasswordRecoveryResetInModel {
 export class PasswordRecoveryResetOutModel extends ModelResult {
   public userName: string;
 }
+
+
+// cambio della password conoscendo quella attuale (pagina /change-password, dal login)
+export class PasswordChangeInModel {
+  public userName: string | null = null;
+  public pw: string | null = null;
+  public newPw: string | null = null;
+}
+
+export class PasswordChangeOutModel extends ModelResult {
+  public userName: string;
+}

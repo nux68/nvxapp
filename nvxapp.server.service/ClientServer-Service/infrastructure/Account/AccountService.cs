@@ -818,7 +818,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                     var user = new ApplicationUser
                     {
                         Id = Guid.NewGuid().ToString(),
-                        UserName = company.Descrizione + "_PowerAdmin", //CompanyPowerAdmin
+                        UserName = string.IsNullOrWhiteSpace(model.Data.CompanyEdit.PowerAdminUserName) ? company.Descrizione + "_PowerAdmin" : model.Data.CompanyEdit.PowerAdminUserName.Trim(), //CompanyPowerAdmin
                         Email = model.Data.CompanyEdit.Mail
                     };
 
@@ -839,7 +839,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                     user = new ApplicationUser
                     {
                         Id = Guid.NewGuid().ToString(),
-                        UserName = company.Descrizione + "_Admin", //CompanyAdmin
+                        UserName = string.IsNullOrWhiteSpace(model.Data.CompanyEdit.AdminUserName) ? company.Descrizione + "_Admin" : model.Data.CompanyEdit.AdminUserName.Trim(), //CompanyAdmin
                         Email = model.Data.CompanyEdit.Mail
                     };
 
@@ -1011,6 +1011,18 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                 return retVal;
             }, isSubProcess);
         }
+        // cambia l'email dell'utente se ne arriva una diversa (vuota/null = nessuna modifica)
+        protected async Task AggiornaMail(ApplicationUser applicationUser, string? mail)
+        {
+            string nuova = mail?.Trim() ?? string.Empty;
+            if (nuova.Length == 0 || string.Equals(nuova, applicationUser.Email, StringComparison.OrdinalIgnoreCase))
+                return;
+
+            var result = await _userManager.SetEmailAsync(applicationUser, nuova);
+            if (!result.Succeeded)
+                throw new UserMessageException(string.Join(" ", result.Errors.Select(e => e.Description)));
+        }
+
         public virtual async Task<GenericResult<UserCompanyPutOutModel>> UserCompanyPut(GenericRequest<UserCompanyPutInModel> model, Boolean isSubProcess)
         {
             return await ExecuteAction(model, async () =>
@@ -1031,6 +1043,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                     var applicationUser = await _userManager.FindByIdAsync(userCompany.IdAspNetUsers);
                     if(applicationUser!=null)
                     {
+                        // email: vuota/null = non modificare (es. salvataggi da altri flussi che non conoscono il campo)
+                        await AggiornaMail(applicationUser, model.Data.UserCompanyEdit.Mail);
+
                         var ruoliAttuali = await _userManager.GetRolesAsync(applicationUser);
 
                         // Trova i ruoli da aggiungere e rimuovere

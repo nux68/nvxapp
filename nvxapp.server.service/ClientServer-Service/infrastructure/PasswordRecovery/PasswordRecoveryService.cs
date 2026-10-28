@@ -29,6 +29,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.PasswordReco
          La risposta e' sempre la stessa, che l'utente esista o no, per non rivelare i nomi utente.
       2. PasswordRecoveryReset: dal link (pagina /reset-password), verifica il token e imposta la
          nuova password.
+     Cambio della password conoscendo quella attuale, senza login e senza email:
+      - PasswordChange: nome utente, password attuale e nuova (pagina /change-password, dal login).
+        Utente sconosciuto o password errata danno lo stesso messaggio, per non rivelare i nomi utente.
      Indirizzo del link: App:PublicUrl, altrimenti l'origine della pagina chiamante (SiteUrl).
     */
     public class PasswordRecoveryService : ServiceBase, IPasswordRecoveryService
@@ -145,6 +148,51 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.PasswordReco
             }, isSubProcess);
         }
 
+        public virtual async Task<GenericResult<PasswordChangeOutModel>> PasswordChange(GenericRequest<PasswordChangeInModel> model, Boolean isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                PasswordChangeOutModel retVal = new PasswordChangeOutModel();
+
+                var data = model.Data ?? new PasswordChangeInModel();
+                string userName = data.UserName?.Trim() ?? string.Empty;
+                string pw = data.Pw ?? string.Empty;
+                string newPw = data.NewPw ?? string.Empty;
+
+                if (userName.Length == 0)
+                    retVal.AddMessage(InfrastructureMessages.Get("PasswordRecoveryUserNameRequired"), MessageType.Error);
+                if (newPw.Length < PasswordMinLength)
+                    retVal.AddMessage(InfrastructureMessages.Get("PasswordTooShort", PasswordMinLength), MessageType.Error);
+                else if (newPw == pw)
+                    retVal.AddMessage(InfrastructureMessages.Get("PasswordChangeSamePassword"), MessageType.Error);
+                if (retVal.Messages.Any())
+                    return retVal;
+
+                // utente sconosciuto o password attuale errata: stesso messaggio
+                var user = await _userManager.FindByNameAsync(userName);
+                if (user == null)
+                {
+                    retVal.AddMessage(InfrastructureMessages.Get("PasswordChangeWrongCredentials"), MessageType.Error);
+                    return retVal;
+                }
+
+                var result = await _userManager.ChangePasswordAsync(user, pw, newPw);
+                if (!result.Succeeded)
+                {
+                    bool passwordErrata = result.Errors.Any(e => e.Code == "PasswordMismatch");
+                    retVal.AddMessage(passwordErrata
+                        ? InfrastructureMessages.Get("PasswordChangeWrongCredentials")
+                        : string.Join(" ", result.Errors.Select(e => e.Description)), MessageType.Error);
+                    return retVal;
+                }
+
+                retVal.UserName = user.UserName ?? userName;
+
+                await Task.Delay(DelayAsyncMethod);
+                return retVal;
+            }, isSubProcess);
+        }
+
         private async Task InviaEmailReset(string mail, string userName, string link)
         {
             string sito = SiteName.Value;
@@ -173,5 +221,6 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.PasswordReco
     {
         Task<GenericResult<PasswordRecoveryRequestOutModel>> PasswordRecoveryRequest(GenericRequest<PasswordRecoveryRequestInModel> model, Boolean isSubProcess);
         Task<GenericResult<PasswordRecoveryResetOutModel>> PasswordRecoveryReset(GenericRequest<PasswordRecoveryResetInModel> model, Boolean isSubProcess);
+        Task<GenericResult<PasswordChangeOutModel>> PasswordChange(GenericRequest<PasswordChangeInModel> model, Boolean isSubProcess);
     }
 }

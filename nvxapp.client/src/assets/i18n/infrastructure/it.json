@@ -261,7 +261,9 @@
       "inviata": "Se il nome utente esiste, all’email associata è stato inviato il link per reimpostare la password.",
       "resetTitolo": "Nuova password",
       "resetSottotitolo": "Scegli la nuova password per il tuo utente.",
-      "resetFatto": "La password è stata cambiata: accedi con quella nuova."
+      "resetFatto": "La password è stata cambiata: accedi con quella nuova.",
+      "changeTitolo": "Cambia password",
+      "changeSottotitolo": "Indica il tuo nome utente, la password attuale e quella nuova."
     },
     "aboutPage": {
       "bandTitle": "Parliamone",
@@ -290,7 +292,8 @@
       "subtitle": "Accedi con il tuo account",
       "userName": "User Name",
       "password": "Password",
-      "forgotPassword": "Password dimenticata?"
+      "forgotPassword": "Password dimenticata?",
+      "changePassword": "Cambia password"
     },
     "logout": {
       "title": "Logout",
@@ -303,7 +306,11 @@
       "sentToSuffix": ". Il link vale {{hours}} ore; se non la trovi guarda anche nella posta indesiderata.",
       "companyName": "Ragione sociale",
       "companyNameError": "Almeno 3 lettere o cifre, al massimo {{max}} caratteri.",
-      "userPrefixHint": "Gli utenti di accesso inizieranno con «{{name}}_»",
+      "adminUsersHint": "Questi sono gli utenti amministratori che verranno creati: puoi cambiarne il nome.",
+      "powerAdminUserName": "Utente power admin",
+      "adminUserName": "Utente amministratore",
+      "userNameError": "Da {{min}} a {{max}} caratteri tra lettere, cifre, '_', '.' e '-'.",
+      "userNamesChecking": "Verifica dei nomi utente in corso...",
       "email": "Email",
       "emailInvalid": "Indirizzo email non valido.",
       "password": "Password",
@@ -319,6 +326,19 @@
       "linkValidity": "Il link vale {{hours}} ore e si usa una volta sola; se non trovi l’email guarda anche nella posta indesiderata.",
       "userName": "Nome utente",
       "sendLink": "Invia link",
+      "signIn": "Accedi"
+    },
+    "changePassword": {
+      "title": "Cambia password",
+      "userName": "Nome utente",
+      "userNameRequired": "Indica il nome utente.",
+      "currentPassword": "Password attuale",
+      "currentPasswordRequired": "Indica la password attuale.",
+      "newPassword": "Nuova password",
+      "passwordMinLength": "Almeno {{min}} caratteri.",
+      "confirmPassword": "Conferma nuova password",
+      "passwordMismatch": "Le password non coincidono.",
+      "savePassword": "Salva password",
       "signIn": "Accedi"
     },
     "resetPassword": {

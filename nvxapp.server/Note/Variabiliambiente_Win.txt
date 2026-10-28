@@ -1,0 +1,4 @@
+﻿X assegnare le variabili in win  (powershell admin)
+  C:\REPO\ANGULAR-2025\Merge\nvxapp\nvxapp.server\docs\imposta-variabili-nvxapp.segreti.ps1
+  X riavviare iis
+  iisrest

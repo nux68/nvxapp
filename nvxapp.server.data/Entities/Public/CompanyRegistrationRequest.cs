@@ -8,6 +8,8 @@ namespace nvxapp.server.data.Entities.Public
         - Descrizione : nome dell'azienda (gia' ripulito: solo lettere e cifre)
         - Mail        : indirizzo a cui e' stato inviato il link
         - PasswordHash: password scelta, gia' cifrata come quelle degli utenti (si svuota alla conferma)
+        - PowerAdminUserName / AdminUserName: nomi scelti per gli amministratori dell'azienda
+          (vuoti = quelli predefiniti, Descrizione + "_PowerAdmin" / "_Admin")
         - TokenHash   : SHA-256 del token del link (il token in chiaro sta solo nell'email)
         - ExpiresAt   : scadenza del link
         - ConfirmedAt / IdCompany: conferma avvenuta e azienda creata
@@ -26,6 +28,12 @@ namespace nvxapp.server.data.Entities.Public
 
         [MaxLength(512)]
         public string PasswordHash { get; set; } = string.Empty;
+
+        [MaxLength(256)]
+        public string PowerAdminUserName { get; set; } = string.Empty;
+
+        [MaxLength(256)]
+        public string AdminUserName { get; set; } = string.Empty;
 
         [Required]
         [MaxLength(64)]

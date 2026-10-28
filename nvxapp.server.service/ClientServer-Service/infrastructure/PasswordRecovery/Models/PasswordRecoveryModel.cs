@@ -27,4 +27,18 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.PasswordReco
     {
         public string UserName { get; set; } = string.Empty;
     }
+
+
+    // cambio della password conoscendo quella attuale (pagina /change-password, dal login)
+    public class PasswordChangeInModel
+    {
+        public string? UserName { get; set; } = string.Empty;
+        public string? Pw { get; set; } = string.Empty;
+        public string? NewPw { get; set; } = string.Empty;
+    }
+
+    public class PasswordChangeOutModel : ModelResult
+    {
+        public string UserName { get; set; } = string.Empty;
+    }
 }

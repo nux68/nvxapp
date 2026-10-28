@@ -86,7 +86,8 @@ export interface ShowcaseContenuti {
     confermaTitolo: string;
     esito: string;
   };
-  /** recupero dell'accesso con password dimenticata (/forgot-password e /reset-password) */
+  /** recupero dell'accesso con password dimenticata (/forgot-password e /reset-password)
+   *  e cambio della password conoscendo quella attuale (/change-password) */
   passwordRecovery: {
     titolo: string;
     sottotitolo: string;
@@ -94,6 +95,8 @@ export interface ShowcaseContenuti {
     resetTitolo: string;
     resetSottotitolo: string;
     resetFatto: string;
+    changeTitolo: string;
+    changeSottotitolo: string;
   };
 }
 
