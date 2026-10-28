@@ -283,7 +283,7 @@
     <value>Add attendance code</value>
   </data>
   <data name="ChatRegisterCausaleDescription" xml:space="preserve">
-    <value>records an attendance code for an employee on a date with a number of hours.</value>
+    <value>records hours of an attendance code (e.g. overtime, additional hours, hour bank) for an employee on a date. For absences (holiday, leave, ROL, sickness) use the justification.</value>
   </data>
   <data name="ChatRegisterCausaleCausaleQuestion" xml:space="preserve">
     <value>Which attendance code do you want to add?</value>
@@ -346,7 +346,7 @@
     <value>Leave</value>
   </data>
   <data name="ChatRegisterJustificationDescription" xml:space="preserve">
-    <value>records a leave (holiday, sickness, time off, etc.) for an employee on a date.</value>
+    <value>records a justified absence (holiday, leave, ROL, sickness, etc.) for an employee on a date, with the hours.</value>
   </data>
   <data name="ChatRegisterJustificationTypeQuestion" xml:space="preserve">
     <value>Which leave type? (e.g. Ferie, Malattia, ROL)</value>
@@ -1162,5 +1162,15 @@
   </data>
   <data name="ImportImmaginiNonDisponibili" xml:space="preserve">
     <value>Images cannot be read: no vision model is configured for the assistant (AI:VisionLLM and AI:&lt;provider&gt;:VisionModel).</value>
+  </data>
+  <data name="ChatApproveTypeQuestion" xml:space="preserve">
+    <value>Which request type? (clocking, leave, expense report, overtime)</value>
+  </data>
+  <data name="ChatApproveTypeLabel" xml:space="preserve">
+    <value>Request type</value>
+  </data>
+  <data name="ChatApproveList" xml:space="preserve">
+    <value>Requests ({0}): {1}</value>
+    <comment>{0} = numero, {1} = elenco delle richieste</comment>
   </data>
 </root>

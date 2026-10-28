@@ -283,7 +283,7 @@
     <value>Inserisci causale</value>
   </data>
   <data name="ChatRegisterCausaleDescription" xml:space="preserve">
-    <value>registra una causale per un dipendente in una data con un numero di ore.</value>
+    <value>registra ore di una causale (es. straordinario, supplementare, banca ore) per un dipendente in una data. Per le assenze (ferie, permessi, ROL, malattia) si usa il giustificativo.</value>
   </data>
   <data name="ChatRegisterCausaleCausaleQuestion" xml:space="preserve">
     <value>Quale causale vuoi inserire?</value>
@@ -346,7 +346,7 @@
     <value>Giustificativo</value>
   </data>
   <data name="ChatRegisterJustificationDescription" xml:space="preserve">
-    <value>registra un giustificativo (ferie, malattia, ROL, ecc.) per un dipendente in una data.</value>
+    <value>registra un'assenza giustificata (ferie, permesso, ROL, malattia, ecc.) per un dipendente in una data, con le ore.</value>
   </data>
   <data name="ChatRegisterJustificationTypeQuestion" xml:space="preserve">
     <value>Quale tipo di giustificativo? (es. Ferie, Malattia, ROL)</value>
@@ -1166,5 +1166,15 @@
   </data>
   <data name="ImportImmaginiNonDisponibili" xml:space="preserve">
     <value>Le immagini non si possono leggere: per l'assistente non è configurato un modello con visione (AI:VisionLLM e AI:&lt;provider&gt;:VisionModel).</value>
+  </data>
+  <data name="ChatApproveTypeQuestion" xml:space="preserve">
+    <value>Quale tipo di richiesta? (timbratura, giustificativo, nota spese, straordinario)</value>
+  </data>
+  <data name="ChatApproveTypeLabel" xml:space="preserve">
+    <value>Tipo di richiesta</value>
+  </data>
+  <data name="ChatApproveList" xml:space="preserve">
+    <value>Richieste ({0}): {1}</value>
+    <comment>{0} = numero, {1} = elenco delle richieste</comment>
   </data>
 </root>

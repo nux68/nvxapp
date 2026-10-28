@@ -77,6 +77,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                             r.Codice.Contains(filtro, StringComparison.OrdinalIgnoreCase) ||
                             filtro.Contains(r.Descrizione, StringComparison.OrdinalIgnoreCase))
                 .ToList();
+            // il nome detto non corrisponde a nessun contatore ("permessi" con "ROL", "Banca ore"): tutti i saldi
+            if (risultati.Count == 0)
+                risultati = res.Data.Risultati;
             if (risultati.Count == 0)
                 return CommandResult.Ok(AttendanceTrackingMessages.Get("ChatLeaveBalanceNone", Nome(dipendente)));
 
