@@ -619,7 +619,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
                 bool detailed = detailedIntents.Contains(intent.Name);
                 sb.AppendLine($"{i + 1}. {intent.Name} — {intent.Description}");
 
-                var examples = detailed ? intent.Examples : intent.Examples.Take(2).ToList();
+                // forma compatta: un solo esempio (con molti intent il prompt resta contenuto)
+                var examples = detailed ? intent.Examples : intent.Examples.Take(1).ToList();
                 if (examples.Count > 0)
                     sb.AppendLine($"   Esempi: {string.Join(" | ", examples.Select(e => $"\"{e}\""))}");
 
