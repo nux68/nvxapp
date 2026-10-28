@@ -19,6 +19,7 @@ using Serilog;
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using nvxapp.server.data.Localization;
 
 namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Registration
@@ -29,7 +30,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Registration
          all'email indicata il link di conferma, valido ScadenzaOre ore. Non crea ancora niente.
       2. CompanyRegisterConfirm: dal link, crea l'azienda nel ramo DEMO (studio DEMO del centro DEMO,
          creati da PopolateDB) con la stessa creazione del menu "Aziende" (AccountService.CompanyPut):
-         stessi utenti principali e, nei rami applicativi, gli stessi applicativi attivati e
+         stessi utenti principali (gli amministratori con i nomi scelti nella pagina) e, nei rami applicativi, gli stessi applicativi attivati e
          inizializzati sulle nuove aziende. Gli utenti ricevono la password scelta alla registrazione;
          all'email arriva il riepilogo degli utenti creati con il link di accesso (senza password).
      Non si usa EmailConfirmed di Identity: gli utenti nascono anche dai menu, senza registrazione.
@@ -51,8 +52,15 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Registration
         // pagina dello showcase che riceve il link e pagina di accesso (nell'email di riepilogo)
         private const string PaginaConferma = "/confirm-email";
         private const string PaginaLogin = "/login";
-        // suffissi degli utenti creati con l'azienda (CompanyPut; "_User" nei rami che creano anche il dipendente)
-        private static readonly string[] SuffissiUtenti = { "_PowerAdmin", "_Admin", "_User" };
+        // suffissi degli utenti creati con l'azienda (CompanyPut; "_User" nei rami che creano anche il dipendente).
+        // Gli amministratori possono avere i nomi scelti nella pagina: i suffissi danno quelli predefiniti
+        private const string SuffissoPowerAdmin = "_PowerAdmin";
+        private const string SuffissoAdmin = "_Admin";
+        private const string SuffissoUser = "_User";
+        // nomi scelti per gli amministratori: lettere, cifre, '_', '.' e '-'
+        private const int UserNameMinLength = 3;
+        private const int UserNameMaxLength = 50;
+        private static readonly Regex UserNameCaratteri = new Regex("^[A-Za-z0-9_.-]+$");
 
         private readonly IAccountService _accountService;
         private readonly IEmailService _emailService;
@@ -125,6 +133,14 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Registration
                     retVal.AddMessage(nomeOccupato, MessageType.Error);
                     return retVal;
                 }
+                // nomi degli amministratori: validi e non gia' usati
+                string powerAdminUserName = NomeUtente(data.PowerAdminUserName, descrizione, SuffissoPowerAdmin);
+                string adminUserName = NomeUtente(data.AdminUserName, descrizione, SuffissoAdmin);
+                foreach (var errore in await ErroriNomiUtenti(descrizione, powerAdminUserName, adminUserName))
+                    retVal.AddMessage(errore, MessageType.Error);
+                if (retVal.Messages.Any())
+                    return retVal;
+
                 var stessoNome = RichiesteInAttesa().Where(x => x.Descrizione.ToUpper() == descrizione.ToUpper()).ToList();
                 if (stessoNome.Any(x => !string.Equals(x.Mail, mail, StringComparison.OrdinalIgnoreCase)))
                 {
@@ -147,6 +163,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Registration
                     Descrizione = descrizione,
                     Mail = mail,
                     PasswordHash = _userManager.PasswordHasher.HashPassword(new ApplicationUser(), pw),
+                    PowerAdminUserName = powerAdminUserName,
+                    AdminUserName = adminUserName,
                     TokenHash = HashToken(token),
                     ExpiresAt = DateTime.Now.AddHours(ScadenzaOre)
                 });
@@ -199,12 +217,22 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Registration
                     return retVal;
                 }
 
-                // il nome puo' essere stato preso nel frattempo (es. azienda creata dal menu)
+                // il nome dell'azienda o quelli degli amministratori possono essere stati presi nel frattempo
+                // (es. azienda o utente creati dal menu)
                 string? nomeOccupato = await NomeNonDisponibile(richiesta.Descrizione);
                 int idFinancialAdvisor = StudioDemo();
                 if (nomeOccupato != null || idFinancialAdvisor == 0)
                 {
                     retVal.AddMessage(nomeOccupato ?? InfrastructureMessages.Get("RegistrationUnavailable"), MessageType.Error);
+                    return retVal;
+                }
+                string powerAdminUserName = NomeUtente(richiesta.PowerAdminUserName, richiesta.Descrizione, SuffissoPowerAdmin);
+                string adminUserName = NomeUtente(richiesta.AdminUserName, richiesta.Descrizione, SuffissoAdmin);
+                var erroriNomi = await ErroriNomiUtenti(richiesta.Descrizione, powerAdminUserName, adminUserName);
+                if (erroriNomi.Any())
+                {
+                    foreach (var errore in erroriNomi)
+                        retVal.AddMessage(errore, MessageType.Error);
                     return retVal;
                 }
 
@@ -217,7 +245,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Registration
                     IdCompany = 0,
                     Descrizione = richiesta.Descrizione,
                     Mail = richiesta.Mail,
-                    Pw = Convert.ToBase64String(RandomNumberGenerator.GetBytes(24))
+                    Pw = Convert.ToBase64String(RandomNumberGenerator.GetBytes(24)),
+                    PowerAdminUserName = powerAdminUserName,
+                    AdminUserName = adminUserName
                 };
 
                 ((_accountService as ServiceBase)!).tokenProperty = new TokenProperty()
@@ -268,6 +298,28 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Registration
             }, isSubProcess);
         }
 
+        // verifica dei nomi degli amministratori mentre si compila la pagina (vuoti = quelli predefiniti)
+        public virtual async Task<GenericResult<CompanyRegisterUserNamesCheckOutModel>> CompanyRegisterUserNamesCheck(GenericRequest<CompanyRegisterUserNamesCheckInModel> model, Boolean isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                CompanyRegisterUserNamesCheckOutModel retVal = new CompanyRegisterUserNamesCheckOutModel();
+
+                var data = model.Data ?? new CompanyRegisterUserNamesCheckInModel();
+                string descrizione = StringHelper.RemoveSpecialCharacters(data.RagioneSociale?.Trim()) ?? string.Empty;
+                string powerAdminUserName = NomeUtente(data.PowerAdminUserName, descrizione, SuffissoPowerAdmin);
+                string adminUserName = NomeUtente(data.AdminUserName, descrizione, SuffissoAdmin);
+
+                retVal.PowerAdminUserNameError = await NomeUtenteNonDisponibile(powerAdminUserName, descrizione) ?? string.Empty;
+                retVal.AdminUserNameError = await NomeUtenteNonDisponibile(adminUserName, descrizione) ?? string.Empty;
+                if (retVal.AdminUserNameError.Length == 0 && string.Equals(powerAdminUserName, adminUserName, StringComparison.OrdinalIgnoreCase))
+                    retVal.AdminUserNameError = InfrastructureMessages.Get("RegistrationUserNamesEqual");
+
+                await Task.Delay(DelayAsyncMethod);
+                return retVal;
+            }, isSubProcess);
+        }
+
         // azienda creata e suoi utenti, prima il PowerAdmin che gestisce l'azienda
         private async Task RiempiAzienda(CompanyRegisterConfirmOutModel retVal, int idCompany)
         {
@@ -296,11 +348,54 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Registration
             if (_companyRepository.FindAll(x => x.Descrizione != null && x.Descrizione.ToUpper() == descrizioneNorm).Any())
                 return InfrastructureMessages.Get("RegistrationCompanyAlreadyExists", descrizione);
 
-            foreach (var suffisso in SuffissiUtenti)
-                if (await _userManager.FindByNameAsync(descrizione + suffisso) != null)
-                    return InfrastructureMessages.Get("RegistrationNameNotAvailable", descrizione);
+            // utente dipendente (nei rami che lo creano): ha sempre il nome predefinito
+            if (await _userManager.FindByNameAsync(descrizione + SuffissoUser) != null)
+                return InfrastructureMessages.Get("RegistrationNameNotAvailable", descrizione);
 
             return null;
+        }
+
+        // nome scelto per un amministratore, o quello predefinito se non indicato
+        private static string NomeUtente(string? scelto, string descrizione, string suffisso)
+            => string.IsNullOrWhiteSpace(scelto) ? descrizione + suffisso : scelto.Trim();
+
+        // errori sui nomi degli amministratori (nessuno = si possono creare)
+        private async Task<List<string>> ErroriNomiUtenti(string descrizione, string powerAdminUserName, string adminUserName)
+        {
+            var errori = new List<string>();
+            foreach (var userName in new[] { powerAdminUserName, adminUserName })
+            {
+                string? errore = await NomeUtenteNonDisponibile(userName, descrizione);
+                if (errore != null)
+                    errori.Add(errore);
+            }
+            if (!errori.Any() && string.Equals(powerAdminUserName, adminUserName, StringComparison.OrdinalIgnoreCase))
+                errori.Add(InfrastructureMessages.Get("RegistrationUserNamesEqual"));
+            return errori;
+        }
+
+        // messaggio se il nome di un amministratore non e' valido, e' gia' di un utente, e' quello del
+        // dipendente dell'azienda o e' riservato da un'altra richiesta in attesa; altrimenti null.
+        // Le richieste con la stessa ragione sociale non contano: vengono sostituite o bloccano gia' il nome
+        private async Task<string?> NomeUtenteNonDisponibile(string userName, string descrizione)
+        {
+            if (userName.Length < UserNameMinLength || userName.Length > UserNameMaxLength || !UserNameCaratteri.IsMatch(userName))
+                return InfrastructureMessages.Get("RegistrationUserNameInvalid", userName, UserNameMinLength, UserNameMaxLength);
+
+            if (string.Equals(userName, descrizione + SuffissoUser, StringComparison.OrdinalIgnoreCase)
+                || await _userManager.FindByNameAsync(userName) != null)
+                return InfrastructureMessages.Get("RegistrationUserNameTaken", userName);
+
+            string descrizioneNorm = descrizione.ToUpper();
+            bool riservato = RichiesteInAttesa()
+                .Where(x => x.Descrizione.ToUpper() != descrizioneNorm)
+                .Any(x => new[]
+                {
+                    NomeUtente(x.PowerAdminUserName, x.Descrizione, SuffissoPowerAdmin),
+                    NomeUtente(x.AdminUserName, x.Descrizione, SuffissoAdmin),
+                    x.Descrizione + SuffissoUser
+                }.Contains(userName, StringComparer.OrdinalIgnoreCase));
+            return riservato ? InfrastructureMessages.Get("RegistrationUserNameTaken", userName) : null;
         }
 
         private List<CompanyRegistrationRequest> RichiesteInAttesa()
@@ -404,5 +499,6 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Registration
     {
         Task<GenericResult<CompanyRegisterOutModel>> CompanyRegister(GenericRequest<CompanyRegisterInModel> model, Boolean isSubProcess);
         Task<GenericResult<CompanyRegisterConfirmOutModel>> CompanyRegisterConfirm(GenericRequest<CompanyRegisterConfirmInModel> model, Boolean isSubProcess);
+        Task<GenericResult<CompanyRegisterUserNamesCheckOutModel>> CompanyRegisterUserNamesCheck(GenericRequest<CompanyRegisterUserNamesCheckInModel> model, Boolean isSubProcess);
     }
 }

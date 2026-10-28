@@ -42,6 +42,15 @@
   <data name="RegistrationNameNotAvailable" xml:space="preserve">
     <value>The name '{0}' is not available: choose another company name.</value>
   </data>
+  <data name="RegistrationUserNameInvalid" xml:space="preserve">
+    <value>The username '{0}' is not valid: {1} to {2} characters among letters, digits, '_', '.' and '-'.</value>
+  </data>
+  <data name="RegistrationUserNameTaken" xml:space="preserve">
+    <value>The username '{0}' is already in use: choose another one.</value>
+  </data>
+  <data name="RegistrationUserNamesEqual" xml:space="preserve">
+    <value>The power admin and administrator usernames must be different.</value>
+  </data>
   <data name="RegistrationCompanyAlreadyExists" xml:space="preserve">
     <value>A company registered as '{0}' already exists.</value>
   </data>

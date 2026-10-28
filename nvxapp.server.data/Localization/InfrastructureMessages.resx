@@ -49,6 +49,17 @@
     <value>Il nome '{0}' non e' disponibile: scegli un'altra ragione sociale.</value>
     <comment>{0} = ragione sociale</comment>
   </data>
+  <data name="RegistrationUserNameInvalid" xml:space="preserve">
+    <value>Il nome utente '{0}' non e' valido: da {1} a {2} caratteri tra lettere, cifre, '_', '.' e '-'.</value>
+    <comment>{0} = nome utente, {1} = minimo, {2} = massimo</comment>
+  </data>
+  <data name="RegistrationUserNameTaken" xml:space="preserve">
+    <value>Il nome utente '{0}' e' gia' in uso: scegline un altro.</value>
+    <comment>{0} = nome utente</comment>
+  </data>
+  <data name="RegistrationUserNamesEqual" xml:space="preserve">
+    <value>I nomi utente del power admin e dell'amministratore devono essere diversi.</value>
+  </data>
   <data name="RegistrationCompanyAlreadyExists" xml:space="preserve">
     <value>Esiste gia' un'azienda registrata come '{0}'.</value>
     <comment>{0} = ragione sociale</comment>

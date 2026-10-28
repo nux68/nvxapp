@@ -44,6 +44,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Mode
         public Boolean MainUser { get; set; }
         public string? Mail { get; set; } = string.Empty;
         public string? Pw { get; set; } = string.Empty;
+        // solo in creazione: nomi degli amministratori (vuoti = Descrizione + "_PowerAdmin" / "_Admin")
+        public string? PowerAdminUserName { get; set; }
+        public string? AdminUserName { get; set; }
 
         // applicativi (tutti quelli dell'enum) con lo stato per l'azienda:
         // CompanyGet li restituisce, CompanyPut li applica (attivo -> schema verificato/creato,

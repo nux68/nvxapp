@@ -38,8 +38,25 @@
           </ion-item>
           @if (erroreCampo('ragioneSociale')) {
             <ion-note color="danger" class="nvx-nota-disabled">{{ 'pages.register.companyNameError' | transloco: { max: ragioneSocialeMaxLength } }}</ion-note>
-          } @else if (nomeAzienda) {
-            <ion-note class="nvx-nota-disabled">{{ 'pages.register.userPrefixHint' | transloco: { name: nomeAzienda } }}</ion-note>
+          }
+          @if (_editForm.controls['ragioneSociale'].valid) {
+            <!-- amministratori che verranno creati: nomi modificabili, verificati sul server -->
+            <ion-note class="nvx-nota-disabled">{{ 'pages.register.adminUsersHint' | transloco }}</ion-note>
+            <ion-item lines="full">
+              <ion-input [label]="'pages.register.powerAdminUserName' | transloco" labelPlacement="floating" formControlName="powerAdminUserName" [maxlength]="userNameMaxLength"></ion-input>
+            </ion-item>
+            @if (erroreNome('powerAdminUserName'); as errore) {
+              <ion-note color="danger" class="nvx-nota-disabled">{{ errore }}</ion-note>
+            }
+            <ion-item lines="full">
+              <ion-input [label]="'pages.register.adminUserName' | transloco" labelPlacement="floating" formControlName="adminUserName" [maxlength]="userNameMaxLength"></ion-input>
+            </ion-item>
+            @if (erroreNome('adminUserName'); as errore) {
+              <ion-note color="danger" class="nvx-nota-disabled">{{ errore }}</ion-note>
+            }
+            @if (verificaNomi) {
+              <ion-note class="nvx-nota-disabled">{{ 'pages.register.userNamesChecking' | transloco }}</ion-note>
+            }
           }
           <ion-item lines="full">
             <ion-input [label]="'pages.register.email' | transloco" labelPlacement="floating" type="email" formControlName="mail"></ion-input>

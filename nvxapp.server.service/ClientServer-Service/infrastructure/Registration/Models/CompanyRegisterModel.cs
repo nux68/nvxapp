@@ -10,6 +10,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Registration
         public string? Mail { get; set; } = string.Empty;
         public string? Pw { get; set; } = string.Empty;
         public Boolean AccettaCondizioni { get; set; }
+        // nomi scelti per gli amministratori (vuoti = RagioneSociale + "_PowerAdmin" / "_Admin")
+        public string? PowerAdminUserName { get; set; } = string.Empty;
+        public string? AdminUserName { get; set; } = string.Empty;
     }
 
     public class CompanyRegisterOutModel : ModelResult
@@ -17,6 +20,22 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Registration
         // indirizzo a cui e' stato inviato il link e sua validita'
         public string Mail { get; set; } = string.Empty;
         public int ScadenzaOre { get; set; }
+    }
+
+
+    // verifica, mentre si compila la pagina, dei nomi degli amministratori che si creeranno
+    public class CompanyRegisterUserNamesCheckInModel
+    {
+        public string? RagioneSociale { get; set; } = string.Empty;
+        public string? PowerAdminUserName { get; set; } = string.Empty;
+        public string? AdminUserName { get; set; } = string.Empty;
+    }
+
+    // errore per ciascun nome (vuoto = valido e libero)
+    public class CompanyRegisterUserNamesCheckOutModel : ModelResult
+    {
+        public string PowerAdminUserNameError { get; set; } = string.Empty;
+        public string AdminUserNameError { get; set; } = string.Empty;
     }
 
 

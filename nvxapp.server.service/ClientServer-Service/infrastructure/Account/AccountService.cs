@@ -818,7 +818,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                     var user = new ApplicationUser
                     {
                         Id = Guid.NewGuid().ToString(),
-                        UserName = company.Descrizione + "_PowerAdmin", //CompanyPowerAdmin
+                        UserName = string.IsNullOrWhiteSpace(model.Data.CompanyEdit.PowerAdminUserName) ? company.Descrizione + "_PowerAdmin" : model.Data.CompanyEdit.PowerAdminUserName.Trim(), //CompanyPowerAdmin
                         Email = model.Data.CompanyEdit.Mail
                     };
 
@@ -839,7 +839,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                     user = new ApplicationUser
                     {
                         Id = Guid.NewGuid().ToString(),
-                        UserName = company.Descrizione + "_Admin", //CompanyAdmin
+                        UserName = string.IsNullOrWhiteSpace(model.Data.CompanyEdit.AdminUserName) ? company.Descrizione + "_Admin" : model.Data.CompanyEdit.AdminUserName.Trim(), //CompanyAdmin
                         Email = model.Data.CompanyEdit.Mail
                     };
 

@@ -31,6 +31,15 @@ namespace nvxapp.server.Controllers.Infrastructure
             return await _registrationService.CompanyRegister(inModel, false);
         }
 
+        // verifica dei nomi degli amministratori mentre si compila la pagina
+        [AllowAnonymous]
+        [HttpPost]
+        [Route("CompanyRegisterUserNamesCheck")]
+        public async Task<GenericResult<CompanyRegisterUserNamesCheckOutModel>> CompanyRegisterUserNamesCheck(GenericRequest<CompanyRegisterUserNamesCheckInModel> inModel)
+        {
+            return await _registrationService.CompanyRegisterUserNamesCheck(inModel, false);
+        }
+
         // conferma dal link dell'email: crea l'azienda
         [AllowAnonymous]
         [HttpPost]
