@@ -117,7 +117,8 @@ namespace nvxapp.server.Utility
 
             builder.Services.RegisterAssemblyPublicNonGenericClasses(Assembly.GetAssembly(typeof(IServiceBase)))
                             .Where(type => !typeof(IRabbitMqListenerService).IsAssignableFrom(type)
-                                        && !typeof(nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.IRouteProvider).IsAssignableFrom(type)) // IRouteProvider registrati come Singleton sotto
+                                        && !typeof(nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.IRouteProvider).IsAssignableFrom(type) // IRouteProvider registrati come Singleton sotto
+                                        && type.GetMethod("<Clone>$") == null) // record (dati, non servizi): implementano IEquatable<T> e non si possono costruire
                             .AsPublicImplementedInterfaces(ServiceLifetime.Scoped);
 
             // IChatSessionStore deve essere Singleton: mantiene le sessioni conversazionali
