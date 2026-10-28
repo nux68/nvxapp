@@ -97,6 +97,14 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 case "altroieri": case "l'altroieri": case "altro ieri": case "l'altro ieri":
                 case "day before yesterday": case "the day before yesterday":
                     result = today.AddDays(-2); return true;
+
+                // settimane: il lunedì della settimana (l'inizio di un periodo di 7 giorni)
+                case "questa settimana": case "settimana corrente": case "this week":
+                    result = ResolveWeekday(today, DayOfWeek.Monday, string.Empty); return true;
+                case "la prossima settimana": case "prossima settimana": case "settimana prossima": case "la settimana prossima": case "next week":
+                    result = ResolveWeekday(today, DayOfWeek.Monday, string.Empty).AddDays(7); return true;
+                case "la settimana scorsa": case "settimana scorsa": case "la scorsa settimana": case "scorsa settimana": case "last week":
+                    result = ResolveWeekday(today, DayOfWeek.Monday, string.Empty).AddDays(-7); return true;
             }
 
             // giorno della settimana: "lunedì", "lunedì scorso", "venerdì prossimo", "last monday", "next friday"
