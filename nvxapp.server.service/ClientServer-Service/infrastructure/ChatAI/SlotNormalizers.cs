@@ -64,9 +64,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             ["seven"] = 7, ["eight"] = 8, ["nine"] = 9, ["ten"] = 10, ["eleven"] = 11, ["twelve"] = 12,
         };
 
-        // parole davanti alla data che non ne cambiano il valore ("il 15", "del 15 maggio", "on May 15")
+        // parole davanti alla data che non ne cambiano il valore ("il 15", "del 15 maggio", "dal 3", "on May 15")
         private static readonly string[] _datePrefixes =
-            { "il ", "lo ", "l'", "del ", "dello ", "di ", "per ", "giorno ", "in data ", "on ", "the ", "for " };
+            { "il ", "lo ", "l'", "del ", "dello ", "di ", "per ", "giorno ", "in data ", "a partire dal ", "dal ", "fino al ", "al ",
+              "on ", "the ", "for ", "from ", "until ", "to " };
 
         private static readonly string[] _dateFormats =
             { "d/M/yyyy", "d-M-yyyy", "d.M.yyyy", "yyyy-M-d", "d/M/yy", "d-M-yy", "d.M.yy" };
@@ -173,9 +174,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
         // Orari
         // ---------------------------------------------------------------------------
 
-        // parole davanti all'orario che non ne cambiano il valore ("alle 9", "ore 14", "at 9")
+        // parole davanti all'orario che non ne cambiano il valore ("alle 9", "delle 17", "dalle 8", "at 9")
         private static readonly string[] _timePrefixes =
-            { "alle ", "all'", "ore ", "le ", "verso le ", "per le ", "at ", "around " };
+            { "alle ", "all'", "delle ", "dell'", "dalle ", "dall'", "della ", "ore ", "le ", "verso le ", "per le ",
+              "at ", "around ", "from ", "to " };
 
         // frazioni dopo "e": "9 e mezza", "9 e un quarto", "9 e 20"
         private static readonly Dictionary<string, int> _minuteWords = new()
