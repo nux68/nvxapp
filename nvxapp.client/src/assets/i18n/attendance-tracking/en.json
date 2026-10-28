@@ -1357,6 +1357,15 @@
       }
     },
     "services": {
+      "report": {
+        "titolo": "Report",
+        "attivitaTotali": "Activity totals",
+        "attivitaPerDipendente": "By employee",
+        "pianoFerie": "Holiday plan",
+        "quadratura": "Monthly reconciliation",
+        "notaSpesePerTipo": "By expense type",
+        "notaSpesePerDipendente": "By employee"
+      },
       "timeSheet": {
         "richiestaDalAl": "Request from {{dal}} to {{al}}",
         "fuoriRapporto": {

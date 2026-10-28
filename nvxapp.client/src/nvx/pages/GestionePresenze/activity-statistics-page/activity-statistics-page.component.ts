@@ -17,6 +17,9 @@ import {
   ActivityStatistics_TotaleAttivitaModel
 } from '../../../ClientServer-Service/GestionePresenze/ActivityStatisticsService/Models/activity-statistics-model';
 import { TranslocoService } from '@jsverse/transloco';
+import { FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
+import { ReportFabService } from '../../../Utility/GestionePresenze/report-fab.service';
+import { ReportTipo } from '../../../ClientServer-Service/GestionePresenze/Report/Models/report-model';
 
 @Component({
   selector: 'app-activity-statistics-page',
@@ -102,6 +105,8 @@ export class ActivityStatisticsPageComponent extends BasePageConfirmCancelCompon
               protected override userInterfaceService: UserInterfaceService,
               private activityStatisticsService: ActivityStatisticsService,
               protected override fb: FormBuilder,
+              private fabMenuService: FabMenuService,
+              private reportFabService: ReportFabService,
               private transloco: TranslocoService)
   {
     super(navCtrl, userInterfaceService, fb);
@@ -118,6 +123,22 @@ export class ActivityStatisticsPageComponent extends BasePageConfirmCancelCompon
   ngOnDestroy(): void {
     this._destroy$.next();
     this._destroy$.complete();
+  }
+
+  override ionViewWillEnter() {
+    super.ionViewWillEnter();
+
+    // report PDF dei dipendenti selezionati: totali per attivita' o per dipendente
+    this.fabMenuService.fabMenuItem = [
+      this.reportFabService.FabItem([
+        { tipo: ReportTipo.AttivitaTotali, testo: 'attendance.services.report.attivitaTotali' },
+        { tipo: ReportTipo.AttivitaPerDipendente, testo: 'attendance.services.report.attivitaPerDipendente' },
+      ], () => ({ year: this.year, month: this.month, selectedUserId: this.currUserId ?? [], repartiId: [], idPar_TipoSpesa: null, stati: null })),
+    ];
+  }
+
+  ionViewWillLeave() {
+    this.fabMenuService.fabMenuItem = [];
   }
 
   get Title(): string { return this.transloco.translate('attendance.pages.activityStatistics.title'); }

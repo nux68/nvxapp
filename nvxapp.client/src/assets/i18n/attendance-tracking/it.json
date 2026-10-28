@@ -1357,6 +1357,15 @@
       }
     },
     "services": {
+      "report": {
+        "titolo": "Report",
+        "attivitaTotali": "Totali attività",
+        "attivitaPerDipendente": "Per dipendente",
+        "pianoFerie": "Piano ferie",
+        "quadratura": "Quadratura mensile",
+        "notaSpesePerTipo": "Per tipo di spesa",
+        "notaSpesePerDipendente": "Per dipendente"
+      },
       "timeSheet": {
         "richiestaDalAl": "Richiesta dal {{dal}} al {{al}}",
         "fuoriRapporto": {

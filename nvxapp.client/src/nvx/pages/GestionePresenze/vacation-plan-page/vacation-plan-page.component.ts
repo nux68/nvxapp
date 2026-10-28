@@ -19,6 +19,9 @@ import { DateTimeUtilService } from '../../../Utility/infrastructure/date-time-u
 import { DipGGRichiestaService } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Richiesta/dip-gg-richiesta.service';
 import { TranslocoService } from '@jsverse/transloco';
 import { LanguageService } from '../../../Utility/infrastructure/language.service';
+import { FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
+import { ReportFabService } from '../../../Utility/GestionePresenze/report-fab.service';
+import { ReportTipo } from '../../../ClientServer-Service/GestionePresenze/Report/Models/report-model';
 
 @Component({
   selector: 'app-vacation-plan-page',
@@ -51,7 +54,9 @@ export class VacationPlanPageComponent extends BasePageConfirmCancelComponent<Va
               private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
               public timeSheetService: TimeSheetService,
               private transloco: TranslocoService,
-              private languageService: LanguageService
+              private languageService: LanguageService,
+              private fabMenuService: FabMenuService,
+              private reportFabService: ReportFabService
   )
   {
     super(navCtrl, userInterfaceService, fb);
@@ -68,6 +73,21 @@ export class VacationPlanPageComponent extends BasePageConfirmCancelComponent<Va
   ngOnDestroy(): void {
     this._destroy$.next();
     this._destroy$.complete();
+  }
+
+  override ionViewWillEnter() {
+    super.ionViewWillEnter();
+
+    // report PDF del piano ferie dei dipendenti selezionati
+    this.fabMenuService.fabMenuItem = [
+      this.reportFabService.FabItem([
+        { tipo: ReportTipo.PianoFerie, testo: 'attendance.services.report.pianoFerie' },
+      ], () => ({ year: this.year, month: this.month, selectedUserId: this.currUserId ?? [], repartiId: [], idPar_TipoSpesa: null, stati: null })),
+    ];
+  }
+
+  ionViewWillLeave() {
+    this.fabMenuService.fabMenuItem = [];
   }
 
   get Title(): string { return this.transloco.translate('attendance.pages.vacationPlan.title'); }

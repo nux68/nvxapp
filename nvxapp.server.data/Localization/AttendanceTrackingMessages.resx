@@ -807,4 +807,173 @@
   <data name="ExpenseMileageInvalidKm" xml:space="preserve">
     <value>Km non validi nel rimborso km del {0:dd/MM/yyyy}.</value>
   </data>
+  <data name="Report_Avviato" xml:space="preserve">
+    <value>Creazione del report PDF avviata...</value>
+  </data>
+  <data name="Report_TipoNonValido" xml:space="preserve">
+    <value>Tipo di report non valido.</value>
+  </data>
+  <data name="Report_DatiNonDisponibili" xml:space="preserve">
+    <value>Dati del report non disponibili.</value>
+  </data>
+  <data name="Report_NessunDato" xml:space="preserve">
+    <value>Nessun dato nel periodo.</value>
+  </data>
+  <data name="Report_Dipendenti" xml:space="preserve">
+    <value>Dipendenti</value>
+  </data>
+  <data name="Report_Reparti" xml:space="preserve">
+    <value>Reparti</value>
+  </data>
+  <data name="Report_AltriDipendenti" xml:space="preserve">
+    <value>Altri dipendenti</value>
+  </data>
+  <data name="Report_Totale" xml:space="preserve">
+    <value>Totale</value>
+  </data>
+  <data name="Report_TotaleComplessivo" xml:space="preserve">
+    <value>Totale complessivo</value>
+  </data>
+  <data name="Report_Tutti" xml:space="preserve">
+    <value>Tutti</value>
+  </data>
+  <data name="Report_Legenda" xml:space="preserve">
+    <value>Legenda</value>
+  </data>
+  <data name="Report_ColDipendente" xml:space="preserve">
+    <value>Dipendente</value>
+  </data>
+  <data name="Report_ColStato" xml:space="preserve">
+    <value>Stato</value>
+  </data>
+  <data name="Report_AttivitaTotali_Titolo" xml:space="preserve">
+    <value>Statistiche attività - Totali per attività</value>
+  </data>
+  <data name="Report_AttivitaPerDipendente_Titolo" xml:space="preserve">
+    <value>Statistiche attività - Per dipendente</value>
+  </data>
+  <data name="Report_ColAttivita" xml:space="preserve">
+    <value>Attività</value>
+  </data>
+  <data name="Report_ColCommessa" xml:space="preserve">
+    <value>Commessa / Sub-commessa</value>
+  </data>
+  <data name="Report_ColCliente" xml:space="preserve">
+    <value>Cliente</value>
+  </data>
+  <data name="Report_ColOre" xml:space="preserve">
+    <value>Ore</value>
+  </data>
+  <data name="Report_GiornateEscluse" xml:space="preserve">
+    <value>Giornate escluse dal conteggio (non elaborate o con errori): {0}.</value>
+    <comment>{0} = numero di giornate</comment>
+  </data>
+  <data name="Report_PianoFerie_Titolo" xml:space="preserve">
+    <value>Piano ferie</value>
+  </data>
+  <data name="Report_Quadratura_Titolo" xml:space="preserve">
+    <value>Quadratura mensile</value>
+  </data>
+  <data name="Report_ColContratto" xml:space="preserve">
+    <value>Contratto</value>
+  </data>
+  <data name="Report_ColLavorate" xml:space="preserve">
+    <value>Lavorate / teoriche</value>
+  </data>
+  <data name="Report_ColInPiu" xml:space="preserve">
+    <value>In più</value>
+  </data>
+  <data name="Report_ColSuppl" xml:space="preserve">
+    <value>Suppl.</value>
+  </data>
+  <data name="Report_ColStrao" xml:space="preserve">
+    <value>Strao</value>
+  </data>
+  <data name="Report_ColEccedenti" xml:space="preserve">
+    <value>Eccedenti</value>
+  </data>
+  <data name="Report_ColNonRic" xml:space="preserve">
+    <value>Non ric.</value>
+  </data>
+  <data name="Report_PartTime" xml:space="preserve">
+    <value>Part-time</value>
+  </data>
+  <data name="Report_FullTime" xml:space="preserve">
+    <value>Full-time</value>
+  </data>
+  <data name="Report_BancaOre" xml:space="preserve">
+    <value>banca ore</value>
+  </data>
+  <data name="Report_DaRicalcolare" xml:space="preserve">
+    <value>Ricalcolare il mese dal Calendario HR.</value>
+  </data>
+  <data name="Report_PeriodoNonCalcolato" xml:space="preserve">
+    <value>Non calcolato</value>
+  </data>
+  <data name="Report_PeriodoApprovato" xml:space="preserve">
+    <value>Approvato</value>
+  </data>
+  <data name="Report_PeriodoDaApprovare" xml:space="preserve">
+    <value>Da approvare</value>
+  </data>
+  <data name="Report_PeriodoProvvisorio" xml:space="preserve">
+    <value>Provvisorio</value>
+  </data>
+  <data name="Report_NotaSpesePerTipo_Titolo" xml:space="preserve">
+    <value>Note spese - Per tipo di spesa</value>
+  </data>
+  <data name="Report_NotaSpesePerDipendente_Titolo" xml:space="preserve">
+    <value>Note spese - Per dipendente</value>
+  </data>
+  <data name="Report_TipoSpesa" xml:space="preserve">
+    <value>Tipo di spesa</value>
+  </data>
+  <data name="Report_Stato" xml:space="preserve">
+    <value>Stato</value>
+  </data>
+  <data name="Report_ColData" xml:space="preserve">
+    <value>Data</value>
+  </data>
+  <data name="Report_ColTipoSpesa" xml:space="preserve">
+    <value>Tipo di spesa</value>
+  </data>
+  <data name="Report_ColDescrizione" xml:space="preserve">
+    <value>Descrizione</value>
+  </data>
+  <data name="Report_ColImporto" xml:space="preserve">
+    <value>Importo</value>
+  </data>
+  <data name="Report_Spesa" xml:space="preserve">
+    <value>{0} spesa</value>
+    <comment>{0} = numero di spese</comment>
+  </data>
+  <data name="Report_Spese" xml:space="preserve">
+    <value>{0} spese</value>
+    <comment>{0} = numero di spese</comment>
+  </data>
+  <data name="Report_RimborsoKm" xml:space="preserve">
+    <value>Rimborso km: {0} km · {1}</value>
+    <comment>{0} = km, {1} = autovettura</comment>
+  </data>
+  <data name="Report_StatoRichiesta_Diretta" xml:space="preserve">
+    <value>Diretta</value>
+  </data>
+  <data name="Report_StatoRichiesta_Immessa" xml:space="preserve">
+    <value>Immessa</value>
+  </data>
+  <data name="Report_StatoRichiesta_Cancellata" xml:space="preserve">
+    <value>Cancellata</value>
+  </data>
+  <data name="Report_StatoRichiesta_Rifiutata" xml:space="preserve">
+    <value>Rifiutata</value>
+  </data>
+  <data name="Report_StatoRichiesta_ApprovazioneInCorso" xml:space="preserve">
+    <value>Approvazione in corso</value>
+  </data>
+  <data name="Report_StatoRichiesta_ParzialmenteApprovata" xml:space="preserve">
+    <value>Parzialmente approvata</value>
+  </data>
+  <data name="Report_StatoRichiesta_Approvata" xml:space="preserve">
+    <value>Approvata</value>
+  </data>
 </root>

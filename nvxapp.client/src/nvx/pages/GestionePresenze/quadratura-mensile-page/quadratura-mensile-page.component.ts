@@ -9,6 +9,9 @@ import { CollectionDialogService } from '../../../shared/components/infrastructu
 import { LongJobNotifierService } from '../../../Utility/infrastructure/long-job-notifier.service';
 import { GestionePresenze_JobType } from '../../../Utility/GestionePresenze/GestionePresenze_JobType';
 import { TranslocoService } from '@jsverse/transloco';
+import { FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
+import { ReportFabService } from '../../../Utility/GestionePresenze/report-fab.service';
+import { ReportTipo } from '../../../ClientServer-Service/GestionePresenze/Report/Models/report-model';
 
 /*
  Quadratura mensile: per i dipendenti selezionati, totali del cartellino del mese (ore in piu',
@@ -28,6 +31,8 @@ export class QuadraturaMensilePageComponent implements OnDestroy {
   public currYear: number;
   public currMonth: number;     // 1-12
   public usersId: string[] = [];
+  // reparti selezionati: il report e' diviso per reparto
+  public repartiId: number[] = [];
   public righe: Dip_Periodo_Riga[] = [];
   public selezionati = new Set<number>();
 
@@ -41,6 +46,8 @@ export class QuadraturaMensilePageComponent implements OnDestroy {
               private collectionDialogService: CollectionDialogService,
               private longJobNotifier: LongJobNotifierService,
               private platform: Platform,
+              private fabMenuService: FabMenuService,
+              private reportFabService: ReportFabService,
               private transloco: TranslocoService) {
     this.title = this.transloco.translate('attendance.pages.quadraturaMensile.title');
   }
@@ -55,11 +62,19 @@ export class QuadraturaMensilePageComponent implements OnDestroy {
       if (job.jobType === GestionePresenze_JobType.TimeSheet_Engine_Calculate)
         this.load();
     });
+
+    // report PDF della quadratura dei reparti selezionati
+    this.fabMenuService.fabMenuItem = [
+      this.reportFabService.FabItem([
+        { tipo: ReportTipo.QuadraturaMensile, testo: 'attendance.services.report.quadratura' },
+      ], () => ({ year: this.currYear, month: this.currMonth, selectedUserId: this.usersId, repartiId: this.repartiId, idPar_TipoSpesa: null, stati: null })),
+    ];
   }
 
   ionViewWillLeave() {
     this.jobSub?.unsubscribe();
     this.jobSub = null;
+    this.fabMenuService.fabMenuItem = [];
   }
 
   ngOnDestroy() {
@@ -71,6 +86,10 @@ export class QuadraturaMensilePageComponent implements OnDestroy {
     this.currYear = period.year;
     this.currMonth = period.month;
     this.load();
+  }
+
+  onRepartiChanged(repartoIds: number[] | undefined) {
+    this.repartiId = repartoIds ?? [];
   }
 
   onAllUsersInSelectionChanged(userIds: string[] | undefined) {

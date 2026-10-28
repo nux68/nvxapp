@@ -807,4 +807,169 @@
   <data name="ExpenseMileageInvalidKm" xml:space="preserve">
     <value>Invalid km in the mileage expense of {0:dd/MM/yyyy}.</value>
   </data>
+  <data name="Report_Avviato" xml:space="preserve">
+    <value>PDF report creation started...</value>
+  </data>
+  <data name="Report_TipoNonValido" xml:space="preserve">
+    <value>Invalid report type.</value>
+  </data>
+  <data name="Report_DatiNonDisponibili" xml:space="preserve">
+    <value>Report data not available.</value>
+  </data>
+  <data name="Report_NessunDato" xml:space="preserve">
+    <value>No data in the period.</value>
+  </data>
+  <data name="Report_Dipendenti" xml:space="preserve">
+    <value>Employees</value>
+  </data>
+  <data name="Report_Reparti" xml:space="preserve">
+    <value>Departments</value>
+  </data>
+  <data name="Report_AltriDipendenti" xml:space="preserve">
+    <value>Other employees</value>
+  </data>
+  <data name="Report_Totale" xml:space="preserve">
+    <value>Total</value>
+  </data>
+  <data name="Report_TotaleComplessivo" xml:space="preserve">
+    <value>Grand total</value>
+  </data>
+  <data name="Report_Tutti" xml:space="preserve">
+    <value>All</value>
+  </data>
+  <data name="Report_Legenda" xml:space="preserve">
+    <value>Legend</value>
+  </data>
+  <data name="Report_ColDipendente" xml:space="preserve">
+    <value>Employee</value>
+  </data>
+  <data name="Report_ColStato" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Report_AttivitaTotali_Titolo" xml:space="preserve">
+    <value>Activity statistics - Activity totals</value>
+  </data>
+  <data name="Report_AttivitaPerDipendente_Titolo" xml:space="preserve">
+    <value>Activity statistics - By employee</value>
+  </data>
+  <data name="Report_ColAttivita" xml:space="preserve">
+    <value>Activity</value>
+  </data>
+  <data name="Report_ColCommessa" xml:space="preserve">
+    <value>Job order / Sub-order</value>
+  </data>
+  <data name="Report_ColCliente" xml:space="preserve">
+    <value>Customer</value>
+  </data>
+  <data name="Report_ColOre" xml:space="preserve">
+    <value>Hours</value>
+  </data>
+  <data name="Report_GiornateEscluse" xml:space="preserve">
+    <value>Days excluded from the count (not processed or with errors): {0}.</value>
+  </data>
+  <data name="Report_PianoFerie_Titolo" xml:space="preserve">
+    <value>Holiday plan</value>
+  </data>
+  <data name="Report_Quadratura_Titolo" xml:space="preserve">
+    <value>Monthly reconciliation</value>
+  </data>
+  <data name="Report_ColContratto" xml:space="preserve">
+    <value>Contract</value>
+  </data>
+  <data name="Report_ColLavorate" xml:space="preserve">
+    <value>Worked / scheduled</value>
+  </data>
+  <data name="Report_ColInPiu" xml:space="preserve">
+    <value>Extra</value>
+  </data>
+  <data name="Report_ColSuppl" xml:space="preserve">
+    <value>Add.</value>
+  </data>
+  <data name="Report_ColStrao" xml:space="preserve">
+    <value>Overtime</value>
+  </data>
+  <data name="Report_ColEccedenti" xml:space="preserve">
+    <value>Excess</value>
+  </data>
+  <data name="Report_ColNonRic" xml:space="preserve">
+    <value>Not recog.</value>
+  </data>
+  <data name="Report_PartTime" xml:space="preserve">
+    <value>Part-time</value>
+  </data>
+  <data name="Report_FullTime" xml:space="preserve">
+    <value>Full-time</value>
+  </data>
+  <data name="Report_BancaOre" xml:space="preserve">
+    <value>hour bank</value>
+  </data>
+  <data name="Report_DaRicalcolare" xml:space="preserve">
+    <value>Recalculate the month from the HR Calendar.</value>
+  </data>
+  <data name="Report_PeriodoNonCalcolato" xml:space="preserve">
+    <value>Not calculated</value>
+  </data>
+  <data name="Report_PeriodoApprovato" xml:space="preserve">
+    <value>Approved</value>
+  </data>
+  <data name="Report_PeriodoDaApprovare" xml:space="preserve">
+    <value>To be approved</value>
+  </data>
+  <data name="Report_PeriodoProvvisorio" xml:space="preserve">
+    <value>Provisional</value>
+  </data>
+  <data name="Report_NotaSpesePerTipo_Titolo" xml:space="preserve">
+    <value>Expense reports - By expense type</value>
+  </data>
+  <data name="Report_NotaSpesePerDipendente_Titolo" xml:space="preserve">
+    <value>Expense reports - By employee</value>
+  </data>
+  <data name="Report_TipoSpesa" xml:space="preserve">
+    <value>Expense type</value>
+  </data>
+  <data name="Report_Stato" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Report_ColData" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="Report_ColTipoSpesa" xml:space="preserve">
+    <value>Expense type</value>
+  </data>
+  <data name="Report_ColDescrizione" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="Report_ColImporto" xml:space="preserve">
+    <value>Amount</value>
+  </data>
+  <data name="Report_Spesa" xml:space="preserve">
+    <value>{0} expense</value>
+  </data>
+  <data name="Report_Spese" xml:space="preserve">
+    <value>{0} expenses</value>
+  </data>
+  <data name="Report_RimborsoKm" xml:space="preserve">
+    <value>Mileage: {0} km · {1}</value>
+  </data>
+  <data name="Report_StatoRichiesta_Diretta" xml:space="preserve">
+    <value>Direct</value>
+  </data>
+  <data name="Report_StatoRichiesta_Immessa" xml:space="preserve">
+    <value>Submitted</value>
+  </data>
+  <data name="Report_StatoRichiesta_Cancellata" xml:space="preserve">
+    <value>Cancelled</value>
+  </data>
+  <data name="Report_StatoRichiesta_Rifiutata" xml:space="preserve">
+    <value>Rejected</value>
+  </data>
+  <data name="Report_StatoRichiesta_ApprovazioneInCorso" xml:space="preserve">
+    <value>Approval in progress</value>
+  </data>
+  <data name="Report_StatoRichiesta_ParzialmenteApprovata" xml:space="preserve">
+    <value>Partially approved</value>
+  </data>
+  <data name="Report_StatoRichiesta_Approvata" xml:space="preserve">
+    <value>Approved</value>
+  </data>
 </root>

@@ -3,6 +3,7 @@ export const GestionePresenze_JobType = {
   TimeSheet_Engine_Export: "TimeSheet_Engine.Export",
   TimeSheet_Engine_ExportPdf_4User: "TimeSheet_Engine.ExportPdf_4User",
   TimeSheet_Engine_ExportPdf_4Admin: "TimeSheet_Engine.ExportPdf_4Admin",
+  Report_Pdf: "Report.Pdf",   // report PDF delle pagine HR (ReportFabService)
   
   blabla: "blabla"
 } as const;

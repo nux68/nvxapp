@@ -11,6 +11,9 @@ import { SharedParameterGestionePresenzeService } from '../../../shared/shared-p
 import { NotaSpesaDettaglioDialogService } from '../../../shared/components/GestionePresenze/nota-spesa-dettaglio-dialog/nota-spesa-dettaglio-dialog.service';
 import { TranslocoService } from '@jsverse/transloco';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
+import { FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
+import { ReportFabService } from '../../../Utility/GestionePresenze/report-fab.service';
+import { ReportTipo } from '../../../ClientServer-Service/GestionePresenze/Report/Models/report-model';
 
 
 /** gruppo di spese con il suo totale: una nota spese di un dipendente, o un tipo di spesa */
@@ -90,6 +93,8 @@ export class NotaSpeseAdminPageComponent implements OnDestroy {
               private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
               private notaSpesaDettaglioDialogService: NotaSpesaDettaglioDialogService,
               private userInterfaceService: UserInterfaceService,
+              private fabMenuService: FabMenuService,
+              private reportFabService: ReportFabService,
               private transloco: TranslocoService) {
     this.title = this.transloco.translate('attendance.pages.notaSpeseAdmin.title');
     this.btnDettaglio = this.userInterfaceService.Btn_Dettaglio;
@@ -102,6 +107,18 @@ export class NotaSpeseAdminPageComponent implements OnDestroy {
       this.raggruppaSpese();
     });
     this._ricerca$.next();
+
+    // report PDF dei dipendenti selezionati, con i filtri della pagina: per tipo di spesa o per dipendente
+    this.fabMenuService.fabMenuItem = [
+      this.reportFabService.FabItem([
+        { tipo: ReportTipo.NotaSpesePerTipo, testo: 'attendance.services.report.notaSpesePerTipo' },
+        { tipo: ReportTipo.NotaSpesePerDipendente, testo: 'attendance.services.report.notaSpesePerDipendente' },
+      ], () => ({ year: this.year, month: this.month, selectedUserId: this.usersId, repartiId: [], idPar_TipoSpesa: this.idTipoSpesa || null, stati: this.statiFiltro() })),
+    ];
+  }
+
+  ionViewWillLeave() {
+    this.fabMenuService.fabMenuItem = [];
   }
 
   ngOnDestroy(): void {
@@ -132,17 +149,22 @@ export class NotaSpeseAdminPageComponent implements OnDestroy {
     request.data.al = `${this.year}-${String(this.month).padStart(2, '0')}-${String(fine).padStart(2, '0')}`;
     request.data.usersId = this.usersId;
     request.data.idPar_TipoSpesa = this.idTipoSpesa || null;
-    const attesa = [StatoRichiesta.Immessa, StatoRichiesta.ApprovazioneInCorso, StatoRichiesta.ParzialmenteApprovata];
-    request.data.stati = this.filtroStato === 'approvate' ? [StatoRichiesta.Approvata]
-      : this.filtroStato === 'attesa' ? attesa
-      : this.filtroStato === 'valide' ? [...attesa, StatoRichiesta.Approvata]
-      : this.filtroStato === 'respinte' ? [StatoRichiesta.Rifiutata, StatoRichiesta.Cancellata]
-      : null;
+    request.data.stati = this.statiFiltro();
 
     this.dipGGNotaSpesaService.Search(request).subscribe(res => {
       this.spese = res.data?.dip_GG_NotaSpesa ?? [];
       this.raggruppaSpese();
     });
+  }
+
+  /** stati del filtro della pagina (null = tutti): usati dalla ricerca e dal report */
+  private statiFiltro(): StatoRichiesta[] | null {
+    const attesa = [StatoRichiesta.Immessa, StatoRichiesta.ApprovazioneInCorso, StatoRichiesta.ParzialmenteApprovata];
+    return this.filtroStato === 'approvate' ? [StatoRichiesta.Approvata]
+      : this.filtroStato === 'attesa' ? attesa
+      : this.filtroStato === 'valide' ? [...attesa, StatoRichiesta.Approvata]
+      : this.filtroStato === 'respinte' ? [StatoRichiesta.Rifiutata, StatoRichiesta.Cancellata]
+      : null;
   }
 
   /** gruppi per dipendente o per tipo di spesa, con totali */
