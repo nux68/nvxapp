@@ -883,26 +883,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                         });
                     }
 
-                    //User: un dipendente, come per le aziende create con il DB (PopolateDB), ma uno solo
-                    user = new ApplicationUser
-                    {
-                        Id = Guid.NewGuid().ToString(),
-                        UserName = company.Descrizione + "_User", //User
-                        Email = model.Data.CompanyEdit.Mail
-                    };
-
-                    result = await _userManager.CreateAsync(user, password);
-                    if (result.Succeeded)
-                    {
-                        result = await _userManager.AddToRoleAsync(user, "User");
-
-                        await _userCompanyRepository.UpsertAsync(new UserCompany()
-                        {
-                            IdAspNetUsers = user.Id,
-                            IdCompany = company.Id,
-                            MainUser = false
-                        });
-                    }
+                    // nessun dipendente (User): si inseriscono dalla lista utenti (wizard o importazione da file)
                     /////////////////////
                 }
 
@@ -944,7 +925,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
 
                     await _companyInitializerRegistry.InitializeAllAsync(company);
 
-                    // utenti dell'azienda (PowerAdmin, Admin e dipendente) inizializzati con gli IUserInitializer
+                    // utenti dell'azienda (PowerAdmin e Admin) inizializzati con gli IUserInitializer
                     // degli applicativi ora attivi (es. anagrafica e rapporto di lavoro della gestione presenze)
                     var userCompanies = _userCompanyRepository.FindAll(x => x.IdCompany == company.Id).ToList();
                     foreach (var userCompany in userCompanies)
