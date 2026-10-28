@@ -214,13 +214,14 @@ export class FabMenuComponent implements OnInit, AfterViewInit {
                 duration: 3000,
                 position: 'bottom'
               }).then(t => t.present());
-            } else if (responseType === 'confirmation') {
-              // Modal chiusa + vocale: auto-conferma senza aprire la modal.
+            } else if (responseType === 'confirmation' && res.data?.autoConfirm) {
+              // Modal chiusa + vocale + piano di sola navigazione: auto-conferma senza aprire la modal.
               // Usa il primo chip del server (conferma, gia' nella lingua dell'utente: "Sì"/"Yes");
               // il server accetta comunque le parole di conferma italiane e inglesi.
               const confirmText = res.data?.suggestions?.[0] ?? 'Sì';
               setTimeout(() => this.sendSuggestion(confirmText), 600);
             } else {
+              // confirmation di un piano che scrive dati: l'utente vede il riepilogo e conferma (anche a voce)
               // question: la conversazione richiede input manuale → apri la modal
               this.openModal('vocal');
             }
