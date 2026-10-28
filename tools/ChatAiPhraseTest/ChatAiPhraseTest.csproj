@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!--
+    Prova delle frasi della chat AI con il LLM configurato: vedi README.md.
+    Non fa parte della solution ne' dell'immagine Docker: si lancia a mano dopo ogni modifica
+    a prompt, modello o comandi.
+  -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyName>ChatAiPhraseTest</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\nvxapp.server.service\nvxapp.server.service.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="frasi\*.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

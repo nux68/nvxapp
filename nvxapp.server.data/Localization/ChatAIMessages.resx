@@ -158,4 +158,40 @@
     <value>es. "{0}"</value>
     <comment>{0} = frase di esempio del comando</comment>
   </data>
+  <data name="OpenEntityDisplayName" xml:space="preserve">
+    <value>Apri scheda</value>
+  </data>
+  <data name="OpenEntityDescription" xml:space="preserve">
+    <value>apre la pagina di modifica di un elemento indicato per nome o codice ({0}).</value>
+    <comment>{0} = elenco delle entità</comment>
+  </data>
+  <data name="OpenEntityTypeQuestion" xml:space="preserve">
+    <value>Cosa vuoi aprire? ({0})</value>
+    <comment>{0} = elenco delle entità</comment>
+  </data>
+  <data name="OpenEntityTypeLabel" xml:space="preserve">
+    <value>Tipo</value>
+  </data>
+  <data name="OpenEntityNameQuestion" xml:space="preserve">
+    <value>Quale? Indica il nome o il codice.</value>
+  </data>
+  <data name="OpenEntityNameLabel" xml:space="preserve">
+    <value>Nome</value>
+  </data>
+  <data name="OpenEntityNotFound" xml:space="preserve">
+    <value>Nessun elemento '{1}' tra: {0}.</value>
+    <comment>{0} = entità, {1} = nome cercato</comment>
+  </data>
+  <data name="OpenEntityAmbiguous" xml:space="preserve">
+    <value>Trovati {0} elementi '{2}' ({1}): {3}. Quale?</value>
+    <comment>{0} = numero, {1} = entità, {2} = nome cercato, {3} = elenco</comment>
+  </data>
+  <data name="OpenEntityNotAllowed" xml:space="preserve">
+    <value>Non puoi aprire: {0}.</value>
+    <comment>{0} = entità</comment>
+  </data>
+  <data name="OpenEntityOpening" xml:space="preserve">
+    <value>Apro {0}: {1}.</value>
+    <comment>{0} = entità, {1} = elemento</comment>
+  </data>
 </root>
