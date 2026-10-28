@@ -1,3 +1,6 @@
+using nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI;
+using System.Globalization;
+using System.Text;
 using nvxapp.server.data.Localization;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_AnagraficaService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_AnagraficaService.Models;
@@ -15,7 +18,9 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
         // Validator slot — da usare come SlotDefinition.Validator
         // ---------------------------------------------------------------------------
 
-        public static SlotValidationResult? ValidateEmployeeSlot(string v, IDip_AnagraficaService dip_AnagraficaService)
+        // currentUserId: utente della richiesta, per risolvere ChatSelf.Token ("@me") nel suo dipendente
+        public static SlotValidationResult? ValidateEmployeeSlot(string v, IDip_AnagraficaService dip_AnagraficaService,
+                                                                 string? currentUserId = null)
         {
             if (string.IsNullOrWhiteSpace(v) || !v.Any(char.IsLetter))
                 return SlotValidationResult.Failed(
@@ -39,6 +44,20 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
                     AttendanceTrackingMessages.Get("ChatNoEmployeesAvailable"),
                     "employeeName");
 
+            // "@me": l'utente parla di sé -> il dipendente collegato al suo utente
+            if (v.Trim() == ChatSelf.Token)
+            {
+                var self = string.IsNullOrEmpty(currentUserId)
+                    ? null
+                    : all.FirstOrDefault(d => d.IdAspNetUsers == currentUserId);
+                return self != null
+                    ? SlotValidationResult.Ok($"{self.Cognome} {self.Nome}".Trim())
+                    : SlotValidationResult.Failed(
+                        SlotValidationError.EntityNotFound,
+                        AttendanceTrackingMessages.Get("ChatEmployeeSelfNotFound"),
+                        "employeeName");
+            }
+
             var token = v.Trim().ToLowerInvariant();
             var parts = token.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
@@ -47,14 +66,12 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
                 field.Contains(word, StringComparison.OrdinalIgnoreCase);
 
             List<Dip_AnagraficaModel> found;
-            bool exactMatch = false;
 
             if (parts.Length >= 2)
             {
                 found = all.Where(d => Like(d.Cognome, parts[0]) && Like(d.Nome, parts[1])).ToList();
                 if (found.Count == 0)
                     found = all.Where(d => Like(d.Nome, parts[0]) && Like(d.Cognome, parts[1])).ToList();
-                if (found.Count > 0) exactMatch = true;
             }
             else
             {
@@ -68,6 +85,15 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
                 found = all.Where(d =>
                     parts.Any(p => Like(d.Cognome, p) || Like(d.Nome, p))).ToList();
 
+            // Nessuna corrispondenza esatta: ricerca tollerante agli errori di battitura
+            // e di trascrizione vocale ("Russi" -> "Rossi", "Bianki" -> "Bianchi")
+            bool fuzzy = false;
+            if (found.Count == 0)
+            {
+                found = all.Where(d => parts.All(p => FuzzyLike(d.Cognome, p) || FuzzyLike(d.Nome, p))).ToList();
+                fuzzy = found.Count > 0;
+            }
+
             if (found.Count == 0)
                 return SlotValidationResult.Failed(
                     SlotValidationError.EntityNotFound,
@@ -77,8 +103,8 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
             if (found.Count == 1)
             {
                 var canonical = $"{found[0].Cognome} {found[0].Nome}".Trim();
-                var info = !exactMatch ? AttendanceTrackingMessages.Get("ChatEmployeeMatched", canonical) : null;
-                info = "";
+                // messaggio solo con la ricerca tollerante: il nome trovato è diverso da quello detto
+                var info = fuzzy ? AttendanceTrackingMessages.Get("ChatEmployeeMatched", canonical) : "";
                 return SlotValidationResult.Ok(canonical, info);
             }
 
@@ -92,6 +118,45 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
                 AttendanceTrackingMessages.Get("ChatEmployeesAmbiguous", found.Count, v),
                 "employeeName",
                 suggestions);
+        }
+
+        // Parola simile a una del campo dopo la normalizzazione fonetica (accenti, h, doppie):
+        // distanza di modifica al massimo 1 per parole fino a 6 lettere, 2 per quelle più lunghe.
+        private static bool FuzzyLike(string? field, string word)
+        {
+            if (string.IsNullOrWhiteSpace(field) || word.Length < 3) return false;
+
+            var w = Phonetic(word);
+            return field.Split(new[] { ' ', '\'', '-' }, StringSplitOptions.RemoveEmptyEntries)
+                .Any(f => EditDistance(Phonetic(f), w) <= (w.Length <= 6 ? 1 : 2));
+        }
+
+        // minuscolo, senza accenti, senza "h", lettere doppie ridotte a una ("Bianchi" -> "bianci")
+        private static string Phonetic(string s)
+        {
+            var sb = new StringBuilder();
+            foreach (var c in s.ToLowerInvariant().Normalize(NormalizationForm.FormD))
+            {
+                if (CharUnicodeInfo.GetUnicodeCategory(c) == UnicodeCategory.NonSpacingMark || c == 'h') continue;
+                if (sb.Length > 0 && sb[^1] == c) continue;
+                sb.Append(c);
+            }
+            return sb.ToString();
+        }
+
+        // distanza di Levenshtein
+        private static int EditDistance(string a, string b)
+        {
+            var prev = Enumerable.Range(0, b.Length + 1).ToArray();
+            for (int i = 1; i <= a.Length; i++)
+            {
+                var cur = new int[b.Length + 1];
+                cur[0] = i;
+                for (int j = 1; j <= b.Length; j++)
+                    cur[j] = Math.Min(Math.Min(cur[j - 1] + 1, prev[j] + 1), prev[j - 1] + (a[i - 1] == b[j - 1] ? 0 : 1));
+                prev = cur;
+            }
+            return prev[b.Length];
         }
 
         // ---------------------------------------------------------------------------

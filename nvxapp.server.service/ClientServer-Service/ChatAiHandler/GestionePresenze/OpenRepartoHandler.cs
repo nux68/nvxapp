@@ -27,6 +27,8 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
             DisplayName  = AttendanceTrackingMessages.Get("ChatOpenRepartoDisplayName"),
             Usable4Role = new List<string> { "CompanyPowerAdmin" },
             Description  = AttendanceTrackingMessages.Get("ChatOpenRepartoDescription"),
+            // frasi di esempio per il riconoscimento dell'intent (italiano e inglese)
+            Examples = new() { "apri il reparto produzione", "modifica il reparto magazzino" },
             IsNavigation = true,
             Keywords     = new() { "reparto", "apri reparto", "modifica reparto", "apri il reparto",
                                    "department", "open department", "edit department" },

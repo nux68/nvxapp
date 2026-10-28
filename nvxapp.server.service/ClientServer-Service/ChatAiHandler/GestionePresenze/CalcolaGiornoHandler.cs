@@ -1,3 +1,4 @@
+using nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI;
 using nvxapp.server.data.Localization;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_AnagraficaService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_AnagraficaService.Models;
@@ -21,8 +22,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
 
         public CalcolaGiornoHandler(
             IDip_AnagraficaService dip_AnagraficaService,
-            ITimeSheet_EngineService timeSheet_EngineService
-        ) : base(dip_AnagraficaService)
+            ITimeSheet_EngineService timeSheet_EngineService,
+            IChatUserContext chatUserContext
+        ) : base(dip_AnagraficaService, chatUserContext)
         {
             _timeSheet_EngineService = timeSheet_EngineService;
 
@@ -36,6 +38,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                 DisplayName = AttendanceTrackingMessages.Get("ChatCalcolaGiornoDisplayName"),
                 Usable4Role = new List<string> { "CompanyPowerAdmin" },
                 Description = AttendanceTrackingMessages.Get("ChatCalcolaGiornoDescription"),
+                // frasi di esempio per il riconoscimento dell'intent (italiano e inglese)
+                Examples = new() { "ricalcola le presenze di Rossi di ottobre", "calcola il giorno di ieri per Bianchi", "ricalcola Verdi dal 1 al 15", "recalculate Rossi's attendance for October" },
+                SummaryTemplate = AttendanceTrackingMessages.Get("ChatCalcolaGiornoSummary"),
                 Keywords    = new()
                 {
                     "calcola", "ricalcola", "calcola presenze", "ricalcola presenze",

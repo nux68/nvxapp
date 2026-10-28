@@ -27,6 +27,8 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
             DisplayName  = AttendanceTrackingMessages.Get("ChatOpenOrarioDisplayName"),
             Usable4Role = new List<string> { "CompanyPowerAdmin" },
             Description  = AttendanceTrackingMessages.Get("ChatOpenOrarioDescription"),
+            // frasi di esempio per il riconoscimento dell'intent (italiano e inglese)
+            Examples = new() { "apri l'orario turno mattina", "modifica l'orario 8-17" },
             IsNavigation = true,
             Keywords     = new() { "apri orario", "modifica orario", "apri l'orario", "modifica l'orario", "orario",
                                    "open work schedule", "edit work schedule", "work schedule", "working hours" },

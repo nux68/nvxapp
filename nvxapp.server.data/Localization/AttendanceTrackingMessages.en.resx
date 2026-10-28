@@ -975,4 +975,23 @@
   <data name="Report_StatoRichiesta_Approvata" xml:space="preserve">
     <value>Approved</value>
   </data>
+  <data name="ChatEmployeeSelfNotFound" xml:space="preserve">
+    <value>Your user is not linked to any employee. Which employee?</value>
+  </data>
+  <data name="ChatRegisterClockingSummary" xml:space="preserve">
+    <value>clocking for {employeeName} at {time} on {date}</value>
+    <comment>frase per la voce: {nomeSlot} = valore dello slot</comment>
+  </data>
+  <data name="ChatRegisterJustificationSummary" xml:space="preserve">
+    <value>{justification} for {employeeName} on {date}, hours {hours}</value>
+    <comment>frase per la voce: {nomeSlot} = valore dello slot</comment>
+  </data>
+  <data name="ChatRegisterCausaleSummary" xml:space="preserve">
+    <value>{causale} for {employeeName} on {date}, hours {hours}</value>
+    <comment>frase per la voce: {nomeSlot} = valore dello slot</comment>
+  </data>
+  <data name="ChatCalcolaGiornoSummary" xml:space="preserve">
+    <value>attendance recalculation for {employeeName}</value>
+    <comment>frase per la voce: {nomeSlot} = valore dello slot</comment>
+  </data>
 </root>

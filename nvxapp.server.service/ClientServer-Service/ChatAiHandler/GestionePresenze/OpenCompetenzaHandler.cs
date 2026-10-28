@@ -27,6 +27,8 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
             DisplayName  = AttendanceTrackingMessages.Get("ChatOpenCompetenzaDisplayName"),
             Usable4Role = new List<string> { "CompanyPowerAdmin" },
             Description  = AttendanceTrackingMessages.Get("ChatOpenCompetenzaDescription"),
+            // frasi di esempio per il riconoscimento dell'intent (italiano e inglese)
+            Examples = new() { "apri la competenza saldatura", "modifica la competenza inglese" },
             IsNavigation = true,
             Keywords     = new() { "competenza", "apri competenza", "modifica competenza", "apri la competenza",
                                    "skill", "competence", "open skill", "edit skill" },

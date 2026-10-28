@@ -1,3 +1,4 @@
+using nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI;
 using nvxapp.server.data.Localization;
 using nvxapp.server.data.Entities.Tenant;
 using nvxapp.server.data.Entities.Tenant.GestionePresenze;
@@ -25,8 +26,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
         public RegisterJustificationHandler(
             IDip_AnagraficaService dip_AnagraficaService,
             IDip_GG_GiustificativiService dip_GG_GiustificativiService,
-            IPar_GiustificativiService par_GiustificativiService
-        ) : base(dip_AnagraficaService)
+            IPar_GiustificativiService par_GiustificativiService,
+            IChatUserContext chatUserContext
+        ) : base(dip_AnagraficaService, chatUserContext)
         {
             _dip_GG_GiustificativiService = dip_GG_GiustificativiService;
             _par_GiustificativiService    = par_GiustificativiService;
@@ -41,6 +43,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                 DisplayName = AttendanceTrackingMessages.Get("ChatRegisterJustificationDisplayName"),
                 Usable4Role = new List<string> { "CompanyPowerAdmin" },
                 Description = AttendanceTrackingMessages.Get("ChatRegisterJustificationDescription"),
+                // frasi di esempio per il riconoscimento dell'intent (italiano e inglese)
+                Examples = new() { "metti 4 ore di ferie a Rossi per domani", "Bianchi ieri ha fatto 2 ore di permesso", "Verdi è stato in malattia lunedì, 8 ore", "register 8 hours of holiday for Rossi" },
+                SummaryTemplate = AttendanceTrackingMessages.Get("ChatRegisterJustificationSummary"),
                 Keywords    = new()
                 {
                     "giustificativo", "giustifica",
@@ -63,7 +68,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                         Name               = "hours",
                         Type               = "HH:mm o numero testuale",
                         Required           = true,
-                        PromptDescription  = "ore da giustificare nel formato HH:mm (es. 08:00, 04:30) oppure come numero scritto in lettere (es. uno, due, otto)",
+                        PromptDescription  = HoursSlotHelper.PromptDescription,
+                        Normalizer         = HoursSlotHelper.Normalize,
                         Question           = AttendanceTrackingMessages.Get("ChatRegisterJustificationHoursQuestion"),
                         Label              = AttendanceTrackingMessages.Get("ChatHoursLabel"),
                         Validator          = v =>

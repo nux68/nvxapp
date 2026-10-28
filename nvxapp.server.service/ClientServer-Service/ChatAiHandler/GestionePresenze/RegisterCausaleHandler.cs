@@ -1,3 +1,4 @@
+using nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI;
 using nvxapp.server.data.Localization;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_AnagraficaService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_AnagraficaService.Models;
@@ -23,8 +24,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
         public RegisterCausaleHandler(
             IDip_AnagraficaService dip_AnagraficaService,
             IDip_GG_CausaliService dip_GG_CausaliService,
-            IPar_CausaliService par_CausaliService
-        ) : base(dip_AnagraficaService)
+            IPar_CausaliService par_CausaliService,
+            IChatUserContext chatUserContext
+        ) : base(dip_AnagraficaService, chatUserContext)
         {
             _dip_GG_CausaliService = dip_GG_CausaliService;
             _par_CausaliService    = par_CausaliService;
@@ -39,6 +41,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                 DisplayName = AttendanceTrackingMessages.Get("ChatRegisterCausaleDisplayName"),
                 Usable4Role = new List<string> { "CompanyPowerAdmin" },
                 Description = AttendanceTrackingMessages.Get("ChatRegisterCausaleDescription"),
+                // frasi di esempio per il riconoscimento dell'intent (italiano e inglese)
+                Examples = new() { "aggiungi 2 ore di straordinario a Rossi per ieri", "Bianchi ha fatto un'ora di reperibilità oggi", "register 3 hours of overtime for Verdi" },
+                SummaryTemplate = AttendanceTrackingMessages.Get("ChatRegisterCausaleSummary"),
                 Keywords    = new()
                 {
                     "causale", "inserisci causale", "registra causale", "aggiungi causale",
@@ -61,7 +66,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                         Name               = "hours",
                         Type               = "HH:mm o numero testuale",
                         Required           = true,
-                        PromptDescription  = "ore da registrare nel formato HH:mm (es. 08:00, 02:30) oppure come numero in lettere (es. due, otto)",
+                        PromptDescription  = HoursSlotHelper.PromptDescription,
+                        Normalizer         = HoursSlotHelper.Normalize,
                         Question           = AttendanceTrackingMessages.Get("ChatRegisterCausaleHoursQuestion"),
                         Label              = AttendanceTrackingMessages.Get("ChatHoursLabel"),
                         Validator          = v =>

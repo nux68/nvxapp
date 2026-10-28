@@ -1,3 +1,4 @@
+using nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI;
 using nvxapp.server.data.Localization;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_AnagraficaService;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Commands;
@@ -12,11 +13,13 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
     public class TimeSheetPowerAdminHandler : BaseCommandHandler
     {
         private readonly IDip_AnagraficaService _dip_AnagraficaService;
+        private readonly IChatUserContext _chatUserContext;
         private readonly IntentDefinition _intentDefinition;
 
-        public TimeSheetPowerAdminHandler(IDip_AnagraficaService dip_AnagraficaService)
+        public TimeSheetPowerAdminHandler(IDip_AnagraficaService dip_AnagraficaService, IChatUserContext chatUserContext)
         {
             _dip_AnagraficaService = dip_AnagraficaService;
+            _chatUserContext = chatUserContext;
 
             _intentDefinition = new IntentDefinition
             {
@@ -24,6 +27,8 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
                 DisplayName  = AttendanceTrackingMessages.Get("ChatTimeSheetPowerAdminDisplayName"),
                 Usable4Role = new List<string> { "CompanyPowerAdmin" },
                 Description  = AttendanceTrackingMessages.Get("ChatTimeSheetPowerAdminDescription"),
+                // frasi di esempio per il riconoscimento dell'intent (italiano e inglese)
+                Examples = new() { "apri il calendario HR di Rossi di ottobre", "fammi vedere il mio calendario presenze", "show the HR calendar for Bianchi" },
                 IsNavigation = true,
                 Keywords     = new()
                 {
@@ -41,7 +46,8 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
                         PromptDescription  = "nome e/o cognome del dipendente (facoltativo)",
                         Question           = AttendanceTrackingMessages.Get("ChatTimeSheetPowerAdminEmployeeQuestion"),
                         Label              = AttendanceTrackingMessages.Get("ChatEmployeeLabel"),
-                        Validator          = v => DipendenteLookupHelper.ValidateEmployeeSlot(v, _dip_AnagraficaService),
+                        IsPerson           = true,
+                        Validator          = v => DipendenteLookupHelper.ValidateEmployeeSlot(v, _dip_AnagraficaService, _chatUserContext.UserId),
                         HasRelevantContent = msg => msg.Any(char.IsLetter)
                     },
                     new()

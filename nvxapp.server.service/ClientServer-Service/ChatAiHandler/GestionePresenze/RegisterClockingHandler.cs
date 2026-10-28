@@ -1,3 +1,4 @@
+using nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI;
 using System.Globalization;
 using nvxapp.server.data.Localization;
 using nvxapp.server.data.Entities.Tenant;
@@ -21,8 +22,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
         private readonly IDip_GG_TimbraturaService _dip_GG_TimbraturaService;
 
         public RegisterClockingHandler(IDip_AnagraficaService dip_AnagraficaService,
-                                       IDip_GG_TimbraturaService dip_GG_TimbraturaService
-                                       ) : base(dip_AnagraficaService)
+                                       IDip_GG_TimbraturaService dip_GG_TimbraturaService,
+                                       IChatUserContext chatUserContext
+                                       ) : base(dip_AnagraficaService, chatUserContext)
         {
             _dip_GG_TimbraturaService = dip_GG_TimbraturaService;
 
@@ -42,6 +44,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                 Usable4Role = new List<string> { "CompanyPowerAdmin" },
                 DisplayName = AttendanceTrackingMessages.Get("ChatRegisterClockingDisplayName"),
                 Description = AttendanceTrackingMessages.Get("ChatRegisterClockingDescription"),
+                // frasi di esempio per il riconoscimento dell'intent (italiano e inglese)
+                Examples = new() { "Rossi è entrato alle 8", "segna l'uscita di Bianchi alle 17:30", "timbrami adesso", "registra l'entrata di Verdi ieri alle 9", "clock in Rossi at 9" },
+                SummaryTemplate = AttendanceTrackingMessages.Get("ChatRegisterClockingSummary"),
                 Keywords = new() { "timbratura", "timbra","timbrare" ,
                                        "entrata","entra", "entrato", 
                                        "uscita", "esce", "uscito",

@@ -27,6 +27,8 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
             DisplayName  = AttendanceTrackingMessages.Get("ChatOpenCausaleDisplayName"),
             Usable4Role = new List<string> { "CompanyPowerAdmin" },
             Description  = AttendanceTrackingMessages.Get("ChatOpenCausaleDescription"),
+            // frasi di esempio per il riconoscimento dell'intent (italiano e inglese)
+            Examples = new() { "apri la causale straordinario", "modifica la causale ferie" },
             IsNavigation = true,
             Keywords     = new() { "modifica causale", "apri causale", "apri la causale", "modifica la causale", "causale",
                                    "edit attendance code", "open attendance code", "attendance code", "pay code" },

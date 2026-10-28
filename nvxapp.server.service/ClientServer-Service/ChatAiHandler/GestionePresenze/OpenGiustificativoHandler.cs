@@ -27,6 +27,8 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
             DisplayName  = AttendanceTrackingMessages.Get("ChatOpenGiustificativoDisplayName"),
             Usable4Role = new List<string> { "CompanyPowerAdmin" },
             Description  = AttendanceTrackingMessages.Get("ChatOpenGiustificativoDescription"),
+            // frasi di esempio per il riconoscimento dell'intent (italiano e inglese)
+            Examples = new() { "apri il giustificativo ferie", "modifica il giustificativo ROL" },
             IsNavigation = true,
             Keywords     = new() { "modifica giustificativo", "apri giustificativo", "apri il giustificativo", "modifica il giustificativo", "giustificativo",
                                    "edit leave type", "open leave type", "leave type", "absence type" },

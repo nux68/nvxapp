@@ -1,3 +1,4 @@
+using nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI;
 using nvxapp.server.data.Localization;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_AnagraficaService;
 using nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePresenze;
@@ -15,12 +16,16 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
 
         protected readonly IDip_AnagraficaService _dip_AnagraficaService;
 
+        // utente della richiesta: per risolvere "@me" (l'utente parla di sé) nel suo dipendente
+        protected readonly IChatUserContext _chatUserContext;
+
         // Non più static: deve catturare _dip_AnagraficaService dalla specifica istanza.
         protected readonly SlotDefinition EmployeeNameSlot;
 
-        protected BaseCommandDipeHandler(IDip_AnagraficaService dip_AnagraficaService)
+        protected BaseCommandDipeHandler(IDip_AnagraficaService dip_AnagraficaService, IChatUserContext chatUserContext)
         {
             _dip_AnagraficaService = dip_AnagraficaService;
+            _chatUserContext = chatUserContext;
 
             // Inizializzato nel costruttore così può usare _dip_AnagraficaService.
             EmployeeNameSlot = new SlotDefinition
@@ -28,10 +33,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                 Name = "employeeName",
                 Type = "string",
                 Required = true,
-                PromptDescription = "(string, obbligatorio)",
+                PromptDescription = "nome e/o cognome del dipendente",
+                IsPerson = true,
                 Question = AttendanceTrackingMessages.Get("ChatEmployeeQuestion"),
                 Label = AttendanceTrackingMessages.Get("ChatEmployeeLabel"),
-                Validator = v => DipendenteLookupHelper.ValidateEmployeeSlot(v, _dip_AnagraficaService)
+                Validator = v => DipendenteLookupHelper.ValidateEmployeeSlot(v, _dip_AnagraficaService, _chatUserContext.UserId)
             };
         }
 

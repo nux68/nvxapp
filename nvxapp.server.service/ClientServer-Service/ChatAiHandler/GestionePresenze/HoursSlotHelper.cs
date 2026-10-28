@@ -1,11 +1,30 @@
+using System.Globalization;
+using System.Text.RegularExpressions;
+
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Commands.Handlers
 {
     // Converte una stringa ore in TimeSpan.
     // Formati accettati:
     //   HH:mm        (es. "08:00", "04:30")
     //   numero intero scritto in lettere IT (es. "uno", "due", ..., "ventiquattro")
+    //   espressioni di durata (es. "2 ore", "due ore", "un'ora e mezza", "mezz'ora", "2 ore e 30",
+    //   "2,5 ore", "8h", "4 hours", "half an hour")
     public static class HoursSlotHelper
     {
+        // Descrizione degli slot ore per il LLM: copia l'espressione, la conversione la fa Normalize
+        public const string PromptDescription =
+            "ore: copia l'espressione usata dall'utente così come l'ha scritta " +
+            "(es. '2 ore', 'otto', '08:00', 'mezz'ora', 'un'ora e mezza', '4 hours'). Non convertirla: la converte il sistema.";
+
+        // Normalizzatore dello slot (SlotDefinition.Normalizer): espressione -> "HH:mm", null se non riconosciuta
+        public static string? Normalize(string value) =>
+            TryParse(value, out var ts) ? $"{(int)ts.TotalHours:D2}:{ts.Minutes:D2}" : null;
+
+        private static readonly Dictionary<string, int> _fractions = new(StringComparer.OrdinalIgnoreCase)
+        {
+            ["mezza"] = 30, ["mezzo"] = 30, ["un quarto"] = 15, ["tre quarti"] = 45, ["a half"] = 30, ["half"] = 30,
+        };
+
         private static readonly Dictionary<string, int> _wordsToHours =
             new(StringComparer.OrdinalIgnoreCase)
             {
@@ -86,7 +105,48 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                 return true;
             }
 
-            return false;
+            return TryParseDuration(trimmed, out result);
+        }
+
+        // "2 ore", "due ore", "un'ora e mezza", "mezz'ora", "2 ore e 30", "2,5 ore", "8h", "4 hours", "half an hour"
+        private static bool TryParseDuration(string value, out TimeSpan result)
+        {
+            result = TimeSpan.Zero;
+            var t = value.ToLowerInvariant().Replace('\u2019', '\'').Trim().TrimEnd('.', ',', ';', '!', '?').Trim();
+
+            if (t is "mezz'ora" or "mezzora" or "mezza ora" or "half an hour" or "half hour")
+            {
+                result = TimeSpan.FromMinutes(30);
+                return true;
+            }
+
+            // "un'ora", "una ora", "an hour" -> "1 ora"
+            t = Regex.Replace(t, @"^(un'|un |una |an |one )(?=ora|hour)", "1 ");
+
+            var m = Regex.Match(t,
+                @"^(?<h>\d{1,2}(?:[.,]\d{1,2})?|\p{L}+)\s*(?:ore|ora|h|hours?|hrs?)?" +
+                @"(?:\s+(?:e|and)\s+(?<f>mezza|mezzo|un quarto|tre quarti|a half|\d{1,2})(?:\s*(?:minuti|min|minutes))?)?$");
+            if (!m.Success) return false;
+
+            double h;
+            var hText = m.Groups["h"].Value;
+            if (double.TryParse(hText.Replace(',', '.'), NumberStyles.Float, CultureInfo.InvariantCulture, out var hNum))
+                h = hNum;
+            else if (_wordsToHours.TryGetValue(hText, out var hWord))
+                h = hWord;
+            else
+                return false;
+
+            int minutes = 0;
+            if (m.Groups["f"].Success)
+            {
+                var f = m.Groups["f"].Value;
+                if (!_fractions.TryGetValue(f, out minutes) && !int.TryParse(f, out minutes)) return false;
+                if (minutes > 59) return false;
+            }
+
+            result = TimeSpan.FromHours(h) + TimeSpan.FromMinutes(minutes);
+            return result > TimeSpan.Zero && result <= TimeSpan.FromHours(24);
         }
     }
 }
