@@ -453,10 +453,21 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
 
         private async Task<ExtractedPlan?> Call_LLM_OnceAsync(ChatSession session, ICollection<string> detailedIntents)
         {
-            var messages = BuildChatMessages(_intentCatalog.BuildTurnSystemPrompt(session, detailedIntents), session.History);
-            var raw = await PostToLlmAsync(messages);
-
+            var systemPrompt = _intentCatalog.BuildTurnSystemPrompt(session, detailedIntents);
+            var raw = await PostToLlmAsync(BuildChatMessages(systemPrompt, session.History));
             Log.Debug("[ChatAI] Risposta LLM. Session={SessionId} Raw={Raw}", session.SessionId, raw);
+
+            // Risposta vuota: capita (es. DeepSeek in modalità JSON) dopo vari scambi con risposte testuali
+            // dell'assistente nella cronologia. Si ripete una volta con la sola ultima frase dell'utente:
+            // lo stato della conversazione (piano in corso, ultime azioni) è comunque nel prompt di sistema.
+            if (string.IsNullOrWhiteSpace(raw))
+            {
+                var lastUser = session.History.LastOrDefault(t => t.Role == "user");
+                var shortHistory = lastUser != null ? new List<ConversationTurn> { lastUser } : new List<ConversationTurn>();
+                raw = await PostToLlmAsync(BuildChatMessages(systemPrompt, shortHistory));
+                Log.Debug("[ChatAI] Risposta LLM (nuovo tentativo, senza cronologia). Session={SessionId} Raw={Raw}", session.SessionId, raw);
+            }
+
             return ParsePlan(raw);
         }
 
