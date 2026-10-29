@@ -523,9 +523,9 @@ Numerazione unica, nell'ordine in cui farli. `[ ]` da fare, `[x]` fatto (con not
 | 12.1 | Infrastruttura | 1–7 | 7/7 | **completata** (29/10/2026) |
 | 12.2 | Anagrafica: matricola e codice fiscale | 8–12 | 5/5 | **completata** (29/10/2026) |
 | 12.3 | Tipo Orario / Importo | 13–27 | 15/15 | **completata** (29/10/2026) |
-| 12.4 | Modello di export | 28–32 | 0/5 | da iniziare |
+| 12.4 | Modello di export | 28–32 | 5/5 | **completata** (29/10/2026) |
 | 12.5 | Export | 33–43 | 0/11 | da iniziare |
-| **Totale** | | **1–43** | **27/43** | |
+| **Totale** | | **1–43** | **32/43** | |
 
 ### 12.1 Infrastruttura (lavori 1–7) — ramo `Infrastructure_Dev`, poi catena dei merge (§5)
 
@@ -593,11 +593,17 @@ Numerazione unica, nell'ordine in cui farli. `[ ]` da fare, `[x]` fatto (con not
 
 ### 12.4 Modello di export (lavori 28–32) — `AttendanceTracking_Dev` (§2)
 
-- [ ] 28. Eliminazione di `Par_ExportCau.TipoFile` (entità, enum, migrazione, modelli, default, pagina edit, lista, pipe, i18n)
-- [ ] 29. Tabella `Par_ExportCau_Docs` + campi `NoteAI`, `RicettaAI`, `RicettaHash` su `Par_ExportCau` + colonna `Verso` su `Par_ExportCau_Causali` (default Sommatoria) + migrazione
-- [ ] 30. Repository, servizio (upload base64, estrazione testo, limiti), controller, servizio client di `Par_ExportCau_Docs`
-- [ ] 31. Sezione *Documentazione* nella pagina edit: elenco, carica, vedi (file o testo estratto), scarica, elimina
-- [ ] 32. Causali dell'export: select *Verso* nel dialog e segno nell'elenco (modelli, i18n); controllo in `Par_ExportCau_Causali_PutAll_4Edit`: stesso codice di output ⇒ stesso tipo elaborazione e unità; `Importo` solo per causali a importo
+- [x] 28. Eliminazione di `Par_ExportCau.TipoFile` (entità, enum, migrazione, modelli, default, pagina edit, lista, pipe, i18n)
+  — Fatto: tolto da entita', enum, modelli server/client, default (servizio e parametri iniziali), pagina, elenco, pipe (file eliminato) e i18n. L'export attuale scrive sempre CSV (il ramo TXT e' stato tolto) finche' i lavori 34-39 non lo sostituiscono.
+- [x] 29. Tabella `Par_ExportCau_Docs` + campi `NoteAI`, `RicettaAI`, `RicettaHash` su `Par_ExportCau` + colonna `Verso` su `Par_ExportCau_Causali` (default Sommatoria) + migrazione
+  — Fatto: tabella `Par_ExportCau_Docs` (FK con cascata), `NoteAI` (1000), `RicettaAI` (text), `RicettaHash` (64) su `Par_ExportCau`, `Verso` su `Par_ExportCau_Causali` (default Sommatoria): migrazione `20261029142757_ExportCau_Docs_Verso`. Il salvataggio del modello conserva la ricetta salvata (non arriva dal client).
+- [x] 30. Repository, servizio (upload base64, estrazione testo, limiti), controller, servizio client di `Par_ExportCau_Docs`
+  — Fatto: repository, `Par_ExportCau_DocsService` e controller (`GetAll` senza contenuto, `Get` con base64 e testo, `Put`, `Delete`); limiti 5 MB, 10 documenti per modello, `.pdf .docx .odt .xlsx .txt .csv .xml .json .md`; testo estratto con `ImportFileText` al caricamento, file senza testo (es. PDF scansionato) rifiutato; servizio client `par-export-cau-docs.service.ts`.
+- [x] 31. Sezione *Documentazione* nella pagina edit: elenco, carica, vedi (file o testo estratto), scarica, elimina
+  — Fatto: terza sezione *Documentazione* (attiva dopo il primo salvataggio del modello): carica (anche piu' file), vedi (PDF/testo in una scheda, gli altri come testo), testo letto (quello che riceve l'AI), scarica, elimina; caratteri letti per documento. Campo *Indicazioni per l'AI* nella sezione Generale.
+- [x] 32. Causali dell'export: select *Verso* nel dialog e segno nell'elenco (modelli, i18n); controllo in `Par_ExportCau_Causali_PutAll_4Edit`: stesso codice di output ⇒ stesso tipo elaborazione e unità; `Importo` solo per causali a importo
+  — Fatto: select *Verso* nel dialog, "(Sottrai)" nell'elenco delle righe; con una causale a importo l'unita' e' solo Importo (impostata da sola). Server: stesso codice => stessa elaborazione e unita', Importo solo per causali a importo; il controllo gira anche prima di salvare la testata (prima un errore lasciava la testata salvata e le righe no).
+  — Prove sul server di prova: migrazione applicata; note e verso salvati; righe incoerenti rifiutate senza salvare la testata; Importo su causale a ore rifiutato; documento di testo caricato (caratteri letti), tipo non ammesso e modello non salvato rifiutati, elenco/contenuto/eliminazione; modello ripristinato; export avviato con file CSV prodotto. Interfaccia non provata nel browser.
 
 ### 12.5 Export (lavori 33–43) — `AttendanceTracking_Dev` (§3, §4, §6.3)
 
@@ -625,3 +631,4 @@ Una riga per ogni lavoro completato, nell'ordine in cui è stato fatto. Il detta
 | 29/10/2026 | 12.1 | 7 | Infrastructure → AttendanceTracking_Dev → AttendanceTracking | `d09b596f`, `e77c3543` | catena dei merge, build server e client ok |
 | 29/10/2026 | 12.2 | 8–12 | AttendanceTracking_Dev → AttendanceTracking | `c374c41c` | matricola e codice fiscale: dati, controlli, pagine, importazione, i18n; prove API ok |
 | 29/10/2026 | 12.3 | 13–27 | AttendanceTracking_Dev → AttendanceTracking | `ce0ca1cd` | tipo Orario/Importo: dati, regole, motore, dialog, richieste, chat, visualizzazioni; non regressione e prove API ok |
+| 29/10/2026 | 12.4 | 28–32 | AttendanceTracking_Dev → AttendanceTracking | `3b31c50d` | via il tipo file, documentazione per l'AI, note AI, Verso, controlli delle righe; prove API ok |
