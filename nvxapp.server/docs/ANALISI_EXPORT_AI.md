@@ -520,22 +520,29 @@ Numerazione unica, nell'ordine in cui farli. `[ ]` da fare, `[x]` fatto (con not
 
 | Sezione | Contenuto | Lavori | Fatti | Stato |
 |---------|-----------|--------|-------|-------|
-| 12.1 | Infrastruttura | 1–7 | 0/7 | da iniziare |
+| 12.1 | Infrastruttura | 1–7 | 7/7 | **completata** (29/10/2026) |
 | 12.2 | Anagrafica: matricola e codice fiscale | 8–12 | 0/5 | da iniziare |
 | 12.3 | Tipo Orario / Importo | 13–27 | 0/15 | da iniziare |
 | 12.4 | Modello di export | 28–32 | 0/5 | da iniziare |
-| 12.5 | Export | 33–42 | 0/10 | da iniziare |
-| **Totale** | | **1–42** | **0/42** | |
+| 12.5 | Export | 33–43 | 0/11 | da iniziare |
+| **Totale** | | **1–43** | **7/43** | |
 
 ### 12.1 Infrastruttura (lavori 1–7) — ramo `Infrastructure_Dev`, poi catena dei merge (§5)
 
-- [ ] 1. `NVXSystem.SalvaFileJob(jobId, estensione, contenuto)` con lista di estensioni ammesse; nome su disco `{jobId}.{ext}` (§5.1)
-- [ ] 2. `Account/Download`: Content-Type dall'estensione (`FileExtensionContentTypeProvider`), controllo del nome file, `Content-Disposition` (§5.2)
-- [ ] 3. Registro dei file dei job (proprietario + nome visibile) e controllo che scarichi solo chi ha lanciato il job (§5.2)
-- [ ] 4. `LongJobProgressUpdate.FileName` lato server e client; `page-toolbar` usa `job.fileName` per il nome scaricato (§5.3)
-- [ ] 5. Pulizia automatica di `nvxapp_exports` (`Export:RetentionHours`, default 24) (§5.4)
-- [ ] 6. `LlmClient`: parametro `maxTokens`, provider dedicato `AI:ExportLLM`, timeout `AI:TimeoutSeconds`, limite `AI:ExportMaxChars` (§5.5)
-- [ ] 7. Merge `Infrastructure_Dev → Infrastructure → AttendanceTracking_Dev → AttendanceTracking`
+- [x] 1. `NVXSystem.SalvaFileJob(jobId, estensione, contenuto)` con lista di estensioni ammesse; nome su disco `{jobId}.{ext}` (§5.1)
+  — Fatto: `SalvaFileJob(jobId, owner, nomeVisibile, estensione, contenuto)` e `RegistraFileJob` (per i file già scritti da un writer, es. PDF) in `Helpers/Sistema.cs`; estensioni ammesse `csv txt tsv json xml xlsx pdf dat prn zip`; jobId deve essere un GUID. Restituiscono `JobFile(DownloadUrl, FileName)`. `MyMokeLongJobService` usa già `SalvaFileJob`.
+- [x] 2. `Account/Download`: Content-Type dall'estensione (`FileExtensionContentTypeProvider`), controllo del nome file, `Content-Disposition` (§5.2)
+  — Fatto: `NVXSystem.NomeFileJobValido` rifiuta cartelle, `..`, caratteri non validi ed estensioni non ammesse (quindi anche i `.meta`); risposta 404 senza dire il perché. Il nome nel `Content-Disposition` è quello registrato.
+- [x] 3. Registro dei file dei job (proprietario + nome visibile) e controllo che scarichi solo chi ha lanciato il job (§5.2)
+  — Fatto: file `{file}.meta` (JSON: Owner, FileName, Creato) accanto al file. Owner = utente del login (`useridfirstconnection`, come le notifiche del job, quindi funziona anche in impersonazione). **I file non registrati** (cartellini PDF, report, export attuale: codice dei rami presenze) restano scaricabili come prima: si adeguano al lavoro 43.
+- [x] 4. `LongJobProgressUpdate.FileName` lato server e client; `page-toolbar` usa `job.fileName` per il nome scaricato (§5.3)
+  — Fatto: senza `fileName` il client usa l'ultimo pezzo dell'URL come prima.
+- [x] 5. Pulizia automatica di `nvxapp_exports` (`Export:RetentionHours`, default 24) (§5.4)
+  — Fatto: `nvxapp.server/Utility/JobFileCleanupService.cs` (BackgroundService, all'avvio e ogni ora), registrato in `Installers.InstallServices`. Sta nel progetto server perché lo scanner del service registra tutto come Scoped.
+- [x] 6. `LlmClient`: parametro `maxTokens`, provider dedicato `AI:ExportLLM`, timeout `AI:TimeoutSeconds`, limite `AI:ExportMaxChars` (§5.5)
+  — Fatto: `CompleteJsonAsync(..., provider, maxTokens)` con parametri facoltativi (chiamate esistenti invariate); `max_tokens` / Ollama `num_predict`; timeout da `AI:TimeoutSeconds` (180) con `LlmTimeoutException`; `WebApiService.Post` con `timeout` facoltativo. In appsettings: `AI:ExportLLM` (vuoto), `AI:ExportMaxChars` (30000), `AI:ExportMaxTokens` (4000): li leggerà l'export (lavori 37–39).
+- [x] 7. Merge `Infrastructure_Dev → Infrastructure → AttendanceTracking_Dev → AttendanceTracking`
+  — Fatto: commit `79ef15cc` su Infrastructure_Dev, merge `d09b596f` (Infrastructure), `e77c3543` (AttendanceTracking_Dev), AttendanceTracking allineato. Nessun conflitto; `dotnet build` e `ng build` ok.
 
 ### 12.2 Anagrafica: matricola e codice fiscale (lavori 8–12) — `AttendanceTracking_Dev` (§10)
 
@@ -571,7 +578,7 @@ Numerazione unica, nell'ordine in cui farli. `[ ]` da fare, `[x]` fatto (con not
 - [ ] 31. Sezione *Documentazione* nella pagina edit: elenco, carica, vedi (file o testo estratto), scarica, elimina
 - [ ] 32. Causali dell'export: select *Verso* nel dialog e segno nell'elenco (modelli, i18n); controllo in `Par_ExportCau_Causali_PutAll_4Edit`: stesso codice di output ⇒ stesso tipo elaborazione e unità; `Importo` solo per causali a importo
 
-### 12.5 Export (lavori 33–42) — `AttendanceTracking_Dev` (§3, §4, §6.3)
+### 12.5 Export (lavori 33–43) — `AttendanceTracking_Dev` (§3, §4, §6.3)
 
 - [ ] 33. Controllo ruoli e dipendenti amministrati in `Export`; tolto `Task.Delay(10000)`
 - [ ] 34. `PrepareExportMetadati`: JSON con elenco `chiave`, raggruppamento per codice di output e periodo con il segno del Verso, 2 decimali, avviso per i totali negativi, esclusi i dipendenti senza causali
@@ -583,6 +590,7 @@ Numerazione unica, nell'ordine in cui farli. `[ ]` da fare, `[x]` fatto (con not
 - [ ] 40. Anteprima della ricetta nella pagina del modello (su un dipendente)
 - [ ] 41. i18n e messaggi
 - [ ] 42. Prove finali (§8): JSON, TXT a larghezza fissa, CSV, XLSX, causali a importo, CompanyAdmin, AI non raggiungibile/429
+- [ ] 43. Cartellini PDF (`ExportPdf_4User`, `ExportPdf_4Admin`) e report (`ReportService`) registrano il file con `NVXSystem.RegistraFileJob` e mandano `FileName` nella notifica (download solo per chi ha lanciato il job, nome leggibile)
 
 ---
 
@@ -592,4 +600,5 @@ Una riga per ogni lavoro completato, nell'ordine in cui è stato fatto. Il detta
 
 | Data | Sezione | Lavoro | Ramo | Commit | Note |
 |------|---------|--------|------|--------|------|
-| — | — | — | — | — | nessun lavoro ancora fatto |
+| 29/10/2026 | 12.1 | 1–6 | Infrastructure_Dev | `79ef15cc` | file dei job, download, nome file nella notifica, pulizia, LlmClient |
+| 29/10/2026 | 12.1 | 7 | Infrastructure → AttendanceTracking_Dev → AttendanceTracking | `d09b596f`, `e77c3543` | catena dei merge, build server e client ok |
