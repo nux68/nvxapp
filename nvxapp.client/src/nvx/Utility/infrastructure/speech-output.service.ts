@@ -27,9 +27,16 @@ export class SpeechOutputService {
   }
 
   private _enabled: boolean;
-  private spokenWords = new Set<string>();   // parole del testo in pronuncia (riconoscimento dell'eco)
+  private spokenWords: string[] = [];        // parole del testo in pronuncia, in ordine (riconoscimento dell'eco)
   private endedAt = 0;
   private queue: string[] = [];
+  // ogni speak() apre una generazione: gli eventi in ritardo di una voce interrotta (onerror dopo
+  // cancel()) non devono chiudere quella nuova
+  private generation = 0;
+  // riferimento alla frase in pronuncia: in Chrome, se l'oggetto non e' referenziato, onend puo' non arrivare
+  private current: SpeechSynthesisUtterance | null = null;
+  // fine forzata se onend non arriva mai: lo stato "sta parlando" non deve restare acceso
+  private watchdog: ReturnType<typeof setTimeout> | null = null;
 
   constructor(private languageService: LanguageService) {
     let saved: string | null = null;
@@ -61,55 +68,69 @@ export class SpeechOutputService {
     const clean = this.clean(text);
     if (!clean) return;
 
-    this.spokenWords = new Set(this.words(clean));
+    const generation = ++this.generation;
+    this.spokenWords = this.words(clean);
     this.queue = this.sentences(clean);
     this._Speaking$.next(true);
-    this.next();
+    // durata massima stimata (circa 15 caratteri al secondo, piu' margine)
+    this.watchdog = setTimeout(() => this.finished(generation), clean.length * 90 + 4000);
+    this.next(generation);
   }
 
   /** interrompe la voce (l'utente parla o chiude) */
   public cancel(): void {
     this.queue = [];
     if (this.supported) window.speechSynthesis.cancel();
-    if (this.isSpeaking) this.finished();
+    if (this.isSpeaking) this.finished(this.generation);
   }
 
   /**
-   Vero se il testo riconosciuto e' l'eco della voce dell'assistente: arriva mentre parla
-   (o subito dopo) e quasi tutte le sue parole sono nel testo pronunciato.
+   Vero se il testo riconosciuto e' l'eco della voce dell'assistente: arriva mentre parla (o subito
+   dopo) ed e' una sequenza continua di parole del testo pronunciato. Un comando dell'utente che usa
+   solo alcune delle stesse parole ("timbra Rossi alle 9" dopo "timbratura di Rossi Mario alle 09:00")
+   non e' eco.
   */
   public isEcho(heard: string): boolean {
     const recent = this.isSpeaking || Date.now() - this.endedAt < SpeechOutputService.EchoTailMs;
-    if (!recent || this.spokenWords.size === 0) return false;
+    if (!recent || this.spokenWords.length === 0) return false;
     const words = this.words(heard);
     if (words.length === 0) return true;
-    // a voce finita una risposta breve ("sì", "alle 9") e' dell'utente, anche se quelle parole erano nella frase
-    if (!this.isSpeaking && words.length <= 2) return false;
-    const inSpoken = words.filter(w => this.spokenWords.has(w)).length;
-    return inSpoken / words.length >= 0.6;
+    // una risposta breve ("sì", "no", "alle 9") e' sempre dell'utente
+    if (words.length <= 2) return false;
+
+    const spoken = ` ${this.spokenWords.join(' ')} `;
+    const echo = spoken.includes(` ${words.join(' ')} `);
+    if (echo) console.log('🔇 Testo scartato come eco della voce dell\'assistente:', heard);
+    return echo;
   }
 
   // -------------------------------------------------------------------------
 
-  private next(): void {
+  private next(generation: number): void {
+    if (generation !== this.generation) return;
     const sentence = this.queue.shift();
     if (!sentence) {
-      this.finished();
+      this.finished(generation);
       return;
     }
     const utterance = new SpeechSynthesisUtterance(sentence);
     utterance.lang = this.languageService.speechLanguage;
     const voice = this.voice(utterance.lang);
     if (voice) utterance.voice = voice;
-    utterance.onend = () => this.next();
-    utterance.onerror = () => this.finished();
+    utterance.onend = () => this.next(generation);
+    utterance.onerror = () => this.finished(generation);
+    this.current = utterance;
     window.speechSynthesis.speak(utterance);
   }
 
-  private finished(): void {
+  // fine della voce della generazione indicata (gli eventi di una voce gia' sostituita si ignorano)
+  private finished(generation: number): void {
+    if (generation !== this.generation) return;
+    if (this.watchdog) { clearTimeout(this.watchdog); this.watchdog = null; }
+    this.current = null;
     this.queue = [];
     this.endedAt = Date.now();
-    this._Speaking$.next(false);
+    if (this.isSpeaking) this._Speaking$.next(false);
   }
 
   // voce del browser per la lingua ("it-IT"), altrimenti una della stessa lingua ("it")
