@@ -1375,4 +1375,10 @@
   <data name="ExportRicettaDocTroncata" xml:space="preserve">
     <value>La documentazione supera {0} caratteri: all'AI è arrivata solo la prima parte.</value>
   </data>
+  <data name="ExportCompletatoJson" xml:space="preserve">
+    <value>Export completato (formato paghe non disponibile: file JSON), clicca per scaricare</value>
+  </data>
+  <data name="ExportAnteprimaNessunDato" xml:space="preserve">
+    <value>Il dipendente scelto non ha causali del modello nel mese: prova con un altro dipendente o un altro mese.</value>
+  </data>
 </root>

@@ -85,7 +85,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
     /*
      Ricetta del formato prodotta dall'AI dalla documentazione (par. 6.3): il server la applica ai metadati reali
-     (ExportRicettaRenderer). Una riga di dettaglio per ogni causale di ogni dipendente; intestazione e piede facoltativi.
+     (ExportRicettaRenderer). Righe di dettaglio: una per ogni causale di ogni dipendente (RigaPer "causale"), oppure una
+     per dipendente con i Campi del dipendente seguiti dai CampiCausale ripetuti per ogni sua causale (RigaPer "dipendente");
+     intestazione e piede facoltativi.
     */
     public class ExportRicetta
     {
@@ -101,9 +103,12 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
         public string? Separatore { get; set; }
         /// <summary>prima riga con i titoli delle colonne (Titolo dei campi)</summary>
         public bool TitoliColonne { get; set; }
-        /// <summary>tipo di riga di dettaglio: per ora solo "causale" (una riga per causale di ogni dipendente)</summary>
+        /// <summary>riga di dettaglio: "causale" (una per causale di ogni dipendente) o "dipendente" (una per dipendente)</summary>
         public string RigaPer { get; set; } = "causale";
+        /// <summary>campi della riga di dettaglio (con "dipendente": solo i dati del dipendente, all'inizio della riga)</summary>
         public List<ExportRicetta_Campo> Campi { get; set; } = new();
+        /// <summary>solo con "dipendente": campi ripetuti per ogni causale del dipendente, uno dopo l'altro nella stessa riga</summary>
+        public List<ExportRicetta_Campo> CampiCausale { get; set; } = new();
         /// <summary>righe prima del dettaglio (ognuna e' una lista di campi)</summary>
         public List<List<ExportRicetta_Campo>> Intestazione { get; set; } = new();
         /// <summary>righe dopo il dettaglio</summary>

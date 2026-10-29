@@ -190,6 +190,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                         var metadati = preparati.Risultato!.Metadati;
                         var nomeFile = $"{metadati.ModelloExport.Codice}_{richiesta.Dal:yyyyMMdd}-{richiesta.Al:yyyyMMdd}";
                         var avvisi = new List<string>();
+                        var ripiegoJson = false;
                         JobFile file;
 
                         var ricettaService = scope.ServiceProvider.GetRequiredService<IPar_ExportCau_RicettaService>();
@@ -211,6 +212,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                 // senza ricetta i dati non si perdono: si scarica il JSON
                                 Log.Warning(ex, "Export job {JobId}: ricetta non disponibile, si scarica il JSON", jobId);
                                 avvisi.Add(AttendanceTrackingMessages.Get("ExportRicettaNonDisponibile", ex.Message));
+                                ripiegoJson = true;
                                 file = NVXSystem.SalvaFileJob(jobId.ToString(), userId, nomeFile, "json", JsonMetadati(metadati));
                             }
                         }
@@ -221,11 +223,15 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                         if (senzaMatricola > 0)
                             avvisi.Add(AttendanceTrackingMessages.Get("ExportSenzaMatricola", senzaMatricola));
 
+                        // la notifica resta corta come quella degli altri job (la barra la mostra per intero):
+                        // gli avvisi vanno nel log e si vedono nella "Prova del formato" del modello
                         Log.Information("Export file created for job {JobId}: {FileName}", jobId, file.FileName);
+                        if (avvisi.Count > 0)
+                            Log.Warning("Export job {JobId}, avvisi: {Avvisi}", jobId, string.Join(" | ", avvisi));
                         await Notifica(100,
-                                       avvisi.Count == 0
-                                           ? new Message { Text = AttendanceTrackingMessages.Get("ExportCompletedClickToDownload"), MsgType = MessageType.Information }
-                                           : new Message { Text = AttendanceTrackingMessages.Get("ExportCompletatoConAvvisi", string.Join(" ", avvisi)), MsgType = MessageType.Warning },
+                                       ripiegoJson
+                                           ? new Message { Text = AttendanceTrackingMessages.Get("ExportCompletatoJson"), MsgType = MessageType.Warning }
+                                           : new Message { Text = AttendanceTrackingMessages.Get("ExportCompletedClickToDownload"), MsgType = MessageType.Information },
                                        file,
                                        isFinished: true);
                     }
@@ -286,7 +292,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                     retVal.Avvisi.AddRange(ricetta.Avvisi);
                 }
                 if (metadati.Dipendenti.Count == 0)
-                    retVal.Avvisi.Add(AttendanceTrackingMessages.Get("ExportNessunDato"));
+                    retVal.Avvisi.Add(AttendanceTrackingMessages.Get("ExportAnteprimaNessunDato"));
+                else if (metadati.Dipendenti.Any(x => string.IsNullOrWhiteSpace(x.Anagrafica.Matricola)))
+                    retVal.Avvisi.Add(AttendanceTrackingMessages.Get("ExportSenzaMatricola", 1));
                 if (preparati.Risultato.Negativi.Count > 0)
                     retVal.Avvisi.Add(AttendanceTrackingMessages.Get("ExportValoriNegativi", preparati.Risultato.Negativi.Count, string.Join(", ", preparati.Risultato.Negativi.Take(5))));
                 return retVal;

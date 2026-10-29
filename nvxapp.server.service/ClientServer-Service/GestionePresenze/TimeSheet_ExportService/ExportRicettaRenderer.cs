@@ -37,12 +37,13 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
             ["causale.tipoUnita"] = "unita' del valore: Ore, Giorni, Importo",
             ["causale.valore"] = "quantita': ore decimali, giorni o euro (numero, puo' essere negativo)",
             ["riga.numero"] = "numero progressivo della riga di dettaglio (numero)",
+            ["dipendente.numeroCausali"] = "numero di causali del dipendente nella riga (numero, con una riga per dipendente)",
             ["totale.righe"] = "numero di righe di dettaglio (numero, per il piede)",
             ["totale.valore"] = "somma dei valori di dettaglio (numero, per il piede)",
         };
 
         private static readonly string[] Date = { "periodo.dal", "periodo.al", "generato", "causale.periodo" };
-        private static readonly string[] Numeri = { "anagrafica.idDipendente", "causale.valore", "riga.numero", "totale.righe", "totale.valore" };
+        private static readonly string[] Numeri = { "anagrafica.idDipendente", "causale.valore", "riga.numero", "dipendente.numeroCausali", "totale.righe", "totale.valore" };
         private static readonly string[] Codifiche = { "utf-8", "utf-8-bom", "windows-1252", "iso-8859-1", "ascii" };
 
         /// <summary>errori della ricetta (vuoto = valida): l'AI puo' sbagliare, quindi si controlla tutto prima di usarla</summary>
@@ -55,10 +56,19 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
             if (!NVXSystem.EstensioniAmmesse.Contains(ext) || ext is "pdf" or "zip") errori.Add($"estensione '{r.Estensione}' non ammessa");
             if (!Codifiche.Contains((r.Codifica ?? string.Empty).ToLowerInvariant())) errori.Add($"codifica '{r.Codifica}' non prevista ({string.Join(", ", Codifiche)})");
             if (r.FineRiga is not ("CRLF" or "LF")) errori.Add($"fine riga '{r.FineRiga}' non previsto (CRLF, LF)");
-            if (r.RigaPer != "causale") errori.Add($"riga per '{r.RigaPer}' non prevista (causale)");
+            if (r.RigaPer is not ("causale" or "dipendente")) errori.Add($"riga per '{r.RigaPer}' non prevista (causale, dipendente)");
+            if (r.RigaPer == "dipendente")
+            {
+                // una riga per dipendente: i dati della causale stanno solo nei campi ripetuti
+                if (r.CampiCausale.Count == 0) errori.Add("con una riga per dipendente servono i campi ripetuti per ogni causale (campiCausale)");
+                foreach (var c in r.Campi.Where(c => c.Campo.StartsWith("causale.")))
+                    errori.Add($"con una riga per dipendente il campo '{c.Campo}' va tra i campi ripetuti per causale");
+                foreach (var c in r.CampiCausale.Where(c => !c.Campo.StartsWith("causale.") && c.Campo != "costante"))
+                    errori.Add($"tra i campi ripetuti per causale il campo '{c.Campo}' non e' previsto (solo causale.* o costante)");
+            }
             if (r.Separatore is { Length: > 5 }) errori.Add("separatore troppo lungo");
             if (r.Campi.Count == 0) errori.Add("nessun campo nella riga di dettaglio");
-            foreach (var c in r.Campi.Concat(r.Intestazione.SelectMany(x => x)).Concat(r.Piede.SelectMany(x => x)))
+            foreach (var c in r.Campi.Concat(r.CampiCausale).Concat(r.Intestazione.SelectMany(x => x)).Concat(r.Piede.SelectMany(x => x)))
             {
                 if (!Sorgenti.ContainsKey(c.Campo)) errori.Add($"campo '{c.Campo}' non previsto");
                 if (c.Lunghezza is < 1 or > 500) errori.Add($"lunghezza {c.Lunghezza} del campo '{c.Campo}' non valida");
@@ -70,7 +80,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                     catch (FormatException) { errori.Add($"formato data '{c.Formato}' non valido"); }
                 }
             }
-            if (r.Campi.Count > 100 || r.Intestazione.Count > 20 || r.Piede.Count > 20) errori.Add("ricetta troppo grande");
+            if (r.Campi.Count > 100 || r.CampiCausale.Count > 50 || r.Intestazione.Count > 20 || r.Piede.Count > 20) errori.Add("ricetta troppo grande");
             return errori;
         }
 
@@ -109,19 +119,34 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
         // righe come liste di celle (valore formattato + valore tipizzato per l'xlsx)
         private static List<List<(string Testo, object? Tipizzato)>> Righe(ExportRicetta r, ExportMetadati m)
         {
+            var perDipendente = r.RigaPer == "dipendente";
             var dettaglio = m.Dipendenti.SelectMany(d => d.Causali.Select(c => (d, c))).ToList();
-            var contesto = new Contesto(m, dettaglio.Count, dettaglio.Sum(x => x.c.Valore));
+            var contesto = new Contesto(m, perDipendente ? m.Dipendenti.Count : dettaglio.Count, dettaglio.Sum(x => x.c.Valore));
             var righe = new List<List<(string Testo, object? Tipizzato)>>();
             foreach (var riga in r.Intestazione)
                 righe.Add(riga.Select(c => Cella(c, contesto, null, null, 0)).ToList());
             if (r.TitoliColonne)
-                righe.Add(r.Campi.Select(c => ((c.Titolo ?? c.Campo), (object?)(c.Titolo ?? c.Campo))).ToList());
+                righe.Add(r.Campi.Concat(perDipendente ? r.CampiCausale : Enumerable.Empty<ExportRicetta_Campo>())
+                                 .Select(c => ((c.Titolo ?? c.Campo), (object?)(c.Titolo ?? c.Campo))).ToList());
             var n = 0;
-            foreach (var (d, c) in dettaglio)
+            if (perDipendente)
             {
-                n++;
-                righe.Add(r.Campi.Select(f => Cella(f, contesto, d, c, n)).ToList());
+                // una riga per dipendente: i suoi dati, poi i campi di ogni causale uno dopo l'altro
+                foreach (var d in m.Dipendenti)
+                {
+                    n++;
+                    var riga = r.Campi.Select(f => Cella(f, contesto, d, null, n)).ToList();
+                    foreach (var c in d.Causali)
+                        riga.AddRange(r.CampiCausale.Select(f => Cella(f, contesto, d, c, n)));
+                    righe.Add(riga);
+                }
             }
+            else
+                foreach (var (d, c) in dettaglio)
+                {
+                    n++;
+                    righe.Add(r.Campi.Select(f => Cella(f, contesto, d, c, n)).ToList());
+                }
             foreach (var riga in r.Piede)
                 righe.Add(riga.Select(c => Cella(c, contesto, null, null, 0)).ToList());
             return righe;
@@ -154,6 +179,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                 "causale.tipoUnita" => c?.TipoUnita,
                 "causale.valore" => c?.Valore,
                 "riga.numero" => (decimal)numero,
+                "dipendente.numeroCausali" => d == null ? null : (decimal?)d.Causali.Count,
                 "totale.righe" => (decimal)ctx.TotaleRighe,
                 "totale.valore" => ctx.TotaleValore,
                 _ => null

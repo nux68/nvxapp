@@ -1371,4 +1371,10 @@
   <data name="ExportRicettaDocTroncata" xml:space="preserve">
     <value>The documentation exceeds {0} characters: the AI only received the first part.</value>
   </data>
+  <data name="ExportCompletatoJson" xml:space="preserve">
+    <value>Export completed (payroll format not available: JSON file), click to download</value>
+  </data>
+  <data name="ExportAnteprimaNessunDato" xml:space="preserve">
+    <value>The chosen employee has no pay causes of the model in the month: try another employee or month.</value>
+  </data>
 </root>
