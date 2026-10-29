@@ -522,10 +522,10 @@ Numerazione unica, nell'ordine in cui farli. `[ ]` da fare, `[x]` fatto (con not
 |---------|-----------|--------|-------|-------|
 | 12.1 | Infrastruttura | 1–7 | 7/7 | **completata** (29/10/2026) |
 | 12.2 | Anagrafica: matricola e codice fiscale | 8–12 | 5/5 | **completata** (29/10/2026) |
-| 12.3 | Tipo Orario / Importo | 13–27 | 0/15 | da iniziare |
+| 12.3 | Tipo Orario / Importo | 13–27 | 15/15 | **completata** (29/10/2026) |
 | 12.4 | Modello di export | 28–32 | 0/5 | da iniziare |
 | 12.5 | Export | 33–43 | 0/11 | da iniziare |
-| **Totale** | | **1–43** | **12/43** | |
+| **Totale** | | **1–43** | **27/43** | |
 
 ### 12.1 Infrastruttura (lavori 1–7) — ramo `Infrastructure_Dev`, poi catena dei merge (§5)
 
@@ -560,21 +560,36 @@ Numerazione unica, nell'ordine in cui farli. `[ ]` da fare, `[x]` fatto (con not
 
 ### 12.3 Tipo Orario / Importo su causali e giustificativi (lavori 13–27) — `AttendanceTracking_Dev` (§11)
 
-- [ ] 13. Enum `TipoValore`; `Par_Causali.Tipo`, `Par_Giustificativi.Tipo`, `Dip_GG_Giustificativi.Importo`, `Dip_GG_Causali.Importo` (`decimal(18,2)`) + migrazione con default Orario
-- [ ] 14. Parametri causale (pagina, lista, servizio): campo Tipo, blocco del cambio se la causale è già usata
-- [ ] 15. Parametri giustificativo: campo Tipo; con Importo campi forzati (segno neutro, niente contatore, banca ore, autorizzazione straordinario, piano ferie); causale collegata dello stesso tipo; blocco del cambio se usato
-- [ ] 16. Profili orari e orari: selettori causale solo orarie + controllo in salvataggio
-- [ ] 17. Motore (`TimeSheet_EngineService`): accumulo degli importi dai giustificativi a importo, nessun effetto su ore/quadratura; `ScriviCausali` scrive `Importo`
-- [ ] 18. Dialog giustificativo del giorno (admin): un solo importo al posto di ore/dalle/tipo input
-- [ ] 19. Richiesta giustificativo dell'utente + approvazione (`request-justification-user-page`, `Dip_GG_RichiestaService`): giustificativi a importo richiedibili dal dipendente
-- [ ] 20. Dialog causale del giorno: un solo importo per le causali a importo
-- [ ] 21. Servizi `Dip_GG_GiustificativiService` / `Dip_GG_CausaliService`: importo > 0 obbligatorio per il tipo Importo, ore vuote
-- [ ] 22. Chat AI: `RegisterJustificationHandler`, `RegisterJustificationPeriodHandler`, `RegisterCausaleHandler` con lo slot importo
-- [ ] 23. Visualizzazioni: calendari/timesheet (user, admin, power admin), `time-sheet.service.ts`, piano ferie: importi mostrati come `€ 12,50` ed esclusi dai totali ore
-- [ ] 24. Contatori e report (`ContatoriService`, `ReportService`): importi esclusi dalle ore; colonna importi nei report se serve
-- [ ] 25. Cartellino PDF: giustificativi a importo con l'importo
-- [ ] 26. i18n e messaggi
-- [ ] 27. Prova di non regressione: ricalcolo di giorni esistenti senza differenze sui dati orari
+- [x] 13. Enum `TipoValore`; `Par_Causali.Tipo`, `Par_Giustificativi.Tipo`, `Dip_GG_Giustificativi.Importo`, `Dip_GG_Causali.Importo` (`decimal(18,2)`) + migrazione con default Orario
+  — Fatto: enum `TipoValore` (in `Par_Causali.cs`), `Tipo` su `Par_Causali`/`Par_Giustificativi` (default Orario), `Importo` `numeric(10,2)` su `Dip_GG_Giustificativi` e `Dip_GG_Causali` (come la nota spese), migrazione `20261029134812_TipoValore_Importo` (solo `AddColumn`). Campi anche nei modelli server/client, `[HashField]` sugli importi.
+- [x] 14. Parametri causale (pagina, lista, servizio): campo Tipo, blocco del cambio se la causale è già usata
+  — Fatto: select Tipo e nota nella pagina, colonna nell'elenco; `Par_CausaliPut` rifiuta il cambio di tipo se la causale e' usata (giorni dei dipendenti, giustificativi, profili, orari, fasce, modelli di export).
+- [x] 15. Parametri giustificativo: campo Tipo; con Importo campi forzati (segno neutro, niente contatore, banca ore, autorizzazione straordinario, piano ferie); causale collegata dello stesso tipo; blocco del cambio se usato
+  — Fatto: select Tipo; con Importo i campi delle ore sono nascosti e forzati (anche dal server), causali filtrate per tipo; `Par_GiustificativiPut` controlla causale dello stesso tipo e blocca il cambio di tipo se il giustificativo e' usato (giorni o maturazioni).
+- [x] 16. Profili orari e orari: selettori causale solo orarie + controllo in salvataggio
+  — Fatto: selettori di profilo orario (causali e giustificativo di assenza), orario (monte ore) e fasce mostrano solo i tipi a ore; i servizi rifiutano un tipo a importo (`_utility/GestionePresenzeTipoValore`). **Corretto un bug esistente**: profilo orario e fasce prendevano le causali di default dalla tabella dei giustificativi.
+- [x] 17. Motore (`TimeSheet_EngineService`): accumulo degli importi dai giustificativi a importo, nessun effetto su ore/quadratura; `ScriviCausali` scrive `Importo`
+  — Fatto: in `GeneraCausali` il giustificativo a importo accumula l'importo sulla sua causale (`_importiGiorno`) e salta tutti gli effetti sulle ore; `ScriviCausali` scrive le causali a importo (Valore 00:00).
+- [x] 18. Dialog giustificativo del giorno (admin): un solo importo al posto di ore/dalle/tipo input
+  — Fatto: `edit-dip-gg-giustificativi-dialog` mostra l'importo al posto dell'ora per i giustificativi a importo (validazione ore/importo secondo il tipo). Corretto anche il messaggio di giustificativo obbligatorio (path sbagliato, non compariva mai).
+- [x] 19. Richiesta giustificativo dell'utente + approvazione (`request-justification-user-page`, `Dip_GG_RichiestaService`): giustificativi a importo richiedibili dal dipendente
+  — Fatto: `request-justification-user-page` chiede l'importo per giorno; `Dip_GG_Richiesta_Body_Giustificativo.Importo`; il server vuole un importo positivo e materializza un giustificativo per ogni giorno lavorativo del periodo con quell'importo (scelta: stesso criterio dei giorni delle ore). Approvazione invariata (cambia solo lo stato).
+- [x] 20. Dialog causale del giorno: un solo importo per le causali a importo
+  — Fatto: `edit-dip-gg-causali-dialog` con l'importo per le causali a importo (stesso schema del dialog dei giustificativi). Il ricalcolo del giorno resta com'e' (§11.7.1).
+- [x] 21. Servizi `Dip_GG_GiustificativiService` / `Dip_GG_CausaliService`: importo > 0 obbligatorio per il tipo Importo, ore vuote
+  — Fatto: `Dip_GG_GiustificativiPut` e `Dip_GG_CausaliPut` vogliono un importo > 0 per il tipo Importo e azzerano ore/importo secondo il tipo; i valori proposti per un nuovo record usano il primo tipo a ore.
+- [x] 22. Chat AI: `RegisterJustificationHandler`, `RegisterJustificationPeriodHandler`, `RegisterCausaleHandler` con lo slot importo
+  — Fatto: nuovo comando `RegisterJustificationAmount` ("rimborso di 25 euro a Rossi per oggi") con `ImportoSlotHelper`; slot `amount` facoltativo nelle richieste per periodo e self-service (obbligatorio se il giustificativo e' a importo); `RegisterJustification` e `RegisterCausale` rispondono con un messaggio se il tipo e' a importo (le causali a importo dalla chat non si registrano); testo delle richieste con l'importo; "chi e' presente" ignora i giustificativi a importo. **Chat non provata con il LLM.**
+- [x] 23. Visualizzazioni: calendari/timesheet (user, admin, power admin), `time-sheet.service.ts`, piano ferie: importi mostrati come `€ 12,50` ed esclusi dai totali ore
+  — Fatto: cartellini utente, admin e power admin, action sheet delle causali, testo delle richieste nelle liste: importo con la pipe `importoEuro` (lingua attiva). Piano ferie: i giustificativi a importo non compaiono (non sono "da piano ferie"), aggiunta solo la protezione su ore assenti.
+- [x] 24. Contatori e report (`ContatoriService`, `ReportService`): importi esclusi dalle ore; colonna importi nei report se serve
+  — Fatto/verificato: contatori e piano ferie/report li escludono gia' (niente contatore, niente piano ferie per i tipi a importo); nessuna modifica necessaria. Colonna importi nei report non aggiunta (non richiesta).
+- [x] 25. Cartellino PDF: giustificativi a importo con l'importo
+  — Fatto: nel cartellino PDF il giustificativo a importo mostra l'importo (es. `TRIMB € 25,50`).
+- [x] 26. i18n e messaggi
+  — Fatto: messaggi server it/en (regole dei parametri, importo obbligatorio, chat) e chiavi client: nuova sezione `attendance.common` (tipo, ore, importo), note delle pagine causali/giustificativi, importo per giorno della richiesta.
+- [x] 27. Prova di non regressione: ricalcolo di giorni esistenti senza differenze sui dati orari
+  — Fatto: **non regressione** sul server di prova (azienda di test 1, ottobre, 7 dipendenti): ricalcolo con il motore dell'ultimo commit (`0a7b97af`, worktree temporaneo) e con quello nuovo -> causali e risultati giornalieri **identici**. **Prove funzionali** (API): causale e giustificativo a importo con campi forzati; giustificativo a ore con causale a importo rifiutato; giustificativo del giorno senza importo rifiutato, con 25,50 salvato e causale `00:00|25.50` scritta dal motore con ore del giorno invariate; cambio di tipo rifiutato se usato; profilo con causale a importo rifiutato; richiesta a importo senza importo rifiutata e con importo materializzata; pulizia con il giorno tornato uguale. Interfaccia non provata nel browser.
 
 ### 12.4 Modello di export (lavori 28–32) — `AttendanceTracking_Dev` (§2)
 
@@ -609,3 +624,4 @@ Una riga per ogni lavoro completato, nell'ordine in cui è stato fatto. Il detta
 | 29/10/2026 | 12.1 | 1–6 | Infrastructure_Dev | `79ef15cc` | file dei job, download, nome file nella notifica, pulizia, LlmClient |
 | 29/10/2026 | 12.1 | 7 | Infrastructure → AttendanceTracking_Dev → AttendanceTracking | `d09b596f`, `e77c3543` | catena dei merge, build server e client ok |
 | 29/10/2026 | 12.2 | 8–12 | AttendanceTracking_Dev → AttendanceTracking | `c374c41c` | matricola e codice fiscale: dati, controlli, pagine, importazione, i18n; prove API ok |
+| 29/10/2026 | 12.3 | 13–27 | AttendanceTracking_Dev → AttendanceTracking | `ce0ca1cd` | tipo Orario/Importo: dati, regole, motore, dialog, richieste, chat, visualizzazioni; non regressione e prove API ok |
