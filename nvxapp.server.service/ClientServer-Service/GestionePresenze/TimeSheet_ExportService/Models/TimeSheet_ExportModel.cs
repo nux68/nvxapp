@@ -35,13 +35,26 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
         }
     }
 
-    public class ExportRow
+    // ── Anteprima del file del modello di export (pagina del modello) ─────
+
+    public class TimeSheet_Export_Anteprima_InModel
     {
-        public string Cognome { get; set; } = string.Empty;
-        public string Nome { get; set; } = string.Empty;
-        public string Data { get; set; } = string.Empty;
-        public string CodiceCausale { get; set; } = string.Empty;
-        public decimal Valore { get; set; }
+        public int IdPar_ExportCau { get; set; }
+        public DateTime Dal { get; set; }
+        public DateTime Al { get; set; }
+        /// <summary>dipendente su cui provare il formato</summary>
+        public string? IdAspNetUsers { get; set; }
+        /// <summary>chiede una ricetta nuova all'AI anche se documenti e note non sono cambiati</summary>
+        public bool Rigenera { get; set; }
+    }
+    public class TimeSheet_Export_Anteprima_OutModel : ModelResult
+    {
+        /// <summary>prime righe del file (o il JSON dei dati, senza documentazione)</summary>
+        public string Anteprima { get; set; } = string.Empty;
+        public string Estensione { get; set; } = string.Empty;
+        /// <summary>ricetta usata (JSON); null senza documentazione</summary>
+        public string? Ricetta { get; set; }
+        public List<string> Avvisi { get; set; } = new();
     }
 
 

@@ -1344,4 +1344,31 @@
   <data name="ExportCausaliCausaleImporto" xml:space="preserve">
     <value>The pay cause "{0}" is amount-based: the unit must be Amount.</value>
   </data>
+  <data name="ExportNessunDato" xml:space="preserve">
+    <value>no employee has pay causes of the model in the period</value>
+  </data>
+  <data name="ExportRicettaInCorso" xml:space="preserve">
+    <value>Preparing the file format (AI recipe)...</value>
+  </data>
+  <data name="ExportScritturaFile" xml:space="preserve">
+    <value>Writing the file...</value>
+  </data>
+  <data name="ExportRicettaNonDisponibile" xml:space="preserve">
+    <value>Payroll file format not available ({0}): the JSON data file was produced.</value>
+  </data>
+  <data name="ExportValoriNegativi" xml:space="preserve">
+    <value>{0} negative values (Subtract sign): {1}.</value>
+  </data>
+  <data name="ExportSenzaMatricola" xml:space="preserve">
+    <value>{0} employees without employee number.</value>
+  </data>
+  <data name="ExportCompletatoConAvvisi" xml:space="preserve">
+    <value>Export completed, click to download. Warning: {0}</value>
+  </data>
+  <data name="ExportRicettaNonValida" xml:space="preserve">
+    <value>The recipe produced by the AI is not valid: {0}</value>
+  </data>
+  <data name="ExportRicettaDocTroncata" xml:space="preserve">
+    <value>The documentation exceeds {0} characters: the AI only received the first part.</value>
+  </data>
 </root>

@@ -126,7 +126,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ReportServ
                 {
                     var longJobNotifier = scope.ServiceProvider.GetRequiredService<ILongJobNotifier>();
 
-                    Task Notifica(int progress, Message message, string? downloadUrl = null, bool isFinished = false) =>
+                    Task Notifica(int progress, Message message, JobFile? file = null, bool isFinished = false) =>
                         longJobNotifier.LongJobProgressAsync(userId,
                                                              new LongJobProgressUpdate
                                                              {
@@ -134,7 +134,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ReportServ
                                                                  JobType = GestionePresenze_JobType.Report_Pdf,
                                                                  Payload = payload,
                                                                  Category = LongJobCategory.FileGeneration,
-                                                                 DownloadUrl = downloadUrl,
+                                                                 DownloadUrl = file?.DownloadUrl,
+                                                                 FileName = file?.FileName,
                                                                  ProgressPercentage = progress,
                                                                  Message = message,
                                                                  IsFinished = isFinished
@@ -160,12 +161,13 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ReportServ
 
                         await Notifica(80, new Message { Text = AttendanceTrackingMessages.Get("ExportPdfWriting"), MsgType = MessageType.Information });
 
-                        var fileName = ReportPdfWriter.Write(report, $"Report_{richiesta.Tipo}_{richiesta.Year}-{richiesta.Month:00}", jobId.ToString(), NVXSystem.ExportFolder);
+                        var nome = $"Report_{richiesta.Tipo}_{richiesta.Year}-{richiesta.Month:00}";
+                        var fileName = ReportPdfWriter.Write(report, nome, jobId.ToString(), NVXSystem.ExportFolder);
                         Log.Information("Report PDF file created for job {JobId}: {FileName}", jobId, fileName);
 
                         await Notifica(100,
                                        new Message { Text = AttendanceTrackingMessages.Get("ExportCompletedClickToDownload"), MsgType = MessageType.Information },
-                                       $"{NVXSystem.DownloadURL}{fileName}",
+                                       NVXSystem.RegistraFileJob(fileName, userId, nome),
                                        isFinished: true);
                     }
                     catch (Exception ex)

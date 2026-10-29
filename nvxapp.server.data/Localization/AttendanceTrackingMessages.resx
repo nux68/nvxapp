@@ -1348,4 +1348,31 @@
   <data name="ExportCausaliCausaleImporto" xml:space="preserve">
     <value>La causale "{0}" è a importo: l'unità deve essere Importo.</value>
   </data>
+  <data name="ExportNessunDato" xml:space="preserve">
+    <value>nessun dipendente ha causali del modello nel periodo</value>
+  </data>
+  <data name="ExportRicettaInCorso" xml:space="preserve">
+    <value>Preparazione del formato del file (ricetta dell'AI)...</value>
+  </data>
+  <data name="ExportScritturaFile" xml:space="preserve">
+    <value>Scrittura del file...</value>
+  </data>
+  <data name="ExportRicettaNonDisponibile" xml:space="preserve">
+    <value>Formato del programma paghe non disponibile ({0}): è stato prodotto il file JSON dei dati.</value>
+  </data>
+  <data name="ExportValoriNegativi" xml:space="preserve">
+    <value>{0} valori negativi (verso Sottrazione): {1}.</value>
+  </data>
+  <data name="ExportSenzaMatricola" xml:space="preserve">
+    <value>{0} dipendenti senza matricola.</value>
+  </data>
+  <data name="ExportCompletatoConAvvisi" xml:space="preserve">
+    <value>Export completato, clicca per scaricare. Attenzione: {0}</value>
+  </data>
+  <data name="ExportRicettaNonValida" xml:space="preserve">
+    <value>La ricetta prodotta dall'AI non è valida: {0}</value>
+  </data>
+  <data name="ExportRicettaDocTroncata" xml:space="preserve">
+    <value>La documentazione supera {0} caratteri: all'AI è arrivata solo la prima parte.</value>
+  </data>
 </root>

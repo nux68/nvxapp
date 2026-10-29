@@ -29,6 +29,15 @@ namespace nvxapp.server.Controllers.GestionePresenze
             return res;
         }
 
+        // anteprima del file del modello di export su un dipendente (pagina del modello); puo' chiedere la ricetta all'AI
+        [Authorize]
+        [HttpPost]
+        [Route("Export_Anteprima")]
+        public async Task<GenericResult<TimeSheet_Export_Anteprima_OutModel>> Export_Anteprima(GenericRequest<TimeSheet_Export_Anteprima_InModel> inModel)
+        {
+            return await _timeSheet_ExportService.Export_Anteprima(inModel, false);
+        }
+
         // cartellino PDF del mese dell'utente collegato
         [Authorize]
         [HttpPost]

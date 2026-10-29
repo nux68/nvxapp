@@ -58,3 +58,22 @@ export class TimeSheet_ExportPdf_4Admin_InModel {
 export class TimeSheet_ExportPdf_4Admin_OutModel extends ModelResult {
   jobId: string | null = null;
 }
+
+// anteprima del file del modello di export su un dipendente (pagina del modello)
+export class TimeSheet_Export_Anteprima_InModel {
+  idPar_ExportCau: number = 0;
+  dal: string = '';
+  al: string = '';
+  idAspNetUsers: string | null = null;
+  /** chiede una ricetta nuova all'AI anche se documenti e note non sono cambiati */
+  rigenera: boolean = false;
+}
+
+export class TimeSheet_Export_Anteprima_OutModel extends ModelResult {
+  /** prime righe del file, o il JSON dei dati senza documentazione */
+  anteprima: string = '';
+  estensione: string = '';
+  /** ricetta usata (JSON); null senza documentazione */
+  ricetta: string | null = null;
+  avvisi: string[] = [];
+}

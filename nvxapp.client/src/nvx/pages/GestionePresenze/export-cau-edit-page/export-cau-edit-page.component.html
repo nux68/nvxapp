@@ -187,6 +187,65 @@
                 </ion-item>
                 <pre class="nvx-doc-testo">{{ testoAperto.testo }}</pre>
               }
+
+              <!-- anteprima del file su un dipendente e un mese -->
+              <ion-item class="nvx-item-4-title">
+                <ion-label>{{ 'attendance.pages.exportCauEdit.anteprimaTitolo' | transloco }}</ion-label>
+              </ion-item>
+              <ion-note>{{ 'attendance.pages.exportCauEdit.anteprimaNota' | transloco }}</ion-note>
+              <ion-grid>
+                <ion-row class="ion-align-items-center">
+                  <ion-col size="12" size-md="4">
+                    <ion-item>
+                      <ion-label position="stacked">{{ 'attendance.pages.exportCauEdit.anteprimaMese' | transloco }}</ion-label>
+                      <ion-input type="month" [value]="anteprimaMese" (ionChange)="anteprimaMese = $event.detail.value ?? ''"></ion-input>
+                    </ion-item>
+                  </ion-col>
+                  <ion-col size="12" size-md="8">
+                    <ion-item>
+                      <ion-label position="stacked">{{ 'attendance.pages.exportCauEdit.anteprimaDipendente' | transloco }}</ion-label>
+                      <ion-select interface="popover" [value]="anteprimaDip" (ionChange)="anteprimaDip = $event.detail.value"
+                        [placeholder]="'attendance.pages.exportCauEdit.anteprimaScegliDipendente' | transloco">
+                        @for (dip of dipendentiAnteprima; track dip.idAspNetUsers) {
+                          <ion-select-option [value]="dip.idAspNetUsers">{{ dip.cognome }} {{ dip.nome }}</ion-select-option>
+                        }
+                      </ion-select>
+                    </ion-item>
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
+              <p>
+                <ion-button size="small" fill="outline" shape="round" [disabled]="anteprimaInCorso || !anteprimaDip" (click)="provaFormato(false)">
+                  <ion-icon name="play-outline"></ion-icon>&nbsp;{{ 'attendance.pages.exportCauEdit.anteprimaProva' | transloco }}
+                </ion-button>
+                @if (documenti.length > 0) {
+                  <ion-button size="small" fill="outline" shape="round" [disabled]="anteprimaInCorso || !anteprimaDip" (click)="provaFormato(true)">
+                    <ion-icon name="refresh-outline"></ion-icon>&nbsp;{{ 'attendance.pages.exportCauEdit.anteprimaRigenera' | transloco }}
+                  </ion-button>
+                }
+              </p>
+              @if (anteprimaInCorso) {
+                <ion-progress-bar type="indeterminate"></ion-progress-bar>
+                <ion-note>{{ 'attendance.pages.exportCauEdit.anteprimaInCorso' | transloco }}</ion-note>
+              }
+              @if (erroreAnteprima) {
+                <p><ion-note color="danger">{{ erroreAnteprima }}</ion-note></p>
+              }
+              @if (anteprima) {
+                @for (avviso of anteprima.avvisi; track avviso) {
+                  <p><ion-note color="warning">{{ avviso }}</ion-note></p>
+                }
+                <ion-note>{{ 'attendance.pages.exportCauEdit.anteprimaFile' | transloco: { ext: anteprima.estensione } }}</ion-note>
+                <pre class="nvx-doc-testo">{{ anteprima.anteprima }}</pre>
+                @if (anteprima.ricetta) {
+                  <ion-button size="small" fill="clear" (click)="mostraRicetta = !mostraRicetta">
+                    {{ (mostraRicetta ? 'attendance.pages.exportCauEdit.anteprimaNascondiRicetta' : 'attendance.pages.exportCauEdit.anteprimaMostraRicetta') | transloco }}
+                  </ion-button>
+                  @if (mostraRicetta) {
+                    <pre class="nvx-doc-testo">{{ ricettaLeggibile }}</pre>
+                  }
+                }
+              }
             }
           </div>
       </form>

@@ -18,7 +18,11 @@ import { FabMenuService, FabMenuItem } from '../../../Utility/infrastructure/fab
 import { EditParExportCauCausaliComponentComponent } from '../../../shared/components/GestionePresenze/edit-par-export-cau-causali-component/edit-par-export-cau-causali-component.component';
 import { ParExportCauCausaliService } from '../../../ClientServer-Service/GestionePresenze/Par_ExportCau_Causali/par-export-cau-causali.service';
 import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
-import { ParTable } from '../../../shared/shared-parameter-gestione-presenze.service';
+import { ParTable, SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
+import { TimeSheetExportService } from '../../../ClientServer-Service/GestionePresenze/TimeSheet_ExportService/time-sheet-export.service';
+import { TimeSheet_Export_Anteprima_InModel, TimeSheet_Export_Anteprima_OutModel } from '../../../ClientServer-Service/GestionePresenze/TimeSheet_ExportService/Models/time-sheet-export-model';
+import { Dip_AnagraficaModel } from '../../../ClientServer-Service/GestionePresenze/Dip_Anagrafica/Models/dip-anagrafica-model';
+import { RoleCode } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-roles-model';
 import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
@@ -49,6 +53,15 @@ export class ExportCauEditPageComponent extends BasePageConfirmCancelComponent<P
   /** testo estratto mostrato nella pagina (quello che riceve l'AI) */
   public testoAperto: { nomeFile: string; testo: string } | null = null;
 
+  // ── Anteprima del file: un dipendente, un mese ──
+  /** mese "YYYY-MM" (default: il mese scorso, di solito quello da mandare alle paghe) */
+  public anteprimaMese: string = this.meseScorso();
+  public anteprimaDip: string | null = null;
+  public anteprimaInCorso = false;
+  public anteprima: TimeSheet_Export_Anteprima_OutModel | null = null;
+  public erroreAnteprima: string | null = null;
+  public mostraRicetta = false;
+
   constructor(
     protected override navCtrl: NavController,
     protected override userInterfaceService: UserInterfaceService,
@@ -62,6 +75,8 @@ export class ExportCauEditPageComponent extends BasePageConfirmCancelComponent<P
     private transloco: TranslocoService,
     private parExportCauDocsService: ParExportCauDocsService,
     private cdr: ChangeDetectorRef,
+    private timeSheetExportService: TimeSheetExportService,
+    private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
   ) {
     super(navCtrl, userInterfaceService, fb);
 
@@ -299,6 +314,62 @@ export class ExportCauEditPageComponent extends BasePageConfirmCancelComponent<P
 
   private bytes(base64: string) {
     return Uint8Array.from(atob(base64), c => c.charCodeAt(0));
+  }
+
+  /** dipendenti su cui provare il formato */
+  public get dipendentiAnteprima(): Dip_AnagraficaModel[] {
+    return this.sharedParameterGestionePresenzeService.Dip_Anagrafica_OnRoles([RoleCode.User]) ?? [];
+  }
+
+  private meseScorso(): string {
+    const d = new Date();
+    d.setDate(1);
+    d.setMonth(d.getMonth() - 1);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+  }
+
+  /**
+   * Anteprima del file sul dipendente e sul mese scelti: con documentazione la ricetta dell'AI (salvata, o nuova se
+   * documenti o note sono cambiati o con "rigenera") applicata ai dati reali; senza documentazione il JSON dei dati.
+   */
+  async provaFormato(rigenera: boolean): Promise<void> {
+    if (!this.idModello || !this.anteprimaDip || !this.anteprimaMese) return;
+    const [anno, mese] = this.anteprimaMese.split('-').map(x => +x);
+    const ultimo = new Date(anno, mese, 0).getDate();
+
+    const request = new GenericRequest<TimeSheet_Export_Anteprima_InModel>(TimeSheet_Export_Anteprima_InModel);
+    request.data.idPar_ExportCau = this.idModello;
+    request.data.idAspNetUsers = this.anteprimaDip;
+    request.data.dal = `${this.anteprimaMese}-01T00:00:00`;
+    request.data.al = `${this.anteprimaMese}-${String(ultimo).padStart(2, '0')}T00:00:00`;
+    request.data.rigenera = rigenera;
+
+    this.anteprimaInCorso = true;
+    this.erroreAnteprima = null;
+    this.anteprima = null;
+    this.cdr.detectChanges();
+    try {
+      const res = await firstValueFrom(this.timeSheetExportService.Export_Anteprima(request));
+      if (res?.success && res.data)
+        this.anteprima = res.data;
+      else
+        this.erroreAnteprima = res?.messages?.map(m => m.text).join(' ') || this.transloco.translate('attendance.pages.exportCauEdit.anteprimaErrore');
+    } catch (error) {
+      console.error("Errore durante l'anteprima:", error);
+      this.erroreAnteprima = this.transloco.translate('attendance.pages.exportCauEdit.anteprimaErrore');
+    } finally {
+      this.anteprimaInCorso = false;
+      this.cdr.detectChanges();
+    }
+  }
+
+  /** ricetta in JSON leggibile */
+  public get ricettaLeggibile(): string {
+    try {
+      return this.anteprima?.ricetta ? JSON.stringify(JSON.parse(this.anteprima.ricetta), null, 2) : '';
+    } catch {
+      return this.anteprima?.ricetta ?? '';
+    }
   }
 
   dimensioneTesto(byte: number): string {

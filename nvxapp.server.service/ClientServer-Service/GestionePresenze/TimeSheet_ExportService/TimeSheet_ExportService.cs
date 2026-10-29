@@ -21,15 +21,17 @@ using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_ExportCauS
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_EngineService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_EngineService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_ExportService.Models;
-using nvxapp.server.service.ClientServer_Service.infrastructure.MyMokeLongJob.Models;
 using nvxapp.server.service.ClientServer_Service.infrastructure.Notifications;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Helpers;
 using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.ServerModels;
 using Serilog;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_ExportCau_RicettaService;
+using nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI;
 using System.Globalization;
 using System.Text;
+using System.Text.Json;
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_ExportService
 {
@@ -40,9 +42,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
     {
         private readonly IGestionePresenzeUserUtility _gestionePresenzeUserUtility;
         private readonly IAz_SediRepartoUserRepository _az_SediRepartoUserRepository;
-        private ILongJobNotifier? _longJobNotifier;
-        private ITimeSheet_EngineService? _timeSheet_EngineService;
-        private IPar_ExportCauService? _par_ExportCauService;
+        private readonly IServiceProvider _serviceProvider;
 
         //private readonly IJobNotifier _jobNotifier;
 
@@ -71,7 +71,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                       IConfiguration configuration,
 
                                       IGestionePresenzeUserUtility gestionePresenzeUserUtility,
-                                      IAz_SediRepartoUserRepository az_SediRepartoUserRepository
+                                      IAz_SediRepartoUserRepository az_SediRepartoUserRepository,
+                                      IServiceProvider serviceProvider
 
 
                                       //ILongJobNotifier longJobNotifier,
@@ -96,6 +97,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
             
             _gestionePresenzeUserUtility = gestionePresenzeUserUtility;
             _az_SediRepartoUserRepository = az_SediRepartoUserRepository;
+            _serviceProvider = serviceProvider;
 
             //_longJobNotifier = longJobNotifier;
             //_jobNotifier = jobNotifier;
@@ -117,160 +119,247 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
         }
 
 
+        /// <summary>
+        /// Export verso le paghe (analisi ANALISI_EXPORT_AI.md, par. 3): job in background.
+        /// Metadati JSON dei dipendenti scelti (solo quelli che l'amministratore puo' vedere); se il modello ha documentazione
+        /// la ricetta dell'AI (salvata o rigenerata) li scrive nel formato del programma paghe, altrimenti il file e' il JSON.
+        /// Se la ricetta non si puo' ottenere (AI non raggiungibile, ricetta non valida) si scarica comunque il JSON, con un avviso.
+        /// </summary>
         public virtual async Task<GenericResult<TimeSheet_ExportOutModel>> Export(GenericRequest<TimeSheet_ExportInModel> model, bool isSubProcess)
         {
             return await ExecuteAction(model, async () =>
             {
-                TimeSheet_ExportOutModel retVal = new TimeSheet_ExportOutModel();
+                var retVal = new TimeSheet_ExportOutModel();
+                var richiesta = model.Data.TimeSheet_Export;
+                retVal.TimeSheet_Export = richiesta;
 
-                int IdCompany;
-                int.TryParse(this.CurrentCompany, out IdCompany);
-
-                Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg company_DATA = await _gestionePresenzeUserUtility.Get_AzAna_AzSedi_AzReparto_Az_Cfg(IdCompany, true);
-                if (company_DATA != null && company_DATA.az_Anagrafica != null)
+                var dipendenti = await DipendentiEsportabili(richiesta.SelectedUserId);
+                if (dipendenti.Count == 0)
                 {
-
-                    var outModel = new MyMokeLongJobOutModel();
-                    var jobId = Guid.NewGuid();
-                    outModel.JobId = jobId.ToString();
-
-                    var userId = this.UserIdFirstConnection;
-                    if (string.IsNullOrEmpty(userId))
-                    {
-                        Log.Information("Could not find user ID. Unable to send SignalR notifications for job {JobId}.", jobId);
-                        outModel.Messages.Add(new Message(AttendanceTrackingMessages.Get("JobUserNotIdentified"), MessageType.Error));
-                    }
-                    else
-                    {
-                        RunInBackground(async scope =>
-                        {
-                            _longJobNotifier = scope.ServiceProvider.GetRequiredService<ILongJobNotifier>();
-                            _timeSheet_EngineService = scope.ServiceProvider.GetRequiredService<ITimeSheet_EngineService>();
-                            _par_ExportCauService = scope.ServiceProvider.GetRequiredService<IPar_ExportCauService>();
-
-                             
-
-                            try
-                            {
-
-                                await _longJobNotifier.LongJobProgressAsync(userId,
-                                                                            new LongJobProgressUpdate
-                                                                            {
-                                                                                JobId = jobId.ToString(),
-                                                                                JobType = GestionePresenze_JobType.TimeSheet_Engine_Export,
-                                                                                Payload = model.Data.TimeSheet_Export,
-                                                                                Category = LongJobCategory.FileGeneration,
-                                                                                ProgressPercentage = 0,
-                                                                                Message = new Message { Text = AttendanceTrackingMessages.Get("ExportStarted"), MsgType = MessageType.Information }
-                                                                            }
-                                                                         );
-
-                                var req_AllData_4User = new GenericRequest<Timesheet_AllData_InModel>();
-                                req_AllData_4User.Data.Dal = model.Data.TimeSheet_Export.Dal;
-                                req_AllData_4User.Data.Al = model.Data.TimeSheet_Export.Al;
-                                req_AllData_4User.Data.UsersId = model.Data.TimeSheet_Export.SelectedUserId;
-
-                                string? downloadUrl = null;
-                                // perche' non e' stato generato il file (null = file generato)
-                                string? motivoSenzaFile = null;
-                                var AllData_Res = await _timeSheet_EngineService.Get_Timesheet_AllData(req_AllData_4User, true);
-
-                                if (AllData_Res.Success && AllData_Res.Data != null)
-                                {
-                                    var req_Par_ExportCau = new GenericRequest<Par_ExportCau_Get_InModel>();
-                                    req_Par_ExportCau.Data.Id = model.Data.TimeSheet_Export.IdPar_ExportCau;
-                                    
-                                    var res_Par_ExportCau = await _par_ExportCauService.Par_ExportCauGet(req_Par_ExportCau, true);
-                                    if (res_Par_ExportCau.Success && res_Par_ExportCau.Data != null)
-                                    {
-                                        var exportCau = res_Par_ExportCau.Data.Par_ExportCau;
-                                        var exportCausali = res_Par_ExportCau.Data.Par_ExportCau_Causali;
-
-                                        if (exportCau != null && exportCausali != null && exportCausali.Count > 0)
-                                        {
-                                            var allData = AllData_Res.Data;
-
-                                            var rows = await PrepareExportRows(
-                                                allData, exportCausali,
-                                                userId, jobId.ToString(), model.Data.TimeSheet_Export);
-
-                                            var exportsFolder = NVXSystem.ExportFolder;
-                                            
-
-                                            // tipo file tolto dal modello: CSV finche' l'export non produce i metadati JSON / la ricetta AI (12.5)
-                                            string fileName = await WriteCsvFile(rows, exportCau.Codice ?? "export", jobId.ToString(), exportsFolder);
-
-                                            downloadUrl = $"{NVXSystem.DownloadURL}{fileName}";
-
-                                            
-
-                                            Log.Information("Export file created for job {JobId}: {FileName}", jobId, fileName);
-                                        }
-                                        else if (exportCau == null)
-                                            motivoSenzaFile = AttendanceTrackingMessages.Get("ExportLayoutNotFound");
-                                        else
-                                            motivoSenzaFile = AttendanceTrackingMessages.Get("ExportLayoutWithoutCausali", exportCau.Descrizione);
-                                    }
-                                    else
-                                        motivoSenzaFile = AttendanceTrackingMessages.Get("ExportLayoutNotFound");
-                                }
-                                else
-                                    motivoSenzaFile = AttendanceTrackingMessages.Get("ExportAttendanceDataUnavailable");
-
-                                if (motivoSenzaFile != null)
-                                    Log.Warning("Export job {JobId}: nessun file generato, {Motivo}", jobId, motivoSenzaFile);
-
-                                await Task.Delay(10000);
-                                Log.Information("Background task for job {JobId} has finished successfully.", jobId);
-                                await _longJobNotifier.LongJobProgressAsync(userId,
-                                                                            new LongJobProgressUpdate
-                                                                                {
-                                                                                    JobId = jobId.ToString(),
-                                                                                    JobType = GestionePresenze_JobType.TimeSheet_Engine_Export,
-                                                                                    Payload = model.Data.TimeSheet_Export,
-                                                                                    Category = LongJobCategory.FileGeneration,
-                                                                                    DownloadUrl = downloadUrl,
-                                                                                    ProgressPercentage = 100,
-                                                                                    Message = motivoSenzaFile == null
-                                                                                        ? new Message { Text = AttendanceTrackingMessages.Get("ExportCompletedClickToDownload"), MsgType = MessageType.Information }
-                                                                                        : new Message { Text = AttendanceTrackingMessages.Get("ExportNoFileGenerated", motivoSenzaFile), MsgType = MessageType.Warning },
-                                                                                    IsFinished = true
-                                                                                }
-                                                                            );
-
-
-                            }
-                            catch (Exception ex)
-                            {
-                                  Log.Error(ex, "Background task for job {JobId} failed.", jobId);
-                                  await _longJobNotifier.LongJobProgressAsync(userId,
-                                                                            new LongJobProgressUpdate
-                                                                            {
-                                                                                JobId = jobId.ToString(),
-                                                                                JobType = GestionePresenze_JobType.TimeSheet_Engine_Export,
-                                                                                Payload = model.Data.TimeSheet_Export,
-                                                                                ProgressPercentage = 100,
-                                                                                Category = LongJobCategory.FileGeneration,
-                                                                                Message = new Message { Text = AttendanceTrackingMessages.Get("ExportFailed", ex.Message), MsgType = MessageType.Exception },
-                                                                                IsFinished = true
-                                                                            }
-                                                                            );
-                            }
-
-                        });
-                    }
-
-
-
+                    retVal.Messages.Add(new Message(AttendanceTrackingMessages.Get("ExportPdfNoEmployees"), MessageType.Warning));
+                    return retVal;
                 }
 
-                //eliminare
-                // Nessun 'await' qui
-                //await Task.Delay(DelayAsyncMethod);
-                await Task.Delay(0);
+                var userId = this.UserIdFirstConnection;
+                if (string.IsNullOrEmpty(userId))
+                {
+                    retVal.Messages.Add(new Message(AttendanceTrackingMessages.Get("JobUserNotIdentified"), MessageType.Error));
+                    return retVal;
+                }
 
+                int.TryParse(this.CurrentCompany, out int idCompany);
+                var jobId = Guid.NewGuid();
+                var payload = new TimeSheet_ExportModel
+                {
+                    Year = richiesta.Year, Month = richiesta.Month, Dal = richiesta.Dal, Al = richiesta.Al,
+                    IdPar_ExportCau = richiesta.IdPar_ExportCau, SelectedUserId = dipendenti
+                };
+
+                RunInBackground(async scope =>
+                {
+                    var longJobNotifier = scope.ServiceProvider.GetRequiredService<ILongJobNotifier>();
+
+                    Task Notifica(int progress, Message message, JobFile? file = null, bool isFinished = false) =>
+                        longJobNotifier.LongJobProgressAsync(userId,
+                                                             new LongJobProgressUpdate
+                                                             {
+                                                                 JobId = jobId.ToString(),
+                                                                 JobType = GestionePresenze_JobType.TimeSheet_Engine_Export,
+                                                                 Payload = payload,
+                                                                 Category = LongJobCategory.FileGeneration,
+                                                                 DownloadUrl = file?.DownloadUrl,
+                                                                 FileName = file?.FileName,
+                                                                 ProgressPercentage = progress,
+                                                                 Message = message,
+                                                                 IsFinished = isFinished
+                                                             });
+
+                    try
+                    {
+                        await Notifica(0, new Message { Text = AttendanceTrackingMessages.Get("ExportStarted"), MsgType = MessageType.Information });
+
+                        var preparati = await PreparaMetadati(scope.ServiceProvider, richiesta.IdPar_ExportCau, richiesta.Dal, richiesta.Al, dipendenti, idCompany);
+                        var motivo = preparati.Errore ?? (preparati.Risultato!.Metadati.Dipendenti.Count == 0 ? AttendanceTrackingMessages.Get("ExportNessunDato") : null);
+                        if (motivo != null)
+                        {
+                            Log.Warning("Export job {JobId}: nessun file generato, {Motivo}", jobId, motivo);
+                            await Notifica(100, new Message { Text = AttendanceTrackingMessages.Get("ExportNoFileGenerated", motivo), MsgType = MessageType.Warning }, isFinished: true);
+                            return;
+                        }
+
+                        var metadati = preparati.Risultato!.Metadati;
+                        var nomeFile = $"{metadati.ModelloExport.Codice}_{richiesta.Dal:yyyyMMdd}-{richiesta.Al:yyyyMMdd}";
+                        var avvisi = new List<string>();
+                        JobFile file;
+
+                        var ricettaService = scope.ServiceProvider.GetRequiredService<IPar_ExportCau_RicettaService>();
+                        if (!ricettaService.HaDocumentazione(richiesta.IdPar_ExportCau))
+                            file = NVXSystem.SalvaFileJob(jobId.ToString(), userId, nomeFile, "json", JsonMetadati(metadati));
+                        else
+                        {
+                            try
+                            {
+                                await Notifica(60, new Message { Text = AttendanceTrackingMessages.Get("ExportRicettaInCorso"), MsgType = MessageType.Information });
+                                var ricetta = (await ricettaService.OttieniRicetta(richiesta.IdPar_ExportCau, false))!;
+                                await Notifica(85, new Message { Text = AttendanceTrackingMessages.Get("ExportScritturaFile"), MsgType = MessageType.Information });
+                                var (contenuto, estensione) = ExportRicettaRenderer.Scrivi(ricetta, metadati);
+                                file = NVXSystem.SalvaFileJob(jobId.ToString(), userId, nomeFile, estensione, contenuto);
+                                avvisi.AddRange(ricetta.Avvisi);
+                            }
+                            catch (Exception ex) when (ex is UserMessageException or LlmBusyException or LlmTimeoutException or InvalidOperationException)
+                            {
+                                // senza ricetta i dati non si perdono: si scarica il JSON
+                                Log.Warning(ex, "Export job {JobId}: ricetta non disponibile, si scarica il JSON", jobId);
+                                avvisi.Add(AttendanceTrackingMessages.Get("ExportRicettaNonDisponibile", ex.Message));
+                                file = NVXSystem.SalvaFileJob(jobId.ToString(), userId, nomeFile, "json", JsonMetadati(metadati));
+                            }
+                        }
+
+                        if (preparati.Risultato.Negativi.Count > 0)
+                            avvisi.Add(AttendanceTrackingMessages.Get("ExportValoriNegativi", preparati.Risultato.Negativi.Count, string.Join(", ", preparati.Risultato.Negativi.Take(5))));
+                        var senzaMatricola = metadati.Dipendenti.Count(d => string.IsNullOrWhiteSpace(d.Anagrafica.Matricola));
+                        if (senzaMatricola > 0)
+                            avvisi.Add(AttendanceTrackingMessages.Get("ExportSenzaMatricola", senzaMatricola));
+
+                        Log.Information("Export file created for job {JobId}: {FileName}", jobId, file.FileName);
+                        await Notifica(100,
+                                       avvisi.Count == 0
+                                           ? new Message { Text = AttendanceTrackingMessages.Get("ExportCompletedClickToDownload"), MsgType = MessageType.Information }
+                                           : new Message { Text = AttendanceTrackingMessages.Get("ExportCompletatoConAvvisi", string.Join(" ", avvisi)), MsgType = MessageType.Warning },
+                                       file,
+                                       isFinished: true);
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error(ex, "Background task for job {JobId} failed.", jobId);
+                        await Notifica(100, new Message { Text = AttendanceTrackingMessages.Get("ExportFailed", ex.Message), MsgType = MessageType.Exception }, isFinished: true);
+                    }
+                });
+
+                await Task.CompletedTask;
                 return retVal;
             }, isSubProcess);
+        }
+
+        /// <summary>
+        /// Anteprima del file del modello di export su un dipendente e un periodo (pagina del modello, sezione Documentazione):
+        /// con documentazione la ricetta (salvata, o richiesta all'AI se cambiata o se <c>Rigenera</c>) applicata ai dati reali,
+        /// senza documentazione il JSON dei dati. Non salva file.
+        /// </summary>
+        public virtual async Task<GenericResult<TimeSheet_Export_Anteprima_OutModel>> Export_Anteprima(GenericRequest<TimeSheet_Export_Anteprima_InModel> model, bool isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                var retVal = new TimeSheet_Export_Anteprima_OutModel();
+                var d = model.Data;
+                var dipendenti = await DipendentiEsportabili(new List<string> { d.IdAspNetUsers ?? string.Empty });
+                if (dipendenti.Count == 0)
+                    throw new UserMessageException(AttendanceTrackingMessages.Get("ExportPdfNoEmployees"));
+
+                int.TryParse(this.CurrentCompany, out int idCompany);
+                var preparati = await PreparaMetadati(_serviceProvider, d.IdPar_ExportCau, d.Dal, d.Al, dipendenti, idCompany);
+                if (preparati.Errore != null)
+                    throw new UserMessageException(preparati.Errore);
+                var metadati = preparati.Risultato!.Metadati;
+
+                var ricettaService = _serviceProvider.GetRequiredService<IPar_ExportCau_RicettaService>();
+                ExportRicetta? ricetta;
+                try
+                {
+                    ricetta = await ricettaService.OttieniRicetta(d.IdPar_ExportCau, d.Rigenera);
+                }
+                catch (Exception ex) when (ex is LlmBusyException or LlmTimeoutException)
+                {
+                    throw new UserMessageException(AttendanceTrackingMessages.Get("ExportRicettaNonDisponibile", ex.Message), ex);
+                }
+
+                if (ricetta == null)
+                {
+                    retVal.Estensione = "json";
+                    retVal.Anteprima = Encoding.UTF8.GetString(JsonMetadati(metadati));
+                }
+                else
+                {
+                    retVal.Ricetta = Par_ExportCau_RicettaService.Par_ExportCau_RicettaService.Serializza(ricetta);
+                    retVal.Estensione = ricetta.Estensione;
+                    retVal.Anteprima = string.Join("\n", ExportRicettaRenderer.Anteprima(ricetta, metadati, 50));
+                    retVal.Avvisi.AddRange(ricetta.Avvisi);
+                }
+                if (metadati.Dipendenti.Count == 0)
+                    retVal.Avvisi.Add(AttendanceTrackingMessages.Get("ExportNessunDato"));
+                if (preparati.Risultato.Negativi.Count > 0)
+                    retVal.Avvisi.Add(AttendanceTrackingMessages.Get("ExportValoriNegativi", preparati.Risultato.Negativi.Count, string.Join(", ", preparati.Risultato.Negativi.Take(5))));
+                return retVal;
+            }, isSubProcess);
+        }
+
+        private static readonly JsonSerializerOptions JsonExport = new()
+        {
+            WriteIndented = true,
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+        };
+
+        private static byte[] JsonMetadati(ExportMetadati metadati) => JsonSerializer.SerializeToUtf8Bytes(metadati, JsonExport);
+
+        /// <summary>
+        /// Metadati dell'export per i dipendenti indicati (gia' filtrati), dai servizi dello scope (job o richiesta).
+        /// Errore (testo per l'utente) se il modello non c'e', non ha righe o i dati delle presenze non si leggono.
+        /// </summary>
+        private static async Task<(ExportMetadatiBuilder.Risultato? Risultato, string? Errore)> PreparaMetadati(IServiceProvider sp, int idPar_ExportCau,
+                                                                                                                  DateTime dal, DateTime al, List<string> usersId, int idCompany)
+        {
+            var par_ExportCauService = sp.GetRequiredService<IPar_ExportCauService>();
+            var req_Modello = new GenericRequest<Par_ExportCau_Get_InModel>();
+            req_Modello.Data.Id = idPar_ExportCau;
+            var res_Modello = await par_ExportCauService.Par_ExportCauGet(req_Modello, true);
+            var testata = res_Modello.Success ? res_Modello.Data?.Par_ExportCau : null;
+            if (testata == null || testata.Id == 0)
+                return (null, AttendanceTrackingMessages.Get("ExportLayoutNotFound"));
+            var righe = res_Modello.Data!.Par_ExportCau_Causali;
+            if (righe.Count == 0)
+                return (null, AttendanceTrackingMessages.Get("ExportLayoutWithoutCausali", testata.Descrizione));
+
+            var engine = sp.GetRequiredService<ITimeSheet_EngineService>();
+            var req_AllData = new GenericRequest<Timesheet_AllData_InModel>();
+            req_AllData.Data.Dal = dal;
+            req_AllData.Data.Al = al;
+            req_AllData.Data.UsersId = usersId;
+            var res_AllData = await engine.Get_Timesheet_AllData(req_AllData, true);
+            if (!res_AllData.Success || res_AllData.Data == null)
+                return (null, AttendanceTrackingMessages.Get("ExportAttendanceDataUnavailable"));
+
+            var company = await sp.GetRequiredService<ICompanyRepository>().FindByIdAsync(idCompany);
+            var utenti = sp.GetRequiredService<UserManager<ApplicationUser>>().Users
+                           .Where(u => usersId.Contains(u.Id))
+                           .Select(u => new { u.Id, u.Email, u.UserName })
+                           .ToList()
+                           .ToDictionary(u => u.Id, u => new ExportMetadatiBuilder.DatiUtente(u.Email, u.UserName));
+
+            var schema = res_AllData.Data.OrariSchema_4User_OutModel;
+            var risultato = ExportMetadatiBuilder.Costruisci(company?.Descrizione ?? string.Empty, testata.Codice, testata.Descrizione, dal, al,
+                                                             schema.Dip_Anagrafica.Where(a => usersId.Contains(a.IdAspNetUsers)),
+                                                             schema.Dip_RapportoLavoro,
+                                                             res_AllData.Data.Dip_GG_AllData_OutModel.Dip_GG_Causali,
+                                                             righe, utenti, DateTime.Now);
+            return (risultato, null);
+        }
+
+        /// <summary>
+        /// Dipendenti richiesti che l'utente puo' esportare: CompanyPowerAdmin tutti quelli dell'azienda, CompanyAdmin quelli
+        /// dei reparti che amministra (come i cartellini dell'admin). Gli altri utenti non esportano.
+        /// </summary>
+        private async Task<List<string>> DipendentiEsportabili(List<string>? richiesti)
+        {
+            var usersId = (richiesti ?? new List<string>()).Where(x => !string.IsNullOrEmpty(x)).Distinct().ToList();
+            if (!await HaRuolo("CompanyPowerAdmin"))
+            {
+                if (!await HaRuolo("CompanyAdmin"))
+                    throw new UserMessageException(AttendanceTrackingMessages.Get("ExportPdfAdminsOnly"));
+                var amministrati = DipendentiAmministrati(this.CurrentUserId);
+                usersId = usersId.Where(u => amministrati.Contains(u)).ToList();
+            }
+            return (await _gestionePresenzeUserUtility.GetAnagraficheByUsersId(usersId)).Select(d => d.IdAspNetUsers).Distinct().ToList();
         }
 
 
@@ -313,7 +402,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                     var dip_PeriodoService = scope.ServiceProvider.GetRequiredService<IDip_PeriodoService>();
                     var companyRepository = scope.ServiceProvider.GetRequiredService<ICompanyRepository>();
 
-                    Task Notifica(int progress, Message message, string? downloadUrl = null, bool isFinished = false) =>
+                    Task Notifica(int progress, Message message, JobFile? file = null, bool isFinished = false) =>
                         longJobNotifier.LongJobProgressAsync(userId,
                                                              new LongJobProgressUpdate
                                                              {
@@ -321,7 +410,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                                                  JobType = GestionePresenze_JobType.TimeSheet_Engine_ExportPdf_4User,
                                                                  Payload = periodo,
                                                                  Category = LongJobCategory.FileGeneration,
-                                                                 DownloadUrl = downloadUrl,
+                                                                 DownloadUrl = file?.DownloadUrl,
+                                                                 FileName = file?.FileName,
                                                                  ProgressPercentage = progress,
                                                                  Message = message,
                                                                  IsFinished = isFinished
@@ -337,12 +427,13 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
                         await Notifica(60, new Message { Text = AttendanceTrackingMessages.Get("ExportPdfWriting"), MsgType = MessageType.Information });
 
-                        var fileName = TimeSheetPdfWriter.Write(new[] { cartellino }, $"Cartellino_{periodo.Year}-{periodo.Month:00}", jobId.ToString(), NVXSystem.ExportFolder);
+                        var nome = $"Cartellino_{periodo.Year}-{periodo.Month:00}";
+                        var fileName = TimeSheetPdfWriter.Write(new[] { cartellino }, nome, jobId.ToString(), NVXSystem.ExportFolder);
                         Log.Information("Export PDF file created for job {JobId}: {FileName}", jobId, fileName);
 
                         await Notifica(100,
                                        new Message { Text = AttendanceTrackingMessages.Get("ExportCompletedClickToDownload"), MsgType = MessageType.Information },
-                                       $"{NVXSystem.DownloadURL}{fileName}",
+                                       NVXSystem.RegistraFileJob(fileName, userId, nome),
                                        isFinished: true);
                     }
                     catch (Exception ex)
@@ -419,7 +510,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                     var dip_PeriodoService = scope.ServiceProvider.GetRequiredService<IDip_PeriodoService>();
                     var companyRepository = scope.ServiceProvider.GetRequiredService<ICompanyRepository>();
 
-                    Task Notifica(int progress, Message message, string? downloadUrl = null, bool isFinished = false) =>
+                    Task Notifica(int progress, Message message, JobFile? file = null, bool isFinished = false) =>
                         longJobNotifier.LongJobProgressAsync(userId,
                                                              new LongJobProgressUpdate
                                                              {
@@ -427,7 +518,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                                                  JobType = GestionePresenze_JobType.TimeSheet_Engine_ExportPdf_4Admin,
                                                                  Payload = payload,
                                                                  Category = LongJobCategory.FileGeneration,
-                                                                 DownloadUrl = downloadUrl,
+                                                                 DownloadUrl = file?.DownloadUrl,
+                                                                 FileName = file?.FileName,
                                                                  ProgressPercentage = progress,
                                                                  Message = message,
                                                                  IsFinished = isFinished
@@ -453,12 +545,13 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
                         await Notifica(90, new Message { Text = AttendanceTrackingMessages.Get("ExportPdfWriting"), MsgType = MessageType.Information });
 
-                        var fileName = TimeSheetPdfWriter.Write(cartellini, $"Cartellini_{richiesta.Year}-{richiesta.Month:00}", jobId.ToString(), NVXSystem.ExportFolder);
+                        var nome = $"Cartellini_{richiesta.Year}-{richiesta.Month:00}";
+                        var fileName = TimeSheetPdfWriter.Write(cartellini, nome, jobId.ToString(), NVXSystem.ExportFolder);
                         Log.Information("Export PDF file created for job {JobId}: {FileName} ({Count} employees)", jobId, fileName, cartellini.Count);
 
                         await Notifica(100,
                                        new Message { Text = AttendanceTrackingMessages.Get("ExportCompletedClickToDownload"), MsgType = MessageType.Information },
-                                       $"{NVXSystem.DownloadURL}{fileName}",
+                                       NVXSystem.RegistraFileJob(fileName, userId, nome),
                                        isFinished: true);
                     }
                     catch (Exception ex)
@@ -658,123 +751,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
             return voci;
         }
 
-        private async Task<List<ExportRow>> PrepareExportRows(
-            Timesheet_AllData_OutModel allData,
-            List<Par_ExportCau_CausaliModel> exportCausali,
-            string userId, string jobId, TimeSheet_ExportModel exportPayload)
-        {
-            var rows = new List<ExportRow>();
-
-            var dipAnagrafiche = allData.OrariSchema_4User_OutModel.Dip_Anagrafica;
-            var rapportiLavoro = allData.OrariSchema_4User_OutModel.Dip_RapportoLavoro;
-            var causaliGG = allData.Dip_GG_AllData_OutModel.Dip_GG_Causali;
-
-            int totalUsers = dipAnagrafiche.Count;
-            int processedUsers = 0;
-
-            foreach (var dip in dipAnagrafiche)
-            {
-                var rapportiIds = rapportiLavoro
-                    .Where(r => r.IdDip_Anagrafica == dip.Id)
-                    .Select(r => r.Id)
-                    .ToHashSet();
-
-                foreach (var exportCausale in exportCausali)
-                {
-                    var causaliUtente = causaliGG
-                        .Where(c => rapportiIds.Contains(c.IdDip_RapportoLavoro) && c.IdPar_Causali == exportCausale.IdCausale)
-                        .ToList();
-
-                    if (exportCausale.TipoElaborazione == Par_Export_TipoElaborazione.Gionaliera)
-                    {
-                        foreach (var causale in causaliUtente)
-                        {
-                            rows.Add(new ExportRow
-                            {
-                                Cognome = dip.Cognome ?? "",
-                                Nome = dip.Nome ?? "",
-                                Data = causale.Data.ToString("yyyy-MM-dd"),
-                                CodiceCausale = exportCausale.Codice ?? "",
-                                Valore = ConvertValore(causale.Valore, exportCausale.TipoUnita)
-                            });
-                        }
-                    }
-                    else // Mensile
-                    {
-                        var grouped = causaliUtente
-                            .GroupBy(c => new { c.Data.Year, c.Data.Month });
-
-                        foreach (var grp in grouped)
-                        {
-                            rows.Add(new ExportRow
-                            {
-                                Cognome = dip.Cognome ?? "",
-                                Nome = dip.Nome ?? "",
-                                Data = new DateTime(grp.Key.Year, grp.Key.Month, 1).ToString("yyyy-MM"),
-                                CodiceCausale = exportCausale.Codice ?? "",
-                                Valore = grp.Sum(c => ConvertValore(c.Valore, exportCausale.TipoUnita))
-                            });
-                        }
-                    }
-                }
-
-                processedUsers++;
-                var progress = (int)((processedUsers / (double)dipAnagrafiche.Count) * 100);
-
-                await _longJobNotifier!.LongJobProgressAsync(userId,
-                    new LongJobProgressUpdate
-                    {
-                        JobId = jobId,
-                        JobType = GestionePresenze_JobType.TimeSheet_Engine_Export,
-                        Payload = exportPayload,
-                        Category = LongJobCategory.FileGeneration,
-                        ProgressPercentage = progress,
-                        Message = new Message { Text = AttendanceTrackingMessages.Get("ExportProcessingProgress", processedUsers, totalUsers), MsgType = MessageType.Information }
-                    });
-            }
-
-            return rows;
-        }
-
-        private static decimal ConvertValore(TimeOnly valore, Par_Export_TipoUnita tipoUnita)
-        {
-            return tipoUnita switch
-            {
-                Par_Export_TipoUnita.Ore => (decimal)valore.Hour + (decimal)valore.Minute / 60m,
-                Par_Export_TipoUnita.Giorni => (valore.Hour > 0 || valore.Minute > 0) ? 1m : 0m,
-                Par_Export_TipoUnita.Importo => (decimal)valore.Hour + (decimal)valore.Minute / 60m,
-                _ => (decimal)valore.Hour + (decimal)valore.Minute / 60m
-            };
-        }
-
-        #endregion
-
-        #region Generazione file
-
-        private static async Task<string> WriteCsvFile(List<ExportRow> rows, string codice, string jobId, string folder)
-        {
-            const string separator = ";";
-            var sb = new StringBuilder();
-
-            sb.AppendLine(string.Join(separator, "Cognome", "Nome", "Data", "CodiceCausale", "Valore"));
-
-            foreach (var row in rows)
-            {
-                sb.AppendLine(string.Join(separator,
-                    row.Cognome,
-                    row.Nome,
-                    row.Data,
-                    row.CodiceCausale,
-                    row.Valore.ToString(CultureInfo.InvariantCulture)));
-            }
-
-            var fileName = $"{codice}_{jobId}.csv";
-            var filePath = Path.Combine(folder, fileName);
-            await File.WriteAllTextAsync(filePath, sb.ToString(), Encoding.UTF8);
-            return fileName;
-        }
-
-
         #endregion
     }
 
@@ -783,6 +759,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
     public interface ITimeSheet_ExportService : IServiceBase
     {
         Task<GenericResult<TimeSheet_ExportOutModel>> Export(GenericRequest<TimeSheet_ExportInModel> model, bool isSubProcess);
+        Task<GenericResult<TimeSheet_Export_Anteprima_OutModel>> Export_Anteprima(GenericRequest<TimeSheet_Export_Anteprima_InModel> model, bool isSubProcess);
         Task<GenericResult<TimeSheet_ExportPdf_4User_OutModel>> ExportPdf_4User(GenericRequest<TimeSheet_ExportPdf_4User_InModel> model, bool isSubProcess);
         Task<GenericResult<TimeSheet_ExportPdf_4Admin_OutModel>> ExportPdf_4Admin(GenericRequest<TimeSheet_ExportPdf_4Admin_InModel> model, bool isSubProcess);
     }

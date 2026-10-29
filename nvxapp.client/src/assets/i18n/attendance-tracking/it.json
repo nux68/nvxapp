@@ -433,6 +433,18 @@
         "statoWarning": "Warning"
       },
       "exportCauEdit": {
+        "anteprimaTitolo": "Prova del formato",
+        "anteprimaNota": "Applica il formato del programma paghe ai dati reali di un dipendente in un mese (senza documentazione mostra il JSON dei dati). La prima volta, o se documenti e indicazioni cambiano, l'AI prepara il formato: può richiedere qualche decina di secondi.",
+        "anteprimaMese": "Mese",
+        "anteprimaDipendente": "Dipendente",
+        "anteprimaScegliDipendente": "Scegli un dipendente",
+        "anteprimaProva": "Prova il formato",
+        "anteprimaRigenera": "Rigenera con l'AI",
+        "anteprimaInCorso": "Preparazione in corso...",
+        "anteprimaErrore": "Anteprima non riuscita.",
+        "anteprimaFile": "Prime righe del file .{{ext}}:",
+        "anteprimaMostraRicetta": "Mostra la ricetta del formato",
+        "anteprimaNascondiRicetta": "Nascondi la ricetta",
         "noteAI": "Indicazioni per l'AI",
         "noteAINota": "Facoltative: es. \"separatore punto e virgola\", \"codifica ANSI\", \"una riga per dipendente\". Insieme alla documentazione servono all'AI per preparare il formato del file.",
         "documentazione": "Documentazione",

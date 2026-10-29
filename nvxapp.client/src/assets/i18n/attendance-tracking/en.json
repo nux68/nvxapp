@@ -433,6 +433,18 @@
         "statoWarning": "Warning"
       },
       "exportCauEdit": {
+        "anteprimaTitolo": "Format test",
+        "anteprimaNota": "Applies the payroll format to the real data of one employee in one month (without documentation it shows the JSON data). The first time, or when documents and instructions change, the AI prepares the format: it can take some tens of seconds.",
+        "anteprimaMese": "Month",
+        "anteprimaDipendente": "Employee",
+        "anteprimaScegliDipendente": "Choose an employee",
+        "anteprimaProva": "Test the format",
+        "anteprimaRigenera": "Regenerate with AI",
+        "anteprimaInCorso": "Preparing...",
+        "anteprimaErrore": "Preview failed.",
+        "anteprimaFile": "First lines of the .{{ext}} file:",
+        "anteprimaMostraRicetta": "Show the format recipe",
+        "anteprimaNascondiRicetta": "Hide the recipe",
         "noteAI": "Instructions for the AI",
         "noteAINota": "Optional: e.g. \"semicolon separator\", \"ANSI encoding\", \"one row per employee\". Together with the documentation they help the AI prepare the file format.",
         "documentazione": "Documentation",

@@ -11,7 +11,9 @@ import {
   TimeSheet_ExportPdf_4User_InModel,
   TimeSheet_ExportPdf_4User_OutModel,
   TimeSheet_ExportPdf_4Admin_InModel,
-  TimeSheet_ExportPdf_4Admin_OutModel
+  TimeSheet_ExportPdf_4Admin_OutModel,
+  TimeSheet_Export_Anteprima_InModel,
+  TimeSheet_Export_Anteprima_OutModel
 } from './Models/time-sheet-export-model';
 
 @Injectable({
@@ -42,6 +44,13 @@ export class TimeSheetExportService {
     return this.http.post<GenericResult<TimeSheet_ExportPdf_4Admin_OutModel>>(
       environment.remoteData.apiUri + 'TimeSheet_Export/ExportPdf_4Admin', model
     ).pipe(map(r => r));
+  }
+
+  // anteprima del file del modello di export (puo' chiedere la ricetta all'AI: anche decine di secondi)
+  Export_Anteprima(model: GenericRequest<TimeSheet_Export_Anteprima_InModel>): Observable<GenericResult<TimeSheet_Export_Anteprima_OutModel>> {
+    return this.http.post<GenericResult<TimeSheet_Export_Anteprima_OutModel>>(
+      environment.remoteData.apiUri + 'TimeSheet_Export/Export_Anteprima', model
+    );
   }
 
 }
