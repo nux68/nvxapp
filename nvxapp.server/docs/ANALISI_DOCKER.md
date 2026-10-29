@@ -265,7 +265,7 @@ Rilascio: snapshot o dump del DB → carica la nuova immagine → `docker compos
 
 ## 10. Come far partire l'app con Docker
 
-File nella cartella della solution (`C:\REPO\ANGULAR-2025\Merge\nvxapp`): `Dockerfile`, `.dockerignore`, `docker-compose.yml`, `docker-compose.local.yml`, `docker-compose.prod.yml`, `docker/Caddyfile` (VPS), `docker/Caddyfile.local` (PC), `.env.example`. Tutti i comandi si lanciano da quella cartella (sul server da `/opt/nvxapp`).
+File nella cartella della solution (`C:\REPO\ANGULAR-2025\Merge\nvxapp`): `Dockerfile`, `.dockerignore`, `docker-compose.yml`, `docker-compose.local.yml`, `docker-compose.prod.yml`, `docker/Caddyfile` (VPS), `docker/Caddyfile.local` (PC), `docker-compose.devdb.yml` (PC, facoltativo), `.env.example`. Tutti i comandi si lanciano da quella cartella (sul server da `/opt/nvxapp`).
 
 **File di ambiente** (copie di `.env.example`, con segreti, esclusi da git):
 
@@ -325,6 +325,24 @@ Da sapere:
 - **Firewall di Windows**: con la rete impostata come **Privata** non serve nessuna regola (la regola "Docker Desktop Backend" consente già l'ingresso); con rete Pubblica Windows blocca la porta.
 - Se si cancella il volume `caddy_data` (es. `down -v`) nasce una nuova autorità e il certificato radice va reinstallato ovunque.
 - Nei log di Caddy l'avviso "Caddyfile input is not formatted" è solo estetico.
+
+#### Database di sviluppo del PC al posto di quello del container
+
+Con l'override facoltativo **`docker-compose.devdb.yml`** l'app in Docker usa il PostgreSQL installato sul PC, cioè lo stesso database del server di Visual Studio (`nvxapp_V2`), e il container `postgres` non si avvia. Utile per provare in Docker con i dati veri di sviluppo.
+
+1. In `DockerLocale.env` compilare `DEVDB_PORT`, `DEVDB_NAME`, `DEVDB_USER` e `DEVDB_PASSWORD`: sono i valori di `NVXAPP_ConnectionStrings__nvxappDbContext` di Windows. L'host lo mette compose: `host.docker.internal`, cioè il PC visto dal container, perché `localhost` dentro il container è il container stesso. Nomi diversi da `NVXAPP_...` perché compose darebbe la precedenza alla variabile di Windows, che ha `Server=localhost`.
+2. Aggiungere l'override a `COMPOSE_FILE`:
+   ```
+   COMPOSE_FILE=docker-compose.yml;docker-compose.local.yml;docker-compose.devdb.yml
+   ```
+3. Ripubblicare (Visual Studio → DockerLocale, oppure `docker compose --env-file DockerLocale.env up -d --build`). Il container `postgres` già avviato non si ferma da solo: `docker stop nvxapp-postgres-1`.
+
+Per tornare al database del container basta togliere `docker-compose.devdb.yml` da `COMPOSE_FILE` e ripubblicare: i suoi dati sono rimasti nel volume `pg_data`.
+
+Da sapere:
+- All'avvio l'app in Docker **applica al database di sviluppo** le migrazioni del codice da cui è costruita l'immagine: pubblicare da un ramo con migrazioni nuove le porta anche sul DB usato da Visual Studio.
+- Server di Visual Studio e app in Docker possono girare insieme sullo stesso database; ognuno ha il suo RabbitMQ, quindi i messaggi non vengono elaborati due volte.
+- PostgreSQL del PC deve accettare connessioni TCP: le connessioni da Docker Desktop arrivano come `127.0.0.1`, già ammesse dalla configurazione standard (`pg_hba.conf`). **Verificato** il 29/10/2026 con PostgreSQL 14 sulla porta 5432: login 200, dati e schemi `tenant_*` di sviluppo, nessuna migrazione da applicare.
 
 ### 10.2 Sul VPS (primo rilascio)
 
@@ -389,4 +407,5 @@ Scritti come sul server. **Sul PC** aggiungere `--env-file DockerLocale.env` sub
 | Ripristino di un dump | `docker compose cp nvxapp.dump postgres:/tmp/` e poi `docker compose exec -T postgres pg_restore -U postgres -d nvxapp --clean --if-exists /tmp/nvxapp.dump` (con l'app ferma: `docker compose stop nvxapp`) |
 | Console RabbitMQ (solo PC) | http://localhost:15672, utente `rabbit` |
 | Certificato radice di Caddy (solo PC) | `docker compose cp caddy:/data/caddy/pki/authorities/local/root.crt nvxapp-caddy-root.crt` (installazione nella sezione 10.1) |
+| Container postgres fermo con `docker-compose.devdb.yml` (solo PC) | `docker stop nvxapp-postgres-1` |
 | Postgres da pgAdmin/Navicat (solo PC) | host `127.0.0.1` (non `localhost`: la porta è solo IPv4), porta `5434`, utente `postgres`, password `POSTGRES_PASSWORD` di `DockerLocale.env` |

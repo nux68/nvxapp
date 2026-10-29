@@ -1,0 +1,26 @@
+# Override facoltativo per il PC di sviluppo, insieme a docker-compose.yml e docker-compose.local.yml:
+# l'app in Docker usa il PostgreSQL installato sul PC (il database di sviluppo di Visual Studio)
+# invece del container postgres, che con questo override non si avvia.
+# Si attiva aggiungendolo a COMPOSE_FILE in DockerLocale.env:
+#   COMPOSE_FILE=docker-compose.yml;docker-compose.local.yml;docker-compose.devdb.yml
+# e si disattiva togliendolo (si torna al database del container, i cui dati restano nel volume pg_data).
+#
+# Attenzione: all'avvio l'app applica le migrazioni del codice da cui e' costruita l'immagine anche al database
+# di sviluppo; server di Visual Studio e app in Docker possono girare insieme sullo stesso database.
+#
+# Variabili DEVDB_* e non NVXAPP_ConnectionStrings__...: quella esiste gia' tra le variabili di Windows con
+# Server=localhost, che dentro il container non e' il PC, e compose darebbe la precedenza a Windows sul file.
+
+services:
+  nvxapp:
+    # niente attesa del container postgres, che qui non parte
+    depends_on: !override
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      # host.docker.internal = il PC che ospita Docker Desktop
+      NVXAPP_ConnectionStrings__nvxappDbContext: "Server=${DEVDB_HOST:-host.docker.internal};Port=${DEVDB_PORT:-5432};Database=${DEVDB_NAME:?impostare DEVDB_NAME in DockerLocale.env (database di sviluppo, es. nvxapp_V2)};User Id=${DEVDB_USER:-postgres};Password=${DEVDB_PASSWORD:?impostare DEVDB_PASSWORD in DockerLocale.env (password del PostgreSQL del PC)};"
+
+  postgres:
+    # il container postgres si avvia solo chiedendolo: docker compose --profile dbcontainer up -d
+    profiles: ["dbcontainer"]
