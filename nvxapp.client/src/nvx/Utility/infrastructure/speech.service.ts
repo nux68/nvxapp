@@ -27,6 +27,8 @@ export class SpeechService {
       this._VoiceCommandActive$.next(value);
 
       if (this.isVoiceCommandActive) {
+        this.silentRestarts = 0;
+        this.fatalError = false;
         this.recognition.start();
       }
       else {
@@ -48,6 +50,16 @@ export class SpeechService {
 
   // "tieni premuto per parlare": ascolto finche' il pulsante resta premuto, senza attivare l'ascolto continuo
   private pushToTalk = false;
+  private pushToTalkAt = 0;
+  private static readonly ShortPressMs = 500;
+
+  // ascolto continuo: Chrome lo chiude da solo dopo alcuni secondi di silenzio ("no-speech") e lo si
+  // riavvia; si spegne per un errore vero (permesso, microfono, rete) o dopo troppi riavvii senza parole
+  private static readonly MaxSilentRestarts = 15;
+  private static readonly RecoverableErrors = ['no-speech', 'aborted'];
+  private silentRestarts = 0;
+  private fatalError = false;
+
   private _PushToTalk$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public get PushToTalk$(): Observable<boolean> {
     return this._PushToTalk$.asObservable();
@@ -57,8 +69,14 @@ export class SpeechService {
   }
 
   public startPushToTalk() {
-    if (!this.recognition || this.isVoiceCommandActive || this.pushToTalk) return;
+    if (!this.recognition || this.isVoiceCommandActive) return;
+    // ascolto lasciato aperto da un click breve: la nuova pressione lo chiude
+    if (this.pushToTalk) {
+      this.recognition.stop();
+      return;
+    }
     this.pushToTalk = true;
+    this.pushToTalkAt = Date.now();
     this._PushToTalk$.next(true);
     try {
       this.recognition.start();
@@ -67,9 +85,13 @@ export class SpeechService {
     }
   }
 
-  // rilasciato il pulsante: il browser consegna il testo riconosciuto e chiude (onend)
+  // rilasciato il pulsante: il browser consegna il testo riconosciuto e chiude (onend).
+  // Un click breve (non tenuto premuto) lascia l'ascolto aperto fino al click successivo o al silenzio:
+  // chiuderlo subito darebbe solo "no-speech"
   public stopPushToTalk() {
-    if (this.pushToTalk && this.recognition) this.recognition.stop();
+    if (!this.pushToTalk || !this.recognition) return;
+    if (Date.now() - this.pushToTalkAt < SpeechService.ShortPressMs) return;
+    this.recognition.stop();
   }
 
   private endPushToTalk() {
@@ -88,6 +110,19 @@ export class SpeechService {
     this.VoiceCommandActive = false;
     if (eraAttivo)
       this._AutoDeactivated$.next();
+  }
+
+  // ascolto continuo chiuso dal browser mentre l'utente lo vuole acceso: si riavvia
+  private restartContinuous(): boolean {
+    if (this.pushToTalk || !this.isVoiceCommandActive || this.fatalError) return false;
+    if (++this.silentRestarts > SpeechService.MaxSilentRestarts) return false;
+    try {
+      this.recognition.start();
+      console.log("🔁 Riconoscimento riavviato.");
+      return true;
+    } catch {
+      return false;
+    }
   }
 
   public stop() {
@@ -111,17 +146,24 @@ export class SpeechService {
       this.recognition.onresult = (event: any) => {
         const resultText = event.results[event.results.length - 1][0].transcript.trim();
         console.log("🗣️ Riconosciuto:", resultText);
+        this.silentRestarts = 0;
 
         this._Message$.next(resultText);
       };
 
+      // dopo onerror arriva sempre onend: la decisione (riavvio o chiusura) si prende li'
       this.recognition.onerror = (event: any) => {
+        if (SpeechService.RecoverableErrors.includes(event.error)) {
+          console.warn("⚠️ Riconoscimento vocale:", event.error, "(nessuna voce ricevuta dal microfono)");
+          return;
+        }
         console.error("⚠️ Errore nel riconoscimento vocale:", event.error);
-        this.onRecognitionClosed();
+        this.fatalError = true;
       };
 
       this.recognition.onend = () => {
         console.log("⏹️ Riconoscimento terminato.");
+        if (this.restartContinuous()) return;
         this.onRecognitionClosed();
       };
     } else {
