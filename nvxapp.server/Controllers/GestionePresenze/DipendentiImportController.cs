@@ -29,5 +29,15 @@ namespace nvxapp.server.Controllers.GestionePresenze
             var res = await _dipendentiImportService.DipendentiImportEstrai(inModel, false);
             return res;
         }
+
+        // inserimento dei dipendenti corretti nel dialog: avvia il job, l'avanzamento arriva con LongJobProgress
+        [Authorize]
+        [HttpPost]
+        [Route("DipendentiImportEsegui")]
+        public async Task<GenericResult<DipendentiImport_EseguiOutModel>> DipendentiImportEsegui(GenericRequest<DipendentiImport_EseguiInModel> inModel)
+        {
+            var res = await _dipendentiImportService.DipendentiImportEsegui(inModel, false);
+            return res;
+        }
     }
 }

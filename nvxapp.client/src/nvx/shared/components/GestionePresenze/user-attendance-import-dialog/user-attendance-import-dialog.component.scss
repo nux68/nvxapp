@@ -9,13 +9,51 @@
   padding: 0 16px 12px;
 }
 
-// un dipendente dell'elenco; bordo rosso se ha dati da correggere
+// un dipendente dell'elenco: scheda con intestazione (numero, nome, togli); bordo rosso se ha dati da correggere
 .nvx-import-riga {
   margin: 12px 0;
-  padding: 4px 0;
+  padding: 0 0 6px;
   border: 1px solid var(--ion-color-step-200, #ddd);
-  border-left-width: 4px;
+  border-left: 4px solid var(--ion-color-primary);
   border-radius: 6px;
+  overflow: hidden;
+
+  ion-col {
+    padding: 0 4px;
+  }
+
+  ion-item {
+    --min-height: 48px;
+  }
+
+  // ruolo e profilo: il valore scelto occupa solo lo spazio che serve
+  ion-select {
+    max-width: 100%;
+  }
+}
+
+// intestazione della scheda: come i titoli di sezione dei dialog (.nvx-item-4-title in global.scss)
+.nvx-import-riga-testa {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 4px 2px 12px;
+  color: var(--nvx-text-muted);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.nvx-import-riga-numero::after {
+  content: '.';
+}
+
+.nvx-import-riga-nome {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .nvx-import-riga-errore {

@@ -24,6 +24,29 @@ export class DipendentiImport_EstraiInModel {
   public note: string | null = null;
 }
 
+/** dipendente da inserire, con i dati corretti nel dialog */
+export class DipendenteImportDaInserireModel {
+  public cognome: string = '';
+  public nome: string = '';
+  public userName: string = '';
+  public mail: string = '';
+  public roles: string[] = [];
+  /** "YYYY-MM-DDT00:00:00"; null = oggi */
+  public dataAss: string | null = null;
+  public idPar_ProfiloOrario: number = 0;
+}
+
+export class DipendentiImport_EseguiInModel {
+  /** password iniziale, uguale per tutti */
+  public password: string = '';
+  public dipendenti: DipendenteImportDaInserireModel[] = [];
+}
+
+export class DipendentiImport_EseguiOutModel extends ModelResult {
+  /** job avviato: avanzamento e fine arrivano con le notifiche LongJobProgress */
+  public jobId: string = '';
+}
+
 export class DipendentiImport_EstraiOutModel extends ModelResult {
   public dipendenti: DipendenteImportModel[] = [];
   /** file troppo lungo: e' stata letta solo la prima parte */

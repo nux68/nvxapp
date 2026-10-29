@@ -987,7 +987,7 @@
         "notaRevisione": "Check the data read from the file and correct those marked in red: missing, invalid or already used data cannot be imported.",
         "testoTroncato": "The file is long: only the first part was read. Import the missing employees from another file.",
         "password": "Initial password (for everyone)",
-        "notaDefault": "The other data take the values proposed by the wizard (full time, default work profile, default skills); the hiring date, if empty, is today and is also the start of the work profile. They can be changed later from the employee record.",
+        "notaDefault": "The other data take the values proposed by the wizard (full time, default skills). The hiring date, if empty, is today and is also the start of the work profile. They can be changed later from the employee record.",
         "userNameCaratteri": "Only letters without accents, digits and the characters - . _ @ +",
         "userNameDuplicato": "UserName repeated in the list",
         "emailDuplicata": "Email repeated in the list",
@@ -996,12 +996,11 @@
         "altroFile": "Other file",
         "importa": "Import",
         "giaUsati": "Some usernames or emails are already used by other users: correct them and try again.",
-        "esito": "Employees added: {{inseriti}}; to correct: {{rimasti}}.",
-        "datiPresenzeNonSalvati": "{{nome}}: user created but attendance data not saved ({{errore}}), complete them from the employee record.",
         "note": "Notes for the assistant (optional)",
         "notePlaceholder": "E.g.: all hired from 1/11/2026; only use the \"Production\" sheet",
         "analisiAttesa": "The assistant is reading the file: it may take up to a minute.",
-        "dataAssOggi": "If empty: today"
+        "dataAssOggi": "If empty: today",
+        "erroreAvvio": "The import could not be started: try again."
       },
       "userAttendanceWizardDialog": {
         "title": "New employee",

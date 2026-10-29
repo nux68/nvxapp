@@ -3,7 +3,7 @@ import { TranslocoService } from '@jsverse/transloco';
 import { CommonModule } from '@angular/common';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { IonButton, IonCard, IonCardContent, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonLabel, IonNote, IonProgressBar, IonRow, IonSelect, IonSelectOption, IonText, IonTextarea, IonTitle, IonToolbar, ModalController } from '@ionic/angular';
-import { firstValueFrom, Observable, of } from 'rxjs';
+import { filter, firstValueFrom, Observable, of, take } from 'rxjs';
 import { SharedComponentInfrastructureModule } from '../../../shared-component-infrastructure.module';
 import { ButtonItem, UserInterfaceService } from '../../../../Utility/infrastructure/user-interface.service';
 import { GenericRequest } from '../../../../ClientServer-Service/ModelsBase/generic-request';
@@ -12,10 +12,12 @@ import { ParameterService } from '../../../../ClientServer-Service/Infrastructur
 import { RoleCode } from '../../../../ClientServer-Service/Infrastructure/Account/Models/user-roles-model';
 import { UserCheckInModel } from '../../../../ClientServer-Service/Infrastructure/Account/Models/user-check-model';
 import { DipendentiImportService } from '../../../../ClientServer-Service/GestionePresenze/DipendentiImportService/dipendenti-import.service';
-import { DIPENDENTI_IMPORT_MAX_BYTE, DipendenteImportModel, DipendentiImport_EstraiInModel } from '../../../../ClientServer-Service/GestionePresenze/DipendentiImportService/Models/dipendenti-import-model';
-import { NuovoDipendenteService, NuovoDipendenteUtente } from '../../../../Utility/GestionePresenze/nuovo-dipendente.service';
+import { DIPENDENTI_IMPORT_MAX_BYTE, DipendenteImportDaInserireModel, DipendenteImportModel, DipendentiImport_EseguiInModel, DipendentiImport_EstraiInModel } from '../../../../ClientServer-Service/GestionePresenze/DipendentiImportService/Models/dipendenti-import-model';
+import { NuovoDipendenteService } from '../../../../Utility/GestionePresenze/nuovo-dipendente.service';
+import { LongJobNotifierService } from '../../../../Utility/infrastructure/long-job-notifier.service';
 import { RefresherService } from '../../../../Utility/GestionePresenze/refresher.service';
-import { ParTable } from '../../../shared-parameter-gestione-presenze.service';
+import { ParTable, SharedParameterGestionePresenzeService } from '../../../shared-parameter-gestione-presenze.service';
+import { Par_ProfiloOrarioModel } from '../../../../ClientServer-Service/GestionePresenze/Par_ProfiloOrario/Models/par-profilo-orario-model';
 import { BaseDialogConfirmCancelComponent } from '../../../../pages/_BASE/base-dialog-confirm-cancel/base-dialog-confirm-cancel.component';
 
 type Fase = 'file' | 'analisi' | 'revisione' | 'salvataggio';
@@ -32,11 +34,12 @@ const IMMAGINE_MAX_LATO = 2000;
  *  2 il server ne legge il testo e il LLM estrae le persone con i dati del primo step del wizard
  *    (cognome, nome, username, email) e la data di assunzione
  *  3 l'elenco si corregge: con dati mancanti, non validi o gia' usati non si puo' importare;
- *    la password iniziale e' unica per tutti, ruoli e data di assunzione sono per dipendente
- *    (di default User e oggi)
- *  4 ogni dipendente si inserisce come dal wizard, con i valori di default per gli altri step
- *    (NuovoDipendenteService): la data di assunzione e' anche l'inizio del profilo orario.
- *    Quelli non inseriti restano in elenco con l'errore.
+ *    la password iniziale e' unica per tutti, ruoli, data di assunzione e profilo orario sono per
+ *    dipendente (di default User, oggi e il profilo di default del wizard)
+ *  4 l'elenco passa al server, che inserisce i dipendenti in un job (DipendentiImportEsegui) come dal
+ *    wizard, con i valori di default per gli altri step: la data di assunzione e' anche l'inizio del
+ *    profilo orario. Avanzamento e riepilogo (inseriti e motivi degli scarti) nella barra della pagina;
+ *    il dialog si chiude con il JobId e la lista utenti si rilegge a fine job.
  * Standalone, come il wizard: la pagina di Infrastructure lo apre tramite DialogName.ImportUserCompany.
  */
 @Component({
@@ -54,16 +57,13 @@ export class UserAttendanceImportDialogComponent extends BaseDialogConfirmCancel
   /** indicazioni per il LLM scritte con la scelta del file */
   public note: string = '';
   public testoTroncato: boolean = false;
-  /** errore della lettura del file o dell'ultimo inserimento */
+  /** errore della lettura del file o dell'avvio dell'inserimento */
   public errore: string | null = null;
-  /** errore di inserimento per dipendente (stessa posizione dell'elenco) */
-  public erroriRiga: (string | null)[] = [];
-  /** dipendenti gia' inseriti in questa importazione */
-  public inseriti: number = 0;
-  /** avanzamento dell'inserimento */
-  public progresso: number = 0;
 
   private btnAltroFile: ButtonItem;
+
+  /** profili orari tra cui scegliere (come nello step 3 del wizard) */
+  public par_ProfiloOrario: Par_ProfiloOrarioModel[] = [];
 
   public get dipendenti(): FormArray { return this._editForm?.get('dipendenti') as FormArray; }
   public get righe(): FormGroup[] { return (this.dipendenti?.controls ?? []) as FormGroup[]; }
@@ -76,17 +76,19 @@ export class UserAttendanceImportDialogComponent extends BaseDialogConfirmCancel
               private dipendentiImportService: DipendentiImportService,
               private nuovoDipendenteService: NuovoDipendenteService,
               private refresherService: RefresherService,
+              private longJobNotifierService: LongJobNotifierService,
+              private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
               private elementRef: ElementRef<HTMLElement>,
               private transloco: TranslocoService) {
 
     super(userInterfaceService, fb, modalCtrl);
 
+    this.par_ProfiloOrario = this.sharedParameterGestionePresenzeService.Par_ProfiloOrario ?? [];
+
     this.btnAltroFile = new ButtonItem(this.t('altroFile'), 'document-outline', 'medium', false, () => this.ricomincia());
     this.btnConfirm.text = this.t('importa');
     this.btnConfirm.image = 'cloud-upload-outline';
     this.btnConfirm.event = this.handleConfirm;
-    // dopo inserimenti parziali la lista utenti deve rileggersi anche chiudendo
-    this.btnCancel.event = () => this.chiudi();
   }
 
   get EditForm(): FormGroup {
@@ -214,11 +216,9 @@ export class UserAttendanceImportDialogComponent extends BaseDialogConfirmCancel
 
   private caricaElenco(dipendenti: DipendenteImportModel[]): void {
     this.dipendenti.clear();
-    this.erroriRiga = [];
     for (const d of dipendenti) {
       const riga = this.nuovaRiga(d);
       this.dipendenti.push(riga);
-      this.erroriRiga.push(null);
       // gia' usati in archivio (controllo del server): l'errore sparisce modificando il campo
       if (d.userNameExists) this.segnaGiaUsato(riga, 'descrizione', true);
       if (d.mailExists) this.segnaGiaUsato(riga, 'mail', true);
@@ -236,13 +236,13 @@ export class UserAttendanceImportDialogComponent extends BaseDialogConfirmCancel
       roles: [userRole ? [userRole.name] : [], [minArrayLength(1)]],
       // "YYYY-MM-DD" (campo data); vuota = oggi
       dataAss: [d?.dataAss ? d.dataAss.substring(0, 10) : null],
+      idPar_ProfiloOrario: [this.nuovoDipendenteService.Default().profilo.idPar_ProfiloOrario, [Validators.required]],
     });
   }
 
   private ricomincia(): void {
     if (this.fase === 'salvataggio') return;
     this.dipendenti.clear();
-    this.erroriRiga = [];
     this.errore = null;
     this.testoTroncato = false;
     this.fase = 'file';
@@ -252,14 +252,11 @@ export class UserAttendanceImportDialogComponent extends BaseDialogConfirmCancel
   // ── Step 3: correzione dell'elenco ───────────────────────────────────────
 
   aggiungiRiga(): void {
-    const riga = this.nuovaRiga();
-    this.dipendenti.push(riga);
-    this.erroriRiga.push(null);
+    this.dipendenti.push(this.nuovaRiga());
   }
 
   togliRiga(index: number): void {
     this.dipendenti.removeAt(index);
-    this.erroriRiga.splice(index, 1);
   }
 
   /** stesso username o email in un'altra riga dell'elenco */
@@ -288,15 +285,19 @@ export class UserAttendanceImportDialogComponent extends BaseDialogConfirmCancel
     this.buttonbar = bar;
   }
 
-  // ── Step 4: inserimento ──────────────────────────────────────────────────
+  // ── Step 4: inserimento in un job del server ─────────────────────────────
 
+  /**
+   * Controlla i dati e passa l'elenco al server, che inserisce i dipendenti in un job: l'avanzamento e il
+   * riepilogo finale si vedono nella barra della pagina; il dialog si chiude e restituisce il JobId
+   * (la lista utenti si rilegge a fine job).
+   */
   private handleConfirm = async () => {
     this._editForm.markAllAsTouched();
     if (this.fase !== 'revisione' || !this.importabile) return;
 
     this.fase = 'salvataggio';
     this.errore = null;
-    this.progresso = 0;
     this.updateButtonbar();
     try {
       if (!(await this.verificaUsernameMail())) {
@@ -304,46 +305,38 @@ export class UserAttendanceImportDialogComponent extends BaseDialogConfirmCancel
         return;
       }
 
-      const pw: string = this._editForm.value.pw;
-      const altriDati = this.nuovoDipendenteService.Default();
-      const righe = [...this.righe];
-      const daTogliere: FormGroup[] = [];
-      const avvisi: string[] = [];
+      const request = new GenericRequest<DipendentiImport_EseguiInModel>(DipendentiImport_EseguiInModel);
+      request.data.password = this._editForm.value.pw;
+      request.data.dipendenti = this.righe.map(r => {
+        const v = r.value;
+        const d = new DipendenteImportDaInserireModel();
+        d.cognome = v.cognome.trim();
+        d.nome = v.nome.trim();
+        d.userName = v.descrizione.trim();
+        d.mail = v.mail.trim();
+        d.roles = v.roles;
+        // data di assunzione (anche inizio del profilo orario); vuota = oggi
+        d.dataAss = v.dataAss ? v.dataAss.substring(0, 10) + 'T00:00:00' : null;
+        d.idPar_ProfiloOrario = v.idPar_ProfiloOrario;
+        return d;
+      });
 
-      for (let i = 0; i < righe.length; i++) {
-        const v = righe[i].value;
-        const utente: NuovoDipendenteUtente = {
-          cognome: v.cognome.trim(), nome: v.nome.trim(), descrizione: v.descrizione.trim(), mail: v.mail.trim(), pw, roles: v.roles
-        };
-        // data di assunzione della riga (anche inizio del profilo orario), altrimenti oggi
-        const dati = { ...altriDati, rapporto: { ...altriDati.rapporto, dataAss: v.dataAss ? v.dataAss.substring(0, 10) + 'T00:00:00' : altriDati.rapporto.dataAss } };
-        const esito = await this.nuovoDipendenteService.Inserisci(utente, dati);
-
-        if (esito.idAspNetUsers) {
-          // utente creato: esce dall'elenco anche se i dati delle presenze non si sono salvati (si completano dalla scheda)
-          this.inseriti++;
-          daTogliere.push(righe[i]);
-          if (!esito.ok)
-            avvisi.push(this.t('datiPresenzeNonSalvati', { nome: `${utente.cognome} ${utente.nome}`, errore: esito.errore }));
-        } else {
-          this.erroriRiga[this.righe.indexOf(righe[i])] = esito.errore;
-        }
-        this.progresso = (i + 1) / righe.length;
-      }
-
-      for (const riga of daTogliere) {
-        const index = this.righe.indexOf(riga);
-        this.dipendenti.removeAt(index);
-        this.erroriRiga.splice(index, 1);
-      }
-      if (this.inseriti > 0)
-        this.refresherService.SharedParameterGestionePresenze_triggerRefresh(ParTable.Dip_Anagrafica);
-
-      if (this.righe.length === 0 && avvisi.length === 0) {
-        this.modalCtrl.dismiss({ inserimentoCompletato: true, inseriti: this.inseriti }, 'confirm');
+      const res = await firstValueFrom(this.dipendentiImportService.DipendentiImportEsegui(request));
+      const jobId = res?.success ? res.data?.jobId : null;
+      if (!jobId) {
+        this.errore = res?.messages?.map(m => m.text).join(' ') || this.t('erroreAvvio');
         return;
       }
-      this.errore = [this.t('esito', { inseriti: this.inseriti, rimasti: this.righe.length }), ...avvisi].join(' ');
+
+      // a fine job i dipendenti nuovi devono comparire anche nelle tabelle delle presenze
+      this.longJobNotifierService.jobFinished$
+        .pipe(filter(job => job.jobId === jobId), take(1))
+        .subscribe(() => this.refresherService.SharedParameterGestionePresenze_triggerRefresh(ParTable.Dip_Anagrafica));
+
+      this.modalCtrl.dismiss({ jobId }, 'confirm');
+    } catch (error) {
+      console.error('Errore durante la chiamata API:', error);
+      this.errore = this.t('erroreAvvio');
     } finally {
       if (this.fase === 'salvataggio') this.fase = 'revisione';
       this.updateButtonbar();
@@ -382,13 +375,6 @@ export class UserAttendanceImportDialogComponent extends BaseDialogConfirmCancel
     const errori = giaUsato ? { ...altri, giaUsato: true } : altri;
     control.setErrors(Object.keys(errori).length ? errori : null);
     control.markAsTouched();
-  }
-
-  private chiudi(): void {
-    if (this.inseriti > 0)
-      this.modalCtrl.dismiss({ inserimentoCompletato: true, inseriti: this.inseriti }, 'confirm');
-    else
-      this.modalCtrl.dismiss(null, 'cancel');
   }
 }
 

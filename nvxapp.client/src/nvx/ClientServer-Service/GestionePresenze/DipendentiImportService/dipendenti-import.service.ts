@@ -5,6 +5,8 @@ import { GenericRequest } from '../../ModelsBase/generic-request';
 import { GenericResult } from '../../ModelsBase/generic-result';
 import { map, Observable } from 'rxjs';
 import {
+  DipendentiImport_EseguiInModel,
+  DipendentiImport_EseguiOutModel,
   DipendentiImport_EstraiInModel,
   DipendentiImport_EstraiOutModel
 } from './Models/dipendenti-import-model';
@@ -20,6 +22,13 @@ export class DipendentiImportService {
   DipendentiImportEstrai(model: GenericRequest<DipendentiImport_EstraiInModel>): Observable<GenericResult<DipendentiImport_EstraiOutModel>> {
     return this.http.post<GenericResult<DipendentiImport_EstraiOutModel>>(
       environment.remoteData.apiUri + 'DipendentiImport/DipendentiImportEstrai', model
+    ).pipe(map(r => r));
+  }
+
+  /** inserimento dei dipendenti in un job del server: restituisce il JobId */
+  DipendentiImportEsegui(model: GenericRequest<DipendentiImport_EseguiInModel>): Observable<GenericResult<DipendentiImport_EseguiOutModel>> {
+    return this.http.post<GenericResult<DipendentiImport_EseguiOutModel>>(
+      environment.remoteData.apiUri + 'DipendentiImport/DipendentiImportEsegui', model
     ).pipe(map(r => r));
   }
 

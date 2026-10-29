@@ -25,6 +25,40 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dipendenti
         public string? Note { get; set; }
     }
 
+    /// <summary>dipendente da inserire, con i dati corretti nel dialog</summary>
+    public class DipendenteImportDaInserireModel
+    {
+        public string Cognome { get; set; } = string.Empty;
+        public string Nome { get; set; } = string.Empty;
+        public string UserName { get; set; } = string.Empty;
+        public string Mail { get; set; } = string.Empty;
+        public List<string> Roles { get; set; } = new List<string>();
+        /// <summary>data di assunzione (anche inizio del profilo orario); null = oggi</summary>
+        public DateTime? DataAss { get; set; }
+        public int IdPar_ProfiloOrario { get; set; }
+    }
+
+    public class DipendentiImport_EseguiInModel
+    {
+        /// <summary>password iniziale, uguale per tutti</summary>
+        public string Password { get; set; } = string.Empty;
+        public List<DipendenteImportDaInserireModel> Dipendenti { get; set; } = new List<DipendenteImportDaInserireModel>();
+    }
+
+    public class DipendentiImport_EseguiOutModel : ModelResult
+    {
+        /// <summary>job avviato: avanzamento e fine arrivano con le notifiche LongJobProgress</summary>
+        public string JobId { get; set; } = string.Empty;
+    }
+
+    /// <summary>esito del job, nel Payload della notifica di fine</summary>
+    public class DipendentiImport_EsitoModel
+    {
+        public int Inseriti { get; set; }
+        public int Totale { get; set; }
+        public List<string> Errori { get; set; } = new List<string>();
+    }
+
     public class DipendentiImport_EstraiOutModel : ModelResult
     {
         public List<DipendenteImportModel> Dipendenti { get; set; } = new List<DipendenteImportModel>();

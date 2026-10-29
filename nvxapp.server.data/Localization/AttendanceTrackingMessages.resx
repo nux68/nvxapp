@@ -1177,4 +1177,52 @@
     <value>Richieste ({0}): {1}</value>
     <comment>{0} = numero, {1} = elenco delle richieste</comment>
   </data>
+  <data name="ImportElencoVuoto" xml:space="preserve">
+    <value>Nessun dipendente da importare.</value>
+  </data>
+  <data name="ImportTroppiDipendenti" xml:space="preserve">
+    <value>Al massimo {0} dipendenti per importazione: dividi l'elenco.</value>
+    <comment>{0} = numero massimo</comment>
+  </data>
+  <data name="ImportDatiIncompleti" xml:space="preserve">
+    <value>Dati incompleti: per ogni dipendente servono cognome, nome, username, email, ruolo e profilo orario.</value>
+  </data>
+  <data name="ImportJobAvviato" xml:space="preserve">
+    <value>Importazione di {0} dipendenti avviata.</value>
+    <comment>{0} = numero di dipendenti</comment>
+  </data>
+  <data name="ImportJobInCorso" xml:space="preserve">
+    <value>Inserimento di {0} ({1} di {2})...</value>
+    <comment>{0} = cognome e nome; {1} = posizione; {2} = totale</comment>
+  </data>
+  <data name="ImportJobCompletato" xml:space="preserve">
+    <value>Importazione completata: {0} dipendenti inseriti.</value>
+    <comment>{0} = inseriti</comment>
+  </data>
+  <data name="ImportJobCompletatoConErrori" xml:space="preserve">
+    <value>Importazione terminata: {0} dipendenti inseriti su {1}. Non inseriti: {2}</value>
+    <comment>{0} = inseriti; {1} = totale; {2} = elenco degli errori</comment>
+  </data>
+  <data name="ImportJobFallito" xml:space="preserve">
+    <value>Importazione interrotta per un errore: {0} dipendenti inseriti su {1}.</value>
+    <comment>{0} = inseriti; {1} = totale</comment>
+  </data>
+  <data name="ImportUserNameGiaUsato" xml:space="preserve">
+    <value>username {0} già usato</value>
+    <comment>{0} = username</comment>
+  </data>
+  <data name="ImportMailGiaUsata" xml:space="preserve">
+    <value>email {0} già usata</value>
+    <comment>{0} = email</comment>
+  </data>
+  <data name="ImportUtenteNonCreato" xml:space="preserve">
+    <value>utente non creato</value>
+  </data>
+  <data name="ImportDatiPresenzeNonSalvati" xml:space="preserve">
+    <value>utente creato, ma dati delle presenze non salvati ({0}): completali dalla scheda del dipendente</value>
+    <comment>{0} = motivo</comment>
+  </data>
+  <data name="ImportDatiDipendenteNonDisponibili" xml:space="preserve">
+    <value>dati del dipendente non disponibili</value>
+  </data>
 </root>
