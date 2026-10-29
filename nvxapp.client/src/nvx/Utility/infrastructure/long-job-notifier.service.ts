@@ -80,6 +80,8 @@ export class LongJobProgressUpdate {
   public message: Message | null = null;
   public isFinished: boolean = false;
   public downloadUrl: string | null = null;
+  // nome del file scaricato, con estensione (il tipo lo decide il job); se manca si usa l'ultimo pezzo di downloadUrl
+  public fileName: string | null = null;
 }
 
 

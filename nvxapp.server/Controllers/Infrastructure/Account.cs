@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.StaticFiles;
+using System.Security.Claims;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Account;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
@@ -298,16 +300,33 @@ namespace nvxapp.server.Controllers.Infrastructure
         [Route("Download/{fileName}")]
         public IActionResult Download(string fileName)
         {
+            // solo nomi semplici con estensione ammessa: niente cartelle, niente file di registrazione (.meta)
+            if (!NVXSystem.NomeFileJobValido(fileName))
+                return NotFound(new { message = InfrastructureMessages.Get("FileNotFound") });
+
             var filePath = Path.Combine(NVXSystem.ExportFolder, fileName);
             if (!System.IO.File.Exists(filePath))
                 return NotFound(new { message = InfrastructureMessages.Get("FileNotFound") });
 
-            var contentType = fileName.EndsWith(".csv", StringComparison.OrdinalIgnoreCase)
-                ? "text/csv"
-                : "text/plain";
+            // file registrato (NVXSystem.SalvaFileJob/RegistraFileJob): lo scarica solo chi ha lanciato il job,
+            // cioe' l'utente del login anche se sta impersonando qualcuno (come le notifiche del job)
+            var info = NVXSystem.InfoFileJob(fileName);
+            if (info != null)
+            {
+                var userId = User.FindFirst("useridfirstconnection")?.Value;
+                if (string.IsNullOrEmpty(userId))
+                    userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(userId) || userId != info.Owner)
+                    return NotFound(new { message = InfrastructureMessages.Get("FileNotFound") });
+            }
 
-            return PhysicalFile(filePath, contentType, fileName);
+            if (!_contentTypeProvider.TryGetContentType(fileName, out var contentType))
+                contentType = "application/octet-stream";
+
+            return PhysicalFile(filePath, contentType, info?.FileName ?? fileName);
         }
+
+        private static readonly FileExtensionContentTypeProvider _contentTypeProvider = new();
     }
 
 

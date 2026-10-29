@@ -62,6 +62,9 @@ namespace nvxapp.server.service.ClientServer_Service.infrastructure.Notification
         public bool IsFinished { get; set; }
 
         public string? DownloadUrl { get; set; }
+
+        // nome da dare al file scaricato (con estensione): il tipo lo decide il job, es. l'AI (NVXSystem.SalvaFileJob)
+        public string? FileName { get; set; }
     }
 
 
