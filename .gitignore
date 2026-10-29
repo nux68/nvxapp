@@ -34,3 +34,4 @@ nvxapp.server/brevo.key
 # certificato radice di Caddy esportato per installarlo sui dispositivi (sezione 10 di ANALISI_DOCKER.md)
 *.crt
 /nvxapp.server/Note/Cose da fare.txt
+/nvxapp.server/Note/Cose da fase.txt
