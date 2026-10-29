@@ -24,6 +24,8 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
             _intentDefinition = new IntentDefinition
             {
                 Name         = "OpenTimeSheetPowerAdmin",
+                Category     = AttendanceTrackingMessages.Get("ChatCategoryTimeSheet"),
+                CategoryOrder = 600,
                 DisplayName  = AttendanceTrackingMessages.Get("ChatTimeSheetPowerAdminDisplayName"),
                 Usable4Role = new List<string> { "CompanyPowerAdmin" },
                 Description  = AttendanceTrackingMessages.Get("ChatTimeSheetPowerAdminDescription"),

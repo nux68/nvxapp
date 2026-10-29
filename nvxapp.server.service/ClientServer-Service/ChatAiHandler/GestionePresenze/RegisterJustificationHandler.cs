@@ -40,6 +40,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
             _intentDefinition = new IntentDefinition
             {
                 Name        = "RegisterJustification",
+                Category    = AttendanceTrackingMessages.Get("ChatCategoryJustifications"),
+                CategoryOrder = 200,
                 DisplayName = AttendanceTrackingMessages.Get("ChatRegisterJustificationDisplayName"),
                 Usable4Role = new List<string> { "CompanyPowerAdmin" },
                 Description = AttendanceTrackingMessages.Get("ChatRegisterJustificationDescription"),

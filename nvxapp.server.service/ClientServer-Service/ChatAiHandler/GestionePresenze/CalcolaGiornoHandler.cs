@@ -35,6 +35,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
             _intentDefinition = new IntentDefinition
             {
                 Name        = "CalcolaGiorno",
+                Category    = AttendanceTrackingMessages.Get("ChatCategoryTimeSheet"),
+                CategoryOrder = 600,
                 DisplayName = AttendanceTrackingMessages.Get("ChatCalcolaGiornoDisplayName"),
                 Usable4Role = new List<string> { "CompanyPowerAdmin" },
                 Description = AttendanceTrackingMessages.Get("ChatCalcolaGiornoDescription"),

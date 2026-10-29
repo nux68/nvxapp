@@ -29,6 +29,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
             _intentDefinition = new IntentDefinition
             {
                 Name = "ClockNow",
+                Category = AttendanceTrackingMessages.Get("ChatCategoryClockings"),
+                CategoryOrder = 100,
                 DisplayName = AttendanceTrackingMessages.Get("ChatClockNowDisplayName"),
                 Usable4Role = new List<string> { RuoloUser, RuoloAdmin, RuoloHR },
                 Description = AttendanceTrackingMessages.Get("ChatClockNowDescription"),
@@ -78,6 +80,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
             _intentDefinition = new IntentDefinition
             {
                 Name = "RequestLeave",
+                Category = AttendanceTrackingMessages.Get("ChatCategoryLeave"),
+                CategoryOrder = 300,
                 DisplayName = AttendanceTrackingMessages.Get("ChatRequestLeaveDisplayName"),
                 Usable4Role = new List<string> { RuoloUser, RuoloAdmin, RuoloHR },
                 Description = AttendanceTrackingMessages.Get("ChatRequestLeaveDescription"),
@@ -156,6 +160,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
             _intentDefinition = new IntentDefinition
             {
                 Name = "RequestClocking",
+                Category = AttendanceTrackingMessages.Get("ChatCategoryClockings"),
+                CategoryOrder = 100,
                 DisplayName = AttendanceTrackingMessages.Get("ChatRequestClockingDisplayName"),
                 Usable4Role = new List<string> { RuoloUser, RuoloAdmin, RuoloHR },
                 Description = AttendanceTrackingMessages.Get("ChatRequestClockingDescription"),

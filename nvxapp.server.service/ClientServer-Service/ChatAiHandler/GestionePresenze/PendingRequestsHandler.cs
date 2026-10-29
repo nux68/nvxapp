@@ -29,6 +29,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
             _intentDefinition = new IntentDefinition
             {
                 Name = "PendingRequests",
+                Category = AttendanceTrackingMessages.Get("ChatCategoryRequests"),
+                CategoryOrder = 400,
                 DisplayName = AttendanceTrackingMessages.Get("ChatPendingRequestsDisplayName"),
                 Usable4Role = new List<string> { RuoloHR },
                 Description = AttendanceTrackingMessages.Get("ChatPendingRequestsDescription"),

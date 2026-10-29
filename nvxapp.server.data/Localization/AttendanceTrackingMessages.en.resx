@@ -1221,4 +1221,28 @@
   <data name="ImportDatiDipendenteNonDisponibili" xml:space="preserve">
     <value>employee data not available</value>
   </data>
+  <data name="ChatCategoryClockings" xml:space="preserve">
+    <value>Clockings</value>
+    <comment>titolo della sezione nell'elenco dei comandi della chat (help)</comment>
+  </data>
+  <data name="ChatCategoryJustifications" xml:space="preserve">
+    <value>Absences and pay items</value>
+    <comment>titolo della sezione nell'elenco dei comandi della chat (help)</comment>
+  </data>
+  <data name="ChatCategoryLeave" xml:space="preserve">
+    <value>Holidays and leave</value>
+    <comment>titolo della sezione nell'elenco dei comandi della chat (help)</comment>
+  </data>
+  <data name="ChatCategoryRequests" xml:space="preserve">
+    <value>Requests</value>
+    <comment>titolo della sezione nell'elenco dei comandi della chat (help)</comment>
+  </data>
+  <data name="ChatCategoryAttendance" xml:space="preserve">
+    <value>Attendance and hours</value>
+    <comment>titolo della sezione nell'elenco dei comandi della chat (help)</comment>
+  </data>
+  <data name="ChatCategoryTimeSheet" xml:space="preserve">
+    <value>Time sheet and reports</value>
+    <comment>titolo della sezione nell'elenco dei comandi della chat (help)</comment>
+  </data>
 </root>

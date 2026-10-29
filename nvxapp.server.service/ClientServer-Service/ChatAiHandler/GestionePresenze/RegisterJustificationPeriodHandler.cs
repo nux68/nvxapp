@@ -29,6 +29,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
             _intentDefinition = new IntentDefinition
             {
                 Name = "RegisterJustificationPeriod",
+                Category = AttendanceTrackingMessages.Get("ChatCategoryJustifications"),
+                CategoryOrder = 200,
                 DisplayName = AttendanceTrackingMessages.Get("ChatJustificationPeriodDisplayName"),
                 Usable4Role = new List<string> { RuoloHR },
                 Description = AttendanceTrackingMessages.Get("ChatJustificationPeriodDescription"),

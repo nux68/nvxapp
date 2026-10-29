@@ -37,6 +37,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
             _intentDefinition = new IntentDefinition
             {
                 Name = "WhoIsPresent",
+                Category = AttendanceTrackingMessages.Get("ChatCategoryAttendance"),
+                CategoryOrder = 500,
                 DisplayName = AttendanceTrackingMessages.Get("ChatWhoIsPresentDisplayName"),
                 Usable4Role = new List<string> { RuoloHR },
                 Description = AttendanceTrackingMessages.Get("ChatWhoIsPresentDescription"),

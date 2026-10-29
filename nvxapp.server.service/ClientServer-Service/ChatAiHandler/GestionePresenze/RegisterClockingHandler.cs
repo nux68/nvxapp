@@ -41,6 +41,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
             _intentDefinition = new IntentDefinition
             {
                 Name = "RegisterClocking",
+                Category = AttendanceTrackingMessages.Get("ChatCategoryClockings"),
+                CategoryOrder = 100,
                 Usable4Role = new List<string> { "CompanyPowerAdmin" },
                 DisplayName = AttendanceTrackingMessages.Get("ChatRegisterClockingDisplayName"),
                 Description = AttendanceTrackingMessages.Get("ChatRegisterClockingDescription"),

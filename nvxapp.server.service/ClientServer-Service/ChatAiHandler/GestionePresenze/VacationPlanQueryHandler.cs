@@ -32,6 +32,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
             _intentDefinition = new IntentDefinition
             {
                 Name = "VacationPlanQuery",
+                Category = AttendanceTrackingMessages.Get("ChatCategoryLeave"),
+                CategoryOrder = 300,
                 DisplayName = AttendanceTrackingMessages.Get("ChatVacationPlanDisplayName"),
                 Usable4Role = new List<string> { RuoloHR },
                 Description = AttendanceTrackingMessages.Get("ChatVacationPlanDescription"),

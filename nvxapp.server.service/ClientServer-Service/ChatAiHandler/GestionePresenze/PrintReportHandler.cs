@@ -40,6 +40,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
             _intentDefinition = new IntentDefinition
             {
                 Name = "PrintReport",
+                Category = AttendanceTrackingMessages.Get("ChatCategoryTimeSheet"),
+                CategoryOrder = 600,
                 DisplayName = AttendanceTrackingMessages.Get("ChatPrintReportDisplayName"),
                 Usable4Role = new List<string> { RuoloHR, RuoloAdmin },
                 Description = AttendanceTrackingMessages.Get("ChatPrintReportDescription"),
