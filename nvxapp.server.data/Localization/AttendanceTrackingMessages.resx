@@ -1324,4 +1324,28 @@
   <data name="ChatJustificationAmountMissing" xml:space="preserve">
     <value>Il giustificativo '{0}' è a importo: indica l'importo in euro.</value>
   </data>
+  <data name="ExportDocNonTrovato" xml:space="preserve">
+    <value>Documento non trovato.</value>
+  </data>
+  <data name="ExportDocModelloNonSalvato" xml:space="preserve">
+    <value>Salvare prima il modello di export, poi caricare la documentazione.</value>
+  </data>
+  <data name="ExportDocTipoNonAmmesso" xml:space="preserve">
+    <value>Tipo di file non ammesso. Sono ammessi: {0}.</value>
+  </data>
+  <data name="ExportDocTroppi" xml:space="preserve">
+    <value>Al massimo {0} documenti per modello di export.</value>
+  </data>
+  <data name="ExportDocSenzaTesto" xml:space="preserve">
+    <value>Dal file "{0}" non si legge nessun testo (es. PDF scansionato): l'AI non potrebbe usarlo.</value>
+  </data>
+  <data name="ExportCausaliCodiceIncoerente" xml:space="preserve">
+    <value>Le righe con il codice "{0}" si sommano: devono avere la stessa elaborazione e la stessa unità.</value>
+  </data>
+  <data name="ExportCausaliImportoSoloImporto" xml:space="preserve">
+    <value>L'unità Importo è solo per le causali a importo: "{0}" è a ore.</value>
+  </data>
+  <data name="ExportCausaliCausaleImporto" xml:space="preserve">
+    <value>La causale "{0}" è a importo: l'unità deve essere Importo.</value>
+  </data>
 </root>

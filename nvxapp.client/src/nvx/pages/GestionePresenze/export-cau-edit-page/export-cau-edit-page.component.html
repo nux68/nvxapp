@@ -17,6 +17,9 @@
             <ion-segment-button value="{{SEGMENT_sez2}}" content-id="SEGMENT_sez2">
               <ion-label>{{ 'attendance.pages.exportCauEdit.causali' | transloco }}</ion-label>
             </ion-segment-button>
+            <ion-segment-button value="{{SEGMENT_sez3}}" content-id="SEGMENT_sez3">
+              <ion-label>{{ 'attendance.pages.exportCauEdit.documentazione' | transloco }}</ion-label>
+            </ion-segment-button>
           </ion-segment>
           <div [hidden]="currSection!==SEGMENT_sez1">
             <br />
@@ -52,17 +55,10 @@
               </ion-note>
             }
             <ion-item>
-              <ion-label position="floating">{{ 'attendance.pages.exportCauEdit.tipoFile' | transloco }}</ion-label>
-              <ion-select formControlName="tipoFile" interface="popover">
-                <ion-select-option [value]="par_Export_TipoFile.CSV">CSV</ion-select-option>
-                <ion-select-option [value]="par_Export_TipoFile.TXT">TXT</ion-select-option>
-              </ion-select>
+              <ion-label position="floating">{{ 'attendance.pages.exportCauEdit.noteAI' | transloco }}</ion-label>
+              <ion-textarea formControlName="noteAI" [autoGrow]="true" maxlength="1000"></ion-textarea>
             </ion-item>
-            @if (_editForm.get('tipoFile')?.hasError('required') && _editForm.get('tipoFile')?.touched) {
-              <ion-note color="danger">
-                {{ 'attendance.pages.exportCauEdit.tipoFileObbligatorio' | transloco }}
-              </ion-note>
-            }
+            <ion-note>{{ 'attendance.pages.exportCauEdit.noteAINota' | transloco }}</ion-note>
           </div>
           <div [hidden]="currSection!==SEGMENT_sez2">
             <br />
@@ -111,6 +107,7 @@
                     <ion-icon [name]="false ? 'server-outline' : 'server-outline'"></ion-icon>
                     <ion-label [ngStyle]="{ color: false ? 'var(--ion-color-primary)' : '' }">
                       {{ item.idCausale | parCausaliToLongText}}
+                      @if (item.verso === 1) { <strong>({{ 'attendance.components.editParExportCauCausaliComponent.versoSottrazione' | transloco }})</strong> }
                     </ion-label>
                   </ion-col>
                   <ion-col size="2" class="ion-hide-sm-down">
@@ -132,6 +129,66 @@
             </ion-grid>
           }
         </div>
+          <div [hidden]="currSection!==SEGMENT_sez3">
+            <br />
+            <ion-item class="nvx-item-4-title">
+              <ion-label>{{ 'attendance.pages.exportCauEdit.documentazione' | transloco }}</ion-label>
+            </ion-item>
+            <ion-note>{{ 'attendance.pages.exportCauEdit.documentazioneNota' | transloco }}</ion-note>
+            @if (!idModello) {
+              <p><ion-note color="warning">{{ 'attendance.pages.exportCauEdit.docSalvarePrima' | transloco }}</ion-note></p>
+            } @else {
+              <p>
+                <input #fileDoc type="file" hidden multiple [accept]="accept" (change)="carica($event)" />
+                <ion-button size="small" fill="outline" shape="round" [disabled]="caricamentoDoc" (click)="fileDoc.click()">
+                  <ion-icon name="cloud-upload-outline"></ion-icon>&nbsp;{{ 'attendance.pages.exportCauEdit.docCarica' | transloco }}
+                </ion-button>
+              </p>
+              @if (erroreDoc) {
+                <p><ion-note color="danger">{{ erroreDoc }}</ion-note></p>
+              }
+              @if (documenti.length === 0) {
+                <p><ion-note>{{ 'attendance.pages.exportCauEdit.docNessuno' | transloco }}</ion-note></p>
+              }
+              <ion-grid>
+                @for (doc of documenti; track doc.id; let i = $index) {
+                  <ion-row class="nvx-ion-row-4table nvx-row-hover ion-align-items-center"
+                    [class.nvx-row-odd]="i % 2 !== 0" [class.nvx-row-even]="i % 2 === 0">
+                    <ion-col size="12" size-md="6">
+                      <ion-icon name="document-text-outline"></ion-icon>
+                      <ion-label>
+                        {{ doc.nomeFile }}
+                        <ion-note>&nbsp;{{ dimensioneTesto(doc.dimensione) }} · {{ 'attendance.pages.exportCauEdit.docCaratteriLetti' | transloco: { n: doc.lunghezzaTesto } }}</ion-note>
+                      </ion-label>
+                    </ion-col>
+                    <ion-col size="12" size-md="6" class="ion-text-end">
+                      <ion-button size="small" fill="outline" shape="round" (click)="vedi(doc)">
+                        <ion-icon name="eye-outline"></ion-icon>&nbsp;{{ 'attendance.pages.exportCauEdit.docVedi' | transloco }}
+                      </ion-button>
+                      <ion-button size="small" fill="outline" shape="round" (click)="vediTesto(doc)">
+                        <ion-icon name="reader-outline"></ion-icon>&nbsp;{{ 'attendance.pages.exportCauEdit.docTestoLetto' | transloco }}
+                      </ion-button>
+                      <ion-button size="small" fill="outline" shape="round" (click)="scarica(doc)">
+                        <ion-icon name="download-outline"></ion-icon>
+                      </ion-button>
+                      <ion-button size="small" fill="outline" shape="round" color="danger" (click)="eliminaDoc(doc)">
+                        <ion-icon name="trash-outline"></ion-icon>
+                      </ion-button>
+                    </ion-col>
+                  </ion-row>
+                }
+              </ion-grid>
+              @if (testoAperto) {
+                <ion-item class="nvx-item-4-title">
+                  <ion-label>{{ 'attendance.pages.exportCauEdit.docTestoDi' | transloco: { nome: testoAperto.nomeFile } }}</ion-label>
+                  <ion-button slot="end" fill="clear" size="small" (click)="testoAperto = null">
+                    <ion-icon name="close-outline"></ion-icon>
+                  </ion-button>
+                </ion-item>
+                <pre class="nvx-doc-testo">{{ testoAperto.testo }}</pre>
+              }
+            }
+          </div>
       </form>
     </ion-card-content>
   }

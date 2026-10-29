@@ -257,8 +257,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
             {
                 IdAz_Anagrafica = IdAz_Anagrafica,
                 Codice = "0001",
-                Descrizione = "ExportProva",
-                TipoFile = Par_Export_TipoFile.CSV
+                Descrizione = "ExportProva"
             });
 
             // tutte le causali nel tracciato di prova, con il loro codice (senza causali l'export non produce file);

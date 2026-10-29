@@ -11,6 +11,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Export
         public string? Codice { get; set; }
         public Par_Export_TipoElaborazione TipoElaborazione { get; set; }
         public Par_Export_TipoUnita TipoUnita { get; set; }     
+        public Par_Export_Verso Verso { get; set; }
     }
 
     public class Par_ExportCau_Causali_GetAll_InModel

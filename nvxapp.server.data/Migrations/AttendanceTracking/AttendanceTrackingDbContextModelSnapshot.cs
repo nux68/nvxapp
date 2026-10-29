@@ -1563,8 +1563,16 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int>("TipoFile")
-                        .HasColumnType("integer");
+                    b.Property<string>("NoteAI")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<string>("RicettaAI")
+                        .HasColumnType("text");
+
+                    b.Property<string>("RicettaHash")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
 
                     b.HasKey("Id");
 
@@ -1608,6 +1616,9 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     b.Property<int>("TipoUnita")
                         .HasColumnType("integer");
 
+                    b.Property<int>("Verso")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.HasIndex("IdCausale");
@@ -1615,6 +1626,61 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     b.HasIndex("IdPar_ExportCau");
 
                     b.ToTable("Par_ExportCau_Causali");
+                });
+
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.GestionePresenze.Par_ExportCau_Docs", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<byte[]>("Contenuto")
+                        .IsRequired()
+                        .HasColumnType("bytea");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Descrizione")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<int>("Dimensione")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("IdPar_ExportCau")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("NomeFile")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<int>("Ordine")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Testo")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdPar_ExportCau");
+
+                    b.ToTable("Par_ExportCau_Docs");
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.GestionePresenze.Par_Festivita", b =>
@@ -2783,6 +2849,17 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     b.Navigation("Par_ExportCauNavigation");
                 });
 
+            modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.GestionePresenze.Par_ExportCau_Docs", b =>
+                {
+                    b.HasOne("nvxapp.server.data.Entities.Tenant.GestionePresenze.Par_ExportCau", "Par_ExportCauNavigation")
+                        .WithMany("Par_ExportCau_Docs")
+                        .HasForeignKey("IdPar_ExportCau")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Par_ExportCauNavigation");
+                });
+
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.GestionePresenze.Par_Festivita", b =>
                 {
                     b.HasOne("nvxapp.server.data.Entities.Tenant.Az_Anagrafica", "Az_AnagraficaNavigation")
@@ -3149,6 +3226,8 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.GestionePresenze.Par_ExportCau", b =>
                 {
                     b.Navigation("Par_ExportCau_Causali");
+
+                    b.Navigation("Par_ExportCau_Docs");
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.GestionePresenze.Par_Orario", b =>

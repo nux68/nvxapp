@@ -433,17 +433,31 @@
         "statoWarning": "Warning"
       },
       "exportCauEdit": {
+        "noteAI": "Instructions for the AI",
+        "noteAINota": "Optional: e.g. \"semicolon separator\", \"ANSI encoding\", \"one row per employee\". Together with the documentation they help the AI prepare the file format.",
+        "documentazione": "Documentation",
+        "documentazioneNota": "Payroll program record layout, manual or sample file: the AI reads them to understand the file format to produce. Documents are saved immediately, regardless of the save button.",
+        "docSalvarePrima": "Save the export model first, then upload the documentation.",
+        "docCarica": "Upload documents",
+        "docNessuno": "No documents: the export will produce the JSON data file.",
+        "docCaratteriLetti": "{{n}} characters read",
+        "docVedi": "View",
+        "docTestoLetto": "Text read",
+        "docTestoDi": "Text read from {{nome}} (what the AI receives)",
+        "docConfermaEliminazione": "Delete the document \"{{nome}}\"?",
+        "docTipoNonAmmesso": "\"{{nome}}\": file type not allowed. Allowed: {{tipi}}.",
+        "docTroppoGrande": "\"{{nome}}\": the file exceeds {{mb}} MB.",
+        "docTroppi": "At most {{max}} documents per model.",
+        "docErroreCaricamento": "\"{{nome}}\": upload failed.",
         "title": "Export templates",
         "generale": "General",
         "causali": "Pay codes",
         "descrizione": "Description",
         "codice": "Code",
-        "tipoFile": "File type",
         "descrizioneObbligatoria": "Description is required.",
         "descrizioneMaxLength": "Description cannot exceed 20 characters.",
         "codiceObbligatorio": "Code is required.",
         "codiceMaxLength": "Code cannot exceed 5 characters.",
-        "tipoFileObbligatorio": "File type is required.",
         "confermaCancellazione": "Do you confirm deletion of the export pay code?"
       },
       "notaSpesaRequestUser": {
@@ -702,8 +716,7 @@
         "title": "Export templates",
         "confirmDelete": "Confirm deletion of the table",
         "columnCode": "Code",
-        "columnDescription": "Description",
-        "columnFileType": "File type"
+        "columnDescription": "Description"
       },
       "profiloOrarioList": {
         "title": "Work schedule profiles",
@@ -909,6 +922,10 @@
         "numGiornoPartenza": "Cycle start day no. ( {{giorno}} / {{totale}} )"
       },
       "editParExportCauCausaliComponent": {
+        "verso": "Sign",
+        "versoSommatoria": "Add",
+        "versoSottrazione": "Subtract",
+        "versoNota": "Rows with the same payroll code are added together: with \"Subtract\" this pay cause's value is deducted.",
         "title": "Export pay code",
         "codice": "Code",
         "codiceObbligatorio": "code is required.",

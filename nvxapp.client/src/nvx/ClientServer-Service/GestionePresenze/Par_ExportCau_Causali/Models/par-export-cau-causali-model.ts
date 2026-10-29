@@ -7,6 +7,13 @@ export class Par_ExportCau_CausaliModel {
   codice: string;
   tipoElaborazione: Par_Export_TipoElaborazione;
   tipoUnita: Par_Export_TipoUnita;
+  /** segno con cui il valore entra nel codice di output */
+  verso: Par_Export_Verso = Par_Export_Verso.Sommatoria;
+}
+
+export enum Par_Export_Verso {
+  Sommatoria  = 0,
+  Sottrazione = 1
 }
 
 export enum Par_Export_TipoElaborazione {

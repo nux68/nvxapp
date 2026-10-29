@@ -72,6 +72,7 @@ namespace nvxapp.server.data.Infrastructure
 
         public virtual DbSet<Par_ExportCau> Par_ExportCau { get; set; }
         public virtual DbSet<Par_ExportCau_Causali> Par_ExportCau_Causali { get; set; }
+        public virtual DbSet<Par_ExportCau_Docs> Par_ExportCau_Docs { get; set; }
 
         public virtual DbSet<Dip_Rapporto_Giustificativi_Maturazione> Dip_Rapporto_Giustificativi_Maturazione { get; set; }
         public virtual DbSet<Dip_Contatori_Riporto> Dip_Contatori_Riporto { get; set; }
@@ -443,6 +444,13 @@ namespace nvxapp.server.data.Infrastructure
                 .HasForeignKey(key_esterna => key_esterna.IdAz_Anagrafica)
                 .OnDelete(DeleteBehavior.Cascade);
 
+
+            /* Par_ExportCau_Docs */
+            modelBuilder.Entity<Par_ExportCau_Docs>()
+                .HasOne(t_padre => t_padre.Par_ExportCauNavigation)
+                .WithMany(t_figlio => t_figlio.Par_ExportCau_Docs)
+                .HasForeignKey(key_esterna => key_esterna.IdPar_ExportCau)
+                .OnDelete(DeleteBehavior.Cascade);
 
             /* Par_ExportCau_Causali */
             modelBuilder.Entity<Par_ExportCau_Causali>()

@@ -6,12 +6,8 @@ export class Par_ExportCauModel {
   idAz_Anagrafica: number;
   codice: string;
   descrizione: string;
-  tipoFile: Par_Export_TipoFile;
-}
-
-export enum Par_Export_TipoFile {
-  CSV = 0,
-  TXT = 1
+  /** indicazioni libere per l'AI (es. "separatore ;", "codifica ANSI") */
+  noteAI: string | null = null;
 }
 
 export class Par_ExportCau_GetAll_InModel { }

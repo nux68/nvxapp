@@ -26,3 +26,15 @@ ion-menu-button {
 #container a {
   text-decoration: none;
 }
+
+// testo letto da un documento della documentazione (quello che riceve l'AI)
+.nvx-doc-testo {
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 50vh;
+  overflow: auto;
+  padding: 8px 12px;
+  font-size: 0.8rem;
+  border: 1px solid var(--ion-color-medium);
+  border-radius: 6px;
+}

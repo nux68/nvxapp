@@ -25,7 +25,7 @@
           }
           <ion-item>
             <ion-label position="stacked">{{ 'attendance.components.editParExportCauCausaliComponent.causale' | transloco }}</ion-label>
-            <ion-select formControlName="idCausale" placeholder="{{ 'attendance.components.editParExportCauCausaliComponent.selezionaCausale' | transloco }}">
+            <ion-select formControlName="idCausale" (ionChange)="onCausaleChange()" placeholder="{{ 'attendance.components.editParExportCauCausaliComponent.selezionaCausale' | transloco }}">
               @for (causale of _par_CausaliList; track causale) {
                 <ion-select-option [value]="causale.id">
                   {{ causale.descrizione }}
@@ -53,9 +53,12 @@
           <ion-item>
             <ion-label position="floating">{{ 'attendance.components.editParExportCauCausaliComponent.unita' | transloco }}</ion-label>
             <ion-select formControlName="tipoUnita" interface="popover">
-              <ion-select-option [value]="par_Export_TipoUnita.Ore">{{ 'attendance.components.editParExportCauCausaliComponent.ore' | transloco }}</ion-select-option>
-              <ion-select-option [value]="par_Export_TipoUnita.Giorni">{{ 'attendance.components.editParExportCauCausaliComponent.giorni' | transloco }}</ion-select-option>
-              <ion-select-option [value]="par_Export_TipoUnita.Importo">{{ 'attendance.components.editParExportCauCausaliComponent.importo' | transloco }}</ion-select-option>
+              @if (causaleAImporto) {
+                <ion-select-option [value]="par_Export_TipoUnita.Importo">{{ 'attendance.components.editParExportCauCausaliComponent.importo' | transloco }}</ion-select-option>
+              } @else {
+                <ion-select-option [value]="par_Export_TipoUnita.Ore">{{ 'attendance.components.editParExportCauCausaliComponent.ore' | transloco }}</ion-select-option>
+                <ion-select-option [value]="par_Export_TipoUnita.Giorni">{{ 'attendance.components.editParExportCauCausaliComponent.giorni' | transloco }}</ion-select-option>
+              }
             </ion-select>
           </ion-item>
           @if (_editForm.get('tipoUnita')?.hasError('required') && _editForm.get('tipoUnita')?.touched) {
@@ -63,6 +66,14 @@
               {{ 'attendance.components.editParExportCauCausaliComponent.tipoUnitaObbligatorio' | transloco }}
             </ion-note>
           }
+          <ion-item>
+            <ion-label position="floating">{{ 'attendance.components.editParExportCauCausaliComponent.verso' | transloco }}</ion-label>
+            <ion-select formControlName="verso" interface="popover">
+              <ion-select-option [value]="par_Export_Verso.Sommatoria">{{ 'attendance.components.editParExportCauCausaliComponent.versoSommatoria' | transloco }}</ion-select-option>
+              <ion-select-option [value]="par_Export_Verso.Sottrazione">{{ 'attendance.components.editParExportCauCausaliComponent.versoSottrazione' | transloco }}</ion-select-option>
+            </ion-select>
+          </ion-item>
+          <ion-note>{{ 'attendance.components.editParExportCauCausaliComponent.versoNota' | transloco }}</ion-note>
         </ion-card-content>
       </ion-card>
     </form>

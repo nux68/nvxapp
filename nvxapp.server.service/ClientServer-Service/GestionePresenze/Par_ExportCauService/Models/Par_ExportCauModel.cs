@@ -10,7 +10,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Export
         public int IdAz_Anagrafica { get; set; }
         public string Codice { get; set; } = string.Empty;
         public string Descrizione { get; set; } = string.Empty;
-        public Par_Export_TipoFile TipoFile { get; set; }
+        // indicazioni libere per l'AI; la ricetta del formato non viaggia con il modello (la gestisce l'export)
+        public string? NoteAI { get; set; }
     }
 
     public class Par_ExportCau_GetAll_InModel { }

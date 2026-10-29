@@ -433,17 +433,31 @@
         "statoWarning": "Warning"
       },
       "exportCauEdit": {
+        "noteAI": "Indicazioni per l'AI",
+        "noteAINota": "Facoltative: es. \"separatore punto e virgola\", \"codifica ANSI\", \"una riga per dipendente\". Insieme alla documentazione servono all'AI per preparare il formato del file.",
+        "documentazione": "Documentazione",
+        "documentazioneNota": "Tracciato del programma paghe, manuale o file di esempio: l'AI li legge per capire il formato del file da produrre. I documenti si salvano subito, indipendentemente dal pulsante di salvataggio.",
+        "docSalvarePrima": "Salvare prima il modello di export, poi caricare la documentazione.",
+        "docCarica": "Carica documenti",
+        "docNessuno": "Nessun documento: l'export produrrà il file JSON dei dati.",
+        "docCaratteriLetti": "{{n}} caratteri letti",
+        "docVedi": "Vedi",
+        "docTestoLetto": "Testo letto",
+        "docTestoDi": "Testo letto da {{nome}} (quello che riceve l'AI)",
+        "docConfermaEliminazione": "Eliminare il documento \"{{nome}}\"?",
+        "docTipoNonAmmesso": "\"{{nome}}\": tipo di file non ammesso. Ammessi: {{tipi}}.",
+        "docTroppoGrande": "\"{{nome}}\": il file supera {{mb}} MB.",
+        "docTroppi": "Al massimo {{max}} documenti per modello.",
+        "docErroreCaricamento": "\"{{nome}}\": caricamento non riuscito.",
         "title": "Modelli export",
         "generale": "Generale",
         "causali": "Causali",
         "descrizione": "Descrizione",
         "codice": "Codice",
-        "tipoFile": "Tipo file",
         "descrizioneObbligatoria": "Descrizione è obbligatorio.",
         "descrizioneMaxLength": "Descrizione non può superare i 20 caratteri.",
         "codiceObbligatorio": "codice è obbligatorio.",
         "codiceMaxLength": "codice non può superare i 5 caratteri.",
-        "tipoFileObbligatorio": "Il tipo file è obbligatorio.",
         "confermaCancellazione": "Confermi la cancellazione della causale in export"
       },
       "notaSpesaRequestUser": {
@@ -702,8 +716,7 @@
         "title": "Modelli export",
         "confirmDelete": "Confermi la cancellazione della tabella",
         "columnCode": "Codice",
-        "columnDescription": "Descrizione",
-        "columnFileType": "Tipo file"
+        "columnDescription": "Descrizione"
       },
       "profiloOrarioList": {
         "title": "Profili Orari",
@@ -909,6 +922,10 @@
         "numGiornoPartenza": "Num. Giorno partenza ciclo ( {{giorno}} / {{totale}} )"
       },
       "editParExportCauCausaliComponent": {
+        "verso": "Verso",
+        "versoSommatoria": "Somma",
+        "versoSottrazione": "Sottrai",
+        "versoNota": "Le righe con lo stesso codice paghe si sommano: con \"Sottrai\" il valore di questa causale viene tolto.",
         "title": "Causale export",
         "codice": "Codice",
         "codiceObbligatorio": "codice è obbligatorio.",

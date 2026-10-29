@@ -39,7 +39,6 @@ import { ParCausaliToShortTextPipe } from './pipe/GestionePresenze/par-causali-t
 import { EditDipGGCausaliDialogComponent } from './components/GestionePresenze/edit-dip-gg-causali-dialog/edit-dip-gg-causali-dialog.component';
 import { EditDipGGTimbraturaDialogComponent } from './components/GestionePresenze/edit-dip-gg-timbratura-dialog/edit-dip-gg-timbratura-dialog.component';
 import { EditDipGGGiustificativiDialogComponent } from './components/GestionePresenze/edit-dip-gg-giustificativi-dialog/edit-dip-gg-giustificativi-dialog.component';
-import { ParExportTipoFileToShortTextPipe } from './pipe/GestionePresenze/par-export-tipo-file-to-short-text.pipe';
 import { ImportoEuroPipe } from './pipe/GestionePresenze/importo-euro.pipe';
 import { EditParExportCauCausaliComponentComponent } from './components/GestionePresenze/edit-par-export-cau-causali-component/edit-par-export-cau-causali-component.component';
 import { DipSelectorModalComponent } from './components/GestionePresenze/dip-selector-modal/dip-selector-modal.component';
@@ -74,7 +73,7 @@ import { RimborsoKmDialogComponent } from './components/GestionePresenze/rimbors
     IdAspNetUsersToCognomePipe, IdAspNetUsersToNomePipe,
     ParAttivitaToLongTextPipe, ParCompetenzaToLongTextPipe, AzCommessaToLongTextPipe, AzClienteToLongTextPipe,
     AzSediRepartoToLongTextPipe, AzSediRepartoToShortTextPipe, ParProfiloOrarioToLongTextPipePipe,
-    ParOrarioToCodicePipe, ParOrarioToLongTextPipe, ParExportTipoFileToShortTextPipe, ImportoEuroPipe,
+    ParOrarioToCodicePipe, ParOrarioToLongTextPipe, ImportoEuroPipe,
     TipoContatoreToLongTextPipe
   ],
   exports: [
@@ -89,7 +88,7 @@ import { RimborsoKmDialogComponent } from './components/GestionePresenze/rimbors
     EditDipGGCausaliDialogComponent, EditDipGGTimbraturaDialogComponent, DipSelectorModalComponent,
     EditDipGGGiustificativiDialogComponent, CartellinoQuadraturaComponent,
     EditDipRapportoAutovettureDialogComponent, RimborsoKmDialogComponent,
-    ParOrarioToCodicePipe, ParOrarioToLongTextPipe, ParExportTipoFileToShortTextPipe, ImportoEuroPipe,
+    ParOrarioToCodicePipe, ParOrarioToLongTextPipe, ImportoEuroPipe,
     TipoContatoreToLongTextPipe
   ]
 })

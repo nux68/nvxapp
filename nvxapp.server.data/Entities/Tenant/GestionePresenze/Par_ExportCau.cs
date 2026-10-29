@@ -24,10 +24,18 @@ namespace nvxapp.server.data.Entities.Tenant.GestionePresenze
         public string? Descrizione { get; set; }
 
 
-        public Par_Export_TipoFile TipoFile { get; set; }
-        
+        // indicazioni libere dell'amministratore per l'AI (es. "separatore ;", "codifica ANSI")
+        [MaxLength(1000)]
+        public string? NoteAI { get; set; }
+
+        // ricetta del formato prodotta dall'AI dalla documentazione (JSON) e impronta di documenti e note da cui e' nata:
+        // si rigenera solo quando cambiano
+        public string? RicettaAI { get; set; }
+        [MaxLength(64)]
+        public string? RicettaHash { get; set; }
 
         public ICollection<Par_ExportCau_Causali>? Par_ExportCau_Causali { get; set; }
+        public ICollection<Par_ExportCau_Docs>? Par_ExportCau_Docs { get; set; }
 
         
 
@@ -35,11 +43,6 @@ namespace nvxapp.server.data.Entities.Tenant.GestionePresenze
     }
 
 
-    public enum Par_Export_TipoFile
-    {
-        CSV,
-        TXT
-    }
 
 
 

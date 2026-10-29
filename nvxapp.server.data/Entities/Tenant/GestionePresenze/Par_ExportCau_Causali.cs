@@ -29,6 +29,9 @@ namespace nvxapp.server.data.Entities.Tenant.GestionePresenze
         public Par_Export_TipoElaborazione TipoElaborazione { get; set; }
         public Par_Export_TipoUnita TipoUnita { get; set; }
 
+        // segno con cui il valore entra nel codice di output (piu' causali sullo stesso codice si sommano o si sottraggono)
+        public Par_Export_Verso Verso { get; set; } = Par_Export_Verso.Sommatoria;
+
     }
 
 

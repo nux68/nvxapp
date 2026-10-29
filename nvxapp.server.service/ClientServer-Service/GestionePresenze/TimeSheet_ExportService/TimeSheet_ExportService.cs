@@ -197,11 +197,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                             var exportsFolder = NVXSystem.ExportFolder;
                                             
 
-                                            string fileName;
-                                            if (exportCau.TipoFile == Par_Export_TipoFile.CSV)
-                                                fileName = await WriteCsvFile(rows, exportCau.Codice ?? "export", jobId.ToString(), exportsFolder);
-                                            else
-                                                fileName = await WriteTxtFile(rows, exportCau.Codice ?? "export", jobId.ToString(), exportsFolder);
+                                            // tipo file tolto dal modello: CSV finche' l'export non produce i metadati JSON / la ricetta AI (12.5)
+                                            string fileName = await WriteCsvFile(rows, exportCau.Codice ?? "export", jobId.ToString(), exportsFolder);
 
                                             downloadUrl = $"{NVXSystem.DownloadURL}{fileName}";
 
@@ -777,28 +774,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
             return fileName;
         }
 
-        private static async Task<string> WriteTxtFile(List<ExportRow> rows, string codice, string jobId, string folder)
-        {
-            const string separator = "\t";
-            var sb = new StringBuilder();
-
-            sb.AppendLine(string.Join(separator, "Cognome", "Nome", "Data", "CodiceCausale", "Valore"));
-
-            foreach (var row in rows)
-            {
-                sb.AppendLine(string.Join(separator,
-                    row.Cognome,
-                    row.Nome,
-                    row.Data,
-                    row.CodiceCausale,
-                    row.Valore.ToString(CultureInfo.InvariantCulture)));
-            }
-
-            var fileName = $"{codice}_{jobId}.txt";
-            var filePath = Path.Combine(folder, fileName);
-            await File.WriteAllTextAsync(filePath, sb.ToString(), Encoding.UTF8);
-            return fileName;
-        }
 
         #endregion
     }

@@ -68,8 +68,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Export
                         {
                             IdAz_Anagrafica = companyData.az_Anagrafica.Id,
                             Codice          = "0000",
-                            Descrizione     = "Nuovo Export",
-                            TipoFile        = Par_Export_TipoFile.CSV
+                            Descrizione     = "Nuovo Export"
                         };
                     }
                     retVal.Par_ExportCau = _mapper.Map<Par_ExportCauModel>(entity);
@@ -90,7 +89,18 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Export
             return await ExecuteAction(model, async () =>
             {
                 var retVal = new Par_ExportCau_Put_OutModel();
+                // righe del modello coerenti prima di salvare la testata (altrimenti si salverebbe a meta')
+                _par_ExportCau_CausaliService.ControllaCausali(model.Data.Par_ExportCau_Causali);
+
                 var entity = _mapper.Map<Par_ExportCau>(model.Data.Par_ExportCau);
+
+                // la ricetta del formato non arriva dal client: resta quella salvata
+                var esistente = _par_ExportCauRepository.FindAll(x => x.Id == entity.Id).Select(x => new { x.RicettaAI, x.RicettaHash }).FirstOrDefault();
+                if (esistente != null)
+                {
+                    entity.RicettaAI = esistente.RicettaAI;
+                    entity.RicettaHash = esistente.RicettaHash;
+                }
 
                 int.TryParse(this.CurrentCompany, out int idCompany);
                 var companyData = await _gestionePresenzeUserUtility.Get_AzAna_AzSedi_AzReparto_Az_Cfg(idCompany, true);

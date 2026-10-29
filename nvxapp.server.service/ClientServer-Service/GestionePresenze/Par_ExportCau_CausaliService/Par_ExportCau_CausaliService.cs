@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using nvxapp.server.Base;
 using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Entities.Tenant.GestionePresenze;
+using nvxapp.server.data.Localization;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
@@ -95,6 +96,33 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Export
                 return retVal;
             }, isSubProcess);
         }
+        /// <summary>
+        /// Coerenza delle righe del modello di export (errore all'utente se non va):
+        /// - le righe con lo stesso codice di output si sommano, quindi devono avere stessa elaborazione e stessa unita'
+        ///   (il Verso puo' essere diverso: e' il suo scopo);
+        /// - unita' Importo solo per le causali a importo, e le causali a importo solo con unita' Importo.
+        /// Si chiama anche prima di salvare la testata (Par_ExportCauPut), per non salvare a meta'.
+        /// </summary>
+        public void ControllaCausali(List<Par_ExportCau_CausaliModel> causali)
+        {
+            foreach (var gruppo in causali.GroupBy(x => (x.Codice ?? string.Empty).Trim(), StringComparer.OrdinalIgnoreCase))
+            {
+                if (gruppo.Select(x => x.TipoElaborazione).Distinct().Count() > 1 || gruppo.Select(x => x.TipoUnita).Distinct().Count() > 1)
+                    throw new UserMessageException(AttendanceTrackingMessages.Get("ExportCausaliCodiceIncoerente", gruppo.Key));
+            }
+
+            var ids = causali.Select(x => x.IdCausale).Distinct().ToList();
+            var tipi = _par_CausaliRepository.FindAll(x => ids.Contains(x.Id)).ToDictionary(x => x.Id, x => (x.Tipo, x.Codice));
+            foreach (var riga in causali)
+            {
+                if (!tipi.TryGetValue(riga.IdCausale, out var causale))
+                    continue;
+                var aImporto = causale.Tipo == nvxapp.server.data.Entities.Tenant.TipoValore.Importo;
+                if (aImporto != (riga.TipoUnita == Par_Export_TipoUnita.Importo))
+                    throw new UserMessageException(AttendanceTrackingMessages.Get(aImporto ? "ExportCausaliCausaleImporto" : "ExportCausaliImportoSoloImporto", causale.Codice));
+            }
+        }
+
         public virtual async Task<GenericResult<Par_ExportCau_Causali_PutAll_4Edit_OutModel>> Par_ExportCau_Causali_PutAll_4Edit(GenericRequest<Par_ExportCau_Causali_PutAll_4Edit_InModel> model, bool isSubProcess)
         {
             return await ExecuteAction(model, async () =>
@@ -108,6 +136,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Export
                     var par_ExportCau = _par_ExportCauRepository.FindById(model.Data.IdPar_ExportCau);
                     if (par_ExportCau != null)
                     {
+                        ControllaCausali(model.Data.Par_ExportCau_Causali);
+
                         // normalizza gli id temporanei negativi (nuovi record)
                         model.Data.Par_ExportCau_Causali
                             .Where(x => x.Id < 0)
@@ -153,5 +183,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Export
         Task<GenericResult<Par_ExportCau_Causali_Get_OutModel>>  Par_ExportCau_Causali_Get(GenericRequest<Par_ExportCau_Causali_Get_InModel>  model, bool isSubProcess);
         Task<GenericResult<Par_ExportCau_Causali_GetAll_4Edit_OutModel>>  Par_ExportCau_Causali_GetAll_4Edit(GenericRequest<Par_ExportCau_Causali_GetAll_4Edit_InModel>  model, bool isSubProcess);
         Task<GenericResult<Par_ExportCau_Causali_PutAll_4Edit_OutModel>>  Par_ExportCau_Causali_PutAll_4Edit(GenericRequest<Par_ExportCau_Causali_PutAll_4Edit_InModel>  model, bool isSubProcess);
+        void ControllaCausali(List<Par_ExportCau_CausaliModel> causali);
     }
 }

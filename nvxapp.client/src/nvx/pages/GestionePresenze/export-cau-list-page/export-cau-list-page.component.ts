@@ -31,8 +31,7 @@ export class ExportCauListPageComponent {
   }
   public readonly columns: NvxListColumn<Par_ExportCauModel>[] = [
     { key: 'codice', title: this.transloco.translate('attendance.pages.exportCauList.columnCode'), width: '140px', mobile: 'subtitle' },
-    { key: 'descrizione', title: this.transloco.translate('attendance.pages.exportCauList.columnDescription'), mobile: 'title' },
-    { key: 'tipoFile', title: this.transloco.translate('attendance.pages.exportCauList.columnFileType'), width: '160px', mobile: 'note' }
+    { key: 'descrizione', title: this.transloco.translate('attendance.pages.exportCauList.columnDescription'), mobile: 'title' }
   ];
   public actions: NvxListAction<Par_ExportCauModel>[] = [];
   public readonly sortList = (a: Par_ExportCauModel, b: Par_ExportCauModel) => (a.descrizione ?? '').localeCompare(b.descrizione ?? '');

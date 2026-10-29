@@ -1320,4 +1320,28 @@
   <data name="ChatJustificationAmountMissing" xml:space="preserve">
     <value>The justification '{0}' is amount-based: give the amount in euro.</value>
   </data>
+  <data name="ExportDocNonTrovato" xml:space="preserve">
+    <value>Document not found.</value>
+  </data>
+  <data name="ExportDocModelloNonSalvato" xml:space="preserve">
+    <value>Save the export model first, then upload the documentation.</value>
+  </data>
+  <data name="ExportDocTipoNonAmmesso" xml:space="preserve">
+    <value>File type not allowed. Allowed: {0}.</value>
+  </data>
+  <data name="ExportDocTroppi" xml:space="preserve">
+    <value>At most {0} documents per export model.</value>
+  </data>
+  <data name="ExportDocSenzaTesto" xml:space="preserve">
+    <value>No text can be read from "{0}" (e.g. scanned PDF): the AI could not use it.</value>
+  </data>
+  <data name="ExportCausaliCodiceIncoerente" xml:space="preserve">
+    <value>Rows with code "{0}" are added together: they must have the same processing and the same unit.</value>
+  </data>
+  <data name="ExportCausaliImportoSoloImporto" xml:space="preserve">
+    <value>The Amount unit is only for amount pay causes: "{0}" is hour-based.</value>
+  </data>
+  <data name="ExportCausaliCausaleImporto" xml:space="preserve">
+    <value>The pay cause "{0}" is amount-based: the unit must be Amount.</value>
+  </data>
 </root>
