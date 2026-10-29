@@ -13,6 +13,8 @@ import { UserLoadInModel } from '../../../ClientServer-Service/Infrastructure/Ac
 import { UserCompanyListModel, UserCompanyListInModel } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-company-model';
 import { RoleCode } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-roles-model';
 import { MainMenuService } from '../../../Utility/infrastructure/main-menu.service';
+import { LongJobNotifierService } from '../../../Utility/infrastructure/long-job-notifier.service';
+import { filter, take } from 'rxjs';
 import { DialogName } from '../../../Utility/infrastructure/dialog-redefinition';
 import { AddUserCompanyComponent } from '../../../shared/components/infrastructure/add-user-company/add-user-company.component';
 import { UserCompanyEditModel, UserCompanyGetInModel } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-company-model';
@@ -52,6 +54,7 @@ export class UserCompanyListPageComponent {
               private userNavigationService: UserNavigationService,
               private modalCtrl: ModalController,
               private actionSheetCtrl: ActionSheetController,
+              private longJobNotifierService: LongJobNotifierService,
               private transloco: TranslocoService
             
             ) 
@@ -123,7 +126,14 @@ export class UserCompanyListPageComponent {
     await modal.present();
 
     const { data, role } = await modal.onDidDismiss();
-    if (role === 'confirm' && data && data.inserimentoCompletato)
+    if (role !== 'confirm' || !data)
+      return;
+    // inserimento in un job del server (avanzamento nella barra della pagina): la lista si rilegge alla fine
+    if (data.jobId)
+      this.longJobNotifierService.jobFinished$
+        .pipe(filter(job => job.jobId === data.jobId), take(1))
+        .subscribe(() => this.rileggiLista());
+    else if (data.inserimentoCompletato)
       this.rileggiLista();
   }
 

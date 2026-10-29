@@ -294,8 +294,12 @@ export class FabMenuComponent implements OnInit, AfterViewInit {
   }
 
   // Converte \n in <br> per la visualizzazione HTML nel template
+  // testo dell'assistente: a capo e **grassetto** (titoli delle sezioni dell'help); l'HTML del testo non si interpreta
   formatText(text: string): string {
-    return (text ?? '').replace(/\n/g, '<br>');
+    return (text ?? '')
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\n/g, '<br>');
   }
 
   // -------------------------------------------------------------------------

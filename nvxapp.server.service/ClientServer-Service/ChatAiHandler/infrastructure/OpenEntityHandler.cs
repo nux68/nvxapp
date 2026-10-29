@@ -27,6 +27,8 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.infrastructur
                 DisplayName = ChatAIMessages.Get("OpenEntityDisplayName"),
                 Description = ChatAIMessages.Get("OpenEntityDescription", nomi),
                 Usable4Role = _entities.SelectMany(e => e.Roles).Distinct().ToList(),
+                Category = ChatAIMessages.Get("ChatCategoryNavigation"),
+                CategoryOrder = IntentCategoryOrder.Navigation,
                 IsNavigation = true,
                 Keywords = new List<string> { "apri", "modifica", "scheda", "open", "edit" }
                     .Concat(_entities.SelectMany(e => e.Words)).Distinct(StringComparer.OrdinalIgnoreCase).ToList(),

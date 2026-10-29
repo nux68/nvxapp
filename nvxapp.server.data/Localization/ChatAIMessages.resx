@@ -194,4 +194,13 @@
     <value>Apro {0}: {1}.</value>
     <comment>{0} = entità, {1} = elemento</comment>
   </data>
+  <data name="HelpOtherCategory" xml:space="preserve">
+    <value>Altro</value>
+  </data>
+  <data name="ChatCategoryNavigation" xml:space="preserve">
+    <value>Navigazione</value>
+  </data>
+  <data name="ChatCategorySettings" xml:space="preserve">
+    <value>Impostazioni</value>
+  </data>
 </root>

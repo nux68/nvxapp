@@ -59,8 +59,18 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.infrastructur
             else
                 sb.AppendLine(ChatAIMessages.Get("HelpCommandsTitle"));
 
-            foreach (var intent in intents.Except(pageIntents))
-                sb.AppendLine(FormatIntent(intent));
+            // gli altri comandi raggruppati per argomento, ogni sezione con il suo titolo
+            var sezioni = intents.Except(pageIntents)
+                .GroupBy(i => string.IsNullOrWhiteSpace(i.Category) ? ChatAIMessages.Get("HelpOtherCategory") : i.Category)
+                .OrderBy(g => g.Min(i => string.IsNullOrWhiteSpace(i.Category) ? int.MaxValue : i.CategoryOrder))
+                .ThenBy(g => g.Key);
+            foreach (var sezione in sezioni)
+            {
+                sb.AppendLine();
+                sb.AppendLine($"**{sezione.Key}**");
+                foreach (var intent in sezione)
+                    sb.AppendLine(FormatIntent(intent));
+            }
 
             return Task.FromResult(CommandResult.Ok(sb.ToString().TrimEnd()));
         }

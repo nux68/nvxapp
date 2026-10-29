@@ -25,6 +25,8 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.infrastructur
             Name        = "Navigate",
             DisplayName = ChatAIMessages.Get("NavigateDisplayName"),
             Usable4Role = new List<string> { "*" },
+            Category    = ChatAIMessages.Get("ChatCategoryNavigation"),
+            CategoryOrder = IntentCategoryOrder.Navigation,
             Description = ChatAIMessages.Get("NavigateDescription"),
             IsNavigation = true,
             ExecutionStrategy = ExecutionStrategy.ContinueOnError,
