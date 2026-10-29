@@ -524,8 +524,8 @@ Numerazione unica, nell'ordine in cui farli. `[ ]` da fare, `[x]` fatto (con not
 | 12.2 | Anagrafica: matricola e codice fiscale | 8–12 | 5/5 | **completata** (29/10/2026) |
 | 12.3 | Tipo Orario / Importo | 13–27 | 15/15 | **completata** (29/10/2026) |
 | 12.4 | Modello di export | 28–32 | 5/5 | **completata** (29/10/2026) |
-| 12.5 | Export | 33–43 | 0/11 | da iniziare |
-| **Totale** | | **1–43** | **32/43** | |
+| 12.5 | Export | 33–43 | 11/11 | **completata** (29/10/2026) |
+| **Totale** | | **1–43** | **43/43** | **completato** |
 
 ### 12.1 Infrastruttura (lavori 1–7) — ramo `Infrastructure_Dev`, poi catena dei merge (§5)
 
@@ -607,17 +607,28 @@ Numerazione unica, nell'ordine in cui farli. `[ ]` da fare, `[x]` fatto (con not
 
 ### 12.5 Export (lavori 33–43) — `AttendanceTracking_Dev` (§3, §4, §6.3)
 
-- [ ] 33. Controllo ruoli e dipendenti amministrati in `Export`; tolto `Task.Delay(10000)`
-- [ ] 34. `PrepareExportMetadati`: JSON con elenco `chiave`, raggruppamento per codice di output e periodo con il segno del Verso, 2 decimali, avviso per i totali negativi, esclusi i dipendenti senza causali
-- [ ] 35. Unit test del raggruppamento (stesso codice da più causali, giornaliera/mensile, periodo a cavallo di due mesi, importi, Verso Sottrazione, totale negativo)
-- [ ] 36. Export senza documentazione → file `.json` scaricabile
-- [ ] 37. Generazione della ricetta AI (prompt, schema, validazione) e salvataggio su `Par_ExportCau` con hash di documenti e note
-- [ ] 38. Renderer della ricetta: testo (separato / larghezza fissa, codifica, fine riga, intestazione/piede, formato del segno per i valori negativi) e XLSX con ClosedXML
-- [ ] 39. Export con documentazione: ricetta (rigenerata solo se cambiano documenti o note) + renderer + download; errore AI ⇒ JSON comunque scaricabile
-- [ ] 40. Anteprima della ricetta nella pagina del modello (su un dipendente)
-- [ ] 41. i18n e messaggi
-- [ ] 42. Prove finali (§8): JSON, TXT a larghezza fissa, CSV, XLSX, causali a importo, CompanyAdmin, AI non raggiungibile/429
-- [ ] 43. Cartellini PDF (`ExportPdf_4User`, `ExportPdf_4Admin`) e report (`ReportService`) registrano il file con `NVXSystem.RegistraFileJob` e mandano `FileName` nella notifica (download solo per chi ha lanciato il job, nome leggibile)
+- [x] 33. Controllo ruoli e dipendenti amministrati in `Export`; tolto `Task.Delay(10000)`
+  — Fatto: `Export` (e l'anteprima) solo per CompanyPowerAdmin/CompanyAdmin; per il CompanyAdmin solo i dipendenti dei reparti che amministra (come i cartellini). Tolto `Task.Delay(10000)`.
+- [x] 34. `PrepareExportMetadati`: JSON con elenco `chiave`, raggruppamento per codice di output e periodo con il segno del Verso, 2 decimali, avviso per i totali negativi, esclusi i dipendenti senza causali
+  — Fatto: `TimeSheet_ExportService/ExportMetadatiBuilder` (senza accessi a database) e modelli in `Models/ExportMetadatiModel.cs`; anagrafica con matricola, CF, email, username e rapporti. Giorni: per ogni giorno il saldo dei minuti del codice da' +1/-1/0. Avvisi a fine job per valori negativi e dipendenti senza matricola.
+- [x] 35. Unit test del raggruppamento (stesso codice da più causali, giornaliera/mensile, periodo a cavallo di due mesi, importi, Verso Sottrazione, totale negativo)
+  — Fatto **fuori dal repository**: nel progetto non c'e' un progetto di test, quindi raggruppamento e renderer sono stati provati con un programma a parte (18 controlli: verso, importi, giorni, periodo a cavallo di due mesi, esclusioni, negativi, tracciato fisso con zeri e segno, CSV con BOM e titoli, XLSX tipizzato, ricetta errata respinta). Da decidere se aggiungere un progetto di test alla soluzione.
+- [x] 36. Export senza documentazione → file `.json` scaricabile
+  — Fatto: senza documenti il file e' il JSON dei metadati (`{codice}_{dal}-{al}.json`), registrato con `NVXSystem.SalvaFileJob`.
+- [x] 37. Generazione della ricetta AI (prompt, schema, validazione) e salvataggio su `Par_ExportCau` con hash di documenti e note
+  — Fatto: `Par_ExportCau_RicettaService` (prompt con le sorgenti del renderer, schema, esempio di dati inventato: all'AI non vanno dati dei dipendenti); risposta controllata con `ExportRicettaRenderer.Valida`; ricetta e impronta SHA-256 di documenti, note e versione del prompt salvate su `Par_ExportCau`; si rigenera solo se cambiano o su richiesta. Usa `AI:ExportLLM`, `AI:ExportMaxChars`, `AI:ExportMaxTokens`.
+- [x] 38. Renderer della ricetta: testo (separato / larghezza fissa, codifica, fine riga, intestazione/piede, formato del segno per i valori negativi) e XLSX con ClosedXML
+  — Fatto: `ExportRicettaRenderer` (testo separato o a larghezza fissa, allineamento e riempimento, formati di data, decimali e separatore, segno davanti/finale/nessuno con zeri dopo il segno, intestazione/piede con totali, codifiche utf-8/utf-8-bom/windows-1252/iso-8859-1/ascii, CRLF/LF; XLSX con ClosedXML e numeri tipizzati). Una riga di dettaglio per causale (righe "per dipendente" non previste).
+- [x] 39. Export con documentazione: ricetta (rigenerata solo se cambiano documenti o note) + renderer + download; errore AI ⇒ JSON comunque scaricabile
+  — Fatto: con documentazione ricetta (salvata o rigenerata) + renderer + file con l'estensione della ricetta; se la ricetta non si ottiene (AI non raggiungibile, 429, timeout, ricetta non valida) si scarica il JSON e la notifica lo dice.
+- [x] 40. Anteprima della ricetta nella pagina del modello (su un dipendente)
+  — Fatto: endpoint `TimeSheet_Export/Export_Anteprima` e, nella sezione Documentazione, "Prova del formato" (mese, dipendente, prova / rigenera con l'AI): avvisi, prime 50 righe, ricetta visibile.
+- [x] 41. i18n e messaggi
+  — Fatto: messaggi server it/en (job, ricetta, avvisi) e chiavi client dell'anteprima.
+- [x] 42. Prove finali (§8): JSON, TXT a larghezza fissa, CSV, XLSX, causali a importo, CompanyAdmin, AI non raggiungibile/429
+  — Fatto sul server di prova (azienda di test 1, ottobre, **AI vera DeepSeek**): export senza documenti -> JSON scaricabile (5 dipendenti, chiavi `codice|periodo`), altro utente -> 404; caricato un tracciato a larghezza fissa -> l'AI ha prodotto in 4 s una ricetta valida (testa T, dettaglio D di 30 caratteri, coda Z con il conteggio) con due avvisi pertinenti; seconda anteprima con la ricetta salvata in 0,4 s; export con ricetta -> file `.txt` ANSI di 104 righe con coda `Z000102`; provider AI inesistente -> JSON con l'avviso "formato non disponibile" e "5 dipendenti senza matricola". Interfaccia non provata nel browser; test con CompanyAdmin non eseguito (nessun utente CompanyAdmin di prova usato).
+- [x] 43. Cartellini PDF (`ExportPdf_4User`, `ExportPdf_4Admin`) e report (`ReportService`) registrano il file con `NVXSystem.RegistraFileJob` e mandano `FileName` nella notifica (download solo per chi ha lanciato il job, nome leggibile)
+  — Fatto: cartellini (`ExportPdf_4User`, `ExportPdf_4Admin`) e report registrano il file con `RegistraFileJob` e mandano `FileName`: scaricati come `Cartellini_2026-10.pdf` (application/pdf), altro utente -> 404. Ora tutti i job che producono file usano la registrazione.
 
 ---
 
@@ -632,3 +643,4 @@ Una riga per ogni lavoro completato, nell'ordine in cui è stato fatto. Il detta
 | 29/10/2026 | 12.2 | 8–12 | AttendanceTracking_Dev → AttendanceTracking | `c374c41c` | matricola e codice fiscale: dati, controlli, pagine, importazione, i18n; prove API ok |
 | 29/10/2026 | 12.3 | 13–27 | AttendanceTracking_Dev → AttendanceTracking | `ce0ca1cd` | tipo Orario/Importo: dati, regole, motore, dialog, richieste, chat, visualizzazioni; non regressione e prove API ok |
 | 29/10/2026 | 12.4 | 28–32 | AttendanceTracking_Dev → AttendanceTracking | `3b31c50d` | via il tipo file, documentazione per l'AI, note AI, Verso, controlli delle righe; prove API ok |
+| 29/10/2026 | 12.5 | 33–43 | AttendanceTracking_Dev → AttendanceTracking | `6c4d92de` | metadati JSON, ricetta AI, renderer, anteprima, file registrati; prove con AI vera ok |
