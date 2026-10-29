@@ -68,7 +68,7 @@
 
           <div formArrayName="dipendenti">
             @for (riga of righe; track riga; let i = $index) {
-              <div class="nvx-import-riga" [class.nvx-import-riga-errore]="riga.invalid || duplicato(i, 'descrizione') || duplicato(i, 'mail')" [formGroupName]="i">
+              <div class="nvx-import-riga" [class.nvx-import-riga-errore]="riga.invalid || rigaDuplicata(i)" [formGroupName]="i">
                 <!-- intestazione: numero e nome del dipendente, togli -->
                 <div class="nvx-import-riga-testa">
                   <span class="nvx-import-riga-numero">{{ i + 1 }}</span>
@@ -161,7 +161,37 @@
                       }
                     </ion-col>
                   </ion-row>
-                  <!-- 3: profilo orario (dalla data di assunzione) -->
+                  <!-- 3: matricola e codice fiscale (facoltativi) -->
+                  <ion-row>
+                    <ion-col size="12" size-md="4">
+                      <ion-item>
+                        <ion-label position="floating">{{ 'attendance.components.userAttendanceWizardDialog.matricola' | transloco }}</ion-label>
+                        <ion-input type="text" formControlName="matricola" maxlength="20"></ion-input>
+                      </ion-item>
+                      @if (riga.get('matricola')?.hasError('giaUsato')) {
+                        <ion-note color="danger">{{ 'attendance.components.userAttendanceWizardDialog.matricolaGiaUsata' | transloco }}</ion-note>
+                      }
+                      @if (duplicato(i, 'matricola')) {
+                        <ion-note color="danger">{{ 'attendance.components.userAttendanceImportDialog.matricolaDuplicata' | transloco }}</ion-note>
+                      }
+                    </ion-col>
+                    <ion-col size="12" size-md="8">
+                      <ion-item>
+                        <ion-label position="floating">{{ 'attendance.components.userAttendanceWizardDialog.codiceFiscale' | transloco }}</ion-label>
+                        <ion-input type="text" formControlName="codiceFiscale" maxlength="16" autocapitalize="characters"></ion-input>
+                      </ion-item>
+                      @if (riga.get('codiceFiscale')?.hasError('codiceFiscale')) {
+                        <ion-note color="danger">{{ 'attendance.components.userAttendanceWizardDialog.codiceFiscaleNonValido' | transloco }}</ion-note>
+                      }
+                      @if (riga.get('codiceFiscale')?.hasError('giaUsato')) {
+                        <ion-note color="danger">{{ 'attendance.components.userAttendanceWizardDialog.codiceFiscaleGiaUsato' | transloco }}</ion-note>
+                      }
+                      @if (duplicato(i, 'codiceFiscale')) {
+                        <ion-note color="danger">{{ 'attendance.components.userAttendanceImportDialog.codiceFiscaleDuplicato' | transloco }}</ion-note>
+                      }
+                    </ion-col>
+                  </ion-row>
+                  <!-- 4: profilo orario (dalla data di assunzione) -->
                   <ion-row>
                     <ion-col size="12" size-md="8">
                       <ion-item>

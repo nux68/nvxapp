@@ -16,6 +16,9 @@ export class Dip_AnagraficaModel {
   
   public cognome!: string;
   public nome!: string;
+  /** matricola paghe e codice fiscale: facoltativi, unici tra i dipendenti dell'azienda */
+  public matricola: string | null = null;
+  public codiceFiscale: string | null = null;
 
   public dip_RapportoLavoro: Dip_RapportoLavoroModel[];
 
@@ -85,6 +88,19 @@ export class Dip_Anagrafica4EditModel extends Dip_AnagraficaModel {
    */
   public dip_RapportoAutovetture: Dip_RapportoAutovettureModel[] | null;
 
+}
+
+/** controllo di matricola e codice fiscale (wizard, prima di creare l'utente) */
+export class Dip_Anagrafica_Check_InModel {
+  public matricola: string | null = null;
+  public codiceFiscale: string | null = null;
+  /** dipendente in modifica (escluso dal controllo); vuoto per un nuovo dipendente */
+  public idAspNetUsers: string | null = null;
+}
+export class Dip_Anagrafica_Check_OutModel extends ModelResult {
+  public matricolaExists: boolean = false;
+  public codiceFiscaleExists: boolean = false;
+  public codiceFiscaleNonValido: boolean = false;
 }
 
 export class Dip_Anagrafica_Get_InModel {

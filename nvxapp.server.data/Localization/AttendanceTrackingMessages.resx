@@ -1249,4 +1249,22 @@
     <value>Cartellino e report</value>
     <comment>titolo della sezione nell'elenco dei comandi della chat (help)</comment>
   </data>
+  <data name="AnagraficaMatricolaTroppoLunga" xml:space="preserve">
+    <value>La matricola può avere al massimo {0} caratteri.</value>
+  </data>
+  <data name="AnagraficaCodiceFiscaleNonValido" xml:space="preserve">
+    <value>Il codice fiscale "{0}" non è valido.</value>
+  </data>
+  <data name="AnagraficaMatricolaGiaUsata" xml:space="preserve">
+    <value>La matricola "{0}" è già usata da {1}.</value>
+  </data>
+  <data name="AnagraficaCodiceFiscaleGiaUsato" xml:space="preserve">
+    <value>Il codice fiscale "{0}" è già usato da {1}.</value>
+  </data>
+  <data name="ImportMatricolaRipetuta" xml:space="preserve">
+    <value>La matricola "{0}" compare per più dipendenti dell'elenco.</value>
+  </data>
+  <data name="ImportCodiceFiscaleRipetuto" xml:space="preserve">
+    <value>Il codice fiscale "{0}" compare per più dipendenti dell'elenco.</value>
+  </data>
 </root>

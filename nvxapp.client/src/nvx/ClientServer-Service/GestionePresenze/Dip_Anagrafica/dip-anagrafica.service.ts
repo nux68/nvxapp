@@ -5,7 +5,7 @@ import { environment } from '../../../../environments/environment';
 import { GenericRequest } from '../../ModelsBase/generic-request';
 import { GenericResult } from '../../ModelsBase/generic-result';
 import { map, Observable } from 'rxjs';
-import { Dip_Anagrafica_Get_InModel, Dip_Anagrafica_Get_OutModel, Dip_Anagrafica_GetAll_InModel, Dip_Anagrafica_GetAll_OutModel, Dip_Anagrafica_Put_InModel, Dip_Anagrafica_Put_OutModel } from './Models/dip-anagrafica-model';
+import { Dip_Anagrafica_Check_InModel, Dip_Anagrafica_Check_OutModel, Dip_Anagrafica_Get_InModel, Dip_Anagrafica_Get_OutModel, Dip_Anagrafica_GetAll_InModel, Dip_Anagrafica_GetAll_OutModel, Dip_Anagrafica_Put_InModel, Dip_Anagrafica_Put_OutModel } from './Models/dip-anagrafica-model';
 
 @Injectable({
   providedIn: 'root'
@@ -44,6 +44,10 @@ export class DipAnagraficaService {
           return r;
         })
       );
+  }
+
+  Dip_AnagraficaCheck(model: GenericRequest<Dip_Anagrafica_Check_InModel>): Observable<GenericResult<Dip_Anagrafica_Check_OutModel>> {
+    return this.http.post<GenericResult<Dip_Anagrafica_Check_OutModel>>(environment.remoteData.apiUri + 'Dip_Anagrafica/Dip_AnagraficaCheck', model);
   }
 
 }

@@ -11,11 +11,15 @@ import { Dip_ProfiloOrarioModel } from '../../ClientServer-Service/GestionePrese
 import { Dip_CompetenzaModel } from '../../ClientServer-Service/GestionePresenze/Dip_Competenza/Models/dip-competenza-model';
 import { Dip_Rapporto_Giustificativi_MaturazioneModel } from '../../ClientServer-Service/GestionePresenze/Dip_Rapporto_Giustificativi_Maturazione/Models/dip-rapporto-giustificativi-maturazione-model';
 import { SharedParameterGestionePresenzeService } from '../../shared/shared-parameter-gestione-presenze.service';
+import { normalizzaCodiceFiscale } from './codice-fiscale';
 
 /** dati del primo step del wizard: l'utente */
 export interface NuovoDipendenteUtente {
   cognome: string;
   nome: string;
+  /** facoltativi */
+  matricola?: string | null;
+  codiceFiscale?: string | null;
   /** username */
   descrizione: string;
   pw: string;
@@ -102,6 +106,8 @@ export class NuovoDipendenteService {
     // step 1
     dip.cognome = utente.cognome;
     dip.nome = utente.nome;
+    dip.matricola = utente.matricola?.trim() || null;
+    dip.codiceFiscale = normalizzaCodiceFiscale(utente.codiceFiscale) || null;
     dip.pw = '';
 
     // step 2: rapporto di lavoro (la data di licenziamento resta vuota)

@@ -7,6 +7,7 @@ using nvxapp.server.Base;
 using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Entities.Tenant;
 using nvxapp.server.data.Extensions;
+using nvxapp.server.data.Localization;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
@@ -129,6 +130,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
                                 IdAspNetUsers = item.IdAspNetUsers,
                                 Cognome = item.Cognome,
                                 Nome = item.Nome,
+                                Matricola = item.Matricola,
+                                CodiceFiscale = item.CodiceFiscale,
                                 Id = item.Id,
                                 Dip_RapportoLavoro = _mapper.Map<List<Dip_RapportoLavoroModel>>(dip_RapportoLavoro.Where(x => x.IdDip_Anagrafica == item.Id).ToList()),
                                 RoleCode = aspNetRoles.Where(x=> x.Name!= null && usrRoles.Contains(x.Name)).Select(x=> x.Code).ToList()
@@ -281,7 +284,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
                 Company_DATA_COMB_AzAna_AzSedi_AzReparto_Az_Cfg company_DATA = await _gestionePresenzeUserUtility.Get_AzAna_AzSedi_AzReparto_Az_Cfg(IdCompany, true);
                 if (company_DATA != null && company_DATA.az_Anagrafica != null)
                 {
-
+                    // matricola e codice fiscale: si controllano prima di creare/aggiornare l'utente
+                    ControllaMatricolaCodiceFiscale(model.Data.Dip_Anagrafica, IdCompany);
 
                     var req_UsrComp = new GenericRequest<UserCompanyPutInModel>();
                     req_UsrComp.Data = new UserCompanyPutInModel()
@@ -432,6 +436,87 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
             }, isSubProcess);
         }
 
+        public virtual async Task<GenericResult<Dip_Anagrafica_Check_OutModel>> Dip_AnagraficaCheck(GenericRequest<Dip_Anagrafica_Check_InModel> model, bool isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                var retVal = new Dip_Anagrafica_Check_OutModel();
+                int.TryParse(this.CurrentCompany, out int idCompany);
+
+                var matricola = string.IsNullOrWhiteSpace(model.Data.Matricola) ? null : model.Data.Matricola.Trim();
+                var codiceFiscale = GestionePresenzeCodiceFiscale.Normalizza(model.Data.CodiceFiscale);
+                retVal.CodiceFiscaleNonValido = codiceFiscale != null && !GestionePresenzeCodiceFiscale.IsValido(codiceFiscale);
+
+                var usati = MatricolaCodiceFiscaleGiaUsati(matricola, codiceFiscale, NullSeVuoto(model.Data.IdAspNetUsers), idCompany);
+                retVal.MatricolaExists = usati.DipendenteConMatricola != null;
+                retVal.CodiceFiscaleExists = usati.DipendenteConCodiceFiscale != null;
+
+                await Task.CompletedTask;
+                return retVal;
+            }, isSubProcess);
+        }
+
+        private static string? NullSeVuoto(string? valore) => string.IsNullOrEmpty(valore) ? null : valore;
+
+        /// <summary>
+        /// Normalizza matricola (senza spazi ai lati) e codice fiscale (maiuscolo, senza spazi; vuoti = null),
+        /// controlla il codice fiscale e che nessun altro dipendente dell'azienda abbia la stessa matricola o lo stesso codice fiscale.
+        /// </summary>
+        private void ControllaMatricolaCodiceFiscale(Dip_Anagrafica4EditModel dip, int idCompany)
+        {
+            dip.Matricola = string.IsNullOrWhiteSpace(dip.Matricola) ? null : dip.Matricola.Trim();
+            dip.CodiceFiscale = GestionePresenzeCodiceFiscale.Normalizza(dip.CodiceFiscale);
+
+            if (dip.Matricola != null && dip.Matricola.Length > 20)
+                throw new UserMessageException(AttendanceTrackingMessages.Get("AnagraficaMatricolaTroppoLunga", 20));
+            if (dip.CodiceFiscale != null && !GestionePresenzeCodiceFiscale.IsValido(dip.CodiceFiscale))
+                throw new UserMessageException(AttendanceTrackingMessages.Get("AnagraficaCodiceFiscaleNonValido", dip.CodiceFiscale));
+            if (dip.Matricola == null && dip.CodiceFiscale == null)
+                return;
+
+            // il dipendente stesso: utente gia' collegato all'azienda (in un nuovo inserimento non c'e')
+            var idUtente = dip.IdUserCompany > 0
+                ? _userCompanyRepository.FindAll(x => x.Id == dip.IdUserCompany).Select(x => x.IdAspNetUsers).FirstOrDefault()
+                : null;
+            if (string.IsNullOrEmpty(idUtente) && !string.IsNullOrEmpty(dip.IdAspNetUsers))
+                idUtente = dip.IdAspNetUsers;
+
+            var errore = MatricolaCodiceFiscaleGiaUsati(dip.Matricola, dip.CodiceFiscale, idUtente, idCompany).Errore;
+            if (errore != null)
+                throw new UserMessageException(errore);
+        }
+
+        /// <summary>
+        /// Altri dipendenti dell'azienda con la stessa matricola o lo stesso codice fiscale (valori gia' normalizzati),
+        /// escluso l'utente <paramref name="idAspNetUsersEscluso"/>. Lo usa anche l'importazione da file, prima di creare l'utente.
+        /// </summary>
+        public MatricolaCodiceFiscaleUsati MatricolaCodiceFiscaleGiaUsati(string? matricola, string? codiceFiscale, string? idAspNetUsersEscluso, int idCompany)
+        {
+            var retVal = new MatricolaCodiceFiscaleUsati();
+            if (matricola == null && codiceFiscale == null)
+                return retVal;
+
+            var utentiAzienda = _userCompanyRepository.FindAll(x => x.IdCompany == idCompany && x.IdAspNetUsers != idAspNetUsersEscluso)
+                                                      .Select(x => x.IdAspNetUsers)
+                                                      .ToList();
+            var altri = _dip_AnagraficaRepository.FindAll(x => utentiAzienda.Contains(x.IdAspNetUsers)
+                                                               && ((matricola != null && x.Matricola == matricola)
+                                                                   || (codiceFiscale != null && x.CodiceFiscale == codiceFiscale)))
+                                                 .ToList();
+
+            var stessaMatricola = altri.FirstOrDefault(x => matricola != null && x.Matricola == matricola);
+            if (stessaMatricola != null)
+                retVal.DipendenteConMatricola = $"{stessaMatricola.Cognome} {stessaMatricola.Nome}".Trim();
+            var stessoCf = altri.FirstOrDefault(x => codiceFiscale != null && x.CodiceFiscale == codiceFiscale);
+            if (stessoCf != null)
+                retVal.DipendenteConCodiceFiscale = $"{stessoCf.Cognome} {stessoCf.Nome}".Trim();
+
+            if (retVal.DipendenteConMatricola != null)
+                retVal.Errore = AttendanceTrackingMessages.Get("AnagraficaMatricolaGiaUsata", matricola, retVal.DipendenteConMatricola);
+            else if (retVal.DipendenteConCodiceFiscale != null)
+                retVal.Errore = AttendanceTrackingMessages.Get("AnagraficaCodiceFiscaleGiaUsato", codiceFiscale, retVal.DipendenteConCodiceFiscale);
+            return retVal;
+        }
 
     }
 
@@ -441,6 +526,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
 
         public Task<GenericResult<Dip_Anagrafica_Get_OutModel>> Dip_AnagraficaGet(GenericRequest<Dip_Anagrafica_Get_InModel> model, bool isSubProcess);
         public Task<GenericResult<Dip_Anagrafica_Put_OutModel>> Dip_AnagraficaPut(GenericRequest<Dip_Anagrafica_Put_InModel> model, bool isSubProcess);
+
+        public Task<GenericResult<Dip_Anagrafica_Check_OutModel>> Dip_AnagraficaCheck(GenericRequest<Dip_Anagrafica_Check_InModel> model, bool isSubProcess);
+
+        public MatricolaCodiceFiscaleUsati MatricolaCodiceFiscaleGiaUsati(string? matricola, string? codiceFiscale, string? idAspNetUsersEscluso, int idCompany);
 
     }
 

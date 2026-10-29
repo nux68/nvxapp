@@ -30,12 +30,13 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dipendenti
     /*
      Importazione dei dipendenti da un file qualsiasi (lista utenti, FAB "+" > Importa da file).
      Il server legge il testo del file (ImportFileText) e chiede al LLM di estrarne le persone con i dati
-     del primo step del wizard di inserimento (cognome, nome, username, email) e la data di assunzione.
+     del primo step del wizard di inserimento (cognome, nome, username, email), la data di assunzione,
+     la matricola e il codice fiscale.
      Un'immagine (es. foto di una carta d'identita') va al LLM cosi' com'e', con il modello con visione
      (vedi LlmClient). Le note dell'amministratore si aggiungono al prompt. Restituisce l'elenco al
      client, che lo mostra per la correzione e poi inserisce ogni dipendente come il wizard, con i valori
      di default per i dati che il file non contiene. Qui non si salva nulla.
-     Il LLM non deve inventare: email e username si accettano solo se compaiono nel testo, una persona solo
+     Il LLM non deve inventare: email, username, matricola e codice fiscale si accettano solo se compaiono nel testo, una persona solo
      se nel testo c'e' il cognome o il nome (per le immagini non c'e' un testo con cui verificare). Senza username nel file se ne propone uno (nome.cognome),
      non gia' usato.
      Solo per gli amministratori dell'azienda (CompanyAdmin, CompanyPowerAdmin), come l'inserimento utenti.
@@ -55,6 +56,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dipendenti
         private const int MaxDipendentiPerImport = 500;
 
         private readonly ILlmClient _llmClient;
+        private readonly IDip_AnagraficaService _dip_AnagraficaService;
         // testo massimo passato al LLM: i provider gratuiti hanno un limite di token al minuto
         private readonly int _maxCaratteri;
 
@@ -64,10 +66,12 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dipendenti
                                        IOptions<JwtParameter> jwtParameter,
                                        IHttpContextAccessor httpContextAccessor,
                                        IConfiguration configuration,
-                                       ILlmClient llmClient
+                                       ILlmClient llmClient,
+                                       IDip_AnagraficaService dip_AnagraficaService
                                        ) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _llmClient = llmClient;
+            _dip_AnagraficaService = dip_AnagraficaService;
             _maxCaratteri = int.TryParse(configuration["AI:ImportMaxChars"], out var n) && n > 0 ? n : 12000;
         }
 
@@ -133,6 +137,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dipendenti
                     throw new UserMessageException(AttendanceTrackingMessages.Get("ImportImmaginiNonDisponibili"), ex);
                 }
 
+                int.TryParse(this.CurrentCompany, out int idCompany);
                 var usernameUsati = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
                 foreach (var letto in Leggi(risposta))
                 {
@@ -143,6 +148,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dipendenti
                         Mail = Campo(letto.Email).ToLowerInvariant(),
                         UserName = Campo(letto.Username),
                         DataAss = Data(letto.DataAssunzione),
+                        Matricola = Campo(letto.Matricola),
+                        CodiceFiscale = GestionePresenzeCodiceFiscale.Normalizza(letto.CodiceFiscale) ?? string.Empty,
                     };
                     if (dip.Cognome.Length == 0 && dip.Nome.Length == 0) continue;
 
@@ -152,6 +159,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dipendenti
                         if (!Presente(testo, dip.Cognome) && !Presente(testo, dip.Nome)) continue;
                         if (!Presente(testo, dip.Mail)) dip.Mail = string.Empty;
                         if (!Presente(testo, dip.UserName)) dip.UserName = string.Empty;
+                        if (!Presente(testo, dip.Matricola)) dip.Matricola = string.Empty;
+                        if (!Presente(SenzaSpazi(testo), dip.CodiceFiscale)) dip.CodiceFiscale = string.Empty;
                     }
 
                     // la stessa persona ripetuta nel file
@@ -172,6 +181,15 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dipendenti
                     {
                         var normalizzata = _userManager.NormalizeEmail(dip.Mail);
                         dip.MailExists = _userManager.Users.Any(x => x.NormalizedEmail == normalizzata);
+                    }
+
+                    // matricola e codice fiscale: validita' e altri dipendenti dell'azienda che li hanno gia'
+                    dip.CodiceFiscaleNonValido = dip.CodiceFiscale.Length > 0 && !GestionePresenzeCodiceFiscale.IsValido(dip.CodiceFiscale);
+                    if (dip.Matricola.Length > 0 || dip.CodiceFiscale.Length > 0)
+                    {
+                        var usati = _dip_AnagraficaService.MatricolaCodiceFiscaleGiaUsati(NullSeVuoto(dip.Matricola), NullSeVuoto(dip.CodiceFiscale), null, idCompany);
+                        dip.MatricolaExists = usati.DipendenteConMatricola != null;
+                        dip.CodiceFiscaleExists = usati.DipendenteConCodiceFiscale != null;
                     }
 
                     retVal.Dipendenti.Add(dip);
@@ -203,6 +221,23 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dipendenti
                                         || d.Roles.Count == 0 || d.IdPar_ProfiloOrario <= 0))
                     throw new UserMessageException(AttendanceTrackingMessages.Get("ImportDatiIncompleti"));
 
+                // matricola e codice fiscale: facoltativi, ma validi e non ripetuti nell'elenco
+                foreach (var d in dipendenti)
+                {
+                    d.Matricola = NullSeVuoto(d.Matricola?.Trim());
+                    d.CodiceFiscale = GestionePresenzeCodiceFiscale.Normalizza(d.CodiceFiscale);
+                    if (d.Matricola != null && d.Matricola.Length > 20)
+                        throw new UserMessageException(AttendanceTrackingMessages.Get("AnagraficaMatricolaTroppoLunga", 20));
+                    if (d.CodiceFiscale != null && !GestionePresenzeCodiceFiscale.IsValido(d.CodiceFiscale))
+                        throw new UserMessageException(AttendanceTrackingMessages.Get("AnagraficaCodiceFiscaleNonValido", d.CodiceFiscale));
+                }
+                var matricolaRipetuta = dipendenti.Where(d => d.Matricola != null).GroupBy(d => d.Matricola!, StringComparer.OrdinalIgnoreCase).FirstOrDefault(g => g.Count() > 1);
+                if (matricolaRipetuta != null)
+                    throw new UserMessageException(AttendanceTrackingMessages.Get("ImportMatricolaRipetuta", matricolaRipetuta.Key));
+                var cfRipetuto = dipendenti.Where(d => d.CodiceFiscale != null).GroupBy(d => d.CodiceFiscale!).FirstOrDefault(g => g.Count() > 1);
+                if (cfRipetuto != null)
+                    throw new UserMessageException(AttendanceTrackingMessages.Get("ImportCodiceFiscaleRipetuto", cfRipetuto.Key));
+
                 // password: le stesse regole della creazione utente (altrimenti nessun utente verrebbe creato)
                 var password = model.Data.Password ?? string.Empty;
                 foreach (var validator in _userManager.PasswordValidators)
@@ -222,6 +257,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dipendenti
                 var jobId = Guid.NewGuid().ToString();
                 retVal.JobId = jobId;
                 var totale = dipendenti.Count;
+                int.TryParse(this.CurrentCompany, out int idCompany);
 
                 RunInBackground(async scope =>
                 {
@@ -251,7 +287,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dipendenti
                             var nome = $"{d.Cognome.Trim()} {d.Nome.Trim()}";
                             await Notifica(i * 100 / totale, AttendanceTrackingMessages.Get("ImportJobInCorso", nome, i + 1, totale));
 
-                            var errore = await InserisciDipendente(scope, d, password);
+                            var errore = await InserisciDipendente(scope, d, password, idCompany);
                             if (errore == null)
                                 esito.Inseriti++;
                             else
@@ -280,7 +316,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dipendenti
         /// rapporto e profilo di default) e poi gli applica cognome, nome, data di assunzione e profilo orario.
         /// Restituisce l'errore da mostrare, null se riuscito.
         /// </summary>
-        private async Task<string?> InserisciDipendente(IServiceScope scope, DipendenteImportDaInserireModel d, string password)
+        private async Task<string?> InserisciDipendente(IServiceScope scope, DipendenteImportDaInserireModel d, string password, int idCompany)
         {
             try
             {
@@ -292,6 +328,12 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dipendenti
                     return AttendanceTrackingMessages.Get("ImportUserNameGiaUsato", userName);
                 if (await userManager.FindByEmailAsync(mail) != null)
                     return AttendanceTrackingMessages.Get("ImportMailGiaUsata", mail);
+
+                // matricola e codice fiscale gia' di un altro dipendente: anche questi prima di creare l'utente
+                var dipAnagraficaService = scope.ServiceProvider.GetRequiredService<IDip_AnagraficaService>();
+                var usati = dipAnagraficaService.MatricolaCodiceFiscaleGiaUsati(d.Matricola, d.CodiceFiscale, null, idCompany);
+                if (usati.Errore != null)
+                    return usati.Errore;
 
                 var accountService = scope.ServiceProvider.GetRequiredService<IAccountService>();
                 var reqUser = new GenericRequest<UserCompanyPutInModel>();
@@ -310,7 +352,6 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dipendenti
                     return Testo(resUser.Messages) ?? AttendanceTrackingMessages.Get("ImportUtenteNonCreato");
 
                 // dati delle presenze, sui dati di default creati per il nuovo utente
-                var dipAnagraficaService = scope.ServiceProvider.GetRequiredService<IDip_AnagraficaService>();
                 var reqGet = new GenericRequest<Dip_Anagrafica_Get_InModel>();
                 reqGet.Data.Id = idAspNetUsers;
                 var resGet = await dipAnagraficaService.Dip_AnagraficaGet(reqGet, true);
@@ -322,6 +363,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dipendenti
                 var dataAss = (d.DataAss ?? DateTime.Today).Date;
                 dip.Cognome = d.Cognome.Trim();
                 dip.Nome = d.Nome.Trim();
+                dip.Matricola = d.Matricola;
+                dip.CodiceFiscale = d.CodiceFiscale;
                 dip.Pw = string.Empty;
                 rapporto.DataAss = dataAss;
 
@@ -386,9 +429,12 @@ Estrai TUTTE le persone presenti, una voce per persona, con questi campi:
 - username: solo se il file riporta esplicitamente il nome utente / login / username della persona
 - data_assunzione: data di assunzione / inizio del rapporto di lavoro, nel formato AAAA-MM-GG, solo se presente
   nel file o indicata nelle note; altrimenti stringa vuota. Non usare la data di nascita o di rilascio di un documento.
+- matricola: matricola / numero di matricola / codice dipendente della persona, solo se presente nel file
+- codice_fiscale: codice fiscale della persona (16 caratteri, es. RSSMRA80A01H501U), solo se presente nel file;
+  scrivilo in maiuscolo senza spazi
 
 Regole:
-- Non inventare dati: un campo assente nel file e' una stringa vuota. Non costruire email o username.
+- Non inventare dati: un campo assente nel file e' una stringa vuota. Non costruire email, username o codice fiscale.
 - Nei fogli di calcolo le celle sono separate da tabulazione: usa la riga di intestazione per capire le colonne.
 - Se cognome e nome sono in un unico campo, separali. Negli elenchi italiani (es. ""ROSSI MARIO"") il cognome di solito
   viene prima; con l'intestazione ""Nome Cognome"" o nel testo libero (""Mario Rossi"") viene dopo.
@@ -397,11 +443,11 @@ Regole:
 - Ignora intestazioni, totali, righe vuote, nomi di aziende, uffici o reparti.
 - Non ripetere la stessa persona.
 - Documento d'identita' (carta d'identita', patente, passaporto, tessera sanitaria): estrai solo cognome e nome
-  del titolare; gli altri campi restano vuoti salvo indicazioni nelle note.
+  del titolare e il codice fiscale se riportato (es. tessera sanitaria); gli altri campi restano vuoti salvo indicazioni nelle note.
 - Se il file non contiene persone restituisci una lista vuota.
 
 Rispondi SOLO con un oggetto JSON in questo formato:
-{""dipendenti"":[{""cognome"":""Rossi"",""nome"":""Mario"",""email"":""mario.rossi@azienda.it"",""username"":"""",""data_assunzione"":""2026-03-01""}]}";
+{""dipendenti"":[{""cognome"":""Rossi"",""nome"":""Mario"",""email"":""mario.rossi@azienda.it"",""username"":"""",""data_assunzione"":""2026-03-01"",""matricola"":""0042"",""codice_fiscale"":""RSSMRA80A01H501U""}]}";
 
         private static readonly object Schema = new Dictionary<string, object>
         {
@@ -421,8 +467,10 @@ Rispondi SOLO con un oggetto JSON in questo formato:
                             ["email"] = new Dictionary<string, object> { ["type"] = "string" },
                             ["username"] = new Dictionary<string, object> { ["type"] = "string" },
                             ["data_assunzione"] = new Dictionary<string, object> { ["type"] = "string" },
+                            ["matricola"] = new Dictionary<string, object> { ["type"] = "string" },
+                            ["codice_fiscale"] = new Dictionary<string, object> { ["type"] = "string" },
                         },
-                        ["required"] = new[] { "cognome", "nome", "email", "username", "data_assunzione" },
+                        ["required"] = new[] { "cognome", "nome", "email", "username", "data_assunzione", "matricola", "codice_fiscale" },
                         ["additionalProperties"] = false
                     }
                 }
@@ -431,7 +479,7 @@ Rispondi SOLO con un oggetto JSON in questo formato:
             ["additionalProperties"] = false
         };
 
-        private record Letto(string? Cognome, string? Nome, string? Email, string? Username, string? DataAssunzione);
+        private record Letto(string? Cognome, string? Nome, string? Email, string? Username, string? DataAssunzione, string? Matricola, string? CodiceFiscale);
 
         /// <summary>persone della risposta del LLM: tollera testo prima o dopo il JSON e valori non stringa</summary>
         private static List<Letto> Leggi(string? raw)
@@ -453,7 +501,8 @@ Rispondi SOLO con un oggetto JSON in questo formato:
                 foreach (var p in lista.EnumerateArray())
                 {
                     if (p.ValueKind != JsonValueKind.Object) continue;
-                    retVal.Add(new Letto(Valore(p, "cognome"), Valore(p, "nome"), Valore(p, "email"), Valore(p, "username"), Valore(p, "data_assunzione")));
+                    retVal.Add(new Letto(Valore(p, "cognome"), Valore(p, "nome"), Valore(p, "email"), Valore(p, "username"), Valore(p, "data_assunzione"),
+                                         Valore(p, "matricola"), Valore(p, "codice_fiscale")));
                 }
             }
             catch (JsonException ex)
@@ -498,6 +547,10 @@ Rispondi SOLO con un oggetto JSON in questo formato:
 
         private static bool Presente(string testo, string valore) =>
             valore.Length > 0 && testo.Contains(valore, StringComparison.OrdinalIgnoreCase);
+
+        private static string SenzaSpazi(string testo) => new string(testo.Where(c => !char.IsWhiteSpace(c)).ToArray());
+
+        private static string? NullSeVuoto(string? valore) => string.IsNullOrEmpty(valore) ? null : valore;
 
         private static bool Uguale(string a, string b) => string.Equals(a, b, StringComparison.OrdinalIgnoreCase);
 

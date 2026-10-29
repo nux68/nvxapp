@@ -3,6 +3,7 @@ import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-ca
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { ModalController, NavController } from '@ionic/angular';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { codiceFiscaleValidator } from '../../../Utility/GestionePresenze/codice-fiscale';
 import { AccountService } from '../../../ClientServer-Service/Infrastructure/Account/account.service';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { Observable } from 'rxjs/internal/Observable';
@@ -246,6 +247,9 @@ export class UserDepartmentEditPageComponent extends BasePageConfirmCancelCompon
       mail: [null, [Validators.email]],
       cognome: [null, [Validators.required, Validators.maxLength(50)]],
       nome: [null, [Validators.required, Validators.maxLength(50)]],
+      // facoltativi; l'univocita' nell'azienda la controlla il server al salvataggio
+      matricola: [null, [Validators.maxLength(20)]],
+      codiceFiscale: [null, [codiceFiscaleValidator()]],
     });
   }
 

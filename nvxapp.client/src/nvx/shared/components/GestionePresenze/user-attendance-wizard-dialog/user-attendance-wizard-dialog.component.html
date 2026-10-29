@@ -71,6 +71,31 @@
             <ion-row>
               <ion-col size="12" size-md="6">
               <ion-item>
+                <ion-label position="floating">{{ 'attendance.components.userAttendanceWizardDialog.matricola' | transloco }}</ion-label>
+                <ion-input type="text" formControlName="matricola" maxlength="20"></ion-input>
+              </ion-item>
+              @if (formUtente.get('matricola')?.hasError('giaUsato')) {
+                <ion-note color="danger">{{ 'attendance.components.userAttendanceWizardDialog.matricolaGiaUsata' | transloco }}</ion-note>
+              }
+              </ion-col>
+              <ion-col size="12" size-md="6">
+              <ion-item>
+                <ion-label position="floating">{{ 'attendance.components.userAttendanceWizardDialog.codiceFiscale' | transloco }}</ion-label>
+                <ion-input type="text" formControlName="codiceFiscale" maxlength="16" autocapitalize="characters"></ion-input>
+              </ion-item>
+              @if (formUtente.get('codiceFiscale')?.hasError('codiceFiscale') && formUtente.get('codiceFiscale')?.touched) {
+                <ion-note color="danger">{{ 'attendance.components.userAttendanceWizardDialog.codiceFiscaleNonValido' | transloco }}</ion-note>
+              }
+              @if (formUtente.get('codiceFiscale')?.hasError('giaUsato')) {
+                <ion-note color="danger">{{ 'attendance.components.userAttendanceWizardDialog.codiceFiscaleGiaUsato' | transloco }}</ion-note>
+              }
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+          <ion-grid class="ion-no-padding">
+            <ion-row>
+              <ion-col size="12" size-md="6">
+              <ion-item>
                 <ion-label position="floating">UserName</ion-label>
                 <ion-input type="text" formControlName="descrizione" maxlength="50"></ion-input>
               </ion-item>

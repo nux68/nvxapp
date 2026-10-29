@@ -17,11 +17,35 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagra
         public int Id { get; set; }
         public string? Cognome { get; set; }
         public string? Nome { get; set; }
+        public string? Matricola { get; set; }
+        public string? CodiceFiscale { get; set; }
         public List<RoleCode> RoleCode { get; set; } = new List<RoleCode>();
 
         // questi vengono usati per visualizzare i dati, ma le editazioni lavorano dievrsamente con propri ogegtti
         public List<Dip_RapportoLavoroModel> Dip_RapportoLavoro { get; set; } = new List<Dip_RapportoLavoroModel>();
 
+    }
+
+    /// <summary>altri dipendenti dell'azienda con la stessa matricola / lo stesso codice fiscale (cognome e nome), e l'errore da mostrare</summary>
+    public class MatricolaCodiceFiscaleUsati
+    {
+        public string? DipendenteConMatricola { get; set; }
+        public string? DipendenteConCodiceFiscale { get; set; }
+        public string? Errore { get; set; }
+    }
+
+    public class Dip_Anagrafica_Check_InModel
+    {
+        public string? Matricola { get; set; }
+        public string? CodiceFiscale { get; set; }
+        /// <summary>dipendente in modifica (escluso dal controllo); vuoto per un nuovo dipendente</summary>
+        public string? IdAspNetUsers { get; set; }
+    }
+    public class Dip_Anagrafica_Check_OutModel : ModelResult
+    {
+        public bool MatricolaExists { get; set; }
+        public bool CodiceFiscaleExists { get; set; }
+        public bool CodiceFiscaleNonValido { get; set; }
     }
 
     public class Dip_Anagrafica_GetAll_InModel

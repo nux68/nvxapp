@@ -18,6 +18,12 @@ namespace nvxapp.server.data.Entities.Tenant
         public string? Cognome { get; set; }
         public string? Nome { get; set; }
 
+        // matricola paghe e codice fiscale (facoltativi; unici tra i dipendenti dell'azienda, controllo in Dip_AnagraficaService)
+        [MaxLength(20)]
+        public string? Matricola { get; set; }
+        [MaxLength(16)]
+        public string? CodiceFiscale { get; set; }
+
         public ICollection<Dip_RapportoLavoro>? Dip_RapportoLavoro { get; set; }
         public ICollection<Dip_Competenza>? Dip_Competenza { get; set; }
         

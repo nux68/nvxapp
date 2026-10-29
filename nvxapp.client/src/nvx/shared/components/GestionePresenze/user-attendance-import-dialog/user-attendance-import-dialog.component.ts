@@ -14,6 +14,9 @@ import { UserCheckInModel } from '../../../../ClientServer-Service/Infrastructur
 import { DipendentiImportService } from '../../../../ClientServer-Service/GestionePresenze/DipendentiImportService/dipendenti-import.service';
 import { DIPENDENTI_IMPORT_MAX_BYTE, DipendenteImportDaInserireModel, DipendenteImportModel, DipendentiImport_EseguiInModel, DipendentiImport_EstraiInModel } from '../../../../ClientServer-Service/GestionePresenze/DipendentiImportService/Models/dipendenti-import-model';
 import { NuovoDipendenteService } from '../../../../Utility/GestionePresenze/nuovo-dipendente.service';
+import { codiceFiscaleValidator, normalizzaCodiceFiscale } from '../../../../Utility/GestionePresenze/codice-fiscale';
+import { DipAnagraficaService } from '../../../../ClientServer-Service/GestionePresenze/Dip_Anagrafica/dip-anagrafica.service';
+import { Dip_Anagrafica_Check_InModel } from '../../../../ClientServer-Service/GestionePresenze/Dip_Anagrafica/Models/dip-anagrafica-model';
 import { LongJobNotifierService } from '../../../../Utility/infrastructure/long-job-notifier.service';
 import { RefresherService } from '../../../../Utility/GestionePresenze/refresher.service';
 import { ParTable, SharedParameterGestionePresenzeService } from '../../../shared-parameter-gestione-presenze.service';
@@ -32,7 +35,7 @@ const IMMAGINE_MAX_LATO = 2000;
  *  1 l'utente sceglie il file (anche una foto, es. di una carta d'identita') e puo' scrivere delle note
  *    per il LLM (es. "assunti tutti dal 1/11")
  *  2 il server ne legge il testo e il LLM estrae le persone con i dati del primo step del wizard
- *    (cognome, nome, username, email) e la data di assunzione
+ *    (cognome, nome, username, email), la data di assunzione, la matricola e il codice fiscale
  *  3 l'elenco si corregge: con dati mancanti, non validi o gia' usati non si puo' importare;
  *    la password iniziale e' unica per tutti, ruoli, data di assunzione e profilo orario sono per
  *    dipendente (di default User, oggi e il profilo di default del wizard)
@@ -75,6 +78,7 @@ export class UserAttendanceImportDialogComponent extends BaseDialogConfirmCancel
               private accountService: AccountService,
               private dipendentiImportService: DipendentiImportService,
               private nuovoDipendenteService: NuovoDipendenteService,
+              private dipAnagraficaService: DipAnagraficaService,
               private refresherService: RefresherService,
               private longJobNotifierService: LongJobNotifierService,
               private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
@@ -222,6 +226,8 @@ export class UserAttendanceImportDialogComponent extends BaseDialogConfirmCancel
       // gia' usati in archivio (controllo del server): l'errore sparisce modificando il campo
       if (d.userNameExists) this.segnaGiaUsato(riga, 'descrizione', true);
       if (d.mailExists) this.segnaGiaUsato(riga, 'mail', true);
+      if (d.matricolaExists) this.segnaGiaUsato(riga, 'matricola', true);
+      if (d.codiceFiscaleExists) this.segnaGiaUsato(riga, 'codiceFiscale', true);
     }
     this.dipendenti.markAllAsTouched();
   }
@@ -236,6 +242,9 @@ export class UserAttendanceImportDialogComponent extends BaseDialogConfirmCancel
       roles: [userRole ? [userRole.name] : [], [minArrayLength(1)]],
       // "YYYY-MM-DD" (campo data); vuota = oggi
       dataAss: [d?.dataAss ? d.dataAss.substring(0, 10) : null],
+      // facoltativi
+      matricola: [d?.matricola || null, [Validators.maxLength(20)]],
+      codiceFiscale: [d?.codiceFiscale || null, [codiceFiscaleValidator()]],
       idPar_ProfiloOrario: [this.nuovoDipendenteService.Default().profilo.idPar_ProfiloOrario, [Validators.required]],
     });
   }
@@ -259,14 +268,19 @@ export class UserAttendanceImportDialogComponent extends BaseDialogConfirmCancel
     this.dipendenti.removeAt(index);
   }
 
-  /** stesso username o email in un'altra riga dell'elenco */
-  duplicato(index: number, campo: 'descrizione' | 'mail'): boolean {
+  /** stesso username, email, matricola o codice fiscale in un'altra riga dell'elenco */
+  duplicato(index: number, campo: CampoUnico): boolean {
     const valore = normalizza(this.righe[index]?.get(campo)?.value);
     return !!valore && this.righe.some((r, i) => i !== index && normalizza(r.get(campo)?.value) === valore);
   }
 
+  /** riga con un campo ripetuto in un'altra riga */
+  rigaDuplicata(index: number): boolean {
+    return CAMPI_UNICI.some(campo => this.duplicato(index, campo));
+  }
+
   private get senzaDuplicati(): boolean {
-    return this.righe.every((_, i) => !this.duplicato(i, 'descrizione') && !this.duplicato(i, 'mail'));
+    return this.righe.every((_, i) => !this.rigaDuplicata(i));
   }
 
   public get importabile(): boolean {
@@ -300,7 +314,7 @@ export class UserAttendanceImportDialogComponent extends BaseDialogConfirmCancel
     this.errore = null;
     this.updateButtonbar();
     try {
-      if (!(await this.verificaUsernameMail())) {
+      if (!(await this.verificaUsernameMail()) || !(await this.verificaMatricolaCodiceFiscale())) {
         this.errore = this.t('giaUsati');
         return;
       }
@@ -318,6 +332,8 @@ export class UserAttendanceImportDialogComponent extends BaseDialogConfirmCancel
         // data di assunzione (anche inizio del profilo orario); vuota = oggi
         d.dataAss = v.dataAss ? v.dataAss.substring(0, 10) + 'T00:00:00' : null;
         d.idPar_ProfiloOrario = v.idPar_ProfiloOrario;
+        d.matricola = v.matricola?.trim() || null;
+        d.codiceFiscale = normalizzaCodiceFiscale(v.codiceFiscale) || null;
         return d;
       });
 
@@ -367,6 +383,32 @@ export class UserAttendanceImportDialogComponent extends BaseDialogConfirmCancel
     return liberi;
   }
 
+  /**
+   * Controlla matricola e codice fiscale delle righe che li hanno: quelli gia' di un altro dipendente
+   * dell'azienda si segnano sul campo. In caso di errore della chiamata non blocca: il server li ricontrolla.
+   */
+  private async verificaMatricolaCodiceFiscale(): Promise<boolean> {
+    let liberi = true;
+    for (const riga of this.righe) {
+      const matricola = (riga.value.matricola ?? '').trim();
+      const codiceFiscale = normalizzaCodiceFiscale(riga.value.codiceFiscale);
+      if (!matricola && !codiceFiscale) continue;
+      const request = new GenericRequest<Dip_Anagrafica_Check_InModel>(Dip_Anagrafica_Check_InModel);
+      request.data.matricola = matricola || null;
+      request.data.codiceFiscale = codiceFiscale || null;
+      try {
+        const res = await firstValueFrom(this.dipAnagraficaService.Dip_AnagraficaCheck(request));
+        if (!res?.success || !res.data) continue;
+        this.segnaGiaUsato(riga, 'matricola', res.data.matricolaExists);
+        this.segnaGiaUsato(riga, 'codiceFiscale', res.data.codiceFiscaleExists);
+        liberi = liberi && !res.data.matricolaExists && !res.data.codiceFiscaleExists;
+      } catch (error) {
+        console.error('Errore durante la chiamata API:', error);
+      }
+    }
+    return liberi;
+  }
+
   /** Aggiunge o toglie l'errore "giaUsato" lasciando gli altri errori del campo. */
   private segnaGiaUsato(riga: FormGroup, campo: string, giaUsato: boolean): void {
     const control = riga.get(campo);
@@ -378,8 +420,12 @@ export class UserAttendanceImportDialogComponent extends BaseDialogConfirmCancel
   }
 }
 
+/** campi che non si possono ripetere tra le righe (vuoti esclusi) */
+type CampoUnico = 'descrizione' | 'mail' | 'matricola' | 'codiceFiscale';
+const CAMPI_UNICI: CampoUnico[] = ['descrizione', 'mail', 'matricola', 'codiceFiscale'];
+
 function normalizza(valore: string | null | undefined): string {
-  return (valore ?? '').trim().toLowerCase();
+  return (valore ?? '').replace(/\s/g, '').toLowerCase();
 }
 
 function minArrayLength(min: number): ValidatorFn {

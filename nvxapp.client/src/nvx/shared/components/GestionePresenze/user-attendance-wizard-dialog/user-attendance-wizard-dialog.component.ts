@@ -19,6 +19,9 @@ import { Par_CompetenzaModel } from '../../../../ClientServer-Service/GestionePr
 import { SharedParameterGestionePresenzeService, ParTable } from '../../../shared-parameter-gestione-presenze.service';
 import { BaseDialogConfirmCancelComponent } from '../../../../pages/_BASE/base-dialog-confirm-cancel/base-dialog-confirm-cancel.component';
 import { NuovoDipendenteService } from '../../../../Utility/GestionePresenze/nuovo-dipendente.service';
+import { codiceFiscaleValidator } from '../../../../Utility/GestionePresenze/codice-fiscale';
+import { DipAnagraficaService } from '../../../../ClientServer-Service/GestionePresenze/Dip_Anagrafica/dip-anagrafica.service';
+import { Dip_Anagrafica_Check_InModel } from '../../../../ClientServer-Service/GestionePresenze/Dip_Anagrafica/Models/dip-anagrafica-model';
 
 /** valori del wizard: un gruppo del form per gli step 1-3; dopo il salvataggio l'utente creato */
 export class UserAttendanceWizardModel {
@@ -83,6 +86,7 @@ export class UserAttendanceWizardDialogComponent extends BaseDialogConfirmCancel
               private parameterService: ParameterService,
               private accountService: AccountService,
               private nuovoDipendenteService: NuovoDipendenteService,
+              private dipAnagraficaService: DipAnagraficaService,
               private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
               private refresherService: RefresherService,
               private elementRef: ElementRef<HTMLElement>,
@@ -107,6 +111,8 @@ export class UserAttendanceWizardDialogComponent extends BaseDialogConfirmCancel
       utente: this.fb.group({
         cognome: [null, [Validators.required, Validators.maxLength(50)]],
         nome: [null, [Validators.required, Validators.maxLength(50)]],
+        matricola: [null, [Validators.maxLength(20)]],
+        codiceFiscale: [null, [codiceFiscaleValidator()]],
         descrizione: [null, [Validators.required, Validators.maxLength(50)]],
         pw: [null, [Validators.required]],
         mail: [null, [Validators.required, Validators.email]],
@@ -240,8 +246,9 @@ export class UserAttendanceWizardDialogComponent extends BaseDialogConfirmCancel
 
   private handleNext = async () => {
     if (this.checking || !this.stepValido(this.currentStep)) return;
-    // dallo step 1: username ed email non devono essere già usati da un altro utente
+    // dallo step 1: username ed email non devono essere già usati da un altro utente, matricola e codice fiscale da un altro dipendente
     if (this.currentStep === 0 && !(await this.verificaUsernameMail())) return;
+    if (this.currentStep === 0 && !(await this.verificaMatricolaCodiceFiscale())) return;
     if (this.currentStep < this.titoliStep.length - 1) {
       this.currentStep++;
       this.updateButtonbar();
@@ -265,6 +272,39 @@ export class UserAttendanceWizardDialogComponent extends BaseDialogConfirmCancel
       this.segnaGiaUsato('descrizione', res.data.userNameExists);
       this.segnaGiaUsato('mail', res.data.mailExists);
       return !res.data.userNameExists && !res.data.mailExists;
+    } catch (error) {
+      console.error('Errore durante la chiamata API:', error);
+      return true;
+    } finally {
+      this.checking = false;
+      this.updateButtonbar();
+    }
+  }
+
+  /**
+   * Matricola e codice fiscale (se indicati) non devono essere già di un altro dipendente dell'azienda:
+   * l'utente si crea prima dei dati delle presenze, quindi il controllo va fatto qui.
+   * In caso di errore della chiamata non blocca: resta il controllo al salvataggio.
+   */
+  private async verificaMatricolaCodiceFiscale(): Promise<boolean> {
+    const matricola = (this.formUtente.value.matricola ?? '').trim();
+    const codiceFiscale = (this.formUtente.value.codiceFiscale ?? '').trim();
+    this.segnaGiaUsato('matricola', false);
+    this.segnaGiaUsato('codiceFiscale', false);
+    if (!matricola && !codiceFiscale) return true;
+
+    const request = new GenericRequest<Dip_Anagrafica_Check_InModel>(Dip_Anagrafica_Check_InModel);
+    request.data.matricola = matricola || null;
+    request.data.codiceFiscale = codiceFiscale || null;
+
+    this.checking = true;
+    this.updateButtonbar();
+    try {
+      const res = await firstValueFrom(this.dipAnagraficaService.Dip_AnagraficaCheck(request));
+      if (!res?.success || !res.data) return true;
+      this.segnaGiaUsato('matricola', res.data.matricolaExists);
+      this.segnaGiaUsato('codiceFiscale', res.data.codiceFiscaleExists);
+      return !res.data.matricolaExists && !res.data.codiceFiscaleExists;
     } catch (error) {
       console.error('Errore durante la chiamata API:', error);
       return true;

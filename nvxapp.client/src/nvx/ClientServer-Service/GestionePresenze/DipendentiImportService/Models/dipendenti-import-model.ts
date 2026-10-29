@@ -8,9 +8,16 @@ export class DipendenteImportModel {
   public mail: string = '';
   /** data di assunzione "YYYY-MM-DDT00:00:00", vuota se il file non la riporta */
   public dataAss: string = '';
+  /** matricola paghe e codice fiscale, vuoti se il file non li riporta */
+  public matricola: string = '';
+  public codiceFiscale: string = '';
   /** username o email gia' usati da un altro utente */
   public userNameExists: boolean = false;
   public mailExists: boolean = false;
+  /** matricola o codice fiscale gia' di un altro dipendente dell'azienda; codice fiscale non valido */
+  public matricolaExists: boolean = false;
+  public codiceFiscaleExists: boolean = false;
+  public codiceFiscaleNonValido: boolean = false;
 }
 
 /** dimensione massima del file da importare (come sul server) */
@@ -34,6 +41,9 @@ export class DipendenteImportDaInserireModel {
   /** "YYYY-MM-DDT00:00:00"; null = oggi */
   public dataAss: string | null = null;
   public idPar_ProfiloOrario: number = 0;
+  /** facoltativi */
+  public matricola: string | null = null;
+  public codiceFiscale: string | null = null;
 }
 
 export class DipendentiImport_EseguiInModel {

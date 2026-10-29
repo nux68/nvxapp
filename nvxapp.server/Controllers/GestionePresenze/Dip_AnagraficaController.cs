@@ -51,6 +51,15 @@ namespace nvxapp.server.Controllers
             return await _dip_AnagraficaService.Dip_AnagraficaPut(inModel, false);
         }
 
+        // matricola e codice fiscale: validita' e altri dipendenti che li hanno gia' (wizard, prima di creare l'utente)
+        [Authorize]
+        [HttpPost]
+        [Route("Dip_AnagraficaCheck")]
+        public async Task<GenericResult<Dip_Anagrafica_Check_OutModel>> Dip_AnagraficaCheck(GenericRequest<Dip_Anagrafica_Check_InModel> inModel)
+        {
+            return await _dip_AnagraficaService.Dip_AnagraficaCheck(inModel, false);
+        }
+
     }
 
 

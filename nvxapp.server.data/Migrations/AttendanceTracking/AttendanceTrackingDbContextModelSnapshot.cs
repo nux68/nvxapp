@@ -614,6 +614,10 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
+                    b.Property<string>("CodiceFiscale")
+                        .HasMaxLength(16)
+                        .HasColumnType("character varying(16)");
+
                     b.Property<string>("Cognome")
                         .HasColumnType("text");
 
@@ -623,6 +627,10 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     b.Property<string>("IdAspNetUsers")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<string>("Matricola")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
 
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("timestamp without time zone");

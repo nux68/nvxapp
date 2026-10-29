@@ -1245,4 +1245,22 @@
     <value>Time sheet and reports</value>
     <comment>titolo della sezione nell'elenco dei comandi della chat (help)</comment>
   </data>
+  <data name="AnagraficaMatricolaTroppoLunga" xml:space="preserve">
+    <value>The employee number can have at most {0} characters.</value>
+  </data>
+  <data name="AnagraficaCodiceFiscaleNonValido" xml:space="preserve">
+    <value>The tax code "{0}" is not valid.</value>
+  </data>
+  <data name="AnagraficaMatricolaGiaUsata" xml:space="preserve">
+    <value>The employee number "{0}" is already used by {1}.</value>
+  </data>
+  <data name="AnagraficaCodiceFiscaleGiaUsato" xml:space="preserve">
+    <value>The tax code "{0}" is already used by {1}.</value>
+  </data>
+  <data name="ImportMatricolaRipetuta" xml:space="preserve">
+    <value>The employee number "{0}" appears for more than one employee in the list.</value>
+  </data>
+  <data name="ImportCodiceFiscaleRipetuto" xml:space="preserve">
+    <value>The tax code "{0}" appears for more than one employee in the list.</value>
+  </data>
 </root>

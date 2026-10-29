@@ -141,6 +141,24 @@
                 </ion-note>
               }
               <ion-item>
+                <ion-label position="floating">{{ 'attendance.pages.userDepartmentEdit.matricola' | transloco }}</ion-label>
+                <ion-input type="text" formControlName="matricola" maxlength="20"></ion-input>
+              </ion-item>
+              @if (_editForm.get('matricola')?.hasError('maxlength') && _editForm.get('matricola')?.touched) {
+                <ion-note color="danger">
+                  {{ 'attendance.pages.userDepartmentEdit.matricolaMaxLength' | transloco: { max: 20 } }}
+                </ion-note>
+              }
+              <ion-item>
+                <ion-label position="floating">{{ 'attendance.pages.userDepartmentEdit.codiceFiscale' | transloco }}</ion-label>
+                <ion-input type="text" formControlName="codiceFiscale" maxlength="16" autocapitalize="characters"></ion-input>
+              </ion-item>
+              @if (_editForm.get('codiceFiscale')?.hasError('codiceFiscale') && _editForm.get('codiceFiscale')?.touched) {
+                <ion-note color="danger">
+                  {{ 'attendance.pages.userDepartmentEdit.codiceFiscaleNonValido' | transloco }}
+                </ion-note>
+              }
+              <ion-item>
                 <ion-toggle formControlName="disabled" justify="start">{{ 'attendance.pages.userDepartmentEdit.disabled' | transloco }}</ion-toggle>
               </ion-item>
               <ion-note class="nvx-nota-disabled">{{ 'attendance.pages.userDepartmentEdit.disabledNote' | transloco }}</ion-note>

@@ -48,6 +48,7 @@ export class DipSelectorModalComponent implements OnInit {
         cognome: dip?.cognome ?? '',
         nome: dip?.nome ?? '',
         userName: dip?.userName ?? u.idAspNetUsers,
+        matricola: dip?.matricola ?? '',
         displayLabel: dip ? `${dip.cognome} ${dip.nome}` : u.idAspNetUsers,
         initials: dip ? `${dip.cognome.charAt(0)}${dip.nome.charAt(0)}`.toUpperCase() : '?'
       };
@@ -79,7 +80,8 @@ export class DipSelectorModalComponent implements OnInit {
       : this.allUsers.filter(u =>
           u.cognome.toLowerCase().includes(q) ||
           u.nome.toLowerCase().includes(q) ||
-          u.userName.toLowerCase().includes(q)
+          u.userName.toLowerCase().includes(q) ||
+          u.matricola.toLowerCase().includes(q)
         );
   }
 
@@ -133,6 +135,7 @@ export interface DipDisplayItem {
   cognome: string;
   nome: string;
   userName: string;
+  matricola: string;
   displayLabel: string;
   initials: string;
 }

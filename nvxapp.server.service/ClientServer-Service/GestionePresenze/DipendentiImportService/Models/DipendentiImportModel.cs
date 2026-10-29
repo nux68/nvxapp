@@ -11,9 +11,16 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dipendenti
         public string Mail { get; set; } = string.Empty;
         /// <summary>data di assunzione "YYYY-MM-DDT00:00:00", vuota se il file non la riporta</summary>
         public string DataAss { get; set; } = string.Empty;
+        /// <summary>matricola paghe e codice fiscale, vuoti se il file non li riporta</summary>
+        public string Matricola { get; set; } = string.Empty;
+        public string CodiceFiscale { get; set; } = string.Empty;
         /// <summary>username o email gia' usati da un altro utente</summary>
         public bool UserNameExists { get; set; }
         public bool MailExists { get; set; }
+        /// <summary>matricola o codice fiscale gia' usati da un altro dipendente dell'azienda; codice fiscale non valido</summary>
+        public bool MatricolaExists { get; set; }
+        public bool CodiceFiscaleExists { get; set; }
+        public bool CodiceFiscaleNonValido { get; set; }
     }
 
     public class DipendentiImport_EstraiInModel
@@ -35,6 +42,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dipendenti
         public List<string> Roles { get; set; } = new List<string>();
         /// <summary>data di assunzione (anche inizio del profilo orario); null = oggi</summary>
         public DateTime? DataAss { get; set; }
+        public string? Matricola { get; set; }
+        public string? CodiceFiscale { get; set; }
         public int IdPar_ProfiloOrario { get; set; }
     }
 

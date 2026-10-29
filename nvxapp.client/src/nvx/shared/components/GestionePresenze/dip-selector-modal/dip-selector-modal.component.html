@@ -39,7 +39,7 @@
         </div>
         <ion-label>
           <h2>{{ user.cognome }} {{ user.nome }}</h2>
-          <p>{{ user.userName }}</p>
+          <p>{{ user.userName }}@if (user.matricola) { · {{ user.matricola }}}</p>
         </ion-label>
         @if (mode === 'single' && isSelected(user.idAspNetUsers)) {
           <ion-icon
