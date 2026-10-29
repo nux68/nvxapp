@@ -5,6 +5,14 @@ export class Par_CausaliModel {
     public idAz_Anagrafica!: number;
     public descrizione!: string;
     public codice!: string;
+    /** ore oppure importo in euro (non si cambia se la causale e' gia' usata) */
+    public tipo: TipoValore = TipoValore.Orario;
+}
+
+/** valore di causali e giustificativi: ore oppure un importo in euro (2 decimali) */
+export enum TipoValore {
+    Orario = 0,
+    Importo = 1
 }
 
 export class Par_CausaliInModel {

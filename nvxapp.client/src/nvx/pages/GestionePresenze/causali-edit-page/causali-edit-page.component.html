@@ -44,6 +44,15 @@
           </ion-note>
         }
 
+        <ion-item>
+          <ion-label position="floating">{{ 'attendance.common.tipoValore' | transloco }}</ion-label>
+          <ion-select formControlName="tipo" interface="popover">
+            <ion-select-option [value]="TipoValore.Orario">{{ 'attendance.common.tipoValoreOrario' | transloco }}</ion-select-option>
+            <ion-select-option [value]="TipoValore.Importo">{{ 'attendance.common.tipoValoreImporto' | transloco }}</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <ion-note>{{ 'attendance.pages.causaliEdit.tipoNota' | transloco }}</ion-note>
+
 
       </form>
 

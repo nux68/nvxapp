@@ -150,6 +150,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                 return CommandResult.Fail(
                     AttendanceTrackingMessages.Get("ChatJustificationTypeNotFound", justification));
 
+            // giustificativo a importo: si registra con l'importo (RegisterJustificationAmount), non con le ore
+            if (parGiustificativo.Tipo == TipoValore.Importo)
+                return CommandResult.Fail(AttendanceTrackingMessages.Get("ChatJustificationIsAmount", parGiustificativo.Descrizione));
+
             // --- Risolvi data ---
             DateTime competenzaDate = ChatSlotWords.ParseDateOrToday(dateSlot);
 

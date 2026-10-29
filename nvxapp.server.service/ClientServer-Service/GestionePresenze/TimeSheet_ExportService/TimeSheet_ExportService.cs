@@ -545,7 +545,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                 .Select(g =>
                                 {
                                     var codice = giustificativi.TryGetValue(g.IdPar_Giustificativi, out var par) ? (par.Codice ?? par.Descrizione ?? "") : "";
-                                    var ore = g.Hours is TimeSpan h && h > TimeSpan.Zero ? $" {(int)h.TotalHours}:{h.Minutes:00}" : "";
+                                    // giustificativo a importo: l'importo al posto delle ore
+                                    var ore = g.Importo is decimal importo && importo > 0
+                                        ? " " + importo.ToString("€ #,##0.00", System.Globalization.CultureInfo.GetCultureInfo("it-IT"))
+                                        : g.Hours is TimeSpan h && h > TimeSpan.Zero ? $" {(int)h.TotalHours}:{h.Minutes:00}" : "";
                                     return $"{codice}{ore}{SegnoStato(g.RichiestaStato)}";
                                 });
 

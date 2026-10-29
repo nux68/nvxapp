@@ -12,7 +12,7 @@ import { Par_OrarioIntervalloHH_Arrange_Coppie_InModel, Par_OrarioIntervalloHHMo
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
 import { EditParOrarioDettaglioOrarioIntervalloHHDialogComponent } from '../../../shared/components/GestionePresenze/edit-par-orario-dettaglio-orario-intervallo-hhdialog/edit-par-orario-dettaglio-orario-intervallo-hhdialog.component';
 import { ParOrarioIntervalloHHService } from '../../../ClientServer-Service/GestionePresenze/Par_OrarioIntervalloHH/par-orario-intervallo-hh.service';
-import { Par_CausaliModel } from '../../../ClientServer-Service/GestionePresenze/Par_Causali/Models/par-causali-model';
+import { Par_CausaliModel, TipoValore } from '../../../ClientServer-Service/GestionePresenze/Par_Causali/Models/par-causali-model';
 import { SharedParameterGestionePresenzeService, ParTable } from '../../../shared/shared-parameter-gestione-presenze.service';
 import { TranslocoService } from '@jsverse/transloco';
 import { Az_SubCommessaAttivita_4FullListModel } from '../../../ClientServer-Service/GestionePresenze/Az_SubCommessaAttivita/Models/az-subcommessa-attivita-model';
@@ -74,7 +74,8 @@ export class OrariEditPageComponent extends BasePageConfirmCancelComponent<Par_O
   LoadData = (): Observable<Par_OrarioModel | null> => {
     const state = history.state;
 
-    this.par_CausaliModelList = this.sharedParameterGestionePresenzeService.Par_Causali;
+    // monte ore: solo causali a ore
+    this.par_CausaliModelList = (this.sharedParameterGestionePresenzeService.Par_Causali ?? []).filter(c => (c.tipo ?? TipoValore.Orario) === TipoValore.Orario);
     this.az_SubCommessaAttivita_4FullList = this.sharedParameterGestionePresenzeService.Az_SubCommessaAttivita_4Full;
 
     if (state) {

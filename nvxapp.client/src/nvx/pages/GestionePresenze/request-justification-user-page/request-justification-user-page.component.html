@@ -63,7 +63,15 @@
 </ion-item>
 
 
-@if (autorizzazione) {
+@if (aImporto) {
+  <ion-item>
+    <ion-label position="floating">{{ 'attendance.pages.requestJustificationUser.importoPerGiorno' | transloco }}</ion-label>
+    <ion-input type="number" inputmode="decimal" step="0.01" min="0.01" formControlName="importo"></ion-input>
+  </ion-item>
+  @if (_editForm.hasError('importoRequired') || _editForm.get('importo')?.invalid) {
+    <ion-note color="danger">{{ 'attendance.common.importoObbligatorio' | transloco }}</ion-note>
+  }
+} @else if (autorizzazione) {
   <ion-note class="nota-autorizzazione">
     {{ 'attendance.pages.requestJustificationUser.notaAutorizzazione' | transloco }}
   </ion-note>
@@ -75,7 +83,7 @@
 }
 
 <!-- La sezione ore sarà visibile solo se fullDay è false -->
-@if (!fullDay) {
+@if (!fullDay && !aImporto) {
   <div class="form-section">
     <div class="form-label">{{ 'attendance.pages.requestJustificationUser.ore' | transloco }}</div>
     <div class="time-input">

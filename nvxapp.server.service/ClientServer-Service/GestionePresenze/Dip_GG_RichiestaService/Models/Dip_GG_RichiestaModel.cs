@@ -50,6 +50,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
         public required string hhmm { get; set; } = string.Empty;
         public required bool AllDay { get; set; } = false;
         public required int IdPar_Giustificativi { get; set; } = 0;
+        // giustificativo a importo: euro per ogni giorno lavorativo del periodo (hhmm e AllDay non usati)
+        public decimal? Importo { get; set; }
     }
     /*
      Nota spese: la richiesta e' il contenitore delle spese (dettagli). All'invio arrivano spese e allegati;

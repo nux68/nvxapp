@@ -37,7 +37,10 @@ export class TimeSheetUtilityService {
           const Just = this.sharedParameterGestionePresenzeService.Par_Giustificativi.find(x => x.id == GG_Just.idPar_Giustificativi);
           if (Just) {
             let  retText = Just.codice;
-            if (GG_Just.allDay)
+            // a importo: l'importo per giorno al posto delle ore
+            if (GG_Just.importo != null)
+              retText = retText + " " + new Intl.NumberFormat(this.languageService.locale, { style: 'currency', currency: 'EUR' }).format(GG_Just.importo);
+            else if (GG_Just.allDay)
               retText = retText;
             else
               retText = retText + " " + GG_Just.hhmm;

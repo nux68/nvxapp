@@ -33,7 +33,7 @@
                   }
                 </ion-select>
               </ion-item>
-              @if (_editForm.get('_editForm.idPar_Giustificativi')?.hasError('required') && _editForm.get('_editForm.idPar_Giustificativi')?.touched) {
+              @if (_editForm.get('idPar_Giustificativi')?.hasError('required') && _editForm.get('idPar_Giustificativi')?.touched) {
                 <ion-note color="danger">
                   {{ 'attendance.components.editDipGgGiustificativiDialog.giustificativoObbligatorio' | transloco }}
                 </ion-note>
@@ -44,9 +44,19 @@
           <ion-row class="ion-align-items-center">
 
 
-            <!-- Valore -->
+            <!-- Valore: ore oppure importo, secondo il tipo del giustificativo -->
 
-            <ion-item>
+            @if (aImporto) {
+              <ion-item>
+                <ion-label position="floating">{{ 'attendance.common.importo' | transloco }}</ion-label>
+                <ion-input type="number" inputmode="decimal" step="0.01" min="0.01" formControlName="importo"></ion-input>
+              </ion-item>
+              @if (_editForm.hasError('importoRequired') || _editForm.get('importo')?.invalid) {
+                <ion-note color="danger">{{ 'attendance.common.importoObbligatorio' | transloco }}</ion-note>
+              }
+            }
+
+            <ion-item [hidden]="aImporto">
               <ion-label position="floating">{{ 'attendance.components.editDipGgGiustificativiDialog.valore' | transloco }}</ion-label>
               <ion-datetime-button class="datetime-button-with-label" datetime="hours-modal"></ion-datetime-button>
               <ion-modal [keepContentsMounted]="true">

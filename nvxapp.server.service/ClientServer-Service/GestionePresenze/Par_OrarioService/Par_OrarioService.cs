@@ -21,6 +21,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Orario
     public class Par_OrarioService : ServiceBase, IPar_OrarioService
     {
         private readonly IPar_OrarioRepository _par_OrarioRepository;
+        private readonly IPar_CausaliRepository _par_CausaliRepository;
         private readonly IGestionePresenzeUserUtility _gestionePresenzeUserUtility;
         private readonly IPar_OrarioIntervalloHHService _par_OrarioIntervalloHHService;
 
@@ -34,9 +35,11 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Orario
                                   IConfiguration configuration,
                                   IGestionePresenzeUserUtility gestionePresenzeUserUtility,
                                   IPar_OrarioIntervalloHHService par_OrarioIntervalloHHService,
-                                  IPar_OrarioRepository par_OrarioRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
+                                  IPar_OrarioRepository par_OrarioRepository,
+                                  IPar_CausaliRepository par_CausaliRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _par_OrarioRepository = par_OrarioRepository;
+            _par_CausaliRepository = par_CausaliRepository;
             _gestionePresenzeUserUtility = gestionePresenzeUserUtility;
             _par_OrarioIntervalloHHService = par_OrarioIntervalloHHService;
         }
@@ -96,6 +99,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Orario
             return await ExecuteAction(model, async () =>
             {
                 var retVal = new Par_Orario_PutOutModel();
+                // la causale del monte ore riceve ore: niente causali a importo
+                GestionePresenzeTipoValore.ControllaCausaliOrarie(_par_CausaliRepository, model.Data.Par_Orario.IdCausale_HH_Lav_MonteOre);
                 var entity = _mapper.Map<Par_Orario>(model.Data.Par_Orario);
 
                 int.TryParse(this.CurrentCompany, out int idCompany);

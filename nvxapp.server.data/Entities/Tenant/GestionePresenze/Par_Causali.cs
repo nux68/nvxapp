@@ -21,6 +21,9 @@ namespace nvxapp.server.data.Entities.Tenant
         [MaxLength(10)]
         public string? Codice { get; set; }
 
+        // ore (Dip_GG_Causali.Valore) oppure importo in euro (Dip_GG_Causali.Importo); non si cambia se la causale e' gia' usata
+        public TipoValore Tipo { get; set; } = TipoValore.Orario;
+
         public ICollection<Dip_GG_Causali>? Dip_GG_Causali { get; set; }
         public ICollection<Par_ExportCau_Causali>? Par_ExportCau_Causali { get; set; }
         
@@ -28,4 +31,11 @@ namespace nvxapp.server.data.Entities.Tenant
 
 
 
+
+    /// <summary>valore di causali e giustificativi: ore oppure un importo in euro (2 decimali)</summary>
+    public enum TipoValore
+    {
+        Orario = 0,
+        Importo = 1
+    }
 }

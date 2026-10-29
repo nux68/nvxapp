@@ -16,7 +16,7 @@ import { Par_OrarioIntervalloHHModel } from '../../../ClientServer-Service/Gesti
 import { OrarioTimbratureTipo, Par_OrarioModel } from '../../../ClientServer-Service/GestionePresenze/Par_Orario/Models/par-orario-model';
 import { SharedParameterGestionePresenzeService, ParTable } from '../../../shared/shared-parameter-gestione-presenze.service';
 import { ParProfiloOrarioGGService } from '../../../ClientServer-Service/GestionePresenze/Par_ProfiloOrarioGG/par-profilo-orario-gg.service';
-import { Par_CausaliModel } from '../../../ClientServer-Service/GestionePresenze/Par_Causali/Models/par-causali-model';
+import { Par_CausaliModel, TipoValore } from '../../../ClientServer-Service/GestionePresenze/Par_Causali/Models/par-causali-model';
 import { Par_GiustificativiModel } from '../../../ClientServer-Service/GestionePresenze/Par_Giustificativi/Models/par-giustificativi-model';
 import { TranslocoService } from '@jsverse/transloco';
 
@@ -122,8 +122,9 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
     const state = history.state;
 
     this.par_OrarioModelList = this.sharedParameterGestionePresenzeService.Par_Orario;
-    this.par_CausaliModelList = this.sharedParameterGestionePresenzeService.Par_Causali;
-    this.par_GiustificativiModelList = this.sharedParameterGestionePresenzeService.Par_Giustificativi;
+    // ricevono ore: solo causali e giustificativi a ore (il server lo ricontrolla)
+    this.par_CausaliModelList = (this.sharedParameterGestionePresenzeService.Par_Causali ?? []).filter(c => (c.tipo ?? TipoValore.Orario) === TipoValore.Orario);
+    this.par_GiustificativiModelList = (this.sharedParameterGestionePresenzeService.Par_Giustificativi ?? []).filter(g => (g.tipo ?? TipoValore.Orario) === TipoValore.Orario);
     
 
     this.par_OrarioIntervalloHH = this.sharedParameterGestionePresenzeService.Par_OrarioIntervalloHH;

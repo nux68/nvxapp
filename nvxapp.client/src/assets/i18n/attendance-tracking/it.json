@@ -1,5 +1,12 @@
 {
   "attendance": {
+    "common": {
+      "tipoValore": "Tipo",
+      "tipoValoreOrario": "Ore",
+      "tipoValoreImporto": "Importo",
+      "importo": "Importo (€)",
+      "importoObbligatorio": "Indicare un importo maggiore di zero."
+    },
     "pages": {
       "presentStaff": {
         "title": "Personale presente"
@@ -367,6 +374,7 @@
         "deleteConfirm": "Confermi la cancellazione della festività"
       },
       "requestJustificationUser": {
+        "importoPerGiorno": "Importo per giorno (€)",
         "title": "Richiesta ferie e permessi",
         "giustificativo": "Giustificativo",
         "seleziona": "Seleziona",
@@ -604,6 +612,7 @@
         "confirmExport": "Confermi l'export delle causali? "
       },
       "justificationEdit": {
+        "tipoImportoNota": "Giustificativo a importo: si inserisce un solo importo in euro. Non incide su ore, contatori, banca ore e piano ferie; la causale deve essere a importo.",
         "title": "Giustificativi",
         "info": "Info",
         "descrizione": "Descrizione",
@@ -756,6 +765,7 @@
         "columnDescription": "Descrizione"
       },
       "causaliEdit": {
+        "tipoNota": "Il tipo non si può cambiare se la causale è già usata. Le causali a importo non si usano in profili, orari e fasce.",
         "title": "Causale",
         "info": "Info",
         "description": "Descrizione",

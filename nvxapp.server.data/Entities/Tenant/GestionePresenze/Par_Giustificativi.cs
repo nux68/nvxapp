@@ -29,6 +29,10 @@ namespace nvxapp.server.data.Entities.Tenant
 
         public JustTipoInput TipoInput { get; set; }
 
+        // Importo: si inserisce un solo importo (Dip_GG_Giustificativi.Importo) al posto delle ore; la causale collegata
+        // deve essere dello stesso tipo e non ha effetti su ore, contatori, banca ore e piano ferie
+        public TipoValore Tipo { get; set; } = TipoValore.Orario;
+
         
         public int? IdCausale { get; set; }
         [ForeignKey("IdCausale")]

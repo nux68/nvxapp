@@ -24,7 +24,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Orario
         private readonly IPar_OrarioRepository _par_OrarioRepository;
         private readonly IPar_OrarioIntervalloHHRepository _par_OrarioIntervalloHHRepository;
         private readonly IGestionePresenzeUserUtility _gestionePresenzeUserUtility;
-        private readonly IPar_GiustificativiRepository _par_CausaliRepository;
+        private readonly IPar_CausaliRepository _par_CausaliRepository;
 
         public Par_OrarioIntervalloHHService(IMapper mapper,
                                   UserManager<ApplicationUser> userManager,
@@ -33,7 +33,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Orario
                                   IHttpContextAccessor httpContextAccessor,
                                   IConfiguration configuration,
 
-                                  IPar_GiustificativiRepository par_CausaliRepository,
+                                  IPar_CausaliRepository par_CausaliRepository,
                                   IGestionePresenzeUserUtility gestionePresenzeUserUtility,
                                   IPar_OrarioRepository par_OrarioRepository,
                                   IPar_OrarioIntervalloHHRepository par_OrarioIntervalloHHRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
@@ -128,6 +128,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Orario
                     {
                         retVal.Id = model.Data.Id;
 
+                        // le fasce ricevono ore lavorate: solo causali orarie
+                        GestionePresenzeTipoValore.ControllaCausaliOrarie(_par_CausaliRepository,
+                            model.Data.Par_OrarioIntervalloHH.Select(x => (int?)x.IdCausale_HH_Lav).ToArray());
+
                         //elimino gli id <0
                         model.Data.Par_OrarioIntervalloHH.Where(x => x.Id < 0).ToList().ForEach(x => x.Id = 0);
 
@@ -221,7 +225,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Orario
             Par_OrarioIntervalloHHModel _par_OrarioIntervalloHH = new Par_OrarioIntervalloHHModel();
 
             _par_OrarioIntervalloHH.NumCoppia = numCoppia;
-            var par_causali = _par_CausaliRepository.FindAll(x => x.IdAz_Anagrafica == IdAz_Anagrafica).FirstOrDefault();
+            var par_causali = _par_CausaliRepository.FindAll(x => x.IdAz_Anagrafica == IdAz_Anagrafica && x.Tipo == TipoValore.Orario).FirstOrDefault();
 
             _par_OrarioIntervalloHH.IdCausale_HH_Lav = par_causali != null ? par_causali.Id : 0; //MIGLIORARE
 

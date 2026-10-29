@@ -14,6 +14,10 @@ namespace nvxapp.server.data.Entities.Tenant
         public DateTime Data { get; set; }
         public TimeOnly Valore { get; set; }
 
+        // causale a importo (Par_Causali.Tipo = Importo): euro; Valore resta 00:00
+        [Column(TypeName = "numeric(10,2)")]
+        public decimal? Importo { get; set; }
+
         public int IdPar_Causali { get; set; }
         [ForeignKey("IdPar_Causali")]
         public virtual Par_Causali? Par_CausaliNavigation { get; set; }

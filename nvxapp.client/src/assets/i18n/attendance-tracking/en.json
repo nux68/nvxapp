@@ -1,5 +1,12 @@
 {
   "attendance": {
+    "common": {
+      "tipoValore": "Type",
+      "tipoValoreOrario": "Hours",
+      "tipoValoreImporto": "Amount",
+      "importo": "Amount (€)",
+      "importoObbligatorio": "Enter an amount greater than zero."
+    },
     "pages": {
       "presentStaff": {
         "title": "Staff present"
@@ -367,6 +374,7 @@
         "deleteConfirm": "Do you confirm deleting the public holiday"
       },
       "requestJustificationUser": {
+        "importoPerGiorno": "Amount per day (€)",
         "title": "Holiday and leave request",
         "giustificativo": "Absence justification",
         "seleziona": "Select",
@@ -604,6 +612,7 @@
         "confirmExport": "Confirm the reason code export? "
       },
       "justificationEdit": {
+        "tipoImportoNota": "Amount justification: a single amount in euro is entered. It does not affect hours, counters, hour bank or holiday plan; the pay cause must be amount-based.",
         "title": "Absence justifications",
         "info": "Info",
         "descrizione": "Description",
@@ -756,6 +765,7 @@
         "columnDescription": "Description"
       },
       "causaliEdit": {
+        "tipoNota": "The type cannot be changed once the pay cause is in use. Amount pay causes cannot be used in profiles, schedules and time slots.",
         "title": "Reason code",
         "info": "Info",
         "description": "Description",

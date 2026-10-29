@@ -1,4 +1,6 @@
 import { Component, OnDestroy, OnInit, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
+import { ImportoEuroPipe } from '../../../shared/pipe/GestionePresenze/importo-euro.pipe';
+import { LanguageService } from '../../../Utility/infrastructure/language.service';
 import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
 import { TimeSheetService } from '../../../Utility/GestionePresenze/time-sheet.service';
 import { MonthData, SegmentoItem, SegmentoRichiesta } from '../../../Utility/GestionePresenze/time-sheet-common-data';
@@ -112,7 +114,8 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
               private platform: Platform,
               private transloco: TranslocoService,
               private userInterfaceService: UserInterfaceService,
-              private timeSheetExportService: TimeSheetExportService
+              private timeSheetExportService: TimeSheetExportService,
+              private languageService: LanguageService
   ) {
     this.title = this.transloco.translate('attendance.pages.timeSheetPowerAdmin.title');
     this.currentMonth = { year: 0, month: 0, days: {}, dip_GG_Richiesta: [], daySlot: [], contatori_Anno_Mese:[] };
@@ -606,13 +609,15 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
       const parCausaliToShortTextPipe = new ParCausaliToShortTextPipe(this.sharedParameterGestionePresenzeService);
 
       const causale = obj as Dip_GG_CausaliModel;
+      // causale a importo: l'importo al posto delle ore
+      const valoreCausale = causale.importo != null ? new ImportoEuroPipe(this.languageService).transform(causale.importo) : (causale.valore ?? '').slice(0, 5);
       this.actionSheetOpenSelectObj = causale;
       this.actionSheetHeader = this.transloco.translate('attendance.pages.timeSheetPowerAdmin.reasonCodeHeader', { date: this.dateTimeUtilService.DateTo_ggmmyyyy(new Date(causale.data)) });
       this.actionSheetSubHeader = null;
 
       const dynamicButtons = JSON.parse(JSON.stringify(this.actionSheetButtonsCausali));
-      dynamicButtons.find((b: any) => b.role === actionSheet_Action.Causali_PREFIX + "_" + actionSheet_Action.cancellacausale).text = this.transloco.translate('attendance.pages.timeSheetPowerAdmin.deleteReasonCodeDetail', { code: parCausaliToShortTextPipe.transform(causale.idPar_Causali), date: this.dateTimeUtilService.DateTo_ggmmyyyy(new Date(causale.data)), value: causale.valore.slice(0, 5) });
-      dynamicButtons.find((b: any) => b.role === actionSheet_Action.Causali_PREFIX + "_" + actionSheet_Action.modificacausale).text = this.transloco.translate('attendance.pages.timeSheetPowerAdmin.editReasonCodeDetail', { code: parCausaliToShortTextPipe.transform(causale.idPar_Causali), date: this.dateTimeUtilService.DateTo_ggmmyyyy(new Date(causale.data)), value: causale.valore.slice(0, 5) });
+      dynamicButtons.find((b: any) => b.role === actionSheet_Action.Causali_PREFIX + "_" + actionSheet_Action.cancellacausale).text = this.transloco.translate('attendance.pages.timeSheetPowerAdmin.deleteReasonCodeDetail', { code: parCausaliToShortTextPipe.transform(causale.idPar_Causali), date: this.dateTimeUtilService.DateTo_ggmmyyyy(new Date(causale.data)), value: valoreCausale });
+      dynamicButtons.find((b: any) => b.role === actionSheet_Action.Causali_PREFIX + "_" + actionSheet_Action.modificacausale).text = this.transloco.translate('attendance.pages.timeSheetPowerAdmin.editReasonCodeDetail', { code: parCausaliToShortTextPipe.transform(causale.idPar_Causali), date: this.dateTimeUtilService.DateTo_ggmmyyyy(new Date(causale.data)), value: valoreCausale });
 
       
 

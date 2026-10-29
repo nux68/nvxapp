@@ -22,6 +22,10 @@ namespace nvxapp.server.data.Entities.Tenant
 
         public TimeSpan? From { get; set; }   // se InputType=manual  (dalle)
 
+        // giustificativo a importo (Par_Giustificativi.Tipo = Importo): euro, al posto di Hours/From
+        [Column(TypeName = "numeric(10,2)")]
+        public decimal? Importo { get; set; }
+
 
         public required int IdPar_Giustificativi { get; set; }
         [ForeignKey("IdPar_Giustificativi")]

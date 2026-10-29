@@ -14,14 +14,16 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
     {
         // idAspNetUsers null = utente corrente. Ritorna null se inviata, altrimenti il messaggio d'errore del servizio.
         public static async Task<string?> Giustificativo(IDip_GG_RichiestaService service, string? idAspNetUsers, bool fromHR,
-            DateTime dal, DateTime al, int idPar_Giustificativi, TimeSpan? ore)
+            DateTime dal, DateTime al, int idPar_Giustificativi, TimeSpan? ore, decimal? importo = null)
         {
-            // stesso formato del client (request-justification-user-page): senza ore = giornata intera
+            // stesso formato del client (request-justification-user-page): senza ore = giornata intera;
+            // giustificativo a importo: l'importo per giorno, senza ore
             var dati = JsonConvert.SerializeObject(new
             {
                 hhmm = ore != null ? $"{(int)ore.Value.TotalHours:D2}:{ore.Value.Minutes:D2}" : "00:00",
-                allDay = ore == null,
-                idPar_Giustificativi
+                allDay = ore == null && importo == null,
+                idPar_Giustificativi,
+                importo
             });
             return await Invia(service, idAspNetUsers, fromHR, TipoRichiesta.Giustificativo, dal, al, dati);
         }

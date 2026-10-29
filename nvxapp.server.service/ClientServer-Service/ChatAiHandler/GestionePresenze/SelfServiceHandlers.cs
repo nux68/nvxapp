@@ -114,7 +114,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                         Question = AttendanceTrackingMessages.Get("ChatRegisterJustificationHoursQuestion"),
                         Label = AttendanceTrackingMessages.Get("ChatHoursLabel"),
                         Normalizer = HoursSlotHelper.Normalize
-                    })
+                    },
+                    RegisterJustificationAmountHandler.AmountSlot(false))
             };
         }
 
@@ -131,8 +132,17 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
             var al = slots.TryGetValue("to", out var a) ? ParseData(a) : dal;
             TimeSpan? ore = slots.TryGetValue("hours", out var h) && HoursSlotHelper.TryParse(h, out var ts) ? ts : null;
 
+            // giustificativo a importo (es. rimborso): l'importo (per giorno) e' obbligatorio
+            decimal? importo = null;
+            if (giustificativo.Tipo == nvxapp.server.data.Entities.Tenant.TipoValore.Importo)
+            {
+                if (!ImportoSlotHelper.TryParse(slots.GetValueOrDefault("amount"), out var imp))
+                    return CommandResult.Fail(AttendanceTrackingMessages.Get("ChatJustificationAmountMissing", giustificativo.Descrizione ?? nomeGiustificativo));
+                importo = imp;
+            }
+
             // null = utente corrente; non dall'HR: resta in attesa di approvazione
-            var errore = await ChatInvioRichiestaHelper.Giustificativo(_dip_GG_RichiestaService, null, false, dal, al, giustificativo.Id, ore);
+            var errore = await ChatInvioRichiestaHelper.Giustificativo(_dip_GG_RichiestaService, null, false, dal, al, giustificativo.Id, ore, importo);
             if (errore != null)
                 return CommandResult.Fail(AttendanceTrackingMessages.Get("ChatRequestError", errore));
 

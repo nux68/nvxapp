@@ -6,6 +6,8 @@ using Microsoft.Extensions.Options;
 using nvxapp.server.Base;
 using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Entities.Tenant;
+using nvxapp.server.data.Extensions;
+using nvxapp.server.data.Localization;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
@@ -21,6 +23,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Giusti
     {
         private readonly IPar_GiustificativiRepository _par_GiustificativiRepository;
         private readonly IGestionePresenzeUserUtility _gestionePresenzeUserUtility;
+        private readonly IPar_CausaliRepository _par_CausaliRepository;
+        private readonly IDip_GG_GiustificativiRepository _dip_GG_GiustificativiRepository;
+        private readonly IDip_Rapporto_Giustificativi_MaturazioneRepository _maturazioneRepository;
 
         public Par_GiustificativiService(IMapper mapper,
                                   UserManager<ApplicationUser> userManager,
@@ -30,11 +35,17 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Giusti
                                   IConfiguration configuration,
 
                                   IPar_GiustificativiRepository par_GiustificativiRepository,
-                                  IGestionePresenzeUserUtility gestionePresenzeUserUtility
+                                  IGestionePresenzeUserUtility gestionePresenzeUserUtility,
+                                  IPar_CausaliRepository par_CausaliRepository,
+                                  IDip_GG_GiustificativiRepository dip_GG_GiustificativiRepository,
+                                  IDip_Rapporto_Giustificativi_MaturazioneRepository maturazioneRepository
             ) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _par_GiustificativiRepository = par_GiustificativiRepository;
             _gestionePresenzeUserUtility = gestionePresenzeUserUtility;
+            _par_CausaliRepository = par_CausaliRepository;
+            _dip_GG_GiustificativiRepository = dip_GG_GiustificativiRepository;
+            _maturazioneRepository = maturazioneRepository;
         }
 
         public virtual async Task<GenericResult<Par_GiustificativiOutModel>> GetAll(GenericRequest<Par_GiustificativiInModel> model, Boolean isSubProcess)
@@ -163,7 +174,12 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Giusti
 
                 if (company_DATA_COMB_AzAna_AzSedi_AzReparto != null && company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Anagrafica != null)
                 {
+                    ControllaTipo(model.Data.Par_Giustificativi);
+
                     Par_Giustificativi? par_Giustificativi = await _par_GiustificativiRepository.FindByIdAsync(model.Data.Par_Giustificativi.Id);
+                    if (par_Giustificativi != null && par_Giustificativi.Tipo != model.Data.Par_Giustificativi.Tipo && GiustificativoUsato(par_Giustificativi.Id))
+                        throw new UserMessageException(AttendanceTrackingMessages.Get("ParGiustificativoTipoNonModificabile", par_Giustificativi.Codice));
+
                     if (par_Giustificativi == null)
                     {
                         par_Giustificativi = _mapper.Map<Par_Giustificativi>(model.Data.Par_Giustificativi);
@@ -191,6 +207,36 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Giusti
             }, isSubProcess);
         }
     
+        /// <summary>
+        /// Giustificativo a importo: si inserisce solo un importo, quindi niente effetti sulle ore (segno neutro),
+        /// niente contatore, banca ore, autorizzazione allo straordinario e piano ferie. La causale collegata
+        /// deve essere dello stesso tipo del giustificativo (le ore vanno su causali orarie, gli importi su causali a importo).
+        /// </summary>
+        private void ControllaTipo(Par_GiustificativiModel giust)
+        {
+            if (giust.Tipo == TipoValore.Importo)
+            {
+                giust.Segno = SignWithNeutral.Neutral;
+                giust.TipoContatore = TipoContatore.NoContatore;
+                giust.BancaOre = false;
+                giust.AutorizzaStraordinario = false;
+                giust.VisualizzaInPianoFerie = false;
+            }
+
+            if (giust.IdCausale is int idCausale && idCausale > 0)
+            {
+                var causale = _par_CausaliRepository.FindAll(x => x.Id == idCausale).FirstOrDefault();
+                if (causale != null && causale.Tipo != giust.Tipo)
+                    throw new UserMessageException(AttendanceTrackingMessages.Get(giust.Tipo == TipoValore.Importo
+                        ? "ParGiustificativoCausaleNonImporto" : "ParGiustificativoCausaleNonOraria", causale.Codice));
+            }
+        }
+
+        /// <summary>giustificativo gia' registrato nei giorni dei dipendenti o con una maturazione configurata</summary>
+        private bool GiustificativoUsato(int id) =>
+            _dip_GG_GiustificativiRepository.FindAll(x => x.IdPar_Giustificativi == id).Any()
+            || _maturazioneRepository.FindAll(x => x.IdPar_Giustificativi == id).Any();
+
         public virtual async Task<GenericResult<Par_Giustificativi_DeleteOutModel>> Par_GiustificativiDelete(GenericRequest<Par_Giustificativi_DeleteInModel> model, bool isSubProcess)
         {
             return await ExecuteAction(model, async () =>

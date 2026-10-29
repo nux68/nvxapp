@@ -1,5 +1,6 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
+import { TipoValore } from '../../../ClientServer-Service/GestionePresenze/Par_Causali/Models/par-causali-model';
 import { NavController } from '@ionic/angular';
 import { Observable, map, of } from 'rxjs';
 import { UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
@@ -20,6 +21,8 @@ export class RequestJustificationModel {
   endDate: string | null = null;
   fullDay: boolean = true;
   notes: string = '';
+  /** giustificativo a importo: euro per ogni giorno lavorativo del periodo */
+  importo: number | null = null;
 }
 
 @Component({
@@ -64,7 +67,19 @@ export class RequestJustificationUserPageComponent extends BasePageConfirmCancel
       endDate: [null, [Validators.required]],
       fullDay: [true],
       notes: [''],
-    });
+      importo: [null, [Validators.min(0.01), Validators.max(99999999.99)]],
+    }, { validators: (g: AbstractControl) => this.importoValidator(g) });
+  }
+
+  /** Il giustificativo scelto e' a importo (es. rimborso): si chiede l'importo al posto delle ore. */
+  get aImporto(): boolean {
+    return this.giustificativi.find(g => g.codice === this.justificationType)?.tipo === TipoValore.Importo;
+  }
+
+  private importoValidator(g: AbstractControl): ValidationErrors | null {
+    const codice = g.get('justificationType')?.value;
+    const aImporto = (this.giustificativi ?? []).find(x => x.codice === codice)?.tipo === TipoValore.Importo;
+    return aImporto && !g.get('importo')?.value ? { importoRequired: true } : null;
   }
 
   get justificationType(): string | null { return this._editForm?.get('justificationType')?.value ?? null; }
@@ -101,6 +116,12 @@ export class RequestJustificationUserPageComponent extends BasePageConfirmCancel
     let dip_GG_Richiesta_Body_Giustificativo: Dip_GG_Richiesta_Body_Giustificativo = new Dip_GG_Richiesta_Body_Giustificativo();
     dip_GG_Richiesta_Body_Giustificativo.hhmm = this.hoursFormatted;
     dip_GG_Richiesta_Body_Giustificativo.allDay = editModel.fullDay;
+    // a importo: solo l'importo (per giorno), niente ore
+    if (this.aImporto) {
+      dip_GG_Richiesta_Body_Giustificativo.allDay = false;
+      dip_GG_Richiesta_Body_Giustificativo.hhmm = '00:00';
+      dip_GG_Richiesta_Body_Giustificativo.importo = editModel.importo != null ? +editModel.importo : null;
+    }
 
     // Trova l'ID del giustificativo selezionato
     const giustificativoSelezionato = this.giustificativi.find(g => g.codice === editModel.justificationType);

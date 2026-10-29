@@ -9,7 +9,7 @@ import { SharedParameterGestionePresenzeService } from '../../../shared-paramete
 import { Observable, of } from 'rxjs';
 import { Par_OrarioIntervalloHHModel, RoundDirection, TimeRoundInterval } from '../../../../ClientServer-Service/GestionePresenze/Par_OrarioIntervalloHH/Models/par-orario-intervallo-hh-model';
 import { StringHelperService } from '../../../../Utility/infrastructure/string-helper.service';
-import { Par_CausaliModel } from '../../../../ClientServer-Service/GestionePresenze/Par_Causali/Models/par-causali-model';
+import { Par_CausaliModel, TipoValore } from '../../../../ClientServer-Service/GestionePresenze/Par_Causali/Models/par-causali-model';
 import { Az_SubCommessaAttivita_4FullListModel } from '../../../../ClientServer-Service/GestionePresenze/Az_SubCommessaAttivita/Models/az-subcommessa-attivita-model';
 
 @Component({
@@ -81,7 +81,8 @@ export class EditParOrarioDettaglioOrarioIntervalloHHDialogComponent extends Bas
     this.dateTime = this.stringHelperService.DateCurr_To_ISOString();
     this.formattedDate = this.stringHelperService.Date_To_S_ddmmyyyy(now)
     this.formattedTime = this.stringHelperService.Date_To_S_hhmm(now);
-    this.par_CausaliModelList = this.sharedParameterGestionePresenzeService.Par_Causali;
+    // ore lavorate della fascia: solo causali a ore
+    this.par_CausaliModelList = (this.sharedParameterGestionePresenzeService.Par_Causali ?? []).filter(c => (c.tipo ?? TipoValore.Orario) === TipoValore.Orario);
     this.az_SubCommessaAttivita_4FullList = this.sharedParameterGestionePresenzeService.Az_SubCommessaAttivita_4Full;
     
 

@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using nvxapp.server.Base;
 using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Entities.Tenant;
+using nvxapp.server.data.Localization;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
@@ -134,6 +135,22 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Cau
 
                 if (company_DATA_COMB_AzAna_AzSedi_AzReparto != null && company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Anagrafica != null)
                 {
+                    // causale a importo: un solo importo e Valore 00:00; oraria: niente importo
+                    var causale = model.Data.Dip_GG_Causali;
+                    var tipo = _par_CausaliRepository.FindAll(x => x.Id == causale.IdPar_Causali).Select(x => x.Tipo).FirstOrDefault();
+                    if (tipo == TipoValore.Importo)
+                    {
+                        if (causale.Importo is not decimal importo || importo <= 0 || importo >= 100_000_000m)
+                        {
+                            retVal.Messages.Add(new Message(AttendanceTrackingMessages.Get("CausaleImportoObbligatorio"), MessageType.Exception));
+                            return retVal;
+                        }
+                        causale.Importo = Math.Round(importo, 2);
+                        causale.Valore = TimeOnly.MinValue;
+                    }
+                    else
+                        causale.Importo = null;
+
                     Dip_GG_Causali? par_Causale = await _Dip_GG_CausaliRepository.FindByIdAsync(model.Data.Dip_GG_Causali.Id);
                     if (par_Causale == null)
                     {
@@ -195,7 +212,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Cau
                 {
                     Dip_GG_Causali? dip_GG_Causali = await _Dip_GG_CausaliRepository.FindByIdAsync(model.Data.Id);
                     int IdPar_Causali = 0;
-                    var cau = _par_CausaliRepository.FindAll(x => x.IdAz_Anagrafica == IdAnagrafica).FirstOrDefault();
+                    // proposta per una nuova causale: la prima a ore (con 1 ora)
+                    var cau = _par_CausaliRepository.FindAll(x => x.IdAz_Anagrafica == IdAnagrafica && x.Tipo == TipoValore.Orario).FirstOrDefault()
+                              ?? _par_CausaliRepository.FindAll(x => x.IdAz_Anagrafica == IdAnagrafica).FirstOrDefault();
                     if (cau != null)
                         IdPar_Causali = cau.Id;
 

@@ -30,7 +30,8 @@ export class CausaliListPageComponent {
   }
   public readonly columns: NvxListColumn<Par_CausaliModel>[] = [
     { key: 'codice', title: this.transloco.translate('attendance.pages.causaliList.columnCode'), width: '140px', mobile: 'subtitle' },
-    { key: 'descrizione', title: this.transloco.translate('attendance.pages.causaliList.columnDescription'), mobile: 'title' }
+    { key: 'descrizione', title: this.transloco.translate('attendance.pages.causaliList.columnDescription'), mobile: 'title' },
+    { key: 'tipo', title: this.transloco.translate('attendance.common.tipoValore'), width: '120px', mobile: 'note' }
   ];
   public actions: NvxListAction<Par_CausaliModel>[] = [];
   public readonly sortList = (a: Par_CausaliModel, b: Par_CausaliModel) => (a.descrizione ?? '').localeCompare(b.descrizione ?? '');

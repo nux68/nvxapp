@@ -1263,4 +1263,61 @@
   <data name="ImportCodiceFiscaleRipetuto" xml:space="preserve">
     <value>The tax code "{0}" appears for more than one employee in the list.</value>
   </data>
+  <data name="ParCausaleTipoNonModificabile" xml:space="preserve">
+    <value>The pay cause "{0}" is already in use: its type (hours/amount) cannot be changed.</value>
+  </data>
+  <data name="ParGiustificativoTipoNonModificabile" xml:space="preserve">
+    <value>The justification "{0}" is already in use: its type (hours/amount) cannot be changed.</value>
+  </data>
+  <data name="ParGiustificativoCausaleNonImporto" xml:space="preserve">
+    <value>An amount justification needs an amount pay cause: "{0}" is hour-based.</value>
+  </data>
+  <data name="ParGiustificativoCausaleNonOraria" xml:space="preserve">
+    <value>An hour-based justification needs an hour-based pay cause: "{0}" is amount-based.</value>
+  </data>
+  <data name="ParCausaleImportoNonAmmessa" xml:space="preserve">
+    <value>The pay cause "{0}" is amount-based: an hour-based pay cause is required here.</value>
+  </data>
+  <data name="ParGiustificativoImportoNonAmmesso" xml:space="preserve">
+    <value>The justification "{0}" is amount-based: an hour-based justification is required here.</value>
+  </data>
+  <data name="GiustificativoImportoObbligatorio" xml:space="preserve">
+    <value>The justification is amount-based: enter an amount greater than zero.</value>
+  </data>
+  <data name="CausaleImportoObbligatorio" xml:space="preserve">
+    <value>The pay cause is amount-based: enter an amount greater than zero.</value>
+  </data>
+  <data name="ChatRegisterJustificationAmountDisplayName" xml:space="preserve">
+    <value>Amount justification</value>
+  </data>
+  <data name="ChatRegisterJustificationAmountDescription" xml:space="preserve">
+    <value>registers an amount justification (refund, travel allowance, etc.) for an employee on a date, with the amount in euro.</value>
+  </data>
+  <data name="ChatRegisterJustificationAmountSummary" xml:space="preserve">
+    <value>{justification} for {employeeName} on {date}, amount {amount}</value>
+  </data>
+  <data name="ChatAmountQuestion" xml:space="preserve">
+    <value>Which amount? (e.g. 25.50)</value>
+  </data>
+  <data name="ChatAmountLabel" xml:space="preserve">
+    <value>Amount</value>
+  </data>
+  <data name="ChatInvalidAmount" xml:space="preserve">
+    <value>'{0}' is not a valid amount (e.g. 25 or 25.50).</value>
+  </data>
+  <data name="ChatRegisterJustificationAmountDone" xml:space="preserve">
+    <value>Justification '{0}' of {1} registered for {2} on {3}.</value>
+  </data>
+  <data name="ChatJustificationIsAmount" xml:space="preserve">
+    <value>The justification '{0}' is amount-based: give the amount in euro (e.g. "25 euro refund for Rossi today").</value>
+  </data>
+  <data name="ChatJustificationNotAmount" xml:space="preserve">
+    <value>No amount justification matches '{0}'.</value>
+  </data>
+  <data name="ChatCausaleIsAmount" xml:space="preserve">
+    <value>The pay cause '{0}' is amount-based: only hour-based pay causes can be registered from the chat. Enter the amount from the timesheet.</value>
+  </data>
+  <data name="ChatJustificationAmountMissing" xml:space="preserve">
+    <value>The justification '{0}' is amount-based: give the amount in euro.</value>
+  </data>
 </root>

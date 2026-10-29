@@ -746,6 +746,9 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     b.Property<int>("IdPar_Causali")
                         .HasColumnType("integer");
 
+                    b.Property<decimal?>("Importo")
+                        .HasColumnType("numeric(10,2)");
+
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("timestamp without time zone");
 
@@ -796,6 +799,9 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
 
                     b.Property<int>("IdPar_Giustificativi")
                         .HasColumnType("integer");
+
+                    b.Property<decimal?>("Importo")
+                        .HasColumnType("numeric(10,2)");
 
                     b.Property<int>("InputType")
                         .HasColumnType("integer");
@@ -2092,6 +2098,9 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<int>("Tipo")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.HasIndex("IdAz_Anagrafica");
@@ -2185,6 +2194,9 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     b.Property<string>("TextColor")
                         .HasMaxLength(7)
                         .HasColumnType("character varying(7)");
+
+                    b.Property<int>("Tipo")
+                        .HasColumnType("integer");
 
                     b.Property<int>("TipoContatore")
                         .HasColumnType("integer");

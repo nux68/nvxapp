@@ -147,6 +147,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
             if (parCausale == null)
                 return CommandResult.Fail(AttendanceTrackingMessages.Get("ChatCausaleNotFound", causaleNome));
 
+            // causale a importo: dalla chat si registrano solo le ore; l'importo si inserisce dal cartellino
+            if (parCausale.Tipo == nvxapp.server.data.Entities.Tenant.TipoValore.Importo)
+                return CommandResult.Fail(AttendanceTrackingMessages.Get("ChatCausaleIsAmount", parCausale.Descrizione));
+
             // --- Risolvi data ---
             DateTime competenzaDate = ChatSlotWords.ParseDateOrToday(dateSlot);
 

@@ -8,6 +8,8 @@ export class Dip_GG_CausaliModel {
   public data!: string;
   public idPar_Causali: number;
   public valore: string | null;
+  /** causale a importo: euro (valore 00:00) */
+  public importo?: number | null;
 
 }
 

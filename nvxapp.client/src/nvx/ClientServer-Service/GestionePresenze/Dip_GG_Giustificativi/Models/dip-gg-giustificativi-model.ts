@@ -25,6 +25,8 @@ export class Dip_GG_GiustificativiModel  {
 
   public hours?: string;
   public from?: string;
+  /** giustificativo a importo: euro, al posto delle ore */
+  public importo?: number | null;
 
   public idPar_Giustificativi: number; // Required
   public richiestaStato: StatoRichiesta;

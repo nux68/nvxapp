@@ -20,6 +20,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Giusti
         public string? BackgroundColor { get; set; }
         public string? TextColor { get; set; }
         public JustTipoInput TipoInput { get; set; }
+        public TipoValore Tipo { get; set; }
         public int? IdCausale { get; set; }
         public SignWithNeutral Segno { get; set; }
         public bool VisualizzaInPianoFerie { get; set; }

@@ -60,6 +60,17 @@
 
 
         <ion-item>
+          <ion-label position="floating">{{ 'attendance.common.tipoValore' | transloco }}</ion-label>
+          <ion-select formControlName="tipo" interface="popover" (ionChange)="onTipoChange()">
+            <ion-select-option [value]="TipoValore.Orario">{{ 'attendance.common.tipoValoreOrario' | transloco }}</ion-select-option>
+            <ion-select-option [value]="TipoValore.Importo">{{ 'attendance.common.tipoValoreImporto' | transloco }}</ion-select-option>
+          </ion-select>
+        </ion-item>
+        @if (aImporto) {
+          <ion-note>{{ 'attendance.pages.justificationEdit.tipoImportoNota' | transloco }}</ion-note>
+        }
+
+        <ion-item [hidden]="aImporto">
           <ion-label position="floating">{{ 'attendance.pages.justificationEdit.segno' | transloco }}</ion-label>
           <ion-select formControlName="segno" interface="popover">
             <ion-select-option [value]="signWithNeutral.Down">-</ion-select-option>
@@ -76,7 +87,7 @@
         <ion-item>
           <ion-label position="stacked">{{ 'attendance.pages.justificationEdit.causale' | transloco }} </ion-label>
           <ion-select formControlName="idCausale" [placeholder]="'attendance.pages.justificationEdit.causalePlaceholder' | transloco">
-            @for (causali of par_CausaliModelList; track causali) {
+            @for (causali of causaliDelTipo; track causali) {
               <ion-select-option [value]="causali.id">
                 {{ causali.descrizione }}
               </ion-select-option>
@@ -89,12 +100,12 @@
           </ion-note>
         }
 
-        <ion-item>
+        <ion-item [hidden]="aImporto">
           <ion-label>{{ 'attendance.pages.justificationEdit.visualizzaInPianoFerie' | transloco }}</ion-label>
           <ion-toggle formControlName="visualizzaInPianoFerie" slot="end"></ion-toggle>
         </ion-item>
 
-        <ion-item>
+        <ion-item [hidden]="aImporto">
           <ion-label position="floating">{{ 'attendance.pages.justificationEdit.tipoContatore' | transloco }}</ion-label>
           <ion-select formControlName="tipoContatore" interface="popover">
             <ion-select-option [value]="tipoContatore.NoContatore">{{ 'attendance.pages.justificationEdit.noContatore' | transloco }}</ion-select-option>
@@ -109,10 +120,10 @@
           </ion-note>
         }
 
-        <ion-item>
+        <ion-item [hidden]="aImporto">
           <ion-toggle formControlName="bancaOre" justify="space-between">{{ 'attendance.pages.justificationEdit.bancaOre' | transloco }}</ion-toggle>
         </ion-item>
-        <ion-item>
+        <ion-item [hidden]="aImporto">
           <ion-toggle formControlName="autorizzaStraordinario" justify="space-between">{{ 'attendance.pages.justificationEdit.autorizzaStraordinario' | transloco }}</ion-toggle>
         </ion-item>
         @if (_editForm.get('autorizzaStraordinario')?.value) {

@@ -1267,4 +1267,61 @@
   <data name="ImportCodiceFiscaleRipetuto" xml:space="preserve">
     <value>Il codice fiscale "{0}" compare per più dipendenti dell'elenco.</value>
   </data>
+  <data name="ParCausaleTipoNonModificabile" xml:space="preserve">
+    <value>La causale "{0}" è già usata: non si può cambiare il tipo (ore/importo).</value>
+  </data>
+  <data name="ParGiustificativoTipoNonModificabile" xml:space="preserve">
+    <value>Il giustificativo "{0}" è già usato: non si può cambiare il tipo (ore/importo).</value>
+  </data>
+  <data name="ParGiustificativoCausaleNonImporto" xml:space="preserve">
+    <value>Un giustificativo a importo deve avere una causale a importo: "{0}" è a ore.</value>
+  </data>
+  <data name="ParGiustificativoCausaleNonOraria" xml:space="preserve">
+    <value>Un giustificativo a ore deve avere una causale a ore: "{0}" è a importo.</value>
+  </data>
+  <data name="ParCausaleImportoNonAmmessa" xml:space="preserve">
+    <value>La causale "{0}" è a importo: qui servono causali a ore.</value>
+  </data>
+  <data name="ParGiustificativoImportoNonAmmesso" xml:space="preserve">
+    <value>Il giustificativo "{0}" è a importo: qui serve un giustificativo a ore.</value>
+  </data>
+  <data name="GiustificativoImportoObbligatorio" xml:space="preserve">
+    <value>Il giustificativo è a importo: indicare un importo maggiore di zero.</value>
+  </data>
+  <data name="CausaleImportoObbligatorio" xml:space="preserve">
+    <value>La causale è a importo: indicare un importo maggiore di zero.</value>
+  </data>
+  <data name="ChatRegisterJustificationAmountDisplayName" xml:space="preserve">
+    <value>Giustificativo a importo</value>
+  </data>
+  <data name="ChatRegisterJustificationAmountDescription" xml:space="preserve">
+    <value>registra un giustificativo a importo (rimborso, trasferta, ecc.) per un dipendente in una data, con l'importo in euro.</value>
+  </data>
+  <data name="ChatRegisterJustificationAmountSummary" xml:space="preserve">
+    <value>{justification} per {employeeName} il {date}, importo {amount}</value>
+  </data>
+  <data name="ChatAmountQuestion" xml:space="preserve">
+    <value>Quale importo? (es. 25,50)</value>
+  </data>
+  <data name="ChatAmountLabel" xml:space="preserve">
+    <value>Importo</value>
+  </data>
+  <data name="ChatInvalidAmount" xml:space="preserve">
+    <value>'{0}' non è un importo valido (es. 25 oppure 25,50).</value>
+  </data>
+  <data name="ChatRegisterJustificationAmountDone" xml:space="preserve">
+    <value>Giustificativo '{0}' di {1} registrato per {2} il {3}.</value>
+  </data>
+  <data name="ChatJustificationIsAmount" xml:space="preserve">
+    <value>Il giustificativo '{0}' è a importo: indica l'importo in euro (es. "rimborso di 25 euro a Rossi per oggi").</value>
+  </data>
+  <data name="ChatJustificationNotAmount" xml:space="preserve">
+    <value>Nessun giustificativo a importo corrisponde a '{0}'.</value>
+  </data>
+  <data name="ChatCausaleIsAmount" xml:space="preserve">
+    <value>La causale '{0}' è a importo: dalla chat si registrano solo le causali a ore. Inserisci l'importo dal cartellino.</value>
+  </data>
+  <data name="ChatJustificationAmountMissing" xml:space="preserve">
+    <value>Il giustificativo '{0}' è a importo: indica l'importo in euro.</value>
+  </data>
 </root>

@@ -39,6 +39,8 @@ export class Dip_GG_Richiesta_Body_Giustificativo {
   hhmm!: string;
   allDay!: boolean;
   idPar_Giustificativi!: number;
+  /** giustificativo a importo: euro per ogni giorno lavorativo del periodo */
+  importo?: number | null;
 }
 /*
  Nota spese: la richiesta contiene le spese (dettagli). All'invio si mandano spese e allegati;

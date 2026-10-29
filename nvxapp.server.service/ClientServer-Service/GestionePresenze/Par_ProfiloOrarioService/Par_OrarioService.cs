@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using nvxapp.server.Base;
 using nvxapp.server.data.Entities.Public;
+using nvxapp.server.data.Entities.Tenant;
 using nvxapp.server.data.Entities.Tenant.GestionePresenze;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
@@ -26,7 +27,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Profil
         private readonly IPar_ProfiloOrarioGGService _par_ProfiloOrarioGGService;
         private readonly IPar_OrarioIntervalloHHService _par_OrarioIntervalloHHService;
         private readonly IPar_OrarioRepository _par_OrarioRepository;
-        private readonly IPar_GiustificativiRepository _par_CausaliRepository;
+        private readonly IPar_CausaliRepository _par_CausaliRepository;
         private readonly IPar_GiustificativiRepository _par_GiustificativiRepository;
 
 
@@ -41,7 +42,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Profil
                                   IPar_ProfiloOrarioGGService par_ProfiloOrarioGGService,
                                   IPar_OrarioIntervalloHHService par_OrarioIntervalloHHService,
                                   IPar_OrarioRepository par_OrarioRepository,
-                                  IPar_GiustificativiRepository par_CausaliRepository,
+                                  IPar_CausaliRepository par_CausaliRepository,
                                   IPar_GiustificativiRepository par_GiustificativiRepository,
 
                                   IPar_ProfiloOrarioRepository par_ProfiloOrarioRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
@@ -116,6 +117,13 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Profil
                 if (company_DATA != null && company_DATA.az_Anagrafica != null)
                 {
 
+                    // le causali delle ore in piu' e il giustificativo di assenza ricevono ore: niente tipi a importo
+                    var p = model.Data.Par_ProfiloOrario;
+                    GestionePresenzeTipoValore.ControllaCausaliOrarie(_par_CausaliRepository,
+                        p.IdCausale_Lavoro_Strao, p.IdCausale_Lavoro_StraoNott, p.IdCausale_Lavoro_StraoFest, p.IdCausale_Lavoro_StraoFestNott,
+                        p.IdCausale_Lavoro_Suppl, p.IdCausale_Lavoro_SupplEcc, p.IdCausale_Lavoro_EccOrd, p.IdCausale_BancaOre);
+                    GestionePresenzeTipoValore.ControllaGiustificativoOrario(_par_GiustificativiRepository, p.IdGiustificativo_Assenza_Ingiust);
+
                     var entity = _mapper.Map<Par_ProfiloOrario>(model.Data.Par_ProfiloOrario);
                     if (model.Data.Par_ProfiloOrario.IdAz_Anagrafica == 0)
                         entity.IdAz_Anagrafica = company_DATA.az_Anagrafica.Id;
@@ -157,8 +165,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Profil
         {
             // preferisce i parametri di default (RIPOSO, STRAO, SUPPL, ASS), altrimenti il primo disponibile
             var orari = _par_OrarioRepository.FindAll(x => x.IdAz_Anagrafica == IdAz_Anagrafica).ToList();
-            var causali = _par_CausaliRepository.FindAll(x => x.IdAz_Anagrafica == IdAz_Anagrafica).ToList();
-            var giust = _par_GiustificativiRepository.FindAll(x => x.IdAz_Anagrafica == IdAz_Anagrafica).ToList();
+            var causali = _par_CausaliRepository.FindAll(x => x.IdAz_Anagrafica == IdAz_Anagrafica && x.Tipo == TipoValore.Orario).ToList();
+            var giust = _par_GiustificativiRepository.FindAll(x => x.IdAz_Anagrafica == IdAz_Anagrafica && x.Tipo == TipoValore.Orario).ToList();
 
             var par_Orario = orari.FirstOrDefault(x => x.Codice == "RIPOSO") ?? orari.FirstOrDefault();
             var par_causali_strao = causali.FirstOrDefault(x => x.Codice == "STRAO") ?? causali.FirstOrDefault();

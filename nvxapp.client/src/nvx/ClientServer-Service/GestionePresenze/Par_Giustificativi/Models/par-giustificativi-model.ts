@@ -1,4 +1,5 @@
 import { ModelResult } from "../../../ModelsBase/model-result";
+import { TipoValore } from "../../Par_Causali/Models/par-causali-model";
 
 
 export class Par_GiustificativiModel {
@@ -11,6 +12,8 @@ export class Par_GiustificativiModel {
   public backgroundColor!: string;
   public textColor!: string;
   public tipoInput!: JustTipoInput;
+  /** Importo: si inserisce un solo importo al posto delle ore; nessun effetto su ore, contatori, banca ore, piano ferie */
+  public tipo: TipoValore = TipoValore.Orario;
   public idCausale?: number;
   public segno!: SignWithNeutral;
   public visualizzaInPianoFerie!: boolean;

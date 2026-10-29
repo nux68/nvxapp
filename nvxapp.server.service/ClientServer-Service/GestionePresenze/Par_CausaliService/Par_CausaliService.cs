@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using nvxapp.server.Base;
 using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Entities.Tenant;
+using nvxapp.server.data.Localization;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
@@ -24,6 +25,13 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Causal
     {
         private readonly IPar_CausaliRepository _par_CausaliRepository;
         private readonly IGestionePresenzeUserUtility _gestionePresenzeUserUtility;
+        // per sapere se una causale e' gia' usata (il tipo Orario/Importo non si puo' piu' cambiare)
+        private readonly IDip_GG_CausaliRepository _dip_GG_CausaliRepository;
+        private readonly IPar_GiustificativiRepository _par_GiustificativiRepository;
+        private readonly IPar_ProfiloOrarioRepository _par_ProfiloOrarioRepository;
+        private readonly IPar_OrarioRepository _par_OrarioRepository;
+        private readonly IPar_OrarioIntervalloHHRepository _par_OrarioIntervalloHHRepository;
+        private readonly IPar_ExportCau_CausaliRepository _par_ExportCau_CausaliRepository;
 
         public Par_CausaliService(IMapper mapper,
                                   UserManager<ApplicationUser> userManager,
@@ -33,10 +41,22 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Causal
                                   IConfiguration configuration,
 
                                   IPar_CausaliRepository par_CausaliRepository,
-                                  IGestionePresenzeUserUtility gestionePresenzeUserUtility) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
+                                  IGestionePresenzeUserUtility gestionePresenzeUserUtility,
+                                  IDip_GG_CausaliRepository dip_GG_CausaliRepository,
+                                  IPar_GiustificativiRepository par_GiustificativiRepository,
+                                  IPar_ProfiloOrarioRepository par_ProfiloOrarioRepository,
+                                  IPar_OrarioRepository par_OrarioRepository,
+                                  IPar_OrarioIntervalloHHRepository par_OrarioIntervalloHHRepository,
+                                  IPar_ExportCau_CausaliRepository par_ExportCau_CausaliRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _par_CausaliRepository = par_CausaliRepository;
             _gestionePresenzeUserUtility = gestionePresenzeUserUtility;
+            _dip_GG_CausaliRepository = dip_GG_CausaliRepository;
+            _par_GiustificativiRepository = par_GiustificativiRepository;
+            _par_ProfiloOrarioRepository = par_ProfiloOrarioRepository;
+            _par_OrarioRepository = par_OrarioRepository;
+            _par_OrarioIntervalloHHRepository = par_OrarioIntervalloHHRepository;
+            _par_ExportCau_CausaliRepository = par_ExportCau_CausaliRepository;
         }
 
         public virtual async Task<GenericResult<Par_CausaliOutModel>> GetAll(GenericRequest<Par_CausaliInModel> model, bool isSubProcess)
@@ -106,6 +126,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Causal
                     }
                     else
                     {
+                        // il tipo (ore / importo) non si cambia se la causale e' gia' usata: i valori registrati cambierebbero significato
+                        if (par_Causale.Tipo != model.Data.Par_Causale.Tipo && CausaleUsata(par_Causale.Id))
+                            throw new UserMessageException(AttendanceTrackingMessages.Get("ParCausaleTipoNonModificabile", par_Causale.Codice));
+
                         //update 
                         par_Causale = _mapper.Map<Par_Causali>(model.Data.Par_Causale);
                     }
@@ -121,6 +145,17 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Causal
             }, isSubProcess);
         }
     
+        /// <summary>causale registrata nei giorni dei dipendenti o collegata a giustificativi, profili, orari o modelli di export</summary>
+        private bool CausaleUsata(int id) =>
+            _dip_GG_CausaliRepository.FindAll(x => x.IdPar_Causali == id).Any()
+            || _par_GiustificativiRepository.FindAll(x => x.IdCausale == id).Any()
+            || _par_ProfiloOrarioRepository.FindAll(x => x.IdCausale_Lavoro_Strao == id || x.IdCausale_Lavoro_StraoNott == id || x.IdCausale_Lavoro_StraoFest == id
+                                                         || x.IdCausale_Lavoro_StraoFestNott == id || x.IdCausale_Lavoro_Suppl == id || x.IdCausale_Lavoro_SupplEcc == id
+                                                         || x.IdCausale_Lavoro_EccOrd == id || x.IdCausale_BancaOre == id).Any()
+            || _par_OrarioRepository.FindAll(x => x.IdCausale_HH_Lav_MonteOre == id).Any()
+            || _par_OrarioIntervalloHHRepository.FindAll(x => x.IdCausale_HH_Lav == id).Any()
+            || _par_ExportCau_CausaliRepository.FindAll(x => x.IdCausale == id).Any();
+
         public virtual async Task<GenericResult<Par_Causali_DeleteOutModel>> Par_CausaliDelete(GenericRequest<Par_Causali_DeleteInModel> model, bool isSubProcess)
         {
             return await ExecuteAction(model, async () =>

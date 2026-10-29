@@ -182,6 +182,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
         // causali del giorno calcolate nella fase giornaliera: la fase di periodo aggiunge quelle delle
         // ore in piu' e poi vengono scritte (chiave: rapporto, giorno)
         private readonly Dictionary<(int, DateTime), Dictionary<int, TimeSpan>> _causaliGiorno = new();
+        // importi del giorno per causale (giustificativi a importo): non toccano le ore, si scrivono con le causali
+        private readonly Dictionary<(int, DateTime), Dictionary<int, decimal>> _importiGiorno = new();
 
 
         //private readonly IDip_GG_TimbraturaRepository _dip_GG_TimbraturaRepository;
@@ -976,7 +978,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                 if (profilo != null)
                     AggiungiCausaliEccedenze(causali, profilo, g, bancaOre);
 
-                ScriviCausali(AllData, rapporto.Id, g.Data, causali);
+                _importiGiorno.TryGetValue((rapporto.Id, g.Data), out var importi);
+                ScriviCausali(AllData, rapporto.Id, g.Data, causali, importi);
             }
 
             // 5) cartellini mensili
@@ -1978,6 +1981,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
             // dizionario temporaneo IdCausale -> TimeSpan accumulato
             var causaliAccumulate = new Dictionary<int, TimeSpan>();
+            var importiAccumulati = new Dictionary<int, decimal>();
             void Accumula(int idCausale, TimeSpan valore)
             {
                 if (idCausale <= 0 || valore <= TimeSpan.Zero) return;
@@ -2002,6 +2006,14 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
 
                 if (parGiust == null)
                     continue;
+
+                // giustificativo a importo: l'importo va sulla causale (a importo) e non ha effetti sulle ore del giorno
+                if (parGiust.Tipo == TipoValore.Importo)
+                {
+                    if (parGiust.IdCausale is int idCausaleImporto && idCausaleImporto > 0 && giustificativo.Importo is decimal importo && importo > 0)
+                        importiAccumulati[idCausaleImporto] = importiAccumulati.GetValueOrDefault(idCausaleImporto) + importo;
+                    continue;
+                }
 
                 TimeSpan valoreOre = giustificativo.Hours ?? TimeSpan.Zero;
 
@@ -2187,6 +2199,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                                     (profilo != null && profilo.DomenicaFestiva && day.DayOfWeek == DayOfWeek.Sunday);
 
             _causaliGiorno[(IdDip_RapportoLavoro, day.Date)] = causaliAccumulate;
+            _importiGiorno[(IdDip_RapportoLavoro, day.Date)] = importiAccumulati;
 
             if (oreLavorabili != oreLavorate)
             {
@@ -2205,8 +2218,12 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
             return retVal;
         }
 
-        /// <summary>Scrive le causali del giorno: aggiorna quelle esistenti, aggiunge le nuove, cancella le altre.</summary>
-        private void ScriviCausali(Timesheet_AllData_OutModel allData, int IdDip_RapportoLavoro, DateTime day, Dictionary<int, TimeSpan> causaliAccumulate)
+        /// <summary>
+        /// Scrive le causali del giorno: aggiorna quelle esistenti, aggiunge le nuove, cancella le altre.
+        /// Le causali a importo (<paramref name="importi"/>) hanno l'importo in euro e Valore 00:00.
+        /// </summary>
+        private void ScriviCausali(Timesheet_AllData_OutModel allData, int IdDip_RapportoLavoro, DateTime day, Dictionary<int, TimeSpan> causaliAccumulate,
+                                   Dictionary<int, decimal>? importi = null)
         {
             // recupera le causali pre-esistenti per questo giorno/rapporto
             var causaliEsistenti = allData.Dip_GG_AllData_OutModel.Dip_GG_Causali.Where(c => c.IdDip_RapportoLavoro == IdDip_RapportoLavoro &&
@@ -2234,6 +2251,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                 {
                     // esiste già: aggiorna il valore e rimuovi il flag ToBeDeleted
                     causaleEsistente.Valore = nuovoValore;
+                    causaleEsistente.Importo = null;
                     causaleEsistente.ToBeDeleted = false;
                 }
                 else
@@ -2246,6 +2264,35 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_
                         Data = day.Date,
                         IdPar_Causali = kvp.Key,
                         Valore = nuovoValore,
+                        ToBeDeleted = false
+                    });
+                }
+            }
+
+            // 3) causali a importo (giustificativi a importo): stesso criterio, con l'importo al posto delle ore
+            foreach (var kvp in importi ?? new Dictionary<int, decimal>())
+            {
+                if (kvp.Value <= 0)
+                    continue;
+
+                var importo = Math.Round(kvp.Value, 2);
+                var causaleEsistente = causaliEsistenti.FirstOrDefault(c => c.IdPar_Causali == kvp.Key);
+                if (causaleEsistente != null)
+                {
+                    causaleEsistente.Valore = TimeOnly.MinValue;
+                    causaleEsistente.Importo = importo;
+                    causaleEsistente.ToBeDeleted = false;
+                }
+                else
+                {
+                    allData.Dip_GG_AllData_OutModel.Dip_GG_Causali.Add(new Dip_GG_CausaliModel
+                    {
+                        Id = 0,
+                        IdDip_RapportoLavoro = IdDip_RapportoLavoro,
+                        Data = day.Date,
+                        IdPar_Causali = kvp.Key,
+                        Valore = TimeOnly.MinValue,
+                        Importo = importo,
                         ToBeDeleted = false
                     });
                 }

@@ -62,7 +62,7 @@
                               }"
                             (click)="CanOpenMenuActionGiustificativi(slot,g) ? actionSheetOpen(g) : null"
                             [title]="titoloGiustificativo(slot, g, g.idPar_Giustificativi | parGiustificativiToLongText)">
-                            {{ g.idPar_Giustificativi | parGiustificativiToShortText }}&nbsp;{{ g.hours.substring(0, 5) }}
+                            {{ g.idPar_Giustificativi | parGiustificativiToShortText }}&nbsp;{{ g.hours?.substring(0, 5) }}
                           </ion-chip>
                         }
                       } @else {
@@ -129,7 +129,7 @@
                               }"
                               (click)="CanOpenMenuActionGiustificativi(slot,g) ? actionSheetOpen(g) : null"
                               [title]="titoloGiustificativo(slot, g, g.idPar_Giustificativi | parGiustificativiToLongText)">
-                              {{ g.idPar_Giustificativi | parGiustificativiToShortText }}  {{ g.hours.substring(0, 5) }}
+                              {{ g.idPar_Giustificativi | parGiustificativiToShortText }}  {{ g.hours?.substring(0, 5) }}
                             </ion-chip>
                           }
                         </div>

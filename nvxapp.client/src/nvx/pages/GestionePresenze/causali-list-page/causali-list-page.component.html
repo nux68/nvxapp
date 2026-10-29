@@ -14,6 +14,7 @@
         icon="server-outline"
         [searchText]="searchText"
         [sort]="sortList">
+        <ng-template nvxCell="tipo" let-item>{{ (item.tipo === 1 ? 'attendance.common.tipoValoreImporto' : 'attendance.common.tipoValoreOrario') | transloco }}</ng-template>
       </nvx-list>
     </ion-card-content>
   </ion-card>

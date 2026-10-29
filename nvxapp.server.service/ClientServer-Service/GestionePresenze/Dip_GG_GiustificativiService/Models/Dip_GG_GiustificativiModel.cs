@@ -21,6 +21,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Giu
         [HashField]
         public TimeSpan? From { get; set; }   // se InputType=manual  (dalle)
         [HashField]
+        public decimal? Importo { get; set; }   // giustificativo a importo (euro)
+        [HashField]
         public required int IdPar_Giustificativi { get; set; }
         [HashField]
         public StatoRichiesta RichiestaStato { get; set; }

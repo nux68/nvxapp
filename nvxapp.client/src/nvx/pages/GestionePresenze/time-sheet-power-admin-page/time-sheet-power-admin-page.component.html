@@ -150,7 +150,7 @@
                                          'opacity': CanOpenMenuActionGiustificativi(just) ? '1' : '0.5'
                                        }"
                           (click)="CanOpenMenuActionGiustificativi(just) ? actionSheetOpen(just) : null">
-                          {{ just.idPar_Giustificativi | parGiustificativiToShortText }} {{ just.hours.substring(0, 5)  }}
+                          {{ just.idPar_Giustificativi | parGiustificativiToShortText }} {{ just.importo != null ? (just.importo | importoEuro) : just.hours?.substring(0, 5) }}
                           @if (!isMobile) {
                             <ion-icon [name]="timeSheetService.get_StatoRichiesta_icon(get_Dip_GG_Richiesta(just.idDip_GG_Richiesta))"></ion-icon>
                           }
@@ -210,7 +210,7 @@
                                                      ? '1' : '0.5'
                                        }"
                               (click)="(true) ? actionSheetOpen(caus) : null">
-                              {{ caus.idPar_Causali | parCausaliToShortText}} {{ caus.valore | slice:0:5 }}
+                              {{ caus.idPar_Causali | parCausaliToShortText}} {{ caus.importo != null ? (caus.importo | importoEuro) : (caus.valore | slice:0:5) }}
                             </ion-chip>
                           }
                         } @else {

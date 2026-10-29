@@ -76,7 +76,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                 {
                     Data = new() { UsersId = utenti, Dal = giorno, Al = giorno }
                 }, true);
+            // i giustificativi a importo (rimborsi, trasferte) non dicono nulla sulla presenza: esclusi
             var nomiGiustificativi = (await Giustificativi(_par_GiustificativiService))
+                .Where(g => g.Tipo != nvxapp.server.data.Entities.Tenant.TipoValore.Importo)
                 .ToDictionary(g => g.Id, g => g.Descrizione ?? g.Codice ?? string.Empty);
 
             var timbratureValide = timbrature.Data.Dip_GG_Timbratura
@@ -85,7 +87,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                 .ToDictionary(g => g.Key, g => g.OrderBy(t => t.Timbratura).ToList());
 
             var giustificati = (giustificativi.Data?.Dip_GG_Giustificativi ?? new())
-                .Where(g => StatoValido(g.RichiestaStato))
+                .Where(g => StatoValido(g.RichiestaStato) && nomiGiustificativi.ContainsKey(g.IdPar_Giustificativi))
                 .GroupBy(g => g.IdDip_RapportoLavoro)
                 .ToDictionary(g => g.Key, g => string.Join(", ", g.Select(x => nomiGiustificativi.GetValueOrDefault(x.IdPar_Giustificativi, "?")).Distinct()));
 

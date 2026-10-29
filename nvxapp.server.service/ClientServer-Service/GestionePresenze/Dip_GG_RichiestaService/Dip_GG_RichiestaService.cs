@@ -461,6 +461,14 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                             // ── Validazione contatori ───────────────────────────────────────
                             if (dip_GG_Richiesta.RichiestaTipo == TipoRichiesta.Giustificativo)
                             {
+                                // giustificativo a importo: serve un importo positivo (euro, 2 decimali)
+                                var erroreImporto = ControllaImportoRichiesta(dip_GG_Richiesta);
+                                if (erroreImporto != null)
+                                {
+                                    retVal.Messages.Add(new Message(erroreImporto, MessageType.Exception));
+                                    return retVal;
+                                }
+
                                 var orePerGiorno = OreGiustificativoPerGiorno(dip_GG_Richiesta, user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.Id);
                                 if (orePerGiorno.Count == 0)
                                 {
@@ -1163,6 +1171,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                             if (richiesta != null)
                             {
 
+                                // a importo: lo stesso importo in ogni giorno, nessuna ora
+                                var aImporto = TipoGiustificativo(richiesta.IdPar_Giustificativi) == TipoValore.Importo;
+
                                 // solo i giorni lavorativi, con le ore del giorno (giornata intera) o quelle richieste
                                 foreach (var (date, ore) in OreGiustificativoPerGiorno(dip_GG_Richiesta, user_DATA_COMB_DipAna_DipRapp.dip_RapportoLavoro.Id))
                                 {
@@ -1173,8 +1184,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
                                         IdDip_GG_Richiesta = dip_GG_Richiesta.Id,
                                         IdPar_Giustificativi = richiesta.IdPar_Giustificativi,
                                         RichiestaStato = dip_GG_Richiesta.RichiestaStato,
-                                        InputType = richiesta.AllDay ? JustificationInputType.AllDay : JustificationInputType.Manual,
-                                        Hours = ore
+                                        InputType = richiesta.AllDay && !aImporto ? JustificationInputType.AllDay : JustificationInputType.Manual,
+                                        Hours = aImporto ? null : ore,
+                                        Importo = aImporto && richiesta.Importo is decimal importo ? Math.Round(importo, 2) : null
                                     };
                                     await _dip_GG_GiustificativiRepository.UpsertAsync(dip_GG_Giustificativi);
                                 }
@@ -1441,12 +1453,20 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
             if (body == null)
                 return retVal;
 
-            var oreRichieste = TimeSpan.Parse(body.hhmm);
+            // giustificativo a importo: i giorni sono gli stessi, ma senza ore (hhmm puo' mancare)
+            var oreRichieste = TimeSpan.TryParse(body.hhmm, out var hhmm) ? hhmm : TimeSpan.Zero;
             var oreTeoriche = _gestionePresenzeOreTeoriche.GetOreTeoriche(idDip_RapportoLavoro, richiesta.Data, richiesta.DataA);
 
             bool autorizzazione = _par_GiustificativiRepository.FindAll(j => j.Id == body.IdPar_Giustificativi)
                                                                .Select(j => j.AutorizzaStraordinario)
                                                                .FirstOrDefault();
+            if (TipoGiustificativo(body.IdPar_Giustificativi) == TipoValore.Importo)
+            {
+                foreach (var (giorno, oreTeo) in oreTeoriche)
+                    if (oreTeo != TimeSpan.Zero)
+                        retVal[giorno] = TimeSpan.Zero;
+                return retVal;
+            }
             if (autorizzazione)
             {
                 foreach (var giorno in oreTeoriche.Keys)
@@ -1463,6 +1483,20 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
             }
 
             return retVal;
+        }
+
+        private TipoValore TipoGiustificativo(int idPar_Giustificativi) =>
+            _par_GiustificativiRepository.FindAll(j => j.Id == idPar_Giustificativi).Select(j => j.Tipo).FirstOrDefault();
+
+        /// <summary>Richiesta di un giustificativo a importo senza importo positivo: messaggio di errore (null se va bene).</summary>
+        private string? ControllaImportoRichiesta(Dip_GG_Richiesta richiesta)
+        {
+            var body = string.IsNullOrEmpty(richiesta.Dati) ? null : JsonConvert.DeserializeObject<Dip_GG_Richiesta_Body_Giustificativo>(richiesta.Dati);
+            if (body == null || TipoGiustificativo(body.IdPar_Giustificativi) != TipoValore.Importo)
+                return null;
+            return body.Importo is decimal importo && importo > 0 && importo < 100_000_000m
+                ? null
+                : AttendanceTrackingMessages.Get("GiustificativoImportoObbligatorio");
         }
 
         private async Task<ValidazioneContatori> ValidaContatoriAsync(

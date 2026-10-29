@@ -1,4 +1,5 @@
-﻿using nvxapp.server.service.ClientServer_Service.ModelsBase;
+﻿using nvxapp.server.data.Entities.Tenant;
+using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using System.Collections.Generic;
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_CausaliService.Models
@@ -9,6 +10,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Causal
         public int IdAz_Anagrafica { get; set; }
         public string? Codice { get; set; }
         public string? Descrizione { get; set; }
+        public TipoValore Tipo { get; set; }
     }
 
     public class Par_CausaliInModel

@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using nvxapp.server.Base;
 using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Entities.Tenant;
+using nvxapp.server.data.Localization;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
@@ -129,6 +130,24 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Giu
 
 
 
+                // giustificativo a importo: un solo importo, niente ore; orario: niente importo
+                var giust = model.Data.Dip_GG_Giustificativi;
+                var tipo = _par_GiustificativiRepository.FindAll(x => x.Id == giust.IdPar_Giustificativi).Select(x => x.Tipo).FirstOrDefault();
+                if (tipo == TipoValore.Importo)
+                {
+                    if (giust.Importo is not decimal importo || importo <= 0 || importo >= 100_000_000m)
+                    {
+                        retVal.Messages.Add(new Message(AttendanceTrackingMessages.Get("GiustificativoImportoObbligatorio"), MessageType.Exception));
+                        return retVal;
+                    }
+                    giust.Importo = Math.Round(importo, 2);
+                    giust.Hours = null;
+                    giust.From = null;
+                    giust.InputType = JustificationInputType.Manual;
+                }
+                else
+                    giust.Importo = null;
+
                 Dip_GG_Giustificativi? dip_GG_Giustificativi = await _Dip_GG_GiustificativiRepository.FindByIdAsync(model.Data.Dip_GG_Giustificativi.Id);
                 if (dip_GG_Giustificativi == null)
                 {
@@ -207,7 +226,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Giu
                 {
                     Dip_GG_Giustificativi? dip_GG_Giustificativi = await _Dip_GG_GiustificativiRepository.FindByIdAsync(model.Data.Id);
                     int IdPar_Giustificativi = 0;
-                    var cau = _par_GiustificativiRepository.FindAll(x => x.IdAz_Anagrafica == IdAnagrafica).FirstOrDefault();
+                    // proposta per un nuovo giustificativo: il primo a ore (con 1 ora)
+                    var cau = _par_GiustificativiRepository.FindAll(x => x.IdAz_Anagrafica == IdAnagrafica && x.Tipo == TipoValore.Orario).FirstOrDefault()
+                              ?? _par_GiustificativiRepository.FindAll(x => x.IdAz_Anagrafica == IdAnagrafica).FirstOrDefault();
                     if (cau != null)
                         IdPar_Giustificativi = cau.Id;
 

@@ -6,7 +6,7 @@ import { Observable, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
 import { UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
-import { Par_CausaliGetInModel, Par_CausaliModel, Par_CausaliPutInModel } from '../../../ClientServer-Service/GestionePresenze/Par_Causali/Models/par-causali-model';
+import { Par_CausaliGetInModel, Par_CausaliModel, Par_CausaliPutInModel, TipoValore } from '../../../ClientServer-Service/GestionePresenze/Par_Causali/Models/par-causali-model';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { ParCausaliService } from '../../../ClientServer-Service/GestionePresenze/Par_Causali/par-causali.service';
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
@@ -21,6 +21,8 @@ import { ParTable } from '../../../shared/shared-parameter-gestione-presenze.ser
   standalone: false
 })
 export class CausaliEditPageComponent extends BasePageConfirmCancelComponent<Par_CausaliModel> {
+
+  public readonly TipoValore = TipoValore;
 
   constructor(
     protected override navCtrl: NavController,
@@ -40,6 +42,8 @@ export class CausaliEditPageComponent extends BasePageConfirmCancelComponent<Par
     return this.fb.group({
       descrizione: [null, [Validators.required, Validators.maxLength(50)]],
       codice: [null, [Validators.required, Validators.maxLength(5)]],
+      // ore oppure importo: il server non lo lascia cambiare se la causale e' gia' usata
+      tipo: [TipoValore.Orario, [Validators.required]],
     });
   }
 

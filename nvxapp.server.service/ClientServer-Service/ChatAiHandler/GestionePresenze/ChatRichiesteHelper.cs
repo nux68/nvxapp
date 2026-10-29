@@ -61,9 +61,12 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
 
                 case TipoRichiesta.Giustificativo:
                     var tipo = int.TryParse(Campo("idPar_Giustificativi"), out var id) ? nomiGiustificativi.GetValueOrDefault(id, "?") : "?";
-                    var ore = bool.TryParse(Campo("allDay"), out var allDay) && allDay
-                        ? AttendanceTrackingMessages.Get("ChatRequestAllDay")
-                        : AttendanceTrackingMessages.Get("ChatRequestHours", Campo("hhmm") ?? "?");
+                    // giustificativo a importo: l'importo al posto delle ore
+                    var ore = decimal.TryParse(Campo("importo"), System.Globalization.NumberStyles.Number, System.Globalization.CultureInfo.InvariantCulture, out var importo) && importo > 0
+                        ? ImportoSlotHelper.Testo(importo)
+                        : bool.TryParse(Campo("allDay"), out var allDay) && allDay
+                            ? AttendanceTrackingMessages.Get("ChatRequestAllDay")
+                            : AttendanceTrackingMessages.Get("ChatRequestHours", Campo("hhmm") ?? "?");
                     return AttendanceTrackingMessages.Get("ChatRequestJustification", nome, tipo, dalTesto, alTesto, ore);
 
                 default:

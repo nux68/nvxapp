@@ -14,7 +14,7 @@ import { ParGiustificativiService } from '../../../ClientServer-Service/Gestione
 import { SharedParameterGestionePresenzeService, ParTable } from '../../../shared/shared-parameter-gestione-presenze.service';
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
 import { Title } from '@angular/platform-browser';
-import { Par_CausaliModel } from '../../../ClientServer-Service/GestionePresenze/Par_Causali/Models/par-causali-model';
+import { Par_CausaliModel, TipoValore } from '../../../ClientServer-Service/GestionePresenze/Par_Causali/Models/par-causali-model';
 import { TranslocoService } from '@jsverse/transloco';
 
 @Component({
@@ -29,6 +29,7 @@ export class JustificationEditPageComponent extends BasePageConfirmCancelCompone
   public signWithNeutral = SignWithNeutral;
   public tipoContatore   = TipoContatore;
   public par_CausaliModelList: Par_CausaliModel[] = [];
+  public readonly TipoValore = TipoValore;
 
   constructor(protected override navCtrl: NavController,
     protected override userInterfaceService: UserInterfaceService,
@@ -50,6 +51,8 @@ export class JustificationEditPageComponent extends BasePageConfirmCancelCompone
 
       descrizione: [null, [Validators.required, Validators.maxLength(50)]],
       codice: [null, [Validators.required, Validators.maxLength(5)]],
+      // ore oppure importo: il server non lo lascia cambiare se il giustificativo e' gia' usato
+      tipo: [TipoValore.Orario, [Validators.required]],
       backgroundColor: [null, []],
       textColor: [null, []],
       segno: [null, [Validators.required]],
@@ -63,6 +66,33 @@ export class JustificationEditPageComponent extends BasePageConfirmCancelCompone
       //roleId: [null, [Validators.required]],
 
     });
+  }
+
+  /** giustificativo a importo: niente effetti sulle ore (segno, contatore, banca ore, autorizzazione, piano ferie) */
+  public get aImporto(): boolean {
+    return this._editForm?.get('tipo')?.value === TipoValore.Importo;
+  }
+
+  /** causali dello stesso tipo del giustificativo (le ore vanno su causali a ore, gli importi su causali a importo) */
+  public get causaliDelTipo(): Par_CausaliModel[] {
+    const tipo = this._editForm?.get('tipo')?.value ?? TipoValore.Orario;
+    return (this.par_CausaliModelList ?? []).filter(c => (c.tipo ?? TipoValore.Orario) === tipo);
+  }
+
+  /** cambio di tipo: valori fissi per gli importi (come sul server) e causale tolta se di un altro tipo */
+  public onTipoChange(): void {
+    if (this.aImporto) {
+      this._editForm.patchValue({
+        segno: SignWithNeutral.Neutral,
+        tipoContatore: TipoContatore.NoContatore,
+        bancaOre: false,
+        autorizzaStraordinario: false,
+        visualizzaInPianoFerie: false
+      });
+    }
+    const idCausale = this._editForm.get('idCausale')?.value;
+    if (idCausale && !this.causaliDelTipo.some(c => c.id === idCausale))
+      this._editForm.patchValue({ idCausale: null });
   }
 
   LoadData = (): Observable<Par_GiustificativiModel | null> => {

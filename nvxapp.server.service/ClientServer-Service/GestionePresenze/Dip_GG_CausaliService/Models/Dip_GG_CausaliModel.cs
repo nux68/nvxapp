@@ -20,6 +20,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Cau
         public int IdPar_Causali { get; set; }
         [HashField]
         public TimeOnly Valore { get; set; }
+        [HashField]
+        public decimal? Importo { get; set; }   // causale a importo (euro)
     }
 
     public class Dip_GG_Causali_GetAll_InModel

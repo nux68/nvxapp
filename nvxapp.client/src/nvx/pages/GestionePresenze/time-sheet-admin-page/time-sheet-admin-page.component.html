@@ -93,7 +93,7 @@
                                              'opacity': isMobile ? '1' :(Attiva(just.idDip_GG_Richiesta) ? '1' : '0.5')
                                            }"
                                 (click)="Decidibile(just.idDip_GG_Richiesta) ? actionSheetOpen(just) : null">
-                                {{ just.idPar_Giustificativi | parGiustificativiToShortText }} {{ just.hours.substring(0, 5)  }}
+                                {{ just.idPar_Giustificativi | parGiustificativiToShortText }} {{ just.importo != null ? (just.importo | importoEuro) : just.hours?.substring(0, 5) }}
                                 <ion-icon  [name]="timeSheetService.get_StatoRichiesta_icon(get_Dip_GG_Richiesta(just.idDip_GG_Richiesta))"></ion-icon>
                               </ion-chip>
                             }
