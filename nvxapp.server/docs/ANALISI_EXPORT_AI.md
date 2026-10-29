@@ -521,11 +521,11 @@ Numerazione unica, nell'ordine in cui farli. `[ ]` da fare, `[x]` fatto (con not
 | Sezione | Contenuto | Lavori | Fatti | Stato |
 |---------|-----------|--------|-------|-------|
 | 12.1 | Infrastruttura | 1–7 | 7/7 | **completata** (29/10/2026) |
-| 12.2 | Anagrafica: matricola e codice fiscale | 8–12 | 0/5 | da iniziare |
+| 12.2 | Anagrafica: matricola e codice fiscale | 8–12 | 5/5 | **completata** (29/10/2026) |
 | 12.3 | Tipo Orario / Importo | 13–27 | 0/15 | da iniziare |
 | 12.4 | Modello di export | 28–32 | 0/5 | da iniziare |
 | 12.5 | Export | 33–43 | 0/11 | da iniziare |
-| **Totale** | | **1–43** | **7/43** | |
+| **Totale** | | **1–43** | **12/43** | |
 
 ### 12.1 Infrastruttura (lavori 1–7) — ramo `Infrastructure_Dev`, poi catena dei merge (§5)
 
@@ -546,11 +546,17 @@ Numerazione unica, nell'ordine in cui farli. `[ ]` da fare, `[x]` fatto (con not
 
 ### 12.2 Anagrafica: matricola e codice fiscale (lavori 8–12) — `AttendanceTracking_Dev` (§10)
 
-- [ ] 8. `Dip_Anagrafica.Matricola` e `CodiceFiscale` + migrazione
-- [ ] 9. Modelli, mapper e controlli in `Dip_AnagraficaService` (CF valido, univocità per azienda di matricola e CF)
-- [ ] 10. Pagine: modifica dipendente, wizard, dialog del wizard; ricerca per matricola nel selettore dipendenti
-- [ ] 11. Importazione da file (`DipendentiImportService`): schema e prompt AI con matricola e CF, regola "solo se presenti nel testo"
-- [ ] 12. i18n e messaggi
+- [x] 8. `Dip_Anagrafica.Matricola` e `CodiceFiscale` + migrazione
+  — Fatto: colonne facoltative (20 e 16 caratteri), migrazione `20261029133216_Dip_Anagrafica_MatricolaCF` (solo due `AddColumn`); si applica all'avvio a tutti gli schemi attivi. Nessun indice univoco a database: in modalità singola lo schema `public` contiene più aziende, l'univocità la controlla il servizio.
+- [x] 9. Modelli, mapper e controlli in `Dip_AnagraficaService` (CF valido, univocità per azienda di matricola e CF)
+  — Fatto: `_utility/GestionePresenzeCodiceFiscale` (16 caratteri con carattere di controllo, anche omocodia; 11 cifre con controllo partita IVA). `Dip_AnagraficaPut` normalizza (CF maiuscolo senza spazi, vuoti = null) e controlla **prima** di creare/aggiornare l'utente. `MatricolaCodiceFiscaleGiaUsati` (riusato dall'importazione) cerca tra i dipendenti dell'azienda escluso il dipendente stesso. Nuovo endpoint `Dip_Anagrafica/Dip_AnagraficaCheck` per il wizard. Mapper invariati (stessi nomi).
+- [x] 10. Pagine: modifica dipendente, wizard, dialog del wizard; ricerca per matricola nel selettore dipendenti
+  — Fatto: `user-department-edit-page` e dialog `user-attendance-wizard-dialog` (allo step 1 controllo sul server, come per username/email: l'utente si crea prima dei dati presenze); validatore client `Utility/GestionePresenze/codice-fiscale.ts`; `dip-selector-modal` cerca e mostra la matricola. La pagina `user-department-wizard-page` non è collegata a nessuna rotta: non toccata.
+- [x] 11. Importazione da file (`DipendentiImportService`): schema e prompt AI con matricola e CF, regola "solo se presenti nel testo"
+  — Fatto: campi `matricola`/`codice_fiscale` nello schema e nel prompt; accettati solo se presenti nel testo (CF cercato senza spazi); in revisione segnalati CF non valido, già usati in azienda, ripetuti nell'elenco; all'inserimento controllo prima dell'avvio del job e, per ogni dipendente, prima di creare l'utente.
+- [x] 12. i18n e messaggi
+  — Fatto: `AttendanceTrackingMessages` (it/en) `AnagraficaMatricolaTroppoLunga`, `AnagraficaCodiceFiscaleNonValido`, `AnagraficaMatricolaGiaUsata`, `AnagraficaCodiceFiscaleGiaUsato`, `ImportMatricolaRipetuta`, `ImportCodiceFiscaleRipetuto`; chiavi client in `userDepartmentEdit`, `userAttendanceWizardDialog`, `userAttendanceImportDialog`.
+  — Prove sul server di prova (5299, azienda di test 1): elenco con i campi nuovi, controllo CF, salvataggio rifiutato per CF non valido e per CF già di un altro dipendente (nessuna scrittura), salvataggio con normalizzazione e ripristino del dato; estrazione AI (DeepSeek) di matricola e CF da un CSV; inserimento da import rifiutato per CF non valido e matricola ripetuta prima di creare utenti. Interfaccia non provata nel browser.
 
 ### 12.3 Tipo Orario / Importo su causali e giustificativi (lavori 13–27) — `AttendanceTracking_Dev` (§11)
 
@@ -602,3 +608,4 @@ Una riga per ogni lavoro completato, nell'ordine in cui è stato fatto. Il detta
 |------|---------|--------|------|--------|------|
 | 29/10/2026 | 12.1 | 1–6 | Infrastructure_Dev | `79ef15cc` | file dei job, download, nome file nella notifica, pulizia, LlmClient |
 | 29/10/2026 | 12.1 | 7 | Infrastructure → AttendanceTracking_Dev → AttendanceTracking | `d09b596f`, `e77c3543` | catena dei merge, build server e client ok |
+| 29/10/2026 | 12.2 | 8–12 | AttendanceTracking_Dev → AttendanceTracking | `c374c41c` | matricola e codice fiscale: dati, controlli, pagine, importazione, i18n; prove API ok |
