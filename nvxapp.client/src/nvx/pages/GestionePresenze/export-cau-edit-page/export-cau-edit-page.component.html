@@ -137,6 +137,9 @@
             <ion-note>{{ 'attendance.pages.exportCauEdit.documentazioneNota' | transloco }}</ion-note>
             @if (!idModello) {
               <p><ion-note color="warning">{{ 'attendance.pages.exportCauEdit.docSalvarePrima' | transloco }}</ion-note></p>
+              @if (duplicaDa && documentiDaCopiare > 0) {
+                <p><ion-note>{{ 'attendance.pages.exportCauEdit.docDaCopiare' | transloco: { n: documentiDaCopiare } }}</ion-note></p>
+              }
             } @else {
               <p>
                 <input #fileDoc type="file" hidden multiple [accept]="accept" (change)="carica($event)" />

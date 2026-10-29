@@ -1,0 +1,35 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{ title }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-card>
+    <ion-card-content>
+      <ion-searchbar [(ngModel)]="searchText" [debounce]="150"
+        [placeholder]="'attendance.components.seletionParExportCauDialog.cerca' | transloco"></ion-searchbar>
+
+      <ion-list>
+        <ion-radio-group [value]="selectedId" (ionChange)="onSelect($event.detail.value)">
+          @for (modello of modelliFiltrati; track modello.id) {
+            <ion-item>
+              <ion-radio [value]="modello.id" justify="space-between">
+                <ion-label>
+                  <h3>{{ modello.descrizione }}</h3>
+                  <p>{{ modello.codice }}</p>
+                </ion-label>
+              </ion-radio>
+            </ion-item>
+          } @empty {
+            <ion-item lines="none">
+              <ion-note>{{ 'attendance.components.seletionParExportCauDialog.nessuno' | transloco }}</ion-note>
+            </ion-item>
+          }
+        </ion-radio-group>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
+
+<app-page-buttonbar [buttonbar]="buttonbar"></app-page-buttonbar>

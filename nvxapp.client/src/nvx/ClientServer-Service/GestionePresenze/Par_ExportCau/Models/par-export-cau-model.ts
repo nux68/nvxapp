@@ -35,6 +35,8 @@ export class Par_ExportCau_Get_OutModel extends ModelResult {
 export class Par_ExportCau_Put_InModel {
   par_ExportCau: Par_ExportCauModel;
   par_ExportCau_Causali: Par_ExportCau_CausaliModel[];
+  /** duplicazione: modello da cui il server copia documentazione e ricetta nel modello nuovo */
+  duplicaDa: number | null = null;
   constructor() {
     this.par_ExportCau = new Par_ExportCauModel();
     this.par_ExportCau_Causali = [];

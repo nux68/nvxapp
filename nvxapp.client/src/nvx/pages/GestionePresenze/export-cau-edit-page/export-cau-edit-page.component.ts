@@ -62,6 +62,10 @@ export class ExportCauEditPageComponent extends BasePageConfirmCancelComponent<P
   public erroreAnteprima: string | null = null;
   public mostraRicetta = false;
 
+  /** duplicazione dalla lista: modello copiato (documentazione e ricetta le copia il server al salvataggio) */
+  public duplicaDa: number | null = null;
+  public documentiDaCopiare = 0;
+
   constructor(
     protected override navCtrl: NavController,
     protected override userInterfaceService: UserInterfaceService,
@@ -131,12 +135,18 @@ export class ExportCauEditPageComponent extends BasePageConfirmCancelComponent<P
 
     if (state) {
 
+      // duplicazione (dalla lista): si legge il modello scelto e lo si salva come modello nuovo
+      this.duplicaDa = state.duplicaDa || null;
       let request = new GenericRequest<Par_ExportCau_Get_InModel>(Par_ExportCau_Get_InModel);
-      request.data.id = state.id;
+      request.data.id = this.duplicaDa || state.id;
 
       return this.parExportCauService.Par_ExportCauGet(request).pipe(
         map((res) => {
           this.par_ExportCau_Causali = res.data.par_ExportCau_Causali;
+          if (this.duplicaDa) {
+            this.contaDocumentiDaCopiare(this.duplicaDa);
+            return this.copiaModello(res.data.par_ExportCau);
+          }
           this.caricaDocumenti(res.data.par_ExportCau?.id ?? 0);
           return res.data.par_ExportCau;
         }
@@ -158,6 +168,7 @@ export class ExportCauEditPageComponent extends BasePageConfirmCancelComponent<P
     let request: GenericRequest<Par_ExportCau_Put_InModel> = new GenericRequest<Par_ExportCau_Put_InModel>(Par_ExportCau_Put_InModel);
     request.data.par_ExportCau = editModel;
     request.data.par_ExportCau_Causali = this.par_ExportCau_Causali;
+    request.data.duplicaDa = this.duplicaDa;
 
     return this.parExportCauService.Par_ExportCauPut(request).pipe(
       map(() => {
@@ -374,6 +385,27 @@ export class ExportCauEditPageComponent extends BasePageConfirmCancelComponent<P
 
   dimensioneTesto(byte: number): string {
     return byte >= 1024 * 1024 ? `${(byte / (1024 * 1024)).toFixed(1)} MB` : `${Math.max(1, Math.round(byte / 1024))} KB`;
+  }
+
+  /**
+   * Copia da salvare come modello nuovo: id 0, codice da scegliere, descrizione "... (copia)".
+   * Le righe hanno id negativi: il server le crea per il nuovo modello (con l'id originale
+   * aggiornerebbe quelle del modello copiato).
+   */
+  private copiaModello(originale: Par_ExportCauModel): Par_ExportCauModel {
+    const copia: Par_ExportCauModel = { ...originale, id: 0, codice: '' };
+    copia.descrizione = this.transloco.translate('attendance.pages.exportCauEdit.copiaDi', { descrizione: originale.descrizione ?? '' }).substring(0, 50);
+    this.par_ExportCau_Causali = (this.par_ExportCau_Causali ?? []).map((r, i) => ({ ...r, id: -(i + 1), idPar_ExportCau: 0 }));
+    return copia;
+  }
+
+  private contaDocumentiDaCopiare(idPar_ExportCau: number): void {
+    const request = new GenericRequest<Par_ExportCau_Docs_GetAll_InModel>(Par_ExportCau_Docs_GetAll_InModel);
+    request.data.idPar_ExportCau = idPar_ExportCau;
+    this.parExportCauDocsService.Par_ExportCau_Docs_GetAll(request).subscribe(res => {
+      this.documentiDaCopiare = res?.data?.par_ExportCau_Docs?.length ?? 0;
+      this.cdr.detectChanges();
+    });
   }
 
   segmentChanged(event: any) {

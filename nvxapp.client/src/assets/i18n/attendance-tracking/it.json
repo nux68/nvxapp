@@ -433,6 +433,8 @@
         "statoWarning": "Warning"
       },
       "exportCauEdit": {
+        "copiaDi": "{{descrizione}} (copia)",
+        "docDaCopiare": "Al salvataggio verranno copiati anche i {{n}} documenti del modello duplicato (e la sua ricetta del formato).",
         "anteprimaTitolo": "Prova del formato",
         "anteprimaNota": "Applica il formato del programma paghe ai dati reali di un dipendente in un mese (senza documentazione mostra il JSON dei dati). La prima volta, o se documenti e indicazioni cambiano, l'AI prepara il formato: può richiedere qualche decina di secondi.",
         "anteprimaMese": "Mese",
@@ -725,6 +727,10 @@
         "columnCounter": "Contatore"
       },
       "exportCauList": {
+        "fabAdd": "Aggiungi",
+        "fabNuovo": "Nuovo export",
+        "fabDuplica": "Duplica un export",
+        "duplicaTitolo": "Export da duplicare",
         "title": "Modelli export",
         "confirmDelete": "Confermi la cancellazione della tabella",
         "columnCode": "Codice",
@@ -994,6 +1000,11 @@
         "title": "Seleziona Attività",
         "descrizione": "Descrizione",
         "tutteCollegate": "Tutte le attività sono già collegate."
+      },
+      "seletionParExportCauDialog": {
+        "title": "Scegli il modello di export",
+        "cerca": "Cerca per codice o descrizione",
+        "nessuno": "Nessun modello di export trovato."
       },
       "seletionParProfiloOrarioDialog": {
         "title": "Scegli il profilo orario",

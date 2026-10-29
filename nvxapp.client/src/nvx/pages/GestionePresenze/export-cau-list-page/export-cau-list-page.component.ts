@@ -1,6 +1,6 @@
 import { TranslocoService } from '@jsverse/transloco';
 import { Component, ChangeDetectionStrategy } from '@angular/core';
-import { NavController } from '@ionic/angular';
+import { ActionSheetController, ModalController, NavController } from '@ionic/angular';
 import { ParOrarioService } from '../../../ClientServer-Service/GestionePresenze/Par_Orario/par-orario.service';
 import { CollectionDialogService } from '../../../shared/components/infrastructure/generic-dialog/collection-dialog.service';
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
@@ -12,6 +12,7 @@ import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic
 import { ParExportCauService } from '../../../ClientServer-Service/GestionePresenze/Par_ExportCau/par-export-cau.service';
 import { Par_ExportCau_Delete_InModel, Par_ExportCau_GetAll_InModel, Par_ExportCauModel } from '../../../ClientServer-Service/GestionePresenze/Par_ExportCau/Models/par-export-cau-model';
 import { ParTable, SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
+import { SeletionParExportCauDialogComponent, SeletionParExportCauDialogResult } from '../../../shared/components/GestionePresenze/seletion-par-export-cau-dialog/seletion-par-export-cau-dialog.component';
 
 @Component({
   selector: 'app-export-cau-list-page',
@@ -46,7 +47,9 @@ export class ExportCauListPageComponent {
     private collectionDialogService: CollectionDialogService,
     private refresherService: RefresherService,
     private userInterfaceService: UserInterfaceService,
-    private transloco: TranslocoService
+    private transloco: TranslocoService,
+    private actionSheetCtrl: ActionSheetController,
+    private modalCtrl: ModalController
   ) {
     this.title = this.transloco.translate('attendance.pages.exportCauList.title');
     this.btnEdit = this.userInterfaceService.Btn_Modifica;
@@ -66,15 +69,47 @@ export class ExportCauListPageComponent {
 
     this.fabMenuService.fabMenuItem = [
 
-      new FabMenuItem('Elemento 1', 'add-circle-outline', () => {
-        this.navCtrl.navigateForward('/exportcauedit', {
-          state: { id: 0 }
-        });
+      new FabMenuItem(this.transloco.translate('attendance.pages.exportCauList.fabAdd'), 'add-circle-outline', () => {
+        this.scegliInserimento();
       }),
 
     ];
 
 
+  }
+
+  /** Pulsante "+": action sheet con nuovo modello o duplicazione di un modello esistente (come i profili orari). */
+  async scegliInserimento() {
+    const sheet = await this.actionSheetCtrl.create({
+      header: this.transloco.translate('attendance.pages.exportCauList.fabAdd'),
+      buttons: [
+        { text: this.transloco.translate('attendance.pages.exportCauList.fabNuovo'), icon: 'add-circle-outline', handler: () => { this.nuovoExport(); } },
+        { text: this.transloco.translate('attendance.pages.exportCauList.fabDuplica'), icon: 'copy-outline', handler: () => { this.duplicaExport(); } },
+        { text: this.transloco.translate('common.buttons.cancel'), role: 'cancel' }
+      ]
+    });
+    await sheet.present();
+  }
+
+  private nuovoExport() {
+    this.navCtrl.navigateForward('/exportcauedit', {
+      state: { id: 0 }
+    });
+  }
+
+  /** Si sceglie il modello da duplicare; la modifica si apre con una copia da salvare come modello nuovo. */
+  private async duplicaExport() {
+    const modal = await this.modalCtrl.create({
+      component: SeletionParExportCauDialogComponent,
+      componentProps: { title: this.transloco.translate('attendance.pages.exportCauList.duplicaTitolo') }
+    });
+    await modal.present();
+
+    const { data, role } = await modal.onDidDismiss<SeletionParExportCauDialogResult>();
+    if (role === 'confirm' && data?.id)
+      this.navCtrl.navigateForward('/exportcauedit', {
+        state: { id: 0, duplicaDa: data.id }
+      });
   }
 
   ionViewWillLeave() {

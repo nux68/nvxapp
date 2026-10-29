@@ -34,6 +34,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Export
     {
         public Par_ExportCauModel Par_ExportCau { get; set; } = new();
         public List<Par_ExportCau_CausaliModel> Par_ExportCau_Causali { get; set; } = new();
+        /// <summary>duplicazione (dalla lista): modello da cui copiare documentazione e ricetta nel modello nuovo</summary>
+        public int? DuplicaDa { get; set; }
     }
     public class Par_ExportCau_Put_OutModel : ModelResult
     {

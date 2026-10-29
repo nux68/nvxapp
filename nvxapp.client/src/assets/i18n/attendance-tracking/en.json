@@ -433,6 +433,8 @@
         "statoWarning": "Warning"
       },
       "exportCauEdit": {
+        "copiaDi": "{{descrizione}} (copy)",
+        "docDaCopiare": "On saving, the {{n}} documents of the duplicated model (and its format recipe) will be copied too.",
         "anteprimaTitolo": "Format test",
         "anteprimaNota": "Applies the payroll format to the real data of one employee in one month (without documentation it shows the JSON data). The first time, or when documents and instructions change, the AI prepares the format: it can take some tens of seconds.",
         "anteprimaMese": "Month",
@@ -725,6 +727,10 @@
         "columnCounter": "Counter"
       },
       "exportCauList": {
+        "fabAdd": "Add",
+        "fabNuovo": "New export",
+        "fabDuplica": "Duplicate an export",
+        "duplicaTitolo": "Export to duplicate",
         "title": "Export templates",
         "confirmDelete": "Confirm deletion of the table",
         "columnCode": "Code",
@@ -994,6 +1000,11 @@
         "title": "Select activities",
         "descrizione": "Description",
         "tutteCollegate": "All activities are already linked."
+      },
+      "seletionParExportCauDialog": {
+        "title": "Choose the export model",
+        "cerca": "Search by code or description",
+        "nessuno": "No export model found."
       },
       "seletionParProfiloOrarioDialog": {
         "title": "Choose the work schedule profile",

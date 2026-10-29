@@ -23,6 +23,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Export
         private readonly IPar_ExportCauRepository          _par_ExportCauRepository;
         private readonly IGestionePresenzeUserUtility      _gestionePresenzeUserUtility;
         private readonly IPar_ExportCau_CausaliService     _par_ExportCau_CausaliService;
+        private readonly IPar_ExportCau_DocsRepository     _par_ExportCau_DocsRepository;
 
         public Par_ExportCauService(IMapper mapper,
                                     UserManager<ApplicationUser> userManager,
@@ -32,10 +33,12 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Export
                                     IConfiguration configuration,
                                     IGestionePresenzeUserUtility gestionePresenzeUserUtility,
                                     IPar_ExportCau_CausaliService par_ExportCau_CausaliService,
-                                    IPar_ExportCauRepository par_ExportCauRepository)
+                                    IPar_ExportCauRepository par_ExportCauRepository,
+                                    IPar_ExportCau_DocsRepository par_ExportCau_DocsRepository)
             : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _par_ExportCauRepository      = par_ExportCauRepository;
+            _par_ExportCau_DocsRepository = par_ExportCau_DocsRepository;
             _gestionePresenzeUserUtility  = gestionePresenzeUserUtility;
             _par_ExportCau_CausaliService = par_ExportCau_CausaliService;
         }
@@ -107,8 +110,14 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Export
                 if (companyData?.az_Anagrafica != null)
                     entity.IdAz_Anagrafica = companyData.az_Anagrafica.Id;
 
+                var nuovo = entity.Id == 0;
                 var updatedEntity = await _par_ExportCauRepository.UpsertAsync(entity);
                 retVal.Par_ExportCau = _mapper.Map<Par_ExportCauModel>(updatedEntity);
+
+                // duplicazione: il modello nuovo riceve anche documentazione e ricetta di quello copiato
+                // (con gli stessi documenti e le stesse note la ricetta resta valida e non si chiede di nuovo all'AI)
+                if (nuovo && model.Data.DuplicaDa is int duplicaDa && duplicaDa > 0)
+                    await CopiaDocumentazione(duplicaDa, updatedEntity);
 
                 var req_1 = new GenericRequest<Par_ExportCau_Causali_PutAll_4Edit_InModel>();
                 req_1.Data = new Par_ExportCau_Causali_PutAll_4Edit_InModel()
@@ -122,6 +131,31 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_Export
 
                 return retVal;
             }, isSubProcess);
+        }
+
+        private async Task CopiaDocumentazione(int idOrigine, Par_ExportCau destinazione)
+        {
+            var origine = _par_ExportCauRepository.FindAll(x => x.Id == idOrigine).Select(x => new { x.RicettaAI, x.RicettaHash }).FirstOrDefault();
+            if (origine == null)
+                return;
+
+            var documenti = _par_ExportCau_DocsRepository.FindAll(x => x.IdPar_ExportCau == idOrigine).OrderBy(x => x.Ordine).ThenBy(x => x.Id).ToList();
+            foreach (var d in documenti)
+                await _par_ExportCau_DocsRepository.UpsertAsync(new Par_ExportCau_Docs
+                {
+                    IdPar_ExportCau = destinazione.Id,
+                    NomeFile = d.NomeFile,
+                    ContentType = d.ContentType,
+                    Dimensione = d.Dimensione,
+                    Contenuto = d.Contenuto,
+                    Testo = d.Testo,
+                    Descrizione = d.Descrizione,
+                    Ordine = d.Ordine
+                });
+
+            destinazione.RicettaAI = origine.RicettaAI;
+            destinazione.RicettaHash = origine.RicettaHash;
+            await _par_ExportCauRepository.UpsertAsync(destinazione);
         }
 
         public virtual async Task<GenericResult<Par_ExportCau_Delete_OutModel>> Par_ExportCauDelete(GenericRequest<Par_ExportCau_Delete_InModel> model, bool isSubProcess)
