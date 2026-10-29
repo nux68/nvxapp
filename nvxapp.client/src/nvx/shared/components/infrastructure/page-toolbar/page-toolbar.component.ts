@@ -59,7 +59,7 @@ export class PageToolbarComponent {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = downloadUrl.split('/').pop() || 'export';
+        a.download = job.fileName || downloadUrl.split('/').pop() || 'export';
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
