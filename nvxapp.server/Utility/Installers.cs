@@ -142,6 +142,9 @@ namespace nvxapp.server.Utility
             builder.Services.AddSingleton<nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.IRouteRegistry,
                                           nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.RouteRegistry>();
 
+            // pulizia dei file prodotti dai job (Export:RetentionHours)
+            builder.Services.AddHostedService<JobFileCleanupService>();
+
 
             return builder.Services;
         }

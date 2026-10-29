@@ -205,15 +205,17 @@ namespace nvxapp.server.service.Helpers
         /// <param name="bodyType"></param>
         /// <param name="headers"></param>
         /// <param name="returnRawData">Restituisce i dati grezzi senza deserializzarli dal json</param>
+        /// <param name="timeout">Attesa massima della risposta (null = default di HttpClient, 100 secondi)</param>
         /// <returns></returns>
         public async Task<WebApiResult<TOut>?> Post<TIn, TOut>(string serverUrl, AuthenticationHeaderValue? authentication,
                                                       string action,
                                                       TIn body,
                                                       WebApiBodyType bodyType,
                                                       IDictionary<string, string> headers,
-                                                      bool returnRawData = false)
+                                                      bool returnRawData = false,
+                                                      TimeSpan? timeout = null)
         {
-            return await Fetch<TIn, TOut>(serverUrl, authentication, action, body, bodyType, headers, WebApiRequestType.Post, returnRawData);
+            return await Fetch<TIn, TOut>(serverUrl, authentication, action, body, bodyType, headers, WebApiRequestType.Post, returnRawData, timeout);
         }
 
 
@@ -259,7 +261,8 @@ namespace nvxapp.server.service.Helpers
 
 
         private async Task<WebApiResult<TOut>?> Fetch<TIn, TOut>(string serverUrl, AuthenticationHeaderValue? authentication,
-            string action, TIn body, WebApiBodyType bodyType, IDictionary<string, string> headers, WebApiRequestType type, bool returnRawData = false)
+            string action, TIn body, WebApiBodyType bodyType, IDictionary<string, string> headers, WebApiRequestType type, bool returnRawData = false,
+            TimeSpan? timeout = null)
         {
 
             var r = new WebApiResult<TOut>
@@ -280,6 +283,8 @@ namespace nvxapp.server.service.Helpers
 
                 httpClient.BaseAddress = new Uri(_serverUri, action);
                 httpClient.MaxResponseContentBufferSize = int.MaxValue;
+                if (timeout != null)
+                    httpClient.Timeout = timeout.Value;
 
                 // clean the headers
                 httpClient.DefaultRequestHeaders.Clear();
@@ -412,7 +417,8 @@ namespace nvxapp.server.service.Helpers
                                                       TIn body,
                                                       WebApiBodyType bodyType,
                                                       IDictionary<string, string> headers,
-                                                      bool returnRawData = false);
+                                                      bool returnRawData = false,
+                                                      TimeSpan? timeout = null);
 
         public Task<WebApiResult<TOut>?> Put<TIn, TOut>(string serverUrl, AuthenticationHeaderValue? authentication,
                                                       string action,

@@ -202,9 +202,8 @@ namespace nvxapp.server.service.ClientServer_Service.infrastructure.MyMokeLongJo
                                                                             );
                             }
 
-                            var exportsFolder = NVXSystem.ExportFolder;
-                            string fileName;
-                            fileName = await WriteTxtFile("MokeExport", jobId.ToString(), exportsFolder);
+                            // file del job: nome su disco {jobId}.txt, scaricabile solo da chi ha lanciato il job
+                            var file = NVXSystem.SalvaFileJob(jobId.ToString(), userId, "MokeExport", "txt", ContenutoTxt());
 
                             Log.Information("Background task for job {JobId} has finished successfully.", jobId);
                             await _longJobNotifier.LongJobProgressAsync(userId, 
@@ -212,7 +211,8 @@ namespace nvxapp.server.service.ClientServer_Service.infrastructure.MyMokeLongJo
                                                                                                     JobType = "MyMokeExportJob",
                                                                                                     Category = LongJobCategory.FileGeneration,
                                                                                                     Payload = null,
-                                                                                                    DownloadUrl = $"{NVXSystem.DownloadURL}{fileName}",
+                                                                                                    DownloadUrl = file.DownloadUrl,
+                                                                                                    FileName = file.FileName,
                                                                                                     ProgressPercentage = 100, 
                                                                                                     Message = new Message { Text = "Export completato, clicca per scaricare", MsgType = MessageType.Information },
                                                                                                     IsFinished = true 
@@ -247,19 +247,14 @@ namespace nvxapp.server.service.ClientServer_Service.infrastructure.MyMokeLongJo
         }
         
 
-        private static async Task<string> WriteTxtFile(string codice,string jobId, string folder)
+        private static byte[] ContenutoTxt()
         {
             const string separator = "\t";
             var sb = new StringBuilder();
 
             sb.AppendLine(string.Join(separator, "ciao", "ciao", "ciao", "ciao", "ciao"));
 
-            
-
-            var fileName = $"{codice}_{jobId}.txt";
-            var filePath = Path.Combine(folder, fileName);
-            await File.WriteAllTextAsync(filePath, sb.ToString(), Encoding.UTF8);
-            return fileName;
+            return Encoding.UTF8.GetBytes(sb.ToString());
         }
 
     }
