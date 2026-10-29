@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
-import { ModalController, NavController } from '@ionic/angular';
+import { ActionSheetController, ModalController, NavController } from '@ionic/angular';
 import { TranslocoService } from '@jsverse/transloco';
 import { AccountService } from '../../../ClientServer-Service/Infrastructure/Account/account.service';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
@@ -13,6 +13,8 @@ import { UserLoadInModel } from '../../../ClientServer-Service/Infrastructure/Ac
 import { UserCompanyListModel, UserCompanyListInModel } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-company-model';
 import { RoleCode } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-roles-model';
 import { MainMenuService } from '../../../Utility/infrastructure/main-menu.service';
+import { LongJobNotifierService } from '../../../Utility/infrastructure/long-job-notifier.service';
+import { filter, take } from 'rxjs';
 import { DialogName } from '../../../Utility/infrastructure/dialog-redefinition';
 import { AddUserCompanyComponent } from '../../../shared/components/infrastructure/add-user-company/add-user-company.component';
 import { UserCompanyEditModel, UserCompanyGetInModel } from '../../../ClientServer-Service/Infrastructure/Account/Models/user-company-model';
@@ -51,6 +53,8 @@ export class UserCompanyListPageComponent {
               private userInterfaceService: UserInterfaceService,
               private userNavigationService: UserNavigationService,
               private modalCtrl: ModalController,
+              private actionSheetCtrl: ActionSheetController,
+              private longJobNotifierService: LongJobNotifierService,
               private transloco: TranslocoService
             
             ) 
@@ -83,7 +87,7 @@ export class UserCompanyListPageComponent {
         // this.navCtrl.navigateForward('/' + pageName, {
         //   state: { id: 0 }
         // });
-        this.openAddUserCompany();
+        this.scegliInserimento();
       }),
 
     ];
@@ -94,6 +98,51 @@ export class UserCompanyListPageComponent {
     this.fabMenuService.fabMenuItem = [];
   }
 
+
+  /**
+   * Pulsante "+": se un applicativo fornisce l'importazione da file (es. gestione presenze) si sceglie da un
+   * action sheet tra inserimento di un utente e importazione; altrimenti si apre subito l'inserimento.
+   */
+  async scegliInserimento() {
+    const importDialog = await this.mainMenuService.RedefineDialog(DialogName.ImportUserCompany, null);
+    if (!importDialog) {
+      this.openAddUserCompany();
+      return;
+    }
+
+    const sheet = await this.actionSheetCtrl.create({
+      header: this.transloco.translate('pages.userCompanyList.fabAddHeader'),
+      buttons: [
+        { text: this.transloco.translate('pages.userCompanyList.fabAddUser'), icon: 'person-add-outline', handler: () => { this.openAddUserCompany(); } },
+        { text: this.transloco.translate('pages.userCompanyList.fabImport'), icon: 'document-attach-outline', handler: () => { this.openImportUserCompany(importDialog); } },
+        { text: this.transloco.translate('common.buttons.cancel'), role: 'cancel' }
+      ]
+    });
+    await sheet.present();
+  }
+
+  async openImportUserCompany(component: any) {
+    const modal = await this.modalCtrl.create({ component: component });
+    await modal.present();
+
+    const { data, role } = await modal.onDidDismiss();
+    if (role !== 'confirm' || !data)
+      return;
+    // inserimento in un job del server (avanzamento nella barra della pagina): la lista si rilegge alla fine
+    if (data.jobId)
+      this.longJobNotifierService.jobFinished$
+        .pipe(filter(job => job.jobId === data.jobId), take(1))
+        .subscribe(() => this.rileggiLista());
+    else if (data.inserimentoCompletato)
+      this.rileggiLista();
+  }
+
+  private rileggiLista() {
+    const request: GenericRequest<UserCompanyListInModel> = new GenericRequest<UserCompanyListInModel>(UserCompanyListInModel);
+    this.accountService.UserCompanyList(request).subscribe(res => {
+      this.userCompanyList = res.data.userCompanyList;
+    });
+  }
 
   async openAddUserCompany() {
     // un applicativo puo' sostituire il dialog di inserimento (es. wizard della gestione presenze)
@@ -109,10 +158,7 @@ export class UserCompanyListPageComponent {
 
     // il dialog ha gia' completato l'inserimento: basta rileggere la lista
     if (role === 'confirm' && data && data.inserimentoCompletato) {
-      let request: GenericRequest<UserCompanyListInModel> = new GenericRequest<UserCompanyListInModel>(UserCompanyListInModel);
-      this.accountService.UserCompanyList(request).subscribe(res => {
-        this.userCompanyList = res.data.userCompanyList;
-      });
+      this.rileggiLista();
       return;
     }
 

@@ -204,9 +204,12 @@ export class MainMenuService implements iMainMenuService {
 
   /**
    * Dialog che un applicativo puo' sostituire (vedi dialog-redefinition.ts): si interrogano le ridefinizioni
-   * con tutti gli applicativi attivi per l'azienda, dalla priorita' piu' alta; senza ridefinizioni si apre quello indicato.
+   * con tutti gli applicativi attivi per l'azienda, dalla priorita' piu' alta; senza ridefinizioni si apre quello indicato
+   * (null: dialog che esiste solo se un applicativo lo fornisce).
    */
-  public async RedefineDialog(dialogName: string, defaultDialog: Type<any>): Promise<Type<any>> {
+  public RedefineDialog(dialogName: string, defaultDialog: Type<any>): Promise<Type<any>>;
+  public RedefineDialog(dialogName: string, defaultDialog: null): Promise<Type<any> | null>;
+  public async RedefineDialog(dialogName: string, defaultDialog: Type<any> | null): Promise<Type<any> | null> {
     const candidate = this.dialogRedefinitions
       .filter(r => r.applications.length > 0 && r.applications.every(a => this.authService.hasApplication(a)))
       .sort((a, b) => b.priority - a.priority);

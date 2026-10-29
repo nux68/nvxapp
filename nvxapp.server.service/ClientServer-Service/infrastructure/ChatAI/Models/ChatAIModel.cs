@@ -822,6 +822,13 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
         // a riconoscere l'intent anche con parole diverse dalle Keywords.
         public List<string> Examples { get; set; } = new();
 
+        // Argomento del comando, titolo della sezione nell'elenco dell'help (es. "Timbrature"),
+        // nella lingua della richiesta. Vuoto = sezione "Altro" in fondo.
+        // CategoryOrder: posizione della sezione (crescente); i comandi comuni (navigazione,
+        // impostazioni) vanno dopo quelli degli applicativi. Non entra nel prompt del LLM.
+        public string Category { get; set; } = string.Empty;
+        public int CategoryOrder { get; set; } = 1000;
+
         // Riepilogo e conferma prima dell'esecuzione. Se non impostato: richiesti, tranne per
         // gli intent di navigazione (non modificano dati e si eseguono subito).
         public bool? RequiresConfirmation { get; set; }
