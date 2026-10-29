@@ -129,12 +129,16 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
     this.par_OrarioIntervalloHH = this.sharedParameterGestionePresenzeService.Par_OrarioIntervalloHH;
 
     if (state) {
+        // duplicazione (dalla lista): si legge il profilo scelto e lo si salva come profilo nuovo
+        const duplicaDa: number | undefined = state.duplicaDa;
         let request = new GenericRequest<Par_ProfiloOrario_GetInModel>(Par_ProfiloOrario_GetInModel);
-        request.data.id = state.id;
+        request.data.id = duplicaDa || state.id;
 
         return this.parProfiloOrarioService.Par_ProfiloOrarioGet(request).pipe(
           map((res) => {
             this.par_ProfiloOrarioGG = res.data.par_ProfiloOrarioGG;
+            if (duplicaDa)
+              return this.copiaProfilo(res.data.par_ProfiloOrario);
             return res.data.par_ProfiloOrario;
           }),
           catchError((error) => {
@@ -149,6 +153,18 @@ export class ProfiloOrarioEditPageComponent extends BasePageConfirmCancelCompone
 
 
   };
+
+  /**
+   * Copia da salvare come profilo nuovo: id 0, codice da scegliere, descrizione "... (copia)".
+   * I giorni hanno id negativi: il server li crea per il nuovo profilo (con l'id originale
+   * aggiornerebbe quelli del profilo copiato).
+   */
+  private copiaProfilo(originale: Par_ProfiloOrarioModel): Par_ProfiloOrarioModel {
+    const copia: Par_ProfiloOrarioModel = { ...originale, id: 0, codice: '' };
+    copia.descrizione = this.transloco.translate('attendance.pages.profiloOrarioEdit.copiaDi', { descrizione: originale.descrizione ?? '' }).substring(0, 50);
+    this.par_ProfiloOrarioGG = this.par_ProfiloOrarioGG.map((gg, i) => ({ ...gg, id: -(i + 1), idPar_ProfiloOrario: 0 }));
+    return copia;
+  }
 
   SaveData = (editModel: Par_ProfiloOrarioModel): Observable<boolean> => {
 

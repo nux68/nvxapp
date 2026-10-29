@@ -1,6 +1,6 @@
 import { TranslocoService } from '@jsverse/transloco';
 import { Component, ChangeDetectionStrategy } from '@angular/core';
-import { NavController } from '@ionic/angular';
+import { ActionSheetController, ModalController, NavController } from '@ionic/angular';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { NvxListAction, NvxListColumn } from '../../../shared/components/infrastructure/nvx-list/nvx-list.component';
@@ -15,6 +15,7 @@ import { RefresherService } from '../../../Utility/GestionePresenze/refresher.se
 import { ParProfiloOrarioService } from '../../../ClientServer-Service/GestionePresenze/Par_ProfiloOrario/par-profilo-orario.service';
 import { Par_ProfiloOrario_DeleteInModel, Par_ProfiloOrario_GetAllInModel, Par_ProfiloOrarioModel } from '../../../ClientServer-Service/GestionePresenze/Par_ProfiloOrario/Models/par-profilo-orario-model';
 import { ParTable, SharedParameterGestionePresenzeService } from '../../../shared/shared-parameter-gestione-presenze.service';
+import { SeletionParProfiloOrarioDialogComponent, SeletionParProfiloOrarioDialogResult } from '../../../shared/components/GestionePresenze/seletion-par-profilo-orario-dialog/seletion-par-profilo-orario-dialog.component';
 
 @Component({
   selector: 'app-profilo-orario-list-page',
@@ -43,6 +44,8 @@ export class ProfiloOrarioListPageComponent {
   constructor(
     private sharedParameterGestionePresenzeService: SharedParameterGestionePresenzeService,
     private navCtrl: NavController,
+    private actionSheetCtrl: ActionSheetController,
+    private modalCtrl: ModalController,
     public fabMenuService: FabMenuService,
     private parProfiloOrarioService: ParProfiloOrarioService,
     private collectionDialogService: CollectionDialogService,
@@ -68,15 +71,47 @@ export class ProfiloOrarioListPageComponent {
 
     this.fabMenuService.fabMenuItem = [
 
-      new FabMenuItem('Elemento 1', 'add-circle-outline', () => {
-        this.navCtrl.navigateForward('/profiliorariedit', {
-          state: { id: 0 }
-        });
+      new FabMenuItem(this.transloco.translate('attendance.pages.profiloOrarioList.fabAdd'), 'add-circle-outline', () => {
+        this.scegliInserimento();
       }),
 
     ];
 
 
+  }
+
+  /** Pulsante "+": action sheet con nuovo profilo o duplicazione di un profilo esistente. */
+  async scegliInserimento() {
+    const sheet = await this.actionSheetCtrl.create({
+      header: this.transloco.translate('attendance.pages.profiloOrarioList.fabAdd'),
+      buttons: [
+        { text: this.transloco.translate('attendance.pages.profiloOrarioList.fabNuovo'), icon: 'add-circle-outline', handler: () => { this.nuovoProfilo(); } },
+        { text: this.transloco.translate('attendance.pages.profiloOrarioList.fabDuplica'), icon: 'copy-outline', handler: () => { this.duplicaProfilo(); } },
+        { text: this.transloco.translate('common.buttons.cancel'), role: 'cancel' }
+      ]
+    });
+    await sheet.present();
+  }
+
+  private nuovoProfilo() {
+    this.navCtrl.navigateForward('/profiliorariedit', {
+      state: { id: 0 }
+    });
+  }
+
+  /** Si sceglie il profilo da duplicare; la modifica si apre con una copia da salvare come profilo nuovo. */
+  private async duplicaProfilo() {
+    const modal = await this.modalCtrl.create({
+      component: SeletionParProfiloOrarioDialogComponent,
+      componentProps: { title: this.transloco.translate('attendance.pages.profiloOrarioList.duplicaTitolo') }
+    });
+    await modal.present();
+
+    const { data, role } = await modal.onDidDismiss<SeletionParProfiloOrarioDialogResult>();
+    if (role === 'confirm' && data?.id)
+      this.navCtrl.navigateForward('/profiliorariedit', {
+        state: { id: 0, duplicaDa: data.id }
+      });
   }
 
   ionViewWillLeave() {

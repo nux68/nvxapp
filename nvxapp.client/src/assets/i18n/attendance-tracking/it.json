@@ -214,7 +214,8 @@
         "giorniProfilo": "Giorni del profilo",
         "giorno": "Giorno {{n}}",
         "riposo": "Riposo",
-        "hhTeo": "HH Teo."
+        "hhTeo": "HH Teo.",
+        "copiaDi": "{{descrizione}} (copia)"
       },
       "departmentEdit": {
         "title": "Reparti",
@@ -695,7 +696,11 @@
         "title": "Profili Orari",
         "confirmDelete": "Confermi la cancellazione dell Profilo Orario",
         "columnCode": "Codice",
-        "columnDescription": "Descrizione"
+        "columnDescription": "Descrizione",
+        "fabAdd": "Aggiungi",
+        "fabNuovo": "Nuovo profilo",
+        "fabDuplica": "Duplica un profilo",
+        "duplicaTitolo": "Profilo da duplicare"
       },
       "orariList": {
         "title": "Orari",
@@ -946,6 +951,11 @@
         "title": "Seleziona Attività",
         "descrizione": "Descrizione",
         "tutteCollegate": "Tutte le attività sono già collegate."
+      },
+      "seletionParProfiloOrarioDialog": {
+        "title": "Scegli il profilo orario",
+        "cerca": "Cerca per codice o descrizione",
+        "nessuno": "Nessun profilo orario trovato."
       },
       "seletionParCompetenzaDialog": {
         "title": "Seleziona Competenze",

@@ -214,7 +214,8 @@
         "giorniProfilo": "Profile days",
         "giorno": "Day {{n}}",
         "riposo": "Rest",
-        "hhTeo": "Sched. hrs"
+        "hhTeo": "Sched. hrs",
+        "copiaDi": "{{descrizione}} (copy)"
       },
       "departmentEdit": {
         "title": "Departments",
@@ -695,7 +696,11 @@
         "title": "Work schedule profiles",
         "confirmDelete": "Confirm deletion of the work schedule profile",
         "columnCode": "Code",
-        "columnDescription": "Description"
+        "columnDescription": "Description",
+        "fabAdd": "Add",
+        "fabNuovo": "New profile",
+        "fabDuplica": "Duplicate a profile",
+        "duplicaTitolo": "Profile to duplicate"
       },
       "orariList": {
         "title": "Schedules",
@@ -946,6 +951,11 @@
         "title": "Select activities",
         "descrizione": "Description",
         "tutteCollegate": "All activities are already linked."
+      },
+      "seletionParProfiloOrarioDialog": {
+        "title": "Choose the work schedule profile",
+        "cerca": "Search by code or description",
+        "nessuno": "No work schedule profile found."
       },
       "seletionParCompetenzaDialog": {
         "title": "Select skills",
