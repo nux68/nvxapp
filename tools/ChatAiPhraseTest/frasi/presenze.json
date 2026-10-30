@@ -13,6 +13,9 @@
   { "frase": "segnami Rossi in malattia domani", "intent": "RegisterJustification", "slots": { "employeeName": "Rossi Mario", "date": "=domani" } },
   { "frase": "aggiungi un'ora e mezza di straordinario a Verdi per lunedì", "intent": "RegisterCausale", "slots": { "employeeName": "Verdi Giuseppe", "hours": "01:30", "date": "=lunedì" } },
   { "frase": "metti in ferie Verdi dal 3 al 7 novembre", "intent": "RegisterJustificationPeriod", "slots": { "employeeName": "Verdi Giuseppe", "from": "=3 novembre", "to": "=7 novembre" } },
+  // una settimana del mese: dal primo all'ultimo giorno della settimana
+  { "frase": "metti in ferie Verdi la seconda settimana di novembre", "intent": "RegisterJustificationPeriod", "slots": { "employeeName": "Verdi Giuseppe", "from": "=seconda settimana di novembre", "to": "=15 novembre" } },
+  { "frase": "Bianchi in malattia la prossima settimana", "intent": "RegisterJustificationPeriod", "slots": { "employeeName": "Bianchi Luca", "from": "=la prossima settimana" } },
   { "frase": "ricalcola le presenze di Rossi di ottobre", "intent": "CalcolaGiorno", "slots": { "employeeName": "Rossi Mario" } },
 
   // correzioni e approvazioni (HR)
