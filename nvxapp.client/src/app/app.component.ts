@@ -38,6 +38,8 @@ export class AppComponent implements OnInit {
   public groupedAdminMenu: GroupMainMenuItem[] = [];
   public groupedSuperUserMenu: GroupMainMenuItem[] = [];
   public groupedUserMenu: GroupMainMenuItem[] = [];
+  // sezione "Assistenza", in fondo al menu per tutti gli utenti collegati
+  public groupedSupportMenu: GroupMainMenuItem[] = [];
   // menu dello showcase, mostrato al posto degli altri prima del login
   public groupedShowcaseMenu: GroupMainMenuItem[] = [];
   // sezione dello showcase aperta all'inizio: la prima, oppure quella del login ("Area riservata")
@@ -150,6 +152,7 @@ export class AppComponent implements OnInit {
       this.groupedAdminMenu = this.getGroupedAdmin();
       this.groupedSuperUserMenu = this.getGroupedSuperUser();
       this.groupedUserMenu = this.getGroupedUser();
+      this.groupedSupportMenu = this.getGroupedSupport();
 
       // ticket in carico dell'utente (anche dopo un'impersonificazione)
       this.ticketNotifierService.refreshCount();
@@ -170,7 +173,7 @@ export class AppComponent implements OnInit {
 
   
   // prima sezione del menu con voci visibili, nell'ordine in cui compaiono (utente, SuperUser, Admin, Centro,
-  // Studio, Azienda), saltando "Accesso" (login, logout, dati utente); se non ce ne sono altre resta "Accesso"
+  // Studio, Azienda, Assistenza), saltando "Accesso" (login, logout, dati utente); se non ce ne sono altre resta "Accesso"
   private primaSezioneAperta(): string {
     const accesso = this.mainMenuInfrastructureService.GetMenuHeaderMenu(this.mainMenuService.Pages4User)?.title ?? '';
     const sezioni: [GroupMainMenuItem[], boolean, (component: string) => boolean][] = [
@@ -180,6 +183,7 @@ export class AppComponent implements OnInit {
       [this.groupedDealerAdminMenu, this.authService.IsInGroupDealerAdmin, c => this.showPage4DealerAdmin(c)],
       [this.groupedFinancialAdvisorAdminMenu, this.authService.IsInGroupFinancialAdvisorAdmin, c => this.showPage4FinancialAdvisorAdmin(c)],
       [this.groupedCompanyAdminMenu, this.authService.IsInGroupCompanyAdmin, c => this.showPage4CompanyAdmin(c)],
+      [this.groupedSupportMenu, true, c => true],
     ];
     for (const [gruppi, visibili, mostra] of sezioni) {
       if (!visibili) continue;
@@ -260,17 +264,6 @@ export class AppComponent implements OnInit {
 
       case 'DashboardPageComponent':
         return this.authService.Token != null;
-        break;
-
-      // ticket di assistenza: qui solo per chi non ha un menu di ruolo (es. il dipendente),
-      // gli altri trovano la voce nella sezione del proprio ruolo
-      case 'TicketListPageComponent':
-        return this.authService.Token != null &&
-               !this.authService.IsSuperUser &&
-               !this.authService.IsInGroupAdmin &&
-               !this.authService.IsInGroupDealerAdmin &&
-               !this.authService.IsInGroupFinancialAdvisorAdmin &&
-               !this.authService.IsInGroupCompanyAdmin;
         break;
 
       case 'LoginPageComponent':
@@ -463,7 +456,17 @@ export class AppComponent implements OnInit {
     return this.groupMenu(retVal);
   }
 
-  
+  // sezione "Assistenza": voci senza ruoli per tutti gli utenti collegati, le altre per chi ha uno dei ruoli indicati
+  // (il menu si ricalcola quando cambiano i ruoli: senza ruoli, cioe' senza login, la sezione non c'e')
+  public getGroupedSupport(): GroupMainMenuItem[] {
+    const ruoli = this.authService.RoleNames;
+    if (ruoli.length === 0)
+      return [];
+
+    const retVal = this.mainMenuService.Pages4Support.filter(item => !item.roles || item.roles.some(role => ruoli.includes(role)));
+
+    return this.groupMenu(retVal);
+  }
 
 }
 
