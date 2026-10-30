@@ -13,8 +13,12 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
             ["timeclockuser"]             = "/timeclockuser",
             ["presenze"]                  = "/timeclockuser",
             ["richieste"]                 = "/requestlistuser",
+            ["le mie richieste"]          = "/requestlistuser",
+            ["mie richieste"]             = "/requestlistuser",
             ["requestlistuser"]           = "/requestlistuser",
             ["calendario"]                = "/usertimesheet",
+            ["il mio calendario"]         = "/usertimesheet",
+            ["mio calendario"]            = "/usertimesheet",
             ["usertimesheet"]             = "/usertimesheet",
             ["richiesta giustificativo"]  = "/requestjustificationuser",
             ["giustificativo"]            = "/requestjustificationuser",
@@ -59,6 +63,7 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
             ["calendar"]                  = "/usertimesheet",
             ["timesheet"]                 = "/usertimesheet",
             ["my timesheet"]              = "/usertimesheet",
+            ["my calendar"]               = "/usertimesheet",
             ["leave request"]             = "/requestjustificationuser",
             ["justification request"]     = "/requestjustificationuser",
             ["clocking request"]          = "/requestclockinguser",
@@ -100,5 +105,24 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
         };
 
         public IReadOnlyDictionary<string, string> Routes => _routes;
+
+        // stessa voce di menu, pagina dell'amministrazione (vedi MainMenuAttendanceTrackingService):
+        // valgono prima di Routes. Per chi e' anche User le pagine personali restano raggiungibili
+        // con "le mie richieste" / "il mio calendario"
+        private static readonly List<RoleRoute> _roleRoutes =
+        [
+            new("richieste",  "/requestlistadmin",    "CompanyPowerAdmin", "CompanyAdmin"),
+            new("requests",   "/requestlistadmin",    "CompanyPowerAdmin", "CompanyAdmin"),
+            new("calendario", "/poweradmintimesheet", "CompanyPowerAdmin"),
+            new("calendar",   "/poweradmintimesheet", "CompanyPowerAdmin"),
+            new("timesheet",  "/poweradmintimesheet", "CompanyPowerAdmin"),
+            new("calendario", "/admintimesheet",      "CompanyAdmin"),
+            new("calendar",   "/admintimesheet",      "CompanyAdmin"),
+            new("timesheet",  "/admintimesheet",      "CompanyAdmin"),
+            new("utenti",     "/userdepartmentlist",  "CompanyAdmin"),
+            new("users",      "/userdepartmentlist",  "CompanyAdmin"),
+        ];
+
+        public IReadOnlyList<RoleRoute> RoleRoutes => _roleRoutes;
     }
 }
