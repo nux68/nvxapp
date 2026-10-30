@@ -21,6 +21,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.SupportTicke
         public DateTime? CreationDate { get; set; }
         public DateTime? ModifiedDate { get; set; }
         public int Version { get; set; }
+        // risposta automatica AI in corso (gli operatori possono comunque prendere il ticket)
+        public bool AiPending { get; set; }
     }
 
     // allegato: File valorizzato solo in invio e nel download
@@ -51,6 +53,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.SupportTicke
         public string? TipoDescrizione { get; set; }
         public DateTime? CreationDate { get; set; }
         public List<TicketAttachModel> TicketAttach { get; set; } = new List<TicketAttachModel>();
+        // titoli dei documenti usati dall'AI (righe RisoluzioneAI e RisoluzioneAINonTrovata), non mostrati a chi ha aperto
+        public List<string> Document { get; set; } = new List<string>();
     }
 
     // utente proposto (assegnatari)
@@ -237,23 +241,55 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.SupportTicke
 
 
     /*
-     Risoluzione automatica AI (predisposizione): chiamata prima di passare il ticket al livello superiore.
-     Se Resolved il ticket torna a chi l'ha aperto come Risolto con Text e gli allegati.
+     Risposta automatica AI: domanda del ticket, risposte AI precedenti e obiezioni di chi ha aperto (riaperture),
+     documenti del livello (TicketAiKnowledge). Se Resolved il ticket torna a chi l'ha aperto come Risolto con Text;
+     altrimenti resta all'operatore. UsedDocumentIds: documenti su cui si basa la risposta.
     */
     public class TicketAiResolveInModel
     {
         public int IdTicket { get; set; }
-        public int IdTicketType { get; set; }
         public TicketLevel DestinationLevel { get; set; }
+        public string TipoDescrizione { get; set; } = string.Empty;
         public string Oggetto { get; set; } = string.Empty;
         public string Text { get; set; } = string.Empty;
-        public List<TicketCronologyModel> TicketCronology { get; set; } = new List<TicketCronologyModel>();
+        public List<TicketAiHistoryModel> History { get; set; } = new List<TicketAiHistoryModel>();
+        public List<TicketAiDocumentModel> Document { get; set; } = new List<TicketAiDocumentModel>();
     }
 
     public class TicketAiResolveOutModel : ModelResult
     {
         public bool Resolved { get; set; }
         public string? Text { get; set; }
-        public List<TicketAttachModel> TicketAttach { get; set; } = new List<TicketAttachModel>();
+        public List<int> UsedDocumentIds { get; set; } = new List<int>();
+    }
+
+    // passaggio precedente del dialogo: risposta dell'AI o obiezione di chi ha aperto
+    public class TicketAiHistoryModel
+    {
+        public bool FromAi { get; set; }
+        public string Text { get; set; } = string.Empty;
+    }
+
+    // documento passato all'AI
+    public class TicketAiDocumentModel
+    {
+        public int Id { get; set; }
+        public string Titolo { get; set; } = string.Empty;
+        public string? Descrizione { get; set; }
+        public string Contenuto { get; set; } = string.Empty;
+        public bool LinkedToType { get; set; }
+        public int Distance { get; set; }
+        public int Ordine { get; set; }
+    }
+
+    // lavoro in background della risposta AI: si ferma se il ticket e' cambiato (Version)
+    public class TicketAiRunInModel
+    {
+        public int IdTicket { get; set; }
+        public int Version { get; set; }
+    }
+
+    public class TicketAiRunOutModel : ModelResult
+    {
     }
 }

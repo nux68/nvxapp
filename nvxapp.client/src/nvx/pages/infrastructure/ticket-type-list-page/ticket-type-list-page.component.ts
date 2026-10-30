@@ -41,8 +41,6 @@ export class TicketTypeListPageComponent {
         value: t => this.transloco.translate('ticket.application.' + (t.applicationType ?? 'general')) },
       { key: 'level', title: this.transloco.translate('pages.ticketTypeList.columnLevels'), sortable: false,
         value: t => t.level.map(l => this.transloco.translate('ticket.level.' + l)).join(', ') },
-      { key: 'aiResolution', title: this.transloco.translate('pages.ticketTypeList.columnAi'), width: '70px',
-        value: t => this.transloco.translate(t.aiResolution ? 'pages.ticketTypeList.yes' : 'pages.ticketTypeList.no') },
     ];
 
     this.btnEdit = userInterfaceService.Btn_Modifica;

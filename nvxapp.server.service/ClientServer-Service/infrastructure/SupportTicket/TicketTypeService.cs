@@ -17,7 +17,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.SupportTicke
 {
     /*
      Tipi di richiesta dei ticket, configurati dal SuperUser: applicativo, descrizione (una sola,
-     come gli altri dati delle tabelle), livelli abilitati (almeno due: uno che apre e uno che riceve), risoluzione automatica AI.
+     come gli altri dati delle tabelle), livelli abilitati (almeno due: uno che apre e uno che riceve).
+     La risposta automatica AI si imposta per livello e nodo (TicketTypeAiSettingService).
      I tipi non si cancellano: si disattivano (restano sui ticket esistenti).
     */
     public class TicketTypeService : ServiceBase, ITicketTypeService

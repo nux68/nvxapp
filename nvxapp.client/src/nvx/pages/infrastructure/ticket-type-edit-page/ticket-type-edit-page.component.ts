@@ -13,7 +13,8 @@ import { TicketTypeService } from '../../../ClientServer-Service/Infrastructure/
 
 /*
  Tipo di richiesta dei ticket (SuperUser): applicativo, descrizione (una sola, come gli altri dati), livelli abilitati
- (almeno due: chi apre e chi riceve), risoluzione automatica AI (predisposizione), ordine, attivo.
+ (almeno due: chi apre e chi riceve), ordine, attivo.
+ La risposta automatica AI si imposta per livello e nodo (ticket-type-ai-setting-page).
 */
 @Component({
   selector: 'app-ticket-type-edit-page',
@@ -43,7 +44,6 @@ export class TicketTypeEditPageComponent extends BasePageConfirmCancelComponent<
       descrizione: [null, [Validators.required, Validators.maxLength(100)]],
       applicationType: [null],
       level: [[], [this.minLevels]],
-      aiResolution: [false],
       ordine: [0],
       active: [true],
     });

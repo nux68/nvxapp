@@ -15,7 +15,8 @@ namespace nvxapp.server.service.Mappers.Public
             CreateMap<Ticket, TicketListModel>()
                 .ForMember(x => x.TipoDescrizione, o => o.Ignore())
                 .ForMember(x => x.OpenerUserName, o => o.Ignore())
-                .ForMember(x => x.CurrentUserName, o => o.Ignore());
+                .ForMember(x => x.CurrentUserName, o => o.Ignore())
+                .ForMember(x => x.AiPending, o => o.Ignore());
 
             CreateMap<Ticket, TicketDetailModel>()
                 .IncludeBase<Ticket, TicketListModel>()
@@ -27,7 +28,8 @@ namespace nvxapp.server.service.Mappers.Public
                 .ForMember(x => x.AuthorName, o => o.Ignore())
                 .ForMember(x => x.ReturnUserName, o => o.Ignore())
                 .ForMember(x => x.TipoDescrizione, o => o.Ignore())
-                .ForMember(x => x.TicketAttach, o => o.Ignore());
+                .ForMember(x => x.TicketAttach, o => o.Ignore())
+                .ForMember(x => x.Document, o => o.Ignore());
 
             // il contenuto resta fuori: negli elenchi si proietta senza leggerlo dal database
             CreateMap<TicketAttach, TicketAttachModel>()

@@ -34,6 +34,7 @@ export enum TicketAction {
   Chiusura = 9,
   Riclassificazione = 10,
   Spostamento = 11,
+  RisoluzioneAINonTrovata = 12,
 }
 
 // Viste dell'elenco
@@ -58,6 +59,8 @@ export class TicketListModel {
   public creationDate: string | null = null;
   public modifiedDate: string | null = null;
   public version: number = 0;
+  // risposta automatica AI in corso
+  public aiPending: boolean = false;
 }
 
 // allegato: file (base64) valorizzato solo in invio e nel download
@@ -85,6 +88,8 @@ export class TicketCronologyModel {
   public tipoDescrizione: string | null = null;
   public creationDate: string | null = null;
   public ticketAttach: TicketAttachModel[] = [];
+  // documenti usati dall'AI (non mostrati a chi ha aperto)
+  public document: string[] = [];
 }
 
 export class TicketUserModel {

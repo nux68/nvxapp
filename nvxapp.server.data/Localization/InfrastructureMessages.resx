@@ -298,4 +298,56 @@
     <value>Esiste già un tipo di richiesta con codice {0}.</value>
     <comment>tipi di richiesta, {0} = codice</comment>
   </data>
+  <data name="FileTextOldFormat" xml:space="preserve">
+    <value>Formato vecchio (.doc, .xls) non leggibile: salva il file come .docx o .xlsx.</value>
+    <comment>testo dei file caricati</comment>
+  </data>
+  <data name="FileTextNotReadable" xml:space="preserve">
+    <value>Il file non è leggibile: potrebbe essere danneggiato o protetto da password.</value>
+    <comment>testo dei file caricati</comment>
+  </data>
+  <data name="FileTextNotSupported" xml:space="preserve">
+    <value>Formato del file non supportato: carica un PDF, un documento Word o OpenDocument, un foglio Excel o un file di testo.</value>
+    <comment>testo dei file caricati</comment>
+  </data>
+  <data name="DocumentNotFound" xml:space="preserve">
+    <value>Documento non trovato.</value>
+    <comment>documentazione dei livelli</comment>
+  </data>
+  <data name="DocumentOperationNotAllowed" xml:space="preserve">
+    <value>Non hai i permessi per modificare la documentazione di questo livello.</value>
+    <comment>documentazione dei livelli</comment>
+  </data>
+  <data name="DocumentDataNotValid" xml:space="preserve">
+    <value>Dati del documento non validi: titolo (max 200) e contenuto sono obbligatori, descrizione max 1000 caratteri.</value>
+    <comment>documentazione dei livelli</comment>
+  </data>
+  <data name="DocumentContentTooLong" xml:space="preserve">
+    <value>Il contenuto del documento supera i {0} caratteri: dividilo in più documenti.</value>
+    <comment>documentazione dei livelli, {0} = caratteri massimi</comment>
+  </data>
+  <data name="DocumentFileTooLarge" xml:space="preserve">
+    <value>Il file {0} supera i {1} MB.</value>
+    <comment>documentazione dei livelli, {0} = file, {1} = MB</comment>
+  </data>
+  <data name="DocumentFileExtensionNotAllowed" xml:space="preserve">
+    <value>Il tipo del file {0} non è ammesso: carica un PDF, un documento Word o OpenDocument, un foglio Excel o un file di testo.</value>
+    <comment>documentazione dei livelli, {0} = file</comment>
+  </data>
+  <data name="DocumentFileNoText" xml:space="preserve">
+    <value>Il file {0} non contiene testo (per esempio un PDF scansionato): scrivi o incolla il testo nel contenuto.</value>
+    <comment>documentazione dei livelli, {0} = file</comment>
+  </data>
+  <data name="DocumentTicketTypeNotValid" xml:space="preserve">
+    <value>Uno dei tipi di richiesta scelti non è disponibile a questo livello.</value>
+    <comment>documentazione dei livelli</comment>
+  </data>
+  <data name="TicketTypeAiSettingNotAllowed" xml:space="preserve">
+    <value>Non hai i permessi per modificare le impostazioni AI di questo livello.</value>
+    <comment>impostazioni AI dei tipi di richiesta</comment>
+  </data>
+  <data name="TicketTypeAiSettingAttemptsNotValid" xml:space="preserve">
+    <value>Numero di tentativi AI non valido: indica un valore da 1 a {0}.</value>
+    <comment>impostazioni AI dei tipi di richiesta, {0} = massimo</comment>
+  </data>
 </root>

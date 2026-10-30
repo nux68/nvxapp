@@ -243,4 +243,43 @@
   <data name="TicketTypeCodeDuplicate" xml:space="preserve">
     <value>A request type with code {0} already exists.</value>
   </data>
+  <data name="FileTextOldFormat" xml:space="preserve">
+    <value>Old format (.doc, .xls) cannot be read: save the file as .docx or .xlsx.</value>
+  </data>
+  <data name="FileTextNotReadable" xml:space="preserve">
+    <value>The file cannot be read: it may be damaged or password protected.</value>
+  </data>
+  <data name="FileTextNotSupported" xml:space="preserve">
+    <value>File format not supported: upload a PDF, a Word or OpenDocument document, an Excel sheet or a text file.</value>
+  </data>
+  <data name="DocumentNotFound" xml:space="preserve">
+    <value>Document not found.</value>
+  </data>
+  <data name="DocumentOperationNotAllowed" xml:space="preserve">
+    <value>You are not allowed to change the documentation of this level.</value>
+  </data>
+  <data name="DocumentDataNotValid" xml:space="preserve">
+    <value>Invalid document data: title (max 200) and content are required, description max 1000 characters.</value>
+  </data>
+  <data name="DocumentContentTooLong" xml:space="preserve">
+    <value>The document content exceeds {0} characters: split it into several documents.</value>
+  </data>
+  <data name="DocumentFileTooLarge" xml:space="preserve">
+    <value>The file {0} exceeds {1} MB.</value>
+  </data>
+  <data name="DocumentFileExtensionNotAllowed" xml:space="preserve">
+    <value>The file type of {0} is not allowed: upload a PDF, a Word or OpenDocument document, an Excel sheet or a text file.</value>
+  </data>
+  <data name="DocumentFileNoText" xml:space="preserve">
+    <value>The file {0} contains no text (for example a scanned PDF): write or paste the text in the content.</value>
+  </data>
+  <data name="DocumentTicketTypeNotValid" xml:space="preserve">
+    <value>One of the selected request types is not available at this level.</value>
+  </data>
+  <data name="TicketTypeAiSettingNotAllowed" xml:space="preserve">
+    <value>You are not allowed to change the AI settings of this level.</value>
+  </data>
+  <data name="TicketTypeAiSettingAttemptsNotValid" xml:space="preserve">
+    <value>Invalid number of AI attempts: enter a value from 1 to {0}.</value>
+  </data>
 </root>

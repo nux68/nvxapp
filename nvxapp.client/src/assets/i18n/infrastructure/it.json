@@ -80,7 +80,9 @@
     "logout": "Logout",
     "userData": "User Data",
     "tickets": "Assistenza",
-    "ticketTypes": "Tipi di richiesta"
+    "ticketTypes": "Tipi di richiesta",
+    "aiDocuments": "Documentazione AI",
+    "ticketTypeAiSettings": "Risposte AI"
   },
   "showcase": {
     "menu": {
@@ -552,7 +554,8 @@
       "cronology": "Cronologia",
       "newType": "Nuovo tipo: {{type}}",
       "download": "Scarica {{name}}",
-      "authorAi": "Assistente AI"
+      "authorAi": "Assistente AI",
+      "aiDocuments": "Documenti usati: {{documents}}"
     },
     "ticketTypeList": {
       "title": "Tipi di richiesta",
@@ -560,7 +563,6 @@
       "columnDescription": "Descrizione",
       "columnApplication": "Applicativo",
       "columnLevels": "Livelli abilitati",
-      "columnAi": "AI",
       "yes": "Sì",
       "no": "No",
       "newType": "Nuovo tipo",
@@ -577,10 +579,74 @@
       "levelsNote": "Il ticket si apre, sale e si vede solo nei livelli abilitati: sale al primo livello abilitato sopra quello corrente.",
       "levelsRequired": "Abilita almeno due livelli: uno che apre il ticket e uno che lo riceve.",
       "order": "Ordine",
-      "aiResolution": "Risoluzione automatica AI",
-      "aiResolutionNote": "A ogni passaggio verso l'alto (escluso DEV → SuperUser) si tenta una risposta automatica. Per ora è solo una predisposizione: il ticket passa sempre al livello superiore.",
       "active": "Attivo",
       "activeNote": "Un tipo disattivato non si può più scegliere, ma resta sui ticket esistenti."
+    },
+    "aiDocumentList": {
+      "title": "Documentazione AI",
+      "level": "Livello",
+      "info": "Documenti da cui l'assistente AI prende le risposte automatiche ai ticket che arrivano a questo livello. Il loro contenuto viene inviato al servizio AI.",
+      "readOnly": "Sola lettura: i documenti li modifica il PowerAdmin.",
+      "noScope": "Nessun livello di cui gestire la documentazione.",
+      "columnTitle": "Titolo",
+      "columnTypes": "Tipi di richiesta",
+      "columnSubLevels": "Livelli sotto",
+      "columnLength": "Testo",
+      "characters": "{{n}} caratteri",
+      "allTypes": "Tutti i tipi",
+      "yes": "Sì",
+      "no": "No",
+      "newDocument": "Nuovo documento",
+      "showDisabled": "Mostra anche i disattivati",
+      "deleteConfirm": "Eliminare il documento \"{{title}}\"? Le risposte già date lo citano ancora per titolo."
+    },
+    "aiDocumentEdit": {
+      "title": "Documento AI",
+      "info": "Documento",
+      "readOnly": "Sola lettura: il documento lo modifica il PowerAdmin.",
+      "titolo": "Titolo",
+      "titoloRequired": "Il titolo è obbligatorio.",
+      "descrizione": "Descrizione",
+      "descrizioneNote": "A cosa serve il documento: aiuta l'assistente AI a capire quando usarlo.",
+      "ticketTypes": "Tipi di richiesta",
+      "ticketTypesNote": "Il documento si usa solo per i ticket di questi tipi. Nessun tipo = tutti i tipi.",
+      "application": "Applicativo",
+      "includeSubLevels": "Vale anche per i livelli sotto",
+      "includeSubLevelsNote": "Il documento si usa anche per i ticket che arrivano ai livelli sotto questo (per esempio il manuale caricato una volta per tutte le aziende).",
+      "file": "File originale",
+      "fileNone": "Nessun file",
+      "fileUpload": "Carica un file",
+      "fileReading": "Lettura del file...",
+      "fileRemove": "Togli il file",
+      "fileDownload": "Scarica il file",
+      "fileNote": "PDF, Word, OpenDocument, Excel o testo, fino a 10 MB: il testo del file sostituisce il contenuto, che puoi poi correggere.",
+      "fileExtension": "Il tipo del file {{name}} non è ammesso.",
+      "fileSize": "Il file {{name}} è vuoto o supera i {{max}} MB.",
+      "replaceContent": "Il testo del file sostituisce il contenuto attuale. Continuare?",
+      "contenuto": "Contenuto",
+      "contenutoLength": "{{n}} caratteri su {{max}}.",
+      "contenutoNote": "È il testo che l'assistente AI legge per rispondere.",
+      "contenutoRequired": "Il contenuto è obbligatorio: scrivilo o carica un file.",
+      "contenutoTooLong": "Il contenuto supera i {{max}} caratteri: dividilo in più documenti.",
+      "order": "Ordine",
+      "orderNote": "Se i documenti sono troppi per una risposta, l'assistente AI legge prima quelli con l'ordine più basso.",
+      "active": "Attivo",
+      "activeNote": "Un documento disattivato non viene usato dall'assistente AI."
+    },
+    "ticketTypeAiSetting": {
+      "title": "Risposte AI",
+      "level": "Livello",
+      "noScope": "Nessun livello di cui gestire le risposte AI.",
+      "infoDefault": "Valori di default: valgono per tutti i nodi del livello che non li personalizzano. Per il DEV sono gli unici valori.",
+      "infoNode": "Per ogni tipo di richiesta puoi usare i valori di default o personalizzarli.",
+      "infoDocuments": "Quando un ticket arriva al livello l'assistente AI risponde, se è attivo e ci sono documenti per il tipo. Dopo il numero di tentativi indicato il ticket passa all'operatore.",
+      "readOnly": "Sola lettura: le impostazioni le modifica il PowerAdmin.",
+      "custom": "Personalizza",
+      "aiEnabled": "Risposta AI",
+      "attempts": "Tentativi",
+      "defaultOn": "default: AI attiva, {{n}} tentativi",
+      "defaultOff": "default: AI non attiva",
+      "empty": "Nessun tipo di richiesta abilitato a questo livello."
     }
   },
   "components": {
@@ -695,7 +761,8 @@
       "8": "Riapertura",
       "9": "Chiusura",
       "10": "Cambio tipo",
-      "11": "Spostamento dell'azienda"
+      "11": "Spostamento dell'azienda",
+      "12": "Nessuna risposta automatica"
     },
     "actionButton": {
       "1": "Assegna",
@@ -713,6 +780,7 @@
       "2": "Presenze",
       "general": "Generale"
     },
+    "aiPending": "Risposta automatica in corso",
     "notification": {
       "message": "Ticket #{{id}} \"{{oggetto}}\": {{action}}"
     }

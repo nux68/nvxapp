@@ -1,0 +1,12 @@
+// valori del tipo su una riga: personalizza, AI attiva, tentativi
+.ai-setting-values {
+  --inner-padding-end: 0;
+
+  ion-toggle {
+    margin-right: 24px;
+  }
+}
+
+.ai-setting-attempts {
+  max-width: 140px;
+}

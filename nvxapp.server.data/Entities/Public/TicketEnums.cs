@@ -40,5 +40,6 @@ namespace nvxapp.server.data.Entities.Public
         Chiusura = 9,
         Riclassificazione = 10,
         Spostamento = 11,    // l'azienda e' passata a un altro studio (CompanyMove)
+        RisoluzioneAINonTrovata = 12, // l'AI non ha trovato la risposta nei documenti: il ticket resta all'operatore
     }
 }
