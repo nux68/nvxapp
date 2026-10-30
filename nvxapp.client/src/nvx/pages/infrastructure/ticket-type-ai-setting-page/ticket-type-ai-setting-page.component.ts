@@ -135,7 +135,9 @@ export class TicketTypeAiSettingPageComponent extends BasePageConfirmCancelCompo
     );
   };
 
-  // si resta sulla pagina con i valori salvati
+  // come le altre pagine di modifica: salvato si torna alla pagina precedente; con un errore si resta qui
   override AfterSave(saved: boolean): void {
+    if (saved)
+      this.navCtrl.back();
   }
 }

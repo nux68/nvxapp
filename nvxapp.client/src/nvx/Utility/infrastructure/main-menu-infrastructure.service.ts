@@ -1,6 +1,10 @@
 import { Injectable } from '@angular/core';
 import { iMainMenuService, MainMenuItem, MenuType, WorkingMode } from './main-menu.service';
 
+// ruoli che gestiscono (o leggono) documentazione e risposte AI: SuperUser, centro, studio, azienda (non il DEV)
+const RUOLI_DOCUMENTAZIONE_AI = ['SuperUser', 'DealerPowerAdmin', 'DealerAdmin', 'FinancialAdvisorPowerAdmin', 'FinancialAdvisorAdmin',
+                                 'CompanyPowerAdmin', 'CompanyAdmin'];
+
 @Injectable({
   providedIn: 'root'
 })
@@ -27,11 +31,7 @@ export class MainMenuInfrastructureService implements iMainMenuService{
       { menuType: MenuType.MenuItem,   zorder: 100, group: 0, title: 'menu.superUserPage', component: "SuperUserPageComponent", url: '/superuser', icon: 'triangle' },
       { menuType: MenuType.MenuItem,   zorder: 200, group: 0, title: 'menu.dealers', component: "DealerListPageComponent", url: '/dealerlist', icon: 'list-circle' },
       { menuType: MenuType.MenuItem, zorder: 300, group: 0, title: 'menu.users', component: "UserListPageComponent", url: '/userlist', icon: 'people' },
-      { menuType: MenuType.MenuItem, zorder: 400, group: 0, title: 'menu.companyMove', component: "CompanyMovePageComponent", url: '/companymove', icon: 'swap-horizontal' },
-      { menuType: MenuType.MenuItem, zorder: 500, group: 0, title: 'menu.ticketTypes', component: "TicketTypeListPageComponent", url: '/tickettypelist', icon: 'pricetags' },
-      { menuType: MenuType.MenuItem, zorder: 600, group: 0, title: 'menu.tickets', component: "TicketListPageComponent", url: '/ticketlist', icon: 'help-buoy' },
-      { menuType: MenuType.MenuItem, zorder: 610, group: 0, title: 'menu.aiDocuments', component: "AiDocumentListPageComponent", url: '/aidocumentlist', icon: 'library' },
-      { menuType: MenuType.MenuItem, zorder: 620, group: 0, title: 'menu.ticketTypeAiSettings', component: "TicketTypeAiSettingPageComponent", url: '/tickettypeaisetting', icon: 'sparkles' }
+      { menuType: MenuType.MenuItem, zorder: 400, group: 0, title: 'menu.companyMove', component: "CompanyMovePageComponent", url: '/companymove', icon: 'swap-horizontal' }
     ];
   }
 
@@ -41,8 +41,7 @@ export class MainMenuInfrastructureService implements iMainMenuService{
       { menuType: MenuType.MenuItem, zorder: 100, group: 0, title: 'menu.powerAdmin', component: "PowerAdminPageComponent", url: '/poweradmin', icon: 'square' },
       { menuType: MenuType.MenuItem, zorder: 200, group: 0, title: 'menu.admin', component: "AdminPageComponent", url: '/admin', icon: 'square' },
       { menuType: MenuType.MenuItem, zorder: 300, group: 0, title: 'menu.users', component: "UserListPageComponent", url: '/userlist', icon: 'people' },
-      { menuType: MenuType.MenuItem, zorder: 400, group: 0, title: 'menu.dealers', component: "DealerListPageComponent", url: '/dealerlist', icon: 'list-circle' },
-      { menuType: MenuType.MenuItem, zorder: 500, group: 0, title: 'menu.tickets', component: "TicketListPageComponent", url: '/ticketlist', icon: 'help-buoy' }
+      { menuType: MenuType.MenuItem, zorder: 400, group: 0, title: 'menu.dealers', component: "DealerListPageComponent", url: '/dealerlist', icon: 'list-circle' }
     ];
   }
 
@@ -52,10 +51,7 @@ export class MainMenuInfrastructureService implements iMainMenuService{
       { menuType: MenuType.MenuItem, zorder: 100, group: 0, title: 'menu.dealerPowerAdmin', component: "DealerPowerAdminPageComponent", url: '/dealerpoweradmin', icon: 'ellipse' },
       { menuType: MenuType.MenuItem, zorder: 200, group: 0, title: 'menu.dealerAdmin'      , component: "DealerAdminPageComponent", url: '/dealeradmin', icon: 'ellipse' },
       { menuType: MenuType.MenuItem, zorder: 300, group: 0, title: 'menu.dealerUsers'     , component: "UserDealerListPageComponent", url: '/userdealerlist', icon: 'list-circle' },
-      { menuType: MenuType.MenuItem, zorder: 400, group: 0, title: 'menu.financialAdvisors'             , component: "FinancialAdvisorListPageComponent", url: '/financialadvisorlist', icon: 'list-circle' },
-      { menuType: MenuType.MenuItem, zorder: 500, group: 0, title: 'menu.tickets', component: "TicketListPageComponent", url: '/ticketlist', icon: 'help-buoy' },
-      { menuType: MenuType.MenuItem, zorder: 510, group: 0, title: 'menu.aiDocuments', component: "AiDocumentListPageComponent", url: '/aidocumentlist', icon: 'library' },
-      { menuType: MenuType.MenuItem, zorder: 520, group: 0, title: 'menu.ticketTypeAiSettings', component: "TicketTypeAiSettingPageComponent", url: '/tickettypeaisetting', icon: 'sparkles' }
+      { menuType: MenuType.MenuItem, zorder: 400, group: 0, title: 'menu.financialAdvisors'             , component: "FinancialAdvisorListPageComponent", url: '/financialadvisorlist', icon: 'list-circle' }
     ];
   }
 
@@ -65,10 +61,7 @@ export class MainMenuInfrastructureService implements iMainMenuService{
       { menuType: MenuType.MenuItem  , zorder: 100, group: 0, title: 'menu.financialAdvisorPowerAdmin', component: "FinancialAdvisorPowerAdminPageComponent", url: '/financialadvisorpoweradmin', icon: 'ellipse' },
       { menuType: MenuType.MenuItem  , zorder: 200, group: 0, title: 'menu.financialAdvisorAdmin'      , component: "FinancialAdvisorAdminPageComponent", url: '/financialadvisoradmin', icon: 'ellipse' },
       { menuType: MenuType.MenuItem  , zorder: 300, group: 0, title: 'menu.financialAdvisorUsers'     , component: "UserFinancialAdvisorListPageComponent", url: '/userfinancialadvisorlist', icon: 'list-circle' },
-      { menuType: MenuType.MenuItem  , zorder: 400, group: 0, title: 'menu.companies'           , component: "CompanyListPageComponent", url: '/companylist', icon: 'list-circle' },
-      { menuType: MenuType.MenuItem, zorder: 500, group: 0, title: 'menu.tickets', component: "TicketListPageComponent", url: '/ticketlist', icon: 'help-buoy' },
-      { menuType: MenuType.MenuItem, zorder: 510, group: 0, title: 'menu.aiDocuments', component: "AiDocumentListPageComponent", url: '/aidocumentlist', icon: 'library' },
-      { menuType: MenuType.MenuItem, zorder: 520, group: 0, title: 'menu.ticketTypeAiSettings', component: "TicketTypeAiSettingPageComponent", url: '/tickettypeaisetting', icon: 'sparkles' }
+      { menuType: MenuType.MenuItem  , zorder: 400, group: 0, title: 'menu.companies'           , component: "CompanyListPageComponent", url: '/companylist', icon: 'list-circle' }
     ];
   }
 
@@ -78,9 +71,6 @@ export class MainMenuInfrastructureService implements iMainMenuService{
       { menuType: MenuType.MenuItem,   zorder:  100,  group: 0, title: 'menu.companyPowerAdmin', roles: ['CompanyPowerAdmin']  , component: "CompanyPowerAdminPageComponent", url: '/companypoweradmin', icon: 'ellipse' },
       { menuType: MenuType.MenuItem,   zorder:  200,  group: 0, title: 'menu.companyAdmin'      , roles: ['CompanyAdmin']       , component: "CompanyAdminPageComponent", url: '/companyadmin', icon: 'ellipse' },
       { menuType: MenuType.MenuItem  , zorder: 3000,  group: 0, title: 'menu.users'             , roles: ['CompanyPowerAdmin']  , component: "UserCompanyListPageComponent", url: '/usercompanylist', icon: 'people' },
-      { menuType: MenuType.MenuItem, zorder: 3500, group: 0, title: 'menu.tickets', component: "TicketListPageComponent", url: '/ticketlist', icon: 'help-buoy' },
-      { menuType: MenuType.MenuItem, zorder: 3510, group: 0, title: 'menu.aiDocuments', roles: ['CompanyPowerAdmin', 'CompanyAdmin'], component: "AiDocumentListPageComponent", url: '/aidocumentlist', icon: 'library' },
-      { menuType: MenuType.MenuItem, zorder: 3520, group: 0, title: 'menu.ticketTypeAiSettings', roles: ['CompanyPowerAdmin', 'CompanyAdmin'], component: "TicketTypeAiSettingPageComponent", url: '/tickettypeaisetting', icon: 'sparkles' },
       // nella sezione Parametri (gruppo 1, intestazione dichiarata dal menu presenze), dopo le altre voci
       { menuType: MenuType.MenuItem  , zorder: 208000, group: 1, title: 'menu.menuRestriction'      , roles: ['CompanyPowerAdmin']  , component: "CompanyMenuRestrictionPageComponent", url: '/companymenurestriction', icon: 'options' }
     ];
@@ -95,12 +85,23 @@ export class MainMenuInfrastructureService implements iMainMenuService{
       { menuType: MenuType.MenuHeader, zorder: 0,   group: 0, title: 'menu.access', component: '', url: '', icon: '' },
       { menuType: MenuType.MenuItem,   zorder: 100, group: 0, title: 'menu.impersonate', component: "UserImpersonatePageComponent", url: '/userimpersonate', icon: 'people-circle', nonConfigurabile: true },
       { menuType: MenuType.MenuItem,   zorder: 200, group: 0, title: 'menu.dashboard', component: "DashboardPageComponent", url: '/dashboard', icon: 'home', nonConfigurabile: true },
-      // ticket di assistenza per chi non ha un menu di ruolo (dipendente): nella seconda sezione se c'e' (gruppo 1,
-      // es. Presenze), altrimenti nella prima (groupMenu sposta nella prima le voci di un gruppo senza intestazione)
-      { menuType: MenuType.MenuItem,   zorder: 990000, group: 1, title: 'menu.tickets', component: "TicketListPageComponent", url: '/ticketlist', icon: 'help-buoy' },
       { menuType: MenuType.MenuItem,   zorder: 300, group: 0, title: 'menu.login', component: "LoginPageComponent", url: '/login', icon: 'enter', nonConfigurabile: true },
       { menuType: MenuType.MenuItem,   zorder: 400, group: 0, title: 'menu.logout', component: "LogoutPageComponent", url: '/logout', icon: 'exit', nonConfigurabile: true },
       { menuType: MenuType.MenuItem,   zorder: 500, group: 0, title: 'menu.userData', component: "UserPageComponent", url: '/user', icon: 'person', nonConfigurabile: true }
+    ];
+  }
+
+  /*
+   Sezione "Assistenza": per tutti gli utenti collegati, in fondo al menu (dopo le sezioni dei ruoli).
+   Ogni voce indica i ruoli che la vedono (nessun ruolo = tutti); permessi e livelli li ricontrolla il server.
+  */
+  public get Pages4Support(): MainMenuItem[] {
+    return [
+      { menuType: MenuType.MenuHeader, zorder:   0, group: 0, title: 'menu.support', component: '', url: '', icon: '' },
+      { menuType: MenuType.MenuItem,   zorder: 100, group: 0, title: 'menu.tickets', component: "TicketListPageComponent", url: '/ticketlist', icon: 'help-buoy' },
+      { menuType: MenuType.MenuItem,   zorder: 200, group: 0, title: 'menu.ticketTypes', roles: ['SuperUser'], component: "TicketTypeListPageComponent", url: '/tickettypelist', icon: 'pricetags' },
+      { menuType: MenuType.MenuItem,   zorder: 300, group: 0, title: 'menu.aiDocuments', roles: RUOLI_DOCUMENTAZIONE_AI, component: "AiDocumentListPageComponent", url: '/aidocumentlist', icon: 'library' },
+      { menuType: MenuType.MenuItem,   zorder: 400, group: 0, title: 'menu.ticketTypeAiSettings', roles: RUOLI_DOCUMENTAZIONE_AI, component: "TicketTypeAiSettingPageComponent", url: '/tickettypeaisetting', icon: 'sparkles' }
     ];
   }
 
