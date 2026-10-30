@@ -312,7 +312,7 @@ Decisioni tecniche prese nell'implementazione:
 | 11.2 Server: documenti e impostazioni | 7–12 | fatto |
 | 11.3 Server: flusso AI dei ticket | 13–19 | fatto |
 | 11.4 Client | 20–27 | fatto |
-| 11.5 Verifica | 28–30 | 28, 29 fatti; 30 da fare |
+| 11.5 Verifica | 28–30 | fatto (pagine da provare nel browser) |
 
 ### 11.1 Dati
 - [x] 1. Entità `Document`, `DocumentTicketType`, enum `DocumentSection`
@@ -352,7 +352,7 @@ Decisioni tecniche prese nell'implementazione:
 ### 11.5 Verifica
 - [x] 28. Build server e client
 - [x] 29. Migration applicata al database di sviluppo (30/10)
-- [ ] 30. Prova del flusso con il server di prova (apertura → risposta AI, riapertura → secondo tentativo, limite → operatore)
+- [x] 30. Prova del flusso con il server di prova (apertura → risposta AI, riapertura → secondo tentativo, limite → operatore) — 30/10, API sul server di prova con DeepSeek: risposta dal documento del SuperUser ereditato (≈3 s), riapertura con obiezione → secondo tentativo "non trovata" e ticket all'operatore, limite di 1 tentativo personalizzato dall'azienda → riapertura diretta all'operatore, presa in carico durante la risposta → lavoro AI abbandonato; permessi di Admin e PowerAdmin. Dati di prova eliminati. Le pagine client non sono ancora state provate nel browser.
 
 ---
 
@@ -363,3 +363,5 @@ Decisioni tecniche prese nell'implementazione:
 | 30/10/2026 | 11.1 | 1–6, 29 | Infrastructure_Dev | b5dabcd5 |
 | 30/10/2026 | 11.2 | 7–12 | Infrastructure_Dev | 303597d2 |
 | 30/10/2026 | 11.3 | 13–19 | Infrastructure_Dev | cf095ab1 |
+| 30/10/2026 | 11.4 | 20–28 | Infrastructure_Dev | 19ecff93 |
+| 30/10/2026 | 11.5 | 30 (prove API) | Infrastructure_Dev | questo commit |
