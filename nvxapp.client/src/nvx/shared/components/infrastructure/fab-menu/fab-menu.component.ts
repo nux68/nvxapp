@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit, ViewChild, ElementRef, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild, ElementRef, ChangeDetectorRef, ChangeDetectionStrategy, NgZone } from '@angular/core';
 import { IonContent, IonModal, NavController, ToastController } from '@ionic/angular';
 import { SpeechService } from '../../../../Utility/infrastructure/speech.service';
 import { SpeechOutputService } from '../../../../Utility/infrastructure/speech-output.service';
@@ -62,6 +62,22 @@ export class FabMenuComponent implements OnInit, AfterViewInit {
   @ViewChild('chatModal',     { static: true  }) chatModal!: IonModal;
   @ViewChild('fab',           { static: false }) fab: IonFab;
 
+  // campo di testo della chat: il testo si legge fuori da Angular. Con ngModel ogni tasto aggiornava
+  // tutta l'app, compresa la pagina sotto la chat (pesante su griglie come il piano ferie)
+  private chatInputEl: (HTMLElement & { value?: string | null }) | null = null;
+
+  @ViewChild('chatInput', { static: false, read: ElementRef })
+  set chatInput(ref: ElementRef | undefined) {
+    const el = ref?.nativeElement ?? null;
+    if (el === this.chatInputEl) return;
+    this.chatInputEl = el;
+    if (el) {
+      el.value = this.newMessage;
+      this.zone.runOutsideAngular(() =>
+        el.addEventListener('ionInput', (e: any) => this.onChatInput(e.detail?.value ?? el.value ?? '')));
+    }
+  }
+
   // -------------------------------------------------------------------------
   // Constructor / lifecycle
   // -------------------------------------------------------------------------
@@ -78,7 +94,8 @@ export class FabMenuComponent implements OnInit, AfterViewInit {
     private navCtrl:       NavController,
     private router:        Router,
     private transloco:     TranslocoService,
-    private mainMenuService: MainMenuService
+    private mainMenuService: MainMenuService,
+    private zone:          NgZone
   ) {
     this.fabMenuService.fabMenuItem$.subscribe(() => {
       if (this.fab) this.fab.close();
@@ -140,10 +157,19 @@ export class FabMenuComponent implements OnInit, AfterViewInit {
 
     this.pushMessage('You', text);
     this.newMessage  = '';
+    if (this.chatInputEl) this.chatInputEl.value = '';
     this.suggestions = [];   // nasconde i chip mentre si aspetta la risposta
     this.scrollToBottom();
 
     this.callServer(text);
+  }
+
+  // testo digitato (fuori da Angular): si aggiorna solo questo componente, e solo quando il campo
+  // passa da vuoto a pieno o viceversa (abilitazione del pulsante di invio)
+  private onChatInput(value: string) {
+    const eraVuoto = !this.newMessage.trim();
+    this.newMessage = value;
+    if (eraVuoto !== !value.trim()) this.cdRef.detectChanges();
   }
 
   // -------------------------------------------------------------------------
