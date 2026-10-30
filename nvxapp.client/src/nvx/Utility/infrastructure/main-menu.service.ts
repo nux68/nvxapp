@@ -170,6 +170,18 @@ export class MainMenuService implements iMainMenuService {
     return voci.length === 0 || voci.some(v => this.VoceVisibile(v.item, v.lista, ruoliUtente));
   }
 
+  /** Titolo (chiave di traduzione) della voce di menu con questo url; null se la pagina non e' nel menu. */
+  public TitoloPagina(url: string): string | null {
+    const key = AuthService.normalizeMenuUrl(url);
+    const elenchi = [this.Pages4CompanyAdmin, this.Pages4User, this.Pages4Admin, this.Pages4SuperUser,
+                     this.Pages4DealerAdmin, this.Pages4FinancialAdvisorAdmin];
+    for (const elenco of elenchi) {
+      const voce = elenco.find(i => i.menuType === MenuType.MenuItem && i.url && AuthService.normalizeMenuUrl(i.url) === key);
+      if (voce) return voce.title.trim();
+    }
+    return null;
+  }
+
   /** Voci configurabili dal CompanyPowerAdmin, una per url, con i ruoli a cui si possono togliere. */
   public get VociMenuConfigurabili(): VoceMenuConfigurabile[] {
     const voci: VoceMenuConfigurabile[] = [];
