@@ -7,6 +7,8 @@ using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Giustif
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_RichiestaService;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_GiustificativiService;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_EngineService;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_EngineService.Models;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Models;
 using static nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Commands.Handlers.ChatPresenzeHelper;
@@ -16,23 +18,27 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
     // Giustificativo di un dipendente su un periodo (es. ferie dal 3 al 7), a giornata intera o con le ore
     // indicate. Si registra come dal Calendario HR: un giustificativo diretto per ogni giorno del periodo
     // (giorni e ore con le regole delle richieste), che l'HR puo' poi modificare o cancellare. Solo HR, con conferma.
+    // Il cartellino si ricalcola una volta sola per il periodo (un job per mese), non giorno per giorno.
     public class RegisterJustificationPeriodHandler : BaseCommandDipeHandler
     {
         private readonly IntentDefinition _intentDefinition;
         private readonly IDip_GG_RichiestaService _dip_GG_RichiestaService;
         private readonly IDip_GG_GiustificativiService _dip_GG_GiustificativiService;
         private readonly IPar_GiustificativiService _par_GiustificativiService;
+        private readonly ITimeSheet_EngineService_OnlyCalculate _timeSheet_EngineService;
 
         public RegisterJustificationPeriodHandler(IDip_AnagraficaService dip_AnagraficaService,
                                                   IDip_GG_RichiestaService dip_GG_RichiestaService,
                                                   IDip_GG_GiustificativiService dip_GG_GiustificativiService,
                                                   IPar_GiustificativiService par_GiustificativiService,
+                                                  ITimeSheet_EngineService_OnlyCalculate timeSheet_EngineService,
                                                   IChatUserContext chatUserContext
                                                   ) : base(dip_AnagraficaService, chatUserContext)
         {
             _dip_GG_RichiestaService = dip_GG_RichiestaService;
             _dip_GG_GiustificativiService = dip_GG_GiustificativiService;
             _par_GiustificativiService = par_GiustificativiService;
+            _timeSheet_EngineService = timeSheet_EngineService;
 
             _intentDefinition = new IntentDefinition
             {
@@ -128,7 +134,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                     Data = new Dip_GG_GiustificativiPutInModel
                     {
                         IdDip_RapportoLavoro = rapporto.Id,
-                        ExcludeRicalc = false,
+                        // ricalcolo unico per il periodo, sotto
+                        ExcludeRicalc = true,
                         Dip_GG_Giustificativi = new Dip_GG_GiustificativiModel
                         {
                             Id = 0,
@@ -145,6 +152,28 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                 if (!res.Success)
                     return CommandResult.Fail(AttendanceTrackingMessages.Get("ChatRegisterJustificationError",
                         $"{Data(giorno)}: {string.Join(", ", res.Messages.Select(m => m.Text))}"));
+            }
+
+            // un solo ricalcolo per mese, dal primo all'ultimo giorno inserito (giorni consecutivi del calendario):
+            // un job invece di uno per giorno. Per mese perche' i client ricaricano il mese indicato dal job
+            foreach (var mese in giorni.Keys.GroupBy(g => new { g.Year, g.Month }))
+            {
+                var res = await _timeSheet_EngineService.Calculate(new GenericRequest<TimeSheet_CalculateInModel>
+                {
+                    Data = new TimeSheet_CalculateInModel
+                    {
+                        TimeSheet_Calculate = new TimeSheet_CalculateModel
+                        {
+                            SelectedUserId = new List<string> { dipendente.IdAspNetUsers },
+                            Dal = mese.Min().Date,
+                            Al = mese.Max().Date,
+                            Year = mese.Key.Year,
+                            Month = mese.Key.Month
+                        }
+                    }
+                }, false);
+                if (!res.Success)
+                    return CommandResult.Fail(AttendanceTrackingMessages.Get("ChatCalcolaGiornoError", string.Join(", ", res.Messages.Select(m => m.Text))));
             }
 
             return CommandResult.Ok(AttendanceTrackingMessages.Get("ChatJustificationPeriodDone",
