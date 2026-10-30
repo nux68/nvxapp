@@ -60,6 +60,15 @@ export class SpeechService {
   private silentRestarts = 0;
   private fatalError = false;
 
+  // frase in arrivo (vedi collect)
+  private static readonly PhrasePauseMs = 900;
+  private static readonly DuplicateMs = 4000;
+  private pendingFull = '';
+  private pendingTimer: ReturnType<typeof setTimeout> | null = null;
+  private heardInSession = '';     // testo gia' consegnato nella sessione di riconoscimento corrente
+  private lastSent = '';
+  private lastSentAt = 0;
+
   private _PushToTalk$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public get PushToTalk$(): Observable<boolean> {
     return this._PushToTalk$.asObservable();
@@ -112,6 +121,43 @@ export class SpeechService {
       this._AutoDeactivated$.next();
   }
 
+  /*
+   Una frase detta, un messaggio. In ascolto continuo Chrome (soprattutto su Android) consegna la stessa
+   frase piu' volte come definitiva, a pezzi crescenti ("piano", "piano fe", "piano ferie", "piano ferie"),
+   e nei risultati successivi ripete anche le frasi gia' consegnate. Si tiene l'ultimo testo e lo si
+   manda dopo una breve pausa senza nuovi risultati, togliendo la parte gia' mandata nella sessione.
+  */
+  private collect(text: string) {
+    // non e' il seguito della frase in attesa: quella si manda subito
+    if (this.pendingFull && !text.toLowerCase().startsWith(this.pendingFull.toLowerCase())) this.flush();
+    this.pendingFull = text;
+    if (this.pendingTimer) clearTimeout(this.pendingTimer);
+    this.pendingTimer = setTimeout(() => this.flush(), SpeechService.PhrasePauseMs);
+  }
+
+  private flush() {
+    if (this.pendingTimer) { clearTimeout(this.pendingTimer); this.pendingTimer = null; }
+    const full = this.pendingFull;
+    this.pendingFull = '';
+    if (!full) return;
+
+    let text = full;
+    const before = this.heardInSession;
+    if (before && full.length > before.length && full.toLowerCase().startsWith(before.toLowerCase()))
+      text = full.substring(before.length).trim();
+    this.heardInSession = full;
+    if (!text) return;
+
+    // stessa frase consegnata due volte di seguito
+    const now = Date.now();
+    if (text.toLowerCase() === this.lastSent.toLowerCase() && now - this.lastSentAt < SpeechService.DuplicateMs) return;
+    this.lastSent = text;
+    this.lastSentAt = now;
+
+    console.log("📨 Comando vocale:", text);
+    this._Message$.next(text);
+  }
+
   // ascolto continuo chiuso dal browser mentre l'utente lo vuole acceso: si riavvia
   private restartContinuous(): boolean {
     if (this.pushToTalk || !this.isVoiceCommandActive || this.fatalError) return false;
@@ -140,15 +186,20 @@ export class SpeechService {
 
       this.recognition.onstart = () => {
         console.log("🎤 Riconoscimento attivato.");
+        this.heardInSession = '';
         if (!this.pushToTalk) this.VoiceCommandActive = true;
       };
 
       this.recognition.onresult = (event: any) => {
-        const resultText = event.results[event.results.length - 1][0].transcript.trim();
+        // solo i risultati definitivi di questo evento
+        let resultText = '';
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          if (event.results[i].isFinal) resultText = event.results[i][0].transcript.trim();
+        }
+        if (!resultText) return;
         console.log("🗣️ Riconosciuto:", resultText);
         this.silentRestarts = 0;
-
-        this._Message$.next(resultText);
+        this.collect(resultText);
       };
 
       // dopo onerror arriva sempre onend: la decisione (riavvio o chiusura) si prende li'
@@ -163,6 +214,7 @@ export class SpeechService {
 
       this.recognition.onend = () => {
         console.log("⏹️ Riconoscimento terminato.");
+        this.flush();
         if (this.restartContinuous()) return;
         this.onRecognitionClosed();
       };
