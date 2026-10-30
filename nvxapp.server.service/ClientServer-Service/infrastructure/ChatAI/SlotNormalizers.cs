@@ -20,9 +20,13 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             _ => null
         };
 
-        // espressione di data -> "dd/MM/yyyy" (null se non riconosciuta)
+        // espressione di data -> "dd/MM/yyyy" (null se non riconosciuta); un mese ("ottobre") vale il primo giorno
         public static string? Date(string value) =>
             TryParseDate(value, DateTime.Today, out var d) ? d.ToString(DateFormat, CultureInfo.InvariantCulture) : null;
+
+        // fine di un periodo: un mese ("fino a ottobre") vale l'ultimo giorno, il resto come Date
+        public static string? DateEnd(string value) =>
+            TryParseMonth(value, DateTime.Today, out _, out var end) ? end.ToString(DateFormat, CultureInfo.InvariantCulture) : Date(value);
 
         // espressione di orario -> "HH:mm" (null se non riconosciuta)
         public static string? Time(string value) =>
@@ -137,7 +141,48 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             if (d.Success)
                 return TryDate(today.Year, today.Month, int.Parse(d.Groups["d"].Value), out result);
 
+            // un mese intero ("ottobre", "il mese scorso"): il primo giorno
+            if (TryParseMonth(text, today, out result, out _))
+                return true;
+
             return false;
+        }
+
+        // parole davanti a un mese che non ne cambiano il valore ("di ottobre", "a ottobre", "nel mese di ottobre")
+        private static readonly string[] _monthPrefixes =
+            { "nel mese di ", "il mese di ", "mese di ", "durante il mese di ", "durante ", "per il mese di ", "per tutto ",
+              "a partire da ", "fino a ", "fino ad ", "entro ", "da ", "di ", "del ", "per ", "a ", "ad ", "in ", "nel ",
+              "in the month of ", "the month of ", "during ", "for ", "in ", "from ", "until ", "till ", "through ", "to " };
+
+        // Un mese intero: "ottobre", "ottobre 2026", "di ottobre", "questo mese", "il mese scorso", "next month".
+        // Mese senza anno: quello dell'anno corrente.
+        public static bool TryParseMonth(string? text, DateTime today, out DateTime start, out DateTime end)
+        {
+            start = end = default;
+            var t = StripPrefixes(Clean(text), _monthPrefixes);
+            if (t.Length == 0) return false;
+
+            var first = new DateTime(today.Year, today.Month, 1);
+            DateTime? month = t switch
+            {
+                "questo mese" or "il mese corrente" or "mese corrente" or "quest mese" or "this month" or "the current month" => first,
+                "il mese prossimo" or "mese prossimo" or "il prossimo mese" or "prossimo mese" or "next month" => first.AddMonths(1),
+                "il mese scorso" or "mese scorso" or "lo scorso mese" or "scorso mese" or "il mese passato" or "mese passato"
+                    or "last month" or "the previous month" or "previous month" => first.AddMonths(-1),
+                _ => null
+            };
+
+            if (month == null)
+            {
+                var m = Regex.Match(t, @"^(?:il\s+mese\s+di\s+|the\s+)?(?<m>\p{L}+)(?:\s+(?:del\s+|of\s+)?(?<y>\d{4}))?$");
+                if (!m.Success || !_months.TryGetValue(m.Groups["m"].Value, out var mm)) return false;
+                var y = m.Groups["y"].Success ? int.Parse(m.Groups["y"].Value) : today.Year;
+                month = new DateTime(y, mm, 1);
+            }
+
+            start = month.Value;
+            end = start.AddMonths(1).AddDays(-1);
+            return true;
         }
 
         // Giorno della settimana senza qualificatore: quello della settimana corrente (lunedì-domenica).
