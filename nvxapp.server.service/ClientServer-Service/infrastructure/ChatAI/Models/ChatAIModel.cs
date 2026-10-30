@@ -693,7 +693,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
             sb.AppendLine("- Una richiesta può contenere più azioni (\"timbra Rossi alle 9 e Bianchi alle 10\" = due azioni).");
             sb.AppendLine("- Includi solo gli slot di cui conosci il valore: non inventare valori e non usare i valori degli esempi.");
             if (hasPersonSlots)
+            {
                 sb.AppendLine($"- Se l'utente parla di sé (io, me, mi, mio, mia, \"timbrami\", I, me, my), negli slot persona usa il valore \"{ChatSelf.Token}\".");
+                sb.AppendLine($"- Il nome di una persona scritto nel messaggio vale più del pronome attaccato al verbo: \"mettimi in ferie Rossi\", \"segnami Bianchi alle 9\" = Rossi, Bianchi (\"mi\" vuol dire \"per me\"). Usa \"{ChatSelf.Token}\" solo se nel messaggio non c'è il nome di un'altra persona.");
+            }
             sb.AppendLine("- Se il messaggio non corrisponde a nessun intent, restituisci \"actions\": [].");
             sb.AppendLine("- \"confidence\" indica quanto sei sicuro dell'intent (da 0 a 1).");
             sb.AppendLine();
