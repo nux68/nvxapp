@@ -1,6 +1,11 @@
 using nvxapp.server.data.Localization;
+using nvxapp.server.data.Entities.Tenant;
+using nvxapp.server.data.Entities.Tenant.GestionePresenze;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_AnagraficaService;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_GiustificativiService;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_GiustificativiService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_RichiestaService;
+using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_GiustificativiService;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Models;
@@ -9,21 +14,24 @@ using static nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Commands.Handlers
 {
     // Giustificativo di un dipendente su un periodo (es. ferie dal 3 al 7), a giornata intera o con le ore
-    // indicate. Si registra come richiesta già approvata dall'HR, come dal Calendario HR: il servizio
-    // la applica ai giorni del periodo. Solo HR, con conferma.
+    // indicate. Si registra come dal Calendario HR: un giustificativo diretto per ogni giorno del periodo
+    // (giorni e ore con le regole delle richieste), che l'HR puo' poi modificare o cancellare. Solo HR, con conferma.
     public class RegisterJustificationPeriodHandler : BaseCommandDipeHandler
     {
         private readonly IntentDefinition _intentDefinition;
         private readonly IDip_GG_RichiestaService _dip_GG_RichiestaService;
+        private readonly IDip_GG_GiustificativiService _dip_GG_GiustificativiService;
         private readonly IPar_GiustificativiService _par_GiustificativiService;
 
         public RegisterJustificationPeriodHandler(IDip_AnagraficaService dip_AnagraficaService,
                                                   IDip_GG_RichiestaService dip_GG_RichiestaService,
+                                                  IDip_GG_GiustificativiService dip_GG_GiustificativiService,
                                                   IPar_GiustificativiService par_GiustificativiService,
                                                   IChatUserContext chatUserContext
                                                   ) : base(dip_AnagraficaService, chatUserContext)
         {
             _dip_GG_RichiestaService = dip_GG_RichiestaService;
+            _dip_GG_GiustificativiService = dip_GG_GiustificativiService;
             _par_GiustificativiService = par_GiustificativiService;
 
             _intentDefinition = new IntentDefinition
@@ -95,10 +103,49 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                 importo = imp;
             }
 
-            var errore = await ChatInvioRichiestaHelper.Giustificativo(_dip_GG_RichiestaService, dipendente.IdAspNetUsers, true,
-                dal, al, giustificativo.Id, ore, importo);
-            if (errore != null)
-                return CommandResult.Fail(AttendanceTrackingMessages.Get("ChatRegisterJustificationError", errore));
+            if (al < dal) al = dal;
+
+            // rapporto di lavoro in corso all'inizio del periodo
+            var rapporto = dipendente.Dip_RapportoLavoro?
+                .Where(r => (r.DataAss == null || r.DataAss.Value.Date <= dal) && (r.DataLic == null || r.DataLic.Value.Date >= dal))
+                .FirstOrDefault() ?? dipendente.Dip_RapportoLavoro?.FirstOrDefault();
+            if (rapporto == null)
+                return CommandResult.Fail(AttendanceTrackingMessages.Get("ChatEmploymentNotFoundFor", Nome(dipendente)));
+
+            // giorni e ore come per una richiesta: giorni senza orario saltati, giornata intera = ore teoriche
+            bool aImporto = importo != null;
+            bool giornataIntera = ore == null && !aImporto;
+            var giorni = _dip_GG_RichiestaService.GiorniGiustificativo(rapporto.Id, dal, al, giustificativo.Id, ore, giornataIntera);
+            if (giorni.Count == 0)
+                return CommandResult.Fail(AttendanceTrackingMessages.Get("RequestedPeriodNoWorkingDays"));
+
+            // un giustificativo diretto per giorno, come dal Calendario HR: l'HR lo puo' modificare e cancellare
+            // (una richiesta approvata invece non si puo' piu' toccare dal calendario)
+            foreach (var (giorno, oreGiorno) in giorni.OrderBy(g => g.Key))
+            {
+                var res = await _dip_GG_GiustificativiService.Dip_GG_GiustificativiPut(new GenericRequest<Dip_GG_GiustificativiPutInModel>
+                {
+                    Data = new Dip_GG_GiustificativiPutInModel
+                    {
+                        IdDip_RapportoLavoro = rapporto.Id,
+                        ExcludeRicalc = false,
+                        Dip_GG_Giustificativi = new Dip_GG_GiustificativiModel
+                        {
+                            Id = 0,
+                            IdDip_RapportoLavoro = rapporto.Id,
+                            Data = giorno,
+                            IdPar_Giustificativi = giustificativo.Id,
+                            InputType = giornataIntera ? JustificationInputType.AllDay : JustificationInputType.Manual,
+                            Hours = aImporto ? null : oreGiorno,
+                            Importo = importo,
+                            RichiestaStato = StatoRichiesta.Diretta
+                        }
+                    }
+                }, false);
+                if (!res.Success)
+                    return CommandResult.Fail(AttendanceTrackingMessages.Get("ChatRegisterJustificationError",
+                        $"{Data(giorno)}: {string.Join(", ", res.Messages.Select(m => m.Text))}"));
+            }
 
             return CommandResult.Ok(AttendanceTrackingMessages.Get("ChatJustificationPeriodDone",
                 giustificativo.Descrizione ?? nomeGiustificativo, Nome(dipendente), Data(dal), Data(al)));

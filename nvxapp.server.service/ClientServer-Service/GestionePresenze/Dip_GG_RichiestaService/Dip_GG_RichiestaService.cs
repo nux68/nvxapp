@@ -1485,6 +1485,31 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
             return retVal;
         }
 
+        /// <summary>
+        /// Giorni e ore di un giustificativo su un periodo, con le stesse regole delle richieste (giorni senza
+        /// orario saltati, giornata intera = ore teoriche). Per chi registra direttamente un periodo (chat dell'HR).
+        /// </summary>
+        public Dictionary<DateTime, TimeSpan> GiorniGiustificativo(int idDip_RapportoLavoro, DateTime dal, DateTime al,
+            int idPar_Giustificativi, TimeSpan? ore, bool allDay)
+        {
+            var richiesta = new Dip_GG_Richiesta
+            {
+                IdDip_RapportoLavoro = idDip_RapportoLavoro,
+                RichiestaTipo = TipoRichiesta.Giustificativo,
+                Data = dal.Date,
+                DataA = al.Date < dal.Date ? dal.Date : al.Date,
+                RichiestaApprovazioneData = string.Empty,
+                RevocaApprovazioneData = string.Empty,
+                Dati = JsonConvert.SerializeObject(new Dip_GG_Richiesta_Body_Giustificativo
+                {
+                    hhmm = ore != null ? $"{(int)ore.Value.TotalHours:D2}:{ore.Value.Minutes:D2}" : "00:00",
+                    AllDay = allDay,
+                    IdPar_Giustificativi = idPar_Giustificativi
+                })
+            };
+            return OreGiustificativoPerGiorno(richiesta, idDip_RapportoLavoro);
+        }
+
         private TipoValore TipoGiustificativo(int idPar_Giustificativi) =>
             _par_GiustificativiRepository.FindAll(j => j.Id == idPar_Giustificativi).Select(j => j.Tipo).FirstOrDefault();
 
@@ -1593,6 +1618,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Ric
         public Task<GenericResult<Dip_GG_Richiesta_Get_4Calculation_OutModel>> Dip_GG_Richiesta_Get_4Calculation(GenericRequest<Dip_GG_Richiesta_Get_4Calculation_InModel> model, Boolean isSubProcess);
         public Task<GenericResult<Dip_GG_Richiesta_DeleteOutModel>> Dip_GG_RichiestaDelete(GenericRequest<Dip_GG_Richiesta_DeleteInModel> model, bool isSubProcess);
         public Task<GenericResult<Dip_GG_RichiestaPutOutModel>> Dip_GG_RichiestaPut(GenericRequest<Dip_GG_RichiestaPutInModel> model, bool isSubProcess);
+        public Dictionary<DateTime, TimeSpan> GiorniGiustificativo(int idDip_RapportoLavoro, DateTime dal, DateTime al, int idPar_Giustificativi, TimeSpan? ore, bool allDay);
 
     }
 }
