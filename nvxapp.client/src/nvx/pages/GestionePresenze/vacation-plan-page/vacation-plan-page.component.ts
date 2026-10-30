@@ -43,6 +43,7 @@ export class VacationPlanPageComponent extends BasePageConfirmCancelComponent<Va
 
   private _selectionChanged$ = new Subject<void>();
   private _destroy$          = new Subject<void>();
+  private visibile           = false;
 
   constructor(protected override navCtrl: NavController,
               protected override userInterfaceService: UserInterfaceService,
@@ -68,6 +69,14 @@ export class VacationPlanPageComponent extends BasePageConfirmCancelComponent<Va
     this._selectionChanged$
       .pipe(debounceTime(300), takeUntil(this._destroy$))
       .subscribe(() => this.handleButtontaskClick(null));
+
+    // comando dell'assistente (chat o voce) eseguito, es. ferie inserite: il piano si rilegge subito
+    this.fabMenuService.commandExecuted$
+      .pipe(takeUntil(this._destroy$))
+      .subscribe(() => {
+        if (this.visibile && this.year && this.month)
+          this.handleButtontaskClick(null);
+      });
   }
 
   ngOnDestroy(): void {
@@ -77,6 +86,7 @@ export class VacationPlanPageComponent extends BasePageConfirmCancelComponent<Va
 
   override ionViewWillEnter() {
     super.ionViewWillEnter();
+    this.visibile = true;
 
     // report PDF del piano ferie dei dipendenti selezionati
     this.fabMenuService.fabMenuItem = [
@@ -87,6 +97,7 @@ export class VacationPlanPageComponent extends BasePageConfirmCancelComponent<Va
   }
 
   ionViewWillLeave() {
+    this.visibile = false;
     this.fabMenuService.fabMenuItem = [];
   }
 
