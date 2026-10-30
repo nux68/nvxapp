@@ -38,7 +38,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                 Usable4Role = new List<string> { RuoloHR },
                 Description = AttendanceTrackingMessages.Get("ChatVacationPlanDescription"),
                 Keywords = new() { "chi è in ferie", "chi sarà in ferie", "piano ferie", "chi è assente", "who is on holiday", "vacation plan" },
-                Examples = new() { "chi è in ferie la prossima settimana?", "chi sarà assente dal 3 al 7 novembre?", "who is on holiday next week?" },
+                Examples = new() { "chi è in ferie la prossima settimana?", "piano ferie di ottobre", "chi sarà assente dal 3 al 7 novembre?", "who is on holiday next week?" },
                 RequiresConfirmation = false,
                 Pages = new() { "/vacationplan" },
                 Slots = BuildSlots(

@@ -1081,7 +1081,7 @@
     <value>Stampa report</value>
   </data>
   <data name="ChatPrintReportDescription" xml:space="preserve">
-    <value>avvia la stampa in PDF di un report per un mese: piano ferie, attività (totali o per dipendente), note spese (per dipendente o per tipo).</value>
+    <value>avvia la stampa in PDF di un report per un mese: piano ferie, attività (totali o per dipendente), note spese (per dipendente o per tipo). Solo se l'utente chiede di stampare, il PDF o il report: "piano ferie di ottobre" senza "stampa" è la consultazione del piano ferie.</value>
   </data>
   <data name="ChatPrintReportQuestion" xml:space="preserve">
     <value>Quale report? (piano ferie, attività, attività per dipendente, note spese, note spese per tipo)</value>
@@ -1123,7 +1123,7 @@
     <value>Piano ferie</value>
   </data>
   <data name="ChatVacationPlanDescription" xml:space="preserve">
-    <value>dice chi è in ferie o assente (giustificativi del piano ferie) in un periodo (default: da oggi per una settimana).</value>
+    <value>dice in chat chi è in ferie o assente (giustificativi del piano ferie) in un periodo, anche un mese intero ("piano ferie di ottobre"); default: da oggi per una settimana.</value>
   </data>
   <data name="ChatVacationPlanTitle" xml:space="preserve">
     <value>Piano ferie {0}:</value>

@@ -1077,7 +1077,7 @@
     <value>Print report</value>
   </data>
   <data name="ChatPrintReportDescription" xml:space="preserve">
-    <value>starts the PDF print of a monthly report: vacation plan, activities (total or per employee), expense reports (per employee or by type).</value>
+    <value>starts the PDF print of a monthly report: vacation plan, activities (total or per employee), expense reports (per employee or by type). Only when the user asks to print, for the PDF or the report: "vacation plan for October" without "print" is the vacation plan query.</value>
   </data>
   <data name="ChatPrintReportQuestion" xml:space="preserve">
     <value>Which report? (vacation plan, activities, activities per employee, expense reports, expense reports by type)</value>
@@ -1119,7 +1119,7 @@
     <value>Vacation plan</value>
   </data>
   <data name="ChatVacationPlanDescription" xml:space="preserve">
-    <value>tells who is on holiday or absent (vacation plan justifications) in a period (default: from today for one week).</value>
+    <value>tells in the chat who is on holiday or absent (vacation plan justifications) in a period, also a whole month ("vacation plan for October"); default: from today for one week.</value>
   </data>
   <data name="ChatVacationPlanTitle" xml:space="preserve">
     <value>Vacation plan {0}:</value>

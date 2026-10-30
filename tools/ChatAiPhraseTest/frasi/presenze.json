@@ -24,6 +24,10 @@
   { "frase": "ci sono anomalie ieri?", "intent": "ClockingAnomalies" },
   { "frase": "quali richieste devo approvare?", "intent": "PendingRequests" },
   { "frase": "chi è in ferie la prossima settimana?", "intent": "VacationPlanQuery", "slots": { "from": "=la prossima settimana" } },
+  // un mese intero: dal primo all'ultimo giorno
+  { "frase": "piano ferie di ottobre", "intent": "VacationPlanQuery", "slots": { "from": "=ottobre", "to": "=31 ottobre" } },
+  { "frase": "chi era assente a settembre?", "intent": "VacationPlanQuery", "slots": { "from": "=settembre", "to": "=30 settembre" } },
+  { "frase": "chi è in ferie il mese prossimo?", "intent": "VacationPlanQuery", "slots": { "from": "=il mese prossimo" } },
   { "frase": "stampa il piano ferie di novembre", "intent": "PrintReport", "slots": { "report": "PianoFerie" } },
 
   // apertura delle anagrafiche (comando unico)
