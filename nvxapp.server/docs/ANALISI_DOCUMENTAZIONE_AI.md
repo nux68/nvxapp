@@ -309,7 +309,7 @@ Decisioni tecniche prese nell'implementazione:
 | Sezione | Lavori | Stato |
 |---|---|---|
 | 11.1 Dati | 1–6 | fatto |
-| 11.2 Server: documenti e impostazioni | 7–12 | da fare |
+| 11.2 Server: documenti e impostazioni | 7–12 | fatto |
 | 11.3 Server: flusso AI dei ticket | 13–19 | da fare |
 | 11.4 Client | 20–27 | da fare |
 | 11.5 Verifica | 28–30 | da fare |
@@ -323,12 +323,12 @@ Decisioni tecniche prese nell'implementazione:
 - [x] 6. Migration (con il passaggio di `AiResolution` alle impostazioni di default) — `20261030..._TicketAiDocuments`
 
 ### 11.2 Server: documenti e impostazioni
-- [ ] 7. `Helpers/FileText` (estrazione del testo) + pacchetto PdfPig
-- [ ] 8. Livelli gestibili dall'utente (`DocumentOwner`): SuperUser, Dealer, FinancialAdvisor, Company; modifica solo PowerAdmin e SuperUser
-- [ ] 9. `DocumentService` + `DocumentController`: elenco, dettaglio, salvataggio, eliminazione, testo dal file, download
-- [ ] 10. `TicketTypeAiSettingService` + controller: elenco con valori effettivi e di default, salvataggio, ritorno al default
-- [ ] 11. `TicketTypeService`, modelli e mapper senza `AiResolution`
-- [ ] 12. Messaggi `InfrastructureMessages` it/en, `appsettings` (`AI:TicketLLM`, `AI:TicketMaxChars`, `AI:TicketMaxTokens`)
+- [x] 7. `Helpers/FileText` (estrazione del testo) + pacchetto PdfPig
+- [x] 8. Livelli gestibili dall'utente (`Documentation/LevelScope`): SuperUser, Dealer, FinancialAdvisor, Company; modifica solo PowerAdmin e SuperUser
+- [x] 9. `DocumentService` + `DocumentController`: elenco, dettaglio, salvataggio, eliminazione, testo dal file, download (cartella `Documentation`: `Document` andrebbe in conflitto con l'entità)
+- [x] 10. `TicketTypeAiSettingService` + controller: elenco con valori effettivi e di default, salvataggio, ritorno al default
+- [x] 11. `TicketTypeService`, modelli e mapper senza `AiResolution`
+- [x] 12. Messaggi `InfrastructureMessages` it/en, `appsettings` (`AI:TicketLLM`, `AI:TicketMaxChars`, `AI:TicketMaxTokens`)
 
 ### 11.3 Server: flusso AI dei ticket
 - [ ] 13. Impostazione effettiva e documenti per livello di destinazione, con ereditarietà (`TicketAiKnowledge`)
@@ -360,3 +360,4 @@ Decisioni tecniche prese nell'implementazione:
 
 | Data | Sezione | Lavori | Ramo | Commit |
 |---|---|---|---|---|
+| 30/10/2026 | 11.1 | 1–6, 29 | Infrastructure_Dev | b5dabcd5 |

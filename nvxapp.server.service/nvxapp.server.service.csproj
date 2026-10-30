@@ -16,6 +16,7 @@
     <PackageReference Include="ClosedXML" Version="0.105.1" />
     <PackageReference Include="MailKit" Version="4.18.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
+    <PackageReference Include="PdfPig" Version="0.1.11" />
     <!-- 6.2.4 = ultima versione MIT: dalla 6.5.0 la licenza e' AGPL-3.0 o commerciale (senza licenza caricata la libreria si blocca) -->
     <PackageReference Include="PDFsharp-MigraDoc" Version="6.2.4" />
     <PackageReference Include="RabbitMQ.Client" Version="7.2.2" />
