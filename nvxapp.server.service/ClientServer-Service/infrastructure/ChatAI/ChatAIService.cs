@@ -350,11 +350,29 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             if (action == null || string.IsNullOrWhiteSpace(userMessage)) return false;
 
             var slotName = GetMissingRequiredSlotsForAction(action).First();
-            var slotDef = FindSlotDefinition(action.Intent, slotName);
-            var normalizer = slotDef?.Normalizer ?? SlotNormalizers.ForType(slotDef?.Type);
+            var intentDef = FindIntent(action.Intent);
+            var slotDef = intentDef?.Slots.FirstOrDefault(s => s.Name == slotName);
+            var normalizer = slotDef == null ? null : NormalizerFor(intentDef!, slotDef);
 
             action.Slots[slotName] = normalizer?.Invoke(userMessage) ?? userMessage;
+            if (slotDef != null) FillPeriodEnd(action, slotDef, userMessage);
             return true;
+        }
+
+        // Normalizzatore dello slot: il suo, altrimenti quello del tipo. Lo slot di fine di un periodo
+        // (PeriodEndSlot di un altro slot) usa la fine: "fino a ottobre" -> 31/10
+        private static Func<string, string?>? NormalizerFor(IntentDefinition intentDef, SlotDefinition slotDef) =>
+            slotDef.Normalizer
+            ?? (slotDef.Type == SlotNormalizers.DateFormat && intentDef.Slots.Any(s => s.PeriodEndSlot == slotDef.Name)
+                ? SlotNormalizers.DateEnd
+                : SlotNormalizers.ForType(slotDef.Type));
+
+        // Inizio di un periodo detto come mese ("le ferie di ottobre"): se la fine non c'e', e' l'ultimo giorno del mese
+        private static void FillPeriodEnd(ActionEntry entry, SlotDefinition slotDef, string value)
+        {
+            if (string.IsNullOrEmpty(slotDef.PeriodEndSlot) || entry.Slots.ContainsKey(slotDef.PeriodEndSlot)) return;
+            if (SlotNormalizers.TryParseMonth(value, DateTime.Today, out _, out var end))
+                entry.Slots[slotDef.PeriodEndSlot] = end.ToString(SlotNormalizers.DateFormat, System.Globalization.CultureInfo.InvariantCulture);
         }
 
         // ---------------------------------------------------------------------------
@@ -863,7 +881,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                  !ContainsAllWords(slotDef.PromptDescription, value)))
                 return;
 
-            var normalizer = slotDef.Normalizer ?? SlotNormalizers.ForType(slotDef.Type);
+            var normalizer = NormalizerFor(intentDef, slotDef);
             var normalized = normalizer?.Invoke(value);
             var stored = normalized ?? value;
 
@@ -885,6 +903,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             }
 
             entry.Slots[slotName] = isSelf ? ChatSelf.Token : stored;
+            FillPeriodEnd(entry, slotDef, value);
         }
 
         private static bool IsDefaultValue(SlotDefinition slotDef, string value, Func<string, string?>? normalizer, string stored) =>
@@ -1196,7 +1215,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                         // valore mancante: il default, normalizzato ("oggi" -> la data)
                         var slotDef = intentDef.Slots.FirstOrDefault(s => s.Name == m.Groups[1].Value);
                         if (string.IsNullOrEmpty(slotDef?.Default)) return string.Empty;
-                        var normalizer = slotDef.Normalizer ?? SlotNormalizers.ForType(slotDef.Type);
+                        var normalizer = NormalizerFor(intentDef, slotDef);
                         return normalizer?.Invoke(slotDef.Default) ?? slotDef.Default;
                     });
 
