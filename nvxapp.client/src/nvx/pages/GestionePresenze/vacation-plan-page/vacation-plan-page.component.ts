@@ -22,6 +22,8 @@ import { LanguageService } from '../../../Utility/infrastructure/language.servic
 import { FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { ReportFabService } from '../../../Utility/GestionePresenze/report-fab.service';
 import { ReportTipo } from '../../../ClientServer-Service/GestionePresenze/Report/Models/report-model';
+import { JobNotifierService } from '../../../Utility/infrastructure/job-notifier.service';
+import { GestionePresenze_JobType } from '../../../Utility/GestionePresenze/GestionePresenze_JobType';
 
 @Component({
   selector: 'app-vacation-plan-page',
@@ -44,6 +46,7 @@ export class VacationPlanPageComponent extends BasePageConfirmCancelComponent<Va
   private _selectionChanged$ = new Subject<void>();
   private _destroy$          = new Subject<void>();
   private visibile           = false;
+  private daRicaricare       = false;   // pagina lasciata: al rientro il piano si rilegge
 
   constructor(protected override navCtrl: NavController,
               protected override userInterfaceService: UserInterfaceService,
@@ -57,7 +60,8 @@ export class VacationPlanPageComponent extends BasePageConfirmCancelComponent<Va
               private transloco: TranslocoService,
               private languageService: LanguageService,
               private fabMenuService: FabMenuService,
-              private reportFabService: ReportFabService
+              private reportFabService: ReportFabService,
+              private jobNotifierService: JobNotifierService
   )
   {
     super(navCtrl, userInterfaceService, fb);
@@ -77,6 +81,18 @@ export class VacationPlanPageComponent extends BasePageConfirmCancelComponent<Va
         if (this.visibile && this.year && this.month)
           this.handleButtontaskClick(null);
       });
+
+    // ricalcolo del cartellino finito (es. giustificativo cancellato o modificato nel Calendario HR,
+    // anche da un'altra finestra): se riguarda il mese mostrato, il piano si rilegge
+    this.jobNotifierService.jobFinished$
+      .pipe(takeUntil(this._destroy$))
+      .subscribe(jobUpdate => {
+        if (this.visibile &&
+            jobUpdate.jobType === GestionePresenze_JobType.TimeSheet_Engine_Calculate &&
+            jobUpdate.payload?.year == this.year &&
+            jobUpdate.payload?.month == this.month)
+          this._selectionChanged$.next();
+      });
   }
 
   ngOnDestroy(): void {
@@ -88,6 +104,14 @@ export class VacationPlanPageComponent extends BasePageConfirmCancelComponent<Va
     super.ionViewWillEnter();
     this.visibile = true;
 
+    // si torna al piano (es. dal Calendario HR dopo aver cancellato un giustificativo): Ionic tiene la
+    // pagina in memoria, il mese mostrato si rilegge
+    if (this.daRicaricare) {
+      this.daRicaricare = false;
+      if (this.year && this.month)
+        this.handleButtontaskClick(null);
+    }
+
     // report PDF del piano ferie dei dipendenti selezionati
     this.fabMenuService.fabMenuItem = [
       this.reportFabService.FabItem([
@@ -98,6 +122,7 @@ export class VacationPlanPageComponent extends BasePageConfirmCancelComponent<Va
 
   ionViewWillLeave() {
     this.visibile = false;
+    this.daRicaricare = true;
     this.fabMenuService.fabMenuItem = [];
   }
 
