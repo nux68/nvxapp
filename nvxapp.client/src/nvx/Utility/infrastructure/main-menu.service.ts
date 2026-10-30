@@ -115,6 +115,11 @@ export class MainMenuService implements iMainMenuService {
 
   }
 
+  // sezione "Assistenza" (ticket, tipi di richiesta, documentazione e risposte AI): solo Infrastructure
+  public get Pages4Support(): MainMenuItem[] {
+    return this.mainMenuInfrastructureService.Pages4Support;
+  }
+
   public get GetMode(): WorkingMode {
 
     return Math.max(
@@ -174,7 +179,7 @@ export class MainMenuService implements iMainMenuService {
   public TitoloPagina(url: string): string | null {
     const key = AuthService.normalizeMenuUrl(url);
     const elenchi = [this.Pages4CompanyAdmin, this.Pages4User, this.Pages4Admin, this.Pages4SuperUser,
-                     this.Pages4DealerAdmin, this.Pages4FinancialAdvisorAdmin];
+                     this.Pages4DealerAdmin, this.Pages4FinancialAdvisorAdmin, this.Pages4Support];
     for (const elenco of elenchi) {
       const voce = elenco.find(i => i.menuType === MenuType.MenuItem && i.url && AuthService.normalizeMenuUrl(i.url) === key);
       if (voce) return voce.title.trim();

@@ -79,7 +79,8 @@
     "login": "Login",
     "logout": "Logout",
     "userData": "User Data",
-    "tickets": "Support",
+    "support": "Support",
+    "tickets": "Tickets",
     "ticketTypes": "Request types",
     "aiDocuments": "AI documentation",
     "ticketTypeAiSettings": "AI answers"
