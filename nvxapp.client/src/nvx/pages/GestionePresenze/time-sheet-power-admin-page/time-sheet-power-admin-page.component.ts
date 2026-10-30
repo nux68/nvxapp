@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewEncapsulation, ChangeDetectionStrategy, HostListener } from '@angular/core';
 import { ImportoEuroPipe } from '../../../shared/pipe/GestionePresenze/importo-euro.pipe';
 import { LanguageService } from '../../../Utility/infrastructure/language.service';
 import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
@@ -121,8 +121,16 @@ export class TimeSheetPowerAdminPageComponent implements OnInit, OnDestroy {
     this.currentMonth = { year: 0, month: 0, days: {}, dip_GG_Richiesta: [], daySlot: [], contatori_Anno_Mese:[] };
   }
   
+  // letto una volta e riletto al ridimensionamento della finestra: platform.width() (window.innerWidth)
+  // forza il ricalcolo del layout e il template lo usa in ogni riga (lento, es. all'apertura dei dialog)
+  private _isMobile: boolean | null = null;
   public get isMobile(): boolean {
-    return this.platform.width() < 576;
+    return this._isMobile ??= this.platform.width() < 576;
+  }
+
+  @HostListener('window:resize')
+  onWindowResize(): void {
+    this._isMobile = null;
   }
 
   ionViewWillEnter() {

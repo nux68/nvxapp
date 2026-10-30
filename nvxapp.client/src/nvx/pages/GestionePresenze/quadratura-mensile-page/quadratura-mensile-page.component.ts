@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, OnDestroy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, OnDestroy, HostListener } from '@angular/core';
 import { NavController, Platform } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
@@ -52,8 +52,16 @@ export class QuadraturaMensilePageComponent implements OnDestroy {
     this.title = this.transloco.translate('attendance.pages.quadraturaMensile.title');
   }
 
+  // letto una volta e riletto al ridimensionamento della finestra: platform.width() (window.innerWidth)
+  // forza il ricalcolo del layout e il template lo usa in ogni riga (lento, es. all'apertura dei dialog)
+  private _isMobile: boolean | null = null;
   public get isMobile(): boolean {
-    return this.platform.width() < 576;
+    return this._isMobile ??= this.platform.width() < 576;
+  }
+
+  @HostListener('window:resize')
+  onWindowResize(): void {
+    this._isMobile = null;
   }
 
   ionViewWillEnter() {

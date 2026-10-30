@@ -1,5 +1,5 @@
 import { Dip_GG_ResultModel } from '../../../ClientServer-Service/GestionePresenze/Dip_GG_Result/Models/dip-gg-result-model';
-import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, HostListener } from '@angular/core';
 import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
 import { environment } from '../../../../environments/environment';
 import { MonthNavigatorService } from '../../../Utility/infrastructure/month-navigator.service';
@@ -97,8 +97,16 @@ export class TimeSheetUserPageComponent implements OnInit, OnDestroy {
     
   }
 
+  // letto una volta e riletto al ridimensionamento della finestra: platform.width() (window.innerWidth)
+  // forza il ricalcolo del layout e il template lo usa in ogni riga (lento, es. all'apertura dei dialog)
+  private _isMobile: boolean | null = null;
   public get isMobile(): boolean {
-    return this.platform.width() < 576;
+    return this._isMobile ??= this.platform.width() < 576;
+  }
+
+  @HostListener('window:resize')
+  onWindowResize(): void {
+    this._isMobile = null;
   }
 
   ionViewWillEnter() {

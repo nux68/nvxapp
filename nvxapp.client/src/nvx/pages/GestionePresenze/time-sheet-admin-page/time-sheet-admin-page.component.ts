@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, HostListener } from '@angular/core';
 import { UserNavigationService } from '../../../Utility/infrastructure/user-navigation.service';
 import { TimeSheetService } from '../../../Utility/GestionePresenze/time-sheet.service';
 import { MonthData, SegmentoItem, SegmentoRichiesta } from '../../../Utility/GestionePresenze/time-sheet-common-data';
@@ -447,8 +447,16 @@ export class TimeSheetAdminPageComponent implements OnInit, OnDestroy {
     return a ? `${a.cognome ?? ''} ${a.nome ?? ''}`.trim() : '';
   }
 
+  // letto una volta e riletto al ridimensionamento della finestra: platform.width() (window.innerWidth)
+  // forza il ricalcolo del layout e il template lo usa in ogni riga (lento, es. all'apertura dei dialog)
+  private _isMobile: boolean | null = null;
   public get isMobile(): boolean {
-    return this.platform.width() < 576;
+    return this._isMobile ??= this.platform.width() < 576;
+  }
+
+  @HostListener('window:resize')
+  onWindowResize(): void {
+    this._isMobile = null;
   }
 
   /** Richiesta ancora da decidere (approvabile o rifiutabile): il chip si apre al clic. */
