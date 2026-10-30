@@ -76,3 +76,11 @@ export class Dip_GG_GiustificativiGetInModel {
 export class Dip_GG_GiustificativiGetOutModel extends ModelResult {
   public dip_GG_Giustificativi: Dip_GG_GiustificativiModel;
 }
+
+// notifica push (evento SignalR "GiustificativiNotifier"): giustificativo inserito, modificato o cancellato
+export class GiustificativiNotifierData {
+  public idDip_RapportoLavoro: number = 0;
+  public data: string = '';   // yyyy-MM-dd
+  public year: number = 0;
+  public month: number = 0;   // 1-12
+}

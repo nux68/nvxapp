@@ -22,8 +22,8 @@ import { LanguageService } from '../../../Utility/infrastructure/language.servic
 import { FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { ReportFabService } from '../../../Utility/GestionePresenze/report-fab.service';
 import { ReportTipo } from '../../../ClientServer-Service/GestionePresenze/Report/Models/report-model';
-import { JobNotifierService } from '../../../Utility/infrastructure/job-notifier.service';
-import { GestionePresenze_JobType } from '../../../Utility/GestionePresenze/GestionePresenze_JobType';
+import { GiustificativiNotifierService } from '../../../Utility/GestionePresenze/giustificativi-notifier.service';
+import { RichiestaNotifierService } from '../../../Utility/GestionePresenze/richiesta-notifier.service';
 
 @Component({
   selector: 'app-vacation-plan-page',
@@ -46,7 +46,7 @@ export class VacationPlanPageComponent extends BasePageConfirmCancelComponent<Va
   private _selectionChanged$ = new Subject<void>();
   private _destroy$          = new Subject<void>();
   private visibile           = false;
-  private daRicaricare       = false;   // pagina lasciata: al rientro il piano si rilegge
+  private daRicaricare       = false;   // notifica arrivata a pagina nascosta: al rientro il piano si rilegge
 
   constructor(protected override navCtrl: NavController,
               protected override userInterfaceService: UserInterfaceService,
@@ -61,7 +61,8 @@ export class VacationPlanPageComponent extends BasePageConfirmCancelComponent<Va
               private languageService: LanguageService,
               private fabMenuService: FabMenuService,
               private reportFabService: ReportFabService,
-              private jobNotifierService: JobNotifierService
+              private giustificativiNotifierService: GiustificativiNotifierService,
+              private richiestaNotifierService: RichiestaNotifierService
   )
   {
     super(navCtrl, userInterfaceService, fb);
@@ -82,17 +83,26 @@ export class VacationPlanPageComponent extends BasePageConfirmCancelComponent<Va
           this.handleButtontaskClick(null);
       });
 
-    // ricalcolo del cartellino finito (es. giustificativo cancellato o modificato nel Calendario HR,
-    // anche da un'altra finestra): se riguarda il mese mostrato, il piano si rilegge
-    this.jobNotifierService.jobFinished$
+    // notifiche SignalR: giustificativo inserito, modificato o cancellato (es. nel Calendario HR) nel mese
+    // mostrato, oppure richieste cambiate (inserite, approvate, rifiutate, revocate)
+    this.giustificativiNotifierService.changed$
       .pipe(takeUntil(this._destroy$))
-      .subscribe(jobUpdate => {
-        if (this.visibile &&
-            jobUpdate.jobType === GestionePresenze_JobType.TimeSheet_Engine_Calculate &&
-            jobUpdate.payload?.year == this.year &&
-            jobUpdate.payload?.month == this.month)
-          this._selectionChanged$.next();
+      .subscribe(data => {
+        if (data?.year == this.year && data?.month == this.month)
+          this.aggiornaDaNotifica();
       });
+
+    this.richiestaNotifierService.changed$
+      .pipe(takeUntil(this._destroy$))
+      .subscribe(() => this.aggiornaDaNotifica());
+  }
+
+  // pagina visibile: il piano si rilegge (le notifiche ravvicinate in una sola lettura); nascosta: al rientro
+  private aggiornaDaNotifica(): void {
+    if (this.visibile)
+      this._selectionChanged$.next();
+    else
+      this.daRicaricare = true;
   }
 
   ngOnDestroy(): void {
@@ -104,8 +114,7 @@ export class VacationPlanPageComponent extends BasePageConfirmCancelComponent<Va
     super.ionViewWillEnter();
     this.visibile = true;
 
-    // si torna al piano (es. dal Calendario HR dopo aver cancellato un giustificativo): Ionic tiene la
-    // pagina in memoria, il mese mostrato si rilegge
+    // notifica arrivata mentre la pagina era nascosta (Ionic la tiene in memoria): il mese mostrato si rilegge
     if (this.daRicaricare) {
       this.daRicaricare = false;
       if (this.year && this.month)
@@ -122,7 +131,6 @@ export class VacationPlanPageComponent extends BasePageConfirmCancelComponent<Va
 
   ionViewWillLeave() {
     this.visibile = false;
-    this.daRicaricare = true;
     this.fabMenuService.fabMenuItem = [];
   }
 

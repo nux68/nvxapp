@@ -13,9 +13,12 @@ using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_GiustificativiService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_EngineService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.TimeSheet_EngineService.Models;
+using nvxapp.server.service.ClientServer_Service.Infrastructure.Account;
+using nvxapp.server.service.ClientServer_Service.Infrastructure.Account.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
 using nvxapp.server.service.Interfaces;
 using nvxapp.server.service.ServerModels;
+using Serilog;
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_GiustificativiService
 {
@@ -26,6 +29,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Giu
         private readonly IDip_GG_GiustificativiRepository _Dip_GG_GiustificativiRepository;
         private readonly IPar_GiustificativiRepository _par_GiustificativiRepository;
         private ITimeSheet_EngineService_OnlyCalculate _timeSheet_EngineService;
+        private readonly IDip_AnagraficaRepository _dip_AnagraficaRepository;
+        private readonly IDip_RapportoLavoroRepository _dip_RapportoLavoroRepository;
+        private readonly IAccountService _accountService;
+        private readonly IGiustificativiNotifier _giustificativiNotifier;
 
         public Dip_GG_GiustificativiService(IMapper mapper,
                                   UserManager<ApplicationUser> userManager,
@@ -37,12 +44,20 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Giu
                                   ITimeSheet_EngineService_OnlyCalculate timeSheet_EngineService,
 
                                   IGestionePresenzeUserUtility gestionePresenzeUserUtility,
-                                  IDip_GG_GiustificativiRepository Dip_GG_GiustificativiRepository) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
+                                  IDip_GG_GiustificativiRepository Dip_GG_GiustificativiRepository,
+                                  IDip_AnagraficaRepository dip_AnagraficaRepository,
+                                  IDip_RapportoLavoroRepository dip_RapportoLavoroRepository,
+                                  IAccountService accountService,
+                                  IGiustificativiNotifier giustificativiNotifier) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _gestionePresenzeUserUtility = gestionePresenzeUserUtility;
             _Dip_GG_GiustificativiRepository = Dip_GG_GiustificativiRepository;
             _par_GiustificativiRepository = par_GiustificativiRepository;
             _timeSheet_EngineService = timeSheet_EngineService;
+            _dip_AnagraficaRepository = dip_AnagraficaRepository;
+            _dip_RapportoLavoroRepository = dip_RapportoLavoroRepository;
+            _accountService = accountService;
+            _giustificativiNotifier = giustificativiNotifier;
         }
 
         public virtual async Task<GenericResult<Dip_GG_Giustificativi_GetAll_OutModel>> GetAll(GenericRequest<Dip_GG_Giustificativi_GetAll_InModel> model, Boolean isSubProcess)
@@ -177,6 +192,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Giu
                 if(!model.Data.ExcludeRicalc)
                     await CalculateGiorno(dip_GG_Giustificativi.IdDip_RapportoLavoro, dip_GG_Giustificativi.Data);
 
+                // il motore del cartellino e le richieste (subprocess) salvano giorno per giorno: si avvisa solo per le azioni dal client
+                if (!isSubProcess)
+                    await NotifyGiustificativi(dip_GG_Giustificativi.IdDip_RapportoLavoro, dip_GG_Giustificativi.Data);
+
                 await Task.Delay(DelayAsyncMethod);
 
                 return retVal;
@@ -197,6 +216,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Giu
                     if(!model.Data.ExcludeRicalc)
                         await CalculateGiorno(IdDip_RapportoLavoro, GiornoCompetenza);
 
+                    if (!isSubProcess)
+                        await NotifyGiustificativi(IdDip_RapportoLavoro, GiornoCompetenza);
                 }
 
                 
@@ -250,6 +271,36 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_Giu
             }, isSubProcess);
         }
 
+
+        // avvisa (SignalR) chi vede i giustificativi del dipendente: il dipendente e gli amministratori dell'azienda
+        private async Task NotifyGiustificativi(int idDip_RapportoLavoro, DateTime giorno)
+        {
+            try
+            {
+                var recipients = new List<string>();
+
+                var idDip_Anagrafica = _dip_RapportoLavoroRepository.FindAll(x => x.Id == idDip_RapportoLavoro).Select(x => x.IdDip_Anagrafica).ToList();
+                recipients.AddRange(_dip_AnagraficaRepository.FindAll(x => idDip_Anagrafica.Contains(x.Id)).Select(x => x.IdAspNetUsers).ToList());
+
+                var reqAdmin = new GenericRequest<UserCompanyListInModel>();
+                reqAdmin.Data.FilteredRoles = new List<string> { "CompanyAdmin", "CompanyPowerAdmin" };
+                var resAdmin = await _accountService.UserCompanyList(reqAdmin, true);
+                if (resAdmin.Success && resAdmin.Data != null)
+                    recipients.AddRange(resAdmin.Data.UserCompanyList.Select(x => x.IdAspNetUsers ?? string.Empty));
+
+                await _giustificativiNotifier.GiustificativiNotifierAsync(recipients, new GiustificativiNotifierData
+                {
+                    IdDip_RapportoLavoro = idDip_RapportoLavoro,
+                    Data = giorno.ToString("yyyy-MM-dd"),
+                    Year = giorno.Year,
+                    Month = giorno.Month
+                });
+            }
+            catch (Exception ex)
+            {
+                Log.Warning(ex, "Giustificativi del rapporto {IdDip_RapportoLavoro} giorno {Giorno}: notifica non inviata", idDip_RapportoLavoro, giorno);
+            }
+        }
 
         private async Task CalculateGiorno(int IdDip_RapportoLavoro, DateTime GiornoCompetenza)
         {
