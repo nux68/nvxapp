@@ -20,6 +20,12 @@
             <strong>{{ ('ticket.level.' + ticket.currentLevel) | transloco }}</strong>
             @if (ticket.currentUserName) { - {{ ticket.currentUserName }} }
           </span>
+          @if (ticket.aiPending) {
+            <ion-chip color="tertiary">
+              <ion-icon name="sparkles-outline"></ion-icon>
+              <ion-label>{{ 'ticket.aiPending' | transloco }}</ion-label>
+            </ion-chip>
+          }
         </div>
 
         <p class="ticket-opener">
@@ -53,6 +59,9 @@
                 }
                 @if (row.text && row.action !== TicketAction.Apertura) {
                   <p class="ticket-text">{{ row.text }}</p>
+                }
+                @if (row.document.length > 0) {
+                  <p>{{ 'pages.ticketDetail.aiDocuments' | transloco: { documents: row.document.join(', ') } }}</p>
                 }
                 @if (row.ticketAttach.length > 0) {
                   <div class="ticket-attach-list">

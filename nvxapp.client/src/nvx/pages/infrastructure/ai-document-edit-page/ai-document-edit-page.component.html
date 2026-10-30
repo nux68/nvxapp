@@ -1,0 +1,122 @@
+<app-page-toolbar [title]="Title"
+  [showFilter]="ShowFilter"
+  [showBreadcrumbs]="true">
+</app-page-toolbar>
+
+<ion-content [fullscreen]="true">
+
+  <ion-card>
+    <ion-card-content>
+
+      <ion-item class="nvx-item-4-title">
+        <ion-label>
+          {{ 'pages.aiDocumentEdit.info' | transloco }}
+          @if (level !== null) { - {{ ('ticket.level.' + level) | transloco }} }
+        </ion-label>
+      </ion-item>
+      @if (_editModel && !canEdit) {
+        <ion-note class="nvx-nota-disabled">{{ 'pages.aiDocumentEdit.readOnly' | transloco }}</ion-note>
+      }
+
+      <form [formGroup]="_editForm">
+
+        <ion-item>
+          <ion-input type="text" formControlName="titolo" [label]="'pages.aiDocumentEdit.titolo' | transloco" labelPlacement="floating" maxlength="200"></ion-input>
+        </ion-item>
+        @if (_editForm.get('titolo')?.hasError('required') && _editForm.get('titolo')?.touched) {
+          <ion-note color="danger">{{ 'pages.aiDocumentEdit.titoloRequired' | transloco }}</ion-note>
+        }
+
+        <ion-item>
+          <ion-textarea formControlName="descrizione" [label]="'pages.aiDocumentEdit.descrizione' | transloco" labelPlacement="floating" [autoGrow]="true" maxlength="1000"></ion-textarea>
+        </ion-item>
+        <ion-note class="nvx-nota-disabled">{{ 'pages.aiDocumentEdit.descrizioneNote' | transloco }}</ion-note>
+
+        <ion-item>
+          <ion-select formControlName="idTicketType" [multiple]="true" [label]="'pages.aiDocumentEdit.ticketTypes' | transloco" labelPlacement="floating"
+                      [placeholder]="'pages.aiDocumentList.allTypes' | transloco">
+            @for (t of ticketTypes; track t.id) {
+              <ion-select-option [value]="t.id">{{ t.descrizione }}</ion-select-option>
+            }
+          </ion-select>
+        </ion-item>
+        <ion-note class="nvx-nota-disabled">{{ 'pages.aiDocumentEdit.ticketTypesNote' | transloco }}</ion-note>
+
+        <ion-item>
+          <ion-select formControlName="applicationType" [label]="'pages.aiDocumentEdit.application' | transloco" labelPlacement="floating">
+            <ion-select-option [value]="null">{{ 'ticket.application.general' | transloco }}</ion-select-option>
+            @for (a of applications; track a) {
+              <ion-select-option [value]="a">{{ ('ticket.application.' + a) | transloco }}</ion-select-option>
+            }
+          </ion-select>
+        </ion-item>
+
+        <ion-item>
+          <ion-toggle formControlName="includeSubLevels" justify="start">{{ 'pages.aiDocumentEdit.includeSubLevels' | transloco }}</ion-toggle>
+        </ion-item>
+        <ion-note class="nvx-nota-disabled">{{ 'pages.aiDocumentEdit.includeSubLevelsNote' | transloco }}</ion-note>
+
+        <!-- file originale: il testo estratto va nel contenuto -->
+        <ion-item lines="none">
+          <ion-label>
+            {{ 'pages.aiDocumentEdit.file' | transloco }}
+            <p>{{ _editModel?.fileName || ('pages.aiDocumentEdit.fileNone' | transloco) }}</p>
+          </ion-label>
+          @if (_editModel?.fileName && _editModel?.id && !_editModel?.file) {
+            <ion-button slot="end" fill="clear" (click)="download()" [attr.aria-label]="'pages.aiDocumentEdit.fileDownload' | transloco">
+              <ion-icon slot="icon-only" name="download-outline"></ion-icon>
+            </ion-button>
+          }
+          @if (canEdit && _editModel?.fileName) {
+            <ion-button slot="end" fill="clear" color="danger" (click)="removeFile()" [attr.aria-label]="'pages.aiDocumentEdit.fileRemove' | transloco">
+              <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+            </ion-button>
+          }
+        </ion-item>
+        @if (canEdit) {
+          <input #fileInput type="file" [accept]="accept" (change)="onFile($event)" hidden />
+          <ion-button size="small" fill="outline" shape="round" color="primary" [disabled]="reading" (click)="fileInput.click()">
+            <ion-icon slot="start" name="cloud-upload-outline"></ion-icon>
+            {{ (reading ? 'pages.aiDocumentEdit.fileReading' : 'pages.aiDocumentEdit.fileUpload') | transloco }}
+          </ion-button>
+          <ion-note class="nvx-nota-disabled">{{ 'pages.aiDocumentEdit.fileNote' | transloco }}</ion-note>
+        }
+        @if (fileError) {
+          <ion-note color="danger">{{ fileError }}</ion-note>
+        }
+
+        <ion-item>
+          <ion-textarea formControlName="contenuto" [label]="'pages.aiDocumentEdit.contenuto' | transloco" labelPlacement="floating"
+                        [autoGrow]="true" [rows]="12" class="ai-document-content"></ion-textarea>
+        </ion-item>
+        <ion-note class="nvx-nota-disabled">
+          {{ 'pages.aiDocumentEdit.contenutoLength' | transloco: { n: contentLength.toLocaleString(), max: contentMaxLength.toLocaleString() } }}
+          {{ 'pages.aiDocumentEdit.contenutoNote' | transloco }}
+        </ion-note>
+        @if (_editForm.get('contenuto')?.hasError('required') && _editForm.get('contenuto')?.touched) {
+          <ion-note color="danger">{{ 'pages.aiDocumentEdit.contenutoRequired' | transloco }}</ion-note>
+        }
+        @if (_editForm.get('contenuto')?.hasError('maxlength')) {
+          <ion-note color="danger">{{ 'pages.aiDocumentEdit.contenutoTooLong' | transloco: { max: contentMaxLength.toLocaleString() } }}</ion-note>
+        }
+
+        <ion-item>
+          <ion-input type="number" formControlName="ordine" [label]="'pages.aiDocumentEdit.order' | transloco" labelPlacement="floating"></ion-input>
+        </ion-item>
+        <ion-note class="nvx-nota-disabled">{{ 'pages.aiDocumentEdit.orderNote' | transloco }}</ion-note>
+
+        <ion-item>
+          <ion-toggle formControlName="active" justify="start">{{ 'pages.aiDocumentEdit.active' | transloco }}</ion-toggle>
+        </ion-item>
+        <ion-note class="nvx-nota-disabled">{{ 'pages.aiDocumentEdit.activeNote' | transloco }}</ion-note>
+
+      </form>
+
+      <br />
+
+    </ion-card-content>
+  </ion-card>
+
+</ion-content>
+
+<app-page-buttonbar [buttonbar]="buttonbar"></app-page-buttonbar>

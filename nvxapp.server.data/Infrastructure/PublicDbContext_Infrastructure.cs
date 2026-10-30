@@ -30,6 +30,12 @@ namespace nvxapp.server.data.Infrastructure
         public DbSet<Ticket> Ticket { get; set; }
         public DbSet<TicketCronology> TicketCronology { get; set; }
         public DbSet<TicketAttach> TicketAttach { get; set; }
+        public DbSet<TicketTypeAiSetting> TicketTypeAiSetting { get; set; }
+        public DbSet<TicketCronologyDocument> TicketCronologyDocument { get; set; }
+
+        // documenti dei livelli (es. documentazione per le risposte AI ai ticket)
+        public DbSet<Document> Document { get; set; }
+        public DbSet<DocumentTicketType> DocumentTicketType { get; set; }
 
 
         private void Define_Table_DbContext_Infrastructure(ModelBuilder modelBuilder)
@@ -43,6 +49,7 @@ namespace nvxapp.server.data.Infrastructure
             Gen_CompanyMenuRestriction(modelBuilder);
             Gen_CompanyRegistrationRequest(modelBuilder);
             Gen_Ticket(modelBuilder);
+            Gen_Document(modelBuilder);
         }
 
         private void Gen_InitDB(ModelBuilder modelBuilder)
@@ -167,6 +174,100 @@ namespace nvxapp.server.data.Infrastructure
                       .HasForeignKey(e => e.IdTicketCronology)
                       .OnDelete(DeleteBehavior.Cascade);
             });
+
+            modelBuilder.Entity<TicketTypeAiSetting>(entity =>
+            {
+                entity.ToTable("TicketTypeAiSetting", Schema, t =>
+                    t.HasCheckConstraint("CK_TicketTypeAiSetting_Node", NodeCheck));
+                entity.HasKey(e => e.Id);
+
+                // una riga per tipo/livello/nodo. Indici parziali (NULLS NOT DISTINCT richiede PostgreSQL 15):
+                // default del livello (nodo vuoto) e una riga per nodo (il livello e' implicito nel nodo)
+                entity.HasIndex(e => new { e.IdTicketType, e.Level })
+                      .IsUnique()
+                      .HasFilter("\"IdDealer\" IS NULL AND \"IdFinancialAdvisor\" IS NULL AND \"IdCompany\" IS NULL");
+                entity.HasIndex(e => new { e.IdTicketType, e.IdDealer }).IsUnique().HasFilter("\"IdDealer\" IS NOT NULL");
+                entity.HasIndex(e => new { e.IdTicketType, e.IdFinancialAdvisor }).IsUnique().HasFilter("\"IdFinancialAdvisor\" IS NOT NULL");
+                entity.HasIndex(e => new { e.IdTicketType, e.IdCompany }).IsUnique().HasFilter("\"IdCompany\" IS NOT NULL");
+
+                entity.HasOne(e => e.TicketTypeNavigation)
+                      .WithMany()
+                      .HasForeignKey(e => e.IdTicketType)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                NodeForeignKeys(entity);
+            });
+
+            modelBuilder.Entity<TicketCronologyDocument>(entity =>
+            {
+                entity.ToTable("TicketCronologyDocument", Schema);
+                entity.HasKey(e => e.Id);
+
+                entity.HasOne(e => e.TicketCronologyNavigation)
+                      .WithMany(c => c.TicketCronologyDocument)
+                      .HasForeignKey(e => e.IdTicketCronology)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                // il documento eliminato resta citato con il titolo copiato
+                entity.HasOne(e => e.DocumentNavigation)
+                      .WithMany()
+                      .HasForeignKey(e => e.IdDocument)
+                      .OnDelete(DeleteBehavior.SetNull);
+            });
+        }
+
+        /*
+         Documenti dei livelli. Il nodo proprietario e' solo quello del livello (check constraint);
+         chiavi esterne verso Dealer, FinancialAdvisor e Company senza collezioni sui nodi: i contesti
+         degli applicativi mappano Company e scoprirebbero le tabelle seguendo le collezioni.
+         Eliminando il nodo si eliminano i suoi documenti.
+        */
+        private void Gen_Document(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Document>(entity =>
+            {
+                entity.ToTable("Document", Schema, t =>
+                    t.HasCheckConstraint("CK_Document_Node", NodeCheck));
+                entity.HasKey(e => e.Id);
+
+                entity.HasIndex(e => new { e.Section, e.Level, e.IdDealer, e.IdFinancialAdvisor, e.IdCompany, e.Active });
+
+                NodeForeignKeys(entity);
+            });
+
+            modelBuilder.Entity<DocumentTicketType>(entity =>
+            {
+                entity.ToTable("DocumentTicketType", Schema);
+                entity.HasKey(e => e.Id);
+
+                entity.HasIndex(e => new { e.IdDocument, e.IdTicketType }).IsUnique();
+                entity.HasIndex(e => e.IdTicketType);
+
+                entity.HasOne(e => e.DocumentNavigation)
+                      .WithMany(d => d.DocumentTicketType)
+                      .HasForeignKey(e => e.IdDocument)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(e => e.TicketTypeNavigation)
+                      .WithMany()
+                      .HasForeignKey(e => e.IdTicketType)
+                      .OnDelete(DeleteBehavior.Cascade);
+            });
+        }
+
+        // nodo coerente con il livello (TicketLevel): SuperUser e Dev nessuno, poi solo l'id del livello
+        private const string NodeCheck =
+            "(\"Level\" IN (0, 1) AND \"IdDealer\" IS NULL AND \"IdFinancialAdvisor\" IS NULL AND \"IdCompany\" IS NULL)" +
+            " OR (\"Level\" = 2 AND \"IdFinancialAdvisor\" IS NULL AND \"IdCompany\" IS NULL)" +
+            " OR (\"Level\" = 3 AND \"IdDealer\" IS NULL AND \"IdCompany\" IS NULL)" +
+            " OR (\"Level\" = 4 AND \"IdDealer\" IS NULL AND \"IdFinancialAdvisor\" IS NULL)";
+
+        // chiavi esterne verso il nodo proprietario, in cascata, senza navigation
+        private static void NodeForeignKeys<T>(Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<T> entity) where T : class
+        {
+            entity.HasOne<Dealer>().WithMany().HasForeignKey("IdDealer").OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne<FinancialAdvisor>().WithMany().HasForeignKey("IdFinancialAdvisor").OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne<Company>().WithMany().HasForeignKey("IdCompany").OnDelete(DeleteBehavior.Cascade);
         }
 
         private void Gen_CompanyMenuRestriction(ModelBuilder modelBuilder)

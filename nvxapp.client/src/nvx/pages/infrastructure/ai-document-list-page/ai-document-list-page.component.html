@@ -1,0 +1,46 @@
+<app-page-toolbar [title]="title"
+  [showFilter]="true"
+  [showBreadcrumbs]="true"
+  (ev_Filter)="Filter($event)">
+</app-page-toolbar>
+
+<ion-content [fullscreen]="true" class="nvx-wide">
+
+  <ion-card>
+    <ion-card-content>
+
+      @if (scopes.length > 1) {
+        <ion-item>
+          <ion-select [(ngModel)]="level" (ionChange)="loadList()" [label]="'pages.aiDocumentList.level' | transloco" labelPlacement="floating">
+            @for (s of scopes; track s.level) {
+              <ion-select-option [value]="s.level">{{ ('ticket.level.' + s.level) | transloco }}</ion-select-option>
+            }
+          </ion-select>
+        </ion-item>
+      }
+
+      @if (scopes.length === 0 && loaded) {
+        <ion-note class="nvx-nota-disabled">{{ 'pages.aiDocumentList.noScope' | transloco }}</ion-note>
+      } @else {
+        <ion-note class="nvx-nota-disabled">{{ 'pages.aiDocumentList.info' | transloco }}</ion-note>
+        @if (scope && !scope.canEdit) {
+          <ion-note class="nvx-nota-disabled">{{ 'pages.aiDocumentList.readOnly' | transloco }}</ion-note>
+        }
+
+        <nvx-list
+          [items]="documentList"
+          [columns]="columns"
+          [actions]="actions"
+          trackKey="id"
+          icon="library-outline"
+          [searchText]="searchText"
+          [sort]="sortByOrdine"
+          [rowDisabled]="isDisabled"
+          [disabledToggleLabel]="'pages.aiDocumentList.showDisabled' | transloco">
+        </nvx-list>
+      }
+
+    </ion-card-content>
+  </ion-card>
+
+</ion-content>

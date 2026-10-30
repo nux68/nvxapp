@@ -2,6 +2,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using nvxapp.server.Base;
 using nvxapp.server.data.Entities.Public;
@@ -44,6 +45,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.SupportTicke
         private readonly IFinancialAdvisorRepository _financialAdvisorRepository;
         private readonly ICompanyApplicationRepository _companyApplicationRepository;
         private readonly ITicketAiResolverService _ticketAiResolverService;
+        private readonly ITicketAiKnowledge _ticketAiKnowledge;
+        private readonly ITicketCronologyDocumentRepository _ticketCronologyDocumentRepository;
         private readonly ITicketNotifier _ticketNotifier;
 
         // ruoli dell'applicazione (Id <-> codice), letti una volta per richiesta
@@ -71,6 +74,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.SupportTicke
                              IFinancialAdvisorRepository financialAdvisorRepository,
                              ICompanyApplicationRepository companyApplicationRepository,
                              ITicketAiResolverService ticketAiResolverService,
+                             ITicketAiKnowledge ticketAiKnowledge,
+                             ITicketCronologyDocumentRepository ticketCronologyDocumentRepository,
                              ITicketNotifier ticketNotifier) : base(mapper, userManager, aspNetUsersRepository, jwtParameter, configuration, httpContextAccessor)
         {
             _ticketRepository = ticketRepository;
@@ -87,6 +92,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.SupportTicke
             _financialAdvisorRepository = financialAdvisorRepository;
             _companyApplicationRepository = companyApplicationRepository;
             _ticketAiResolverService = ticketAiResolverService;
+            _ticketAiKnowledge = ticketAiKnowledge;
+            _ticketCronologyDocumentRepository = ticketCronologyDocumentRepository;
             _ticketNotifier = ticketNotifier;
         }
 
@@ -128,7 +135,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.SupportTicke
                 var retVal = new TicketCountOutModel();
                 var user = await CurrentTicketUser();
 
-                retVal.InCarico = QueryInCarico(user).Count();
+                // senza quelli con la risposta AI in corso: gli operatori non sono ancora stati avvisati
+                var limite = DateTime.Now.AddSeconds(-((int.TryParse(_configuration["AI:TimeoutSeconds"], out int s) && s > 0 ? s : 100) + 120));
+                retVal.InCarico = QueryInCarico(user).Count(t => t.AiPendingSince == null || t.AiPendingSince < limite);
 
                 return retVal;
             }, isSubProcess);
@@ -243,7 +252,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.SupportTicke
                     // destinatario: primo livello abilitato sopra chi apre (garantito dai tipi proposti)
                     var next = TicketRules.NextLevelUp(type.Levels, ticket.OpenerLevel)
                                ?? throw new UserMessageException(InfrastructureMessages.Get("TicketNoUpperLevel"));
-                    rows.AddRange(await SalitaRows(user, ticket, type, next, null, new List<TicketAttachModel>(), rows.Select(r => r.row).ToList()));
+                    rows.AddRange(await SalitaRows(user, ticket, type, next, null, new List<TicketAttachModel>()));
                 }
 
                 var last = rows.Last().row;
@@ -258,8 +267,14 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.SupportTicke
 
                 retVal.Id = ticket.Id;
 
-                var extra = superUser ? await DevUsers(true) : new List<string>();
-                await Notify(user, ticket, last.Action, extra);
+                // con la risposta AI in corso gli operatori si avvisano dopo, se l'AI non risponde
+                if (ticket.AiPendingSince != null)
+                    StartAi(ticket);
+                else
+                {
+                    var extra = superUser ? await DevUsers(true) : new List<string>();
+                    await Notify(user, ticket, last.Action, extra);
+                }
 
                 return retVal;
             }, isSubProcess);
@@ -287,6 +302,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.SupportTicke
                 var actions = await Actions(user, ticket, type, cronology);
                 var attach = data.TicketAttach ?? new List<TicketAttachModel>();
 
+                // ogni azione ferma la risposta AI in corso (il lavoro in background trova la versione cambiata);
+                // inoltro e riapertura possono avviarne una nuova
+                ticket.AiPendingSince = null;
+
                 List<(TicketCronology row, List<TicketAttachModel> attach)> rows;
                 List<string> extraNotify = new List<string>();
 
@@ -305,7 +324,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.SupportTicke
                         {
                             if (!actions.Inoltra || actions.InoltraLevel == null)
                                 throw NotAllowed();
-                            rows = await SalitaRows(user, ticket, type, actions.InoltraLevel.Value, text, attach, cronology);
+                            rows = await SalitaRows(user, ticket, type, actions.InoltraLevel.Value, text, attach);
                             break;
                         }
 
@@ -383,11 +402,15 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.SupportTicke
                             var resolution = cronology.LastOrDefault(c => c.Action == TicketAction.Risoluzione || c.Action == TicketAction.RisoluzioneAI)
                                              ?? throw NotAllowed();
                             var level = resolution.ReturnLevel ?? throw NotAllowed();
-                            // dopo una risoluzione AI si va al livello sostituito, senza assegnatario e senza ritentare l'AI
+                            // dopo una risoluzione AI si va al livello sostituito, senza assegnatario; se restano tentativi
+                            // l'AI risponde di nuovo tenendo conto dell'obiezione (il testo della riapertura)
                             string? returnUser = await StillEligible(ticket, level, resolution.ReturnUserId);
 
                             rows = new() { (Row(user, ticket, TicketAction.Riapertura, level, resolution.ReturnRoleId ?? RoleId(TicketRules.PowerRole(level)), returnUser,
                                                 returnUser != null ? TicketState.InCarico : TicketState.Aperto, text), attach) };
+
+                            if (resolution.Action == TicketAction.RisoluzioneAI && ticket.AiLevel == level && await AiCanTry(ticket, type, level))
+                                ticket.AiPendingSince = DateTime.Now;
                             break;
                         }
 
@@ -426,7 +449,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.SupportTicke
                 // salva anche cronologia e allegati aggiunti sopra
                 await _ticketRepository.UpdateAsync(ticket);
 
-                if (last.Action != TicketAction.Nota && last.Action != TicketAction.Riclassificazione && last.Action != TicketAction.Chiusura)
+                // con la risposta AI in corso gli operatori si avvisano dopo, se l'AI non risponde
+                if (ticket.AiPendingSince != null)
+                    StartAi(ticket);
+                else if (last.Action != TicketAction.Nota && last.Action != TicketAction.Riclassificazione && last.Action != TicketAction.Chiusura)
                     await Notify(user, ticket, last.Action, extraNotify);
 
                 retVal.Ticket = await ToDetailModel(user, ticket);
@@ -504,6 +530,112 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.SupportTicke
                 }
 
                 retVal.Riallineati = tickets.Count;
+
+                return retVal;
+            }, isSubProcess);
+        }
+
+        /*
+         Risposta automatica AI in background (avviata da StartAi dopo il salvataggio del passaggio).
+         Si ferma se il ticket e' cambiato nel frattempo (un operatore l'ha preso: Version diversa).
+           - risposta trovata     -> RisoluzioneAI verso chi ha aperto (Risolto); riaprendo si torna a questo livello
+           - risposta non trovata -> RisoluzioneAINonTrovata, il ticket resta all'operatore (il tentativo conta)
+           - errore o timeout     -> nessuna riga, il tentativo non conta, il ticket resta all'operatore
+         In ogni caso gli operatori del livello vengono avvisati solo adesso (o chi ha aperto, se risolto).
+        */
+        public virtual async Task<GenericResult<TicketAiRunOutModel>> TicketAiRun(GenericRequest<TicketAiRunInModel> model, Boolean isSubProcess)
+        {
+            return await ExecuteAction(model, async () =>
+            {
+                var retVal = new TicketAiRunOutModel();
+                await LoadRoles();
+
+                var ticket = await _ticketRepository.FindByIdAsync(model.Data.IdTicket);
+                if (ticket == null || ticket.Version != model.Data.Version || ticket.AiPendingSince == null)
+                    return retVal;
+
+                var level = ticket.CurrentLevel;
+                var type = await TypeWithLevels(ticket.IdTicketType);
+                var documents = _ticketAiKnowledge.Documents(ticket, type.Type, level);
+                var cronology = Cronology(ticket.Id);
+
+                TicketAiResolveOutModel? ai = null;
+                try
+                {
+                    var request = new GenericRequest<TicketAiResolveInModel>(new TicketAiResolveInModel
+                    {
+                        IdTicket = ticket.Id,
+                        DestinationLevel = level,
+                        TipoDescrizione = type.Type.Descrizione,
+                        Oggetto = ticket.Oggetto,
+                        Text = ticket.Text,
+                        // risposte AI precedenti e obiezioni di chi ha aperto
+                        History = cronology.Where(c => (c.Action == TicketAction.RisoluzioneAI || c.Action == TicketAction.Riapertura) && !string.IsNullOrWhiteSpace(c.Text))
+                                           .Select(c => new TicketAiHistoryModel { FromAi = c.Action == TicketAction.RisoluzioneAI, Text = c.Text! })
+                                           .ToList(),
+                        Document = documents,
+                    });
+                    ai = (await _ticketAiResolverService.TicketAiResolve(request, true)).Data;
+                }
+                catch (Exception ex)
+                {
+                    Log.Warning(ex, "Ticket {IdTicket}: risposta AI non riuscita, il ticket resta al livello {Level}", ticket.Id, level);
+                }
+
+                // un operatore puo' aver preso il ticket durante la chiamata
+                ticket = await _ticketRepository.FindByIdAsync(model.Data.IdTicket);
+                if (ticket == null || ticket.Version != model.Data.Version)
+                    return retVal;
+
+                ticket.AiPendingSince = null;
+                ticket.Version++;
+
+                TicketCronology? row = null;
+                if (ai != null)
+                {
+                    ticket.AiAnswerCount++;
+                    row = ai.Resolved
+                        ? new TicketCronology
+                        {
+                            IdTicket = ticket.Id,
+                            RoleId = ticket.OpenerRoleId,
+                            Level = ticket.OpenerLevel,
+                            UserId = ticket.IdAspNetUsersOpener,
+                            IdAspNetUsersAuthor = null,
+                            Action = TicketAction.RisoluzioneAI,
+                            State = TicketState.Risolto,
+                            Text = ai.Text,
+                            // riaprendo si torna al livello sostituito dall'AI, senza assegnatario
+                            ReturnLevel = level,
+                            ReturnRoleId = RoleId(TicketRules.PowerRole(level)),
+                            ReturnUserId = null,
+                        }
+                        : new TicketCronology
+                        {
+                            IdTicket = ticket.Id,
+                            RoleId = ticket.CurrentRoleId,
+                            Level = ticket.CurrentLevel,
+                            UserId = ticket.CurrentIdAspNetUsers,
+                            IdAspNetUsersAuthor = null,
+                            Action = TicketAction.RisoluzioneAINonTrovata,
+                            State = ticket.State,
+                            Text = ai.Text,
+                        };
+
+                    await _ticketCronologyRepository.CreateAsync(row, false);
+                    foreach (var d in documents.Where(d => ai.UsedDocumentIds.Contains(d.Id)))
+                        await _ticketCronologyDocumentRepository.CreateAsync(new TicketCronologyDocument { TicketCronologyNavigation = row, IdDocument = d.Id, Titolo = d.Titolo }, false);
+
+                    ticket.CurrentLevel = row.Level;
+                    ticket.CurrentRoleId = row.RoleId;
+                    ticket.CurrentIdAspNetUsers = row.UserId;
+                    ticket.State = row.State;
+                }
+
+                // salva anche cronologia e documenti aggiunti sopra
+                await _ticketRepository.UpdateAsync(ticket);
+
+                await Notify(new TicketUser(), ticket, row?.Action ?? TicketAction.Inoltro, new List<string>());
 
                 return retVal;
             }, isSubProcess);
@@ -800,66 +932,61 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.SupportTicke
         }
 
         /*
-         Righe di un passaggio verso l'alto (apertura o inoltro) fino al livello "next".
-         Se il tipo lo prevede (e non si sale dal DEV al SuperUser) si tenta prima la risoluzione AI:
-         se risolve, il ticket torna a chi ha aperto come Risolto invece di restare al livello superiore.
+         Riga di un passaggio verso l'alto (apertura o inoltro) fino al livello "next".
+         Il contatore delle risposte AI riparte a ogni nuovo livello; se il livello ha l'AI attiva per il tipo e dei
+         documenti, il ticket arriva con la risposta automatica in corso (AiPendingSince): la chiamata parte in
+         background dopo il salvataggio (StartAi).
         */
         private async Task<List<(TicketCronology row, List<TicketAttachModel> attach)>> SalitaRows(TicketUser user, Ticket ticket, TypeLevels type, TicketLevel next,
-                                                                                                    string? text, List<TicketAttachModel> attach, List<TicketCronology> cronology)
+                                                                                                    string? text, List<TicketAttachModel> attach)
         {
             var inoltro = Row(user, ticket, TicketAction.Inoltro, next, RoleId(TicketRules.PowerRole(next)), null, TicketState.Aperto, text);
-            var rows = new List<(TicketCronology row, List<TicketAttachModel> attach)> { (inoltro, attach) };
 
-            if (type.Type.AiResolution && next != TicketLevel.SuperUser)
+            if (ticket.AiLevel != next)
             {
-                var ai = await AiResolve(ticket, next, cronology);
-                if (ai != null && ai.Resolved)
-                {
-                    var resolution = new TicketCronology
-                    {
-                        IdTicket = ticket.Id,
-                        TicketNavigation = ticket.Id == 0 ? ticket : null,
-                        RoleId = ticket.OpenerRoleId,
-                        Level = ticket.OpenerLevel,
-                        UserId = ticket.IdAspNetUsersOpener,
-                        IdAspNetUsersAuthor = null,
-                        Action = TicketAction.RisoluzioneAI,
-                        State = TicketState.Risolto,
-                        Text = ai.Text,
-                        // riaprendo si va al livello sostituito dall'AI, senza assegnatario
-                        ReturnLevel = next,
-                        ReturnRoleId = inoltro.RoleId,
-                        ReturnUserId = null,
-                    };
-                    rows.Add((resolution, ai.TicketAttach ?? new List<TicketAttachModel>()));
-                }
+                ticket.AiLevel = next;
+                ticket.AiAnswerCount = 0;
             }
+            ticket.AiPendingSince = await AiCanTry(ticket, type, next) ? DateTime.Now : null;
 
-            return rows;
+            return new List<(TicketCronology row, List<TicketAttachModel> attach)> { (inoltro, attach) };
         }
 
-        // risoluzione automatica AI: un errore non blocca mai il passaggio
-        private async Task<TicketAiResolveOutModel?> AiResolve(Ticket ticket, TicketLevel next, List<TicketCronology> cronology)
+        /*
+         Risposta AI possibile all'arrivo al livello: mai verso il SuperUser (dal DEV) ne' sui ticket del SuperUser,
+         AI attiva per il tipo al livello (impostazione effettiva), tentativi non esauriti, almeno un documento.
+        */
+        private async Task<bool> AiCanTry(Ticket ticket, TypeLevels type, TicketLevel level)
         {
-            try
+            await Task.CompletedTask;
+            if (level == TicketLevel.SuperUser || ticket.OpenerLevel == TicketLevel.SuperUser)
+                return false;
+
+            var setting = _ticketAiKnowledge.Setting(ticket, level);
+            if (!setting.AiEnabled || (ticket.AiLevel == level && ticket.AiAnswerCount >= setting.AiMaxAttempts))
+                return false;
+
+            return _ticketAiKnowledge.Documents(ticket, type.Type, level).Count > 0;
+        }
+
+        // la risposta in corso scade dopo il timeout del provider + 2 minuti (lavoro perso, es. server riavviato)
+        private bool AiPendingActive(Ticket ticket)
+        {
+            if (ticket.AiPendingSince == null)
+                return false;
+            int timeout = int.TryParse(_configuration["AI:TimeoutSeconds"], out int s) && s > 0 ? s : 100;
+            return ticket.AiPendingSince.Value.AddSeconds(timeout + 120) > DateTime.Now;
+        }
+
+        // avvia in background la risposta AI della versione appena salvata
+        private void StartAi(Ticket ticket)
+        {
+            var request = new TicketAiRunInModel { IdTicket = ticket.Id, Version = ticket.Version };
+            RunInBackground(async scope =>
             {
-                var request = new GenericRequest<TicketAiResolveInModel>(new TicketAiResolveInModel
-                {
-                    IdTicket = ticket.Id,
-                    IdTicketType = ticket.IdTicketType,
-                    DestinationLevel = next,
-                    Oggetto = ticket.Oggetto,
-                    Text = ticket.Text,
-                    TicketCronology = _mapper.Map<List<TicketCronologyModel>>(cronology),
-                });
-                var res = await _ticketAiResolverService.TicketAiResolve(request, true);
-                return res.Data;
-            }
-            catch (Exception ex)
-            {
-                Log.Warning(ex, "Ticket {IdTicket}: risoluzione AI non riuscita, il ticket passa al livello {Level}", ticket.Id, next);
-                return null;
-            }
+                var service = scope.ServiceProvider.GetRequiredService<ITicketService>();
+                await service.TicketAiRun(new GenericRequest<TicketAiRunInModel>(request), true);
+            });
         }
 
         #endregion
@@ -1134,8 +1261,10 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.SupportTicke
 
             var names = UserNames(tickets.Select(t => t.IdAspNetUsersOpener).Concat(tickets.Where(t => t.CurrentIdAspNetUsers != null).Select(t => t.CurrentIdAspNetUsers!)));
             var types = TypeDescriptions(tickets.Select(t => t.IdTicketType));
+            var pending = tickets.Where(AiPendingActive).Select(t => t.Id).ToHashSet();
             foreach (var t in retVal)
             {
+                t.AiPending = pending.Contains(t.Id);
                 t.OpenerUserName = names.GetValueOrDefault(t.IdAspNetUsersOpener) ?? string.Empty;
                 t.CurrentUserName = t.CurrentIdAspNetUsers != null ? names.GetValueOrDefault(t.CurrentIdAspNetUsers) : null;
                 t.TipoDescrizione = types.GetValueOrDefault(t.IdTicketType) ?? string.Empty;
@@ -1166,6 +1295,14 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.SupportTicke
             retVal.OpenerUserName = names.GetValueOrDefault(ticket.IdAspNetUsersOpener) ?? string.Empty;
             retVal.CurrentUserName = ticket.CurrentIdAspNetUsers != null ? names.GetValueOrDefault(ticket.CurrentIdAspNetUsers) : null;
             retVal.TipoDescrizione = types.GetValueOrDefault(ticket.IdTicketType) ?? string.Empty;
+            retVal.AiPending = AiPendingActive(ticket);
+
+            // documenti usati dall'AI: per chi gestisce il ticket, non per chi l'ha aperto
+            bool opener = ticket.IdAspNetUsersOpener == user.UserId;
+            var documents = _ticketCronologyDocumentRepository.FindAll(x => !opener && cronologyIds.Contains(x.IdTicketCronology))
+                                                              .OrderBy(x => x.Id)
+                                                              .Select(x => new { x.IdTicketCronology, x.Titolo })
+                                                              .ToList();
 
             retVal.TicketCronology = _mapper.Map<List<TicketCronologyModel>>(cronology);
             foreach (var c in retVal.TicketCronology)
@@ -1176,6 +1313,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.SupportTicke
                 c.ReturnUserName = row.ReturnUserId != null ? names.GetValueOrDefault(row.ReturnUserId) : null;
                 c.TipoDescrizione = c.IdTicketType != null ? types.GetValueOrDefault(c.IdTicketType.Value) : null;
                 c.TicketAttach = attach.Where(a => a.IdTicketCronology == c.Id).Select(a => a.Model).ToList();
+                c.Document = documents.Where(d => d.IdTicketCronology == c.Id).Select(d => d.Titolo).ToList();
             }
 
             retVal.Actions = await Actions(user, ticket, await TypeWithLevels(ticket.IdTicketType), cronology);
@@ -1196,5 +1334,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.SupportTicke
         Task<GenericResult<TicketActionOutModel>> TicketExecute(GenericRequest<TicketActionInModel> model, Boolean isSubProcess);
         Task<GenericResult<TicketAttachGetOutModel>> TicketAttachGet(GenericRequest<TicketAttachGetInModel> model, Boolean isSubProcess);
         Task<GenericResult<TicketCompanyMoveOutModel>> TicketCompanyMove(GenericRequest<TicketCompanyMoveInModel> model, Boolean isSubProcess);
+        // solo per il lavoro in background avviato dal servizio stesso (nessun endpoint)
+        Task<GenericResult<TicketAiRunOutModel>> TicketAiRun(GenericRequest<TicketAiRunInModel> model, Boolean isSubProcess);
     }
 }

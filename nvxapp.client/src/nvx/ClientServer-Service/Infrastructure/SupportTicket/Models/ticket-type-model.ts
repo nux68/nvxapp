@@ -7,7 +7,6 @@ export class TicketTypeListModel {
   public applicationType: ApplicationType | null = null;
   public codice: string = '';
   public descrizione: string = '';
-  public aiResolution: boolean = false;
   public ordine: number = 0;
   public active: boolean = true;
   public level: TicketLevel[] = [];
@@ -18,7 +17,6 @@ export class TicketTypeEditModel {
   public applicationType: ApplicationType | null = null;
   public codice: string = '';
   public descrizione: string = '';
-  public aiResolution: boolean = false;
   public ordine: number = 0;
   public active: boolean = true;
   public level: TicketLevel[] = [];
