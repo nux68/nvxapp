@@ -102,11 +102,12 @@
             <!-- Modalità testo: campo a pillola con invio integrato -->
             @if (modalType === 'text') {
               <div class="nvx-composer">
-                <ion-textarea class="chat-input" [(ngModel)]="newMessage"
+                <!-- niente ngModel: il testo si legge fuori da Angular (vedi chatInput nel componente) -->
+                <ion-textarea #chatInput class="chat-input"
                   [placeholder]="'components.fabMenu.messagePlaceholder' | transloco"
                   rows="1"
                   auto-grow="true"
-                  (keydown.enter)="sendMessage()">
+                  (keydown.enter)="$event.preventDefault(); sendMessage()">
                 </ion-textarea>
                 <ion-button class="nvx-send" shape="round"
                   (click)="sendMessage()"
