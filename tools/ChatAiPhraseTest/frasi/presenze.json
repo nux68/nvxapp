@@ -8,6 +8,9 @@
   { "frase": "Rossi è entrato alle 8 e mezza", "intent": "RegisterClocking", "slots": { "employeeName": "Rossi Mario", "time": "08:30" } },
   { "frase": "timbra Russi alle 8", "intent": "RegisterClocking", "slots": { "employeeName": "Rossi Mario", "time": "08:00" } },
   { "frase": "Bianchi ieri ha fatto due ore di permesso", "intent": "RegisterJustification", "slots": { "employeeName": "Bianchi Luca", "hours": "02:00", "date": "=ieri" } },
+  // "mettimi" con un nome: il "mi" vuol dire "per me", il dipendente e' il nome; senza ore = giornata intera
+  { "frase": "mettimi in ferie Verdi oggi", "intent": "RegisterJustification", "slots": { "employeeName": "Verdi Giuseppe", "date": "=oggi" } },
+  { "frase": "segnami Rossi in malattia domani", "intent": "RegisterJustification", "slots": { "employeeName": "Rossi Mario", "date": "=domani" } },
   { "frase": "aggiungi un'ora e mezza di straordinario a Verdi per lunedì", "intent": "RegisterCausale", "slots": { "employeeName": "Verdi Giuseppe", "hours": "01:30", "date": "=lunedì" } },
   { "frase": "metti in ferie Verdi dal 3 al 7 novembre", "intent": "RegisterJustificationPeriod", "slots": { "employeeName": "Verdi Giuseppe", "from": "=3 novembre", "to": "=7 novembre" } },
   { "frase": "ricalcola le presenze di Rossi di ottobre", "intent": "CalcolaGiorno", "slots": { "employeeName": "Rossi Mario" } },

@@ -346,7 +346,7 @@
     <value>Leave</value>
   </data>
   <data name="ChatRegisterJustificationDescription" xml:space="preserve">
-    <value>records a justified absence (holiday, leave, ROL, sickness, etc.) for an employee on a date, with the hours.</value>
+    <value>records a justified absence (holiday, leave, ROL, sickness, etc.) for an employee on a date, with the given hours or full day.</value>
   </data>
   <data name="ChatRegisterJustificationTypeQuestion" xml:space="preserve">
     <value>Which leave type? (e.g. Ferie, Malattia, ROL)</value>

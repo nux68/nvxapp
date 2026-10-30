@@ -6,6 +6,7 @@ using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_Anagrafica
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_AnagraficaService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_GiustificativiService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_GiustificativiService.Models;
+using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_GG_RichiestaService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_GiustificativiService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Par_GiustificativiService.Models;
 using nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Models;
@@ -14,23 +15,27 @@ using System.Text;
 
 namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Commands.Handlers
 {
-    // Registra un giustificativo (es. ferie, malattia, ROL) per un dipendente in una data.
+    // Registra un giustificativo (es. ferie, malattia, ROL) per un dipendente in una data,
+    // con le ore indicate o, se non indicate, a giornata intera (ore teoriche del giorno).
     // Cerca il tipo di giustificativo per nome/codice tra i Par_Giustificativi aziendali,
     // poi salva il record tramite Dip_GG_GiustificativiPut.
     public class RegisterJustificationHandler : BaseCommandDipeHandler
     {
         private readonly IntentDefinition _intentDefinition;
         private readonly IDip_GG_GiustificativiService _dip_GG_GiustificativiService;
+        private readonly IDip_GG_RichiestaService _dip_GG_RichiestaService;
         private readonly IPar_GiustificativiService _par_GiustificativiService;
 
         public RegisterJustificationHandler(
             IDip_AnagraficaService dip_AnagraficaService,
             IDip_GG_GiustificativiService dip_GG_GiustificativiService,
+            IDip_GG_RichiestaService dip_GG_RichiestaService,
             IPar_GiustificativiService par_GiustificativiService,
             IChatUserContext chatUserContext
         ) : base(dip_AnagraficaService, chatUserContext)
         {
             _dip_GG_GiustificativiService = dip_GG_GiustificativiService;
+            _dip_GG_RichiestaService      = dip_GG_RichiestaService;
             _par_GiustificativiService    = par_GiustificativiService;
 
             var sb_Date = new StringBuilder();
@@ -70,8 +75,9 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                     {
                         Name               = "hours",
                         Type               = "HH:mm o numero testuale",
-                        Required           = true,
-                        PromptDescription  = HoursSlotHelper.PromptDescription,
+                        // non indicate: giornata intera ("metti in ferie Rossi oggi")
+                        Required           = false,
+                        PromptDescription  = "solo se indicate (altrimenti giornata intera). " + HoursSlotHelper.PromptDescription,
                         Normalizer         = HoursSlotHelper.Normalize,
                         Question           = AttendanceTrackingMessages.Get("ChatRegisterJustificationHoursQuestion"),
                         Label              = AttendanceTrackingMessages.Get("ChatHoursLabel"),
@@ -115,7 +121,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
         {
             var employeeName  = slots.GetValueOrDefault("employeeName", "");
             var justification = slots.GetValueOrDefault("justification", "");
-            var hoursSlot     = slots.GetValueOrDefault("hours", "0");
+            var hoursSlot     = slots.GetValueOrDefault("hours");
             var dateSlot      = slots.GetValueOrDefault("date", "oggi");
 
             // --- Risolvi dipendente ---
@@ -157,12 +163,20 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
             // --- Risolvi data ---
             DateTime competenzaDate = ChatSlotWords.ParseDateOrToday(dateSlot);
 
-            // --- Risolvi ore ---
-            HoursSlotHelper.TryParse(hoursSlot, out var oreSpan);
+            var idRapportoLavoro = dipendente.Dip_RapportoLavoro[0].Id;
+
+            // --- Risolvi ore: quelle indicate, oppure giornata intera con le ore teoriche del giorno ---
+            bool giornataIntera = !HoursSlotHelper.TryParse(hoursSlot ?? string.Empty, out var oreSpan);
+            if (giornataIntera)
+            {
+                var giorni = _dip_GG_RichiestaService.GiorniGiustificativo(idRapportoLavoro, competenzaDate.Date, competenzaDate.Date, parGiustificativo.Id, null, true);
+                if (giorni.Count == 0)
+                    return CommandResult.Fail(AttendanceTrackingMessages.Get("RequestedPeriodNoWorkingDays"));
+                oreSpan = giorni.Values.First();
+            }
             var oreLabel = $"{(int)oreSpan.TotalHours:D2}:{oreSpan.Minutes:D2}";
 
             // --- Salva giustificativo ---
-            var idRapportoLavoro = dipendente.Dip_RapportoLavoro[0].Id;
 
             var model = new Dip_GG_GiustificativiModel
             {
@@ -170,7 +184,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                 IdDip_RapportoLavoro = idRapportoLavoro,
                 Data                 = competenzaDate,
                 IdPar_Giustificativi = parGiustificativo.Id,
-                InputType            = JustificationInputType.Manual,
+                InputType            = giornataIntera ? JustificationInputType.AllDay : JustificationInputType.Manual,
                 Hours                = oreSpan,
                 RichiestaStato       = StatoRichiesta.Diretta
             };
