@@ -1,4 +1,4 @@
-import { Directive, Input, HostListener, OnDestroy } from '@angular/core';
+import { Directive, ElementRef, Input, NgZone, OnDestroy } from '@angular/core';
 import { HoverPopupData } from './hover-popup.component';
 import { HoverPopupService } from './hover-popup.service';
 
@@ -12,11 +12,26 @@ export class HoverPopupDirective implements OnDestroy {
 
   private showDelay = 500;
   private delayTimer: ReturnType<typeof setTimeout> | null = null;
+  private readonly removeListeners: (() => void)[] = [];
 
-  constructor(private popupService: HoverPopupService) { }
+  constructor(private popupService: HoverPopupService,
+              elementRef: ElementRef<HTMLElement>,
+              zone: NgZone) {
+    // eventi del mouse fuori da Angular: con @HostListener ogni movimento sopra un elemento con il popup
+    // (decine per pagina, es. Calendario HR) aggiornava tutta l'app. Il popup si aggiorna da solo (HoverPopupService)
+    zone.runOutsideAngular(() => {
+      const el = elementRef.nativeElement;
+      const on = (evento: string, handler: (e: MouseEvent) => void) => {
+        el.addEventListener(evento, handler as EventListener);
+        this.removeListeners.push(() => el.removeEventListener(evento, handler as EventListener));
+      };
+      on('mouseenter', e => this.onMouseEnter(e));
+      on('mousemove', e => this.onMouseMove(e));
+      on('mouseleave', () => this.onMouseLeave());
+    });
+  }
 
-  @HostListener('mouseenter', ['$event'])
-  onMouseEnter(event: MouseEvent): void {
+  private onMouseEnter(event: MouseEvent): void {
     if (!this.appHoverPopupEnabled) return;
     this.clearTimer();
     this.delayTimer = setTimeout(() => {
@@ -24,20 +39,19 @@ export class HoverPopupDirective implements OnDestroy {
     }, this.showDelay);
   }
 
-  @HostListener('mousemove', ['$event'])
-  onMouseMove(event: MouseEvent): void {
+  private onMouseMove(event: MouseEvent): void {
     if (this.delayTimer) {
       this.popupService.updatePosition(event.clientX, event.clientY);
     }
   }
 
-  @HostListener('mouseleave')
-  onMouseLeave(): void {
+  private onMouseLeave(): void {
     this.clearTimer();
     this.popupService.hide();
   }
 
   ngOnDestroy(): void {
+    this.removeListeners.forEach(remove => remove());
     this.clearTimer();
     this.popupService.hide();
   }
