@@ -11,7 +11,6 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.SupportTicke
         public ApplicationType? ApplicationType { get; set; }
         public string Codice { get; set; } = string.Empty;
         public string Descrizione { get; set; } = string.Empty;
-        public bool AiResolution { get; set; }
         public int Ordine { get; set; }
         public bool Active { get; set; }
         public List<TicketLevel> Level { get; set; } = new List<TicketLevel>();
@@ -24,7 +23,6 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.SupportTicke
         public ApplicationType? ApplicationType { get; set; }
         public string Codice { get; set; } = string.Empty;
         public string Descrizione { get; set; } = string.Empty;
-        public bool AiResolution { get; set; }
         public int Ordine { get; set; }
         public bool Active { get; set; } = true;
         public List<TicketLevel> Level { get; set; } = new List<TicketLevel>();

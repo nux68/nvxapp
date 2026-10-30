@@ -810,7 +810,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.SupportTicke
             var inoltro = Row(user, ticket, TicketAction.Inoltro, next, RoleId(TicketRules.PowerRole(next)), null, TicketState.Aperto, text);
             var rows = new List<(TicketCronology row, List<TicketAttachModel> attach)> { (inoltro, attach) };
 
-            if (type.Type.AiResolution && next != TicketLevel.SuperUser)
+            if (false && next != TicketLevel.SuperUser) // TODO 11.3
             {
                 var ai = await AiResolve(ticket, next, cronology);
                 if (ai != null && ai.Resolved)

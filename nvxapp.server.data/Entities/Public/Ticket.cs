@@ -9,6 +9,7 @@ namespace nvxapp.server.data.Entities.Public
           (vuoto per i ticket del SuperUser); individua il nodo dei livelli e filtra i ticket dei figli
         - Current*: copia dell'ultima riga della cronologia (livello e assegnatario correnti)
         - Version : cresce a ogni passaggio, per rifiutare le azioni fatte su una versione superata
+        - Ai*     : risposta automatica AI (nvxapp.server/docs/ANALISI_DOCUMENTAZIONE_AI.md)
      Nessuna relazione verso Company, Dealer, FinancialAdvisor o AspNetUsers: i contesti degli applicativi
      mappano Company e scoprirebbero la tabella; la cronologia resta anche se l'azienda o l'utente spariscono.
     */
@@ -52,6 +53,12 @@ namespace nvxapp.server.data.Entities.Public
         public string? CurrentIdAspNetUsers { get; set; }
 
         public int Version { get; set; }
+
+        // risposta automatica AI: tentativi fatti al livello AiLevel (si azzerano salendo a un nuovo livello)
+        // e risposta in corso in background (null = nessuna)
+        public int AiAnswerCount { get; set; }
+        public TicketLevel? AiLevel { get; set; }
+        public DateTime? AiPendingSince { get; set; }
 
         public ICollection<TicketCronology>? TicketCronology { get; set; }
     }

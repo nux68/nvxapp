@@ -8,10 +8,9 @@ namespace nvxapp.server.data.Entities.Public
         - ApplicationType: applicativo a cui si riferisce (null = Generale)
         - Codice         : univoco
         - Descrizione    : una sola, mostrata uguale in tutte le lingue (come gli altri dati delle tabelle)
-        - AiResolution   : a ogni passaggio verso l'alto si tenta la risoluzione automatica AI
         - Ordine         : ordinamento nelle liste
         - Active         : i tipi disattivati non si propongono in apertura ma restano sui ticket esistenti
-     Livelli in cui il tipo e' abilitato in TicketTypeLevel.
+     Livelli in cui il tipo e' abilitato in TicketTypeLevel; risposta automatica AI per livello e nodo in TicketTypeAiSetting.
     */
     public class TicketType : BaseEntity
     {
@@ -24,8 +23,6 @@ namespace nvxapp.server.data.Entities.Public
         [Required]
         [MaxLength(100)]
         public string Descrizione { get; set; } = string.Empty;
-
-        public bool AiResolution { get; set; }
 
         public int Ordine { get; set; }
 

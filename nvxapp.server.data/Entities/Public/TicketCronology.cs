@@ -48,5 +48,8 @@ namespace nvxapp.server.data.Entities.Public
         public int? IdTicketType { get; set; }
 
         public ICollection<TicketAttach>? TicketAttach { get; set; }
+
+        // documenti usati dall'AI (righe RisoluzioneAI e RisoluzioneAINonTrovata)
+        public ICollection<TicketCronologyDocument>? TicketCronologyDocument { get; set; }
     }
 }
