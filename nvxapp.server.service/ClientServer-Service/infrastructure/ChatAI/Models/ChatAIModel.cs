@@ -787,6 +787,12 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI.Model
         // Slot che indica una persona: se l'utente parla di sé ("timbrami", "le mie ore") il LLM
         // restituisce ChatSelf.Token e il Validator dell'handler lo risolve nell'utente corrente.
         public bool IsPerson { get; set; }
+
+        // Slot data di INIZIO di un periodo: nome dello slot data di fine dello stesso comando.
+        // Un mese ("le ferie di ottobre") vale dal primo all'ultimo giorno: l'inizio prende il primo giorno
+        // e la fine, se l'utente non la dice, l'ultimo; nello slot di fine un mese vale l'ultimo giorno.
+        // BaseCommandHandler.BuildSlots lo imposta da solo per la coppia di slot data "from"/"to".
+        public string? PeriodEndSlot { get; set; }
     }
 
     public class IntentDefinition
