@@ -53,12 +53,25 @@ export class TimeSheetService {
 
   /** "giovedì 05 marzo" nella lingua dell'interfaccia */
   private giornoLungo(data: string | Date): string {
-    return new Date(data).toLocaleDateString(this.languageService.locale, { weekday: 'long', day: '2-digit', month: 'long' });
+    return this.formato('giornoLungo', { weekday: 'long', day: '2-digit', month: 'long' }).format(new Date(data));
   }
 
   /** "08:30" nella lingua dell'interfaccia */
   private oraBreve(data: string | Date): string {
-    return new Date(data).toLocaleTimeString(this.languageService.locale, { hour: '2-digit', minute: '2-digit' });
+    return this.formato('oraBreve', { hour: '2-digit', minute: '2-digit' }).format(new Date(data));
+  }
+
+  // formattatori Intl in memoria, per lingua: toLocaleDateString/toLocaleTimeString con le opzioni ne creano uno
+  // a ogni chiamata (lento), e i dati dei popup dei calendari si ricalcolano a ogni aggiornamento della pagina
+  private readonly formati = new Map<string, Intl.DateTimeFormat>();
+  private formato(nome: string, opzioni: Intl.DateTimeFormatOptions): Intl.DateTimeFormat {
+    const chiave = `${nome}|${this.languageService.locale}`;
+    let f = this.formati.get(chiave);
+    if (!f) {
+      f = new Intl.DateTimeFormat(this.languageService.locale, opzioni);
+      this.formati.set(chiave, f);
+    }
+    return f;
   }
 
 
