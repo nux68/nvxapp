@@ -367,11 +367,12 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
                 ? SlotNormalizers.DateEnd
                 : SlotNormalizers.ForType(slotDef.Type));
 
-        // Inizio di un periodo detto come mese ("le ferie di ottobre"): se la fine non c'e', e' l'ultimo giorno del mese
+        // Inizio di un periodo detto come mese o settimana ("le ferie di ottobre", "la prima settimana di ottobre"):
+        // se la fine non c'e', e' l'ultimo giorno del periodo
         private static void FillPeriodEnd(ActionEntry entry, SlotDefinition slotDef, string value)
         {
             if (string.IsNullOrEmpty(slotDef.PeriodEndSlot) || entry.Slots.ContainsKey(slotDef.PeriodEndSlot)) return;
-            if (SlotNormalizers.TryParseMonth(value, DateTime.Today, out _, out var end))
+            if (SlotNormalizers.TryParsePeriod(value, DateTime.Today, out _, out var end))
                 entry.Slots[slotDef.PeriodEndSlot] = end.ToString(SlotNormalizers.DateFormat, System.Globalization.CultureInfo.InvariantCulture);
         }
 

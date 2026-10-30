@@ -20,13 +20,14 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             _ => null
         };
 
-        // espressione di data -> "dd/MM/yyyy" (null se non riconosciuta); un mese ("ottobre") vale il primo giorno
+        // espressione di data -> "dd/MM/yyyy" (null se non riconosciuta); un periodo ("ottobre", "la prima settimana
+        // di ottobre") vale il primo giorno
         public static string? Date(string value) =>
             TryParseDate(value, DateTime.Today, out var d) ? d.ToString(DateFormat, CultureInfo.InvariantCulture) : null;
 
-        // fine di un periodo: un mese ("fino a ottobre") vale l'ultimo giorno, il resto come Date
+        // fine di un periodo: un mese o una settimana ("fino a ottobre") vale l'ultimo giorno, il resto come Date
         public static string? DateEnd(string value) =>
-            TryParseMonth(value, DateTime.Today, out _, out var end) ? end.ToString(DateFormat, CultureInfo.InvariantCulture) : Date(value);
+            TryParsePeriod(value, DateTime.Today, out _, out var end) ? end.ToString(DateFormat, CultureInfo.InvariantCulture) : Date(value);
 
         // espressione di orario -> "HH:mm" (null se non riconosciuta)
         public static string? Time(string value) =>
@@ -141,8 +142,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
             if (d.Success)
                 return TryDate(today.Year, today.Month, int.Parse(d.Groups["d"].Value), out result);
 
-            // un mese intero ("ottobre", "il mese scorso"): il primo giorno
-            if (TryParseMonth(text, today, out result, out _))
+            // un periodo ("ottobre", "il mese scorso", "la prima settimana di ottobre"): il primo giorno
+            if (TryParsePeriod(text, today, out result, out _))
                 return true;
 
             return false;
@@ -182,6 +183,68 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
 
             start = month.Value;
             end = start.AddMonths(1).AddDays(-1);
+            return true;
+        }
+
+        // Un periodo di piu' giorni: un mese (TryParseMonth) o una settimana (TryParseWeek)
+        public static bool TryParsePeriod(string? text, DateTime today, out DateTime start, out DateTime end) =>
+            TryParseWeek(text, today, out start, out end) || TryParseMonth(text, today, out start, out end);
+
+        private static readonly string[] _weekPrefixes =
+ { "durante la ", "per tutta la ", "per la ", "nella ", "la ", "l'", "a partire dalla ", "dalla ", "fino alla ", "entro la ",
+              "during the ", "for the ", "in the ", "the ", "from the ", "until the ", "through the ", "by the " };
+
+        private static readonly Dictionary<string, int> _weekOrdinals = new()
+        {
+            ["prima"] = 1, ["1a"] = 1, ["1ª"] = 1, ["seconda"] = 2, ["2a"] = 2, ["2ª"] = 2, ["terza"] = 3, ["3a"] = 3, ["3ª"] = 3,
+            ["quarta"] = 4, ["4a"] = 4, ["4ª"] = 4, ["quinta"] = 5, ["5a"] = 5, ["5ª"] = 5, ["ultima"] = -1,
+            ["first"] = 1, ["1st"] = 1, ["second"] = 2, ["2nd"] = 2, ["third"] = 3, ["3rd"] = 3, ["fourth"] = 4, ["4th"] = 4,
+            ["fifth"] = 5, ["5th"] = 5, ["last"] = -1,
+        };
+
+        // Una settimana, da lunedi' a domenica:
+        // - "questa settimana", "la prossima settimana", "la settimana scorsa" (this/next/last week);
+        // - "la prima/seconda/.../ultima settimana di ottobre [2026]" (first ... last week of October): settimane del
+        //   calendario tagliate ai confini del mese. Come per le settimane ISO, una settimana e' del mese in cui cade
+        //   il suo giovedi': la prima di novembre 2026 (1 novembre domenica) e' 2-8 novembre, la prima di ottobre 2026
+        //   (1 ottobre giovedi') e' 1-4 ottobre. Il mese e' quello di TryParseMonth ("di ottobre", "del mese prossimo").
+        public static bool TryParseWeek(string? text, DateTime today, out DateTime start, out DateTime end)
+        {
+            start = end = default;
+            var t = StripPrefixes(Clean(text), _weekPrefixes);
+            if (t.Length == 0) return false;
+
+            var lunedi = ResolveWeekday(today, DayOfWeek.Monday, string.Empty);
+            DateTime? settimana = t switch
+            {
+                "questa settimana" or "settimana corrente" or "this week" => lunedi,
+                "prossima settimana" or "settimana prossima" or "next week" => lunedi.AddDays(7),
+                "settimana scorsa" or "scorsa settimana" or "settimana passata" or "last week" or "previous week" => lunedi.AddDays(-7),
+                _ => null
+            };
+            if (settimana != null)
+            {
+                start = settimana.Value;
+                end = start.AddDays(6);
+                return true;
+            }
+
+            var w = Regex.Match(t, @"^(?<n>\S+)\s+(?:settimana|week)\s+(?:of\s+)?(?<mese>.+)$");
+            if (!w.Success || !_weekOrdinals.TryGetValue(w.Groups["n"].Value, out var n)) return false;
+            if (!TryParseMonth(w.Groups["mese"].Value, today, out var inizioMese, out var fineMese)) return false;
+
+            // lunedi' della prima e dell'ultima settimana del mese (quelle con il giovedi' nel mese)
+            static DateTime Lunedi(DateTime g) => g.AddDays(-(((int)g.DayOfWeek + 6) % 7));
+            var primo = Lunedi(inizioMese);
+            if (primo.AddDays(3) < inizioMese) primo = primo.AddDays(7);
+            var ultimo = Lunedi(fineMese);
+            if (ultimo.AddDays(3) > fineMese) ultimo = ultimo.AddDays(-7);
+
+            var da = n > 0 ? primo.AddDays(7 * (n - 1)) : ultimo;
+            if (da > ultimo) return false;   // "quinta settimana" di un mese che ne ha quattro
+
+            start = da < inizioMese ? inizioMese : da;
+            end = da.AddDays(6) > fineMese ? fineMese : da.AddDays(6);
             return true;
         }
 
