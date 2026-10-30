@@ -310,7 +310,7 @@ Decisioni tecniche prese nell'implementazione:
 |---|---|---|
 | 11.1 Dati | 1–6 | fatto |
 | 11.2 Server: documenti e impostazioni | 7–12 | fatto |
-| 11.3 Server: flusso AI dei ticket | 13–19 | da fare |
+| 11.3 Server: flusso AI dei ticket | 13–19 | fatto |
 | 11.4 Client | 20–27 | da fare |
 | 11.5 Verifica | 28–30 | da fare |
 
@@ -331,13 +331,13 @@ Decisioni tecniche prese nell'implementazione:
 - [x] 12. Messaggi `InfrastructureMessages` it/en, `appsettings` (`AI:TicketLLM`, `AI:TicketMaxChars`, `AI:TicketMaxTokens`)
 
 ### 11.3 Server: flusso AI dei ticket
-- [ ] 13. Impostazione effettiva e documenti per livello di destinazione, con ereditarietà (`TicketAiKnowledge`)
-- [ ] 14. `SalitaRows`: contatore per livello, `AiPendingSince` al posto della chiamata sincrona
-- [ ] 15. Lavoro in background (`TicketAiRun`): versione, esito, cronologia, documenti usati, notifiche
-- [ ] 16. `TicketAiResolverService` reale con `LlmClient` (prompt, schema JSON, budget dei documenti)
-- [ ] 17. Riapertura dopo una risposta AI: nuovo tentativo se il limite lo consente
-- [ ] 18. Ogni azione azzera la risposta in corso; nessuna notifica agli operatori mentre è in corso
-- [ ] 19. Dettaglio: `AiPending`, documenti usati sulle righe AI
+- [x] 13. Impostazione effettiva e documenti per livello di destinazione, con ereditarietà (`TicketAiKnowledge`)
+- [x] 14. `SalitaRows`: contatore per livello, `AiPendingSince` al posto della chiamata sincrona
+- [x] 15. Lavoro in background (`TicketAiRun`): versione, esito, cronologia, documenti usati, notifiche
+- [x] 16. `TicketAiResolverService` reale con `LlmClient` (prompt, schema JSON, budget dei documenti)
+- [x] 17. Riapertura dopo una risposta AI: nuovo tentativo se il limite lo consente
+- [x] 18. Ogni azione azzera la risposta in corso; nessuna notifica agli operatori mentre è in corso
+- [x] 19. Dettaglio: `AiPending`, documenti usati sulle righe AI
 
 ### 11.4 Client
 - [ ] 20. Servizi e modelli `Document`, `TicketTypeAiSetting`
@@ -361,3 +361,4 @@ Decisioni tecniche prese nell'implementazione:
 | Data | Sezione | Lavori | Ramo | Commit |
 |---|---|---|---|---|
 | 30/10/2026 | 11.1 | 1–6, 29 | Infrastructure_Dev | b5dabcd5 |
+| 30/10/2026 | 11.2 | 7–12 | Infrastructure_Dev | 303597d2 |
