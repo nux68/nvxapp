@@ -11,6 +11,7 @@ import { Language, LanguageService, SUPPORTED_LANGUAGES } from '../../../../Util
 import { Router } from '@angular/router';
 import { IonFab } from '@ionic/angular';
 import { TranslocoService } from '@jsverse/transloco';
+import { MainMenuService } from '../../../../Utility/infrastructure/main-menu.service';
 
 @Component({
   selector: 'app-fab-menu',
@@ -76,7 +77,8 @@ export class FabMenuComponent implements OnInit, AfterViewInit {
     private toastCtrl:     ToastController,
     private navCtrl:       NavController,
     private router:        Router,
-    private transloco:     TranslocoService
+    private transloco:     TranslocoService,
+    private mainMenuService: MainMenuService
   ) {
     this.fabMenuService.fabMenuItem$.subscribe(() => {
       if (this.fab) this.fab.close();
@@ -194,19 +196,23 @@ export class FabMenuComponent implements OnInit, AfterViewInit {
           this.currentSessionId = res.data.sessionId;
         }
 
+        // Navigazione lato client se il server restituisce un payload navigate
+        const navigatePayload = res.data?.navigate
+          ?? res.data?.actionResults?.find(r => r.navigate != null)?.navigate
+          ?? null;
+
+        // nel testo della navigazione il server mette la route ("/requestlistadmin"): si mostra e si
+        // pronuncia il nome della voce di menu ("Richieste")
+        const responce = this.withPageTitle(res.data?.responce ?? '', navigatePayload?.route);
+        const speechText = this.withPageTitle(res.data?.speechText ?? '', navigatePayload?.route);
+
         // Mostra la risposta dell'assistente solo se non è vuota
-        const responce = res.data?.responce ?? '';
         if (responce.trim().length > 0) {
           this.pushMessage('Assistant', responce, res.data?.responseType);
         }
 
         // Mostra i chip di suggerimento se presenti
         this.suggestions = res.data?.suggestions ?? [];
-
-        // Navigazione lato client se il server restituisce un payload navigate
-        const navigatePayload = res.data?.navigate
-          ?? res.data?.actionResults?.find(r => r.navigate != null)?.navigate
-          ?? null;
         if (navigatePayload?.route) {
           const navOptions = navigatePayload.state ? { state: navigatePayload.state } : {};
           if (this.isModalOpen) {
@@ -232,7 +238,7 @@ export class FabMenuComponent implements OnInit, AfterViewInit {
         // risposta vocale (se il messaggio e' arrivato a voce): domanda, riepilogo in forma di frase o risultato.
         // La conferma automatica della navigazione non si annuncia: segue subito il risultato.
         if (this.lastInputVoice && !autoConfirm) {
-          this.speechOutput.speak(res.data?.speechText || responce);
+          this.speechOutput.speak(speechText || responce);
         }
 
         // comando eseguito (anche solo in parte): la pagina corrente rilegge i dati
@@ -291,6 +297,13 @@ export class FabMenuComponent implements OnInit, AfterViewInit {
 
   private pushMessage(sender: string, text: string, type: string = '') {
     this.messages.push({ sender, text, type });
+  }
+
+  // route della pagina nel testo -> nome della voce di menu nella lingua dell'utente (route non nel menu: invariato)
+  private withPageTitle(text: string, route: string | null | undefined): string {
+    if (!text || !route) return text;
+    const title = this.mainMenuService.TitoloPagina(route);
+    return title ? text.split(route).join(this.transloco.translate(title)) : text;
   }
 
   // Converte \n in <br> per la visualizzazione HTML nel template

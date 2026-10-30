@@ -12,10 +12,12 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.infrastructur
     public class NavigateHandler : BaseCommandHandler
     {
         private readonly IRouteRegistry _routeRegistry;
+        private readonly IChatUserContext _chatUserContext;
 
-        public NavigateHandler(IRouteRegistry routeRegistry)
+        public NavigateHandler(IRouteRegistry routeRegistry, IChatUserContext chatUserContext)
         {
             _routeRegistry = routeRegistry;
+            _chatUserContext = chatUserContext;
         }
 
         // Definizione creata per istanza (handler Scoped): i testi sono nella lingua della richiesta.
@@ -43,8 +45,9 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.infrastructur
                     Required          = true,
                     PromptDescription = "nome della pagina. Pagine disponibili: " +
                         "home, impersonate, login, logout, utente, " +
-                        "timbratura, richieste, calendario, richiesta giustificativo, richiesta timbratura, " +
+                        "timbratura, richieste, le mie richieste, calendario, il mio calendario, richiesta giustificativo, richiesta timbratura, " +
                         "richieste admin, calendario hr, calendario admin, utenti reparto, " +
+                        "(usa il nome come lo dice l'utente, es. \"richieste\": la pagina giusta per il suo ruolo la sceglie l'applicazione) " +
                         "export causali, statistiche attività, personale presente, piano ferie, " +
                         "giustificativi, causali, configurazione, orari, profili orari, modelli export, " +
                         "commesse, clienti, reparti, sedi, attività, competenze, " +
@@ -74,7 +77,8 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.infrastructur
             slots.TryGetValue("page", out var page);
             slots.TryGetValue("params", out var rawParams);
 
-            var route = _routeRegistry.Resolve(page);
+            // stessa voce di menu, pagina diversa secondo il ruolo (es. "richieste" per l'amministratore)
+            var route = _routeRegistry.Resolve(page, _chatUserContext.Roles);
 
             var navParams = new Dictionary<string, string>();
             if (!string.IsNullOrWhiteSpace(rawParams))
@@ -95,6 +99,7 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.infrastructur
                 Params = navParams
             };
 
+            // nel testo c'e' la route: il client la sostituisce con il nome della voce di menu
             return Task.FromResult(CommandResult.Ok(ChatAIMessages.Get("NavigateResult", route), payload));
         }
     }

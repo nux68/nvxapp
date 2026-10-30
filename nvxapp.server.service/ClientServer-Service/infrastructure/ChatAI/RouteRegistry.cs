@@ -8,19 +8,33 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
     public class RouteRegistry : IRouteRegistry
     {
         private readonly Dictionary<string, string> _routes;
+        private readonly List<RoleRoute> _roleRoutes = new();
 
         public RouteRegistry(IEnumerable<IRouteProvider> providers)
         {
             _routes = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
             foreach (var provider in providers)
+            {
                 foreach (var kv in provider.Routes)
                     _routes.TryAdd(kv.Key, kv.Value);   // primo provider vince in caso di duplicato
+                _roleRoutes.AddRange(provider.RoleRoutes);
+            }
         }
 
-        public string Resolve(string? page)
+        public string Resolve(string? page, IReadOnlyCollection<string>? roles = null)
         {
             if (string.IsNullOrWhiteSpace(page)) return "/home";
+
+            // pagina diversa secondo il ruolo (es. "richieste" per l'amministratore)
+            if (roles is { Count: > 0 })
+            {
+                var roleRoute = _roleRoutes.FirstOrDefault(r =>
+                    r.Name.Equals(page.Trim(), StringComparison.OrdinalIgnoreCase) &&
+                    r.Roles.Any(x => roles.Contains(x, StringComparer.OrdinalIgnoreCase)));
+                if (roleRoute != null)
+                    return roleRoute.Route;
+            }
 
             if (_routes.TryGetValue(page.Trim(), out var route))
                 return route;
