@@ -199,6 +199,11 @@ export class AppComponent implements OnInit {
     return p.component === 'TicketListPageComponent' ? this.ticketNotifierService.inCarico() : (p.badge?.() ?? 0);
   }
 
+  // somma dei contatori delle voci di una sezione, mostrata accanto all'intestazione (es. "Assistenza")
+  public groupBadge(group: GroupMainMenuItem): number {
+    return group.menuItem.reduce((totale, p) => totale + this.menuBadge(p), 0);
+  }
+
   public showPage4SuperUser(component: string): boolean {
     return true;
   }
