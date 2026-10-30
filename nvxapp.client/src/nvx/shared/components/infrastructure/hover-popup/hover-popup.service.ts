@@ -24,6 +24,8 @@ export class HoverPopupService {
 
     this.appRef.attachView(this.componentRef.hostView);
     document.body.appendChild(this.componentRef.location.nativeElement);
+    // chiamato anche fuori da Angular (HoverPopupDirective): il popup si disegna subito
+    this.componentRef.changeDetectorRef.detectChanges();
   }
 
   updatePosition(x: number, y: number): void {
