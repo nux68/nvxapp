@@ -80,7 +80,9 @@
     "logout": "Logout",
     "userData": "User Data",
     "tickets": "Support",
-    "ticketTypes": "Request types"
+    "ticketTypes": "Request types",
+    "aiDocuments": "AI documentation",
+    "ticketTypeAiSettings": "AI answers"
   },
   "showcase": {
     "menu": {
@@ -552,7 +554,8 @@
       "cronology": "History",
       "newType": "New type: {{type}}",
       "download": "Download {{name}}",
-      "authorAi": "AI assistant"
+      "authorAi": "AI assistant",
+      "aiDocuments": "Documents used: {{documents}}"
     },
     "ticketTypeList": {
       "title": "Request types",
@@ -560,7 +563,6 @@
       "columnDescription": "Description",
       "columnApplication": "Application",
       "columnLevels": "Enabled levels",
-      "columnAi": "AI",
       "yes": "Yes",
       "no": "No",
       "newType": "New type",
@@ -577,10 +579,74 @@
       "levelsNote": "The ticket is opened, moves up and is visible only in the enabled levels: it moves to the first enabled level above the current one.",
       "levelsRequired": "Enable at least two levels: one that opens the ticket and one that receives it.",
       "order": "Order",
-      "aiResolution": "Automatic AI resolution",
-      "aiResolutionNote": "At every step up (except DEV → SuperUser) an automatic answer is attempted. For now this is only a placeholder: the ticket always moves to the upper level.",
       "active": "Active",
       "activeNote": "An inactive type can no longer be selected, but stays on existing tickets."
+    },
+    "aiDocumentList": {
+      "title": "AI documentation",
+      "level": "Level",
+      "info": "Documents the AI assistant uses for automatic answers to tickets that reach this level. Their content is sent to the AI service.",
+      "readOnly": "Read only: documents are changed by the PowerAdmin.",
+      "noScope": "No level whose documentation you can manage.",
+      "columnTitle": "Title",
+      "columnTypes": "Request types",
+      "columnSubLevels": "Lower levels",
+      "columnLength": "Text",
+      "characters": "{{n}} characters",
+      "allTypes": "All types",
+      "yes": "Yes",
+      "no": "No",
+      "newDocument": "New document",
+      "showDisabled": "Show disabled too",
+      "deleteConfirm": "Delete the document \"{{title}}\"? Answers already given still mention it by title."
+    },
+    "aiDocumentEdit": {
+      "title": "AI document",
+      "info": "Document",
+      "readOnly": "Read only: the document is changed by the PowerAdmin.",
+      "titolo": "Title",
+      "titoloRequired": "The title is required.",
+      "descrizione": "Description",
+      "descrizioneNote": "What the document is for: it helps the AI assistant decide when to use it.",
+      "ticketTypes": "Request types",
+      "ticketTypesNote": "The document is used only for tickets of these types. No type = all types.",
+      "application": "Application",
+      "includeSubLevels": "Also for lower levels",
+      "includeSubLevelsNote": "The document is also used for tickets reaching the levels below this one (for example the manual uploaded once for all companies).",
+      "file": "Original file",
+      "fileNone": "No file",
+      "fileUpload": "Upload a file",
+      "fileReading": "Reading the file...",
+      "fileRemove": "Remove the file",
+      "fileDownload": "Download the file",
+      "fileNote": "PDF, Word, OpenDocument, Excel or text, up to 10 MB: the file text replaces the content, which you can then correct.",
+      "fileExtension": "The file type of {{name}} is not allowed.",
+      "fileSize": "The file {{name}} is empty or exceeds {{max}} MB.",
+      "replaceContent": "The file text replaces the current content. Continue?",
+      "contenuto": "Content",
+      "contenutoLength": "{{n}} of {{max}} characters.",
+      "contenutoNote": "This is the text the AI assistant reads to answer.",
+      "contenutoRequired": "The content is required: write it or upload a file.",
+      "contenutoTooLong": "The content exceeds {{max}} characters: split it into several documents.",
+      "order": "Order",
+      "orderNote": "If there are too many documents for one answer, the AI assistant reads those with the lowest order first.",
+      "active": "Active",
+      "activeNote": "A disabled document is not used by the AI assistant."
+    },
+    "ticketTypeAiSetting": {
+      "title": "AI answers",
+      "level": "Level",
+      "noScope": "No level whose AI answers you can manage.",
+      "infoDefault": "Default values: they apply to all nodes of the level that do not customize them. For DEV they are the only values.",
+      "infoNode": "For each request type you can use the default values or customize them.",
+      "infoDocuments": "When a ticket reaches the level the AI assistant answers, if it is enabled and there are documents for the type. After the given number of attempts the ticket goes to an operator.",
+      "readOnly": "Read only: settings are changed by the PowerAdmin.",
+      "custom": "Customize",
+      "aiEnabled": "AI answer",
+      "attempts": "Attempts",
+      "defaultOn": "default: AI enabled, {{n}} attempts",
+      "defaultOff": "default: AI disabled",
+      "empty": "No request type enabled at this level."
     }
   },
   "components": {
@@ -695,7 +761,8 @@
       "8": "Reopened",
       "9": "Closed",
       "10": "Type changed",
-      "11": "Company moved"
+      "11": "Company moved",
+      "12": "No automatic answer"
     },
     "actionButton": {
       "1": "Assign",
@@ -713,6 +780,7 @@
       "2": "Attendance",
       "general": "General"
     },
+    "aiPending": "Automatic answer in progress",
     "notification": {
       "message": "Ticket #{{id}} \"{{oggetto}}\": {{action}}"
     }

@@ -311,8 +311,8 @@ Decisioni tecniche prese nell'implementazione:
 | 11.1 Dati | 1–6 | fatto |
 | 11.2 Server: documenti e impostazioni | 7–12 | fatto |
 | 11.3 Server: flusso AI dei ticket | 13–19 | fatto |
-| 11.4 Client | 20–27 | da fare |
-| 11.5 Verifica | 28–30 | da fare |
+| 11.4 Client | 20–27 | fatto |
+| 11.5 Verifica | 28–30 | 28, 29 fatti; 30 da fare |
 
 ### 11.1 Dati
 - [x] 1. Entità `Document`, `DocumentTicketType`, enum `DocumentSection`
@@ -340,17 +340,17 @@ Decisioni tecniche prese nell'implementazione:
 - [x] 19. Dettaglio: `AiPending`, documenti usati sulle righe AI
 
 ### 11.4 Client
-- [ ] 20. Servizi e modelli `Document`, `TicketTypeAiSetting`
-- [ ] 21. Pagina elenco documentazione AI (scelta del livello se l'utente ne ha più di uno)
-- [ ] 22. Pagina modifica documento (tipi, flag livelli sotto, file con estrazione del testo, contenuto)
-- [ ] 23. Pagina impostazioni AI dei tipi di richiesta
-- [ ] 24. Route e voci di menu sotto "Assistenza" (SuperUser, Dealer, FinancialAdvisor, Company)
-- [ ] 25. Tipi di richiesta: tolti colonna e casella AI
-- [ ] 26. Dettaglio ticket: "risposta automatica in corso", azione `RisoluzioneAINonTrovata`, documenti usati
-- [ ] 27. Traduzioni it/en
+- [x] 20. Servizi e modelli `Document`, `TicketTypeAiSetting`
+- [x] 21. Pagina elenco documentazione AI (scelta del livello se l'utente ne ha più di uno)
+- [x] 22. Pagina modifica documento (tipi, flag livelli sotto, file con estrazione del testo, contenuto)
+- [x] 23. Pagina impostazioni AI dei tipi di richiesta
+- [x] 24. Route e voci di menu sotto "Assistenza" (SuperUser, Dealer, FinancialAdvisor, Company)
+- [x] 25. Tipi di richiesta: tolti colonna e casella AI
+- [x] 26. Dettaglio ticket: "risposta automatica in corso", azione `RisoluzioneAINonTrovata`, documenti usati
+- [x] 27. Traduzioni it/en
 
 ### 11.5 Verifica
-- [ ] 28. Build server e client
+- [x] 28. Build server e client
 - [x] 29. Migration applicata al database di sviluppo (30/10)
 - [ ] 30. Prova del flusso con il server di prova (apertura → risposta AI, riapertura → secondo tentativo, limite → operatore)
 
@@ -362,3 +362,4 @@ Decisioni tecniche prese nell'implementazione:
 |---|---|---|---|---|
 | 30/10/2026 | 11.1 | 1–6, 29 | Infrastructure_Dev | b5dabcd5 |
 | 30/10/2026 | 11.2 | 7–12 | Infrastructure_Dev | 303597d2 |
+| 30/10/2026 | 11.3 | 13–19 | Infrastructure_Dev | cf095ab1 |
