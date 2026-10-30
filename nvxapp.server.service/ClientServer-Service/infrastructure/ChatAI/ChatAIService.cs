@@ -887,6 +887,16 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.ChatAI
 
             bool isSelf = slotDef.IsPerson && value.Equals(ChatSelf.Token, StringComparison.OrdinalIgnoreCase);
 
+            // "mettimi in ferie topolino": il "mi" vuol dire "per me", la persona e' quella nominata
+            var named = isSelf ? slotDef.FindPersonInText?.Invoke(userText) : null;
+            if (!string.IsNullOrEmpty(named))
+            {
+                Log.Information("[ChatAI] Slot persona: \"{Self}\" sostituito dalla persona nominata. Slot={Slot} Valore={Value} Testo={Text}",
+                    ChatSelf.Token, slotName, named, userText);
+                entry.Slots[slotName] = named;
+                return;
+            }
+
             bool justified =
                 isSelf ? ChatSelf.MentionsSelf(userText)
                 : ContainsAllWords(userText, value)
