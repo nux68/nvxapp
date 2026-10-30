@@ -104,7 +104,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
             Validator = slot.Validator,
             HasRelevantContent = slot.HasRelevantContent,
             Normalizer = slot.Normalizer,
-            IsPerson = slot.IsPerson
+            IsPerson = slot.IsPerson,
+            FindPersonInText = slot.FindPersonInText
         };
 
         // ---------------------------------------------------------------------------

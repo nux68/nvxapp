@@ -37,7 +37,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze.ChatAI.Com
                 IsPerson = true,
                 Question = AttendanceTrackingMessages.Get("ChatEmployeeQuestion"),
                 Label = AttendanceTrackingMessages.Get("ChatEmployeeLabel"),
-                Validator = v => DipendenteLookupHelper.ValidateEmployeeSlot(v, _dip_AnagraficaService, _chatUserContext.UserId)
+                Validator = v => DipendenteLookupHelper.ValidateEmployeeSlot(v, _dip_AnagraficaService, _chatUserContext.UserId),
+                FindPersonInText = msg => DipendenteLookupHelper.PersonaNominata(msg, _dip_AnagraficaService, _chatUserContext.UserId)
             };
         }
 

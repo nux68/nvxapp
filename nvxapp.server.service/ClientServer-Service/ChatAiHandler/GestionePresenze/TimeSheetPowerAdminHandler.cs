@@ -51,6 +51,7 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
                         Label              = AttendanceTrackingMessages.Get("ChatEmployeeLabel"),
                         IsPerson           = true,
                         Validator          = v => DipendenteLookupHelper.ValidateEmployeeSlot(v, _dip_AnagraficaService, _chatUserContext.UserId),
+                        FindPersonInText   = msg => DipendenteLookupHelper.PersonaNominata(msg, _dip_AnagraficaService, _chatUserContext.UserId),
                         HasRelevantContent = msg => msg.Any(char.IsLetter)
                     },
                     new()

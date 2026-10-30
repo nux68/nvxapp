@@ -185,6 +185,30 @@ namespace nvxapp.server.service.ClientServer_Service.ChatAiHandler.GestionePrese
             return res.Data.Dip_Anagrafica.FirstOrDefault(x => StessoNome(x, employeeName));
         }
 
+        // Dipendente nominato nel messaggio ("mettimi in ferie topolino" -> "Mouse Topolino"): cognome o nome
+        // scritti per intero, escluso il dipendente dell'utente corrente. Null se nessuno o piu' d'uno.
+        // Usato da SlotDefinition.FindPersonInText: vale piu' del "mi" del verbo ("@me").
+        public static string? PersonaNominata(string? messaggio, IDip_AnagraficaService dip_AnagraficaService,
+                                              string? currentUserId)
+        {
+            var testo = $" {ChatAIKeywords.Normalize(messaggio)} ";
+            if (testo.Trim().Length == 0) return null;
+
+            var res = dip_AnagraficaService.GetAll(new GenericRequest<Dip_Anagrafica_GetAll_InModel>(), true).Result;
+            if (!res.Success || res.Data == null) return null;
+
+            bool Citato(string? parola)
+            {
+                var p = ChatAIKeywords.Normalize(parola);
+                return p.Length >= 3 && testo.Contains($" {p} ");
+            }
+
+            var trovati = res.Data.Dip_Anagrafica
+                .Where(d => d.IdAspNetUsers != currentUserId && (Citato(d.Cognome) || Citato(d.Nome)))
+                .ToList();
+            return trovati.Count == 1 ? NomeCompleto(trovati[0]) : null;
+        }
+
         // "Cognome Nome", come lo mostrano riepilogo e chip
         public static string NomeCompleto(Dip_AnagraficaModel d) => $"{d.Cognome} {d.Nome}".Trim();
 
