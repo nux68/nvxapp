@@ -483,6 +483,61 @@ namespace nvxapp.server.data.Migrations.Public
                     b.ToTable("Dealer", "public");
                 });
 
+            modelBuilder.Entity("nvxapp.server.data.Entities.Public.DeletionLog", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ChangeUser")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("Data")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Descrizione")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("IdAspNetUsers")
+                        .IsRequired()
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
+                    b.Property<string>("IdAspNetUsersDeleted")
+                        .HasMaxLength(450)
+                        .HasColumnType("character varying(450)");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int?>("NodeId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("NodeType")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Riepilogo")
+                        .HasColumnType("text");
+
+                    b.Property<string>("UserName")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Data");
+
+                    b.ToTable("DeletionLog", "public");
+                });
+
             modelBuilder.Entity("nvxapp.server.data.Entities.Public.Document", b =>
                 {
                     b.Property<int>("Id")
@@ -1218,7 +1273,7 @@ namespace nvxapp.server.data.Migrations.Public
                     b.HasOne("nvxapp.server.data.Entities.Public.FinancialAdvisor", "FinancialAdvisorNavigation")
                         .WithMany("Company")
                         .HasForeignKey("IdFinancialAdvisor")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("FinancialAdvisorNavigation");
@@ -1288,7 +1343,7 @@ namespace nvxapp.server.data.Migrations.Public
                     b.HasOne("nvxapp.server.data.Entities.Public.Dealer", "DealerNavigation")
                         .WithMany("FinancialAdvisor")
                         .HasForeignKey("IdDealer")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("DealerNavigation");

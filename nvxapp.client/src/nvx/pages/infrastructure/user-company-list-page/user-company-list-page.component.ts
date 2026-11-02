@@ -5,6 +5,9 @@ import { AccountService } from '../../../ClientServer-Service/Infrastructure/Acc
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { UserNavigationService, UserDataAdditionalModel } from '../../../Utility/infrastructure/user-navigation.service';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
+import { AuthService } from '../../../Utility/infrastructure/auth.service';
+import { DeletionDialogService } from '../../../shared/components/infrastructure/deletion-dialog/deletion-dialog.service';
+import { DeletionNodeType } from '../../../ClientServer-Service/Infrastructure/Deletion/Models/deletion-model';
 import { NvxListAction, NvxListColumn } from '../../../shared/components/infrastructure/nvx-list/nvx-list.component';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { ParameterService } from '../../../ClientServer-Service/Infrastructure/Parameter/parameter.service';
@@ -44,6 +47,7 @@ export class UserCompanyListPageComponent {
   public readonly iconOf = (item: UserCompanyListModel) => this.isAdmin(item) ? 'person-add-outline' : 'person-outline';
   public btnImpersona: ButtonItem;
   public btnEdit: ButtonItem;
+  public btnDelete: ButtonItem;
 
   constructor(private navCtrl: NavController,
               private accountService: AccountService,
@@ -55,7 +59,9 @@ export class UserCompanyListPageComponent {
               private modalCtrl: ModalController,
               private actionSheetCtrl: ActionSheetController,
               private longJobNotifierService: LongJobNotifierService,
-              private transloco: TranslocoService
+              private transloco: TranslocoService,
+              private deletionDialogService: DeletionDialogService,
+              private authService: AuthService
             
             ) 
 {
@@ -68,7 +74,11 @@ export class UserCompanyListPageComponent {
     this.btnEdit.event = this.handleButtonEditClick;
 
     // Impersona solo per gli utenti (non per gli amministratori)
-    this.actions = [{ button: this.btnImpersona, visible: item => this.isUser(item) }, { button: this.btnEdit }];
+    // cancellazione fisica (anteprima e conferma nel dialog; permessi controllati dal server)
+    this.btnDelete = userInterfaceService.Btn_Cancella;
+    this.btnDelete.event = this.handleButtonDeleteClick;
+
+    this.actions = [{ button: this.btnDelete, visible: item => this.canDelete && !this.isAdminPrincipale(item) }, { button: this.btnImpersona, visible: item => this.isUser(item) }, { button: this.btnEdit }];
   }
 
   ionViewWillEnter() {
@@ -281,6 +291,23 @@ export class UserCompanyListPageComponent {
       .map(x => x.name);
 
     return item.roles.some(role => adminRoles.includes(role));
+  }
+
+  // PowerAdmin, DealerPowerAdmin, FinancialAdvisorPowerAdmin e CompanyPowerAdmin non si eliminano da soli (solo con il loro nodo)
+  isAdminPrincipale(item: any): boolean {
+    const codici = [RoleCode.PowerAdmin, RoleCode.DealerPowerAdmin, RoleCode.FinancialAdvisorPowerAdmin, RoleCode.CompanyPowerAdmin];
+    const ruoli = this.parameterService.Roles.filter(role => codici.includes(role.code));
+    return item.roles.some((role: string) => ruoli.map(x => x.name).includes(role));
+  }
+
+  // eliminazione: il SuperUser (anche mentre impersona) o il PowerAdmin indicato in ANALISI_CANCELLAZIONE.md
+  get canDelete(): boolean {
+    return this.userNavigationService.LoginIsSuperUser || this.authService.IsCompanyPowerAdmin || this.authService.IsFinancialAdvisorPowerAdmin;
+  }
+
+  handleButtonDeleteClick = async (item: any) => {
+    if (await this.deletionDialogService.open(DeletionNodeType.UserCompany, item.idUserCompany))
+      this.ionViewWillEnter();
   }
 
 }

@@ -48,6 +48,12 @@ export class UserNavigationService {
     
   }
 
+  // l'utente del login (il primo della cronologia) e' SuperUser, anche mentre ne impersona un altro
+  public get LoginIsSuperUser(): boolean {
+    const login = this._userCronology?.[0];
+    return login ? (login.userData?.roles ?? []).some(r => r.name === 'SuperUser') : this.authService.IsSuperUser;
+  }
+
   public get UserCanGoBack(): boolean {
     return ( this._userCronology.length > 1 );
   }

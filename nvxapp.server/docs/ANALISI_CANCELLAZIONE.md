@@ -1,7 +1,7 @@
 # Analisi – Cancellazione fisica di Dealer, FinancialAdvisor, Company e User
 
 Branch di sviluppo: **Infrastructure_Dev**.
-Documento di sola analisi: nessun codice è stato scritto.
+Analisi approvata il 02/11/2026 con le decisioni del §9; implementazione: vedi §11.
 
 > La richiesta si interrompe a "se elimino un …". Si assume il significato naturale: eliminando un nodo si elimina tutto ciò che sta sotto
 > (Dealer → i suoi FinancialAdvisor → le loro Company → i loro utenti e dati).
@@ -139,13 +139,13 @@ Tutti i controlli nel servizio, con il nodo preso dal token (come in `piano-secu
 
 ---
 
-## 9. Domande aperte
+## 9. Decisioni (02/11/2026)
 
-1. Conferma del significato della frase interrotta ("se elimino un …"): eliminazione a cascata di tutto il ramo sotto il nodo?
-2. Chi può eliminare studi e aziende oltre al SuperUser (§6)?
-3. Ticket del ramo eliminato: eliminati o anonimizzati (§5)?
-4. Export obbligatorio prima di eliminare un'azienda (§8)?
-5. Periodo di "disattivazione" prima della cancellazione definitiva?
+1. Eliminando un nodo si elimina tutto il ramo sotto di lui.
+2. Oltre al SuperUser: lo studio lo elimina anche il **DealerPowerAdmin** del centro padre, l'azienda anche il **FinancialAdvisorPowerAdmin** dello studio padre. Il Dealer solo il SuperUser.
+3. Ticket nati nel ramo eliminato: **eliminati** (con cronologia e allegati). Quelli nati altrove restano e mostrano "utente eliminato".
+4. Export prima di eliminare un'azienda: **solo avviso** nell'anteprima, nessun blocco.
+5. Nessun periodo di disattivazione: cancellazione **immediata** dopo anteprima e conferma forte, con registro.
 
 ---
 
@@ -157,3 +157,20 @@ Tutti i controlli nel servizio, con il nodo preso dal token (come in `piano-secu
 - `SupportTicket`: rilascio dei ticket assegnati a utenti eliminati
 - `Controllers/Infrastructure/DeletionController.cs` (solo POST): anteprima, esecuzione
 - client: comando Elimina e dialog di anteprima/conferma nelle pagine di Dealer, studi, aziende e utenti; traduzioni
+
+---
+
+## 11. Implementazione (Infrastructure_Dev, 02/11/2026)
+
+Fatto:
+- [x] Cascade Dealer → FinancialAdvisor → Company portate a `Restrict`; tabella `public."DeletionLog"` (registro: tipo, id, nome, chi, quando, riepilogo dei conteggi). Migration `DeletionLogRestrictNodes`.
+- [x] `TenantProvisioningService.CompanySchemasAsync` / `DropCompanySchemasAsync`: schemi `tenant_<IdAzienda>_<n>` esistenti (anche di applicativi disattivati), eliminati con `DROP SCHEMA ... CASCADE` sulla connessione di `PublicDbContext`.
+- [x] `IApplicationDataDeleter` (infrastructure/Deletion): punto di estensione degli applicativi (conteggi per l'anteprima, dati dell'azienda in modalità singola, dati di un utente tolto da un'azienda).
+- [x] `DeletionService` + `DeletionController` (`api/Deletion/DeletionPreview`, `DeletionExecute`): tipi Dealer, FinancialAdvisor, Company, UserDealer / UserFinancialAdvisor / UserCompany (collegamento; l'utente si elimina se non ha altri collegamenti), User (solo SuperUser). Permessi del §9; blocchi: sé stessi, SuperUser, ultimo PowerAdmin attivo di un nodo che resta, e (richiesta del 02/11) gli utenti **PowerAdmin, DealerPowerAdmin, FinancialAdvisorPowerAdmin e CompanyPowerAdmin** non si eliminano singolarmente: quelli di un nodo escono solo eliminando il nodo, il PowerAdmin (globale) non si elimina mai, neanche con un nodo (resta, perde solo il collegamento). Nelle liste utenti il pulsante Cancella è nascosto sulle loro righe. Ticket del ramo e aperti dagli utenti eliminati: eliminati; in carico agli utenti eliminati: senza assegnatario. Tutto in una transazione su `PublicDbContext` (schemi compresi); i dati degli applicativi via `IApplicationDataDeleter` prima della transazione.
+- [x] Client: dialog `app-deletion-dialog` (anteprima, avvisi, utenti che restano, nome da digitare), pulsante Cancella nelle liste di centri, studi, aziende, utenti dei tre livelli e utenti (visibile al SuperUser del login, anche mentre impersona, e ai PowerAdmin previsti); traduzioni it/en.
+- [x] Provato sul server di prova (multi-tenant) con un ramo creato apposta: anteprime, permessi negati, nome sbagliato, ultimo PowerAdmin, utente tolto ed eliminato, centro intero (studio, azienda, 6 utenti, schema tenant) e registro; dialog provato dal browser.
+
+Da fare:
+- [ ] **AttendanceTracking** (ramo presenze): implementare `IApplicationDataDeleter` per `ApplicationType.AttendanceTracking`: conteggi (dipendenti), dati dell'azienda in modalità singola (`Az_Anagrafica` e figli, alcune relazioni interne sono `Restrict`), dati di un utente tolto da un'azienda che resta (`Dip_Anagrafica` e figli, `Az_SediRepartoUser`, `Az_SubCommessaUser`). Senza, togliere da un'azienda un dipendente con dati presenze lascia i suoi dati nello schema dell'azienda, e l'eliminazione dell'utente può fallire sulle relazioni `Restrict` (la transazione si annulla, nessun dato perso).
+- [ ] Sessioni: il token di un utente eliminato resta valido fino alla scadenza (nessun controllo dell'esistenza dell'utente a ogni richiesta).
+- [ ] Cancellazione in background con avanzamento per centri molto grandi (oggi sincrona, nella richiesta).

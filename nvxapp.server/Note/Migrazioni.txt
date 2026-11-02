@@ -76,6 +76,8 @@ storico migrazioni create
           e i tipi di richiesta dei ticket, Migrations/Public/PopolateTicketType.cs)
           AddDataProtectionKeys (tabella public."DataProtectionKeys": chiavi DataProtection dei token di Identity)
           RegistrationAdminUserNames (CompanyRegistrationRequest: nomi scelti per gli amministratori)
+          TicketAiDocuments (documenti dei livelli e impostazioni AI dei tipi di ticket)
+          DeletionLogRestrictNodes (registro delle cancellazioni; Dealer->FinancialAdvisor->Company senza cascata)
   Moke:   InitMoke
 
 

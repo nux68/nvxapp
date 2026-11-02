@@ -37,6 +37,9 @@ namespace nvxapp.server.data.Infrastructure
         public DbSet<Document> Document { get; set; }
         public DbSet<DocumentTicketType> DocumentTicketType { get; set; }
 
+        // registro delle cancellazioni fisiche (centri, studi, aziende, utenti)
+        public DbSet<DeletionLog> DeletionLog { get; set; }
+
 
         private void Define_Table_DbContext_Infrastructure(ModelBuilder modelBuilder)
         {
@@ -50,6 +53,17 @@ namespace nvxapp.server.data.Infrastructure
             Gen_CompanyRegistrationRequest(modelBuilder);
             Gen_Ticket(modelBuilder);
             Gen_Document(modelBuilder);
+            Gen_DeletionLog(modelBuilder);
+        }
+
+        private void Gen_DeletionLog(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<DeletionLog>(entity =>
+            {
+                entity.ToTable("DeletionLog", Schema);
+                entity.HasKey(e => e.Id);
+                entity.HasIndex(e => e.Data);
+            });
         }
 
         private void Gen_InitDB(ModelBuilder modelBuilder)
@@ -353,11 +367,12 @@ namespace nvxapp.server.data.Infrastructure
                        .HasOne(md => md.DealerNavigation)
                        .WithMany(d => d.FinancialAdvisor)
                        .HasForeignKey(md => md.IdDealer);
-            //questa x specificare la cancellazione
+            // nessuna cascata: un centro con studi si elimina solo dal servizio di cancellazione (DeletionService),
+            // che elimina in ordine anche utenti, schemi degli applicativi e ticket del ramo
             modelBuilder.Entity<Dealer>()
                         .HasMany(o => o.FinancialAdvisor)
                         .WithOne(i => i.DealerNavigation)
-                        .OnDelete(DeleteBehavior.Cascade); //MODIFICARE SENNO RASA VIA TUTTO
+                        .OnDelete(DeleteBehavior.Restrict);
 
             #endregion
 
@@ -366,11 +381,11 @@ namespace nvxapp.server.data.Infrastructure
                         .HasOne(md => md.FinancialAdvisorNavigation)
                         .WithMany(d => d.Company)
                         .HasForeignKey(md => md.IdFinancialAdvisor);
-            //questa x specificare la cancellazione
+            // nessuna cascata: vedi Dealer-FinancialAdvisor
             modelBuilder.Entity<FinancialAdvisor>()
                         .HasMany(o => o.Company)
                         .WithOne(i => i.FinancialAdvisorNavigation)
-                        .OnDelete(DeleteBehavior.Cascade); //MODIFICARE SENNO RASA VIA TUTTO
+                        .OnDelete(DeleteBehavior.Restrict);
 
             #endregion
 

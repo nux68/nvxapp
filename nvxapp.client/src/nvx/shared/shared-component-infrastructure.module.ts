@@ -17,6 +17,7 @@ import { AddCompanyComponent } from './components/infrastructure/add-company/add
 import { NvxListCellDirective, NvxListComponent, NvxListMobileDirective } from './components/infrastructure/nvx-list/nvx-list.component';
 import { TicketAttachComponent } from './components/infrastructure/ticket-attach/ticket-attach.component';
 import { TicketActionDialogComponent } from './components/infrastructure/ticket-action-dialog/ticket-action-dialog.component';
+import { DeletionDialogComponent } from './components/infrastructure/deletion-dialog/deletion-dialog.component';
 
 
 @NgModule({
@@ -31,7 +32,7 @@ import { TicketActionDialogComponent } from './components/infrastructure/ticket-
     TranslocoPipe,
     NvxDatetimeLocaleDirective
   ],
-  declarations: [BreadcrumbsImpersonateComponent, PageToolbarComponent, SlideButtonCancellaModificaComponent, PageButtonbarComponent, GenericDialogComponent, AddUserCompanyComponent, AddCompanyComponent, TicketAttachComponent, TicketActionDialogComponent/*, FabMenuComponent*/],
-  exports: [BreadcrumbsImpersonateComponent, GenericFilterPipe, PageToolbarComponent, SlideButtonCancellaModificaComponent, PageButtonbarComponent, HoverPopupComponent, HoverPopupDirective, AddUserCompanyComponent, AddCompanyComponent, TicketAttachComponent, TicketActionDialogComponent, NvxListComponent, NvxListCellDirective, NvxListMobileDirective, TranslocoPipe, NvxDatetimeLocaleDirective/*, FabMenuComponent*/]
+  declarations: [BreadcrumbsImpersonateComponent, PageToolbarComponent, SlideButtonCancellaModificaComponent, PageButtonbarComponent, GenericDialogComponent, AddUserCompanyComponent, AddCompanyComponent, TicketAttachComponent, TicketActionDialogComponent, DeletionDialogComponent/*, FabMenuComponent*/],
+  exports: [BreadcrumbsImpersonateComponent, GenericFilterPipe, PageToolbarComponent, SlideButtonCancellaModificaComponent, PageButtonbarComponent, HoverPopupComponent, HoverPopupDirective, AddUserCompanyComponent, AddCompanyComponent, TicketAttachComponent, TicketActionDialogComponent, DeletionDialogComponent, NvxListComponent, NvxListCellDirective, NvxListMobileDirective, TranslocoPipe, NvxDatetimeLocaleDirective/*, FabMenuComponent*/]
 })
 export class SharedComponentInfrastructureModule { }

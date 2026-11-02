@@ -732,6 +732,18 @@
       "textRequired": "The text is required.",
       "noteRequired": "Write a text or attach at least one file.",
       "closeNote": "The ticket will be closed for good and cannot be reopened. To go back to the list without closing it, use Cancel and then \"Back to list\"."
+    },
+    "deletionDialog": {
+      "titleDealer": "Delete dealer",
+      "titleFinancialAdvisor": "Delete financial advisor",
+      "titleCompany": "Delete company",
+      "titleUserLink": "Remove and delete user",
+      "titleUser": "Delete user",
+      "willDelete": "The following will be deleted:",
+      "usersKept": "These users lose the link but are kept, because they are linked elsewhere:",
+      "typeName": "To confirm, type the name: {{name}}",
+      "confirmLabel": "Name",
+      "confirm": "Delete permanently"
     }
   },
   "ticket": {

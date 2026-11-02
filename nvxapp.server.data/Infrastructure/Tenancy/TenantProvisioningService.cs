@@ -19,6 +19,16 @@ namespace nvxapp.server.data.Infrastructure.Tenancy
 
         /// <summary>Migra le tabelle degli applicativi: public in modalita' singola, ogni schema azienda/applicativo attivo in multi-tenant.</summary>
         Task MigrateAllAsync(CancellationToken cancellationToken = default);
+
+        /// <summary>Schemi esistenti degli applicativi di un'azienda (multi-tenant; vuoto in modalita' singola), anche di applicativi disattivati.</summary>
+        Task<List<string>> CompanySchemasAsync(int idCompany, CancellationToken cancellationToken = default);
+
+        /// <summary>
+        /// Elimina gli schemi degli applicativi di un'azienda con tutti i dati (DROP SCHEMA ... CASCADE), per la cancellazione
+        /// dell'azienda. Usa la connessione di PublicDbContext: dentro una sua transazione si annulla con il rollback.
+        /// In modalita' singola non fa nulla.
+        /// </summary>
+        Task<List<string>> DropCompanySchemasAsync(int idCompany, CancellationToken cancellationToken = default);
     }
 
     public sealed class TenantProvisioningService : ITenantProvisioningService
@@ -98,6 +108,35 @@ namespace nvxapp.server.data.Infrastructure.Tenancy
                 _logger.LogError("[Tenancy] Migrazione fallita per {Count} schemi: {Schemas}", failed.Count, string.Join(", ", failed));
             else
                 _logger.LogInformation("[Tenancy] Migrazione schemi completata.");
+        }
+
+        public async Task<List<string>> CompanySchemasAsync(int idCompany, CancellationToken cancellationToken = default)
+        {
+            if (!_tenancySettings.MultiTenant)
+                return new List<string>();
+
+            // solo i nomi esatti tenant_<IdAzienda>_<numero> (in LIKE "_" vale un carattere qualsiasi: si filtra dopo)
+            var prefix = $"tenant_{idCompany}_";
+            var schemas = await _publicDbContext.Database
+                .SqlQueryRaw<string>("SELECT nspname::text AS \"Value\" FROM pg_namespace WHERE nspname LIKE {0}", prefix + "%")
+                .ToListAsync(cancellationToken);
+
+            return schemas.Where(x => x.Length > prefix.Length && x[prefix.Length..].All(char.IsDigit))
+                          .OrderBy(x => x)
+                          .ToList();
+        }
+
+        public async Task<List<string>> DropCompanySchemasAsync(int idCompany, CancellationToken cancellationToken = default)
+        {
+            var schemas = await CompanySchemasAsync(idCompany, cancellationToken);
+            foreach (var schema in schemas)
+            {
+                // un identificatore non puo' essere un parametro SQL: il nome e' validato e quotato da TenantSchemaName
+                string dropSchemaSql = "DROP SCHEMA IF EXISTS " + TenantSchemaName.Quote(schema) + " CASCADE";
+                await _publicDbContext.Database.ExecuteSqlRawAsync(dropSchemaSql, cancellationToken);
+                _logger.LogInformation("[Tenancy] Schema {Schema} eliminato (azienda {IdCompany}).", schema, idCompany);
+            }
+            return schemas;
         }
 
         private async Task MigrateSchemaAsync(ApplicationType application, string schema, bool createSchema, CancellationToken cancellationToken)
