@@ -8,6 +8,13 @@
 
   <ion-card>
     <ion-card-content>
+      <!-- opzioni della lista (Mostra disabilitati, Abilita cancellazioni) -->
+      <nvx-list-options
+        [showDisabledLabel]="'pages.userDealerList.showDisabled' | transloco"
+        [(showDisabled)]="showDisabled"
+        [deleteAvailable]="canDelete"
+        [(deleteEnabled)]="deleteEnabled">
+      </nvx-list-options>
       <nvx-list
         [items]="userDealerList"
         [columns]="columns"
@@ -18,7 +25,8 @@
         [searchText]="searchText"
         [sort]="sortByRole"
         [rowDisabled]="isDisabled"
-        [disabledToggleLabel]="'pages.userDealerList.showDisabled' | transloco">
+        [disabledToggleExternal]="true"
+        [(showDisabled)]="showDisabled">
       </nvx-list>
     </ion-card-content>
   </ion-card>

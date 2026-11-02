@@ -35,6 +35,9 @@ export class CompanyListPageComponent {
   public btnImpersona: ButtonItem;
   public btnEdit: ButtonItem;
   public btnDelete: ButtonItem;
+  // opzioni della lista (nvx-list-options): Mostra disabilitati e Abilita cancellazioni (il pulsante Cancella)
+  public showDisabled = false;
+  public deleteEnabled = false;
 
   constructor(private navCtrl: NavController,
               private accountService: AccountService,
@@ -61,7 +64,7 @@ export class CompanyListPageComponent {
     this.btnDelete.event = this.handleButtonDeleteClick;
 
 
-    this.actions = [{ button: this.btnDelete, visible: () => this.canDelete }, { button: this.btnImpersona }, { button: this.btnEdit }];
+    this.actions = [{ button: this.btnDelete, visible: () => this.canDelete && this.deleteEnabled }, { button: this.btnImpersona }, { button: this.btnEdit }];
 
   }
 

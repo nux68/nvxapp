@@ -48,6 +48,9 @@ export class UserCompanyListPageComponent {
   public btnImpersona: ButtonItem;
   public btnEdit: ButtonItem;
   public btnDelete: ButtonItem;
+  // opzioni della lista (nvx-list-options): Mostra disabilitati e Abilita cancellazioni (il pulsante Cancella)
+  public showDisabled = false;
+  public deleteEnabled = false;
 
   constructor(private navCtrl: NavController,
               private accountService: AccountService,
@@ -78,7 +81,7 @@ export class UserCompanyListPageComponent {
     this.btnDelete = userInterfaceService.Btn_Cancella;
     this.btnDelete.event = this.handleButtonDeleteClick;
 
-    this.actions = [{ button: this.btnDelete, visible: item => this.canDelete && !this.isAdminPrincipale(item) }, { button: this.btnImpersona, visible: item => this.isUser(item) }, { button: this.btnEdit }];
+    this.actions = [{ button: this.btnDelete, visible: item => this.canDelete && this.deleteEnabled && !this.isAdminPrincipale(item) }, { button: this.btnImpersona, visible: item => this.isUser(item) }, { button: this.btnEdit }];
   }
 
   ionViewWillEnter() {

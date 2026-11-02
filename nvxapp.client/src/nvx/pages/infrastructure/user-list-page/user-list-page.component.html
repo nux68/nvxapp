@@ -8,6 +8,11 @@
 
   <ion-card>
     <ion-card-content>
+      <!-- opzioni della lista (Mostra disabilitati, Abilita cancellazioni) -->
+      <nvx-list-options
+        [deleteAvailable]="canDelete"
+        [(deleteEnabled)]="deleteEnabled">
+      </nvx-list-options>
       <nvx-list
         [items]="userList"
         [columns]="columns"
