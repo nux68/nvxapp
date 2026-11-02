@@ -1,0 +1,59 @@
+<app-page-toolbar [title]="Title"
+  [showFilter]="ShowFilter"
+  [showBreadcrumbs]="false">
+</app-page-toolbar>
+
+<ion-content [fullscreen]="true">
+
+  <ion-card>
+    <ion-card-content>
+
+      @if (!preview) {
+        <ion-progress-bar type="indeterminate"></ion-progress-bar>
+      } @else {
+
+        <h2 class="deletion-name">{{ preview.descrizione }}</h2>
+
+        <!-- cosa verra' eliminato -->
+        @if (preview.counts.length > 0) {
+          <p class="deletion-section">{{ 'components.deletionDialog.willDelete' | transloco }}</p>
+          <ul class="deletion-counts">
+            @for (c of preview.counts; track c.label) {
+              <li><span>{{ c.label }}</span><strong>{{ c.count }}</strong></li>
+            }
+          </ul>
+        }
+
+        <!-- utenti che perdono il collegamento ma restano -->
+        @if (preview.usersKept.length > 0) {
+          <p class="deletion-section">{{ 'components.deletionDialog.usersKept' | transloco }}</p>
+          <p class="deletion-kept">{{ preview.usersKept.join(', ') }}</p>
+        }
+
+        @for (w of preview.warnings; track w) {
+          <ion-note color="danger" class="deletion-warning">{{ w }}</ion-note>
+        }
+
+        @if (!preview.canDelete) {
+          <ion-note color="danger" class="deletion-block">{{ preview.blockReason }}</ion-note>
+        } @else {
+          <form [formGroup]="_editForm">
+            <p class="deletion-section">{{ 'components.deletionDialog.typeName' | transloco: { name: preview.descrizione } }}</p>
+            <ion-item>
+              <ion-input formControlName="confirmText" [label]="'components.deletionDialog.confirmLabel' | transloco"
+                         labelPlacement="floating" autocomplete="off" [disabled]="running"></ion-input>
+            </ion-item>
+          </form>
+        }
+
+        @if (running) {
+          <ion-progress-bar type="indeterminate"></ion-progress-bar>
+        }
+      }
+
+    </ion-card-content>
+  </ion-card>
+
+</ion-content>
+
+<app-page-buttonbar [buttonbar]="buttonbar"></app-page-buttonbar>

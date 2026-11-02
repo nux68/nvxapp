@@ -350,4 +350,76 @@
     <value>Numero di tentativi AI non valido: indica un valore da 1 a {0}.</value>
     <comment>impostazioni AI dei tipi di richiesta, {0} = massimo</comment>
   </data>
+  <data name="DeletionNotAllowed" xml:space="preserve">
+    <value>Non hai i permessi per eliminare questo elemento.</value>
+    <comment>cancellazione fisica (DeletionService)</comment>
+  </data>
+  <data name="DeletionNodeNotFound" xml:space="preserve">
+    <value>Elemento da eliminare non trovato.</value>
+    <comment>cancellazione fisica (DeletionService)</comment>
+  </data>
+  <data name="DeletionConfirmMismatch" xml:space="preserve">
+    <value>Il nome digitato non coincide: eliminazione annullata.</value>
+    <comment>cancellazione fisica (DeletionService)</comment>
+  </data>
+  <data name="DeletionSelf" xml:space="preserve">
+    <value>Non puoi eliminare il tuo utente.</value>
+    <comment>cancellazione fisica (DeletionService)</comment>
+  </data>
+  <data name="DeletionSuperUser" xml:space="preserve">
+    <value>Il SuperUser non si può eliminare.</value>
+    <comment>cancellazione fisica (DeletionService)</comment>
+  </data>
+  <data name="DeletionLastPowerAdmin" xml:space="preserve">
+    <value>È l'ultimo PowerAdmin attivo del nodo: prima assegna il ruolo a un altro utente.</value>
+    <comment>cancellazione fisica (DeletionService)</comment>
+  </data>
+  <data name="DeletionWarningExport" xml:space="preserve">
+    <value>Esporta i dati delle aziende prima di eliminarle: dopo la cancellazione non si possono recuperare (presenze e paghe hanno obblighi di conservazione).</value>
+    <comment>cancellazione fisica (DeletionService)</comment>
+  </data>
+  <data name="DeletionWarningIrreversible" xml:space="preserve">
+    <value>L'eliminazione è definitiva e non si può annullare.</value>
+    <comment>cancellazione fisica (DeletionService)</comment>
+  </data>
+  <data name="DeletionCountDealers" xml:space="preserve">
+    <value>Centri</value>
+    <comment>cancellazione fisica (DeletionService)</comment>
+  </data>
+  <data name="DeletionCountFinancialAdvisors" xml:space="preserve">
+    <value>Studi</value>
+    <comment>cancellazione fisica (DeletionService)</comment>
+  </data>
+  <data name="DeletionCountCompanies" xml:space="preserve">
+    <value>Aziende</value>
+    <comment>cancellazione fisica (DeletionService)</comment>
+  </data>
+  <data name="DeletionCountUsersDeleted" xml:space="preserve">
+    <value>Utenti eliminati</value>
+    <comment>cancellazione fisica (DeletionService)</comment>
+  </data>
+  <data name="DeletionCountUserLinks" xml:space="preserve">
+    <value>Collegamenti utente rimossi</value>
+    <comment>cancellazione fisica (DeletionService)</comment>
+  </data>
+  <data name="DeletionCountTickets" xml:space="preserve">
+    <value>Ticket eliminati</value>
+    <comment>cancellazione fisica (DeletionService)</comment>
+  </data>
+  <data name="DeletionCountTicketsReleased" xml:space="preserve">
+    <value>Ticket in carico rilasciati</value>
+    <comment>cancellazione fisica (DeletionService)</comment>
+  </data>
+  <data name="DeletionCountDocuments" xml:space="preserve">
+    <value>Documenti</value>
+    <comment>cancellazione fisica (DeletionService)</comment>
+  </data>
+  <data name="DeletionCountSchemas" xml:space="preserve">
+    <value>Archivi degli applicativi</value>
+    <comment>cancellazione fisica (DeletionService)</comment>
+  </data>
+  <data name="DeletionPowerAdminUser" xml:space="preserve">
+    <value>Gli utenti PowerAdmin, DealerPowerAdmin, FinancialAdvisorPowerAdmin e CompanyPowerAdmin non si possono eliminare: escono solo eliminando il loro nodo.</value>
+    <comment>cancellazione fisica (DeletionService)</comment>
+  </data>
 </root>

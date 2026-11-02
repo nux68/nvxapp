@@ -5,6 +5,9 @@ import { AccountService } from '../../../ClientServer-Service/Infrastructure/Acc
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { UserNavigationService, UserDataAdditionalModel } from '../../../Utility/infrastructure/user-navigation.service';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
+import { AuthService } from '../../../Utility/infrastructure/auth.service';
+import { DeletionDialogService } from '../../../shared/components/infrastructure/deletion-dialog/deletion-dialog.service';
+import { DeletionNodeType } from '../../../ClientServer-Service/Infrastructure/Deletion/Models/deletion-model';
 import { NvxListAction, NvxListColumn } from '../../../shared/components/infrastructure/nvx-list/nvx-list.component';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { ParameterService } from '../../../ClientServer-Service/Infrastructure/Parameter/parameter.service';
@@ -32,6 +35,7 @@ export class UserFinancialAdvisorListPageComponent {
   public readonly isHighlighted = (item: UserFinancialAdvisorListModel) => this.isPowerAdmin(item);
   public readonly iconOf = (item: UserFinancialAdvisorListModel) => this.isPowerAdmin(item) ? 'person-add-outline' : 'person-outline';
   public btnEdit: ButtonItem;
+  public btnDelete: ButtonItem;
 
   constructor(private navCtrl: NavController,
     private accountService: AccountService,
@@ -39,14 +43,23 @@ export class UserFinancialAdvisorListPageComponent {
     private parameterService: ParameterService,
     private userInterfaceService: UserInterfaceService,
     private userNavigationService: UserNavigationService,
-    private transloco: TranslocoService) {
+    private transloco: TranslocoService,
+    private deletionDialogService: DeletionDialogService,
+    private authService: AuthService) {
 
     this.title = this.transloco.translate('pages.userFinancialAdvisorList.title');
 
     this.btnEdit = userInterfaceService.Btn_Modifica;
     this.btnEdit.event = this.handleButtonEditClick;
 
-    this.actions = [{ button: this.btnEdit }];
+    // cancellazione fisica (anteprima e conferma nel dialog; permessi controllati dal server)
+
+    this.btnDelete = userInterfaceService.Btn_Cancella;
+
+    this.btnDelete.event = this.handleButtonDeleteClick;
+
+
+    this.actions = [{ button: this.btnDelete, visible: item => this.canDelete && !this.isAdminPrincipale(item) }, { button: this.btnEdit }];
   }
 
   ionViewWillEnter() {
@@ -134,6 +147,23 @@ export class UserFinancialAdvisorListPageComponent {
       return true;
     else
       return false;
+  }
+
+  // PowerAdmin, DealerPowerAdmin, FinancialAdvisorPowerAdmin e CompanyPowerAdmin non si eliminano da soli (solo con il loro nodo)
+  isAdminPrincipale(item: any): boolean {
+    const codici = [RoleCode.PowerAdmin, RoleCode.DealerPowerAdmin, RoleCode.FinancialAdvisorPowerAdmin, RoleCode.CompanyPowerAdmin];
+    const ruoli = this.parameterService.Roles.filter(role => codici.includes(role.code));
+    return ruoli.some(x => x.id == item.roleId);
+  }
+
+  // eliminazione: il SuperUser (anche mentre impersona) o il PowerAdmin indicato in ANALISI_CANCELLAZIONE.md
+  get canDelete(): boolean {
+    return this.userNavigationService.LoginIsSuperUser || this.authService.IsFinancialAdvisorPowerAdmin || this.authService.IsDealerPowerAdmin;
+  }
+
+  handleButtonDeleteClick = async (item: any) => {
+    if (await this.deletionDialogService.open(DeletionNodeType.UserFinancialAdvisor, item.idUserFinancialAdvisor))
+      this.ionViewWillEnter();
   }
 
 }
