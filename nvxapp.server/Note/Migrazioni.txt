@@ -78,6 +78,7 @@ storico migrazioni create
           RegistrationAdminUserNames (CompanyRegistrationRequest: nomi scelti per gli amministratori)
           TicketAiDocuments (documenti dei livelli e impostazioni AI dei tipi di ticket)
           DeletionLogRestrictNodes (registro delle cancellazioni; Dealer->FinancialAdvisor->Company senza cascata)
+          TicketAiUseParentDocuments (TicketTypeAiSetting.UseParentDocuments: risposta AI con o senza i documenti dei livelli sopra)
   Moke:   InitMoke
   AttendanceTracking: AttendanceTracking_Init   (tabelle del modulo presenze; ramo AttendanceTracking)
 

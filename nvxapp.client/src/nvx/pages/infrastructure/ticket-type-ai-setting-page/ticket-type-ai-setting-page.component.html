@@ -29,6 +29,7 @@
         <ion-note class="nvx-nota-disabled">
           {{ (isDefault ? 'pages.ticketTypeAiSetting.infoDefault' : 'pages.ticketTypeAiSetting.infoNode') | transloco }}
           {{ 'pages.ticketTypeAiSetting.infoDocuments' | transloco }}
+          @if (hasParentDocuments) { {{ 'pages.ticketTypeAiSetting.infoParentDocuments' | transloco }} }
         </ion-note>
         @if (!canEdit) {
           <ion-note class="nvx-nota-disabled">{{ 'pages.ticketTypeAiSetting.readOnly' | transloco }}</ion-note>
@@ -58,6 +59,11 @@
               </ion-toggle>
               <ion-input type="number" [(ngModel)]="row.aiMaxAttempts" [disabled]="!editable(row) || !row.aiEnabled" [min]="1" [max]="maxAttempts"
                          [label]="'pages.ticketTypeAiSetting.attempts' | transloco" labelPlacement="floating" class="ai-setting-attempts"></ion-input>
+              @if (hasParentDocuments) {
+                <ion-toggle [(ngModel)]="row.useParentDocuments" [disabled]="!editable(row) || !row.aiEnabled" justify="start">
+                  {{ 'pages.ticketTypeAiSetting.useParentDocuments' | transloco }}
+                </ion-toggle>
+              }
             </ion-item>
           } @empty {
             <ion-note class="nvx-nota-disabled">{{ 'pages.ticketTypeAiSetting.empty' | transloco }}</ion-note>

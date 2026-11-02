@@ -10,7 +10,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.SupportTicke
        - documenti attivi della sezione TicketAi:
            Dev              -> documenti del SuperUser
            Dealer / FA / Company -> documenti del nodo + quelli dei nodi sopra (e del SuperUser) che valgono
-                                    anche per i livelli sotto (IncludeSubLevels)
+                                    anche per i livelli sotto (IncludeSubLevels), salvo che l'impostazione del tipo
+                                    escluda la documentazione dei livelli sopra (UseParentDocuments = false)
          del tipo del ticket o senza tipi, generali o dell'applicativo del tipo.
          Ordine: prima quelli legati al tipo, poi il nodo prima dei livelli sopra, poi Ordine e titolo.
      Il nodo si legge dal percorso del ticket (IdDealer, IdFinancialAdvisor, IdCompany).
@@ -30,16 +31,16 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.SupportTicke
             _documentTicketTypeRepository = documentTicketTypeRepository;
         }
 
-        public (bool AiEnabled, int AiMaxAttempts) Setting(Ticket ticket, TicketLevel level)
+        public (bool AiEnabled, int AiMaxAttempts, bool UseParentDocuments) Setting(Ticket ticket, TicketLevel level)
         {
             if (!TicketTypeAiSettingService.AiLevels.Contains(level))
-                return (false, 1);
+                return (false, 1, true);
 
             int? idDealer = level == TicketLevel.Dealer ? ticket.IdDealer : null;
             int? idFinancialAdvisor = level == TicketLevel.FinancialAdvisor ? ticket.IdFinancialAdvisor : null;
             int? idCompany = level == TicketLevel.Company ? ticket.IdCompany : null;
             if (level != TicketLevel.Dev && idDealer == null && idFinancialAdvisor == null && idCompany == null)
-                return (false, 1);
+                return (false, 1, true);
 
             int idTicketType = ticket.IdTicketType;
             var rows = _ticketTypeAiSettingRepository.FindAll(s => s.IdTicketType == idTicketType && s.Level == level).ToList();
@@ -80,6 +81,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.SupportTicke
             }
             // nodo mancante nel percorso: quel livello non ha documenti
             owners.RemoveAll(o => o.Level != TicketLevel.SuperUser && o.Id == null);
+            // il tipo esclude la documentazione dei livelli sopra: solo quella del nodo
+            if (!Setting(ticket, level).UseParentDocuments)
+                owners.RemoveAll(o => o.Distance > 0);
 
             int? idDealer = ticket.IdDealer, idFinancialAdvisor = ticket.IdFinancialAdvisor, idCompany = ticket.IdCompany;
             var application = type.ApplicationType;
@@ -126,7 +130,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.SupportTicke
 
     public interface ITicketAiKnowledge
     {
-        (bool AiEnabled, int AiMaxAttempts) Setting(Ticket ticket, TicketLevel level);
+        (bool AiEnabled, int AiMaxAttempts, bool UseParentDocuments) Setting(Ticket ticket, TicketLevel level);
         List<TicketAiDocumentModel> Documents(Ticket ticket, TicketType type, TicketLevel level);
     }
 }

@@ -29,6 +29,9 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.SupportTicke
         public int AiMaxAttempts { get; set; }
         public bool DefaultAiEnabled { get; set; }
         public int DefaultAiMaxAttempts { get; set; }
+        // la risposta AI usa anche la documentazione dei livelli sopra (false: solo quella del nodo)
+        public bool UseParentDocuments { get; set; } = true;
+        public bool DefaultUseParentDocuments { get; set; } = true;
     }
 
 

@@ -1032,6 +1032,9 @@ namespace nvxapp.server.data.Migrations.Public
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<bool>("UseParentDocuments")
+                        .HasColumnType("boolean");
+
                     b.HasKey("Id");
 
                     b.HasIndex("IdCompany");

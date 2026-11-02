@@ -651,7 +651,10 @@
       "attempts": "Attempts",
       "defaultOn": "default: AI enabled, {{n}} attempts",
       "defaultOff": "default: AI disabled",
-      "empty": "No request type enabled at this level."
+      "empty": "No request type enabled at this level.",
+      "useParentDocuments": "Use the documentation of the upper levels",
+      "defaultOwnDocuments": "node documentation only",
+      "infoParentDocuments": "\"Use the documentation of the upper levels\": the assistant also uses the documents of the upper levels (and of the SuperUser) published for the lower levels; off, it uses only the node's own documents."
     }
   },
   "components": {

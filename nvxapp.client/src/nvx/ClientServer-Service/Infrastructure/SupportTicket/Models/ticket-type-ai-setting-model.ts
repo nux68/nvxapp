@@ -20,6 +20,9 @@ export class TicketTypeAiSettingModel {
   public aiMaxAttempts: number = 1;
   public defaultAiEnabled: boolean = false;
   public defaultAiMaxAttempts: number = 1;
+  // la risposta AI usa anche la documentazione dei livelli sopra (false: solo quella del nodo)
+  public useParentDocuments: boolean = true;
+  public defaultUseParentDocuments: boolean = true;
 }
 
 
