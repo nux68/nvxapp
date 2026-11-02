@@ -748,6 +748,10 @@
       "typeName": "To confirm, type the name: {{name}}",
       "confirmLabel": "Name",
       "confirm": "Delete permanently"
+    },
+    "nvxListOptions": {
+      "title": "Options",
+      "enableDelete": "Enable deletion"
     }
   },
   "ticket": {

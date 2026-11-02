@@ -748,6 +748,10 @@
       "typeName": "Per confermare digita il nome: {{name}}",
       "confirmLabel": "Nome",
       "confirm": "Elimina definitivamente"
+    },
+    "nvxListOptions": {
+      "title": "Opzioni",
+      "enableDelete": "Abilita cancellazioni"
     }
   },
   "ticket": {
