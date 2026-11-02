@@ -282,4 +282,76 @@
   <data name="TicketTypeAiSettingAttemptsNotValid" xml:space="preserve">
     <value>Invalid number of AI attempts: enter a value from 1 to {0}.</value>
   </data>
+  <data name="DeletionNotAllowed" xml:space="preserve">
+    <value>You are not allowed to delete this item.</value>
+    <comment>cancellazione fisica (DeletionService)</comment>
+  </data>
+  <data name="DeletionNodeNotFound" xml:space="preserve">
+    <value>Item to delete not found.</value>
+    <comment>cancellazione fisica (DeletionService)</comment>
+  </data>
+  <data name="DeletionConfirmMismatch" xml:space="preserve">
+    <value>The typed name does not match: deletion cancelled.</value>
+    <comment>cancellazione fisica (DeletionService)</comment>
+  </data>
+  <data name="DeletionSelf" xml:space="preserve">
+    <value>You cannot delete your own user.</value>
+    <comment>cancellazione fisica (DeletionService)</comment>
+  </data>
+  <data name="DeletionSuperUser" xml:space="preserve">
+    <value>The SuperUser cannot be deleted.</value>
+    <comment>cancellazione fisica (DeletionService)</comment>
+  </data>
+  <data name="DeletionLastPowerAdmin" xml:space="preserve">
+    <value>This is the last active PowerAdmin of the node: assign the role to another user first.</value>
+    <comment>cancellazione fisica (DeletionService)</comment>
+  </data>
+  <data name="DeletionWarningExport" xml:space="preserve">
+    <value>Export the companies' data before deleting them: after deletion they cannot be recovered (attendance and payroll data must be retained).</value>
+    <comment>cancellazione fisica (DeletionService)</comment>
+  </data>
+  <data name="DeletionWarningIrreversible" xml:space="preserve">
+    <value>Deletion is permanent and cannot be undone.</value>
+    <comment>cancellazione fisica (DeletionService)</comment>
+  </data>
+  <data name="DeletionCountDealers" xml:space="preserve">
+    <value>Dealers</value>
+    <comment>cancellazione fisica (DeletionService)</comment>
+  </data>
+  <data name="DeletionCountFinancialAdvisors" xml:space="preserve">
+    <value>Financial advisors</value>
+    <comment>cancellazione fisica (DeletionService)</comment>
+  </data>
+  <data name="DeletionCountCompanies" xml:space="preserve">
+    <value>Companies</value>
+    <comment>cancellazione fisica (DeletionService)</comment>
+  </data>
+  <data name="DeletionCountUsersDeleted" xml:space="preserve">
+    <value>Users deleted</value>
+    <comment>cancellazione fisica (DeletionService)</comment>
+  </data>
+  <data name="DeletionCountUserLinks" xml:space="preserve">
+    <value>User links removed</value>
+    <comment>cancellazione fisica (DeletionService)</comment>
+  </data>
+  <data name="DeletionCountTickets" xml:space="preserve">
+    <value>Tickets deleted</value>
+    <comment>cancellazione fisica (DeletionService)</comment>
+  </data>
+  <data name="DeletionCountTicketsReleased" xml:space="preserve">
+    <value>Assigned tickets released</value>
+    <comment>cancellazione fisica (DeletionService)</comment>
+  </data>
+  <data name="DeletionCountDocuments" xml:space="preserve">
+    <value>Documents</value>
+    <comment>cancellazione fisica (DeletionService)</comment>
+  </data>
+  <data name="DeletionCountSchemas" xml:space="preserve">
+    <value>Application data stores</value>
+    <comment>cancellazione fisica (DeletionService)</comment>
+  </data>
+  <data name="DeletionPowerAdminUser" xml:space="preserve">
+    <value>PowerAdmin, DealerPowerAdmin, FinancialAdvisorPowerAdmin and CompanyPowerAdmin users cannot be deleted: they are removed only by deleting their node.</value>
+    <comment>cancellazione fisica (DeletionService)</comment>
+  </data>
 </root>

@@ -732,6 +732,18 @@
       "textRequired": "Il testo è obbligatorio.",
       "noteRequired": "Scrivi un testo o allega almeno un file.",
       "closeNote": "Il ticket verrà chiuso definitivamente e non potrà più essere riaperto. Per tornare all'elenco senza chiuderlo usa Annulla e poi \"Torna all'elenco\"."
+    },
+    "deletionDialog": {
+      "titleDealer": "Elimina centro",
+      "titleFinancialAdvisor": "Elimina studio",
+      "titleCompany": "Elimina azienda",
+      "titleUserLink": "Togli ed elimina utente",
+      "titleUser": "Elimina utente",
+      "willDelete": "Verranno eliminati:",
+      "usersKept": "Questi utenti perdono il collegamento ma restano, perché collegati altrove:",
+      "typeName": "Per confermare digita il nome: {{name}}",
+      "confirmLabel": "Nome",
+      "confirm": "Elimina definitivamente"
     }
   },
   "ticket": {

@@ -7,6 +7,9 @@ import { UserDataAdditionalModel, UserNavigationService } from '../../../Utility
 import { NavController } from '@ionic/angular';
 import { FabMenuItem, FabMenuService } from '../../../Utility/infrastructure/fab-menu.service';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
+import { AuthService } from '../../../Utility/infrastructure/auth.service';
+import { DeletionDialogService } from '../../../shared/components/infrastructure/deletion-dialog/deletion-dialog.service';
+import { DeletionNodeType } from '../../../ClientServer-Service/Infrastructure/Deletion/Models/deletion-model';
 import { NvxListAction, NvxListColumn } from '../../../shared/components/infrastructure/nvx-list/nvx-list.component';
 import { TranslocoService } from '@jsverse/transloco';
 
@@ -27,6 +30,7 @@ export class DealerListPageComponent {
   public readonly isDisabled = (item: DealerListModel) => item.disabled;
   public readonly sortByDescrizione = (a: DealerListModel, b: DealerListModel) => a.descrizione.localeCompare(b.descrizione);
   public btnEdit: ButtonItem;
+  public btnDelete: ButtonItem;
   public btnImpersona: ButtonItem;
 
   constructor(private navCtrl: NavController,
@@ -34,7 +38,9 @@ export class DealerListPageComponent {
               public fabMenuService: FabMenuService,
               private userInterfaceService: UserInterfaceService,
               private userNavigationService: UserNavigationService,
-              private transloco: TranslocoService) {
+              private transloco: TranslocoService,
+              private deletionDialogService: DeletionDialogService,
+              private authService: AuthService) {
     this.title = this.transloco.translate('pages.dealerList.title');
     this.columns = [{ key: 'descrizione', title: this.transloco.translate('pages.dealerList.columnDealer') }];
     console.log('NavController instance:', this.navCtrl);
@@ -45,7 +51,14 @@ export class DealerListPageComponent {
     this.btnImpersona = userInterfaceService.Btn_Impersona;
     this.btnImpersona.event = this.handleButtonImpersonaClick;
 
-    this.actions = [{ button: this.btnImpersona }, { button: this.btnEdit }];
+    // cancellazione fisica (anteprima e conferma nel dialog; permessi controllati dal server)
+
+    this.btnDelete = userInterfaceService.Btn_Cancella;
+
+    this.btnDelete.event = this.handleButtonDeleteClick;
+
+
+    this.actions = [{ button: this.btnDelete, visible: () => this.canDelete }, { button: this.btnImpersona }, { button: this.btnEdit }];
 
   }
 
@@ -107,5 +120,15 @@ export class DealerListPageComponent {
     this.searchText = CurrFilter;
   }
 
+
+  // eliminazione: il SuperUser (anche mentre impersona) o il PowerAdmin indicato in ANALISI_CANCELLAZIONE.md
+  get canDelete(): boolean {
+    return this.userNavigationService.LoginIsSuperUser;
+  }
+
+  handleButtonDeleteClick = async (item: any) => {
+    if (await this.deletionDialogService.open(DeletionNodeType.Dealer, item.idDealer))
+      this.ionViewWillEnter();
+  }
 
 }
