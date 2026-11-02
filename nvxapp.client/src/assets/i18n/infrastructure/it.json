@@ -83,7 +83,11 @@
     "tickets": "Ticket",
     "ticketTypes": "Tipi di richiesta",
     "aiDocuments": "Documentazione AI",
-    "ticketTypeAiSettings": "Configura risposte AI"
+    "ticketTypeAiSettings": "Configura risposte AI",
+    "application": {
+      "1": "Moke",
+      "2": "Presenze"
+    }
   },
   "showcase": {
     "menu": {

@@ -14,6 +14,7 @@ import { TicketNotifierService } from '../nvx/Utility/infrastructure/ticket-noti
 import { ThemeService } from '../nvx/Utility/infrastructure/theme.service';
 import { ShowcaseService } from '../nvx/Utility/infrastructure/showcase.service';
 import { SITE_NAME } from '../nvx/Utility/infrastructure/site-name';
+import { ApplicationType } from '../nvx/ClientServer-Service/Infrastructure/Account/Models/user-load-model';
 
 
 @Component({
@@ -40,6 +41,11 @@ export class AppComponent implements OnInit {
   public groupedUserMenu: GroupMainMenuItem[] = [];
   // sezione "Assistenza", in fondo al menu per tutti gli utenti collegati
   public groupedSupportMenu: GroupMainMenuItem[] = [];
+  // Ordine del menu dopo il login: Accesso, Assistenza, il nome degli applicativi attivi (es. "Presenze"),
+  // poi le altre sezioni (utente e ruoli) come sono dichiarate
+  public sezioniAccesso: SezioneMenu[] = [];
+  public sezioniMenu: SezioneMenu[] = [];
+  public applicativiAttivi: ApplicationType[] = [];
   // menu dello showcase, mostrato al posto degli altri prima del login
   public groupedShowcaseMenu: GroupMainMenuItem[] = [];
   // sezione dello showcase aperta all'inizio: la prima, oppure quella del login ("Area riservata")
@@ -153,6 +159,7 @@ export class AppComponent implements OnInit {
       this.groupedSuperUserMenu = this.getGroupedSuperUser();
       this.groupedUserMenu = this.getGroupedUser();
       this.groupedSupportMenu = this.getGroupedSupport();
+      this.componiMenu();
 
       // ticket in carico dell'utente (anche dopo un'impersonificazione)
       this.ticketNotifierService.refreshCount();
@@ -172,10 +179,8 @@ export class AppComponent implements OnInit {
   }
 
   
-  // prima sezione del menu con voci visibili, nell'ordine in cui compaiono (utente, SuperUser, Admin, Centro,
-  // Studio, Azienda, Assistenza), saltando "Accesso" (login, logout, dati utente); se non ce ne sono altre resta "Accesso"
-  private primaSezioneAperta(): string {
-    const accesso = this.mainMenuInfrastructureService.GetMenuHeaderMenu(this.mainMenuService.Pages4User)?.title ?? '';
+  // sezioni dei ruoli dell'utente, nell'ordine del menu (utente, SuperUser, Admin, Centro, Studio, Azienda)
+  private sezioniRuoli(): SezioneMenu[] {
     const sezioni: [GroupMainMenuItem[], boolean, (component: string) => boolean][] = [
       [this.groupedUserMenu, true, c => this.showPage4User(c)],
       [this.groupedSuperUserMenu, this.authService.IsSuperUser, c => this.showPage4SuperUser(c)],
@@ -183,10 +188,28 @@ export class AppComponent implements OnInit {
       [this.groupedDealerAdminMenu, this.authService.IsInGroupDealerAdmin, c => this.showPage4DealerAdmin(c)],
       [this.groupedFinancialAdvisorAdminMenu, this.authService.IsInGroupFinancialAdvisorAdmin, c => this.showPage4FinancialAdvisorAdmin(c)],
       [this.groupedCompanyAdminMenu, this.authService.IsInGroupCompanyAdmin, c => this.showPage4CompanyAdmin(c)],
-      [this.groupedSupportMenu, true, c => true],
     ];
-    for (const [gruppi, visibili, mostra] of sezioni) {
-      if (!visibili) continue;
+    return sezioni.filter(([, visibili]) => visibili)
+                  .map(([gruppi, , mostra]) => ({ gruppi: gruppi.filter(g => g.menuItem.length > 0), mostra }));
+  }
+
+  // "Accesso" (sezione dell'utente di Infrastructure) in testa, le altre sezioni dopo Assistenza e il nome degli applicativi
+  private componiMenu(): void {
+    const accesso = this.mainMenuInfrastructureService.GetMenuHeaderMenu(this.mainMenuService.Pages4User)?.title ?? '';
+    const [utente, ...ruoli] = this.sezioniRuoli();
+
+    this.sezioniAccesso = [{ gruppi: utente.gruppi.filter(g => g.menuHeader.title === accesso), mostra: utente.mostra }];
+    this.sezioniMenu = [{ gruppi: utente.gruppi.filter(g => g.menuHeader.title !== accesso), mostra: utente.mostra }, ...ruoli];
+    this.applicativiAttivi = (Object.values(ApplicationType).filter(v => typeof v === 'number') as ApplicationType[])
+      .filter(a => this.authService.hasApplication(a));
+  }
+
+  // prima sezione del menu con voci visibili da aprire dopo il login, saltando "Accesso" (login, logout, dati utente)
+  // e "Assistenza", che si apre solo se non ce ne sono altre; altrimenti resta "Accesso"
+  private primaSezioneAperta(): string {
+    const accesso = this.mainMenuInfrastructureService.GetMenuHeaderMenu(this.mainMenuService.Pages4User)?.title ?? '';
+    const sezioni: SezioneMenu[] = [...this.sezioniMenu, { gruppi: this.groupedSupportMenu, mostra: () => true }];
+    for (const { gruppi, mostra } of sezioni) {
       const gruppo = gruppi.find(g => g.menuHeader.title !== accesso &&
         g.menuItem.some(p => p.menuType === MenuType.MenuItem && mostra(p.component)));
       if (gruppo) return gruppo.menuHeader.title;
@@ -476,6 +499,12 @@ export class AppComponent implements OnInit {
 }
 
 
+
+// sezioni di un elenco di ruolo con la regola che decide quali voci mostrare
+export interface SezioneMenu {
+  gruppi: GroupMainMenuItem[];
+  mostra: (component: string) => boolean;
+}
 
 export class GroupMainMenuItem {
 
