@@ -1,0 +1,28 @@
+@if (hasOptions()) {
+  <div class="nvx-list-options">
+    <button type="button" class="nvx-list-options-header" [attr.aria-expanded]="open()" (click)="toggle()">
+      <ion-icon name="options-outline" aria-hidden="true"></ion-icon>
+      <span>{{ 'components.nvxListOptions.title' | transloco }}</span>
+      <ion-icon class="nvx-list-options-chevron" [name]="open() ? 'chevron-up-outline' : 'chevron-down-outline'" aria-hidden="true"></ion-icon>
+    </button>
+
+    @if (open()) {
+      <div class="nvx-list-options-content">
+        @if (showDisabledLabel()) {
+          <ion-checkbox labelPlacement="end" justify="start"
+            [checked]="showDisabled()"
+            (ionChange)="showDisabled.set($event.detail.checked)">
+            {{ showDisabledLabel() }}
+          </ion-checkbox>
+        }
+        @if (deleteAvailable()) {
+          <ion-checkbox labelPlacement="end" justify="start" color="danger"
+            [checked]="deleteEnabled()"
+            (ionChange)="deleteEnabled.set($event.detail.checked)">
+            {{ 'components.nvxListOptions.enableDelete' | transloco }}
+          </ion-checkbox>
+        }
+      </div>
+    }
+  </div>
+}

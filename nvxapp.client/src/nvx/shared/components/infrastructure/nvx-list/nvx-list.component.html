@@ -1,6 +1,6 @@
 @if (items()) {
 
-  @if (disabledToggleLabel()) {
+  @if (disabledToggleLabel() && !disabledToggleExternal()) {
     <div class="nvx-list-toggle">
       <ion-checkbox labelPlacement="end" justify="start"
         [checked]="showDisabled()"

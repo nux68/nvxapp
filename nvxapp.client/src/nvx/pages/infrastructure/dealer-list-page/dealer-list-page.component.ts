@@ -31,6 +31,9 @@ export class DealerListPageComponent {
   public readonly sortByDescrizione = (a: DealerListModel, b: DealerListModel) => a.descrizione.localeCompare(b.descrizione);
   public btnEdit: ButtonItem;
   public btnDelete: ButtonItem;
+  // opzioni della lista (nvx-list-options): Mostra disabilitati e Abilita cancellazioni (il pulsante Cancella)
+  public showDisabled = false;
+  public deleteEnabled = false;
   public btnImpersona: ButtonItem;
 
   constructor(private navCtrl: NavController,
@@ -58,7 +61,7 @@ export class DealerListPageComponent {
     this.btnDelete.event = this.handleButtonDeleteClick;
 
 
-    this.actions = [{ button: this.btnDelete, visible: () => this.canDelete }, { button: this.btnImpersona }, { button: this.btnEdit }];
+    this.actions = [{ button: this.btnDelete, visible: () => this.canDelete && this.deleteEnabled }, { button: this.btnImpersona }, { button: this.btnEdit }];
 
   }
 

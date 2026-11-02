@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, Directive, TemplateRef, computed, contentChild, contentChildren, inject, input, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, Directive, TemplateRef, computed, contentChild, contentChildren, inject, input, signal, model } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
 import { IonButton, IonCheckbox, IonIcon, IonItem, IonItemOption, IonItemOptions, IonItemSliding, IonLabel, IonList, IonNote } from '@ionic/angular';
 import { ButtonItem, UserInterfaceService } from '../../../../Utility/infrastructure/user-interface.service';
@@ -78,9 +78,12 @@ export class NvxListComponent<T = any> {
   readonly rowDisabled = input<((item: T) => boolean) | null>(null);
   /** se valorizzato compare la casella "mostra disabilitati" e le righe disabilitate sono nascoste finche' non si spunta */
   readonly disabledToggleLabel = input<string | null>(null);
+  /** la casella "mostra disabilitati" e' fuori dalla lista (es. nella sezione Opzioni, nvx-list-options):
+      le righe disabilitate si nascondono finche' showDisabled (collegato con [(showDisabled)]) e' false */
+  readonly disabledToggleExternal = input(false);
   readonly emptyText = input<string>(inject(TranslocoService).translate('components.nvxList.empty'));
 
-  readonly showDisabled = signal(false);
+  readonly showDisabled = model(false);
   readonly sortKey = signal<string | null>(null);
   readonly sortDir = signal<1 | -1>(1);
 
@@ -104,7 +107,7 @@ export class NvxListComponent<T = any> {
     let rows = [...(this.items() ?? [])];
 
     const disabled = this.rowDisabled();
-    if (disabled && this.disabledToggleLabel() && !this.showDisabled()) {
+    if (disabled && (this.disabledToggleLabel() || this.disabledToggleExternal()) && !this.showDisabled()) {
       rows = rows.filter(r => !disabled(r));
     }
 
