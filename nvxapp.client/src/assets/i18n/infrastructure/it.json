@@ -651,7 +651,10 @@
       "attempts": "Tentativi",
       "defaultOn": "default: AI attiva, {{n}} tentativi",
       "defaultOff": "default: AI non attiva",
-      "empty": "Nessun tipo di richiesta abilitato a questo livello."
+      "empty": "Nessun tipo di richiesta abilitato a questo livello.",
+      "useParentDocuments": "Usa la documentazione dei livelli superiori",
+      "defaultOwnDocuments": "solo documentazione del nodo",
+      "infoParentDocuments": "\"Usa la documentazione dei livelli superiori\": l'assistente usa anche i documenti dei livelli sopra (e del SuperUser) pubblicati per i livelli sotto; spento, usa solo quelli del nodo."
     }
   },
   "components": {
