@@ -129,6 +129,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.SupportTicke
                     };
                     row.AiEnabled = r.AiEnabled;
                     row.AiMaxAttempts = r.AiMaxAttempts;
+                    row.UseParentDocuments = r.UseParentDocuments;
                     await _ticketTypeAiSettingRepository.UpsertAsync(row);
                 }
 
@@ -210,15 +211,18 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.SupportTicke
                     AiMaxAttempts = effective.AiMaxAttempts,
                     DefaultAiEnabled = d?.AiEnabled ?? false,
                     DefaultAiMaxAttempts = d?.AiMaxAttempts ?? 1,
+                    UseParentDocuments = effective.UseParentDocuments,
+                    DefaultUseParentDocuments = d?.UseParentDocuments ?? true,
                 };
             }).ToList();
         }
 
         // impostazione effettiva: riga del nodo, altrimenti default del livello, altrimenti AI disattivata
-        public static (bool AiEnabled, int AiMaxAttempts) Effective(TicketTypeAiSetting? levelDefault, TicketTypeAiSetting? node)
+        // (senza righe la documentazione dei livelli sopra si usa)
+        public static (bool AiEnabled, int AiMaxAttempts, bool UseParentDocuments) Effective(TicketTypeAiSetting? levelDefault, TicketTypeAiSetting? node)
         {
             var s = node ?? levelDefault;
-            return s == null ? (false, 1) : (s.AiEnabled, Math.Max(1, s.AiMaxAttempts));
+            return s == null ? (false, 1, true) : (s.AiEnabled, Math.Max(1, s.AiMaxAttempts), s.UseParentDocuments);
         }
     }
 

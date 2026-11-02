@@ -101,17 +101,24 @@ export class TicketTypeAiSettingPageComponent extends BasePageConfirmCancelCompo
     if (!row.custom) {
       row.aiEnabled = row.defaultAiEnabled;
       row.aiMaxAttempts = row.defaultAiMaxAttempts;
+      row.useParentDocuments = row.defaultUseParentDocuments;
     }
   }
+
+  // il DEV usa solo la documentazione del SuperUser: non ha livelli sopra da escludere
+  get hasParentDocuments(): boolean { return this.scope?.level !== TicketLevel.Dev; }
 
   editable(row: TicketTypeAiSettingModel): boolean {
     return this.canEdit && (this.isDefault || row.custom);
   }
 
   defaultText(row: TicketTypeAiSettingModel): string {
-    return row.defaultAiEnabled
+    const testo = row.defaultAiEnabled
       ? this.transloco.translate('pages.ticketTypeAiSetting.defaultOn', { n: row.defaultAiMaxAttempts })
       : this.transloco.translate('pages.ticketTypeAiSetting.defaultOff');
+    return row.defaultAiEnabled && this.hasParentDocuments && !row.defaultUseParentDocuments
+      ? testo + ', ' + this.transloco.translate('pages.ticketTypeAiSetting.defaultOwnDocuments')
+      : testo;
   }
 
   SaveData = (editModel: TicketTypeAiSettingPutInModel): Observable<boolean> => {

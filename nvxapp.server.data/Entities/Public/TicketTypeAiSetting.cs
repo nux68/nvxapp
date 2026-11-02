@@ -9,6 +9,8 @@ namespace nvxapp.server.data.Entities.Public
                                                     livello, deciso dal SuperUser
         - AiEnabled                               : all'arrivo del ticket al livello si tenta la risposta AI
         - AiMaxAttempts                           : tentativi AI al massimo a quel livello, poi l'operatore
+        - UseParentDocuments                      : la risposta AI usa anche i documenti dei livelli sopra (e del
+                                                    SuperUser) che valgono per i livelli sotto; false = solo quelli del nodo
      Impostazione effettiva: riga del nodo, altrimenti default del livello, altrimenti AI disattivata.
     */
     public class TicketTypeAiSetting : BaseEntity
@@ -26,5 +28,7 @@ namespace nvxapp.server.data.Entities.Public
         public bool AiEnabled { get; set; }
 
         public int AiMaxAttempts { get; set; }
+
+        public bool UseParentDocuments { get; set; } = true;
     }
 }
