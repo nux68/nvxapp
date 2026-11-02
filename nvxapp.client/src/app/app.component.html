@@ -40,219 +40,12 @@
         } @else {
         <ion-accordion-group [value]="selectedMenu">
 
-          <ng-container>
-            @for (group of groupedUserMenu; track group.menuHeader.title;let i = $index) {
-              @if (group.menuItem.length > 0) {
-                <ion-accordion value="{{group.menuHeader.title}}" toggleIcon="chevron-down" toggleIconSlot="end">
-                  <ion-item slot="header">
-                    <ion-label>{{ group.menuHeader.title | transloco }}</ion-label>
-                  </ion-item>
-
-                  <div class="ion-padding" slot="content" style="padding:0px;">
-                    <ion-list id="nvx-list">
-
-                      @for (p of group.menuItem ; track p; let i = $index) {
-                        @if (p.menuType === 0) {
-                          @if (showPage4User(p.component)) {
-                            <ion-menu-toggle auto-hide="false">
-                              <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
-                                <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-outline'"></ion-icon>
-                                <ion-label>{{ p.title | transloco }}</ion-label>
-                                @if (menuBadge(p) > 0) {
-                                  <ion-badge slot="end" color="danger">{{ menuBadge(p) }}</ion-badge>
-                                }
-                              </ion-item>
-                            </ion-menu-toggle>
-                          }
-                        }
-                        @if (p.menuType === 2) {
-                          <ion-note>{{ p.title | transloco }}</ion-note>
-                        }
-                      }
-                    </ion-list>
-                  </div>
-
-                </ion-accordion>
-              }
-            }
-          </ng-container>
-
-
-          @if (authService.IsSuperUser) {
-            @for (group of groupedSuperUserMenu; track group.menuHeader.title;let i = $index) {
-              @if (group.menuItem.length > 0) {
-                <ion-accordion value="{{group.menuHeader.title}}" toggleIcon="chevron-down" toggleIconSlot="end">
-                  <ion-item slot="header">
-                    <ion-label>{{ group.menuHeader.title | transloco }}</ion-label>
-                  </ion-item>
-                  <div class="ion-padding" slot="content" style="padding:0px;">
-                    <ion-list id="nvx-list">
-                      @for (p of group.menuItem ; track p; let i = $index) {
-                        @if (p.menuType === 0) {
-                          @if (showPage4SuperUser(p.component)) {
-                            <ion-menu-toggle auto-hide="false">
-                              <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
-                                <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-outline'"></ion-icon>
-                                <ion-label>{{ p.title | transloco }}</ion-label>
-                                @if (menuBadge(p) > 0) {
-                                  <ion-badge slot="end" color="danger">{{ menuBadge(p) }}</ion-badge>
-                                }
-                              </ion-item>
-                            </ion-menu-toggle>
-                          }
-                        }
-                        @if (p.menuType === 2) {
-                          <ion-note>{{ p.title | transloco }}</ion-note>
-                        }
-                      }
-                    </ion-list>
-                  </div>
-                </ion-accordion>
-              }
-            }
+          <!-- 1. Accesso (sezioni di Infrastructure dell'utente) -->
+          @for (sezione of sezioniAccesso; track $index) {
+            <ng-container *ngTemplateOutlet="modelloSezioni; context: { $implicit: sezione }"></ng-container>
           }
 
-
-          @if (authService.IsInGroupAdmin) {
-            @for (group of groupedAdminMenu; track group.menuHeader.title;let i = $index) {
-              @if (group.menuItem.length > 0) {
-                <ion-accordion value="{{group.menuHeader.title}}" toggleIcon="chevron-down" toggleIconSlot="end">
-                  <ion-item slot="header">
-                    <ion-label>{{ group.menuHeader.title | transloco }}</ion-label>
-                  </ion-item>
-                  <div class="ion-padding" slot="content" style="padding:0px;">
-                    <ion-list id="nvx-list">
-                      @for (p of group.menuItem ; track p; let i = $index) {
-                        @if (p.menuType === 0) {
-                          @if (showPage4Admin(p.component)) {
-                            <ion-menu-toggle auto-hide="false">
-                              <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
-                                <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-outline'"></ion-icon>
-                                <ion-label>{{ p.title | transloco }}</ion-label>
-                                @if (menuBadge(p) > 0) {
-                                  <ion-badge slot="end" color="danger">{{ menuBadge(p) }}</ion-badge>
-                                }
-                              </ion-item>
-                            </ion-menu-toggle>
-                          }
-                        }
-                        @if (p.menuType === 2) {
-                          <ion-note>{{ p.title | transloco }}</ion-note>
-                        }
-                      }
-                    </ion-list>
-                  </div>
-                </ion-accordion>
-              }
-            }
-          }
-
-
-          @if (authService.IsInGroupDealerAdmin) {
-            @for (group of groupedDealerAdminMenu; track group.menuHeader.title;let i = $index) {
-              @if (group.menuItem.length > 0) {
-                <ion-accordion value="{{group.menuHeader.title}}" toggleIcon="chevron-down" toggleIconSlot="end">
-                  <ion-item slot="header">
-                    <ion-label>{{ group.menuHeader.title | transloco }}</ion-label>
-                  </ion-item>
-                  <div class="ion-padding" slot="content" style="padding:0px;">
-                    <ion-list id="nvx-list">
-                      @for (p of group.menuItem ; track p; let i = $index) {
-                        @if (p.menuType === 0) {
-                          @if (showPage4DealerAdmin(p.component)) {
-                            <ion-menu-toggle auto-hide="false">
-                              <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
-                                <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-outline'"></ion-icon>
-                                <ion-label>{{ p.title | transloco }}</ion-label>
-                                @if (menuBadge(p) > 0) {
-                                  <ion-badge slot="end" color="danger">{{ menuBadge(p) }}</ion-badge>
-                                }
-                              </ion-item>
-                            </ion-menu-toggle>
-                          }
-                        }
-                        @if (p.menuType === 2) {
-                          <ion-note>{{ p.title | transloco }}</ion-note>
-                        }
-                      }
-                    </ion-list>
-                  </div>
-                </ion-accordion>
-              }
-            }
-          }
-
-
-          @if (authService.IsInGroupFinancialAdvisorAdmin) {
-            @for (group of groupedFinancialAdvisorAdminMenu; track group.menuHeader.title;let i = $index) {
-              @if (group.menuItem.length > 0) {
-                <ion-accordion value="{{group.menuHeader.title}}" toggleIcon="chevron-down" toggleIconSlot="end">
-                  <ion-item slot="header">
-                    <ion-label>{{ group.menuHeader.title | transloco }}</ion-label>
-                  </ion-item>
-                  <div class="ion-padding" slot="content" style="padding:0px;">
-                    <ion-list id="nvx-list">
-                      @for (p of group.menuItem ; track p; let i = $index) {
-                        @if (p.menuType === 0) {
-                          @if (showPage4FinancialAdvisorAdmin(p.component)) {
-                            <ion-menu-toggle auto-hide="false">
-                              <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
-                                <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-outline'"></ion-icon>
-                                <ion-label>{{ p.title | transloco }}</ion-label>
-                                @if (menuBadge(p) > 0) {
-                                  <ion-badge slot="end" color="danger">{{ menuBadge(p) }}</ion-badge>
-                                }
-                              </ion-item>
-                            </ion-menu-toggle>
-                          }
-                        }
-                        @if (p.menuType === 2) {
-                          <ion-note>{{ p.title | transloco }}</ion-note>
-                        }
-                      }
-                    </ion-list>
-                  </div>
-                </ion-accordion>
-              }
-            }
-          }
-
-
-          @if (authService.IsInGroupCompanyAdmin) {
-            @for (group of groupedCompanyAdminMenu; track group.menuHeader.title;let i = $index) {
-              @if (group.menuItem.length > 0) {
-                <ion-accordion value="{{group.menuHeader.title}}" toggleIcon="chevron-down" toggleIconSlot="end">
-                  <ion-item slot="header">
-                    <ion-label>{{ group.menuHeader.title | transloco }}</ion-label>
-                  </ion-item>
-                  <div class="ion-padding" slot="content" style="padding:0px;">
-                    <ion-list id="nvx-list">
-                      @for (p of group.menuItem ; track p; let i = $index) {
-                        @if (p.menuType === 0) {
-                          @if (showPage4CompanyAdmin(p.component)) {
-                            <ion-menu-toggle auto-hide="false">
-                              <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
-                                <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-outline'"></ion-icon>
-                                <ion-label>{{ p.title | transloco }}</ion-label>
-                                @if (menuBadge(p) > 0) {
-                                  <ion-badge slot="end" color="danger">{{ menuBadge(p) }}</ion-badge>
-                                }
-                              </ion-item>
-                            </ion-menu-toggle>
-                          }
-                        }
-                        @if (p.menuType === 2) {
-                          <ion-note>{{ p.title | transloco }}</ion-note>
-                        }
-                      }
-                    </ion-list>
-                  </div>
-                </ion-accordion>
-              }
-            }
-          }
-
-          <!-- Assistenza: ultima sezione, per tutti gli utenti collegati (voci filtrate per ruolo in getGroupedSupport) -->
+          <!-- 2. Assistenza: per tutti gli utenti collegati (voci filtrate per ruolo in getGroupedSupport) -->
           @for (group of groupedSupportMenu; track group.menuHeader.title) {
             <ion-accordion value="{{group.menuHeader.title}}" toggleIcon="chevron-down" toggleIconSlot="end">
               <ion-item slot="header">
@@ -280,8 +73,55 @@
             </ion-accordion>
           }
 
+          <!-- 3. applicativi attivi (es. "Presenze"): le sezioni che seguono sono dell'applicativo -->
+          @if (applicativiAttivi.length > 0) {
+            <div class="nvx-menu-application">
+              @for (app of applicativiAttivi; track app; let last = $last) {
+                {{ 'menu.application.' + app | transloco }}@if (!last) { · }
+              }
+            </div>
+          }
+
+          <!-- 4. sezioni dell'utente e dei ruoli (SuperUser, Centro, Studio, Azienda...) come sono dichiarate -->
+          @for (sezione of sezioniMenu; track $index) {
+            <ng-container *ngTemplateOutlet="modelloSezioni; context: { $implicit: sezione }"></ng-container>
+          }
+
         </ion-accordion-group>
         }
+
+        <!-- sezioni di un elenco di ruolo: un accordion per gruppo, voci filtrate con la regola della sezione -->
+        <ng-template #modelloSezioni let-sezione>
+          @for (group of sezione.gruppi; track group.menuHeader.title) {
+            <ion-accordion value="{{group.menuHeader.title}}" toggleIcon="chevron-down" toggleIconSlot="end">
+              <ion-item slot="header">
+                <ion-label>{{ group.menuHeader.title | transloco }}</ion-label>
+              </ion-item>
+              <div class="ion-padding" slot="content" style="padding:0px;">
+                <ion-list id="nvx-list">
+                  @for (p of group.menuItem; track p) {
+                    @if (p.menuType === 0) {
+                      @if (sezione.mostra(p.component)) {
+                        <ion-menu-toggle auto-hide="false">
+                          <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false" routerLinkActive="selected">
+                            <ion-icon aria-hidden="true" slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-outline'"></ion-icon>
+                            <ion-label>{{ p.title | transloco }}</ion-label>
+                            @if (menuBadge(p) > 0) {
+                              <ion-badge slot="end" color="danger">{{ menuBadge(p) }}</ion-badge>
+                            }
+                          </ion-item>
+                        </ion-menu-toggle>
+                      }
+                    }
+                    @if (p.menuType === 2) {
+                      <ion-note>{{ p.title | transloco }}</ion-note>
+                    }
+                  }
+                </ion-list>
+              </div>
+            </ion-accordion>
+          }
+        </ng-template>
 
 
 

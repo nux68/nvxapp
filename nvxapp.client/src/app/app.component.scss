@@ -56,6 +56,18 @@ ion-accordion-group {
   }
 }
 
+// titolo di un applicativo (es. "Presenze") sopra le sue sezioni: separa le voci dell'applicativo da quelle comuni
+ion-accordion-group .nvx-menu-application {
+  margin: 14px 10px 8px 10px;
+  padding-top: 12px;
+  border-top: 1px solid var(--ion-color-step-150, rgba(127, 127, 127, 0.25));
+  color: var(--ion-color-primary);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
 ion-menu ion-list#nvx-list {
   background: transparent;
   padding: 2px 0;
