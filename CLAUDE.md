@@ -1,18 +1,22 @@
 ## ATTENZIONE !!! 
 
-La solutionj si sviluppa su due filono principali.
-Il primo Infrastructure e Infrastructure_Dev
-dove vengono sviluppare le funzioni condivise a vari argomenti che varanno sviluppati
+La solution si porta avanti su branch differenti che rappresentano i gruppi "logici" dell'applicativo
 
-Il primo argomento è la gestione rpesenze
+1) "Funzioni base" comuni in tutto l'applicativo, viene sviluppata in Infrastructure_Dev e mergiata in Infrastructure
+2) "Gestione Presenze"                            viene sviluppata in AttendanceTracking_Dev , riceve i merge da Infrastructure e viene mergiata in AttendanceTracking 
+3) "CRM"                                          viene sviluppata in CRM_Dev                , riceve i merge da Infrastructure e viene mergiata in CRM  
+4) "Documentale"                                  viene sviluppata in DocumentManagement_Dev , riceve i merge da Infrastructure e viene mergiata in DocumentManagement  
+5) "All Function"                                 viene sviluppata in AllFunction_Dev        , riceve i merge da,Infrastructure(per primo) a seguire AttendanceTracking,CRM,DocumentManagement  e mergiata in AllFunction
 
-AttendanceTracking e AttendanceTracking_Dev
 
-quindi e possibile che una modifca debba essere fatta prima sul brach Infrastructure o Infrastructure_Dev
-mergiata sul ramo AttendanceTracking e proseguita 
+## ATTENZIONE !!! 
+I merge vanno sempe da "Funzioni base" verso gli altri branch a mai al contrario 
 
 
 
 ## ATTENZIONE !!! 
 le mod. vanno fatte sul branch corrente
 non effettuare mai commit verso origin, tutte le mod. fatte devono rimenere locali
+   
+   
+   
