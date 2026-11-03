@@ -9,6 +9,7 @@ using nvxapp.server.data.Repositories.Public;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
+using nvxapp.server.data.Repositories.Tenant.Common;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_AnagraficaService.Models;
 using nvxapp.server.Base;
 

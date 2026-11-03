@@ -1381,4 +1381,8 @@
   <data name="ExportAnteprimaNessunDato" xml:space="preserve">
     <value>Il dipendente scelto non ha causali del modello nel mese: prova con un altro dipendente o un altro mese.</value>
   </data>
+  <data name="CustomerUsedByJobs" xml:space="preserve">
+    <value>commesse delle presenze: {0}</value>
+    <comment>cliente comune usato dalle commesse (ICommonEntityUsage)</comment>
+  </data>
 </root>

@@ -88,7 +88,7 @@ namespace nvxapp.server.data.Infrastructure
         }
 
         /*
-         Tabelle di public referenziate dalle tabelle presenze (chiavi esterne verso utenti e aziende).
+         Tabelle di public (e comuni, vedi sotto) referenziate dalle tabelle presenze (chiavi esterne verso utenti e aziende).
          Mappate con lo schema "public" esplicito e ESCLUSE dalle migration tenant: le crea e le
          aggiorna solo PublicDbContext. Da qui si usano in sola lettura (Include, join).
          Le navigazioni verso altre tabelle di public non servono al modulo e vengono ignorate.
@@ -109,6 +109,31 @@ namespace nvxapp.server.data.Infrastructure
                 entity.Ignore(e => e.FinancialAdvisorNavigation);
                 entity.Ignore(e => e.UserCompany);
                 entity.Ignore(e => e.CompanyApplication);
+            });
+
+            /*
+             Tabelle comuni dell'azienda (schema Common, tenant_<IdAzienda>_0 o public): le crea e le aggiorna
+             CommonDbContext. Qui SENZA schema (le risolve il search_path, che contiene anche lo schema Common)
+             e in sola lettura: le scritture passano dai repository di Repositories/Tenant/Common.
+            */
+            // tabella comune non usata dalle presenze: fuori dal modello
+            modelBuilder.Ignore<Az_ClienteContatto>();
+
+            modelBuilder.Entity<Az_Anagrafica>(entity =>
+            {
+                entity.ToTable("Az_Anagrafica", t => t.ExcludeFromMigrations());
+                entity.HasOne(t => t.CompanyNavigation)
+                      .WithOne()
+                      .HasForeignKey<Az_Anagrafica>(t => t.IdCompany);
+            });
+
+            modelBuilder.Entity<Az_Cliente>(entity =>
+            {
+                entity.ToTable("Az_Cliente", t => t.ExcludeFromMigrations());
+                entity.Ignore(e => e.Az_ClienteContatto);
+                entity.HasOne(t => t.Az_AnagraficaNavigation)
+                      .WithMany(t => t.Az_Cliente)
+                      .HasForeignKey(t => t.IdAz_Anagrafica);
             });
         }
 
@@ -262,22 +287,11 @@ namespace nvxapp.server.data.Infrastructure
               .WithMany(t_figlio => t_figlio.Dip_GG_Timbratura)
               .HasForeignKey(key_esterna => key_esterna.IdAz_SubCommessaAttivita)
               .OnDelete(DeleteBehavior.Cascade);
-            
-
-
-
-
-            /* Az_Anagrafica */
-            modelBuilder.Entity<Az_Anagrafica>()
-                .HasOne(t_padre => t_padre.CompanyNavigation)
-                .WithOne()
-                .HasForeignKey<Az_Anagrafica>(key_esterna => key_esterna.IdCompany)
-                .OnDelete(DeleteBehavior.Cascade);
 
             /* Az_Cfg */
             modelBuilder.Entity<Az_Cfg>()
                 .HasOne(t_padre => t_padre.Az_AnagraficaNavigation)
-                .WithOne(t_figlio => t_figlio.Az_Cfg)
+                .WithOne()
                 .HasForeignKey<Az_Cfg>(key_esterna => key_esterna.IdAz_Anagrafica)
                 .OnDelete(DeleteBehavior.Cascade);
 
@@ -285,7 +299,7 @@ namespace nvxapp.server.data.Infrastructure
             /* Az_Sedi */
             modelBuilder.Entity<Az_Sedi>()
                 .HasOne(t_padre => t_padre.Az_AnagraficaNavigation)
-                .WithMany(t_figlio => t_figlio.Az_Sedi)
+                .WithMany()
                 .HasForeignKey(key_esterna => key_esterna.IdAz_Anagrafica)
                 .OnDelete(DeleteBehavior.Cascade);
 
@@ -344,7 +358,7 @@ namespace nvxapp.server.data.Infrastructure
             /* Az_Attivita */
             modelBuilder.Entity<Par_Attivita>()
                 .HasOne(t_padre => t_padre.Az_AnagraficaNavigation)
-                .WithMany(t_figlio => t_figlio.Par_Attivita)
+                .WithMany()
                 .HasForeignKey(key_esterna => key_esterna.IdAz_Anagrafica)
                 .OnDelete(DeleteBehavior.Cascade);
 
@@ -364,7 +378,7 @@ namespace nvxapp.server.data.Infrastructure
             /* Az_Commessa */
             modelBuilder.Entity<Az_Commessa>()
                 .HasOne(t_padre => t_padre.Az_AnagraficaNavigation)
-                .WithMany(t_figlio => t_figlio.Az_Commessa)
+                .WithMany()
                 .HasForeignKey(key_esterna => key_esterna.IdAz_Anagrafica)
                 .OnDelete(DeleteBehavior.Cascade);
 
@@ -396,13 +410,6 @@ namespace nvxapp.server.data.Infrastructure
                 .HasForeignKey(t => t.IdPar_Attivita)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            /* Az_Cliente */
-            modelBuilder.Entity<Az_Cliente>()
-                .HasOne(t_padre => t_padre.Az_AnagraficaNavigation)
-                .WithMany(t_figlio => t_figlio.Az_Cliente)
-                .HasForeignKey(key_esterna => key_esterna.IdAz_Anagrafica)
-                .OnDelete(DeleteBehavior.Cascade);
-
             /* Az_SediAttivita */
             modelBuilder.Entity<Az_SediAttivita>()
                 .HasOne(t_padre => t_padre.Az_SediNavigation)
@@ -419,14 +426,14 @@ namespace nvxapp.server.data.Infrastructure
             /* Par_Causali */
             modelBuilder.Entity<Par_Causali>()
                 .HasOne(t_padre => t_padre.Az_AnagraficaNavigation)
-                .WithMany(t_figlio => t_figlio.Par_Causali)
+                .WithMany()
                 .HasForeignKey(key_esterna => key_esterna.IdAz_Anagrafica)
                 .OnDelete(DeleteBehavior.Cascade);
 
             /* Par_Giustificativi */
             modelBuilder.Entity<Par_Giustificativi>()
                 .HasOne(t_padre => t_padre.Az_AnagraficaNavigation)
-                .WithMany(t_figlio => t_figlio.Par_Giustificativi)
+                .WithMany()
                 .HasForeignKey(key_esterna => key_esterna.IdAz_Anagrafica)
                 .OnDelete(DeleteBehavior.Cascade);
 
@@ -440,7 +447,7 @@ namespace nvxapp.server.data.Infrastructure
             /* Par_ExportCau */
             modelBuilder.Entity<Par_ExportCau>()
                 .HasOne(t_padre => t_padre.Az_AnagraficaNavigation)
-                .WithMany(t_figlio => t_figlio.Par_ExportCau)
+                .WithMany()
                 .HasForeignKey(key_esterna => key_esterna.IdAz_Anagrafica)
                 .OnDelete(DeleteBehavior.Cascade);
 
@@ -471,14 +478,14 @@ namespace nvxapp.server.data.Infrastructure
             /* Par_Arrotondamenti */
             modelBuilder.Entity<Par_Arrotondamenti>()
                 .HasOne(t_padre => t_padre.Az_AnagraficaNavigation)
-                .WithMany(t_figlio => t_figlio.Par_Arrotondamenti)
+                .WithMany()
                 .HasForeignKey(key_esterna => key_esterna.IdAz_Anagrafica)
                 .OnDelete(DeleteBehavior.Cascade);
 
             /* Par_Orario */
             modelBuilder.Entity<Par_Orario>()
                 .HasOne(t_padre => t_padre.Az_AnagraficaNavigation)
-                .WithMany(t_figlio => t_figlio.Par_Orario)
+                .WithMany()
                 .HasForeignKey(key_esterna => key_esterna.IdAz_Anagrafica)
                 .OnDelete(DeleteBehavior.Cascade);
 
@@ -493,7 +500,7 @@ namespace nvxapp.server.data.Infrastructure
             /* Par_ProfiloOrario */
             modelBuilder.Entity<Par_ProfiloOrario>()
                 .HasOne(t_padre => t_padre.Az_AnagraficaNavigation)
-                .WithMany(t_figlio => t_figlio.Par_ProfiloOrario)
+                .WithMany()
                 .HasForeignKey(key_esterna => key_esterna.IdAz_Anagrafica)
                 .OnDelete(DeleteBehavior.Cascade);
                
@@ -669,7 +676,7 @@ namespace nvxapp.server.data.Infrastructure
             /* Par_Festivita */
             modelBuilder.Entity<Par_Festivita>()
                 .HasOne(t => t.Az_AnagraficaNavigation)
-                .WithMany(t => t.Par_Festivita)
+                .WithMany()
                 .HasForeignKey(t => t.IdAz_Anagrafica)
                 .OnDelete(DeleteBehavior.Cascade);
 

@@ -6,6 +6,8 @@ using nvxapp.server.data.Entities.Tenant;
 using nvxapp.server.data.Entities.Tenant.GestionePresenze;
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
+using nvxapp.server.data.Repositories.Tenant.Common;
+using nvxapp.server.service.ClientServer_Service.Infrastructure.Common;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubCommessaAttivitaService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Dip_AnagraficaService.Models;
 using nvxapp.server.service.ClientServer_Service.ModelsBase;
@@ -20,6 +22,7 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
         private readonly IDip_RapportoLavoroRepository _dip_RapportoLavoroRepository;
 
         private readonly IAz_AnagraficaRepository _az_AnagraficaRepository;
+        private readonly ICommonCompanyUtility _commonCompanyUtility;
         private readonly IAz_SediRepository _az_SediRepository;
         private readonly IAz_SediRepartoRepository _az_RepartoRepository;
         private readonly IAz_CfgRepository _az_CfgRepository;
@@ -76,10 +79,12 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
                                            IDip_PeriodoRepository dip_PeriodoRepository,
                                            IDip_CompetenzaRepository dip_CompetenzaRepository,
                                            IAz_SubCommessaUserRepository az_SubCommessaUserRepository,
-                                           IDip_GG_TimbraturaRepository dip_GG_TimbraturaRepository
+                                           IDip_GG_TimbraturaRepository dip_GG_TimbraturaRepository,
+                                           ICommonCompanyUtility commonCompanyUtility
                                            )
         {
             _mapper = mapper;
+            _commonCompanyUtility = commonCompanyUtility;
             _dip_AnagraficaRepository = dip_AnagraficaRepository;
             _dip_RapportoLavoroRepository = dip_RapportoLavoroRepository;
 
@@ -366,23 +371,10 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
 
             Boolean isNewCompany = false;
 
-            company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Anagrafica = await _az_AnagraficaRepository.FindAll(x => x.IdCompany == IdCompany).FirstOrDefaultAsync();
+            // anagrafica comune dell'azienda (schema Common): la crea solo l'infrastruttura
+            company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Anagrafica = await _commonCompanyUtility.GetAz_AnagraficaAsync(IdCompany, InitIfNotExsist);
             if (company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Anagrafica == null)
-            {
-                if (InitIfNotExsist)
-                {
-                    isNewCompany = true;
-                    company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Anagrafica = new Az_Anagrafica()
-                    {
-                        IdCompany = IdCompany,
-                    };
-                    company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Anagrafica = await _az_AnagraficaRepository.UpsertAsync(company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Anagrafica);
-                }
-                else
-                {
-                    throw new UserMessageException(AttendanceTrackingMessages.Get("CompanyRecordNotFound"));
-                }
-            }
+                throw new UserMessageException(AttendanceTrackingMessages.Get("CompanyRecordNotFound"));
 
             //Az_Cfg
             company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Cfg = await _az_CfgRepository.FindAll(x => x.IdAz_Anagrafica == company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Anagrafica.Id).FirstOrDefaultAsync();
@@ -390,6 +382,8 @@ namespace nvxapp.server.service.ClientServer_Service.GestionePresenze._utility
             {
                 if (InitIfNotExsist)
                 {
+                    // senza configurazione delle presenze l'azienda e' nuova per le presenze (l'anagrafica comune puo' esistere gia')
+                    isNewCompany = true;
                     company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Cfg = new Az_Cfg()
                     {
                         IdAz_Anagrafica = company_DATA_COMB_AzAna_AzSedi_AzReparto.az_Anagrafica.Id

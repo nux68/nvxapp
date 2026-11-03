@@ -88,7 +88,7 @@ storico migrazioni create
           e i tipi di richiesta dei ticket, Migrations/Public/PopolateTicketType.cs)
   Common: InitCommon (Az_Anagrafica, Az_Cliente, Az_ClienteContatto)
   Moke:   InitMoke
-  AttendanceTracking: AttendanceTracking_Init   (tabelle del modulo presenze; ramo AttendanceTracking)
+  AttendanceTracking: AttendanceTracking_Init (Az_Anagrafica e Az_Cliente ora in Common, mappate escluse)
 
 
 aggiorna db

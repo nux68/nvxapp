@@ -8,6 +8,7 @@ using nvxapp.server.data.Entities.Public;
 using nvxapp.server.data.Entities.Tenant; // <-- corretto per Az_SubCommessaAttivita
 using nvxapp.server.data.Repositories.Public;
 using nvxapp.server.data.Repositories.Tenant.GestionePresenze;
+using nvxapp.server.data.Repositories.Tenant.Common;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_CommessaService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze._utility;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SubCommessaAttivitaService.Models;

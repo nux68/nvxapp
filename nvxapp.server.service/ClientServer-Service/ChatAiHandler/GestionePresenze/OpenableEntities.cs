@@ -1,6 +1,6 @@
 using nvxapp.server.data.Localization;
-using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_ClienteService;
-using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_ClienteService.Models;
+using nvxapp.server.service.ClientServer_Service.Infrastructure.Common.Az_ClienteService;
+using nvxapp.server.service.ClientServer_Service.Infrastructure.Common.Az_ClienteService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_CommessaService;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_CommessaService.Models;
 using nvxapp.server.service.ClientServer_Service.GestionePresenze.Az_SediRepartoService;

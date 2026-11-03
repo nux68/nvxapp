@@ -162,7 +162,10 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     b.HasIndex("IdCompany")
                         .IsUnique();
 
-                    b.ToTable("Az_Anagrafica");
+                    b.ToTable("Az_Anagrafica", null, t =>
+                        {
+                            t.ExcludeFromMigrations();
+                        });
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Az_Cfg", b =>
@@ -283,7 +286,10 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
 
                     b.HasIndex("IdAz_Anagrafica");
 
-                    b.ToTable("Az_Cliente");
+                    b.ToTable("Az_Cliente", null, t =>
+                        {
+                            t.ExcludeFromMigrations();
+                        });
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Az_Commessa", b =>
@@ -2352,7 +2358,7 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Az_Cfg", b =>
                 {
                     b.HasOne("nvxapp.server.data.Entities.Tenant.Az_Anagrafica", "Az_AnagraficaNavigation")
-                        .WithOne("Az_Cfg")
+                        .WithOne()
                         .HasForeignKey("nvxapp.server.data.Entities.Tenant.Az_Cfg", "IdAz_Anagrafica")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -2374,7 +2380,7 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Az_Commessa", b =>
                 {
                     b.HasOne("nvxapp.server.data.Entities.Tenant.Az_Anagrafica", "Az_AnagraficaNavigation")
-                        .WithMany("Az_Commessa")
+                        .WithMany()
                         .HasForeignKey("IdAz_Anagrafica")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -2393,7 +2399,7 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Az_Sedi", b =>
                 {
                     b.HasOne("nvxapp.server.data.Entities.Tenant.Az_Anagrafica", "Az_AnagraficaNavigation")
-                        .WithMany("Az_Sedi")
+                        .WithMany()
                         .HasForeignKey("IdAz_Anagrafica")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -2811,7 +2817,7 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.GestionePresenze.Par_Arrotondamenti", b =>
                 {
                     b.HasOne("nvxapp.server.data.Entities.Tenant.Az_Anagrafica", "Az_AnagraficaNavigation")
-                        .WithMany("Par_Arrotondamenti")
+                        .WithMany()
                         .HasForeignKey("IdAz_Anagrafica")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -2822,7 +2828,7 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.GestionePresenze.Par_ExportCau", b =>
                 {
                     b.HasOne("nvxapp.server.data.Entities.Tenant.Az_Anagrafica", "Az_AnagraficaNavigation")
-                        .WithMany("Par_ExportCau")
+                        .WithMany()
                         .HasForeignKey("IdAz_Anagrafica")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -2863,7 +2869,7 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.GestionePresenze.Par_Festivita", b =>
                 {
                     b.HasOne("nvxapp.server.data.Entities.Tenant.Az_Anagrafica", "Az_AnagraficaNavigation")
-                        .WithMany("Par_Festivita")
+                        .WithMany()
                         .HasForeignKey("IdAz_Anagrafica")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -2878,7 +2884,7 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                         .HasForeignKey("Az_SubCommessaAttivitaId");
 
                     b.HasOne("nvxapp.server.data.Entities.Tenant.Az_Anagrafica", "Az_AnagraficaNavigation")
-                        .WithMany("Par_Orario")
+                        .WithMany()
                         .HasForeignKey("IdAz_Anagrafica")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -2918,7 +2924,7 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.GestionePresenze.Par_ProfiloOrario", b =>
                 {
                     b.HasOne("nvxapp.server.data.Entities.Tenant.Az_Anagrafica", "Az_AnagraficaNavigation")
-                        .WithMany("Par_ProfiloOrario")
+                        .WithMany()
                         .HasForeignKey("IdAz_Anagrafica")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -3022,7 +3028,7 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Par_Attivita", b =>
                 {
                     b.HasOne("nvxapp.server.data.Entities.Tenant.Az_Anagrafica", "Az_AnagraficaNavigation")
-                        .WithMany("Par_Attivita")
+                        .WithMany()
                         .HasForeignKey("IdAz_Anagrafica")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -3052,7 +3058,7 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Par_Causali", b =>
                 {
                     b.HasOne("nvxapp.server.data.Entities.Tenant.Az_Anagrafica", "Az_AnagraficaNavigation")
-                        .WithMany("Par_Causali")
+                        .WithMany()
                         .HasForeignKey("IdAz_Anagrafica")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -3063,7 +3069,7 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Par_Competenza", b =>
                 {
                     b.HasOne("nvxapp.server.data.Entities.Tenant.Az_Anagrafica", "Az_AnagraficaNavigation")
-                        .WithMany("Par_Competenza")
+                        .WithMany()
                         .HasForeignKey("IdAz_Anagrafica")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -3074,7 +3080,7 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Par_Giustificativi", b =>
                 {
                     b.HasOne("nvxapp.server.data.Entities.Tenant.Az_Anagrafica", "Az_AnagraficaNavigation")
-                        .WithMany("Par_Giustificativi")
+                        .WithMany()
                         .HasForeignKey("IdAz_Anagrafica")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -3102,31 +3108,7 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Az_Anagrafica", b =>
                 {
-                    b.Navigation("Az_Cfg");
-
                     b.Navigation("Az_Cliente");
-
-                    b.Navigation("Az_Commessa");
-
-                    b.Navigation("Az_Sedi");
-
-                    b.Navigation("Par_Arrotondamenti");
-
-                    b.Navigation("Par_Attivita");
-
-                    b.Navigation("Par_Causali");
-
-                    b.Navigation("Par_Competenza");
-
-                    b.Navigation("Par_ExportCau");
-
-                    b.Navigation("Par_Festivita");
-
-                    b.Navigation("Par_Giustificativi");
-
-                    b.Navigation("Par_Orario");
-
-                    b.Navigation("Par_ProfiloOrario");
                 });
 
             modelBuilder.Entity("nvxapp.server.data.Entities.Tenant.Az_Commessa", b =>

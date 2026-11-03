@@ -1377,4 +1377,8 @@
   <data name="ExportAnteprimaNessunDato" xml:space="preserve">
     <value>The chosen employee has no pay causes of the model in the month: try another employee or month.</value>
   </data>
+  <data name="CustomerUsedByJobs" xml:space="preserve">
+    <value>attendance jobs: {0}</value>
+    <comment>cliente comune usato dalle commesse (ICommonEntityUsage)</comment>
+  </data>
 </root>

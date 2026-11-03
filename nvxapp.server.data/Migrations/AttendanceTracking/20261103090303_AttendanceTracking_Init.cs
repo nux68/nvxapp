@@ -13,24 +13,79 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Az_Anagrafica",
+                name: "Az_Cfg",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    IdCompany = table.Column<int>(type: "integer", nullable: false),
+                    IdAz_Anagrafica = table.Column<int>(type: "integer", nullable: false),
+                    ApprovazioneTipo = table.Column<int>(type: "integer", maxLength: 50, nullable: false),
                     ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Az_Anagrafica", x => x.Id);
+                    table.PrimaryKey("PK_Az_Cfg", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Az_Anagrafica_Company_IdCompany",
-                        column: x => x.IdCompany,
-                        principalSchema: "public",
-                        principalTable: "Company",
+                        name: "FK_Az_Cfg_Az_Anagrafica_IdAz_Anagrafica",
+                        column: x => x.IdAz_Anagrafica,
+                        principalTable: "Az_Anagrafica",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Az_Commessa",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    IdAz_Anagrafica = table.Column<int>(type: "integer", nullable: false),
+                    Descrizione = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    IdAz_Cliente = table.Column<int>(type: "integer", nullable: false),
+                    Default = table.Column<bool>(type: "boolean", nullable: false),
+                    ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Az_Commessa", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Az_Commessa_Az_Anagrafica_IdAz_Anagrafica",
+                        column: x => x.IdAz_Anagrafica,
+                        principalTable: "Az_Anagrafica",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Az_Commessa_Az_Cliente_IdAz_Cliente",
+                        column: x => x.IdAz_Cliente,
+                        principalTable: "Az_Cliente",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Az_Sedi",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    IdAz_Anagrafica = table.Column<int>(type: "integer", nullable: false),
+                    Descrizione = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    Default = table.Column<bool>(type: "boolean", nullable: false),
+                    ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Az_Sedi", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Az_Sedi_Az_Anagrafica_IdAz_Anagrafica",
+                        column: x => x.IdAz_Anagrafica,
+                        principalTable: "Az_Anagrafica",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -44,6 +99,8 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     IdAspNetUsers = table.Column<string>(type: "text", nullable: false),
                     Cognome = table.Column<string>(type: "text", nullable: true),
                     Nome = table.Column<string>(type: "text", nullable: true),
+                    Matricola = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: true),
+                    CodiceFiscale = table.Column<string>(type: "character varying(16)", maxLength: 16, nullable: true),
                     ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
@@ -75,90 +132,6 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_My_template1", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Az_Cfg",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    IdAz_Anagrafica = table.Column<int>(type: "integer", nullable: false),
-                    ApprovazioneTipo = table.Column<int>(type: "integer", maxLength: 50, nullable: false),
-                    ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Az_Cfg", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Az_Cfg_Az_Anagrafica_IdAz_Anagrafica",
-                        column: x => x.IdAz_Anagrafica,
-                        principalTable: "Az_Anagrafica",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Az_Cliente",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    IdAz_Anagrafica = table.Column<int>(type: "integer", nullable: false),
-                    Descrizione = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    Default = table.Column<bool>(type: "boolean", nullable: false),
-                    PartitaIva = table.Column<string>(type: "character varying(11)", maxLength: 11, nullable: true),
-                    CodiceFiscale = table.Column<string>(type: "character varying(16)", maxLength: 16, nullable: true),
-                    Indirizzo = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
-                    Cap = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: true),
-                    Citta = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
-                    Provincia = table.Column<string>(type: "character varying(2)", maxLength: 2, nullable: true),
-                    Nazione = table.Column<string>(type: "character varying(2)", maxLength: 2, nullable: true),
-                    Telefono = table.Column<string>(type: "character varying(30)", maxLength: 30, nullable: true),
-                    Email = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
-                    Pec = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
-                    Referente = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
-                    CodiceDestinatario = table.Column<string>(type: "character varying(7)", maxLength: 7, nullable: true),
-                    Note = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true),
-                    ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Az_Cliente", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Az_Cliente_Az_Anagrafica_IdAz_Anagrafica",
-                        column: x => x.IdAz_Anagrafica,
-                        principalTable: "Az_Anagrafica",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Az_Sedi",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    IdAz_Anagrafica = table.Column<int>(type: "integer", nullable: false),
-                    Descrizione = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    Default = table.Column<bool>(type: "boolean", nullable: false),
-                    ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Az_Sedi", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Az_Sedi_Az_Anagrafica_IdAz_Anagrafica",
-                        column: x => x.IdAz_Anagrafica,
-                        principalTable: "Az_Anagrafica",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -225,6 +198,7 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     IdAz_Anagrafica = table.Column<int>(type: "integer", nullable: false),
                     Descrizione = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     Codice = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: false),
+                    Tipo = table.Column<int>(type: "integer", nullable: false),
                     ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
@@ -273,7 +247,9 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     IdAz_Anagrafica = table.Column<int>(type: "integer", nullable: false),
                     Codice = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: false),
                     Descrizione = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    TipoFile = table.Column<int>(type: "integer", nullable: false),
+                    NoteAI = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
+                    RicettaAI = table.Column<string>(type: "text", nullable: true),
+                    RicettaHash = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true),
                     ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
@@ -315,34 +291,54 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                 });
 
             migrationBuilder.CreateTable(
-                name: "Az_Commessa",
+                name: "Par_TipoSpesa",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     IdAz_Anagrafica = table.Column<int>(type: "integer", nullable: false),
+                    Codice = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: false),
                     Descrizione = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    IdAz_Cliente = table.Column<int>(type: "integer", nullable: false),
-                    Default = table.Column<bool>(type: "boolean", nullable: false),
+                    Tipo = table.Column<int>(type: "integer", nullable: false),
                     ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Az_Commessa", x => x.Id);
+                    table.PrimaryKey("PK_Par_TipoSpesa", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Az_Commessa_Az_Anagrafica_IdAz_Anagrafica",
+                        name: "FK_Par_TipoSpesa_Az_Anagrafica_IdAz_Anagrafica",
                         column: x => x.IdAz_Anagrafica,
                         principalTable: "Az_Anagrafica",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Az_SubCommessa",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    IdAz_Commessa = table.Column<int>(type: "integer", nullable: false),
+                    Descrizione = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    Default = table.Column<bool>(type: "boolean", nullable: false),
+                    Data = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    DataA = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Az_SubCommessa", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Az_Commessa_Az_Cliente_IdAz_Cliente",
-                        column: x => x.IdAz_Cliente,
-                        principalTable: "Az_Cliente",
+                        name: "FK_Az_SubCommessa_Az_Commessa_IdAz_Commessa",
+                        column: x => x.IdAz_Commessa,
+                        principalTable: "Az_Commessa",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -417,6 +413,7 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     BackgroundColor = table.Column<string>(type: "character varying(7)", maxLength: 7, nullable: true),
                     TextColor = table.Column<string>(type: "character varying(7)", maxLength: 7, nullable: true),
                     TipoInput = table.Column<int>(type: "integer", nullable: false),
+                    Tipo = table.Column<int>(type: "integer", nullable: false),
                     IdCausale = table.Column<int>(type: "integer", nullable: true),
                     Segno = table.Column<int>(type: "integer", nullable: false),
                     VisualizzaInPianoFerie = table.Column<bool>(type: "boolean", nullable: false),
@@ -513,6 +510,7 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     Codice = table.Column<string>(type: "character varying(10)", maxLength: 10, nullable: false),
                     TipoElaborazione = table.Column<int>(type: "integer", nullable: false),
                     TipoUnita = table.Column<int>(type: "integer", nullable: false),
+                    Verso = table.Column<int>(type: "integer", nullable: false),
                     ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
@@ -535,27 +533,90 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                 });
 
             migrationBuilder.CreateTable(
-                name: "Az_SubCommessa",
+                name: "Par_ExportCau_Docs",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    IdAz_Commessa = table.Column<int>(type: "integer", nullable: false),
-                    Descrizione = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    Default = table.Column<bool>(type: "boolean", nullable: false),
-                    Data = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    DataA = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    IdPar_ExportCau = table.Column<int>(type: "integer", nullable: false),
+                    NomeFile = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    ContentType = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Dimensione = table.Column<int>(type: "integer", nullable: false),
+                    Contenuto = table.Column<byte[]>(type: "bytea", nullable: false),
+                    Testo = table.Column<string>(type: "text", nullable: true),
+                    Descrizione = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
+                    Ordine = table.Column<int>(type: "integer", nullable: false),
                     ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Az_SubCommessa", x => x.Id);
+                    table.PrimaryKey("PK_Par_ExportCau_Docs", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Az_SubCommessa_Az_Commessa_IdAz_Commessa",
-                        column: x => x.IdAz_Commessa,
-                        principalTable: "Az_Commessa",
+                        name: "FK_Par_ExportCau_Docs_Par_ExportCau_IdPar_ExportCau",
+                        column: x => x.IdPar_ExportCau,
+                        principalTable: "Par_ExportCau",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Az_SubCommessaAttivita",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    IdAz_SubCommessa = table.Column<int>(type: "integer", nullable: false),
+                    IdPar_Attivita = table.Column<int>(type: "integer", nullable: false),
+                    Default = table.Column<bool>(type: "boolean", nullable: false),
+                    ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Az_SubCommessaAttivita", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Az_SubCommessaAttivita_Az_SubCommessa_IdAz_SubCommessa",
+                        column: x => x.IdAz_SubCommessa,
+                        principalTable: "Az_SubCommessa",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Az_SubCommessaAttivita_Par_Attivita_IdPar_Attivita",
+                        column: x => x.IdPar_Attivita,
+                        principalTable: "Par_Attivita",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Az_SubCommessaUser",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    IdAz_SubCommessa = table.Column<int>(type: "integer", nullable: false),
+                    IdAspNetUsers = table.Column<string>(type: "text", nullable: false),
+                    ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Az_SubCommessaUser", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Az_SubCommessaUser_AspNetUsers_IdAspNetUsers",
+                        column: x => x.IdAspNetUsers,
+                        principalSchema: "public",
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Az_SubCommessaUser_Az_SubCommessa_IdAz_SubCommessa",
+                        column: x => x.IdAz_SubCommessa,
+                        principalTable: "Az_SubCommessa",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -626,36 +687,6 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                 });
 
             migrationBuilder.CreateTable(
-                name: "Az_SubCommessaAttivita",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    IdAz_SubCommessa = table.Column<int>(type: "integer", nullable: false),
-                    IdPar_Attivita = table.Column<int>(type: "integer", nullable: false),
-                    Default = table.Column<bool>(type: "boolean", nullable: false),
-                    ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Az_SubCommessaAttivita", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Az_SubCommessaAttivita_Az_SubCommessa_IdAz_SubCommessa",
-                        column: x => x.IdAz_SubCommessa,
-                        principalTable: "Az_SubCommessa",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Az_SubCommessaAttivita_Par_Attivita_IdPar_Attivita",
-                        column: x => x.IdPar_Attivita,
-                        principalTable: "Par_Attivita",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Az_SubCommessaSediReparto",
                 columns: table => new
                 {
@@ -678,36 +709,6 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Az_SubCommessaSediReparto_Az_SubCommessa_IdAz_SubCommessa",
-                        column: x => x.IdAz_SubCommessa,
-                        principalTable: "Az_SubCommessa",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Az_SubCommessaUser",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    IdAz_SubCommessa = table.Column<int>(type: "integer", nullable: false),
-                    IdAspNetUsers = table.Column<string>(type: "text", nullable: false),
-                    ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Az_SubCommessaUser", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Az_SubCommessaUser_AspNetUsers_IdAspNetUsers",
-                        column: x => x.IdAspNetUsers,
-                        principalSchema: "public",
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Az_SubCommessaUser_Az_SubCommessa_IdAz_SubCommessa",
                         column: x => x.IdAz_SubCommessa,
                         principalTable: "Az_SubCommessa",
                         principalColumn: "Id",
@@ -828,6 +829,7 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     IdDip_RapportoLavoro = table.Column<int>(type: "integer", nullable: false),
                     Data = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     Valore = table.Column<TimeOnly>(type: "time without time zone", nullable: false),
+                    Importo = table.Column<decimal>(type: "numeric(10,2)", nullable: true),
                     IdPar_Causali = table.Column<int>(type: "integer", nullable: false),
                     ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
                     CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
@@ -1002,6 +1004,31 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                 });
 
             migrationBuilder.CreateTable(
+                name: "Dip_RapportoAutovetture",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    IdDip_RapportoLavoro = table.Column<int>(type: "integer", nullable: false),
+                    Descrizione = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    Targa = table.Column<string>(type: "character varying(15)", maxLength: 15, nullable: true),
+                    RimborsoKM = table.Column<decimal>(type: "numeric(10,4)", nullable: false),
+                    ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Dip_RapportoAutovetture", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Dip_RapportoAutovetture_Dip_RapportoLavoro_IdDip_RapportoLa~",
+                        column: x => x.IdDip_RapportoLavoro,
+                        principalTable: "Dip_RapportoLavoro",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Par_OrarioIntervalloHH",
                 columns: table => new
                 {
@@ -1169,6 +1196,7 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                     InputType = table.Column<int>(type: "integer", nullable: false),
                     Hours = table.Column<TimeSpan>(type: "interval", nullable: true),
                     From = table.Column<TimeSpan>(type: "interval", nullable: true),
+                    Importo = table.Column<decimal>(type: "numeric(10,2)", nullable: true),
                     IdPar_Giustificativi = table.Column<int>(type: "integer", nullable: false),
                     RichiestaStato = table.Column<int>(type: "integer", nullable: false),
                     IdDip_GG_Richiesta = table.Column<int>(type: "integer", nullable: true),
@@ -1195,37 +1223,6 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                         name: "FK_Dip_GG_Giustificativi_Par_Giustificativi_IdPar_Giustificati~",
                         column: x => x.IdPar_Giustificativi,
                         principalTable: "Par_Giustificativi",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Dip_GG_NotaSpese",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    IdDip_RapportoLavoro = table.Column<int>(type: "integer", nullable: false),
-                    Data = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    RichiestaStato = table.Column<int>(type: "integer", nullable: false),
-                    IdDip_GG_Richiesta = table.Column<int>(type: "integer", nullable: true),
-                    ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
-                    ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Dip_GG_NotaSpese", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Dip_GG_NotaSpese_Dip_GG_Richieste_IdDip_GG_Richiesta",
-                        column: x => x.IdDip_GG_Richiesta,
-                        principalTable: "Dip_GG_Richieste",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Dip_GG_NotaSpese_Dip_RapportoLavoro_IdDip_RapportoLavoro",
-                        column: x => x.IdDip_RapportoLavoro,
-                        principalTable: "Dip_RapportoLavoro",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -1270,6 +1267,54 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                         principalTable: "Dip_RapportoLavoro",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Dip_GG_NotaSpese",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    IdDip_RapportoLavoro = table.Column<int>(type: "integer", nullable: false),
+                    Data = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    RichiestaStato = table.Column<int>(type: "integer", nullable: false),
+                    IdDip_GG_Richiesta = table.Column<int>(type: "integer", nullable: true),
+                    IdPar_TipoSpesa = table.Column<int>(type: "integer", nullable: false),
+                    Importo = table.Column<decimal>(type: "numeric(10,2)", nullable: false),
+                    Descrizione = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: true),
+                    Km = table.Column<decimal>(type: "numeric(10,2)", nullable: true),
+                    IdDip_RapportoAutovetture = table.Column<int>(type: "integer", nullable: true),
+                    ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Dip_GG_NotaSpese", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Dip_GG_NotaSpese_Dip_GG_Richieste_IdDip_GG_Richiesta",
+                        column: x => x.IdDip_GG_Richiesta,
+                        principalTable: "Dip_GG_Richieste",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Dip_GG_NotaSpese_Dip_RapportoAutovetture_IdDip_RapportoAuto~",
+                        column: x => x.IdDip_RapportoAutovetture,
+                        principalTable: "Dip_RapportoAutovetture",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Dip_GG_NotaSpese_Dip_RapportoLavoro_IdDip_RapportoLavoro",
+                        column: x => x.IdDip_RapportoLavoro,
+                        principalTable: "Dip_RapportoLavoro",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Dip_GG_NotaSpese_Par_TipoSpesa_IdPar_TipoSpesa",
+                        column: x => x.IdPar_TipoSpesa,
+                        principalTable: "Par_TipoSpesa",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -1336,6 +1381,32 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                 });
 
             migrationBuilder.CreateTable(
+                name: "Dip_GG_NotaSpesa_Allegato",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    IdDip_GG_NotaSpesa = table.Column<int>(type: "integer", nullable: false),
+                    NomeFile = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    ContentType = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    Dimensione = table.Column<int>(type: "integer", nullable: false),
+                    Contenuto = table.Column<byte[]>(type: "bytea", nullable: false),
+                    ModifiedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    CreationDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true),
+                    ChangeUser = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Dip_GG_NotaSpesa_Allegato", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Dip_GG_NotaSpesa_Allegato_Dip_GG_NotaSpese_IdDip_GG_NotaSpe~",
+                        column: x => x.IdDip_GG_NotaSpesa,
+                        principalTable: "Dip_GG_NotaSpese",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Par_OrarioPar_ProfiloOrarioGG",
                 columns: table => new
                 {
@@ -1360,21 +1431,10 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Az_Anagrafica_IdCompany",
-                table: "Az_Anagrafica",
-                column: "IdCompany",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Az_Cfg_IdAz_Anagrafica",
                 table: "Az_Cfg",
                 column: "IdAz_Anagrafica",
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Az_Cliente_IdAz_Anagrafica",
-                table: "Az_Cliente",
-                column: "IdAz_Anagrafica");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Az_Commessa_IdAz_Anagrafica",
@@ -1523,14 +1583,29 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                 column: "IdPar_Giustificativi");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Dip_GG_NotaSpesa_Allegato_IdDip_GG_NotaSpesa",
+                table: "Dip_GG_NotaSpesa_Allegato",
+                column: "IdDip_GG_NotaSpesa");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Dip_GG_NotaSpese_IdDip_GG_Richiesta",
                 table: "Dip_GG_NotaSpese",
                 column: "IdDip_GG_Richiesta");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Dip_GG_NotaSpese_IdDip_RapportoAutovetture",
+                table: "Dip_GG_NotaSpese",
+                column: "IdDip_RapportoAutovetture");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Dip_GG_NotaSpese_IdDip_RapportoLavoro",
                 table: "Dip_GG_NotaSpese",
                 column: "IdDip_RapportoLavoro");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Dip_GG_NotaSpese_IdPar_TipoSpesa",
+                table: "Dip_GG_NotaSpese",
+                column: "IdPar_TipoSpesa");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Dip_GG_Result_IdDip_RapportoLavoro",
@@ -1585,6 +1660,11 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                 column: "IdPar_Giustificativi");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Dip_RapportoAutovetture_IdDip_RapportoLavoro",
+                table: "Dip_RapportoAutovetture",
+                column: "IdDip_RapportoLavoro");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Dip_RapportoLavoro_IdAz_SubCommessaAttivita",
                 table: "Dip_RapportoLavoro",
                 column: "IdAz_SubCommessaAttivita");
@@ -1637,6 +1717,11 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
             migrationBuilder.CreateIndex(
                 name: "IX_Par_ExportCau_Causali_IdPar_ExportCau",
                 table: "Par_ExportCau_Causali",
+                column: "IdPar_ExportCau");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Par_ExportCau_Docs_IdPar_ExportCau",
+                table: "Par_ExportCau_Docs",
                 column: "IdPar_ExportCau");
 
             migrationBuilder.CreateIndex(
@@ -1753,6 +1838,11 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                 name: "IX_Par_ProfiloOrarioGG_IdPar_ProfiloOrario",
                 table: "Par_ProfiloOrarioGG",
                 column: "IdPar_ProfiloOrario");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Par_TipoSpesa_IdAz_Anagrafica",
+                table: "Par_TipoSpesa",
+                column: "IdAz_Anagrafica");
         }
 
         /// <inheritdoc />
@@ -1789,7 +1879,7 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                 name: "Dip_GG_Giustificativi");
 
             migrationBuilder.DropTable(
-                name: "Dip_GG_NotaSpese");
+                name: "Dip_GG_NotaSpesa_Allegato");
 
             migrationBuilder.DropTable(
                 name: "Dip_GG_Result");
@@ -1819,6 +1909,9 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                 name: "Par_ExportCau_Causali");
 
             migrationBuilder.DropTable(
+                name: "Par_ExportCau_Docs");
+
+            migrationBuilder.DropTable(
                 name: "Par_Festivita");
 
             migrationBuilder.DropTable(
@@ -1831,7 +1924,7 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                 name: "Az_SediReparto");
 
             migrationBuilder.DropTable(
-                name: "Dip_GG_Richieste");
+                name: "Dip_GG_NotaSpese");
 
             migrationBuilder.DropTable(
                 name: "Par_Competenza");
@@ -1846,19 +1939,28 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
                 name: "Az_Sedi");
 
             migrationBuilder.DropTable(
-                name: "Dip_RapportoLavoro");
+                name: "Dip_GG_Richieste");
+
+            migrationBuilder.DropTable(
+                name: "Dip_RapportoAutovetture");
+
+            migrationBuilder.DropTable(
+                name: "Par_TipoSpesa");
 
             migrationBuilder.DropTable(
                 name: "Par_ProfiloOrario");
 
             migrationBuilder.DropTable(
-                name: "Dip_Anagrafica");
+                name: "Dip_RapportoLavoro");
 
             migrationBuilder.DropTable(
                 name: "Par_Giustificativi");
 
             migrationBuilder.DropTable(
                 name: "Par_Orario");
+
+            migrationBuilder.DropTable(
+                name: "Dip_Anagrafica");
 
             migrationBuilder.DropTable(
                 name: "Az_SubCommessaAttivita");
@@ -1874,12 +1976,6 @@ namespace nvxapp.server.data.Migrations.AttendanceTracking
 
             migrationBuilder.DropTable(
                 name: "Az_Commessa");
-
-            migrationBuilder.DropTable(
-                name: "Az_Cliente");
-
-            migrationBuilder.DropTable(
-                name: "Az_Anagrafica");
         }
     }
 }
