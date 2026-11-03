@@ -34,7 +34,7 @@ export const DOCUMENT_FILE_EXTENSIONS = ['.pdf', '.docx', '.odt', '.ods', '.xlsx
 })
 export class AiDocumentEditPageComponent extends BasePageConfirmCancelComponent<DocumentEditModel> {
 
-  public readonly applications = Object.values(ApplicationType).filter((v): v is ApplicationType => typeof v === 'number');
+  public readonly applications = Object.values(ApplicationType).filter((v): v is ApplicationType => typeof v === 'number' && v !== ApplicationType.Common);
   public readonly accept = DOCUMENT_FILE_EXTENSIONS.join(',');
   public readonly contentMaxLength = DOCUMENT_CONTENT_MAX_LENGTH;
   public ticketTypes: TicketTypeOptionModel[] = [];

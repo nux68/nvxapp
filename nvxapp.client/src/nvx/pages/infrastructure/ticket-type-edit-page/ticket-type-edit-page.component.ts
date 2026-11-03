@@ -26,7 +26,7 @@ import { TicketTypeService } from '../../../ClientServer-Service/Infrastructure/
 export class TicketTypeEditPageComponent extends BasePageConfirmCancelComponent<TicketTypeEditModel> {
 
   public readonly levels = [TicketLevel.SuperUser, TicketLevel.Dev, TicketLevel.Dealer, TicketLevel.FinancialAdvisor, TicketLevel.Company, TicketLevel.User];
-  public readonly applications = Object.values(ApplicationType).filter((v): v is ApplicationType => typeof v === 'number');
+  public readonly applications = Object.values(ApplicationType).filter((v): v is ApplicationType => typeof v === 'number' && v !== ApplicationType.Common);
 
   constructor(protected override navCtrl: NavController,
               protected override userInterfaceService: UserInterfaceService,

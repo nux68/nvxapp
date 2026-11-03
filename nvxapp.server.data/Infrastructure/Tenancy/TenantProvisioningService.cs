@@ -9,15 +9,23 @@ namespace nvxapp.server.data.Infrastructure.Tenancy
         - multi-tenant: uno schema per azienda e applicativo ATTIVO (tenant_<IdAzienda>_<IdApp>),
           creato se manca e migrato; gli applicativi non attivi non hanno schema (o lo
           conservano, se disattivati dopo l'uso)
+        - Common (dati comuni, tenant_<IdAzienda>_0): schema creato per OGNI azienda e migrato
+          sempre per primo, perche' gli schemi degli applicativi hanno chiavi esterne verso le sue tabelle
      Ogni schema ha il proprio storico (__EFMigrationsHistory_<Applicativo>), quindi sa da solo
      quali migration gli mancano.
     */
     public interface ITenantProvisioningService
     {
-        /// <summary>Crea (se manca) e migra lo schema di un applicativo di un'azienda. In modalita' singola non fa nulla.</summary>
+        /// <summary>
+        /// Crea (se manca) e migra lo schema di un applicativo di un'azienda; per un applicativo diverso da Common
+        /// prima crea/migra anche lo schema Common dell'azienda. In modalita' singola non fa nulla.
+        /// </summary>
         Task EnsureApplicationAsync(int idCompany, ApplicationType application, CancellationToken cancellationToken = default);
 
-        /// <summary>Migra le tabelle degli applicativi: public in modalita' singola, ogni schema azienda/applicativo attivo in multi-tenant.</summary>
+        /// <summary>
+        /// Migra le tabelle degli applicativi: public in modalita' singola (Common per primo), in multi-tenant lo schema
+        /// Common di ogni azienda e poi ogni schema azienda/applicativo attivo.
+        /// </summary>
         Task MigrateAllAsync(CancellationToken cancellationToken = default);
 
         /// <summary>Schemi esistenti degli applicativi di un'azienda (multi-tenant; vuoto in modalita' singola), anche di applicativi disattivati.</summary>
@@ -57,6 +65,10 @@ namespace nvxapp.server.data.Infrastructure.Tenancy
             if (!_tenancySettings.MultiTenant)
                 return;
 
+            // le tabelle dell'applicativo hanno chiavi esterne verso quelle comuni: Common per primo
+            if (application.IsActivatable())
+                await EnsureApplicationAsync(idCompany, ApplicationType.Common, cancellationToken);
+
             if (!_registry.IsRegistered(application))
             {
                 _logger.LogWarning("[Tenancy] Applicativo {Application} senza contesto registrato: schema non creato per l'azienda {IdCompany}.",
@@ -71,15 +83,21 @@ namespace nvxapp.server.data.Infrastructure.Tenancy
         {
             if (!_tenancySettings.MultiTenant)
             {
-                foreach (var application in _registry.Contexts.Keys)
+                // Common (0) per primo: gli altri contesti hanno chiavi esterne verso le sue tabelle
+                foreach (var application in _registry.Contexts.Keys.OrderBy(x => (int)x))
                     await MigrateSchemaAsync(application, TenantSchemaName.Public, createSchema: false, cancellationToken);
                 return;
             }
 
-            var actives = await _publicDbContext.CompanyApplication
-                                                .Where(x => x.Active)
-                                                .Select(x => new { x.IdCompany, x.ApplicationType })
-                                                .ToListAsync(cancellationToken);
+            // schema Common per tutte le aziende, prima degli applicativi
+            var companies = await _publicDbContext.Company.Select(x => x.Id).OrderBy(x => x).ToListAsync(cancellationToken);
+            var actives = companies.Select(x => new { IdCompany = x, ApplicationType = ApplicationType.Common }).ToList();
+
+            actives.AddRange(await _publicDbContext.CompanyApplication
+                                                   .Where(x => x.Active && x.ApplicationType != ApplicationType.Common)
+                                                   .OrderBy(x => x.IdCompany).ThenBy(x => x.ApplicationType)
+                                                   .Select(x => new { x.IdCompany, x.ApplicationType })
+                                                   .ToListAsync(cancellationToken));
 
             var skipped = actives.Where(x => !_registry.IsRegistered(x.ApplicationType)).Select(x => x.ApplicationType).Distinct().ToList();
             if (skipped.Count > 0)
