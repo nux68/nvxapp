@@ -26,6 +26,22 @@ namespace nvxapp.server.data.Infrastructure.Tenancy
         /// <summary>Schema dei dati di un applicativo di un'azienda (multi-tenant): tenant_&lt;IdAzienda&gt;_&lt;IdApplicativo&gt;.</summary>
         public static string For(int idCompany, ApplicationType application) => $"tenant_{idCompany}_{(int)application}";
 
+        /// <summary>
+        /// Schema Common (dati comuni) della stessa azienda di uno schema applicativo: tenant_&lt;IdAzienda&gt;_&lt;n&gt; -> tenant_&lt;IdAzienda&gt;_0.
+        /// "public" resta "public" (modalita' singola); null se il nome non e' uno schema azienda.
+        /// </summary>
+        public static string? CommonFor(string schema)
+        {
+            var value = Validate(schema);
+            if (value == Public)
+                return Public;
+
+            var match = _tenant.Match(value);
+            return match.Success ? For(int.Parse(match.Groups[1].Value), ApplicationType.Common) : null;
+        }
+
+        private static readonly Regex _tenant = new Regex("^tenant_([0-9]+)_[0-9]+$", RegexOptions.Compiled);
+
         /// <summary>Identificatore quotato per l'SQL.</summary>
         public static string Quote(string schema) => $"\"{Validate(schema)}\"";
     }

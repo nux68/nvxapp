@@ -69,7 +69,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyAppli
                 CompanyApplicationPutOutModel retVal = new CompanyApplicationPutOutModel();
 
                 var application = model.Data.ApplicationType;
-                if (!Enum.IsDefined(application))
+                // Common (dati comuni) non si attiva: e' sempre presente
+                if (!Enum.IsDefined(application) || !application.IsActivatable())
                     throw new UserMessageException(InfrastructureMessages.Get("ApplicationInvalid", (int)application));
 
                 var company = await _companyRepository.FindByIdAsync(model.Data.IdCompany)
@@ -115,7 +116,8 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyAppli
         }
 
         // Tutti gli applicativi dell'enum ApplicationType (letto dinamicamente: un nuovo valore
-        // compare da solo) con lo stato per l'azienda. idCompany = 0 (azienda nuova): proposti attivi
+        // compare da solo) con lo stato per l'azienda, tranne Common (sempre presente).
+        // idCompany = 0 (azienda nuova): proposti attivi
         // quelli che il ramo attiva sulle nuove aziende (ICompanyInitializer.ActivateOnNewCompany).
         public List<CompanyApplicationModel> Applications(int idCompany)
         {
@@ -125,6 +127,7 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.CompanyAppli
             var perNuovaAzienda = idCompany > 0 ? new List<ApplicationType>() : _companyInitializerRegistry.ApplicationsForNewCompany();
 
             return Enum.GetValues<ApplicationType>()
+                       .Where(application => application.IsActivatable())
                        .Select(application =>
                        {
                            var app = ToModel(idCompany, application, rows.FirstOrDefault(x => x.ApplicationType == application));

@@ -34,8 +34,10 @@ export class MenuRestrictionModel {
   public role: string = '';
 }
 
-// Applicativi (stessi valori dell'enum ApplicationType del server)
+// Applicativi (stessi valori dell'enum ApplicationType del server).
+// Common (0) non e' un applicativo da attivare: sono i dati comuni dell'azienda (clienti...), sempre presenti.
 export enum ApplicationType {
+  Common = 0,
   Moke = 1,
   AttendanceTracking = 2,
 }

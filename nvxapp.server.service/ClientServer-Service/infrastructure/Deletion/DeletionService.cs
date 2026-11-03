@@ -440,11 +440,15 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Deletion
             return conteggi;
         }
 
-        // cancellatori degli applicativi che l'azienda ha usato (attivi o disattivati)
+        // cancellatori degli applicativi che l'azienda ha usato (attivi o disattivati), piu' quello dei dati
+        // comuni (Common, sempre presente) per ULTIMO: gli applicativi hanno chiavi esterne verso le sue tabelle
         private async Task<List<IApplicationDataDeleter>> DeleterAzienda(int idCompany)
         {
             var applicativi = await _db.CompanyApplication.Where(x => x.IdCompany == idCompany).Select(x => x.ApplicationType).ToListAsync();
-            return _applicationDataDeleters.Where(d => applicativi.Contains(d.Application)).ToList();
+            applicativi.Add(ApplicationType.Common);
+            return _applicationDataDeleters.Where(d => applicativi.Contains(d.Application))
+                                           .OrderBy(d => d.Application == ApplicationType.Common ? 1 : 0)
+                                           .ToList();
         }
 
         private async Task Registra(Piano piano, List<DeletionCountModel> conteggi)

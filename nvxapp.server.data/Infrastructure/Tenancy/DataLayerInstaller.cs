@@ -23,7 +23,8 @@ namespace nvxapp.server.data.Infrastructure.Tenancy
             services.AddScoped<IApplicationDbContextFactory, ApplicationDbContextFactory>();
             services.AddScoped<ITenantProvisioningService, TenantProvisioningService>();
 
-            // applicativi dell'infrastruttura
+            // dati comuni dell'azienda (schema sempre presente) e applicativi dell'infrastruttura
+            services.AddApplicationDbContext<CommonDbContext>(ApplicationType.Common);
             services.AddApplicationDbContext<MokeDbContext>(ApplicationType.Moke);
 
             return services;
