@@ -39,8 +39,8 @@ namespace nvxapp.server.data.Migrations.Public
 
                 migrationBuilder.InsertData(
                     table: "TicketType",
-                    columns: new[] { "ApplicationType", "Codice", "Descrizione", "AiResolution", "Ordine", "Active" },
-                    values: new object?[] { tipo.application.HasValue ? (int)tipo.application.Value : null, tipo.codice, tipo.descrizione, false, idTicketType * 10, true }
+                    columns: new[] { "ApplicationType", "Codice", "Descrizione", "Ordine", "Active" },
+                    values: new object?[] { tipo.application.HasValue ? (int)tipo.application.Value : null, tipo.codice, tipo.descrizione, idTicketType * 10, true }
                     );
 
                 foreach (var level in tipo.levels)

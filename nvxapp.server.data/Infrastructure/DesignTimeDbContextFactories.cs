@@ -42,6 +42,16 @@ namespace nvxapp.server.data.Infrastructure
      Contesti degli applicativi: il modello non contiene lo schema, per generare le migration
      basta "public". Ogni modulo aggiunge la factory del proprio contesto.
     */
+    public class CommonDbContextDesignTimeFactory : IDesignTimeDbContextFactory<CommonDbContext>
+    {
+        public CommonDbContext CreateDbContext(string[] args)
+        {
+            var options = new DbContextOptionsBuilder<CommonDbContext>();
+            DataLayerInstaller.ConfigureApplication(options, DesignTimeConfiguration.ConnectionString(), ApplicationType.Common);
+            return new CommonDbContext(options.Options, new FixedTenantSchemaAccessor(TenantSchemaName.Public));
+        }
+    }
+
     public class MokeDbContextDesignTimeFactory : IDesignTimeDbContextFactory<MokeDbContext>
     {
         public MokeDbContext CreateDbContext(string[] args)

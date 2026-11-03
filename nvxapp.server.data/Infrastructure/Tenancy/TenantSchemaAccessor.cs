@@ -21,7 +21,8 @@ namespace nvxapp.server.data.Infrastructure.Tenancy
     /*
      Schema della richiesta corrente (registrato come scoped).
         - azienda: TenantScope (job in background, inizializzatori) oppure claim "company" del token
-        - l'applicativo deve essere ATTIVO per l'azienda (CompanyApplication), in entrambe le modalita'
+        - l'applicativo deve essere ATTIVO per l'azienda (CompanyApplication), in entrambe le modalita';
+          Common (dati comuni dell'azienda) e' sempre accessibile
         - modalita' singola: "public"; multi-tenant: tenant_<IdAzienda>_<IdApplicativo>
      Nessuna variabile statica condivisa: ogni richiesta risolve il proprio valore.
     */
@@ -51,7 +52,7 @@ namespace nvxapp.server.data.Infrastructure.Tenancy
                 ?? throw new ApplicationNotActiveException(
                     InfrastructureMessages.Get("ApplicationNoCompanySelected", application));
 
-            if (!ActiveApplications(idCompany).Contains(application))
+            if (application.IsActivatable() && !ActiveApplications(idCompany).Contains(application))
                 throw new ApplicationNotActiveException(
                     InfrastructureMessages.Get("ApplicationNotActiveForCompany", application, idCompany));
 

@@ -3,7 +3,13 @@
 Branch: **CRM_Dev** (riceve i merge da Infrastructure, si mergia in CRM).
 La parte sulle **tabelle condivise** (§2) è lavoro di **Infrastructure_Dev** e va fatta *prima* di iniziare il CRM: vale anche per il Documentale (`ANALISI_DOCUMENTALE.md`, che rimanda qui).
 
-Stato: analisi, nessuna implementazione. Le scelte da confermare sono raccolte al §9.
+Stato: analisi. Le scelte da confermare sono raccolte al §9.
+
+**Predisposizione fatta il 03/11/2026** (decisioni dell'utente): schema Common con valore **`Common = 0`**, sempre creato per ogni azienda;
+in Common sono state travasate `Az_Anagrafica` e `Az_Cliente` ed è stata aggiunta `Az_ClienteContatto`; **`Dip_Anagrafica` resta nelle presenze**
+(a chi attiva solo il documentale i dipendenti possono non interessare). Migration azzerate: una iniziale per contesto (Public, Common, Moke,
+AttendanceTracking) e database ricreato. Le pagine client dei clienti restano per ora nelle presenze (stesse API `api/Az_Cliente/*`, ora in
+Infrastructure); i contatti hanno solo le API (`api/Az_ClienteContatto/*`). I valori di CRM e documentale nell'enum non sono ancora stati assegnati.
 
 ---
 
