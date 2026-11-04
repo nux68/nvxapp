@@ -950,18 +950,13 @@ namespace nvxapp.server.service.ClientServer_Service.Infrastructure.Account
                 // con gli ICompanyInitializer e i suoi utenti con gli IUserInitializer
                 if (nuovaAzienda && company != null)
                 {
-                    var richiesti = model.Data.CompanyEdit.Applications?.Select(x => x.ApplicationType).ToList() ?? new List<ApplicationType>();
+                    // chi puo' gestire gli applicativi (SuperUser, DealerPowerAdmin) ha gia' deciso con le spunte; per gli altri
+                    // (es. lo studio che crea l'azienda) si attivano comunque quelli previsti dal ramo, senza controllo del ruolo
+                    var richiesti = await _companyApplicationService.CanManageAsync(company.Id)
+                        ? model.Data.CompanyEdit.Applications?.Select(x => x.ApplicationType).ToList() ?? new List<ApplicationType>()
+                        : new List<ApplicationType>();
                     foreach (var application in _companyInitializerRegistry.ApplicationsForNewCompany().Where(a => !richiesti.Contains(a)))
-                    {
-                        var reqApp = new GenericRequest<CompanyApplicationPutInModel>();
-                        reqApp.Data = new CompanyApplicationPutInModel()
-                        {
-                            IdCompany = company.Id,
-                            ApplicationType = application,
-                            Active = true
-                        };
-                        await _companyApplicationService.CompanyApplicationPut(reqApp, true);
-                    }
+                        await _companyApplicationService.ActivateForNewCompanyAsync(company.Id, application);
 
                     await _companyInitializerRegistry.InitializeAllAsync(company);
 
