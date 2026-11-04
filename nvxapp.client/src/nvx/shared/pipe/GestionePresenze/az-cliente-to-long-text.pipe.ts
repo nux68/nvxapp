@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core';
 import { SharedParameterGestionePresenzeService } from '../../shared-parameter-gestione-presenze.service';
-import { Az_ClienteModel } from '../../../ClientServer-Service/GestionePresenze/Az_Cliente/Models/az-cliente-model';
+import { Az_ClienteModel } from '../../../ClientServer-Service/Infrastructure/Az_Cliente/Models/az-cliente-model';
 
 @Pipe({
   name: 'azClienteToLongText',

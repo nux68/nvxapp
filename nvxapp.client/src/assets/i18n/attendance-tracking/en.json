@@ -594,36 +594,6 @@
         "back": "Back",
         "usersWarning": "Warning: to access this account the following users will be created    ->   {{admin}} / {{powerAdmin}}"
       },
-      "customerEdit": {
-        "title": "Customer",
-        "anagrafica": "Personal data",
-        "ragioneSociale": "Company name",
-        "ragioneSocialeRequired": "The company name is required.",
-        "ragioneSocialeMaxLength": "The company name cannot exceed {{max}} characters.",
-        "referente": "Contact person",
-        "datiFiscali": "Tax details",
-        "partitaIva": "VAT number",
-        "partitaIvaPattern": "The VAT number consists of 11 digits.",
-        "codiceFiscale": "Tax code",
-        "codiceFiscalePattern": "The tax code is 16 characters (individual) or 11 digits (company).",
-        "sede": "Site",
-        "indirizzo": "Address",
-        "cap": "Postcode",
-        "citta": "City",
-        "provincia": "Province",
-        "nazione": "Country",
-        "provinciaPattern": "The province is the 2-letter code (e.g. MI).",
-        "nazionePattern": "The country is the 2-letter code (e.g. IT).",
-        "contatti": "Contacts",
-        "telefono": "Phone",
-        "email": "Email",
-        "pec": "PEC",
-        "pecInvalid": "Enter a valid PEC address.",
-        "fatturazioneElettronica": "Electronic invoicing",
-        "codiceDestinatario": "Recipient code (SDI)",
-        "codiceDestinatarioPattern": "The recipient code is 7 characters (6 for the Public Administration).",
-        "note": "Notes"
-      },
       "departmentList": {
         "title": "Departments",
         "columnReparto": "Department",
@@ -770,12 +740,6 @@
         "confirmDelete": "Confirm deletion of the site?",
         "fabAdd": "New site",
         "columnSite": "Site"
-      },
-      "customerList": {
-        "title": "Customers",
-        "confirmDelete": "Confirm deletion of the customer?",
-        "fabAdd": "New",
-        "columnCustomer": "Customer"
       },
       "activityList": {
         "title": "Activities",
@@ -1250,7 +1214,6 @@
       "esameSpese": "Expense review",
       "gestioneCommesse": "Job order settings",
       "commesse": "Job orders",
-      "clienti": "Customers",
       "reparti": "Departments",
       "sedi": "Sites",
       "attivita": "Activities",

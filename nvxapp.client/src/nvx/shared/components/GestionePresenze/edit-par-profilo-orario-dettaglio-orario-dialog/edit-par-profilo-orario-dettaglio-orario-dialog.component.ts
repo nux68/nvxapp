@@ -8,7 +8,7 @@ import { ModalController } from '@ionic/angular';
 import { UserInterfaceService } from '../../../../Utility/infrastructure/user-interface.service';
 import { SharedParameterGestionePresenzeService } from '../../../shared-parameter-gestione-presenze.service';
 import { Observable, of } from 'rxjs';
-import { Az_ClienteModel } from '../../../../ClientServer-Service/GestionePresenze/Az_Cliente/Models/az-cliente-model';
+import { Az_ClienteModel } from '../../../../ClientServer-Service/Infrastructure/Az_Cliente/Models/az-cliente-model';
 import { Par_OrarioModel } from '../../../../ClientServer-Service/GestionePresenze/Par_Orario/Models/par-orario-model';
 
 

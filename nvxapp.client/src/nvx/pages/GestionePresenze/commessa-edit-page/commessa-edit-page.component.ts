@@ -9,7 +9,7 @@ import { map, catchError, of, firstValueFrom } from 'rxjs';
 import { StringHelperService } from '../../../Utility/infrastructure/string-helper.service';
 import { Az_CommessaGetInModel, Az_CommessaGetOutModel, Az_CommessaPutInModel } from '../../../ClientServer-Service/GestionePresenze/Az_Commessa/Models/az-commessa-model';
 import { RefresherService } from '../../../Utility/GestionePresenze/refresher.service';
-import { Az_ClienteModel } from '../../../ClientServer-Service/GestionePresenze/Az_Cliente/Models/az-cliente-model';
+import { Az_ClienteModel, clienteSelezionabile } from '../../../ClientServer-Service/Infrastructure/Az_Cliente/Models/az-cliente-model';
 import { SharedParameterGestionePresenzeService, ParTable } from '../../../shared/shared-parameter-gestione-presenze.service';
 import { AzCommessaService } from '../../../ClientServer-Service/GestionePresenze/Az_Commessa/az-commessa.service';
 import { CheckObjOn_Id_Number, CheckObjOn_Id_Text } from '../../../ClientServer-Service/ModelsBase/check-obj';
@@ -38,6 +38,12 @@ export class CommessaEditPageComponent extends BasePageConfirmCancelComponent<Az
 
   public override _editForm: FormGroup;
   public _az_ClienteModelList: Az_ClienteModel[] = [];
+
+  // clienti proponibili: attivi e non solo fornitori, piu' quello gia' assegnato alla commessa
+  public get clientiSelezionabili(): Az_ClienteModel[] {
+    const attuale = this._editForm?.get('az_Commessa.idAz_Cliente')?.value;
+    return (this._az_ClienteModelList ?? []).filter(x => clienteSelezionabile(x) || x.id === attuale);
+  }
   public _az_SediRepartoList: Az_SediRepartoModel[] = [];
   public _par_Attivita: Par_AttivitaModel[] = [];
 

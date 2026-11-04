@@ -50,7 +50,6 @@ export class MainMenuAttendanceTrackingService implements iMainMenuService {
 
       { menuType: MenuType.MenuHeader, zorder: 205000, group: 2, title: 'attendance.menu.gestioneCommesse', roles: ['CompanyPowerAdmin'], component: '', url: '', icon: '' },
       { menuType: MenuType.MenuItem, zorder: 205100, group: 2, title: 'attendance.menu.commesse', roles: ['CompanyPowerAdmin'], component: "CommessaListPageComponent", url: '/commessalist', icon: 'layers' },
-      { menuType: MenuType.MenuItem, zorder: 205200, group: 2, title: 'attendance.menu.clienti', roles: ['CompanyPowerAdmin'], component: "CustomerListPageComponent", url: '/customerlist', icon: 'people' },
       { menuType: MenuType.MenuItem, zorder: 205300, group: 2, title: 'attendance.menu.reparti', roles: ['CompanyPowerAdmin'], component: "DepartmentListPageComponent", url: '/departmentlist', icon: 'grid' },
       { menuType: MenuType.MenuItem, zorder: 205400, group: 2, title: 'attendance.menu.sedi', roles: ['CompanyPowerAdmin'], component: "AzSediListPageComponent", url: '/azsedilist', icon: 'business' },
       { menuType: MenuType.MenuItem, zorder: 205500, group: 2, title: 'attendance.menu.attivita', roles: ['CompanyPowerAdmin'], component: "ActivityListPageComponent", url: '/activitylist', icon: 'file-tray-full' },

@@ -3,7 +3,7 @@ import { Component, OnDestroy, OnInit, ChangeDetectionStrategy } from '@angular/
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ButtonItem, UserInterfaceService } from '../../../Utility/infrastructure/user-interface.service';
 import { Observable, map, catchError } from 'rxjs';
-import { Az_ClienteModel, Az_ClienteGetInModel } from '../../../ClientServer-Service/GestionePresenze/Az_Cliente/Models/az-cliente-model';
+import { Az_ClienteModel, Az_ClienteGetInModel } from '../../../ClientServer-Service/Infrastructure/Az_Cliente/Models/az-cliente-model';
 import { GenericRequest } from '../../../ClientServer-Service/ModelsBase/generic-request';
 import { BasePageConfirmCancelComponent } from '../../_BASE/base-page-confirm-cancel/base-page-confirm-cancel.component';
 import { NavController } from '@ionic/angular';
