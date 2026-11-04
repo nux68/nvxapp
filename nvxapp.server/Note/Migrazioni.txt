@@ -12,8 +12,8 @@ in un contesto dedicato. Gli applicativi sono l'enum ApplicationType
     0 Common                -> CommonDbContext              (Infrastructure) dati comuni dell'azienda, SEMPRE presenti
     1 Moke                  -> MokeDbContext                (Infrastructure)
     2 AttendanceTracking    -> AttendanceTrackingDbContext  (ramo AttendanceTracking)
-    3 Crm                   -> (da sviluppare, ramo CRM)
-    4 DocumentManagement    -> (da sviluppare, ramo DocumentManagement)
+    3 Crm                   -> CrmDbContext                 (ramo CRM)
+    4 DocumentManagement    -> DocumentManagementDbContext  (ramo DocumentManagement)
 
 COMMON (dati comuni dell'azienda, vedi nvxapp.server/docs/ANALISI_CRM.md §2)
     Tabelle condivise tra gli applicativi: Az_Anagrafica (una riga per azienda), Az_Cliente, Az_ClienteContatto,
@@ -85,6 +85,8 @@ dotnet ef migrations add <Nome> --context PublicDbContext -o Migrations/Public -
 dotnet ef migrations add <Nome> --context CommonDbContext -o Migrations/Common --project nvxapp.server.data --startup-project nvxapp.server
 dotnet ef migrations add <Nome> --context MokeDbContext -o Migrations/Moke --project nvxapp.server.data --startup-project nvxapp.server
 dotnet ef migrations add <Nome> --context AttendanceTrackingDbContext -o Migrations/AttendanceTracking --project nvxapp.server.data --startup-project nvxapp.server
+dotnet ef migrations add <Nome> --context CrmDbContext -o Migrations/Crm --project nvxapp.server.data --startup-project nvxapp.server
+dotnet ef migrations add <Nome> --context DocumentManagementDbContext -o Migrations/DocumentManagement --project nvxapp.server.data --startup-project nvxapp.server
 
 storico migrazioni create
   03/11/2026 e 04/11/2026: tutte le migration precedenti eliminate e sostituite da una iniziale per contesto (database ricreato).
