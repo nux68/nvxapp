@@ -300,43 +300,53 @@ Legenda: [x] fatto · [ ] da fare.
 - [ ] invito di un dipendente senza account (creazione dell'utente e collegamento alla riga esistente)
 - [x] migration Common e presenze azzerate e database ricreato – 04/11/2026
 
-**Attivazione degli applicativi** (§4.1)
-- [ ] `CompanyApplicationPut` accettato solo da SuperUser e DealerPowerAdmin del centro dell'azienda (oggi nessun controllo); pagina in sola lettura per gli altri ruoli
-- [ ] `public.FinancialAdvisorApplication` con servizio, API e pagina di abilitazione nello studio (SuperUser e DealerPowerAdmin)
+**Attivazione degli applicativi** (§4.1) – fatto il 04/11/2026
+- [x] `CompanyApplicationPut` accettato solo da SuperUser e DealerPowerAdmin del centro dell'azienda; stesso stato senza controllo; pagina azienda in sola lettura per gli altri ruoli; applicativi del ramo sulle aziende nuove con `ActivateForNewCompanyAsync`
+- [x] `public.FinancialAdvisorApplication` con servizio, API e sezione applicativi nella pagina dello studio (SuperUser e DealerPowerAdmin)
+- [x] si attivano solo gli applicativi con contesto registrato nel ramo (CRM non attivabile finché non esiste)
 - [ ] attivazione in blocco sulle aziende dello studio e proposta sulle aziende nuove (S5)
-- [ ] `UserLoad` con gli applicativi abilitati dello studio; menu dello studio con `forApplication` (S10)
+- [x] `UserLoad` con gli applicativi abilitati dello studio; menu e rotte lato studio con `forFinancialAdvisorApplication` / `financialAdvisorApplicationGuard` (S10; le pagine dello studio arrivano con la Fase 2)
 - [ ] restrizioni delle funzioni agli utenti dello studio (S9)
 
-**Archiviazione su disco** (§5.1)
-- [ ] `IFileStorage` con implementazione **FileSystem** (`<idCompany>/<aaaa>/<mm>/<guid>`), hash SHA-256
-- [ ] volume Docker `nvxapp_files` in `docker-compose*.yml` e nelle istruzioni di backup
-- [ ] lista bianca dei tipi di file e dimensione massima del file
+**Archiviazione su disco** (§5.1) – fatto il 04/11/2026
+- [x] `IFileStorage` con implementazione **FileSystem** (`<idCompany>/<aaaa>/<mm>/<guid>`, scrittura atomica, chiave validata), hash SHA-256 nel documentale
+- [x] volume Docker `nvxapp_files` in `docker-compose.yml` e nelle istruzioni di backup (`ANALISI_DOCKER.md` §9.4); file eliminati con la cancellazione fisica dell'azienda
+- [x] lista bianca dei tipi di file e dimensione massima del file
 - [ ] (facoltativo, dopo) implementazioni S3/MinIO e database; cifratura (decisa: per ora no)
 
-**Spazio a disposizione** (§5.3)
-- [ ] `AppSetting` `Storage_MaxFileMB`, `Storage_WarningPercent` = 50 MB e 80%
-- [ ] `StoragePlan` con i pacchetti iniziali **1, 5 e 20 GB** e il pacchetto predefinito
-- [ ] `CompanyStorage` (pacchetto, spazio usato e prenotato) e `CompanyStorageHistory` (fotografia mensile)
-- [ ] prenotazione atomica al caricamento, conferma o annullamento, blocco oltre quota
-- [ ] ricalcolo notturno (Hangfire) e fotografia mensile
-- [ ] avvisi alla soglia e al 100% (SignalR + email a CompanyPowerAdmin e DealerPowerAdmin)
-- [ ] pagine: spazio dell'azienda, elenco aziende per centro/SuperUser con cambio di pacchetto ed export Excel, riepilogo per lo studio, pacchetti e valori predefiniti per il SuperUser
+**Spazio a disposizione** (§5.3) – fatto il 04/11/2026
+- [x] `AppSetting` `Storage_MaxFileMB`, `Storage_WarningPercent` = 50 MB e 80%
+- [x] `StoragePlan` con i pacchetti iniziali **1, 5 e 20 GB** e il pacchetto predefinito
+- [x] `CompanyStorage` (pacchetto, spazio usato e prenotato) e `CompanyStorageHistory` (fotografia mensile)
+- [x] prenotazione atomica al caricamento, conferma o annullamento, blocco oltre quota
+- [x] ricalcolo notturno e fotografia mensile (servizio in background `StorageMaintenanceService`, non Hangfire: Hangfire è facoltativo)
+- [x] avvisi alla soglia e al 100% via email a CompanyPowerAdmin e DealerPowerAdmin
+- [ ] avvisi in app (SignalR) alla soglia e al 100%
+- [x] pagine: spazio dell'azienda (nel documentale), elenco aziende per SuperUser/centro/studio con cambio di pacchetto, pacchetti e valori predefiniti per il SuperUser
+- [ ] export Excel dell'elenco e dell'andamento mensile (fatturazione)
 
-### Fase 1 – Documentale di base (DocumentManagement_Dev, creato da Infrastructure dopo la Fase 0)
-- [ ] creazione del ramo DocumentManagement_Dev da Infrastructure
-- [ ] `DocumentManagementDbContext` (`ApplicationType.DocumentManagement`), design-time factory, installer, migration iniziale
-- [ ] configurazione (§6.1: `Doc_Cfg`, tipologie, metadati, cartelle, permessi delle cartelle) e wizard di attivazione con tipologie e cartelle predefinite multilingua
-- [ ] abilitazioni per utente ai documenti del personale (`Doc_UtenteAbilitazione`: carica / vede) per CompanyPowerAdmin e CompanyAdmin
-- [ ] archivio: cartelle, fascicoli (dipendente, cliente), elenco, filtri, caricamento multiplo, anteprima PDF/immagini
-- [ ] versioni (nuova, storico, ripristino), cestino con svuotamento
-- [ ] ricerca nel testo (`tsvector` italiano + indice GIN) con il testo estratto da `FileText`
-- [ ] documenti del personale con destinatari e **presa visione** (`Doc_Destinatario`)
-- [ ] "I miei documenti" per il dipendente
-- [ ] registro accessi (`Doc_Log`), consultabile ed esportabile
-- [ ] controllo dello spazio a ogni caricamento (§5.3)
-- [ ] `DocumentManagementDataDeleter` (file nello storage compresi; i documenti del personale restano all'uscita del dipendente) e `ICommonEntityUsage` del documentale (documenti di un cliente o di un dipendente)
-- [ ] menu, rotte, site-name, showcase, multilingua (`DocumentManagementMessages`, i18n)
+### Fase 1 – Documentale di base (DocumentManagement_Dev, creato da Infrastructure dopo la Fase 0) – fatto il 04/11/2026
+- [x] creazione dei rami DocumentManagement_Dev e DocumentManagement da Infrastructure
+- [x] `DocumentManagementDbContext` (`ApplicationType.DocumentManagement`, schema `tenant_<id>_4`), design-time factory, installer, migration iniziale
+- [x] configurazione (`Doc_Cfg`, tipologie, cartelle ad albero con "visibile ai dipendenti") e inizializzazione all'attivazione con tipologie e cartelle predefinite multilingua
+- [ ] metadati per tipologia (`Doc_Par_TipoMetadato`) e permessi per cartella (`Doc_CartellaPermesso`): per ora competenza, scadenza e "visibile ai dipendenti" coprono i casi della prima versione
+- [x] abilitazioni per utente ai documenti del personale (`Doc_UtenteAbilitazione`: carica / vede) per CompanyPowerAdmin e CompanyAdmin
+- [x] dipendenti anche senza account (anagrafica comune) gestiti dal documentale
+- [x] archivio: cartelle, filtri (testo, cartella, tipologia, dipendente, anno), fascicoli per dipendente e cliente tramite i filtri, avviso dei duplicati
+- [ ] caricamento multiplo e anteprima PDF/immagini nel browser (oggi un file alla volta e download)
+- [x] versioni (nuova, storico, download delle precedenti, potatura), cestino con svuotamento manuale e notturno
+- [ ] ripristino di una versione precedente come corrente
+- [x] ricerca nel testo (`tsvector` italiano + indice GIN) con il testo estratto da `FileText`
+- [x] documenti del personale con destinatari e **presa visione** (`Doc_Destinatario`), azzerata a ogni nuova versione; avviso email al dipendente
+- [x] "I miei documenti" per il dipendente
+- [x] registro accessi (`Doc_Log`) consultabile
+- [ ] export del registro accessi
+- [x] controllo dello spazio a ogni caricamento (§5.3)
+- [x] `DocumentManagementDataDeleter` (i documenti del personale restano all'uscita del dipendente), `ICommonEntityUsage` (clienti usati da documenti), spazio reale per il riallineamento notturno
+- [x] menu, rotte, multilingua (`DocumentManagementMessages`, i18n `document-management`)
+- [ ] site-name e showcase del documentale
 - [ ] handler chat che cerca per titolo, tipologia e metadati, **senza leggere i contenuti** (§7.6)
+- [x] prove: API (permessi, caricamento, ricerca, versioni, presa visione, cestino, spazio) e pagine nel browser (CompanyPowerAdmin e dipendente) su database temporaneo
 
 ### Fase 2 – Studio e flussi
 - [ ] area studio (§7.4): aziende dello studio con documentale attivo, documenti inviati, prese visione, richieste
