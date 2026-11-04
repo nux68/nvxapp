@@ -22,6 +22,9 @@
             {{ 'components.nvxListOptions.enableDelete' | transloco }}
           </ion-checkbox>
         }
+        @if (note()) {
+          <p class="nvx-list-options-note">{{ note() }}</p>
+        }
       </div>
     }
   </div>

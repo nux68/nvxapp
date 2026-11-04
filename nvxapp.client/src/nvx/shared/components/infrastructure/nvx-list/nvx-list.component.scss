@@ -74,6 +74,12 @@
     white-space: nowrap;
     text-align: right;
 
+    // senza nowrap Ionic manda a capo il testo dei bottoni nel calcolo della larghezza minima ("Presa visione"):
+    // la colonna risultava piu' stretta dei bottoni, che uscivano dal riquadro
+    ion-button {
+      white-space: nowrap;
+    }
+
     ion-button + ion-button {
       margin-left: 6px;
     }

@@ -250,6 +250,19 @@ export class AppComponent implements OnInit {
     return (this.sezioniApplicativi.find(a => a.chiave !== 'admin') ?? this.sezioniApplicativi[0])?.chiave ?? '';
   }
 
+  // Sezioni aperte o chiuse a mano: i valori legati al menu le seguono, altrimenti dopo un'impersonificazione il
+  // ricalcolo (spesso uguale al valore di prima, es. di nuovo "Presenze") non verrebbe riapplicato e resterebbe
+  // aperta la sezione scelta a mano. L'evento ionChange risale dai gruppi interni: conta solo quello del gruppo stesso.
+  public sezioneCambiata(ev: Event): void {
+    if (ev.target === ev.currentTarget)
+      this.selectedMenu = ((ev as CustomEvent).detail?.value as string) ?? '';
+  }
+
+  public sottosezioneCambiata(chiave: string, ev: Event): void {
+    if (ev.target === ev.currentTarget)
+      this.sottosezioniAperte = { ...this.sottosezioniAperte, [chiave]: ((ev as CustomEvent).detail?.value as string) ?? '' };
+  }
+
   // somma dei contatori delle voci di una sezione di applicativo (es. richieste da approvare), visibile a sezione chiusa
   public appBadge(app: SezioneApplicativo): number {
     return app.sezioni.reduce((totale, s) => totale + s.gruppi.reduce((t, g) =>
